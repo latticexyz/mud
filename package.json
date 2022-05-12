@@ -1,0 +1,24 @@
+{
+  "name": "mud",
+  "version": "0.0.0",
+  "description": "A toolkit for building on-chain worlds",
+  "repository": "https://github.com/latticexyz/mud.git",
+  "license": "UNLICENSED",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "3.3.0",
+    "lerna": "^4.0.0"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "scripts": {
+    "commit": "cz"
+  }
+}
