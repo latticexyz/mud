@@ -5,9 +5,14 @@
   "repository": "https://github.com/latticexyz/mud.git",
   "license": "UNLICENSED",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "@mud/solecs/**"
+    ]
+  },
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
     "@commitlint/config-conventional": "^16.2.4",
@@ -36,5 +41,6 @@
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
     "*.{ts,css,md}": "prettier --write"
-  }
+  },
+  "dependencies": {}
 }
