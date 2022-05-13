@@ -1,0 +1,38 @@
+{
+  "name": "@mud/recs",
+  "license": "MIT",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "scripts": {
+    "lint": "eslint . --ext .ts",
+    "test": "jest",
+    "build": "rimraf dist && rollup -c rollup.config.js"
+  },
+  "devDependencies": {
+    "@mud/utils": "0.0.1",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/plugin-typescript": "^8.3.1",
+    "@types/jest": "^27.4.1",
+    "@types/uuid": "^8.3.4",
+    "@typescript-eslint/eslint-plugin": "^5.12.1",
+    "@typescript-eslint/parser": "^5.12.1",
+    "eslint": "^8.9.0",
+    "jest": "^27.5.1",
+    "mobx": "^6.4.2",
+    "prettier": "^2.6.0",
+    "rimraf": "^3.0.2",
+    "rollup": "^2.69.0",
+    "rollup-plugin-commonjs": "^10.1.0",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rxjs": "^7.5.5",
+    "ts-jest": "^27.1.3",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.5"
+  },
+  "peerDependencies": {
+    "@mud/utils": "0.0.1",
+    "mobx": "^6.4.2",
+    "rxjs": "7.5.5"
+  },
+  "dependencies": {}
+}
