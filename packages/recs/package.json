@@ -19,7 +19,6 @@
     "eslint": "^8.9.0",
     "jest": "^27.5.1",
     "mobx": "^6.4.2",
-    "prettier": "^2.6.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.69.0",
     "rollup-plugin-commonjs": "^10.1.0",

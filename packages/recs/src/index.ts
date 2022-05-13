@@ -14,7 +14,16 @@ export {
   overridableComponent,
 } from "./Component";
 export { defineSystem, defineAutorunSystem, defineReactionSystem, defineSyncSystem, defineRxSystem } from "./System";
-export { defineQuery, getQueryResult, defineEnterQuery, defineExitQuery, defineUpdateQuery, Has, Not, HasValue } from "./Query";
+export {
+  defineQuery,
+  getQueryResult,
+  defineEnterQuery,
+  defineExitQuery,
+  defineUpdateQuery,
+  Has,
+  Not,
+  HasValue,
+} from "./Query";
 export { Type } from "./constants";
 export type {
   Component,

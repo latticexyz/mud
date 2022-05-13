@@ -11,7 +11,8 @@
   "devDependencies": {
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "3.3.0",
-    "lerna": "^4.0.0"
+    "lerna": "^4.0.0",
+    "prettier": "^2.6.2"
   },
   "config": {
     "commitizen": {
@@ -19,6 +20,8 @@
     }
   },
   "scripts": {
-    "commit": "cz"
+    "commit": "cz",
+    "prettier:check": "prettier --check 'packages/**/*.ts'",
+    "prettier": "prettier --write 'packages/**/*.ts'"
   }
 }

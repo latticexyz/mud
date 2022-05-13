@@ -10,5 +10,5 @@ export enum Type {
   Entity,
   OptionalEntity,
   EntityArray,
-  OptionalEntityArray
+  OptionalEntityArray,
 }

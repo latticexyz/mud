@@ -20,7 +20,7 @@ export function createEntity<Cs extends Schema[]>(
 
 export function removeEntity(world: World, entity: Entity) {
   const components = getEntityComponents(world, entity);
-  for(const component of components) {
+  for (const component of components) {
     removeComponent(component, entity);
   }
 }

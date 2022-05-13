@@ -11,6 +11,8 @@
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
     "@ethersproject/providers": "^5.6.1",
+    "@mud/recs": "0.0.1",
+    "@mud/utils": "0.0.1",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
@@ -23,7 +25,6 @@
     "ethers": "^5.5.4",
     "jest": "^27.5.1",
     "mobx": "^6.5.0",
-    "prettier": "^2.5.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.70.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
@@ -31,18 +32,15 @@
     "ts-jest": "^27.1.3",
     "ts-node": "^10.7.0",
     "tslib": "^2.3.1",
-    "typescript": "^4.6.2",
-    "@mud/recs": "0.0.1",
-    "@mud/utils": "0.0.1"
+    "typescript": "^4.6.2"
   },
   "peerDependencies": {
+    "@mud/recs": "0.0.1",
+    "@mud/utils": "0.0.1",
     "async-mutex": "^0.3.2",
     "ethers": "^5.5.4",
     "mobx": "^6.5.0",
-    "rxjs": "^7.5.5",
-    "@mud/recs": "0.0.1",
-    "@mud/utils": "0.0.1"
-    
+    "rxjs": "^7.5.5"
   },
   "dependencies": {}
 }
