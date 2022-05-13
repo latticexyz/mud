@@ -1,16 +1,16 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity 0.8.13;
 
-import { DSTestPlus } from 'solmate/test/utils/DSTestPlus.sol';
-import { Vm } from 'forge-std/Vm.sol';
-import { console } from 'forge-std/console.sol';
-import 'memmove/Array.sol';
+import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import { Vm } from "forge-std/Vm.sol";
+import { console } from "forge-std/console.sol";
+import "memmove/Array.sol";
 
-import { PublicQuadtreeIndexer } from './public/PublicQuadtreeIndexer.sol';
-import { Point, Rectangle, MAX_INT } from '../QuadtreeIndexer.sol';
-import { World } from '../World.sol';
+import { PublicQuadtreeIndexer } from "./public/PublicQuadtreeIndexer.sol";
+import { Point, Rectangle, MAX_INT } from "../QuadtreeIndexer.sol";
+import { World } from "../World.sol";
 
-import { PositionComponent, Position } from './components/PositionComponent.sol';
+import { PositionComponent, Position } from "./components/PositionComponent.sol";
 
 function pointEq(
   Point memory p1,
@@ -97,7 +97,7 @@ contract QuadtreeTest is DSTestPlus {
     uint256 id = 0;
     int64 start = -10000;
     for (int64 i = start; i < -start; i++) {
-      startMeasuringGas('Insert');
+      startMeasuringGas("Insert");
       qt.insert(0, Point(i, i, ++id, 0));
       stopMeasuringGas();
     }
@@ -110,7 +110,7 @@ contract QuadtreeTest is DSTestPlus {
     qt.insert(0, Point(52, 10, ++id, 0));
 
     // Should remove last point
-    startMeasuringGas('Remove');
+    startMeasuringGas("Remove");
     qt.remove(id);
     stopMeasuringGas();
     assertEq(qt.getNode(0).points.length, 1);
@@ -152,7 +152,7 @@ contract QuadtreeTest is DSTestPlus {
     qt.insert(0, Point(85, 15, ++id, 0));
 
     // Should be same location different coordinates
-    startMeasuringGas('Update');
+    startMeasuringGas("Update");
     qt.update(id, abi.encode(Point(42, 42, id, 0)));
     assertTrue(
       pointEq(
@@ -186,7 +186,7 @@ contract QuadtreeTest is DSTestPlus {
     qt.insert(0, Point(60, 52, ++id, 0));
 
     Rectangle memory rect = qt.initRectangle(57, 48, 10, 10);
-    startMeasuringGas('Query');
+    startMeasuringGas("Query");
     uint256[] memory newFoundPoints = qt.getEntitiesWithValue(abi.encode(rect));
     stopMeasuringGas();
     assertEq(newFoundPoints.length, 4);
@@ -203,7 +203,7 @@ contract QuadtreeTest is DSTestPlus {
       qt.insert(0, Point(i, i, ++id, 0));
     }
     for (int64 i = start; i < -start; i++) {
-      startMeasuringGas('Query');
+      startMeasuringGas("Query");
       qt.getEntitiesWithValue(abi.encode(qt.initRectangle(i, i, 10, 10)));
       stopMeasuringGas();
     }
@@ -219,7 +219,7 @@ contract QuadtreeTest is DSTestPlus {
     }
 
     // Get all entities in a 10 tile radius around 10,10
-    startMeasuringGas('Position Get Entities With Value');
+    startMeasuringGas("Position Get Entities With Value");
     Array entities = RefArrayLib.newArray(0);
     for (uint64 i = 10; i < 20; i++) {
       for (uint64 j = 10; j < 20; j++) {
@@ -231,7 +231,7 @@ contract QuadtreeTest is DSTestPlus {
     }
     stopMeasuringGas();
 
-    startMeasuringGas('Query');
+    startMeasuringGas("Query");
     uint256[] memory entityRes = qt.getEntitiesWithValue(abi.encode(qt.initRectangle(10, 10, 10, 10)));
     stopMeasuringGas();
 

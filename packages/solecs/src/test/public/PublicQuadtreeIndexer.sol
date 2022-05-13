@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import { QuadtreeIndexer, Node, Rectangle, Point } from '../../QuadtreeIndexer.sol';
-import { Component } from '../../Component.sol';
+import { QuadtreeIndexer, Node, Rectangle, Point } from "../../QuadtreeIndexer.sol";
+import { Component } from "../../Component.sol";
 
 contract PublicQuadtreeIndexer is QuadtreeIndexer {
   constructor(

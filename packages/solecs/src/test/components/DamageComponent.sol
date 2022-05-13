@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import '../../Component.sol';
+import "../../Component.sol";
 
-uint256 constant ID = uint256(keccak256('ember.components.DamageComponent'));
+uint256 constant ID = uint256(keccak256("ember.components.DamageComponent"));
 
 contract DamageComponent is Component {
   constructor(address world) Component(world) {}

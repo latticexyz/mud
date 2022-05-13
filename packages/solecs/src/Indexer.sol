@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import { IERC165 } from './interfaces/IERC165.sol';
-import { IEntityContainer } from './interfaces/IEntityContainer.sol';
-import { IEntityIndexer } from './interfaces/IEntityIndexer.sol';
+import { IERC165 } from "./interfaces/IERC165.sol";
+import { IEntityContainer } from "./interfaces/IEntityContainer.sol";
+import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
 
-import { Set } from './Set.sol';
-import { Component } from './Component.sol';
+import { Set } from "./Set.sol";
+import { Component } from "./Component.sol";
 
 contract Indexer is IEntityIndexer, IERC165 {
   Set private entities;
@@ -33,7 +33,7 @@ contract Indexer is IEntityIndexer, IERC165 {
       }
     }
 
-    require(foundSenderComponent, 'Message Sender is not indexed!');
+    require(foundSenderComponent, "Message Sender is not indexed!");
 
     // If data for entity doesn't exist yet create it
     if (entityToValue[entity].length == 0) {
@@ -93,7 +93,7 @@ contract Indexer is IEntityIndexer, IERC165 {
       }
     }
 
-    require(foundSenderComponent, 'Message Sender is not indexed!');
+    require(foundSenderComponent, "Message Sender is not indexed!");
 
     // if there is no entity with this value, return
     if (!has(entity)) return;
@@ -130,7 +130,7 @@ contract Indexer is IEntityIndexer, IERC165 {
   }
 
   function _set(uint256 entity, bytes[] memory newValues) internal {
-    require(newValues.length == components.length, 'Need values for all components.');
+    require(newValues.length == components.length, "Need values for all components.");
 
     // Store the entity
     entities.add(entity);

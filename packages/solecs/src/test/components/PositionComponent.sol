@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import '../../Component.sol';
-import { Point } from '../../QuadtreeIndexer.sol';
+import "../../Component.sol";
+import { Point } from "../../QuadtreeIndexer.sol";
 
 struct Position {
   int64 x;
   int64 y;
 }
 
-uint256 constant ID = uint256(keccak256('ember.components.PositionComponent'));
+uint256 constant ID = uint256(keccak256("ember.components.PositionComponent"));
 
 contract PositionComponent is Component {
   constructor(address world) Component(world) {}

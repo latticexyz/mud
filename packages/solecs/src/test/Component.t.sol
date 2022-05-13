@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import { DSTestPlus } from 'solmate/test/utils/DSTestPlus.sol';
-import { Vm } from 'forge-std/Vm.sol';
-import { console } from 'forge-std/console.sol';
+import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import { Vm } from "forge-std/Vm.sol";
+import { console } from "forge-std/console.sol";
 
-import { Component } from '../Component.sol';
-import { World } from '../World.sol';
+import { Component } from "../Component.sol";
+import { World } from "../World.sol";
 
 contract TestComponent is Component {
-  uint256 public constant ID = uint256(keccak256('lib.testComponent'));
+  uint256 public constant ID = uint256(keccak256("lib.testComponent"));
 
   constructor(address world) Component(world) {}
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import { Set } from './Set.sol';
-import { Component } from './Component.sol';
+import { Set } from "./Set.sol";
+import { Component } from "./Component.sol";
 
 contract World {
   Set private entities = new Set();
@@ -15,9 +15,9 @@ contract World {
   event ComponentValueRemoved(uint256 indexed componentId, address indexed component, uint256 indexed entity);
 
   function registerComponent(address componentAddr, uint256 id) public {
-    require(id != 0, 'Invalid ID');
-    require(componentAddr != address(0), 'Invalid component address');
-    require(components[id] == address(0), 'ID already registered');
+    require(id != 0, "Invalid ID");
+    require(componentAddr != address(0), "Invalid component address");
+    require(components[id] == address(0), "ID already registered");
     components[id] = componentAddr;
     componentAddressToId[componentAddr] = id;
     emit ComponentRegistered(id, componentAddr);

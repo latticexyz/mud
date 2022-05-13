@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import '@openzeppelin/contracts/utils/introspection/ERC165Checker.sol';
+import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
-import { IEntityIndexer } from './interfaces/IEntityIndexer.sol';
+import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
 
-import { Set } from './Set.sol';
-import { World } from './World.sol';
+import { Set } from "./Set.sol";
+import { World } from "./World.sol";
 
 abstract contract Component {
   address public world;
@@ -25,7 +25,7 @@ abstract contract Component {
   }
 
   modifier onlyContractOwner() {
-    require(msg.sender == owner, 'ONLY_CONTRACT_OWNER');
+    require(msg.sender == owner, "ONLY_CONTRACT_OWNER");
     _;
   }
 
@@ -102,7 +102,7 @@ abstract contract Component {
   function registerIndexer(address indexer) external onlyContractOwner {
     require(
       ERC165Checker.supportsInterface(indexer, type(IEntityIndexer).interfaceId),
-      'Given address is not an indexer.'
+      "Given address is not an indexer."
     );
     indexers.push(IEntityIndexer(indexer));
   }
