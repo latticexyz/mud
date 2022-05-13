@@ -1,0 +1,320 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "getEntities",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "bytes",
+          "name": "value",
+          "type": "bytes"
+        }
+      ],
+      "name": "getEntitiesWithValue",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "entity",
+          "type": "uint256"
+        }
+      ],
+      "name": "has",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "entity",
+          "type": "uint256"
+        }
+      ],
+      "name": "remove",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "entity",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bytes",
+          "name": "value",
+          "type": "bytes"
+        }
+      ],
+      "name": "update",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x",
+    "sourceMap": "",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/solecs/src/interfaces/IEntityIndexer.sol",
+    "exportedSymbols": {
+      "IEntityContainer": [
+        14057
+      ],
+      "IEntityIndexer": [
+        14076
+      ]
+    },
+    "id": 14077,
+    "license": "Unlicense",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "id": 14059,
+        "literals": [
+          "solidity",
+          ">=",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "38:24:20"
+      },
+      {
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/solecs/src/interfaces/IEntityContainer.sol",
+        "file": "./IEntityContainer.sol",
+        "id": 14061,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 14077,
+        "sourceUnit": 14058,
+        "src": "64:58:20",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 14060,
+              "name": "IEntityContainer",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 14057,
+              "src": "73:16:20",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 14062,
+              "name": "IEntityContainer",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 14057,
+              "src": "152:16:20"
+            },
+            "id": 14063,
+            "nodeType": "InheritanceSpecifier",
+            "src": "152:16:20"
+          }
+        ],
+        "canonicalName": "IEntityIndexer",
+        "contractDependencies": [],
+        "contractKind": "interface",
+        "fullyImplemented": false,
+        "id": 14076,
+        "linearizedBaseContracts": [
+          14076,
+          14057
+        ],
+        "name": "IEntityIndexer",
+        "nameLocation": "134:14:20",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "functionSelector": "0216b838",
+            "id": 14070,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "update",
+            "nameLocation": "182:6:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 14068,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14065,
+                  "mutability": "mutable",
+                  "name": "entity",
+                  "nameLocation": "197:6:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 14070,
+                  "src": "189:14:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 14064,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "189:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                },
+                {
+                  "constant": false,
+                  "id": 14067,
+                  "mutability": "mutable",
+                  "name": "value",
+                  "nameLocation": "218:5:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 14070,
+                  "src": "205:18:20",
+                  "stateVariable": false,
+                  "storageLocation": "memory",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_bytes_memory_ptr",
+                    "typeString": "bytes"
+                  },
+                  "typeName": {
+                    "id": 14066,
+                    "name": "bytes",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "205:5:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_bytes_storage_ptr",
+                      "typeString": "bytes"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "188:36:20"
+            },
+            "returnParameters": {
+              "id": 14069,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "233:0:20"
+            },
+            "scope": 14076,
+            "src": "173:61:20",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          },
+          {
+            "functionSelector": "4cc82215",
+            "id": 14075,
+            "implemented": false,
+            "kind": "function",
+            "modifiers": [],
+            "name": "remove",
+            "nameLocation": "247:6:20",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 14073,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 14072,
+                  "mutability": "mutable",
+                  "name": "entity",
+                  "nameLocation": "262:6:20",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 14075,
+                  "src": "254:14:20",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  },
+                  "typeName": {
+                    "id": 14071,
+                    "name": "uint256",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "254:7:20",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_uint256",
+                      "typeString": "uint256"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "253:16:20"
+            },
+            "returnParameters": {
+              "id": 14074,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "278:0:20"
+            },
+            "scope": 14076,
+            "src": "238:41:20",
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "scope": 14077,
+        "src": "124:157:20",
+        "usedErrors": []
+      }
+    ],
+    "src": "38:244:20"
+  }
+}

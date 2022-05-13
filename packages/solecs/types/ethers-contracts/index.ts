@@ -2,33 +2,19 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { Component } from "./Component";
-export type { ComponentTest } from "./ComponentTest";
-export type { DSTest } from "./DSTest";
-export type { DSTestPlus } from "./DSTestPlus";
-export type { DamageComponent } from "./DamageComponent";
-export type { Hevm } from "./Hevm";
+export type { IERC165 } from "./IERC165";
+export type { IEntityContainer } from "./IEntityContainer";
+export type { IEntityIndexer } from "./IEntityIndexer";
 export type { Indexer } from "./Indexer";
-export type { IndexerTest } from "./IndexerTest";
-export type { PositionComponent } from "./PositionComponent";
-export type { PublicQuadtreeIndexer } from "./PublicQuadtreeIndexer";
 export type { QuadtreeIndexer } from "./QuadtreeIndexer";
-export type { QuadtreeTest } from "./QuadtreeTest";
-export type { SetTest } from "./SetTest";
-export type { TestComponent } from "./TestComponent";
+export type { Set } from "./Set";
 export type { World } from "./World";
 
 export { Component__factory } from "./factories/Component__factory";
-export { ComponentTest__factory } from "./factories/ComponentTest__factory";
-export { DSTest__factory } from "./factories/DSTest__factory";
-export { DSTestPlus__factory } from "./factories/DSTestPlus__factory";
-export { DamageComponent__factory } from "./factories/DamageComponent__factory";
-export { Hevm__factory } from "./factories/Hevm__factory";
+export { IERC165__factory } from "./factories/IERC165__factory";
+export { IEntityContainer__factory } from "./factories/IEntityContainer__factory";
+export { IEntityIndexer__factory } from "./factories/IEntityIndexer__factory";
 export { Indexer__factory } from "./factories/Indexer__factory";
-export { IndexerTest__factory } from "./factories/IndexerTest__factory";
-export { PositionComponent__factory } from "./factories/PositionComponent__factory";
-export { PublicQuadtreeIndexer__factory } from "./factories/PublicQuadtreeIndexer__factory";
 export { QuadtreeIndexer__factory } from "./factories/QuadtreeIndexer__factory";
-export { QuadtreeTest__factory } from "./factories/QuadtreeTest__factory";
-export { SetTest__factory } from "./factories/SetTest__factory";
-export { TestComponent__factory } from "./factories/TestComponent__factory";
+export { Set__factory } from "./factories/Set__factory";
 export { World__factory } from "./factories/World__factory";

@@ -8,9 +8,6 @@
   "workspaces": {
     "packages": [
       "packages/*"
-    ],
-    "nohoist": [
-      "@mud/solecs/**"
     ]
   },
   "devDependencies": {
@@ -40,7 +37,7 @@
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
-    "*.{ts,css,md}": "prettier --write"
+    "*.{ts,css,md,sol}": "prettier --write"
   },
   "dependencies": {}
 }
