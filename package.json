@@ -14,7 +14,9 @@
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.15.0",
+    "husky": ">=6",
     "lerna": "^4.0.0",
+    "lint-staged": ">=10",
     "prettier": "^2.6.2"
   },
   "config": {
@@ -26,6 +28,11 @@
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --fix",
+    "*.{ts,css,md}": "prettier --write"
   }
 }
