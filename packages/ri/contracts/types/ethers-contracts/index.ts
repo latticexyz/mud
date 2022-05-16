@@ -4,7 +4,9 @@
 export type { Diamond } from "./Diamond";
 export type { EmberFacet } from "./EmberFacet";
 export type { PositionComponent } from "./PositionComponent";
+export type { World } from "./World";
 
 export { Diamond__factory } from "./factories/Diamond__factory";
 export { EmberFacet__factory } from "./factories/EmberFacet__factory";
 export { PositionComponent__factory } from "./factories/PositionComponent__factory";
+export { World__factory } from "./factories/World__factory";
