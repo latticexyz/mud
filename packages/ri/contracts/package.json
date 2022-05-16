@@ -11,7 +11,9 @@
     "test": "forge test",
     "build": "rimraf out && forge build --force && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh",
-    "types": "rimraf types && typechain --target=ethers-v5 abi/*.json"
+    "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
+    "start:node": "anvil",
+    "deploy:local": "forge script ./src/test/utils/BroadcastDeploy.sol -i 1 --target-contract Deploy --sig \"deployEmber()\" --fork-url http://localhost:8545 --broadcast -vvv"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
@@ -38,7 +40,7 @@
     "solhint": "^3.3.7",
     "ts-node": "^10.7.0",
     "typechain": "^7.0.1",
-    "typescript": "^4.6.2"
-  },
-  "dependencies": {}
+    "typescript": "^4.6.2",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#4d36e3f7e2168c8155c641eb0f80e85cd584bd1c"
+  }
 }

@@ -14,6 +14,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
 
   function world() external view returns (address) {
     return address(s.world);
+    return address(0);
   }
 
   // Debugging

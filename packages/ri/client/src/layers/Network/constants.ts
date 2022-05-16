@@ -1,4 +1,4 @@
 export const RPC_URL = "http://127.0.0.1:8545/";
-export const DEV_PRIVATE_KEY = "0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF";
-export const DIAMOND_ADDRESS = "0xc14D994fe7C5858c93936cc3bD42bb9467d6fB2C";
+export const DEV_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+export const DIAMOND_ADDRESS = "0x0db1d0cfcba97f7dc5af76cfec1a646c33cd9297";
 export const LAYER_NAME = "network";

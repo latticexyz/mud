@@ -1,48 +1,48 @@
 {
   "abi": [],
   "bytecode": {
-    "object": "0x602d6037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea164736f6c634300080d000a",
+    "object": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220dd904d015e4cab0f94ee9faaf29beb4f4d1885593cd5531f7e4c9125200906e364736f6c634300080d0033",
     "sourceMap": "428:145:62:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;428:145:62;;;;;;;;;;;;;;;;;",
     "linkReferences": {}
   },
   "deployedBytecode": {
-    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea164736f6c634300080d000a",
+    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220dd904d015e4cab0f94ee9faaf29beb4f4d1885593cd5531f7e4c9125200906e364736f6c634300080d0033",
     "sourceMap": "428:145:62:-:0;;;;;;;;",
     "linkReferences": {}
   },
   "ast": {
     "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/libraries/LibAppStorage.sol",
+    "id": 26653,
     "exportedSymbols": {
       "AppStorage": [
-        26638
+        26643
       ],
       "Config": [
-        26622
+        26627
       ],
       "LibAppStorage": [
-        26647
+        26652
       ],
       "World": [
         11262
       ]
     },
-    "id": 26648,
-    "license": "MIT",
     "nodeType": "SourceUnit",
+    "src": "0:574:62",
     "nodes": [
       {
+        "id": 26621,
+        "nodeType": "ImportDirective",
+        "src": "0:41:62",
         "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mud/solecs/src/World.sol",
         "file": "solecs/World.sol",
-        "id": 26616,
         "nameLocation": "-1:-1:-1",
-        "nodeType": "ImportDirective",
-        "scope": 26648,
+        "scope": 26653,
         "sourceUnit": 11263,
-        "src": "0:41:62",
         "symbolAliases": [
           {
             "foreign": {
-              "id": 26615,
+              "id": 26620,
               "name": "World",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
@@ -56,28 +56,30 @@
         "unitAlias": ""
       },
       {
-        "id": 26617,
+        "id": 26622,
+        "nodeType": "PragmaDirective",
+        "src": "43:23:62",
         "literals": [
           "solidity",
           "^",
           "0.8",
           ".0"
-        ],
-        "nodeType": "PragmaDirective",
-        "src": "43:23:62"
+        ]
       },
       {
+        "id": 26627,
+        "nodeType": "StructDefinition",
+        "src": "100:70:62",
         "canonicalName": "Config",
-        "id": 26622,
         "members": [
           {
             "constant": false,
-            "id": 26619,
+            "id": 26624,
             "mutability": "mutable",
             "name": "resetCallerEntityID",
             "nameLocation": "123:19:62",
             "nodeType": "VariableDeclaration",
-            "scope": 26622,
+            "scope": 26627,
             "src": "118:24:62",
             "stateVariable": false,
             "storageLocation": "default",
@@ -86,7 +88,7 @@
               "typeString": "bool"
             },
             "typeName": {
-              "id": 26618,
+              "id": 26623,
               "name": "bool",
               "nodeType": "ElementaryTypeName",
               "src": "118:4:62",
@@ -99,12 +101,12 @@
           },
           {
             "constant": false,
-            "id": 26621,
+            "id": 26626,
             "mutability": "mutable",
             "name": "personaMirror",
             "nameLocation": "154:13:62",
             "nodeType": "VariableDeclaration",
-            "scope": 26622,
+            "scope": 26627,
             "src": "146:21:62",
             "stateVariable": false,
             "storageLocation": "default",
@@ -113,7 +115,7 @@
               "typeString": "address"
             },
             "typeName": {
-              "id": 26620,
+              "id": 26625,
               "name": "address",
               "nodeType": "ElementaryTypeName",
               "src": "146:7:62",
@@ -128,44 +130,44 @@
         ],
         "name": "Config",
         "nameLocation": "107:6:62",
-        "nodeType": "StructDefinition",
-        "scope": 26648,
-        "src": "100:70:62",
+        "scope": 26653,
         "visibility": "public"
       },
       {
+        "id": 26643,
+        "nodeType": "StructDefinition",
+        "src": "171:255:62",
         "canonicalName": "AppStorage",
-        "id": 26638,
         "members": [
           {
             "constant": false,
-            "id": 26625,
+            "id": 26630,
             "mutability": "mutable",
             "name": "config",
             "nameLocation": "200:6:62",
             "nodeType": "VariableDeclaration",
-            "scope": 26638,
+            "scope": 26643,
             "src": "193:13:62",
             "stateVariable": false,
             "storageLocation": "default",
             "typeDescriptions": {
-              "typeIdentifier": "t_struct$_Config_$26622_storage_ptr",
+              "typeIdentifier": "t_struct$_Config_$26627_storage_ptr",
               "typeString": "struct Config"
             },
             "typeName": {
-              "id": 26624,
+              "id": 26629,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 26623,
+                "id": 26628,
                 "name": "Config",
                 "nodeType": "IdentifierPath",
-                "referencedDeclaration": 26622,
+                "referencedDeclaration": 26627,
                 "src": "193:6:62"
               },
-              "referencedDeclaration": 26622,
+              "referencedDeclaration": 26627,
               "src": "193:6:62",
               "typeDescriptions": {
-                "typeIdentifier": "t_struct$_Config_$26622_storage_ptr",
+                "typeIdentifier": "t_struct$_Config_$26627_storage_ptr",
                 "typeString": "struct Config"
               }
             },
@@ -173,12 +175,12 @@
           },
           {
             "constant": false,
-            "id": 26628,
+            "id": 26633,
             "mutability": "mutable",
             "name": "world",
             "nameLocation": "216:5:62",
             "nodeType": "VariableDeclaration",
-            "scope": 26638,
+            "scope": 26643,
             "src": "210:11:62",
             "stateVariable": false,
             "storageLocation": "default",
@@ -187,10 +189,10 @@
               "typeString": "contract World"
             },
             "typeName": {
-              "id": 26627,
+              "id": 26632,
               "nodeType": "UserDefinedTypeName",
               "pathNode": {
-                "id": 26626,
+                "id": 26631,
                 "name": "World",
                 "nodeType": "IdentifierPath",
                 "referencedDeclaration": 11262,
@@ -207,12 +209,12 @@
           },
           {
             "constant": false,
-            "id": 26630,
+            "id": 26635,
             "mutability": "mutable",
             "name": "_callerEntityID",
             "nameLocation": "233:15:62",
             "nodeType": "VariableDeclaration",
-            "scope": 26638,
+            "scope": 26643,
             "src": "225:23:62",
             "stateVariable": false,
             "storageLocation": "default",
@@ -221,7 +223,7 @@
               "typeString": "uint256"
             },
             "typeName": {
-              "id": 26629,
+              "id": 26634,
               "name": "uint256",
               "nodeType": "ElementaryTypeName",
               "src": "225:7:62",
@@ -234,12 +236,12 @@
           },
           {
             "constant": false,
-            "id": 26633,
+            "id": 26638,
             "mutability": "mutable",
             "name": "accessControllers",
             "nameLocation": "337:17:62",
             "nodeType": "VariableDeclaration",
-            "scope": 26638,
+            "scope": 26643,
             "src": "327:27:62",
             "stateVariable": false,
             "storageLocation": "default",
@@ -249,7 +251,7 @@
             },
             "typeName": {
               "baseType": {
-                "id": 26631,
+                "id": 26636,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "327:7:62",
@@ -259,7 +261,7 @@
                   "typeString": "address"
                 }
               },
-              "id": 26632,
+              "id": 26637,
               "nodeType": "ArrayTypeName",
               "src": "327:9:62",
               "typeDescriptions": {
@@ -271,12 +273,12 @@
           },
           {
             "constant": false,
-            "id": 26637,
+            "id": 26642,
             "mutability": "mutable",
             "name": "embodiedSystemSelectorToImplementation",
             "nameLocation": "385:38:62",
             "nodeType": "VariableDeclaration",
-            "scope": 26638,
+            "scope": 26643,
             "src": "358:65:62",
             "stateVariable": false,
             "storageLocation": "default",
@@ -285,9 +287,9 @@
               "typeString": "mapping(bytes4 => address)"
             },
             "typeName": {
-              "id": 26636,
+              "id": 26641,
               "keyType": {
-                "id": 26634,
+                "id": 26639,
                 "name": "bytes4",
                 "nodeType": "ElementaryTypeName",
                 "src": "366:6:62",
@@ -303,7 +305,7 @@
                 "typeString": "mapping(bytes4 => address)"
               },
               "valueType": {
-                "id": 26635,
+                "id": 26640,
                 "name": "address",
                 "nodeType": "ElementaryTypeName",
                 "src": "376:7:62",
@@ -319,29 +321,20 @@
         ],
         "name": "AppStorage",
         "nameLocation": "178:10:62",
-        "nodeType": "StructDefinition",
-        "scope": 26648,
-        "src": "171:255:62",
+        "scope": 26653,
         "visibility": "public"
       },
       {
-        "abstract": false,
-        "baseContracts": [],
-        "canonicalName": "LibAppStorage",
-        "contractDependencies": [],
-        "contractKind": "library",
-        "fullyImplemented": true,
-        "id": 26647,
-        "linearizedBaseContracts": [
-          26647
-        ],
-        "name": "LibAppStorage",
-        "nameLocation": "436:13:62",
+        "id": 26652,
         "nodeType": "ContractDefinition",
+        "src": "428:145:62",
         "nodes": [
           {
+            "id": 26651,
+            "nodeType": "FunctionDefinition",
+            "src": "454:117:62",
             "body": {
-              "id": 26645,
+              "id": 26650,
               "nodeType": "Block",
               "src": "526:45:62",
               "statements": [
@@ -373,7 +366,7 @@
                   "evmVersion": "london",
                   "externalReferences": [
                     {
-                      "declaration": 26642,
+                      "declaration": 26647,
                       "isOffset": false,
                       "isSlot": true,
                       "src": "549:7:62",
@@ -381,58 +374,56 @@
                       "valueSize": 1
                     }
                   ],
-                  "id": 26644,
+                  "id": 26649,
                   "nodeType": "InlineAssembly",
                   "src": "532:35:62"
                 }
               ]
             },
-            "id": 26646,
             "implemented": true,
             "kind": "function",
             "modifiers": [],
             "name": "diamondStorage",
             "nameLocation": "463:14:62",
-            "nodeType": "FunctionDefinition",
             "parameters": {
-              "id": 26639,
+              "id": 26644,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "477:2:62"
             },
             "returnParameters": {
-              "id": 26643,
+              "id": 26648,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 26642,
+                  "id": 26647,
                   "mutability": "mutable",
                   "name": "ds",
                   "nameLocation": "522:2:62",
                   "nodeType": "VariableDeclaration",
-                  "scope": 26646,
+                  "scope": 26651,
                   "src": "503:21:62",
                   "stateVariable": false,
                   "storageLocation": "storage",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_struct$_AppStorage_$26638_storage_ptr",
+                    "typeIdentifier": "t_struct$_AppStorage_$26643_storage_ptr",
                     "typeString": "struct AppStorage"
                   },
                   "typeName": {
-                    "id": 26641,
+                    "id": 26646,
                     "nodeType": "UserDefinedTypeName",
                     "pathNode": {
-                      "id": 26640,
+                      "id": 26645,
                       "name": "AppStorage",
                       "nodeType": "IdentifierPath",
-                      "referencedDeclaration": 26638,
+                      "referencedDeclaration": 26643,
                       "src": "503:10:62"
                     },
-                    "referencedDeclaration": 26638,
+                    "referencedDeclaration": 26643,
                     "src": "503:10:62",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_AppStorage_$26638_storage_ptr",
+                      "typeIdentifier": "t_struct$_AppStorage_$26643_storage_ptr",
                       "typeString": "struct AppStorage"
                     }
                   },
@@ -441,18 +432,27 @@
               ],
               "src": "502:23:62"
             },
-            "scope": 26647,
-            "src": "454:117:62",
+            "scope": 26652,
             "stateMutability": "pure",
             "virtual": false,
             "visibility": "internal"
           }
         ],
-        "scope": 26648,
-        "src": "428:145:62",
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "LibAppStorage",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          26652
+        ],
+        "name": "LibAppStorage",
+        "nameLocation": "436:13:62",
+        "scope": 26653,
         "usedErrors": []
       }
     ],
-    "src": "0:574:62"
+    "license": "MIT"
   }
 }
