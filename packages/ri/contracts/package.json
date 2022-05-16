@@ -12,7 +12,9 @@
     "build": "rimraf out && forge build --force && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
-    "start:node": "anvil",
+    "start:node": "run-p -l anvil:start anvil:automine",
+    "anvil:start": "anvil",
+    "anvil:automine": "wait-on tcp:8545 && curl -X POST localhost:8545 -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"evm_setAutomine\", \"params\": [true], \"id\": 1 }'",
     "deploy:local": "forge script ./src/test/utils/BroadcastDeploy.sol -i 1 --target-contract Deploy --sig \"deployEmber()\" --fork-url http://localhost:8545 --broadcast -vvv"
   },
   "devDependencies": {
@@ -30,9 +32,11 @@
     "copyfiles": "^2.4.1",
     "ds-test": "https://github.com/dapphub/ds-test.git#c7a36fb236f298e04edf28e2fee385b80f53945f",
     "ethers": "^5.6.6",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#4d36e3f7e2168c8155c641eb0f80e85cd584bd1c",
     "hardhat": "^2.9.1",
     "hardhat-abi-exporter": "^2.8.0",
     "hardhat-diamond-abi": "^2.0.0",
+    "npm-run-all": "^4.1.5",
     "openzeppelin-solidity": "https://github.com/OpenZeppelin/openzeppelin-contracts.git#57725120581e27ec469e1c7e497a4008aafff818",
     "prettier": "^2.6.2",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
@@ -41,6 +45,6 @@
     "ts-node": "^10.7.0",
     "typechain": "^7.0.1",
     "typescript": "^4.6.2",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#4d36e3f7e2168c8155c641eb0f80e85cd584bd1c"
+    "wait-on": "^6.0.1"
   }
 }
