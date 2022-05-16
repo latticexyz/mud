@@ -19,7 +19,7 @@
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.21",
     "async-mutex": "^0.3.2",
-    "ethers": "^5.5.4",
+    "ethers": "^5.6.6",
     "jest": "^27.5.1",
     "mobx": "^6.5.0",
     "rimraf": "^3.0.2",
@@ -35,7 +35,6 @@
     "@mud/recs": "0.0.1",
     "@mud/utils": "0.0.1",
     "async-mutex": "^0.3.2",
-    "ethers": "^5.5.4",
     "mobx": "^6.5.0",
     "rxjs": "^7.5.5"
   },

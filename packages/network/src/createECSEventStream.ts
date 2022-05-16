@@ -12,7 +12,7 @@ type ECSEventStreamConfig<C extends Components> = {
 export type Mappings<C extends Components> = {
   [key in keyof C]: {
     decoder: (data: string) => ComponentValue<SchemaOf<C[key]>>;
-    componentAddress: string;
+    id: string;
   };
 };
 
@@ -31,10 +31,10 @@ export function createECSStream<C extends Components, W extends BaseContract>(
 ): ECSEventStream<C> {
   const { mappings } = config;
 
-  const mappingByContract: { [address: string]: keyof C } = {};
+  const mappingById: { [address: string]: keyof C } = {};
   for (const key of Object.keys(config.mappings)) {
-    const { componentAddress } = mappings[key];
-    mappingByContract[componentAddress] = key;
+    const { id } = mappings[key];
+    mappingById[id] = key;
   }
 
   const ecsEventStream$ = eventStream$.pipe(
@@ -50,7 +50,7 @@ export function createECSStream<C extends Components, W extends BaseContract>(
             entity: BigNumber;
             data: string;
           };
-          const component = mappingByContract[address];
+          const component = mappingById[address];
           if (component) {
             const { decoder } = mappings[component];
             return {
