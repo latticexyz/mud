@@ -1,0 +1,458 @@
+{
+  "abi": [],
+  "bytecode": {
+    "object": "0x602d6037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea164736f6c634300080d000a",
+    "sourceMap": "428:145:62:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;428:145:62;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea164736f6c634300080d000a",
+    "sourceMap": "428:145:62:-:0;;;;;;;;",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/libraries/LibAppStorage.sol",
+    "exportedSymbols": {
+      "AppStorage": [
+        26638
+      ],
+      "Config": [
+        26622
+      ],
+      "LibAppStorage": [
+        26647
+      ],
+      "World": [
+        11262
+      ]
+    },
+    "id": 26648,
+    "license": "MIT",
+    "nodeType": "SourceUnit",
+    "nodes": [
+      {
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mud/solecs/src/World.sol",
+        "file": "solecs/World.sol",
+        "id": 26616,
+        "nameLocation": "-1:-1:-1",
+        "nodeType": "ImportDirective",
+        "scope": 26648,
+        "sourceUnit": 11263,
+        "src": "0:41:62",
+        "symbolAliases": [
+          {
+            "foreign": {
+              "id": 26615,
+              "name": "World",
+              "nodeType": "Identifier",
+              "overloadedDeclarations": [],
+              "referencedDeclaration": 11262,
+              "src": "9:5:62",
+              "typeDescriptions": {}
+            },
+            "nameLocation": "-1:-1:-1"
+          }
+        ],
+        "unitAlias": ""
+      },
+      {
+        "id": 26617,
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ],
+        "nodeType": "PragmaDirective",
+        "src": "43:23:62"
+      },
+      {
+        "canonicalName": "Config",
+        "id": 26622,
+        "members": [
+          {
+            "constant": false,
+            "id": 26619,
+            "mutability": "mutable",
+            "name": "resetCallerEntityID",
+            "nameLocation": "123:19:62",
+            "nodeType": "VariableDeclaration",
+            "scope": 26622,
+            "src": "118:24:62",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_bool",
+              "typeString": "bool"
+            },
+            "typeName": {
+              "id": 26618,
+              "name": "bool",
+              "nodeType": "ElementaryTypeName",
+              "src": "118:4:62",
+              "typeDescriptions": {
+                "typeIdentifier": "t_bool",
+                "typeString": "bool"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 26621,
+            "mutability": "mutable",
+            "name": "personaMirror",
+            "nameLocation": "154:13:62",
+            "nodeType": "VariableDeclaration",
+            "scope": 26622,
+            "src": "146:21:62",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 26620,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "146:7:62",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "visibility": "internal"
+          }
+        ],
+        "name": "Config",
+        "nameLocation": "107:6:62",
+        "nodeType": "StructDefinition",
+        "scope": 26648,
+        "src": "100:70:62",
+        "visibility": "public"
+      },
+      {
+        "canonicalName": "AppStorage",
+        "id": 26638,
+        "members": [
+          {
+            "constant": false,
+            "id": 26625,
+            "mutability": "mutable",
+            "name": "config",
+            "nameLocation": "200:6:62",
+            "nodeType": "VariableDeclaration",
+            "scope": 26638,
+            "src": "193:13:62",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_struct$_Config_$26622_storage_ptr",
+              "typeString": "struct Config"
+            },
+            "typeName": {
+              "id": 26624,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 26623,
+                "name": "Config",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 26622,
+                "src": "193:6:62"
+              },
+              "referencedDeclaration": 26622,
+              "src": "193:6:62",
+              "typeDescriptions": {
+                "typeIdentifier": "t_struct$_Config_$26622_storage_ptr",
+                "typeString": "struct Config"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 26628,
+            "mutability": "mutable",
+            "name": "world",
+            "nameLocation": "216:5:62",
+            "nodeType": "VariableDeclaration",
+            "scope": 26638,
+            "src": "210:11:62",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_World_$11262",
+              "typeString": "contract World"
+            },
+            "typeName": {
+              "id": 26627,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 26626,
+                "name": "World",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 11262,
+                "src": "210:5:62"
+              },
+              "referencedDeclaration": 11262,
+              "src": "210:5:62",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_World_$11262",
+                "typeString": "contract World"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 26630,
+            "mutability": "mutable",
+            "name": "_callerEntityID",
+            "nameLocation": "233:15:62",
+            "nodeType": "VariableDeclaration",
+            "scope": 26638,
+            "src": "225:23:62",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_uint256",
+              "typeString": "uint256"
+            },
+            "typeName": {
+              "id": 26629,
+              "name": "uint256",
+              "nodeType": "ElementaryTypeName",
+              "src": "225:7:62",
+              "typeDescriptions": {
+                "typeIdentifier": "t_uint256",
+                "typeString": "uint256"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 26633,
+            "mutability": "mutable",
+            "name": "accessControllers",
+            "nameLocation": "337:17:62",
+            "nodeType": "VariableDeclaration",
+            "scope": 26638,
+            "src": "327:27:62",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+              "typeString": "address[]"
+            },
+            "typeName": {
+              "baseType": {
+                "id": 26631,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "327:7:62",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              },
+              "id": 26632,
+              "nodeType": "ArrayTypeName",
+              "src": "327:9:62",
+              "typeDescriptions": {
+                "typeIdentifier": "t_array$_t_address_$dyn_storage_ptr",
+                "typeString": "address[]"
+              }
+            },
+            "visibility": "internal"
+          },
+          {
+            "constant": false,
+            "id": 26637,
+            "mutability": "mutable",
+            "name": "embodiedSystemSelectorToImplementation",
+            "nameLocation": "385:38:62",
+            "nodeType": "VariableDeclaration",
+            "scope": 26638,
+            "src": "358:65:62",
+            "stateVariable": false,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_mapping$_t_bytes4_$_t_address_$",
+              "typeString": "mapping(bytes4 => address)"
+            },
+            "typeName": {
+              "id": 26636,
+              "keyType": {
+                "id": 26634,
+                "name": "bytes4",
+                "nodeType": "ElementaryTypeName",
+                "src": "366:6:62",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_bytes4",
+                  "typeString": "bytes4"
+                }
+              },
+              "nodeType": "Mapping",
+              "src": "358:26:62",
+              "typeDescriptions": {
+                "typeIdentifier": "t_mapping$_t_bytes4_$_t_address_$",
+                "typeString": "mapping(bytes4 => address)"
+              },
+              "valueType": {
+                "id": 26635,
+                "name": "address",
+                "nodeType": "ElementaryTypeName",
+                "src": "376:7:62",
+                "stateMutability": "nonpayable",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                }
+              }
+            },
+            "visibility": "internal"
+          }
+        ],
+        "name": "AppStorage",
+        "nameLocation": "178:10:62",
+        "nodeType": "StructDefinition",
+        "scope": 26648,
+        "src": "171:255:62",
+        "visibility": "public"
+      },
+      {
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "LibAppStorage",
+        "contractDependencies": [],
+        "contractKind": "library",
+        "fullyImplemented": true,
+        "id": 26647,
+        "linearizedBaseContracts": [
+          26647
+        ],
+        "name": "LibAppStorage",
+        "nameLocation": "436:13:62",
+        "nodeType": "ContractDefinition",
+        "nodes": [
+          {
+            "body": {
+              "id": 26645,
+              "nodeType": "Block",
+              "src": "526:45:62",
+              "statements": [
+                {
+                  "AST": {
+                    "nodeType": "YulBlock",
+                    "src": "541:26:62",
+                    "statements": [
+                      {
+                        "nodeType": "YulAssignment",
+                        "src": "549:12:62",
+                        "value": {
+                          "kind": "number",
+                          "nodeType": "YulLiteral",
+                          "src": "560:1:62",
+                          "type": "",
+                          "value": "0"
+                        },
+                        "variableNames": [
+                          {
+                            "name": "ds.slot",
+                            "nodeType": "YulIdentifier",
+                            "src": "549:7:62"
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "evmVersion": "london",
+                  "externalReferences": [
+                    {
+                      "declaration": 26642,
+                      "isOffset": false,
+                      "isSlot": true,
+                      "src": "549:7:62",
+                      "suffix": "slot",
+                      "valueSize": 1
+                    }
+                  ],
+                  "id": 26644,
+                  "nodeType": "InlineAssembly",
+                  "src": "532:35:62"
+                }
+              ]
+            },
+            "id": 26646,
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "diamondStorage",
+            "nameLocation": "463:14:62",
+            "nodeType": "FunctionDefinition",
+            "parameters": {
+              "id": 26639,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "477:2:62"
+            },
+            "returnParameters": {
+              "id": 26643,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 26642,
+                  "mutability": "mutable",
+                  "name": "ds",
+                  "nameLocation": "522:2:62",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 26646,
+                  "src": "503:21:62",
+                  "stateVariable": false,
+                  "storageLocation": "storage",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_struct$_AppStorage_$26638_storage_ptr",
+                    "typeString": "struct AppStorage"
+                  },
+                  "typeName": {
+                    "id": 26641,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 26640,
+                      "name": "AppStorage",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 26638,
+                      "src": "503:10:62"
+                    },
+                    "referencedDeclaration": 26638,
+                    "src": "503:10:62",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_struct$_AppStorage_$26638_storage_ptr",
+                      "typeString": "struct AppStorage"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "502:23:62"
+            },
+            "scope": 26647,
+            "src": "454:117:62",
+            "stateMutability": "pure",
+            "virtual": false,
+            "visibility": "internal"
+          }
+        ],
+        "scope": 26648,
+        "src": "428:145:62",
+        "usedErrors": []
+      }
+    ],
+    "src": "0:574:62"
+  }
+}

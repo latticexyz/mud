@@ -1,0 +1,6 @@
+out/
+/cache/
+node_modules/
+.env
+bindings/
+artifacts/
