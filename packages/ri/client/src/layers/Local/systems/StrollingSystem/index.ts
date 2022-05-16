@@ -1,0 +1,1 @@
+export { createStrollingSystem } from "./createStrollingSystem";

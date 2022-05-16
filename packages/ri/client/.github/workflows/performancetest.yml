@@ -1,0 +1,35 @@
+name: Performance tests
+
+on:
+  pull_request:
+    types: [review_requested]
+
+jobs:
+  cypress-run:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.PAT }}
+          submodules: recursive
+      - name: Install
+        run: YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install
+      - name: Build
+        run: yarn build
+      - name: Run Cypress
+        uses: cypress-io/github-action@v2
+        with:
+          command-prefix: yarn dlx
+          start: yarn start:prod
+      - name: Get report
+        id: get-comment-body
+        run: |
+          body=$(cat cypress/reports/performance/performance_report.md)
+          echo ::set-output name=body::$body
+      - name: Comment performance report
+        uses: peter-evans/commit-comment@v1
+        with:
+          token: ${{ secrets.PAT }}
+          body: |
+            ${{ steps.get-comment-body.outputs.body }}

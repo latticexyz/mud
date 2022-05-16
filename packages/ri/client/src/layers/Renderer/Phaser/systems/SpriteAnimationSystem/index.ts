@@ -1,0 +1,1 @@
+export { createSpriteAnimationSystem } from "./createSpriteAnimationSystem";

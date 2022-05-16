@@ -1,0 +1,8 @@
+node_modules
+dist
+.parcel-cache
+cypress/videos
+cypress/screenshots
+cypress/reports
+.yarn/install-state.gz
+.DS_Store
