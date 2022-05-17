@@ -2,7 +2,6 @@ import { World as WorldContract } from "ri-contracts/types/ethers-contracts/Worl
 import { EmberFacet } from "ri-contracts/types/ethers-contracts/EmberFacet";
 import { setComponent, World, Component, Schema } from "@mud/recs";
 import { createECSStream, Mappings, ContractEvent } from "@mud/network";
-import { contractToNetworkEntity } from "../utils";
 import { mergeMap, Observable, Subject } from "rxjs";
 import { NetworkLayer } from "../types";
 
@@ -38,11 +37,10 @@ export function setupMappings(
   const txReduced$ = new Subject<string>();
 
   const ecsEventSub = ecsEventStream$.subscribe((update) => {
-    const networkEntity = contractToNetworkEntity(update.entity);
-    if (!world.entities.has(networkEntity)) {
-      world.registerEntity(networkEntity);
+    if (!world.entities.has(update.entity)) {
+      world.registerEntity(update.entity);
     }
-    setComponent(components[update.component] as Component<Schema>, networkEntity, update.value);
+    setComponent(components[update.component] as Component<Schema>, update.entity, update.value);
     if (update.lastEventInTx) txReduced$.next(update.txHash);
   });
 

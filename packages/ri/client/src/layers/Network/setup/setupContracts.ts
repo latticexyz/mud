@@ -8,7 +8,7 @@ import {
   Mappings,
   ContractEvent,
 } from "@mud/network";
-import { RPC_URL, DEV_PRIVATE_KEY, DIAMOND_ADDRESS } from "../constants";
+import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { EmberFacet } from "ri-contracts/types/ethers-contracts/EmberFacet";
 import WorldABI from "ri-contracts/abi/World.json";
@@ -17,8 +17,9 @@ import { combineLatest, from, map, mergeMap, ReplaySubject, Subscription } from 
 import { World } from "@mud/recs";
 import { NetworkLayer } from "../types";
 import { setupMappings } from "./setupMappings";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { WebSocketProvider } from "@ethersproject/providers";
 import { Signer } from "ethers";
+import { filterNullish } from "@mud/utils";
 
 export function setupContracts(
   world: World,
@@ -31,7 +32,7 @@ export function setupContracts(
   const connected$ = new ReplaySubject<boolean>(1);
   const contracts$ = new ReplaySubject<{ Ember: EmberFacet; World: WorldContract }>(1);
   const ethersSigner$ = new ReplaySubject<Signer>(1);
-  const provider$ = new ReplaySubject<JsonRpcProvider>(1);
+  const provider$ = new ReplaySubject<WebSocketProvider>(1);
   const contractEvents$ = new ReplaySubject<ContractEvent<{ World: WorldContract }>>();
 
   let connectedSub: Subscription | undefined = undefined;
@@ -62,7 +63,7 @@ export function setupContracts(
         chainId: 1337,
         rpcSupportsBatchQueries: false,
         rpcUrl: RPC_URL,
-        // rpcWsUrl: RPC_URL,
+        rpcWsUrl: RPC_WS_URL,
       });
       world.registerDisposer(network.dispose);
 
@@ -77,8 +78,8 @@ export function setupContracts(
 
       // Connect the provider to the outer scope provider
       providerSub?.unsubscribe();
-      const _provider = network.providers$.pipe(map(([json]) => json));
-      providerSub = _provider.subscribe(provider$);
+      const _provider = network.providers$.pipe(map(([, ws]) => ws));
+      providerSub = _provider.pipe(filterNullish()).subscribe(provider$);
 
       const rpcSupportsBatchQueries$ = network.config$.pipe(map((c) => c.rpcSupportsBatchQueries));
 
@@ -122,7 +123,7 @@ export function setupContracts(
         },
         worldContract$,
         network.blockNumber$,
-        _provider,
+        provider$,
         rpcSupportsBatchQueries$
       );
       contractEventsSub = contractEventStream.eventStream$.subscribe(contractEvents$);

@@ -5,13 +5,16 @@ import {
   defineEntityTypeComponent,
   defineUntraversableComponent,
   defineMinedTagComponent,
+  defineSpellComponent,
+  defineEmbodiedSystemArgumentComponent,
 } from "./components";
 import { setupContracts } from "./setup";
 import { LAYER_NAME } from "./constants";
-import { decodeEntityType, decodePosition, decodeUntraversable } from "./decoders";
+import { decodeEntityType, decodePosition, decodeSpell, decodeUntraversable } from "./decoders";
 import { EntityTypes } from "./types";
-import { networkToContractEntity } from "./utils";
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
+import { BigNumber } from "ethers";
+import { keccak256 } from "@mud/utils";
 
 /**
  * The Network layer is the lowest layer in the client architecture.
@@ -27,6 +30,8 @@ export async function createNetworkLayer(options?: { skipContracts?: boolean }) 
     EntityType: defineEntityTypeComponent(world),
     Untraversable: defineUntraversableComponent(world),
     MinedTag: defineMinedTagComponent(world),
+    Spell: defineSpellComponent(world),
+    EmbodiedSystemArgumentComponent: defineEmbodiedSystemArgumentComponent(world),
   };
 
   // Contracts and mappings
@@ -38,26 +43,33 @@ export async function createNetworkLayer(options?: { skipContracts?: boolean }) 
       EntityType: { decoder: decodeEntityType, id: "ember.component.entityTypeComponent" },
       Untraversable: { decoder: decodeUntraversable, id: "ember.component.untraversableComponent" },
       MinedTag: { decoder: () => ({}), id: "ember.component.minedTagComponent" },
+      Spell: { decoder: decodeSpell, id: "ember.component.spellComponent" },
+      EmbodiedSystemArgumentComponent: {
+        decoder: (value: string) => ({ value }),
+        id: "ember.component.embodiedSystemArgumentComponent",
+      },
     },
     { skip: options?.skipContracts }
   );
 
   // API
-  function setPosition(entity: Entity, position: WorldCoord) {
-    const contractEntity = networkToContractEntity(entity);
+  async function setPosition(entity: Entity, position: WorldCoord) {
+    const positionContract = await txQueue.World.getComponent(keccak256("ember.component.positionComponent"));
+    console.log("Position contract at ", positionContract);
     txQueue.Ember.addComponentToEntityExternally(
-      contractEntity,
-      "ember.component.positionComponent",
+      BigNumber.from(entity),
+      positionContract,
       abi.encode(["uint256", "uint256"], [position.x, position.y])
     );
     console.log("Setting position", entity, position);
   }
 
-  function setEntityType(entity: Entity, entityType: EntityTypes) {
-    const contractEntity = networkToContractEntity(entity);
+  async function setEntityType(entity: Entity, entityType: EntityTypes) {
+    const entityTypeContract = await txQueue.World.getComponent(keccak256("ember.component.entityTypeComponent"));
+    console.log("Entity type contract", entityTypeContract);
     txQueue.Ember.addComponentToEntityExternally(
-      contractEntity,
-      "ember.component.entityTypeComponent",
+      BigNumber.from(entity),
+      entityTypeContract,
       abi.encode(["uint256"], [entityType])
     );
     console.log("Setting entityType", entity, entityType);
