@@ -16,7 +16,7 @@
     "start:anvil": "run-p -l anvil:start anvil:automine",
     "anvil:start": "anvil",
     "anvil:automine": "wait-on tcp:8545 && curl -X POST localhost:8545 -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"evm_setAutomine\", \"params\": [true], \"id\": 1 }'",
-    "deploy:local": "forge script ./src/test/utils/BroadcastDeploy.sol -i 1 --target-contract Deploy --sig \"deployEmber()\" --fork-url http://localhost:8545 --broadcast -vvv"
+    "deploy:local": "forge script ./src/test/utils/BroadcastDeploy.sol --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --target-contract Deploy --sig \"deployEmber()\" --fork-url http://localhost:8545 --broadcast -vvv"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
