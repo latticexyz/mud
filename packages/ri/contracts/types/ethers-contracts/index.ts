@@ -2,6 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { CastSpellFacet } from "./CastSpellFacet";
+export type { CombinedFacets } from "./CombinedFacets";
 export type { Diamond } from "./Diamond";
 export type { DiamondCutFacet } from "./DiamondCutFacet";
 export type { DiamondLoupeFacet } from "./DiamondLoupeFacet";
@@ -19,6 +20,7 @@ export type { SpellComponent } from "./SpellComponent";
 export type { World } from "./World";
 
 export { CastSpellFacet__factory } from "./factories/CastSpellFacet__factory";
+export { CombinedFacets__factory } from "./factories/CombinedFacets__factory";
 export { Diamond__factory } from "./factories/Diamond__factory";
 export { DiamondCutFacet__factory } from "./factories/DiamondCutFacet__factory";
 export { DiamondLoupeFacet__factory } from "./factories/DiamondLoupeFacet__factory";
