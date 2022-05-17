@@ -10,9 +10,9 @@ import {
 } from "@mud/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
-import { EmberFacet } from "ri-contracts/types/ethers-contracts/EmberFacet";
+import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import WorldABI from "ri-contracts/abi/World.json";
-import EmberABI from "ri-contracts/abi/EmberFacet.json";
+import EmberABI from "ri-contracts/abi/CombinedFacets.json";
 import { combineLatest, from, map, mergeMap, ReplaySubject, Subscription } from "rxjs";
 import { World } from "@mud/recs";
 import { NetworkLayer } from "../types";
@@ -30,7 +30,7 @@ export function setupContracts(
   }
 ) {
   const connected$ = new ReplaySubject<boolean>(1);
-  const contracts$ = new ReplaySubject<{ Ember: EmberFacet; World: WorldContract }>(1);
+  const contracts$ = new ReplaySubject<{ Ember: CombinedFacets; World: WorldContract }>(1);
   const ethersSigner$ = new ReplaySubject<Signer>(1);
   const provider$ = new ReplaySubject<WebSocketProvider>(1);
   const contractEvents$ = new ReplaySubject<ContractEvent<{ World: WorldContract }>>();
@@ -83,7 +83,7 @@ export function setupContracts(
 
       const rpcSupportsBatchQueries$ = network.config$.pipe(map((c) => c.rpcSupportsBatchQueries));
 
-      const emberContract = createContracts<{ Ember: EmberFacet }>(
+      const emberContract = createContracts<{ Ember: CombinedFacets }>(
         { Ember: { abi: EmberABI.abi, address: DIAMOND_ADDRESS } },
         _signer.ethersSigner$
       );

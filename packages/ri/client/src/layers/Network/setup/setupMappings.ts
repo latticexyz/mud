@@ -1,5 +1,5 @@
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
-import { EmberFacet } from "ri-contracts/types/ethers-contracts/EmberFacet";
+import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import { setComponent, World, Component, Schema } from "@mud/recs";
 import { createECSStream, Mappings, ContractEvent } from "@mud/network";
 import { mergeMap, Observable, Subject } from "rxjs";
@@ -12,7 +12,7 @@ export function setupMappings(
   world: World,
   components: NetworkLayer["components"],
   contracts$: Observable<{
-    Ember: EmberFacet;
+    Ember: CombinedFacets;
     World: WorldContract;
   }>,
   contractEventStream$: Observable<
