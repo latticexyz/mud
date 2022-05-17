@@ -2,6 +2,7 @@ import { map, Observable } from "rxjs";
 import { ComponentValue, Components, ExtendableECSEvent, SchemaOf } from "@mud/recs";
 import { ContractEvent } from "./createContractsEventStream";
 import { BaseContract, BigNumber } from "ethers";
+import { keccak256 } from "@mud/utils";
 
 export type ValueOf<T extends object> = T[keyof T];
 
@@ -18,7 +19,7 @@ export type Mappings<C extends Components> = {
 
 export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
   C,
-  { lastEventInTx: boolean; txHash: string; entity: number }
+  { lastEventInTx: boolean; txHash: string; entity: string }
 >;
 
 export type ECSEventStream<C extends Components> = {
@@ -34,29 +35,25 @@ export function createECSStream<C extends Components, W extends BaseContract>(
   const mappingById: { [address: string]: keyof C } = {};
   for (const key of Object.keys(config.mappings)) {
     const { id } = mappings[key];
-    mappingById[id] = key;
+    mappingById[keccak256(id)] = key;
   }
-
   const ecsEventStream$ = eventStream$.pipe(
     map((e) => {
       if (e.contractKey === "World") {
         if (e.eventKey === "ComponentValueSet") {
-          const {
-            component: address,
-            entity,
-            data,
-          } = e.args as unknown as {
+          const { entity, data, componentId } = e.args as unknown as {
             component: string;
             entity: BigNumber;
             data: string;
+            componentId: BigNumber;
           };
-          const component = mappingById[address];
+          const component = mappingById[componentId.toHexString()];
           if (component) {
             const { decoder } = mappings[component];
             return {
               component,
               value: decoder(data),
-              entity: entity.toNumber(),
+              entity: entity.toHexString(),
               lastEventInTx: e.lastEventInTx,
               txHash: e.txHash,
             };
