@@ -12,7 +12,8 @@
     "build": "rimraf out && forge build --force && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
-    "start:node": "run-p -l anvil:start anvil:automine",
+    "start:hardhat": "hardhat node",
+    "start:anvil": "run-p -l anvil:start anvil:automine",
     "anvil:start": "anvil",
     "anvil:automine": "wait-on tcp:8545 && curl -X POST localhost:8545 -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"evm_setAutomine\", \"params\": [true], \"id\": 1 }'",
     "deploy:local": "forge script ./src/test/utils/BroadcastDeploy.sol -i 1 --target-contract Deploy --sig \"deployEmber()\" --fork-url http://localhost:8545 --broadcast -vvv"
