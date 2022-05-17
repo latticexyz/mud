@@ -4,25 +4,15 @@ import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
 import { Vm } from "forge-std/Vm.sol";
 import { console } from "forge-std/console.sol";
 
-import { Component } from "../Component.sol";
+import { TestComponent } from "./components/TestComponent.sol";
 import { World } from "../World.sol";
-
-contract TestComponent is Component {
-  uint256 public constant ID = uint256(keccak256("lib.testComponent"));
-
-  constructor(address world) Component(world) {}
-
-  function getID() public pure override returns (uint256) {
-    return ID;
-  }
-}
 
 contract ComponentTest is DSTestPlus {
   Vm internal immutable vm = Vm(HEVM_ADDRESS);
 
   address payable[] internal users;
 
-  Component internal component;
+  TestComponent internal component;
 
   function setUp() public {
     address world = address(new World());
