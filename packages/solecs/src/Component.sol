@@ -6,6 +6,7 @@ import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
 
 import { Set } from "./Set.sol";
+import { MapSet } from "./MapSet.sol";
 import { World } from "./World.sol";
 
 abstract contract Component {
@@ -13,7 +14,7 @@ abstract contract Component {
   address public owner;
 
   Set private entities;
-  mapping(bytes => address) private valueToEntities;
+  MapSet private valueToEntities;
   mapping(uint256 => bytes) private entityToValue;
   IEntityIndexer[] internal indexers;
 
@@ -21,6 +22,7 @@ abstract contract Component {
     world = _world;
     World(_world).registerComponent(address(this), getID());
     entities = new Set();
+    valueToEntities = new MapSet();
     owner = msg.sender;
   }
 
@@ -39,14 +41,14 @@ abstract contract Component {
     // Store the entity
     entities.add(entity);
 
+    // Remove the entitiy from the previous reverse mapping if there is one
+    valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
+
     // Store the entity's value;
     entityToValue[entity] = value;
 
-    // Store the reverse mapping
-    if (valueToEntities[value] == address(0)) {
-      valueToEntities[value] = address(new Set());
-    }
-    Set(valueToEntities[value]).add(entity);
+    // Add the entity to the new reverse mapping
+    valueToEntities.add(uint256(keccak256(value)), entity);
 
     for (uint256 i = 0; i < indexers.length; i++) {
       indexers[i].update(entity, value);
@@ -57,11 +59,8 @@ abstract contract Component {
   }
 
   function remove(uint256 entity) public onlyContractOwner {
-    // if there is no entity with this value, return
-    if (valueToEntities[entityToValue[entity]] == address(0)) return;
-
     // Remove the entity from the reverse mapping
-    Set(valueToEntities[entityToValue[entity]]).remove(entity);
+    valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
 
     // Remove the entity from the entity list
     entities.remove(entity);
@@ -91,12 +90,8 @@ abstract contract Component {
   }
 
   function getEntitiesWithValue(bytes memory value) public view returns (uint256[] memory) {
-    if (valueToEntities[value] == address(0)) {
-      return new uint256[](0);
-    }
-
     // Return all entities with this component value
-    return Set(valueToEntities[value]).getItems();
+    return valueToEntities.getItems(uint256(keccak256(value)));
   }
 
   function registerIndexer(address indexer) external onlyContractOwner {
