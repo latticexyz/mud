@@ -12,5 +12,6 @@ export * from "./promise";
 export * from "./sleep";
 export * from "./iterable";
 export * from "./area";
+export * from "./hash";
 
 export type { Cached, PromiseValue, ValueOf, Area, Coord } from "./types";
