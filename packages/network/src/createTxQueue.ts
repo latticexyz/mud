@@ -56,7 +56,11 @@ export function createTxQueue<C extends Contracts>(
   options?: { concurrency?: number }
 ): { txQueue: TxQueue<C>; dispose: () => void } {
   const { concurrency } = options || {};
-  const queue = createPriorityQueue<{ execute: (nonce: number) => Promise<TransactionResponse>; cancel: () => void }>();
+  const queue = createPriorityQueue<{
+    execute: (nonce: number) => Promise<TransactionResponse>;
+    cancel: () => void;
+    stateMutability?: string;
+  }>();
   const submissionMutex = new Mutex();
 
   const _connected = streamToComputed(connected$);
@@ -107,6 +111,10 @@ export function createTxQueue<C extends Contracts>(
     const overrides = (hasOverrides ? args[args.length - 1] : {}) as CallOverrides;
     const argsWithoutOverrides = hasOverrides ? args.slice(0, args.length - 1) : args;
 
+    // Store state mutability to know when to increase the nonce
+    const fragment = target.interface.fragments.find((fragment) => fragment.name === prop);
+    const stateMutability = fragment && (fragment as { stateMutability?: string }).stateMutability;
+
     // Create a function that executes the tx when called
     const execute = async (nonce: number) => {
       try {
@@ -121,7 +129,9 @@ export function createTxQueue<C extends Contracts>(
           );
         }
 
-        const result = await member(...argsWithoutOverrides, { ...overrides, nonce });
+        // TODO: only set gasPrice to 0 on local chain
+        // (https://linear.app/latticexyz/issue/LAT-587/integrate-mud-reference-implementation-with-launcher)
+        const result = await member(...argsWithoutOverrides, { ...overrides, nonce, gasPrice: 0 });
         resolve(result);
         return result;
       } catch (e) {
@@ -131,7 +141,7 @@ export function createTxQueue<C extends Contracts>(
     };
 
     // Queue the tx execution
-    queue.add(uuid(), { execute, cancel: () => reject(new Error("TX_CANCELLED")) });
+    queue.add(uuid(), { execute, cancel: () => reject(new Error("TX_CANCELLED")), stateMutability });
 
     // Start processing the queue
     processQueue();
@@ -157,13 +167,13 @@ export function createTxQueue<C extends Contracts>(
         // Wait if nonce is not ready
         const { nonce } = await awaitValue(readyState);
         const result = await txRequest.execute(nonce);
-        incNonce();
+        if (txRequest.stateMutability !== "view") incNonce();
         return result;
       } catch (e: any) {
         // If the error includes information about the transaction,
         // then the transaction was submitted and the nonce needs to be
         // increased regardless of the error;
-        if ("transaction" in e) incNonce();
+        if ("transaction" in e && txRequest.stateMutability !== "view") incNonce();
         if ("code" in e && e.code === "NONCE_EXPIRED") await resetNonce();
       }
     });
