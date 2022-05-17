@@ -59,6 +59,9 @@ abstract contract Component {
   }
 
   function remove(uint256 entity) public onlyContractOwner {
+    // If there is no entity with this value, return
+    if (valueToEntities.size(uint256(keccak256(entityToValue[entity]))) == 0) return;
+
     // Remove the entity from the reverse mapping
     valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
 
