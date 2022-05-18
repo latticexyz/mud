@@ -8,15 +8,18 @@
     "mud": "./build/cli.js"
   },
   "scripts": {
-    "globalinstall": "chmod u+x build/cli.js && yarn build && yarn link && yarn global add @mud/cli@link:./",
-    "build": "rimraf build && tsc -p .",
+    "prepare": "chmod u+x build/cli.js",
+    "globalinstall": "yarn build && yarn prepare && yarn link && yarn global add @mud/cli@link:./",
+    "build": "rimraf build && tsc -p . && yarn prepare",
     "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli.ts",
     "link:bin": "export PATH=\"$(yarn global bin):$PATH\""
   },
   "devDependencies": {
     "@types/clear": "^0.1.2",
     "@types/figlet": "^1.5.4",
+    "@types/inquirer": "^8.2.1",
     "@types/node": "^17.0.34",
+    "@types/openurl": "^1.0.0",
     "@types/yargs": "^17.0.10",
     "nodemon": "^2.0.16",
     "pkg": "^5.7.0",
@@ -29,7 +32,12 @@
     "chalk": "4.1.2",
     "clear": "^0.1.0",
     "commander": "^9.2.0",
+    "esm": "^3.2.25",
     "figlet": "^1.5.2",
+    "inquirer": "^8.2.4",
+    "inquirer-prompt-suggest": "^0.1.0",
+    "netlify": "^11.0.1",
+    "openurl": "^1.1.1",
     "path": "^0.12.7",
     "yargs": "^17.5.1"
   },

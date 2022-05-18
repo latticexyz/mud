@@ -1,4 +1,13 @@
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
@@ -15,7 +24,7 @@ const builder = (yargs) => yargs.options({
     out: { type: "string" },
 });
 exports.builder = builder;
-const handler = async (argv) => {
+const handler = (argv) => __awaiter(void 0, void 0, void 0, function* () {
     const { include: _include, exclude: _exclude, out: _out } = argv;
     const wd = process.cwd();
     console.log("Current working directory:", wd);
@@ -38,10 +47,10 @@ const handler = async (argv) => {
             resolve();
         });
         // Make the callback syncronous
-        await promise;
+        yield promise;
     }
     fs_1.default.writeFileSync(out, JSON.stringify({ abi }));
     console.log(`Created diamond abi at ${out}`);
     process.exit(0);
-};
+});
 exports.handler = handler;
