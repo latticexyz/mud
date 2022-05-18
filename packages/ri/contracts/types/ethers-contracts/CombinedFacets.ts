@@ -13,7 +13,7 @@ import {
   Signer,
   utils,
 } from "ethers";
-import { FunctionFragment, Result } from "@ethersproject/abi";
+import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
@@ -27,10 +27,42 @@ export type ConfigStructOutput = [boolean, string] & {
   personaMirror: string;
 };
 
+export declare namespace IDiamondCut {
+  export type FacetCutStruct = {
+    facetAddress: string;
+    action: BigNumberish;
+    functionSelectors: BytesLike[];
+  };
+
+  export type FacetCutStructOutput = [string, number, string[]] & {
+    facetAddress: string;
+    action: number;
+    functionSelectors: string[];
+  };
+}
+
+export declare namespace IDiamondLoupe {
+  export type FacetStruct = {
+    facetAddress: string;
+    functionSelectors: BytesLike[];
+  };
+
+  export type FacetStructOutput = [string, string[]] & {
+    facetAddress: string;
+    functionSelectors: string[];
+  };
+}
+
 export interface CombinedFacetsInterface extends utils.Interface {
   contractName: "CombinedFacets";
   functions: {
     "castSpell(uint256,uint256,uint256)": FunctionFragment;
+    "diamondCut((address,uint8,bytes4[])[],address,bytes)": FunctionFragment;
+    "facetAddress(bytes4)": FunctionFragment;
+    "facetAddresses()": FunctionFragment;
+    "facetFunctionSelectors(address)": FunctionFragment;
+    "facets()": FunctionFragment;
+    "supportsInterface(bytes4)": FunctionFragment;
     "addComponentToEntityExternally(uint256,address,bytes)": FunctionFragment;
     "callerEntityID()": FunctionFragment;
     "entryPoint()": FunctionFragment;
@@ -40,9 +72,17 @@ export interface CombinedFacetsInterface extends utils.Interface {
     "registerAccessControllerExternally(address)": FunctionFragment;
     "registerContentCreatorExternally(address)": FunctionFragment;
     "registerEmbodiedSystemExternally(address,bytes4)": FunctionFragment;
+    "owner()": FunctionFragment;
+    "transferOwnership(address)": FunctionFragment;
   };
 
   encodeFunctionData(functionFragment: "castSpell", values: [BigNumberish, BigNumberish, BigNumberish]): string;
+  encodeFunctionData(functionFragment: "diamondCut", values: [IDiamondCut.FacetCutStruct[], string, BytesLike]): string;
+  encodeFunctionData(functionFragment: "facetAddress", values: [BytesLike]): string;
+  encodeFunctionData(functionFragment: "facetAddresses", values?: undefined): string;
+  encodeFunctionData(functionFragment: "facetFunctionSelectors", values: [string]): string;
+  encodeFunctionData(functionFragment: "facets", values?: undefined): string;
+  encodeFunctionData(functionFragment: "supportsInterface", values: [BytesLike]): string;
   encodeFunctionData(
     functionFragment: "addComponentToEntityExternally",
     values: [BigNumberish, string, BytesLike]
@@ -55,8 +95,16 @@ export interface CombinedFacetsInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "registerAccessControllerExternally", values: [string]): string;
   encodeFunctionData(functionFragment: "registerContentCreatorExternally", values: [string]): string;
   encodeFunctionData(functionFragment: "registerEmbodiedSystemExternally", values: [string, BytesLike]): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
+  encodeFunctionData(functionFragment: "transferOwnership", values: [string]): string;
 
   decodeFunctionResult(functionFragment: "castSpell", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "diamondCut", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "facetAddress", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "facetAddresses", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "facetFunctionSelectors", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "facets", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "supportsInterface", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "addComponentToEntityExternally", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "callerEntityID", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "entryPoint", data: BytesLike): Result;
@@ -66,9 +114,32 @@ export interface CombinedFacetsInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "registerAccessControllerExternally", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "registerContentCreatorExternally", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "registerEmbodiedSystemExternally", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "transferOwnership", data: BytesLike): Result;
 
-  events: {};
+  events: {
+    "DiamondCut(tuple[],address,bytes)": EventFragment;
+    "OwnershipTransferred(address,address)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "DiamondCut"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "OwnershipTransferred"): EventFragment;
 }
+
+export type DiamondCutEvent = TypedEvent<
+  [IDiamondCut.FacetCutStructOutput[], string, string],
+  {
+    _diamondCut: IDiamondCut.FacetCutStructOutput[];
+    _init: string;
+    _calldata: string;
+  }
+>;
+
+export type DiamondCutEventFilter = TypedEventFilter<DiamondCutEvent>;
+
+export type OwnershipTransferredEvent = TypedEvent<[string, string], { previousOwner: string; newOwner: string }>;
+
+export type OwnershipTransferredEventFilter = TypedEventFilter<OwnershipTransferredEvent>;
 
 export interface CombinedFacets extends BaseContract {
   contractName: "CombinedFacets";
@@ -100,6 +171,33 @@ export interface CombinedFacets extends BaseContract {
       targetEntityID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    diamondCut(
+      _diamondCut: IDiamondCut.FacetCutStruct[],
+      _init: string,
+      _calldata: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    facetAddress(
+      _functionSelector: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string] & { facetAddress_: string }>;
+
+    facetAddresses(overrides?: CallOverrides): Promise<[string[]] & { facetAddresses_: string[] }>;
+
+    facetFunctionSelectors(
+      _facet: string,
+      overrides?: CallOverrides
+    ): Promise<[string[]] & { _facetFunctionSelectors: string[] }>;
+
+    facets(overrides?: CallOverrides): Promise<
+      [IDiamondLoupe.FacetStructOutput[]] & {
+        facets_: IDiamondLoupe.FacetStructOutput[];
+      }
+    >;
+
+    supportsInterface(_interfaceId: BytesLike, overrides?: CallOverrides): Promise<[boolean]>;
 
     addComponentToEntityExternally(
       entity: BigNumberish,
@@ -140,6 +238,13 @@ export interface CombinedFacets extends BaseContract {
       selector: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<[string] & { owner_: string }>;
+
+    transferOwnership(
+      _newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
   castSpell(
@@ -148,6 +253,23 @@ export interface CombinedFacets extends BaseContract {
     targetEntityID: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
+
+  diamondCut(
+    _diamondCut: IDiamondCut.FacetCutStruct[],
+    _init: string,
+    _calldata: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  facetAddress(_functionSelector: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+  facetAddresses(overrides?: CallOverrides): Promise<string[]>;
+
+  facetFunctionSelectors(_facet: string, overrides?: CallOverrides): Promise<string[]>;
+
+  facets(overrides?: CallOverrides): Promise<IDiamondLoupe.FacetStructOutput[]>;
+
+  supportsInterface(_interfaceId: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
   addComponentToEntityExternally(
     entity: BigNumberish,
@@ -189,6 +311,13 @@ export interface CombinedFacets extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  owner(overrides?: CallOverrides): Promise<string>;
+
+  transferOwnership(
+    _newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
     castSpell(
       spellEntityID: BigNumberish,
@@ -196,6 +325,23 @@ export interface CombinedFacets extends BaseContract {
       targetEntityID: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    diamondCut(
+      _diamondCut: IDiamondCut.FacetCutStruct[],
+      _init: string,
+      _calldata: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    facetAddress(_functionSelector: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+    facetAddresses(overrides?: CallOverrides): Promise<string[]>;
+
+    facetFunctionSelectors(_facet: string, overrides?: CallOverrides): Promise<string[]>;
+
+    facets(overrides?: CallOverrides): Promise<IDiamondLoupe.FacetStructOutput[]>;
+
+    supportsInterface(_interfaceId: BytesLike, overrides?: CallOverrides): Promise<boolean>;
 
     addComponentToEntityExternally(
       entity: BigNumberish,
@@ -227,9 +373,22 @@ export interface CombinedFacets extends BaseContract {
       selector: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    owner(overrides?: CallOverrides): Promise<string>;
+
+    transferOwnership(_newOwner: string, overrides?: CallOverrides): Promise<void>;
   };
 
-  filters: {};
+  filters: {
+    "DiamondCut(tuple[],address,bytes)"(_diamondCut?: null, _init?: null, _calldata?: null): DiamondCutEventFilter;
+    DiamondCut(_diamondCut?: null, _init?: null, _calldata?: null): DiamondCutEventFilter;
+
+    "OwnershipTransferred(address,address)"(
+      previousOwner?: string | null,
+      newOwner?: string | null
+    ): OwnershipTransferredEventFilter;
+    OwnershipTransferred(previousOwner?: string | null, newOwner?: string | null): OwnershipTransferredEventFilter;
+  };
 
   estimateGas: {
     castSpell(
@@ -238,6 +397,23 @@ export interface CombinedFacets extends BaseContract {
       targetEntityID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    diamondCut(
+      _diamondCut: IDiamondCut.FacetCutStruct[],
+      _init: string,
+      _calldata: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    facetAddress(_functionSelector: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
+    facetAddresses(overrides?: CallOverrides): Promise<BigNumber>;
+
+    facetFunctionSelectors(_facet: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    facets(overrides?: CallOverrides): Promise<BigNumber>;
+
+    supportsInterface(_interfaceId: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
 
     addComponentToEntityExternally(
       entity: BigNumberish,
@@ -278,6 +454,13 @@ export interface CombinedFacets extends BaseContract {
       selector: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
+    transferOwnership(
+      _newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -287,6 +470,23 @@ export interface CombinedFacets extends BaseContract {
       targetEntityID: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    diamondCut(
+      _diamondCut: IDiamondCut.FacetCutStruct[],
+      _init: string,
+      _calldata: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    facetAddress(_functionSelector: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    facetAddresses(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    facetFunctionSelectors(_facet: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    facets(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    supportsInterface(_interfaceId: BytesLike, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     addComponentToEntityExternally(
       entity: BigNumberish,
@@ -325,6 +525,13 @@ export interface CombinedFacets extends BaseContract {
     registerEmbodiedSystemExternally(
       embodiedSystemAddr: string,
       selector: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    transferOwnership(
+      _newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };

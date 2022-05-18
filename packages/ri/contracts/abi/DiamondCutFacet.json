@@ -95,26 +95,26 @@
   },
   "ast": {
     "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/diamond/facets/DiamondCutFacet.sol",
-    "id": 24444,
+    "id": 24459,
     "exportedSymbols": {
       "DiamondCutFacet": [
-        24443
+        24458
       ],
       "DiamondStorage": [
-        25156
+        25171
       ],
       "IDiamondCut": [
-        25066
+        25081
       ],
       "LibDiamond": [
-        26009
+        26024
       ]
     },
     "nodeType": "SourceUnit",
     "src": "32:2599:47",
     "nodes": [
       {
-        "id": 24303,
+        "id": 24318,
         "nodeType": "PragmaDirective",
         "src": "32:23:47",
         "literals": [
@@ -125,22 +125,22 @@
         ]
       },
       {
-        "id": 24305,
+        "id": 24320,
         "nodeType": "ImportDirective",
         "src": "408:60:47",
         "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/diamond/interfaces/IDiamondCut.sol",
         "file": "../interfaces/IDiamondCut.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 24444,
-        "sourceUnit": 25067,
+        "scope": 24459,
+        "sourceUnit": 25082,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 24304,
+              "id": 24319,
               "name": "IDiamondCut",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 25066,
+              "referencedDeclaration": 25081,
               "src": "417:11:47",
               "typeDescriptions": {}
             },
@@ -150,22 +150,22 @@
         "unitAlias": ""
       },
       {
-        "id": 24308,
+        "id": 24323,
         "nodeType": "ImportDirective",
         "src": "469:73:47",
         "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/diamond/libraries/LibDiamond.sol",
         "file": "../libraries/LibDiamond.sol",
         "nameLocation": "-1:-1:-1",
-        "scope": 24444,
-        "sourceUnit": 26010,
+        "scope": 24459,
+        "sourceUnit": 26025,
         "symbolAliases": [
           {
             "foreign": {
-              "id": 24306,
+              "id": 24321,
               "name": "LibDiamond",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 26009,
+              "referencedDeclaration": 26024,
               "src": "478:10:47",
               "typeDescriptions": {}
             },
@@ -173,11 +173,11 @@
           },
           {
             "foreign": {
-              "id": 24307,
+              "id": 24322,
               "name": "DiamondStorage",
               "nodeType": "Identifier",
               "overloadedDeclarations": [],
-              "referencedDeclaration": 25156,
+              "referencedDeclaration": 25171,
               "src": "490:14:47",
               "typeDescriptions": {}
             },
@@ -187,16 +187,16 @@
         "unitAlias": ""
       },
       {
-        "id": 24443,
+        "id": 24458,
         "nodeType": "ContractDefinition",
         "src": "544:2086:47",
         "nodes": [
           {
-            "id": 24442,
+            "id": 24457,
             "nodeType": "FunctionDefinition",
             "src": "1019:1609:47",
             "body": {
-              "id": 24441,
+              "id": 24456,
               "nodeType": "Block",
               "src": "1147:1481:47",
               "statements": [
@@ -206,32 +206,32 @@
                     "expression": {
                       "argumentTypes": [],
                       "expression": {
-                        "id": 24323,
+                        "id": 24338,
                         "name": "LibDiamond",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 26009,
+                        "referencedDeclaration": 26024,
                         "src": "1153:10:47",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_LibDiamond_$26009_$",
+                          "typeIdentifier": "t_type$_t_contract$_LibDiamond_$26024_$",
                           "typeString": "type(library LibDiamond)"
                         }
                       },
-                      "id": 24325,
+                      "id": 24340,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "enforceIsContractOwner",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 25233,
+                      "referencedDeclaration": 25248,
                       "src": "1153:33:47",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_view$__$returns$__$",
                         "typeString": "function () view"
                       }
                     },
-                    "id": 24326,
+                    "id": 24341,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -246,82 +246,82 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 24327,
+                  "id": 24342,
                   "nodeType": "ExpressionStatement",
                   "src": "1153:35:47"
                 },
                 {
                   "assignments": [
-                    24330
+                    24345
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 24330,
+                      "id": 24345,
                       "mutability": "mutable",
                       "name": "ds",
                       "nameLocation": "1217:2:47",
                       "nodeType": "VariableDeclaration",
-                      "scope": 24441,
+                      "scope": 24456,
                       "src": "1194:25:47",
                       "stateVariable": false,
                       "storageLocation": "storage",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_DiamondStorage_$25156_storage_ptr",
+                        "typeIdentifier": "t_struct$_DiamondStorage_$25171_storage_ptr",
                         "typeString": "struct DiamondStorage"
                       },
                       "typeName": {
-                        "id": 24329,
+                        "id": 24344,
                         "nodeType": "UserDefinedTypeName",
                         "pathNode": {
-                          "id": 24328,
+                          "id": 24343,
                           "name": "DiamondStorage",
                           "nodeType": "IdentifierPath",
-                          "referencedDeclaration": 25156,
+                          "referencedDeclaration": 25171,
                           "src": "1194:14:47"
                         },
-                        "referencedDeclaration": 25156,
+                        "referencedDeclaration": 25171,
                         "src": "1194:14:47",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_struct$_DiamondStorage_$25156_storage_ptr",
+                          "typeIdentifier": "t_struct$_DiamondStorage_$25171_storage_ptr",
                           "typeString": "struct DiamondStorage"
                         }
                       },
                       "visibility": "internal"
                     }
                   ],
-                  "id": 24334,
+                  "id": 24349,
                   "initialValue": {
                     "arguments": [],
                     "expression": {
                       "argumentTypes": [],
                       "expression": {
-                        "id": 24331,
+                        "id": 24346,
                         "name": "LibDiamond",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 26009,
+                        "referencedDeclaration": 26024,
                         "src": "1222:10:47",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_LibDiamond_$26009_$",
+                          "typeIdentifier": "t_type$_t_contract$_LibDiamond_$26024_$",
                           "typeString": "type(library LibDiamond)"
                         }
                       },
-                      "id": 24332,
+                      "id": 24347,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "diamondStorage",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 25173,
+                      "referencedDeclaration": 25188,
                       "src": "1222:25:47",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_internal_pure$__$returns$_t_struct$_DiamondStorage_$25156_storage_ptr_$",
+                        "typeIdentifier": "t_function_internal_pure$__$returns$_t_struct$_DiamondStorage_$25171_storage_ptr_$",
                         "typeString": "function () pure returns (struct DiamondStorage storage pointer)"
                       }
                     },
-                    "id": 24333,
+                    "id": 24348,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -332,7 +332,7 @@
                     "src": "1222:27:47",
                     "tryCall": false,
                     "typeDescriptions": {
-                      "typeIdentifier": "t_struct$_DiamondStorage_$25156_storage_ptr",
+                      "typeIdentifier": "t_struct$_DiamondStorage_$25171_storage_ptr",
                       "typeString": "struct DiamondStorage storage pointer"
                     }
                   },
@@ -341,17 +341,17 @@
                 },
                 {
                   "assignments": [
-                    24336
+                    24351
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 24336,
+                      "id": 24351,
                       "mutability": "mutable",
                       "name": "originalSelectorCount",
                       "nameLocation": "1263:21:47",
                       "nodeType": "VariableDeclaration",
-                      "scope": 24441,
+                      "scope": 24456,
                       "src": "1255:29:47",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -360,7 +360,7 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 24335,
+                        "id": 24350,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
                         "src": "1255:7:47",
@@ -372,28 +372,28 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 24339,
+                  "id": 24354,
                   "initialValue": {
                     "expression": {
-                      "id": 24337,
+                      "id": 24352,
                       "name": "ds",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 24330,
+                      "referencedDeclaration": 24345,
                       "src": "1287:2:47",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_DiamondStorage_$25156_storage_ptr",
+                        "typeIdentifier": "t_struct$_DiamondStorage_$25171_storage_ptr",
                         "typeString": "struct DiamondStorage storage pointer"
                       }
                     },
-                    "id": 24338,
+                    "id": 24353,
                     "isConstant": false,
                     "isLValue": true,
                     "isPure": false,
                     "lValueRequested": false,
                     "memberName": "selectorCount",
                     "nodeType": "MemberAccess",
-                    "referencedDeclaration": 25147,
+                    "referencedDeclaration": 25162,
                     "src": "1287:16:47",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint16",
@@ -405,17 +405,17 @@
                 },
                 {
                   "assignments": [
-                    24341
+                    24356
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 24341,
+                      "id": 24356,
                       "mutability": "mutable",
                       "name": "selectorCount",
                       "nameLocation": "1317:13:47",
                       "nodeType": "VariableDeclaration",
-                      "scope": 24441,
+                      "scope": 24456,
                       "src": "1309:21:47",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -424,7 +424,7 @@
                         "typeString": "uint256"
                       },
                       "typeName": {
-                        "id": 24340,
+                        "id": 24355,
                         "name": "uint256",
                         "nodeType": "ElementaryTypeName",
                         "src": "1309:7:47",
@@ -436,13 +436,13 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 24343,
+                  "id": 24358,
                   "initialValue": {
-                    "id": 24342,
+                    "id": 24357,
                     "name": "originalSelectorCount",
                     "nodeType": "Identifier",
                     "overloadedDeclarations": [],
-                    "referencedDeclaration": 24336,
+                    "referencedDeclaration": 24351,
                     "src": "1333:21:47",
                     "typeDescriptions": {
                       "typeIdentifier": "t_uint256",
@@ -454,17 +454,17 @@
                 },
                 {
                   "assignments": [
-                    24345
+                    24360
                   ],
                   "declarations": [
                     {
                       "constant": false,
-                      "id": 24345,
+                      "id": 24360,
                       "mutability": "mutable",
                       "name": "selectorSlot",
                       "nameLocation": "1368:12:47",
                       "nodeType": "VariableDeclaration",
-                      "scope": 24441,
+                      "scope": 24456,
                       "src": "1360:20:47",
                       "stateVariable": false,
                       "storageLocation": "default",
@@ -473,7 +473,7 @@
                         "typeString": "bytes32"
                       },
                       "typeName": {
-                        "id": 24344,
+                        "id": 24359,
                         "name": "bytes32",
                         "nodeType": "ElementaryTypeName",
                         "src": "1360:7:47",
@@ -485,7 +485,7 @@
                       "visibility": "internal"
                     }
                   ],
-                  "id": 24346,
+                  "id": 24361,
                   "nodeType": "VariableDeclarationStatement",
                   "src": "1360:20:47"
                 },
@@ -495,7 +495,7 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 24351,
+                    "id": 24366,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -505,17 +505,17 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 24349,
+                      "id": 24364,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
-                        "id": 24347,
+                        "id": 24362,
                         "name": "selectorCount",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 24341,
+                        "referencedDeclaration": 24356,
                         "src": "1519:13:47",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -526,7 +526,7 @@
                       "operator": "&",
                       "rightExpression": {
                         "hexValue": "37",
-                        "id": 24348,
+                        "id": 24363,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -550,7 +550,7 @@
                     "operator": ">",
                     "rightExpression": {
                       "hexValue": "30",
-                      "id": 24350,
+                      "id": 24365,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -570,27 +570,27 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 24362,
+                  "id": 24377,
                   "nodeType": "IfStatement",
                   "src": "1515:207:47",
                   "trueBody": {
-                    "id": 24361,
+                    "id": 24376,
                     "nodeType": "Block",
                     "src": "1542:180:47",
                     "statements": [
                       {
                         "expression": {
-                          "id": 24359,
+                          "id": 24374,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
-                            "id": 24352,
+                            "id": 24367,
                             "name": "selectorSlot",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 24345,
+                            "referencedDeclaration": 24360,
                             "src": "1664:12:47",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -602,48 +602,48 @@
                           "rightHandSide": {
                             "baseExpression": {
                               "expression": {
-                                "id": 24353,
+                                "id": 24368,
                                 "name": "ds",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 24330,
+                                "referencedDeclaration": 24345,
                                 "src": "1679:2:47",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_DiamondStorage_$25156_storage_ptr",
+                                  "typeIdentifier": "t_struct$_DiamondStorage_$25171_storage_ptr",
                                   "typeString": "struct DiamondStorage storage pointer"
                                 }
                               },
-                              "id": 24354,
+                              "id": 24369,
                               "isConstant": false,
                               "isLValue": true,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "selectorSlots",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 25145,
+                              "referencedDeclaration": 25160,
                               "src": "1679:16:47",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_mapping$_t_uint256_$_t_bytes32_$",
                                 "typeString": "mapping(uint256 => bytes32)"
                               }
                             },
-                            "id": 24358,
+                            "id": 24373,
                             "indexExpression": {
                               "commonType": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
                               },
-                              "id": 24357,
+                              "id": 24372,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "leftExpression": {
-                                "id": 24355,
+                                "id": 24370,
                                 "name": "selectorCount",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 24341,
+                                "referencedDeclaration": 24356,
                                 "src": "1696:13:47",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -654,7 +654,7 @@
                               "operator": ">>",
                               "rightExpression": {
                                 "hexValue": "33",
-                                "id": 24356,
+                                "id": 24371,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": true,
@@ -691,7 +691,7 @@
                             "typeString": "bytes32"
                           }
                         },
-                        "id": 24360,
+                        "id": 24375,
                         "nodeType": "ExpressionStatement",
                         "src": "1664:51:47"
                       }
@@ -700,13 +700,13 @@
                 },
                 {
                   "body": {
-                    "id": 24395,
+                    "id": 24410,
                     "nodeType": "Block",
                     "src": "1831:278:47",
                     "statements": [
                       {
                         "expression": {
-                          "id": 24393,
+                          "id": 24408,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -714,11 +714,11 @@
                           "leftHandSide": {
                             "components": [
                               {
-                                "id": 24373,
+                                "id": 24388,
                                 "name": "selectorCount",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 24341,
+                                "referencedDeclaration": 24356,
                                 "src": "1840:13:47",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -726,11 +726,11 @@
                                 }
                               },
                               {
-                                "id": 24374,
+                                "id": 24389,
                                 "name": "selectorSlot",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 24345,
+                                "referencedDeclaration": 24360,
                                 "src": "1855:12:47",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
@@ -738,7 +738,7 @@
                                 }
                               }
                             ],
-                            "id": 24375,
+                            "id": 24390,
                             "isConstant": false,
                             "isInlineArray": false,
                             "isLValue": true,
@@ -756,11 +756,11 @@
                           "rightHandSide": {
                             "arguments": [
                               {
-                                "id": 24378,
+                                "id": 24393,
                                 "name": "selectorCount",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 24341,
+                                "referencedDeclaration": 24356,
                                 "src": "1922:13:47",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -768,11 +768,11 @@
                                 }
                               },
                               {
-                                "id": 24379,
+                                "id": 24394,
                                 "name": "selectorSlot",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 24345,
+                                "referencedDeclaration": 24360,
                                 "src": "1945:12:47",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_bytes32",
@@ -782,24 +782,24 @@
                               {
                                 "expression": {
                                   "baseExpression": {
-                                    "id": 24380,
+                                    "id": 24395,
                                     "name": "_diamondCut",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 24315,
+                                    "referencedDeclaration": 24330,
                                     "src": "1967:11:47",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_array$_t_struct$_FacetCut_$25043_calldata_ptr_$dyn_calldata_ptr",
+                                      "typeIdentifier": "t_array$_t_struct$_FacetCut_$25058_calldata_ptr_$dyn_calldata_ptr",
                                       "typeString": "struct IDiamondCut.FacetCut calldata[] calldata"
                                     }
                                   },
-                                  "id": 24382,
+                                  "id": 24397,
                                   "indexExpression": {
-                                    "id": 24381,
+                                    "id": 24396,
                                     "name": "facetIndex",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 24364,
+                                    "referencedDeclaration": 24379,
                                     "src": "1979:10:47",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
@@ -813,18 +813,18 @@
                                   "nodeType": "IndexAccess",
                                   "src": "1967:23:47",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_struct$_FacetCut_$25043_calldata_ptr",
+                                    "typeIdentifier": "t_struct$_FacetCut_$25058_calldata_ptr",
                                     "typeString": "struct IDiamondCut.FacetCut calldata"
                                   }
                                 },
-                                "id": 24383,
+                                "id": 24398,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
                                 "lValueRequested": false,
                                 "memberName": "facetAddress",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 25036,
+                                "referencedDeclaration": 25051,
                                 "src": "1967:36:47",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_address",
@@ -834,24 +834,24 @@
                               {
                                 "expression": {
                                   "baseExpression": {
-                                    "id": 24384,
+                                    "id": 24399,
                                     "name": "_diamondCut",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 24315,
+                                    "referencedDeclaration": 24330,
                                     "src": "2013:11:47",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_array$_t_struct$_FacetCut_$25043_calldata_ptr_$dyn_calldata_ptr",
+                                      "typeIdentifier": "t_array$_t_struct$_FacetCut_$25058_calldata_ptr_$dyn_calldata_ptr",
                                       "typeString": "struct IDiamondCut.FacetCut calldata[] calldata"
                                     }
                                   },
-                                  "id": 24386,
+                                  "id": 24401,
                                   "indexExpression": {
-                                    "id": 24385,
+                                    "id": 24400,
                                     "name": "facetIndex",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 24364,
+                                    "referencedDeclaration": 24379,
                                     "src": "2025:10:47",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
@@ -865,45 +865,45 @@
                                   "nodeType": "IndexAccess",
                                   "src": "2013:23:47",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_struct$_FacetCut_$25043_calldata_ptr",
+                                    "typeIdentifier": "t_struct$_FacetCut_$25058_calldata_ptr",
                                     "typeString": "struct IDiamondCut.FacetCut calldata"
                                   }
                                 },
-                                "id": 24387,
+                                "id": 24402,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
                                 "lValueRequested": false,
                                 "memberName": "action",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 25039,
+                                "referencedDeclaration": 25054,
                                 "src": "2013:30:47",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_enum$_FacetCutAction_$25034",
+                                  "typeIdentifier": "t_enum$_FacetCutAction_$25049",
                                   "typeString": "enum IDiamondCut.FacetCutAction"
                                 }
                               },
                               {
                                 "expression": {
                                   "baseExpression": {
-                                    "id": 24388,
+                                    "id": 24403,
                                     "name": "_diamondCut",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 24315,
+                                    "referencedDeclaration": 24330,
                                     "src": "2053:11:47",
                                     "typeDescriptions": {
-                                      "typeIdentifier": "t_array$_t_struct$_FacetCut_$25043_calldata_ptr_$dyn_calldata_ptr",
+                                      "typeIdentifier": "t_array$_t_struct$_FacetCut_$25058_calldata_ptr_$dyn_calldata_ptr",
                                       "typeString": "struct IDiamondCut.FacetCut calldata[] calldata"
                                     }
                                   },
-                                  "id": 24390,
+                                  "id": 24405,
                                   "indexExpression": {
-                                    "id": 24389,
+                                    "id": 24404,
                                     "name": "facetIndex",
                                     "nodeType": "Identifier",
                                     "overloadedDeclarations": [],
-                                    "referencedDeclaration": 24364,
+                                    "referencedDeclaration": 24379,
                                     "src": "2065:10:47",
                                     "typeDescriptions": {
                                       "typeIdentifier": "t_uint256",
@@ -917,18 +917,18 @@
                                   "nodeType": "IndexAccess",
                                   "src": "2053:23:47",
                                   "typeDescriptions": {
-                                    "typeIdentifier": "t_struct$_FacetCut_$25043_calldata_ptr",
+                                    "typeIdentifier": "t_struct$_FacetCut_$25058_calldata_ptr",
                                     "typeString": "struct IDiamondCut.FacetCut calldata"
                                   }
                                 },
-                                "id": 24391,
+                                "id": 24406,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": false,
                                 "lValueRequested": false,
                                 "memberName": "functionSelectors",
                                 "nodeType": "MemberAccess",
-                                "referencedDeclaration": 25042,
+                                "referencedDeclaration": 25057,
                                 "src": "2053:41:47",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_array$_t_bytes4_$dyn_calldata_ptr",
@@ -951,7 +951,7 @@
                                   "typeString": "address"
                                 },
                                 {
-                                  "typeIdentifier": "t_enum$_FacetCutAction_$25034",
+                                  "typeIdentifier": "t_enum$_FacetCutAction_$25049",
                                   "typeString": "enum IDiamondCut.FacetCutAction"
                                 },
                                 {
@@ -960,32 +960,32 @@
                                 }
                               ],
                               "expression": {
-                                "id": 24376,
+                                "id": 24391,
                                 "name": "LibDiamond",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 26009,
+                                "referencedDeclaration": 26024,
                                 "src": "1871:10:47",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_LibDiamond_$26009_$",
+                                  "typeIdentifier": "t_type$_t_contract$_LibDiamond_$26024_$",
                                   "typeString": "type(library LibDiamond)"
                                 }
                               },
-                              "id": 24377,
+                              "id": 24392,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "addReplaceRemoveFacetSelectors",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 25912,
+                              "referencedDeclaration": 25927,
                               "src": "1871:41:47",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_bytes32_$_t_address_$_t_enum$_FacetCutAction_$25034_$_t_array$_t_bytes4_$dyn_memory_ptr_$returns$_t_uint256_$_t_bytes32_$",
+                                "typeIdentifier": "t_function_internal_nonpayable$_t_uint256_$_t_bytes32_$_t_address_$_t_enum$_FacetCutAction_$25049_$_t_array$_t_bytes4_$dyn_memory_ptr_$returns$_t_uint256_$_t_bytes32_$",
                                 "typeString": "function (uint256,bytes32,address,enum IDiamondCut.FacetCutAction,bytes4[] memory) returns (uint256,bytes32)"
                               }
                             },
-                            "id": 24392,
+                            "id": 24407,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -1006,7 +1006,7 @@
                             "typeString": "tuple()"
                           }
                         },
-                        "id": 24394,
+                        "id": 24409,
                         "nodeType": "ExpressionStatement",
                         "src": "1839:263:47"
                       }
@@ -1017,17 +1017,17 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 24369,
+                    "id": 24384,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "id": 24366,
+                      "id": 24381,
                       "name": "facetIndex",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 24364,
+                      "referencedDeclaration": 24379,
                       "src": "1784:10:47",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1038,18 +1038,18 @@
                     "operator": "<",
                     "rightExpression": {
                       "expression": {
-                        "id": 24367,
+                        "id": 24382,
                         "name": "_diamondCut",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 24315,
+                        "referencedDeclaration": 24330,
                         "src": "1797:11:47",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_struct$_FacetCut_$25043_calldata_ptr_$dyn_calldata_ptr",
+                          "typeIdentifier": "t_array$_t_struct$_FacetCut_$25058_calldata_ptr_$dyn_calldata_ptr",
                           "typeString": "struct IDiamondCut.FacetCut calldata[] calldata"
                         }
                       },
-                      "id": 24368,
+                      "id": 24383,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1068,20 +1068,20 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 24396,
+                  "id": 24411,
                   "initializationExpression": {
                     "assignments": [
-                      24364
+                      24379
                     ],
                     "declarations": [
                       {
                         "constant": false,
-                        "id": 24364,
+                        "id": 24379,
                         "mutability": "mutable",
                         "name": "facetIndex",
                         "nameLocation": "1772:10:47",
                         "nodeType": "VariableDeclaration",
-                        "scope": 24396,
+                        "scope": 24411,
                         "src": "1764:18:47",
                         "stateVariable": false,
                         "storageLocation": "default",
@@ -1090,7 +1090,7 @@
                           "typeString": "uint256"
                         },
                         "typeName": {
-                          "id": 24363,
+                          "id": 24378,
                           "name": "uint256",
                           "nodeType": "ElementaryTypeName",
                           "src": "1764:7:47",
@@ -1102,13 +1102,13 @@
                         "visibility": "internal"
                       }
                     ],
-                    "id": 24365,
+                    "id": 24380,
                     "nodeType": "VariableDeclarationStatement",
                     "src": "1764:18:47"
                   },
                   "loopExpression": {
                     "expression": {
-                      "id": 24371,
+                      "id": 24386,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
@@ -1118,11 +1118,11 @@
                       "prefix": false,
                       "src": "1817:12:47",
                       "subExpression": {
-                        "id": 24370,
+                        "id": 24385,
                         "name": "facetIndex",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 24364,
+                        "referencedDeclaration": 24379,
                         "src": "1817:10:47",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1134,7 +1134,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 24372,
+                    "id": 24387,
                     "nodeType": "ExpressionStatement",
                     "src": "1817:12:47"
                   },
@@ -1147,17 +1147,17 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 24399,
+                    "id": 24414,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
                     "lValueRequested": false,
                     "leftExpression": {
-                      "id": 24397,
+                      "id": 24412,
                       "name": "selectorCount",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 24341,
+                      "referencedDeclaration": 24356,
                       "src": "2118:13:47",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1167,11 +1167,11 @@
                     "nodeType": "BinaryOperation",
                     "operator": "!=",
                     "rightExpression": {
-                      "id": 24398,
+                      "id": 24413,
                       "name": "originalSelectorCount",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 24336,
+                      "referencedDeclaration": 24351,
                       "src": "2135:21:47",
                       "typeDescriptions": {
                         "typeIdentifier": "t_uint256",
@@ -1184,42 +1184,42 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 24410,
+                  "id": 24425,
                   "nodeType": "IfStatement",
                   "src": "2114:99:47",
                   "trueBody": {
-                    "id": 24409,
+                    "id": 24424,
                     "nodeType": "Block",
                     "src": "2158:55:47",
                     "statements": [
                       {
                         "expression": {
-                          "id": 24407,
+                          "id": 24422,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
                           "lValueRequested": false,
                           "leftHandSide": {
                             "expression": {
-                              "id": 24400,
+                              "id": 24415,
                               "name": "ds",
                               "nodeType": "Identifier",
                               "overloadedDeclarations": [],
-                              "referencedDeclaration": 24330,
+                              "referencedDeclaration": 24345,
                               "src": "2166:2:47",
                               "typeDescriptions": {
-                                "typeIdentifier": "t_struct$_DiamondStorage_$25156_storage_ptr",
+                                "typeIdentifier": "t_struct$_DiamondStorage_$25171_storage_ptr",
                                 "typeString": "struct DiamondStorage storage pointer"
                               }
                             },
-                            "id": 24402,
+                            "id": 24417,
                             "isConstant": false,
                             "isLValue": true,
                             "isPure": false,
                             "lValueRequested": true,
                             "memberName": "selectorCount",
                             "nodeType": "MemberAccess",
-                            "referencedDeclaration": 25147,
+                            "referencedDeclaration": 25162,
                             "src": "2166:16:47",
                             "typeDescriptions": {
                               "typeIdentifier": "t_uint16",
@@ -1231,11 +1231,11 @@
                           "rightHandSide": {
                             "arguments": [
                               {
-                                "id": 24405,
+                                "id": 24420,
                                 "name": "selectorCount",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 24341,
+                                "referencedDeclaration": 24356,
                                 "src": "2192:13:47",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -1250,7 +1250,7 @@
                                   "typeString": "uint256"
                                 }
                               ],
-                              "id": 24404,
+                              "id": 24419,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": true,
@@ -1262,14 +1262,14 @@
                                 "typeString": "type(uint16)"
                               },
                               "typeName": {
-                                "id": 24403,
+                                "id": 24418,
                                 "name": "uint16",
                                 "nodeType": "ElementaryTypeName",
                                 "src": "2185:6:47",
                                 "typeDescriptions": {}
                               }
                             },
-                            "id": 24406,
+                            "id": 24421,
                             "isConstant": false,
                             "isLValue": false,
                             "isPure": false,
@@ -1290,7 +1290,7 @@
                             "typeString": "uint16"
                           }
                         },
-                        "id": 24408,
+                        "id": 24423,
                         "nodeType": "ExpressionStatement",
                         "src": "2166:40:47"
                       }
@@ -1303,7 +1303,7 @@
                       "typeIdentifier": "t_uint256",
                       "typeString": "uint256"
                     },
-                    "id": 24415,
+                    "id": 24430,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1313,17 +1313,17 @@
                         "typeIdentifier": "t_uint256",
                         "typeString": "uint256"
                       },
-                      "id": 24413,
+                      "id": 24428,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "leftExpression": {
-                        "id": 24411,
+                        "id": 24426,
                         "name": "selectorCount",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 24341,
+                        "referencedDeclaration": 24356,
                         "src": "2345:13:47",
                         "typeDescriptions": {
                           "typeIdentifier": "t_uint256",
@@ -1334,7 +1334,7 @@
                       "operator": "&",
                       "rightExpression": {
                         "hexValue": "37",
-                        "id": 24412,
+                        "id": 24427,
                         "isConstant": false,
                         "isLValue": false,
                         "isPure": true,
@@ -1358,7 +1358,7 @@
                     "operator": ">",
                     "rightExpression": {
                       "hexValue": "30",
-                      "id": 24414,
+                      "id": 24429,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": true,
@@ -1378,17 +1378,17 @@
                       "typeString": "bool"
                     }
                   },
-                  "id": 24427,
+                  "id": 24442,
                   "nodeType": "IfStatement",
                   "src": "2341:176:47",
                   "trueBody": {
-                    "id": 24426,
+                    "id": 24441,
                     "nodeType": "Block",
                     "src": "2368:149:47",
                     "statements": [
                       {
                         "expression": {
-                          "id": 24424,
+                          "id": 24439,
                           "isConstant": false,
                           "isLValue": false,
                           "isPure": false,
@@ -1396,48 +1396,48 @@
                           "leftHandSide": {
                             "baseExpression": {
                               "expression": {
-                                "id": 24416,
+                                "id": 24431,
                                 "name": "ds",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 24330,
+                                "referencedDeclaration": 24345,
                                 "src": "2459:2:47",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_struct$_DiamondStorage_$25156_storage_ptr",
+                                  "typeIdentifier": "t_struct$_DiamondStorage_$25171_storage_ptr",
                                   "typeString": "struct DiamondStorage storage pointer"
                                 }
                               },
-                              "id": 24421,
+                              "id": 24436,
                               "isConstant": false,
                               "isLValue": true,
                               "isPure": false,
                               "lValueRequested": false,
                               "memberName": "selectorSlots",
                               "nodeType": "MemberAccess",
-                              "referencedDeclaration": 25145,
+                              "referencedDeclaration": 25160,
                               "src": "2459:16:47",
                               "typeDescriptions": {
                                 "typeIdentifier": "t_mapping$_t_uint256_$_t_bytes32_$",
                                 "typeString": "mapping(uint256 => bytes32)"
                               }
                             },
-                            "id": 24422,
+                            "id": 24437,
                             "indexExpression": {
                               "commonType": {
                                 "typeIdentifier": "t_uint256",
                                 "typeString": "uint256"
                               },
-                              "id": 24420,
+                              "id": 24435,
                               "isConstant": false,
                               "isLValue": false,
                               "isPure": false,
                               "lValueRequested": false,
                               "leftExpression": {
-                                "id": 24418,
+                                "id": 24433,
                                 "name": "selectorCount",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 24341,
+                                "referencedDeclaration": 24356,
                                 "src": "2476:13:47",
                                 "typeDescriptions": {
                                   "typeIdentifier": "t_uint256",
@@ -1448,7 +1448,7 @@
                               "operator": ">>",
                               "rightExpression": {
                                 "hexValue": "33",
-                                "id": 24419,
+                                "id": 24434,
                                 "isConstant": false,
                                 "isLValue": false,
                                 "isPure": true,
@@ -1482,11 +1482,11 @@
                           "nodeType": "Assignment",
                           "operator": "=",
                           "rightHandSide": {
-                            "id": 24423,
+                            "id": 24438,
                             "name": "selectorSlot",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 24345,
+                            "referencedDeclaration": 24360,
                             "src": "2498:12:47",
                             "typeDescriptions": {
                               "typeIdentifier": "t_bytes32",
@@ -1499,7 +1499,7 @@
                             "typeString": "bytes32"
                           }
                         },
-                        "id": 24425,
+                        "id": 24440,
                         "nodeType": "ExpressionStatement",
                         "src": "2459:51:47"
                       }
@@ -1510,23 +1510,23 @@
                   "eventCall": {
                     "arguments": [
                       {
-                        "id": 24429,
+                        "id": 24444,
                         "name": "_diamondCut",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 24315,
+                        "referencedDeclaration": 24330,
                         "src": "2538:11:47",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_array$_t_struct$_FacetCut_$25043_calldata_ptr_$dyn_calldata_ptr",
+                          "typeIdentifier": "t_array$_t_struct$_FacetCut_$25058_calldata_ptr_$dyn_calldata_ptr",
                           "typeString": "struct IDiamondCut.FacetCut calldata[] calldata"
                         }
                       },
                       {
-                        "id": 24430,
+                        "id": 24445,
                         "name": "_init",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 24317,
+                        "referencedDeclaration": 24332,
                         "src": "2551:5:47",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1534,11 +1534,11 @@
                         }
                       },
                       {
-                        "id": 24431,
+                        "id": 24446,
                         "name": "_calldata",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 24319,
+                        "referencedDeclaration": 24334,
                         "src": "2558:9:47",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_calldata_ptr",
@@ -1549,7 +1549,7 @@
                     "expression": {
                       "argumentTypes": [
                         {
-                          "typeIdentifier": "t_array$_t_struct$_FacetCut_$25043_calldata_ptr_$dyn_calldata_ptr",
+                          "typeIdentifier": "t_array$_t_struct$_FacetCut_$25058_calldata_ptr_$dyn_calldata_ptr",
                           "typeString": "struct IDiamondCut.FacetCut calldata[] calldata"
                         },
                         {
@@ -1561,18 +1561,18 @@
                           "typeString": "bytes calldata"
                         }
                       ],
-                      "id": 24428,
+                      "id": 24443,
                       "name": "DiamondCut",
                       "nodeType": "Identifier",
                       "overloadedDeclarations": [],
-                      "referencedDeclaration": 25065,
+                      "referencedDeclaration": 25080,
                       "src": "2527:10:47",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_function_event_nonpayable$_t_array$_t_struct$_FacetCut_$25043_memory_ptr_$dyn_memory_ptr_$_t_address_$_t_bytes_memory_ptr_$returns$__$",
+                        "typeIdentifier": "t_function_event_nonpayable$_t_array$_t_struct$_FacetCut_$25058_memory_ptr_$dyn_memory_ptr_$_t_address_$_t_bytes_memory_ptr_$returns$__$",
                         "typeString": "function (struct IDiamondCut.FacetCut memory[] memory,address,bytes memory)"
                       }
                     },
-                    "id": 24432,
+                    "id": 24447,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1587,7 +1587,7 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 24433,
+                  "id": 24448,
                   "nodeType": "EmitStatement",
                   "src": "2522:46:47"
                 },
@@ -1595,11 +1595,11 @@
                   "expression": {
                     "arguments": [
                       {
-                        "id": 24437,
+                        "id": 24452,
                         "name": "_init",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 24317,
+                        "referencedDeclaration": 24332,
                         "src": "2606:5:47",
                         "typeDescriptions": {
                           "typeIdentifier": "t_address",
@@ -1607,11 +1607,11 @@
                         }
                       },
                       {
-                        "id": 24438,
+                        "id": 24453,
                         "name": "_calldata",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 24319,
+                        "referencedDeclaration": 24334,
                         "src": "2613:9:47",
                         "typeDescriptions": {
                           "typeIdentifier": "t_bytes_calldata_ptr",
@@ -1631,32 +1631,32 @@
                         }
                       ],
                       "expression": {
-                        "id": 24434,
+                        "id": 24449,
                         "name": "LibDiamond",
                         "nodeType": "Identifier",
                         "overloadedDeclarations": [],
-                        "referencedDeclaration": 26009,
+                        "referencedDeclaration": 26024,
                         "src": "2574:10:47",
                         "typeDescriptions": {
-                          "typeIdentifier": "t_type$_t_contract$_LibDiamond_$26009_$",
+                          "typeIdentifier": "t_type$_t_contract$_LibDiamond_$26024_$",
                           "typeString": "type(library LibDiamond)"
                         }
                       },
-                      "id": 24436,
+                      "id": 24451,
                       "isConstant": false,
                       "isLValue": false,
                       "isPure": false,
                       "lValueRequested": false,
                       "memberName": "initializeDiamondCut",
                       "nodeType": "MemberAccess",
-                      "referencedDeclaration": 25989,
+                      "referencedDeclaration": 26004,
                       "src": "2574:31:47",
                       "typeDescriptions": {
                         "typeIdentifier": "t_function_internal_nonpayable$_t_address_$_t_bytes_memory_ptr_$returns$__$",
                         "typeString": "function (address,bytes memory)"
                       }
                     },
-                    "id": 24439,
+                    "id": 24454,
                     "isConstant": false,
                     "isLValue": false,
                     "isPure": false,
@@ -1671,17 +1671,17 @@
                       "typeString": "tuple()"
                     }
                   },
-                  "id": 24440,
+                  "id": 24455,
                   "nodeType": "ExpressionStatement",
                   "src": "2574:49:47"
                 }
               ]
             },
             "baseFunctions": [
-              25055
+              25070
             ],
             "documentation": {
-              "id": 24311,
+              "id": 24326,
               "nodeType": "StructuredDocumentation",
               "src": "588:428:47",
               "text": "@notice Add/replace/remove any number of functions and optionally execute\n         a function with delegatecall\n @param _diamondCut Contains the facet addresses and function selectors\n @param _init The address of the contract or facet to execute _calldata\n @param _calldata A function call, including function selector and arguments\n                  _calldata is executed with delegatecall on _init"
@@ -1693,53 +1693,53 @@
             "name": "diamondCut",
             "nameLocation": "1028:10:47",
             "overrides": {
-              "id": 24321,
+              "id": 24336,
               "nodeType": "OverrideSpecifier",
               "overrides": [],
               "src": "1138:8:47"
             },
             "parameters": {
-              "id": 24320,
+              "id": 24335,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 24315,
+                  "id": 24330,
                   "mutability": "mutable",
                   "name": "_diamondCut",
                   "nameLocation": "1064:11:47",
                   "nodeType": "VariableDeclaration",
-                  "scope": 24442,
+                  "scope": 24457,
                   "src": "1044:31:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
                   "typeDescriptions": {
-                    "typeIdentifier": "t_array$_t_struct$_FacetCut_$25043_calldata_ptr_$dyn_calldata_ptr",
+                    "typeIdentifier": "t_array$_t_struct$_FacetCut_$25058_calldata_ptr_$dyn_calldata_ptr",
                     "typeString": "struct IDiamondCut.FacetCut[]"
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 24313,
+                      "id": 24328,
                       "nodeType": "UserDefinedTypeName",
                       "pathNode": {
-                        "id": 24312,
+                        "id": 24327,
                         "name": "FacetCut",
                         "nodeType": "IdentifierPath",
-                        "referencedDeclaration": 25043,
+                        "referencedDeclaration": 25058,
                         "src": "1044:8:47"
                       },
-                      "referencedDeclaration": 25043,
+                      "referencedDeclaration": 25058,
                       "src": "1044:8:47",
                       "typeDescriptions": {
-                        "typeIdentifier": "t_struct$_FacetCut_$25043_storage_ptr",
+                        "typeIdentifier": "t_struct$_FacetCut_$25058_storage_ptr",
                         "typeString": "struct IDiamondCut.FacetCut"
                       }
                     },
-                    "id": 24314,
+                    "id": 24329,
                     "nodeType": "ArrayTypeName",
                     "src": "1044:10:47",
                     "typeDescriptions": {
-                      "typeIdentifier": "t_array$_t_struct$_FacetCut_$25043_storage_$dyn_storage_ptr",
+                      "typeIdentifier": "t_array$_t_struct$_FacetCut_$25058_storage_$dyn_storage_ptr",
                       "typeString": "struct IDiamondCut.FacetCut[]"
                     }
                   },
@@ -1747,12 +1747,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 24317,
+                  "id": 24332,
                   "mutability": "mutable",
                   "name": "_init",
                   "nameLocation": "1089:5:47",
                   "nodeType": "VariableDeclaration",
-                  "scope": 24442,
+                  "scope": 24457,
                   "src": "1081:13:47",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -1761,7 +1761,7 @@
                     "typeString": "address"
                   },
                   "typeName": {
-                    "id": 24316,
+                    "id": 24331,
                     "name": "address",
                     "nodeType": "ElementaryTypeName",
                     "src": "1081:7:47",
@@ -1775,12 +1775,12 @@
                 },
                 {
                   "constant": false,
-                  "id": 24319,
+                  "id": 24334,
                   "mutability": "mutable",
                   "name": "_calldata",
                   "nameLocation": "1115:9:47",
                   "nodeType": "VariableDeclaration",
-                  "scope": 24442,
+                  "scope": 24457,
                   "src": "1100:24:47",
                   "stateVariable": false,
                   "storageLocation": "calldata",
@@ -1789,7 +1789,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 24318,
+                    "id": 24333,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "1100:5:47",
@@ -1804,12 +1804,12 @@
               "src": "1038:90:47"
             },
             "returnParameters": {
-              "id": 24322,
+              "id": 24337,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "1147:0:47"
             },
-            "scope": 24443,
+            "scope": 24458,
             "stateMutability": "nonpayable",
             "virtual": false,
             "visibility": "external"
@@ -1819,13 +1819,13 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 24309,
+              "id": 24324,
               "name": "IDiamondCut",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 25066,
+              "referencedDeclaration": 25081,
               "src": "572:11:47"
             },
-            "id": 24310,
+            "id": 24325,
             "nodeType": "InheritanceSpecifier",
             "src": "572:11:47"
           }
@@ -1835,12 +1835,12 @@
         "contractKind": "contract",
         "fullyImplemented": true,
         "linearizedBaseContracts": [
-          24443,
-          25066
+          24458,
+          25081
         ],
         "name": "DiamondCutFacet",
         "nameLocation": "553:15:47",
-        "scope": 24444,
+        "scope": 24459,
         "usedErrors": []
       }
     ],
