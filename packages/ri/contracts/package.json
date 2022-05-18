@@ -13,11 +13,13 @@
     "dist": "rimraf abi && mkdir abi && bash exports.sh && ts-node abigen.ts",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
     "start:hardhat": "hardhat node",
-    "start:anvil": "run-p -l anvil:start anvil:automine",
-    "anvil:start": "anvil",
+    "start:anvil": "run-p -l anvil:node anvil:automine",
+    "anvil:node": "anvil",
     "anvil:automine": "wait-on tcp:8545 && curl -X POST localhost:8545 -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"evm_setAutomine\", \"params\": [true], \"id\": 1 }'",
-    "deploy:local": "forge script ./src/test/utils/BroadcastDeploy.sol --private-keys 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --target-contract Deploy --sig \"deployEmber()\" --fork-url http://localhost:8545 --broadcast -vvv",
-    "deploy:degen": "forge script ./src/test/utils/BroadcastDeploy.sol --private-keys 0xb20486f2dadf532076b54c65b945f7df6728945d8bff5df06088dc1286bee1c3 --target-contract Deploy --sig \"deployEmber()\" --fork-url https://degen-chain.lattice.xyz --broadcast -vvv"
+    "deploy:anvil": "yarn forge:deploy --private-keys 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --sig \"deployEmber(address)\" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --fork-url http://localhost:8545",
+    "deploy:hardhat": "yarn forge:deploy --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --sig \"deployEmber(address)\" 0x1c0f0Af3262A7213E59Be7f1440282279D788335 --fork-url http://localhost:8545",
+    "deploy:degen": "yarn forge:deploy --private-keys 0xb20486f2dadf532076b54c65b945f7df6728945d8bff5df06088dc1286bee1c3 --sig \"deployEmber(address)\" 0xDdaa406fe1D2d3Af4B9cB3dA1B3C9E9fa3B7f427 --fork-url https://degen-chain.lattice.xyz",
+    "forge:deploy": "forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
