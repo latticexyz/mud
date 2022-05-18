@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 import { Set } from "./Set.sol";
-import { Component } from "./Component.sol";
+import { LibQuery } from "./LibQuery.sol";
+import { IWorld, WorldQueryFragment } from "./interfaces/IWorld.sol";
+import { IComponent } from "./interfaces/IComponent.sol";
+import { QueryFragment } from "./interfaces/Query.sol";
 
-contract World {
+contract World is IWorld {
   Set private entities = new Set();
 
   /// @notice This is a mapping from Component ID to the address of a deployed component connected to this world with that id
@@ -56,6 +59,18 @@ contract World {
 
   function getNumEntities() public view returns (uint256) {
     return Set(entities).size();
+  }
+
+  function query(WorldQueryFragment[] calldata worldQueryFragments) public view returns (uint256[] memory) {
+    QueryFragment[] memory fragments = new QueryFragment[](worldQueryFragments.length);
+    for (uint256 i; i < worldQueryFragments.length; i++) {
+      fragments[i] = QueryFragment(
+        worldQueryFragments[i].queryType,
+        IComponent(getComponent(worldQueryFragments[i].componentId)),
+        worldQueryFragments[i].value
+      );
+    }
+    return LibQuery.query(fragments);
   }
 
   function hasEntity(uint256 entity) public view returns (bool) {

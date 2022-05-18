@@ -4,12 +4,13 @@ pragma solidity >=0.8.0;
 import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
 
 import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
+import { IWorld } from "./interfaces/IWorld.sol";
+import { IComponent } from "./interfaces/IComponent.sol";
 
 import { Set } from "./Set.sol";
 import { MapSet } from "./MapSet.sol";
-import { World } from "./World.sol";
 
-abstract contract Component {
+abstract contract Component is IComponent {
   address public world;
   address public owner;
 
@@ -20,7 +21,7 @@ abstract contract Component {
 
   constructor(address _world) {
     world = _world;
-    World(_world).registerComponent(address(this), getID());
+    IWorld(_world).registerComponent(address(this), getID());
     entities = new Set();
     valueToEntities = new MapSet();
     owner = msg.sender;
@@ -55,7 +56,7 @@ abstract contract Component {
     }
 
     // Emit global event
-    World(world).registerComponentValueSet(address(this), entity, value);
+    IWorld(world).registerComponentValueSet(address(this), entity, value);
   }
 
   function remove(uint256 entity) public onlyContractOwner {
@@ -76,7 +77,7 @@ abstract contract Component {
     }
 
     // Emit global event
-    World(world).registerComponentValueRemoved(address(this), entity);
+    IWorld(world).registerComponentValueRemoved(address(this), entity);
   }
 
   function has(uint256 entity) public view returns (bool) {
