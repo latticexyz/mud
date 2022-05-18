@@ -72,7 +72,8 @@ contract Deploy is DSTest {
   PersonaMirror public personaMirror;
   MockConsumer public consumer;
 
-  function deployEmber(address deployer) public returns (address) {
+  function deployEmber(address _deployer) public returns (address) {
+    deployer = _deployer;
     // deployer = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266; // 1st anvil address
     // deployer = 0x1c0f0Af3262A7213E59Be7f1440282279D788335; // 1st hardhat address
     // deployer = 0xDdaa406fe1D2d3Af4B9cB3dA1B3C9E9fa3B7f427; // degen chain
