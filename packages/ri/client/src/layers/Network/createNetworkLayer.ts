@@ -53,19 +53,20 @@ export async function createNetworkLayer(options?: { skipContracts?: boolean }) 
   );
 
   // API
+  const positionContract = await txQueue.World.getComponent(keccak256("ember.component.positionComponent"));
   async function setPosition(entity: Entity, position: WorldCoord) {
-    const positionContract = await txQueue.World.getComponent(keccak256("ember.component.positionComponent"));
     console.log("Position contract at ", positionContract);
     txQueue.Ember.addComponentToEntityExternally(
       BigNumber.from(entity),
       positionContract,
       abi.encode(["uint256", "uint256"], [position.x, position.y])
     );
+
     console.log("Setting position", entity, position);
   }
 
+  const entityTypeContract = await txQueue.World.getComponent(keccak256("ember.component.entityTypeComponent"));
   async function setEntityType(entity: Entity, entityType: EntityTypes) {
-    const entityTypeContract = await txQueue.World.getComponent(keccak256("ember.component.entityTypeComponent"));
     console.log("Entity type contract", entityTypeContract);
     txQueue.Ember.addComponentToEntityExternally(
       BigNumber.from(entity),
