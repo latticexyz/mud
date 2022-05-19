@@ -18,6 +18,7 @@ subtask(TASK_COMPILE_SOLIDITY).setAction(async (_: { force: boolean; quiet: bool
     ["gsn", "@opengsn/contracts/src"],
     ["royalty-registry", "@manifoldxyz/royalty-registry-solidity/contracts"],
     ["@openzeppelin", "openzeppelin-solidity"],
+    ["memmove", "memmove/src"],
   ];
   for (const [library, libraryPath] of libraries) {
     const symlinkPath = path.join(process.cwd(), library);

@@ -13,6 +13,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await getNamedAccounts();
 
   const personaMiror = await hre.ethers.getContract("PersonaMirror", deployer);
+  const LibQuery = await hre.deployments.get("LibQuery");
 
   console.log(blue("Deploying Diamond"));
 
@@ -25,7 +26,9 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
       methodName: "initializeExternally",
       args: [[true, personaMiror.address]],
     },
-    libraries: {},
+    libraries: {
+      LibQuery: LibQuery.address,
+    },
     autoMine: true,
   });
 

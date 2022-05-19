@@ -20,8 +20,10 @@
     "forge:deploy:hardhat": "yarn forge:deploy --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --sig \"deployEmber(address)\" 0x1c0f0Af3262A7213E59Be7f1440282279D788335 --fork-url http://localhost:8545",
     "forge:deploy:degen": "yarn forge:deploy --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --sig \"deployEmber(address)\" 0x1c0f0Af3262A7213E59Be7f1440282279D788335 --fork-url https://degen-chain.lattice.xyz --legacy",
     "forge:deploy": "forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv",
-    "hardhat:deploy:hardhat": "hardhat deploy --network hardhat --reset",
-    "hardhat:deploy:update": "hardhat deploy --network localhost --reset"
+    "hardhat:deploy:degen": "yarn hardhat:deploy --network degen",
+    "hardhat:deploy:hardhat": "yarn hardhat:deploy --network hardhat",
+    "hardhat:deploy:update": "yarn hardhat:deploy --network localhost",
+    "hardhat:deploy": "hardhat deploy --reset"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
