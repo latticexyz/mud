@@ -12,15 +12,7 @@ import {
   defineSelectableComponent,
   defineRockWallComponent,
 } from "./components";
-import {
-  createDestinationSystem,
-  createImpSystem,
-  createPathSystem,
-  createStrollingSystem,
-  createSyncSystem,
-  createPositionSystem,
-  createSelectionSystem,
-} from "./systems";
+import { createDestinationSystem, createPathSystem, createSyncSystem, createPositionSystem } from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
 import { Area } from "@mud/utils";
 import { createRockWallSystem } from "./systems/RockWallSystem";
@@ -88,13 +80,13 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   };
 
   // Systems
+  // createSelectionSystem(layer); // Enable selection system
+  // createImpSystem(layer); // Enable imps
+  // createStrollingSystem(layer); // Enable strolling
   createSyncSystem(layer);
-  createImpSystem(layer);
   createPositionSystem(layer);
-  createStrollingSystem(layer);
   createDestinationSystem(layer);
   createPathSystem(layer);
-  createSelectionSystem(layer);
   createRockWallSystem(layer);
 
   return layer;

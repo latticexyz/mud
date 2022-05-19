@@ -1,4 +1,4 @@
-import { createWorld, Entity, createEntity, withValue } from "@mud/recs";
+import { createWorld, Entity } from "@mud/recs";
 import { WorldCoord } from "../../types";
 import {
   definePositionComponent,
@@ -80,14 +80,6 @@ export async function createNetworkLayer(options?: { skipContracts?: boolean }) 
   const constants = {
     mapSize: 50,
   };
-
-  // TODO: get this from the contract
-  // Create tag
-  for (let x = 0; x < 8; x++) {
-    for (let y = 0; y < 8; y++) {
-      createEntity(world, [withValue(components.MinedTag, {}), withValue(components.Position, { x, y })]);
-    }
-  }
 
   return {
     world,

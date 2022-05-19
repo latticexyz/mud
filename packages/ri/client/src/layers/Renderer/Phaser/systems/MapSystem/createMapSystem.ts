@@ -1,5 +1,5 @@
-import { defineAutorunSystem, defineEnterQuery, Has, defineReactionSystem, getComponentValueStrict } from "@mud/recs";
-import { TileAnimationKey, Tileset, RockWallTileset } from "../../constants";
+import { defineEnterQuery, Has, defineReactionSystem, getComponentValueStrict } from "@mud/recs";
+import { Tileset, RockWallTileset } from "../../constants";
 import { PhaserLayer } from "../../types";
 
 /**
@@ -65,12 +65,12 @@ export function createMapSystem(layer: PhaserLayer) {
   );
 
   // TODO: Remove this - only for demonstration purposes
-  return defineAutorunSystem(world, () => {
-    // Put a gold generator
-    Main.putAnimationAt({ x: 0, y: 0 }, TileAnimationKey.GoldGenerator);
-    Main.pauseAnimationAt({ x: 0, y: 0 });
-    Main.resumeAnimationAt({ x: 0, y: 0 });
+  // return defineAutorunSystem(world, () => {
+  //   // Put a gold generator
+  //   Main.putAnimationAt({ x: 0, y: 0 }, TileAnimationKey.GoldGenerator);
+  //   Main.pauseAnimationAt({ x: 0, y: 0 });
+  //   Main.resumeAnimationAt({ x: 0, y: 0 });
 
-    Strategic.putTileAt({ x: 0, y: 0 }, Tileset.OwnedGround);
-  });
+  //   Strategic.putTileAt({ x: 0, y: 0 }, Tileset.OwnedGround);
+  // });
 }
