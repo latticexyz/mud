@@ -16,10 +16,12 @@
     "start:anvil": "run-p -l anvil:node anvil:automine",
     "anvil:node": "anvil",
     "anvil:automine": "wait-on tcp:8545 && curl -X POST localhost:8545 -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"evm_setAutomine\", \"params\": [true], \"id\": 1 }'",
-    "deploy:anvil": "yarn forge:deploy --private-keys 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --sig \"deployEmber(address)\" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --fork-url http://localhost:8545",
-    "deploy:hardhat": "yarn forge:deploy --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --sig \"deployEmber(address)\" 0x1c0f0Af3262A7213E59Be7f1440282279D788335 --fork-url http://localhost:8545",
-    "deploy:degen": "yarn forge:deploy --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --sig \"deployEmber(address)\" 0x1c0f0Af3262A7213E59Be7f1440282279D788335 --fork-url https://degen-chain.lattice.xyz --legacy",
-    "forge:deploy": "forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv"
+    "forge:deploy:anvil": "yarn forge:deploy --private-keys 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --sig \"deployEmber(address)\" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 --fork-url http://localhost:8545",
+    "forge:deploy:hardhat": "yarn forge:deploy --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --sig \"deployEmber(address)\" 0x1c0f0Af3262A7213E59Be7f1440282279D788335 --fork-url http://localhost:8545",
+    "forge:deploy:degen": "yarn forge:deploy --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --sig \"deployEmber(address)\" 0x1c0f0Af3262A7213E59Be7f1440282279D788335 --fork-url https://degen-chain.lattice.xyz --legacy",
+    "forge:deploy": "forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv",
+    "hardhat:deploy:hardhat": "hardhat deploy --network hardhat --reset",
+    "hardhat:deploy:update": "hardhat deploy --network localhost --reset"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
@@ -27,6 +29,8 @@
     "@ethersproject/providers": "^5.6.1",
     "@latticexyz/persona": "https://github.com/latticexyz/persona.git#4b4634be26c20fe16e0c1c8b26938b26128f4f2f",
     "@manifoldxyz/royalty-registry-solidity": "https://github.com/manifoldxyz/royalty-registry-solidity.git#c5ad6269d37e180fbf449a1f5ba2d2ff6c441efc",
+    "@mud/cli": "0.0.1",
+    "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
     "@opengsn/contracts": "^2.2.6",
     "@rari-capital/solmate": "https://github.com/rari-capital/solmate.git#851ea3baa4327f453da723df75b1093b58b964dc",
     "@typechain/ethers-v5": "^9.0.0",
@@ -41,6 +45,7 @@
     "glob": "^8.0.3",
     "hardhat": "^2.9.1",
     "hardhat-abi-exporter": "^2.8.0",
+    "hardhat-deploy": "^0.11.5",
     "hardhat-diamond-abi": "^2.0.0",
     "npm-run-all": "^4.1.5",
     "openzeppelin-solidity": "https://github.com/OpenZeppelin/openzeppelin-contracts.git#57725120581e27ec469e1c7e497a4008aafff818",
@@ -51,8 +56,7 @@
     "ts-node": "^10.7.0",
     "typechain": "^7.0.1",
     "typescript": "^4.6.2",
-    "wait-on": "^6.0.1",
-    "@mud/cli": "0.0.1"
+    "wait-on": "^6.0.1"
   },
   "dependencies": {}
 }

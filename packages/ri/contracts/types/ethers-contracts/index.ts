@@ -11,6 +11,7 @@ export type { EmbodiedSystemArgumentComponent } from "./EmbodiedSystemArgumentCo
 export type { EntityTypeComponent } from "./EntityTypeComponent";
 export type { InitializeFacet } from "./InitializeFacet";
 export type { LearnedSpellsComponent } from "./LearnedSpellsComponent";
+export type { LocalLatticeGameLocator } from "./LocalLatticeGameLocator";
 export type { MaxDistanceComponent } from "./MaxDistanceComponent";
 export type { OwnedByComponent } from "./OwnedByComponent";
 export type { OwnershipFacet } from "./OwnershipFacet";
@@ -29,6 +30,7 @@ export { EmbodiedSystemArgumentComponent__factory } from "./factories/EmbodiedSy
 export { EntityTypeComponent__factory } from "./factories/EntityTypeComponent__factory";
 export { InitializeFacet__factory } from "./factories/InitializeFacet__factory";
 export { LearnedSpellsComponent__factory } from "./factories/LearnedSpellsComponent__factory";
+export { LocalLatticeGameLocator__factory } from "./factories/LocalLatticeGameLocator__factory";
 export { MaxDistanceComponent__factory } from "./factories/MaxDistanceComponent__factory";
 export { OwnedByComponent__factory } from "./factories/OwnedByComponent__factory";
 export { OwnershipFacet__factory } from "./factories/OwnershipFacet__factory";

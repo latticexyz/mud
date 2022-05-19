@@ -5,6 +5,7 @@ ABIS=(
   *Facet
   World
   Diamond
+  LocalLatticeGameLocator
 )
 
 EXCLUDE=(

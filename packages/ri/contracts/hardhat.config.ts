@@ -1,40 +1,20 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "hardhat-abi-exporter";
-import "hardhat-diamond-abi";
-import "@typechain/hardhat";
-
+import "hardhat-deploy";
+import "@nomiclabs/hardhat-ethers";
 import "./tasks/compile";
 
 const config: HardhatUserConfig = {
+  defaultNetwork: "hardhat",
+  namedAccounts: {
+    deployer: 0, // first skey derived from the hd wallet
+    user1: 1,
+    user2: 2,
+  },
   paths: {
     sources: "./src",
   },
-  solidity: {
-    version: "0.8.13",
-    settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
-      },
-    },
-  },
-  typechain: {
-    outDir: "./types/ethers-contracts",
-    target: "ethers-v5",
-  },
-  diamondAbi: {
-    name: "Ember",
-    include: ["Facet"],
-    strict: true,
-  },
-  abiExporter: {
-    path: "./abi",
-    runOnCompile: true,
-    flat: true,
-    only: [":Ember$", ":World", "Component"],
-  },
-  defaultNetwork: "hardhat",
   networks: {
+    // this is when connecting to a localhost hh instance, it doesn't actually configure the hh network. for this setup stuff in the 'hardhat' key.
     localhost: {
       url: "http://localhost:8545/",
       accounts: [
@@ -50,7 +30,7 @@ const config: HardhatUserConfig = {
       },
       gasPrice: 0,
       initialBaseFeePerGas: 0,
-      blockGasLimit: 999999999999999,
+      blockGasLimit: 16777215,
       accounts: [
         // from/deployer is default the first address in accounts
         {
@@ -69,6 +49,22 @@ const config: HardhatUserConfig = {
         },
       ],
     },
+  },
+  solidity: {
+    version: "0.8.12",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
+  },
+  external: {
+    contracts: [
+      {
+        artifacts: "@latticexyz/persona/abi",
+      },
+    ],
   },
 };
 

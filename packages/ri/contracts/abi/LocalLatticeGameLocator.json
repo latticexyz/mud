@@ -1,0 +1,220 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "name": "localLatticeGameAddress",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "localLatticeGameAddr",
+          "type": "address"
+        }
+      ],
+      "name": "setLocalLatticeGameAddress",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b5061014e806100206000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c8063906182f01461003b578063eef3f4eb14610084575b600080fd5b60005461005b9073ffffffffffffffffffffffffffffffffffffffff1681565b60405173ffffffffffffffffffffffffffffffffffffffff909116815260200160405180910390f35b6100d96100923660046100db565b600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff92909216919091179055565b005b6000602082840312156100ed57600080fd5b813573ffffffffffffffffffffffffffffffffffffffff8116811461011157600080fd5b939250505056fea26469706673582212204811835b8b6cacd32d908f3b4d222259f9905fc5625f1b379d1065f2f3abe42464736f6c634300080d0033",
+    "sourceMap": "63:212:81:-:0;;;;;;;;;;;;;;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b50600436106100365760003560e01c8063906182f01461003b578063eef3f4eb14610084575b600080fd5b60005461005b9073ffffffffffffffffffffffffffffffffffffffff1681565b60405173ffffffffffffffffffffffffffffffffffffffff909116815260200160405180910390f35b6100d96100923660046100db565b600080547fffffffffffffffffffffffff00000000000000000000000000000000000000001673ffffffffffffffffffffffffffffffffffffffff92909216919091179055565b005b6000602082840312156100ed57600080fd5b813573ffffffffffffffffffffffffffffffffffffffff8116811461011157600080fd5b939250505056fea26469706673582212204811835b8b6cacd32d908f3b4d222259f9905fc5625f1b379d1065f2f3abe42464736f6c634300080d0033",
+    "sourceMap": "63:212:81:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;100:38;;;;;;;;;;;;190:42:89;178:55;;;160:74;;148:2;133:18;100:38:81;;;;;;;143:130;;;;;;:::i;:::-;222:23;:46;;;;;;;;;;;;;;;143:130;;;245:309:89;304:6;357:2;345:9;336:7;332:23;328:32;325:52;;;373:1;370;363:12;325:52;412:9;399:23;462:42;455:5;451:54;444:5;441:65;431:93;;520:1;517;510:12;431:93;543:5;245:309;-1:-1:-1;;;245:309:89:o",
+    "linkReferences": {}
+  },
+  "ast": {
+    "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/utils/LocalLatticeGameLocator.sol",
+    "id": 30394,
+    "exportedSymbols": {
+      "LocalLatticeGameLocator": [
+        30393
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "38:238:81",
+    "nodes": [
+      {
+        "id": 30380,
+        "nodeType": "PragmaDirective",
+        "src": "38:23:81",
+        "literals": [
+          "solidity",
+          "^",
+          "0.8",
+          ".0"
+        ]
+      },
+      {
+        "id": 30393,
+        "nodeType": "ContractDefinition",
+        "src": "63:212:81",
+        "nodes": [
+          {
+            "id": 30382,
+            "nodeType": "VariableDeclaration",
+            "src": "100:38:81",
+            "constant": false,
+            "functionSelector": "906182f0",
+            "mutability": "mutable",
+            "name": "localLatticeGameAddress",
+            "nameLocation": "115:23:81",
+            "scope": 30393,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_address",
+              "typeString": "address"
+            },
+            "typeName": {
+              "id": 30381,
+              "name": "address",
+              "nodeType": "ElementaryTypeName",
+              "src": "100:7:81",
+              "stateMutability": "nonpayable",
+              "typeDescriptions": {
+                "typeIdentifier": "t_address",
+                "typeString": "address"
+              }
+            },
+            "visibility": "public"
+          },
+          {
+            "id": 30392,
+            "nodeType": "FunctionDefinition",
+            "src": "143:130:81",
+            "body": {
+              "id": 30391,
+              "nodeType": "Block",
+              "src": "216:57:81",
+              "statements": [
+                {
+                  "expression": {
+                    "id": 30389,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 30387,
+                      "name": "localLatticeGameAddress",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 30382,
+                      "src": "222:23:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 30388,
+                      "name": "localLatticeGameAddr",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 30384,
+                      "src": "248:20:81",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_address",
+                        "typeString": "address"
+                      }
+                    },
+                    "src": "222:46:81",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "id": 30390,
+                  "nodeType": "ExpressionStatement",
+                  "src": "222:46:81"
+                }
+              ]
+            },
+            "functionSelector": "eef3f4eb",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [],
+            "name": "setLocalLatticeGameAddress",
+            "nameLocation": "152:26:81",
+            "parameters": {
+              "id": 30385,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 30384,
+                  "mutability": "mutable",
+                  "name": "localLatticeGameAddr",
+                  "nameLocation": "187:20:81",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 30392,
+                  "src": "179:28:81",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  },
+                  "typeName": {
+                    "id": 30383,
+                    "name": "address",
+                    "nodeType": "ElementaryTypeName",
+                    "src": "179:7:81",
+                    "stateMutability": "nonpayable",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_address",
+                      "typeString": "address"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "178:30:81"
+            },
+            "returnParameters": {
+              "id": 30386,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "216:0:81"
+            },
+            "scope": 30393,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [],
+        "canonicalName": "LocalLatticeGameLocator",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          30393
+        ],
+        "name": "LocalLatticeGameLocator",
+        "nameLocation": "72:23:81",
+        "scope": 30394,
+        "usedErrors": []
+      }
+    ],
+    "license": "Unlicense"
+  }
+}
