@@ -17,7 +17,7 @@ import { combineLatest, from, map, mergeMap, ReplaySubject, Subscription } from 
 import { World } from "@mud/recs";
 import { NetworkLayer } from "../types";
 import { setupMappings } from "./setupMappings";
-import { WebSocketProvider } from "@ethersproject/providers";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import { Signer } from "ethers";
 import { filterNullish } from "@mud/utils";
 
@@ -32,7 +32,7 @@ export function setupContracts(
   const connected$ = new ReplaySubject<boolean>(1);
   const contracts$ = new ReplaySubject<{ Ember: CombinedFacets; World: WorldContract }>(1);
   const ethersSigner$ = new ReplaySubject<Signer>(1);
-  const provider$ = new ReplaySubject<WebSocketProvider>(1);
+  const provider$ = new ReplaySubject<JsonRpcProvider>(1);
   const contractEvents$ = new ReplaySubject<ContractEvent<{ World: WorldContract }>>();
 
   let connectedSub: Subscription | undefined = undefined;
@@ -78,7 +78,7 @@ export function setupContracts(
 
       // Connect the provider to the outer scope provider
       providerSub?.unsubscribe();
-      const _provider = network.providers$.pipe(map(([, ws]) => ws));
+      const _provider = network.providers$.pipe(map(([json]) => json));
       providerSub = _provider.pipe(filterNullish()).subscribe(provider$);
 
       const rpcSupportsBatchQueries$ = network.config$.pipe(map((c) => c.rpcSupportsBatchQueries));
