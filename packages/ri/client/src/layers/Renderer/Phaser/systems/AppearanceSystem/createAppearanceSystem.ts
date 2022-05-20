@@ -1,4 +1,4 @@
-import { defineAutorunSystem, defineUpdateQuery, getComponentValueStrict, Has } from "@mud/recs";
+import { defineAutorunSystem, defineUpdateQuery, getComponentValue, Has } from "@mud/recs";
 import { PhaserLayer } from "../../types";
 
 /**
@@ -14,12 +14,14 @@ export function createAppearanceSystem(layer: PhaserLayer) {
   const entities = defineUpdateQuery(world, [Has(Appearance)], { runOnInit: true });
   return defineAutorunSystem(world, () => {
     for (const entity of entities.get()) {
-      const { texture } = getComponentValueStrict(Appearance, entity);
+      const appearance = getComponentValue(Appearance, entity);
+      if (!appearance) continue;
+
       const embodiedEntity = objectPool.get(entity, "Sprite");
       embodiedEntity.setComponent({
         id: Appearance.id,
         once: (gameObject) => {
-          gameObject.setTexture(texture);
+          gameObject.setTexture(appearance.texture);
         },
       });
     }

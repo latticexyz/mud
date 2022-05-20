@@ -1,11 +1,4 @@
-import {
-  defineEnterQuery,
-  defineReactionSystem,
-  defineUpdateQuery,
-  Has,
-  getComponentValue,
-  getComponentValueStrict,
-} from "@mud/recs";
+import { defineEnterQuery, defineReactionSystem, defineUpdateQuery, Has, getComponentValue } from "@mud/recs";
 import { tween, tileCoordToPixelCoord } from "@mud/phaserx";
 import { PhaserLayer } from "../../types";
 
@@ -40,7 +33,9 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
     () => newEntities.get(),
     (entities) => {
       for (const entity of entities) {
-        const pos = getComponentValueStrict(LocalPosition, entity);
+        const pos = getComponentValue(LocalPosition, entity);
+        if (!pos) continue;
+
         const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
         const embodiedEntity = objectPool.get(entity, "Sprite");
 
@@ -61,7 +56,9 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
     () => updatedEntities.get(),
     (entities) => {
       for (const entity of entities) {
-        const newPosition = getComponentValueStrict(LocalPosition, entity);
+        const newPosition = getComponentValue(LocalPosition, entity);
+        if (!newPosition) continue;
+
         const pixel = tileCoordToPixelCoord(newPosition, tileWidth, tileHeight);
         const embodiedEntity = objectPool.get(entity, "Sprite");
 
