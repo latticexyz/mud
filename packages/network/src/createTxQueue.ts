@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseContract, CallOverrides, Overrides, Signer } from "ethers";
-import { autorun, computed, observable, runInAction } from "mobx";
+import { autorun, computed, IComputedValue, observable, runInAction } from "mobx";
 import { Observable } from "rxjs";
 import { mapObject, streamToComputed, deferred, uuid, awaitValue, cacheUntilReady } from "@mud/utils";
 import { Mutex } from "async-mutex";
@@ -53,8 +53,8 @@ export function createTxQueue<C extends Contracts>(
   signer$: Observable<Signer>,
   provider$: Observable<Provider>,
   connected$: Observable<boolean>,
-  options?: { concurrency?: number }
-): { txQueue: TxQueue<C>; dispose: () => void } {
+  options?: { concurrency?: number; ignoreConfirmation?: boolean }
+): { txQueue: TxQueue<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {
   const { concurrency } = options || {};
   const queue = createPriorityQueue<{
     execute: (nonce: number) => Promise<TransactionResponse>;
@@ -131,7 +131,7 @@ export function createTxQueue<C extends Contracts>(
 
         // TODO: only set gasPrice to 0 on local chain
         // (https://linear.app/latticexyz/issue/LAT-587/integrate-mud-reference-implementation-with-launcher)
-        const result = await member(...argsWithoutOverrides, { ...overrides, nonce, gasPrice: 0 });
+        const result = await member(...argsWithoutOverrides, { ...overrides, nonce });
         resolve(result);
         return result;
       } catch (e) {
@@ -161,15 +161,15 @@ export function createTxQueue<C extends Contracts>(
 
     // Increase utilization to prevent executing more tx than allowed by capacity
     utilization++;
-
     const txResult = await submissionMutex.runExclusive(async () => {
       try {
         // Wait if nonce is not ready
         const { nonce } = await awaitValue(readyState);
-        const result = await txRequest.execute(nonce);
+        const resultPromise = txRequest.execute(nonce);
         if (txRequest.stateMutability !== "view") incNonce();
-        return result;
+        if (!options?.ignoreConfirmation) return await resultPromise;
       } catch (e: any) {
+        console.warn("TXQUEUE EXECUTION FAILED", e);
         // If the error includes information about the transaction,
         // then the transaction was submitted and the nonce needs to be
         // increased regardless of the error;
@@ -211,7 +211,7 @@ export function createTxQueue<C extends Contracts>(
 
   const cachedProxiedContracts = cacheUntilReady(proxiedContracts);
 
-  return { txQueue: cachedProxiedContracts, dispose };
+  return { txQueue: cachedProxiedContracts, dispose, ready: computed(() => (readyState ? true : undefined)) };
 }
 
 function isOverrides(obj: any): obj is Overrides {
