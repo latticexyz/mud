@@ -1,9 +1,50 @@
-import { BehaviorSubject, filter, first, Observable, OperatorFunction, pipe, UnaryFunction } from "rxjs";
+import {
+  BehaviorSubject,
+  delay,
+  filter,
+  first,
+  mergeMap,
+  Observable,
+  of,
+  OperatorFunction,
+  pipe,
+  scan,
+  Timestamp,
+  timestamp,
+  UnaryFunction,
+} from "rxjs";
 import { computed, IComputedValue, observable, reaction, runInAction } from "mobx";
 import { deferred } from "./deferred";
 
 export function filterNullish<T>(): UnaryFunction<Observable<T | null | undefined>, Observable<T>> {
   return pipe(filter((x) => x != null) as OperatorFunction<T | null | undefined, T>);
+}
+
+/**
+ * RxJS operator to stretch out an event stream by a given delay per event
+ * @param spacingDelayMs Delay between each event in ms
+ * @returns stream of events with at least spacingDelayMs spaceing between event
+ */
+export function stretch<T>(spacingDelayMs: number) {
+  return pipe(
+    timestamp<T>(),
+    scan((acc: (Timestamp<T> & { delay: number }) | null, curr: Timestamp<T>) => {
+      // calculate delay needed to offset next emission
+      let delay = 0;
+      if (acc !== null) {
+        const timeDelta = curr.timestamp - acc.timestamp;
+        delay = timeDelta > spacingDelayMs ? 0 : spacingDelayMs - timeDelta;
+      }
+
+      return {
+        timestamp: curr.timestamp,
+        delay: delay,
+        value: curr.value,
+      };
+    }, null),
+    filterNullish(),
+    mergeMap((i) => of(i.value).pipe(delay(i.delay)), 1)
+  );
 }
 
 export function computedToStream<T>(comp: IComputedValue<T>): Observable<T> {
