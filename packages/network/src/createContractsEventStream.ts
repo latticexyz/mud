@@ -1,19 +1,22 @@
 import {
   BehaviorSubject,
   combineLatest,
+  concat,
   concatMap,
+  endWith,
   map,
   Observable,
   of,
-  ReplaySubject,
+  range,
   Subject,
-  throttleTime,
+  take,
   withLatestFrom,
 } from "rxjs";
 import * as ethers from "ethers";
-import { createStatefulSync } from "./createStatefulSync";
 import { Contracts } from "./types";
 import { Result } from "ethers/lib/utils";
+import { stretch } from "@mud/utils";
+import { fetchEventsInBlockRange } from "./networkUtils";
 
 export type ContractTopics<C extends Contracts> = {
   key: keyof C;
@@ -36,7 +39,6 @@ interface ContractsEventStreamConfig<C extends Contracts> {
 export type ContractsEventStream<C extends Contracts> = {
   config$: Subject<ContractsEventStreamConfig<C>>;
   eventStream$: Observable<ContractEvent<C>>;
-  lastSyncedBlockNumber$: Observable<number>;
 };
 
 export function createContractsEventStream<C extends Contracts>(
@@ -44,22 +46,42 @@ export function createContractsEventStream<C extends Contracts>(
   contracts$: Observable<C>,
   blockNumber$: Observable<number>,
   provider$: Observable<ethers.providers.JsonRpcProvider>,
-  supportsBatchQueries$: Observable<boolean>
+  supportsBatchQueries$: Observable<boolean>,
+  maxBlockInterval = 200
 ): ContractsEventStream<C> {
   const { initialBlockNumber } = initialConfig;
 
   const config$ = new BehaviorSubject<ContractsEventStreamConfig<C>>(initialConfig);
-  const lastSyncedBlockNumber$ = new ReplaySubject<number>(1);
+  let lastSyncedBlockNumber = initialBlockNumber || 0;
 
-  const statefulSync = createStatefulSync<C>(initialBlockNumber || 0, lastSyncedBlockNumber$);
+  const initialSync$ = blockNumber$.pipe(
+    take(1), // Take the first block number
+    concatMap((blockNr) =>
+      // Create a stepped range that ends with the current number
+      range(Math.floor(lastSyncedBlockNumber / maxBlockInterval), Math.floor(blockNr / maxBlockInterval)).pipe(
+        map((i) => i * maxBlockInterval),
+        endWith(blockNr)
+      )
+    ),
+    stretch(30) // Emit one event every 10ms
+  );
 
-  const mergedStream$ = combineLatest([contracts$, config$, blockNumber$]);
+  const mergedStream$ = combineLatest([contracts$, config$, concat(initialSync$, blockNumber$)]);
   const eventStream$ = mergedStream$.pipe(
     withLatestFrom(provider$, supportsBatchQueries$),
-    throttleTime(1000, undefined, { leading: true, trailing: true }),
-    concatMap(([[contracts, config, blockNumber], provider, supportsBatchQueries]) =>
-      statefulSync.sync(provider, config.contractTopics, blockNumber, contracts, supportsBatchQueries)
-    ),
+    map(([[contracts, config, blockNumber], provider, supportsBatchQueries]) => {
+      const events = fetchEventsInBlockRange(
+        provider,
+        config.contractTopics,
+        lastSyncedBlockNumber + 1,
+        blockNumber,
+        contracts,
+        supportsBatchQueries
+      );
+      lastSyncedBlockNumber = blockNumber;
+      return events;
+    }),
+    concatMap((i) => i),
     // we flatten the stream into a stream of ContractEvent
     map((v) => of(...v)),
     concatMap((v) => v)
@@ -68,6 +90,5 @@ export function createContractsEventStream<C extends Contracts>(
   return {
     config$,
     eventStream$,
-    lastSyncedBlockNumber$: lastSyncedBlockNumber$.asObservable(),
   };
 }
