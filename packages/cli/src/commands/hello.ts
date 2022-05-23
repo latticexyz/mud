@@ -16,8 +16,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     .positional("name", { type: "string", demandOption: true });
 
 export const handler = (argv: Arguments<Options>): void => {
-  const { name, upper } = argv;
+  const { name } = argv;
   const greeting = `Hello, ${name}!`;
-  process.stdout.write(upper ? greeting.toUpperCase() : greeting);
+  console.log(greeting);
   process.exit(0);
 };

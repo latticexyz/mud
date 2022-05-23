@@ -10,9 +10,9 @@ const builder = (yargs) => yargs
     .positional("name", { type: "string", demandOption: true });
 exports.builder = builder;
 const handler = (argv) => {
-    const { name, upper } = argv;
+    const { name } = argv;
     const greeting = `Hello, ${name}!`;
-    process.stdout.write(upper ? greeting.toUpperCase() : greeting);
+    console.log(greeting);
     process.exit(0);
 };
 exports.handler = handler;
