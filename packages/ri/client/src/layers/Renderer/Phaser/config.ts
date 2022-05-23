@@ -1,4 +1,10 @@
-import { defineSceneConfig, AssetType, defineScaleConfig, defineMapConfig, defineCameraConfig } from "@mudkit/phaserx";
+import {
+  defineSceneConfig,
+  AssetType,
+  defineScaleConfig,
+  defineMapConfig,
+  defineCameraConfig,
+} from "@latticexyz/phaserx";
 import { Animations, Assets, Maps, Scenes, TileAnimations, Tileset } from "./constants";
 import tilemap from "../assets/tilemap.png";
 import imp from "../assets/imp.png";

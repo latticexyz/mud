@@ -1,4 +1,4 @@
-import { defineUpdateQuery, Has, defineReactionSystem, getComponentValueStrict } from "@mudkit/recs";
+import { defineUpdateQuery, Has, defineReactionSystem, getComponentValueStrict } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 
 /**

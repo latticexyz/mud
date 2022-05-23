@@ -1,4 +1,4 @@
-import { World, defineComponent, Type } from "@mudkit/recs";
+import { World, defineComponent, Type } from "@latticexyz/recs";
 
 export function defineSelectionComponent(world: World) {
   return defineComponent(

@@ -1,5 +1,5 @@
 {
-  "name": "@mudkit/solecs",
+  "name": "@latticexyz/solecs",
   "license": "MIT",
   "version": "0.1.1",
   "description": "Solidity Entity Component System",
@@ -27,5 +27,6 @@
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
     "typechain": "^8.0.0"
-  }
+  },
+  "gitHead": "d5f226cde3e85f2b9600e2ca4d87c7bb75b8f618"
 }

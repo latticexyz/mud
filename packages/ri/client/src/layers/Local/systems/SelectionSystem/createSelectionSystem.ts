@@ -1,6 +1,13 @@
-import { defineReactionSystem, getComponentValue, defineQuery, Has, removeComponent, setComponent } from "@mudkit/recs";
+import {
+  defineReactionSystem,
+  getComponentValue,
+  defineQuery,
+  Has,
+  removeComponent,
+  setComponent,
+} from "@latticexyz/recs";
 import { LocalLayer } from "../../types";
-import { areaContains } from "@mudkit/utils";
+import { areaContains } from "@latticexyz/utils";
 
 /**
  * The Selection system handles selecting all selectable entities in the selected area

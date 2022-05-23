@@ -1,8 +1,8 @@
 import { map, Observable } from "rxjs";
-import { ComponentValue, Components, ExtendableECSEvent, SchemaOf } from "@mudkit/recs";
+import { ComponentValue, Components, ExtendableECSEvent, SchemaOf } from "@latticexyz/recs";
 import { ContractEvent } from "./types";
 import { BaseContract, BigNumber } from "ethers";
-import { keccak256 } from "@mudkit/utils";
+import { keccak256 } from "@latticexyz/utils";
 
 export type ValueOf<T extends object> = T[keyof T];
 

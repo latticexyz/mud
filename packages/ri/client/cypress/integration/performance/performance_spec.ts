@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { createEntity, withValue } from "@mudkit/recs";
+import { createEntity, withValue } from "@latticexyz/recs";
 import { LocalEntityTypes } from "../../../src/layers/Local/types";
 import { EmberWindow } from "../../../src/types";
-import { random } from "@mudkit/utils";
+import { random } from "@latticexyz/utils";
 
 const NUM_IMPS = 500;
 

@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { Entity } from "@mudkit/recs";
+import { Entity } from "@latticexyz/recs";
 import { HeadlessLayer } from "../../../Headless";
 import { LocalLayer } from "../../../Local";
 import { NetworkLayer } from "../../../Network";

@@ -1,5 +1,5 @@
-import { Entity, Components, SchemaOf, Override } from "@mudkit/recs";
-import { ValueOf } from "@mudkit/utils";
+import { Entity, Components, SchemaOf, Override } from "@latticexyz/recs";
+import { ValueOf } from "@latticexyz/utils";
 
 export type ComponentUpdate<C extends Components> = ValueOf<{
   [key in keyof C]: {

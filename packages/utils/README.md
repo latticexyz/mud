@@ -1,3 +1,3 @@
-# @mudkit/utils
+# @latticexyz/utils
 
 Useful utilities for everyday use

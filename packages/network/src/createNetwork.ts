@@ -11,7 +11,7 @@ import {
   withLatestFrom,
 } from "rxjs";
 import { createClock } from "./createClock";
-import { callWithRetry, timeoutAfter } from "@mudkit/utils";
+import { callWithRetry, timeoutAfter } from "@latticexyz/utils";
 import { ensureNetworkIsUp, fetchBlock } from "./networkUtils";
 import { JsonRpcBatchProvider, JsonRpcProvider, WebSocketProvider } from "@ethersproject/providers";
 

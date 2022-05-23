@@ -11,7 +11,7 @@ import {
   withLatestFrom,
 } from "rxjs";
 import { ContractAddressInterface, Contracts, ContractsEventStream, ContractsEventStreamConfig } from "./types";
-import { mapObject, stretch } from "@mudkit/utils";
+import { mapObject, stretch } from "@latticexyz/utils";
 import { fromWorker } from "observable-webworker";
 import { Input, Output } from "./sync.worker";
 import { FormatTypes } from "@ethersproject/abi";

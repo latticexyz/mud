@@ -1,5 +1,5 @@
 {
-  "name": "@mudkit/utils",
+  "name": "@latticexyz/utils",
   "license": "MIT",
   "version": "0.1.1",
   "main": "src/index.ts",
@@ -30,5 +30,6 @@
     "mobx": "^6.5.0",
     "proxy-deep": "^3.1.1",
     "rxjs": "^7.5.5"
-  }
+  },
+  "gitHead": "d5f226cde3e85f2b9600e2ca4d87c7bb75b8f618"
 }

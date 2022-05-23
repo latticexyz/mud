@@ -1,7 +1,7 @@
 import { EmbodiedEntity, GameObjectTypes } from "./types";
 import { createEmbodiedEntity } from "./createEmbodiedEntity";
 import { observable } from "mobx";
-import { mapObject } from "@mudkit/utils";
+import { mapObject } from "@latticexyz/utils";
 import { GameObjectClasses } from "./constants";
 
 type ObjectPoolReturnType<Type> = Type extends keyof GameObjectTypes

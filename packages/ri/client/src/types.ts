@@ -1,5 +1,5 @@
 import { boot } from "./boot";
-import { PromiseValue } from "@mudkit/utils";
+import { PromiseValue } from "@latticexyz/utils";
 
 export interface WorldCoord {
   x: number;

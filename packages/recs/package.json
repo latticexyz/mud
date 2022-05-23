@@ -1,5 +1,5 @@
 {
-  "name": "@mudkit/recs",
+  "name": "@latticexyz/recs",
   "license": "MIT",
   "version": "0.1.1",
   "main": "src/index.ts",
@@ -9,7 +9,7 @@
     "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "devDependencies": {
-    "@mudkit/utils": "^0.1.1",
+    "@latticexyz/utils": "^0.1.1",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/jest": "^27.4.1",
@@ -26,8 +26,9 @@
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
-    "@mudkit/utils": "0.0.1",
+    "@latticexyz/utils": "0.0.1",
     "mobx": "^6.4.2",
     "rxjs": "7.5.5"
-  }
+  },
+  "gitHead": "d5f226cde3e85f2b9600e2ca4d87c7bb75b8f618"
 }

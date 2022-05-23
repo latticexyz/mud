@@ -10,7 +10,7 @@ subtask(TASK_COMPILE_SOLIDITY).setAction(async (_: { force: boolean; quiet: bool
   const symlinks = [];
   const libraries = [
     ["solmate", "@rari-capital/solmate/src"],
-    ["solecs", "@mudkit/solecs/src"],
+    ["solecs", "@latticexyz/solecs/src"],
     ["ds-test", "ds-test/src"],
     ["forge-std", "forge-std/src"],
     ["persona", "@latticexyz/persona/src"],

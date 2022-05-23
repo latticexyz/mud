@@ -1,5 +1,5 @@
-import { Component, Schema, ComponentValue, getComponentValue, componentValueEquals } from "@mudkit/recs";
-import { deferred } from "@mudkit/utils";
+import { Component, Schema, ComponentValue, getComponentValue, componentValueEquals } from "@latticexyz/recs";
+import { deferred } from "@latticexyz/utils";
 import { reaction } from "mobx";
 
 function waitForComponentValue<S extends Schema>(

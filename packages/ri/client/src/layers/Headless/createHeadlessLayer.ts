@@ -1,4 +1,4 @@
-import { createWorld, Entity } from "@mudkit/recs";
+import { createWorld, Entity } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { WorldCoord } from "../../types";
 import { createActionSystem } from "./systems";

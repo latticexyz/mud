@@ -234,7 +234,7 @@
         "id": 23162,
         "nodeType": "ImportDirective",
         "src": "63:30:37",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mudkit/solecs/src/Component.sol",
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@latticexyz/solecs/src/Component.sol",
         "file": "solecs/Component.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 23204,

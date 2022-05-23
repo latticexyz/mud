@@ -1,4 +1,4 @@
-import { PromiseValue } from "@mudkit/utils";
+import { PromiseValue } from "@latticexyz/utils";
 import { createNetworkLayer } from "./createNetworkLayer";
 
 export type NetworkLayer = PromiseValue<ReturnType<typeof createNetworkLayer>>;

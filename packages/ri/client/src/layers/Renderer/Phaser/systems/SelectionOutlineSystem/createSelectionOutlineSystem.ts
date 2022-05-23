@@ -1,5 +1,5 @@
 import { PhaserLayer } from "../../types";
-import { defineReactionSystem, getComponentValue } from "@mudkit/recs";
+import { defineReactionSystem, getComponentValue } from "@latticexyz/recs";
 import { worldCoordToPixel } from "../../utils";
 
 const SELECTION_OUTLINE = "SELECTION_OUTLINE";

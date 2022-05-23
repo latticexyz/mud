@@ -1,5 +1,5 @@
-import { HasValue, Has } from "@mudkit/recs";
-import { defineSyncSystem } from "@mudkit/recs";
+import { HasValue, Has } from "@latticexyz/recs";
+import { defineSyncSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { LocalEntityTypes } from "../../../../Local/types";
 import { EntityTypes } from "../../../../Network/types";

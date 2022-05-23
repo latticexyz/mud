@@ -1,4 +1,4 @@
-import { defineScene } from "@mudkit/phaserx";
+import { defineScene } from "@latticexyz/phaserx";
 import { Scenes } from "../constants";
 
 /**

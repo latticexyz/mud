@@ -108,7 +108,7 @@
         "id": 26302,
         "nodeType": "ImportDirective",
         "src": "64:41:60",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mudkit/solecs/src/World.sol",
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@latticexyz/solecs/src/World.sol",
         "file": "solecs/World.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 26387,

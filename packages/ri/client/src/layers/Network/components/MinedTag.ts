@@ -1,4 +1,4 @@
-import { defineComponent, World } from "@mudkit/recs";
+import { defineComponent, World } from "@latticexyz/recs";
 
 export function defineMinedTagComponent(world: World) {
   return defineComponent(world, {});

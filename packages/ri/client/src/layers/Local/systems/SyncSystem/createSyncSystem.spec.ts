@@ -1,4 +1,4 @@
-import { createEntity, withValue, getComponentValue } from "@mudkit/recs";
+import { createEntity, withValue, getComponentValue } from "@latticexyz/recs";
 import { LocalLayer } from "../../types";
 import { createLocalLayer } from "../../createLocalLayer";
 import { createHeadlessLayer, HeadlessLayer } from "../../../Headless";

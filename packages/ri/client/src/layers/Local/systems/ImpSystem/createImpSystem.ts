@@ -1,6 +1,6 @@
-import { createEntity, defineQuery, defineSystem, withValue } from "@mudkit/recs";
-import { HasValue } from "@mudkit/recs";
-import { random } from "@mudkit/utils";
+import { createEntity, defineQuery, defineSystem, withValue } from "@latticexyz/recs";
+import { HasValue } from "@latticexyz/recs";
+import { random } from "@latticexyz/utils";
 import { Time } from "../../../../utils/time";
 import { LocalEntityTypes, LocalLayer } from "../../types";
 

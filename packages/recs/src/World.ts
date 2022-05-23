@@ -1,5 +1,5 @@
 import { AnyComponent, Entity, World } from "./types";
-import { uuid } from "@mudkit/utils";
+import { uuid } from "@latticexyz/utils";
 import { observable, observe } from "mobx";
 import { SuperSet, SuperSetMap } from "./Utils";
 

@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { mergeIterators } from "@mudkit/utils";
+import { mergeIterators } from "@latticexyz/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isSuperSet(s: any): s is SuperSet<any> {

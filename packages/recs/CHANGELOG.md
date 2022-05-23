@@ -5,7 +5,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [0.1.1](https://github.com/latticexyz/mud/compare/v0.1.0...v0.1.1) (2022-05-23)
 
-**Note:** Version bump only for package @mudkit/recs
+**Note:** Version bump only for package @latticexyz/recs
 
 # 0.1.0 (2022-05-23)
 

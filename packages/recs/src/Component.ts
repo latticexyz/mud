@@ -1,4 +1,4 @@
-import { uuid } from "@mudkit/utils";
+import { uuid } from "@latticexyz/utils";
 import { runInAction, keys, toJS, isObservable, observable, action } from "mobx";
 import { Subject } from "rxjs";
 import {

@@ -1,6 +1,6 @@
-import { defineEnterQuery, defineExitQuery, Has, defineReactionSystem } from "@mudkit/recs";
+import { defineEnterQuery, defineExitQuery, Has, defineReactionSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
-import { HueTintAndOutlineFXPipeline } from "@mudkit/phaserx";
+import { HueTintAndOutlineFXPipeline } from "@latticexyz/phaserx";
 
 /**
  * The Outline system handles setting an "outline" pipeline data on game objects having an outline

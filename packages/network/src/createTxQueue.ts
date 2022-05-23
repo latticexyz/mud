@@ -2,7 +2,7 @@
 import { BaseContract, CallOverrides, Overrides, Signer } from "ethers";
 import { autorun, computed, IComputedValue, observable, runInAction } from "mobx";
 import { Observable } from "rxjs";
-import { mapObject, streamToComputed, deferred, uuid, awaitValue, cacheUntilReady } from "@mudkit/utils";
+import { mapObject, streamToComputed, deferred, uuid, awaitValue, cacheUntilReady } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
 import { Provider, TransactionResponse } from "@ethersproject/providers";
 import { Contracts, TxQueue } from "./types";

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { WorldCoord } from "../../../../types";
 import { PixelCoord } from "../types";
-import { ChunkedTilemap } from "@mudkit/phaserx";
+import { ChunkedTilemap } from "@latticexyz/phaserx";
 
 /**
  * Converts a pixel coordinate to a world (tile) coordinate.

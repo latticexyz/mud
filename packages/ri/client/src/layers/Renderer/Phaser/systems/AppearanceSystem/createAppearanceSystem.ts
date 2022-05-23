@@ -1,4 +1,4 @@
-import { defineAutorunSystem, defineUpdateQuery, getComponentValue, Has } from "@mudkit/recs";
+import { defineAutorunSystem, defineUpdateQuery, getComponentValue, Has } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 
 /**

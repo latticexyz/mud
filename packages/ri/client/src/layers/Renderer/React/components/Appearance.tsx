@@ -1,5 +1,5 @@
 import React from "react";
-import { getComponentValue } from "@mudkit/recs";
+import { getComponentValue } from "@latticexyz/recs";
 import { registerUIComponent, Spritesheet } from "../engine";
 import imp from "../../assets/imp.png";
 

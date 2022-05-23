@@ -1,5 +1,5 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { filterNullish } from "@mudkit/utils";
+import { filterNullish } from "@latticexyz/utils";
 import { DoWork, runWorker } from "observable-webworker";
 import { Observable, of } from "rxjs";
 import { concatMap, map } from "rxjs/operators";

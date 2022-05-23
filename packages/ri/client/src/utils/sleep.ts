@@ -1,4 +1,4 @@
-import { deferred } from "@mudkit/utils";
+import { deferred } from "@latticexyz/utils";
 import { Time } from "./time";
 
 /**

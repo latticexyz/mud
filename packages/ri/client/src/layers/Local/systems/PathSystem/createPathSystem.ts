@@ -1,4 +1,4 @@
-import { Entity, getComponentValue, removeComponent, setComponent, defineRxSystem } from "@mudkit/recs";
+import { Entity, getComponentValue, removeComponent, setComponent, defineRxSystem } from "@latticexyz/recs";
 import { DEFAULT_MOVE_SPEED, FAST_MOVE_SPEED } from "../../constants";
 import { LocalLayer } from "../../types";
 import { concatMap, find, from, of, zipWith } from "rxjs";

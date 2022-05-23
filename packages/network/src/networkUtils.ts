@@ -1,5 +1,5 @@
 import { JsonRpcProvider, WebSocketProvider, Block, Log, Formatter } from "@ethersproject/providers";
-import { callWithRetry, range, sleep } from "@mudkit/utils";
+import { callWithRetry, range, sleep } from "@latticexyz/utils";
 import { BigNumber, Contract } from "ethers";
 import { resolveProperties } from "ethers/lib/utils";
 import { Contracts, ContractTopics, ContractAddressInterface, ContractEvent } from "./types";

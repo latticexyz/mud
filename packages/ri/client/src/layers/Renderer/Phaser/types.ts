@@ -1,5 +1,5 @@
 import { ObservableMap } from "mobx";
-import { PromiseValue } from "@mudkit/utils";
+import { PromiseValue } from "@latticexyz/utils";
 import { createPhaserLayer } from "./createPhaserLayer";
 
 export interface Scene {

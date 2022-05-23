@@ -1,8 +1,8 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
 import { useLayers, useEngineStore } from "../hooks";
-import { filterNullishValues } from "@mudkit/utils";
-import { Entity } from "@mudkit/recs";
+import { filterNullishValues } from "@latticexyz/utils";
+import { Entity } from "@latticexyz/recs";
 
 export const ComponentRenderer: React.FC<{
   selectedEntities: Set<Entity>;
