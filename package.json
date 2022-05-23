@@ -34,7 +34,8 @@
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "release": "lerna version --conventional-commits"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
