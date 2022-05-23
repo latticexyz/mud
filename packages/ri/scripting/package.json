@@ -1,6 +1,7 @@
 {
   "name": "ri-scripting",
   "version": "0.0.1",
+  "private": true,
   "dependencies": {
     "@ethersproject/providers": "^5.6.1",
     "@mud/network": "0.0.1",

@@ -2,6 +2,7 @@
   "name": "ri-contracts",
   "license": "MIT",
   "version": "0.0.1",
+  "private": true,
   "scripts": {
     "prepare": "chmod u+x git-install.sh && chmod u+x exports.sh",
     "git:install": "bash git-install.sh",
