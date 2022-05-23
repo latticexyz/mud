@@ -1,7 +1,7 @@
 {
   "name": "@mudkit/phaserx",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint . --ext .ts",
@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@mudkit/utils": "^0.1.0",
+    "@mudkit/utils": "^0.1.1",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",

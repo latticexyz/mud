@@ -1,7 +1,7 @@
 {
   "name": "@mudkit/utils",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "src/index.ts",
   "scripts": {
     "lint": "eslint . --ext .ts",
