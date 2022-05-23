@@ -36,7 +36,7 @@
     "lint": "eslint . --ext .ts",
     "prepare": "husky install",
     "lerna:release": "lerna version --conventional-commits --yes",
-    "lerna:publish": "lerna publish --registry=https://npm.pkg.github.com"
+    "lerna:publish": "lerna publish"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
