@@ -1,25 +1,18 @@
-import * as ethers from "ethers";
+import { JsonRpcProvider, WebSocketProvider, Block, Log, Formatter } from "@ethersproject/providers";
 import { callWithRetry, range, sleep } from "@mud/utils";
+import { BigNumber, Contract } from "ethers";
 import { resolveProperties } from "ethers/lib/utils";
-import { ContractTopics, ContractEvent } from "./createContractsEventStream";
-import { Contracts } from "./types";
-import { getEmptyPromise } from "./utils";
+import { Contracts, ContractTopics, ContractAddressInterface, ContractEvent } from "./types";
 
-export async function ensureNetworkIsUp(
-  provider: ethers.providers.JsonRpcProvider,
-  wssProvider?: ethers.providers.WebSocketProvider
-): Promise<void> {
+export async function ensureNetworkIsUp(provider: JsonRpcProvider, wssProvider?: WebSocketProvider): Promise<void> {
   const networkInfoPromise = () => {
-    return Promise.all([provider.getBlockNumber(), wssProvider ? wssProvider.getBlockNumber() : getEmptyPromise()]);
+    return Promise.all([provider.getBlockNumber(), wssProvider ? wssProvider.getBlockNumber() : Promise.resolve()]);
   };
   await callWithRetry(networkInfoPromise, [], 10, 1000);
   return;
 }
 
-export async function fetchBlock(
-  provider: ethers.providers.JsonRpcProvider,
-  requireMinimumBlockNumber?: number
-): Promise<ethers.providers.Block> {
+export async function fetchBlock(provider: JsonRpcProvider, requireMinimumBlockNumber?: number): Promise<Block> {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const _ of range(10)) {
     const blockPromise = async () => {
@@ -29,7 +22,7 @@ export async function fetchBlock(
       });
       return provider.formatter.block(rawBlock);
     };
-    const block = await callWithRetry<ethers.providers.Block>(blockPromise, [], 10, 1000);
+    const block = await callWithRetry<Block>(blockPromise, [], 10, 1000);
     if (requireMinimumBlockNumber && block.number < requireMinimumBlockNumber) {
       await sleep(300);
       continue;
@@ -41,14 +34,14 @@ export async function fetchBlock(
 }
 
 export async function fetchLogs<C extends Contracts>(
-  provider: ethers.providers.JsonRpcProvider,
+  provider: JsonRpcProvider,
   topics: ContractTopics<C>[],
   startBlockNumber: number,
   endBlockNumber: number,
-  contracts: C,
+  contracts: ContractAddressInterface<C>,
   requireMinimumBlockNumber?: number
-): Promise<Array<ethers.providers.Log>> {
-  const getLogPromise = async (contractAddress: string, topics: string[][]): Promise<Array<ethers.providers.Log>> => {
+): Promise<Array<Log>> {
+  const getLogPromise = async (contractAddress: string, topics: string[][]): Promise<Array<Log>> => {
     const params = await resolveProperties({
       filter: provider._getFilter({
         fromBlock: startBlockNumber, // inclusive
@@ -57,23 +50,23 @@ export async function fetchLogs<C extends Contracts>(
         topics: topics,
       }),
     });
-    const logs: Array<ethers.providers.Log> = await provider.perform("getLogs", params);
+    const logs: Array<Log> = await provider.perform("getLogs", params);
     logs.forEach((log) => {
       if (log.removed == null) {
         log.removed = false;
       }
     });
-    return ethers.providers.Formatter.arrayOf(provider.formatter.filterLog.bind(provider.formatter))(logs);
+    return Formatter.arrayOf(provider.formatter.filterLog.bind(provider.formatter))(logs);
   };
 
   const blockPromise = async () => {
     const _blockNumber = await provider.perform("getBlockNumber", {});
-    const blockNumber = ethers.BigNumber.from(_blockNumber).toNumber();
+    const blockNumber = BigNumber.from(_blockNumber).toNumber();
     return blockNumber;
   };
 
   const getLogPromises = () => {
-    const logPromises: Array<Promise<Array<ethers.providers.Log>>> = [];
+    const logPromises: Array<Promise<Array<Log>>> = [];
     for (const [k, c] of Object.entries(contracts)) {
       const topicsForContract = topics.find((t) => t.key === k)?.topics;
       if (topicsForContract) {
@@ -87,12 +80,7 @@ export async function fetchLogs<C extends Contracts>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const _ in range(10)) {
       const call = () => Promise.all([blockPromise(), ...getLogPromises()]);
-      const [blockNumber, logs] = await callWithRetry<[number, ...Array<Array<ethers.providers.Log>>]>(
-        call,
-        [],
-        10,
-        1000
-      );
+      const [blockNumber, logs] = await callWithRetry<[number, ...Array<Array<Log>>]>(call, [], 10, 1000);
       if (blockNumber < requireMinimumBlockNumber) {
         await sleep(500);
       } else {
@@ -102,21 +90,21 @@ export async function fetchLogs<C extends Contracts>(
     throw new Error("Could not fetch logs with a required minimum block number");
   } else {
     const call = () => Promise.all([...getLogPromises()]);
-    const logs = await callWithRetry<Array<Array<ethers.providers.Log>>>(call, [], 10, 1000);
+    const logs = await callWithRetry<Array<Array<Log>>>(call, [], 10, 1000);
     return logs.flat();
   }
 }
 
 export async function fetchEventsInBlockRange<C extends Contracts>(
-  provider: ethers.providers.JsonRpcProvider,
+  provider: JsonRpcProvider,
   topics: ContractTopics<C>[],
   startBlockNumber: number,
   endBlockNumber: number,
-  contracts: C,
+  contracts: ContractAddressInterface<C>,
   supportsBatchQueries: boolean
 ): Promise<Array<ContractEvent<C>>> {
   console.log(`fetching from ${startBlockNumber} -> ${endBlockNumber}`);
-  const logs: Array<ethers.providers.Log> = await fetchLogs(
+  const logs: Array<Log> = await fetchLogs(
     provider,
     topics,
     startBlockNumber,
@@ -125,7 +113,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
     supportsBatchQueries ? endBlockNumber : undefined
   );
   // we need to sort per block, transaction index, and log index
-  logs.sort((a: ethers.providers.Log, b: ethers.providers.Log) => {
+  logs.sort((a: Log, b: Log) => {
     if (a.blockNumber < b.blockNumber) {
       return -1;
     } else if (a.blockNumber > b.blockNumber) {
@@ -156,7 +144,9 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
     if (!contractKey) {
       throw new Error("This should not happen. An event's address is not part of the contracts dictionnary");
     }
-    const contract = contracts[contractKey];
+
+    const { address, interface: abi } = contracts[contractKey];
+    const contract = new Contract(address, abi);
     try {
       const logDescription = contract.interface.parseLog(log);
 
@@ -171,6 +161,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
         lastEventInTx,
       });
     } catch (e) {
+      console.warn("Error", e);
       console.warn("A log couldn't be parsed with the corresponding contract interface!");
     }
   }

@@ -1,5 +1,5 @@
 import { ethers, VoidSigner } from "ethers";
-import { ContractTopics } from "./createContractsEventStream";
+import { ContractTopics } from "./types";
 import { Contracts } from "./types";
 
 export type Topics<C extends Contracts> = {

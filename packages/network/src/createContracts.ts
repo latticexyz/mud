@@ -1,10 +1,11 @@
 import { BehaviorSubject, combineLatest, map, Observable, Subject } from "rxjs";
-import * as ethers from "ethers";
 import { Contracts } from "./types";
+import { Contract, ContractInterface, Signer } from "ethers";
+import { Provider } from "@ethersproject/providers";
 
 export type AddressAbi = {
   address: string;
-  abi: ethers.ContractInterface;
+  abi: ContractInterface;
 };
 
 export type ContractsStream<C extends Contracts> = {
@@ -18,14 +19,14 @@ export type ContractsConfig<C extends Contracts> = {
 
 export function createContracts<C extends Contracts>(
   initialConfig: ContractsConfig<C>,
-  providerOrSigner$: Observable<ethers.providers.Provider | ethers.Signer>
+  providerOrSigner$: Observable<Provider | Signer>
 ): ContractsStream<C> {
   const config$ = new BehaviorSubject<ContractsConfig<C>>(initialConfig);
   const contracts$ = combineLatest([providerOrSigner$, config$]).pipe(
     map(([providerOrSigner, config]) => {
       const contracts: Contracts = {};
       for (const [type, { address, abi }] of Object.entries(config)) {
-        contracts[type] = new ethers.Contract(address, abi, providerOrSigner);
+        contracts[type] = new Contract(address, abi, providerOrSigner);
       }
       return contracts as C;
     })

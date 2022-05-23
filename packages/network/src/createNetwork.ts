@@ -10,10 +10,10 @@ import {
   throttleTime,
   withLatestFrom,
 } from "rxjs";
-import * as ethers from "ethers";
 import { createClock } from "./createClock";
 import { callWithRetry, timeoutAfter } from "@mud/utils";
 import { ensureNetworkIsUp, fetchBlock } from "./networkUtils";
+import { JsonRpcBatchProvider, JsonRpcProvider, WebSocketProvider } from "@ethersproject/providers";
 
 export interface NetworkConfig {
   chainId: number;
@@ -25,7 +25,7 @@ export interface NetworkConfig {
   rpcWsUrl?: string;
 }
 
-export type ProviderPair = [ethers.providers.JsonRpcProvider, ethers.providers.WebSocketProvider?];
+export type ProviderPair = [JsonRpcProvider, WebSocketProvider?];
 
 export enum ConnectionError {
   WEBSOCKET_CLOSED,
@@ -49,12 +49,12 @@ function createProviderPair(networkConfig: NetworkConfig): ProviderPair {
   let jsonProvider;
   let wssProvider;
   if (rpcSupportsBatchQueries) {
-    jsonProvider = new ethers.providers.JsonRpcBatchProvider(rpcUrl);
+    jsonProvider = new JsonRpcBatchProvider(rpcUrl);
   } else {
-    jsonProvider = new ethers.providers.JsonRpcProvider(rpcUrl);
+    jsonProvider = new JsonRpcProvider(rpcUrl);
   }
   if (rpcWsUrl) {
-    wssProvider = new ethers.providers.WebSocketProvider(rpcWsUrl);
+    wssProvider = new WebSocketProvider(rpcWsUrl);
   }
   return [jsonProvider, wssProvider];
 }
@@ -106,10 +106,7 @@ export function createNetwork(initialConfig: NetworkConfig): Network {
     connected$.next(true);
   });
 
-  const listenToNewBlocks = async (
-    jsonProvider: ethers.providers.JsonRpcProvider,
-    wssProvider?: ethers.providers.WebSocketProvider
-  ) => {
+  const listenToNewBlocks = async (jsonProvider: JsonRpcProvider, wssProvider?: WebSocketProvider) => {
     if (wssProvider) {
       wssProvider.on("block", (blockNumber: number) => {
         blockNumber$.next(blockNumber);

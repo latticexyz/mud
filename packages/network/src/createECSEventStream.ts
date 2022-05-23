@@ -1,6 +1,6 @@
 import { map, Observable } from "rxjs";
 import { ComponentValue, Components, ExtendableECSEvent, SchemaOf } from "@mud/recs";
-import { ContractEvent } from "./createContractsEventStream";
+import { ContractEvent } from "./types";
 import { BaseContract, BigNumber } from "ethers";
 import { keccak256 } from "@mud/utils";
 
@@ -47,13 +47,13 @@ export function createECSStream<C extends Components, W extends BaseContract>(
             data: string;
             componentId: BigNumber;
           };
-          const component = mappingById[componentId.toHexString()];
+          const component = mappingById[BigNumber.from(componentId).toHexString()];
           if (component) {
             const { decoder } = mappings[component];
             return {
               component,
               value: decoder(data),
-              entity: entity.toHexString(),
+              entity: BigNumber.from(entity).toHexString(),
               lastEventInTx: e.lastEventInTx,
               txHash: e.txHash,
             };

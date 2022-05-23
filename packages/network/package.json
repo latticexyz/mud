@@ -38,5 +38,7 @@
     "mobx": "^6.5.0",
     "rxjs": "^7.5.5"
   },
-  "dependencies": {}
+  "dependencies": {
+    "observable-webworker": "^4.0.1"
+  }
 }
