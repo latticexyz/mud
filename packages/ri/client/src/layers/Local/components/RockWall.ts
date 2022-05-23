@@ -1,4 +1,4 @@
-import { defineComponent, World } from "@mud/recs";
+import { defineComponent, World } from "@mudkit/recs";
 
 export function defineRockWallComponent(world: World) {
   return defineComponent(world, {});

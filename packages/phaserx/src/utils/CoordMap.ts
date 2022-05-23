@@ -1,5 +1,5 @@
 import { WorldCoord } from "../types";
-import { transformIterator } from "@mud/utils";
+import { transformIterator } from "@mudkit/utils";
 
 const LOWER_HALF_MASK = 2 ** 16 - 1;
 const MAX_SUPPORTED = 2 ** 15 - 1;

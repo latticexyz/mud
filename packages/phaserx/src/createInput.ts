@@ -12,7 +12,7 @@ import {
 } from "rxjs";
 import { observable, reaction, runInAction } from "mobx";
 import { Area } from "./types";
-import { filterNullish } from "@mud/utils";
+import { filterNullish } from "@mudkit/utils";
 
 type Key = keyof typeof Phaser.Input.Keyboard.KeyCodes | "POINTER_LEFT" | "POINTER_RIGHT";
 

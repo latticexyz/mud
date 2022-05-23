@@ -1,4 +1,4 @@
-import { defineReactionSystem, defineUpdateQuery, getComponentValueStrict, Has, setComponent } from "@mud/recs";
+import { defineReactionSystem, defineUpdateQuery, getComponentValueStrict, Has, setComponent } from "@mudkit/recs";
 import { LocalLayer } from "../../types";
 
 /**

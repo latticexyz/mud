@@ -1,4 +1,4 @@
-import { defineComponent, World } from "@mud/recs";
+import { defineComponent, World } from "@mudkit/recs";
 
 export function defineOutlineComponent(world: World) {
   return defineComponent(world, {});

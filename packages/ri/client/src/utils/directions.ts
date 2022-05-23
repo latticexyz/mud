@@ -1,6 +1,6 @@
 import { Direction, Directions } from "../constants";
 import { WorldCoord } from "../types";
-import { random } from "@mud/utils";
+import { random } from "@mudkit/utils";
 
 /**
  * @param coord Initial coordinate

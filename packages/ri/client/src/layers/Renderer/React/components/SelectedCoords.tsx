@@ -1,6 +1,6 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
-import { getComponentValue } from "@mud/recs";
+import { getComponentValue } from "@mudkit/recs";
 
 export function registerSelectedCoords() {
   registerUIComponent(

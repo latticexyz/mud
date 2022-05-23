@@ -1,5 +1,5 @@
-import { defineQuery, defineSystem, getComponentValueStrict, Has, setComponent } from "@mud/recs";
-import { HasValue, Not, Entity } from "@mud/recs";
+import { defineQuery, defineSystem, getComponentValueStrict, Has, setComponent } from "@mudkit/recs";
+import { HasValue, Not, Entity } from "@mudkit/recs";
 import { LocalLayer } from "../../types";
 import { WorldCoord } from "../../../../types";
 import { randomValidStep } from "../../utils";

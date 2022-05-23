@@ -1,4 +1,4 @@
-import { deferred } from "@mud/utils";
+import { deferred } from "@mudkit/utils";
 import { Time } from "./time";
 
 /**

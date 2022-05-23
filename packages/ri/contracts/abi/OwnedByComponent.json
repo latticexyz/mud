@@ -269,36 +269,16 @@
     "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/components/OwnedByComponent.sol",
     "id": 23579,
     "exportedSymbols": {
-      "Component": [
-        11021
-      ],
-      "ERC165Checker": [
-        22336
-      ],
-      "ID": [
-        23498
-      ],
-      "IERC165": [
-        22348
-      ],
-      "IEntityIndexer": [
-        39834
-      ],
-      "MapSet": [
-        39683
-      ],
-      "OwnedBy": [
-        23490
-      ],
-      "OwnedByComponent": [
-        23578
-      ],
-      "Set": [
-        39815
-      ],
-      "World": [
-        11257
-      ]
+      "Component": [11021],
+      "ERC165Checker": [22336],
+      "ID": [23498],
+      "IERC165": [22348],
+      "IEntityIndexer": [39834],
+      "MapSet": [39683],
+      "OwnedBy": [23490],
+      "OwnedByComponent": [23578],
+      "Set": [39815],
+      "World": [11257]
     },
     "nodeType": "SourceUnit",
     "src": "38:776:41",
@@ -307,18 +287,13 @@
         "id": 23486,
         "nodeType": "PragmaDirective",
         "src": "38:24:41",
-        "literals": [
-          "solidity",
-          ">=",
-          "0.8",
-          ".0"
-        ]
+        "literals": ["solidity", ">=", "0.8", ".0"]
       },
       {
         "id": 23487,
         "nodeType": "ImportDirective",
         "src": "63:30:41",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mud/solecs/src/Component.sol",
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mudkit/solecs/src/Component.sol",
         "file": "solecs/Component.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 23579,
@@ -611,9 +586,7 @@
                 }
               ]
             },
-            "baseFunctions": [
-              10777
-            ],
+            "baseFunctions": [10777],
             "functionSelector": "ab9dbd07",
             "implemented": true,
             "kind": "function",
@@ -772,10 +745,7 @@
                       "id": 23526,
                       "name": "set",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        23535,
-                        10858
-                      ],
+                      "overloadedDeclarations": [23535, 10858],
                       "referencedDeclaration": 10858,
                       "src": "443:3:41",
                       "typeDescriptions": {
@@ -899,9 +869,7 @@
               "src": "553:100:41",
               "statements": [
                 {
-                  "assignments": [
-                    23544
-                  ],
+                  "assignments": [23544],
                   "declarations": [
                     {
                       "constant": false,
@@ -1300,10 +1268,7 @@
                       "id": 23569,
                       "name": "getEntitiesWithValue",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        23577,
-                        10992
-                      ],
+                      "overloadedDeclarations": [23577, 10992],
                       "referencedDeclaration": 10992,
                       "src": "765:20:41",
                       "typeDescriptions": {
@@ -1445,16 +1410,10 @@
           }
         ],
         "canonicalName": "OwnedByComponent",
-        "contractDependencies": [
-          39683,
-          39815
-        ],
+        "contractDependencies": [39683, 39815],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "linearizedBaseContracts": [
-          23578,
-          11021
-        ],
+        "linearizedBaseContracts": [23578, 11021],
         "name": "OwnedByComponent",
         "nameLocation": "213:16:41",
         "scope": 23579,

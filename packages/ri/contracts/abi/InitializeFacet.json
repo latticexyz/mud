@@ -84,36 +84,16 @@
     "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/facets/InitializeFacet.sol",
     "id": 26387,
     "exportedSymbols": {
-      "AppStorage": [
-        26633
-      ],
-      "Config": [
-        26617
-      ],
-      "InitializeFacet": [
-        26386
-      ],
-      "LibAccessControl": [
-        26608
-      ],
-      "LibContent": [
-        26675
-      ],
-      "LibEmbodiedSystem": [
-        26905
-      ],
-      "PersonaAccessController": [
-        23046
-      ],
-      "UsingAccessControl": [
-        23159
-      ],
-      "UsingDiamondOwner": [
-        26050
-      ],
-      "World": [
-        11257
-      ]
+      "AppStorage": [26633],
+      "Config": [26617],
+      "InitializeFacet": [26386],
+      "LibAccessControl": [26608],
+      "LibContent": [26675],
+      "LibEmbodiedSystem": [26905],
+      "PersonaAccessController": [23046],
+      "UsingAccessControl": [23159],
+      "UsingDiamondOwner": [26050],
+      "World": [11257]
     },
     "nodeType": "SourceUnit",
     "src": "38:1285:60",
@@ -122,18 +102,13 @@
         "id": 26300,
         "nodeType": "PragmaDirective",
         "src": "38:24:60",
-        "literals": [
-          "solidity",
-          ">=",
-          "0.8",
-          ".0"
-        ]
+        "literals": ["solidity", ">=", "0.8", ".0"]
       },
       {
         "id": 26302,
         "nodeType": "ImportDirective",
         "src": "64:41:60",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mud/solecs/src/World.sol",
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mudkit/solecs/src/World.sol",
         "file": "solecs/World.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 26387,
@@ -1066,17 +1041,10 @@
           }
         ],
         "canonicalName": "InitializeFacet",
-        "contractDependencies": [
-          11257
-        ],
+        "contractDependencies": [11257],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "linearizedBaseContracts": [
-          26386,
-          23159,
-          30410,
-          26050
-        ],
+        "linearizedBaseContracts": [26386, 23159, 30410, 26050],
         "name": "InitializeFacet",
         "nameLocation": "615:15:60",
         "scope": 26387,

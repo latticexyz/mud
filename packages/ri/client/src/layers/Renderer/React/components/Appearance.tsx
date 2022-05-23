@@ -1,5 +1,5 @@
 import React from "react";
-import { getComponentValue } from "@mud/recs";
+import { getComponentValue } from "@mudkit/recs";
 import { registerUIComponent, Spritesheet } from "../engine";
 import imp from "../../assets/imp.png";
 

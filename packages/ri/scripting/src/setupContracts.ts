@@ -1,4 +1,4 @@
-import { createNetwork, createContracts, createSigner, createTxQueue } from "@mud/network";
+import { createNetwork, createContracts, createSigner, createTxQueue } from "@mudkit/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
@@ -7,7 +7,7 @@ import EmberABI from "ri-contracts/abi/CombinedFacets.json";
 import { combineLatest, from, map, mergeMap, ReplaySubject } from "rxjs";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Signer } from "ethers";
-import { awaitValue, filterNullish, streamToComputed } from "@mud/utils";
+import { awaitValue, filterNullish, streamToComputed } from "@mudkit/utils";
 
 export async function setupContracts() {
   const connected$ = new ReplaySubject<boolean>(1);

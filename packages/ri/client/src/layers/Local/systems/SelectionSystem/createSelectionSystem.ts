@@ -1,6 +1,6 @@
-import { defineReactionSystem, getComponentValue, defineQuery, Has, removeComponent, setComponent } from "@mud/recs";
+import { defineReactionSystem, getComponentValue, defineQuery, Has, removeComponent, setComponent } from "@mudkit/recs";
 import { LocalLayer } from "../../types";
-import { areaContains } from "@mud/utils";
+import { areaContains } from "@mudkit/utils";
 
 /**
  * The Selection system handles selecting all selectable entities in the selected area

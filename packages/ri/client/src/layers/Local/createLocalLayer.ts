@@ -1,4 +1,4 @@
-import { createWorld, createEntity, setComponent, Entity, getComponentValue } from "@mud/recs";
+import { createWorld, createEntity, setComponent, Entity, getComponentValue } from "@mudkit/recs";
 import { HeadlessLayer } from "../Headless";
 import {
   defineStrollingComponent,
@@ -14,7 +14,7 @@ import {
 } from "./components";
 import { createDestinationSystem, createPathSystem, createSyncSystem, createPositionSystem } from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
-import { Area } from "@mud/utils";
+import { Area } from "@mudkit/utils";
 import { createRockWallSystem } from "./systems/RockWallSystem";
 
 /**

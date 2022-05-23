@@ -1,5 +1,5 @@
-import { Entity, Components, SchemaOf, Override } from "@mud/recs";
-import { ValueOf } from "@mud/utils";
+import { Entity, Components, SchemaOf, Override } from "@mudkit/recs";
+import { ValueOf } from "@mudkit/utils";
 
 export type ComponentUpdate<C extends Components> = ValueOf<{
   [key in keyof C]: {

@@ -1,4 +1,4 @@
-import { PromiseValue } from "@mud/utils";
+import { PromiseValue } from "@mudkit/utils";
 import { createNetworkLayer } from "./createNetworkLayer";
 
 export type NetworkLayer = PromiseValue<ReturnType<typeof createNetworkLayer>>;

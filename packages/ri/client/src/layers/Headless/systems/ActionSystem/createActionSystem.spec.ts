@@ -11,8 +11,8 @@ import {
   getComponentValueStrict,
   defineQuery,
   HasValue,
-} from "@mud/recs";
-import { deferred } from "@mud/utils";
+} from "@mudkit/recs";
+import { deferred } from "@mudkit/utils";
 import { ReplaySubject } from "rxjs";
 import { ActionState, createActionSystem } from ".";
 import { waitForComponentValueIn } from "../../../../utils/components";

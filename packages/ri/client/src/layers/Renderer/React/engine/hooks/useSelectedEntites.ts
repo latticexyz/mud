@@ -1,4 +1,4 @@
-import { defineQuery, Has } from "@mud/recs";
+import { defineQuery, Has } from "@mudkit/recs";
 import { useLayers } from "./useLayers";
 
 export function useSelectedEntities() {

@@ -7,19 +7,19 @@ import {
   createTxQueue,
   Mappings,
   ContractEvent,
-} from "@mud/network";
+} from "@mudkit/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import WorldABI from "ri-contracts/abi/World.json";
 import EmberABI from "ri-contracts/abi/CombinedFacets.json";
 import { combineLatest, from, map, mergeMap, ReplaySubject, Subscription } from "rxjs";
-import { World } from "@mud/recs";
+import { World } from "@mudkit/recs";
 import { NetworkLayer } from "../types";
 import { setupMappings } from "./setupMappings";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Signer } from "ethers";
-import { filterNullish } from "@mud/utils";
+import { filterNullish } from "@mudkit/utils";
 
 export function setupContracts(
   world: World,

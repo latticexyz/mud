@@ -1,4 +1,4 @@
-import { defineEnterQuery, Has, defineReactionSystem, getComponentValueStrict } from "@mud/recs";
+import { defineEnterQuery, Has, defineReactionSystem, getComponentValueStrict } from "@mudkit/recs";
 import { Tileset, RockWallTileset } from "../../constants";
 import { PhaserLayer } from "../../types";
 

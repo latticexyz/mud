@@ -1,10 +1,10 @@
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
-import { setComponent, World, Component, Schema } from "@mud/recs";
-import { createECSStream, Mappings, ContractEvent } from "@mud/network";
+import { setComponent, World, Component, Schema } from "@mudkit/recs";
+import { createECSStream, Mappings, ContractEvent } from "@mudkit/network";
 import { bufferCount, filter, mergeMap, Observable, Subject } from "rxjs";
 import { NetworkLayer } from "../types";
-import { stretch } from "@mud/utils";
+import { stretch } from "@mudkit/utils";
 
 /**
  * Sets up syncronization between contract components and client components by listening to World contract events

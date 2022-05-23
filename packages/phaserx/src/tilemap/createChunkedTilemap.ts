@@ -2,7 +2,7 @@ import { ChunkedTilemap } from "./types";
 import { ChunkCoord, Chunks, WorldCoord } from "../types";
 import { mod, CoordMap, chunkToPixelCoord, tileCoordToChunkCoord, chunkCoordToTileCoord } from "../utils";
 import { MultiHueTintPipeline } from "../pipelines";
-import { pickRandom } from "@mud/utils";
+import { pickRandom } from "@mudkit/utils";
 
 export type ChunkedTilemapConfig<TileKeys extends number, LayerKeys extends string> = {
   scene: Phaser.Scene;

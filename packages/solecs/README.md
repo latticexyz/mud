@@ -1,3 +1,3 @@
-# @mud/solecs
+# @mudkit/solecs
 
 Solidity Entity Component System

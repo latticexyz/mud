@@ -1,5 +1,5 @@
-import { Component, Schema, ComponentValue, getComponentValue, componentValueEquals } from "@mud/recs";
-import { deferred } from "@mud/utils";
+import { Component, Schema, ComponentValue, getComponentValue, componentValueEquals } from "@mudkit/recs";
+import { deferred } from "@mudkit/utils";
 import { reaction } from "mobx";
 
 function waitForComponentValue<S extends Schema>(

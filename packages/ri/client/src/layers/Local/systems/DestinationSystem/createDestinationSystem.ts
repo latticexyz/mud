@@ -5,7 +5,7 @@ import {
   Has,
   removeComponent,
   setComponent,
-} from "@mud/recs";
+} from "@mudkit/recs";
 import { worldCoordEq } from "../../../../utils/coords";
 import { aStar } from "../../../../utils/pathfinding";
 import { LocalLayer } from "../../types";

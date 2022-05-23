@@ -1,5 +1,5 @@
-import { defineEnterQuery, defineReactionSystem, defineUpdateQuery, Has, getComponentValue } from "@mud/recs";
-import { tween, tileCoordToPixelCoord } from "@mud/phaserx";
+import { defineEnterQuery, defineReactionSystem, defineUpdateQuery, Has, getComponentValue } from "@mudkit/recs";
+import { tween, tileCoordToPixelCoord } from "@mudkit/phaserx";
 import { PhaserLayer } from "../../types";
 
 /**

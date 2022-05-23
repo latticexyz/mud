@@ -7,7 +7,7 @@ import {
   HasValue,
   getComponentValueStrict,
   defineReactionSystem,
-} from "@mud/recs";
+} from "@mudkit/recs";
 import { LocalLayer } from "../../Local";
 import {
   createMapSystem,
@@ -19,7 +19,7 @@ import {
   createHueTintSystem,
   createSelectionSystem,
 } from "./systems";
-import { createPhaserEngine } from "@mud/phaserx";
+import { createPhaserEngine } from "@mudkit/phaserx";
 import {
   defineAppearanceComponent,
   defineSpriteAnimationComponent,
@@ -28,7 +28,7 @@ import {
 } from "./components";
 import { config } from "./config";
 import { createSelectionOutlineSystem } from "./systems/SelectionOutlineSystem";
-import { coordsOf } from "@mud/utils";
+import { coordsOf } from "@mudkit/utils";
 
 /**
  * The Phaser layer extends the Local layer.

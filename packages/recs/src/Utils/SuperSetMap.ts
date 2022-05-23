@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
 import { SuperSet } from "./SuperSet";
-import { makeIterable, transformIterator } from "@mud/utils";
+import { makeIterable, transformIterator } from "@mudkit/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isSuperSetMap(s: any): s is SuperSetMap<any, any> {

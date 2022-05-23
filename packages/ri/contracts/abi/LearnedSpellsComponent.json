@@ -248,33 +248,15 @@
     "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/components/LearnedSpellsComponent.sol",
     "id": 23391,
     "exportedSymbols": {
-      "Component": [
-        11021
-      ],
-      "ERC165Checker": [
-        22336
-      ],
-      "ID": [
-        23308
-      ],
-      "IERC165": [
-        22348
-      ],
-      "IEntityIndexer": [
-        39834
-      ],
-      "LearnedSpellsComponent": [
-        23390
-      ],
-      "MapSet": [
-        39683
-      ],
-      "Set": [
-        39815
-      ],
-      "World": [
-        11257
-      ]
+      "Component": [11021],
+      "ERC165Checker": [22336],
+      "ID": [23308],
+      "IERC165": [22348],
+      "IEntityIndexer": [39834],
+      "LearnedSpellsComponent": [23390],
+      "MapSet": [39683],
+      "Set": [39815],
+      "World": [11257]
     },
     "nodeType": "SourceUnit",
     "src": "38:790:39",
@@ -283,18 +265,13 @@
         "id": 23299,
         "nodeType": "PragmaDirective",
         "src": "38:24:39",
-        "literals": [
-          "solidity",
-          ">=",
-          "0.8",
-          ".0"
-        ]
+        "literals": ["solidity", ">=", "0.8", ".0"]
       },
       {
         "id": 23300,
         "nodeType": "ImportDirective",
         "src": "63:30:39",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mud/solecs/src/Component.sol",
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mudkit/solecs/src/Component.sol",
         "file": "solecs/Component.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 23391,
@@ -548,9 +525,7 @@
                 }
               ]
             },
-            "baseFunctions": [
-              10777
-            ],
+            "baseFunctions": [10777],
             "functionSelector": "ab9dbd07",
             "implemented": true,
             "kind": "function",
@@ -709,10 +684,7 @@
                       "id": 23336,
                       "name": "set",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        23345,
-                        10858
-                      ],
+                      "overloadedDeclarations": [23345, 10858],
                       "referencedDeclaration": 10858,
                       "src": "427:3:39",
                       "typeDescriptions": {
@@ -838,9 +810,7 @@
               "src": "539:114:39",
               "statements": [
                 {
-                  "assignments": [
-                    23357
-                  ],
+                  "assignments": [23357],
                   "declarations": [
                     {
                       "constant": false,
@@ -1227,10 +1197,7 @@
                       "id": 23381,
                       "name": "getEntitiesWithValue",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        23389,
-                        10992
-                      ],
+                      "overloadedDeclarations": [23389, 10992],
                       "referencedDeclaration": 10992,
                       "src": "773:20:39",
                       "typeDescriptions": {
@@ -1374,16 +1341,10 @@
           }
         ],
         "canonicalName": "LearnedSpellsComponent",
-        "contractDependencies": [
-          39683,
-          39815
-        ],
+        "contractDependencies": [39683, 39815],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "linearizedBaseContracts": [
-          23390,
-          11021
-        ],
+        "linearizedBaseContracts": [23390, 11021],
         "name": "LearnedSpellsComponent",
         "nameLocation": "189:22:39",
         "scope": 23391,

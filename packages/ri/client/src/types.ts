@@ -1,5 +1,5 @@
 import { boot } from "./boot";
-import { PromiseValue } from "@mud/utils";
+import { PromiseValue } from "@mudkit/utils";
 
 export interface WorldCoord {
   x: number;

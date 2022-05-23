@@ -1,6 +1,6 @@
 import { computed, observe, reaction } from "mobx";
 import { from, map, mergeMap, pipe } from "rxjs";
-import { filterNullish } from "@mud/utils";
+import { filterNullish } from "@mudkit/utils";
 import { Camera, ChunkCoord, Chunks, Coord, EmbodiedEntity, ObjectPool } from "./types";
 import { CoordMap, pixelToChunkCoord, coordEq } from "./utils";
 

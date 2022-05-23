@@ -1,4 +1,4 @@
-import { World, defineComponent, Type } from "@mud/recs";
+import { World, defineComponent, Type } from "@mudkit/recs";
 
 export function defineSelectionComponent(world: World) {
   return defineComponent(

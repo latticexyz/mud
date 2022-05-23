@@ -8,7 +8,7 @@
     "persona/=node_modules/@latticexyz/persona/src/",
     "gsn/=node_modules/@opengsn/contracts/src/",
     "ds-test/=node_modules/ds-test/src/",
-    "solecs/=node_modules/@mud/solecs/src/",
+    "solecs/=node_modules/@mudkit/solecs/src/",
     "royalty-registry/=node_modules/@manifoldxzy/royalty-registry/contracts/"
   ]
 }

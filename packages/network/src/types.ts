@@ -1,4 +1,4 @@
-import { Cached } from "@mud/utils";
+import { Cached } from "@mudkit/utils";
 import { BaseContract } from "ethers";
 import { Result } from "ethers/lib/utils";
 import { Observable, Subject } from "rxjs";

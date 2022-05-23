@@ -1,4 +1,4 @@
-import { deferred } from "@mud/utils";
+import { deferred } from "@mudkit/utils";
 
 type TweenBuilderConfig = { targets: Phaser.GameObjects.Sprite } & Omit<
   Phaser.Types.Tweens.TweenBuilderConfig,

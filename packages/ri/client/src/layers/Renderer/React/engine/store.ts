@@ -1,6 +1,6 @@
 import { observable, action } from "mobx";
 import { UIComponent } from "./types";
-import { Entity } from "@mud/recs";
+import { Entity } from "@mudkit/recs";
 
 export const EngineStore = observable({
   UIComponents: new Map<string, UIComponent<unknown>>(),

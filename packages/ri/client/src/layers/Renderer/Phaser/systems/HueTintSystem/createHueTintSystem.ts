@@ -1,6 +1,6 @@
-import { defineUpdateQuery, defineExitQuery, Has, defineReactionSystem, getComponentValue } from "@mud/recs";
+import { defineUpdateQuery, defineExitQuery, Has, defineReactionSystem, getComponentValue } from "@mudkit/recs";
 import { PhaserLayer } from "../../types";
-import { HueTintAndOutlineFXPipeline } from "@mud/phaserx";
+import { HueTintAndOutlineFXPipeline } from "@mudkit/phaserx";
 
 /**
  * The HueTint system handles setting a "hueTint" pipeline data on game objects having a hue tint

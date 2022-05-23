@@ -1,4 +1,4 @@
-import { createWorld, Entity } from "@mud/recs";
+import { createWorld, Entity } from "@mudkit/recs";
 import { WorldCoord } from "../../types";
 import {
   definePositionComponent,
@@ -14,7 +14,7 @@ import { decodeEntityType, decodePosition, decodeSpell, decodeUntraversable } fr
 import { EntityTypes } from "./types";
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
-import { keccak256 } from "@mud/utils";
+import { keccak256 } from "@mudkit/utils";
 
 /**
  * The Network layer is the lowest layer in the client architecture.

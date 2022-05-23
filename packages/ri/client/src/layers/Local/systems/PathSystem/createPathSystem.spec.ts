@@ -1,4 +1,4 @@
-import { createEntity, withValue, getComponentValue, setComponent } from "@mud/recs";
+import { createEntity, withValue, getComponentValue, setComponent } from "@mudkit/recs";
 import { LocalLayer } from "../../types";
 import { createLocalLayer } from "../../createLocalLayer";
 import { createHeadlessLayer, HeadlessLayer } from "../../../Headless";

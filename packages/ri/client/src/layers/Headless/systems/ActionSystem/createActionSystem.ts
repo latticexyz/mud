@@ -8,8 +8,8 @@ import {
   Schema,
   overridableComponent,
   updateComponent,
-} from "@mud/recs";
-import { mapObject, awaitStreamValue } from "@mud/utils";
+} from "@mudkit/recs";
+import { mapObject, awaitStreamValue } from "@mudkit/utils";
 import { autorun } from "mobx";
 import { ActionState } from "./constants";
 import { ActionData, ActionRequest } from "./types";

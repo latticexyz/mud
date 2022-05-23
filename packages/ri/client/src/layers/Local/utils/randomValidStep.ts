@@ -1,5 +1,5 @@
-import { isNotEmpty } from "@mud/utils";
-import { pickRandom } from "@mud/utils";
+import { isNotEmpty } from "@mudkit/utils";
+import { pickRandom } from "@mudkit/utils";
 import { Directions } from "../../../constants";
 import { WorldCoord } from "../../../types";
 import { translate } from "../../../utils/directions";

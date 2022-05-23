@@ -38,51 +38,21 @@
     "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/facets/systems/CastSpellFacet.sol",
     "id": 26543,
     "exportedSymbols": {
-      "AppStorage": [
-        26633
-      ],
-      "CastSpellFacet": [
-        26542
-      ],
-      "Component": [
-        11021
-      ],
-      "EmbodiedSystemArgumentComponent": [
-        23203
-      ],
-      "EmbodiedSystemArgumentComponentID": [
-        23170
-      ],
-      "LearnedSpellsComponent": [
-        23390
-      ],
-      "LearnedSpellsComponentID": [
-        23308
-      ],
-      "LibECS": [
-        26806
-      ],
-      "LibEmbodiedSystem": [
-        26905
-      ],
-      "LibUtils": [
-        27155
-      ],
-      "Spell": [
-        23785
-      ],
-      "SpellComponent": [
-        23880
-      ],
-      "SpellComponentID": [
-        23793
-      ],
-      "UsingAccessControl": [
-        23159
-      ],
-      "World": [
-        11257
-      ]
+      "AppStorage": [26633],
+      "CastSpellFacet": [26542],
+      "Component": [11021],
+      "EmbodiedSystemArgumentComponent": [23203],
+      "EmbodiedSystemArgumentComponentID": [23170],
+      "LearnedSpellsComponent": [23390],
+      "LearnedSpellsComponentID": [23308],
+      "LibECS": [26806],
+      "LibEmbodiedSystem": [26905],
+      "LibUtils": [27155],
+      "Spell": [23785],
+      "SpellComponent": [23880],
+      "SpellComponentID": [23793],
+      "UsingAccessControl": [23159],
+      "World": [11257]
     },
     "nodeType": "SourceUnit",
     "src": "38:2430:61",
@@ -91,18 +61,13 @@
         "id": 26388,
         "nodeType": "PragmaDirective",
         "src": "38:24:61",
-        "literals": [
-          "solidity",
-          ">=",
-          "0.8",
-          ".0"
-        ]
+        "literals": ["solidity", ">=", "0.8", ".0"]
       },
       {
         "id": 26390,
         "nodeType": "ImportDirective",
         "src": "64:41:61",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mud/solecs/src/World.sol",
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mudkit/solecs/src/World.sol",
         "file": "solecs/World.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 26543,
@@ -127,7 +92,7 @@
         "id": 26392,
         "nodeType": "ImportDirective",
         "src": "106:49:61",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mud/solecs/src/Component.sol",
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mudkit/solecs/src/Component.sol",
         "file": "solecs/Component.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 26543,
@@ -448,9 +413,7 @@
               "src": "1059:1406:61",
               "statements": [
                 {
-                  "assignments": [
-                    26430
-                  ],
+                  "assignments": [26430],
                   "declarations": [
                     {
                       "constant": false,
@@ -606,9 +569,7 @@
                   "src": "1065:86:61"
                 },
                 {
-                  "assignments": [
-                    26441
-                  ],
+                  "assignments": [26441],
                   "declarations": [
                     {
                       "constant": false,
@@ -764,9 +725,7 @@
                   "src": "1157:130:61"
                 },
                 {
-                  "assignments": [
-                    26452
-                  ],
+                  "assignments": [26452],
                   "declarations": [
                     {
                       "constant": false,
@@ -1018,10 +977,7 @@
                       "id": 26461,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "1488:7:61",
                       "typeDescriptions": {
@@ -1049,9 +1005,7 @@
                   "src": "1488:65:61"
                 },
                 {
-                  "assignments": [
-                    26471
-                  ],
+                  "assignments": [26471],
                   "declarations": [
                     {
                       "constant": false,
@@ -1252,10 +1206,7 @@
                       "id": 26477,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "1685:7:61",
                       "typeDescriptions": {
@@ -1379,10 +1330,7 @@
                       "id": 26485,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "1844:7:61",
                       "typeDescriptions": {
@@ -1410,9 +1358,7 @@
                   "src": "1844:83:61"
                 },
                 {
-                  "assignments": [
-                    26497
-                  ],
+                  "assignments": [26497],
                   "declarations": [
                     {
                       "constant": false,
@@ -1631,10 +1577,7 @@
                       "id": 26503,
                       "name": "require",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        -18,
-                        -18
-                      ],
+                      "overloadedDeclarations": [-18, -18],
                       "referencedDeclaration": -18,
                       "src": "2019:7:61",
                       "typeDescriptions": {
@@ -1662,9 +1605,7 @@
                   "src": "2019:97:61"
                 },
                 {
-                  "assignments": [
-                    26513
-                  ],
+                  "assignments": [26513],
                   "declarations": [
                     {
                       "constant": false,
@@ -2170,11 +2111,7 @@
         "contractDependencies": [],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "linearizedBaseContracts": [
-          26542,
-          23159,
-          30410
-        ],
+        "linearizedBaseContracts": [26542, 23159, 30410],
         "name": "CastSpellFacet",
         "nameLocation": "856:14:61",
         "scope": 26543,

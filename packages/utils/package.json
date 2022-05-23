@@ -1,5 +1,5 @@
 {
-  "name": "@mud/utils",
+  "name": "@mudkit/utils",
   "license": "MIT",
   "version": "0.0.1",
   "main": "src/index.ts",

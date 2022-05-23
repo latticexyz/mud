@@ -1,5 +1,5 @@
 import { IComputedValue } from "mobx";
-import { ValueOf } from "@mud/utils";
+import { ValueOf } from "@mudkit/utils";
 import { Subject } from "rxjs";
 import { Type } from "./constants";
 import { SuperSet, SuperSetMap } from "./Utils";

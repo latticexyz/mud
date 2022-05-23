@@ -6,7 +6,7 @@ import { createPhaserLayer as createPhaserLayerImport, PhaserLayer } from "./lay
 import { Engine as EngineImport } from "./layers/Renderer/React/engine/Engine";
 import { registerUIComponents as registerUIComponentsImport } from "./layers/Renderer/React/components";
 import { Layers } from "./layers/Renderer/React/engine/types";
-import { getComponentValue, removeComponent, setComponent } from "@mud/recs";
+import { getComponentValue, removeComponent, setComponent } from "@mudkit/recs";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Time } from "./utils/time";

@@ -9,7 +9,7 @@ import {
   getComponentValueStrict,
   removeEntity,
   defineEnterQuery,
-} from "@mud/recs";
+} from "@mudkit/recs";
 import { WorldCoord } from "../../../../types";
 import { getSurroundingCoords } from "../../../../utils/directions";
 

@@ -1,6 +1,6 @@
-import { getComponentValueStrict } from "@mud/recs";
-import { Has, HasValue } from "@mud/recs";
-import { defineSyncSystem } from "@mud/recs";
+import { getComponentValueStrict } from "@mudkit/recs";
+import { Has, HasValue } from "@mudkit/recs";
+import { defineSyncSystem } from "@mudkit/recs";
 import { LocalLayer } from "../../types";
 import { EntityTypes } from "../../../Network/types";
 

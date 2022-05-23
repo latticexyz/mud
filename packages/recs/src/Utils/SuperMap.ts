@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { makeIterable, transformIterator } from "@mud/utils";
+import { makeIterable, transformIterator } from "@mudkit/utils";
 
 export class SuperMap<K, V> implements Map<K, V> {
   parent?: SuperMap<K, V>;

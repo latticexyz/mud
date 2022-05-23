@@ -269,36 +269,16 @@
     "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/src/components/EntityTypeComponent.sol",
     "id": 23298,
     "exportedSymbols": {
-      "Component": [
-        11021
-      ],
-      "ERC165Checker": [
-        22336
-      ],
-      "EntityType": [
-        23209
-      ],
-      "EntityTypeComponent": [
-        23297
-      ],
-      "ID": [
-        23217
-      ],
-      "IERC165": [
-        22348
-      ],
-      "IEntityIndexer": [
-        39834
-      ],
-      "MapSet": [
-        39683
-      ],
-      "Set": [
-        39815
-      ],
-      "World": [
-        11257
-      ]
+      "Component": [11021],
+      "ERC165Checker": [22336],
+      "EntityType": [23209],
+      "EntityTypeComponent": [23297],
+      "ID": [23217],
+      "IERC165": [22348],
+      "IEntityIndexer": [39834],
+      "MapSet": [39683],
+      "Set": [39815],
+      "World": [11257]
     },
     "nodeType": "SourceUnit",
     "src": "38:817:38",
@@ -307,18 +287,13 @@
         "id": 23205,
         "nodeType": "PragmaDirective",
         "src": "38:24:38",
-        "literals": [
-          "solidity",
-          ">=",
-          "0.8",
-          ".0"
-        ]
+        "literals": ["solidity", ">=", "0.8", ".0"]
       },
       {
         "id": 23206,
         "nodeType": "ImportDirective",
         "src": "63:30:38",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mud/solecs/src/Component.sol",
+        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/ri/contracts/../../../node_modules/@mudkit/solecs/src/Component.sol",
         "file": "solecs/Component.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 23298,
@@ -611,9 +586,7 @@
                 }
               ]
             },
-            "baseFunctions": [
-              10777
-            ],
+            "baseFunctions": [10777],
             "functionSelector": "ab9dbd07",
             "implemented": true,
             "kind": "function",
@@ -772,10 +745,7 @@
                       "id": 23245,
                       "name": "set",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        23254,
-                        10858
-                      ],
+                      "overloadedDeclarations": [23254, 10858],
                       "referencedDeclaration": 10858,
                       "src": "467:3:38",
                       "typeDescriptions": {
@@ -899,9 +869,7 @@
               "src": "580:109:38",
               "statements": [
                 {
-                  "assignments": [
-                    23263
-                  ],
+                  "assignments": [23263],
                   "declarations": [
                     {
                       "constant": false,
@@ -1300,10 +1268,7 @@
                       "id": 23288,
                       "name": "getEntitiesWithValue",
                       "nodeType": "Identifier",
-                      "overloadedDeclarations": [
-                        23296,
-                        10992
-                      ],
+                      "overloadedDeclarations": [23296, 10992],
                       "referencedDeclaration": 10992,
                       "src": "805:20:38",
                       "typeDescriptions": {
@@ -1445,16 +1410,10 @@
           }
         ],
         "canonicalName": "EntityTypeComponent",
-        "contractDependencies": [
-          39683,
-          39815
-        ],
+        "contractDependencies": [39683, 39815],
         "contractKind": "contract",
         "fullyImplemented": true,
-        "linearizedBaseContracts": [
-          23297,
-          11021
-        ],
+        "linearizedBaseContracts": [23297, 11021],
         "name": "EntityTypeComponent",
         "nameLocation": "231:19:38",
         "scope": 23298,

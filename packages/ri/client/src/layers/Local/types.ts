@@ -1,4 +1,4 @@
-import { PromiseValue } from "@mud/utils";
+import { PromiseValue } from "@mudkit/utils";
 import { createLocalLayer } from "./createLocalLayer";
 
 export type LocalLayer = PromiseValue<ReturnType<typeof createLocalLayer>>;

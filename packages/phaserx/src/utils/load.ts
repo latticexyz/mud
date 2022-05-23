@@ -1,4 +1,4 @@
-import { deferred } from "@mud/utils";
+import { deferred } from "@mudkit/utils";
 
 export async function load(scene: Phaser.Scene, callback: (loader: Phaser.Loader.LoaderPlugin) => void) {
   const loader = scene.load;

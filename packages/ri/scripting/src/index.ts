@@ -1,5 +1,5 @@
 /* eslint-disable no-constant-condition */
-import { awaitValue, keccak256, PromiseValue, random, sleep } from "@mud/utils";
+import { awaitValue, keccak256, PromiseValue, random, sleep } from "@mudkit/utils";
 import { setupContracts } from "./setupContracts";
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
 import { Signer } from "ethers";

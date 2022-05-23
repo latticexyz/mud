@@ -1,5 +1,5 @@
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
-import { Entity } from "@mud/recs";
+import { Entity } from "@mudkit/recs";
 
 /**
  * Decode encoded contract component data to decoded client component value
