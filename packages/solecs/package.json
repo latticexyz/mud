@@ -1,7 +1,7 @@
 {
   "name": "@mudkit/solecs",
   "license": "MIT",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Solidity Entity Component System",
   "types": "./types/ethers-contracts/",
   "scripts": {
@@ -16,17 +16,16 @@
     "lint": "yarn prettier && yarn solhint"
   },
   "devDependencies": {
+    "@rari-capital/solmate": "https://github.com/Rari-Capital/solmate.git#b6ae78e6ff490f8fec7695c7b65d06e5614f1b65",
     "@typechain/ethers-v5": "^9.0.0",
+    "ds-test": "https://github.com/dapphub/ds-test.git#c7a36fb236f298e04edf28e2fee385b80f53945f",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#37a3fe48c3a4d8239cda93445f0b5e76b1507436",
+    "memmove": "https://github.com/brockelmore/memmove.git#d577ecd1bc43656f4032edf4daa9797f756a8ad2",
+    "openzeppelin-solidity": "https://github.com/OpenZeppelin/openzeppelin-contracts.git#cd2da98d4d21f070f56476b40042279f5500fc59",
     "prettier": "^2.6.2",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
-    "typechain": "^8.0.0",
-    "@rari-capital/solmate": "https://github.com/Rari-Capital/solmate.git#b6ae78e6ff490f8fec7695c7b65d06e5614f1b65",
-    "ds-test": "https://github.com/dapphub/ds-test.git#c7a36fb236f298e04edf28e2fee385b80f53945f",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#37a3fe48c3a4d8239cda93445f0b5e76b1507436",
-    "memmove": "https://github.com/brockelmore/memmove.git#d577ecd1bc43656f4032edf4daa9797f756a8ad2",
-    "openzeppelin-solidity": "https://github.com/OpenZeppelin/openzeppelin-contracts.git#cd2da98d4d21f070f56476b40042279f5500fc59"
-  },
-  "dependencies": {}
+    "typechain": "^8.0.0"
+  }
 }
