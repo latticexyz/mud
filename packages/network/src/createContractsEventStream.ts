@@ -55,10 +55,10 @@ export function createContractsEventStream<C extends Contracts>(
     concat(initialSync$, blockNumber$),
   ]).pipe(withLatestFrom(provider$.pipe(map((provider) => provider.connection.url)), supportsBatchQueries$));
 
-  const eventStream$ = fromWorker<Input<C>, Output<C>>(
-    () => new Worker(new URL("./sync.worker.ts", import.meta.url), { type: "module" }),
-    mergedStream$
-  );
+  const workerUrl = new URL("./sync.worker.ts", import.meta.url);
+  console.log("Spawning sync worker at", workerUrl);
+
+  const eventStream$ = fromWorker<Input<C>, Output<C>>(() => new Worker(workerUrl, { type: "module" }), mergedStream$);
 
   return {
     config$,
