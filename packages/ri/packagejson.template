@@ -1,0 +1,23 @@
+{
+  "name": "mudapp",
+  "version": "0.0.0",
+  "description": "An on-chain game powered by mud",
+  "license": "MIT",
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "client",
+      "contracts",
+      "scripting"
+    ]
+  },
+  "scripts": {
+    "start": "run-pty % yarn start:contracts % yarn start:client",
+    "start:client": "wait-on tcp:8545 && yarn workspace ri-client run start:dev",
+    "start:contracts": "yarn workspace ri-contracts run start:hardhat"
+  },
+  "devDependencies": {
+    "run-pty": "^3.0.0",
+    "wait-on": "^6.0.1"
+  }
+}

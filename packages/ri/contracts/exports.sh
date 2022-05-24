@@ -6,11 +6,13 @@ ABIS=(
   World
   Diamond
   LocalLatticeGameLocator
+  LibQuery
 )
 
 EXCLUDE=(
   # Add files not to export here 
   Component 
+  IComponent
 )
 
 for file in ${ABIS[@]}; do

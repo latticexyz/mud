@@ -3,6 +3,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { subtask } from "hardhat/config";
 
+// TODO: fix
+
 subtask(TASK_COMPILE_SOLIDITY).setAction(async (_: { force: boolean; quiet: boolean }, { config }, runSuper) => {
   console.log("Symlinking forge-style libraries");
   const symlinks = [];
@@ -24,7 +26,7 @@ subtask(TASK_COMPILE_SOLIDITY).setAction(async (_: { force: boolean; quiet: bool
     if (fs.existsSync(symlinkPath)) {
       console.warn("symlink already exists!");
     } else {
-      const libPath = path.join(config.paths.sources, "..", "..", "..", "..", "node_modules", libraryPath);
+      const libPath = path.join(config.paths.sources, "..", "..", "node_modules", libraryPath);
       fs.symlinkSync(libPath, symlinkPath, "dir");
     }
     symlinks.push(symlinkPath);
