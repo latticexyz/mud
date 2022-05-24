@@ -37,8 +37,8 @@
     "typescript": "^4.6.2"
   },
   "peerDependencies": {
-    "@latticexyz/recs": "0.0.1",
-    "@latticexyz/utils": "0.0.1",
+    "@latticexyz/recs": ">=0.1.4",
+    "@latticexyz/utils": ">=0.1.4",
     "async-mutex": "^0.3.2",
     "mobx": "^6.5.0",
     "rxjs": "^7.5.5"
