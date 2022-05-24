@@ -4,6 +4,11 @@
   "version": "0.1.3",
   "description": "Solidity Entity Component System",
   "types": "./types/ethers-contracts/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/solecs"
+  },
   "scripts": {
     "prepare": "chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
@@ -28,5 +33,5 @@
     "solhint": "^3.3.7",
     "typechain": "^8.0.0"
   },
-  "gitHead": "f5dedd7bcdba7177bb495b385178610b546c01a2"
+  "gitHead": "2000994f695cee35fcc32558f399584922073016"
 }

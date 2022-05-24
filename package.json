@@ -2,8 +2,10 @@
   "name": "mud",
   "version": "0.0.0",
   "description": "A toolkit for building on-chain worlds",
-  "repository": "https://github.com/latticexyz/mud.git",
-  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git"
+  },
   "private": true,
   "workspaces": {
     "packages": [

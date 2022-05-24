@@ -7,6 +7,11 @@
   "bin": {
     "mud": "./build/cli.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/cli"
+  },
   "scripts": {
     "prepare": "chmod u+x build/cli.js",
     "globalinstall": "yarn build && yarn prepare && yarn link && yarn global add @latticexyz/cli@link:./",
@@ -44,5 +49,5 @@
   "pkg": {
     "scripts": "build/**/*.js"
   },
-  "gitHead": "f5dedd7bcdba7177bb495b385178610b546c01a2"
+  "gitHead": "2000994f695cee35fcc32558f399584922073016"
 }
