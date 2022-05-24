@@ -16,11 +16,9 @@ exports.deploy = exports.SUPPORTED_DEPLOYMENT_CHAINS = exports.findGameContractA
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const ethers_1 = require("ethers");
-const chalk_1 = __importDefault(require("chalk"));
 const inquirer_1 = __importDefault(require("inquirer"));
 const uuid_1 = require("uuid");
 const listr2_1 = require("listr2");
-const execa_1 = __importDefault(require("execa"));
 const process_1 = require("process");
 const fs_1 = __importDefault(require("fs"));
 const openurl_1 = __importDefault(require("openurl"));
@@ -29,6 +27,8 @@ inquirer_1.default.registerPrompt("suggest", inquirer_prompt_suggest_1.default);
 // Workaround to prevent tsc to transpole dynamic imports with require, which causes an error upstream
 // https://github.com/microsoft/TypeScript/issues/43329#issuecomment-922544562
 const importNetlify = eval('import("netlify")');
+const importChalk = eval('import("chalk")');
+const importExeca = eval('import("execa")');
 exports.command = "deploy";
 exports.desc = "Deploys the local mud contracts and optionally the client";
 const builder = (yargs) => yargs.options({
@@ -92,8 +92,9 @@ exports.SUPPORTED_DEPLOYMENT_CHAINS = {
 };
 const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p;
+    const { default: chalk } = yield importChalk;
     console.log();
-    console.log(chalk_1.default.bgWhite.black.bold(" == Mud Deployer == "));
+    console.log(chalk.bgWhite.black.bold(" == Mud Deployer == "));
     console.log();
     let config = {};
     try {
@@ -210,10 +211,12 @@ const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
+    const { default: chalk } = yield importChalk;
+    const { execa } = yield importExeca;
     console.log();
-    console.log(chalk_1.default.yellow(`>> Deploying ${chalk_1.default.bgYellow.black.bold(" " + options.deploymentName + " ")} <<`));
+    console.log(chalk.yellow(`>> Deploying ${chalk.bgYellow.black.bold(" " + options.deploymentName + " ")} <<`));
     const wallet = new ethers_1.ethers.Wallet(options.deployerPrivateKey);
-    console.log(chalk_1.default.red(`>> Deployer address: ${chalk_1.default.bgYellow.black.bold(" " + wallet.address + " ")} <<`));
+    console.log(chalk.red(`>> Deployer address: ${chalk.bgYellow.black.bold(" " + wallet.address + " ")} <<`));
     console.log();
     const network = exports.SUPPORTED_DEPLOYMENT_CHAINS[options.chainId];
     const logger = new listr2_1.Logger({ useIcons: true });
@@ -232,7 +235,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                             title: "Contracts",
                             task: (ctx, task) => __awaiter(void 0, void 0, void 0, function* () {
                                 var _a;
-                                const child = (0, execa_1.default)("yarn", [
+                                const child = execa("yarn", [
                                     "workspace",
                                     "ri-contracts",
                                     "forge:deploy",
@@ -249,7 +252,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                                 const lines = stdout.split("\n");
                                 gameContractAddress = (0, exports.findGameContractAddress)(lines);
                                 ctx.gameContractAddress = gameContractAddress;
-                                task.output = chalk_1.default.yellow(`Game deployed at: ${chalk_1.default.bgYellow.black(gameContractAddress)} on chain: ${chalk_1.default.bgYellow.black(network.name)}`);
+                                task.output = chalk.yellow(`Game deployed at: ${chalk.bgYellow.black(gameContractAddress)} on chain: ${chalk.bgYellow.black(network.name)}`);
                             }),
                             options: { bottomBar: 3 },
                         },
@@ -262,7 +265,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                                         task: (_, task) => __awaiter(void 0, void 0, void 0, function* () {
                                             const time = Date.now();
                                             task.output = "Building local client...";
-                                            const child = (0, execa_1.default)("yarn", ["workspace", "client", "build"]);
+                                            const child = execa("yarn", ["workspace", "client", "build"]);
                                             yield child;
                                             const duration = Date.now() - time;
                                             task.output = "Client built in " + Math.round(duration / 1000) + "s";
@@ -284,7 +287,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                                             ctx.siteId = site.id;
                                             ctx.clientUrl = site.ssl_url;
                                             gameClientUrl = site.ssl_url;
-                                            task.output = "Netlify site created with id: " + chalk_1.default.bgYellow.black(site.id);
+                                            task.output = "Netlify site created with id: " + chalk.bgYellow.black(site.id);
                                         }),
                                         skip: () => !options.deployClient,
                                         options: { bottomBar: 1 },
@@ -293,7 +296,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                                         title: "Deploying",
                                         task: (ctx, task) => __awaiter(void 0, void 0, void 0, function* () {
                                             var _a;
-                                            const child = (0, execa_1.default)("yarn", ["workspace", "client", "run", "netlify", "deploy", "--prod"], {
+                                            const child = execa("yarn", ["workspace", "client", "run", "netlify", "deploy", "--prod"], {
                                                 env: {
                                                     NETLIFY_AUTH_TOKEN: options.netlifyPersonalToken,
                                                     NETLIFY_SITE_ID: ctx.siteId,
@@ -301,7 +304,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                                             });
                                             (_a = child.stdout) === null || _a === void 0 ? void 0 : _a.pipe(task.stdout());
                                             yield child;
-                                            task.output = chalk_1.default.yellow("Netlify site deployed!");
+                                            task.output = chalk.yellow("Netlify site deployed!");
                                         }),
                                         skip: () => !options.deployClient,
                                         options: { bottomBar: 3 },
@@ -325,10 +328,10 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
         ]);
         yield tasks.run();
         console.log();
-        console.log(chalk_1.default.bgGreen.black.bold(" Congratulations! Deployment successful"));
+        console.log(chalk.bgGreen.black.bold(" Congratulations! Deployment successful"));
         console.log();
-        console.log(chalk_1.default.green(`Game contract deployed to ${gameContractAddress}`));
-        console.log(chalk_1.default.green(`Game client deployed to ${gameClientUrl}`));
+        console.log(chalk.green(`Game contract deployed to ${gameContractAddress}`));
+        console.log(chalk.green(`Game client deployed to ${gameClientUrl}`));
         console.log();
     }
     catch (e) {

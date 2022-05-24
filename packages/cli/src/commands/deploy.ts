@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import { ethers } from "ethers";
-import chalk from "chalk";
 import inquirer from "inquirer";
 import { v4 } from "uuid";
 import { Listr, Logger } from "listr2";
-import execa from "execa";
 import { exit } from "process";
 import fs from "fs";
 import openurl from "openurl";
@@ -16,6 +14,8 @@ inquirer.registerPrompt("suggest", ips);
 // Workaround to prevent tsc to transpole dynamic imports with require, which causes an error upstream
 // https://github.com/microsoft/TypeScript/issues/43329#issuecomment-922544562
 const importNetlify = eval('import("netlify")') as Promise<typeof import("netlify")>;
+const importChalk = eval('import("chalk")') as Promise<typeof import("chalk")>;
+const importExeca = eval('import("execa")') as Promise<typeof import("execa")>;
 
 interface Options {
   chainId?: number;
@@ -100,6 +100,7 @@ export const SUPPORTED_DEPLOYMENT_CHAINS: { [key: number]: Network } = {
 };
 
 const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (args) => {
+  const { default: chalk } = await importChalk;
   console.log();
   console.log(chalk.bgWhite.black.bold(" == Mud Deployer == "));
   console.log();
@@ -218,6 +219,8 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
 };
 
 export const deploy = async (options: Options) => {
+  const { default: chalk } = await importChalk;
+  const { execa } = await importExeca;
   console.log();
   console.log(chalk.yellow(`>> Deploying ${chalk.bgYellow.black.bold(" " + options.deploymentName + " ")} <<`));
 
