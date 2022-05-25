@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.1.8](https://github.com/latticexyz/mud/compare/v0.1.7...v0.1.8) (2022-05-25)
+
+### Bug Fixes
+
+- **@latticexyz/cli:** fix create script ([2c3b0db](https://github.com/latticexyz/mud/commit/2c3b0db177ded2c3a74721f82fad59d7f596c98e))
+- **ri-client:** change bufferCount to bufferTime to apply ecs updates immediately below threshold ([03ecc70](https://github.com/latticexyz/mud/commit/03ecc70ee5b83d0d76b62b9dfe64d9e0efbdf525))
+
+### Performance Improvements
+
+- **ri-contracts:** disable hardhat automine ([72d644a](https://github.com/latticexyz/mud/commit/72d644ac9adc470aec9db62fc8eb576738ecb8b5))
+
 ## [0.1.7](https://github.com/latticexyz/mud/compare/v0.1.6...v0.1.7) (2022-05-25)
 
 **Note:** Version bump only for package mud
