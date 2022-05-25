@@ -23,7 +23,8 @@ const localhost = {
 
 const hardhat = {
   mining: {
-    auto: true,
+    auto: false,
+    interval: 1000,
   },
   gasPrice: 0,
   initialBaseFeePerGas: 0,
