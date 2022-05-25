@@ -2,6 +2,7 @@
   "name": "ri-scripting",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "dependencies": {
     "@ethersproject/providers": "^5.6.1",
     "@latticexyz/network": "^0.1.0",
@@ -20,7 +21,7 @@
     "typescript": "^4.5.5"
   },
   "scripts": {
-    "start": "ts-node ./src/index.ts",
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node ./src/index.ts",
     "txpool": "curl -X POST -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"txpool_content\", \"params\": [], \"id\":1}' https://degen-chain.lattice.xyz/"
   }
 }
