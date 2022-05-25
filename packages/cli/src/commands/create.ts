@@ -32,18 +32,18 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
 
   console.log("Setting up foundry.toml...");
   await exec(`rm ${name}/contracts/foundry.toml`);
-  await exec(`mv ${name}/contracts/foundrytoml.template contracts/foundry.toml`);
+  await exec(`mv ${name}/contracts/foundrytoml.template ${name}/contracts/foundry.toml`);
 
   console.log("Setting up remappings...");
   await exec(`rm ${name}/contracts/remappings.txt`);
-  await exec(`mv ${name}/contracts/remappingstxt.template contracts/remappings.txt`);
+  await exec(`mv ${name}/contracts/remappingstxt.template ${name}/contracts/remappings.txt`);
 
   console.log("Setting up compile task...");
   await exec(`rm ${name}/contracts/tasks/compile.ts`);
-  await exec(`mv ${name}/contracts/tasks/compilets.template contracts/tasks/compile.ts`);
+  await exec(`mv ${name}/contracts/tasks/compilets.template ${name}/contracts/tasks/compile.ts`);
 
   console.log("Building contracts...");
-  await exec(`cd contracts && yarn build`);
+  await exec(`cd ${name}/contracts && yarn build`);
 
   console.log("Done setting up! Run `yarn start` to start client and chain, then head to localhost:3000 to explore.");
 
