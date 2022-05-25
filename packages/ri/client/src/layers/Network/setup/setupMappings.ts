@@ -2,7 +2,7 @@ import { World as WorldContract } from "ri-contracts/types/ethers-contracts/Worl
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import { setComponent, World, Component, Schema } from "@latticexyz/recs";
 import { createECSStream, Mappings, ContractEvent } from "@latticexyz/network";
-import { bufferCount, filter, mergeMap, Observable, Subject } from "rxjs";
+import { bufferTime, filter, mergeMap, Observable, Subject } from "rxjs";
 import { NetworkLayer } from "../types";
 import { stretch } from "@latticexyz/utils";
 
@@ -42,7 +42,7 @@ export function setupMappings(
       // We throttle the client side event processing to 200 events every 16ms, so 12.000 events per second.
       // This means if the chain would emit more than 12.000 events per second, the client couldn't keep up.
       // (We're not close to 12.000 events per second on the chain yet)
-      bufferCount(200, 16),
+      bufferTime(16, null, 200),
       filter((updates) => updates.length > 0),
       stretch(16)
     )
