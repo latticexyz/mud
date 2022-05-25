@@ -8,7 +8,7 @@ import {
   Mappings,
   ContractEvent,
 } from "@latticexyz/network";
-import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants";
+import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import WorldABI from "ri-contracts/abi/World.json";

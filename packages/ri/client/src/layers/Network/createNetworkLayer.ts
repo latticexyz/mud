@@ -9,7 +9,7 @@ import {
   defineEmbodiedSystemArgumentComponent,
 } from "./components";
 import { setupContracts } from "./setup";
-import { LAYER_NAME } from "./constants";
+import { LAYER_NAME } from "./constants.local";
 import { decodeEntityType, decodePosition, decodeSpell, decodeUntraversable } from "./decoders";
 import { EntityTypes } from "./types";
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
