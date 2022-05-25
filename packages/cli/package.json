@@ -41,6 +41,7 @@
     "ethers": "^5.6.7",
     "execa": "^6.1.0",
     "figlet": "^1.5.2",
+    "glob": "^8.0.3",
     "inquirer": "^8.2.4",
     "inquirer-prompt-suggest": "^0.1.0",
     "listr2": "^4.0.5",
