@@ -1,7 +1,7 @@
 {
   "name": "ri-contracts",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.7",
   "private": true,
   "scripts": {
     "prepare": "chmod u+x git-install.sh && chmod u+x exports.sh",
@@ -30,8 +30,9 @@
     "@ethersproject/abi": "^5.6.0",
     "@ethersproject/bytes": "^5.6.0",
     "@ethersproject/providers": "^5.6.1",
-    "@latticexyz/cli": "0.1.6",
+    "@latticexyz/cli": "^0.1.7",
     "@latticexyz/persona": "https://github.com/latticexyz/persona.git#4b4634be26c20fe16e0c1c8b26938b26128f4f2f",
+    "@latticexyz/solecs": "^0.1.7",
     "@manifoldxyz/royalty-registry-solidity": "https://github.com/manifoldxyz/royalty-registry-solidity.git#c5ad6269d37e180fbf449a1f5ba2d2ff6c441efc",
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
     "@opengsn/contracts": "^2.2.6",
@@ -50,6 +51,7 @@
     "hardhat-abi-exporter": "^2.8.0",
     "hardhat-deploy": "^0.11.5",
     "hardhat-diamond-abi": "^2.0.0",
+    "memmove": "https://github.com/brockelmore/memmove.git#d577ecd1bc43656f4032edf4daa9797f756a8ad2",
     "npm-run-all": "^4.1.5",
     "openzeppelin-solidity": "https://github.com/OpenZeppelin/openzeppelin-contracts.git#57725120581e27ec469e1c7e497a4008aafff818",
     "prettier": "^2.6.2",
@@ -59,9 +61,6 @@
     "ts-node": "^10.7.0",
     "typechain": "^7.0.1",
     "typescript": "^4.6.2",
-    "wait-on": "^6.0.1",
-    "@latticexyz/solecs": "0.1.6",
-    "memmove": "https://github.com/brockelmore/memmove.git#d577ecd1bc43656f4032edf4daa9797f756a8ad2"
-  },
-  "dependencies": {}
+    "wait-on": "^6.0.1"
+  }
 }

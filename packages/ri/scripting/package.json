@@ -1,16 +1,16 @@
 {
   "name": "ri-scripting",
-  "version": "0.1.0",
+  "version": "0.1.7",
   "private": true,
   "type": "module",
   "dependencies": {
     "@ethersproject/providers": "^5.6.1",
-    "@latticexyz/network": "^0.1.0",
-    "@latticexyz/utils": "^0.1.0",
+    "@latticexyz/network": "^0.1.7",
+    "@latticexyz/utils": "^0.1.7",
     "async-mutex": "^0.3.2",
     "ethers": "^5.6.6",
     "proxy-deep": "^3.1.1",
-    "ri-contracts": "^0.1.0"
+    "ri-contracts": "^0.1.7"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.12.1",
