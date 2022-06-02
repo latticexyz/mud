@@ -1,3 +1,5 @@
+import { Cached } from "@latticexyz/utils";
+import { BaseContract, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
 import { createNetwork } from "./createNetwork";
 import { createProvider } from "./createProvider";
@@ -30,3 +32,18 @@ export interface ProviderConfig {
 
 export type Providers = ReturnType<typeof createProvider>;
 export type Network = ReturnType<typeof createNetwork>;
+
+export type Contracts = {
+  [key: string]: BaseContract;
+};
+
+export type ContractConfig = {
+  address: string;
+  abi: ContractInterface;
+};
+
+export type ContractsConfig<C extends Contracts> = {
+  [ContractType in keyof C]: ContractConfig;
+};
+
+export type TxQueue<C extends Contracts> = Cached<C>;
