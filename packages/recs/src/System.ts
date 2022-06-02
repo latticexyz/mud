@@ -13,10 +13,11 @@ export function defineSystem(world: World, system: (world: World) => void): Syst
 /**
  * @param world ECS world this component is defined in
  * @param system Function to be called whenever any of the observable data accessed in the function changes
+ * @param requirements Function that must return true for system to run, defaults to true
  * @returns Function to dispose the system
  */
-export function defineAutorunSystem(world: World, system: () => void) {
-  const disposer = autorun(() => system());
+export function defineAutorunSystem(world: World, system: () => void, requirements: () => boolean = () => true) {
+  const disposer = autorun(() => requirements() && system());
   world.registerDisposer(disposer);
 }
 
@@ -24,10 +25,16 @@ export function defineAutorunSystem(world: World, system: () => void) {
  * @param world ECS world this component is defined in
  * @param observe System is rerun if any of the data accessed in this function changes. Result of this function is passed to the system.
  * @param system Function to be run when any of the data accessed in the observe function changes
+ * @param requirements Function that must return true for system to run, defaults to true
  * @returns Function to dispose the system
  */
-export function defineReactionSystem<T>(world: World, observe: () => T, system: (data: T) => void) {
-  const disposer = reaction(observe, (data) => system(data), { fireImmediately: true });
+export function defineReactionSystem<T>(
+  world: World,
+  observe: () => T,
+  system: (data: T) => void,
+  requirements: () => boolean = () => true,
+) {
+  const disposer = reaction(observe, (data) => { requirements() && system(data) }, { fireImmediately: true });
   world.registerDisposer(disposer);
 }
 
