@@ -13,7 +13,7 @@ import {
   timestamp,
   UnaryFunction,
 } from "rxjs";
-import { computed, IComputedValue, observable, reaction, runInAction } from "mobx";
+import { computed, IComputedValue, IObservableValue, observable, reaction, runInAction } from "mobx";
 import { deferred } from "./deferred";
 
 export function filterNullish<T>(): UnaryFunction<Observable<T | null | undefined>, Observable<T>> {
@@ -47,6 +47,10 @@ export function stretch<T>(spacingDelayMs: number) {
   );
 }
 
+export function observableToComputed<T>(obs: IObservableValue<T>): IComputedValue<T> {
+  return computed(() => obs.get());
+}
+
 export function computedToStream<T>(comp: IComputedValue<T>): Observable<T> {
   const stream = new BehaviorSubject(comp.get());
   reaction(
@@ -56,15 +60,15 @@ export function computedToStream<T>(comp: IComputedValue<T>): Observable<T> {
   return stream;
 }
 
-export function streamToComputed<T>(stream: Observable<T>): IComputedValue<T | undefined> {
-  const value = observable<{ current: T | undefined }>({ current: undefined });
-  stream.subscribe((val) => runInAction(() => (value.current = val)));
-  return computed(() => value.current);
+export function streamToComputed<T>(stream$: Observable<T>): IComputedValue<T | undefined> {
+  const value = observable.box<T | undefined>();
+  stream$.subscribe((val) => runInAction(() => value.set(val)));
+  return computed(() => value.get());
 }
 
 /**
  *
- * @param stream RxJS observable to check for the given value
+ * @param stream$ RxJS observable to check for the given value
  * @param predicate Predicate to check
  * @returns A promise that resolves with the requested value once the predicate is true
  */
