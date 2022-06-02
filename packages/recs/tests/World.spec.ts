@@ -66,6 +66,7 @@ describe("World", () => {
           },
           entities: new Set<Entity>(),
           stream$: new Subject(),
+          schema: { value: Type.Number },
         };
       });
 
@@ -203,6 +204,7 @@ describe("World", () => {
           },
           entities: new Set<Entity>(),
           stream$: new Subject(),
+          schema: { value: Type.Number },
         };
       });
 

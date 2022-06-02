@@ -37,6 +37,7 @@ export interface Component<T extends Schema> {
   entities: Set<Entity>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stream$: Subject<any>;
+  schema: Schema;
 }
 
 export type Components = {

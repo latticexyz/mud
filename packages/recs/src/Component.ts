@@ -22,6 +22,7 @@ export function defineComponent<T extends Schema>(world: World, schema: T, optio
     values: {},
     entities: new Set<Entity>(),
     stream$: new Subject(),
+    schema,
   };
 
   for (const [key, val] of Object.entries(schema)) {
@@ -138,6 +139,7 @@ export function cloneComponent<T extends Schema>(component: Component<T>): Compo
     values: {},
     entities: new Set<Entity>(...component.entities),
     stream$: new Subject(),
+    schema: {},
   };
 
   for (const key of Object.keys(component.values)) {
