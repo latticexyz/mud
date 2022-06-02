@@ -21,6 +21,9 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   console.log("Moving...");
   await exec(`cp -r _mudtemp/packages/ri ${name}`);
 
+  console.log("Setting up vscode solidity settings...");
+  await exec(`cp -r _mudtemp/.vscode ${name}/.vscode`);
+
   console.log("Cleaning up...");
   await exec(`rm -rf _mudtemp`);
 

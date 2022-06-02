@@ -22,6 +22,8 @@ const handler = (argv) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, utils_1.exec)(`git clone https://github.com/latticexyz/mud _mudtemp`);
     console.log("Moving...");
     yield (0, utils_1.exec)(`cp -r _mudtemp/packages/ri ${name}`);
+    console.log("Setting up vscode solidity settings...");
+    yield (0, utils_1.exec)(`cp -r _mudtemp/.vscode ${name}/.vscode`);
     console.log("Cleaning up...");
     yield (0, utils_1.exec)(`rm -rf _mudtemp`);
     console.log("Setting up package.json...");
