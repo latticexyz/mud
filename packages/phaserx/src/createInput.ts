@@ -119,7 +119,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   // Adds a key to include in the state
   function addKey(key: string) {
     // Add the key to the phaser keyboard input plugin
-    const keyObj = phaserKeyboard.addKey(key);
+    const keyObj = phaserKeyboard.addKey(key, false);
     // Store the cleartext key map
     codeToKey.set(keyObj.keyCode, key as Key);
 
