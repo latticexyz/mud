@@ -10,6 +10,13 @@ const degen = {
   chainId: 6969,
 };
 
+const erigon = {
+  live: true,
+  url: "https://erigon-one-chain.lattice.xyz",
+  accounts: ["0x26e86e45f6fc45ec6e2ecd128cec80fa1d1505e5507dcd2ae58c3130a7a97b48"],
+  chainId: 4242,
+};
+
 // this is when connecting to a localhost hh instance, it doesn't actually configure the hh network. for this setup stuff in the 'hardhat' key.
 const localhost = {
   url: "http://localhost:8545/",
@@ -62,6 +69,7 @@ const config: HardhatUserConfig = {
     degen,
     localhost,
     hardhat,
+    erigon,
   },
   solidity: {
     version: "0.8.13",
@@ -78,6 +86,15 @@ const config: HardhatUserConfig = {
         artifacts: "@latticexyz/persona/abi",
       },
     ],
+  },
+  deterministicDeployment: {
+    "4242": {
+      factory: "0xC39496f108A05b8111Ae5B283c114CfB0327B359",
+      deployer: "0x16820E675fF74dC1DfB0a21f8735c291eEE61F1f",
+      funding: "0",
+      signedTx:
+        "0xf8a78085174876e800830186a08080b853604580600e600039806000f350fe7fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe03601600081602082378035828234f58015156039578182fd5b8082525050506014600cf3822147a0339736b46d151775b8649857c91ecc36b2e7f1c6fb78a07c8794abcb1ca5c826a002ddd269b8268ceeec100c69a4b467086a0f9541d29d979285cd0976c10d9963",
+    },
   },
 };
 
