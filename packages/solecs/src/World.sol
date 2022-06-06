@@ -76,4 +76,15 @@ contract World is IWorld {
   function hasEntity(uint256 entity) public view returns (bool) {
     return Set(entities).has(entity);
   }
+
+  function getUniqueEntityId() public view returns (uint256) {
+    uint256 entityNum = getNumEntities();
+    uint256 id;
+    do {
+      entityNum++;
+      id = uint256(keccak256(abi.encodePacked(entityNum)));
+    } while (hasEntity(id));
+
+    return id;
+  }
 }
