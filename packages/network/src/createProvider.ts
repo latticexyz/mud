@@ -1,7 +1,7 @@
 import { JsonRpcBatchProvider, JsonRpcProvider, WebSocketProvider } from "@ethersproject/providers";
 import { callWithRetry, observableToComputed, timeoutAfter } from "@latticexyz/utils";
 import { IComputedValue, observable, reaction, runInAction } from "mobx";
-import { ensureNetworkIsUp } from "../networkUtils";
+import { ensureNetworkIsUp } from "./networkUtils";
 import { ProviderConfig, Providers } from "./types";
 
 export function createProvider({ jsonRpcUrl, wsRpcUrl, options }: ProviderConfig) {
@@ -17,7 +17,7 @@ export function createProvider({ jsonRpcUrl, wsRpcUrl, options }: ProviderConfig
   return providers;
 }
 
-export function createReconnectingProvider(config: IComputedValue<ProviderConfig>) {
+export async function createReconnectingProvider(config: IComputedValue<ProviderConfig>) {
   const connected = observable.box(false);
   const providers = observable.box<Providers>();
   const disposers: (() => void)[] = [];
@@ -36,11 +36,13 @@ export function createReconnectingProvider(config: IComputedValue<ProviderConfig
       // Ignore errors when closing websocket that was not in an open state
     }
 
+    const conf = config.get();
+
     // Create new providers
     await callWithRetry(async () => {
-      const newProviders = createProvider(config.get());
+      const newProviders = createProvider(conf);
       // If the connection is not successful, this will throw an error, triggering a retry
-      !config.get()?.options?.skipNetworkCheck && (await ensureNetworkIsUp(newProviders.json, newProviders.ws));
+      !conf?.options?.skipNetworkCheck && (await ensureNetworkIsUp(newProviders.json, newProviders.ws));
       runInAction(() => {
         providers.set(newProviders);
         connected.set(true);
@@ -52,8 +54,7 @@ export function createReconnectingProvider(config: IComputedValue<ProviderConfig
   disposers.push(
     reaction(
       () => config.get(),
-      () => initProviders(),
-      { fireImmediately: true }
+      () => initProviders()
     )
   );
 
@@ -76,16 +77,18 @@ export function createReconnectingProvider(config: IComputedValue<ProviderConfig
   // Keep websocket connection alive
   const keepAliveInterval = setInterval(async () => {
     if (!connected.get()) return;
-    const { ws } = providers.get();
-    if (!ws) return;
+    const currentProviders = providers.get();
+    if (!currentProviders?.ws) return;
     try {
-      await timeoutAfter(ws.getBlockNumber(), 10000, "Network Request Timed out");
+      await timeoutAfter(currentProviders.ws.getBlockNumber(), 10000, "Network Request Timed out");
     } catch {
       initProviders();
     }
     //
   }, 10000);
   disposers.push(() => clearInterval(keepAliveInterval));
+
+  await initProviders();
 
   return {
     connected: observableToComputed(connected),

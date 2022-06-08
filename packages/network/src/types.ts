@@ -1,14 +1,51 @@
+import { Result } from "@ethersproject/abi";
+import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
 import { Cached } from "@latticexyz/utils";
-import { BaseContract } from "ethers";
-import { Result } from "ethers/lib/utils";
-import { Observable, Subject } from "rxjs";
+import { BaseContract, ContractInterface } from "ethers";
+import { Observable } from "rxjs";
+import { createNetwork } from "./createNetwork";
+import { createProvider } from "./createProvider";
+
+export interface NetworkConfig {
+  chainId: number;
+  privateKey?: string;
+  clock: ClockConfig;
+  provider: ProviderConfig;
+}
+
+export interface ClockConfig {
+  period: number;
+  initialTime: number;
+}
+
+export type Clock = {
+  time$: Observable<number>;
+  currentTime: number;
+  lastUpdateTime: number;
+  update: (time: number, maintainStale?: boolean) => void;
+  dispose: () => void;
+};
+
+export interface ProviderConfig {
+  jsonRpcUrl: string;
+  wsRpcUrl?: string;
+  options?: { batch?: boolean; pollingInterval?: number; skipNetworkCheck?: boolean };
+}
+
+export type Providers = ReturnType<typeof createProvider>;
+export type Network = Awaited<ReturnType<typeof createNetwork>>;
 
 export type Contracts = {
   [key: string]: BaseContract;
 };
 
-export type ContractAddressInterface<C extends Contracts> = {
-  [key in keyof C]: { address: C[key]["address"]; interface: string | string[] };
+export type ContractConfig = {
+  address: string;
+  abi: ContractInterface;
+};
+
+export type ContractsConfig<C extends Contracts> = {
+  [ContractType in keyof C]: ContractConfig;
 };
 
 export type TxQueue<C extends Contracts> = Cached<C>;
@@ -26,12 +63,9 @@ export type ContractEvent<C extends Contracts> = {
   lastEventInTx: boolean;
 };
 
-export interface ContractsEventStreamConfig<C extends Contracts> {
-  contractTopics: ContractTopics<C>[];
-  initialBlockNumber?: number;
-}
-
-export type ContractsEventStream<C extends Contracts> = {
-  config$: Subject<ContractsEventStreamConfig<C>>;
-  eventStream$: Observable<ContractEvent<C>>;
+export type Mappings<C extends Components> = {
+  [key in keyof C]: {
+    decoder: (data: string) => ComponentValue<SchemaOf<C[key]>>;
+    id: string;
+  };
 };

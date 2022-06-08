@@ -1,39 +1,38 @@
-import { BehaviorSubject, combineLatest, map, Observable, Subject } from "rxjs";
-import { Contracts } from "./types";
-import { Contract, ContractInterface, Signer } from "ethers";
+import { Contracts, ContractsConfig } from "./types";
+import { Contract, Signer } from "ethers";
 import { Provider } from "@ethersproject/providers";
+import { computed, IComputedValue } from "mobx";
+import { mapObject } from "@latticexyz/utils";
 
-export type AddressAbi = {
-  address: string;
-  abi: ContractInterface;
-};
+export async function createContracts<C extends Contracts>({
+  config,
+  asyncConfig,
+  signerOrProvider,
+}: {
+  config: Partial<ContractsConfig<C>>;
+  asyncConfig?: (contracts: C) => Promise<Partial<ContractsConfig<C>>>;
+  signerOrProvider: IComputedValue<Signer | Provider>;
+}): Promise<{ contracts: IComputedValue<C>; config: ContractsConfig<C> }> {
+  const contracts = computed(() =>
+    mapObject<Partial<ContractsConfig<C>>, C>(
+      config,
+      (c) => c && (new Contract(c.address, c.abi, signerOrProvider.get()) as C[keyof C])
+    )
+  );
 
-export type ContractsStream<C extends Contracts> = {
-  config$: Subject<ContractsConfig<C>>;
-  contracts$: Observable<C>;
-};
+  if (!asyncConfig) return { contracts, config: config as ContractsConfig<C> };
 
-export type ContractsConfig<C extends Contracts> = {
-  [ContractType in keyof C]: AddressAbi;
-};
+  const asyncConfigResult = await asyncConfig(contracts.get());
 
-export function createContracts<C extends Contracts>(
-  initialConfig: ContractsConfig<C>,
-  providerOrSigner$: Observable<Provider | Signer>
-): ContractsStream<C> {
-  const config$ = new BehaviorSubject<ContractsConfig<C>>(initialConfig);
-  const contracts$ = combineLatest([providerOrSigner$, config$]).pipe(
-    map(([providerOrSigner, config]) => {
-      const contracts: Contracts = {};
-      for (const [type, { address, abi }] of Object.entries(config)) {
-        contracts[type] = new Contract(address, abi, providerOrSigner);
-      }
-      return contracts as C;
-    })
+  const asyncContracts = computed(() =>
+    mapObject<Partial<ContractsConfig<C>>, C>(
+      asyncConfigResult,
+      (c) => c && (new Contract(c.address, c.abi, signerOrProvider.get()) as C[keyof C])
+    )
   );
 
   return {
-    config$,
-    contracts$,
+    contracts: computed(() => ({ ...contracts.get(), ...asyncContracts.get() })),
+    config: { ...config, ...asyncConfigResult } as ContractsConfig<C>,
   };
 }
