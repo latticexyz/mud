@@ -3,6 +3,7 @@ import {
   delay,
   filter,
   first,
+  identity,
   mergeMap,
   Observable,
   of,
@@ -13,11 +14,13 @@ import {
   timestamp,
   UnaryFunction,
 } from "rxjs";
-import { computed, IComputedValue, IObservableValue, observable, reaction, runInAction } from "mobx";
+import { computed, IComputedValue, IObservableValue, observable, reaction, runInAction, toJS } from "mobx";
 import { deferred } from "./deferred";
 
-export function filterNullish<T>(): UnaryFunction<Observable<T | null | undefined>, Observable<T>> {
-  return pipe(filter((x) => x != null) as OperatorFunction<T | null | undefined, T>);
+export function filterNullish<T>(
+  selector: (arg: T | null | undefined) => unknown = identity
+): UnaryFunction<Observable<T | null | undefined>, Observable<T>> {
+  return pipe(filter((x) => selector(x) != null) as OperatorFunction<T | null | undefined, T>);
 }
 
 /**
@@ -55,6 +58,15 @@ export function computedToStream<T>(comp: IComputedValue<T>): Observable<T> {
   const stream = new BehaviorSubject(comp.get());
   reaction(
     () => comp.get(),
+    (value) => stream.next(value)
+  );
+  return stream;
+}
+
+export function observableToStream<T>(obs: T): Observable<T> {
+  const stream = new BehaviorSubject(toJS(obs));
+  reaction(
+    () => toJS(obs),
     (value) => stream.next(value)
   );
   return stream;
