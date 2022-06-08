@@ -13,7 +13,7 @@ export function defineSystem(world: World, system: (world: World) => void): Syst
 /**
  * @param world ECS world this component is defined in
  * @param system Function to be called whenever any of the observable data accessed in the function changes
- * @param options Optional parameters object, [requirement?] is a function that must return true or be nullfor system to run
+ * @param options Optional parameters object, [requirement?] is a function that must return true or be null for system to run
  * @returns Function to dispose the system
  */
 export function defineAutorunSystem(world: World, system: () => void, options?: { requirement?: () => boolean }) {
