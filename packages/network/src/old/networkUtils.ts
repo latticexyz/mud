@@ -2,7 +2,7 @@ import { JsonRpcProvider, WebSocketProvider, Block, Log, Formatter } from "@ethe
 import { callWithRetry, range, sleep } from "@latticexyz/utils";
 import { BigNumber, Contract } from "ethers";
 import { resolveProperties } from "ethers/lib/utils";
-import { Contracts, ContractTopics, ContractEvent, ContractsConfig } from "./types";
+import { Contracts, ContractTopics, ContractAddressInterface, ContractEvent } from "./types";
 
 export async function ensureNetworkIsUp(provider: JsonRpcProvider, wssProvider?: WebSocketProvider): Promise<void> {
   const networkInfoPromise = () => {
@@ -38,7 +38,7 @@ export async function fetchLogs<C extends Contracts>(
   topics: ContractTopics<C>[],
   startBlockNumber: number,
   endBlockNumber: number,
-  contracts: ContractsConfig<C>,
+  contracts: ContractAddressInterface<C>,
   requireMinimumBlockNumber?: number
 ): Promise<Array<Log>> {
   const getLogPromise = async (contractAddress: string, topics: string[][]): Promise<Array<Log>> => {
@@ -100,8 +100,8 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
   topics: ContractTopics<C>[],
   startBlockNumber: number,
   endBlockNumber: number,
-  contracts: ContractsConfig<C>,
-  supportsBatchQueries?: boolean
+  contracts: ContractAddressInterface<C>,
+  supportsBatchQueries: boolean
 ): Promise<Array<ContractEvent<C>>> {
   console.log(`fetching from ${startBlockNumber} -> ${endBlockNumber}`);
   const logs: Array<Log> = await fetchLogs(
@@ -145,7 +145,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
       throw new Error("This should not happen. An event's address is not part of the contracts dictionnary");
     }
 
-    const { address, abi } = contracts[contractKey];
+    const { address, interface: abi } = contracts[contractKey];
     const contract = new Contract(address, abi);
     try {
       const logDescription = contract.interface.parseLog(log);

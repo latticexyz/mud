@@ -1,197 +1,63 @@
-import {
-  BehaviorSubject,
-  combineLatest,
-  exhaustMap,
-  filter,
-  interval,
-  Observable,
-  ReplaySubject,
-  Subject,
-  throttleTime,
-  withLatestFrom,
-} from "rxjs";
+import { computed, observable, toJS } from "mobx";
+import { createSigner } from "./createSigner";
+import { createReconnectingProvider } from "./createProvider";
+import { NetworkConfig } from "./types";
+import { concatMap, EMPTY, filter, map, of, throttleTime, withLatestFrom } from "rxjs";
 import { createClock } from "./createClock";
-import { callWithRetry, timeoutAfter } from "@latticexyz/utils";
-import { ensureNetworkIsUp, fetchBlock } from "./networkUtils";
-import { JsonRpcBatchProvider, JsonRpcProvider, WebSocketProvider } from "@ethersproject/providers";
+import { fetchBlock } from "./networkUtils";
+import { createBlockNumberStream } from "./createBlockNumberStream";
+import { Signer } from "ethers";
 
-export interface NetworkConfig {
-  chainId: number;
-  rpcUrl: string;
-  rpcSupportsBatchQueries: boolean;
-  time: {
-    period: number;
-  };
-  rpcWsUrl?: string;
-}
-
-export type ProviderPair = [JsonRpcProvider, WebSocketProvider?];
-
-export enum ConnectionError {
-  WEBSOCKET_CLOSED,
-  TIMEOUT,
-}
-
-export type Network = {
-  config$: Subject<NetworkConfig>;
-  close: () => void;
-  dispose: () => void;
-  blockNumber$: Observable<number>;
-  time$: Observable<number>;
-  fresh$: Observable<boolean>;
-  providers$: Observable<ProviderPair>;
-  connected$: Observable<boolean>;
-  connectionError$: Observable<ConnectionError>;
-};
-
-function createProviderPair(networkConfig: NetworkConfig): ProviderPair {
-  const { rpcSupportsBatchQueries, rpcUrl, rpcWsUrl } = networkConfig;
-  let jsonProvider;
-  let wssProvider;
-  if (rpcSupportsBatchQueries) {
-    jsonProvider = new JsonRpcBatchProvider(rpcUrl);
-  } else {
-    jsonProvider = new JsonRpcProvider(rpcUrl);
-  }
-  if (rpcWsUrl) {
-    wssProvider = new WebSocketProvider(rpcWsUrl);
-  }
-  return [jsonProvider, wssProvider];
-}
-
-export function createNetwork(initialConfig: NetworkConfig): Network {
+export async function createNetwork(initialConfig: NetworkConfig) {
+  console.log("Creating network");
+  const config = observable(initialConfig);
+  const disposers: (() => void)[] = [];
   const {
-    time: { period },
-  } = initialConfig;
+    providers,
+    connected,
+    dispose: disposeProvider,
+  } = await createReconnectingProvider(computed(() => toJS(config.provider)));
+  disposers.push(disposeProvider);
 
-  const clock = createClock({
-    initialValue: 0,
-    period,
+  // Create signer
+  const signer = computed<Signer | undefined>(() => {
+    const privateKey = config.privateKey;
+    const currentProviders = providers.get();
+    if (privateKey && currentProviders) return createSigner(privateKey, currentProviders);
   });
 
-  const config$ = new BehaviorSubject<NetworkConfig>(initialConfig);
-  const close$ = new Subject<void>();
+  // Listen to new block numbers
+  const { blockNumber$, dispose: disposeBlockNumberStream } = createBlockNumberStream(providers);
+  disposers.push(disposeBlockNumberStream);
 
-  const providers$ = new ReplaySubject<ProviderPair>(1);
-  const blockNumber$ = new ReplaySubject<number>(1);
-  const connected$ = new ReplaySubject<boolean>(1);
-  const connectionError$ = new ReplaySubject<ConnectionError>(1);
+  // Create local clock
+  const clock = createClock(config.clock);
+  disposers.push(clock.dispose);
 
-  const createProviderAndHookErrorCallbacks = async (config: NetworkConfig): Promise<ProviderPair> => {
-    const [jsonProvider, wssProvider] = createProviderPair(config);
-    await ensureNetworkIsUp(jsonProvider, wssProvider);
-    if (wssProvider) {
-      wssProvider._websocket.onerror = () => {
-        console.log("WEBSOCKET_CLOSED from on error");
-        connectionError$.next(ConnectionError.WEBSOCKET_CLOSED);
-        wssProvider.removeAllListeners();
-        wssProvider._websocket.close();
-      };
-      (wssProvider._websocket as WebSocket).onclose = (e) => {
-        wssProvider.removeAllListeners();
-        if (!e.wasClean) {
-          console.warn("Socket closed and unclean!");
-          console.log("WEBSOCKET_CLOSED from on close");
-          connectionError$.next(ConnectionError.WEBSOCKET_CLOSED);
-        }
-      };
-    }
-    return [jsonProvider, wssProvider];
-  };
-
-  const configSub = config$.subscribe(async (config: NetworkConfig) => {
-    close$.next();
-    const [jsonProvider, wssProvider] = await callWithRetry(createProviderAndHookErrorCallbacks, [config]);
-    providers$.next([jsonProvider, wssProvider]);
-    connected$.next(true);
-  });
-
-  const listenToNewBlocks = async (jsonProvider: JsonRpcProvider, wssProvider?: WebSocketProvider) => {
-    if (wssProvider) {
-      wssProvider.on("block", (blockNumber: number) => {
-        blockNumber$.next(blockNumber);
-      });
-    } else {
-      jsonProvider.on("block", (blockNumber: number) => blockNumber$.next(blockNumber));
-    }
-  };
-
-  const providersSub = providers$.subscribe(([jsonProvider, wssProvider]) => {
-    // on new providers
-    listenToNewBlocks(jsonProvider, wssProvider);
-    clock.tick(Date.now() - period);
-  });
-
-  const errorsSub = connectionError$.pipe(withLatestFrom(config$)).subscribe(async ([error, config]) => {
-    close$.next();
-    console.warn("Reconnecting because of an error " + error);
-    const [jsonProvider, wssProvider] = await callWithRetry(createProviderAndHookErrorCallbacks, [config]);
-    providers$.next([jsonProvider, wssProvider]);
-    connected$.next(true);
-  });
-
-  const closeProvidersSub = close$.pipe(withLatestFrom(providers$)).subscribe(([, [jsonProvider, wssProvider]]) => {
-    jsonProvider.removeAllListeners();
-    wssProvider?.removeAllListeners();
-    wssProvider?.destroy();
-    connected$.next(false);
-  });
-
-  const keepAlive$ = interval(10000);
-
-  const connectedSub = combineLatest([keepAlive$, connected$])
+  // Sync the local time to the chain time in regular intervals
+  const syncBlockSub = blockNumber$
     .pipe(
-      filter(([, connected]) => connected),
-      withLatestFrom(providers$),
-      exhaustMap(async ([, [, wssProvider]]) => {
-        if (wssProvider) {
-          try {
-            await timeoutAfter(wssProvider.getBlockNumber(), 10000, "Network Request Timed out");
-          } catch (_) {
-            console.log("WEBSOCKET_CLOSED from keep alive");
-            connectionError$.next(ConnectionError.WEBSOCKET_CLOSED);
-          }
-        }
-      })
+      throttleTime(5000, undefined, { leading: true, trailing: true }), // Update time max once per 5s
+      withLatestFrom(of(providers.get())), // Get the latest providers
+      concatMap(([blockNumber, currentProviders]) =>
+        currentProviders ? fetchBlock(currentProviders.json, blockNumber) : EMPTY
+      ), // Fetch the latest block if a provider is available
+      map((block) => block.timestamp * 1000), // Map to timestamp in ms
+      filter((blockTimestamp) => blockTimestamp === clock.lastUpdateTime), // Ignore if the clock was already refreshed with this block
+      filter((blockTimestamp) => blockTimestamp === clock.currentTime) // Ignore if the current local timestamp is correct
     )
-    .subscribe(() => undefined);
-
-  const blockSub = combineLatest([providers$, blockNumber$])
-    .pipe(
-      throttleTime(5000, undefined, { leading: true, trailing: true }),
-      withLatestFrom(clock.lastFreshTime$, clock.time$)
-    )
-    .subscribe(async ([[[jsonProvider], blockNumber], lastFreshTime, currentClockTime]) => {
-      const block = await fetchBlock(jsonProvider, blockNumber);
-      const blockTimestamp = block.timestamp * 1000;
-      if (blockTimestamp === lastFreshTime) {
-        // we are stil on the same block
-        return;
-      }
-      if (blockTimestamp !== currentClockTime) {
-        // the clock is off! update it
-        clock.tick(blockTimestamp);
-      }
-    });
+    .subscribe(clock.update); // Update the local clock
+  disposers.push(() => syncBlockSub?.unsubscribe());
 
   return {
-    config$,
-    close: () => close$.next(),
+    providers,
+    signer,
+    connected,
+    blockNumber$,
     dispose: () => {
-      close$?.next();
-      configSub?.unsubscribe();
-      providersSub?.unsubscribe();
-      errorsSub?.unsubscribe();
-      connectedSub?.unsubscribe();
-      closeProvidersSub?.unsubscribe();
-      blockSub?.unsubscribe();
-      clock.dispose();
+      for (const disposer of disposers) disposer();
     },
-    time$: clock.time$,
-    fresh$: clock.fresh$,
-    blockNumber$: blockNumber$.asObservable(),
-    providers$: providers$.asObservable(),
-    connected$: connected$.asObservable(),
-    connectionError$: connectionError$.asObservable(),
+    clock,
+    config,
   };
 }
