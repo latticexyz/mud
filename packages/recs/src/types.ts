@@ -12,6 +12,8 @@ export type Schema = {
   [key: string]: Type;
 };
 
+export { Type };
+
 export type ValueType = {
   [Type.Number]: number;
   [Type.String]: string;
