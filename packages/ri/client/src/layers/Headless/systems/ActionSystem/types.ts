@@ -26,10 +26,10 @@ export interface ActionRequest<C extends Components, T> {
 
   // Declare effects this action will have on components.
   // Used to compute component values with pending updates for other requested actions.
-  updates: (componentsWithPendingUpdates: C) => ComponentUpdate<C>[];
+  updates: (componentsWithPendingUpdates: C, data: T) => ComponentUpdate<C>[];
 
   // Logic to be executed when the action is executed.
-  // If txHashes are returned, the action will only be completed (and pending updates removed)
+  // If txHashes are returned from the txQueue, the action will only be completed (and pending updates removed)
   // once all events from the given txHashes have been received and reduced.
   execute: (data: T) => Promise<{ txHashes: string[] }> | Promise<void> | void;
 }
