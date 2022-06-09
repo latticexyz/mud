@@ -121,7 +121,7 @@ export function createActionSystem(
     updateComponent(Action, action.id, { state: ActionState.Executing });
 
     // Set all pending updates of this action
-    for (const { component, value, entity } of action.updates(action.componentsWithPendingUpdates)) {
+    for (const { component, value, entity } of action.updates(action.componentsWithPendingUpdates, requirementResult)) {
       componentsWithPendingUpdates[component as string].addOverride(action.id, { entity, value });
     }
 
