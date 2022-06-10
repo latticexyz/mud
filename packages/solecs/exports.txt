@@ -6,3 +6,5 @@ World
 IEntityContainer
 IEntityIndexer
 IERC165
+LibTypes
+LibQuery

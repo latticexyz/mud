@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 import { Component } from "../../Component.sol";
+import { LibTypes } from "../../LibTypes.sol";
 
 contract TestComponent is Component {
   uint256 public constant ID = uint256(keccak256("lib.testComponent"));
@@ -9,6 +10,10 @@ contract TestComponent is Component {
 
   function getID() public pure override returns (uint256) {
     return ID;
+  }
+
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    values[0] = LibTypes.SchemaValue.UINT256;
   }
 }
 
@@ -20,6 +25,10 @@ contract TestComponent1 is Component {
   function getID() public pure override returns (uint256) {
     return ID;
   }
+
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    values[0] = LibTypes.SchemaValue.UINT256;
+  }
 }
 
 contract TestComponent2 is Component {
@@ -29,6 +38,10 @@ contract TestComponent2 is Component {
 
   function getID() public pure override returns (uint256) {
     return ID;
+  }
+
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    values[0] = LibTypes.SchemaValue.UINT256;
   }
 }
 
@@ -40,6 +53,10 @@ contract TestComponent3 is Component {
   function getID() public pure override returns (uint256) {
     return ID;
   }
+
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    values[0] = LibTypes.SchemaValue.UINT256;
+  }
 }
 
 contract TestComponent4 is Component {
@@ -49,5 +66,9 @@ contract TestComponent4 is Component {
 
   function getID() public pure override returns (uint256) {
     return ID;
+  }
+
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    values[0] = LibTypes.SchemaValue.UINT256;
   }
 }
