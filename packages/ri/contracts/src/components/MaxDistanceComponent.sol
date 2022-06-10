@@ -15,6 +15,13 @@ contract MaxDistanceComponent is Component {
     return ID;
   }
 
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    keys = new string[](1);
+    values = new LibTypes.SchemaValue[](1);
+    keys[0] = "maxDistance";
+    values[0] = LibTypes.SchemaValue.UINT256;
+  }
+
   function set(uint256 entity, MaxDistance calldata value) public {
     set(entity, abi.encode(value));
   }

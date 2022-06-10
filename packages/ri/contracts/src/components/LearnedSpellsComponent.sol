@@ -11,6 +11,11 @@ contract LearnedSpellsComponent is Component {
     return ID;
   }
 
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    values = new LibTypes.SchemaValue[](1);
+    values[0] = LibTypes.SchemaValue.UINT256_ARRAY;
+  }
+
   function set(uint256 entity, uint256[] calldata value) public {
     set(entity, abi.encode(value));
   }

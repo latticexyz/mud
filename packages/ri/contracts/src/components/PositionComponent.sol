@@ -16,6 +16,17 @@ contract PositionComponent is Component {
     return ID;
   }
 
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    keys = new string[](2);
+    values = new LibTypes.SchemaValue[](2);
+
+    keys[0] = "x";
+    values[0] = LibTypes.SchemaValue.INT64;
+
+    keys[1] = "y";
+    values[1] = LibTypes.SchemaValue.INT64;
+  }
+
   function set(uint256 entity, Position calldata value) public {
     set(entity, abi.encode(value));
   }
