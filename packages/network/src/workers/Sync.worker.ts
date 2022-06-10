@@ -1,7 +1,7 @@
-import { awaitValue, filterNullish } from "@latticexyz/utils";
-import { autorun, computed, IComputedValue, IObservableValue, observable, reaction } from "mobx";
+import { awaitPromise, awaitValue, filterNullish, stretch, stretch2 } from "@latticexyz/utils";
+import { autorun, computed, IComputedValue, IObservableValue, observable, reaction, runInAction } from "mobx";
 import { DoWork, runWorker } from "observable-webworker";
-import { concatMap, identity, map, Observable, of, Subject, withLatestFrom } from "rxjs";
+import { concatMap, filter, identity, map, Observable, of, Subject, withLatestFrom } from "rxjs";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { createReconnectingProvider } from "../createProvider";
@@ -39,7 +39,33 @@ export class SyncWorker<Cn extends Contracts, Cm extends Components> implements 
   }
 
   private async init() {
+    // Internal ecs event stream
+    const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>(); // TODO: Very weird hack, if we don't do it like this, we can only subscribe to the stream once...
+
+    // Create cache and get the cache block number
     this.cache = await createCache("ECS");
+    const cacheBlockNumber = (await this.cache.get("_blockNumber")) ?? 9;
+    if (cacheBlockNumber) this.clientBlockNumber = cacheBlockNumber;
+    console.log("Cache block number", cacheBlockNumber);
+
+    // Init from cache
+    const cacheEntries = await this.cache.entries();
+    for (const [key, value] of cacheEntries) {
+      const componentEntity = key.split("/");
+      if (componentEntity.length < 2) continue; // TODO: This is a hack to ignore block number - find a better way to store the block number than in the same DB
+      const [component, entity] = componentEntity;
+      const ecsEvent: ECSEventWithTx<Cm> = {
+        component,
+        entity,
+        value,
+        lastEventInTx: false,
+        txHash: "cache",
+      };
+
+      // Channel this directly to the output, since we don't want to cache it again
+      console.log("ECS event from cache", ecsEvent);
+      this.output$.next(ecsEvent);
+    }
 
     // Only run this once we have an initial config
     await awaitValue(this.config);
@@ -48,17 +74,19 @@ export class SyncWorker<Cn extends Contracts, Cm extends Components> implements 
 
     const { blockNumber$ } = createBlockNumberStream(providers, {
       // TODO: Start from given initial block number
-      initialSync: { initialBlockNumber: 0, interval: 200, gap: 32 },
+      initialSync: { initialBlockNumber: 0, interval: 200 },
     });
 
     // If ECS sidecar is not available
     // TODO: move this into own utility to be able to create a contract event stream without a webworker too
     // TODO: add some kind of config to return a ContractEvent stream and disregard ECS (or maybe that should be a separate worker?)
-    const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>(); // TODO: Very weird hack, if we don't do it like this, we can only subscribe to the stream once...
-    blockNumber$
-      .pipe(
-        map((e) => {
-          return e;
+    (
+      blockNumber$.pipe(
+        filter((blockNumber) => blockNumber > cacheBlockNumber), // Ignore the block numbers lower than our cached block number
+        stretch(32), // Stretch processing of block number to one every 32 milliseconds (mainly relevant for initial sync)
+        map((blockNumber) => {
+          // console.log("blockNumber", blockNumber);
+          return blockNumber;
         }),
         withLatestFrom(awaitValue(this.config), awaitValue(connected)), // Only process if config is available and connected
         map(([blockNumber, config]) => {
@@ -113,9 +141,10 @@ export class SyncWorker<Cn extends Contracts, Cm extends Components> implements 
             txHash: event.txHash,
           };
         }),
-        concatMap(identity), // Await promises
+        awaitPromise(),
         filterNullish() // Only emit if a ECS event was constructed
-      )
+      ) as Observable<ECSEventWithTx<Cm>>
+    ) // TODO: figure out why we need to manually type this, should be inferred
       .subscribe(ecsEvent$);
 
     // Stream ECS events to the Cache worker
@@ -126,7 +155,7 @@ export class SyncWorker<Cn extends Contracts, Cm extends Components> implements 
         withLatestFrom(blockNumber$) // Keep track of the latest block number in the Cache
       )
       .subscribe(([{ key, value }, blockNumber]) => {
-        this.cache?.set("blockNumber", String(blockNumber - 1)); // TODO: only set this if the block number changed (in a separate stream)
+        this.cache?.set("_blockNumber", blockNumber); // TODO: only set this if the block number changed (in a separate stream)
         this.cache?.set(key, value); // The cache is initialized before we process the first event
       });
 
@@ -135,7 +164,7 @@ export class SyncWorker<Cn extends Contracts, Cm extends Components> implements 
   }
 
   public work(input$: Observable<Config<Cn, Cm>>): Observable<Output<Cm>> {
-    input$.subscribe((config) => this.config.set(config));
+    input$.subscribe((config) => runInAction(() => this.config.set(config)));
     return this.output$.asObservable();
   }
 }
