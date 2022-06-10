@@ -21,6 +21,11 @@ contract SpellComponent is Component {
     return ID;
   }
 
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    values = new LibTypes.SchemaValue[](1);
+    values[0] = LibTypes.SchemaValue.UINT8;
+  }
+
   function set(uint256 entity, Spell calldata value) public {
     set(entity, abi.encode(value));
   }
