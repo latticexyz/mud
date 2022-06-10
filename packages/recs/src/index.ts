@@ -38,4 +38,12 @@ export type {
   ExtendableECSEvent,
   Override,
   OverridableComponent,
+  isOptionalType,
+  OptionalType,
+  isArrayType,
+  ArrayType,
+  isNumberType,
+  NumberType,
+  isEntityType,
+  EntityType,
 } from "./types";
