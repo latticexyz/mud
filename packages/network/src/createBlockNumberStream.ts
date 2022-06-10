@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { stretch } from "@latticexyz/utils";
 import { IComputedValue, reaction } from "mobx";
 import { concat, concatMap, EMPTY, endWith, map, range, ReplaySubject, take } from "rxjs";
 import { Providers } from "./types";
@@ -10,7 +9,6 @@ export function createBlockNumberStream(
     initialSync?: {
       initialBlockNumber: number;
       interval: number;
-      gap: number;
     };
   }
 ) {
@@ -28,8 +26,7 @@ export function createBlockNumberStream(
             map((i) => i * options.initialSync!.interval),
             endWith(blockNr)
           )
-        ),
-        stretch(options.initialSync.gap) // Emit one blockNr every x ms
+        )
       )
     : EMPTY;
 

@@ -68,7 +68,7 @@ export async function createCache(storeId: string) {
     };
 
     request.onsuccess = () => {
-      const item = request.result?.value;
+      const item = request.result;
       resolve(item);
     };
 
@@ -111,7 +111,7 @@ export async function createCache(storeId: string) {
   }
 
   // TODO: type this properly
-  function entries() {
+  function values() {
     const [resolve, reject, promise] = deferred<any[]>();
 
     const objectStore = getStore();
@@ -129,5 +129,15 @@ export async function createCache(storeId: string) {
     return promise;
   }
 
-  return { set, get, remove, keys, entries };
+  // TODO: turn this into an interator
+  async function entries() {
+    const [k, v] = await Promise.all([keys(), values()]);
+    const e: [string, any][] = [];
+    for (let i = 0; i < k.length; i++) {
+      e.push([k[i], v[i]]);
+    }
+    return e;
+  }
+
+  return { set, get, remove, keys, values, entries };
 }
