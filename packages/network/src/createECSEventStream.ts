@@ -9,7 +9,7 @@ export function createECSEventStream<Cn extends Contracts, Cm extends Components
   const config = observable(initialConfig);
   const worker = new Worker(new URL("./workers/Sync.worker.ts", import.meta.url), { type: "module" });
   return {
-    ecsEventStream$: fromWorker<Config<Cn, Cm>, Output<Cn, Cm>>(() => worker, observableToStream(config)),
+    ecsEventStream$: fromWorker<Config<Cn, Cm>, Output<Cm>>(() => worker, observableToStream(config)),
     config,
   };
 }
