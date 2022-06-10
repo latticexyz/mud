@@ -49,8 +49,6 @@ export async function createDecoder<V = unknown>(
       data
     );
 
-    console.log("Decoded", decoded);
-
     // Contruct the client component value
     // TODO: This does not take into account schemas without keys, should we support them? Need to add support in client libraries
     const result: { [key: string]: unknown } = {};
@@ -63,7 +61,7 @@ export async function createDecoder<V = unknown>(
         : value;
     }
 
-    console.log("Result", result);
+    console.log("Decoded", data, "to", result);
     return result as unknown as V;
   };
 }

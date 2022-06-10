@@ -5,11 +5,12 @@ import { concatMap, identity, map, Observable, of, Subject, withLatestFrom } fro
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { createReconnectingProvider } from "../createProvider";
-import { ContractEvent, Contracts, ContractsConfig, ContractTopics, Mappings, ProviderConfig } from "../types";
+import { Cache, ContractEvent, Contracts, ContractsConfig, ContractTopics, Mappings, ProviderConfig } from "../types";
 import { observableToBeFn } from "rxjs/internal/testing/TestScheduler";
 import { BigNumber, Contract } from "ethers";
 import { createDecoder } from "../createDecoder";
 import { Components, ComponentValue, ExtendableECSEvent, SchemaOf } from "@latticexyz/recs";
+import { createCache } from "../createCache";
 
 export type Config<Cn extends Contracts, Cm extends Components> = {
   provider: ProviderConfig;
@@ -31,12 +32,15 @@ export class SyncWorker<Cn extends Contracts, Cm extends Components> implements 
   private clientBlockNumber = 1;
   private decoders: { [key: string]: (data: string) => unknown } = {};
   private output$ = new Subject<Output<Cm>>();
+  private cache?: Cache;
 
   constructor() {
     this.init();
   }
 
   private async init() {
+    this.cache = await createCache("ECS");
+
     // Only run this once we have an initial config
     await awaitValue(this.config);
 
@@ -50,10 +54,10 @@ export class SyncWorker<Cn extends Contracts, Cm extends Components> implements 
     // If ECS sidecar is not available
     // TODO: move this into own utility to be able to create a contract event stream without a webworker too
     // TODO: add some kind of config to return a ContractEvent stream and disregard ECS (or maybe that should be a separate worker?)
+    const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>(); // TODO: Very weird hack, if we don't do it like this, we can only subscribe to the stream once...
     blockNumber$
       .pipe(
         map((e) => {
-          console.log("Blocknr", e);
           return e;
         }),
         withLatestFrom(awaitValue(this.config), awaitValue(connected)), // Only process if config is available and connected
@@ -112,7 +116,22 @@ export class SyncWorker<Cn extends Contracts, Cm extends Components> implements 
         concatMap(identity), // Await promises
         filterNullish() // Only emit if a ECS event was constructed
       )
-      .subscribe(this.output$);
+      .subscribe(ecsEvent$);
+
+    // Stream ECS events to the Cache worker
+    // TODO: move this to its own worker
+    ecsEvent$
+      .pipe(
+        map((event) => ({ key: `${event.component}/${event.entity}`, value: event.value })),
+        withLatestFrom(blockNumber$) // Keep track of the latest block number in the Cache
+      )
+      .subscribe(([{ key, value }, blockNumber]) => {
+        this.cache?.set("blockNumber", String(blockNumber - 1)); // TODO: only set this if the block number changed (in a separate stream)
+        this.cache?.set(key, value); // The cache is initialized before we process the first event
+      });
+
+    // Stream ECS events to the main thread
+    ecsEvent$.subscribe(this.output$);
   }
 
   public work(input$: Observable<Config<Cn, Cm>>): Observable<Output<Cm>> {

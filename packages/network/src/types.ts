@@ -3,6 +3,7 @@ import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
 import { Cached } from "@latticexyz/utils";
 import { BaseContract, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
+import { createCache } from "./createCache";
 import { createNetwork } from "./createNetwork";
 import { createProvider } from "./createProvider";
 
@@ -67,3 +68,5 @@ export type ContractEvent<C extends Contracts> = {
 export type Mappings<C extends Components> = {
   [hashedContractId: string]: keyof C;
 };
+
+export type Cache = Awaited<ReturnType<typeof createCache>>;

@@ -1,17 +1,15 @@
 import { deferred } from "@latticexyz/utils";
 
 const indexedDB = self.indexedDB;
-const VERSION = 1;
+const VERSION = 4; // TODO: Find a better way to manage the version than hardcoding here
 
-export enum Store {
-  ECSEvent = "ECSEvent",
+function initStore(db: IDBDatabase, storeId: string) {
+  if (!db.objectStoreNames.contains(storeId)) {
+    db.createObjectStore(storeId);
+  }
 }
 
-type ReturnTypes = {
-  [Store.ECSEvent]: string;
-};
-
-function initDb() {
+function initDb(storeId: string) {
   const [resolve, reject, promise] = deferred<IDBDatabase>();
 
   const request = indexedDB.open("Cache", VERSION);
@@ -19,39 +17,35 @@ function initDb() {
   // Create store and index
   request.onupgradeneeded = () => {
     const db = request.result;
+    initStore(db, storeId);
+  };
 
-    for (const store of Object.values(Store)) {
-      if (db.objectStoreNames.contains(store)) {
-        continue;
-      }
-      db.createObjectStore(store, { keyPath: "key" });
-    }
+  request.onsuccess = () => {
+    const db = request.result;
+    resolve(db);
+  };
 
-    request.onsuccess = () => {
-      resolve(request.result);
-    };
-
-    request.onerror = (error) => {
-      reject(new Error(JSON.stringify(error)));
-    };
+  request.onerror = (error) => {
+    reject(new Error(JSON.stringify(error)));
   };
 
   return promise;
 }
 
-export async function createCache() {
-  const db = await initDb();
+export async function createCache(storeId: string) {
+  const db = await initDb(storeId);
 
-  function getStore(store: Store) {
-    const tx = db.transaction(store, "readwrite");
-    return tx.objectStore(store);
+  function getStore(): IDBObjectStore {
+    const tx = db.transaction(storeId, "readwrite");
+    return tx.objectStore(storeId);
   }
 
-  function setItem<S extends Store>(store: S, key: string, value: ReturnTypes[S]) {
+  // TODO: make this better by providing a schema when initializing the store, then verifying the schema here
+  function set(key: string, value: any) {
     const [resolve, reject, promise] = deferred<void>();
 
-    const objectStore = getStore(store);
-    const request = objectStore.put({ key, value });
+    const objectStore = getStore();
+    const request = objectStore.put(value, key);
     request.onerror = (error) => {
       reject(new Error(JSON.stringify(error)));
     };
@@ -63,10 +57,10 @@ export async function createCache() {
     return promise;
   }
 
-  function getItem<S extends Store>(store: S, key: string) {
-    const [resolve, reject, promise] = deferred<ReturnTypes[S] | undefined>();
+  function get(key: string) {
+    const [resolve, reject, promise] = deferred<any | undefined>();
 
-    const objectStore = getStore(store);
+    const objectStore = getStore();
     const request = objectStore.get(key);
 
     request.onerror = (error) => {
@@ -81,10 +75,10 @@ export async function createCache() {
     return promise;
   }
 
-  function deleteItem<S extends Store>(store: S, key: string) {
+  function remove(key: string) {
     const [resolve, reject, promise] = deferred<void>();
 
-    const objectStore = getStore(store);
+    const objectStore = getStore();
     const request = objectStore.delete(key);
 
     request.onerror = (error) => {
@@ -98,10 +92,10 @@ export async function createCache() {
     return promise;
   }
 
-  function getKeys<S extends Store>(store: S) {
+  function keys() {
     const [resolve, reject, promise] = deferred<string[]>();
 
-    const objectStore = getStore(store);
+    const objectStore = getStore();
     const request = objectStore.getAllKeys();
 
     request.onerror = (error) => {
@@ -116,5 +110,24 @@ export async function createCache() {
     return promise;
   }
 
-  return { setItem, getItem, deleteItem, getKeys };
+  // TODO: type this properly
+  function entries() {
+    const [resolve, reject, promise] = deferred<any[]>();
+
+    const objectStore = getStore();
+    const request = objectStore.getAll();
+
+    request.onerror = (error) => {
+      reject(new Error(JSON.stringify(error)));
+    };
+
+    request.onsuccess = () => {
+      const item = request.result;
+      resolve(item);
+    };
+
+    return promise;
+  }
+
+  return { set, get, remove, keys, entries };
 }

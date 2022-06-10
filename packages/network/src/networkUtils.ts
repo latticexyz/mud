@@ -103,7 +103,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
   contracts: ContractsConfig<C>,
   supportsBatchQueries?: boolean
 ): Promise<Array<ContractEvent<C>>> {
-  console.log(`fetching from ${startBlockNumber} -> ${endBlockNumber}`);
+  // console.log(`fetching from ${startBlockNumber} -> ${endBlockNumber}`);
   const logs: Array<Log> = await fetchLogs(
     provider,
     topics,
