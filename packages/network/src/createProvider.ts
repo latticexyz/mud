@@ -1,6 +1,6 @@
 import { JsonRpcBatchProvider, JsonRpcProvider, WebSocketProvider } from "@ethersproject/providers";
 import { callWithRetry, observableToComputed, timeoutAfter } from "@latticexyz/utils";
-import { IComputedValue, observable, reaction, runInAction } from "mobx";
+import { IComputedValue, IObservableValue, observable, reaction, runInAction } from "mobx";
 import { ensureNetworkIsUp } from "./networkUtils";
 import { ProviderConfig, Providers } from "./types";
 
@@ -17,14 +17,25 @@ export function createProvider({ jsonRpcUrl, wsRpcUrl, options }: ProviderConfig
   return providers;
 }
 
+export enum ConnectionState {
+  DISCONNECTED,
+  CONNECTING,
+  CONNECTED,
+}
+
 export async function createReconnectingProvider(config: IComputedValue<ProviderConfig>) {
-  const connected = observable.box(false);
-  const providers = observable.box<Providers>();
+  const connected = observable.box<ConnectionState>(ConnectionState.DISCONNECTED);
+  const providers = observable.box<Providers>() as IObservableValue<Providers>;
   const disposers: (() => void)[] = [];
 
   async function initProviders() {
+    // Abort if connection is currently being established
+    if (connected.get() === ConnectionState.CONNECTING) return;
+
+    console.log("Initializing providers");
+
     // Invalidate current providers
-    runInAction(() => connected.set(false));
+    runInAction(() => connected.set(ConnectionState.CONNECTING));
 
     // Remove listeners from stale providers and close open connections
     const prevProviders = providers.get();
@@ -45,7 +56,7 @@ export async function createReconnectingProvider(config: IComputedValue<Provider
       !conf?.options?.skipNetworkCheck && (await ensureNetworkIsUp(newProviders.json, newProviders.ws));
       runInAction(() => {
         providers.set(newProviders);
-        connected.set(true);
+        connected.set(ConnectionState.CONNECTED);
       });
     });
   }
@@ -54,7 +65,10 @@ export async function createReconnectingProvider(config: IComputedValue<Provider
   disposers.push(
     reaction(
       () => config.get(),
-      () => initProviders()
+      () => {
+        console.log("Config changed");
+        initProviders();
+      }
     )
   );
 
@@ -67,7 +81,9 @@ export async function createReconnectingProvider(config: IComputedValue<Provider
           currentProviders.ws._websocket.onerror = initProviders;
           currentProviders.ws._websocket.onclose = () => {
             // Only reconnect if closed unexpectedly
-            if (connected.get()) initProviders();
+            if (connected.get() === ConnectionState.CONNECTED) {
+              initProviders();
+            }
           };
         }
       }
@@ -76,7 +92,7 @@ export async function createReconnectingProvider(config: IComputedValue<Provider
 
   // Keep websocket connection alive
   const keepAliveInterval = setInterval(async () => {
-    if (!connected.get()) return;
+    if (connected.get() !== ConnectionState.CONNECTED) return;
     const currentProviders = providers.get();
     if (!currentProviders?.ws) return;
     try {
@@ -84,7 +100,6 @@ export async function createReconnectingProvider(config: IComputedValue<Provider
     } catch {
       initProviders();
     }
-    //
   }, 10000);
   disposers.push(() => clearInterval(keepAliveInterval));
 

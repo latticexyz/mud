@@ -45,7 +45,7 @@ export type ContractConfig = {
 };
 
 export type ContractsConfig<C extends Contracts> = {
-  [ContractType in keyof C]: ContractConfig;
+  [key in keyof C]: ContractConfig;
 };
 
 export type TxQueue<C extends Contracts> = Cached<C>;
@@ -63,9 +63,7 @@ export type ContractEvent<C extends Contracts> = {
   lastEventInTx: boolean;
 };
 
+// Mapping from hashed contract component id to client component key
 export type Mappings<C extends Components> = {
-  [key in keyof C]: {
-    decoder: (data: string) => ComponentValue<SchemaOf<C[key]>>;
-    id: string;
-  };
+  [hashedContractId: string]: keyof C;
 };

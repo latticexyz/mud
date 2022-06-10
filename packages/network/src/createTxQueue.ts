@@ -5,6 +5,7 @@ import { mapObject, deferred, uuid, awaitValue, cacheUntilReady } from "@lattice
 import { Mutex } from "async-mutex";
 import { TransactionResponse } from "@ethersproject/providers";
 import { Contracts, Network, TxQueue } from "./types";
+import { ConnectionState } from "./createProvider";
 
 function createPriorityQueue<T>() {
   const queue = new Map<string, { element: T; priority: number }>();
@@ -69,7 +70,9 @@ export function createTxQueue<C extends Contracts>(
     const provider = network.providers.get()?.json;
     const nonce = _nonce.get();
 
-    if (!connected || !contracts || !signer || !provider || nonce == null) return undefined;
+    if (connected !== ConnectionState.CONNECTED || !contracts || !signer || !provider || nonce == null)
+      return undefined;
+
     return { contracts, signer, provider, nonce };
   });
 
