@@ -36,15 +36,12 @@ export async function createNetworkLayer() {
 
   // Contracts and mappings
   const { txQueue, txReduced$ } = await setupContracts(world, components, {
-    Position: { decoder: decodePosition, id: "ember.component.positionComponent" },
-    EntityType: { decoder: decodeEntityType, id: "ember.component.entityTypeComponent" },
-    Untraversable: { decoder: decodeUntraversable, id: "ember.component.untraversableComponent" },
-    MinedTag: { decoder: () => ({}), id: "ember.component.minedTagComponent" },
-    Spell: { decoder: decodeSpell, id: "ember.component.spellComponent" },
-    EmbodiedSystemArgumentComponent: {
-      decoder: (value: string) => ({ value }),
-      id: "ember.component.embodiedSystemArgumentComponent",
-    },
+    [keccak256("ember.component.positionComponent")]: "Position",
+    [keccak256("ember.component.entityTypeComponent")]: "EntityType",
+    [keccak256("ember.component.untraversableComponent")]: "Untraversable",
+    [keccak256("ember.component.minedTagComponent")]: "MinedTag",
+    [keccak256("ember.component.spellComponent")]: "Spell",
+    [keccak256("ember.component.embodiedSystemArgumentComponent")]: "EmbodiedSystemArgumentComponent",
   });
 
   // API
