@@ -64,7 +64,7 @@ export async function setupContracts<C extends Components>(world: World, compone
 
   // TEST
   ecsEventStream$.subscribe((event) => console.log("Got event", event));
-  // const { txReduced$ } = applyNetworkUpdates(world, components, ecsEventStream$);
+  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEventStream$);
 
   return { txQueue, txReduced$: new Subject<any>() };
 }
