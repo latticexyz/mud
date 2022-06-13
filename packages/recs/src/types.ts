@@ -148,3 +148,51 @@ export type OverridableComponent<T extends Schema> = Component<T> & {
   addOverride: (id: string, update: Override<T>) => void;
   removeOverride: (id: string) => void;
 };
+
+export type OptionalType =
+  | Type.OptionalNumber
+  | Type.OptionalString
+  | Type.OptionalEntity
+  | Type.OptionalNumberArray
+  | Type.OptionalStringArray
+  | Type.OptionalEntityArray;
+
+export function isOptionalType(t: Type): t is OptionalType {
+  return [
+    Type.OptionalNumber,
+    Type.OptionalString,
+    Type.OptionalEntity,
+    Type.OptionalEntityArray,
+    Type.OptionalNumberArray,
+    Type.OptionalStringArray,
+  ].includes(t);
+}
+
+export type ArrayType =
+  | Type.NumberArray
+  | Type.OptionalNumberArray
+  | Type.StringArray
+  | Type.OptionalStringArray
+  | Type.EntityArray
+  | Type.OptionalEntityArray;
+
+export function isArrayType(t: Type): t is ArrayType {
+  return [
+    Type.NumberArray,
+    Type.OptionalNumberArray,
+    Type.StringArray,
+    Type.OptionalStringArray,
+    Type.EntityArray,
+    Type.OptionalEntityArray,
+  ].includes(t);
+}
+
+export type NumberType = Type.Number | Type.OptionalNumber;
+export function isNumberType(t: Type): t is NumberType {
+  return [Type.Number, Type.OptionalNumber].includes(t);
+}
+
+export type EntityType = Type.Entity | Type.OptionalEntity;
+export function isEntityType(t: Type): t is EntityType {
+  return [Type.Entity, Type.OptionalEntity].includes(t);
+}
