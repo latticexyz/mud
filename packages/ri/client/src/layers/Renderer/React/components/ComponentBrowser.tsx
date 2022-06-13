@@ -1,5 +1,5 @@
 import React from "react";
-import { Browser } from "@latticexyz/browser";
+import { Browser } from "@latticexyz/ecs-browser";
 import { registerUIComponent } from "../engine";
 
 export function registerComponentBrowser() {
