@@ -10,17 +10,12 @@ import { defineActionComponent } from "./components";
  */
 
 export async function createHeadlessLayer(network: NetworkLayer) {
-  const world = createWorld({ parentWorld: network.world });
+  const world = createWorld({ parentWorld: network.world, name: "Headless" });
 
   const Action = defineActionComponent(world);
   const components = { Action };
 
   const actions = createActionSystem(world, Action, network.txReduced$);
 
-  // API
-  function moveEntity(entity: Entity, to: WorldCoord) {
-    network.api.setPosition(entity, to);
-  }
-
-  return { world, actions, parentLayers: { network }, components, api: { moveEntity } };
+  return { world, actions, parentLayers: { network }, components };
 }
