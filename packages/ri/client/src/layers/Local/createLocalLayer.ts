@@ -28,7 +28,7 @@ import { createRockWallSystem } from "./systems/RockWallSystem";
  * Its purpose is to add components and systems for all client-only functionality, eg. strolling imps.
  */
 export async function createLocalLayer(headless: HeadlessLayer) {
-  const world = createWorld({ parentWorld: headless.world });
+  const world = createWorld({ parentWorld: headless.world, name: "Local" });
 
   // Components
   const LocalPosition = defineLocalPositionComponent(world);
