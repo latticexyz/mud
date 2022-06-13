@@ -38,13 +38,10 @@ export type {
   ExtendableECSEvent,
   Override,
   OverridableComponent,
-  isOptionalType,
   OptionalType,
-  isArrayType,
   ArrayType,
-  isNumberType,
   NumberType,
-  isEntityType,
   EntityType,
 } from "./types";
+export { isOptionalType, isArrayType, isNumberType, isEntityType } from "./types";
 export type { Layer, Layers } from "./Layer";
