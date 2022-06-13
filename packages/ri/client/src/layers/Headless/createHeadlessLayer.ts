@@ -1,6 +1,5 @@
-import { createWorld, Entity } from "@latticexyz/recs";
+import { createWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
-import { WorldCoord } from "../../types";
 import { createActionSystem } from "./systems";
 import { defineActionComponent } from "./components";
 
