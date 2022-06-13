@@ -1,0 +1,5 @@
+memmove/=../../node_modules/memmove/src/
+ds-test/=../../node_modules/ds-test/src/
+@openzeppelin/=../../node_modules/openzeppelin-solidity/
+forge-std/=../../node_modules/forge-std/src/
+solmate/=../../node_modules/@rari-capital/solmate/src

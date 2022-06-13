@@ -62,19 +62,24 @@
     "sourceMap": "",
     "linkReferences": {}
   },
+  "methodIdentifiers": {
+    "getEntities()": "31b933b9",
+    "getEntitiesWithValue(bytes)": "b361be46",
+    "has(uint256)": "cccf7a8e"
+  },
   "ast": {
-    "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/solecs/src/interfaces/IEntityContainer.sol",
-    "id": 16357,
+    "absolutePath": "/Users/kooshaba/workspace/mud/packages/solecs/src/interfaces/IEntityContainer.sol",
+    "id": 16406,
     "exportedSymbols": {
       "IEntityContainer": [
-        16356
+        16405
       ]
     },
     "nodeType": "SourceUnit",
     "src": "38:281:24",
     "nodes": [
       {
-        "id": 16334,
+        "id": 16383,
         "nodeType": "PragmaDirective",
         "src": "38:24:24",
         "literals": [
@@ -85,12 +90,12 @@
         ]
       },
       {
-        "id": 16356,
+        "id": 16405,
         "nodeType": "ContractDefinition",
         "src": "64:254:24",
         "nodes": [
           {
-            "id": 16341,
+            "id": 16390,
             "nodeType": "FunctionDefinition",
             "src": "95:58:24",
             "functionSelector": "cccf7a8e",
@@ -100,17 +105,17 @@
             "name": "has",
             "nameLocation": "104:3:24",
             "parameters": {
-              "id": 16337,
+              "id": 16386,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16336,
+                  "id": 16385,
                   "mutability": "mutable",
                   "name": "entity",
                   "nameLocation": "116:6:24",
                   "nodeType": "VariableDeclaration",
-                  "scope": 16341,
+                  "scope": 16390,
                   "src": "108:14:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -119,7 +124,7 @@
                     "typeString": "uint256"
                   },
                   "typeName": {
-                    "id": 16335,
+                    "id": 16384,
                     "name": "uint256",
                     "nodeType": "ElementaryTypeName",
                     "src": "108:7:24",
@@ -134,17 +139,17 @@
               "src": "107:16:24"
             },
             "returnParameters": {
-              "id": 16340,
+              "id": 16389,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16339,
+                  "id": 16388,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 16341,
+                  "scope": 16390,
                   "src": "147:4:24",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -153,7 +158,7 @@
                     "typeString": "bool"
                   },
                   "typeName": {
-                    "id": 16338,
+                    "id": 16387,
                     "name": "bool",
                     "nodeType": "ElementaryTypeName",
                     "src": "147:4:24",
@@ -167,13 +172,13 @@
               ],
               "src": "146:6:24"
             },
-            "scope": 16356,
+            "scope": 16405,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 16347,
+            "id": 16396,
             "nodeType": "FunctionDefinition",
             "src": "157:64:24",
             "functionSelector": "31b933b9",
@@ -183,23 +188,23 @@
             "name": "getEntities",
             "nameLocation": "166:11:24",
             "parameters": {
-              "id": 16342,
+              "id": 16391,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "177:2:24"
             },
             "returnParameters": {
-              "id": 16346,
+              "id": 16395,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16345,
+                  "id": 16394,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 16347,
+                  "scope": 16396,
                   "src": "203:16:24",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -209,7 +214,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 16343,
+                      "id": 16392,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "203:7:24",
@@ -218,7 +223,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 16344,
+                    "id": 16393,
                     "nodeType": "ArrayTypeName",
                     "src": "203:9:24",
                     "typeDescriptions": {
@@ -231,13 +236,13 @@
               ],
               "src": "202:18:24"
             },
-            "scope": 16356,
+            "scope": 16405,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
           },
           {
-            "id": 16355,
+            "id": 16404,
             "nodeType": "FunctionDefinition",
             "src": "225:91:24",
             "functionSelector": "b361be46",
@@ -247,17 +252,17 @@
             "name": "getEntitiesWithValue",
             "nameLocation": "234:20:24",
             "parameters": {
-              "id": 16350,
+              "id": 16399,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16349,
+                  "id": 16398,
                   "mutability": "mutable",
                   "name": "value",
                   "nameLocation": "268:5:24",
                   "nodeType": "VariableDeclaration",
-                  "scope": 16355,
+                  "scope": 16404,
                   "src": "255:18:24",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -266,7 +271,7 @@
                     "typeString": "bytes"
                   },
                   "typeName": {
-                    "id": 16348,
+                    "id": 16397,
                     "name": "bytes",
                     "nodeType": "ElementaryTypeName",
                     "src": "255:5:24",
@@ -281,17 +286,17 @@
               "src": "254:20:24"
             },
             "returnParameters": {
-              "id": 16354,
+              "id": 16403,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 16353,
+                  "id": 16402,
                   "mutability": "mutable",
                   "name": "",
                   "nameLocation": "-1:-1:-1",
                   "nodeType": "VariableDeclaration",
-                  "scope": 16355,
+                  "scope": 16404,
                   "src": "298:16:24",
                   "stateVariable": false,
                   "storageLocation": "memory",
@@ -301,7 +306,7 @@
                   },
                   "typeName": {
                     "baseType": {
-                      "id": 16351,
+                      "id": 16400,
                       "name": "uint256",
                       "nodeType": "ElementaryTypeName",
                       "src": "298:7:24",
@@ -310,7 +315,7 @@
                         "typeString": "uint256"
                       }
                     },
-                    "id": 16352,
+                    "id": 16401,
                     "nodeType": "ArrayTypeName",
                     "src": "298:9:24",
                     "typeDescriptions": {
@@ -323,7 +328,7 @@
               ],
               "src": "297:18:24"
             },
-            "scope": 16356,
+            "scope": 16405,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -336,14 +341,15 @@
         "contractKind": "interface",
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          16356
+          16405
         ],
         "name": "IEntityContainer",
         "nameLocation": "74:16:24",
-        "scope": 16357,
+        "scope": 16406,
         "usedErrors": []
       }
     ],
     "license": "Unlicense"
-  }
+  },
+  "id": 24
 }

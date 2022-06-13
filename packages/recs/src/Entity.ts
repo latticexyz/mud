@@ -5,9 +5,9 @@ import { ComponentWithValue, Entity, Schema, Unpacked, World } from "./types";
 export function createEntity<Cs extends Schema[]>(
   world: World,
   components?: ComponentWithValue<Unpacked<Cs>>[],
-  options?: { id?: string }
+  options?: { id?: string; name?: string }
 ): Entity {
-  const entity = world.registerEntity(options?.id);
+  const entity = world.registerEntity(options?.id, options?.name);
 
   if (components) {
     for (const { component, value } of components) {

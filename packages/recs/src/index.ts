@@ -47,3 +47,4 @@ export type {
   isEntityType,
   EntityType,
 } from "./types";
+export type { Layer, Layers } from "./Layer";

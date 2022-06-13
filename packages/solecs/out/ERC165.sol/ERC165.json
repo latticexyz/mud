@@ -30,8 +30,11 @@
     "sourceMap": "",
     "linkReferences": {}
   },
+  "methodIdentifiers": {
+    "supportsInterface(bytes4)": "01ffc9a7"
+  },
   "ast": {
-    "absolutePath": "/Users/flomllr/git/latticexyz/mud/node_modules/openzeppelin-solidity/contracts/utils/introspection/ERC165.sol",
+    "absolutePath": "/Users/kooshaba/workspace/mud/node_modules/openzeppelin-solidity/contracts/utils/introspection/ERC165.sol",
     "id": 572,
     "exportedSymbols": {
       "ERC165": [
@@ -59,7 +62,7 @@
         "id": 550,
         "nodeType": "ImportDirective",
         "src": "124:23:2",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/node_modules/openzeppelin-solidity/contracts/utils/introspection/IERC165.sol",
+        "absolutePath": "/Users/kooshaba/workspace/mud/node_modules/openzeppelin-solidity/contracts/utils/introspection/IERC165.sol",
         "file": "./IERC165.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 572,
@@ -312,5 +315,6 @@
       }
     ],
     "license": "MIT"
-  }
+  },
+  "id": 2
 }

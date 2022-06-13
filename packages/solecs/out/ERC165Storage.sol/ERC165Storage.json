@@ -30,18 +30,21 @@
     "sourceMap": "",
     "linkReferences": {}
   },
+  "methodIdentifiers": {
+    "supportsInterface(bytes4)": "01ffc9a7"
+  },
   "ast": {
-    "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/solecs/../../node_modules/openzeppelin-solidity/contracts/utils/introspection/ERC165Storage.sol",
+    "absolutePath": "/Users/kooshaba/workspace/mud/packages/solecs/../../node_modules/openzeppelin-solidity/contracts/utils/introspection/ERC165Storage.sol",
     "id": 12135,
     "exportedSymbols": {
       "ERC165": [
-        23579
+        23628
       ],
       "ERC165Storage": [
         12134
       ],
       "IERC165": [
-        23555
+        23604
       ]
     },
     "nodeType": "SourceUnit",
@@ -62,11 +65,11 @@
         "id": 12086,
         "nodeType": "ImportDirective",
         "src": "131:22:13",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/solecs/../../node_modules/openzeppelin-solidity/contracts/utils/introspection/ERC165.sol",
+        "absolutePath": "/Users/kooshaba/workspace/mud/packages/solecs/../../node_modules/openzeppelin-solidity/contracts/utils/introspection/ERC165.sol",
         "file": "./ERC165.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 12135,
-        "sourceUnit": 23580,
+        "sourceUnit": 23629,
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -188,7 +191,7 @@
                         "lValueRequested": false,
                         "memberName": "supportsInterface",
                         "nodeType": "MemberAccess",
-                        "referencedDeclaration": 23578,
+                        "referencedDeclaration": 23627,
                         "src": "704:23:13",
                         "typeDescriptions": {
                           "typeIdentifier": "t_function_internal_view$_t_bytes4_$returns$_t_bool_$",
@@ -263,7 +266,7 @@
               ]
             },
             "baseFunctions": [
-              23578
+              23627
             ],
             "documentation": {
               "id": 12095,
@@ -613,7 +616,7 @@
               "id": 12088,
               "name": "ERC165",
               "nodeType": "IdentifierPath",
-              "referencedDeclaration": 23579,
+              "referencedDeclaration": 23628,
               "src": "376:6:13"
             },
             "id": 12089,
@@ -633,8 +636,8 @@
         "fullyImplemented": true,
         "linearizedBaseContracts": [
           12134,
-          23579,
-          23555
+          23628,
+          23604
         ],
         "name": "ERC165Storage",
         "nameLocation": "359:13:13",
@@ -643,5 +646,6 @@
       }
     ],
     "license": "MIT"
-  }
+  },
+  "id": 13
 }

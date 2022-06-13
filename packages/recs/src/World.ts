@@ -9,8 +9,8 @@ export function createWorld(options?: { parentWorld?: World; name?: string }): W
   const systemDisposer = new Set<() => void>();
   const prefix = options?.name || uuid();
 
-  function registerEntity(id?: string): Entity {
-    const entity = id || prefix + "/" + entities.size;
+  function registerEntity(id?: string, name?: string): Entity {
+    const entity = id || prefix + "/" + entities.size + (name ? "-" + name : "");
     entities.init(entity);
     return entity;
   }

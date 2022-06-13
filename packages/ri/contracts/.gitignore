@@ -5,3 +5,5 @@ node_modules/
 bindings/
 artifacts/
 deployments
+abi/
+types/ethers-contracts/

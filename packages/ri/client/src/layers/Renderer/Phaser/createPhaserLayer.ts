@@ -18,6 +18,7 @@ import {
   createOutlineSystem,
   createHueTintSystem,
   createSelectionSystem,
+  createDrawDevHighlightSystem,
 } from "./systems";
 import { createPhaserEngine } from "@latticexyz/phaserx";
 import {
@@ -29,6 +30,7 @@ import {
 import { config } from "./config";
 import { createSelectionOutlineSystem } from "./systems/SelectionOutlineSystem";
 import { coordsOf } from "@latticexyz/utils";
+import { defineDevHighlightComponent } from "@latticexyz/std-client";
 
 /**
  * The Phaser layer extends the Local layer.
@@ -43,7 +45,8 @@ export async function createPhaserLayer(local: LocalLayer) {
   const SpriteAnimation = defineSpriteAnimationComponent(world);
   const Outline = defineOutlineComponent(world);
   const HueTint = defineHueTintComponent(world);
-  const components = { Appearance, SpriteAnimation, Outline, HueTint };
+  const DevHighlight = defineDevHighlightComponent(world);
+  const components = { Appearance, SpriteAnimation, Outline, HueTint, DevHighlight };
 
   // Create phaser engine
   const { game, scenes, dispose: disposePhaser } = await createPhaserEngine(config);
@@ -95,6 +98,7 @@ export async function createPhaserLayer(local: LocalLayer) {
   createHueTintSystem(layer);
   createSelectionSystem(layer);
   createSelectionOutlineSystem(layer);
+  createDrawDevHighlightSystem(layer);
 
   return layer;
 }

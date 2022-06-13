@@ -1,24 +1,25 @@
 {
   "abi": [],
   "bytecode": {
-    "object": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220100cbba4de13ec798541bae0580c949fb5d184743cae67ecd29f40100fe8837564736f6c634300080d0033",
+    "object": "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203e5451e82d6c1788d795281716bf8b12e4870e5098c11deaf2ce936239a42c3864736f6c634300080d0033",
     "sourceMap": "434:4185:12:-:0;;;;;;;;;;;;;;;-1:-1:-1;;;434:4185:12;;;;;;;;;;;;;;;;;",
     "linkReferences": {}
   },
   "deployedBytecode": {
-    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220100cbba4de13ec798541bae0580c949fb5d184743cae67ecd29f40100fe8837564736f6c634300080d0033",
+    "object": "0x73000000000000000000000000000000000000000030146080604052600080fdfea26469706673582212203e5451e82d6c1788d795281716bf8b12e4870e5098c11deaf2ce936239a42c3864736f6c634300080d0033",
     "sourceMap": "434:4185:12:-:0;;;;;;;;",
     "linkReferences": {}
   },
+  "methodIdentifiers": {},
   "ast": {
-    "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/solecs/../../node_modules/openzeppelin-solidity/contracts/utils/introspection/ERC165Checker.sol",
+    "absolutePath": "/Users/kooshaba/workspace/mud/packages/solecs/../../node_modules/openzeppelin-solidity/contracts/utils/introspection/ERC165Checker.sol",
     "id": 12084,
     "exportedSymbols": {
       "ERC165Checker": [
         12083
       ],
       "IERC165": [
-        23555
+        23604
       ]
     },
     "nodeType": "SourceUnit",
@@ -39,11 +40,11 @@
         "id": 11884,
         "nodeType": "ImportDirective",
         "src": "131:23:12",
-        "absolutePath": "/Users/flomllr/git/latticexyz/mud/packages/solecs/../../node_modules/openzeppelin-solidity/contracts/utils/introspection/IERC165.sol",
+        "absolutePath": "/Users/kooshaba/workspace/mud/packages/solecs/../../node_modules/openzeppelin-solidity/contracts/utils/introspection/IERC165.sol",
         "file": "./IERC165.sol",
         "nameLocation": "-1:-1:-1",
         "scope": 12084,
-        "sourceUnit": 23556,
+        "sourceUnit": 23605,
         "symbolAliases": [],
         "unitAlias": ""
       },
@@ -137,10 +138,10 @@
                                 "name": "IERC165",
                                 "nodeType": "Identifier",
                                 "overloadedDeclarations": [],
-                                "referencedDeclaration": 23555,
+                                "referencedDeclaration": 23604,
                                 "src": "999:7:12",
                                 "typeDescriptions": {
-                                  "typeIdentifier": "t_type$_t_contract$_IERC165_$23555_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IERC165_$23604_$",
                                   "typeString": "type(contract IERC165)"
                                 }
                               }
@@ -148,7 +149,7 @@
                             "expression": {
                               "argumentTypes": [
                                 {
-                                  "typeIdentifier": "t_type$_t_contract$_IERC165_$23555_$",
+                                  "typeIdentifier": "t_type$_t_contract$_IERC165_$23604_$",
                                   "typeString": "type(contract IERC165)"
                                 }
                               ],
@@ -174,7 +175,7 @@
                             "src": "994:13:12",
                             "tryCall": false,
                             "typeDescriptions": {
-                              "typeIdentifier": "t_magic_meta_type_t_contract$_IERC165_$23555",
+                              "typeIdentifier": "t_magic_meta_type_t_contract$_IERC165_$23604",
                               "typeString": "type(contract IERC165)"
                             }
                           },
@@ -1906,10 +1907,10 @@
                             "name": "IERC165",
                             "nodeType": "Identifier",
                             "overloadedDeclarations": [],
-                            "referencedDeclaration": 23555,
+                            "referencedDeclaration": 23604,
                             "src": "4369:7:12",
                             "typeDescriptions": {
-                              "typeIdentifier": "t_type$_t_contract$_IERC165_$23555_$",
+                              "typeIdentifier": "t_type$_t_contract$_IERC165_$23604_$",
                               "typeString": "type(contract IERC165)"
                             }
                           },
@@ -1920,7 +1921,7 @@
                           "lValueRequested": false,
                           "memberName": "supportsInterface",
                           "nodeType": "MemberAccess",
-                          "referencedDeclaration": 23554,
+                          "referencedDeclaration": 23603,
                           "src": "4369:25:12",
                           "typeDescriptions": {
                             "typeIdentifier": "t_function_declaration_view$_t_bytes4_$returns$_t_bool_$",
@@ -2536,5 +2537,6 @@
       }
     ],
     "license": "MIT"
-  }
+  },
+  "id": 12
 }
