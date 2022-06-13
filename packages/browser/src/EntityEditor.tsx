@@ -42,7 +42,7 @@ export const EntityEditor = observer(
           <ComponentBrowserButton onClick={() => setOpened(!opened)}>{opened ? "V" : ">"}</ComponentBrowserButton>
         </div>
         <Collapse isOpened={opened}>
-          {[...components.values()].map((c) => (
+          {[...components.values()].filter(c => c.id !== devHighlightComponent.id).map((c) => (
             <ComponentEditor
               key={`component-editor-${entity}-${c.id}`}
               entity={entity}
