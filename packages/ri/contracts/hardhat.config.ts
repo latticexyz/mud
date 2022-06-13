@@ -10,13 +10,6 @@ const degen = {
   chainId: 6969,
 };
 
-const erigon = {
-  live: true,
-  url: "https://erigon-one-chain.lattice.xyz",
-  accounts: ["0x26e86e45f6fc45ec6e2ecd128cec80fa1d1505e5507dcd2ae58c3130a7a97b48"],
-  chainId: 4242,
-};
-
 // this is when connecting to a localhost hh instance, it doesn't actually configure the hh network. for this setup stuff in the 'hardhat' key.
 const localhost = {
   url: "http://localhost:8545/",
@@ -69,7 +62,6 @@ const config: HardhatUserConfig = {
     degen,
     localhost,
     hardhat,
-    erigon,
   },
   solidity: {
     version: "0.8.13",
