@@ -12,7 +12,13 @@ import {
   defineSelectableComponent,
   defineRockWallComponent,
 } from "./components";
-import { createDestinationSystem, createPathSystem, createSyncSystem, createPositionSystem } from "./systems";
+import {
+  createDestinationSystem,
+  createPathSystem,
+  createSyncSystem,
+  createPositionSystem,
+  createImpSystem,
+} from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
 import { Area } from "@latticexyz/utils";
 import { createRockWallSystem } from "./systems/RockWallSystem";
@@ -81,7 +87,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
 
   // Systems
   // createSelectionSystem(layer); // Enable selection system
-  // createImpSystem(layer); // Enable imps
+  createImpSystem(layer); // Enable imps
   // createStrollingSystem(layer); // Enable strolling
   createSyncSystem(layer);
   createPositionSystem(layer);
