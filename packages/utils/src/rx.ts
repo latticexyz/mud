@@ -87,7 +87,10 @@ export function streamToComputed<T>(stream$: Observable<T>): IComputedValue<T | 
  * @param predicate Predicate to check
  * @returns A promise that resolves with the requested value once the predicate is true
  */
-export async function awaitStreamValue<T>(stream$: Observable<T>, predicate: (value: T) => boolean): Promise<T> {
+export async function awaitStreamValue<T>(
+  stream$: Observable<T>,
+  predicate: (value: T) => boolean = (value) => value != null
+): Promise<T> {
   const [resolve, , promise] = deferred<T>();
   stream$.pipe(first(predicate)).subscribe(resolve);
   return promise;

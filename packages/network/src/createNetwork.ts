@@ -9,7 +9,6 @@ import { createBlockNumberStream } from "./createBlockNumberStream";
 import { Signer } from "ethers";
 
 export async function createNetwork(initialConfig: NetworkConfig) {
-  console.log("Creating network");
   const config = observable(initialConfig);
   const disposers: (() => void)[] = [];
   const {

@@ -1,14 +1,16 @@
 import { DoWork, runWorker } from "observable-webworker";
-import { distinctUntilChanged, map, Observable, ReplaySubject, Subject } from "rxjs";
+import { distinctUntilChanged, filter, map, Observable, ReplaySubject, Subject } from "rxjs";
 import { Components, ComponentValue, ExtendableECSEvent, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
+import { awaitStreamValue } from "@latticexyz/utils";
+import { getCacheId } from "./utils";
 
 export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
   C,
   { lastEventInTx: boolean; txHash: string; entity: string }
 >;
 
-export type Input<Cm extends Components> = [ECSEventWithTx<Cm>, number];
+export type Input<Cm extends Components> = [ECSEventWithTx<Cm>, number, string | undefined]; // [ECSEvent, blockNumber, worldContractAddress]
 export type Output = never;
 
 export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, number> {
@@ -20,13 +22,18 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
   }
 
   private async init() {
+    const ecsEvent$ = this.ecsEventWithBlockNr$.pipe(
+      filter((e) => typeof e !== "string"),
+      map(([ecsEvent]) => ecsEvent)
+    );
+    const blockNr$ = this.ecsEventWithBlockNr$.pipe(map(([, blockNr]) => blockNr));
+    const worldAddress$ = this.ecsEventWithBlockNr$.pipe(map(([, , worldAddress]) => worldAddress));
+
+    const worldAddress = await awaitStreamValue(worldAddress$);
     const cache = await initCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
-      "ECSCache",
+      getCacheId(worldAddress), // Store a separate cache for each World contract address
       ["ComponentValues", "BlockNumber"]
     );
-
-    const ecsEvent$ = this.ecsEventWithBlockNr$.pipe(map(([ecsEvent]) => ecsEvent));
-    const blockNr$ = this.ecsEventWithBlockNr$.pipe(map(([, blockNr]) => blockNr));
 
     ecsEvent$
       .pipe(map((event) => ({ key: `${event.component}/${event.entity}`, value: event.value })))

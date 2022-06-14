@@ -13,6 +13,7 @@ import { createDecoder } from "../createDecoder";
 import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
 import { Input } from "./Cache.worker";
+import { getCacheId } from "./utils";
 
 export type Config<Cm extends Components> = {
   provider: ProviderConfig;
@@ -44,7 +45,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
 
     // Create cache and get the cache block number
     const cache = await initCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
-      "ECSCache",
+      getCacheId(config.worldContract.address), // Store a separate cache for each World contract address
       ["ComponentValues", "BlockNumber"]
     );
 
@@ -141,7 +142,10 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
 
     // Stream ECS events to the Cache worker to store them to IndexDB
     const cacheWorker = new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" });
-    fromWorker<Input<Cm>, boolean>(() => cacheWorker, ecsEvent$.pipe(withLatestFrom(blockNumber$))).subscribe(); // Need to subscribe to make the stream flow
+    fromWorker<Input<Cm>, boolean>(
+      () => cacheWorker,
+      ecsEvent$.pipe(withLatestFrom(blockNumber$, of(config.worldContract.address)))
+    ).subscribe(); // Need to subscribe to make the stream flow
 
     // Stream ECS events to the main thread
     ecsEvent$.subscribe(this.output$);
