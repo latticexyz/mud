@@ -88,3 +88,9 @@ export const QueryBuilderForm = styled.form`
   margin-bottom: 8px;
   width: 100%;
 `;
+
+export const DraggableNumberLabelContainer = styled.form`
+  cursor: ew-resize;
+  user-select: none;
+  color: #8c91a0;
+`;

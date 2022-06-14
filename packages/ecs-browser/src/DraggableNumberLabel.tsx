@@ -1,5 +1,6 @@
 import React from "react";
 import { useCallback, useEffect, useState } from "react";
+import { DraggableNumberLabelContainer } from "./StyledComponents";
 
 export function DraggableNumberLabel({
   label,
@@ -47,16 +48,10 @@ export function DraggableNumberLabel({
   }, [startMouseX, setValue, snapshot, value]);
 
   return (
-    <span
+    <DraggableNumberLabelContainer
       onMouseDown={onStart}
-      style={{
-        padding: 8,
-        color: "gray",
-        cursor: "ew-resize",
-        userSelect: "none",
-      }}
     >
       {label}
-    </span>
+    </DraggableNumberLabelContainer>
   );
 }
