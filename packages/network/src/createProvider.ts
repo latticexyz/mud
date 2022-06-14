@@ -32,8 +32,6 @@ export async function createReconnectingProvider(config: IComputedValue<Provider
     // Abort if connection is currently being established
     if (connected.get() === ConnectionState.CONNECTING) return;
 
-    console.log("Initializing providers");
-
     // Invalidate current providers
     runInAction(() => connected.set(ConnectionState.CONNECTING));
 
@@ -65,10 +63,7 @@ export async function createReconnectingProvider(config: IComputedValue<Provider
   disposers.push(
     reaction(
       () => config.get(),
-      () => {
-        console.log("Config changed");
-        initProviders();
-      }
+      () => initProviders()
     )
   );
 

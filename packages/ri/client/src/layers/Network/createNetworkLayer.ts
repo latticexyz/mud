@@ -10,11 +10,11 @@ import {
 } from "./components";
 import { setupContracts } from "./setup";
 import { LAYER_NAME } from "./constants.local";
-import { decodeEntityType, decodePosition, decodeSpell, decodeUntraversable } from "./decoders";
 import { EntityTypes } from "./types";
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
+import { Mappings } from "@latticexyz/network";
 
 /**
  * The Network layer is the lowest layer in the client architecture.
@@ -34,15 +34,18 @@ export async function createNetworkLayer() {
     EmbodiedSystemArgumentComponent: defineEmbodiedSystemArgumentComponent(world),
   };
 
-  // Contracts and mappings
-  const { txQueue, txReduced$ } = await setupContracts(world, components, {
+  // Define mappings between contract and client components
+  const mappings: Mappings<typeof components> = {
     [keccak256("ember.component.positionComponent")]: "Position",
     [keccak256("ember.component.entityTypeComponent")]: "EntityType",
     [keccak256("ember.component.untraversableComponent")]: "Untraversable",
     [keccak256("ember.component.minedTagComponent")]: "MinedTag",
     [keccak256("ember.component.spellComponent")]: "Spell",
     [keccak256("ember.component.embodiedSystemArgumentComponent")]: "EmbodiedSystemArgumentComponent",
-  });
+  };
+
+  // Instantiate contracts and set up mappings
+  const { txQueue, txReduced$ } = await setupContracts(world, components, mappings);
 
   // API
   const positionContract = await txQueue.World.getComponent(keccak256("ember.component.positionComponent"));

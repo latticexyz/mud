@@ -1,7 +1,7 @@
-import { deferred } from "@latticexyz/utils";
+import { arrayToIterator, deferred, mergeIterators, transformIterator } from "@latticexyz/utils";
 
 const indexedDB = self.indexedDB;
-const VERSION = 4; // TODO: Find a better way to manage the version than hardcoding here
+const VERSION = 4;
 
 function initStore(db: IDBDatabase, storeId: string) {
   if (!db.objectStoreNames.contains(storeId)) {
@@ -9,15 +9,17 @@ function initStore(db: IDBDatabase, storeId: string) {
   }
 }
 
-function initDb(storeId: string) {
+function initDb(dbId: string, stores: string[], version = VERSION) {
   const [resolve, reject, promise] = deferred<IDBDatabase>();
 
-  const request = indexedDB.open("Cache", VERSION);
+  const request = indexedDB.open(dbId, version);
 
   // Create store and index
   request.onupgradeneeded = () => {
     const db = request.result;
-    initStore(db, storeId);
+    for (const store of stores) {
+      initStore(db, store);
+    }
   };
 
   request.onsuccess = () => {
@@ -32,19 +34,21 @@ function initDb(storeId: string) {
   return promise;
 }
 
-export async function createCache(storeId: string) {
-  const db = await initDb(storeId);
+type Stores = { [key: string]: unknown };
+type StoreKey<S extends Stores> = keyof S & string;
 
-  function getStore(): IDBObjectStore {
-    const tx = db.transaction(storeId, "readwrite");
-    return tx.objectStore(storeId);
+export async function createCache<S extends Stores>(id: string, stores: StoreKey<S>[]) {
+  const db = await initDb(id, stores);
+
+  function getStore(store: StoreKey<S>): IDBObjectStore {
+    const tx = db.transaction(store, "readwrite");
+    return tx.objectStore(store);
   }
 
-  // TODO: make this better by providing a schema when initializing the store, then verifying the schema here
-  function set(key: string, value: any) {
+  function set<Store extends StoreKey<S>>(store: Store, key: string, value: S[Store]) {
     const [resolve, reject, promise] = deferred<void>();
 
-    const objectStore = getStore();
+    const objectStore = getStore(store);
     const request = objectStore.put(value, key);
     request.onerror = (error) => {
       reject(new Error(JSON.stringify(error)));
@@ -57,10 +61,10 @@ export async function createCache(storeId: string) {
     return promise;
   }
 
-  function get(key: string) {
-    const [resolve, reject, promise] = deferred<any | undefined>();
+  function get<Store extends StoreKey<S>>(store: Store, key: string): Promise<S[Store] | undefined> {
+    const [resolve, reject, promise] = deferred<S[Store] | undefined>();
 
-    const objectStore = getStore();
+    const objectStore = getStore(store);
     const request = objectStore.get(key);
 
     request.onerror = (error) => {
@@ -75,10 +79,10 @@ export async function createCache(storeId: string) {
     return promise;
   }
 
-  function remove(key: string) {
+  function remove(store: StoreKey<S>, key: string): Promise<void> {
     const [resolve, reject, promise] = deferred<void>();
 
-    const objectStore = getStore();
+    const objectStore = getStore(store);
     const request = objectStore.delete(key);
 
     request.onerror = (error) => {
@@ -92,10 +96,10 @@ export async function createCache(storeId: string) {
     return promise;
   }
 
-  function keys() {
-    const [resolve, reject, promise] = deferred<string[]>();
+  function keys(store: StoreKey<S>): Promise<IterableIterator<string>> {
+    const [resolve, reject, promise] = deferred<IterableIterator<string>>();
 
-    const objectStore = getStore();
+    const objectStore = getStore(store);
     const request = objectStore.getAllKeys();
 
     request.onerror = (error) => {
@@ -103,18 +107,18 @@ export async function createCache(storeId: string) {
     };
 
     request.onsuccess = () => {
-      const item = request.result.map((k) => k.toString());
-      resolve(item);
+      const rawKeys = arrayToIterator(request.result);
+      const stringKeys = transformIterator(rawKeys, (k) => k.toString());
+      resolve(stringKeys);
     };
 
     return promise;
   }
 
-  // TODO: type this properly
-  function values() {
-    const [resolve, reject, promise] = deferred<any[]>();
+  function values<Store extends StoreKey<S>>(store: Store): Promise<IterableIterator<S[Store]>> {
+    const [resolve, reject, promise] = deferred<IterableIterator<S[Store]>>();
 
-    const objectStore = getStore();
+    const objectStore = getStore(store);
     const request = objectStore.getAll();
 
     request.onerror = (error) => {
@@ -122,21 +126,15 @@ export async function createCache(storeId: string) {
     };
 
     request.onsuccess = () => {
-      const item = request.result;
-      resolve(item);
+      resolve(arrayToIterator(request.result));
     };
 
     return promise;
   }
 
-  // TODO: turn this into an interator
-  async function entries() {
-    const [k, v] = await Promise.all([keys(), values()]);
-    const e: [string, any][] = [];
-    for (let i = 0; i < k.length; i++) {
-      e.push([k[i], v[i]]);
-    }
-    return e;
+  async function entries<Store extends StoreKey<S>>(store: Store): Promise<IterableIterator<[string, S[Store]]>> {
+    const [keyIterator, valueIterator] = await Promise.all([keys(store), values(store)]);
+    return mergeIterators(keyIterator, valueIterator);
   }
 
   return { set, get, remove, keys, values, entries };
