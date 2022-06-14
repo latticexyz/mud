@@ -61,7 +61,7 @@ export async function setupContracts<C extends Components>(world: World, compone
 }
 
 /**
- * Sets up syncronization between contract components and client components
+ * Sets up synchronization between contract components and client components
  */
 function applyNetworkUpdates<C extends Components>(
   world: World,
@@ -72,9 +72,9 @@ function applyNetworkUpdates<C extends Components>(
 
   const ecsEventSub = ecsEvent$
     .pipe(
-      // We throttle the client side event processing to 200 events every 16ms, so 12.000 events per second.
-      // This means if the chain would emit more than 12.000 events per second, the client couldn't keep up.
-      // (We're not close to 12.000 events per second on the chain yet)
+      // We throttle the client side event processing to 200 events every 16ms, so 12.500 events per second.
+      // This means if the chain were to emit more than 12.500 events per second, the client would not keep up.
+      // (We're not close to 12.500 events per second on the chain yet)
       bufferTime(16, null, 200),
       filter((updates) => updates.length > 0),
       stretch(16)
