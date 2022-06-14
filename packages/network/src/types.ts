@@ -1,9 +1,8 @@
 import { Result } from "@ethersproject/abi";
-import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
+import { Components } from "@latticexyz/recs";
 import { Cached } from "@latticexyz/utils";
 import { BaseContract, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
-import { createCache } from "./createCache";
 import { createNetwork } from "./createNetwork";
 import { createProvider } from "./createProvider";
 
@@ -51,8 +50,8 @@ export type ContractsConfig<C extends Contracts> = {
 
 export type TxQueue<C extends Contracts> = Cached<C>;
 
-export type ContractTopics<C extends Contracts> = {
-  key: keyof C;
+export type ContractTopics = {
+  key: string;
   topics: string[][];
 };
 
@@ -68,5 +67,3 @@ export type ContractEvent<C extends Contracts> = {
 export type Mappings<C extends Components> = {
   [hashedContractId: string]: keyof C;
 };
-
-export type Cache = Awaited<ReturnType<typeof createCache>>;

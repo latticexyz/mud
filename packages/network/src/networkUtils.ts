@@ -35,7 +35,7 @@ export async function fetchBlock(provider: JsonRpcProvider, requireMinimumBlockN
 
 export async function fetchLogs<C extends Contracts>(
   provider: JsonRpcProvider,
-  topics: ContractTopics<C>[],
+  topics: ContractTopics[],
   startBlockNumber: number,
   endBlockNumber: number,
   contracts: ContractsConfig<C>,
@@ -97,7 +97,7 @@ export async function fetchLogs<C extends Contracts>(
 
 export async function fetchEventsInBlockRange<C extends Contracts>(
   provider: JsonRpcProvider,
-  topics: ContractTopics<C>[],
+  topics: ContractTopics[],
   startBlockNumber: number,
   endBlockNumber: number,
   contracts: ContractsConfig<C>,

@@ -9,8 +9,8 @@ export type TopicsConfig<C extends Contracts> = {
   };
 };
 
-export function createTopics<C extends Contracts>(config: TopicsConfig<C>): ContractTopics<C>[] {
-  const contractTopics: ContractTopics<C>[] = [];
+export function createTopics<C extends Contracts>(config: TopicsConfig<C>): ContractTopics[] {
+  const contractTopics: ContractTopics[] = [];
   for (const key of Object.keys(config)) {
     const { abi, topics } = config[key];
     const dummyContract = new ethers.Contract(

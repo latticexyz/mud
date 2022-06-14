@@ -21,14 +21,6 @@ const ContractSchemaValueId: { [key: number]: string } = {
   [ContractSchemaValue.BYTES]: "bytes",
 };
 
-type ContractSchemaValueType = {
-  [ContractSchemaValue.UINT8]: number;
-  [ContractSchemaValue.UINT256]: number; // This might have to be represented as a string
-  [ContractSchemaValue.INT64]: number;
-  [ContractSchemaValue.UINT256_ARRAY]: number[];
-  [ContractSchemaValue.BYTES]: string;
-};
-
 function isRepresentable(value: BigNumber) {
   return value.lte(0x1fffffffffffff - 1); // This is the MAX_SAFE number used in BigNumber.from()
 }

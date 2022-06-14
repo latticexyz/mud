@@ -12,10 +12,10 @@ export function createBlockNumberStream(
     };
   }
 ) {
-  const blockNumber$ = new ReplaySubject<number>(1);
+  const blockNumberEvent$ = new ReplaySubject<number>(1);
 
   const initialSync$ = options?.initialSync
-    ? blockNumber$.pipe(
+    ? blockNumberEvent$.pipe(
         take(1), // Take the first block number
         concatMap((blockNr) =>
           // Create a stepped range that ends with the current number
@@ -34,10 +34,12 @@ export function createBlockNumberStream(
     () => providers.get(),
     (currProviders) => {
       const provider = currProviders?.ws || currProviders?.json;
-      provider?.on("block", (blockNumber: number) => blockNumber$.next(blockNumber));
+      provider?.on("block", (blockNumber: number) => blockNumberEvent$.next(blockNumber));
     },
     { fireImmediately: true }
   );
 
-  return { blockNumber$: concat(initialSync$, blockNumber$), dispose };
+  const blockNumber$ = concat(initialSync$, blockNumberEvent$);
+
+  return { blockNumber$, dispose };
 }

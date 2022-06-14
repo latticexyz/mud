@@ -4,5 +4,5 @@ export * from "./createProvider";
 export * from "./createSigner";
 export * from "./createContracts";
 export * from "./createTxQueue";
-export * from "./createECSEventStream";
+export * from "./createSyncWorker";
 export * from "./createTopics";

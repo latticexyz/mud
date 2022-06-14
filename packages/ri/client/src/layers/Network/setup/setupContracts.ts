@@ -3,7 +3,7 @@ import {
   createContracts,
   Mappings,
   createTxQueue,
-  createECSEventStream,
+  createSyncWorker,
   createTopics,
 } from "@latticexyz/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
@@ -52,9 +52,9 @@ export async function setupContracts<C extends Components>(world: World, compone
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network);
   world.registerDisposer(disposeTxQueue);
 
-  const { ecsEventStream$ } = createECSEventStream({
+  const { ecsEventStream$ } = createSyncWorker({
     provider: config.provider,
-    contracts: contractsConfig,
+    worldContract: contractsConfig.World,
     initialBlockNumber: 0,
     mappings,
     topics: createTopics<{ World: WorldContract }>({
@@ -62,11 +62,11 @@ export async function setupContracts<C extends Components>(world: World, compone
     }),
   });
 
-  // TEST
+  // TODO: remove this once everything is wired up
   ecsEventStream$.subscribe((event) => console.log("Got event", event));
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEventStream$);
 
-  return { txQueue, txReduced$: new Subject<any>() };
+  return { txQueue, txReduced$ };
 }
 
 /**
