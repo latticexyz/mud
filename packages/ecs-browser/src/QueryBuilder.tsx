@@ -10,7 +10,7 @@ export const QueryBuilder = function ({
   allEntities,
   setFilteredEntities,
   layers,
-  devHighlightComponent
+  devHighlightComponent,
 }: {
   layers: Layers;
   allEntities: [string, Set<AnyComponent>][];
@@ -19,14 +19,19 @@ export const QueryBuilder = function ({
 }) {
   const queryInputRef = useRef<HTMLInputElement>(null);
   const [entityQueryText, setEntityQueryText] = useState("");
-  /**
-   * If there is no filter present, view all entities.
-   */
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const resetFilteredEntities = useCallback(() => {
+    setFilteredEntities(allEntities);
+    setErrorMessage("");
+  }, [setFilteredEntities, setErrorMessage]);
+
+  // If there is no filter present, view all entities.
   useEffect(() => {
     if (!entityQueryText) {
-      setFilteredEntities(allEntities);
+      resetFilteredEntities();
     }
-  }, [setFilteredEntities, allEntities, entityQueryText]);
+  }, [setFilteredEntities, resetFilteredEntities, allEntities, entityQueryText]);
 
   const executeFilter = useCallback(
     (e: React.SyntheticEvent) => {
@@ -34,7 +39,7 @@ export const QueryBuilder = function ({
 
       // Do not throw an error if there is no query
       if (!entityQueryText) {
-        setFilteredEntities(allEntities);
+        resetFilteredEntities();
         return;
       }
 
@@ -55,7 +60,7 @@ export const QueryBuilder = function ({
       try {
         const queryArray = eval(entityQueryText) as QueryFragments;
         if (!queryArray || queryArray.length === 0 || !Array.isArray(queryArray)) {
-          setFilteredEntities(allEntities);
+          resetFilteredEntities();
           throw new Error("Invalid query");
         }
 
@@ -66,11 +71,11 @@ export const QueryBuilder = function ({
         allEntities.forEach(([id]) => removeComponent(devHighlightComponent, id));
         selectedEntities.forEach(([id]) => setComponent(devHighlightComponent, id, { color: 0x0000ff }));
       } catch (e: unknown) {
-        setEntityQueryText(entityQueryText + `\n${e}`);
+        setErrorMessage((e as Error).message);
         console.error(e);
       }
     },
-    [entityQueryText, setEntityQueryText, setFilteredEntities, allEntities]
+    [entityQueryText, setEntityQueryText, setFilteredEntities, resetFilteredEntities, setErrorMessage, allEntities]
   );
 
   return (
@@ -84,6 +89,11 @@ export const QueryBuilder = function ({
         <SyntaxHighlighter wrapLongLines language="javascript" style={dracula}>
           {entityQueryText}
         </SyntaxHighlighter>
+        {errorMessage && (
+          <SyntaxHighlighter wrapLongLines language="javascript" style={dracula}>
+            {`Error: ${errorMessage}`}
+          </SyntaxHighlighter>
+        )}
         <label style={{ cursor: "pointer" }} htmlFor={`query-input`}>
           <h3>Filter Entities</h3>
         </label>
@@ -95,6 +105,7 @@ export const QueryBuilder = function ({
           type="text"
           value={entityQueryText}
           onChange={(e) => {
+            if (errorMessage) setErrorMessage("");
             setEntityQueryText(e.target.value);
           }}
           onFocus={(e) => e.target.select()}
