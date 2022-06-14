@@ -18,7 +18,7 @@ export function createBlockNumberStream(
   const initialSync$ = options?.initialSync
     ? blockNumberEvent$.pipe(
         take(1), // Take the first block number
-        filter((blockNr) => blockNr > (options.initialSync!.initialBlockNumber || 0)), // Only do inital sync if the first block number we receive is higher larger than the block number to start from
+        filter((blockNr) => blockNr > (options.initialSync!.initialBlockNumber || 0)), // Only do inital sync if the first block number we receive is larger than the block number to start from
         concatMap((blockNr) => {
           // Create a stepped range that ends with the current number
           const blocksToSync = blockNr - options.initialSync!.initialBlockNumber;
