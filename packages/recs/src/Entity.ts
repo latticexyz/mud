@@ -7,7 +7,7 @@ export function createEntity<Cs extends Schema[]>(
   components?: ComponentWithValue<Unpacked<Cs>>[],
   options?: { id?: string; idSuffix?: string }
 ): Entity {
-  const entity = world.registerEntity(options?.id, options?.idSuffix);
+  const entity = world.registerEntity(options ?? {});
 
   if (components) {
     for (const { component, value } of components) {
