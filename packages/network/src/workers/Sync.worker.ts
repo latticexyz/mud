@@ -2,16 +2,17 @@ import { awaitPromise, awaitValue, filterNullish, stretch } from "@latticexyz/ut
 import { computed, IObservableValue, observable, runInAction } from "mobx";
 import { Component } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
-import { DoWork, runWorker } from "observable-webworker";
-import { concatMap, distinctUntilChanged, filter, identity, map, Observable, of, Subject, withLatestFrom } from "rxjs";
+import { DoWork, fromWorker, runWorker } from "observable-webworker";
+import { concatMap, filter, identity, map, Observable, of, Subject, withLatestFrom } from "rxjs";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { createReconnectingProvider } from "../createProvider";
-import { ContractConfig, ContractTopics, Mappings, ProviderConfig } from "../types";
+import { ContractConfig, ContractTopics, ECSEventWithTx, Mappings, ProviderConfig } from "../types";
 import { BigNumber, Contract } from "ethers";
 import { createDecoder } from "../createDecoder";
-import { Components, ComponentValue, ExtendableECSEvent, SchemaOf } from "@latticexyz/recs";
-import { createCache } from "../createCache";
+import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
+import { initCache } from "../initCache";
+import { Input } from "./Cache.worker";
 
 export type Config<Cm extends Components> = {
   provider: ProviderConfig;
@@ -20,11 +21,6 @@ export type Config<Cm extends Components> = {
   worldContract: ContractConfig;
   mappings: Mappings<Cm>;
 };
-
-export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
-  C,
-  { lastEventInTx: boolean; txHash: string; entity: string }
->;
 
 export type Output<Cm extends Components> = ECSEventWithTx<Cm>;
 
@@ -47,15 +43,15 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
     const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>();
 
     // Create cache and get the cache block number
-    const cache = await createCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
+    const cache = await initCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
       "ECSCache",
       ["ComponentValues", "BlockNumber"]
     );
 
     const cacheBlockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
 
+    // Init from cache if the cache is more up to date than the initial client block number
     if (cacheBlockNumber > this.clientBlockNumber) {
-      // Init from cache
       this.clientBlockNumber = cacheBlockNumber;
       const cacheEntries = await cache.entries("ComponentValues");
       for (const [key, value] of cacheEntries) {
@@ -143,18 +139,9 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
       )
       .subscribe(ecsEvent$);
 
-    // Stream ECS events to the Cache worker
-    // TODO: move this to its own worker
-    ecsEvent$
-      .pipe(map((event) => ({ key: `${event.component}/${event.entity}`, value: event.value })))
-      .subscribe(({ key, value }) => {
-        cache.set("ComponentValues", key, value); // The cache is initialized before we process the first event
-      });
-
-    // Only set this if the block number changed
-    ecsEvent$.pipe(withLatestFrom(blockNumber$), distinctUntilChanged()).subscribe(([, blockNumber]) => {
-      cache.set("BlockNumber", "current", blockNumber);
-    });
+    // Stream ECS events to the Cache worker to store them to IndexDB
+    const cacheWorker = new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" });
+    fromWorker<Input<Cm>, boolean>(() => cacheWorker, ecsEvent$.pipe(withLatestFrom(blockNumber$))).subscribe(); // Need to subscribe to make the stream flow
 
     // Stream ECS events to the main thread
     ecsEvent$.subscribe(this.output$);

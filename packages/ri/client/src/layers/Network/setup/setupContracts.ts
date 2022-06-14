@@ -63,8 +63,6 @@ export async function setupContracts<C extends Components>(world: World, compone
   });
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
-  // TODO: remove when done
-  ecsEvent$.subscribe((event) => console.log("Got event", event));
 
   return { txQueue, txReduced$ };
 }
