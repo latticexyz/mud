@@ -4,7 +4,7 @@
   "version": "0.1.7",
   "private": true,
   "scripts": {
-    "prepare": "chmod u+x git-install.sh && chmod u+x exports.sh",
+    "prepare": "yarn build && chmod u+x git-install.sh && chmod u+x exports.sh",
     "git:install": "bash git-install.sh",
     "lint": "yarn prettier && yarn solhint",
     "prettier": "prettier --write 'src/**/*.sol'",
