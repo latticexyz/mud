@@ -37,7 +37,7 @@ function initDb(dbId: string, stores: string[], version = VERSION) {
 type Stores = { [key: string]: unknown };
 type StoreKey<S extends Stores> = keyof S & string;
 
-export async function createCache<S extends Stores>(id: string, stores: StoreKey<S>[]) {
+export async function initCache<S extends Stores>(id: string, stores: StoreKey<S>[]) {
   const db = await initDb(id, stores);
 
   function getStore(store: StoreKey<S>): IDBObjectStore {

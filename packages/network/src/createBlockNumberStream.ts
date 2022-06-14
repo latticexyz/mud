@@ -18,10 +18,6 @@ export function createBlockNumberStream(
     ? blockNumberEvent$.pipe(
         take(1), // Take the first block number
         filter((blockNr) => blockNr > (options.initialSync!.initialBlockNumber || 0)), // Only do inital sync if the first block number we receive is higher larger than the block number to start from
-        map((e) => {
-          console.log("block number", e, options.initialSync?.initialBlockNumber);
-          return e;
-        }),
         concatMap((blockNr) => {
           // Create a stepped range that ends with the current number
           const blocksToSync = blockNr - options.initialSync!.initialBlockNumber;
