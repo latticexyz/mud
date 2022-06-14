@@ -51,6 +51,8 @@ export async function setupContracts<C extends Components>(world: World, compone
     worldContract: contractsConfig.World,
     initialBlockNumber: 0,
     mappings,
+    chainId: config.chainId,
+    disableCache: config.chainId === 1337, // Disable cache on hardhat
   });
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
