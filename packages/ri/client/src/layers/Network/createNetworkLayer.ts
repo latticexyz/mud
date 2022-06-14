@@ -82,6 +82,7 @@ export async function createNetworkLayer() {
     constants,
     txQueue,
     txReduced$,
+    mappings,
     api: {
       setPosition,
       setEntityType,

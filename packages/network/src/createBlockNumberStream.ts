@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
+import { stretch } from "@latticexyz/utils";
 import { IComputedValue, reaction } from "mobx";
 import { concat, concatMap, EMPTY, endWith, filter, map, range, ReplaySubject, take } from "rxjs";
 import { Providers } from "./types";
@@ -25,7 +26,8 @@ export function createBlockNumberStream(
             map((i) => options.initialSync!.initialBlockNumber + i * options.initialSync!.interval),
             endWith(blockNr)
           );
-        })
+        }),
+        stretch(32) // Stretch processing of block number to one every 32 milliseconds (during initial sync)
       )
     : EMPTY;
 
