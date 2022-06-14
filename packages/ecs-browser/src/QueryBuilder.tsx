@@ -24,7 +24,7 @@ export const QueryBuilder = function ({
   const resetFilteredEntities = useCallback(() => {
     setFilteredEntities(allEntities);
     setErrorMessage("");
-  }, [setFilteredEntities, setErrorMessage]);
+  }, [setFilteredEntities, setErrorMessage, allEntities]);
 
   // If there is no filter present, view all entities.
   useEffect(() => {
