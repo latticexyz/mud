@@ -1,1 +1,0 @@
-export { defineDevHighlightComponent } from "./DevHighlight";
