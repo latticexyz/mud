@@ -1,5 +1,4 @@
 import {
-  BehaviorSubject,
   concatMap,
   delay,
   filter,
@@ -9,6 +8,7 @@ import {
   of,
   OperatorFunction,
   pipe,
+  ReplaySubject,
   scan,
   Timestamp,
   timestamp,
@@ -57,20 +57,26 @@ export function observableToComputed<T>(obs: IObservableValue<T>): IComputedValu
   return computed(() => obs.get());
 }
 
-export function computedToStream<T>(comp: IComputedValue<T>): Observable<T> {
-  const stream = new BehaviorSubject(comp.get());
+export function computedToStream<T>(comp: IComputedValue<T> | IObservableValue<T>): Observable<T> {
+  const stream = new ReplaySubject<T>(1);
   reaction(
     () => comp.get(),
-    (value) => stream.next(value)
+    (value) => {
+      if (value != null) stream.next(value);
+    },
+    { fireImmediately: true }
   );
   return stream;
 }
 
 export function observableToStream<T>(obs: T): Observable<T> {
-  const stream = new BehaviorSubject(toJS(obs));
+  const stream = new ReplaySubject<T>(1);
   reaction(
     () => toJS(obs),
-    (value) => stream.next(value)
+    (value) => {
+      if (value != null) stream.next(value);
+    },
+    { fireImmediately: true }
   );
   return stream;
 }
