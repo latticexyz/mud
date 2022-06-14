@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Layers } from "@latticexyz/recs";
-import { AnyComponent, Entity, Schema } from "@latticexyz/recs/src/types";
+import { Layers, Type } from "@latticexyz/recs";
+import { AnyComponent, Component, Entity, Schema } from "@latticexyz/recs/src/types";
 import { observer } from "mobx-react-lite";
 import { BrowserContainer } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
@@ -20,7 +20,7 @@ export const Browser = observer(
     entities: [Entity, Set<AnyComponent>][];
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
-    devHighlightComponent: AnyComponent
+    devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
   }) => {
     const [filteredEntities, setFilteredEntities] = useState(entities);
 

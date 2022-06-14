@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import { defineQuery, Layers, removeComponent, setComponent } from "@latticexyz/recs";
-import { AnyComponent, QueryFragments } from "@latticexyz/recs/src/types";
+import { defineQuery, Layers, removeComponent, setComponent, Type } from "@latticexyz/recs";
+import { AnyComponent, Component, QueryFragments } from "@latticexyz/recs/src/types";
 import { ComponentBrowserButton, ComponentBrowserInput, QueryBuilderForm } from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -15,7 +15,7 @@ export const QueryBuilder = function ({
   layers: Layers;
   allEntities: [string, Set<AnyComponent>][];
   setFilteredEntities: (es: [string, Set<AnyComponent>][]) => void;
-  devHighlightComponent: AnyComponent;
+  devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
 }) {
   const queryInputRef = useRef<HTMLInputElement>(null);
   const [entityQueryText, setEntityQueryText] = useState("");
