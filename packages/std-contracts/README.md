@@ -1,3 +1,3 @@
-# @latticexyz/solecs
+# MUD Contracts Standard Library
 
-Solidity Entity Component System
+Components/Functions for making MUD game contracts
