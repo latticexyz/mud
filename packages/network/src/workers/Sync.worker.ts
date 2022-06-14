@@ -1,7 +1,8 @@
 import { awaitPromise, awaitValue, filterNullish, stretch } from "@latticexyz/utils";
 import { computed, IObservableValue, observable, runInAction } from "mobx";
-import { Component } from "@latticexyz/solecs";
+import { Component, World } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
+import WorldAbi from "@latticexyz/solecs/abi/World.json";
 import { DoWork, fromWorker, runWorker } from "observable-webworker";
 import { concatMap, filter, identity, map, Observable, of, Subject, withLatestFrom } from "rxjs";
 import { fetchEventsInBlockRange } from "../networkUtils";
@@ -14,11 +15,11 @@ import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
 import { Input } from "./Cache.worker";
 import { getCacheId } from "./utils";
+import { createTopics } from "../createTopics";
 
 export type Config<Cm extends Components> = {
   provider: ProviderConfig;
   initialBlockNumber: number;
-  topics: ContractTopics[];
   worldContract: ContractConfig;
   mappings: Mappings<Cm>;
 };
@@ -38,10 +39,8 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
   private async init() {
     // Only run this once we have an initial config
     const config = await awaitValue(this.config);
+    // Set the client block number to the block number we want to start from
     if (config.initialBlockNumber) this.clientBlockNumber = config.initialBlockNumber;
-
-    // Internal ecs event stream
-    const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>();
 
     // Create cache and get the cache block number
     const cache = await initCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
@@ -51,7 +50,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
 
     const cacheBlockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
 
-    // Init from cache if the cache is more up to date than the initial client block number
+    // Init from cache if the cache is more up to date than the block number we want to start from
     if (cacheBlockNumber > this.clientBlockNumber) {
       this.clientBlockNumber = cacheBlockNumber;
       const cacheEntries = await cache.entries("ComponentValues");
@@ -73,19 +72,25 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
     const { providers, connected } = await createReconnectingProvider(computed(() => this.config.get().provider));
 
     const { blockNumber$ } = createBlockNumberStream(providers, {
-      initialSync: { initialBlockNumber: config.initialBlockNumber, interval: 200 },
+      initialSync: { initialBlockNumber: this.clientBlockNumber, interval: 200 },
+    });
+
+    // Internal ecs event stream (we need to create this subject and then push to it in order to be able to listen to it at multiple places)
+    const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>();
+
+    // Create World topics to listen to
+    const topics = createTopics<{ World: World }>({
+      World: { abi: WorldAbi.abi, topics: ["ComponentValueSet", "ComponentValueRemoved"] },
     });
 
     // If ECS sidecar is not available, fetch events from contract on every new block
     blockNumber$
       .pipe(
-        filter((blockNumber) => blockNumber > cacheBlockNumber), // Ignore the block numbers lower than our cached block number
-        stretch(32), // Stretch processing of block number to one every 32 milliseconds (mainly relevant for initial sync)
         withLatestFrom(awaitValue(this.config), awaitValue(connected)), // Only process if config is available and connected
         map(([blockNumber, config]) => {
           const events = fetchEventsInBlockRange(
             providers.get().json,
-            config.topics,
+            topics,
             this.clientBlockNumber + 1,
             blockNumber,
             { World: config.worldContract },
@@ -95,11 +100,12 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
           this.clientBlockNumber = blockNumber;
           return events;
         }),
-        concatMap(identity), // Await promises
+        awaitPromise(), // Await promises
         concatMap((v) => of(...v)), // Flatten contract event array into stream of contract events
         map(async (event) => {
-          if (event.contractKey !== "World") return; // We only care about events from the World contract
-          if (event.eventKey !== "ComponentValueSet" && event.eventKey !== "ComponentValueRemoved") return; // We only care about these events
+          if (event.contractKey !== "World") throw new Error("Unknown contract"); // We can only process events from the World contract
+          if (event.eventKey !== "ComponentValueSet" && event.eventKey !== "ComponentValueRemoved")
+            throw new Error("Unknown events"); // We can only process these events
 
           const {
             component: address,
@@ -116,7 +122,11 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
           const contractComponentId = BigNumber.from(componentId).toHexString();
           const clientComponentKey = this.config.get().mappings[contractComponentId];
 
-          if (!clientComponentKey) return; // No client mapping for this component contract
+          // No client mapping for this component contract
+          if (!clientComponentKey) {
+            console.warn("Received unknown component update from", address);
+            return;
+          }
 
           // Create decoder and cache for later
           let decoder = this.decoders[contractComponentId];
@@ -141,9 +151,8 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
       .subscribe(ecsEvent$);
 
     // Stream ECS events to the Cache worker to store them to IndexDB
-    const cacheWorker = new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" });
     fromWorker<Input<Cm>, boolean>(
-      () => cacheWorker,
+      () => new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" }),
       ecsEvent$.pipe(withLatestFrom(blockNumber$, of(config.worldContract.address)))
     ).subscribe(); // Need to subscribe to make the stream flow
 

@@ -57,9 +57,6 @@ export async function setupContracts<C extends Components>(world: World, compone
     worldContract: contractsConfig.World,
     initialBlockNumber: 0,
     mappings,
-    topics: createTopics<{ World: WorldContract }>({
-      World: { abi: WorldAbi.abi, topics: ["ComponentValueSet", "ComponentValueRemoved"] },
-    }),
   });
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
