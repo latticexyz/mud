@@ -56,7 +56,7 @@ export async function createNetworkLayer(options?: { skipContracts?: boolean }) 
   async function setContractComponentValue<T extends Schema>(
     entity: Entity,
     component: Component<T, { contractId: string }>,
-    newValues: ComponentValue<T>
+    newValue: ComponentValue<T>
   ) {
     if (!component.metadata.contractId)
       throw new Error(
@@ -65,7 +65,7 @@ export async function createNetworkLayer(options?: { skipContracts?: boolean }) 
 
     const componentContract = await txQueue.World.getComponent(keccak256(component.metadata.contractId));
     const contractArgTypes = [] as string[];
-    const contractArgs = Object.values(newValues);
+    const contractArgs = Object.values(newValue);
 
     for (const type of Object.values(component.schema)) {
       if (type === Type.Number) {

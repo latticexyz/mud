@@ -4,7 +4,7 @@ import { AnyComponent } from "@latticexyz/recs";
 export type SetContractComponentFunction<T extends Schema> = (
   entity: Entity,
   component: Component<T, { contractId: string }>,
-  newValues: ComponentValue<T>
+  newValue: ComponentValue<T>
 ) => void;
 
 export type AnyComponentWithContract = Component<Schema, { contractId: string }>;
