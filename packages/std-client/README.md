@@ -1,3 +1,3 @@
-# RECS Component Browser
+# MUD Client Standard Library
 
-Unity style Component Browser sidebar for debugging / development
+Shared Components/Systems/Utils for making MUD game clients
