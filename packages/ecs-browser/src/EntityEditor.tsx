@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Layers, removeComponent, setComponent } from "@latticexyz/recs";
-import { AnyComponent, Entity, Schema } from "@latticexyz/recs/src/types";
+import { Layers, removeComponent, setComponent, Type } from "@latticexyz/recs";
+import { AnyComponent, Component, Entity, Schema } from "@latticexyz/recs/src/types";
 import { observer } from "mobx-react-lite";
 import { Collapse } from "react-collapse";
 import { ComponentBrowserButton, EntityEditorContainer } from "./StyledComponents";
@@ -19,7 +19,7 @@ export const EntityEditor = observer(
     components: Set<AnyComponent>;
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
-    devHighlightComponent: AnyComponent;
+    devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
   }) => {
     const [opened, setOpened] = useState(false);
 
