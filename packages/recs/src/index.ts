@@ -26,6 +26,7 @@ export {
 } from "./Query";
 export { Type } from "./constants";
 export type {
+  AnyComponent,
   Component,
   ComponentValue,
   World,
