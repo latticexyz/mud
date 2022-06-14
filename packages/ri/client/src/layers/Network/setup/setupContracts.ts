@@ -52,7 +52,7 @@ export async function setupContracts<C extends Components>(world: World, compone
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network);
   world.registerDisposer(disposeTxQueue);
 
-  const { ecsEventStream$ } = createSyncWorker({
+  const { ecsEvent$ } = createSyncWorker({
     provider: config.provider,
     worldContract: contractsConfig.World,
     initialBlockNumber: 0,
@@ -62,9 +62,9 @@ export async function setupContracts<C extends Components>(world: World, compone
     }),
   });
 
-  // TODO: remove this once everything is wired up
-  ecsEventStream$.subscribe((event) => console.log("Got event", event));
-  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEventStream$);
+  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
+  // TODO: remove when done
+  ecsEvent$.subscribe((event) => console.log("Got event", event));
 
   return { txQueue, txReduced$ };
 }
@@ -75,11 +75,11 @@ export async function setupContracts<C extends Components>(world: World, compone
 function applyNetworkUpdates<C extends Components>(
   world: World,
   components: C,
-  ecsEventStream$: Observable<ECSEventWithTx<C>>
+  ecsEvent$: Observable<ECSEventWithTx<C>>
 ) {
   const txReduced$ = new Subject<string>();
 
-  const ecsEventSub = ecsEventStream$
+  const ecsEventSub = ecsEvent$
     .pipe(
       // We throttle the client side event processing to 200 events every 16ms, so 12.000 events per second.
       // This means if the chain would emit more than 12.000 events per second, the client couldn't keep up.
