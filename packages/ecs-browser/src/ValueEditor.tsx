@@ -57,7 +57,7 @@ export const ValueEditor = observer(
 
         if (value === null || value === "") {
           if (isOptionalType(valueType)) {
-            setValue(null);
+            updateComponent(component, entity, { [valueProp]: null });
             return;
           }
 
