@@ -1,13 +1,13 @@
-import { awaitPromise, awaitValue, filterNullish, stretch } from "@latticexyz/utils";
+import { awaitPromise, awaitValue, computedToStream, filterNullish } from "@latticexyz/utils";
 import { computed, IObservableValue, observable, runInAction } from "mobx";
 import { Component, World } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import WorldAbi from "@latticexyz/solecs/abi/World.json";
 import { DoWork, fromWorker, runWorker } from "observable-webworker";
-import { concatMap, map, Observable, of, Subject, withLatestFrom } from "rxjs";
+import { combineLatest, concatMap, filter, map, Observable, of, Subject, withLatestFrom } from "rxjs";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
-import { createReconnectingProvider } from "../createProvider";
+import { ConnectionState, createReconnectingProvider } from "../createProvider";
 import { ContractConfig, ECSEventWithTx, Mappings, ProviderConfig } from "../types";
 import { BigNumber, Contract } from "ethers";
 import { createDecoder } from "../createDecoder";
@@ -22,6 +22,8 @@ export type Config<Cm extends Components> = {
   initialBlockNumber: number;
   worldContract: ContractConfig;
   mappings: Mappings<Cm>;
+  disableCache?: boolean;
+  chainId: number;
 };
 
 export type Output<Cm extends Components> = ECSEventWithTx<Cm>;
@@ -44,14 +46,14 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
 
     // Create cache and get the cache block number
     const cache = await initCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
-      getCacheId(config.worldContract.address), // Store a separate cache for each World contract address
+      getCacheId(config.chainId, config.worldContract.address), // Store a separate cache for each World contract address
       ["ComponentValues", "BlockNumber"]
     );
 
     const cacheBlockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
 
     // Init from cache if the cache is more up to date than the block number we want to start from
-    if (cacheBlockNumber > this.clientBlockNumber) {
+    if (!config.disableCache && cacheBlockNumber > this.clientBlockNumber) {
       this.clientBlockNumber = cacheBlockNumber;
       const cacheEntries = await cache.entries("ComponentValues");
       for (const [key, value] of cacheEntries) {
@@ -75,7 +77,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
       initialSync: { initialBlockNumber: this.clientBlockNumber, interval: 200 },
     });
 
-    // Internal ecs event stream (we need to create this subject and then push to it in order to be able to listen to it at multiple places)
+    // Internal ECS event stream (we need to create this subject and then push to it in order to be able to listen to it at multiple places)
     const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>();
 
     // Create World topics to listen to
@@ -84,9 +86,9 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
     });
 
     // If ECS sidecar is not available, fetch events from contract on every new block
-    blockNumber$
+    combineLatest([blockNumber$, computedToStream(this.config), computedToStream(connected)])
       .pipe(
-        withLatestFrom(awaitValue(this.config), awaitValue(connected)), // Only process if config is available and connected
+        filter(([, , connectionState]) => connectionState === ConnectionState.CONNECTED),
         map(([blockNumber, config]) => {
           const events = fetchEventsInBlockRange(
             providers.get().json,
@@ -153,7 +155,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
     // Stream ECS events to the Cache worker to store them to IndexDB
     fromWorker<Input<Cm>, boolean>(
       () => new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" }),
-      ecsEvent$.pipe(withLatestFrom(blockNumber$, of(config.worldContract.address)))
+      ecsEvent$.pipe(withLatestFrom(blockNumber$, of(config.worldContract.address), of(config.chainId)))
     ).subscribe(); // Need to subscribe to make the stream flow
 
     // Stream ECS events to the main thread

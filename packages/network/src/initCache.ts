@@ -1,7 +1,7 @@
 import { arrayToIterator, deferred, mergeIterators, transformIterator } from "@latticexyz/utils";
 
 const indexedDB = self.indexedDB;
-const VERSION = 4;
+const VERSION = 1;
 
 function initStore(db: IDBDatabase, storeId: string) {
   if (!db.objectStoreNames.contains(storeId)) {

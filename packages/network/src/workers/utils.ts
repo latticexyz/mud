@@ -1,3 +1,3 @@
-export function getCacheId(worldAddress?: string) {
-  return `ECSCache-${worldAddress}`;
+export function getCacheId(chainId: number, worldAddress: string) {
+  return `ECSCache-${chainId}-${worldAddress}`;
 }

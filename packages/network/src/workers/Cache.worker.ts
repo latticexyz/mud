@@ -1,8 +1,8 @@
 import { DoWork, runWorker } from "observable-webworker";
-import { distinctUntilChanged, filter, map, Observable, ReplaySubject, Subject } from "rxjs";
+import { distinctUntilChanged, filter, map, Observable, ReplaySubject, Subject, take } from "rxjs";
 import { Components, ComponentValue, ExtendableECSEvent, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
-import { awaitStreamValue } from "@latticexyz/utils";
+import { awaitStreamValue, filterNullish } from "@latticexyz/utils";
 import { getCacheId } from "./utils";
 
 export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
@@ -10,7 +10,7 @@ export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
   { lastEventInTx: boolean; txHash: string; entity: string }
 >;
 
-export type Input<Cm extends Components> = [ECSEventWithTx<Cm>, number, string | undefined]; // [ECSEvent, blockNumber, worldContractAddress]
+export type Input<Cm extends Components> = [ECSEventWithTx<Cm>, number, string | undefined, number | undefined]; // [ECSEvent, blockNumber, worldContractAddress, chainId]
 export type Output = never;
 
 export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, number> {
@@ -27,11 +27,25 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
       map(([ecsEvent]) => ecsEvent)
     );
     const blockNr$ = this.ecsEventWithBlockNr$.pipe(map(([, blockNr]) => blockNr));
-    const worldAddress$ = this.ecsEventWithBlockNr$.pipe(map(([, , worldAddress]) => worldAddress));
 
-    const worldAddress = await awaitStreamValue(worldAddress$);
+    const worldAddress = await awaitStreamValue(
+      this.ecsEventWithBlockNr$.pipe(
+        map(([, , worldAddress]) => worldAddress),
+        filterNullish(), // Only emit if not undefined
+        take(1) // Complete after the first emit
+      )
+    );
+
+    const chainId = await awaitStreamValue(
+      this.ecsEventWithBlockNr$.pipe(
+        map(([, , , chainId]) => chainId),
+        filterNullish(), // Only emit if not undefined
+        take(1) // Complete after the first emit
+      )
+    );
+
     const cache = await initCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
-      getCacheId(worldAddress), // Store a separate cache for each World contract address
+      getCacheId(chainId, worldAddress), // Store a separate cache for each World contract address
       ["ComponentValues", "BlockNumber"]
     );
 

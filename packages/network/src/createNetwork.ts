@@ -2,11 +2,12 @@ import { computed, observable, toJS } from "mobx";
 import { createSigner } from "./createSigner";
 import { createReconnectingProvider } from "./createProvider";
 import { NetworkConfig } from "./types";
-import { concatMap, EMPTY, filter, map, of, throttleTime, withLatestFrom } from "rxjs";
+import { combineLatest, concatMap, EMPTY, filter, map, throttleTime } from "rxjs";
 import { createClock } from "./createClock";
 import { fetchBlock } from "./networkUtils";
 import { createBlockNumberStream } from "./createBlockNumberStream";
 import { Signer } from "ethers";
+import { computedToStream } from "@latticexyz/utils";
 
 export async function createNetwork(initialConfig: NetworkConfig) {
   const config = observable(initialConfig);
@@ -34,10 +35,9 @@ export async function createNetwork(initialConfig: NetworkConfig) {
   disposers.push(clock.dispose);
 
   // Sync the local time to the chain time in regular intervals
-  const syncBlockSub = blockNumber$
+  const syncBlockSub = combineLatest([blockNumber$, computedToStream(providers)])
     .pipe(
       throttleTime(config.clock.syncInterval, undefined, { leading: true, trailing: true }), // Update time max once per 5s
-      withLatestFrom(of(providers.get())), // Get the latest providers
       concatMap(([blockNumber, currentProviders]) =>
         currentProviders ? fetchBlock(currentProviders.json, blockNumber) : EMPTY
       ), // Fetch the latest block if a provider is available
