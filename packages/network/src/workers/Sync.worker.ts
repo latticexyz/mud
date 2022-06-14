@@ -1,12 +1,14 @@
 import { awaitPromise, awaitValue, filterNullish, stretch } from "@latticexyz/utils";
 import { computed, IObservableValue, observable, runInAction } from "mobx";
+import { Component } from "@latticexyz/solecs";
+import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { DoWork, runWorker } from "observable-webworker";
 import { concatMap, distinctUntilChanged, filter, identity, map, Observable, of, Subject, withLatestFrom } from "rxjs";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { createReconnectingProvider } from "../createProvider";
 import { ContractConfig, ContractTopics, Mappings, ProviderConfig } from "../types";
-import { BigNumber } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { createDecoder } from "../createDecoder";
 import { Components, ComponentValue, ExtendableECSEvent, SchemaOf } from "@latticexyz/recs";
 import { createCache } from "../createCache";
@@ -120,7 +122,9 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
           // Create decoder and cache for later
           let decoder = this.decoders[contractComponentId];
           if (!decoder) {
-            decoder = await createDecoder(address, providers.get().json);
+            const componentContract = new Contract(address, ComponentAbi.abi, providers.get().json) as Component;
+            const [keys, values] = await componentContract.getSchema();
+            decoder = createDecoder(keys, values);
             this.decoders[contractComponentId] = decoder;
           }
 
