@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { mergeIterators } from "@latticexyz/utils";
+import { concatIterators } from "@latticexyz/utils";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isSuperSet(s: any): s is SuperSet<any> {
@@ -45,7 +45,7 @@ export class SuperSet<T> implements Set<T> {
   }
 
   entries(): IterableIterator<[T, T]> {
-    return mergeIterators(this.child.entries(), this.parent?.entries());
+    return concatIterators(this.child.entries(), this.parent?.entries());
   }
 
   forEach(callbackfn: (value: T, value2: T, set: Set<T>) => void, thisArg?: unknown): void {
@@ -58,11 +58,11 @@ export class SuperSet<T> implements Set<T> {
   }
 
   keys(): IterableIterator<T> {
-    return mergeIterators(this.child.keys(), this.parent?.keys());
+    return concatIterators(this.child.keys(), this.parent?.keys());
   }
 
   values(): IterableIterator<T> {
-    return mergeIterators(this.child.values(), this.parent?.values());
+    return concatIterators(this.child.values(), this.parent?.values());
   }
 
   flat(): Set<T> {

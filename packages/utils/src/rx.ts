@@ -1,14 +1,9 @@
 import {
   BehaviorSubject,
-  concat,
   concatMap,
   delay,
-  EMPTY,
   filter,
   first,
-  identity,
-  interval,
-  map,
   mergeMap,
   Observable,
   of,
@@ -17,8 +12,6 @@ import {
   scan,
   Timestamp,
   timestamp,
-  UnaryFunction,
-  withLatestFrom,
 } from "rxjs";
 import { computed, IComputedValue, IObservableValue, observable, reaction, runInAction, toJS } from "mobx";
 import { deferred } from "./deferred";
@@ -58,10 +51,6 @@ export function stretch<T>(spacingDelayMs: number) {
     filterNullish(),
     mergeMap((i) => of(i.value).pipe(delay(i.delay)), 1)
   );
-}
-
-export function stretch2<T>(spacingDelayMs: number) {
-  return pipe(concatMap<T, Observable<T>>((e) => concat(of(e), EMPTY.pipe(delay(spacingDelayMs)))));
 }
 
 export function observableToComputed<T>(obs: IObservableValue<T>): IComputedValue<T> {
