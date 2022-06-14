@@ -1,11 +1,4 @@
-import {
-  createNetwork,
-  createContracts,
-  Mappings,
-  createTxQueue,
-  createSyncWorker,
-  createTopics,
-} from "@latticexyz/network";
+import { createNetwork, createContracts, Mappings, createTxQueue, createSyncWorker } from "@latticexyz/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
