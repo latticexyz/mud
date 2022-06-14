@@ -31,7 +31,7 @@ export function createImpSystem(layer: LocalLayer) {
         withValue(MoveSpeed, { default: 500, current: 500 }),
         withValue(Selectable, {}), // Remove this later, imps are not selectable
       ],
-      { name: "imp" }
+      { idSuffix: "imp" }
     );
   });
 
