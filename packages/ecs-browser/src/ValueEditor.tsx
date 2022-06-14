@@ -32,7 +32,7 @@ export const ValueEditor = observer(
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
   }) => {
-    const [value, setValue] = useState<string | null>(componentValue[valueProp] as string | null);
+    const [value, setValue] = useState<string | null>(componentValue[valueProp]?.toString() as string | null);
 
     useEffect(() => {
       const v = componentValue[valueProp];
@@ -92,8 +92,8 @@ export const ValueEditor = observer(
       <ValueForm onSubmit={(e) => persistValue(e, value)}>
         {isNumberType(component.schema[valueProp]) ? (
           <DraggableNumberLabel
-            value={value as unknown as number}
-            setValue={setValue as unknown as (n: number) => void}
+            value={value}
+            setValue={setValue}
             persistValue={persistValue}
             label={`${startCase(valueProp)}:`}
           />

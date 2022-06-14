@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useCallback, useEffect, useState } from "react";
 import { DraggableNumberLabelContainer } from "./StyledComponents";
 
@@ -9,33 +9,34 @@ export function DraggableNumberLabel({
   persistValue,
 }: {
   label: string;
-  value: number;
-  setValue: (n: number) => void;
+  value: string | null;
+  setValue: (n: string | null) => void;
   persistValue: (e: Event | React.SyntheticEvent, value: string | null) => void;
 }) {
-  const [snapshot, setSnapshot] = useState(value);
+  const numberValue = useMemo(() => parseInt(value ?? "0"), [value]);
+  const [snapshot, setSnapshot] = useState(numberValue);
   const [startMouseX, setStartMouseX] = useState(0);
 
   const onStart = useCallback(
     (event: React.MouseEvent) => {
       setStartMouseX(event.clientX);
-      setSnapshot(value);
+      setSnapshot(numberValue);
     },
-    [value]
+    [numberValue]
   );
 
   useEffect(() => {
     function onMouseMove(this: Document, event: MouseEvent) {
       if (startMouseX) {
         const change = Math.round((event.clientX - startMouseX) / 25) + snapshot;
-        setValue(change);
+        setValue(change.toString());
       }
     }
 
     const onDragEnd = (e: Event) => {
       if (startMouseX) {
         setStartMouseX(0);
-        persistValue(e, value.toString());
+        persistValue(e, value?.toString() || null);
       }
     };
 
