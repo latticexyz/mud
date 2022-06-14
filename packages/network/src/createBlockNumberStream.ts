@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { IComputedValue, reaction } from "mobx";
-import { concat, concatMap, EMPTY, endWith, map, range, ReplaySubject, take } from "rxjs";
+import { concat, concatMap, EMPTY, endWith, filter, map, range, ReplaySubject, take } from "rxjs";
 import { Providers } from "./types";
 
 export function createBlockNumberStream(
@@ -17,16 +17,19 @@ export function createBlockNumberStream(
   const initialSync$ = options?.initialSync
     ? blockNumberEvent$.pipe(
         take(1), // Take the first block number
-        concatMap((blockNr) =>
+        filter((blockNr) => blockNr > (options.initialSync!.initialBlockNumber || 0)), // Only do inital sync if the first block number we receive is higher larger than the block number to start from
+        map((e) => {
+          console.log("block number", e, options.initialSync?.initialBlockNumber);
+          return e;
+        }),
+        concatMap((blockNr) => {
           // Create a stepped range that ends with the current number
-          range(
-            Math.floor(options.initialSync!.initialBlockNumber / options.initialSync!.interval),
-            Math.floor(blockNr / options.initialSync!.interval)
-          ).pipe(
-            map((i) => i * options.initialSync!.interval),
+          const blocksToSync = blockNr - options.initialSync!.initialBlockNumber;
+          return range(0, Math.ceil(blocksToSync / options.initialSync!.interval)).pipe(
+            map((i) => options.initialSync!.initialBlockNumber + i * options.initialSync!.interval),
             endWith(blockNr)
-          )
-        )
+          );
+        })
       )
     : EMPTY;
 
