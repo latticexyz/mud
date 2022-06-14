@@ -121,7 +121,9 @@ export function createTxQueue<C extends Contracts>(
 
         if (!(member instanceof Function)) {
           throw new Error(
-            `Internal TxQueue error: Member is not a function and should not be proxied. Tried to call "${prop}".`
+            `Internal TxQueue error: Member is not a function and should not be proxied. Tried to call "${String(
+              prop
+            )}".`
           );
         }
 

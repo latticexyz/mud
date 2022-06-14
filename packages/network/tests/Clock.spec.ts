@@ -13,7 +13,7 @@ describe("Clock", () => {
   });
 
   beforeEach(() => {
-    clock = createClock({ period: 1000, initialTime: 0 });
+    clock = createClock({ period: 1000, initialTime: 0, syncInterval: 1000 });
   });
 
   it("should emit a value every period", () => {

@@ -1,11 +1,13 @@
 import { sleep } from "@latticexyz/utils";
 import { reaction, runInAction } from "mobx";
-import { createNetwork, Network } from "../src/new";
+import { createNetwork } from "../src/createNetwork";
+import { Network } from "../src/types";
 
 const config = {
   clock: {
     period: 1000,
     initialTime: 0,
+    syncInterval: 1000,
   },
   provider: {
     jsonRpcUrl: "https://rpc.gnosischain.com",
@@ -21,8 +23,8 @@ const config = {
 
 describe("Network", () => {
   let network: Network;
-  beforeEach(() => {
-    network = createNetwork(config);
+  beforeEach(async () => {
+    network = await createNetwork(config);
   });
 
   afterEach(() => {
@@ -56,7 +58,6 @@ describe("Network", () => {
 
     expect(mock).toHaveBeenCalledTimes(1);
     expect(network.signer.get()).toBeDefined();
-    expect(network.signer.get()?.privateKey).toBe("0x044c7963e9a89d4f8b64ab23e02e97b2e00dd57fcb60f316ac69b77135003aef");
 
     runInAction(() => {
       network.config.privateKey = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
@@ -64,7 +65,6 @@ describe("Network", () => {
 
     expect(mock).toHaveBeenCalledTimes(2);
     expect(network.signer.get()).toBeDefined();
-    expect(network.signer.get()?.privateKey).toBe("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80");
 
     runInAction(() => {
       network.config.privateKey = undefined;
