@@ -16,6 +16,7 @@ export interface NetworkConfig {
 export interface ClockConfig {
   period: number;
   initialTime: number;
+  syncInterval: number;
 }
 
 export type Clock = {

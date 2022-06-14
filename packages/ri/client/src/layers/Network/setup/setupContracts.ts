@@ -18,6 +18,7 @@ const config: Parameters<typeof createNetwork>[0] = {
   clock: {
     period: 5000,
     initialTime: 0,
+    syncInterval: 5000,
   },
   provider: {
     jsonRpcUrl: RPC_URL,
