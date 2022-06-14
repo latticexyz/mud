@@ -39,6 +39,10 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
   }
 
   private async init() {
+    // Only run this once we have an initial config
+    const config = await awaitValue(this.config);
+    if (config.initialBlockNumber) this.clientBlockNumber = config.initialBlockNumber;
+
     // Internal ecs event stream
     const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>();
 
@@ -49,32 +53,30 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
     );
 
     const cacheBlockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
-    if (cacheBlockNumber) this.clientBlockNumber = cacheBlockNumber;
 
-    // Init from cache
-    const cacheEntries = await cache.entries("ComponentValues");
-    for (const [key, value] of cacheEntries) {
-      const componentEntity = key.split("/");
-      const [component, entity] = componentEntity;
-      const ecsEvent: ECSEventWithTx<Cm> = {
-        component,
-        entity,
-        value,
-        lastEventInTx: false,
-        txHash: "cache",
-      };
+    if (cacheBlockNumber > this.clientBlockNumber) {
+      // Init from cache
+      this.clientBlockNumber = cacheBlockNumber;
+      const cacheEntries = await cache.entries("ComponentValues");
+      for (const [key, value] of cacheEntries) {
+        const componentEntity = key.split("/");
+        const [component, entity] = componentEntity;
+        const ecsEvent: ECSEventWithTx<Cm> = {
+          component,
+          entity,
+          value,
+          lastEventInTx: false,
+          txHash: "cache",
+        };
 
-      this.output$.next(ecsEvent);
+        this.output$.next(ecsEvent);
+      }
     }
-
-    // Only run this once we have an initial config
-    await awaitValue(this.config);
 
     const { providers, connected } = await createReconnectingProvider(computed(() => this.config.get().provider));
 
     const { blockNumber$ } = createBlockNumberStream(providers, {
-      // TODO: Start from given initial block number
-      initialSync: { initialBlockNumber: 0, interval: 200 },
+      initialSync: { initialBlockNumber: config.initialBlockNumber, interval: 200 },
     });
 
     // If ECS sidecar is not available, fetch events from contract on every new block
