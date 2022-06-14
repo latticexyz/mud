@@ -15,7 +15,8 @@
     "test": "forge test",
     "build": "rimraf out && forge build && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh",
-    "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
+    "removebytecode": "for i in abi/*; do jq 'del(.bytecode)' \"$i\" > \"$i\".tmp && mv \"$i\".tmp \"$i\"; done",
+    "types": "rimraf types && yarn removebytecode && typechain --target=ethers-v5 abi/*.json",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "lint": "yarn prettier && yarn solhint"
@@ -31,7 +32,7 @@
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
-    "typechain": "^8.0.0"
+    "typechain": "^8.1.0"
   },
   "gitHead": "2000994f695cee35fcc32558f399584922073016"
 }
