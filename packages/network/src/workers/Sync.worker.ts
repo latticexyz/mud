@@ -40,7 +40,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
 
   private async init() {
     // Internal ecs event stream
-    const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>(); // TODO: Very weird hack, if we don't do it like this, we can only subscribe to the stream once...
+    const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>();
 
     // Create cache and get the cache block number
     const cache = await createCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
