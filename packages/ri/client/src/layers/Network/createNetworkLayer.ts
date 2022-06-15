@@ -78,6 +78,11 @@ export async function createNetworkLayer() {
     );
   }
 
+  async function spawnCreature(position: WorldCoord) {
+    console.log(`Spawning creature at position ${JSON.stringify(position)}`);
+    await txQueue.Game.spawnCreature(position);
+  }
+
   // Constants (load from contract later)
   const constants = {
     mapSize: 50,
@@ -92,6 +97,7 @@ export async function createNetworkLayer() {
     mappings,
     api: {
       setContractComponentValue,
+      spawnCreature,
     },
   };
 }

@@ -7,3 +7,4 @@ export { createOutlineSystem } from "./OutlineSystem";
 export { createHueTintSystem } from "./HueTintSystem";
 export { createSelectionSystem } from "./SelectionSystem";
 export { createDrawDevHighlightSystem } from "./DrawDevHighlightSystem";
+export { createSpawnCreatureSystem } from "./SpawnCreatureSystem";
