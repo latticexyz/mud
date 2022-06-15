@@ -22,6 +22,7 @@ export function createAppearanceSystem(layer: PhaserLayer) {
         id: Appearance.id,
         once: (gameObject) => {
           gameObject.setTexture(appearance.texture);
+          gameObject.setOrigin(0, 0);
         },
       });
     }

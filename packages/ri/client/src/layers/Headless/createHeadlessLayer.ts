@@ -1,6 +1,5 @@
-import { createWorld, Entity } from "@latticexyz/recs";
+import { createWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
-import { WorldCoord } from "../../types";
 import { createActionSystem } from "./systems";
 import { defineActionComponent } from "./components";
 
@@ -10,17 +9,12 @@ import { defineActionComponent } from "./components";
  */
 
 export async function createHeadlessLayer(network: NetworkLayer) {
-  const world = createWorld({ parentWorld: network.world });
+  const world = createWorld({ parentWorld: network.world, name: "Headless" });
 
   const Action = defineActionComponent(world);
   const components = { Action };
 
   const actions = createActionSystem(world, Action, network.txReduced$);
 
-  // API
-  function moveEntity(entity: Entity, to: WorldCoord) {
-    network.api.setPosition(entity, to);
-  }
-
-  return { world, actions, parentLayers: { network }, components, api: { moveEntity } };
+  return { world, actions, parentLayers: { network }, components };
 }

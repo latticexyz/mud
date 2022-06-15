@@ -1,5 +1,4 @@
-import { createWorld, Entity } from "@latticexyz/recs";
-import { WorldCoord } from "../../types";
+import { Component, ComponentValue, createWorld, Entity, Schema, Type } from "@latticexyz/recs";
 import {
   definePositionComponent,
   defineEntityTypeComponent,
@@ -10,7 +9,6 @@ import {
 } from "./components";
 import { setupContracts } from "./setup";
 import { LAYER_NAME } from "./constants.local";
-import { EntityTypes } from "./types";
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
@@ -47,28 +45,37 @@ export async function createNetworkLayer() {
   // Instantiate contracts and set up mappings
   const { txQueue, txReduced$ } = await setupContracts(world, components, mappings);
 
-  // API
-  const positionContract = await txQueue.World.getComponent(keccak256("ember.component.positionComponent"));
-  async function setPosition(entity: Entity, position: WorldCoord) {
-    console.log("Position contract at ", positionContract);
+  /**
+   * TODO Only include this function in dev mode.
+   */
+  async function setContractComponentValue<T extends Schema>(
+    entity: Entity,
+    component: Component<T, { contractId: string }>,
+    newValue: ComponentValue<T>
+  ) {
+    if (!component.metadata.contractId)
+      throw new Error(
+        `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
+      );
+
+    const componentContract = await txQueue.World.getComponent(keccak256(component.metadata.contractId));
+    const contractArgTypes = [] as string[];
+    const contractArgs = Object.values(newValue);
+
+    for (const type of Object.values(component.schema)) {
+      if (type === Type.Number) {
+        contractArgTypes.push("uint256");
+      } else {
+        contractArgTypes.push("string");
+      }
+    }
+
+    console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entity}`);
     txQueue.Game.addComponentToEntityExternally(
       BigNumber.from(entity),
-      positionContract,
-      abi.encode(["int32", "int32"], [position.x, position.y])
+      componentContract,
+      abi.encode(contractArgTypes, contractArgs)
     );
-
-    console.log("Setting position", entity, position);
-  }
-
-  const entityTypeContract = await txQueue.World.getComponent(keccak256("ember.component.entityTypeComponent"));
-  async function setEntityType(entity: Entity, entityType: EntityTypes) {
-    console.log("Entity type contract", entityTypeContract);
-    txQueue.Game.addComponentToEntityExternally(
-      BigNumber.from(entity),
-      entityTypeContract,
-      abi.encode(["uint32"], [entityType])
-    );
-    console.log("Setting entityType", entity, entityType);
   }
 
   // Constants (load from contract later)
@@ -84,8 +91,7 @@ export async function createNetworkLayer() {
     txReduced$,
     mappings,
     api: {
-      setPosition,
-      setEntityType,
+      setContractComponentValue,
     },
   };
 }
