@@ -9,6 +9,12 @@ import { UsingDiamondOwner } from "../diamond/utils/UsingDiamondOwner.sol";
 import { UsingAccessControl } from "../access/UsingAccessControl.sol";
 import { AppStorage } from "../libraries/LibAppStorage.sol";
 
+struct ECSEvent {
+  uint256 componentId;
+  uint256 entity;
+  bytes value;
+}
+
 contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
 
@@ -26,7 +32,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     uint256 entity,
     uint256 componentId,
     bytes memory value
-  ) external {
+  ) public {
     Component c = Component(s.world.getComponent(componentId));
     c.set(entity, value);
   }
@@ -35,6 +41,12 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   function removeComponentFromEntityExternally(uint256 entity, uint256 componentId) external {
     Component c = Component(s.world.getComponent(componentId));
     c.remove(entity);
+  }
+
+  function bulkSetState(ECSEvent[] memory state) external {
+    for (uint256 i; i < state.length; i++) {
+      addComponentToEntityExternally(state[i].entity, state[i].componentId, state[i].value);
+    }
   }
 
   function spawnCreature(Position calldata position) external {
