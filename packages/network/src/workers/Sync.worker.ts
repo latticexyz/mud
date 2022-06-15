@@ -4,7 +4,7 @@ import { Component, World } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import WorldAbi from "@latticexyz/solecs/abi/World.json";
 import { DoWork, fromWorker, runWorker } from "observable-webworker";
-import { combineLatest, concatMap, filter, map, Observable, of, Subject, withLatestFrom } from "rxjs";
+import { combineLatest, concatMap, filter, map, Observable, of, startWith, Subject } from "rxjs";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { ConnectionState, createReconnectingProvider } from "../createProvider";
@@ -152,7 +152,12 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
     // Stream ECS events to the Cache worker to store them to IndexDB
     fromWorker<Input<Cm>, boolean>(
       () => new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" }),
-      ecsEvent$.pipe(withLatestFrom(blockNumber$, of(config.worldContract.address), of(config.chainId)))
+      combineLatest([
+        ecsEvent$.pipe(startWith(undefined)),
+        blockNumber$.pipe(startWith(undefined)),
+        of(config.worldContract.address),
+        of(config.chainId),
+      ]) // Emits any either of the sources emit and starts immediately (emitting undefined as first value for ecsEvent and blockNumber)
     ).subscribe(); // Need to subscribe to make the stream flow
 
     // Stream ECS events to the main thread

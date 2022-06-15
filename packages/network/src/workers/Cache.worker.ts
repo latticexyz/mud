@@ -1,5 +1,5 @@
 import { DoWork, runWorker } from "observable-webworker";
-import { distinctUntilChanged, filter, map, Observable, ReplaySubject, Subject, take } from "rxjs";
+import { distinctUntilChanged, map, Observable, ReplaySubject, Subject, take } from "rxjs";
 import { Components, ComponentValue, ExtendableECSEvent, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
 import { awaitStreamValue, filterNullish } from "@latticexyz/utils";
@@ -10,7 +10,12 @@ export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
   { lastEventInTx: boolean; txHash: string; entity: string }
 >;
 
-export type Input<Cm extends Components> = [ECSEventWithTx<Cm>, number, string | undefined, number | undefined]; // [ECSEvent, blockNumber, worldContractAddress, chainId]
+export type Input<Cm extends Components> = [
+  ECSEventWithTx<Cm> | undefined,
+  number | undefined,
+  string | undefined,
+  number | undefined
+]; // [ECSEvent, blockNumber, worldContractAddress, chainId]
 export type Output = never;
 
 export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, number> {
@@ -23,10 +28,15 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
 
   private async init() {
     const ecsEvent$ = this.ecsEventWithBlockNr$.pipe(
-      filter((e) => typeof e !== "string"),
-      map(([ecsEvent]) => ecsEvent)
+      map(([ecsEvent]) => ecsEvent),
+      filterNullish()
     );
-    const blockNr$ = this.ecsEventWithBlockNr$.pipe(map(([, blockNr]) => blockNr));
+    const blockNr$ = this.ecsEventWithBlockNr$.pipe(
+      map(([, blockNr]) => blockNr),
+      filterNullish()
+    );
+
+    blockNr$.subscribe((e) => console.log("Cache block nr", e));
 
     const worldAddress = await awaitStreamValue(
       this.ecsEventWithBlockNr$.pipe(
