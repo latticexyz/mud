@@ -36,8 +36,6 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
       filterNullish()
     );
 
-    blockNr$.subscribe((e) => console.log("Cache block nr", e));
-
     const worldAddress = await awaitStreamValue(
       this.ecsEventWithBlockNr$.pipe(
         map(([, , worldAddress]) => worldAddress),
