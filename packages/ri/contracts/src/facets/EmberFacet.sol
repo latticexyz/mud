@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import { PositionComponent, Position } from "../components/PositionComponent.sol";
-import { EntityTypeComponent, EntityType } from "../components/EntityTypeComponent.sol";
+import { PositionComponent, ID as PositionComponentID, Position } from "../components/PositionComponent.sol";
+import { EntityTypeComponent, ID as EntityTypeComponentID, EntityType } from "../components/EntityTypeComponent.sol";
 import { World } from "solecs/World.sol";
 import { Component } from "solecs/Component.sol";
 import { UsingDiamondOwner } from "../diamond/utils/UsingDiamondOwner.sol";
@@ -24,16 +24,27 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   // Debugging
   function addComponentToEntityExternally(
     uint256 entity,
-    address component,
+    uint256 componentId,
     bytes memory value
   ) external {
-    Component c = Component(component);
+    Component c = Component(s.world.getComponent(componentId));
     c.set(entity, value);
   }
 
-  function removeComponentFromEntityExternally(uint256 entity, address component) external {
-    Component c = Component(component);
+  // Debugging
+  function removeComponentFromEntityExternally(uint256 entity, uint256 componentId) external {
+    Component c = Component(s.world.getComponent(componentId));
     c.remove(entity);
+  }
+
+  function spawnCreature(Position calldata position) external {
+    EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
+    PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
+
+    uint256 entity = s.world.getUniqueEntityId();
+
+    entityTypeComponent.set(entity, EntityType({ entityType: 0 }));
+    positionComponent.set(entity, position);
   }
 
   // Entry Points. Debugging only

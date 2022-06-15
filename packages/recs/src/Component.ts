@@ -16,20 +16,25 @@ import {
   World,
 } from "./types";
 
-export function defineComponent<T extends Schema>(world: World, schema: T, options?: { name?: string }): Component<T> {
+export function defineComponent<T extends Schema, S = Record<string, unknown>>(
+  world: World,
+  schema: T,
+  options?: { name?: string; metadata?: S }
+): Component<T, S> {
   const component: AnyComponent = {
     id: options?.name || uuid(),
     values: {},
     entities: new Set<Entity>(),
     stream$: new Subject(),
     schema,
+    metadata: options?.metadata ?? {},
   };
 
   for (const [key, val] of Object.entries(schema)) {
     component.values[key] = new Map<Entity, ValueType[typeof val]>();
   }
 
-  return world.registerComponent(component) as Component<T>;
+  return world.registerComponent(component) as unknown as Component<T, S>;
 }
 
 export function setComponent<T extends Schema>(component: Component<T>, entity: Entity, value: ComponentValue<T>) {
@@ -140,6 +145,7 @@ export function cloneComponent<T extends Schema>(component: Component<T>): Compo
     entities: new Set<Entity>(...component.entities),
     stream$: new Subject(),
     schema: {},
+    metadata: {},
   };
 
   for (const key of Object.keys(component.values)) {

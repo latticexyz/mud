@@ -12,17 +12,23 @@ import {
   defineSelectableComponent,
   defineRockWallComponent,
 } from "./components";
-import { createDestinationSystem, createPathSystem, createSyncSystem, createPositionSystem } from "./systems";
+import {
+  createDestinationSystem,
+  createPathSystem,
+  createSyncSystem,
+  createPositionSystem,
+  createImpSystem,
+  createSelectionSystem,
+} from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
 import { Area } from "@latticexyz/utils";
-import { createRockWallSystem } from "./systems/RockWallSystem";
 
 /**
  * The Local layer is the thrid layer in the client architecture and extends the Headless layer.
  * Its purpose is to add components and systems for all client-only functionality, eg. strolling imps.
  */
 export async function createLocalLayer(headless: HeadlessLayer) {
-  const world = createWorld({ parentWorld: headless.world });
+  const world = createWorld({ parentWorld: headless.world, name: "Local" });
 
   // Components
   const LocalPosition = defineLocalPositionComponent(world);
@@ -80,14 +86,12 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   };
 
   // Systems
-  // createSelectionSystem(layer); // Enable selection system
-  // createImpSystem(layer); // Enable imps
-  // createStrollingSystem(layer); // Enable strolling
+  createSelectionSystem(layer); // Enable selection system
+  createImpSystem(layer); // Enable imps
   createSyncSystem(layer);
   createPositionSystem(layer);
   createDestinationSystem(layer);
   createPathSystem(layer);
-  createRockWallSystem(layer);
 
   return layer;
 }

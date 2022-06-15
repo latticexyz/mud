@@ -7,3 +7,4 @@ export * from "./createTxQueue";
 export * from "./createSyncWorker";
 export * from "./createTopics";
 export * from "./createDecoder";
+export * from "./createEncoder";

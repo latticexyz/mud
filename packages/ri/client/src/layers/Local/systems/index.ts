@@ -1,4 +1,3 @@
-export { createStrollingSystem } from "./StrollingSystem";
 export { createSyncSystem } from "./SyncSystem";
 export { createImpSystem } from "./ImpSystem";
 export { createPathSystem } from "./PathSystem";

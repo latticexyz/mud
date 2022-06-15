@@ -1,13 +1,4 @@
-import {
-  createWorld,
-  createEntity,
-  withValue,
-  getQueryResult,
-  Has,
-  HasValue,
-  getComponentValueStrict,
-  defineReactionSystem,
-} from "@latticexyz/recs";
+import { createWorld } from "@latticexyz/recs";
 import { LocalLayer } from "../../Local";
 import {
   createMapSystem,
@@ -18,6 +9,8 @@ import {
   createOutlineSystem,
   createHueTintSystem,
   createSelectionSystem,
+  createDrawDevHighlightSystem,
+  createSpawnCreatureSystem,
 } from "./systems";
 import { createPhaserEngine } from "@latticexyz/phaserx";
 import {
@@ -28,7 +21,7 @@ import {
 } from "./components";
 import { config } from "./config";
 import { createSelectionOutlineSystem } from "./systems/SelectionOutlineSystem";
-import { coordsOf } from "@latticexyz/utils";
+import { defineDevHighlightComponent } from "@latticexyz/std-client";
 
 /**
  * The Phaser layer extends the Local layer.
@@ -36,14 +29,15 @@ import { coordsOf } from "@latticexyz/utils";
  */
 export async function createPhaserLayer(local: LocalLayer) {
   // World
-  const world = createWorld({ parentWorld: local.world });
+  const world = createWorld({ parentWorld: local.world, name: "Phaser" });
 
   // Components
   const Appearance = defineAppearanceComponent(world);
   const SpriteAnimation = defineSpriteAnimationComponent(world);
   const Outline = defineOutlineComponent(world);
   const HueTint = defineHueTintComponent(world);
-  const components = { Appearance, SpriteAnimation, Outline, HueTint };
+  const DevHighlight = defineDevHighlightComponent(world);
+  const components = { Appearance, SpriteAnimation, Outline, HueTint, DevHighlight };
 
   // Create phaser engine
   const { game, scenes, dispose: disposePhaser } = await createPhaserEngine(config);
@@ -60,21 +54,6 @@ export async function createPhaserLayer(local: LocalLayer) {
     game,
     scenes,
   };
-
-  // TODO: Remove, only for testing
-
-  defineReactionSystem(
-    world,
-    () => getComponentValueStrict(local.components.Selection, local.singletonEntity),
-    (selection) => {
-      for (const coord of coordsOf(selection)) {
-        const { MinedTag, Position } = layer.parentLayers.network.components;
-        if (getQueryResult([HasValue(Position, coord), Has(MinedTag)]).size === 0) {
-          createEntity(layer.parentLayers.network.world, [withValue(MinedTag, {}), withValue(Position, coord)]);
-        }
-      }
-    }
-  );
 
   // Debugger
   // createDebugger(
@@ -95,6 +74,8 @@ export async function createPhaserLayer(local: LocalLayer) {
   createHueTintSystem(layer);
   createSelectionSystem(layer);
   createSelectionOutlineSystem(layer);
+  createDrawDevHighlightSystem(layer);
+  createSpawnCreatureSystem(layer);
 
   return layer;
 }

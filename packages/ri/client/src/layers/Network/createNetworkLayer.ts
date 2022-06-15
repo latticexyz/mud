@@ -1,20 +1,11 @@
-import { createWorld, Entity } from "@latticexyz/recs";
-import { WorldCoord } from "../../types";
-import {
-  definePositionComponent,
-  defineEntityTypeComponent,
-  defineUntraversableComponent,
-  defineMinedTagComponent,
-  defineSpellComponent,
-  defineEmbodiedSystemArgumentComponent,
-} from "./components";
+import { Component, ComponentValue, createWorld, Entity, Schema } from "@latticexyz/recs";
+import { definePositionComponent, defineEntityTypeComponent } from "./components";
 import { setupContracts } from "./setup";
 import { LAYER_NAME } from "./constants.local";
-import { EntityTypes } from "./types";
-import { defaultAbiCoder as abi } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
+import { Coord } from "@latticexyz/utils";
 
 /**
  * The Network layer is the lowest layer in the client architecture.
@@ -26,49 +17,41 @@ export async function createNetworkLayer() {
 
   // Components
   const components = {
-    Position: definePositionComponent(world),
-    EntityType: defineEntityTypeComponent(world),
-    Untraversable: defineUntraversableComponent(world),
-    MinedTag: defineMinedTagComponent(world),
-    Spell: defineSpellComponent(world),
-    EmbodiedSystemArgumentComponent: defineEmbodiedSystemArgumentComponent(world),
+    Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
+    EntityType: defineEntityTypeComponent(world, keccak256("ember.component.entityTypeComponent")),
   };
 
   // Define mappings between contract and client components
   const mappings: Mappings<typeof components> = {
     [keccak256("ember.component.positionComponent")]: "Position",
     [keccak256("ember.component.entityTypeComponent")]: "EntityType",
-    [keccak256("ember.component.untraversableComponent")]: "Untraversable",
-    [keccak256("ember.component.minedTagComponent")]: "MinedTag",
-    [keccak256("ember.component.spellComponent")]: "Spell",
-    [keccak256("ember.component.embodiedSystemArgumentComponent")]: "EmbodiedSystemArgumentComponent",
   };
 
   // Instantiate contracts and set up mappings
-  const { txQueue, txReduced$ } = await setupContracts(world, components, mappings);
+  const { txQueue, txReduced$, encoders } = await setupContracts(world, components, mappings);
 
-  // API
-  const positionContract = await txQueue.World.getComponent(keccak256("ember.component.positionComponent"));
-  async function setPosition(entity: Entity, position: WorldCoord) {
-    console.log("Position contract at ", positionContract);
-    txQueue.Game.addComponentToEntityExternally(
-      BigNumber.from(entity),
-      positionContract,
-      abi.encode(["int32", "int32"], [position.x, position.y])
-    );
+  /**
+   * TODO Only include this function in dev mode.
+   */
+  async function setContractComponentValue<T extends Schema>(
+    entity: Entity,
+    component: Component<T, { contractId: string }>,
+    newValue: ComponentValue<T>
+  ) {
+    if (!component.metadata.contractId)
+      throw new Error(
+        `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
+      );
 
-    console.log("Setting position", entity, position);
+    const data = encoders[component.id](newValue);
+
+    console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entity}`);
+    await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entity), component.metadata.contractId, data);
   }
 
-  const entityTypeContract = await txQueue.World.getComponent(keccak256("ember.component.entityTypeComponent"));
-  async function setEntityType(entity: Entity, entityType: EntityTypes) {
-    console.log("Entity type contract", entityTypeContract);
-    txQueue.Game.addComponentToEntityExternally(
-      BigNumber.from(entity),
-      entityTypeContract,
-      abi.encode(["uint32"], [entityType])
-    );
-    console.log("Setting entityType", entity, entityType);
+  async function spawnCreature(position: Coord) {
+    console.log(`Spawning creature at position ${JSON.stringify(position)}`);
+    await txQueue.Game.spawnCreature(position);
   }
 
   // Constants (load from contract later)
@@ -84,8 +67,8 @@ export async function createNetworkLayer() {
     txReduced$,
     mappings,
     api: {
-      setPosition,
-      setEntityType,
+      setContractComponentValue,
+      spawnCreature,
     },
   };
 }

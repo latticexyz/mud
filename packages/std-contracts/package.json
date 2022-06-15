@@ -1,0 +1,34 @@
+{
+  "name": "@latticexyz/std-contracts",
+  "license": "MIT",
+  "version": "0.1.8",
+  "description": "MUD Contracts Standard Library",
+  "types": "./types/ethers-contracts/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/std-contracts"
+  },
+  "scripts": {
+    "prepare": "chmod u+x git-install.sh",
+    "git:install": "bash git-install.sh",
+    "test": "forge test",
+    "build": "rimraf out && forge build && yarn dist && yarn types",
+    "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh",
+    "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
+    "prettier": "prettier --write 'src/**/*.sol'",
+    "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
+    "lint": "yarn prettier && yarn solhint"
+  },
+  "devDependencies": {
+    "@rari-capital/solmate": "https://github.com/Rari-Capital/solmate.git#b6ae78e6ff490f8fec7695c7b65d06e5614f1b65",
+    "@typechain/ethers-v5": "^9.0.0",
+    "ds-test": "https://github.com/dapphub/ds-test.git#c7a36fb236f298e04edf28e2fee385b80f53945f",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#37a3fe48c3a4d8239cda93445f0b5e76b1507436",
+    "prettier": "^2.6.2",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "rimraf": "^3.0.2",
+    "solhint": "^3.3.7",
+    "typechain": "^8.0.0"
+  }
+}

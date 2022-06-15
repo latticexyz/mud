@@ -31,13 +31,14 @@ export type ComponentValue<T extends Schema> = {
   [key in keyof T]: ValueType[T[key]];
 };
 
-export interface Component<T extends Schema> {
+export interface Component<T extends Schema, S = Record<string, unknown>> {
   id: string;
   values: { [key in keyof T]: Map<Entity, ValueType[T[key]]> };
   entities: Set<Entity>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   stream$: Subject<any>;
   schema: Schema;
+  metadata: S;
 }
 
 export type Components = {
@@ -58,7 +59,7 @@ export type World = {
   entities: SuperSetMap<Entity, AnyComponent>;
   components: SuperSet<AnyComponent>;
   registerComponent: <T extends AnyComponent>(component: T) => T;
-  registerEntity: (id?: string) => Entity;
+  registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
   getEntityComponents: (entity: Entity) => Set<AnyComponent>;
   registerDisposer: (disposer: () => void) => void;
   disposeAll: () => void;

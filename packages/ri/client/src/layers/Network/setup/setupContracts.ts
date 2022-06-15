@@ -1,4 +1,11 @@
-import { createNetwork, createContracts, Mappings, createTxQueue, createSyncWorker } from "@latticexyz/network";
+import {
+  createNetwork,
+  createContracts,
+  Mappings,
+  createTxQueue,
+  createSyncWorker,
+  createEncoder,
+} from "@latticexyz/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
@@ -8,11 +15,18 @@ import { bufferTime, filter, Observable, Subject } from "rxjs";
 import { Component, Components, ExtendableECSEvent, Schema, setComponent, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { stretch } from "@latticexyz/utils";
+import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
+import { Contract } from "ethers";
+import { Component as SolecsComponent } from "@latticexyz/solecs";
 
 export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
   C,
   { lastEventInTx: boolean; txHash: string; entity: string }
 >;
+
+export type ContractComponents = {
+  [key: string]: Component<Schema, { contractId: string }>;
+};
 
 const config: Parameters<typeof createNetwork>[0] = {
   clock: {
@@ -31,7 +45,7 @@ const config: Parameters<typeof createNetwork>[0] = {
   chainId: 1337,
 };
 
-export async function setupContracts<C extends Components>(world: World, components: C, mappings: Mappings<C>) {
+export async function setupContracts<C extends ContractComponents>(world: World, components: C, mappings: Mappings<C>) {
   const network = await createNetwork(config);
   world.registerDisposer(network.dispose);
 
@@ -57,7 +71,19 @@ export async function setupContracts<C extends Components>(world: World, compone
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
-  return { txQueue, txReduced$ };
+  const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
+  for (const component of Object.values(components)) {
+    const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
+    const componentContract = new Contract(
+      componentAddress,
+      ComponentAbi.abi,
+      signerOrProvider.get()
+    ) as SolecsComponent;
+    const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
+
+    encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
+  }
+  return { txQueue, txReduced$, encoders };
 }
 
 /**
@@ -85,7 +111,7 @@ function applyNetworkUpdates<C extends Components>(
       // runInAction(() => {
       for (const update of updates) {
         if (!world.entities.has(update.entity)) {
-          world.registerEntity(update.entity);
+          world.registerEntity({ id: update.entity });
         }
         setComponent(components[update.component] as Component<Schema>, update.entity, update.value);
         if (update.lastEventInTx) txReduced$.next(update.txHash);

@@ -22,13 +22,17 @@ export function createImpSystem(layer: LocalLayer) {
       y: random(7),
     };
 
-    createEntity(world, [
-      withValue(LocalEntityType, { entityType: LocalEntityTypes.Imp }),
-      withValue(Strolling, {}),
-      withValue(LocalPosition, coord),
-      withValue(MoveSpeed, { default: 500, current: 500 }),
-      withValue(Selectable, {}), // Remove this later, imps are not selectable
-    ]);
+    createEntity(
+      world,
+      [
+        withValue(LocalEntityType, { entityType: LocalEntityTypes.Imp }),
+        withValue(Strolling, {}),
+        withValue(LocalPosition, coord),
+        withValue(MoveSpeed, { default: 500, current: 500 }),
+        withValue(Selectable, {}), // Remove this later, imps are not selectable
+      ],
+      { idSuffix: "imp" }
+    );
   });
 
   const dispose = Time.time.setInterval(createImp, 1000);
