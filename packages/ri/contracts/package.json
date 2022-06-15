@@ -30,9 +30,9 @@
     "@ethersproject/abi": "^5.6.0",
     "@ethersproject/bytes": "^5.6.0",
     "@ethersproject/providers": "^5.6.1",
-    "@latticexyz/cli": "^0.1.7",
+    "@latticexyz/cli": "0.1.8",
     "@latticexyz/persona": "https://github.com/latticexyz/persona.git#a53e26a670ed6f041dc5dec365be293457a90b5d",
-    "@latticexyz/solecs": "^0.1.7",
+    "@latticexyz/solecs": "0.1.8",
     "@manifoldxyz/royalty-registry-solidity": "https://github.com/manifoldxyz/royalty-registry-solidity.git#c5ad6269d37e180fbf449a1f5ba2d2ff6c441efc",
     "@nomiclabs/hardhat-ethers": "npm:hardhat-deploy-ethers",
     "@opengsn/contracts": "^2.2.6",
@@ -62,8 +62,5 @@
     "typechain": "^7.0.1",
     "typescript": "^4.6.2",
     "wait-on": "^6.0.1"
-  },
-  "dependencies": {
-    "@latticexyz/solecs": "^0.1.8"
   }
 }

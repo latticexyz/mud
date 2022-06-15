@@ -114,12 +114,13 @@ contract Deploy is DSTest {
     // -------------------------------------------------------------------------
     EmberFacet emberFacet = new EmberFacet();
 
-    functionSelectors = new bytes4[](5);
+    functionSelectors = new bytes4[](6);
     functionSelectors[0] = EmberFacet.addComponentToEntityExternally.selector;
     functionSelectors[1] = EmberFacet.removeComponentFromEntityExternally.selector;
     functionSelectors[2] = EmberFacet.world.selector;
     functionSelectors[3] = EmberFacet.callerEntityID.selector;
     functionSelectors[4] = EmberFacet.entryPoint.selector;
+    functionSelectors[5] = EmberFacet.bulkSetState.selector;
 
     diamondCut[1] = IDiamondCut.FacetCut({
       facetAddress: address(emberFacet),
