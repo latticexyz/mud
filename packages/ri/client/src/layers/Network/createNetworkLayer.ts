@@ -43,7 +43,7 @@ export async function createNetworkLayer() {
         `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
       );
 
-    const data = await encoders[component.id](newValue);
+    const data = encoders[component.id](newValue);
 
     console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entity}`);
     await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entity), component.metadata.contractId, data);

@@ -81,25 +81,25 @@ export async function setupContracts<C extends ContractComponents>(world: World,
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
-  const encoders = Object.values(components).reduce((encoders, component) => {
-    encoders[component.id] = createEncoder(component);
-    return encoders;
-  }, {} as Record<string, ReturnType<typeof createEncoder>>);
+  const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
+  for (const component of Object.values(components)) {
+    const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
+    const componentContract = new Contract(
+      componentAddress,
+      ComponentAbi.abi,
+      signerOrProvider.get()
+    ) as SolecsComponent;
+    const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
 
+    encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
+  }
   return { txQueue, txReduced$, encoders };
 
   function createEncoder(
-    component: Component<Schema, { contractId: string }>
-  ): (value: ComponentValue<Schema>) => Promise<string> {
-    return async (value) => {
-      const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
-      const componentContract = new Contract(
-        componentAddress,
-        ComponentAbi.abi,
-        signerOrProvider.get()
-      ) as SolecsComponent;
-      const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
-
+    componentSchemaPropNames: string[],
+    componentSchemaTypes: number[]
+  ): (value: ComponentValue<Schema>) => string {
+    return (value) => {
       const contractArgTypes = [] as string[];
       const contractArgs = Object.values(value);
 
