@@ -1,4 +1,4 @@
-import { Component, ComponentValue, createWorld, Entity, Schema, Type } from "@latticexyz/recs";
+import { Component, ComponentValue, createWorld, Entity, Schema } from "@latticexyz/recs";
 import {
   definePositionComponent,
   defineEntityTypeComponent,
@@ -9,10 +9,10 @@ import {
 } from "./components";
 import { setupContracts } from "./setup";
 import { LAYER_NAME } from "./constants.local";
-import { defaultAbiCoder as abi } from "ethers/lib/utils";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
+import { WorldCoord } from "@latticexyz/phaserx/src/types";
 
 /**
  * The Network layer is the lowest layer in the client architecture.
@@ -24,12 +24,15 @@ export async function createNetworkLayer() {
 
   // Components
   const components = {
-    Position: definePositionComponent(world),
-    EntityType: defineEntityTypeComponent(world),
-    Untraversable: defineUntraversableComponent(world),
-    MinedTag: defineMinedTagComponent(world),
-    Spell: defineSpellComponent(world),
-    EmbodiedSystemArgumentComponent: defineEmbodiedSystemArgumentComponent(world),
+    Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
+    EntityType: defineEntityTypeComponent(world, keccak256("ember.component.entityTypeComponent")),
+    Untraversable: defineUntraversableComponent(world, keccak256("ember.component.untraversableComponent")),
+    MinedTag: defineMinedTagComponent(world, keccak256("ember.component.minedTagComponent")),
+    Spell: defineSpellComponent(world, keccak256("ember.component.spellComponent")),
+    EmbodiedSystemArgumentComponent: defineEmbodiedSystemArgumentComponent(
+      world,
+      keccak256("ember.component.embodiedSystemArgumentComponent")
+    ),
   };
 
   // Define mappings between contract and client components
@@ -43,7 +46,7 @@ export async function createNetworkLayer() {
   };
 
   // Instantiate contracts and set up mappings
-  const { txQueue, txReduced$ } = await setupContracts(world, components, mappings);
+  const { txQueue, txReduced$, encoders } = await setupContracts(world, components, mappings);
 
   /**
    * TODO Only include this function in dev mode.
@@ -58,24 +61,10 @@ export async function createNetworkLayer() {
         `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
       );
 
-    const componentContract = await txQueue.World.getComponent(keccak256(component.metadata.contractId));
-    const contractArgTypes = [] as string[];
-    const contractArgs = Object.values(newValue);
-
-    for (const type of Object.values(component.schema)) {
-      if (type === Type.Number) {
-        contractArgTypes.push("uint256");
-      } else {
-        contractArgTypes.push("string");
-      }
-    }
+    const data = await encoders[component.id](newValue);
 
     console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entity}`);
-    txQueue.Game.addComponentToEntityExternally(
-      BigNumber.from(entity),
-      componentContract,
-      abi.encode(contractArgTypes, contractArgs)
-    );
+    await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entity), component.metadata.contractId, data);
   }
 
   async function spawnCreature(position: WorldCoord) {

@@ -1,18 +1,42 @@
-import { createNetwork, createContracts, Mappings, createTxQueue, createSyncWorker } from "@latticexyz/network";
+import {
+  createNetwork,
+  createContracts,
+  Mappings,
+  createTxQueue,
+  createSyncWorker,
+  ContractSchemaValueId,
+  ContractSchemaValue,
+} from "@latticexyz/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import WorldAbi from "ri-contracts/abi/World.json";
 import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
 import { bufferTime, filter, Observable, Subject } from "rxjs";
-import { Component, Components, ExtendableECSEvent, Schema, setComponent, World } from "@latticexyz/recs";
+import {
+  Component,
+  Components,
+  ComponentValue,
+  ExtendableECSEvent,
+  Schema,
+  setComponent,
+  World,
+} from "@latticexyz/recs";
 import { computed } from "mobx";
 import { stretch } from "@latticexyz/utils";
+import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
+import { Contract } from "ethers";
+import { Component as SolecsComponent } from "@latticexyz/solecs";
+import { defaultAbiCoder as abi } from "ethers/lib/utils";
 
 export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
   C,
   { lastEventInTx: boolean; txHash: string; entity: string }
 >;
+
+export type ContractComponents = {
+  [key: string]: Component<Schema, { contractId: string }>;
+};
 
 const config: Parameters<typeof createNetwork>[0] = {
   clock: {
@@ -31,7 +55,7 @@ const config: Parameters<typeof createNetwork>[0] = {
   chainId: 1337,
 };
 
-export async function setupContracts<C extends Components>(world: World, components: C, mappings: Mappings<C>) {
+export async function setupContracts<C extends ContractComponents>(world: World, components: C, mappings: Mappings<C>) {
   const network = await createNetwork(config);
   world.registerDisposer(network.dispose);
 
@@ -57,7 +81,36 @@ export async function setupContracts<C extends Components>(world: World, compone
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
-  return { txQueue, txReduced$ };
+  const encoders = Object.values(components).reduce((encoders, component) => {
+    encoders[component.id] = createEncoder(component);
+    return encoders;
+  }, {} as Record<string, ReturnType<typeof createEncoder>>);
+
+  return { txQueue, txReduced$, encoders };
+
+  function createEncoder(
+    component: Component<Schema, { contractId: string }>
+  ): (value: ComponentValue<Schema>) => Promise<string> {
+    return async (value) => {
+      const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
+      const componentContract = new Contract(
+        componentAddress,
+        ComponentAbi.abi,
+        signerOrProvider.get()
+      ) as SolecsComponent;
+      const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
+
+      const contractArgTypes = [] as string[];
+      const contractArgs = Object.values(value);
+
+      for (const componentValueProp of Object.keys(value)) {
+        const index = componentSchemaPropNames.findIndex((key) => key === componentValueProp);
+        contractArgTypes.push(ContractSchemaValueId[componentSchemaTypes[index] as ContractSchemaValue]);
+      }
+
+      return abi.encode(contractArgTypes, contractArgs);
+    };
+  }
 }
 
 /**

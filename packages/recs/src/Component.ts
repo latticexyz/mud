@@ -20,7 +20,7 @@ export function defineComponent<T extends Schema, S = Record<string, unknown>>(
   world: World,
   schema: T,
   options?: { name?: string; metadata?: S }
-): Component<T> {
+): Component<T, S> {
   const component: AnyComponent = {
     id: options?.name || uuid(),
     values: {},
@@ -34,7 +34,7 @@ export function defineComponent<T extends Schema, S = Record<string, unknown>>(
     component.values[key] = new Map<Entity, ValueType[typeof val]>();
   }
 
-  return world.registerComponent(component) as Component<T>;
+  return world.registerComponent(component) as unknown as Component<T, S>;
 }
 
 export function setComponent<T extends Schema>(component: Component<T>, entity: Entity, value: ComponentValue<T>) {
