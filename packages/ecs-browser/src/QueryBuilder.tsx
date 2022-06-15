@@ -43,10 +43,8 @@ export const QueryBuilder = function ({
         return;
       }
 
-      /**
-       * Create local variables that include all the things necessary to
-       * construct custom Entity queries.
-       */
+      // Create local variables that include all the things necessary to
+      // construct custom Entity queries.
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const q = { ...recs };
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
