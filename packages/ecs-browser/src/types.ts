@@ -9,9 +9,6 @@ export type SetContractComponentFunction<T extends Schema> = (
 
 export type AnyComponentWithContract = Component<Schema, { contractId: string }>;
 
-/**
- * TODO change this to look at the network mapping exported from the network layer
- */
 export function hasContract(component: AnyComponent): component is AnyComponentWithContract {
   return component.metadata.contractId !== undefined;
 }
