@@ -54,7 +54,7 @@ export async function createNetworkLayer() {
     txQueue.Game.addComponentToEntityExternally(
       BigNumber.from(entity),
       positionContract,
-      abi.encode(["uint256", "uint256"], [position.x, position.y])
+      abi.encode(["int32", "int32"], [position.x, position.y])
     );
 
     console.log("Setting position", entity, position);
@@ -66,7 +66,7 @@ export async function createNetworkLayer() {
     txQueue.Game.addComponentToEntityExternally(
       BigNumber.from(entity),
       entityTypeContract,
-      abi.encode(["uint256"], [entityType])
+      abi.encode(["uint32"], [entityType])
     );
     console.log("Setting entityType", entity, entityType);
   }
