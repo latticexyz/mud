@@ -27,13 +27,7 @@ export function createDrawDevHighlightSystem(layer: PhaserLayer) {
     () => exitQuery.get(),
     (entities) => {
       for (const entity of entities) {
-        const highlight = objectPool.get(`${entity}-dev-highlight`, "Rectangle");
-        highlight.setComponent({
-          id: entity,
-          once: (box) => {
-            box.setVisible(false);
-          },
-        });
+        objectPool.remove(`${entity}-dev-highlight`);
       }
     }
   );
