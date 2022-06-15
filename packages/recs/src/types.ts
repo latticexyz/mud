@@ -59,7 +59,7 @@ export type World = {
   entities: SuperSetMap<Entity, AnyComponent>;
   components: SuperSet<AnyComponent>;
   registerComponent: <T extends AnyComponent>(component: T) => T;
-  registerEntity: ({ id, idSuffix }: { id?: string; idSuffix?: string }) => Entity;
+  registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
   getEntityComponents: (entity: Entity) => Set<AnyComponent>;
   registerDisposer: (disposer: () => void) => void;
   disposeAll: () => void;
