@@ -10,8 +10,8 @@ import { UsingAccessControl } from "../access/UsingAccessControl.sol";
 import { AppStorage } from "../libraries/LibAppStorage.sol";
 
 struct ECSEvent {
-  uint256 componentId;
-  uint256 entity;
+  uint8 component;
+  uint32 entity;
   bytes value;
 }
 
@@ -43,9 +43,13 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     c.remove(entity);
   }
 
-  function bulkSetState(ECSEvent[] memory state) external {
+  function bulkSetState(
+    uint256[] memory components,
+    uint256[] memory entities,
+    ECSEvent[] memory state
+  ) external {
     for (uint256 i; i < state.length; i++) {
-      addComponentToEntityExternally(state[i].entity, state[i].componentId, state[i].value);
+      addComponentToEntityExternally(entities[state[i].entity], components[state[i].component], state[i].value);
     }
   }
 

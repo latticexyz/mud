@@ -14,14 +14,19 @@ contract BulkUploadTest is EmberTest {
     uint256 sizeX = 100;
     uint256 sizeY = 100;
 
+    uint256[] memory components = new uint256[](1);
+    components[0] = PositionComponentID;
+
+    uint256[] memory entities = new uint256[](1);
+    entities[0] = 0;
+
     ECSEvent[] memory state = new ECSEvent[](sizeX * sizeY);
 
     for (uint256 y; y < sizeY; y++) {
       for (uint256 x; x < sizeY; x++) {
-        uint256 entity = y * sizeX + x;
-        state[entity] = ECSEvent(PositionComponentID, entity, new bytes(0));
+        state[y * sizeX + x] = ECSEvent(0, 0, new bytes(0));
       }
     }
-    emberFacet.bulkSetState(state);
+    emberFacet.bulkSetState(components, entities, state);
   }
 }
