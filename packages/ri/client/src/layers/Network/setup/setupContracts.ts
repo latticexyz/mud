@@ -85,7 +85,7 @@ function applyNetworkUpdates<C extends Components>(
       // runInAction(() => {
       for (const update of updates) {
         if (!world.entities.has(update.entity)) {
-          world.registerEntity(update.entity);
+          world.registerEntity({ id: update.entity });
         }
         setComponent(components[update.component] as Component<Schema>, update.entity, update.value);
         if (update.lastEventInTx) txReduced$.next(update.txHash);
