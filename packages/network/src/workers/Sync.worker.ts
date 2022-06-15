@@ -1,4 +1,4 @@
-import { awaitPromise, awaitValue, computedToStream, filterNullish } from "@latticexyz/utils";
+import { awaitPromise, awaitValue, computedToStream, deferred, filterNullish } from "@latticexyz/utils";
 import { computed, IObservableValue, observable, runInAction } from "mobx";
 import { Component, World } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
@@ -31,7 +31,7 @@ export type Output<Cm extends Components> = ECSEventWithTx<Cm>;
 export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Output<Cm>> {
   private config = observable.box<Config<Cm>>() as IObservableValue<Config<Cm>>;
   private clientBlockNumber = 0;
-  private decoders: { [key: string]: (data: string) => unknown } = {};
+  private decoders: { [key: string]: Promise<(data: string) => unknown> | ((data: string) => unknown) } = {};
   private output$ = new Subject<Output<Cm>>();
 
   constructor() {
@@ -105,10 +105,6 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
         awaitPromise(), // Await promises
         concatMap((v) => of(...v)), // Flatten contract event array into stream of contract events
         map(async (event) => {
-          if (event.contractKey !== "World") throw new Error("Unknown contract"); // We can only process events from the World contract
-          if (event.eventKey !== "ComponentValueSet" && event.eventKey !== "ComponentValueRemoved")
-            throw new Error("Unknown events"); // We can only process these events
-
           const {
             component: address,
             entity,
@@ -131,13 +127,14 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
           }
 
           // Create decoder and cache for later
-          let decoder = this.decoders[contractComponentId];
-          if (!decoder) {
+          if (!this.decoders[contractComponentId]) {
+            const [resolve, , promise] = deferred<(data: string) => unknown>();
+            this.decoders[contractComponentId] = promise; // Immediately save the promise, so following calls can await it
             const componentContract = new Contract(address, ComponentAbi.abi, providers.get().json) as Component;
             const [keys, values] = await componentContract.getSchema();
-            decoder = createDecoder(keys, values);
-            this.decoders[contractComponentId] = decoder;
+            resolve(createDecoder(keys, values));
           }
+          const decoder = await this.decoders[contractComponentId];
 
           return {
             component: clientComponentKey,
