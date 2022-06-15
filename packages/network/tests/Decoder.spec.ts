@@ -1,7 +1,8 @@
 import { createDecoder, flattenValue } from "../src/createDecoder";
-import { defaultAbiCoder as abi } from "ethers/lib/utils";
+import { createEncoder } from "../src/createEncoder";
 import { BigNumber } from "ethers";
 import { ContractSchemaValue } from "../src/types";
+import { defaultAbiCoder as abi } from "ethers/lib/utils";
 
 describe("Decoder", () => {
   it("decodes the component value", () => {
@@ -16,6 +17,23 @@ describe("Decoder", () => {
     );
     const encoded = abi.encode(["uint256", "int32", "uint256[]", "bool"], [1, 2, [3, 4], true]);
     expect(decoder(encoded)).toEqual({ first: "0x01", second: 2, third: ["0x03", "0x04"], fourth: true });
+  });
+
+  it("can encode and decode a component value", () => {
+    const propNames = ["first", "second", "third", "fourth"] as ["first", "second", "third", "fourth"];
+    const types = [
+      ContractSchemaValue.UINT256,
+      ContractSchemaValue.INT32,
+      ContractSchemaValue.UINT256_ARRAY,
+      ContractSchemaValue.BOOL,
+    ];
+    const decoder = createDecoder<{ first: string; second: number; third: string[]; fourth: boolean }>(
+      propNames,
+      types
+    );
+    const value = { first: "0x01", second: 2, third: ["0x03", "0x04"], fourth: true };
+    const encoded = createEncoder<typeof value>(propNames, types)(value);
+    expect(decoder(encoded)).toEqual(value);
   });
 
   describe("flattenValue", () => {

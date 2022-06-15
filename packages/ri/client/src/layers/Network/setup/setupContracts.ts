@@ -4,8 +4,7 @@ import {
   Mappings,
   createTxQueue,
   createSyncWorker,
-  ContractSchemaValueId,
-  ContractSchemaValue,
+  createEncoder,
 } from "@latticexyz/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
@@ -13,21 +12,12 @@ import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFace
 import WorldAbi from "ri-contracts/abi/World.json";
 import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
 import { bufferTime, filter, Observable, Subject } from "rxjs";
-import {
-  Component,
-  Components,
-  ComponentValue,
-  ExtendableECSEvent,
-  Schema,
-  setComponent,
-  World,
-} from "@latticexyz/recs";
+import { Component, Components, ExtendableECSEvent, Schema, setComponent, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { stretch } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
-import { defaultAbiCoder as abi } from "ethers/lib/utils";
 
 export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
   C,
@@ -94,23 +84,6 @@ export async function setupContracts<C extends ContractComponents>(world: World,
     encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
   }
   return { txQueue, txReduced$, encoders };
-
-  function createEncoder(
-    componentSchemaPropNames: string[],
-    componentSchemaTypes: number[]
-  ): (value: ComponentValue<Schema>) => string {
-    return (value) => {
-      const contractArgTypes = [] as string[];
-      const contractArgs = Object.values(value);
-
-      for (const componentValueProp of Object.keys(value)) {
-        const index = componentSchemaPropNames.findIndex((key) => key === componentValueProp);
-        contractArgTypes.push(ContractSchemaValueId[componentSchemaTypes[index] as ContractSchemaValue]);
-      }
-
-      return abi.encode(contractArgTypes, contractArgs);
-    };
-  }
 }
 
 /**
