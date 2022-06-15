@@ -18,10 +18,10 @@ import {
   createSyncSystem,
   createPositionSystem,
   createImpSystem,
+  createSelectionSystem,
 } from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
 import { Area } from "@latticexyz/utils";
-import { createRockWallSystem } from "./systems/RockWallSystem";
 
 /**
  * The Local layer is the thrid layer in the client architecture and extends the Headless layer.
@@ -86,14 +86,12 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   };
 
   // Systems
-  // createSelectionSystem(layer); // Enable selection system
+  createSelectionSystem(layer); // Enable selection system
   createImpSystem(layer); // Enable imps
-  // createStrollingSystem(layer); // Enable strolling
   createSyncSystem(layer);
   createPositionSystem(layer);
   createDestinationSystem(layer);
   createPathSystem(layer);
-  createRockWallSystem(layer);
 
   return layer;
 }

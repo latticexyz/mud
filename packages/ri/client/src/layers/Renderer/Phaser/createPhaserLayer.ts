@@ -1,13 +1,4 @@
-import {
-  createWorld,
-  createEntity,
-  withValue,
-  getQueryResult,
-  Has,
-  HasValue,
-  getComponentValueStrict,
-  defineReactionSystem,
-} from "@latticexyz/recs";
+import { createWorld } from "@latticexyz/recs";
 import { LocalLayer } from "../../Local";
 import {
   createMapSystem,
@@ -30,7 +21,6 @@ import {
 } from "./components";
 import { config } from "./config";
 import { createSelectionOutlineSystem } from "./systems/SelectionOutlineSystem";
-import { coordsOf } from "@latticexyz/utils";
 import { defineDevHighlightComponent } from "@latticexyz/std-client";
 
 /**
@@ -64,21 +54,6 @@ export async function createPhaserLayer(local: LocalLayer) {
     game,
     scenes,
   };
-
-  // TODO: Remove, only for testing
-
-  defineReactionSystem(
-    world,
-    () => getComponentValueStrict(local.components.Selection, local.singletonEntity),
-    (selection) => {
-      for (const coord of coordsOf(selection)) {
-        const { MinedTag, Position } = layer.parentLayers.network.components;
-        if (getQueryResult([HasValue(Position, coord), Has(MinedTag)]).size === 0) {
-          createEntity(layer.parentLayers.network.world, [withValue(MinedTag, {}), withValue(Position, coord)]);
-        }
-      }
-    }
-  );
 
   // Debugger
   // createDebugger(

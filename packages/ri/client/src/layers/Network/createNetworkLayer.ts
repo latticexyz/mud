@@ -1,12 +1,5 @@
 import { Component, ComponentValue, createWorld, Entity, Schema } from "@latticexyz/recs";
-import {
-  definePositionComponent,
-  defineEntityTypeComponent,
-  defineUntraversableComponent,
-  defineMinedTagComponent,
-  defineSpellComponent,
-  defineEmbodiedSystemArgumentComponent,
-} from "./components";
+import { definePositionComponent, defineEntityTypeComponent } from "./components";
 import { setupContracts } from "./setup";
 import { LAYER_NAME } from "./constants.local";
 import { BigNumber } from "ethers";
@@ -26,23 +19,12 @@ export async function createNetworkLayer() {
   const components = {
     Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
     EntityType: defineEntityTypeComponent(world, keccak256("ember.component.entityTypeComponent")),
-    Untraversable: defineUntraversableComponent(world, keccak256("ember.component.untraversableComponent")),
-    MinedTag: defineMinedTagComponent(world, keccak256("ember.component.minedTagComponent")),
-    Spell: defineSpellComponent(world, keccak256("ember.component.spellComponent")),
-    EmbodiedSystemArgumentComponent: defineEmbodiedSystemArgumentComponent(
-      world,
-      keccak256("ember.component.embodiedSystemArgumentComponent")
-    ),
   };
 
   // Define mappings between contract and client components
   const mappings: Mappings<typeof components> = {
     [keccak256("ember.component.positionComponent")]: "Position",
     [keccak256("ember.component.entityTypeComponent")]: "EntityType",
-    [keccak256("ember.component.untraversableComponent")]: "Untraversable",
-    [keccak256("ember.component.minedTagComponent")]: "MinedTag",
-    [keccak256("ember.component.spellComponent")]: "Spell",
-    [keccak256("ember.component.embodiedSystemArgumentComponent")]: "EmbodiedSystemArgumentComponent",
   };
 
   // Instantiate contracts and set up mappings

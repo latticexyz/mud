@@ -1,5 +1,5 @@
 import { defineEnterQuery, Has, defineReactionSystem, getComponentValueStrict } from "@latticexyz/recs";
-import { Tileset, RockWallTileset } from "../../constants";
+import { RockWallTileset } from "../../constants";
 import { PhaserLayer } from "../../types";
 
 /**
@@ -11,9 +11,6 @@ export function createMapSystem(layer: PhaserLayer) {
     parentLayers: {
       local: {
         components: { LocalPosition, RockWall },
-      },
-      network: {
-        components: { MinedTag, Position },
       },
     },
     scenes: {
@@ -38,19 +35,6 @@ export function createMapSystem(layer: PhaserLayer) {
   });
   world.registerDisposer(() => zoomSub?.unsubscribe());
 
-  // Mined tile system
-  const minedTilesQuery = defineEnterQuery(world, [Has(MinedTag), Has(Position)], { runOnInit: true });
-  defineReactionSystem(
-    world,
-    () => minedTilesQuery.get(),
-    (minedTiles) => {
-      for (const minedTile of minedTiles) {
-        const coord = getComponentValueStrict(Position, minedTile);
-        Main.putTileAt(coord, Tileset.OwnedGround, undefined, 0xff0000);
-      }
-    }
-  );
-
   // Rock wall system
   const rockWallQuery = defineEnterQuery(world, [Has(LocalPosition), Has(RockWall)], { runOnInit: true });
   defineReactionSystem(
@@ -63,14 +47,4 @@ export function createMapSystem(layer: PhaserLayer) {
       }
     }
   );
-
-  // TODO: Remove this - only for demonstration purposes
-  // return defineAutorunSystem(world, () => {
-  //   // Put a gold generator
-  //   Main.putAnimationAt({ x: 0, y: 0 }, TileAnimationKey.GoldGenerator);
-  //   Main.pauseAnimationAt({ x: 0, y: 0 });
-  //   Main.resumeAnimationAt({ x: 0, y: 0 });
-
-  //   Strategic.putTileAt({ x: 0, y: 0 }, Tileset.OwnedGround);
-  // });
 }
