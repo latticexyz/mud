@@ -18,7 +18,8 @@ contract BulkUploadTest is EmberTest {
 
     for (uint256 y; y < sizeY; y++) {
       for (uint256 x; x < sizeY; x++) {
-        state[y * sizeX + x] = ECSEvent(PositionComponentID, 1, new bytes(0));
+        uint256 entity = y * sizeX + x;
+        state[entity] = ECSEvent(PositionComponentID, entity, new bytes(0));
       }
     }
     emberFacet.bulkSetState(state);
