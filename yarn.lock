@@ -1289,9 +1289,9 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@latticexyz/persona@https://github.com/latticexyz/persona.git#4b4634be26c20fe16e0c1c8b26938b26128f4f2f":
+"@latticexyz/persona@https://github.com/latticexyz/persona.git#a53e26a670ed6f041dc5dec365be293457a90b5d":
   version "1.2.0"
-  resolved "https://github.com/latticexyz/persona.git#4b4634be26c20fe16e0c1c8b26938b26128f4f2f"
+  resolved "https://github.com/latticexyz/persona.git#a53e26a670ed6f041dc5dec365be293457a90b5d"
 
 "@lerna/add@4.0.0":
   version "4.0.0"
