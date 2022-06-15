@@ -12,7 +12,7 @@ import { LAYER_NAME } from "./constants.local";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
-import { WorldCoord } from "@latticexyz/phaserx/src/types";
+import { Coord } from "@latticexyz/utils";
 
 /**
  * The Network layer is the lowest layer in the client architecture.
@@ -67,7 +67,7 @@ export async function createNetworkLayer() {
     await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entity), component.metadata.contractId, data);
   }
 
-  async function spawnCreature(position: WorldCoord) {
+  async function spawnCreature(position: Coord) {
     console.log(`Spawning creature at position ${JSON.stringify(position)}`);
     await txQueue.Game.spawnCreature(position);
   }
