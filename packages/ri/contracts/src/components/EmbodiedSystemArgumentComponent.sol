@@ -11,6 +11,11 @@ contract EmbodiedSystemArgumentComponent is Component {
     return ID;
   }
 
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    values = new LibTypes.SchemaValue[](1);
+    values[0] = LibTypes.SchemaValue.BYTES;
+  }
+
   function getValue(uint256 entity) public view returns (bytes memory) {
     return getRawValue(entity);
   }

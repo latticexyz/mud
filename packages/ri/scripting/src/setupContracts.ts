@@ -1,76 +1,46 @@
-import { createNetwork, createContracts, createSigner, createTxQueue } from "@latticexyz/network";
-import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants";
+import { createNetwork, createContracts, createTxQueue } from "@latticexyz/network";
+import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
-import WorldABI from "ri-contracts/abi/World.json";
-import EmberABI from "ri-contracts/abi/CombinedFacets.json";
-import { combineLatest, from, map, mergeMap, ReplaySubject } from "rxjs";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import { Signer } from "ethers";
-import { awaitValue, filterNullish, streamToComputed } from "@latticexyz/utils";
+import WorldAbi from "ri-contracts/abi/World.json";
+import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
+import { Components, ExtendableECSEvent } from "@latticexyz/recs";
+import { computed } from "mobx";
+
+export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
+  C,
+  { lastEventInTx: boolean; txHash: string; entity: string }
+>;
+
+const config: Parameters<typeof createNetwork>[0] = {
+  clock: {
+    period: 5000,
+    initialTime: 0,
+    syncInterval: 5000,
+  },
+  provider: {
+    jsonRpcUrl: RPC_URL,
+    wsRpcUrl: RPC_WS_URL,
+    options: {
+      batch: false,
+    },
+  },
+  privateKey: DEV_PRIVATE_KEY,
+  chainId: 1337,
+};
 
 export async function setupContracts() {
-  const connected$ = new ReplaySubject<boolean>(1);
-  const contracts$ = new ReplaySubject<{ Ember: CombinedFacets; World: WorldContract }>(1);
-  const ethersSigner$ = new ReplaySubject<Signer>(1);
-  const provider$ = new ReplaySubject<JsonRpcProvider>(1);
+  const network = await createNetwork(config);
 
-  const { txQueue, ready } = createTxQueue(contracts$, ethersSigner$, provider$, connected$, {
-    concurrency: Number.MAX_SAFE_INTEGER,
-    ignoreConfirmation: true,
+  const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
+
+  const { contracts } = await createContracts<{ Game: CombinedFacets; World: WorldContract }>({
+    config: { Game: { abi: CombinedFacetsAbi.abi, address: DIAMOND_ADDRESS } },
+    asyncConfig: async (c) => ({ World: { abi: WorldAbi.abi, address: await c.Game.world() } }),
+    signerOrProvider,
   });
 
-  try {
-    const network = createNetwork({
-      time: {
-        period: 5000,
-      },
-      chainId: 1337,
-      rpcSupportsBatchQueries: false,
-      rpcUrl: RPC_URL,
-      rpcWsUrl: RPC_WS_URL,
-    });
+  const { txQueue } = createTxQueue(contracts, network);
 
-    // Connect the connected stream to the outer scope connected stream
-    network.connected$.subscribe(connected$);
-
-    // Connect the signer to the outer scope signer
-    createSigner({ privateKey: DEV_PRIVATE_KEY }, network.providers$).ethersSigner$.subscribe(ethersSigner$);
-
-    // Connect the provider to the outer scope provider
-    network.providers$
-      .pipe(map(([json, ws]) => ws))
-      .pipe(filterNullish())
-      .subscribe(provider$);
-
-    // Create a stream of ember contracts
-    const emberContract = createContracts<{ Ember: CombinedFacets }>(
-      { Ember: { abi: EmberABI.abi, address: DIAMOND_ADDRESS } },
-      ethersSigner$
-    );
-
-    // Create a stream of world contracts
-    const worldContract$ = emberContract.contracts$.pipe(
-      mergeMap(({ Ember }) => from(Ember.world())), // Get the world address
-      mergeMap(
-        (address) =>
-          createContracts<{ World: WorldContract }>({ World: { abi: WorldABI.abi, address } }, ethersSigner$).contracts$
-      )
-    );
-
-    // Connect the contract stream to the outer scope contracts
-    combineLatest([emberContract.contracts$, worldContract$])
-      .pipe(
-        map(([{ Ember }, { World }]) => ({
-          Ember,
-          World,
-        }))
-      )
-      .subscribe(contracts$);
-  } catch (e) {
-    console.warn(e);
-  }
-
-  await awaitValue(ready);
-  return { txQueue, provider: streamToComputed(provider$), signer: streamToComputed(ethersSigner$) };
+  return { txQueue, provider: computed(() => network.providers.get().json), signer: network.signer };
 }

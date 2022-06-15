@@ -9,6 +9,7 @@ import { IComponent } from "./interfaces/IComponent.sol";
 
 import { Set } from "./Set.sol";
 import { MapSet } from "./MapSet.sol";
+import { LibTypes } from "./LibTypes.sol";
 
 abstract contract Component is IComponent {
   address public world;
@@ -35,6 +36,8 @@ abstract contract Component is IComponent {
   function transferOwnership(address newOwner) public onlyContractOwner {
     owner = newOwner;
   }
+
+  function getSchema() public pure virtual returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
   function getID() public pure virtual returns (uint256);
 

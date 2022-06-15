@@ -1,134 +1,98 @@
-import {
-  createNetwork,
-  createContracts,
-  createSigner,
-  createTopics,
-  createContractsEventStream,
-  createTxQueue,
-  Mappings,
-  ContractEvent,
-} from "@latticexyz/network";
+import { createNetwork, createContracts, Mappings, createTxQueue, createSyncWorker } from "@latticexyz/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
-import WorldABI from "ri-contracts/abi/World.json";
-import EmberABI from "ri-contracts/abi/CombinedFacets.json";
-import { combineLatest, from, map, mergeMap, ReplaySubject, Subscription } from "rxjs";
-import { World } from "@latticexyz/recs";
-import { NetworkLayer } from "../types";
-import { setupMappings } from "./setupMappings";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import { Signer } from "ethers";
-import { filterNullish } from "@latticexyz/utils";
+import WorldAbi from "ri-contracts/abi/World.json";
+import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
+import { bufferTime, filter, Observable, Subject } from "rxjs";
+import { Component, Components, ExtendableECSEvent, Schema, setComponent, World } from "@latticexyz/recs";
+import { computed } from "mobx";
+import { stretch } from "@latticexyz/utils";
 
-export function setupContracts(
-  world: World,
-  components: NetworkLayer["components"],
-  mappings: Mappings<NetworkLayer["components"]>,
-  options?: {
-    skip?: boolean;
-  }
-) {
-  const connected$ = new ReplaySubject<boolean>(1);
-  const contracts$ = new ReplaySubject<{ Ember: CombinedFacets; World: WorldContract }>(1);
-  const ethersSigner$ = new ReplaySubject<Signer>(1);
-  const provider$ = new ReplaySubject<JsonRpcProvider>(1);
-  const contractEvents$ = new ReplaySubject<ContractEvent<{ World: WorldContract }>>();
+export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
+  C,
+  { lastEventInTx: boolean; txHash: string; entity: string }
+>;
 
-  let connectedSub: Subscription | undefined = undefined;
-  let signerSub: Subscription | undefined = undefined;
-  let contractsSub: Subscription | undefined = undefined;
-  let contractEventsSub: Subscription | undefined = undefined;
-  let providerSub: Subscription | undefined = undefined;
+const config: Parameters<typeof createNetwork>[0] = {
+  clock: {
+    period: 5000,
+    initialTime: 0,
+    syncInterval: 5000,
+  },
+  provider: {
+    jsonRpcUrl: RPC_URL,
+    wsRpcUrl: RPC_WS_URL,
+    options: {
+      batch: false,
+    },
+  },
+  privateKey: DEV_PRIVATE_KEY,
+  chainId: 1337,
+};
 
-  // Setup mappings
-  const { txReduced$ } = setupMappings(world, components, contracts$, contractEvents$, mappings);
+export async function setupContracts<C extends Components>(world: World, components: C, mappings: Mappings<C>) {
+  const network = await createNetwork(config);
+  world.registerDisposer(network.dispose);
 
-  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts$, ethersSigner$, provider$, connected$);
+  const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
+
+  const { contracts, config: contractsConfig } = await createContracts<{ Game: CombinedFacets; World: WorldContract }>({
+    config: { Game: { abi: CombinedFacetsAbi.abi, address: DIAMOND_ADDRESS } },
+    asyncConfig: async (c) => ({ World: { abi: WorldAbi.abi, address: await c.Game.world() } }),
+    signerOrProvider,
+  });
+
+  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network);
   world.registerDisposer(disposeTxQueue);
 
-  if (!options?.skip) connect();
+  const { ecsEvent$ } = createSyncWorker({
+    provider: config.provider,
+    worldContract: contractsConfig.World,
+    initialBlockNumber: 0,
+    mappings,
+    chainId: config.chainId,
+    disableCache: config.chainId === 1337, // Disable cache on hardhat
+  });
 
-  return { txQueue, connect, txReduced$ };
+  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
-  /**
-   * Logic to connect the subjects to the network.
-   */
-  function connect() {
-    try {
-      const network = createNetwork({
-        time: {
-          period: 5000,
-        },
-        chainId: 1337,
-        rpcSupportsBatchQueries: false,
-        rpcUrl: RPC_URL,
-        rpcWsUrl: RPC_WS_URL,
-      });
-      world.registerDisposer(network.dispose);
+  return { txQueue, txReduced$ };
+}
 
-      // Connect the connected stream to the outer scope connected stream
-      connectedSub?.unsubscribe();
-      connectedSub = network.connected$.subscribe(connected$);
+/**
+ * Sets up synchronization between contract components and client components
+ */
+function applyNetworkUpdates<C extends Components>(
+  world: World,
+  components: C,
+  ecsEvent$: Observable<ECSEventWithTx<C>>
+) {
+  const txReduced$ = new Subject<string>();
 
-      // Connect the signer to the outer scope signer
-      signerSub?.unsubscribe();
-      const _signer = createSigner({ privateKey: DEV_PRIVATE_KEY }, network.providers$);
-      signerSub = _signer.ethersSigner$.subscribe(ethersSigner$);
+  const ecsEventSub = ecsEvent$
+    .pipe(
+      // We throttle the client side event processing to 200 events every 16ms, so 12.500 events per second.
+      // This means if the chain were to emit more than 12.500 events per second, the client would not keep up.
+      // (We're not close to 12.500 events per second on the chain yet)
+      bufferTime(16, null, 200),
+      filter((updates) => updates.length > 0),
+      stretch(16)
+    )
+    .subscribe((updates) => {
+      // Running this in a mobx action would result in only one system update per frame (should increase performance)
+      // but it currently breaks defineUpdateAction (https://linear.app/latticexyz/issue/LAT-594/defineupdatequery-does-not-work-when-running-multiple-component)
+      // runInAction(() => {
+      for (const update of updates) {
+        if (!world.entities.has(update.entity)) {
+          world.registerEntity(update.entity);
+        }
+        setComponent(components[update.component] as Component<Schema>, update.entity, update.value);
+        if (update.lastEventInTx) txReduced$.next(update.txHash);
+      }
+      // });
+    });
 
-      // Connect the provider to the outer scope provider
-      providerSub?.unsubscribe();
-      const _provider = network.providers$.pipe(map(([json]) => json));
-      providerSub = _provider.pipe(filterNullish()).subscribe(provider$);
-
-      const rpcSupportsBatchQueries$ = network.config$.pipe(map((c) => c.rpcSupportsBatchQueries));
-
-      const emberContract = createContracts<{ Ember: CombinedFacets }>(
-        { Ember: { abi: EmberABI.abi, address: DIAMOND_ADDRESS } },
-        _signer.ethersSigner$
-      );
-
-      const worldContract$ = emberContract.contracts$.pipe(
-        mergeMap(({ Ember }) => from(Ember.world())), // Get the world address
-        mergeMap(
-          (address) =>
-            createContracts<{ World: WorldContract }>({ World: { abi: WorldABI.abi, address } }, _signer.ethersSigner$)
-              .contracts$
-        )
-      );
-
-      // Connect the contract stream to the outer scope contracts
-      contractsSub?.unsubscribe();
-      const _contracts = combineLatest([emberContract.contracts$, worldContract$]).pipe(
-        map(([{ Ember }, { World }]) => ({
-          Ember,
-          World,
-        }))
-      );
-      contractsSub = _contracts.subscribe(contracts$);
-
-      const { contractTopics } = createTopics<{ World: WorldContract }>({
-        World: {
-          abi: WorldABI.abi,
-          topics: ["ComponentValueSet", "ComponentValueRemoved"],
-        },
-      });
-
-      // Connect the contract events stream to the outer scope contracts
-      contractEventsSub?.unsubscribe();
-      const contractEventStream = createContractsEventStream(
-        {
-          contractTopics,
-          initialBlockNumber: 0,
-        },
-        worldContract$,
-        network.blockNumber$,
-        provider$,
-        rpcSupportsBatchQueries$
-      );
-      contractEventsSub = contractEventStream.eventStream$.subscribe(contractEvents$);
-    } catch (e) {
-      console.warn(e);
-    }
-  }
+  world.registerDisposer(() => ecsEventSub?.unsubscribe());
+  return { txReduced$: txReduced$.asObservable() };
 }

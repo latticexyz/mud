@@ -18,7 +18,10 @@ export type Cached<C> =
   | ({ proxied: false } & { [key in keyof C]: CachedValue<C[key], false> })
   | ({ proxied: true } & { [key in keyof C]: CachedValue<C[key], true> });
 
-export type PromiseValue<T extends Promise<unknown>> = T extends Promise<infer V> ? V : never;
+/**
+ * @deprecated Use Awaited<T> instead
+ */
+export type PromiseValue<T> = Awaited<T>;
 
 export type ValueOf<T extends object> = T[keyof T];
 

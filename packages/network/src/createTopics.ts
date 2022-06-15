@@ -2,10 +2,6 @@ import { ethers, VoidSigner } from "ethers";
 import { ContractTopics } from "./types";
 import { Contracts } from "./types";
 
-export type Topics<C extends Contracts> = {
-  contractTopics: ContractTopics<C>[];
-};
-
 export type TopicsConfig<C extends Contracts> = {
   [ContractType in keyof C]: {
     abi: ethers.ContractInterface;
@@ -13,8 +9,8 @@ export type TopicsConfig<C extends Contracts> = {
   };
 };
 
-export function createTopics<C extends Contracts>(config: TopicsConfig<C>): Topics<C> {
-  const contractTopics: ContractTopics<C>[] = [];
+export function createTopics<C extends Contracts>(config: TopicsConfig<C>): ContractTopics[] {
+  const contractTopics: ContractTopics[] = [];
   for (const key of Object.keys(config)) {
     const { abi, topics } = config[key];
     const dummyContract = new ethers.Contract(
@@ -32,7 +28,5 @@ export function createTopics<C extends Contracts>(config: TopicsConfig<C>): Topi
       topics: contractTopic,
     });
   }
-  return {
-    contractTopics,
-  };
+  return contractTopics;
 }

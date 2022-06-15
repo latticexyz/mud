@@ -36,7 +36,7 @@
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
-    "prepare": "husky install",
+    "prepare": "husky install && yarn lerna run prepare",
     "lerna:release": "lerna version --conventional-commits --yes",
     "lerna:publish": "lerna publish --no-private --force-publish"
   },

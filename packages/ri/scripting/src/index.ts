@@ -1,24 +1,24 @@
 /* eslint-disable no-constant-condition */
-import { awaitValue, keccak256, PromiseValue, random, sleep } from "@latticexyz/utils";
+import { awaitValue, keccak256, random, sleep } from "@latticexyz/utils";
 import { setupContracts } from "./setupContracts";
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
-import { Signer } from "ethers";
+import { BigNumber, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 
-type Context = PromiseValue<ReturnType<typeof main>>;
-const GAS = 107;
+type Context = Awaited<ReturnType<typeof main>>;
+const GAS = 100;
 
 export async function main() {
   const { txQueue, provider: computedProvider, signer: computedSigner } = await setupContracts();
   const provider = await awaitValue(computedProvider);
   const signer = await awaitValue(computedSigner);
-  const pendingNonces = await getPendingNonces(provider, signer);
-  console.log("Pending nonces", pendingNonces);
+  // const pendingNonces = await getPendingNonces(provider, signer);
+  // console.log("Pending nonces", pendingNonces);
 
   const Position = await txQueue.World.getComponent(keccak256("ember.component.positionComponent"));
   const EntityType = await txQueue.World.getComponent(keccak256("ember.component.entityTypeComponent"));
 
-  const context = { txQueue, components: { Position, EntityType }, provider, signer, pendingNonces };
+  const context = { txQueue, components: { Position, EntityType }, provider, signer };
 
   // Send tx fast
   const promises: Promise<unknown>[] = [];
@@ -58,19 +58,21 @@ async function setPosition(
   pos: { x: number; y: number },
   { txQueue, components: { Position } }: Context
 ) {
-  await txQueue.Ember.addComponentToEntityExternally(
-    entity,
+  await txQueue.Game.addComponentToEntityExternally(
+    BigNumber.from(entity),
     Position,
-    abi.encode(["uint256", "uint256"], [pos.x, pos.y]),
-    { gasPrice: GAS, gasLimit: 250000 }
+    abi.encode(["int32", "int32"], [pos.x, pos.y]),
+    { gasPrice: GAS, gasLimit: 2500000 }
   );
 }
 
 async function setEntityType(entity: number, entityType: number, { txQueue, components: { EntityType } }: Context) {
-  await txQueue.Ember.addComponentToEntityExternally(entity, EntityType, abi.encode(["uint256"], [entityType]), {
-    gasPrice: GAS,
-    gasLimit: 250000,
-  });
+  await txQueue.Game.addComponentToEntityExternally(
+    BigNumber.from(entity),
+    EntityType,
+    abi.encode(["uint32"], [entityType]),
+    { gasPrice: GAS, gasLimit: 2500000 }
+  );
 }
 
 async function setRandomPosition(entity: number, context: Context) {

@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseContract, CallOverrides, Overrides, Signer } from "ethers";
+import { BaseContract, CallOverrides, Overrides } from "ethers";
 import { autorun, computed, IComputedValue, observable, runInAction } from "mobx";
-import { Observable } from "rxjs";
-import { mapObject, streamToComputed, deferred, uuid, awaitValue, cacheUntilReady } from "@latticexyz/utils";
+import { mapObject, deferred, uuid, awaitValue, cacheUntilReady } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
-import { Provider, TransactionResponse } from "@ethersproject/providers";
-import { Contracts, TxQueue } from "./types";
+import { TransactionResponse } from "@ethersproject/providers";
+import { Contracts, Network, TxQueue } from "./types";
+import { ConnectionState } from "./createProvider";
 
 function createPriorityQueue<T>() {
   const queue = new Map<string, { element: T; priority: number }>();
@@ -44,15 +44,14 @@ type ReturnTypeStrict<T> = T extends (...args: any) => any ? ReturnType<T> : nev
 /**
  * The TxQueue takes care of nonce management, concurrency and caching calls if the contracts are not connected.
  * Cached calls are passed to the queue once the contracts are available.
- * @param contracts$ A stream of contracts that should be channelled through the txQueue
+ * @param computedContracts A computed object containing the contracts to be channelled through the txQueue
+ * @param network A network object containing provider, signer, etc
  * @param options The concurrency declares how many transactions can wait for confirmation at the same time.
  * @returns
  */
 export function createTxQueue<C extends Contracts>(
-  contracts$: Observable<C>,
-  signer$: Observable<Signer>,
-  provider$: Observable<Provider>,
-  connected$: Observable<boolean>,
+  computedContracts: IComputedValue<C>,
+  network: Network,
   options?: { concurrency?: number; ignoreConfirmation?: boolean }
 ): { txQueue: TxQueue<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {
   const { concurrency } = options || {};
@@ -62,21 +61,18 @@ export function createTxQueue<C extends Contracts>(
     stateMutability?: string;
   }>();
   const submissionMutex = new Mutex();
-
-  const _connected = streamToComputed(connected$);
-  const _contracts = streamToComputed(contracts$);
-  const _signer = streamToComputed(signer$);
-  const _provider = streamToComputed(provider$);
   const _nonce = observable.box<number | null>(null);
 
   const readyState = computed(() => {
-    const connected = _connected.get();
-    const contracts = _contracts.get();
-    const signer = _signer.get();
-    const provider = _provider.get();
+    const connected = network.connected.get();
+    const contracts = computedContracts.get();
+    const signer = network.signer.get();
+    const provider = network.providers.get()?.json;
     const nonce = _nonce.get();
 
-    if (!connected || !contracts || !signer || !provider || nonce == null) return undefined;
+    if (connected !== ConnectionState.CONNECTED || !contracts || !signer || !provider || nonce == null)
+      return undefined;
+
     return { contracts, signer, provider, nonce };
   });
 
@@ -84,7 +80,7 @@ export function createTxQueue<C extends Contracts>(
 
   async function resetNonce() {
     runInAction(() => _nonce.set(null));
-    const newNonce = (await _signer.get()?.getTransactionCount()) ?? null;
+    const newNonce = (await network.signer.get()?.getTransactionCount()) ?? null;
     runInAction(() => _nonce.set(newNonce));
   }
 
@@ -125,7 +121,9 @@ export function createTxQueue<C extends Contracts>(
 
         if (!(member instanceof Function)) {
           throw new Error(
-            `Internal TxQueue error: Member is not a function and should not be proxied. Tried to call "${prop}".`
+            `Internal TxQueue error: Member is not a function and should not be proxied. Tried to call "${String(
+              prop
+            )}".`
           );
         }
 

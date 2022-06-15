@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 import "solecs/Component.sol";
 
 struct EntityType {
-  uint256 entityType;
+  uint32 entityType;
 }
 
 uint256 constant ID = uint256(keccak256("ember.component.entityTypeComponent"));
@@ -15,12 +15,20 @@ contract EntityTypeComponent is Component {
     return ID;
   }
 
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    keys = new string[](1);
+    values = new LibTypes.SchemaValue[](1);
+
+    keys[0] = "entityType";
+    values[0] = LibTypes.SchemaValue.UINT32;
+  }
+
   function set(uint256 entity, EntityType calldata value) public {
     set(entity, abi.encode(value));
   }
 
   function getValue(uint256 entity) public view returns (EntityType memory) {
-    uint256 entityType = abi.decode(getRawValue(entity), (uint256));
+    uint32 entityType = abi.decode(getRawValue(entity), (uint32));
     return EntityType(entityType);
   }
 

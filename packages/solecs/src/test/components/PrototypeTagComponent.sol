@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 import { Component } from "../../Component.sol";
+import { LibTypes } from "../../LibTypes.sol";
 
 contract PrototypeTagComponent is Component {
   uint256 public constant ID = uint256(keccak256("lib.prototypeTag"));
@@ -9,6 +10,10 @@ contract PrototypeTagComponent is Component {
 
   function getID() public pure override returns (uint256) {
     return ID;
+  }
+
+  function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
+    values[0] = LibTypes.SchemaValue.UINT256;
   }
 
   function set(uint256 entity, bool value) public {

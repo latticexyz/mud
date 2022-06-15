@@ -1,5 +1,5 @@
 import {
-  BehaviorSubject,
+  concatMap,
   delay,
   filter,
   first,
@@ -8,16 +8,22 @@ import {
   of,
   OperatorFunction,
   pipe,
+  ReplaySubject,
   scan,
   Timestamp,
   timestamp,
-  UnaryFunction,
 } from "rxjs";
-import { computed, IComputedValue, observable, reaction, runInAction } from "mobx";
+import { computed, IComputedValue, IObservableValue, observable, reaction, runInAction, toJS } from "mobx";
 import { deferred } from "./deferred";
 
-export function filterNullish<T>(): UnaryFunction<Observable<T | null | undefined>, Observable<T>> {
-  return pipe(filter((x) => x != null) as OperatorFunction<T | null | undefined, T>);
+export function filterNullish<T>(): OperatorFunction<T, NonNullable<T>> {
+  return pipe<Observable<T>, Observable<NonNullable<T>>>(
+    filter<T>((x: T) => x != null) as OperatorFunction<T, NonNullable<T>>
+  );
+}
+
+export function awaitPromise<T extends Promise<unknown>>(): OperatorFunction<T, Awaited<T>> {
+  return pipe(concatMap((x: T) => x)) as OperatorFunction<T, Awaited<T>>;
 }
 
 /**
@@ -47,28 +53,50 @@ export function stretch<T>(spacingDelayMs: number) {
   );
 }
 
-export function computedToStream<T>(comp: IComputedValue<T>): Observable<T> {
-  const stream = new BehaviorSubject(comp.get());
+export function observableToComputed<T>(obs: IObservableValue<T>): IComputedValue<T> {
+  return computed(() => obs.get());
+}
+
+export function computedToStream<T>(comp: IComputedValue<T> | IObservableValue<T>): Observable<T> {
+  const stream = new ReplaySubject<T>(1);
   reaction(
     () => comp.get(),
-    (value) => stream.next(value)
+    (value) => {
+      if (value != null) stream.next(value);
+    },
+    { fireImmediately: true }
   );
   return stream;
 }
 
-export function streamToComputed<T>(stream: Observable<T>): IComputedValue<T | undefined> {
-  const value = observable<{ current: T | undefined }>({ current: undefined });
-  stream.subscribe((val) => runInAction(() => (value.current = val)));
-  return computed(() => value.current);
+export function observableToStream<T>(obs: T): Observable<T> {
+  const stream = new ReplaySubject<T>(1);
+  reaction(
+    () => toJS(obs),
+    (value) => {
+      if (value != null) stream.next(value);
+    },
+    { fireImmediately: true }
+  );
+  return stream;
+}
+
+export function streamToComputed<T>(stream$: Observable<T>): IComputedValue<T | undefined> {
+  const value = observable.box<T | undefined>();
+  stream$.subscribe((val) => runInAction(() => value.set(val)));
+  return computed(() => value.get());
 }
 
 /**
  *
- * @param stream RxJS observable to check for the given value
+ * @param stream$ RxJS observable to check for the given value
  * @param predicate Predicate to check
  * @returns A promise that resolves with the requested value once the predicate is true
  */
-export async function awaitStreamValue<T>(stream$: Observable<T>, predicate: (value: T) => boolean): Promise<T> {
+export async function awaitStreamValue<T>(
+  stream$: Observable<T>,
+  predicate: (value: T) => boolean = (value) => value != null
+): Promise<T> {
   const [resolve, , promise] = deferred<T>();
   stream$.pipe(first(predicate)).subscribe(resolve);
   return promise;
