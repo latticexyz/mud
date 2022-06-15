@@ -24,15 +24,16 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   // Debugging
   function addComponentToEntityExternally(
     uint256 entity,
-    address component,
+    uint256 componentId,
     bytes memory value
   ) external {
-    Component c = Component(component);
+    Component c = Component(s.world.getComponent(componentId));
     c.set(entity, value);
   }
 
-  function removeComponentFromEntityExternally(uint256 entity, address component) external {
-    Component c = Component(component);
+  // Debugging
+  function removeComponentFromEntityExternally(uint256 entity, uint256 componentId) external {
+    Component c = Component(s.world.getComponent(componentId));
     c.remove(entity);
   }
 
