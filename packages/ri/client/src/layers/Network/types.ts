@@ -12,4 +12,5 @@ export enum ContractWorldEvent {
 
 export enum EntityTypes {
   Creature,
+  Wall,
 }

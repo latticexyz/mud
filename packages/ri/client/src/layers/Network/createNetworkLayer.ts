@@ -1,11 +1,18 @@
 import { Component, ComponentValue, createWorld, Entity, Schema } from "@latticexyz/recs";
-import { definePositionComponent, defineEntityTypeComponent } from "./components";
+import {
+  definePositionComponent,
+  defineEntityTypeComponent,
+  defineMovableComponent,
+  defineOwnedByComponent,
+  defineUntraversableComponent,
+} from "./components";
 import { setupContracts } from "./setup";
 import { LAYER_NAME } from "./constants.local";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
 import { Coord } from "@latticexyz/utils";
+import { WorldCoord } from "../../types";
 
 /**
  * The Network layer is the lowest layer in the client architecture.
@@ -19,12 +26,18 @@ export async function createNetworkLayer() {
   const components = {
     Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
     EntityType: defineEntityTypeComponent(world, keccak256("ember.component.entityTypeComponent")),
+    Movable: defineMovableComponent(world, keccak256("ember.component.movableComponent")),
+    OwnedBy: defineOwnedByComponent(world, keccak256("ember.component.ownedByComponent")),
+    Untraversable: defineUntraversableComponent(world, keccak256("ember.component.untraversableComponent")),
   };
 
   // Define mappings between contract and client components
   const mappings: Mappings<typeof components> = {
     [keccak256("ember.component.positionComponent")]: "Position",
     [keccak256("ember.component.entityTypeComponent")]: "EntityType",
+    [keccak256("ember.component.movableComponent")]: "Movable",
+    [keccak256("ember.component.ownedByComponent")]: "OwnedBy",
+    [keccak256("ember.component.untraversableComponent")]: "Untraversable",
   };
 
   // Instantiate contracts and set up mappings
@@ -49,9 +62,14 @@ export async function createNetworkLayer() {
     await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entity), component.metadata.contractId, data);
   }
 
-  async function spawnCreature(position: Coord) {
+  async function spawnCreature(position: WorldCoord, entityType: number) {
     console.log(`Spawning creature at position ${JSON.stringify(position)}`);
-    await txQueue.Game.spawnCreature(position);
+    return txQueue.Game.spawnCreature(position, entityType);
+  }
+
+  async function moveEntity(entity: Entity, targetPosition: WorldCoord) {
+    console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
+    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition, { gasPrice: 0, gasLimit: 250000 });
   }
 
   // Constants (load from contract later)
@@ -70,6 +88,7 @@ export async function createNetworkLayer() {
     api: {
       setContractComponentValue,
       spawnCreature,
+      moveEntity,
     },
   };
 }

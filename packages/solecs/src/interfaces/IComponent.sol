@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 interface IComponent {
   function transferOwnership(address newOwner) external;
 
-  function getID() external pure returns (uint256);
+  function getID() external view returns (uint256);
 
   function set(uint256 entity, bytes memory value) external;
 

@@ -1,1 +1,0 @@
-export { createSpawnCreatureSystem } from "./createSpawnCreatureSystem";

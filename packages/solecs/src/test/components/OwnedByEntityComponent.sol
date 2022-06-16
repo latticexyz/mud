@@ -6,11 +6,7 @@ import { LibTypes } from "../../LibTypes.sol";
 contract OwnedByEntityComponent is Component {
   uint256 public constant ID = uint256(keccak256("lib.ownedByEntity"));
 
-  constructor(address world) Component(world) {}
-
-  function getID() public pure override returns (uint256) {
-    return ID;
-  }
+  constructor(address world) Component(world, ID) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     values[0] = LibTypes.SchemaValue.UINT256;
