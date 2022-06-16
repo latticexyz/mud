@@ -79,10 +79,6 @@ export function createDecoder<D extends { [key: string]: unknown }>(
       data
     );
 
-    // If the contract component only has a single value and no key,
-    // use a single key named "value" on the client by default
-    if (keys.length === 0 && valueTypes.length === 1) keys = ["value"];
-
     // Now keys and valueTypes lengths must match
     if (keys.length !== valueTypes.length) {
       throw new Error("Component schema keys and values length does not match");
