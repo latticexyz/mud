@@ -1,12 +1,4 @@
-import {
-  Components,
-  defineQuery,
-  getComponentValueStrict,
-  getEntitiesWithValue,
-  Has,
-  hasComponent,
-  Type,
-} from "@latticexyz/recs";
+import { Components, defineQuery, getComponentValueStrict, Has, hasComponent, HasValue, Type } from "@latticexyz/recs";
 import { NetworkLayer } from "../../Network";
 import { ActionSystem } from "../types";
 
@@ -37,9 +29,9 @@ export function moveEntityFunc(direction: string, network: NetworkLayer, actions
       const targetPosition = { x: currentPosition.x + delta.x, y: currentPosition.y + delta.y };
 
       // TODO: check untraversable rather than any entity blocking you
-      const entities = getEntitiesWithValue(Position, targetPosition);
+      const entities = [...defineQuery([HasValue(Position, targetPosition)]).get()];
 
-      if (entities.size > 0) {
+      if (entities.length > 0) {
         actions.cancel(actionID);
         return null;
       }
