@@ -40,21 +40,11 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     c.remove(entity);
   }
 
-  // function spawnCreature(Coord calldata position) external {
-  //   EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
-  //   PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
-
-  //   uint256 entity = s.world.getUniqueEntityId();
-
-  //   entityTypeComponent.set(entity, 0);
-  //   positionComponent.set(entity, position);
-  // }
-
   function spawnCreature(Coord calldata position, uint32 entityType) external {
     EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
 
-    (uint256 targetEntity, bool foundTargetEntity) = getEntityAt(s.world, position);
+    (, bool foundTargetEntity) = getEntityAt(s.world, position);
 
     require(!foundTargetEntity, "spot taken fool!");
 
@@ -76,7 +66,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
     require(manhattan(positionComponent.getValue(entity), targetPosition) == 1, "not adjacent");
 
-    (uint256 targetEntity, bool foundTargetEntity) = getEntityWithAt(s.world, UntraversableComponentID, targetPosition);
+    (, bool foundTargetEntity) = getEntityWithAt(s.world, UntraversableComponentID, targetPosition);
     if (!foundTargetEntity) {
       return positionComponent.set(entity, targetPosition);
     }

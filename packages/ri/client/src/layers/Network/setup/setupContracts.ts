@@ -73,7 +73,6 @@ export async function setupContracts<C extends ContractComponents>(world: World,
 
   const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
   for (const [key, component] of Object.entries(components)) {
-    console.log("FINDME  " + key + "  " + component.metadata.contractId);
     const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
     const componentContract = new Contract(
       componentAddress,
@@ -81,13 +80,8 @@ export async function setupContracts<C extends ContractComponents>(world: World,
       signerOrProvider.get()
     ) as SolecsComponent;
 
-    try {
-      const id = await componentContract.getID();
-      const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
-      encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
-    } catch (e) {
-      console.error(component.id, e);
-    }
+    const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
+    encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
   }
   return { txQueue, txReduced$, encoders };
 }
