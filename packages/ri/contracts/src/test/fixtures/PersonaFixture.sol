@@ -5,7 +5,7 @@ import { DSTest } from "ds-test/test.sol";
 import { Vm } from "forge-std/Vm.sol";
 import { World } from "solecs/World.sol";
 
-import { PersonaComponent, Persona, ID as PersonaComponentID } from "../../components/PersonaComponent.sol";
+import { PersonaComponent, ID as PersonaComponentID } from "../../components/PersonaComponent.sol";
 
 import { Deploy } from "../utils/Deploy.sol";
 
@@ -49,7 +49,7 @@ contract PersonaFixture is DSTest {
     // create an entity with a persona component inside the ECS system
     vm.startPrank(diamondAddress);
     PersonaComponent personaComponent = PersonaComponent(world.getComponent(PersonaComponentID));
-    personaComponent.set(playerEntityID, Persona(personaId));
+    personaComponent.set(playerEntityID, personaId);
     vm.stopPrank();
     return personaId;
   }

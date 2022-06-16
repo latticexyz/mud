@@ -15,11 +15,7 @@ struct Spell {
 uint256 constant ID = uint256(keccak256("ember.component.spellComponent"));
 
 contract SpellComponent is Component {
-  constructor(address world) Component(world) {}
-
-  function getID() public pure override returns (uint256) {
-    return ID;
-  }
+  constructor(address world) Component(world, ID) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     values = new LibTypes.SchemaValue[](1);
