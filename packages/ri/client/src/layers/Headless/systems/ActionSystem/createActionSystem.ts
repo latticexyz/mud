@@ -129,11 +129,13 @@ export function createActionSystem(
       // Execute the action
       const result = await action.execute(requirementResult);
 
-      // If the result includes txHashes, wait for the transactions to complete before removing the pending actions
-      if (result?.txHashes) {
+      // If the result includes a hash key (single tx) or hashes (multiple tx) key, wait for the transactions to complete before removing the pending actions
+      if (result?.hashes || result?.hash) {
         // Wait for all tx events to be reduced
+        if (!result.hashes) result.hashes = [];
+        if (result.hash) result.hashes.push(result.hash);
         updateComponent(Action, action.id, { state: ActionState.WaitingForTxEvents });
-        await Promise.all(result.txHashes.map((txHash) => awaitStreamValue(txReduced$, (v) => v === txHash)));
+        await Promise.all(result.hashes.map((txHash) => awaitStreamValue(txReduced$, (v) => v === txHash)));
       }
 
       updateComponent(Action, action.id, { state: ActionState.Complete });

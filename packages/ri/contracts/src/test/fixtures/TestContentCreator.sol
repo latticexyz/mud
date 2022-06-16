@@ -10,7 +10,7 @@ import { UsingAppStorage } from "../../utils/UsingAppStorage.sol";
 import { AppStorage } from "../../libraries/LibAppStorage.sol";
 import { LibUtils } from "../../libraries/LibUtils.sol";
 
-import { OwnedByComponent, OwnedBy, ID as OwnedByComponentID } from "../../components/OwnedByComponent.sol";
+import { OwnedByComponent, ID as OwnedByComponentID } from "../../components/OwnedByComponent.sol";
 import { LearnedSpellsComponent, ID as LearnedSpellsComponentID } from "../../components/LearnedSpellsComponent.sol";
 import { SpellComponent, Spell, SpellTargetFilter, ID as SpellComponentID } from "../../components/SpellComponent.sol";
 import { EmbodiedSystemArgumentComponent, ID as EmbodiedSystemArgumentComponentID } from "../../components/EmbodiedSystemArgumentComponent.sol";
@@ -61,11 +61,11 @@ contract TestContentCreator is UsingAppStorage, IContentCreator {
     uint256[] memory spellCasterLearnedSpells = new uint256[](1);
     spellCasterLearnedSpells[0] = TEST_SPELL_ID;
     learnedSpellsComponent.set(SPELL_CASTER_1, spellCasterLearnedSpells);
-    ownedByComponent.set(SPELL_CASTER_1, OwnedBy(PLAYER_1));
+    ownedByComponent.set(SPELL_CASTER_1, PLAYER_1);
     // SPELL_CASTER_2
     spellCasterLearnedSpells = new uint256[](1);
     spellCasterLearnedSpells[0] = TEST_SPELL_ID;
     learnedSpellsComponent.set(SPELL_CASTER_2, spellCasterLearnedSpells);
-    ownedByComponent.set(SPELL_CASTER_2, OwnedBy(PLAYER_2));
+    ownedByComponent.set(SPELL_CASTER_2, PLAYER_2);
   }
 }

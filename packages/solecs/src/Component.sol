@@ -19,13 +19,15 @@ abstract contract Component is IComponent {
   MapSet private valueToEntities;
   mapping(uint256 => bytes) private entityToValue;
   IEntityIndexer[] internal indexers;
+  uint256 public id;
 
-  constructor(address _world) {
+  constructor(address _world, uint256 _id) {
     world = _world;
-    IWorld(_world).registerComponent(address(this), getID());
+    IWorld(_world).registerComponent(address(this), _id);
     entities = new Set();
     valueToEntities = new MapSet();
     owner = msg.sender;
+    id = _id;
   }
 
   modifier onlyContractOwner() {
@@ -39,7 +41,9 @@ abstract contract Component is IComponent {
 
   function getSchema() public pure virtual returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
-  function getID() public pure virtual returns (uint256);
+  function getID() public view returns (uint256) {
+    return id;
+  }
 
   function set(uint256 entity, bytes memory value) public onlyContractOwner {
     // Store the entity

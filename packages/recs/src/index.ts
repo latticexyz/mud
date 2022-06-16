@@ -8,6 +8,7 @@ export {
   hasComponent,
   getComponentValue,
   getComponentValueStrict,
+  getEntitiesWithValue,
   componentValueEquals,
   withValue,
   cloneComponent,

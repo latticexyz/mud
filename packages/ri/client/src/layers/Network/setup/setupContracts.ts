@@ -72,15 +72,15 @@ export async function setupContracts<C extends ContractComponents>(world: World,
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
   const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
-  for (const component of Object.values(components)) {
+  for (const [key, component] of Object.entries(components)) {
     const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
     const componentContract = new Contract(
       componentAddress,
       ComponentAbi.abi,
       signerOrProvider.get()
     ) as SolecsComponent;
-    const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
 
+    const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
     encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
   }
   return { txQueue, txReduced$, encoders };
