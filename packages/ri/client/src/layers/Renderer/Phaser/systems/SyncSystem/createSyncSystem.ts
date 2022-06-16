@@ -24,7 +24,7 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { entityType: EntityTypes.Creature })],
+    [HasValue(EntityType, { value: EntityTypes.Creature })],
     () => Appearance,
     () => {
       return {

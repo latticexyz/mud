@@ -1,7 +1,9 @@
-import { createWorld } from "@latticexyz/recs";
+import { createWorld, EntityType } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem } from "./systems";
 import { defineActionComponent } from "./components";
+import { moveEntityFunc, spawnCreatureFunc } from "./api";
+import { WorldCoord } from "../../types";
 
 /**
  * The Headless layer is the second layer in the client architecture and extends the Network layer.
@@ -16,5 +18,13 @@ export async function createHeadlessLayer(network: NetworkLayer) {
 
   const actions = createActionSystem(world, Action, network.txReduced$);
 
-  return { world, actions, parentLayers: { network }, components };
+  function moveEntity(direction: string) {
+    moveEntityFunc(direction, network, actions);
+  }
+
+  function spawnCreature(position: WorldCoord, entityType: EntityType) {
+    spawnCreatureFunc(position, entityType, network, actions);
+  }
+
+  return { world, actions, parentLayers: { network }, components, api: { moveEntity, spawnCreature } };
 }

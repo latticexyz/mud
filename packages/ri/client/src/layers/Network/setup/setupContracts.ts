@@ -72,16 +72,22 @@ export async function setupContracts<C extends ContractComponents>(world: World,
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
   const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
-  for (const component of Object.values(components)) {
+  for (const [key, component] of Object.entries(components)) {
+    console.log("FINDME  " + key + "  " + component.metadata.contractId);
     const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
     const componentContract = new Contract(
       componentAddress,
       ComponentAbi.abi,
       signerOrProvider.get()
     ) as SolecsComponent;
-    const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
 
-    encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
+    try {
+      const id = await componentContract.getID();
+      const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
+      encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
+    } catch (e) {
+      console.error(component.id, e);
+    }
   }
   return { txQueue, txReduced$, encoders };
 }

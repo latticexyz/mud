@@ -10,6 +10,7 @@ import {
   createHueTintSystem,
   createSelectionSystem,
   createDrawDevHighlightSystem,
+  createInputSystem,
   createSpawnCreatureSystem,
 } from "./systems";
 import { createPhaserEngine } from "@latticexyz/phaserx";
@@ -75,7 +76,8 @@ export async function createPhaserLayer(local: LocalLayer) {
   createSelectionSystem(layer);
   createSelectionOutlineSystem(layer);
   createDrawDevHighlightSystem(layer);
-  createSpawnCreatureSystem(layer);
+  // createSpawnCreatureSystem(layer);
+  createInputSystem(layer);
 
   return layer;
 }

@@ -31,7 +31,7 @@ export interface ActionRequest<C extends Components, T> {
   // Logic to be executed when the action is executed.
   // If txHashes are returned from the txQueue, the action will only be completed (and pending updates removed)
   // once all events from the given txHashes have been received and reduced.
-  execute: (data: T) => Promise<{ txHashes: string[] }> | Promise<void> | void;
+  execute: (data: T) => Promise<{ hashes?: string[]; hash?: string }> | Promise<void> | void | undefined;
 }
 
 export type ActionData = ActionRequest<Components, unknown> & { componentsWithPendingUpdates: Components };
