@@ -6,11 +6,7 @@ import { LibTypes } from "../../LibTypes.sol";
 contract TestComponent is Component {
   uint256 public constant ID = uint256(keccak256("lib.testComponent"));
 
-  constructor(address world) Component(world) {}
-
-  function getID() public pure override returns (uint256) {
-    return ID;
-  }
+  constructor(address world) Component(world, ID) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     values[0] = LibTypes.SchemaValue.UINT256;
@@ -20,11 +16,7 @@ contract TestComponent is Component {
 contract TestComponent1 is Component {
   uint256 public constant ID = uint256(keccak256("lib.testComponent1"));
 
-  constructor(address world) Component(world) {}
-
-  function getID() public pure override returns (uint256) {
-    return ID;
-  }
+  constructor(address world) Component(world, ID) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     values[0] = LibTypes.SchemaValue.UINT256;
@@ -34,11 +26,7 @@ contract TestComponent1 is Component {
 contract TestComponent2 is Component {
   uint256 public constant ID = uint256(keccak256("lib.testComponent2"));
 
-  constructor(address world) Component(world) {}
-
-  function getID() public pure override returns (uint256) {
-    return ID;
-  }
+  constructor(address world) Component(world, ID) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     values[0] = LibTypes.SchemaValue.UINT256;
@@ -48,11 +36,7 @@ contract TestComponent2 is Component {
 contract TestComponent3 is Component {
   uint256 public constant ID = uint256(keccak256("lib.testComponent3"));
 
-  constructor(address world) Component(world) {}
-
-  function getID() public pure override returns (uint256) {
-    return ID;
-  }
+  constructor(address world) Component(world, ID) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     values[0] = LibTypes.SchemaValue.UINT256;
@@ -62,11 +46,7 @@ contract TestComponent3 is Component {
 contract TestComponent4 is Component {
   uint256 public constant ID = uint256(keccak256("lib.testComponent4"));
 
-  constructor(address world) Component(world) {}
-
-  function getID() public pure override returns (uint256) {
-    return ID;
-  }
+  constructor(address world) Component(world, ID) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     values[0] = LibTypes.SchemaValue.UINT256;

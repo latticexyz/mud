@@ -13,11 +13,7 @@ struct Position {
 uint256 constant ID = uint256(keccak256("ember.components.PositionComponent"));
 
 contract PositionComponent is Component {
-  constructor(address world) Component(world) {}
-
-  function getID() public pure override returns (uint256) {
-    return ID;
-  }
+  constructor(address world) Component(world, ID) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     keys[0] = "x";
