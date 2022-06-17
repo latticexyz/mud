@@ -56,13 +56,13 @@ export async function setupContracts<C extends ContractComponents>(
     initialBlockNumber: 0,
     mappings,
     chainId: config.chainId,
-    disableCache: config.chainId === 1337, // Disable cache on hardhat
+    disableCache: config.chainId === 31337, // Disable cache on hardhat
   });
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
   const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
-  for (const [key, component] of Object.entries(components)) {
+  for (const [, component] of Object.entries(components)) {
     const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
     const componentContract = new Contract(
       componentAddress,

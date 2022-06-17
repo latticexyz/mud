@@ -61,7 +61,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       },
     },
     privateKey: config?.privateKey || DEV_PRIVATE_KEY,
-    chainId: config?.chainId || 1337,
+    chainId: config?.chainId || 31337,
   };
 
   // Instantiate contracts and set up mappings

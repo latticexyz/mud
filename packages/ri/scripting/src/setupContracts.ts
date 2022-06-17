@@ -26,7 +26,7 @@ const config: Parameters<typeof createNetwork>[0] = {
     },
   },
   privateKey: DEV_PRIVATE_KEY,
-  chainId: 1337,
+  chainId: 31337,
 };
 
 export async function setupContracts() {
