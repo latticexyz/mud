@@ -2,6 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
+import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
+import { PersonaComponent, ID as PersonaComponentID } from "../components/PersonaComponent.sol";
 import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
 import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
@@ -10,6 +12,7 @@ import { Component } from "solecs/Component.sol";
 import { UsingDiamondOwner } from "../diamond/utils/UsingDiamondOwner.sol";
 import { UsingAccessControl } from "../access/UsingAccessControl.sol";
 import { AppStorage } from "../libraries/LibAppStorage.sol";
+import { LibPersona } from "../libraries/LibPersona.sol";
 import { manhattan, getEntityAt, getEntityWithAt } from "../utils/utils.sol";
 
 contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
@@ -43,15 +46,20 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   function spawnCreature(Coord calldata position, uint32 entityType) external {
     EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
+    OwnedByComponent ownedByComponent = OwnedByComponent(s.world.getComponent(OwnedByComponentID));
+    PersonaComponent personaComponent = PersonaComponent(s.world.getComponent(PersonaComponentID));
 
     (, bool foundTargetEntity) = getEntityAt(s.world, position);
-
     require(!foundTargetEntity, "spot taken fool!");
 
-    uint256 entity = s.world.getUniqueEntityId();
+    uint256 playerEntity = s.world.getUniqueEntityId();
+    uint256 personaId = LibPersona.getActivePersona();
+    personaComponent.set(playerEntity, personaId);
 
+    uint256 entity = s.world.getUniqueEntityId();
     entityTypeComponent.set(entity, entityType);
     positionComponent.set(entity, position);
+    ownedByComponent.set(entity, playerEntity);
 
     if (entityType == 0) {
       MovableComponent movableComponent = MovableComponent(s.world.getComponent(MovableComponentID));
