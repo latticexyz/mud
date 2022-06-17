@@ -7,18 +7,25 @@ import {
   defineUntraversableComponent,
 } from "./components";
 import { setupContracts } from "./setup";
-import { LAYER_NAME } from "./constants.local";
+import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, LAYER_NAME, RPC_URL, RPC_WS_URL } from "./constants.local";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
-import { Coord } from "@latticexyz/utils";
 import { WorldCoord } from "../../types";
+import { SetupContractConfig } from "./setup/setupContracts";
+
+export type NetworkLayerConfig = {
+  contractAddress: string;
+  privateKey: string;
+  chainId: number;
+  personaId: number;
+};
 
 /**
  * The Network layer is the lowest layer in the client architecture.
  * Its purpose is to synchronize the client components with the contract components.
  */
-export async function createNetworkLayer() {
+export async function createNetworkLayer(config?: NetworkLayerConfig) {
   // World
   const world = createWorld({ name: LAYER_NAME });
 
@@ -40,8 +47,31 @@ export async function createNetworkLayer() {
     [keccak256("ember.component.untraversableComponent")]: "Untraversable",
   };
 
+  const contractConfig: SetupContractConfig = {
+    clock: {
+      period: 5000,
+      initialTime: 0,
+      syncInterval: 5000,
+    },
+    provider: {
+      jsonRpcUrl: RPC_URL,
+      wsRpcUrl: RPC_WS_URL,
+      options: {
+        batch: false,
+      },
+    },
+    privateKey: config?.privateKey || DEV_PRIVATE_KEY,
+    chainId: config?.chainId || 1337,
+  };
+
   // Instantiate contracts and set up mappings
-  const { txQueue, txReduced$, encoders } = await setupContracts(world, components, mappings);
+  const { txQueue, txReduced$, encoders } = await setupContracts(
+    config?.contractAddress || DIAMOND_ADDRESS,
+    contractConfig,
+    world,
+    components,
+    mappings
+  );
 
   /**
    * TODO Only include this function in dev mode.
@@ -84,6 +114,7 @@ export async function createNetworkLayer() {
     txQueue,
     txReduced$,
     mappings,
+    personaId: config?.personaId,
     api: {
       setContractComponentValue,
       spawnCreature,

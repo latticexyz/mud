@@ -6,7 +6,6 @@ import {
   createSyncWorker,
   createEncoder,
 } from "@latticexyz/network";
-import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import WorldAbi from "ri-contracts/abi/World.json";
@@ -28,31 +27,22 @@ export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
 };
 
-const config: Parameters<typeof createNetwork>[0] = {
-  clock: {
-    period: 5000,
-    initialTime: 0,
-    syncInterval: 5000,
-  },
-  provider: {
-    jsonRpcUrl: RPC_URL,
-    wsRpcUrl: RPC_WS_URL,
-    options: {
-      batch: false,
-    },
-  },
-  privateKey: DEV_PRIVATE_KEY,
-  chainId: 1337,
-};
+export type SetupContractConfig = Parameters<typeof createNetwork>[0];
 
-export async function setupContracts<C extends ContractComponents>(world: World, components: C, mappings: Mappings<C>) {
+export async function setupContracts<C extends ContractComponents>(
+  address: string,
+  config: SetupContractConfig,
+  world: World,
+  components: C,
+  mappings: Mappings<C>
+) {
   const network = await createNetwork(config);
   world.registerDisposer(network.dispose);
 
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
   const { contracts, config: contractsConfig } = await createContracts<{ Game: CombinedFacets; World: WorldContract }>({
-    config: { Game: { abi: CombinedFacetsAbi.abi, address: DIAMOND_ADDRESS } },
+    config: { Game: { abi: CombinedFacetsAbi.abi, address } },
     asyncConfig: async (c) => ({ World: { abi: WorldAbi.abi, address: await c.Game.world() } }),
     signerOrProvider,
   });

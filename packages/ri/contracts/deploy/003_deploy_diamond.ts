@@ -4,7 +4,6 @@ import { blue, green } from "colorette";
 import { CombinedFacets, LocalLatticeGameLocator } from "../types/ethers-contracts";
 import { deployComponent } from "../deploy-utils/components";
 import { deployAccessController } from "../deploy-utils/accessControllers";
-import { deployContentCreator } from "../deploy-utils/contentCreators";
 // import { deployContentCreator } from "../deploy-utils/contentCreators";
 
 const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
@@ -41,6 +40,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   await deployComponent(hre, world, ember.address, "MovableComponent");
   await deployComponent(hre, world, ember.address, "UntraversableComponent");
   await deployComponent(hre, world, ember.address, "OwnedByComponent");
+  await deployComponent(hre, world, ember.address, "PersonaComponent");
   // Deploy access controllers
   await deployAccessController(hre, ember, "PersonaAccessController");
   // Deploy content creators

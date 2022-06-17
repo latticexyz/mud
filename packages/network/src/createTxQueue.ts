@@ -127,9 +127,10 @@ export function createTxQueue<C extends Contracts>(
           );
         }
 
-        // TODO: only set gasPrice to 0 on local chain
-        // (https://linear.app/latticexyz/issue/LAT-587/integrate-mud-reference-implementation-with-launcher)
-        const result = await member(...argsWithoutOverrides, { ...overrides, nonce });
+        const configOverrides = { ...overrides, nonce };
+        if (network.config.chainId === 31337) configOverrides.gasPrice = 0;
+
+        const result = await member(...argsWithoutOverrides, configOverrides);
         resolve(result);
         return result;
       } catch (e) {
