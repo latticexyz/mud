@@ -22,6 +22,7 @@ import {
 } from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
 import { Area } from "@latticexyz/utils";
+import { createLocalMapSystem } from "./systems/LocalMapSystem";
 
 /**
  * The Local layer is the thrid layer in the client architecture and extends the Headless layer.
@@ -92,6 +93,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   createPositionSystem(layer);
   createDestinationSystem(layer);
   createPathSystem(layer);
+  createLocalMapSystem(layer);
 
   return layer;
 }
