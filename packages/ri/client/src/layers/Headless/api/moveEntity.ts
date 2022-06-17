@@ -15,7 +15,7 @@ interface MoveData {
   targetEntity?: string;
 }
 
-export function moveEntityFunc(direction: string, network: NetworkLayer, actions: ActionSystem) {
+export function moveEntity(network: NetworkLayer, actions: ActionSystem, direction: string) {
   const { Position, Movable, Untraversable, OwnedBy } = network.components;
   const delta = Directions[direction];
   const player = [...defineQuery([Has(Movable)]).get()][0];

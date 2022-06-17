@@ -1,2 +1,2 @@
-export { spawnCreatureFunc } from "./spawnCreature";
-export { moveEntityFunc } from "./moveEntity";
+export { spawnCreature } from "./spawnCreature";
+export { moveEntity } from "./moveEntity";
