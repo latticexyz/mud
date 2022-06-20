@@ -1,4 +1,5 @@
-import { Component } from "./types";
+import { hasComponent } from "./Component";
+import { Component, Entity, World } from "./types";
 
 export function createWorld() {
   const entityToIndex = new Map<string, number>();
@@ -17,4 +18,10 @@ export function createWorld() {
   }
 
   return { entities, entityToIndex, registerEntity, components, registerComponent };
+}
+
+// Design decision: don't store a list of components for each entity but compute it dynamically when needed
+// because there are less components than entities and maintaining a list of components per entity is a large overhead
+export function getEntityComponents(world: World, entity: Entity): Component[] {
+  return world.components.filter((component) => hasComponent(component, entity));
 }

@@ -56,6 +56,8 @@ export type World = {
   registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
   registerComponent: (component: Component) => void;
   components: Component[];
+  entities: string[];
+  entityToIndex: Map<string, number>;
 };
 
 export type Query = IComputedValue<Set<Entity>>;
