@@ -25,18 +25,21 @@ export type ValueType = {
   [Type.OptionalEntityArray]: Entity[] | null;
 };
 
-export type ComponentValue<T extends Schema = Schema> = {
-  [key in keyof T]: ValueType[T[key]];
+export type ComponentValue<S extends Schema = Schema> = {
+  [key in keyof S]: ValueType[S[key]];
 };
 
+export type ComponentUpdate<S extends Schema = Schema> = {
+  entity: Entity;
+  value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
+  component: Component;
+};
 export interface Component<S extends Schema = Schema> {
   id: string;
   values: { [key in keyof S]: Map<Entity, ValueType[S[key]]> };
   schema: Schema;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  update$: Subject<{ entity: Entity; value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined] }> & {
-    observers: any;
-  };
+  update$: Subject<ComponentUpdate<S>> & { observers: any };
 }
 
 export type Components = {
@@ -106,7 +109,7 @@ export type ProxyExpandQueryFragment = {
   depth: number;
 };
 
-export type QueryFragment<T extends Schema> =
+export type QueryFragment<T extends Schema = Schema> =
   | HasQueryFragment<T>
   | HasValueQueryFragment<T>
   | NotQueryFragment<T>
@@ -114,7 +117,7 @@ export type QueryFragment<T extends Schema> =
   | ProxyReadQueryFragment
   | ProxyExpandQueryFragment;
 
-export type EntityQueryFragment<T extends Schema> =
+export type EntityQueryFragment<T extends Schema = Schema> =
   | HasQueryFragment<T>
   | HasValueQueryFragment<T>
   | NotQueryFragment<T>

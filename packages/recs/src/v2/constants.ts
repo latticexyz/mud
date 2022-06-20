@@ -13,3 +13,9 @@ export enum Type {
   EntityArray,
   OptionalEntityArray,
 }
+
+export enum QueryUpdate {
+  Enter,
+  Exit,
+  Update,
+}

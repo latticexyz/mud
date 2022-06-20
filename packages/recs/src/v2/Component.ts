@@ -18,7 +18,7 @@ export function setComponent<S extends Schema>(component: Component<S>, entity: 
   for (const [key, val] of Object.entries(value)) {
     component.values[key].set(entity, val);
   }
-  component.update$.next({ entity, value: [value, prevValue] });
+  component.update$.next({ entity, value: [value, prevValue], component });
 }
 
 export function updateComponent<T extends Schema>(
@@ -35,7 +35,7 @@ export function removeComponent(component: Component, entity: Entity) {
   for (const key of Object.keys(component.values)) {
     component.values[key].delete(entity);
   }
-  component.update$.next({ entity, value: [undefined, prevValue] });
+  component.update$.next({ entity, value: [undefined, prevValue], component });
 }
 
 export function hasComponent<T extends Schema>(component: Component<T>, entity: Entity): boolean {
@@ -109,22 +109,26 @@ export function getComponentEntities(component: Component): IterableIterator<Ent
  * @param component source component
  * @returns overridable component
  */
-export function overridableComponent<T extends Schema>(component: Component<T>): OverridableComponent<T> {
+export function overridableComponent<S extends Schema>(component: Component<S>): OverridableComponent<S> {
   let nonce = 0;
 
   // Map from OverrideId to Override (to be able to add multiple overrides to the same Entity)
-  const overrides = new Map<string, { update: Override<T>; nonce: number }>();
+  const overrides = new Map<string, { update: Override<S>; nonce: number }>();
 
   // Map from EntityId to current overridden component value
-  const overriddenEntityValues = new Map<Entity, ComponentValue<T>>();
+  const overriddenEntityValues = new Map<Entity, ComponentValue<S>>();
 
   // Update event stream that takes into account overridden entity values
-  const update$ = new Subject();
+  const update$ = new Subject<{
+    entity: Entity;
+    value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
+    component: Component;
+  }>();
   // Channel through update events from the original component if there are no overrides
   component.update$.pipe(filter((e) => !overriddenEntityValues.get(e.entity))).subscribe(update$);
 
   // Add a new override to some entity
-  function addOverride(id: string, update: Override<T>) {
+  function addOverride(id: string, update: Override<S>) {
     overrides.set(id, { update, nonce: nonce++ });
     setOverriddenComponentValue(update.entity, update.value);
   }
@@ -150,21 +154,13 @@ export function overridableComponent<T extends Schema>(component: Component<T>):
     }
   }
 
-  // Internal function to set the current overridden component value and emit the update event
-  function setOverriddenComponentValue(entity: Entity, value?: ComponentValue<T>) {
-    const prevValue = getOverriddenComponentValue(entity);
-    if (value) overriddenEntityValues.set(entity, value);
-    else overriddenEntityValues.delete(entity);
-    update$.next({ entity, value: [getOverriddenComponentValue(entity), prevValue] });
-  }
-
   // Internal function to get the current overridden value or value of the source component
   function getOverriddenComponentValue(entity: Entity) {
     const overriddenValue = overriddenEntityValues.get(entity);
     return overriddenValue ?? getComponentValue(component, entity);
   }
 
-  const valueProxyHandler: (key: keyof T) => ProxyHandler<typeof component.values[typeof key]> = (key: keyof T) => ({
+  const valueProxyHandler: (key: keyof S) => ProxyHandler<typeof component.values[typeof key]> = (key: keyof S) => ({
     get(target, prop) {
       // Intercept calls to component.value[key].get(entity)
       if (prop === "get") {
@@ -178,13 +174,13 @@ export function overridableComponent<T extends Schema>(component: Component<T>):
     },
   });
 
-  const partialValues: Partial<Component<T>["values"]> = {};
-  for (const key of Object.keys(component.values) as (keyof T)[]) {
+  const partialValues: Partial<Component<S>["values"]> = {};
+  for (const key of Object.keys(component.values) as (keyof S)[]) {
     partialValues[key] = new Proxy(component.values[key], valueProxyHandler(key));
   }
-  const valuesProxy = partialValues as Component<T>["values"];
+  const valuesProxy = partialValues as Component<S>["values"];
 
-  return new Proxy(component, {
+  const overriddenComponent = new Proxy(component, {
     get(target, prop) {
       if (prop === "addOverride") return addOverride;
       if (prop === "removeOverride") return removeOverride;
@@ -197,5 +193,15 @@ export function overridableComponent<T extends Schema>(component: Component<T>):
       if (prop === "addOverride" || prop === "removeOverride") return true;
       return prop in target;
     },
-  }) as OverridableComponent<T>;
+  }) as OverridableComponent<S>;
+
+  // Internal function to set the current overridden component value and emit the update event
+  function setOverriddenComponentValue(entity: Entity, value?: ComponentValue<S>) {
+    const prevValue = getOverriddenComponentValue(entity);
+    if (value) overriddenEntityValues.set(entity, value);
+    else overriddenEntityValues.delete(entity);
+    update$.next({ entity, value: [getOverriddenComponentValue(entity), prevValue], component: overriddenComponent });
+  }
+
+  return overriddenComponent;
 }
