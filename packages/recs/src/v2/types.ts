@@ -54,6 +54,8 @@ export type AnyComponent = Component<Schema>;
 
 export type World = {
   registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
+  registerComponent: (component: Component) => void;
+  components: Component[];
 };
 
 export type Query = IComputedValue<Set<Entity>>;
@@ -136,7 +138,7 @@ export type Override<T extends Schema> = {
   value: ComponentValue<T>;
 };
 
-export type OverridableComponent<T extends Schema> = Component<T> & {
+export type OverridableComponent<T extends Schema = Schema> = Component<T> & {
   addOverride: (id: string, update: Override<T>) => void;
   removeOverride: (id: string) => void;
 };
