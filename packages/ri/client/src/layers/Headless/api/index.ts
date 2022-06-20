@@ -1,2 +1,2 @@
-export { spawnCreature } from "./spawnCreature";
+export { joinGame } from "./joinGame";
 export { moveEntity } from "./moveEntity";

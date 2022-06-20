@@ -43,11 +43,11 @@ export function NotValue<T extends Schema>(
   return { type: QueryFragmentType.NotValue, component, value };
 }
 
-export function ProxyRead(component: Component<{ entity: Type.Entity }>, depth: number): ProxyReadQueryFragment {
+export function ProxyRead(component: Component<{ value: Type.Entity }>, depth: number): ProxyReadQueryFragment {
   return { type: QueryFragmentType.ProxyRead, component, depth };
 }
 
-export function ProxyExpand(component: Component<{ entity: Type.Entity }>, depth: number): ProxyExpandQueryFragment {
+export function ProxyExpand(component: Component<{ value: Type.Entity }>, depth: number): ProxyExpandQueryFragment {
   return { type: QueryFragmentType.ProxyExpand, component, depth };
 }
 
@@ -88,7 +88,7 @@ function passesQueryFragmentProxy<T extends Schema>(
     if (!value) return null;
 
     // Move up the proxy chain
-    proxyEntity = value.entity;
+    proxyEntity = value.value;
     passes = passesQueryFragment(proxyEntity, fragment);
 
     if (isBreakingPassState(passes, fragment)) {
@@ -130,12 +130,12 @@ function isBreakingPassState(passes: boolean, fragment: EntityQueryFragment<Sche
  */
 export function getChildEntities(
   entity: Entity,
-  component: Component<{ entity: Type.Entity }>,
+  component: Component<{ value: Type.Entity }>,
   depth: number
 ): Set<Entity> {
   if (depth === 0) return new Set();
 
-  const directChildEntities = getEntitiesWithValue(component, { entity });
+  const directChildEntities = getEntitiesWithValue(component, { value: entity });
   if (depth === 1) return directChildEntities;
 
   const indirectChildEntities = [...directChildEntities]

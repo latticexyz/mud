@@ -73,7 +73,7 @@ export async function setupContracts<C extends ContractComponents>(
     const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
     encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
   }
-  return { txQueue, txReduced$, encoders };
+  return { txQueue, txReduced$, encoders, network };
 }
 
 /**

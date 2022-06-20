@@ -19,10 +19,11 @@ library LibPersona {
 
   function getActivePersonaFromAddress(address addr, bytes4 sig) internal view returns (uint256) {
     // TODO: make it gsn compatible
-    DiamondStorage storage diamondStorage = getDiamondStorage();
+    address diamondAddress = address(this);
     PersonaMirror personaMirror = PersonaMirror(getAppStorage().config.personaMirror);
-    uint256 personaId = personaMirror.getActivePersona(addr, diamondStorage.diamond);
-    if (personaMirror.isAuthorized(personaId, addr, diamondStorage.diamond, sig)) {
+    uint256 personaId = personaMirror.getActivePersona(addr, diamondAddress);
+
+    if (personaMirror.isAuthorized(personaId, addr, diamondAddress, sig)) {
       return personaId;
     } else {
       return 0;

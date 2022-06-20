@@ -100,13 +100,13 @@ export type NotValueQueryFragment<T extends Schema> = {
 
 export type ProxyReadQueryFragment = {
   type: QueryFragmentType.ProxyRead;
-  component: Component<{ entity: Type.Entity }>;
+  component: Component<{ value: Type.Entity }>;
   depth: number;
 };
 
 export type ProxyExpandQueryFragment = {
   type: QueryFragmentType.ProxyExpand;
-  component: Component<{ entity: Type.Entity }>;
+  component: Component<{ value: Type.Entity }>;
   depth: number;
 };
 

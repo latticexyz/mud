@@ -12,8 +12,11 @@ import { Component } from "solecs/Component.sol";
 import { UsingDiamondOwner } from "../diamond/utils/UsingDiamondOwner.sol";
 import { UsingAccessControl } from "../access/UsingAccessControl.sol";
 import { AppStorage } from "../libraries/LibAppStorage.sol";
+import { LibDiamond, DiamondStorage } from "../diamond/libraries/LibDiamond.sol";
 import { LibPersona } from "../libraries/LibPersona.sol";
 import { manhattan, getEntityAt, getEntityWithAt } from "../utils/utils.sol";
+import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
+import { LibQuery } from "solecs/LibQuery.sol";
 
 contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
@@ -43,17 +46,24 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     c.remove(entity);
   }
 
-  function spawnCreature(Coord calldata position, uint32 entityType) external {
+  function joinGame(Coord calldata position, uint32 entityType) external {
+    PersonaComponent personaComponent = PersonaComponent(s.world.getComponent(PersonaComponentID));
+    uint256 personaId = LibPersona.getActivePersona();
+    require(personaId != 0, "no persona found");
+
+    QueryFragment[] memory fragments = new QueryFragment[](1);
+    fragments[0] = QueryFragment(QueryType.HasValue, personaComponent, abi.encode(personaId));
+    uint256[] memory entities = LibQuery.query(fragments);
+    require(entities.length == 0, "already spawned");
+
     EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
     OwnedByComponent ownedByComponent = OwnedByComponent(s.world.getComponent(OwnedByComponentID));
-    PersonaComponent personaComponent = PersonaComponent(s.world.getComponent(PersonaComponentID));
 
     (, bool foundTargetEntity) = getEntityAt(s.world, position);
     require(!foundTargetEntity, "spot taken fool!");
 
     uint256 playerEntity = s.world.getUniqueEntityId();
-    uint256 personaId = LibPersona.getActivePersona();
     personaComponent.set(playerEntity, personaId);
 
     uint256 entity = s.world.getUniqueEntityId();

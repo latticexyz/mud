@@ -1,4 +1,4 @@
-import { Component, ComponentValue, createWorld, Entity, Schema } from "@latticexyz/recs";
+import { Component, ComponentValue, createWorld, defineComponent, Entity, Schema, Type } from "@latticexyz/recs";
 import {
   definePositionComponent,
   defineEntityTypeComponent,
@@ -36,6 +36,11 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     Movable: defineMovableComponent(world, keccak256("ember.component.movableComponent")),
     OwnedBy: defineOwnedByComponent(world, keccak256("ember.component.ownedByComponent")),
     Untraversable: defineUntraversableComponent(world, keccak256("ember.component.untraversableComponent")),
+    Persona: defineComponent(
+      world,
+      { value: Type.String },
+      { name: "Persona", metadata: { contractId: keccak256("ember.component.personaComponent") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -45,6 +50,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     [keccak256("ember.component.movableComponent")]: "Movable",
     [keccak256("ember.component.ownedByComponent")]: "OwnedBy",
     [keccak256("ember.component.untraversableComponent")]: "Untraversable",
+    [keccak256("ember.component.personaComponent")]: "Persona",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -92,14 +98,14 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entity), component.metadata.contractId, data);
   }
 
-  async function spawnCreature(position: WorldCoord, entityType: number) {
+  async function joinGame(position: WorldCoord, entityType: number) {
     console.log(`Spawning creature at position ${JSON.stringify(position)}`);
-    return txQueue.Game.spawnCreature(position, entityType);
+    return txQueue.Game.joinGame(position, entityType);
   }
 
   async function moveEntity(entity: Entity, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition, { gasPrice: 0, gasLimit: 250000 });
+    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition, { gasLimit: 250000 });
   }
 
   // Constants (load from contract later)
@@ -117,7 +123,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     personaId: config?.personaId,
     api: {
       setContractComponentValue,
-      spawnCreature,
+      joinGame,
       moveEntity,
     },
   };

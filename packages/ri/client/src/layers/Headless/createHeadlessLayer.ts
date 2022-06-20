@@ -2,7 +2,7 @@ import { createWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem } from "./systems";
 import { defineActionComponent } from "./components";
-import { moveEntity, spawnCreature } from "./api";
+import { joinGame, moveEntity } from "./api";
 import { curry } from "lodash";
 
 /**
@@ -23,7 +23,7 @@ export async function createHeadlessLayer(network: NetworkLayer) {
     components,
     api: {
       moveEntity: curry(moveEntity)(network, actions),
-      spawnCreature: curry(spawnCreature)(network, actions),
+      joinGame: curry(joinGame)(network, actions),
     },
   };
 }

@@ -24,6 +24,8 @@ export {
   Has,
   Not,
   HasValue,
+  ProxyExpand,
+  ProxyRead,
 } from "./Query";
 export { Type } from "./constants";
 export type {
