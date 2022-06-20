@@ -4,6 +4,7 @@ import { filter, Subject } from "rxjs";
 import { Component, ComponentValue, Entity, OverridableComponent, Override, Schema, World } from "./types";
 
 export function defineComponent<S extends Schema>(world: World, schema: S, options?: { id: string }) {
+  if (Object.keys(schema).length === 0) throw new Error("Component schema must have at least one key");
   const id = options?.id ?? uuid();
   const values = mapObject(schema, () => new Map());
   const update$ = new Subject();

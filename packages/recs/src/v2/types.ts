@@ -10,6 +10,7 @@ export type Schema = {
 };
 
 export type ValueType = {
+  [Type.Boolean]: boolean;
   [Type.Number]: number;
   [Type.String]: string;
   [Type.NumberArray]: number[];

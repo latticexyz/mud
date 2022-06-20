@@ -1,4 +1,5 @@
 export enum Type {
+  Boolean,
   Number,
   OptionalNumber,
   String,
