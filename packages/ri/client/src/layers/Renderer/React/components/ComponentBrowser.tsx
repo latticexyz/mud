@@ -21,6 +21,9 @@ export function registerComponentBrowser() {
           setContractComponentValue={
             layers.network.api.setContractComponentValue
           }
+          removeContractComponent={
+            layers.network.api.removeContractComponent
+          }
         />
       );
     }

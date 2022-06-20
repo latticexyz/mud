@@ -7,6 +7,11 @@ export type SetContractComponentFunction<T extends Schema> = (
   newValue: ComponentValue<T>
 ) => void;
 
+export type RemoveContractComponentFunction<T extends Schema> = (
+  entity: Entity,
+  component: Component<T, { contractId: string }>
+) => void;
+
 export type AnyComponentWithContract = Component<Schema, { contractId: string }>;
 
 export function hasContract(component: AnyComponent): component is AnyComponentWithContract {

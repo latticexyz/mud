@@ -3,7 +3,7 @@ import { Layers, Type } from "@latticexyz/recs";
 import { AnyComponent, Component, Entity, Schema } from "@latticexyz/recs/src/types";
 import { observer } from "mobx-react-lite";
 import { BrowserContainer } from "./StyledComponents";
-import { SetContractComponentFunction } from "./types";
+import { RemoveContractComponentFunction, SetContractComponentFunction } from "./types";
 import { EntityEditor } from "./EntityEditor";
 import { QueryBuilder } from "./QueryBuilder";
 
@@ -15,11 +15,13 @@ export const Browser = observer(
     entities,
     layers,
     setContractComponentValue,
+    removeContractComponent,
     devHighlightComponent,
   }: {
     entities: [Entity, Set<AnyComponent>][];
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
+    removeContractComponent: RemoveContractComponentFunction<Schema>;
     devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
   }) => {
     const [filteredEntities, setFilteredEntities] = useState(entities);
@@ -34,6 +36,7 @@ export const Browser = observer(
             components={components}
             layers={layers}
             setContractComponentValue={setContractComponentValue}
+            removeContractComponent={removeContractComponent}
             devHighlightComponent={devHighlightComponent}
           />
         ))}

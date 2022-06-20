@@ -4,7 +4,7 @@ import { AnyComponent, Component, Entity, Schema } from "@latticexyz/recs/src/ty
 import { observer } from "mobx-react-lite";
 import { Collapse } from "react-collapse";
 import { ComponentBrowserButton, EntityEditorContainer } from "./StyledComponents";
-import { SetContractComponentFunction } from "./types";
+import { RemoveContractComponentFunction, SetContractComponentFunction } from "./types";
 import { ComponentEditor } from "./ComponentEditor";
 
 export const EntityEditor = observer(
@@ -13,12 +13,14 @@ export const EntityEditor = observer(
     components,
     layers,
     setContractComponentValue,
+    removeContractComponent,
     devHighlightComponent,
   }: {
     entity: Entity;
     components: Set<AnyComponent>;
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
+    removeContractComponent: RemoveContractComponentFunction<Schema>;
     devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
   }) => {
     const [opened, setOpened] = useState(false);
@@ -51,6 +53,7 @@ export const EntityEditor = observer(
                 component={c}
                 layers={layers}
                 setContractComponentValue={setContractComponentValue}
+                removeContractComponent={removeContractComponent}
               />
             ))}
         </Collapse>

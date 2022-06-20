@@ -72,6 +72,19 @@ export async function createNetworkLayer() {
     return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition, { gasPrice: 0, gasLimit: 250000 });
   }
 
+  async function removeContractComponent<T extends Schema>(
+    entity: Entity,
+    component: Component<T, { contractId: string }>
+  ) {
+    if (!component.metadata.contractId)
+      throw new Error(
+        `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
+      );
+
+    console.log(`Sent transaction to remove networked Component ${component.id} from Entity ${entity}`);
+    await txQueue.Game.removeComponentFromEntityExternally(BigNumber.from(entity), component.metadata.contractId);
+  }
+
   // Constants (load from contract later)
   const constants = {
     mapSize: 50,
@@ -86,6 +99,7 @@ export async function createNetworkLayer() {
     mappings,
     api: {
       setContractComponentValue,
+      removeContractComponent,
       spawnCreature,
       moveEntity,
     },
