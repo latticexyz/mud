@@ -34,6 +34,7 @@ export type ComponentUpdate<S extends Schema = Schema> = {
   value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
   component: Component;
 };
+
 export interface Component<S extends Schema = Schema> {
   id: string;
   values: { [key in keyof S]: Map<Entity, ValueType[S[key]]> };
@@ -62,6 +63,8 @@ export type World = {
   components: Component[];
   entities: string[];
   entityToIndex: Map<string, number>;
+  dispose: () => void;
+  registerDisposer: (disposer: () => void) => void;
 };
 
 export type Query = IComputedValue<Set<Entity>>;

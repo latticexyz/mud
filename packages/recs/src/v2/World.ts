@@ -5,6 +5,7 @@ export function createWorld() {
   const entityToIndex = new Map<string, number>();
   const entities: string[] = [];
   const components: Component[] = [];
+  let disposers: (() => void)[] = [];
 
   function registerEntity({ id, idSuffix }: { id?: string; idSuffix?: string } = {}) {
     const entity = id || entities.length + (idSuffix ? "-" + idSuffix : "");
@@ -17,7 +18,18 @@ export function createWorld() {
     components.push(component);
   }
 
-  return { entities, entityToIndex, registerEntity, components, registerComponent };
+  function dispose() {
+    for (let i = 0; i < disposers.length; i++) {
+      disposers[i]();
+    }
+    disposers = [];
+  }
+
+  function registerDisposer(disposer: () => void) {
+    disposers.push(disposer);
+  }
+
+  return { entities, entityToIndex, registerEntity, components, registerComponent, dispose, registerDisposer };
 }
 
 // Design decision: don't store a list of components for each entity but compute it dynamically when needed

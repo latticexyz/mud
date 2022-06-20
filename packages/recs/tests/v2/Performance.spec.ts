@@ -1,13 +1,19 @@
-import { defineComponent, withValue } from "../../src/Component";
-import { defineComponent as defineComponentV2, withValue as withValueV2 } from "../../src/v2/Component";
+import { defineComponent, setComponent, withValue } from "../../src/Component";
+import {
+  defineComponent as defineComponentV2,
+  withValue as withValueV2,
+  setComponent as setComponentV2,
+} from "../../src/v2/Component";
 import { createWorld } from "../../src/World";
 import { createWorld as createWorldV2 } from "../../src/v2/World";
 import { createEntity } from "../../src/Entity";
 import { createEntity as createEntityV2 } from "../../src/v2/Entity";
 import { Type } from "../../src/constants";
+import { Type as TypeV2 } from "../../src/v2/constants";
 import { defineUpdateQuery, Has } from "../../src/Query";
-import { defineUpdateQuery as defineUpdateQueryV2 } from "../../src/v2/Query";
+import { defineQuery as defineQueryV2, Has as HasV2, HasValue as HasValueV2 } from "../../src/v2/Query";
 import { defineReactionSystem } from "../../src/System";
+import { defineSystem } from "../../src/v2/System";
 
 export function timeIt(fn: () => unknown) {
   const start = Date.now();
@@ -18,9 +24,42 @@ export function timeIt(fn: () => unknown) {
   return duration;
 }
 
+describe("V2", () => {
+  const size = 1000000;
+  it.skip("measure creation of 1000000 entities", () => {
+    console.log("V2");
+    const world = createWorldV2();
+    const Position = defineComponentV2(world, { x: TypeV2.Number, y: TypeV2.Number });
+
+    timeIt(() => {
+      for (let i = 0; i < size; i++) {
+        const entity = createEntityV2(world);
+        setComponentV2(Position, entity, { x: 1, y: 1 });
+      }
+    });
+  });
+
+  it.skip("measure creation of 1000000 entities and reacting to it", () => {
+    console.log("V2");
+    const world = createWorldV2();
+    const Position = defineComponentV2(world, { x: TypeV2.Number, y: TypeV2.Number });
+
+    defineSystem(world, [HasValueV2(Position, { x: 1, y: 1 })], (update) => {
+      const e = update;
+    });
+
+    timeIt(() => {
+      for (let i = 0; i < size; i++) {
+        const entity = createEntityV2(world);
+        setComponentV2(Position, entity, { x: 1, y: 1 });
+      }
+    });
+  });
+});
+
 describe("V1 vs V2", () => {
   const size = 10000;
-  it.only("measure creation of 10000 entities", () => {
+  it.skip("measure creation of 10000 entities", () => {
     console.log("V1");
     timeIt(() => {
       const world = createWorld();
@@ -43,10 +82,10 @@ describe("V1 vs V2", () => {
     console.log("V2");
     timeIt(() => {
       const world = createWorldV2();
-      const Position = defineComponentV2({ x: Type.Number, y: Type.Number });
-      const query$ = defineUpdateQueryV2([Position]);
+      const Position = defineComponentV2(world, { x: TypeV2.Number, y: TypeV2.Number });
+      const query$ = defineQueryV2([HasV2(Position)]);
 
-      query$.subscribe((e) => {
+      query$.update$.subscribe((e) => {
         const entities = e;
       });
 

@@ -1,6 +1,5 @@
-import { reaction, runInAction } from "mobx";
 import { defineComponent, removeComponent, setComponent, withValue } from "../../src/v2/Component";
-import { QueryUpdate, Type } from "../../src/v2/constants";
+import { UpdateType, Type } from "../../src/v2/constants";
 import { createEntity } from "../../src/v2/Entity";
 import {
   Has,
@@ -8,7 +7,7 @@ import {
   // runQuery,
   defineEnterQuery,
   defineExitQuery,
-  defineUpdateQuery,
+  defineQuery,
   HasValue,
   NotValue,
   ProxyRead,
@@ -340,12 +339,30 @@ describe("Query", () => {
       entities.push(createEntity(world, [withValue(CanMove, { value: true })]));
       entities.push(createEntity(world));
 
-      expect(mock).toHaveBeenCalledWith(entities[0]);
-      expect(mock).toHaveBeenCalledWith(entities[1]);
+      expect(mock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entity: entities[0],
+          component: CanMove,
+          value: [{ value: true }, undefined],
+        })
+      );
+      expect(mock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entity: entities[1],
+          component: CanMove,
+          value: [{ value: true }, undefined],
+        })
+      );
       expect(mock).toBeCalledTimes(2);
 
       setComponent(CanMove, entities[2], { value: true });
-      expect(mock).toHaveBeenCalledWith(entities[2]);
+      expect(mock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entity: entities[2],
+          component: CanMove,
+          value: [{ value: true }, undefined],
+        })
+      );
       expect(mock).toHaveBeenCalledTimes(3);
     });
   });
@@ -366,17 +383,30 @@ describe("Query", () => {
 
       removeComponent(CanMove, entity1);
       expect(mock).toHaveBeenCalledTimes(1);
-      expect(mock).toHaveBeenCalledWith(entity1);
+
+      expect(mock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entity: entity1,
+          component: CanMove,
+          value: [undefined, { value: true }],
+        })
+      );
 
       removeComponent(CanMove, entity2);
       expect(mock).toHaveBeenCalledTimes(2);
-      expect(mock).toHaveBeenCalledWith(entity2);
+      expect(mock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          entity: entity2,
+          component: CanMove,
+          value: [undefined, { value: true }],
+        })
+      );
     });
   });
 
   describe("defineUpdateQuery", () => {
     it("should only return the last updated entity", () => {
-      const updateQuery = defineUpdateQuery([Has(Position)]);
+      const updateQuery = defineQuery([Has(Position)]);
 
       const mock = jest.fn();
       updateQuery.update$.subscribe(mock);
@@ -390,14 +420,14 @@ describe("Query", () => {
         entity: entity1,
         value: [{ x: 1, y: 2 }, undefined],
         component: Position,
-        type: QueryUpdate.Enter,
+        type: UpdateType.Enter,
       });
 
       expect(mock).toHaveBeenCalledWith({
         entity: entity2,
         value: [{ x: 1, y: 3 }, undefined],
         component: Position,
-        type: QueryUpdate.Enter,
+        type: UpdateType.Enter,
       });
 
       setComponent(Position, entity1, { x: 2, y: 3 });
@@ -409,7 +439,7 @@ describe("Query", () => {
           { x: 1, y: 2 },
         ],
         component: Position,
-        type: QueryUpdate.Update,
+        type: UpdateType.Update,
       });
 
       expect(mock).toHaveBeenCalledTimes(3);
@@ -420,14 +450,14 @@ describe("Query", () => {
         entity: entity1,
         value: [undefined, { x: 2, y: 3 }],
         component: Position,
-        type: QueryUpdate.Exit,
+        type: UpdateType.Exit,
       });
 
       expect(mock).toHaveBeenCalledTimes(4);
     });
 
     it("should not return entities matching the query before the query was subscribed to if runOnInit is undefined/false", () => {
-      const updateQuery = defineUpdateQuery([Has(Position)]);
+      const updateQuery = defineQuery([Has(Position)]);
       const entity = createEntity(world, [withValue(Position, { x: 1, y: 2 })]);
 
       const mock = jest.fn();
@@ -444,7 +474,7 @@ describe("Query", () => {
           { x: 1, y: 2 },
         ],
         component: Position,
-        type: QueryUpdate.Enter,
+        type: UpdateType.Enter,
       });
 
       expect(mock).toHaveBeenCalledTimes(1);
@@ -487,7 +517,7 @@ describe("Query", () => {
     // });
 
     it("should work with queries including multiple components", () => {
-      const updateQuery = defineUpdateQuery([Has(Position), Has(CanMove)]);
+      const updateQuery = defineQuery([Has(Position), Has(CanMove)]);
 
       const mock = jest.fn();
       updateQuery.update$.subscribe(mock);
@@ -501,7 +531,7 @@ describe("Query", () => {
         entity: entity1,
         value: [{ value: true }, undefined],
         component: CanMove,
-        type: QueryUpdate.Enter,
+        type: UpdateType.Enter,
       });
 
       setComponent(CanMove, entity2, { value: true });
@@ -512,7 +542,7 @@ describe("Query", () => {
         entity: entity2,
         value: [{ value: true }, undefined],
         component: CanMove,
-        type: QueryUpdate.Enter,
+        type: UpdateType.Enter,
       });
 
       setComponent(Position, entity1, { x: 2, y: 4 });
@@ -526,7 +556,7 @@ describe("Query", () => {
           { x: 1, y: 2 },
         ],
         component: Position,
-        type: QueryUpdate.Update,
+        type: UpdateType.Update,
       });
     });
 

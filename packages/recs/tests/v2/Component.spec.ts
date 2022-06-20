@@ -35,9 +35,10 @@ describe("Component", () => {
     setComponent(component, entity, { x: 7, y: 2 });
     removeComponent(component, entity);
 
-    expect(mock).toHaveBeenNthCalledWith(1, { entity, value: [{ x: 1, y: 2 }, undefined] });
+    expect(mock).toHaveBeenNthCalledWith(1, { entity, value: [{ x: 1, y: 2 }, undefined], component });
     expect(mock).toHaveBeenNthCalledWith(2, {
       entity,
+      component,
       value: [
         { x: 7, y: 2 },
         { x: 1, y: 2 },
@@ -45,18 +46,19 @@ describe("Component", () => {
     });
     expect(mock).toHaveBeenNthCalledWith(3, {
       entity,
+      component,
       value: [
         { x: 7, y: 2 },
         { x: 7, y: 2 },
       ],
     });
-    expect(mock).toHaveBeenNthCalledWith(4, { entity, value: [undefined, { x: 7, y: 2 }] });
+    expect(mock).toHaveBeenNthCalledWith(4, { entity, component, value: [undefined, { x: 7, y: 2 }] });
   });
 
   describe("defineComponent", () => {
     it("should register the component in the world", () => {
       expect(world.components.length).toBe(0);
-      defineComponent(world, {});
+      defineComponent(world, { value: Type.Boolean });
       expect(world.components.length).toBe(1);
     });
   });
@@ -240,6 +242,7 @@ describe("Component", () => {
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenLastCalledWith({
         entity: entity1,
+        component: OverridablePosition,
         value: [
           { x: 3, y: 3 },
           { x: 1, y: 2 },
@@ -250,6 +253,7 @@ describe("Component", () => {
       expect(spy).toHaveBeenCalledTimes(2);
       expect(spy).toHaveBeenLastCalledWith({
         entity: entity1,
+        component: OverridablePosition,
         value: [
           { x: 1, y: 2 },
           { x: 3, y: 3 },
@@ -259,6 +263,7 @@ describe("Component", () => {
       OverridablePosition.addOverride("secondOverride", { entity: 42, value: { x: 2, y: 3 } });
       expect(spy).toHaveBeenLastCalledWith({
         entity: 42,
+        component: OverridablePosition,
         value: [{ x: 2, y: 3 }, undefined],
       });
       expect(spy).toHaveBeenCalledTimes(3);

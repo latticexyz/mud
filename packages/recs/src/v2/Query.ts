@@ -1,6 +1,6 @@
 import { filterNullish } from "@latticexyz/utils";
 import { observable, ObservableSet } from "mobx";
-import { concat, filter, from, map, merge, Observable, of } from "rxjs";
+import { filter, map, merge, Observable } from "rxjs";
 import {
   componentValueEquals,
   getComponentEntities,
@@ -8,7 +8,7 @@ import {
   getEntitiesWithValue,
   hasComponent,
 } from "./Component";
-import { QueryUpdate, Type } from "./constants";
+import { UpdateType, Type } from "./constants";
 import {
   Component,
   ComponentUpdate,
@@ -223,8 +223,8 @@ export function runQuery(fragments: QueryFragment[], initialSet?: Set<Entity>): 
  * @returns Stream of updates for entities that are matching the query or used to match and now stopped matching the query
  * Note: runOnInit was removed in V2. Make sure your queries are defined before any component update events arrive.
  */
-export function defineUpdateQuery(fragments: EntityQueryFragment[]): {
-  update$: Observable<ComponentUpdate & { type: QueryUpdate }>;
+export function defineQuery(fragments: EntityQueryFragment[]): {
+  update$: Observable<ComponentUpdate & { type: UpdateType }>;
   matching: ObservableSet<Entity>;
 } {
   const matching = observable(new Set<Entity>());
@@ -242,11 +242,11 @@ export function defineUpdateQuery(fragments: EntityQueryFragment[]): {
 
             if (pass) {
               // Entity passed before and still passes, forward update
-              return { ...update, type: QueryUpdate.Update };
+              return { ...update, type: UpdateType.Update };
             } else {
               // Entity passed before but not anymore, forward update and exit
               matching.delete(update.entity);
-              return { ...update, type: QueryUpdate.Exit };
+              return { ...update, type: UpdateType.Exit };
             }
           }
 
@@ -255,7 +255,7 @@ export function defineUpdateQuery(fragments: EntityQueryFragment[]): {
           if (pass) {
             // Entity didn't pass before but passes now, forward update end enter
             matching.add(update.entity);
-            return { ...update, type: QueryUpdate.Enter };
+            return { ...update, type: UpdateType.Enter };
           }
         }),
         filterNullish()
@@ -265,22 +265,26 @@ export function defineUpdateQuery(fragments: EntityQueryFragment[]): {
 
 /**
  * @param fragments Query fragments
- * @returns Stream of entities matching the query for the first time
+ * @returns Stream of component updates of entities that had already matched the query
  */
-export function defineEnterQuery(fragments: EntityQueryFragment[]): Observable<Entity> {
-  return defineUpdateQuery(fragments).update$.pipe(
-    filter((e) => e.type === QueryUpdate.Enter),
-    map((e) => e.entity)
-  );
+export function defineUpdateQuery(
+  fragments: EntityQueryFragment[]
+): Observable<ComponentUpdate & { type: UpdateType }> {
+  return defineQuery(fragments).update$.pipe(filter((e) => e.type === UpdateType.Update));
 }
 
 /**
  * @param fragments Query fragments
- * @returns Stream of entities matching the query for the first time
+ * @returns Stream of component updates of entities matching the query for the first time
  */
-export function defineExitQuery(fragments: EntityQueryFragment[]): Observable<Entity> {
-  return defineUpdateQuery(fragments).update$.pipe(
-    filter((e) => e.type === QueryUpdate.Exit),
-    map((e) => e.entity)
-  );
+export function defineEnterQuery(fragments: EntityQueryFragment[]): Observable<ComponentUpdate> {
+  return defineQuery(fragments).update$.pipe(filter((e) => e.type === UpdateType.Enter));
+}
+
+/**
+ * @param fragments Query fragments
+ * @returns Stream of component updates of entities not matching the query anymore for the first time
+ */
+export function defineExitQuery(fragments: EntityQueryFragment[]): Observable<ComponentUpdate> {
+  return defineQuery(fragments).update$.pipe(filter((e) => e.type === UpdateType.Exit));
 }
