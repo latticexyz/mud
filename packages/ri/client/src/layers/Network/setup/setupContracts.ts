@@ -12,7 +12,15 @@ import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFace
 import WorldAbi from "ri-contracts/abi/World.json";
 import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
 import { bufferTime, filter, Observable, Subject } from "rxjs";
-import { Component, Components, ExtendableECSEvent, Schema, setComponent, World } from "@latticexyz/recs";
+import {
+  Component,
+  Components,
+  ExtendableECSEvent,
+  removeComponent,
+  Schema,
+  setComponent,
+  World,
+} from "@latticexyz/recs";
 import { computed } from "mobx";
 import { stretch } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
@@ -113,7 +121,14 @@ function applyNetworkUpdates<C extends Components>(
         if (!world.entities.has(update.entity)) {
           world.registerEntity({ id: update.entity });
         }
-        setComponent(components[update.component] as Component<Schema>, update.entity, update.value);
+
+        if (update.value === undefined) {
+          // undefined value means component removed
+          removeComponent(components[update.component] as Component<Schema>, update.entity);
+        } else {
+          setComponent(components[update.component] as Component<Schema>, update.entity, update.value);
+        }
+
         if (update.lastEventInTx) txReduced$.next(update.txHash);
       }
       // });

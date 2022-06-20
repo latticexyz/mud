@@ -134,7 +134,7 @@ export type ExtendableECSEvent<C extends Components, E> = ValueOf<{
   [key in keyof C]: {
     component: key;
     entity: Entity | number;
-    value: ComponentValue<SchemaOf<C[key]>>;
+    value: ComponentValue<SchemaOf<C[key]>> | undefined;
   } & E;
 }>;
 

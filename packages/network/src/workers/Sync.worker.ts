@@ -126,6 +126,16 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
             return;
           }
 
+          if (event.eventKey === "ComponentValueRemoved") {
+            return {
+              component: clientComponentKey,
+              value: undefined,
+              entity: BigNumber.from(entity).toHexString(),
+              lastEventInTx: event.lastEventInTx,
+              txHash: event.txHash,
+            };
+          }
+
           // Create decoder and cache for later
           if (!this.decoders[contractComponentId]) {
             const [resolve, , promise] = deferred<(data: string) => unknown>();
