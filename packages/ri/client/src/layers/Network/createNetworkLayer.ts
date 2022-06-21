@@ -105,7 +105,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
 
   async function moveEntity(entity: Entity, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition, { gasLimit: 250000 });
+    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition, { gasLimit: 400000 });
   }
 
   // Constants (load from contract later)

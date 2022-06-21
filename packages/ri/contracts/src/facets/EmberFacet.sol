@@ -17,6 +17,7 @@ import { LibPersona } from "../libraries/LibPersona.sol";
 import { manhattan, getEntityAt, getEntityWithAt } from "../utils/utils.sol";
 import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
 import { LibQuery } from "solecs/LibQuery.sol";
+import { LibECS } from "../libraries/LibECS.sol";
 
 contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
@@ -77,7 +78,9 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     }
   }
 
-  function moveEntity(uint256 entity, Coord calldata targetPosition) external {
+  function moveEntity(uint256 entity, Coord calldata targetPosition) external populateCallerEntityID {
+    require(LibECS.doesCallerEntityIDOwnEntity(entity), "You don't own this entity");
+
     MovableComponent movableComponent = MovableComponent(s.world.getComponent(MovableComponentID));
     require(movableComponent.has(entity), "trying to move non-moving entity");
 
