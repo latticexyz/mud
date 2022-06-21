@@ -73,7 +73,7 @@ export type Mappings<C extends Components> = {
 export type NetworkComponentUpdate<C extends Components> = {
   [key in keyof C]: {
     component: key;
-    value: ComponentValue<SchemaOf<C[key]>>;
+    value: ComponentValue<SchemaOf<C[key]>> | undefined;
   };
 }[keyof C] & {
   entity: string;

@@ -225,6 +225,24 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
           // Decode the event
           const contractComponentId = BigNumber.from(componentId).toHexString();
+
+          // Handle ComponentValueRemoved event
+          if (event.eventKey === "ComponentValueRemoved") {
+            const clientComponentKey = this.config.get().mappings[contractComponentId];
+            if (!clientComponentKey) {
+              console.warn("Received unknown component update from", address);
+              return;
+            }
+            return {
+              component: clientComponentKey,
+              value: undefined,
+              entity: BigNumber.from(entity).toHexString(),
+              lastEventInTx: event.lastEventInTx,
+              txHash: event.txHash,
+            };
+          }
+
+          // Handle ComponentValueSet event
           const decoded = await this.decode(providers.get().json, data, contractComponentId, address);
           if (!decoded) return; // There might not be a decoded value if the component id is unknown
 
