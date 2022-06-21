@@ -78,6 +78,10 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     }
   }
 
+  function garbage() external returns (bool) {
+    return false;
+  }
+
   function moveEntity(uint256 entity, Coord calldata targetPosition) external populateCallerEntityID {
     require(LibECS.doesCallerEntityIDOwnEntity(entity), "You don't own this entity");
 

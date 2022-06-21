@@ -17,7 +17,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   console.log(blue("Deploying Diamond"));
 
-  await diamond.deploy("Diamond", {
+  const { newlyDeployed } = await diamond.deploy("Diamond", {
     from: deployer,
     owner: deployer,
     facets: ["EmberFacet", "InitializeFacet", "CastSpellFacet"],
@@ -55,14 +55,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [],
     deterministicDeployment: "0xAAAAFFFF",
   });
-  console.log(blue("Local Lattice game linked"));
   const localLatticeGameLocator = (await hre.ethers.getContract(
     "LocalLatticeGameLocator",
     deployer
   )) as LocalLatticeGameLocator;
-  const tx = await localLatticeGameLocator.setLocalLatticeGameAddress(ember.address);
-  await tx.wait();
   console.log(green("LocalLatticeGameLocator: " + localLatticeGameLocator.address));
+
+  if (newlyDeployed) {
+    const tx = await localLatticeGameLocator.setLocalLatticeGameAddress(ember.address);
+    await tx.wait();
+    console.log(blue("Local Lattice game linked"));
+  }
 };
 export default func;
 func.tags = ["Diamond"];
