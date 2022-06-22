@@ -1,4 +1,4 @@
-import { World, defineComponent } from "@latticexyz/recs";
+import { World, defineComponent, Type } from "@latticexyz/recs";
 export function defineSelectedComponent(world: World) {
-  return defineComponent(world, {}, { name: "Selected" });
+  return defineComponent(world, { value: Type.Boolean }, { id: "Selected" });
 }

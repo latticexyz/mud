@@ -4,13 +4,7 @@ import { World as WorldContract } from "ri-contracts/types/ethers-contracts/Worl
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import WorldAbi from "ri-contracts/abi/World.json";
 import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
-import { Components, ExtendableECSEvent } from "@latticexyz/recs";
 import { computed } from "mobx";
-
-export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
-  C,
-  { lastEventInTx: boolean; txHash: string; entity: string }
->;
 
 const config: Parameters<typeof createNetwork>[0] = {
   clock: {

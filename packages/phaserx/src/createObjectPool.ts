@@ -23,9 +23,10 @@ export function createObjectPool(scene: Phaser.Scene) {
   const cameraFilter = { current: 0 };
 
   function get<Type extends keyof GameObjectTypes | "Existing">(
-    entity: string,
+    entity: number | string,
     type: Type
   ): ObjectPoolReturnType<typeof type> {
+    if (typeof entity === "number") entity = String(entity);
     let embodiedEntity = objects.get(entity);
     if (!isGameObjectType(type)) {
       if (!embodiedEntity) return undefined as ObjectPoolReturnType<typeof type>;
@@ -47,7 +48,8 @@ export function createObjectPool(scene: Phaser.Scene) {
     return embodiedEntity as ObjectPoolReturnType<typeof type>;
   }
 
-  function remove(entity: string) {
+  function remove(entity: number | string) {
+    if (typeof entity === "number") entity = String(entity);
     const object = objects.get(entity);
     if (object) object.despawn();
     objects.delete(entity);

@@ -1,6 +1,15 @@
 import React, { useState } from "react";
-import { Layers, removeComponent, setComponent, Type } from "@latticexyz/recs";
-import { AnyComponent, Component, Entity, Schema } from "@latticexyz/recs/src/types";
+import {
+  Layers,
+  removeComponent,
+  setComponent,
+  Type,
+  AnyComponent,
+  Component,
+  Entity,
+  Schema,
+  World,
+} from "@latticexyz/recs";
 import { observer } from "mobx-react-lite";
 import { Collapse } from "react-collapse";
 import { ComponentBrowserButton, EntityEditorContainer } from "./StyledComponents";
@@ -14,12 +23,14 @@ export const EntityEditor = observer(
     layers,
     setContractComponentValue,
     devHighlightComponent,
+    world,
   }: {
     entity: Entity;
     components: Set<AnyComponent>;
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
     devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
+    world: World;
   }) => {
     const [opened, setOpened] = useState(false);
 
@@ -36,7 +47,7 @@ export const EntityEditor = observer(
         }}
       >
         <div onClick={() => setOpened(!opened)} style={{ cursor: "pointer" }}>
-          <h3 style={{ color: "white" }}>{entity}</h3>
+          <h3 style={{ color: "white" }}>{world.entities[entity]}</h3>
           <ComponentBrowserButton onClick={() => setOpened(!opened)}>
             {opened ? <>&#9660;</> : <>&#9654;</>}
           </ComponentBrowserButton>

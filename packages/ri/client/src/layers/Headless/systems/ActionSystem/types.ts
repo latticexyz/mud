@@ -34,4 +34,7 @@ export interface ActionRequest<C extends Components, T> {
   execute: (data: T) => Promise<{ txHashes: string[] }> | Promise<void> | void;
 }
 
-export type ActionData = ActionRequest<Components, unknown> & { componentsWithPendingUpdates: Components };
+export type ActionData = ActionRequest<Components, unknown> & {
+  componentsWithPendingUpdates: Components;
+  entityIndex: number;
+};

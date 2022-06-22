@@ -1,6 +1,4 @@
-import { getComponentValueStrict } from "@latticexyz/recs";
-import { Has, HasValue } from "@latticexyz/recs";
-import { defineSyncSystem } from "@latticexyz/recs";
+import { getComponentValueStrict, Has, HasValue, defineSyncSystem } from "@latticexyz/recs";
 import { LocalLayer } from "../../types";
 import { EntityTypes } from "../../../Network/types";
 
@@ -23,7 +21,7 @@ export function createSyncSystem(layer: LocalLayer) {
     world,
     [HasValue(EntityType, { entityType: EntityTypes.Creature })],
     () => Strolling,
-    () => ({})
+    () => ({ value: true })
   );
 
   // Add LocalPosition to entities with Position of type Creature
@@ -50,6 +48,6 @@ export function createSyncSystem(layer: LocalLayer) {
     world,
     [HasValue(EntityType, { entityType: EntityTypes.Creature })],
     () => Selectable,
-    () => ({})
+    () => ({ value: true })
   );
 }

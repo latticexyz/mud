@@ -1,6 +1,6 @@
 import { reaction } from "mobx";
-import { setEquals, setMapEquals } from "../../src/Utils/Equals";
-import { SuperSetMap } from "../../src/Utils/SuperSetMap";
+import { setEquals, setMapEquals } from "../../src/v1/Utils/Equals";
+import { SuperSetMap } from "../../src/v1/Utils/SuperSetMap";
 
 describe("SuperSetMap", () => {
   let parent: SuperSetMap<string, number>;

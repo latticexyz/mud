@@ -1,9 +1,9 @@
 import { Subject } from "rxjs";
-import { defineComponent, setComponent } from "../../src/v2/Component";
-import { Type } from "../../src/v2/constants";
-import { createEntity } from "../../src/v2/Entity";
-import { World, AnyComponent, Entity } from "../../src/v2/types";
-import { createWorld, getEntityComponents } from "../../src/v2/World";
+import { defineComponent, setComponent } from "../../src/Component";
+import { Type } from "../../src/constants";
+import { createEntity } from "../../src/Entity";
+import { World, AnyComponent, Entity } from "../../src/types";
+import { createWorld, getEntityComponents } from "../../src/World";
 
 describe("World", () => {
   describe("createWorld", () => {

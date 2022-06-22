@@ -2,15 +2,17 @@ import { IComputedValue } from "mobx";
 import { ValueOf } from "@latticexyz/utils";
 import { Subject } from "rxjs";
 import { Type } from "./constants";
+import { SuperSet, SuperSetMap } from "./Utils";
 
-export type Entity = number;
+export type Unpacked<T> = T extends (infer U)[] ? U : never;
+
+export type Entity = string;
 
 export type Schema = {
   [key: string]: Type;
 };
 
 export type ValueType = {
-  [Type.Boolean]: boolean;
   [Type.Number]: number;
   [Type.String]: string;
   [Type.NumberArray]: number[];
@@ -25,22 +27,18 @@ export type ValueType = {
   [Type.OptionalEntityArray]: Entity[] | null;
 };
 
-export type ComponentValue<S extends Schema = Schema> = {
-  [key in keyof S]: ValueType[S[key]];
+export type ComponentValue<T extends Schema> = {
+  [key in keyof T]: ValueType[T[key]];
 };
 
-export type ComponentUpdate<S extends Schema = Schema> = {
-  entity: Entity;
-  value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
-  component: Component;
-};
-
-export interface Component<S extends Schema = Schema> {
+export interface Component<T extends Schema, S = Record<string, unknown>> {
   id: string;
-  values: { [key in keyof S]: Map<Entity, ValueType[S[key]]> };
-  schema: Schema;
+  values: { [key in keyof T]: Map<Entity, ValueType[T[key]]> };
+  entities: Set<Entity>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  update$: Subject<ComponentUpdate<S>> & { observers: any };
+  stream$: Subject<any>;
+  schema: Schema;
+  metadata: S;
 }
 
 export type Components = {
@@ -58,13 +56,13 @@ export type AnyComponentValue = ComponentValue<Schema>;
 export type AnyComponent = Component<Schema>;
 
 export type World = {
+  entities: SuperSetMap<Entity, AnyComponent>;
+  components: SuperSet<AnyComponent>;
+  registerComponent: <T extends AnyComponent>(component: T) => T;
   registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
-  registerComponent: (component: Component) => void;
-  components: Component[];
-  entities: string[];
-  entityToIndex: Map<string, number>;
-  dispose: () => void;
+  getEntityComponents: (entity: Entity) => Set<AnyComponent>;
   registerDisposer: (disposer: () => void) => void;
+  disposeAll: () => void;
 };
 
 export type Query = IComputedValue<Set<Entity>>;
@@ -112,7 +110,7 @@ export type ProxyExpandQueryFragment = {
   depth: number;
 };
 
-export type QueryFragment<T extends Schema = Schema> =
+export type QueryFragment<T extends Schema> =
   | HasQueryFragment<T>
   | HasValueQueryFragment<T>
   | NotQueryFragment<T>
@@ -120,7 +118,7 @@ export type QueryFragment<T extends Schema = Schema> =
   | ProxyReadQueryFragment
   | ProxyExpandQueryFragment;
 
-export type EntityQueryFragment<T extends Schema = Schema> =
+export type EntityQueryFragment<T extends Schema> =
   | HasQueryFragment<T>
   | HasValueQueryFragment<T>
   | NotQueryFragment<T>
@@ -147,7 +145,7 @@ export type Override<T extends Schema> = {
   value: ComponentValue<T>;
 };
 
-export type OverridableComponent<T extends Schema = Schema> = Component<T> & {
+export type OverridableComponent<T extends Schema> = Component<T> & {
   addOverride: (id: string, update: Override<T>) => void;
   removeOverride: (id: string) => void;
 };

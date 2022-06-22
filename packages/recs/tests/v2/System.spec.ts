@@ -1,10 +1,10 @@
-import { defineComponent, removeComponent, setComponent, withValue } from "../../src/v2/Component";
-import { Type, UpdateType } from "../../src/v2/constants";
-import { createEntity } from "../../src/v2/Entity";
-import { Has } from "../../src/v2/Query";
-import { defineEnterSystem, defineExitSystem, defineSystem, defineUpdateSystem } from "../../src/v2/System";
-import { Component, Entity, World } from "../../src/v2/types";
-import { createWorld } from "../../src/v2/World";
+import { defineComponent, removeComponent, setComponent, withValue } from "../../src/Component";
+import { Type, UpdateType } from "../../src/constants";
+import { createEntity } from "../../src/Entity";
+import { Has } from "../../src/Query";
+import { defineEnterSystem, defineExitSystem, defineSystem, defineUpdateSystem } from "../../src/System";
+import { Component, Entity, World } from "../../src/types";
+import { createWorld } from "../../src/World";
 
 describe("System", () => {
   let world: World;

@@ -24,16 +24,14 @@ describe("Path System", () => {
         }, 1))
     );
 
-    network = await createNetworkLayer({ skipContracts: true });
+    network = await createNetworkLayer();
     headless = await createHeadlessLayer(network);
     local = await createLocalLayer(headless);
   });
 
   afterEach(() => {
     clearInterval(interval);
-    network.world.disposeAll();
-    headless.world.disposeAll();
-    local.world.disposeAll();
+    network.world.dispose();
   });
 
   it("should set entities LocalPosition according to the path defined in their Path component", async () => {

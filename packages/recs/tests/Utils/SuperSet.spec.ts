@@ -1,5 +1,5 @@
 import { reaction } from "mobx";
-import { SuperSet } from "../../src/Utils";
+import { SuperSet } from "../../src/v1/Utils";
 
 describe("SuperSet", () => {
   let parent: SuperSet<number>;

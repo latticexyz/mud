@@ -1,11 +1,11 @@
 import { observe, reaction } from "mobx";
 import { Subject } from "rxjs";
-import { defineComponent, setComponent, withValue } from "../src/Component";
-import { Type } from "../src/constants";
-import { createEntity } from "../src/Entity";
-import { World, AnyComponent, Entity } from "../src/types";
-import { setEquals } from "../src/Utils/Equals";
-import { createWorld, extendWorld, getEntityComponents } from "../src/World";
+import { defineComponent, setComponent, withValue } from "../../src/v1/Component";
+import { Type } from "../../src/v1/constants";
+import { createEntity } from "../../src/v1/Entity";
+import { World, AnyComponent, Entity } from "../../src/v1/types";
+import { setEquals } from "../../src/v1/Utils/Equals";
+import { createWorld, extendWorld, getEntityComponents } from "../../src/v1/World";
 
 describe("World", () => {
   describe("createWorld", () => {

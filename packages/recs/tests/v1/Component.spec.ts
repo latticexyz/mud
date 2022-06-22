@@ -10,12 +10,12 @@ import {
   getEntitiesWithValue,
   cloneComponent,
   overridableComponent,
-} from "../src/Component";
-import { Type } from "../src/constants";
-import { createEntity } from "../src/Entity";
-import { AnyComponent, Entity, World } from "../src/types";
-import { setEquals } from "../src/Utils/Equals";
-import { createWorld } from "../src/World";
+} from "../../src/v1/Component";
+import { Type } from "../../src/v1/constants";
+import { createEntity } from "../../src/v1/Entity";
+import { AnyComponent, Entity, World } from "../../src/v1/types";
+import { setEquals } from "../../src/v1/Utils/Equals";
+import { createWorld } from "../../src/v1/World";
 
 describe("Component", () => {
   let world: World;

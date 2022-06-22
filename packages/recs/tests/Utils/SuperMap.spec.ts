@@ -1,5 +1,5 @@
 import { reaction } from "mobx";
-import { SuperMap } from "../../src/Utils";
+import { SuperMap } from "../../src/v1/Utils";
 
 describe("SuperMap", () => {
   let parent: SuperMap<string, number>;

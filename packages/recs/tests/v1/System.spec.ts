@@ -1,10 +1,10 @@
-import { defineComponent, getComponentValue, removeComponent, setComponent, withValue } from "../src/Component";
-import { Type } from "../src/constants";
-import { createEntity } from "../src/Entity";
-import { Has, defineQuery, defineEnterQuery, defineExitQuery, defineUpdateQuery } from "../src/Query";
-import { defineAutorunSystem, defineSystem } from "../src/System";
-import { Component, Entity, World } from "../src/types";
-import { createWorld } from "../src/World";
+import { defineComponent, getComponentValue, removeComponent, setComponent, withValue } from "../../src/v1/Component";
+import { Type } from "../../src/v1/constants";
+import { createEntity } from "../../src/v1/Entity";
+import { Has, defineQuery, defineEnterQuery, defineExitQuery, defineUpdateQuery } from "../../src/v1/Query";
+import { defineAutorunSystem, defineSystem } from "../../src/v1/System";
+import { Component, Entity, World } from "../../src/v1/types";
+import { createWorld } from "../../src/v1/World";
 
 describe("System", () => {
   let world: World;

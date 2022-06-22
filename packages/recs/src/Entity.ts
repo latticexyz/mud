@@ -1,26 +1,18 @@
-import { getEntityComponents } from "./World";
-import { setComponent, removeComponent } from "./Component";
-import { ComponentWithValue, Entity, Schema, Unpacked, World } from "./types";
+import { setComponent } from "./Component";
+import { Component, ComponentValue, Entity, World } from "./types";
 
-export function createEntity<Cs extends Schema[]>(
+export function createEntity(
   world: World,
-  components?: ComponentWithValue<Unpacked<Cs>>[],
+  components?: [Component, ComponentValue][],
   options?: { id?: string; idSuffix?: string }
 ): Entity {
   const entity = world.registerEntity(options ?? {});
 
   if (components) {
-    for (const { component, value } of components) {
+    for (const [component, value] of components) {
       setComponent(component, entity, value);
     }
   }
 
   return entity;
-}
-
-export function removeEntity(world: World, entity: Entity) {
-  const components = getEntityComponents(world, entity);
-  for (const component of components) {
-    removeComponent(component, entity);
-  }
 }

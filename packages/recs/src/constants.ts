@@ -1,4 +1,5 @@
 export enum Type {
+  Boolean,
   Number,
   OptionalNumber,
   String,
@@ -11,4 +12,11 @@ export enum Type {
   OptionalEntity,
   EntityArray,
   OptionalEntityArray,
+}
+
+export enum UpdateType {
+  Enter,
+  Exit,
+  Update,
+  Noop,
 }

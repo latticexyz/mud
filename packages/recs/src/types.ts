@@ -1,18 +1,21 @@
 import { IComputedValue } from "mobx";
-import { ValueOf } from "@latticexyz/utils";
 import { Subject } from "rxjs";
 import { Type } from "./constants";
-import { SuperSet, SuperSetMap } from "./Utils";
 
-export type Unpacked<T> = T extends (infer U)[] ? U : never;
-
-export type Entity = string;
+export type Entity = number;
 
 export type Schema = {
   [key: string]: Type;
 };
 
+export type Metadata =
+  | {
+      [key: string]: unknown;
+    }
+  | undefined;
+
 export type ValueType = {
+  [Type.Boolean]: boolean;
   [Type.Number]: number;
   [Type.String]: string;
   [Type.NumberArray]: number[];
@@ -27,18 +30,23 @@ export type ValueType = {
   [Type.OptionalEntityArray]: Entity[] | null;
 };
 
-export type ComponentValue<T extends Schema> = {
-  [key in keyof T]: ValueType[T[key]];
+export type ComponentValue<S extends Schema = Schema> = {
+  [key in keyof S]: ValueType[S[key]];
 };
 
-export interface Component<T extends Schema, S = Record<string, unknown>> {
+export type ComponentUpdate<S extends Schema = Schema> = {
+  entity: Entity;
+  value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
+  component: Component<S>;
+};
+
+export interface Component<S extends Schema = Schema, M extends Metadata = Metadata> {
   id: string;
-  values: { [key in keyof T]: Map<Entity, ValueType[T[key]]> };
-  entities: Set<Entity>;
+  values: { [key in keyof S]: Map<Entity, ValueType[S[key]]> };
+  schema: S;
+  metadata: M;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  stream$: Subject<any>;
-  schema: Schema;
-  metadata: S;
+  update$: Subject<ComponentUpdate<S>> & { observers: any };
 }
 
 export type Components = {
@@ -56,13 +64,15 @@ export type AnyComponentValue = ComponentValue<Schema>;
 export type AnyComponent = Component<Schema>;
 
 export type World = {
-  entities: SuperSetMap<Entity, AnyComponent>;
-  components: SuperSet<AnyComponent>;
-  registerComponent: <T extends AnyComponent>(component: T) => T;
   registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
-  getEntityComponents: (entity: Entity) => Set<AnyComponent>;
+  registerComponent: (component: Component) => void;
+  components: Component[];
+  entities: string[];
+  entityToIndex: Map<string, number>;
+  getEntityIndexStrict: (entity: string) => number;
+  dispose: () => void;
   registerDisposer: (disposer: () => void) => void;
-  disposeAll: () => void;
+  hasEntity: (entity: string) => boolean;
 };
 
 export type Query = IComputedValue<Set<Entity>>;
@@ -110,7 +120,7 @@ export type ProxyExpandQueryFragment = {
   depth: number;
 };
 
-export type QueryFragment<T extends Schema> =
+export type QueryFragment<T extends Schema = Schema> =
   | HasQueryFragment<T>
   | HasValueQueryFragment<T>
   | NotQueryFragment<T>
@@ -118,7 +128,7 @@ export type QueryFragment<T extends Schema> =
   | ProxyReadQueryFragment
   | ProxyExpandQueryFragment;
 
-export type EntityQueryFragment<T extends Schema> =
+export type EntityQueryFragment<T extends Schema = Schema> =
   | HasQueryFragment<T>
   | HasValueQueryFragment<T>
   | NotQueryFragment<T>
@@ -130,22 +140,12 @@ export type QueryFragments = QueryFragment<Schema>[];
 
 export type SchemaOf<C extends Component<Schema>> = C extends Component<infer S> ? S : never;
 
-export type ExtendableECSEvent<C extends Components, E> = ValueOf<{
-  [key in keyof C]: {
-    component: key;
-    entity: Entity | number;
-    value: ComponentValue<SchemaOf<C[key]>>;
-  } & E;
-}>;
-
-export type ECSEvent<C extends Components> = ExtendableECSEvent<C, unknown>;
-
 export type Override<T extends Schema> = {
   entity: Entity;
   value: ComponentValue<T>;
 };
 
-export type OverridableComponent<T extends Schema> = Component<T> & {
+export type OverridableComponent<T extends Schema = Schema> = Component<T> & {
   addOverride: (id: string, update: Override<T>) => void;
   removeOverride: (id: string) => void;
 };
@@ -197,3 +197,10 @@ export type EntityType = Type.Entity | Type.OptionalEntity;
 export function isEntityType(t: Type): t is EntityType {
   return [Type.Entity, Type.OptionalEntity].includes(t);
 }
+
+export type Layer = {
+  world: World;
+  components: Record<string, Component<Schema>>;
+};
+
+export type Layers = Record<string, Layer>;

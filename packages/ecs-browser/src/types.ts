@@ -10,5 +10,5 @@ export type SetContractComponentFunction<T extends Schema> = (
 export type AnyComponentWithContract = Component<Schema, { contractId: string }>;
 
 export function hasContract(component: AnyComponent): component is AnyComponentWithContract {
-  return component.metadata.contractId !== undefined;
+  return component.metadata?.contractId !== undefined;
 }

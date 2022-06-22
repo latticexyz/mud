@@ -1,6 +1,6 @@
-import { defineComponent, removeComponent, setComponent, withValue } from "../../src/v2/Component";
-import { UpdateType, Type } from "../../src/v2/constants";
-import { createEntity } from "../../src/v2/Entity";
+import { defineComponent, removeComponent, setComponent, withValue } from "../../src/Component";
+import { UpdateType, Type } from "../../src/constants";
+import { createEntity } from "../../src/Entity";
 import {
   Has,
   Not,
@@ -13,9 +13,9 @@ import {
   ProxyRead,
   ProxyExpand,
   runQuery,
-} from "../../src/v2/Query";
-import { Component, World } from "../../src/v2/types";
-import { createWorld } from "../../src/v2/World";
+} from "../../src/Query";
+import { Component, World } from "../../src/types";
+import { createWorld } from "../../src/World";
 
 describe("Query", () => {
   let world: World;

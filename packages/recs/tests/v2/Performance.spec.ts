@@ -1,19 +1,15 @@
-import { defineComponent, setComponent, withValue } from "../../src/Component";
-import {
-  defineComponent as defineComponentV2,
-  withValue as withValueV2,
-  setComponent as setComponentV2,
-} from "../../src/v2/Component";
-import { createWorld } from "../../src/World";
-import { createWorld as createWorldV2 } from "../../src/v2/World";
-import { createEntity } from "../../src/Entity";
-import { createEntity as createEntityV2 } from "../../src/v2/Entity";
-import { Type } from "../../src/constants";
-import { Type as TypeV2 } from "../../src/v2/constants";
-import { defineUpdateQuery, Has } from "../../src/Query";
-import { defineQuery as defineQueryV2, Has as HasV2, HasValue as HasValueV2 } from "../../src/v2/Query";
-import { defineReactionSystem } from "../../src/System";
-import { defineSystem } from "../../src/v2/System";
+import { defineComponent, withValue } from "../../src/v1/Component";
+import { defineComponent as defineComponentV2, setComponent as setComponentV2 } from "../../src/Component";
+import { createWorld } from "../../src/v1/World";
+import { createWorld as createWorldV2 } from "../../src/World";
+import { createEntity } from "../../src/v1/Entity";
+import { createEntity as createEntityV2 } from "../../src/Entity";
+import { Type } from "../../src/v1/constants";
+import { Type as TypeV2 } from "../../src/constants";
+import { defineUpdateQuery, Has } from "../../src/v1/Query";
+import { defineQuery as defineQueryV2, Has as HasV2, HasValue as HasValueV2 } from "../../src/Query";
+import { defineReactionSystem } from "../../src/v1/System";
+import { defineSystem } from "../../src/System";
 
 export function timeIt(fn: () => unknown) {
   const start = Date.now();

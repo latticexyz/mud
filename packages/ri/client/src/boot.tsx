@@ -55,7 +55,7 @@ async function bootLayers() {
   }
 
   function disposeLayer(layer: keyof typeof layers) {
-    layers[layer]?.world.disposeAll();
+    layers[layer]?.world.dispose();
     layers[layer] = undefined;
   }
 

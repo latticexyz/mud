@@ -1,5 +1,5 @@
 import { Result } from "@ethersproject/abi";
-import { Components, ExtendableECSEvent } from "@latticexyz/recs";
+import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
 import { Cached } from "@latticexyz/utils";
 import { BaseContract, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
@@ -69,10 +69,16 @@ export type Mappings<C extends Components> = {
   [hashedContractId: string]: keyof C;
 };
 
-export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
-  C,
-  { lastEventInTx: boolean; txHash: string; entity: string }
->;
+export type NetworkComponentUpdate<C extends Components> = {
+  [key in keyof C]: {
+    component: key;
+    value: ComponentValue<SchemaOf<C[key]>>;
+  };
+}[keyof C] & {
+  entity: string;
+  lastEventInTx: boolean;
+  txHash: string;
+};
 
 export enum ContractSchemaValue {
   BOOL,

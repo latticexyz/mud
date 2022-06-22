@@ -1,51 +1,29 @@
 import { uuid } from "@latticexyz/utils";
-import { runInAction, keys, toJS, isObservable, observable, action } from "mobx";
-import { Subject } from "rxjs";
-import {
-  AnyComponent,
-  AnyComponentValue,
-  Component,
-  ComponentValue,
-  ComponentWithStream,
-  ComponentWithValue,
-  Entity,
-  OverridableComponent,
-  Override,
-  Schema,
-  ValueType,
-  World,
-} from "./types";
+import { mapObject } from "@latticexyz/utils";
+import { filter, Subject } from "rxjs";
+import { Component, ComponentValue, Entity, Metadata, OverridableComponent, Override, Schema, World } from "./types";
 
-export function defineComponent<T extends Schema, S = Record<string, unknown>>(
+export function defineComponent<S extends Schema, M extends Metadata>(
   world: World,
-  schema: T,
-  options?: { name?: string; metadata?: S }
-): Component<T, S> {
-  const component: AnyComponent = {
-    id: options?.name || uuid(),
-    values: {},
-    entities: new Set<Entity>(),
-    stream$: new Subject(),
-    schema,
-    metadata: options?.metadata ?? {},
-  };
-
-  for (const [key, val] of Object.entries(schema)) {
-    component.values[key] = new Map<Entity, ValueType[typeof val]>();
-  }
-
-  return world.registerComponent(component) as unknown as Component<T, S>;
+  schema: S,
+  options?: { id?: string; metadata?: M }
+) {
+  if (Object.keys(schema).length === 0) throw new Error("Component schema must have at least one key");
+  const id = options?.id ?? uuid();
+  const values = mapObject(schema, () => new Map());
+  const update$ = new Subject();
+  const metadata = options?.metadata;
+  const component = { values, schema, id, update$, metadata } as Component<S, M>;
+  world.registerComponent(component);
+  return component;
 }
 
-export function setComponent<T extends Schema>(component: Component<T>, entity: Entity, value: ComponentValue<T>) {
-  runInAction(() => {
-    for (const [key, val] of Object.entries(value)) {
-      component.values[key]?.set(entity, val);
-    }
-
-    component.entities.add(entity);
-  });
-  (component as ComponentWithStream<T>).stream$.next({ entity, value });
+export function setComponent<S extends Schema>(component: Component<S>, entity: Entity, value: ComponentValue<S>) {
+  const prevValue = getComponentValue(component, entity);
+  for (const [key, val] of Object.entries(value)) {
+    component.values[key].set(entity, val);
+  }
+  component.update$.next({ entity, value: [value, prevValue], component });
 }
 
 export function updateComponent<T extends Schema>(
@@ -57,47 +35,38 @@ export function updateComponent<T extends Schema>(
   setComponent(component, entity, { ...currentValue, ...value });
 }
 
-export function removeComponent<T extends Schema>(component: Component<T>, entity: Entity) {
-  runInAction(() => {
-    for (const key of Object.keys(component.values)) {
-      component.values[key].delete(entity);
-    }
-
-    component.entities.delete(entity);
-  });
-  (component as ComponentWithStream<T>).stream$.next({ entity, value: undefined });
+export function removeComponent(component: Component, entity: Entity) {
+  const prevValue = getComponentValue(component, entity);
+  for (const key of Object.keys(component.values)) {
+    component.values[key].delete(entity);
+  }
+  component.update$.next({ entity, value: [undefined, prevValue], component });
 }
 
 export function hasComponent<T extends Schema>(component: Component<T>, entity: Entity): boolean {
-  return component.entities.has(entity);
+  return Object.values(component.values)[0].has(entity);
 }
 
-export function getComponentValue<T extends Schema>(
-  component: Component<T>,
+export function getComponentValue<S extends Schema>(
+  component: Component<S>,
   entity: Entity
-): ComponentValue<T> | undefined {
-  const value: AnyComponentValue = {};
+): ComponentValue<S> | undefined {
+  const value: Record<string, unknown> = {};
 
   // Get the value of each schema key
-  const schemaKeys = isObservable(component.values) ? keys(component.values) : Object.keys(component.values);
+  const schemaKeys = Object.keys(component.schema);
   for (const key of schemaKeys) {
-    const val = component.values[key as string].get(entity);
+    const val = component.values[key].get(entity);
     if (val === undefined) return undefined;
-    value[key as string] = val;
+    value[key] = val;
   }
 
-  // If the schema has no keys, return undefined instead of {}
-  if (schemaKeys.length === 0 && !component.entities.has(entity)) return undefined;
-
-  return value as ComponentValue<T>;
+  return value as ComponentValue<S>;
 }
 
 export function getComponentValueStrict<T extends Schema>(component: Component<T>, entity: Entity): ComponentValue<T> {
   const value = getComponentValue(component, entity);
-  if (!value) {
-    console.warn("No component value for this entity", toJS(component), entity);
-    throw new Error("No component value for this entity");
-  }
+  if (!value) throw new Error("No component value for this entity");
   return value;
 }
 
@@ -113,17 +82,20 @@ export function componentValueEquals<T extends Schema>(a?: Partial<ComponentValu
   return equals;
 }
 
-export function withValue<T extends Schema>(component: Component<T>, value: ComponentValue<T>): ComponentWithValue<T> {
-  return { component, value };
+export function withValue<S extends Schema>(
+  component: Component<S>,
+  value: ComponentValue<S>
+): [Component<S>, ComponentValue<S>] {
+  return [component, value];
 }
 
+// TODO: Trivial implementation, needs to be more efficient for performant HasValue queries
 export function getEntitiesWithValue<T extends Schema>(
   component: Component<T>,
   value: Partial<ComponentValue<T>>
 ): Set<Entity> {
-  // Trivial implementation, needs to be more efficient
   const entities = new Set<Entity>();
-  for (const entity of component.entities) {
+  for (const entity of getComponentEntities(component)) {
     const val = getComponentValue(component, entity);
     if (componentValueEquals(value, val)) {
       entities.add(entity);
@@ -132,29 +104,8 @@ export function getEntitiesWithValue<T extends Schema>(
   return entities;
 }
 
-/**
- * Returns a copy of the component at the current state.
- * Note: the cloned component will be disconnected from the original world and won't be updated if the original component changes.
- * @param component
- * @returns
- */
-export function cloneComponent<T extends Schema>(component: Component<T>): Component<T> {
-  const clonedComponent: AnyComponent = {
-    id: `${component.id}-copy`,
-    values: {},
-    entities: new Set<Entity>(...component.entities),
-    stream$: new Subject(),
-    schema: {},
-    metadata: {},
-  };
-
-  for (const key of Object.keys(component.values)) {
-    const value = component.values[key];
-    const entries = [...value.entries()];
-    clonedComponent.values[key] = new Map(entries) as typeof value;
-  }
-
-  return clonedComponent as Component<T>;
+export function getComponentEntities(component: Component): IterableIterator<Entity> {
+  return Object.values(component.values)[0].keys();
 }
 
 /**
@@ -163,25 +114,36 @@ export function cloneComponent<T extends Schema>(component: Component<T>): Compo
  * @param component source component
  * @returns overridable component
  */
-export function overridableComponent<T extends Schema>(component: Component<T>): OverridableComponent<T> {
+export function overridableComponent<S extends Schema>(component: Component<S>): OverridableComponent<S> {
   let nonce = 0;
-  const overrides = new Map<string, { update: Override<T>; nonce: number }>();
 
-  // Store overridden entity values in an observable map,
-  // so that observers of this components get triggered when a
-  // specific component values changes.
-  const overriddenEntityValues = observable(new Map<Entity, ComponentValue<T>>());
+  // Map from OverrideId to Override (to be able to add multiple overrides to the same Entity)
+  const overrides = new Map<string, { update: Override<S>; nonce: number }>();
 
-  const addOverride = action((id: string, update: Override<T>) => {
+  // Map from EntityId to current overridden component value
+  const overriddenEntityValues = new Map<Entity, ComponentValue<S>>();
+
+  // Update event stream that takes into account overridden entity values
+  const update$ = new Subject<{
+    entity: Entity;
+    value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
+    component: Component;
+  }>();
+  // Channel through update events from the original component if there are no overrides
+  component.update$.pipe(filter((e) => !overriddenEntityValues.get(e.entity))).subscribe(update$);
+
+  // Add a new override to some entity
+  function addOverride(id: string, update: Override<S>) {
     overrides.set(id, { update, nonce: nonce++ });
-    overriddenEntityValues.set(update.entity, update.value);
-  });
+    setOverriddenComponentValue(update.entity, update.value);
+  }
 
-  const removeOverride = action((id: string) => {
+  // Remove an override from an entity
+  function removeOverride(id: string) {
     const affectedEntity = overrides.get(id)?.update.entity;
     overrides.delete(id);
 
-    if (!affectedEntity) return;
+    if (affectedEntity == null) return;
 
     // If there are more overries affecting this entity,
     // set the overriddenEntityValue to the last override
@@ -191,13 +153,19 @@ export function overridableComponent<T extends Schema>(component: Component<T>):
 
     if (relevantOverrides.length > 0) {
       const lastOverride = relevantOverrides[relevantOverrides.length - 1];
-      overriddenEntityValues.set(affectedEntity, lastOverride.update.value);
+      setOverriddenComponentValue(affectedEntity, lastOverride.update.value);
     } else {
-      overriddenEntityValues.delete(affectedEntity);
+      setOverriddenComponentValue(affectedEntity, undefined);
     }
-  });
+  }
 
-  const valueProxyHandler: (key: keyof T) => ProxyHandler<typeof component.values[typeof key]> = (key: keyof T) => ({
+  // Internal function to get the current overridden value or value of the source component
+  function getOverriddenComponentValue(entity: Entity) {
+    const overriddenValue = overriddenEntityValues.get(entity);
+    return overriddenValue ?? getComponentValue(component, entity);
+  }
+
+  const valueProxyHandler: (key: keyof S) => ProxyHandler<typeof component.values[typeof key]> = (key: keyof S) => ({
     get(target, prop) {
       // Intercept calls to component.value[key].get(entity)
       if (prop === "get") {
@@ -211,17 +179,18 @@ export function overridableComponent<T extends Schema>(component: Component<T>):
     },
   });
 
-  const partialValues: Partial<Component<T>["values"]> = {};
-  for (const key of keys(component.values) as (keyof T)[]) {
+  const partialValues: Partial<Component<S>["values"]> = {};
+  for (const key of Object.keys(component.values) as (keyof S)[]) {
     partialValues[key] = new Proxy(component.values[key], valueProxyHandler(key));
   }
-  const valuesProxy = partialValues as Component<T>["values"];
+  const valuesProxy = partialValues as Component<S>["values"];
 
-  return new Proxy(component, {
+  const overriddenComponent = new Proxy(component, {
     get(target, prop) {
       if (prop === "addOverride") return addOverride;
       if (prop === "removeOverride") return removeOverride;
       if (prop === "values") return valuesProxy;
+      if (prop === "update$") return update$;
 
       return Reflect.get(target, prop);
     },
@@ -229,5 +198,15 @@ export function overridableComponent<T extends Schema>(component: Component<T>):
       if (prop === "addOverride" || prop === "removeOverride") return true;
       return prop in target;
     },
-  }) as OverridableComponent<T>;
+  }) as OverridableComponent<S>;
+
+  // Internal function to set the current overridden component value and emit the update event
+  function setOverriddenComponentValue(entity: Entity, value?: ComponentValue<S>) {
+    const prevValue = getOverriddenComponentValue(entity);
+    if (value) overriddenEntityValues.set(entity, value);
+    else overriddenEntityValues.delete(entity);
+    update$.next({ entity, value: [getOverriddenComponentValue(entity), prevValue], component: overriddenComponent });
+  }
+
+  return overriddenComponent;
 }

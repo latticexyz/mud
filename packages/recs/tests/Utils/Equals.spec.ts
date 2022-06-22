@@ -1,6 +1,6 @@
-import { SuperSet } from "../../src/Utils";
-import { setEquals, setMapEquals } from "../../src/Utils/Equals";
-import { SuperSetMap } from "../../src/Utils/SuperSetMap";
+import { SuperSet } from "../../src/v1/Utils";
+import { setEquals, setMapEquals } from "../../src/v1/Utils/Equals";
+import { SuperSetMap } from "../../src/v1/Utils/SuperSetMap";
 
 describe("setEquals", () => {
   it("should return true for equal Sets", () => {

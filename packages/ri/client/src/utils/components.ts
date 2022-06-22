@@ -1,33 +1,33 @@
-import { Component, Schema, ComponentValue, getComponentValue, componentValueEquals } from "@latticexyz/recs";
+import { Component, Schema, ComponentValue, componentValueEquals, Entity } from "@latticexyz/recs";
 import { deferred } from "@latticexyz/utils";
-import { reaction } from "mobx";
+import { filter } from "rxjs";
 
-function waitForComponentValue<S extends Schema>(
+export function waitForComponentValueIn<S extends Schema>(
   component: Component<S>,
-  entity: string,
-  value: Partial<ComponentValue<S>>
-): { promise: Promise<void>; dispose: () => void } {
-  const [resolve, , promise] = deferred<void>();
-  let dispose = resolve;
-  dispose = reaction(
-    () => getComponentValue(component, entity),
-    (currentValue) => {
-      if (componentValueEquals(value, currentValue)) {
-        resolve();
-        dispose();
-      }
-    },
-    { fireImmediately: true }
-  );
-  return { promise, dispose };
-}
-
-export async function waitForComponentValueIn<S extends Schema>(
-  component: Component<S>,
-  entity: string,
+  entity: Entity,
   values: Partial<ComponentValue<S>>[]
 ): Promise<void> {
-  const disposablePromises = values.map((v) => waitForComponentValue(component, entity, v));
-  await Promise.any(disposablePromises.map((dp) => dp.promise));
-  disposablePromises.forEach((dp) => dp.dispose());
+  const [resolve, , promise] = deferred<void>();
+
+  let dispose = resolve;
+  const subscription = component.update$
+    .pipe(
+      filter((e) => e.entity === entity && Boolean(values.find((value) => componentValueEquals(value, e.value[0]))))
+    )
+    .subscribe(() => {
+      resolve();
+      dispose();
+    });
+
+  dispose = () => subscription?.unsubscribe();
+
+  return promise;
+}
+
+export async function waitForComponentValue<S extends Schema>(
+  component: Component<S>,
+  entity: Entity,
+  value: Partial<ComponentValue<S>>
+): Promise<void> {
+  await waitForComponentValueIn(component, entity, [value]);
 }

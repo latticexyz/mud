@@ -1,4 +1,4 @@
-import { createWorld, createEntity, setComponent, Entity, getComponentValue } from "@latticexyz/recs";
+import { createEntity, setComponent, Entity, getComponentValue } from "@latticexyz/recs";
 import { HeadlessLayer } from "../Headless";
 import {
   defineStrollingComponent,
@@ -29,7 +29,7 @@ import { createLocalMapSystem } from "./systems/LocalMapSystem";
  * Its purpose is to add components and systems for all client-only functionality, eg. strolling imps.
  */
 export async function createLocalLayer(headless: HeadlessLayer) {
-  const world = createWorld({ parentWorld: headless.world, name: "Local" });
+  const { world } = headless;
 
   // Components
   const LocalPosition = defineLocalPositionComponent(world);
@@ -73,7 +73,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   }
 
   function selectEntity(entity: Entity) {
-    if (getComponentValue(Selectable, entity)) setComponent(Selected, entity, {});
+    if (getComponentValue(Selectable, entity)) setComponent(Selected, entity, { value: true });
   }
 
   // Layer

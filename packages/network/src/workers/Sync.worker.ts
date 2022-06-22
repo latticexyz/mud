@@ -8,7 +8,7 @@ import { combineLatest, concatMap, filter, map, Observable, of, startWith, Subje
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { ConnectionState, createReconnectingProvider } from "../createProvider";
-import { ContractConfig, ECSEventWithTx, Mappings, ProviderConfig } from "../types";
+import { ContractConfig, NetworkComponentUpdate, Mappings, ProviderConfig } from "../types";
 import { BigNumber, Contract } from "ethers";
 import { createDecoder } from "../createDecoder";
 import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
@@ -26,7 +26,7 @@ export type Config<Cm extends Components> = {
   chainId: number;
 };
 
-export type Output<Cm extends Components> = ECSEventWithTx<Cm>;
+export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
 
 export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Output<Cm>> {
   private config = observable.box<Config<Cm>>() as IObservableValue<Config<Cm>>;
@@ -59,7 +59,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
       for (const [key, value] of cacheEntries) {
         const componentEntity = key.split("/");
         const [component, entity] = componentEntity;
-        const ecsEvent: ECSEventWithTx<Cm> = {
+        const ecsEvent: NetworkComponentUpdate<Cm> = {
           component,
           entity,
           value,
@@ -78,7 +78,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<Config<Cm>, Out
     });
 
     // Internal ECS event stream (we need to create this subject and then push to it in order to be able to listen to it at multiple places)
-    const ecsEvent$ = new Subject<ECSEventWithTx<Cm>>();
+    const ecsEvent$ = new Subject<NetworkComponentUpdate<Cm>>();
 
     // Create World topics to listen to
     const topics = createTopics<{ World: World }>({
