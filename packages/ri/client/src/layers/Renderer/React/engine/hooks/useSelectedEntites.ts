@@ -1,4 +1,4 @@
-import { defineQuery, Has } from "@latticexyz/recs";
+import { Has, runQuery } from "@latticexyz/recs";
 import { useLayers } from "./useLayers";
 
 export function useSelectedEntities() {
@@ -8,5 +8,5 @@ export function useSelectedEntities() {
     },
   } = useLayers();
 
-  return defineQuery([Has(Selected)]).get();
+  return runQuery([Has(Selected)]);
 }

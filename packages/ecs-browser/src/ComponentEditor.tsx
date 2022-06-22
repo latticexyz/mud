@@ -1,5 +1,5 @@
 import React from "react";
-import { getComponentValue, Layers, removeComponent } from "@latticexyz/recs";
+import { getComponentValueStrict, Layers, removeComponent } from "@latticexyz/recs";
 import { AnyComponent, Entity, Schema } from "@latticexyz/recs/src/types";
 import { observer } from "mobx-react-lite";
 import { ComponentBrowserButton, ComponentEditorContainer, ComponentTitle } from "./StyledComponents";
@@ -18,9 +18,6 @@ export const ComponentEditor = observer(
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
   }) => {
-    const componentValue = getComponentValue(component, entity);
-    if(!componentValue) return <></>;
-
     return (
       <ComponentEditorContainer>
         <ComponentTitle>
@@ -30,7 +27,7 @@ export const ComponentEditor = observer(
         <ComponentValueEditor
           entity={entity}
           component={component}
-          componentValue={componentValue}
+          componentValue={getComponentValueStrict(component, entity)}
           layers={layers}
           setContractComponentValue={setContractComponentValue}
         />

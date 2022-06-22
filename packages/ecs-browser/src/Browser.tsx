@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Layers, Type } from "@latticexyz/recs";
-import { AnyComponent, Component, Entity, Schema } from "@latticexyz/recs/src/types";
+import { Layers, Type, AnyComponent, Component, Entity, Schema, World } from "@latticexyz/recs";
 import { observer } from "mobx-react-lite";
 import { BrowserContainer } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
@@ -16,19 +15,27 @@ export const Browser = observer(
     layers,
     setContractComponentValue,
     devHighlightComponent,
+    world,
   }: {
     entities: [Entity, Set<AnyComponent>][];
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
     devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
+    world: World;
   }) => {
     const [filteredEntities, setFilteredEntities] = useState(entities);
 
     return (
       <BrowserContainer>
-        <QueryBuilder devHighlightComponent={devHighlightComponent} allEntities={entities} setFilteredEntities={setFilteredEntities} layers={layers} />
+        <QueryBuilder
+          devHighlightComponent={devHighlightComponent}
+          allEntities={entities}
+          setFilteredEntities={setFilteredEntities}
+          layers={layers}
+        />
         {filteredEntities.map(([entity, components]) => (
           <EntityEditor
+            world={world}
             key={`entity-editor-${entity}`}
             entity={entity}
             components={components}

@@ -12,6 +12,7 @@ export {
   withValue,
   cloneComponent,
   overridableComponent,
+  getEntitiesWithValue,
 } from "./Component";
 export { defineSystem, defineAutorunSystem, defineReactionSystem, defineSyncSystem, defineRxSystem } from "./System";
 export {
