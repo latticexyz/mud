@@ -6,67 +6,41 @@ import {
   createSyncWorker,
   createEncoder,
   SyncWorkerConfig,
+  NetworkComponentUpdate,
 } from "@latticexyz/network";
-import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import WorldAbi from "ri-contracts/abi/World.json";
 import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
 import { bufferTime, filter, Observable, Subject } from "rxjs";
-import {
-  Component,
-  Components,
-  ExtendableECSEvent,
-  removeComponent,
-  Schema,
-  setComponent,
-  World,
-} from "@latticexyz/recs";
+import { Component, Components, removeComponent, Schema, setComponent, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { stretch } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 
-export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
-  C,
-  { lastEventInTx: boolean; txHash: string; entity: string }
->;
-
 export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
 };
 
-const degenCheckpoint = "https://ecs-snapshot.super-degen-chain.lattice.xyz/";
-const localCheckpoint = "http://localhost:50052";
+export type SetupContractConfig = Parameters<typeof createNetwork>[0] &
+  Omit<SyncWorkerConfig, "worldContract" | "mappings">;
 
-const config: Parameters<typeof createNetwork>[0] & Omit<SyncWorkerConfig, "worldContract" | "mappings"> = {
-  clock: {
-    period: 5000,
-    initialTime: 0,
-    syncInterval: 5000,
-  },
-  provider: {
-    jsonRpcUrl: RPC_URL,
-    wsRpcUrl: RPC_WS_URL,
-    options: {
-      batch: false,
-    },
-  },
-  privateKey: DEV_PRIVATE_KEY,
-  chainId: 1337,
-  checkpointServiceUrl: localCheckpoint,
-  initialBlockNumber: 0,
-};
-
-export async function setupContracts<C extends ContractComponents>(world: World, components: C, mappings: Mappings<C>) {
+export async function setupContracts<C extends ContractComponents>(
+  address: string,
+  config: SetupContractConfig,
+  world: World,
+  components: C,
+  mappings: Mappings<C>
+) {
   const network = await createNetwork(config);
   world.registerDisposer(network.dispose);
 
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
   const { contracts, config: contractsConfig } = await createContracts<{ Game: CombinedFacets; World: WorldContract }>({
-    config: { Game: { abi: CombinedFacetsAbi.abi, address: DIAMOND_ADDRESS } },
+    config: { Game: { abi: CombinedFacetsAbi.abi, address } },
     asyncConfig: async (c) => ({ World: { abi: WorldAbi.abi, address: await c.Game.world() } }),
     signerOrProvider,
   });
@@ -81,10 +55,10 @@ export async function setupContracts<C extends ContractComponents>(world: World,
     config$.next({
       provider: config.provider,
       worldContract: contractsConfig.World,
-      initialBlockNumber: config.initialBlockNumber,
+      initialBlockNumber: 0,
       mappings,
       chainId: config.chainId,
-      disableCache: config.chainId === 1337, // Disable cache on hardhat
+      disableCache: config.chainId === 31337, // Disable cache on hardhat
       checkpointServiceUrl: config.checkpointServiceUrl,
     });
   }
@@ -92,7 +66,7 @@ export async function setupContracts<C extends ContractComponents>(world: World,
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
   const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
-  for (const [key, component] of Object.entries(components)) {
+  for (const [, component] of Object.entries(components)) {
     const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
     const componentContract = new Contract(
       componentAddress,
@@ -103,7 +77,7 @@ export async function setupContracts<C extends ContractComponents>(world: World,
     const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
     encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
   }
-  return { txQueue, txReduced$, encoders, startSync };
+  return { txQueue, txReduced$, encoders, network, startSync };
 }
 
 /**
@@ -112,7 +86,7 @@ export async function setupContracts<C extends ContractComponents>(world: World,
 function applyNetworkUpdates<C extends Components>(
   world: World,
   components: C,
-  ecsEvent$: Observable<ECSEventWithTx<C>>
+  ecsEvent$: Observable<NetworkComponentUpdate<C>>
 ) {
   const txReduced$ = new Subject<string>();
 

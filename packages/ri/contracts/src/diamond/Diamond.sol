@@ -15,6 +15,11 @@ import { IDiamondCut } from "./interfaces/IDiamondCut.sol";
 import { IDiamondLoupe } from "./interfaces/IDiamondLoupe.sol";
 import { IERC173 } from "./interfaces/IERC173.sol";
 
+// This is only used during forge deployments in tests
+// In development we currently use the hardhat hardcoded
+// Diamond contract.
+// If you notice weird inconsistencies between tests and dev
+// chain, this is why.
 contract Diamond {
   constructor(address _diamondOwner, IDiamondCut.FacetCut[] memory _diamondCut) payable {
     LibDiamond.diamondCut(_diamondCut, address(0), new bytes(0));

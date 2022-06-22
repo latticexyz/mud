@@ -23,7 +23,7 @@
     "forge:deploy": "forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv",
     "hardhat:deploy:degen": "yarn hardhat:deploy --network degen",
     "hardhat:deploy:hardhat": "yarn hardhat:deploy --network hardhat",
-    "hardhat:deploy:update": "yarn hardhat:deploy --network localhost",
+    "hardhat:deploy:update": "yarn hardhat deploy --network localhost --tags Diamond",
     "hardhat:deploy": "hardhat deploy --reset"
   },
   "devDependencies": {

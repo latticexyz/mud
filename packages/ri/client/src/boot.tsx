@@ -33,7 +33,23 @@ async function bootLayers() {
   } = {};
 
   async function bootLayers() {
-    if (!layers.network) layers.network = await createNetworkLayer();
+    const params = new URLSearchParams(window.location.search);
+    const contractAddress = params.get("contractAddress");
+    const privateKey = params.get("burnerWalletPrivateKey");
+    const chainIdString = params.get("chainId");
+    const personaIdString = params.get("personaId");
+
+    let networkLayerConfig;
+    if (contractAddress && privateKey && chainIdString && personaIdString) {
+      networkLayerConfig = {
+        contractAddress,
+        privateKey,
+        chainId: parseInt(chainIdString),
+        personaId: parseInt(personaIdString),
+      };
+    }
+
+    if (!layers.network) layers.network = await createNetworkLayer(networkLayerConfig);
     if (!layers.headless) layers.headless = await createHeadlessLayer(layers.network);
     if (!layers.local) layers.local = await createLocalLayer(layers.headless);
     if (!layers.phaser) layers.phaser = await createPhaserLayer(layers.local);

@@ -1,4 +1,3 @@
-import { Has, getQueryResult } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { pixelToWorldCoord } from "../../utils";
 import { map } from "rxjs";
@@ -9,11 +8,8 @@ export function createInputSystem(layer: PhaserLayer) {
       Main: { input, maps },
     },
     parentLayers: {
-      network: {
-        components: { Movable },
-      },
       headless: {
-        api: { moveEntity, spawnCreature },
+        api: { moveEntity, joinGame },
       },
     },
   } = layer;
@@ -44,6 +40,6 @@ export function createInputSystem(layer: PhaserLayer) {
       map((pixel) => pixelToWorldCoord(maps.Main, pixel)) // Map pixel coord to tile coord
     )
     .subscribe((coord) => {
-      spawnCreature(coord, 0);
+      joinGame(coord);
     });
 }

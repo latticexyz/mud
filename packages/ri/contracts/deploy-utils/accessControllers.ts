@@ -13,14 +13,15 @@ export const deployAccessController = async function (
   const { deployer } = await getNamedAccounts();
 
   console.log(blue("Deploying Access Controller: " + name));
-  const { address } = await deploy(name, {
+  const { address, newlyDeployed } = await deploy(name, {
     from: deployer,
     log: true,
     autoMine: true,
     args: [],
   });
-
-  console.log(blue("Registering access controller"));
-  const tx = await diamond.registerAccessControllerExternally(address);
-  await tx.wait();
+  if (newlyDeployed) {
+    console.log(blue("Registering access controller"));
+    const tx = await diamond.registerAccessControllerExternally(address);
+    await tx.wait();
+  }
 };

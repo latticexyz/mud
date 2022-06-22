@@ -1,4 +1,5 @@
-import { Components, defineQuery, getComponentValueStrict, Has, hasComponent, HasValue, Type } from "@latticexyz/recs";
+import { defineQuery, getComponentValueStrict, Has, hasComponent, HasValue, Type, ProxyExpand } from "@latticexyz/recs";
+import { getPlayerEntity } from "@latticexyz/std-client";
 import { NetworkLayer } from "../../Network";
 import { ActionSystem } from "../types";
 
@@ -15,27 +16,36 @@ interface MoveData {
   targetEntity?: string;
 }
 
-export function moveEntityFunc(direction: string, network: NetworkLayer, actions: ActionSystem) {
-  const { Position, Movable, Untraversable, OwnedBy } = network.components;
+export function moveEntity(network: NetworkLayer, actions: ActionSystem, direction: string) {
+  if (!network.personaId) {
+    console.warn("Persona ID not found.");
+    return;
+  }
+
+  const { Position, Movable, Untraversable, OwnedBy, Persona } = network.components;
+
+  const playerEntity = getPlayerEntity(Persona, network.personaId);
   const delta = Directions[direction];
-  const player = [...defineQuery([Has(Movable)]).get()][0];
+  const playerCharacterQuery = defineQuery([
+    ProxyExpand(OwnedBy, 2),
+    HasValue(OwnedBy, { value: playerEntity }),
+    Has(Movable),
+  ]);
+  const characterQueryResult = playerCharacterQuery.get();
+  if (characterQueryResult.size === 0) throw new Error("Player not found");
+  if (characterQueryResult.size > 1) throw new Error("More than one player character found. Something is very wrong.");
+  const character = [...characterQueryResult][0];
+
   const actionID = `move ${Math.random()}`;
 
   actions.add({
     id: actionID,
     components: { Position, Untraversable },
     requirement: ({ Position, Untraversable }) => {
-      const currentPosition = getComponentValueStrict(Position, player);
+      const currentPosition = getComponentValueStrict(Position, character);
       const targetPosition = { x: currentPosition.x + delta.x, y: currentPosition.y + delta.y };
 
-      // TODO: check untraversable rather than any entity blocking you
       const entities = [...defineQuery([HasValue(Position, targetPosition)]).get()];
-
-      if (entities.length > 0) {
-        actions.cancel(actionID);
-        return null;
-      }
-
       for (const entity of entities) {
         if (hasComponent(Untraversable, entity)) {
           actions.cancel(actionID);
@@ -48,13 +58,13 @@ export function moveEntityFunc(direction: string, network: NetworkLayer, actions
     updates: (_, data: MoveData) => [
       {
         component: "Position",
-        entity: player,
+        entity: character,
         value: { x: data.targetPosition.x, y: data.targetPosition.y },
       },
     ],
     execute: async (data: MoveData) => {
       console.log("Execute action");
-      return network.api.moveEntity(player, { x: data.targetPosition.x, y: data.targetPosition.y });
+      return network.api.moveEntity(character, { x: data.targetPosition.x, y: data.targetPosition.y });
     },
   });
 }

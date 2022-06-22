@@ -13,14 +13,15 @@ export const deployContentCreator = async function (
   const { deployer } = await getNamedAccounts();
 
   console.log(blue("Deploying Content Creator: " + name));
-  const { address } = await deploy(name, {
+  const { address, newlyDeployed } = await deploy(name, {
     from: deployer,
     log: true,
     autoMine: true,
     args: [],
   });
-
-  console.log(blue("Registering content creator"));
-  const tx = await diamond.registerContentCreatorExternally(address);
-  await tx.wait();
+  if (newlyDeployed) {
+    console.log(blue("Registering content creator"));
+    const tx = await diamond.registerContentCreatorExternally(address);
+    await tx.wait();
+  }
 };
