@@ -28,7 +28,7 @@ import { Area } from "@latticexyz/utils";
  * Its purpose is to add components and systems for all client-only functionality, eg. strolling imps.
  */
 export async function createLocalLayer(headless: HeadlessLayer) {
-  const world = createWorld({ parentWorld: headless.world, name: "Local" });
+  const { world } = headless;
 
   // Components
   const LocalPosition = defineLocalPositionComponent(world);
@@ -72,7 +72,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   }
 
   function selectEntity(entity: Entity) {
-    if (getComponentValue(Selectable, entity)) setComponent(Selected, entity, {});
+    if (getComponentValue(Selectable, entity)) setComponent(Selected, entity, { value: true });
   }
 
   // Layer

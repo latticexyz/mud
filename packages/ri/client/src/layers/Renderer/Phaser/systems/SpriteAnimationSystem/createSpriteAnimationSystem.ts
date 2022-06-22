@@ -1,4 +1,4 @@
-import { defineUpdateQuery, Has, defineReactionSystem, getComponentValueStrict } from "@latticexyz/recs";
+import { defineComponentSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 
 /**
@@ -13,22 +13,19 @@ export function createSpriteAnimationSystem(layer: PhaserLayer) {
     },
   } = layer;
 
-  const query = defineUpdateQuery(world, [Has(SpriteAnimation)], { runOnInit: true });
+  defineComponentSystem(world, SpriteAnimation, ({ entity, value }) => {
+    const animation = value[0]?.value;
+    const embodiedEntity = objectPool.get(entity, "Sprite");
 
-  return defineReactionSystem(
-    world,
-    () => query.get(),
-    (entities) => {
-      for (const entity of entities) {
-        const { animation } = getComponentValueStrict(SpriteAnimation, entity);
-        const embodiedEntity = objectPool.get(entity, "Sprite");
-        embodiedEntity.setComponent({
-          id: SpriteAnimation.id,
-          once: (gameObject) => {
-            gameObject.play(animation);
-          },
-        });
-      }
+    if (!animation) {
+      return embodiedEntity.removeComponent(SpriteAnimation.id);
     }
-  );
+
+    embodiedEntity.setComponent({
+      id: SpriteAnimation.id,
+      once: (gameObject) => {
+        gameObject.play(animation);
+      },
+    });
+  });
 }

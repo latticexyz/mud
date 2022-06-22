@@ -29,7 +29,7 @@ import { defineDevHighlightComponent } from "@latticexyz/std-client";
  */
 export async function createPhaserLayer(local: LocalLayer) {
   // World
-  const world = createWorld({ parentWorld: local.world, name: "Phaser" });
+  const world = local.world;
 
   // Components
   const Appearance = defineAppearanceComponent(world);

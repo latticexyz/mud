@@ -111,7 +111,7 @@ export const ValueEditor = observer(
             }}
           >
             <option value="">None</option>
-            {[...layers.phaser.world.entities.keys()].map((entityId) => (
+            {layers.phaser.world.entities.map((entityId) => (
               <option key={entityId} value={entityId}>
                 {entityId}
               </option>

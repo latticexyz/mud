@@ -16,7 +16,7 @@ export function registerAppearance() {
       const { Appearance } = layers.phaser.components;
       const appearance = getComponentValue(Appearance, selectedEntity);
       if (!appearance) return;
-      return sprites[appearance.texture];
+      return sprites[appearance.value];
     },
     (sprite) => {
       return (

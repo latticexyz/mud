@@ -20,7 +20,7 @@ export const Browser = observer(
     entities: [Entity, Set<AnyComponent>][];
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
-    devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
+    devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
     world: World;
   }) => {
     const [filteredEntities, setFilteredEntities] = useState(entities);

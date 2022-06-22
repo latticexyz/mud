@@ -1,5 +1,4 @@
-import { createEntity, defineQuery, defineSystem, withValue } from "@latticexyz/recs";
-import { HasValue } from "@latticexyz/recs";
+import { createEntity, runQuery, withValue, HasValue } from "@latticexyz/recs";
 import { random } from "@latticexyz/utils";
 import { Time } from "../../../../utils/time";
 import { LocalEntityTypes, LocalLayer } from "../../types";
@@ -13,10 +12,10 @@ export function createImpSystem(layer: LocalLayer) {
     components: { Strolling, LocalEntityType, LocalPosition, MoveSpeed, Selectable },
   } = layer;
 
-  const imps = defineQuery([HasValue(LocalEntityType, { entityType: LocalEntityTypes.Imp })]);
+  const spawnImp = () => {
+    const getNumImps = () => runQuery([HasValue(LocalEntityType, { entityType: LocalEntityTypes.Imp })]).size;
 
-  const createImp = defineSystem(world, () => {
-    if (imps.get().size > 5) return;
+    if (getNumImps() > 5) return;
     const coord = {
       x: random(7),
       y: random(7),
@@ -26,15 +25,15 @@ export function createImpSystem(layer: LocalLayer) {
       world,
       [
         withValue(LocalEntityType, { entityType: LocalEntityTypes.Imp }),
-        withValue(Strolling, {}),
+        withValue(Strolling, { value: true }),
         withValue(LocalPosition, coord),
         withValue(MoveSpeed, { default: 500, current: 500 }),
-        withValue(Selectable, {}), // Remove this later, imps are not selectable
+        withValue(Selectable, { value: true }), // Remove this later, imps are not selectable
       ],
       { idSuffix: "imp" }
     );
-  });
+  };
 
-  const dispose = Time.time.setInterval(createImp, 1000);
+  const dispose = Time.time.setInterval(spawnImp, 1000);
   world.registerDisposer(dispose);
 }

@@ -1,5 +1,4 @@
-import { HasValue, Has } from "@latticexyz/recs";
-import { defineSyncSystem } from "@latticexyz/recs";
+import { HasValue, Has, defineSyncSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { LocalEntityTypes } from "../../../../Local/types";
 import { EntityTypes } from "../../../../Network/types";
@@ -28,7 +27,7 @@ export function createSyncSystem(layer: PhaserLayer) {
     () => Appearance,
     () => {
       return {
-        texture: Assets.Legendary,
+        value: Assets.Legendary,
       };
     }
   );
@@ -38,7 +37,7 @@ export function createSyncSystem(layer: PhaserLayer) {
     [HasValue(LocalEntityType, { entityType: LocalEntityTypes.Imp })],
     () => Appearance,
     () => ({
-      texture: Assets.Imp,
+      value: Assets.Imp,
     })
   );
 
@@ -46,14 +45,14 @@ export function createSyncSystem(layer: PhaserLayer) {
     world,
     [Has(Selected)],
     () => Outline,
-    () => ({})
+    () => ({ value: true })
   );
 
   defineSyncSystem(
     world,
     [HasValue(LocalEntityType, { entityType: LocalEntityTypes.Imp })],
     () => HueTint,
-    () => ({ hueTint: 0xff0000 })
+    () => ({ value: 0xff0000 })
   );
 
   defineSyncSystem(
@@ -61,7 +60,7 @@ export function createSyncSystem(layer: PhaserLayer) {
     [HasValue(LocalEntityType, { entityType: LocalEntityTypes.Imp })],
     () => SpriteAnimation,
     () => ({
-      animation: Animations.ImpDigging,
+      value: Animations.ImpDigging,
     })
   );
 }

@@ -20,14 +20,14 @@ export type ValueType = {
   [Type.String]: string;
   [Type.NumberArray]: number[];
   [Type.StringArray]: string[];
-  [Type.Entity]: Entity;
-  [Type.EntityArray]: Entity[];
+  [Type.Entity]: string;
+  [Type.EntityArray]: string[];
   [Type.OptionalNumber]: number | null;
   [Type.OptionalString]: string | null;
   [Type.OptionalNumberArray]: number[] | null;
   [Type.OptionalStringArray]: string[] | null;
-  [Type.OptionalEntity]: Entity | null;
-  [Type.OptionalEntityArray]: Entity[] | null;
+  [Type.OptionalEntity]: string | null;
+  [Type.OptionalEntityArray]: string[] | null;
 };
 
 export type ComponentValue<S extends Schema = Schema> = {
@@ -45,6 +45,7 @@ export interface Component<S extends Schema = Schema, M extends Metadata = Metad
   values: { [key in keyof S]: Map<Entity, ValueType[S[key]]> };
   schema: S;
   metadata: M;
+  entities: () => IterableIterator<number>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   update$: Subject<ComponentUpdate<S>> & { observers: any };
 }

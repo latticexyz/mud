@@ -9,8 +9,8 @@ import {
   Type,
   defineComponent,
   getComponentValueStrict,
-  defineQuery,
   HasValue,
+  runQuery,
 } from "@latticexyz/recs";
 import { deferred } from "@latticexyz/utils";
 import { ReplaySubject } from "rxjs";
@@ -35,12 +35,12 @@ describe("ActionSystem", () => {
   });
 
   afterEach(() => {
-    world.disposeAll();
+    world.dispose();
   });
 
   it("should immediately execute actions if their requirement is met and set the Action component", async () => {
     const mockFn = jest.fn();
-    actions.add({
+    const entity = actions.add({
       id: "action",
       components: {},
       requirement: () => true,
@@ -51,14 +51,14 @@ describe("ActionSystem", () => {
     });
 
     expect(mockFn).toHaveBeenCalledTimes(1);
-    expect(getComponentValueStrict(Action, "action").state).toBe(ActionState.Executing);
-    await waitForActionCompletion(Action, "action");
-    expect(getComponentValueStrict(Action, "action").state).toBe(ActionState.Complete);
+    expect(getComponentValueStrict(Action, entity!).state).toBe(ActionState.Executing);
+    await waitForActionCompletion(Action, entity!);
+    expect(getComponentValueStrict(Action, entity!).state).toBe(ActionState.Complete);
   });
 
   it("should not execute actions if their requirement is not met and set the Action component", () => {
     const mockFn = jest.fn();
-    actions.add({
+    const entity = actions.add({
       id: "action",
       components: {},
       requirement: () => false,
@@ -69,12 +69,12 @@ describe("ActionSystem", () => {
     });
 
     expect(mockFn).toHaveBeenCalledTimes(0);
-    expect(getComponentValueStrict(Action, "action").state).toBe(ActionState.Requested);
+    expect(getComponentValueStrict(Action, entity!).state).toBe(ActionState.Requested);
   });
 
   it("should set the Action component of failed actions", async () => {
     const [, reject, promise] = deferred<void>();
-    actions.add({
+    const entity = actions.add({
       id: "action",
       components: {},
       requirement: () => true,
@@ -84,13 +84,13 @@ describe("ActionSystem", () => {
 
     reject(new Error("Error"));
 
-    await waitForActionCompletion(Action, "action");
+    await waitForActionCompletion(Action, entity!);
 
-    expect(getComponentValueStrict(Action, "action").state).toBe(ActionState.Failed);
+    expect(getComponentValueStrict(Action, entity!).state).toBe(ActionState.Failed);
   });
 
   it("should set the Action component of cancelled actions", async () => {
-    actions.add({
+    const entity = actions.add({
       id: "action",
       components: {},
       requirement: () => false,
@@ -99,15 +99,15 @@ describe("ActionSystem", () => {
     });
 
     const cancelled = actions.cancel("action");
-    await waitForActionCompletion(Action, "action");
+    await waitForActionCompletion(Action, entity!);
 
-    expect(getComponentValueStrict(Action, "action").state).toBe(ActionState.Cancelled);
+    expect(getComponentValueStrict(Action, entity!).state).toBe(ActionState.Cancelled);
     expect(cancelled).toBe(true);
   });
 
   it("should not be possible to cancel actions that are already executing", async () => {
     const [resolve, , promise] = deferred<void>();
-    actions.add({
+    const entity = actions.add({
       id: "action",
       components: {},
       requirement: () => true,
@@ -117,8 +117,8 @@ describe("ActionSystem", () => {
 
     const cancelled = actions.cancel("action");
     resolve();
-    await waitForActionCompletion(Action, "action");
-    expect(getComponentValueStrict(Action, "action").state).toBe(ActionState.Complete);
+    await waitForActionCompletion(Action, entity!);
+    expect(getComponentValueStrict(Action, entity!).state).toBe(ActionState.Complete);
     expect(cancelled).toBe(false);
   });
 
@@ -147,7 +147,7 @@ describe("ActionSystem", () => {
     const settlement1 = createEntity(world);
     const settlement2 = createEntity(world);
 
-    actions.add({
+    const entity1 = actions.add({
       id: "action1",
       on: settlement1,
       components: { Resource },
@@ -156,7 +156,7 @@ describe("ActionSystem", () => {
       execute: () => void 0,
     });
 
-    actions.add({
+    const entity2 = actions.add({
       id: "action2",
       on: settlement2,
       components: { Resource },
@@ -165,7 +165,7 @@ describe("ActionSystem", () => {
       execute: () => void 0,
     });
 
-    actions.add({
+    const entity3 = actions.add({
       id: "action3",
       components: { Resource },
       requirement: () => false,
@@ -173,17 +173,17 @@ describe("ActionSystem", () => {
       execute: () => void 0,
     });
 
-    expect(defineQuery([HasValue(Action, { on: settlement1 })]).get()).toEqual(new Set(["action1"]));
-    expect(defineQuery([HasValue(Action, { on: settlement2 })]).get()).toEqual(new Set(["action2"]));
-    expect(defineQuery([HasValue(Action, { state: ActionState.Requested })]).get()).toEqual(
-      new Set(["action1", "action2", "action3"])
+    expect(runQuery([HasValue(Action, { on: settlement1 })])).toEqual(new Set([entity1]));
+    expect(runQuery([HasValue(Action, { on: settlement2 })])).toEqual(new Set([entity2]));
+    expect(runQuery([HasValue(Action, { state: ActionState.Requested })])).toEqual(
+      new Set([entity1, entity2, entity3])
     );
   });
 
   it("should not remove pending update until all corresponding tx have been reduced", async () => {
     const player = createEntity(world, [withValue(Resource, { amount: 100 })]);
 
-    actions.add({
+    const entity1 = actions.add({
       id: "action1",
       components: { Resource },
       requirement: () => true,
@@ -194,10 +194,10 @@ describe("ActionSystem", () => {
           value: { amount: getComponentValueStrict(Resource, player).amount - 1 },
         },
       ],
-      execute: async () => Promise.resolve({ txHashes: ["tx1", "tx2"] }),
+      execute: async () => Promise.resolve({ hashes: ["tx1", "tx2"] }),
     });
 
-    actions.add({
+    const entity2 = actions.add({
       id: "action2",
       components: { Resource },
       // Resource needs to be 100 in order for this action to be executed
@@ -206,21 +206,21 @@ describe("ActionSystem", () => {
       execute: () => void 0,
     });
 
-    await waitForComponentValueIn(Action, "action1", [{ state: ActionState.WaitingForTxEvents }]);
+    await waitForComponentValueIn(Action, entity1!, [{ state: ActionState.WaitingForTxEvents }]);
     // While action1 is waiting for tx, action 2 is not executed yet
-    expect(getComponentValueStrict(Action, "action1").state).toBe(ActionState.WaitingForTxEvents);
-    expect(getComponentValueStrict(Action, "action2").state).toBe(ActionState.Requested);
+    expect(getComponentValueStrict(Action, entity1!).state).toBe(ActionState.WaitingForTxEvents);
+    expect(getComponentValueStrict(Action, entity2!).state).toBe(ActionState.Requested);
 
     txReduced$.next("tx1");
     // Still not done, not all tx have been reduced
-    expect(getComponentValueStrict(Action, "action1").state).toBe(ActionState.WaitingForTxEvents);
-    expect(getComponentValueStrict(Action, "action2").state).toBe(ActionState.Requested);
+    expect(getComponentValueStrict(Action, entity1!).state).toBe(ActionState.WaitingForTxEvents);
+    expect(getComponentValueStrict(Action, entity2!).state).toBe(ActionState.Requested);
 
     txReduced$.next("tx2");
     // Now it's done
-    await waitForComponentValueIn(Action, "action1", [{ state: ActionState.Complete }]);
-    expect(getComponentValueStrict(Action, "action1").state).toBe(ActionState.Complete);
-    expect(getComponentValueStrict(Action, "action2").state).toBe(ActionState.Complete);
+    await waitForComponentValueIn(Action, entity1!, [{ state: ActionState.Complete }]);
+    expect(getComponentValueStrict(Action, entity1!).state).toBe(ActionState.Complete);
+    expect(getComponentValueStrict(Action, entity2!).state).toBe(ActionState.Complete);
   });
 
   it("should execute actions if the requirement is met while taking into account pending updates", async () => {
@@ -238,7 +238,7 @@ describe("ActionSystem", () => {
 
     // First schedule action1
     const [resolveAction1, , action1Promise] = deferred<void>();
-    actions.add({
+    const entity1 = actions.add({
       id: "action1",
       components: { Resource },
       // This action requires a resource amount of 100 to be executed
@@ -302,7 +302,7 @@ describe("ActionSystem", () => {
     // Now schedule action2.
     // This action declares it will update the Resource component to be 100
     const [resolveAction2, , action2Promise] = deferred<void>();
-    actions.add({
+    const entity2 = actions.add({
       id: "action2",
       components: { Resource },
       requirement: () => {
@@ -323,8 +323,8 @@ describe("ActionSystem", () => {
     expect(executeSpy2).toHaveBeenCalledWith(0);
 
     // But it is not done yet, because the promise is not resolved
-    await waitForComponentValueIn(Action, "action2", [{ state: ActionState.Executing }]);
-    expect(getComponentValueStrict(Action, "action2").state).toBe(ActionState.Executing);
+    await waitForComponentValueIn(Action, entity2!, [{ state: ActionState.Executing }]);
+    expect(getComponentValueStrict(Action, entity2!).state).toBe(ActionState.Executing);
 
     // action 2's requirement was checked only once
     expect(requirementSpy2).toHaveBeenCalledTimes(1);
@@ -344,7 +344,7 @@ describe("ActionSystem", () => {
 
     // Now resolve action2
     resolveAction2();
-    await waitForActionCompletion(Action, "action2");
+    await waitForActionCompletion(Action, entity2!);
 
     // The real component amount should be at 100 now
     expect(getComponentValueStrict(Resource, player).amount).toBe(100);
@@ -357,7 +357,7 @@ describe("ActionSystem", () => {
 
     // Now resolve action1
     resolveAction1();
-    await waitForActionCompletion(Action, "action1");
+    await waitForActionCompletion(Action, entity1!);
 
     // The real component amount should be at 0 now
     expect(getComponentValueStrict(Resource, player).amount).toBe(0);
@@ -392,7 +392,7 @@ describe("ActionSystem", () => {
     expect(getComponentValueStrict(Resource, player)).toEqual({ amount: 0 });
 
     const [resolve, , promise] = deferred<void>();
-    actions.add({
+    const entity = actions.add({
       id: "action",
       components: { Resource },
       requirement: () => true,
@@ -405,7 +405,7 @@ describe("ActionSystem", () => {
     expect(getComponentValueStrict(Resource, player)).toEqual({ amount: 0 });
 
     resolve();
-    await waitForActionCompletion(Action, "action");
+    await waitForActionCompletion(Action, entity!);
 
     expect(getComponentValueStrict(Resource, player)).toEqual({ amount: 0 });
   });

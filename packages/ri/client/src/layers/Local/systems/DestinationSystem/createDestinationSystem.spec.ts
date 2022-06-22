@@ -10,15 +10,13 @@ describe("Destination System", () => {
   let local: LocalLayer;
 
   beforeEach(async () => {
-    network = await createNetworkLayer({ skipContracts: true });
+    network = await createNetworkLayer();
     headless = await createHeadlessLayer(network);
     local = await createLocalLayer(headless);
   });
 
   afterEach(() => {
-    network.world.disposeAll();
-    headless.world.disposeAll();
-    local.world.disposeAll();
+    headless.world.dispose();
   });
 
   it("should compute a path to the coordinate given in the Destination component and set it in the Path component", () => {

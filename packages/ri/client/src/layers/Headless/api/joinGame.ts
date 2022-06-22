@@ -8,21 +8,27 @@ import { ActionSystem } from "../types";
 export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPosition: WorldCoord) {
   const { Position, Persona } = network.components;
 
+  const actionId = `spawn ${Math.random()}`;
   actions.add({
-    id: `spawn ${Math.random()}`,
+    id: actionId,
     components: { Position, Persona },
     requirement: ({ Position, Persona }) => {
       const blockingEntities = getEntitiesWithValue(Position, targetPosition);
-      if (blockingEntities.size !== 0) return null;
+      if (blockingEntities.size !== 0) {
+        actions.cancel(actionId);
+        return null;
+      }
 
       if (!network.personaId) {
         console.warn("No persona ID found, canceling spawn attempt");
+        actions.cancel(actionId);
         return null;
       }
 
       const playerEntity = getPlayerEntity(Persona, network.personaId);
       if (playerEntity) {
         console.warn("Player already spawned, canceling spawn.");
+        actions.cancel(actionId);
         return null;
       }
 

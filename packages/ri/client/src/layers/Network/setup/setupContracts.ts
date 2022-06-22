@@ -104,15 +104,13 @@ function applyNetworkUpdates<C extends Components>(
       // but it currently breaks defineUpdateAction (https://linear.app/latticexyz/issue/LAT-594/defineupdatequery-does-not-work-when-running-multiple-component)
       // runInAction(() => {
       for (const update of updates) {
-        if (!world.entities.has(update.entity)) {
-          world.registerEntity({ id: update.entity });
-        }
+        const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
 
         if (update.value === undefined) {
           // undefined value means component removed
-          removeComponent(components[update.component] as Component<Schema>, update.entity);
+          removeComponent(components[update.component] as Component<Schema>, entityIndex);
         } else {
-          setComponent(components[update.component] as Component<Schema>, update.entity, update.value);
+          setComponent(components[update.component] as Component<Schema>, entityIndex, update.value);
         }
 
         if (update.lastEventInTx) txReduced$.next(update.txHash);

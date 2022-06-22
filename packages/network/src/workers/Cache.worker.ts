@@ -54,9 +54,13 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
     );
 
     ecsEvent$
-      .pipe(map((event) => ({ key: `${event.component}/${event.entity}`, value: event.value })))
+      .pipe(map((event) => ({ key: `${String(event.component)}/${event.entity}`, value: event.value })))
       .subscribe(({ key, value }) => {
-        cache.set("ComponentValues", key, value);
+        if (value === undefined) {
+          cache.remove("ComponentValues", key);
+        } else {
+          cache.set("ComponentValues", key, value);
+        }
       });
 
     // Only set this if the block number changed

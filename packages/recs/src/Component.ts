@@ -13,7 +13,8 @@ export function defineComponent<S extends Schema, M extends Metadata>(
   const values = mapObject(schema, () => new Map());
   const update$ = new Subject();
   const metadata = options?.metadata;
-  const component = { values, schema, id, update$, metadata } as Component<S, M>;
+  const entities = () => (Object.values(values)[0] as Map<number, unknown>).keys();
+  const component = { values, schema, id, update$, metadata, entities } as Component<S, M>;
   world.registerComponent(component);
   return component;
 }
@@ -105,7 +106,7 @@ export function getEntitiesWithValue<T extends Schema>(
 }
 
 export function getComponentEntities(component: Component): IterableIterator<Entity> {
-  return Object.values(component.values)[0].keys();
+  return component.entities();
 }
 
 /**

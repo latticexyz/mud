@@ -34,4 +34,7 @@ export interface ActionRequest<C extends Components, T> {
   execute: (data: T) => Promise<{ hashes?: string[]; hash?: string }> | Promise<void> | void | undefined;
 }
 
-export type ActionData = ActionRequest<Components, unknown> & { componentsWithPendingUpdates: Components };
+export type ActionData = ActionRequest<Components, unknown> & {
+  componentsWithPendingUpdates: Components;
+  entityIndex: number;
+};

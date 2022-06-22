@@ -10,11 +10,10 @@ import {
   updateComponent,
 } from "@latticexyz/recs";
 import { mapObject, awaitStreamValue } from "@latticexyz/utils";
-import { autorun } from "mobx";
 import { ActionState } from "./constants";
 import { ActionData, ActionRequest } from "./types";
 import { defineActionComponent } from "../../components";
-import { Observable } from "rxjs";
+import { merge, Observable } from "rxjs";
 
 export function createActionSystem(
   world: World,
@@ -49,15 +48,16 @@ export function createActionSystem(
    * Note: the requirement will only be rechecked automatically if the requirement is based on components
    * (or other mobx-observable values).
    * @param actionRequest Action to be scheduled
+   * @returns index of the entity created for the action
    */
-  function add<C extends Components, T>(actionRequest: ActionRequest<C, T>) {
+  function add<C extends Components, T>(actionRequest: ActionRequest<C, T>): number | void {
     // Prevent the same actions from being scheduled multiple times
-    if (getComponentValue(Action, actionRequest.id)) {
+    if (world.entityToIndex.get(actionRequest.id) != null) {
       return console.warn(`Action with id ${actionRequest.id} is already requested.`);
     }
 
     // Set the action component
-    createEntity(
+    const entityIndex = createEntity(
       world,
       [
         withValue(Action, {
@@ -77,15 +77,22 @@ export function createActionSystem(
     }
 
     // Store relevant components with pending updates along the action's requirement and execution logic
-    const action = { ...actionRequest, componentsWithPendingUpdates: withPendingUpdates(actionRequest.components) };
-    actionData.set(action.id, action as unknown as ActionData);
+    const action = {
+      ...actionRequest,
+      entityIndex,
+      componentsWithPendingUpdates: withPendingUpdates(actionRequest.components),
+    } as unknown as ActionData;
+    actionData.set(action.id, action);
 
-    // This autorun makes sure the action requirement is checked again every time
+    // This subscriotion makes sure the action requirement is checked again every time
     // one of the referenced components changes or the pending updates map changes
-    const dispose = autorun(() => {
-      checkRequirement(action.id);
-    });
-    disposer.set(action.id, { dispose });
+    const subscription = merge(...Object.values(action.componentsWithPendingUpdates).map((c) => c.update$)).subscribe(
+      () => checkRequirement(action)
+    );
+    checkRequirement(action);
+    disposer.set(action.id, { dispose: () => subscription?.unsubscribe() });
+
+    return entityIndex;
   }
 
   /**
@@ -93,12 +100,9 @@ export function createActionSystem(
    * @param actionId ID of the action to check the requirement of
    * @returns void
    */
-  function checkRequirement(actionId: string) {
+  function checkRequirement(action: ActionData) {
     // Only check requirements of requested actions
-    if (getComponentValue(Action, actionId)?.state !== ActionState.Requested) return;
-
-    const action = actionData.get(actionId);
-    if (!action) throw new Error(`Action data of requested action not found: ${actionId}`);
+    if (getComponentValue(Action, action.entityIndex)?.state !== ActionState.Requested) return;
 
     // Check requirement on components including pending updates
     const requirementResult = action.requirement(action.componentsWithPendingUpdates);
@@ -115,10 +119,10 @@ export function createActionSystem(
    */
   async function executeAction<T>(action: ActionData, requirementResult: T) {
     // Only execute actions that were requested before
-    if (getComponentValue(Action, action.id)?.state !== ActionState.Requested) return;
+    if (getComponentValue(Action, action.entityIndex)?.state !== ActionState.Requested) return;
 
     // Update the action state
-    updateComponent(Action, action.id, { state: ActionState.Executing });
+    updateComponent(Action, action.entityIndex, { state: ActionState.Executing });
 
     // Set all pending updates of this action
     for (const { component, value, entity } of action.updates(action.componentsWithPendingUpdates, requirementResult)) {
@@ -134,13 +138,13 @@ export function createActionSystem(
         // Wait for all tx events to be reduced
         if (!result.hashes) result.hashes = [];
         if (result.hash) result.hashes.push(result.hash);
-        updateComponent(Action, action.id, { state: ActionState.WaitingForTxEvents });
+        updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents });
         await Promise.all(result.hashes.map((txHash) => awaitStreamValue(txReduced$, (v) => v === txHash)));
       }
 
-      updateComponent(Action, action.id, { state: ActionState.Complete });
+      updateComponent(Action, action.entityIndex, { state: ActionState.Complete });
     } catch (e) {
-      updateComponent(Action, action.id, { state: ActionState.Failed });
+      updateComponent(Action, action.entityIndex, { state: ActionState.Failed });
     }
 
     // After the action is done executing (failed or completed), remove its actionData and remove the Action component
@@ -153,11 +157,12 @@ export function createActionSystem(
    * @returns void
    */
   function cancel(actionId: string): boolean {
-    if (getComponentValue(Action, actionId)?.state !== ActionState.Requested) {
+    const action = actionData.get(actionId);
+    if (!action || getComponentValue(Action, action.entityIndex)?.state !== ActionState.Requested) {
       console.warn(`Action ${actionId} was not found or is not in the "Requested" state.`);
       return false;
     }
-    updateComponent(Action, actionId, { state: ActionState.Cancelled });
+    updateComponent(Action, action.entityIndex, { state: ActionState.Cancelled });
     remove(actionId);
     return true;
   }

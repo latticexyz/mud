@@ -1,6 +1,6 @@
-import { defineQuery, getComponentValueStrict, Has, hasComponent, HasValue, Type, ProxyExpand } from "@latticexyz/recs";
+import { getComponentValueStrict, Has, hasComponent, HasValue, Type, runQuery } from "@latticexyz/recs";
 import { getPlayerEntity } from "@latticexyz/std-client";
-import { NetworkLayer } from "../../Network";
+import { createNetworkLayer, NetworkLayer } from "../../Network";
 import { ActionSystem } from "../types";
 
 const Directions: { [key: string]: { x: number; y: number } } = {
@@ -26,15 +26,11 @@ export function moveEntity(network: NetworkLayer, actions: ActionSystem, directi
 
   const playerEntity = getPlayerEntity(Persona, network.personaId);
   const delta = Directions[direction];
-  const playerCharacterQuery = defineQuery([
-    ProxyExpand(OwnedBy, 2),
-    HasValue(OwnedBy, { value: playerEntity }),
-    Has(Movable),
-  ]);
-  const characterQueryResult = playerCharacterQuery.get();
-  if (characterQueryResult.size === 0) throw new Error("Player not found");
-  if (characterQueryResult.size > 1) throw new Error("More than one player character found. Something is very wrong.");
-  const character = [...characterQueryResult][0];
+  const playerCharacter = runQuery([HasValue(OwnedBy, { value: network.world.entities[playerEntity] }), Has(Movable)]);
+  if (playerCharacter.size === 0) throw new Error("Player not found");
+  if (playerCharacter.size > 1) throw new Error("More than one player character found. Something is very wrong.");
+
+  const character = [...playerCharacter][0];
 
   const actionID = `move ${Math.random()}`;
 
@@ -45,7 +41,7 @@ export function moveEntity(network: NetworkLayer, actions: ActionSystem, directi
       const currentPosition = getComponentValueStrict(Position, character);
       const targetPosition = { x: currentPosition.x + delta.x, y: currentPosition.y + delta.y };
 
-      const entities = [...defineQuery([HasValue(Position, targetPosition)]).get()];
+      const entities = runQuery([HasValue(Position, targetPosition)]);
       for (const entity of entities) {
         if (hasComponent(Untraversable, entity)) {
           actions.cancel(actionID);
@@ -64,7 +60,10 @@ export function moveEntity(network: NetworkLayer, actions: ActionSystem, directi
     ],
     execute: async (data: MoveData) => {
       console.log("Execute action");
-      return network.api.moveEntity(character, { x: data.targetPosition.x, y: data.targetPosition.y });
+      return network.api.moveEntity(network.world.entities[character], {
+        x: data.targetPosition.x,
+        y: data.targetPosition.y,
+      });
     },
   });
 }

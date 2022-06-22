@@ -1,5 +1,5 @@
 import { tileCoordToPixelCoord } from "@latticexyz/phaserx";
-import { defineReactionSystem, defineUpdateQuery, defineExitQuery, getComponentValue, Has } from "@latticexyz/recs";
+import { Has, getComponentValueStrict, defineSystem, UpdateType } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 
 export function createDrawDevHighlightSystem(layer: PhaserLayer) {
@@ -21,42 +21,25 @@ export function createDrawDevHighlightSystem(layer: PhaserLayer) {
     components: { DevHighlight },
   } = layer;
 
-  const exitQuery = defineExitQuery(world, [Has(DevHighlight)]);
-  defineReactionSystem(
-    world,
-    () => exitQuery.get(),
-    (entities) => {
-      for (const entity of entities) {
-        objectPool.remove(`${entity}-dev-highlight`);
-      }
+  defineSystem(world, [Has(DevHighlight), Has(LocalPosition)], ({ entity, type }) => {
+    if (type === UpdateType.Exit) {
+      return objectPool.remove(`${entity}-dev-highlight`);
     }
-  );
 
-  const query = defineUpdateQuery(world, [Has(DevHighlight), Has(LocalPosition)], { runOnInit: true });
-  return defineReactionSystem(
-    world,
-    () => query.get(),
-    (entities) => {
-      for (const entity of entities) {
-        const devHighlight = getComponentValue(DevHighlight, entity);
-        if (!devHighlight) continue;
+    const devHighlight = getComponentValueStrict(DevHighlight, entity);
+    const position = getComponentValueStrict(LocalPosition, entity);
+    const highlight = objectPool.get(`${entity}-dev-highlight`, "Rectangle");
 
-        const position = getComponentValue(LocalPosition, entity);
-        if (!position) continue;
+    highlight.setComponent({
+      id: `highlight`,
+      once: (box) => {
+        const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
 
-        const highlight = objectPool.get(`${entity}-dev-highlight`, "Rectangle");
-        highlight.setComponent({
-          id: entity,
-          once: (box) => {
-            const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
-
-            box.setVisible(true);
-            box.setFillStyle(devHighlight.color ?? 0xf0e71d, 0.5);
-            box.setSize(tileWidth, tileHeight);
-            box.setPosition(pixelCoord.x + tileWidth / 2, pixelCoord.y + tileHeight / 2);
-          },
-        });
-      }
-    }
-  );
+        // box.setVisible(true);
+        box.setFillStyle(devHighlight.value ?? 0xf0e71d, 0.5);
+        box.setSize(tileWidth, tileHeight);
+        box.setPosition(pixelCoord.x + tileWidth / 2, pixelCoord.y + tileHeight / 2);
+      },
+    });
+  });
 }

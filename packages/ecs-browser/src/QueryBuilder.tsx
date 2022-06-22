@@ -24,7 +24,7 @@ export const QueryBuilder = function ({
   layers: Layers;
   allEntities: [Entity, Set<AnyComponent>][];
   setFilteredEntities: (es: [Entity, Set<AnyComponent>][]) => void;
-  devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
+  devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
 }) {
   const queryInputRef = useRef<HTMLInputElement>(null);
   const [entityQueryText, setEntityQueryText] = useState("");
@@ -76,7 +76,7 @@ export const QueryBuilder = function ({
         setFilteredEntities(selectedEntities);
 
         allEntities.forEach(([id]) => removeComponent(devHighlightComponent, id));
-        selectedEntities.forEach(([id]) => setComponent(devHighlightComponent, id, { color: 0x0000ff }));
+        selectedEntities.forEach(([id]) => setComponent(devHighlightComponent, id, { value: 0x0000ff }));
       } catch (e: unknown) {
         setErrorMessage((e as Error).message);
         console.error(e);

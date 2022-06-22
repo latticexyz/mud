@@ -29,7 +29,7 @@ export const EntityEditor = observer(
     components: Set<AnyComponent>;
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
-    devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
+    devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
     world: World;
   }) => {
     const [opened, setOpened] = useState(false);
@@ -39,7 +39,7 @@ export const EntityEditor = observer(
         onMouseEnter={() => {
           [...layers.phaser.world.entities.keys()].forEach((e) => removeComponent(devHighlightComponent, e));
           setComponent(devHighlightComponent, entity, {
-            color: null,
+            value: null,
           });
         }}
         onMouseLeave={() => {

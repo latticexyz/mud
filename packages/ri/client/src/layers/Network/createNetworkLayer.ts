@@ -7,7 +7,7 @@ import {
   defineUntraversableComponent,
 } from "./components";
 import { setupContracts } from "./setup";
-import { CHECKPOINT_URL, DEV_PRIVATE_KEY, DIAMOND_ADDRESS, LAYER_NAME, RPC_URL, RPC_WS_URL } from "./constants.local";
+import { CHECKPOINT_URL, DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.local";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
@@ -27,7 +27,7 @@ export type NetworkLayerConfig = {
  */
 export async function createNetworkLayer(config?: NetworkLayerConfig) {
   // World
-  const world = createWorld({ name: LAYER_NAME });
+  const world = createWorld();
 
   // Components
   const components = {
@@ -39,7 +39,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     Persona: defineComponent(
       world,
       { value: Type.String },
-      { name: "Persona", metadata: { contractId: keccak256("ember.component.personaComponent") } }
+      { id: "Persona", metadata: { contractId: keccak256("ember.component.personaComponent") } }
     ),
   };
 
@@ -105,7 +105,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     return txQueue.Game.joinGame(position, entityType);
   }
 
-  async function moveEntity(entity: Entity, targetPosition: WorldCoord) {
+  async function moveEntity(entity: string, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
     return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition, { gasLimit: 400000 });
   }
