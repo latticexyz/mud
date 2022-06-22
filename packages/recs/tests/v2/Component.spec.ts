@@ -1,4 +1,3 @@
-import { reaction } from "mobx";
 import {
   defineComponent,
   setComponent,
@@ -8,14 +7,12 @@ import {
   withValue,
   componentValueEquals,
   getEntitiesWithValue,
-  cloneComponent,
   overridableComponent,
-} from "../src/Component";
-import { Type } from "../src/constants";
-import { createEntity } from "../src/Entity";
-import { AnyComponent, Entity, World } from "../src/types";
-import { setEquals } from "../src/Utils/Equals";
-import { createWorld } from "../src/World";
+} from "../../src/Component";
+import { Type } from "../../src/constants";
+import { createEntity } from "../../src/Entity";
+import { AnyComponent, Entity, World } from "../../src/types";
+import { createWorld } from "../../src/World";
 
 describe("Component", () => {
   let world: World;
@@ -29,8 +26,8 @@ describe("Component", () => {
     const component = defineComponent(world, { x: Type.Number, y: Type.Number });
 
     const mock = jest.fn();
-    component.stream$.subscribe(({ entity, value }) => {
-      mock(entity, value);
+    component.update$.subscribe((update) => {
+      mock(update);
     });
 
     setComponent(component, entity, { x: 1, y: 2 });
@@ -38,17 +35,31 @@ describe("Component", () => {
     setComponent(component, entity, { x: 7, y: 2 });
     removeComponent(component, entity);
 
-    expect(mock).toHaveBeenNthCalledWith(1, entity, { x: 1, y: 2 });
-    expect(mock).toHaveBeenNthCalledWith(2, entity, { x: 7, y: 2 });
-    expect(mock).toHaveBeenNthCalledWith(3, entity, { x: 7, y: 2 });
-    expect(mock).toHaveBeenNthCalledWith(4, entity, undefined);
+    expect(mock).toHaveBeenNthCalledWith(1, { entity, value: [{ x: 1, y: 2 }, undefined], component });
+    expect(mock).toHaveBeenNthCalledWith(2, {
+      entity,
+      component,
+      value: [
+        { x: 7, y: 2 },
+        { x: 1, y: 2 },
+      ],
+    });
+    expect(mock).toHaveBeenNthCalledWith(3, {
+      entity,
+      component,
+      value: [
+        { x: 7, y: 2 },
+        { x: 7, y: 2 },
+      ],
+    });
+    expect(mock).toHaveBeenNthCalledWith(4, { entity, component, value: [undefined, { x: 7, y: 2 }] });
   });
 
   describe("defineComponent", () => {
     it("should register the component in the world", () => {
-      expect(world.components.size).toBe(0);
-      defineComponent(world, {});
-      expect(world.components.size).toBe(1);
+      expect(world.components.length).toBe(0);
+      defineComponent(world, { value: Type.Boolean });
+      expect(world.components.length).toBe(1);
     });
   });
 
@@ -69,11 +80,7 @@ describe("Component", () => {
     });
 
     it("should store the entity", () => {
-      expect(component.entities.has(entity)).toBe(true);
-    });
-
-    it("should store the component in the entity's component set", () => {
-      expect(world.entities.get(entity)?.has(component)).toBe(true);
+      expect(hasComponent(component, entity)).toBe(true);
     });
 
     it.todo("should store the value array");
@@ -97,12 +104,12 @@ describe("Component", () => {
     });
 
     it("should remove the entity", () => {
-      expect(component.entities.has(entity)).toBe(false);
+      expect(hasComponent(component, entity)).toBe(false);
     });
 
-    it("shouldremove the component from the entity's component set", () => {
-      expect(world.entities.get(entity)?.has(component)).toBe(false);
-    });
+    // it("shouldremove the component from the entity's component set", () => {
+    //   expect(world.entities.get(entity)?.has(component)).toBe(false);
+    // });
   });
 
   describe("hasComponent", () => {
@@ -147,7 +154,7 @@ describe("Component", () => {
       const component = defineComponent(world, { x: Type.Number, y: Type.Number });
       const value = { x: 1, y: 2 };
       const componentWithValue = withValue(component, value);
-      expect(componentWithValue).toEqual({ component, value });
+      expect(componentWithValue).toEqual([component, value]);
     });
   });
 
@@ -159,48 +166,7 @@ describe("Component", () => {
       createEntity(world);
       const entity4 = createEntity(world, [withValue(Position, { x: 1, y: 2 })]);
 
-      expect(setEquals(getEntitiesWithValue(Position, { x: 1, y: 2 }), new Set([entity1, entity4]))).toBe(true);
-    });
-  });
-
-  describe("cloneComponent", () => {
-    it("should return a deep copy of the given component", () => {
-      const Position = defineComponent(world, { x: Type.Number, y: Type.Number });
-      const entity1 = createEntity(world);
-      setComponent(Position, entity1, { x: 1, y: 2 });
-
-      const PositionClone = cloneComponent(Position);
-      expect(getComponentValue(PositionClone, entity1)).toEqual({ x: 1, y: 2 });
-    });
-
-    it("the cloned component should not be updated if the original component is updated", () => {
-      const Position = defineComponent(world, { x: Type.Number, y: Type.Number });
-      const entity1 = createEntity(world);
-      setComponent(Position, entity1, { x: 1, y: 2 });
-
-      const PositionClone = cloneComponent(Position);
-
-      setComponent(Position, entity1, { x: 2, y: 2 });
-      expect(getComponentValue(PositionClone, entity1)).toEqual({ x: 1, y: 2 });
-
-      const entity2 = createEntity(world, [withValue(Position, { x: 3, y: 3 })]);
-      expect(getComponentValue(PositionClone, entity2)).toBeUndefined();
-    });
-
-    it("the original component should not be updated if the cloned component is updated", () => {
-      const Position = defineComponent(world, { x: Type.Number, y: Type.Number });
-      const entity1 = createEntity(world);
-      setComponent(Position, entity1, { x: 1, y: 2 });
-
-      const PositionClone = cloneComponent(Position);
-      setComponent(PositionClone, entity1, { x: 2, y: 2 });
-      expect(getComponentValue(PositionClone, entity1)).toEqual({ x: 2, y: 2 });
-      expect(getComponentValue(Position, entity1)).toEqual({ x: 1, y: 2 });
-
-      const entity2 = "entity2";
-      setComponent(PositionClone, entity2, { x: 3, y: 3 });
-      expect(getComponentValue(PositionClone, entity2)).toEqual({ x: 3, y: 3 });
-      expect(getComponentValue(Position, entity2)).toBeUndefined();
+      expect(getEntitiesWithValue(Position, { x: 1, y: 2 })).toEqual(new Set([entity1, entity4]));
     });
   });
 
@@ -268,21 +234,39 @@ describe("Component", () => {
       const OverridablePosition = overridableComponent(Position);
 
       const spy = jest.fn();
-      reaction(
-        () => getComponentValue(OverridablePosition, entity1)?.x,
-        () => spy()
-      );
+      OverridablePosition.update$.subscribe(spy);
 
       expect(spy).toHaveBeenCalledTimes(0);
 
       OverridablePosition.addOverride("firstOverride", { entity: entity1, value: { x: 3, y: 3 } });
       expect(spy).toHaveBeenCalledTimes(1);
+      expect(spy).toHaveBeenLastCalledWith({
+        entity: entity1,
+        component: OverridablePosition,
+        value: [
+          { x: 3, y: 3 },
+          { x: 1, y: 2 },
+        ],
+      });
 
       OverridablePosition.removeOverride("firstOverride");
       expect(spy).toHaveBeenCalledTimes(2);
+      expect(spy).toHaveBeenLastCalledWith({
+        entity: entity1,
+        component: OverridablePosition,
+        value: [
+          { x: 1, y: 2 },
+          { x: 3, y: 3 },
+        ],
+      });
 
-      OverridablePosition.addOverride("secondOverride", { entity: "unrelatedEntity", value: { x: 2, y: 3 } });
-      expect(spy).toHaveBeenCalledTimes(2);
+      OverridablePosition.addOverride("secondOverride", { entity: 42, value: { x: 2, y: 3 } });
+      expect(spy).toHaveBeenLastCalledWith({
+        entity: 42,
+        component: OverridablePosition,
+        value: [{ x: 2, y: 3 }, undefined],
+      });
+      expect(spy).toHaveBeenCalledTimes(3);
     });
   });
 });

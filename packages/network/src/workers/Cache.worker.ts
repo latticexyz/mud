@@ -1,17 +1,13 @@
 import { DoWork, runWorker } from "observable-webworker";
 import { distinctUntilChanged, map, Observable, ReplaySubject, Subject, take } from "rxjs";
-import { Components, ComponentValue, ExtendableECSEvent, SchemaOf } from "@latticexyz/recs";
+import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
 import { awaitStreamValue, filterNullish } from "@latticexyz/utils";
 import { getCacheId } from "./utils";
-
-export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
-  C,
-  { lastEventInTx: boolean; txHash: string; entity: string }
->;
+import { NetworkComponentUpdate } from "../types";
 
 export type Input<Cm extends Components> = [
-  ECSEventWithTx<Cm> | undefined,
+  NetworkComponentUpdate<Cm> | undefined,
   number | undefined,
   string | undefined,
   number | undefined

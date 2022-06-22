@@ -1,51 +1,52 @@
-import { autorun, reaction } from "mobx";
-import { Subscription } from "rxjs";
+import { Observable } from "rxjs";
 import { removeComponent, setComponent } from "./Component";
-import { defineExitQuery, defineEnterQuery } from "./Query";
-import { Component, ComponentValue, ComponentWithStream, Entity, QueryFragments, Schema, World } from "./types";
+import { UpdateType } from "./constants";
+import { defineEnterQuery, defineExitQuery, defineQuery, defineUpdateQuery } from "./Query";
+import { Component, ComponentUpdate, ComponentValue, Entity, EntityQueryFragment, Schema, World } from "./types";
 
-export type System = () => void;
-
-export function defineSystem(world: World, system: (world: World) => void): System {
-  return () => system(world);
+function defineRxSystem<T>(world: World, observable$: Observable<T>, system: (event: T) => void) {
+  const subscription = observable$.subscribe(system);
+  world.registerDisposer(() => subscription?.unsubscribe());
 }
 
-/**
- * @param world ECS world this component is defined in
- * @param system Function to be called whenever any of the observable data accessed in the function changes
- * @param options Optional parameters object, [requirement?] is a function that must return true or be null for system to run
- * @returns Function to dispose the system
- */
-export function defineAutorunSystem(world: World, system: () => void, options?: { requirement?: () => boolean }) {
-  const { requirement } = options || {};
-  const disposer = autorun(() => {
-    if (requirement == null || requirement()) system();
-  });
-  world.registerDisposer(disposer);
-}
-
-/**
- * @param world ECS world this component is defined in
- * @param observe System is rerun if any of the data accessed in this function changes. Result of this function is passed to the system.
- * @param system Function to be run when any of the data accessed in the observe function changes
- * @param options Optional parameters object, [requirement?] is a function that must return true or be null for system to run
- * @returns Function to dispose the system
- */
-export function defineReactionSystem<T>(
+export function defineUpdateSystem(
   world: World,
-  observe: () => T,
-  system: (data: T) => void,
-  options?: { requirement?: () => boolean }
+  query: EntityQueryFragment[],
+  system: (update: ComponentUpdate) => void
 ) {
-  const { requirement } = options || {};
-  const disposer = reaction(
-    observe,
-    (data) => {
-      if (requirement == null || requirement()) system(data);
-    },
-    { fireImmediately: true }
-  );
-  world.registerDisposer(disposer);
+  defineRxSystem(world, defineUpdateQuery(query), system);
+}
+
+export function defineEnterSystem(
+  world: World,
+  query: EntityQueryFragment[],
+  system: (update: ComponentUpdate) => void
+) {
+  defineRxSystem(world, defineEnterQuery(query), system);
+}
+
+export function defineExitSystem(
+  world: World,
+  query: EntityQueryFragment[],
+  system: (update: ComponentUpdate) => void
+) {
+  defineRxSystem(world, defineExitQuery(query), system);
+}
+
+export function defineSystem(
+  world: World,
+  query: EntityQueryFragment[],
+  system: (update: ComponentUpdate & { type: UpdateType }) => void
+) {
+  defineRxSystem(world, defineQuery(query).update$, system);
+}
+
+export function defineComponentSystem<S extends Schema>(
+  world: World,
+  component: Component<S>,
+  system: (update: ComponentUpdate<S>) => void
+) {
+  defineRxSystem(world, component.update$, system);
 }
 
 /**
@@ -57,45 +58,12 @@ export function defineReactionSystem<T>(
  */
 export function defineSyncSystem<T extends Schema>(
   world: World,
-  query: QueryFragments,
+  query: EntityQueryFragment[],
   component: (entity: Entity) => Component<T>,
   value: (entity: Entity) => ComponentValue<T>
 ) {
-  const newEntities = defineEnterQuery(world, query, { runOnInit: true });
-  const removedEntities = defineExitQuery(world, query);
-
-  defineReactionSystem(
-    world,
-    () => newEntities.get(),
-    (entities) => {
-      for (const entity of entities) {
-        setComponent(component(entity), entity, value(entity));
-      }
-    }
-  );
-
-  defineReactionSystem(
-    world,
-    () => removedEntities.get(),
-    (entities) => {
-      for (const entity of entities) {
-        removeComponent(component(entity), entity);
-      }
-    }
-  );
-}
-
-/**
- * Wrapper around component.stream$ that handles registering the dispose function on the world
- * @param world ECS world this component is defined in
- * @param component Component to whose stream to subscribe
- * @param system Function to handle the stream with
- */
-export function defineRxSystem<T extends Schema>(
-  world: World,
-  component: Component<T>,
-  system: (stream$: ComponentWithStream<T>["stream$"]) => Subscription
-) {
-  const subscription = system(component.stream$);
-  world.registerDisposer(() => subscription?.unsubscribe());
+  defineSystem(world, query, ({ entity, type }) => {
+    if (type === UpdateType.Enter) setComponent(component(entity), entity, value(entity));
+    if (type === UpdateType.Exit) removeComponent(component(entity), entity);
+  });
 }

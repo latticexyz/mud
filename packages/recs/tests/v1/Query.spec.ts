@@ -1,7 +1,7 @@
 import { reaction, runInAction } from "mobx";
-import { defineComponent, removeComponent, setComponent, withValue } from "../src/Component";
-import { Type } from "../src/constants";
-import { createEntity } from "../src/Entity";
+import { defineComponent, removeComponent, setComponent, withValue } from "../../src/v1/Component";
+import { Type } from "../../src/v1/constants";
+import { createEntity } from "../../src/v1/Entity";
 import {
   Has,
   Not,
@@ -13,9 +13,9 @@ import {
   NotValue,
   ProxyRead,
   ProxyExpand,
-} from "../src/Query";
-import { Component, World } from "../src/types";
-import { createWorld } from "../src/World";
+} from "../../src/v1/Query";
+import { Component, World } from "../../src/v1/types";
+import { createWorld } from "../../src/v1/World";
 
 describe("Query", () => {
   let world: World;

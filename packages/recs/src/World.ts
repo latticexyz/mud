@@ -1,71 +1,59 @@
-import { AnyComponent, Entity, World } from "./types";
-import { uuid } from "@latticexyz/utils";
-import { observable, observe } from "mobx";
-import { SuperSet, SuperSetMap } from "./Utils";
+import { hasComponent } from "./Component";
+import { Component, Entity, World } from "./types";
 
-export function createWorld(options?: { parentWorld?: World; name?: string }): World {
-  const components = new SuperSet<AnyComponent>({ parent: options?.parentWorld?.components });
-  const entities = new SuperSetMap<Entity, AnyComponent>({ parent: options?.parentWorld?.entities });
-  const systemDisposer = new Set<() => void>();
-  const prefix = options?.name || uuid();
+export function createWorld() {
+  const entityToIndex = new Map<string, number>();
+  const entities: string[] = [];
+  const components: Component[] = [];
+  let disposers: (() => void)[] = [];
 
-  function registerEntity({ id, idSuffix }: { id?: string; idSuffix?: string } = {}): Entity {
-    const entity = id || prefix + "/" + entities.size + (idSuffix ? "-" + idSuffix : "");
-    entities.init(entity);
-    return entity;
+  function getEntityIndexStrict(entity: string): number {
+    const index = entityToIndex.get(entity);
+    if (index == null) throw new Error("entity does not exist");
+    return index;
   }
 
-  function registerComponent<T extends AnyComponent>(component: T) {
-    const observableComponent = observable(component);
-    components.add(observableComponent);
+  function registerEntity({ id, idSuffix }: { id?: string; idSuffix?: string } = {}) {
+    const entity = id || entities.length + (idSuffix ? "-" + idSuffix : "");
+    const index = entities.push(entity) - 1;
+    entityToIndex.set(entity, index);
+    return index;
+  }
 
-    observe(observableComponent.entities, (change) => {
-      if (change.type === "add") {
-        const entity = change.newValue;
-        if (!entities.get(entity)) throw new Error("Entity is not registered in this world.");
-        entities.add(change.newValue, observableComponent);
-      }
+  function registerComponent(component: Component) {
+    components.push(component);
+  }
 
-      if (change.type === "delete") {
-        entities.deleteValue(change.oldValue, observableComponent);
-      }
-    });
-
-    return observableComponent;
+  function dispose() {
+    for (let i = 0; i < disposers.length; i++) {
+      disposers[i]();
+    }
+    disposers = [];
   }
 
   function registerDisposer(disposer: () => void) {
-    systemDisposer.add(disposer);
+    disposers.push(disposer);
   }
 
-  function disposeAll() {
-    for (const dispose of systemDisposer.values()) {
-      dispose();
-    }
-    systemDisposer.clear();
-  }
-
-  function getEntityComponents(entity: Entity): Set<AnyComponent> {
-    const entityComponents = entities.get(entity);
-    if (!entityComponents) throw new Error("Entity is not registered in this world");
-    return entityComponents;
+  function hasEntity(entity: string): boolean {
+    return entityToIndex.get(entity) != null;
   }
 
   return {
-    components,
     entities,
-    registerComponent,
+    entityToIndex,
     registerEntity,
-    getEntityComponents,
+    components,
+    registerComponent,
+    dispose,
     registerDisposer,
-    disposeAll,
+    getEntityIndexStrict,
+    hasEntity,
   };
 }
 
-export function extendWorld(parentWorld: World): World {
-  return createWorld({ parentWorld });
-}
-
-export function getEntityComponents(world: World, entity: Entity) {
-  return world.getEntityComponents(entity);
+// Design decision: don't store a list of components for each entity but compute it dynamically when needed
+// because there are less components than entities and maintaining a list of components per entity is a large overhead
+export function getEntityComponents(world: World, entity: Entity): Component[] {
+  return world.components.filter((component) => hasComponent(component, entity));
 }
