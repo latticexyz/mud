@@ -1,13 +1,12 @@
-import { Entity } from "@latticexyz/recs";
 import { waitForComponentValueIn } from "../../../../../utils/components";
 import { defineActionComponent } from "../../../components";
 import { ActionState } from "../constants";
 
-export async function waitForActionCompletion(
+export function waitForActionCompletion(
   Action: ReturnType<typeof defineActionComponent>,
-  entity: Entity
+  actionId: string
 ): Promise<void> {
-  return waitForComponentValueIn(Action, entity, [
+  return waitForComponentValueIn(Action, actionId, [
     { state: ActionState.Cancelled },
     { state: ActionState.Failed },
     { state: ActionState.Complete },

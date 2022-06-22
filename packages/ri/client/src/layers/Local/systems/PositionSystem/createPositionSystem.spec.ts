@@ -11,13 +11,15 @@ describe("Position System", () => {
   let local: LocalLayer;
 
   beforeEach(async () => {
-    network = await createNetworkLayer();
+    network = await createNetworkLayer({ skipContracts: true });
     headless = await createHeadlessLayer(network);
     local = await createLocalLayer(headless);
   });
 
   afterEach(() => {
-    network.world.dispose();
+    network.world.disposeAll();
+    headless.world.disposeAll();
+    local.world.disposeAll();
   });
 
   it.only("should add the Destination component to entities if their network layer Position component changed", () => {

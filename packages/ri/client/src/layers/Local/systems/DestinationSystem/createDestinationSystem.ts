@@ -1,4 +1,11 @@
-import { defineComponentSystem, getComponentValue, removeComponent, setComponent } from "@latticexyz/recs";
+import {
+  defineReactionSystem,
+  defineUpdateQuery,
+  getComponentValue,
+  Has,
+  removeComponent,
+  setComponent,
+} from "@latticexyz/recs";
 import { worldCoordEq } from "../../../../utils/coords";
 import { aStar } from "../../../../utils/pathfinding";
 import { LocalLayer } from "../../types";
@@ -12,23 +19,34 @@ export function createDestinationSystem(layer: LocalLayer) {
     components: { Destination, LocalPosition, Path },
   } = layer;
 
-  defineComponentSystem(world, Destination, (update) => {
-    const destination = update.value[0];
-    if (!destination) return;
+  const query = defineUpdateQuery(world, [Has(Destination)], { runOnInit: true });
 
-    removeComponent(Destination, update.entity);
+  defineReactionSystem(
+    world,
+    () => query.get(),
+    (updatedEntities) => {
+      for (const entity of updatedEntities) {
+        const localPosition = getComponentValue(LocalPosition, entity);
+        const destination = getComponentValue(Destination, entity);
 
-    const localPosition = getComponentValue(LocalPosition, update.entity);
-    if (!localPosition || worldCoordEq(destination, localPosition)) return;
+        if (!worldCoordEq(localPosition, destination)) {
+          removeComponent(Destination, entity);
+        }
 
-    const path = aStar(localPosition, destination);
-    const x: number[] = [];
-    const y: number[] = [];
-    for (const coord of path) {
-      x.push(coord.x);
-      y.push(coord.y);
+        if (!localPosition || !destination) {
+          return;
+        }
+
+        const path = aStar(localPosition, destination);
+        const x: number[] = [];
+        const y: number[] = [];
+        for (const coord of path) {
+          x.push(coord.x);
+          y.push(coord.y);
+        }
+        setComponent(Path, entity, { x, y });
+      }
+      //
     }
-    setComponent(Path, update.entity, { x, y });
-    //
-  });
+  );
 }

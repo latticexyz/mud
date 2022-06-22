@@ -1,3 +1,4 @@
+import { createWorld } from "@latticexyz/recs";
 import { LocalLayer } from "../../Local";
 import {
   createMapSystem,
@@ -28,7 +29,7 @@ import { defineDevHighlightComponent } from "@latticexyz/std-client";
  */
 export async function createPhaserLayer(local: LocalLayer) {
   // World
-  const { world } = local;
+  const world = createWorld({ parentWorld: local.world, name: "Phaser" });
 
   // Components
   const Appearance = defineAppearanceComponent(world);

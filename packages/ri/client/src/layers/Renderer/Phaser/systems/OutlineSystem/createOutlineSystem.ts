@@ -1,4 +1,4 @@
-import { defineComponentSystem } from "@latticexyz/recs";
+import { defineEnterQuery, defineExitQuery, Has, defineReactionSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { HueTintAndOutlineFXPipeline } from "@latticexyz/phaserx";
 
@@ -14,20 +14,33 @@ export function createOutlineSystem(layer: PhaserLayer) {
     },
   } = layer;
 
-  defineComponentSystem(world, Outline, ({ entity, value }) => {
-    const outline = value[0]?.value;
-    const embodiedEntity = objectPool.get(entity, "Sprite");
+  const enterQuery = defineEnterQuery(world, [Has(Outline)], { runOnInit: true });
+  const exitQuery = defineExitQuery(world, [Has(Outline)], { runOnInit: true });
 
-    if (!outline) {
-      return embodiedEntity.removeComponent(Outline.id);
+  defineReactionSystem(
+    world,
+    () => enterQuery.get(),
+    (entities) => {
+      for (const entity of entities) {
+        const embodiedEntity = objectPool.get(entity, "Sprite");
+        embodiedEntity.setComponent({
+          id: Outline.id,
+          once: (gameObject) => {
+            gameObject.setPipeline(HueTintAndOutlineFXPipeline.KEY);
+            gameObject.setPipelineData("outline", true);
+          },
+        });
+      }
     }
-
-    embodiedEntity.setComponent({
-      id: Outline.id,
-      once: (gameObject) => {
-        gameObject.setPipeline(HueTintAndOutlineFXPipeline.KEY);
-        gameObject.setPipelineData("outline", true);
-      },
-    });
-  });
+  );
+  defineReactionSystem(
+    world,
+    () => exitQuery.get(),
+    (entities) => {
+      for (const entity of entities) {
+        const embodiedEntity = objectPool.get(entity, "Sprite");
+        embodiedEntity.removeComponent(Outline.id);
+      }
+    }
+  );
 }

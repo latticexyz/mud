@@ -1,4 +1,4 @@
-import { createEntity, setComponent, Entity, getComponentValue } from "@latticexyz/recs";
+import { createWorld, createEntity, setComponent, Entity, getComponentValue } from "@latticexyz/recs";
 import { HeadlessLayer } from "../Headless";
 import {
   defineStrollingComponent,
@@ -22,14 +22,13 @@ import {
 } from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
 import { Area } from "@latticexyz/utils";
-import { createLocalMapSystem } from "./systems/LocalMapSystem";
 
 /**
  * The Local layer is the thrid layer in the client architecture and extends the Headless layer.
  * Its purpose is to add components and systems for all client-only functionality, eg. strolling imps.
  */
 export async function createLocalLayer(headless: HeadlessLayer) {
-  const { world } = headless;
+  const world = createWorld({ parentWorld: headless.world, name: "Local" });
 
   // Components
   const LocalPosition = defineLocalPositionComponent(world);
@@ -73,7 +72,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   }
 
   function selectEntity(entity: Entity) {
-    if (getComponentValue(Selectable, entity)) setComponent(Selected, entity, { value: true });
+    if (getComponentValue(Selectable, entity)) setComponent(Selected, entity, {});
   }
 
   // Layer
@@ -93,7 +92,6 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   createPositionSystem(layer);
   createDestinationSystem(layer);
   createPathSystem(layer);
-  createLocalMapSystem(layer);
 
   return layer;
 }

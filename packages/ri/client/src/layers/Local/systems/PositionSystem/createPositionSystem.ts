@@ -1,4 +1,4 @@
-import { defineComponentSystem, setComponent } from "@latticexyz/recs";
+import { defineReactionSystem, defineUpdateQuery, getComponentValueStrict, Has, setComponent } from "@latticexyz/recs";
 import { LocalLayer } from "../../types";
 
 /**
@@ -15,7 +15,16 @@ export function createPositionSystem(layer: LocalLayer) {
     components: { Destination },
   } = layer;
 
-  defineComponentSystem(world, Position, ({ entity, value }) => {
-    if (value[0]) setComponent(Destination, entity, value[0]);
-  });
+  const updateQuery = defineUpdateQuery(world, [Has(Position)], { runOnInit: true });
+
+  defineReactionSystem(
+    world,
+    () => updateQuery.get(),
+    (movedEntities) => {
+      for (const entity of movedEntities) {
+        const position = getComponentValueStrict(Position, entity);
+        setComponent(Destination, entity, position);
+      }
+    }
+  );
 }

@@ -1,6 +1,7 @@
 import { Component, ComponentValue, createWorld, Entity, Schema } from "@latticexyz/recs";
 import { definePositionComponent, defineEntityTypeComponent } from "./components";
 import { setupContracts } from "./setup";
+import { LAYER_NAME } from "./constants.local";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
@@ -12,7 +13,7 @@ import { Coord } from "@latticexyz/utils";
  */
 export async function createNetworkLayer() {
   // World
-  const world = createWorld();
+  const world = createWorld({ name: LAYER_NAME });
 
   // Components
   const components = {

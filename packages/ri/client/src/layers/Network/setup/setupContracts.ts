@@ -5,7 +5,6 @@ import {
   createTxQueue,
   createSyncWorker,
   createEncoder,
-  NetworkComponentUpdate,
 } from "@latticexyz/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
@@ -13,12 +12,17 @@ import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFace
 import WorldAbi from "ri-contracts/abi/World.json";
 import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
 import { bufferTime, filter, Observable, Subject } from "rxjs";
-import { Component, Components, Schema, setComponent, World } from "@latticexyz/recs";
+import { Component, Components, ExtendableECSEvent, Schema, setComponent, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { stretch } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
+
+export type ECSEventWithTx<C extends Components> = ExtendableECSEvent<
+  C,
+  { lastEventInTx: boolean; txHash: string; entity: string }
+>;
 
 export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
@@ -88,13 +92,12 @@ export async function setupContracts<C extends ContractComponents>(world: World,
 function applyNetworkUpdates<C extends Components>(
   world: World,
   components: C,
-  ecsEvent$: Observable<NetworkComponentUpdate<C>>
+  ecsEvent$: Observable<ECSEventWithTx<C>>
 ) {
   const txReduced$ = new Subject<string>();
 
   const ecsEventSub = ecsEvent$
     .pipe(
-      // TODO: Check if this is still needed with recs v2
       // We throttle the client side event processing to 200 events every 16ms, so 12.500 events per second.
       // This means if the chain were to emit more than 12.500 events per second, the client would not keep up.
       // (We're not close to 12.500 events per second on the chain yet)
@@ -107,8 +110,10 @@ function applyNetworkUpdates<C extends Components>(
       // but it currently breaks defineUpdateAction (https://linear.app/latticexyz/issue/LAT-594/defineupdatequery-does-not-work-when-running-multiple-component)
       // runInAction(() => {
       for (const update of updates) {
-        const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
-        setComponent(components[update.component] as Component<Schema>, entityIndex, update.value);
+        if (!world.entities.has(update.entity)) {
+          world.registerEntity({ id: update.entity });
+        }
+        setComponent(components[update.component] as Component<Schema>, update.entity, update.value);
         if (update.lastEventInTx) txReduced$.next(update.txHash);
       }
       // });

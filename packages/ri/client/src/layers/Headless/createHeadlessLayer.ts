@@ -1,3 +1,4 @@
+import { createWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem } from "./systems";
 import { defineActionComponent } from "./components";
@@ -8,7 +9,8 @@ import { defineActionComponent } from "./components";
  */
 
 export async function createHeadlessLayer(network: NetworkLayer) {
-  const { world } = network;
+  const world = createWorld({ parentWorld: network.world, name: "Headless" });
+
   const Action = defineActionComponent(world);
   const components = { Action };
 

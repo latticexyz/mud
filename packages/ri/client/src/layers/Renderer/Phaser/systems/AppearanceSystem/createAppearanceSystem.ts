@@ -1,4 +1,4 @@
-import { defineComponentSystem } from "@latticexyz/recs";
+import { defineAutorunSystem, defineUpdateQuery, getComponentValue, Has } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 
 /**
@@ -11,21 +11,20 @@ export function createAppearanceSystem(layer: PhaserLayer) {
     scenes,
   } = layer;
   const objectPool = scenes.Main.objectPool;
+  const entities = defineUpdateQuery(world, [Has(Appearance)], { runOnInit: true });
+  return defineAutorunSystem(world, () => {
+    for (const entity of entities.get()) {
+      const appearance = getComponentValue(Appearance, entity);
+      if (!appearance) continue;
 
-  defineComponentSystem(world, Appearance, ({ entity, value }) => {
-    const appearance = value[0];
-
-    if (!appearance) {
-      return objectPool.remove(entity);
+      const embodiedEntity = objectPool.get(entity, "Sprite");
+      embodiedEntity.setComponent({
+        id: Appearance.id,
+        once: (gameObject) => {
+          gameObject.setTexture(appearance.texture);
+          gameObject.setOrigin(0, 0);
+        },
+      });
     }
-
-    const embodiedEntity = objectPool.get(entity, "Sprite");
-    embodiedEntity.setComponent({
-      id: Appearance.id,
-      once: (gameObject) => {
-        gameObject.setTexture(appearance.texture);
-        gameObject.setOrigin(0, 0);
-      },
-    });
   });
 }

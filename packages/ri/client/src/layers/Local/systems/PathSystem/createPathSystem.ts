@@ -1,4 +1,4 @@
-import { Entity, getComponentValue, removeComponent, setComponent, defineComponentSystem } from "@latticexyz/recs";
+import { Entity, getComponentValue, removeComponent, setComponent, defineRxSystem } from "@latticexyz/recs";
 import { DEFAULT_MOVE_SPEED, FAST_MOVE_SPEED } from "../../constants";
 import { LocalLayer } from "../../types";
 import { concatMap, find, from, of, zipWith } from "rxjs";
@@ -29,35 +29,29 @@ export function createPathSystem(layer: LocalLayer) {
     setComponent(MoveSpeed, entity, { ...moveSpeed, current: moveSpeed.default });
   }
 
-  defineComponentSystem(world, Path, (update) => {
-    const path = update.value[0];
-    if (!path) return;
+  defineRxSystem(world, Path, (stream$) => {
+    return stream$.subscribe(({ entity, value: path }) => {
+      if (!path) return;
 
-    increaseMoveSpeed(update.entity);
+      increaseMoveSpeed(entity);
 
-    const positionStream = from(path.x).pipe(
-      zipWith(from(path.y)), // Transform coords into format [x,y]
-      concatMap((position) => of(position).pipe(delayTime(FAST_MOVE_SPEED))) // Emit one coord every 1000ms
-    );
+      const positionStream = from(path.x).pipe(
+        zipWith(from(path.y)), // Transform coords into format [x,y]
+        concatMap((position) => of(position).pipe(delayTime(FAST_MOVE_SPEED))) // Emit one coord every 1000ms
+      );
 
-    const moveSubscription = positionStream.subscribe({
-      next: ([x, y]) => setComponent(LocalPosition, update.entity, { x, y }), // Set the new position
-      complete: () => {
-        removeComponent(Path, update.entity); // Remove Path component once the path is traversed
-        resetMoveSpeed(update.entity);
-      },
-    });
-
-    // Stop previous traversal if there is a new path
-    const updateSubscription = Path.update$
-      .pipe(find((newValue) => newValue.entity === update.entity))
-      .subscribe(() => {
-        moveSubscription?.unsubscribe();
+      const moveSubscription = positionStream.subscribe({
+        next: ([x, y]) => setComponent(LocalPosition, entity, { x, y }), // Set the new position
+        complete: () => {
+          removeComponent(Path, entity); // Remove Path component once the path is traversed
+          resetMoveSpeed(entity);
+        },
       });
 
-    world.registerDisposer(() => {
-      moveSubscription?.unsubscribe();
-      updateSubscription?.unsubscribe();
+      // Stop previous traversal if there is a new path
+      stream$.pipe(find((newValue) => newValue.entity === entity)).subscribe(() => {
+        moveSubscription.unsubscribe();
+      });
     });
   });
 }

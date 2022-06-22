@@ -1,4 +1,5 @@
-import { HasValue, Has, defineSyncSystem } from "@latticexyz/recs";
+import { HasValue, Has } from "@latticexyz/recs";
+import { defineSyncSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { LocalEntityTypes } from "../../../../Local/types";
 import { EntityTypes } from "../../../../Network/types";
@@ -45,7 +46,7 @@ export function createSyncSystem(layer: PhaserLayer) {
     world,
     [Has(Selected)],
     () => Outline,
-    () => ({ value: true })
+    () => ({})
   );
 
   defineSyncSystem(

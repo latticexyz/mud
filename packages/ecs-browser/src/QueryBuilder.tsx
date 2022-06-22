@@ -1,15 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
-import {
-  Layers,
-  removeComponent,
-  setComponent,
-  Type,
-  AnyComponent,
-  Component,
-  QueryFragments,
-  runQuery,
-  Entity,
-} from "@latticexyz/recs";
+import { defineQuery, Layers, removeComponent, setComponent, Type } from "@latticexyz/recs";
+import { AnyComponent, Component, QueryFragments } from "@latticexyz/recs/src/types";
 import { ComponentBrowserButton, ComponentBrowserInput, QueryBuilderForm } from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -22,8 +13,8 @@ export const QueryBuilder = function ({
   devHighlightComponent,
 }: {
   layers: Layers;
-  allEntities: [Entity, Set<AnyComponent>][];
-  setFilteredEntities: (es: [Entity, Set<AnyComponent>][]) => void;
+  allEntities: [string, Set<AnyComponent>][];
+  setFilteredEntities: (es: [string, Set<AnyComponent>][]) => void;
   devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
 }) {
   const queryInputRef = useRef<HTMLInputElement>(null);
@@ -71,7 +62,7 @@ export const QueryBuilder = function ({
           throw new Error("Invalid query");
         }
 
-        const entityIds = runQuery(queryArray);
+        const entityIds = defineQuery(queryArray).get();
         const selectedEntities = allEntities.filter(([id]) => entityIds.has(id));
         setFilteredEntities(selectedEntities);
 

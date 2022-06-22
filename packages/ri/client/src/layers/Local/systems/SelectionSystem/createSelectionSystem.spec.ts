@@ -1,4 +1,4 @@
-import { createEntity, withValue, getComponentValue, setComponent, Has, runQuery } from "@latticexyz/recs";
+import { createEntity, withValue, getComponentValue, setComponent, defineQuery, Has } from "@latticexyz/recs";
 import { LocalLayer } from "../../types";
 import { createLocalLayer } from "../../createLocalLayer";
 import { createHeadlessLayer, HeadlessLayer } from "../../../Headless";
@@ -10,13 +10,15 @@ describe("Selection system", () => {
   let local: LocalLayer;
 
   beforeEach(async () => {
-    network = await createNetworkLayer();
+    network = await createNetworkLayer({ skipContracts: true });
     headless = await createHeadlessLayer(network);
     local = await createLocalLayer(headless);
   });
 
   afterEach(() => {
-    network.world.dispose();
+    network.world.disposeAll();
+    headless.world.disposeAll();
+    local.world.disposeAll();
   });
 
   it("should select all selectable entities with position in the region", () => {
@@ -28,29 +30,17 @@ describe("Selection system", () => {
       components: { Position },
     } = network;
 
-    const entity1 = createEntity(local.world, [
-      withValue(LocalPosition, { x: 1, y: 2 }),
-      withValue(Selectable, { value: true }),
-    ]); // Selectable
-    const entity2 = createEntity(local.world, [
-      withValue(LocalPosition, { x: 5, y: 4 }),
-      withValue(Selectable, { value: true }),
-    ]); // Selectable
-    const entity3 = createEntity(local.world, [
-      withValue(LocalPosition, { x: 10, y: 20 }),
-      withValue(Selectable, { value: true }),
-    ]); // Selectable but outside area
+    const entity1 = createEntity(local.world, [withValue(LocalPosition, { x: 1, y: 2 }), withValue(Selectable, {})]); // Selectable
+    const entity2 = createEntity(local.world, [withValue(LocalPosition, { x: 5, y: 4 }), withValue(Selectable, {})]); // Selectable
+    const entity3 = createEntity(local.world, [withValue(LocalPosition, { x: 10, y: 20 }), withValue(Selectable, {})]); // Selectable but outside area
     const entity4 = createEntity(local.world, [withValue(LocalPosition, { x: 2, y: 2 })]); // Not Selectable
-    const entity5 = createEntity(network.world, [
-      withValue(Position, { x: 3, y: 3 }),
-      withValue(Selectable, { value: true }),
-    ]); // Selectable
+    const entity5 = createEntity(network.world, [withValue(Position, { x: 3, y: 3 }), withValue(Selectable, {})]); // Selectable
     const entity6 = createEntity(network.world, [withValue(Position, { x: 4, y: 2 })]); // Not Selectable
-    const entity7 = createEntity(network.world, [withValue(Selectable, { value: true })]); // Selectable but no position
-    const entity8 = createEntity(local.world, [withValue(Selectable, { value: true })]); // Selectable but no position
+    const entity7 = createEntity(network.world, [withValue(Selectable, {})]); // Selectable but no position
+    const entity8 = createEntity(local.world, [withValue(Selectable, {})]); // Selectable but no position
 
     setComponent(Selection, singletonEntity, { x: 0, y: 0, width: 6, height: 6 });
-    const selectedEntities = runQuery([Has(Selected)]);
+    const selectedEntities = defineQuery([Has(Selected)]).get();
     expect(selectedEntities).toEqual(new Set([entity1, entity2, entity5]));
     expect(getComponentValue(Selected, entity3)).toBeUndefined();
     expect(getComponentValue(Selected, entity4)).toBeUndefined();
@@ -68,29 +58,18 @@ describe("Selection system", () => {
       components: { Position },
     } = network;
 
-    const entity1 = createEntity(local.world, [
-      withValue(LocalPosition, { x: 1, y: 2 }),
-      withValue(Selectable, { value: true }),
-    ]); // Selectable
-    const entity2 = createEntity(local.world, [
-      withValue(LocalPosition, { x: 5, y: 4 }),
-      withValue(Selectable, { value: true }),
-    ]); // Selectable
-    const entity3 = createEntity(local.world, [
-      withValue(LocalPosition, { x: 10, y: 20 }),
-      withValue(Selectable, { value: true }),
-    ]); // Selectable but outside area
+    const entity1 = createEntity(local.world, [withValue(LocalPosition, { x: 1, y: 2 }), withValue(Selectable, {})]); // Selectable
+    const entity2 = createEntity(local.world, [withValue(LocalPosition, { x: 5, y: 4 }), withValue(Selectable, {})]); // Selectable
+    const entity3 = createEntity(local.world, [withValue(LocalPosition, { x: 10, y: 20 }), withValue(Selectable, {})]); // Selectable but outside area
     const entity4 = createEntity(local.world, [withValue(LocalPosition, { x: 2, y: 2 })]); // Not Selectable
-    const entity5 = createEntity(network.world, [
-      withValue(Position, { x: 3, y: 3 }),
-      withValue(Selectable, { value: true }),
-    ]); // Selectable
+    const entity5 = createEntity(network.world, [withValue(Position, { x: 3, y: 3 }), withValue(Selectable, {})]); // Selectable
     const entity6 = createEntity(network.world, [withValue(Position, { x: 4, y: 2 })]); // Not Selectable
-    const entity7 = createEntity(network.world, [withValue(Selectable, { value: true })]); // Selectable but no position
-    const entity8 = createEntity(local.world, [withValue(Selectable, { value: true })]); // Selectable but no position
+    const entity7 = createEntity(network.world, [withValue(Selectable, {})]); // Selectable but no position
+    const entity8 = createEntity(local.world, [withValue(Selectable, {})]); // Selectable but no position
 
     setComponent(Selection, singletonEntity, { x: 0, y: 0, width: 6, height: 6 });
-    expect(runQuery([Has(Selected)])).toEqual(new Set([entity1, entity2, entity5]));
+    const selectedEntitiesQuery = defineQuery([Has(Selected)]);
+    expect(selectedEntitiesQuery.get()).toEqual(new Set([entity1, entity2, entity5]));
     expect(getComponentValue(Selected, entity3)).toBeUndefined();
     expect(getComponentValue(Selected, entity4)).toBeUndefined();
     expect(getComponentValue(Selected, entity6)).toBeUndefined();
@@ -98,7 +77,7 @@ describe("Selection system", () => {
     expect(getComponentValue(Selected, entity8)).toBeUndefined();
 
     setComponent(Selection, singletonEntity, { x: 0, y: 0, width: 0, height: 0 });
-    expect(runQuery([Has(Selected)])).toEqual(new Set([]));
+    expect(selectedEntitiesQuery.get()).toEqual(new Set([]));
     expect(getComponentValue(Selected, entity1)).toBeUndefined();
     expect(getComponentValue(Selected, entity2)).toBeUndefined();
     expect(getComponentValue(Selected, entity3)).toBeUndefined();
