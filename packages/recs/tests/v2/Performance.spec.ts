@@ -22,7 +22,7 @@ export function timeIt(fn: () => unknown) {
 
 describe("V2", () => {
   const size = 1000000;
-  it.skip("measure creation of 1000000 entities", () => {
+  it("measure creation of 1000000 entities", () => {
     console.log("V2");
     const world = createWorldV2();
     const Position = defineComponentV2(world, { x: TypeV2.Number, y: TypeV2.Number });
@@ -35,7 +35,7 @@ describe("V2", () => {
     });
   });
 
-  it.skip("measure creation of 1000000 entities and reacting to it", () => {
+  it("measure creation of 1000000 entities and reacting to it", () => {
     console.log("V2");
     const world = createWorldV2();
     const Position = defineComponentV2(world, { x: TypeV2.Number, y: TypeV2.Number });
