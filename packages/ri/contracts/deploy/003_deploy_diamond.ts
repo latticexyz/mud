@@ -41,6 +41,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   await deployComponent(hre, world, ember.address, "UntraversableComponent");
   await deployComponent(hre, world, ember.address, "OwnedByComponent");
   await deployComponent(hre, world, ember.address, "PersonaComponent");
+  await deployComponent(hre, world, ember.address, "CurrentStaminaComponent");
+  await deployComponent(hre, world, ember.address, "MaxStaminaComponent");
+  await deployComponent(hre, world, ember.address, "StaminaRegenerationComponent");
+  await deployComponent(hre, world, ember.address, "LastActionTurnComponent");
+  await deployComponent(hre, world, ember.address, "GameConfigComponent");
+
+  console.log(blue("Configure world"));
+  const tx = await ember.configureWorld();
+  await tx.wait();
+
   // Deploy access controllers
   await deployAccessController(hre, ember, "PersonaAccessController");
   // Deploy content creators

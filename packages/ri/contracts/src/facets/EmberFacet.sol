@@ -1,12 +1,6 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
-import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
-import { PersonaComponent, ID as PersonaComponentID } from "../components/PersonaComponent.sol";
-import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
-import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
-import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { World } from "solecs/World.sol";
 import { Component } from "solecs/Component.sol";
 import { UsingDiamondOwner } from "../diamond/utils/UsingDiamondOwner.sol";
@@ -24,6 +18,20 @@ struct ECSEvent {
   uint32 entity;
   bytes value;
 }
+
+import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
+import { PersonaComponent, ID as PersonaComponentID } from "../components/PersonaComponent.sol";
+import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
+import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
+import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
+import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
+import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
+
+// Stamina
+import { MaxStaminaComponent, ID as MaxStaminaComponentID } from "../components/MaxStaminaComponent.sol";
+import { CurrentStaminaComponent, ID as CurrentStaminaComponentID } from "../components/CurrentStaminaComponent.sol";
+import { StaminaRegenerationComponent, ID as StaminaRegenerationComponentID } from "../components/StaminaRegenerationComponent.sol";
+import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
 contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
@@ -64,6 +72,37 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   }
 
   function joinGame(Coord calldata position, uint32 entityType) external {
+    EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
+    PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
+    OwnedByComponent ownedByComponent = OwnedByComponent(s.world.getComponent(OwnedByComponentID));
+    MaxStaminaComponent maxStamina = MaxStaminaComponent(s.world.getComponent(MaxStaminaComponentID));
+    CurrentStaminaComponent currentStamina = CurrentStaminaComponent(s.world.getComponent(CurrentStaminaComponentID));
+    StaminaRegenerationComponent staminaRegeneration = StaminaRegenerationComponent(
+      s.world.getComponent(StaminaRegenerationComponentID)
+    );
+    LastActionTurnComponent lastActionTurn = LastActionTurnComponent(s.world.getComponent(LastActionTurnComponentID));
+    MovableComponent movableComponent = MovableComponent(s.world.getComponent(MovableComponentID));
+
+    (, bool foundTargetEntity) = getEntityAt(s.world, position);
+    require(!foundTargetEntity, "spot taken fool!");
+
+    uint256 playerEntity = createPlayerEntity();
+    uint256 entity = s.world.getUniqueEntityId();
+
+    entityTypeComponent.set(entity, entityType);
+    positionComponent.set(entity, position);
+    ownedByComponent.set(entity, playerEntity);
+    maxStamina.set(entity, 3);
+    currentStamina.set(entity, 0);
+    staminaRegeneration.set(entity, 1);
+    lastActionTurn.set(entity, getCurrentTurn());
+
+    if (entityType == 0) {
+      movableComponent.set(entity);
+    }
+  }
+
+  function createPlayerEntity() private returns (uint256 playerEntity) {
     PersonaComponent personaComponent = PersonaComponent(s.world.getComponent(PersonaComponentID));
     uint256 personaId = LibPersona.getActivePersona();
     require(personaId != 0, "no persona found");
@@ -73,25 +112,8 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     uint256[] memory entities = LibQuery.query(fragments);
     require(entities.length == 0, "already spawned");
 
-    EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
-    PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
-    OwnedByComponent ownedByComponent = OwnedByComponent(s.world.getComponent(OwnedByComponentID));
-
-    (, bool foundTargetEntity) = getEntityAt(s.world, position);
-    require(!foundTargetEntity, "spot taken fool!");
-
-    uint256 playerEntity = s.world.getUniqueEntityId();
+    playerEntity = s.world.getUniqueEntityId();
     personaComponent.set(playerEntity, personaId);
-
-    uint256 entity = s.world.getUniqueEntityId();
-    entityTypeComponent.set(entity, entityType);
-    positionComponent.set(entity, position);
-    ownedByComponent.set(entity, playerEntity);
-
-    if (entityType == 0) {
-      MovableComponent movableComponent = MovableComponent(s.world.getComponent(MovableComponentID));
-      movableComponent.set(entity);
-    }
   }
 
   function moveEntity(uint256 entity, Coord calldata targetPosition) external populateCallerEntityID {
@@ -104,11 +126,53 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     require(manhattan(positionComponent.getValue(entity), targetPosition) == 1, "not adjacent");
 
     (, bool foundTargetEntity) = getEntityWithAt(s.world, UntraversableComponentID, targetPosition);
-    if (!foundTargetEntity) {
-      return positionComponent.set(entity, targetPosition);
+    require(!foundTargetEntity, "entity blocking intended direction");
+
+    positionComponent.set(entity, targetPosition);
+    reduceStamina(entity);
+  }
+
+  function reduceStamina(uint256 entity) private {
+    MaxStaminaComponent maxStamina = MaxStaminaComponent(s.world.getComponent(MaxStaminaComponentID));
+    require(maxStamina.has(entity), "entity does not have stamina");
+
+    CurrentStaminaComponent currentStamina = CurrentStaminaComponent(s.world.getComponent(CurrentStaminaComponentID));
+    require(currentStamina.has(entity), "entity does not have stamina");
+
+    StaminaRegenerationComponent staminaRegeneration = StaminaRegenerationComponent(
+      s.world.getComponent(StaminaRegenerationComponentID)
+    );
+    require(staminaRegeneration.has(entity), "entity does not have stamina");
+
+    LastActionTurnComponent lastActionTurn = LastActionTurnComponent(s.world.getComponent(LastActionTurnComponentID));
+    require(lastActionTurn.has(entity), "entity does not have stamina");
+
+    uint32 currentTurn = getCurrentTurn();
+    uint32 staminaSinceLastAction = uint32(
+      (currentTurn - lastActionTurn.getValue(entity)) * staminaRegeneration.getValue(entity)
+    );
+    uint32 stamina = currentStamina.getValue(entity) + staminaSinceLastAction;
+    require(stamina > 0, "not enough stamina to move");
+
+    if (stamina > maxStamina.getValue(entity)) {
+      stamina = maxStamina.getValue(entity);
     }
 
-    revert("Invalid action");
+    lastActionTurn.set(entity, currentTurn);
+    currentStamina.set(entity, stamina - 1);
+  }
+
+  function getCurrentTurn() public view returns (uint32) {
+    GameConfigComponent gameConfigComponent = GameConfigComponent(s.world.getComponent(GameConfigComponentID));
+    GameConfig memory gameConfig = gameConfigComponent.getValue(GodID);
+
+    uint256 secondsSinceGameStart = block.timestamp - gameConfig.startTime;
+    return uint32(secondsSinceGameStart / gameConfig.turnLength);
+  }
+
+  function configureWorld() public {
+    GameConfigComponent gameConfigComponent = GameConfigComponent(s.world.getComponent(GameConfigComponentID));
+    gameConfigComponent.set(GodID, GameConfig({ startTime: block.timestamp, turnLength: uint256(20) }));
   }
 
   // Entry Points. Debugging only

@@ -11,6 +11,7 @@ import {
   createSelectionSystem,
   createDrawDevHighlightSystem,
   createInputSystem,
+  createDrawStaminaSystem,
 } from "./systems";
 import { createPhaserEngine } from "@latticexyz/phaserx";
 import {
@@ -76,6 +77,7 @@ export async function createPhaserLayer(local: LocalLayer) {
   createSelectionOutlineSystem(layer);
   createDrawDevHighlightSystem(layer);
   createInputSystem(layer);
+  createDrawStaminaSystem(layer);
 
   return layer;
 }
