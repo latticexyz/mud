@@ -1,5 +1,6 @@
-export const RPC_URL = "https://degen-chain.lattice.xyz/";
-export const RPC_WS_URL = "wss://degen-chain.lattice.xyz/ws/";
-export const DEV_PRIVATE_KEY = "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
-export const DIAMOND_ADDRESS = "0x39903eA6F367D765001A26f5C64264BEfd42D26f";
+export const RPC_URL = "https://follower.super-degen-chain.lattice.xyz/";
+export const RPC_WS_URL = "wss://follower.super-degen-chain.lattice.xyz/";
+export const DEV_PRIVATE_KEY = "0x26e86e45f6fc45ec6e2ecd128cec80fa1d1505e5507dcd2ae58c3130a7a97b48";
+export const DIAMOND_ADDRESS = "0xD83B554d44cBcDD8d5d6a80597A7d2f87cB187eF";
+export const CHECKPOINT_URL = "https://ecs-snapshot.super-degen-chain.lattice.xyz/";
 export const LAYER_NAME = "network";
