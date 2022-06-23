@@ -2200,6 +2200,26 @@
   dependencies:
     esbuild "^0.14.14"
 
+"@protobuf-ts/grpcweb-transport@^2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@protobuf-ts/grpcweb-transport/-/grpcweb-transport-2.7.0.tgz#26d5960ff8c6a922f3b359a0d609f271588914a4"
+  integrity sha512-xRWlD0/zulrx+e1hZVGaXpEFl209yzQdi9QBypaZ+lP/8XKC4cbyPM8ABuQXFc/J22Em9FyaXc7NNOcYIl2XSQ==
+  dependencies:
+    "@protobuf-ts/runtime" "^2.7.0"
+    "@protobuf-ts/runtime-rpc" "^2.7.0"
+
+"@protobuf-ts/runtime-rpc@^2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@protobuf-ts/runtime-rpc/-/runtime-rpc-2.7.0.tgz#841f650aa17b8bf803093f60617119500f8cec64"
+  integrity sha512-ha2HFJYLam1Zv04roq4MgYgdivoXv3s5uDQpr6jOAflAduNRWpB5IFegvPvtdc89j4xs7vuNPIGyZtP/MgYAXA==
+  dependencies:
+    "@protobuf-ts/runtime" "^2.7.0"
+
+"@protobuf-ts/runtime@^2.7.0":
+  version "2.7.0"
+  resolved "https://registry.yarnpkg.com/@protobuf-ts/runtime/-/runtime-2.7.0.tgz#108252b9935018bd7eb9c0d4a349b8db11e382f7"
+  integrity sha512-CzunTplg81oMkF9MnSYiX2WOdHnAyHKnokZncgOHm5bt8iEfFNnUsMSbsWUus/ulRNIZ9VAVMjutd96vmySQaw==
+
 "@rari-capital/solmate@https://github.com/Rari-Capital/solmate.git#b6ae78e6ff490f8fec7695c7b65d06e5614f1b65":
   version "6.2.0"
   resolved "https://github.com/Rari-Capital/solmate.git#b6ae78e6ff490f8fec7695c7b65d06e5614f1b65"

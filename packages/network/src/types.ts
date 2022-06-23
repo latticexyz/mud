@@ -11,6 +11,7 @@ export interface NetworkConfig {
   privateKey?: string;
   clock: ClockConfig;
   provider: ProviderConfig;
+  checkpointServiceUrl?: string;
 }
 
 export interface ClockConfig {
@@ -78,6 +79,16 @@ export type NetworkComponentUpdate<C extends Components> = {
   entity: string;
   lastEventInTx: boolean;
   txHash: string;
+};
+
+export type SyncWorkerConfig<Cm extends Components = Components> = {
+  provider: ProviderConfig;
+  initialBlockNumber: number;
+  worldContract: ContractConfig;
+  mappings: Mappings<Cm>;
+  disableCache?: boolean;
+  chainId: number;
+  checkpointServiceUrl?: string;
 };
 
 export enum ContractSchemaValue {

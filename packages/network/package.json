@@ -18,8 +18,8 @@
     "@ethersproject/abi": "^5.6.0",
     "@ethersproject/providers": "^5.6.1",
     "@latticexyz/recs": "^0.1.8",
-    "@latticexyz/utils": "^0.1.8",
     "@latticexyz/solecs": "0.1.8",
+    "@latticexyz/utils": "^0.1.8",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
@@ -40,13 +40,15 @@
   },
   "peerDependencies": {
     "@latticexyz/recs": ">=0.1.4",
-    "@latticexyz/utils": ">=0.1.4",
     "@latticexyz/solecs": "0.1.8",
+    "@latticexyz/utils": ">=0.1.4",
     "async-mutex": "^0.3.2",
     "mobx": "^6.5.0",
     "rxjs": "^7.5.5"
   },
   "dependencies": {
+    "@protobuf-ts/grpcweb-transport": "^2.7.0",
+    "@protobuf-ts/runtime-rpc": "^2.7.0",
     "observable-webworker": "^4.0.1"
   },
   "gitHead": "2000994f695cee35fcc32558f399584922073016"
