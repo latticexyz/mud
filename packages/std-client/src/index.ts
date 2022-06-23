@@ -1,2 +1,2 @@
 export { defineDevHighlightComponent } from "./components";
-export { getPlayerEntity } from "./utils";
+export * from "./utils";

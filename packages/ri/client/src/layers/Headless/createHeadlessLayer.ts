@@ -1,5 +1,6 @@
+import { defineComponent, Type } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
-import { createActionSystem } from "./systems";
+import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";
 import { joinGame, moveEntity } from "./api";
 import { curry } from "lodash";
@@ -12,17 +13,28 @@ import { curry } from "lodash";
 export async function createHeadlessLayer(network: NetworkLayer) {
   const world = network.world;
   const Action = defineActionComponent(world);
-  const components = { Action };
+  const LocalCurrentStamina = defineComponent(world, { value: Type.Number }, { id: "LocalCurrentStamina" });
+  const components = { Action, LocalCurrentStamina };
+
   const actions = createActionSystem(world, Action, network.txReduced$);
 
-  return {
+  const layer = {
     world,
     actions,
     parentLayers: { network },
     components,
     api: {
-      moveEntity: curry(moveEntity)(network, actions),
       joinGame: curry(joinGame)(network, actions),
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      moveEntity: (_: string) => {
+        "no-op for types";
+      },
     },
   };
+
+  layer.api.moveEntity = curry(moveEntity)(layer, actions);
+
+  createCurrentStaminaSystem(layer);
+
+  return layer;
 }

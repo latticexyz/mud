@@ -1,4 +1,4 @@
-import { createWorld, createEntity, setComponent, Entity, getComponentValue } from "@latticexyz/recs";
+import { createEntity, setComponent, Entity, getComponentValue } from "@latticexyz/recs";
 import { HeadlessLayer } from "../Headless";
 import {
   defineStrollingComponent,

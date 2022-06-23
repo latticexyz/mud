@@ -1,7 +1,6 @@
-import { getComponentValueStrict, Has, hasComponent, HasValue, Type, runQuery } from "@latticexyz/recs";
 import { getPlayerEntity } from "@latticexyz/std-client";
-import { createNetworkLayer, NetworkLayer } from "../../Network";
-import { ActionSystem } from "../types";
+import { getComponentValueStrict, Has, hasComponent, HasValue, setComponent, Type, runQuery } from "@latticexyz/recs";
+import { ActionSystem, HeadlessLayer } from "../types";
 
 const Directions: { [key: string]: { x: number; y: number } } = {
   Up: { x: 0, y: -1 },
@@ -13,20 +12,26 @@ const Directions: { [key: string]: { x: number; y: number } } = {
 interface MoveData {
   action: string;
   targetPosition: { x: Type.Number; y: Type.Number };
+  netStamina: number;
   targetEntity?: string;
 }
 
-export function moveEntity(network: NetworkLayer, actions: ActionSystem, direction: string) {
-  if (!network.personaId) {
+export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, direction: string) {
+  const networkLayer = layer.parentLayers.network;
+  if (!networkLayer.personaId) {
     console.warn("Persona ID not found.");
     return;
   }
 
-  const { Position, Movable, Untraversable, OwnedBy, Persona } = network.components;
+  const world = layer.world;
 
-  const playerEntity = getPlayerEntity(Persona, network.personaId);
+  const { Position, Movable, Untraversable, CurrentStamina, MaxStamina, StaminaRegeneration, Persona, OwnedBy } =
+    networkLayer.components;
+  const { LocalCurrentStamina } = layer.components;
+
+  const playerEntity = getPlayerEntity(Persona, networkLayer.personaId);
   const delta = Directions[direction];
-  const playerCharacter = runQuery([HasValue(OwnedBy, { value: network.world.entities[playerEntity] }), Has(Movable)]);
+  const playerCharacter = runQuery([HasValue(OwnedBy, { value: world.entities[playerEntity] }), Has(Movable)]);
   if (playerCharacter.size === 0) throw new Error("Player not found");
   if (playerCharacter.size > 1) throw new Error("More than one player character found. Something is very wrong.");
 
@@ -36,10 +41,23 @@ export function moveEntity(network: NetworkLayer, actions: ActionSystem, directi
 
   actions.add({
     id: actionID,
-    components: { Position, Untraversable },
+    components: {
+      Position,
+      Untraversable,
+      CurrentStamina,
+      MaxStamina,
+      StaminaRegeneration,
+      LocalCurrentStamina,
+    },
     requirement: ({ Position, Untraversable }) => {
       const currentPosition = getComponentValueStrict(Position, character);
       const targetPosition = { x: currentPosition.x + delta.x, y: currentPosition.y + delta.y };
+      const netStamina = getComponentValueStrict(LocalCurrentStamina, character).value - 1;
+
+      if (netStamina < 0) {
+        actions.cancel(actionID);
+        return null;
+      }
 
       const entities = runQuery([HasValue(Position, targetPosition)]);
       for (const entity of entities) {
@@ -49,7 +67,7 @@ export function moveEntity(network: NetworkLayer, actions: ActionSystem, directi
         }
       }
 
-      return { action: "Position", targetPosition: targetPosition };
+      return { action: "Position", targetPosition: targetPosition, netStamina };
     },
     updates: (_, data: MoveData) => [
       {
@@ -57,13 +75,20 @@ export function moveEntity(network: NetworkLayer, actions: ActionSystem, directi
         entity: character,
         value: { x: data.targetPosition.x, y: data.targetPosition.y },
       },
+      {
+        component: "LocalCurrentStamina",
+        entity: character,
+        value: { value: data.netStamina },
+      },
     ],
     execute: async (data: MoveData) => {
       console.log("Execute action");
-      return network.api.moveEntity(network.world.entities[character], {
+      const tx = await layer.parentLayers.network.api.moveEntity(world.entities[character], {
         x: data.targetPosition.x,
         y: data.targetPosition.y,
       });
+      await tx.wait();
+      setComponent(LocalCurrentStamina, character, { value: data.netStamina });
     },
   });
 }
