@@ -28,7 +28,7 @@ export async function createNetworkLayer() {
   };
 
   // Instantiate contracts and set up mappings
-  const { txQueue, txReduced$, encoders } = await setupContracts(world, components, mappings);
+  const { txQueue, txReduced$, encoders, startSync } = await setupContracts(world, components, mappings);
 
   /**
    * TODO Only include this function in dev mode.
@@ -66,6 +66,7 @@ export async function createNetworkLayer() {
     txQueue,
     txReduced$,
     mappings,
+    startSync,
     api: {
       setContractComponentValue,
       spawnCreature,

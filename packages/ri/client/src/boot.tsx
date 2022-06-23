@@ -52,10 +52,13 @@ async function bootLayers() {
       console.log("Detected two canvas elements, full reload");
       import.meta.hot?.invalidate();
     }
+
+    // Start syncing once all systems have booted
+    layers.network.startSync();
   }
 
   function disposeLayer(layer: keyof typeof layers) {
-    layers[layer]?.world.dispose();
+    layers[layer]?.world.disposeAll();
     layers[layer] = undefined;
   }
 

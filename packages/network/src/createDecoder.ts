@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { defaultAbiCoder as abi } from "ethers/lib/utils";
+import { BytesLike, defaultAbiCoder as abi } from "ethers/lib/utils";
 import {
   ContractSchemaValue,
   ContractSchemaValueArrayToElement,
@@ -71,8 +71,8 @@ export function flattenValue<V extends ContractSchemaValue>(
 export function createDecoder<D extends { [key: string]: unknown }>(
   keys: (keyof D)[],
   valueTypes: ContractSchemaValue[]
-): (data: string) => D {
-  return (data: string) => {
+): (data: BytesLike) => D {
+  return (data: BytesLike) => {
     // Decode data with the schema values provided by the component
     const decoded = abi.decode(
       valueTypes.map((valueType) => ContractSchemaValueId[valueType]),

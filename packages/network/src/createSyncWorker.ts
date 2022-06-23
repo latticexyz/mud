@@ -1,21 +1,21 @@
 import { Components } from "@latticexyz/recs";
-import { observableToStream } from "@latticexyz/utils";
-import { observable } from "mobx";
 import { fromWorker } from "observable-webworker";
 import { Subject } from "rxjs";
-import { NetworkComponentUpdate } from "./types";
-import { Config, Output } from "./workers/Sync.worker";
+import { NetworkComponentUpdate, SyncWorkerConfig } from "./types";
+import { Output } from "./workers/Sync.worker";
 
-export function createSyncWorker<Cm extends Components>(initialConfig: Config<Cm>) {
-  const config = observable(initialConfig);
+export function createSyncWorker<Cm extends Components>() {
+  const config$ = new Subject<SyncWorkerConfig<Cm>>();
   const worker = new Worker(new URL("./workers/Sync.worker.ts", import.meta.url), { type: "module" });
   const ecsEvent$ = new Subject<NetworkComponentUpdate<Cm>>();
 
   // Pass in a "config stream", receive a stream of ECS events
-  fromWorker<Config<Cm>, Output<Cm>>(() => worker, observableToStream(config)).subscribe(ecsEvent$);
+  const subscription = fromWorker<SyncWorkerConfig<Cm>, Output<Cm>>(() => worker, config$).subscribe(ecsEvent$);
+  const dispose = () => subscription?.unsubscribe();
 
   return {
     ecsEvent$,
-    config,
+    config$,
+    dispose,
   };
 }

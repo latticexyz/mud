@@ -5,6 +5,7 @@ import {
   createTxQueue,
   createSyncWorker,
   createEncoder,
+  SyncWorkerConfig,
 } from "@latticexyz/network";
 import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "../constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
@@ -28,7 +29,10 @@ export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
 };
 
-const config: Parameters<typeof createNetwork>[0] = {
+const degenCheckpoint = "https://ecs-snapshot.super-degen-chain.lattice.xyz/";
+const localCheckpoint = "http://localhost:50052";
+
+const config: Parameters<typeof createNetwork>[0] & Omit<SyncWorkerConfig, "worldContract" | "mappings"> = {
   clock: {
     period: 5000,
     initialTime: 0,
@@ -43,6 +47,8 @@ const config: Parameters<typeof createNetwork>[0] = {
   },
   privateKey: DEV_PRIVATE_KEY,
   chainId: 1337,
+  checkpointServiceUrl: localCheckpoint,
+  initialBlockNumber: 0,
 };
 
 export async function setupContracts<C extends ContractComponents>(world: World, components: C, mappings: Mappings<C>) {
@@ -60,14 +66,20 @@ export async function setupContracts<C extends ContractComponents>(world: World,
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network);
   world.registerDisposer(disposeTxQueue);
 
-  const { ecsEvent$ } = createSyncWorker({
-    provider: config.provider,
-    worldContract: contractsConfig.World,
-    initialBlockNumber: 0,
-    mappings,
-    chainId: config.chainId,
-    disableCache: config.chainId === 1337, // Disable cache on hardhat
-  });
+  // Create sync worker
+  const { ecsEvent$, config$, dispose } = createSyncWorker<C>();
+  world.registerDisposer(dispose);
+  function startSync() {
+    config$.next({
+      provider: config.provider,
+      worldContract: contractsConfig.World,
+      initialBlockNumber: config.initialBlockNumber,
+      mappings,
+      chainId: config.chainId,
+      disableCache: config.chainId === 1337, // Disable cache on hardhat
+      checkpointServiceUrl: config.checkpointServiceUrl,
+    });
+  }
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
@@ -83,7 +95,7 @@ export async function setupContracts<C extends ContractComponents>(world: World,
 
     encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
   }
-  return { txQueue, txReduced$, encoders };
+  return { txQueue, txReduced$, encoders, startSync };
 }
 
 /**
