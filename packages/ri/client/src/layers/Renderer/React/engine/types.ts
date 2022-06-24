@@ -12,7 +12,10 @@ export type Layers = {
   phaser: PhaserLayer;
 };
 
+export type GridConfiguration = { colStart: number; colEnd: number; rowStart: number; rowEnd: number };
+
 export interface UIComponent<T> {
+  gridConfig: GridConfiguration;
   requirement(layers: Layers, selectedEntities: Set<Entity>): T | null | undefined;
   render(props: NonNullable<T>): ReactElement | null;
 }

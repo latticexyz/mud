@@ -6,6 +6,12 @@ import { Component, Entity, hasComponent } from "@latticexyz/recs";
 export function registerComponentBrowser() {
   registerUIComponent(
     "ComponentBrowser",
+    {
+      rowStart: 1,
+      rowEnd: 5,
+      colStart: 6,
+      colEnd: 6
+    },
     (layers) => {
       const numEntities = layers.network.world.entities.length;
       if (numEntities > 1000) return numEntities;

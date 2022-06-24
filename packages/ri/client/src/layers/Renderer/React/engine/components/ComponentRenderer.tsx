@@ -6,6 +6,38 @@ import { Component, Entity } from "@latticexyz/recs";
 import { useState } from "react";
 import { useEffect } from "react";
 import { merge, throttleTime } from "rxjs";
+import { Window } from "./Window";
+import styled from "styled-components";
+import { GridConfiguration } from "../types";
+
+const UIGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(6, 16.6%);
+  grid-template-rows: repeat(4, 25%);
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100vh;
+  width: 100vw;
+  pointer-events: none;
+`;
+
+const UIComponentContainer: React.FC<{ gridConfig: GridConfiguration }> = ({ children, gridConfig }) => {
+  const { colStart, colEnd, rowStart, rowEnd } = gridConfig;
+
+  return (
+    <Window
+      style={{
+        gridRowStart: rowStart,
+        gridRowEnd: rowEnd,
+        gridColumnStart: colStart,
+        gridColumnEnd: colEnd,
+      }}
+    >
+      {children}
+    </Window>
+  );
+};
 
 export const ComponentRenderer: React.FC<{
   selectedEntities: Set<Entity>;
@@ -26,15 +58,20 @@ export const ComponentRenderer: React.FC<{
     return () => subscription?.unsubscribe();
   });
   return (
-    <>
+    <UIGrid>
       {filterNullishValues(
         // Iterate through all registered UIComponents
         // and return those whose requirements are fulfilled
         [...UIComponents.entries()].map(([key, UIComponent]) => {
           const data = UIComponent.requirement(layers, selectedEntities);
-          if (data) return <div key={`component-${key}`}>{UIComponent.render(data)}</div>;
+          if (data)
+            return (
+              <UIComponentContainer key={`component-${key}`} gridConfig={UIComponent.gridConfig}>
+                {UIComponent.render(data)}
+              </UIComponentContainer>
+            );
         })
       )}
-    </>
+    </UIGrid>
   );
 });

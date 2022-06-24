@@ -11,7 +11,7 @@ export function createInputSystem(layer: PhaserLayer) {
     api: { highlightCoord },
     parentLayers: {
       headless: {
-        api: { moveEntity, joinGame },
+        api: { moveEntity },
       },
       local: {
         components: { Selected },
@@ -52,14 +52,5 @@ export function createInputSystem(layer: PhaserLayer) {
     )
     .subscribe((coord) => {
       highlightCoord(coord);
-    });
-
-  input.click$
-    .pipe(
-      map((pointer) => ({ x: pointer.worldX, y: pointer.worldY })), // Map pointer to pointer pixel cood
-      map((pixel) => pixelToWorldCoord(maps.Main, pixel)) // Map pixel coord to tile coord
-    )
-    .subscribe((coord) => {
-      joinGame(coord);
     });
 }

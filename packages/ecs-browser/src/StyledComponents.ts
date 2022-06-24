@@ -68,18 +68,11 @@ export const EntityEditorContainer = styled.div`
 `;
 
 export const BrowserContainer = styled.div`
-  grid-column: 3;
-  grid-row-start: 1;
-  grid-row-end: 4;
-  pointer-events: all;
-  max-height: calc(100vh - 100px);
   overflow: auto;
-
-  width: 300px;
-  justify-self: end;
-
   background-color: rgba(27, 28, 32, 1);
   color: #8c91a0;
+  height: 100%;
+  pointer-events: all;
 `;
 
 export const QueryBuilderForm = styled.form`
