@@ -7,6 +7,6 @@ export const chainSpec = {
 };
 
 export const game = {
-  diamond: "0x942cBa5081416e2A3389c5338722ccc6912B9115",
+  address: "0x942cBa5081416e2A3389c5338722ccc6912B9115",
   client: "http://localhost:3000",
 };

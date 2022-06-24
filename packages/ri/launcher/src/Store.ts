@@ -43,7 +43,7 @@ export class Store {
 
   public async mintPersonaAndBurner() {
     if (!this.wallet) throw new Error("No wallet connected");
-    const { personaId, burnerWallet } = await this.persona.mintAndBurner(game.diamond);
+    const { personaId, burnerWallet } = await this.persona.mintAndBurner(game.address);
     localStorage.setItem(burnerWalletStorageKey, burnerWallet.privateKey);
     localStorage.setItem(personaStorageKey, String(personaId));
     runInAction(() => {
@@ -54,7 +54,7 @@ export class Store {
 
   public get instanceUrl(): string | undefined {
     return this.burnerWallet && this.personaId != null
-      ? `${game.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${chainSpec.chainId}&contractAddress=${game.diamond}`
+      ? `${game.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${chainSpec.chainId}&contractAddress=${game.address}`
       : undefined;
   }
 }
