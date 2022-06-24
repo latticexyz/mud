@@ -23,7 +23,7 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Creature })],
+    [HasValue(EntityType, { value: EntityTypes.Hero })],
     () => Appearance,
     () => {
       return {
@@ -50,9 +50,18 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [HasValue(LocalEntityType, { entityType: LocalEntityTypes.Imp })],
+    [HasValue(LocalEntityType, { entityType: LocalEntityTypes.Hero })],
     () => HueTint,
     () => ({ value: 0xff0000 })
+  );
+
+  defineSyncSystem(
+    world,
+    [HasValue(EntityType, { value: EntityTypes.Hero })],
+    () => SpriteAnimation,
+    () => ({
+      value: Animations.HeroIdle,
+    })
   );
 
   defineSyncSystem(
@@ -60,7 +69,7 @@ export function createSyncSystem(layer: PhaserLayer) {
     [HasValue(LocalEntityType, { entityType: LocalEntityTypes.Imp })],
     () => SpriteAnimation,
     () => ({
-      value: Animations.ImpDigging,
+      value: Animations.ImpIdle,
     })
   );
 }

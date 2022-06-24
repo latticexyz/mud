@@ -42,7 +42,7 @@ export function createDrawPotentialPathSystem(layer: PhaserLayer) {
             box.setFillStyle(0xf0e71d, 0.3);
             box.setSize(tileWidth, tileHeight);
             box.setPosition(pixelCoord.x + tileWidth / 2, pixelCoord.y + tileHeight / 2);
-            box.setDepth(-1);
+            box.setDepth(0);
           },
         });
       }

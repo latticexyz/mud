@@ -5,8 +5,8 @@ import {
   defineMapConfig,
   defineCameraConfig,
 } from "@latticexyz/phaserx";
-import { Animations, Assets, Maps, Scenes, TileAnimations, Tileset } from "./constants";
-import tilemap from "../assets/tilemap.png";
+import { Animations, Assets, Maps, Scenes, TileAnimations, Tileset, TILE_HEIGHT, TILE_WIDTH } from "./constants";
+import tilemap from "../assets/overworld-tileset.png";
 import imp from "../assets/imp.png";
 import legendary from "../assets/legendary.png";
 
@@ -19,13 +19,13 @@ export const config = {
           type: AssetType.SpriteSheet,
           key: Assets.Imp,
           path: imp,
-          options: { frameWidth: 24, frameHeight: 24 },
+          options: { frameWidth: TILE_WIDTH, frameHeight: TILE_HEIGHT },
         },
         [Assets.Legendary]: {
           type: AssetType.SpriteSheet,
           key: Assets.Legendary,
           path: legendary,
-          options: { frameWidth: 24, frameHeight: 24 },
+          options: { frameWidth: TILE_WIDTH, frameHeight: TILE_HEIGHT },
         },
         [Assets.MainAtlas]: {
           type: AssetType.MultiAtlas,
@@ -38,9 +38,9 @@ export const config = {
       },
       maps: {
         [Maps.Main]: defineMapConfig({
-          tileWidth: 24,
-          tileHeight: 24,
-          backgroundTile: [Tileset.RockA, Tileset.RockA, Tileset.RockB, Tileset.RockC],
+          tileWidth: TILE_WIDTH,
+          tileHeight: TILE_HEIGHT,
+          backgroundTile: [Tileset.Wall1],
           animationInterval: 100,
           tileAnimations: TileAnimations,
           layers: {
@@ -51,9 +51,9 @@ export const config = {
           },
         }),
         [Maps.Strategic]: defineMapConfig({
-          tileWidth: 24 * 8,
-          tileHeight: 24 * 8,
-          backgroundTile: [Tileset.RockC],
+          tileWidth: TILE_WIDTH * 8,
+          tileHeight: TILE_HEIGHT * 8,
+          backgroundTile: [Tileset.Grass],
           animationInterval: 100,
           layers: {
             layers: {
@@ -64,20 +64,29 @@ export const config = {
         }),
       },
       animations: [
-        { key: Animations.ImpIdle, frameRate: 10, assetKey: Assets.Imp, startFrame: 0, endFrame: 3, repeat: -1 },
         {
-          key: Animations.ImpDigging,
+          key: Animations.ImpIdle,
           frameRate: 10,
           assetKey: Assets.MainAtlas,
           startFrame: 0,
-          endFrame: 4,
+          endFrame: 0,
           repeat: -1,
-          prefix: "sprites/creatures/imp/mine/",
+          prefix: "sprites/workers/bridge-builder-imp/",
+          suffix: ".png",
+        },
+        {
+          key: Animations.HeroIdle,
+          frameRate: 10,
+          assetKey: Assets.MainAtlas,
+          startFrame: 0,
+          endFrame: 0,
+          repeat: -1,
+          prefix: "sprites/warriors/hero/",
           suffix: ".png",
         },
       ],
       tilesets: {
-        Default: { assetKey: Assets.Tilemap, tileWidth: 24, tileHeight: 24 },
+        Default: { assetKey: Assets.Tilemap, tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT },
       },
     }),
   },
@@ -91,7 +100,7 @@ export const config = {
     pinchSpeed: 1,
     wheelSpeed: 1,
     maxZoom: 2,
-    minZoom: 1 / 4,
+    minZoom: 1 / 32,
   }),
-  chunkSize: 576,
+  chunkSize: TILE_WIDTH * 16 * 16, //tile size * tile amount
 };

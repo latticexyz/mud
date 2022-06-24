@@ -1,5 +1,15 @@
-import { Has, getComponentValueStrict, defineSystem, UpdateType, ComponentValue, Type } from "@latticexyz/recs";
-import { RockWallTileset } from "../../constants";
+import {
+  Has,
+  getComponentValueStrict,
+  defineSystem,
+  UpdateType,
+  ComponentValue,
+  Type,
+  defineEnterSystem,
+  defineEnterQuery,
+} from "@latticexyz/recs";
+import { EntityTypes } from "../../../../Network/types";
+import { Tileset } from "../../constants";
 import { PhaserLayer } from "../../types";
 
 /**
@@ -12,6 +22,9 @@ export function createMapSystem(layer: PhaserLayer) {
       local: {
         components: { LocalPosition, RockWall },
       },
+      network: {
+        components: { Position, EntityType },
+      },
     },
     scenes: {
       Main: {
@@ -23,7 +36,7 @@ export function createMapSystem(layer: PhaserLayer) {
   } = layer;
 
   const zoomSub = camera.zoom$.subscribe((zoom) => {
-    if (zoom < 0.005) {
+    if (zoom < 0.000005) {
       Strategic.setVisible(true);
       Main.setVisible(false);
       camera.ignore(objectPool, true);
@@ -35,18 +48,11 @@ export function createMapSystem(layer: PhaserLayer) {
   });
   world.registerDisposer(() => zoomSub?.unsubscribe());
 
-  // Rock wall system
-  defineSystem(world, [Has(LocalPosition), Has(RockWall)], (update) => {
-    if (update.type === UpdateType.Enter || update.type === UpdateType.Update) {
-      const coord = getComponentValueStrict(LocalPosition, update.entity);
-      Main.putTileAt(coord, RockWallTileset.single);
-    } else {
-      const prevCoord =
-        update.component.id === LocalPosition.id
-          ? (update.value[1] as ComponentValue<{ x: Type.Number; y: Type.Number }>)
-          : undefined;
-      if (prevCoord) Main.putTileAt(prevCoord, -1);
-    }
-    //
+  defineEnterSystem(world, [Has(Position), Has(EntityType)], (update) => {
+    const coord = getComponentValueStrict(Position, update.entity);
+    const type = getComponentValueStrict(EntityType, update.entity);
+    if (type.value === EntityTypes.Grass) Main.putTileAt(coord, Tileset.Grass);
+    else if (type.value === EntityTypes.Mountain) Main.putTileAt(coord, Tileset.Rock1);
+    else if (type.value === EntityTypes.River) Main.putTileAt(coord, Tileset.Water);
   });
 }

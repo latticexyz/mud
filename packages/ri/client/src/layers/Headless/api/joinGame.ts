@@ -36,7 +36,7 @@ export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPos
     },
     updates: () => [],
     execute: () => {
-      console.log(`spawning entityType: ${EntityTypes.Creature} at ${JSON.stringify(targetPosition)}`);
+      console.log(`spawning entityType: ${EntityTypes.Hero} at ${JSON.stringify(targetPosition)}`);
       network.api.joinGame(targetPosition);
     },
   });
