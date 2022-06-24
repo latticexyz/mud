@@ -42,7 +42,7 @@ export interface ECSStateSnapshot {
   /**
    * @generated from protobuf field: uint64 blockNumber = 2;
    */
-  blockNumber: bigint;
+  blockNumber: number;
 }
 /**
  * The request message for the latest ECS state.
@@ -65,7 +65,7 @@ export interface ECSStateRequestAtBlock {
   /**
    * @generated from protobuf field: uint64 blockNumber = 1;
    */
-  blockNumber: bigint;
+  blockNumber: number;
 }
 /**
  * The response message containing the current state and the block number of that state.
@@ -80,7 +80,7 @@ export interface ECSStateReply {
   /**
    * @generated from protobuf field: uint64 blockNumber = 2;
    */
-  blockNumber: bigint;
+  blockNumber: number;
 }
 /**
  * @generated from protobuf message ecssnapshot.ECSStateBlockReply
@@ -89,7 +89,7 @@ export interface ECSStateBlockReply {
   /**
    * @generated from protobuf field: uint64 blockNumber = 1;
    */
-  blockNumber: bigint;
+  blockNumber: number;
 }
 // @generated message type with reflection information, may provide speed optimized methods
 class ECSState$Type extends MessageType<ECSState> {
@@ -156,7 +156,7 @@ class ECSStateSnapshot$Type extends MessageType<ECSStateSnapshot> {
     ]);
   }
   create(value?: PartialMessage<ECSStateSnapshot>): ECSStateSnapshot {
-    const message = { state: [], blockNumber: 0n };
+    const message = { state: [], blockNumber: 0 };
     globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
     if (value !== undefined) reflectionMergePartial<ECSStateSnapshot>(this, message, value);
     return message;
@@ -176,7 +176,7 @@ class ECSStateSnapshot$Type extends MessageType<ECSStateSnapshot> {
           message.state.push(ECSState.internalBinaryRead(reader, reader.uint32(), options));
           break;
         case /* uint64 blockNumber */ 2:
-          message.blockNumber = reader.uint64().toBigInt();
+          message.blockNumber = reader.uint64().toNumber();
           break;
         default:
           const u = options.readUnknownField;
@@ -193,7 +193,7 @@ class ECSStateSnapshot$Type extends MessageType<ECSStateSnapshot> {
     for (let i = 0; i < message.state.length; i++)
       ECSState.internalBinaryWrite(message.state[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
     /* uint64 blockNumber = 2; */
-    if (message.blockNumber !== 0n) writer.tag(2, WireType.Varint).uint64(message.blockNumber);
+    if (message.blockNumber !== 0) writer.tag(2, WireType.Varint).uint64(message.blockNumber);
     const u = options.writeUnknownFields;
     if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
     return writer;
@@ -277,7 +277,7 @@ class ECSStateRequestAtBlock$Type extends MessageType<ECSStateRequestAtBlock> {
     ]);
   }
   create(value?: PartialMessage<ECSStateRequestAtBlock>): ECSStateRequestAtBlock {
-    const message = { blockNumber: 0n };
+    const message = { blockNumber: 0 };
     globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
     if (value !== undefined) reflectionMergePartial<ECSStateRequestAtBlock>(this, message, value);
     return message;
@@ -294,7 +294,7 @@ class ECSStateRequestAtBlock$Type extends MessageType<ECSStateRequestAtBlock> {
       const [fieldNo, wireType] = reader.tag();
       switch (fieldNo) {
         case /* uint64 blockNumber */ 1:
-          message.blockNumber = reader.uint64().toBigInt();
+          message.blockNumber = reader.uint64().toNumber();
           break;
         default:
           const u = options.readUnknownField;
@@ -312,7 +312,7 @@ class ECSStateRequestAtBlock$Type extends MessageType<ECSStateRequestAtBlock> {
     options: BinaryWriteOptions
   ): IBinaryWriter {
     /* uint64 blockNumber = 1; */
-    if (message.blockNumber !== 0n) writer.tag(1, WireType.Varint).uint64(message.blockNumber);
+    if (message.blockNumber !== 0) writer.tag(1, WireType.Varint).uint64(message.blockNumber);
     const u = options.writeUnknownFields;
     if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
     return writer;
@@ -331,7 +331,7 @@ class ECSStateReply$Type extends MessageType<ECSStateReply> {
     ]);
   }
   create(value?: PartialMessage<ECSStateReply>): ECSStateReply {
-    const message = { state: [], blockNumber: 0n };
+    const message = { state: [], blockNumber: 0 };
     globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
     if (value !== undefined) reflectionMergePartial<ECSStateReply>(this, message, value);
     return message;
@@ -351,7 +351,7 @@ class ECSStateReply$Type extends MessageType<ECSStateReply> {
           message.state.push(ECSState.internalBinaryRead(reader, reader.uint32(), options));
           break;
         case /* uint64 blockNumber */ 2:
-          message.blockNumber = reader.uint64().toBigInt();
+          message.blockNumber = reader.uint64().toNumber();
           break;
         default:
           const u = options.readUnknownField;
@@ -368,7 +368,7 @@ class ECSStateReply$Type extends MessageType<ECSStateReply> {
     for (let i = 0; i < message.state.length; i++)
       ECSState.internalBinaryWrite(message.state[i], writer.tag(1, WireType.LengthDelimited).fork(), options).join();
     /* uint64 blockNumber = 2; */
-    if (message.blockNumber !== 0n) writer.tag(2, WireType.Varint).uint64(message.blockNumber);
+    if (message.blockNumber !== 0) writer.tag(2, WireType.Varint).uint64(message.blockNumber);
     const u = options.writeUnknownFields;
     if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
     return writer;
@@ -386,7 +386,7 @@ class ECSStateBlockReply$Type extends MessageType<ECSStateBlockReply> {
     ]);
   }
   create(value?: PartialMessage<ECSStateBlockReply>): ECSStateBlockReply {
-    const message = { blockNumber: 0n };
+    const message = { blockNumber: 0 };
     globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
     if (value !== undefined) reflectionMergePartial<ECSStateBlockReply>(this, message, value);
     return message;
@@ -403,7 +403,7 @@ class ECSStateBlockReply$Type extends MessageType<ECSStateBlockReply> {
       const [fieldNo, wireType] = reader.tag();
       switch (fieldNo) {
         case /* uint64 blockNumber */ 1:
-          message.blockNumber = reader.uint64().toBigInt();
+          message.blockNumber = reader.uint64().toNumber();
           break;
         default:
           const u = options.readUnknownField;
@@ -417,7 +417,7 @@ class ECSStateBlockReply$Type extends MessageType<ECSStateBlockReply> {
   }
   internalBinaryWrite(message: ECSStateBlockReply, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
     /* uint64 blockNumber = 1; */
-    if (message.blockNumber !== 0n) writer.tag(1, WireType.Varint).uint64(message.blockNumber);
+    if (message.blockNumber !== 0) writer.tag(1, WireType.Varint).uint64(message.blockNumber);
     const u = options.writeUnknownFields;
     if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
     return writer;
