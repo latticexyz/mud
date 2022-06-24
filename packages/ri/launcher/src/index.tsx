@@ -6,12 +6,14 @@ import { App as AppImport } from "./App";
 let App = AppImport;
 
 function boot() {
+  console.log("Start booting");
   const rootElement = document.getElementById("react-root");
   if (!rootElement) return console.warn("React root not found");
   const root = ReactDOM.createRoot(rootElement);
 
   function renderEngine() {
     root.render(<App />);
+    console.info("Done booting");
   }
 
   renderEngine();
