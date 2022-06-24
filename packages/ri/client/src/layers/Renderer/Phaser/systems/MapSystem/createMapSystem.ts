@@ -66,14 +66,16 @@ export function createMapSystem(layer: PhaserLayer) {
     else if (type.value === EntityTypes.River) Main.putTileAt(coord, Tileset.Water);
     // compute cluster for LOD
     if (coord.x % 16 === 0 && coord.y % 16 === 0) {
-      if (type.value === EntityTypes.Grass) Tactic.putTileAt(coord, Tileset.Grass);
-      else if (type.value === EntityTypes.Mountain) Tactic.putTileAt(coord, Tileset.Rock1);
-      else if (type.value === EntityTypes.River) Tactic.putTileAt(coord, Tileset.Water);
+      const tacticCoord = { x: Math.floor(coord.x / 16), y: Math.floor(coord.y / 16) };
+      if (type.value === EntityTypes.Grass) Tactic.putTileAt(tacticCoord, Tileset.Grass);
+      else if (type.value === EntityTypes.Mountain) Tactic.putTileAt(tacticCoord, Tileset.Rock1);
+      else if (type.value === EntityTypes.River) Tactic.putTileAt(tacticCoord, Tileset.Water);
     }
     if (coord.x % (16 * 16) === 0 && coord.y % (16 * 16) === 0) {
-      if (type.value === EntityTypes.Grass) Strategic.putTileAt(coord, Tileset.Grass);
-      else if (type.value === EntityTypes.Mountain) Strategic.putTileAt(coord, Tileset.Rock1);
-      else if (type.value === EntityTypes.River) Strategic.putTileAt(coord, Tileset.Water);
+      const strategicCoord = { x: Math.floor(coord.x / (16 * 16)), y: Math.floor(coord.y / (16 * 16)) };
+      if (type.value === EntityTypes.Grass) Strategic.putTileAt(strategicCoord, Tileset.Grass);
+      else if (type.value === EntityTypes.Mountain) Strategic.putTileAt(strategicCoord, Tileset.Rock1);
+      else if (type.value === EntityTypes.River) Strategic.putTileAt(strategicCoord, Tileset.Water);
     }
   });
 }

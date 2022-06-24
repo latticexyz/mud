@@ -19,6 +19,9 @@ export type NetworkLayerConfig = {
   privateKey: string;
   chainId: number;
   personaId: number;
+  jsonRpc?: string;
+  wsRpc?: string;
+  checkpointUrl?: string;
 };
 
 /**
@@ -28,6 +31,9 @@ export type NetworkLayerConfig = {
 export async function createNetworkLayer(config?: NetworkLayerConfig) {
   // World
   const world = createWorld();
+
+  //Config
+  console.log("Config", config?.jsonRpc, config?.wsRpc);
 
   // Components
   const components = {
@@ -94,15 +100,15 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       syncInterval: 5000,
     },
     provider: {
-      jsonRpcUrl: RPC_URL,
-      wsRpcUrl: RPC_WS_URL,
+      jsonRpcUrl: config?.jsonRpc || RPC_URL,
+      wsRpcUrl: config?.wsRpc || RPC_WS_URL,
       options: {
         batch: false,
       },
     },
     privateKey: config?.privateKey || DEV_PRIVATE_KEY,
     chainId: config?.chainId || 31337,
-    checkpointServiceUrl: CHECKPOINT_URL,
+    checkpointServiceUrl: config?.checkpointUrl || CHECKPOINT_URL,
     initialBlockNumber: 0,
   };
 
@@ -136,7 +142,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
 
   async function joinGame(position: WorldCoord) {
     console.log(`Joining game at position ${JSON.stringify(position)}`);
-    return txQueue.Game.joinGame(position);
+    return txQueue.Game.joinGame(position, { gasLimit: 1000000, gasPrice: 0 });
   }
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {

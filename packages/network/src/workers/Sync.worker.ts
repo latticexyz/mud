@@ -182,7 +182,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     }
 
     const { blockNumber$ } = createBlockNumberStream(providers, {
-      initialSync: { initialBlockNumber: this.clientBlockNumber, interval: 200 },
+      initialSync: { initialBlockNumber: this.clientBlockNumber, interval: 10 },
     });
     blockNumber$.subscribe(toCacheBlockNumber$);
 
