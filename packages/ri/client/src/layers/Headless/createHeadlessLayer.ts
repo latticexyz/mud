@@ -26,7 +26,7 @@ export async function createHeadlessLayer(network: NetworkLayer) {
     api: {
       joinGame: curry(joinGame)(network, actions),
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      moveEntity: (_: string) => {
+      moveEntity: (entity: number, direction: string) => {
         "no-op for types";
       },
     },

@@ -7,14 +7,18 @@ import {
   setComponent,
 } from "@latticexyz/recs";
 import { getCurrentTurn } from "@latticexyz/std-client";
-import { BigNumber } from "ethers";
 import { HeadlessLayer } from "../..";
 
 export function createCurrentStaminaSystem(layer: HeadlessLayer) {
-  const blockNumber$ = layer.parentLayers.network.network.blockNumber$;
-  const { CurrentStamina, LastActionTurn, StaminaRegeneration, MaxStamina, GameConfig } =
-    layer.parentLayers.network.components;
-  const { LocalCurrentStamina } = layer.components;
+  const {
+    parentLayers: {
+      network: {
+        network: { clock },
+        components: { CurrentStamina, LastActionTurn, StaminaRegeneration, MaxStamina, GameConfig },
+      },
+    },
+    components: { LocalCurrentStamina },
+  } = layer;
 
   defineUpdateSystem(layer.world, [Has(CurrentStamina), Has(LocalCurrentStamina)], ({ entity, value, component }) => {
     if (component !== CurrentStamina) return;
@@ -29,13 +33,9 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
       setComponent(LocalCurrentStamina, entity, { value: updatedValue.value as number });
   });
 
-  blockNumber$.forEach(() => {
+  clock.time$.forEach(() => {
     const entities = runQuery([Has(CurrentStamina), Has(LastActionTurn), Has(StaminaRegeneration), Has(MaxStamina)]);
-    const currentTurn = getCurrentTurn(
-      layer.world,
-      GameConfig,
-      BigNumber.from(layer.parentLayers.network.network.clock.currentTime / 1000)
-    );
+    const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
 
     for (const entity of entities) {
       const contractStamina = getComponentValueStrict(CurrentStamina, entity).value;

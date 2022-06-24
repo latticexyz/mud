@@ -1,4 +1,4 @@
-import { createEntity, setComponent, Entity, getComponentValue } from "@latticexyz/recs";
+import { createEntity, setComponent, Entity, getComponentValue, defineComponent, Type } from "@latticexyz/recs";
 import { HeadlessLayer } from "../Headless";
 import {
   defineStrollingComponent,
@@ -22,6 +22,7 @@ import {
 } from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
 import { Area } from "@latticexyz/utils";
+import { createPotentialPathSystem } from "./systems/PotentialPathSystem";
 
 /**
  * The Local layer is the thrid layer in the client architecture and extends the Headless layer.
@@ -41,6 +42,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   const Selected = defineSelectedComponent(world);
   const Selectable = defineSelectableComponent(world);
   const RockWall = defineRockWallComponent(world);
+  const PotentialPath = defineComponent(world, { x: Type.NumberArray, y: Type.NumberArray }, { id: "PotentialPath" });
 
   const components = {
     LocalPosition,
@@ -53,6 +55,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
     Selected,
     Selectable,
     RockWall,
+    PotentialPath,
   };
 
   // Constants
@@ -92,6 +95,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   createPositionSystem(layer);
   createDestinationSystem(layer);
   createPathSystem(layer);
+  createPotentialPathSystem(layer);
 
   return layer;
 }

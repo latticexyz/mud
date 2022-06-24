@@ -57,7 +57,7 @@ export class HueTintAndOutlineFXPipeline extends Phaser.Renderer.WebGL.Pipelines
               float rightAlpha = texture2D(uMainSampler, outTexCoord + vec2(distance.x, 0.0)).a;
               if (srcColor.a == 0.0 && max(max(upAlpha, downAlpha), max(leftAlpha, rightAlpha)) == 1.0)
               {
-                outColor = vec4(0.0, 0.0, 0.0, 1.0);
+                outColor = vec4(0.0, 0.0, 255.0, 0.5);
               }
             }
             gl_FragColor = outColor; 
