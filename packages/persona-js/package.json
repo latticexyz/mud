@@ -12,12 +12,16 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "build": "rimraf dist && rollup -c rollup.config.js"
+    "build": "rimraf dist && rollup -c rollup.config.js",
+    "types": "rimraf src/ethers-types && typechain --target=ethers-v5 ../../node_modules/@latticexyz/persona/abi/*.json --out-dir src/ethers-types"
   },
   "devDependencies": {
+    "@latticexyz/persona": "https://github.com/latticexyz/persona.git#a53e26a670ed6f041dc5dec365be293457a90b5d",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
+    "@typechain/ethers-v5": "^10.1.0",
     "@types/jest": "^27.4.1",
+    "ethers": "^5.6.9",
     "jest": "^27.5.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.69.0",
@@ -25,7 +29,11 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "ts-jest": "^27.1.3",
     "tslib": "^2.3.1",
+    "typechain": "^8.1.0",
     "typescript": "^4.5.5"
   },
-  "peerDependencies": {}
+  "peerDependencies": {
+    "@latticexyz/persona": "https://github.com/latticexyz/persona.git#a53e26a670ed6f041dc5dec365be293457a90b5d",
+    "ethers": "^5.6.9"
+  }
 }
