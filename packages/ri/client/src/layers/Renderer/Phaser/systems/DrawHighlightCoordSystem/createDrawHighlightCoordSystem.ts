@@ -22,7 +22,7 @@ export function createDrawHighlightCoordSystem(layer: PhaserLayer) {
   defineUpdateSystem(world, [Has(HoverHighlight)], ({ entity }) => {
     const hoverHighlght = getComponentValueStrict(HoverHighlight, singletonEntity);
     const highlight = objectPool.get(`${entity}-hover-highlight`, "Rectangle");
-    if (!hoverHighlght.x || !hoverHighlght.y) return;
+    if (hoverHighlght.x === null || hoverHighlght.y === null) return;
     const position = { x: hoverHighlght.x, y: hoverHighlght.y };
 
     highlight.setComponent({
