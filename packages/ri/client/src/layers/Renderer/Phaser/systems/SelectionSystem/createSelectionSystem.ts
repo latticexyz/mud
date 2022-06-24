@@ -31,7 +31,10 @@ export function createSelectionSystem(layer: PhaserLayer) {
       map((pixel) => pixelToWorldCoord(maps.Main, pixel)),
       map((worldCoord) => ({ ...worldCoord, width: 1, height: 1 }))
     )
-    .subscribe(selectArea);
+    .subscribe((area) => {
+      resetSelection();
+      selectArea(area);
+    });
 
   world.registerDisposer(() => {
     clickSub?.unsubscribe();

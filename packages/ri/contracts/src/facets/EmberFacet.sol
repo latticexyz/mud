@@ -71,7 +71,19 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     }
   }
 
-  function joinGame(Coord calldata position, uint32 entityType) external {
+  function joinGame(Coord calldata position) external {
+    (, bool foundTargetEntity) = getEntityAt(s.world, position);
+    require(!foundTargetEntity, "spot taken fool!");
+
+    uint256 playerEntity = createPlayerEntity();
+    createCreature(playerEntity, Coord(position.x, position.y));
+    createCreature(playerEntity, Coord(position.x + 1, position.y));
+    createCreature(playerEntity, Coord(position.x - 1, position.y));
+    createCreature(playerEntity, Coord(position.x, position.y + 1));
+    createCreature(playerEntity, Coord(position.x, position.y - 1));
+  }
+
+  function createCreature(uint256 ownerId, Coord memory position) private {
     EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
     OwnedByComponent ownedByComponent = OwnedByComponent(s.world.getComponent(OwnedByComponentID));
@@ -83,23 +95,16 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     LastActionTurnComponent lastActionTurn = LastActionTurnComponent(s.world.getComponent(LastActionTurnComponentID));
     MovableComponent movableComponent = MovableComponent(s.world.getComponent(MovableComponentID));
 
-    (, bool foundTargetEntity) = getEntityAt(s.world, position);
-    require(!foundTargetEntity, "spot taken fool!");
-
-    uint256 playerEntity = createPlayerEntity();
     uint256 entity = s.world.getUniqueEntityId();
 
-    entityTypeComponent.set(entity, entityType);
+    ownedByComponent.set(entity, ownerId);
+    entityTypeComponent.set(entity, uint32(0));
     positionComponent.set(entity, position);
-    ownedByComponent.set(entity, playerEntity);
     maxStamina.set(entity, 3);
     currentStamina.set(entity, 0);
     staminaRegeneration.set(entity, 1);
     lastActionTurn.set(entity, getCurrentTurn());
-
-    if (entityType == 0) {
-      movableComponent.set(entity);
-    }
+    movableComponent.set(entity);
   }
 
   function createPlayerEntity() private returns (uint256 playerEntity) {

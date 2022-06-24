@@ -1,7 +1,6 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
 import { getCurrentTurn, getGameConfig } from "@latticexyz/std-client";
-import { BigNumber } from "ethers";
 
 export function registerTurnTimer() {
   registerUIComponent(
@@ -26,7 +25,7 @@ export function registerTurnTimer() {
       const secondsUntilNextTurn = turnLength - timeElapsed % turnLength;
 
       return {
-        currentTurn: getCurrentTurn(world, GameConfig, BigNumber.from(currentTime)),
+        currentTurn: getCurrentTurn(world, GameConfig, clock),
         secondsUntilNextTurn
       };
     },

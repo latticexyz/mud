@@ -134,9 +134,9 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entity), component.metadata.contractId, data);
   }
 
-  async function joinGame(position: WorldCoord, entityType: number) {
-    console.log(`Spawning creature at position ${JSON.stringify(position)}`);
-    return txQueue.Game.joinGame(position, entityType);
+  async function joinGame(position: WorldCoord) {
+    console.log(`Joining game at position ${JSON.stringify(position)}`);
+    return txQueue.Game.joinGame(position);
   }
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {
