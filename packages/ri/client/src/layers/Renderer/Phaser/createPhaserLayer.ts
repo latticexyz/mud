@@ -27,6 +27,7 @@ import { curry } from "lodash";
 import { WorldCoord } from "@latticexyz/phaserx/src/types";
 import { createDrawHighlightCoordSystem } from "./systems/DrawHighlightCoordSystem";
 import { createDrawPotentialPathSystem } from "./systems/DrawPotentialPathSystem/createDrawPotentialPathSystem";
+import { createPlayerSpawnSystem } from "./systems/PlayerSpawnSystem";
 
 /**
  * The Phaser layer extends the Local layer.
@@ -90,12 +91,12 @@ export async function createPhaserLayer(local: LocalLayer) {
   createOutlineSystem(layer);
   createHueTintSystem(layer);
   createSelectionSystem(layer);
-  // createSelectionOutlineSystem(layer);
   createDrawDevHighlightSystem(layer);
   createInputSystem(layer);
   createDrawStaminaSystem(layer);
   createDrawHighlightCoordSystem(layer);
   createDrawPotentialPathSystem(layer);
+  createPlayerSpawnSystem(layer);
 
   return layer;
 }
