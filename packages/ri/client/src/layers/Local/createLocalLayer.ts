@@ -17,7 +17,6 @@ import {
   createPathSystem,
   createSyncSystem,
   createPositionSystem,
-  createImpSystem,
   createSelectionSystem,
 } from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
@@ -89,8 +88,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   };
 
   // Systems
-  createSelectionSystem(layer); // Enable selection system
-  createImpSystem(layer); // Enable imps
+  createSelectionSystem(layer);
   createSyncSystem(layer);
   createPositionSystem(layer);
   createDestinationSystem(layer);

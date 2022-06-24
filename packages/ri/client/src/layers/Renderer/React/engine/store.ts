@@ -1,5 +1,5 @@
 import { observable, action } from "mobx";
-import { UIComponent } from "./types";
+import { GridConfiguration, UIComponent } from "./types";
 import { Entity } from "@latticexyz/recs";
 
 export const EngineStore = observable({
@@ -8,8 +8,13 @@ export const EngineStore = observable({
 });
 
 export const registerUIComponent = action(
-  <T>(id: string, requirement: UIComponent<T>["requirement"], render: UIComponent<T>["render"]) => {
-    EngineStore.UIComponents.set(id, { requirement, render });
+  <T>(
+    id: string,
+    gridConfig: GridConfiguration,
+    requirement: UIComponent<T>["requirement"],
+    render: UIComponent<T>["render"]
+  ) => {
+    EngineStore.UIComponents.set(id, { requirement, render, gridConfig });
   }
 );
 

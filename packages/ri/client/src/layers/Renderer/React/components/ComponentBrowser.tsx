@@ -9,7 +9,6 @@ export function registerComponentBrowser() {
   //   (layers) => {
   //     const numEntities = layers.network.world.entities.length;
   //     if (numEntities > 1000) return numEntities;
-
   //     return {
   //       layers,
   //       devHighlightComponent: layers.phaser.components.DevHighlight,

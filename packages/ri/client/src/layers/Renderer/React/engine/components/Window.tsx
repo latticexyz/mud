@@ -6,7 +6,7 @@ import { filter, fromEvent } from "rxjs";
 
 const WINDOW_CLASSNAME = "react-ui-window";
 
-export const Window: React.FC = observer(({ children }) => {
+export const Window: React.FC<{ style: React.CSSProperties }> = observer(({ children, style }) => {
   const {
     phaser: {
       scenes: {
@@ -28,18 +28,20 @@ export const Window: React.FC = observer(({ children }) => {
   }, []);
 
   return (
-    <Container className={WINDOW_CLASSNAME} onMouseLeave={input.enableInput} onMouseEnter={input.disableInput}>
+    <Container
+      style={style}
+      className={WINDOW_CLASSNAME}
+      onMouseLeave={input.enableInput}
+      onMouseEnter={input.disableInput}
+    >
       {children}
     </Container>
   );
 });
 
 const Container = styled.div`
-  background-color: rgb(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
-  max-width: 500px;
-  max-height: 100%;
+  width: 100%;
+  height: 100%;
   pointer-events: all;
   color: #fff;
-  margin: 10px;
 `;

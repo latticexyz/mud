@@ -1,8 +1,9 @@
-import { HasValue, Has, defineSyncSystem } from "@latticexyz/recs";
+import { HasValue, Has, defineSyncSystem, getComponentValue } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { LocalEntityTypes } from "../../../../Local/types";
 import { EntityTypes } from "../../../../Network/types";
 import { Animations, Assets } from "../../constants";
+import { getPersonaColor } from "@latticexyz/std-client";
 
 /**
  * The Sync system handles adding Phaser layer components to entites based on components they have on parent layers
@@ -12,7 +13,7 @@ export function createSyncSystem(layer: PhaserLayer) {
     world,
     parentLayers: {
       network: {
-        components: { EntityType },
+        components: { EntityType, Persona, OwnedBy },
       },
       local: {
         components: { LocalEntityType, Selected },
@@ -50,9 +51,23 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [HasValue(LocalEntityType, { entityType: LocalEntityTypes.Hero })],
+    [Has(OwnedBy)],
     () => HueTint,
-    () => ({ value: 0xff0000 })
+    (entity) => {
+      console.log("hue tint sync");
+
+      const ownedBy = getComponentValue(OwnedBy, entity)?.value;
+      if (!ownedBy) return { value: 0xff0000 };
+
+      const ownedByIndex = world.entityToIndex.get(ownedBy);
+      if (!ownedByIndex) return { value: 0xff0000 };
+
+      const ownerPersonaId = getComponentValue(Persona, ownedByIndex)?.value;
+      if (!ownerPersonaId) return { value: 0xff0000 };
+
+      const personaColor = getPersonaColor(ownerPersonaId);
+      return { value: personaColor };
+    }
   );
 
   defineSyncSystem(

@@ -17,7 +17,7 @@ export { createCamera } from "./createCamera";
 export { createChunks } from "./createChunks";
 export { createDebugger } from "./createDebugger";
 export { createCulling } from "./createCulling";
-export type { Asset } from "./types";
+export type { Asset, Camera } from "./types";
 export { AssetType } from "./constants";
 export {
   defineAssetsConfig,
