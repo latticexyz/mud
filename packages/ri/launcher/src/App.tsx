@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { Game, Info } from "./components";
+import { Boot, Game, Info } from "./components";
 import { useStore } from "./hooks";
 
 export const App: React.FC = observer(() => {
@@ -21,7 +21,7 @@ export const App: React.FC = observer(() => {
         <p>persona id: {store.personaId}</p>
         {/* <p>Burner wallet: {store.burnerWallet?.address}</p> */}
       </Info>
-      {store.instanceUrl && <Game src={store.instanceUrl}></Game>}
+      {store.instanceUrl ? <Game src={store.instanceUrl} /> : <Boot />}
     </>
   );
 });
