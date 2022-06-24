@@ -40,6 +40,7 @@ export function createDrawStaminaSystem(layer: PhaserLayer) {
         once: (staminaText) => {
           const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
 
+          staminaText.setFontSize(8);
           staminaText.setText(`${currentStamina} / ${maxStamina}`);
           staminaText.setPosition(pixelCoord.x, pixelCoord.y + tileHeight);
         },
