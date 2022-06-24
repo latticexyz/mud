@@ -50,9 +50,34 @@ export const config = {
             defaultLayer: "Background",
           },
         }),
+        [Maps.Pixel]: defineMapConfig({
+          tileWidth: TILE_WIDTH,
+          tileHeight: TILE_HEIGHT,
+          backgroundTile: [Tileset.Empty],
+          animationInterval: 100,
+          tileAnimations: TileAnimations,
+          layers: {
+            layers: {
+              Background: { tilesets: ["Default"], hasHueTintShader: false },
+            },
+            defaultLayer: "Background",
+          },
+        }),
+        [Maps.Tactic]: defineMapConfig({
+          tileWidth: TILE_WIDTH * 16,
+          tileHeight: TILE_HEIGHT * 16,
+          backgroundTile: [Tileset.Grass],
+          animationInterval: 100,
+          layers: {
+            layers: {
+              Background: { tilesets: ["Default"] },
+            },
+            defaultLayer: "Background",
+          },
+        }),
         [Maps.Strategic]: defineMapConfig({
-          tileWidth: TILE_WIDTH * 8,
-          tileHeight: TILE_HEIGHT * 8,
+          tileWidth: TILE_WIDTH * 16 * 16,
+          tileHeight: TILE_HEIGHT * 16 * 16,
           backgroundTile: [Tileset.Grass],
           animationInterval: 100,
           layers: {
@@ -100,7 +125,7 @@ export const config = {
     pinchSpeed: 1,
     wheelSpeed: 1,
     maxZoom: 2,
-    minZoom: 1 / 32,
+    minZoom: 1 / (32 * 16),
   }),
   chunkSize: TILE_WIDTH * 16 * 16, //tile size * tile amount
 };

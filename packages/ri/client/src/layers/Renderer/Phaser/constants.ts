@@ -7,6 +7,8 @@ export enum Scenes {
 
 export enum Maps {
   Main = "Main",
+  Pixel = "Pixel",
+  Tactic = "Tactic",
   Strategic = "Strategic",
 }
 
@@ -30,6 +32,8 @@ if (import.meta.hot) {
 }
 
 export enum Tileset {
+  Empty = 0,
+  Plain = 1,
   Tree1 = 55,
   Tree2 = 56,
   Tree3 = 57,
