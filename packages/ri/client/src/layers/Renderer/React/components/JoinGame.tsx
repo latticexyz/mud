@@ -1,7 +1,8 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
-import { getPlayerEntity } from "@latticexyz/std-client";
+import { getPersonaColor, getPlayerEntity } from "@latticexyz/std-client";
 import { getComponentValue } from "@latticexyz/recs";
+import { BigNumber } from "ethers";
 
 export function registerJoinGame() {
   registerUIComponent(
@@ -38,11 +39,12 @@ export function registerJoinGame() {
     },
     ({ joinGame, personaId, playerEntity, selection }) => {
       const joined = !!playerEntity;
+      const playerColor = getPersonaColor(BigNumber.from(personaId).toHexString());
 
       return (
         <div>
           <h1>Join Game</h1>
-          <p>PersonaId: {personaId}</p>
+          <p style={{ color: playerColor.toString(16) }} >PersonaId: {personaId}</p>
           <p>Joined? {joined ? "yes" : "no"}</p>
           {!joined && (
             <button

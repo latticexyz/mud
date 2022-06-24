@@ -1,6 +1,7 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
 import { getComponentValue, Has, runQuery } from "@latticexyz/recs";
+import { getPersonaColor } from "@latticexyz/std-client";
 
 export function registerSelection() {
   registerUIComponent(
@@ -48,7 +49,11 @@ export function registerSelection() {
           <br />
           y: {selection?.y}
           <br />
-          {selectedEntity.ownerPersonaId && `owner persona: ${selectedEntity.ownerPersonaId}`}
+          {selectedEntity.ownerPersonaId && (
+            <p
+              style={{ color: getPersonaColor(selectedEntity.ownerPersonaId).toString(16) }}
+            >{`owner persona: ${selectedEntity.ownerPersonaId}`}</p>
+          )}
           <br />
         </>
       );
