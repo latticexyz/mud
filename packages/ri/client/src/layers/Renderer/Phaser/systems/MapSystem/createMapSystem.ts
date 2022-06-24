@@ -8,6 +8,7 @@ import {
   defineEnterSystem,
   defineEnterQuery,
 } from "@latticexyz/recs";
+import { range } from "lodash";
 import { EntityTypes } from "../../../../Network/types";
 import { Tileset } from "../../constants";
 import { PhaserLayer } from "../../types";
@@ -36,7 +37,7 @@ export function createMapSystem(layer: PhaserLayer) {
   } = layer;
 
   const zoomSub = camera.zoom$.subscribe((zoom) => {
-    if (zoom < 0.000005) {
+    if (zoom < 0.5) {
       Strategic.setVisible(true);
       Main.setVisible(false);
       camera.ignore(objectPool, true);
@@ -54,5 +55,11 @@ export function createMapSystem(layer: PhaserLayer) {
     if (type.value === EntityTypes.Grass) Main.putTileAt(coord, Tileset.Grass);
     else if (type.value === EntityTypes.Mountain) Main.putTileAt(coord, Tileset.Rock1);
     else if (type.value === EntityTypes.River) Main.putTileAt(coord, Tileset.Water);
+    // compute cluster for LOD
+    if (coord.x % 8 === 0 && coord.y % 8 === 0) {
+      if (type.value === EntityTypes.Grass) Strategic.putTileAt(coord, Tileset.Grass);
+      else if (type.value === EntityTypes.Mountain) Strategic.putTileAt(coord, Tileset.Rock1);
+      else if (type.value === EntityTypes.River) Strategic.putTileAt(coord, Tileset.Water);
+    }
   });
 }
