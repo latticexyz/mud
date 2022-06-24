@@ -43,8 +43,8 @@ export function registerJoinGame() {
 
       return (
         <div>
-          <h1>Join Game</h1>
-          <p style={{ color: playerColor.toString(16) }} >PersonaId: {personaId}</p>
+          {!joined && <h1>Join Game</h1>}
+          <p style={{ color: playerColor.toString(16) }}>PersonaId: {personaId}</p>
           <p>Joined? {joined ? "yes" : "no"}</p>
           {!joined && (
             <button
