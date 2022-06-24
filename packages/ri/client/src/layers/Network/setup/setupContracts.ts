@@ -58,7 +58,7 @@ export async function setupContracts<C extends ContractComponents>(
       initialBlockNumber: 0,
       mappings,
       chainId: config.chainId,
-      disableCache: config.chainId === 31337, // Disable cache on hardhat
+      disableCache: config.chainId === 31337 || config.chainId == 4242, // Disable cache on hardhat
       checkpointServiceUrl: config.checkpointServiceUrl,
     });
   }

@@ -16,6 +16,7 @@ export class Store {
   public persona?: ReturnType<typeof Persona>;
   public personaId?: number;
   public burnerWallet?: Wallet;
+  public checkpointUrl?: string;
 
   constructor() {
     makeAutoObservable(this);
@@ -36,6 +37,7 @@ export class Store {
     const params = new URLSearchParams(window.location.search);
     const gameSpecUrl = params.get("gameSpec") || defaultGameSpec;
     const chainSpecUrl = params.get("chainSpec") || defaultChainSpec;
+    this.checkpointUrl = params.get("checkpoint") || undefined;
 
     const responses = await Promise.all([fetch(chainSpecUrl), fetch(gameSpecUrl)]);
     const [chainSpec, gameSpec] = await Promise.all(responses.map((r) => r.json()));
@@ -89,7 +91,7 @@ export class Store {
 
   public get instanceUrl(): string | undefined {
     if (this.burnerWallet && this.gameSpec && this.chainSpec && this.persona != null) {
-      return `${this.gameSpec.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${this.chainSpec.chainId}&contractAddress=${this.gameSpec.address}`;
+      return `${this.gameSpec.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${this.chainSpec.chainId}&contractAddress=${this.gameSpec.address}&rpc=${this.chainSpec.rpc}&checkpoint=${this.checkpointUrl}`;
     }
   }
 }

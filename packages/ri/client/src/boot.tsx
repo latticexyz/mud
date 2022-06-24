@@ -38,6 +38,9 @@ async function bootLayers() {
     const privateKey = params.get("burnerWalletPrivateKey");
     const chainIdString = params.get("chainId");
     const personaIdString = params.get("personaId");
+    const jsonRpc = params.get("rpc") ?? undefined;
+    const wsRpc = jsonRpc && jsonRpc.replace("http", "ws");
+    const checkpointUrl = params.get("checkpoint") ?? undefined;
 
     let networkLayerConfig;
     if (contractAddress && privateKey && chainIdString && personaIdString) {
@@ -46,6 +49,9 @@ async function bootLayers() {
         privateKey,
         chainId: parseInt(chainIdString),
         personaId: parseInt(personaIdString),
+        jsonRpc,
+        wsRpc,
+        checkpointUrl,
       };
     }
 
