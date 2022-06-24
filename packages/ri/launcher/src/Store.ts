@@ -1,49 +1,84 @@
 import { Wallet } from "ethers";
-import { makeAutoObservable, runInAction } from "mobx";
+import { makeAutoObservable, reaction, runInAction } from "mobx";
 import React from "react";
 import { Persona } from "@latticexyz/persona-js";
-import { chainSpec, game } from "./constants";
 import { JsonRpcProvider } from "@ethersproject/providers";
 
 const burnerWalletStorageKey = "burnerWallet";
 const personaStorageKey = "personaId";
+const defaultChainSpec = "https://launcher-config.pages.dev/chainSpec.json";
+const defaultGameSpec = "https://launcher-config.pages.dev/gameSpec.json";
 
 export class Store {
+  public chainSpec?: { [key: string]: string };
+  public gameSpec?: { [key: string]: string };
   public wallet?: Wallet;
-  public persona = Persona(chainSpec);
+  public persona?: ReturnType<typeof Persona>;
   public personaId?: number;
   public burnerWallet?: Wallet;
-  public provider = new JsonRpcProvider(chainSpec.rpc, chainSpec.chainId);
 
   constructor() {
     makeAutoObservable(this);
+
+    // Connect persona to wallet
+    reaction(
+      () => ({ wallet: this.wallet, persona: this.persona }),
+      ({ wallet, persona }) => {
+        if (wallet && persona) persona.connectSigner(wallet);
+      }
+    );
+
     this.boot();
   }
 
   public async boot() {
-    const burnerWallet = localStorage.getItem(burnerWalletStorageKey);
+    // Load config
+    const params = new URLSearchParams(window.location.search);
+    const gameSpecUrl = params.get("gameSpec") || defaultGameSpec;
+    const chainSpecUrl = params.get("chainSpec") || defaultChainSpec;
+
+    const responses = await Promise.all([fetch(chainSpecUrl), fetch(gameSpecUrl)]);
+    const [chainSpec, gameSpec] = await Promise.all(responses.map((r) => r.json()));
+    console.info("Chain spec:", chainSpec);
+    console.info("Game spec:", gameSpec);
+
+    runInAction(() => {
+      this.persona = Persona(chainSpec);
+      this.gameSpec = gameSpec;
+      this.chainSpec = chainSpec;
+    });
+
+    // Init provider
+    const provider = new JsonRpcProvider(chainSpec.rpc, chainSpec.chainId);
+
+    // Create wallet and impersonate
+    const burnerWalletPK = localStorage.getItem(burnerWalletStorageKey);
     const personaString = localStorage.getItem(personaStorageKey);
     const personaId = personaString != null ? Number(personaString) : null;
-    if (burnerWallet && personaId != null) {
-      this.burnerWallet = new Wallet(burnerWallet).connect(this.provider);
-      this.personaId = personaId;
+    if (burnerWalletPK && personaId != null) {
+      runInAction(() => {
+        this.burnerWallet = new Wallet(burnerWalletPK).connect(provider);
+        this.personaId = personaId;
+      });
     } else {
-      this.connectWallet();
+      this.connectWallet(provider);
       await this.mintPersonaAndBurner();
     }
   }
 
-  public connectWallet() {
+  public connectWallet(provider: JsonRpcProvider) {
     // For now this just creates a burner wallet for you.
     // TODO: allow connecting with other actual wallets
     this.wallet = Wallet.createRandom();
-    this.wallet = this.wallet.connect(this.provider);
-    this.persona.connectSigner(this.wallet);
+    this.wallet = this.wallet.connect(provider);
   }
 
   public async mintPersonaAndBurner() {
-    if (!this.wallet) throw new Error("No wallet connected");
-    const { personaId, burnerWallet } = await this.persona.mintAndBurner(game.address);
+    if (!this.wallet || !this.persona || !this.gameSpec) {
+      console.log(this.wallet, this.persona, this.gameSpec);
+      throw new Error("Mint failed: no wallet or persona or game spec");
+    }
+    const { personaId, burnerWallet } = await this.persona.mintAndBurner(this.gameSpec.address);
     localStorage.setItem(burnerWalletStorageKey, burnerWallet.privateKey);
     localStorage.setItem(personaStorageKey, String(personaId));
     runInAction(() => {
@@ -53,9 +88,9 @@ export class Store {
   }
 
   public get instanceUrl(): string | undefined {
-    return this.burnerWallet && this.personaId != null
-      ? `${game.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${chainSpec.chainId}&contractAddress=${game.address}`
-      : undefined;
+    if (this.burnerWallet && this.gameSpec && this.chainSpec && this.persona != null) {
+      return `${this.gameSpec.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${this.chainSpec.chainId}&contractAddress=${this.gameSpec.address}`;
+    }
   }
 }
 

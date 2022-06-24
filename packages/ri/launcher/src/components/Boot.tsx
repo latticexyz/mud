@@ -7,24 +7,41 @@ export const Boot: React.FC = observer(() => {
   const store = useStore();
 
   const state = computed(() => {
+    if (!store.chainSpec || !store.gameSpec) return <>Loading config...</>;
     if (!store.personaId) {
-      if (!store.wallet) return "Creating burner wallet...";
-      return "Minting Persona...";
+      if (!store.wallet) return <>Creating burner wallet...</>;
+      return (
+        <>
+          Minting <Red>Persona</Red>...
+        </>
+      );
     }
-    if (!store.burnerWallet) return "Authorizing burner wallet...";
-    return "Let's go";
+    if (!store.burnerWallet) return <>Authorizing burner wallet...</>;
+    return <>Let's go</>;
   });
-  return <Container>{state.get()}</Container>;
+  return (
+    <Container>
+      <p>{state.get()}</p>
+    </Container>
+  );
 });
 
 const Container = styled.div`
   width: 100vw;
   height: 100vh;
-  font-family: "Space Mono", monospace;
   background-color: black;
-  color: white;
-  font-size: 100px;
   display: grid;
   align-items: center;
   justify-items: center;
+
+  p,
+  span {
+    font-family: "Space Mono", sans-serif;
+    color: white;
+    font-size: 100px;
+  }
+`;
+
+const Red = styled.span`
+  color: #eb4926 !important;
 `;
