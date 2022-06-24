@@ -19,7 +19,7 @@ export function createSyncSystem(layer: LocalLayer) {
   // Add Strolling component to entities with type Creature
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Creature })],
+    [HasValue(EntityType, { value: EntityTypes.Hero })],
     () => Strolling,
     () => ({ value: true })
   );
@@ -27,7 +27,7 @@ export function createSyncSystem(layer: LocalLayer) {
   // Add LocalPosition to entities with Position of type Creature
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Creature }), Has(Position)],
+    [HasValue(EntityType, { value: EntityTypes.Hero }), Has(Position)],
     () => LocalPosition,
     (entity) => {
       const pos = getComponentValueStrict(Position, entity);
@@ -38,7 +38,7 @@ export function createSyncSystem(layer: LocalLayer) {
   // Add MoveSpeed to entities of type Creature
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Creature })],
+    [HasValue(EntityType, { value: EntityTypes.Hero })],
     () => MoveSpeed,
     () => ({ default: 1000, current: 1000 })
   );
@@ -46,7 +46,7 @@ export function createSyncSystem(layer: LocalLayer) {
   // Add Selectable to entities of type Creature
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Creature })],
+    [HasValue(EntityType, { value: EntityTypes.Hero })],
     () => Selectable,
     () => ({ value: true })
   );

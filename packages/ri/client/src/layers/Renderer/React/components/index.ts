@@ -6,7 +6,7 @@ import { registerTurnTimer } from "./TurnTimer";
 
 export function registerUIComponents() {
   registerSelection();
-  registerAppearance();
+  // registerAppearance();
   registerSelectedCoords();
   registerTurnTimer();
   registerComponentBrowser();

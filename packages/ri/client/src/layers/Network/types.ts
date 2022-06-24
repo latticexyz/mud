@@ -11,6 +11,9 @@ export enum ContractWorldEvent {
 }
 
 export enum EntityTypes {
-  Creature,
+  Hero,
+  Grass,
+  Mountain,
+  River,
   Wall,
 }
