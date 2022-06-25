@@ -26,9 +26,9 @@ async function getLatestCheckpoint(
   cache: ReturnType<typeof initCache>
 ): Promise<ECSStateReply | undefined> {
   try {
-    const localCheckpoint: ECSStateReply = cache.get("Checkpoint", "latest");
+    const localCheckpoint: ECSStateReply = await cache.get("Checkpoint", "latest");
     if (localCheckpoint) {
-      console.log("Using cached checkpoint checkpoint");
+      console.log("Using cached checkpoint checkpoint", localCheckpoint);
       return localCheckpoint;
     }
     const transport = new GrpcWebFetchTransport({ baseUrl: checkpointServiceUrl, format: "binary" });
