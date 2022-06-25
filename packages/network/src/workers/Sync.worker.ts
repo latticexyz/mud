@@ -125,9 +125,14 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     if (config.initialBlockNumber) this.clientBlockNumber = config.initialBlockNumber;
 
     // Create cache and get the cache block number
-    const cache = await initCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
+    const cache = await initCache<{
+      ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>;
+      BlockNumber: number;
+      Entities: number;
+      Components: number;
+    }>(
       getCacheId(config.chainId, config.worldContract.address), // Store a separate cache for each World contract address
-      ["ComponentValues", "BlockNumber"]
+      ["ComponentValues", "BlockNumber", "Entities", "Components"]
     );
 
     const cacheBlockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
@@ -145,10 +150,32 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     ) {
       console.log("Loading from cache at block", cacheBlockNumber);
       this.clientBlockNumber = cacheBlockNumber; // Set the current client block number to the cache block number to avoid refetching from blocks before that
+
+      // Initialize maps
+      const indexToEntity = new Map<number, string>();
+      const indexToComponent = new Map<number, string>();
+
+      const entities = await cache.entries("Entities");
+      for (const [id, index] of entities) {
+        indexToEntity.set(index, id);
+      }
+
+      const components = await cache.entries("Components");
+      for (const [id, index] of components) {
+        indexToComponent.set(index, id);
+      }
+
       const cacheEntries = await cache.entries("ComponentValues");
       for (const [key, value] of cacheEntries) {
-        const componentEntity = key.split("/");
-        const [component, entity] = componentEntity;
+        const [componentIndex, entityIndex] = key.split("/");
+        const component = indexToComponent.get(Number(componentIndex));
+        const entity = indexToEntity.get(Number(entityIndex));
+
+        if (!entity || !component) {
+          console.warn("Unknown component or entity", component, entity);
+          continue;
+        }
+
         const ecsEvent: NetworkComponentUpdate<Cm> = {
           component,
           entity,

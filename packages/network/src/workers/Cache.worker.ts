@@ -17,9 +17,30 @@ export type Output = never;
 export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, number> {
   private ecsEventWithBlockNr$ = new ReplaySubject<Input<Cm>>();
   private reducedBlockNr$ = new Subject<number>();
+  private cache: ReturnType<typeof initCache>;
+  private entityToIndex = new Map<string, number>();
+  private componentToIndex = new Map<string, number>();
 
   constructor() {
     this.init();
+  }
+
+  private getEntityIndex(id: string): number {
+    let index = this.entityToIndex.get(id);
+    if (index != null) return index;
+    index = this.entityToIndex.size;
+    this.entityToIndex.set(id, index);
+    this.cache.set("Entities", id, index);
+    return index;
+  }
+
+  private getComponentIndex(id: string): number {
+    let index = this.componentToIndex.get(id);
+    if (index != null) return index;
+    index = this.componentToIndex.size;
+    this.componentToIndex.set(id, index);
+    this.cache.set("Components", id, index);
+    return index;
   }
 
   private async init() {
@@ -48,13 +69,35 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
       )
     );
 
-    const cache = await initCache<{ ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>; BlockNumber: number }>(
+    const cache = await initCache<{
+      ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>;
+      BlockNumber: number;
+      Entities: number;
+      Components: number;
+    }>(
       getCacheId(chainId, worldAddress), // Store a separate cache for each World contract address
-      ["ComponentValues", "BlockNumber"]
+      ["ComponentValues", "BlockNumber", "Entities", "Components"]
     );
+    this.cache = cache;
+
+    // Initialize maps
+    const entities = await cache.entries("Entities");
+    for (const [id, index] of entities) {
+      this.entityToIndex.set(id, index);
+    }
+
+    const components = await cache.entries("Components");
+    for (const [id, index] of components) {
+      this.componentToIndex.set(id, index);
+    }
 
     ecsEvent$
-      .pipe(map((event) => ({ key: `${String(event.component)}/${event.entity}`, value: event.value })))
+      .pipe(
+        map((event) => ({
+          key: `${this.getComponentIndex(String(event.component))}/${this.getEntityIndex(event.entity)}`,
+          value: event.value,
+        }))
+      )
       .subscribe(({ key, value }) => {
         if (value === undefined) {
           cache.remove("ComponentValues", key);
