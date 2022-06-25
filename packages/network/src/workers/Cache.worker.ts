@@ -5,6 +5,7 @@ import { initCache } from "../initCache";
 import { awaitStreamValue, filterNullish } from "@latticexyz/utils";
 import { getCacheId } from "./utils";
 import { NetworkComponentUpdate } from "../types";
+import { ECSStateReply } from "../snapshot";
 
 export type Input<Cm extends Components> = [
   NetworkComponentUpdate<Cm> | undefined,
@@ -74,9 +75,10 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
       BlockNumber: number;
       Entities: number;
       Components: number;
+      Checkpoint: ECSStateReply;
     }>(
       getCacheId(chainId, worldAddress), // Store a separate cache for each World contract address
-      ["ComponentValues", "BlockNumber", "Entities", "Components"]
+      ["ComponentValues", "BlockNumber", "Entities", "Components", "Checkpoint"]
     );
     this.cache = cache;
 

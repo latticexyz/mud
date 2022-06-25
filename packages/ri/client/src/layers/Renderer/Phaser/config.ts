@@ -64,9 +64,9 @@ export const config = {
           },
         }),
         [Maps.Tactic]: defineMapConfig({
-          tileWidth: TILE_WIDTH * 16,
-          tileHeight: TILE_HEIGHT * 16,
-          backgroundTile: [Tileset.Grass],
+          tileWidth: TILE_WIDTH * 4,
+          tileHeight: TILE_HEIGHT * 4,
+          backgroundTile: [Tileset.Wall1],
           animationInterval: 100,
           layers: {
             layers: {
@@ -76,9 +76,9 @@ export const config = {
           },
         }),
         [Maps.Strategic]: defineMapConfig({
-          tileWidth: TILE_WIDTH * 16 * 16,
-          tileHeight: TILE_HEIGHT * 16 * 16,
-          backgroundTile: [Tileset.Grass],
+          tileWidth: TILE_WIDTH * 16,
+          tileHeight: TILE_HEIGHT * 16,
+          backgroundTile: [Tileset.Wall1],
           animationInterval: 100,
           layers: {
             layers: {
@@ -125,7 +125,7 @@ export const config = {
     pinchSpeed: 1,
     wheelSpeed: 1,
     maxZoom: 2,
-    minZoom: 1 / (32 * 16),
+    minZoom: 1 / 32,
   }),
-  chunkSize: TILE_WIDTH * 16 * 16, //tile size * tile amount
+  chunkSize: TILE_WIDTH * 16 * 4, // tile size * tile amount
 };

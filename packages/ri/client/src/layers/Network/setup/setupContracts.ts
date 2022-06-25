@@ -58,7 +58,7 @@ export async function setupContracts<C extends ContractComponents>(
       initialBlockNumber: 0,
       mappings,
       chainId: config.chainId,
-      disableCache: config.chainId === 31337, // Disable cache on hardhat
+      disableCache: config.chainId === 31337 || config.chainId === 4242, // Disable cache on hardhat
       checkpointServiceUrl: config.checkpointServiceUrl,
     });
   }
@@ -90,20 +90,33 @@ function applyNetworkUpdates<C extends Components>(
 ) {
   const txReduced$ = new Subject<string>();
 
-  const ecsEventSub = ecsEvent$.subscribe((update) => {
-    // Running this in a mobx action would result in only one system update per frame (should increase performance)
-    // but it currently breaks defineUpdateAction (https://linear.app/latticexyz/issue/LAT-594/defineupdatequery-does-not-work-when-running-multiple-component)
-    const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
+  const ecsEventSub = ecsEvent$
+    .pipe(
+      // We throttle the client side event processing to 200 events every 16ms, so 12.500 events per second.
+      // This means if the chain were to emit more than 12.500 events per second, the client would not keep up.
+      // (We're not close to 12.500 events per second on the chain yet)
+      bufferTime(16, null, 1000),
+      filter((updates) => updates.length > 0),
+      stretch(16)
+    )
+    .subscribe((updates) => {
+      // Running this in a mobx action would result in only one system update per frame (should increase performance)
+      // but it currently breaks defineUpdateAction (https://linear.app/latticexyz/issue/LAT-594/defineupdatequery-does-not-work-when-running-multiple-component)
+      // runInAction(() => {
+      for (const update of updates) {
+        const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
 
-    if (update.value === undefined) {
-      // undefined value means component removed
-      removeComponent(components[update.component] as Component<Schema>, entityIndex);
-    } else {
-      setComponent(components[update.component] as Component<Schema>, entityIndex, update.value);
-    }
+        if (update.value === undefined) {
+          // undefined value means component removed
+          removeComponent(components[update.component] as Component<Schema>, entityIndex);
+        } else {
+          setComponent(components[update.component] as Component<Schema>, entityIndex, update.value);
+        }
 
-    if (update.lastEventInTx) txReduced$.next(update.txHash);
-  });
+        if (update.lastEventInTx) txReduced$.next(update.txHash);
+      }
+      // });
+    });
 
   world.registerDisposer(() => ecsEventSub?.unsubscribe());
   return { txReduced$: txReduced$.asObservable() };
