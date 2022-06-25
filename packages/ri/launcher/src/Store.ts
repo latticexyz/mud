@@ -31,7 +31,6 @@ export class Store {
   public persona?: ReturnType<typeof Persona>;
   public personaId?: number;
   public burnerWallet?: Wallet;
-  public checkpointUrl?: string;
 
   constructor() {
     makeAutoObservable(this);
@@ -114,7 +113,7 @@ export class Store {
 
   public get instanceUrl(): string | undefined {
     if (this.burnerWallet && this.gameSpec && this.chainSpec && this.persona != null) {
-      return `${this.gameSpec.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${this.chainSpec.chainId}&contractAddress=${this.gameSpec.address}&rpc=${this.chainSpec.rpc}&checkpoint=${this.checkpointUrl}`;
+      return `${this.gameSpec.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${this.chainSpec.chainId}&contractAddress=${this.gameSpec.address}&rpc=${this.chainSpec.rpc}&checkpoint=${this.gameSpec.checkpoint}`;
     }
   }
 }
