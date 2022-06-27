@@ -13,11 +13,11 @@ export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPos
     id: actionId,
     components: { Position, Persona },
     requirement: ({ Position, Persona }) => {
-      const blockingEntities = getEntitiesWithValue(Position, targetPosition);
-      if (blockingEntities.size !== 0) {
-        actions.cancel(actionId);
-        return null;
-      }
+      // const blockingEntities = getEntitiesWithValue(Position, targetPosition);
+      // if (blockingEntities.size !== 0) {
+      //   actions.cancel(actionId);
+      //   return null;
+      // }
 
       if (!network.personaId) {
         console.warn("No persona ID found, canceling spawn attempt");

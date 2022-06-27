@@ -58,7 +58,7 @@ export async function setupContracts<C extends ContractComponents>(
       initialBlockNumber: 0,
       mappings,
       chainId: config.chainId,
-      disableCache: config.chainId === 31337 || config.chainId == 4242, // Disable cache on hardhat
+      disableCache: config.chainId === 31337 || config.chainId === 4242, // Disable cache on hardhat
       checkpointServiceUrl: config.checkpointServiceUrl,
     });
   }
@@ -95,7 +95,7 @@ function applyNetworkUpdates<C extends Components>(
       // We throttle the client side event processing to 200 events every 16ms, so 12.500 events per second.
       // This means if the chain were to emit more than 12.500 events per second, the client would not keep up.
       // (We're not close to 12.500 events per second on the chain yet)
-      bufferTime(16, null, 200),
+      bufferTime(16, null, 1000),
       filter((updates) => updates.length > 0),
       stretch(16)
     )

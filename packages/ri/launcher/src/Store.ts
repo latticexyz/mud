@@ -9,14 +9,28 @@ const personaStorageKey = "personaId";
 const defaultChainSpec = "https://launcher-config.pages.dev/chainSpec.json";
 const defaultGameSpec = "https://launcher-config.pages.dev/gameSpec.json";
 
+interface ChainSpec {
+  chainId: number;
+  rpc: string;
+  wsRpc: string;
+  personaAddress: string;
+  personaMirrorAddress: string;
+  personaAllMinterAddress: string;
+}
+
+interface GameSpec {
+  address: string;
+  client: string;
+  checkpoint: string;
+}
+
 export class Store {
-  public chainSpec?: { [key: string]: string };
-  public gameSpec?: { [key: string]: string };
+  public chainSpec?: ChainSpec;
+  public gameSpec?: GameSpec;
   public wallet?: Wallet;
   public persona?: ReturnType<typeof Persona>;
   public personaId?: number;
   public burnerWallet?: Wallet;
-  public checkpointUrl?: string;
 
   constructor() {
     makeAutoObservable(this);
@@ -37,12 +51,20 @@ export class Store {
     const params = new URLSearchParams(window.location.search);
     const gameSpecUrl = params.get("gameSpec") || defaultGameSpec;
     const chainSpecUrl = params.get("chainSpec") || defaultChainSpec;
-    this.checkpointUrl = params.get("checkpoint") || undefined;
 
     const responses = await Promise.all([fetch(chainSpecUrl), fetch(gameSpecUrl)]);
-    const [chainSpec, gameSpec] = await Promise.all(responses.map((r) => r.json()));
+    const [chainSpec, gameSpec] = (await Promise.all(responses.map((r) => r.json()))) as [ChainSpec, GameSpec];
     console.info("Chain spec:", chainSpec);
     console.info("Game spec:", gameSpec);
+
+    // Override via get params
+    chainSpec.chainId = Number(params.get("chainId")) || chainSpec.chainId;
+    chainSpec.personaAddress = params.get("personaAddress") || chainSpec.personaAddress;
+    chainSpec.personaMirrorAddress = params.get("personaMirrorAddress") || chainSpec.personaMirrorAddress;
+    chainSpec.personaAllMinterAddress = params.get("personaAllMinterAddress") || chainSpec.personaAllMinterAddress;
+    gameSpec.address = params.get("address") || gameSpec.address;
+    gameSpec.checkpoint = params.get("checkpoint") || gameSpec.checkpoint;
+    gameSpec.client = params.get("client") || gameSpec.client;
 
     runInAction(() => {
       this.persona = Persona(chainSpec);
@@ -91,7 +113,7 @@ export class Store {
 
   public get instanceUrl(): string | undefined {
     if (this.burnerWallet && this.gameSpec && this.chainSpec && this.persona != null) {
-      return `${this.gameSpec.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${this.chainSpec.chainId}&contractAddress=${this.gameSpec.address}&rpc=${this.chainSpec.rpc}&checkpoint=${this.checkpointUrl}`;
+      return `${this.gameSpec.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${this.chainSpec.chainId}&contractAddress=${this.gameSpec.address}&rpc=${this.chainSpec.rpc}&checkpoint=${this.gameSpec.checkpoint}`;
     }
   }
 }
