@@ -41,10 +41,6 @@ abstract contract Component is IComponent {
 
   function getSchema() public pure virtual returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
-  function getID() public view returns (uint256) {
-    return id;
-  }
-
   function set(uint256 entity, bytes memory value) public onlyContractOwner {
     // Store the entity
     entities.add(entity);

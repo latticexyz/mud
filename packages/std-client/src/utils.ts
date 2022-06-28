@@ -1,10 +1,10 @@
 import Phaser from "phaser";
-import { Component, EntityID, getComponentValue, getEntitiesWithValue, Schema, Type, World } from "@latticexyz/recs";
+import { Component, EntityID, getComponentValue, getEntitiesWithValue, Type, World } from "@latticexyz/recs";
 import { keccak256 } from "@latticexyz/utils";
 import { BigNumber, ethers } from "ethers";
 import { Clock } from "@latticexyz/network";
 
-export function getPlayerEntity(personaComponent: Component<Schema>, personaId: number) {
+export function getPlayerEntity(personaComponent: Component<{ value: Type.String }>, personaId: number) {
   const playerEntitySet = getEntitiesWithValue(personaComponent, {
     value: ethers.BigNumber.from(personaId).toHexString(),
   });

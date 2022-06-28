@@ -66,22 +66,22 @@ contract WorldTest is DSTest {
 
     // Gimme all entities with component3 and component1
     WorldQueryFragment[] memory fragments = new WorldQueryFragment[](3);
-    fragments[0] = WorldQueryFragment(QueryType.ProxyRead, fromPrototype.getID(), abi.encode(1));
-    fragments[1] = WorldQueryFragment(QueryType.Has, component3.getID(), new bytes(0)); // interim result 4,5,6
-    fragments[2] = WorldQueryFragment(QueryType.Has, component1.getID(), new bytes(0));
+    fragments[0] = WorldQueryFragment(QueryType.ProxyRead, fromPrototype.id(), abi.encode(1));
+    fragments[1] = WorldQueryFragment(QueryType.Has, component3.id(), new bytes(0)); // interim result 4,5,6
+    fragments[2] = WorldQueryFragment(QueryType.Has, component1.id(), new bytes(0));
     uint256[] memory entities = world.query(fragments);
     assertTrue(entities.length == 2);
     assertTrue(entities[0] == 4);
     assertTrue(entities[1] == 5);
 
     // Gimme all entities with component3 and component2
-    fragments[2] = WorldQueryFragment(QueryType.Has, component2.getID(), new bytes(0));
+    fragments[2] = WorldQueryFragment(QueryType.Has, component2.id(), new bytes(0));
     entities = world.query(fragments);
     assertTrue(entities.length == 1);
     assertTrue(entities[0] == 6);
 
     // Gimme all entities with component3 and component1 value 1
-    fragments[2] = WorldQueryFragment(QueryType.HasValue, component1.getID(), abi.encode(1));
+    fragments[2] = WorldQueryFragment(QueryType.HasValue, component1.id(), abi.encode(1));
     entities = world.query(fragments);
     assertTrue(entities.length == 1);
     assertTrue(entities[0] == 4);

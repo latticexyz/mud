@@ -9563,6 +9563,14 @@ phaser@3.60.0-beta.4:
   dependencies:
     eventemitter3 "^4.0.7"
 
+phaser@^3.55.2:
+  version "3.55.2"
+  resolved "https://registry.yarnpkg.com/phaser/-/phaser-3.55.2.tgz#c1e2e9e70de7085502885e06f46b7eb4bd95e29a"
+  integrity sha512-amKXsbb2Ht29dGPKvt1edq3yGGYKtq8373GpJYGKPNPnneYY6MtVTOgjHDuZwtmUyK4v86FugkT3hzW/N4tjxQ==
+  dependencies:
+    eventemitter3 "^4.0.7"
+    path "^0.12.7"
+
 picocolors@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/picocolors/-/picocolors-1.0.0.tgz#cb5bdc74ff3f51892236eaf79d68bc44564ab81c"
