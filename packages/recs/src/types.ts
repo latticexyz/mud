@@ -43,7 +43,7 @@ export type ComponentUpdate<S extends Schema = Schema> = {
 };
 
 export interface Component<S extends Schema = Schema, M extends Metadata = Metadata> {
-  id: EntityID;
+  id: string;
   values: { [key in keyof S]: Map<EntityIndex, ValueType[S[key]]> };
   schema: S;
   metadata: M;
@@ -150,8 +150,8 @@ export type Override<T extends Schema> = {
 };
 
 export type OverridableComponent<T extends Schema = Schema> = Component<T> & {
-  addOverride: (id: EntityID, update: Override<T>) => void;
-  removeOverride: (id: EntityID) => void;
+  addOverride: (actionEntityId: EntityID, update: Override<T>) => void;
+  removeOverride: (actionEntityId: EntityID) => void;
 };
 
 export type OptionalType =
