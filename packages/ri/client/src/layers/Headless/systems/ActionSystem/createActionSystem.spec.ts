@@ -79,7 +79,7 @@ describe("ActionSystem", () => {
   it("should set the Action component of failed actions", async () => {
     const [, reject, promise] = deferred<void>();
     const entity = actions.add({
-      id: "action" as EntityID as EntityID,
+      id: "action" as EntityID,
       components: {},
       requirement: () => true,
       updates: () => [],
