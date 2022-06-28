@@ -95,7 +95,7 @@ describe("ActionSystem", () => {
 
   it("should set the Action component of cancelled actions", async () => {
     const entity = actions.add({
-      id: "action" as EntityID as EntityID,
+      id: "action" as EntityID,
       components: {},
       requirement: () => false,
       updates: () => [],
