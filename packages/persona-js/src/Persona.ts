@@ -1,4 +1,4 @@
-import { Contract, Signer, Wallet } from "ethers";
+import { Contract, Overrides, Signer, Wallet } from "ethers";
 import { ChainSpec } from "./types";
 import { abi as PersonaAbi } from "@latticexyz/persona/abi/Persona.json";
 import { abi as PersonaMirrorAbi } from "@latticexyz/persona/abi/PersonaMirror.json";
@@ -25,9 +25,9 @@ export function Persona({ personaAddress, personaAllMinterAddress, personaMirror
     personaAllMinter = personaAllMinter.connect(signer);
   }
 
-  async function mintPersona(): Promise<number> {
+  async function mintPersona(overrides?: Overrides): Promise<number> {
     if (!persona.signer) throw new Error("Signer is not connected");
-    const tx = await personaAllMinter.mintPersona(persona.signer.getAddress(), { gasLimit: 1000000, gasPrice: 0 });
+    const tx = await personaAllMinter.mintPersona(persona.signer.getAddress(), overrides);
     const receipt = await tx.wait();
     for (const log of receipt.logs) {
       try {
@@ -42,14 +42,14 @@ export function Persona({ personaAddress, personaAllMinterAddress, personaMirror
     throw new Error("Could not mint persona");
   }
 
-  async function authorize(personaId: number, user: string, consumer: string) {
+  async function authorize(personaId: number, user: string, consumer: string, overrides?: Overrides) {
     const isAuthorized = await personaMirror.isAuthorized(personaId, user, consumer, hexZeroPad("0x0", 4));
-    if (!isAuthorized) await personaMirror.authorize(personaId, user, consumer, [], { gasLimit: 1000000, gasPrice: 0 });
+    if (!isAuthorized) await personaMirror.authorize(personaId, user, consumer, [], overrides);
     return true;
   }
 
-  async function impersonate(user: Wallet, personaId: number, consumer: string) {
-    const tx = await personaMirror.connect(user).impersonate(personaId, consumer, { gasLimit: 1000000, gasPrice: 0 });
+  async function impersonate(user: Wallet, personaId: number, consumer: string, overrides?: Overrides) {
+    const tx = await personaMirror.connect(user).impersonate(personaId, consumer, overrides);
     return tx.wait();
   }
 
