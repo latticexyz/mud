@@ -8,9 +8,10 @@ export function createAppearanceSystem(layer: PhaserLayer) {
   const {
     world,
     components: { Appearance },
-    scenes,
+    scenes: {
+      Main: { objectPool },
+    },
   } = layer;
-  const objectPool = scenes.Main.objectPool;
 
   defineComponentSystem(world, Appearance, ({ entity, value }) => {
     const appearance = value[0];
@@ -24,7 +25,6 @@ export function createAppearanceSystem(layer: PhaserLayer) {
       id: Appearance.id,
       once: (gameObject) => {
         gameObject.setTexture(appearance.value);
-        gameObject.setOrigin(0, 0);
       },
     });
   });

@@ -83,6 +83,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     gameObject.cameraFilter = cameraFilter.current;
     gameObject.resetPipeline(true, true);
     gameObject.setScale(1, 1);
+    gameObject.setOrigin(0, 0);
     if (isSprite(gameObject, type)) {
       gameObject.clearTint();
       gameObject.setTexture("");
