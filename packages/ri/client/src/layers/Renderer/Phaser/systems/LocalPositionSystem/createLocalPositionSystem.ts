@@ -60,19 +60,16 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
       embodiedEntity.setComponent({
         id: LocalPosition.id,
         now: async (gameObject) => {
-          const shouldTeleport = false; // manhattan(currentPosition, newPosition) > 1;
           const moveSpeed = getComponentValue(MoveSpeed, entity)?.current || DEFAULT_MOVE_SPEED;
-
-          !shouldTeleport &&
-            (await tween({
-              targets: gameObject,
-              duration: moveSpeed,
-              props: {
-                x: pixel.x,
-                y: pixel.y,
-              },
-              ease: Phaser.Math.Easing.Quadratic.InOut,
-            }));
+          await tween({
+            targets: gameObject,
+            duration: moveSpeed,
+            props: {
+              x: pixel.x,
+              y: pixel.y,
+            },
+            ease: Phaser.Math.Easing.Quadratic.InOut,
+          });
         },
         once: (gameObject) => {
           gameObject.setPosition(pixel.x, pixel.y);
