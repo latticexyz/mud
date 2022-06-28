@@ -1,5 +1,4 @@
 import { WorldCoord } from "@latticexyz/phaserx/src/types";
-import { getEntitiesWithValue } from "@latticexyz/recs";
 import { getPlayerEntity } from "@latticexyz/std-client";
 import { NetworkLayer } from "../../Network";
 import { EntityTypes } from "../../Network/types";
@@ -12,13 +11,7 @@ export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPos
   actions.add({
     id: actionId,
     components: { Position, Persona },
-    requirement: ({ Position, Persona }) => {
-      // const blockingEntities = getEntitiesWithValue(Position, targetPosition);
-      // if (blockingEntities.size !== 0) {
-      //   actions.cancel(actionId);
-      //   return null;
-      // }
-
+    requirement: ({ Persona }) => {
       if (!network.personaId) {
         console.warn("No persona ID found, canceling spawn attempt");
         actions.cancel(actionId);
