@@ -101,7 +101,7 @@ export class HueTintAndOutlineFXPipeline extends Phaser.Renderer.WebGL.Pipelines
 
     this.set1i("outline", this._outline);
     this.set3f("outlineColor", this._outlineColor.redGL, this._outlineColor.greenGL, this._outlineColor.blueGL);
-    console.log(this._tintColor, this._outlineColor);
+
     this.drawToGame(renderTarget);
   }
 }
