@@ -1,6 +1,6 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
-import { getComponentValue, Has, runQuery } from "@latticexyz/recs";
+import { EntityIndex, getComponentValue, Has, runQuery } from "@latticexyz/recs";
 import { getPersonaColor } from "@latticexyz/std-client";
 
 export function registerSelection() {
@@ -24,7 +24,7 @@ export function registerSelection() {
       } = layers;
       const selection = getComponentValue(Selection, singletonEntity);
 
-      const getPersonaOfOwner = (selectedEntity: number) => {
+      const getPersonaOfOwner = (selectedEntity: EntityIndex) => {
         const ownedBy = getComponentValue(OwnedBy, selectedEntity)?.value;
         if (!ownedBy) return null;
         const ownerEntityIndex = layers.network.world.entityToIndex.get(ownedBy);

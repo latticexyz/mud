@@ -2,7 +2,7 @@ import { Observable } from "rxjs";
 import { removeComponent, setComponent } from "./Component";
 import { UpdateType } from "./constants";
 import { defineEnterQuery, defineExitQuery, defineQuery, defineUpdateQuery } from "./Query";
-import { Component, ComponentUpdate, ComponentValue, Entity, EntityQueryFragment, Schema, World } from "./types";
+import { Component, ComponentUpdate, ComponentValue, EntityIndex, EntityQueryFragment, Schema, World } from "./types";
 
 export function defineRxSystem<T>(world: World, observable$: Observable<T>, system: (event: T) => void) {
   const subscription = observable$.subscribe(system);
@@ -59,8 +59,8 @@ export function defineComponentSystem<S extends Schema>(
 export function defineSyncSystem<T extends Schema>(
   world: World,
   query: EntityQueryFragment[],
-  component: (entity: Entity) => Component<T>,
-  value: (entity: Entity) => ComponentValue<T>
+  component: (entity: EntityIndex) => Component<T>,
+  value: (entity: EntityIndex) => ComponentValue<T>
 ) {
   defineSystem(world, query, ({ entity, type }) => {
     if (type === UpdateType.Enter) setComponent(component(entity), entity, value(entity));

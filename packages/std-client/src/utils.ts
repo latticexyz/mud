@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { Component, getComponentValue, getEntitiesWithValue, Schema, Type, World } from "@latticexyz/recs";
+import { Component, EntityID, getComponentValue, getEntitiesWithValue, Schema, Type, World } from "@latticexyz/recs";
 import { keccak256 } from "@latticexyz/utils";
 import { BigNumber, ethers } from "ethers";
 import { Clock } from "@latticexyz/network";
@@ -11,7 +11,7 @@ export function getPlayerEntity(personaComponent: Component<Schema>, personaId: 
   return [...playerEntitySet][0];
 }
 
-export const GodID = keccak256("ember.god");
+export const GodID = keccak256("ember.god") as EntityID;
 
 export function getCurrentTurn(
   world: World,

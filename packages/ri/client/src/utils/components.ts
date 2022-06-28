@@ -1,10 +1,10 @@
-import { Component, Schema, ComponentValue, componentValueEquals, Entity } from "@latticexyz/recs";
+import { Component, Schema, ComponentValue, componentValueEquals, EntityIndex } from "@latticexyz/recs";
 import { deferred } from "@latticexyz/utils";
 import { filter } from "rxjs";
 
 export function waitForComponentValueIn<S extends Schema>(
   component: Component<S>,
-  entity: Entity,
+  entity: EntityIndex,
   values: Partial<ComponentValue<S>>[]
 ): Promise<void> {
   const [resolve, , promise] = deferred<void>();
@@ -26,7 +26,7 @@ export function waitForComponentValueIn<S extends Schema>(
 
 export async function waitForComponentValue<S extends Schema>(
   component: Component<S>,
-  entity: Entity,
+  entity: EntityIndex,
   value: Partial<ComponentValue<S>>
 ): Promise<void> {
   await waitForComponentValueIn(component, entity, [value]);

@@ -1,8 +1,10 @@
 import { IComputedValue } from "mobx";
 import { Subject } from "rxjs";
 import { Type } from "./constants";
+import type { Opaque } from "type-fest";
 
-export type Entity = number;
+export type EntityIndex = Opaque<number, "EntityIndex">;
+export type EntityID = Opaque<string, "EntityID">;
 
 export type Schema = {
   [key: string]: Type;
@@ -20,14 +22,14 @@ export type ValueType = {
   [Type.String]: string;
   [Type.NumberArray]: number[];
   [Type.StringArray]: string[];
-  [Type.Entity]: string;
-  [Type.EntityArray]: string[];
+  [Type.Entity]: EntityID;
+  [Type.EntityArray]: EntityID[];
   [Type.OptionalNumber]: number | null;
   [Type.OptionalString]: string | null;
   [Type.OptionalNumberArray]: number[] | null;
   [Type.OptionalStringArray]: string[] | null;
-  [Type.OptionalEntity]: string | null;
-  [Type.OptionalEntityArray]: string[] | null;
+  [Type.OptionalEntity]: EntityID | null;
+  [Type.OptionalEntityArray]: EntityID[] | null;
 };
 
 export type ComponentValue<S extends Schema = Schema> = {
@@ -35,17 +37,17 @@ export type ComponentValue<S extends Schema = Schema> = {
 };
 
 export type ComponentUpdate<S extends Schema = Schema> = {
-  entity: Entity;
+  entity: EntityIndex;
   value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
   component: Component<S>;
 };
 
 export interface Component<S extends Schema = Schema, M extends Metadata = Metadata> {
-  id: string;
-  values: { [key in keyof S]: Map<Entity, ValueType[S[key]]> };
+  id: EntityID;
+  values: { [key in keyof S]: Map<EntityIndex, ValueType[S[key]]> };
   schema: S;
   metadata: M;
-  entities: () => IterableIterator<number>;
+  entities: () => IterableIterator<EntityIndex>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   update$: Subject<ComponentUpdate<S>> & { observers: any };
 }
@@ -55,7 +57,7 @@ export type Components = {
 };
 
 export interface ComponentWithStream<T extends Schema> extends Component<T> {
-  stream$: Subject<{ entity: Entity; value: ComponentValue<T> | undefined }>;
+  stream$: Subject<{ entity: EntityIndex; value: ComponentValue<T> | undefined }>;
 }
 
 export type ComponentWithValue<T extends Schema> = { component: Component<T>; value: ComponentValue<T> };
@@ -65,18 +67,18 @@ export type AnyComponentValue = ComponentValue<Schema>;
 export type AnyComponent = Component<Schema>;
 
 export type World = {
-  registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
+  registerEntity: (options?: { id?: EntityID; idSuffix?: string }) => EntityIndex;
   registerComponent: (component: Component) => void;
   components: Component[];
-  entities: string[];
-  entityToIndex: Map<string, number>;
-  getEntityIndexStrict: (entity: string) => number;
+  entities: EntityID[];
+  entityToIndex: Map<EntityID, EntityIndex>;
+  getEntityIndexStrict: (entity: EntityID) => EntityIndex;
   dispose: () => void;
   registerDisposer: (disposer: () => void) => void;
-  hasEntity: (entity: string) => boolean;
+  hasEntity: (entity: EntityID) => boolean;
 };
 
-export type Query = IComputedValue<Set<Entity>>;
+export type Query = IComputedValue<Set<EntityIndex>>;
 
 export enum QueryFragmentType {
   Has,
@@ -142,13 +144,13 @@ export type QueryFragments = QueryFragment<Schema>[];
 export type SchemaOf<C extends Component<Schema>> = C extends Component<infer S> ? S : never;
 
 export type Override<T extends Schema> = {
-  entity: Entity;
+  entity: EntityIndex;
   value: ComponentValue<T>;
 };
 
 export type OverridableComponent<T extends Schema = Schema> = Component<T> & {
-  addOverride: (id: string, update: Override<T>) => void;
-  removeOverride: (id: string) => void;
+  addOverride: (id: EntityID, update: Override<T>) => void;
+  removeOverride: (id: EntityID) => void;
 };
 
 export type OptionalType =

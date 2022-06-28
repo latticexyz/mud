@@ -1,4 +1,4 @@
-import { Entity, getComponentValue, removeComponent, setComponent, defineComponentSystem } from "@latticexyz/recs";
+import { EntityIndex, getComponentValue, removeComponent, setComponent, defineComponentSystem } from "@latticexyz/recs";
 import { DEFAULT_MOVE_SPEED, FAST_MOVE_SPEED } from "../../constants";
 import { LocalLayer } from "../../types";
 import { concatMap, find, from, of, zipWith } from "rxjs";
@@ -13,7 +13,7 @@ export function createPathSystem(layer: LocalLayer) {
     components: { Path, LocalPosition, MoveSpeed },
   } = layer;
 
-  function increaseMoveSpeed(entity: Entity) {
+  function increaseMoveSpeed(entity: EntityIndex) {
     const moveSpeed = getComponentValue(MoveSpeed, entity) || {
       default: DEFAULT_MOVE_SPEED,
       current: DEFAULT_MOVE_SPEED,
@@ -21,7 +21,7 @@ export function createPathSystem(layer: LocalLayer) {
     setComponent(MoveSpeed, entity, { ...moveSpeed, current: FAST_MOVE_SPEED });
   }
 
-  function resetMoveSpeed(entity: Entity) {
+  function resetMoveSpeed(entity: EntityIndex) {
     const moveSpeed = getComponentValue(MoveSpeed, entity) || {
       default: DEFAULT_MOVE_SPEED,
       current: DEFAULT_MOVE_SPEED,

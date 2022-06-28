@@ -1,21 +1,21 @@
 import { hasComponent } from "./Component";
-import { Component, Entity, World } from "./types";
+import { Component, EntityIndex, EntityID, World } from "./types";
 
 export function createWorld() {
-  const entityToIndex = new Map<string, number>();
-  const entities: string[] = [];
+  const entityToIndex = new Map<EntityID, EntityIndex>();
+  const entities: EntityID[] = [];
   const components: Component[] = [];
   let disposers: (() => void)[] = [];
 
-  function getEntityIndexStrict(entity: string): number {
+  function getEntityIndexStrict(entity: EntityID): EntityIndex {
     const index = entityToIndex.get(entity);
     if (index == null) throw new Error("entity does not exist");
     return index;
   }
 
-  function registerEntity({ id, idSuffix }: { id?: string; idSuffix?: string } = {}) {
-    const entity = id || entities.length + (idSuffix ? "-" + idSuffix : "");
-    const index = entities.push(entity) - 1;
+  function registerEntity({ id, idSuffix }: { id?: EntityID; idSuffix?: string } = {}) {
+    const entity = (id || entities.length + (idSuffix ? "-" + idSuffix : "")) as EntityID;
+    const index = (entities.push(entity) - 1) as EntityIndex;
     entityToIndex.set(entity, index);
     return index;
   }
@@ -35,7 +35,7 @@ export function createWorld() {
     disposers.push(disposer);
   }
 
-  function hasEntity(entity: string): boolean {
+  function hasEntity(entity: EntityID): boolean {
     return entityToIndex.get(entity) != null;
   }
 
@@ -54,6 +54,6 @@ export function createWorld() {
 
 // Design decision: don't store a list of components for each entity but compute it dynamically when needed
 // because there are less components than entities and maintaining a list of components per entity is a large overhead
-export function getEntityComponents(world: World, entity: Entity): Component[] {
+export function getEntityComponents(world: World, entity: EntityIndex): Component[] {
   return world.components.filter((component) => hasComponent(component, entity));
 }

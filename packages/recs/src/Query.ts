@@ -13,7 +13,7 @@ import {
   Component,
   ComponentUpdate,
   ComponentValue,
-  Entity,
+  EntityIndex,
   EntityQueryFragment,
   HasQueryFragment,
   HasValueQueryFragment,
@@ -57,7 +57,7 @@ export function ProxyExpand(component: Component<{ value: Type.Entity }>, depth:
   return { type: QueryFragmentType.ProxyExpand, component, depth };
 }
 
-function passesQueryFragment<T extends Schema>(entity: Entity, fragment: EntityQueryFragment<T>): boolean {
+function passesQueryFragment<T extends Schema>(entity: EntityIndex, fragment: EntityQueryFragment<T>): boolean {
   if (fragment.type === QueryFragmentType.Has) {
     // Entity must have the given component
     return hasComponent(fragment.component, entity);
@@ -105,11 +105,11 @@ function isBreakingPassState(passes: boolean, fragment: EntityQueryFragment<Sche
 }
 
 function passesQueryFragmentProxy<T extends Schema>(
-  entity: Entity,
+  entity: EntityIndex,
   fragment: EntityQueryFragment<T>,
   proxyRead: ProxyReadQueryFragment
 ): boolean | null {
-  let proxyEntity: Entity = entity;
+  let proxyEntity = entity;
   let passes = false;
   for (let i = 0; i < proxyRead.depth; i++) {
     const value = getComponentValue(proxyRead.component, proxyEntity);
@@ -135,10 +135,10 @@ function passesQueryFragmentProxy<T extends Schema>(
  * @returns Set of entities that are child entities of the given entity via the given component
  */
 export function getChildEntities(
-  entity: Entity,
+  entity: EntityIndex,
   component: Component<{ value: Type.Entity }>,
   depth: number
-): Set<Entity> {
+): Set<EntityIndex> {
   if (depth === 0) return new Set();
 
   const directChildEntities = getEntitiesWithValue(component, { value: entity });
@@ -151,8 +151,8 @@ export function getChildEntities(
   return new Set([...directChildEntities, ...indirectChildEntities]);
 }
 
-export function runQuery(fragments: QueryFragment[], initialSet?: Set<Entity>): Set<Entity> {
-  let entities: Set<Entity> | undefined = initialSet;
+export function runQuery(fragments: QueryFragment[], initialSet?: Set<EntityIndex>): Set<EntityIndex> {
+  let entities: Set<EntityIndex> | undefined = initialSet;
   let proxyRead: ProxyReadQueryFragment | undefined = undefined;
   let proxyExpand: ProxyExpandQueryFragment | undefined = undefined;
 
@@ -215,7 +215,7 @@ export function runQuery(fragments: QueryFragment[], initialSet?: Set<Entity>): 
     }
   }
 
-  return entities ?? new Set<Entity>();
+  return entities ?? new Set<EntityIndex>();
 }
 
 /**
@@ -225,9 +225,9 @@ export function runQuery(fragments: QueryFragment[], initialSet?: Set<Entity>): 
  */
 export function defineQuery(fragments: EntityQueryFragment[]): {
   update$: Observable<ComponentUpdate & { type: UpdateType }>;
-  matching: ObservableSet<Entity>;
+  matching: ObservableSet<EntityIndex>;
 } {
-  const matching = observable(new Set<Entity>());
+  const matching = observable(new Set<EntityIndex>());
 
   return {
     matching,

@@ -6,7 +6,7 @@ import {
   Type,
   AnyComponent,
   Component,
-  Entity,
+  EntityIndex,
   Schema,
   World,
 } from "@latticexyz/recs";
@@ -23,7 +23,7 @@ export const EntityEditor = ({
   devHighlightComponent,
   world,
 }: {
-  entity: Entity;
+  entity: EntityIndex;
   components: Set<AnyComponent>;
   layers: Layers;
   setContractComponentValue: SetContractComponentFunction<Schema>;
@@ -35,7 +35,7 @@ export const EntityEditor = ({
   return (
     <EntityEditorContainer
       onMouseEnter={() => {
-        [...layers.phaser.world.entities.keys()].forEach((e) => removeComponent(devHighlightComponent, e));
+        [...layers.phaser.world.entities.keys()].forEach((e) => removeComponent(devHighlightComponent, e as EntityIndex));
         setComponent(devHighlightComponent, entity, {
           value: null,
         });
