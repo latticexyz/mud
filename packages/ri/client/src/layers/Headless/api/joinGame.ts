@@ -1,7 +1,6 @@
 import { WorldCoord } from "@latticexyz/phaserx/src/types";
 import { getPlayerEntity } from "@latticexyz/std-client";
 import { NetworkLayer } from "../../Network";
-import { EntityTypes } from "../../Network/types";
 import { ActionSystem } from "../types";
 
 export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPosition: WorldCoord) {
@@ -29,7 +28,6 @@ export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPos
     },
     updates: () => [],
     execute: () => {
-      console.log(`spawning entityType: ${EntityTypes.Hero} at ${JSON.stringify(targetPosition)}`);
       network.api.joinGame(targetPosition);
     },
   });
