@@ -35,7 +35,7 @@ export const EntityEditor = ({
   return (
     <EntityEditorContainer
       onMouseEnter={() => {
-        [...layers.phaser.world.entities.keys()].forEach((e) => removeComponent(devHighlightComponent, e as EntityIndex));
+        [...layers.phaser.world.entityToIndex.values()].forEach((e) => removeComponent(devHighlightComponent, e));
         setComponent(devHighlightComponent, entity, {
           value: null,
         });
