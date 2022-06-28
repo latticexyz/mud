@@ -44,9 +44,9 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [Has(Selected)],
+    [Has(Selected), Has(OwnedBy)],
     () => Outline,
-    () => ({ value: true })
+    () => ({ color: 0xfff000 })
   );
 
   defineSyncSystem(
@@ -54,8 +54,6 @@ export function createSyncSystem(layer: PhaserLayer) {
     [Has(OwnedBy)],
     () => HueTint,
     (entity) => {
-      console.log("hue tint sync");
-
       const ownedBy = getComponentValue(OwnedBy, entity)?.value;
       if (!ownedBy) return { value: 0xff0000 };
 
