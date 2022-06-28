@@ -30,7 +30,6 @@ export function createDrawHighlightCoordSystem(layer: PhaserLayer) {
       once: (box) => {
         const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
 
-        // box.setVisible(true);
         box.setStrokeStyle(3, hoverHighlght.color ?? 0xf0e71d, 0.5);
         box.setSize(tileWidth, tileHeight);
         box.setPosition(pixelCoord.x + tileWidth / 2, pixelCoord.y + tileHeight / 2);

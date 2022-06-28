@@ -11,6 +11,9 @@ import {
   createDrawDevHighlightSystem,
   createInputSystem,
   createDrawStaminaSystem,
+  createDrawHighlightCoordSystem,
+  createDrawPotentialPathSystem,
+  createPlayerSpawnSystem,
 } from "./systems";
 import { createPhaserEngine } from "@latticexyz/phaserx";
 import {
@@ -22,12 +25,9 @@ import {
 import { config } from "./config";
 import { defineDevHighlightComponent } from "@latticexyz/std-client";
 import { defineComponent, Type } from "@latticexyz/recs";
-import { highlightCoord as highlightCoordApi } from "./api";
+import { highlightCoord } from "./api";
 import { curry } from "lodash";
-import { WorldCoord } from "@latticexyz/phaserx/src/types";
-import { createDrawHighlightCoordSystem } from "./systems/DrawHighlightCoordSystem";
-import { createDrawPotentialPathSystem } from "./systems/DrawPotentialPathSystem/createDrawPotentialPathSystem";
-import { createPlayerSpawnSystem } from "./systems/PlayerSpawnSystem";
+import { Coord } from "@latticexyz/utils";
 
 /**
  * The Phaser layer extends the Local layer.
@@ -66,12 +66,12 @@ export async function createPhaserLayer(local: LocalLayer) {
     scenes,
     api: {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      highlightCoord: (coord: WorldCoord) => {
+      highlightCoord: (coord: Coord) => {
         "no-op for types";
       },
     },
   };
-  layer.api.highlightCoord = curry(highlightCoordApi)(layer);
+  layer.api.highlightCoord = curry(highlightCoord)(layer);
 
   // Debugger
   // createDebugger(

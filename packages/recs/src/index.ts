@@ -5,3 +5,4 @@ export * from "./World";
 export * from "./Query";
 export * from "./types";
 export * from "./constants";
+export * from "./utils";

@@ -1,5 +1,5 @@
 import { Has, getComponentValueStrict, defineEnterSystem } from "@latticexyz/recs";
-import { EntityTypes } from "../../../../Network/types";
+import { EntityTypes } from "../../../../Network";
 import { Tileset } from "../../constants";
 import { PhaserLayer } from "../../types";
 

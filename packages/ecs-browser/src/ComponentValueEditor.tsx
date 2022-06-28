@@ -1,6 +1,6 @@
 import React from "react";
 import { Layers } from "@latticexyz/recs";
-import { AnyComponent, ComponentValue, Entity, Schema } from "@latticexyz/recs/src/types";
+import { AnyComponent, ComponentValue, Entity, Schema } from "@latticexyz/recs";
 import { observer } from "mobx-react-lite";
 import { SetContractComponentFunction } from "./types";
 import { ValueEditor } from "./ValueEditor";

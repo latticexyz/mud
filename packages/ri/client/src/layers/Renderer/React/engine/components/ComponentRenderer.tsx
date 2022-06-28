@@ -1,10 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { useLayers, useEngineStore } from "../hooks";
 import { filterNullishValues } from "@latticexyz/utils";
 import { Component, Entity } from "@latticexyz/recs";
-import { useState } from "react";
-import { useEffect } from "react";
 import { merge, throttleTime } from "rxjs";
 import { Cell } from "./Cell";
 import styled from "styled-components";

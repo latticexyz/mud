@@ -35,7 +35,7 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [HasValue(LocalEntityType, { entityType: LocalEntityTypes.Imp })],
+    [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
     () => Appearance,
     () => ({
       value: Assets.Imp,
@@ -79,7 +79,7 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [HasValue(LocalEntityType, { entityType: LocalEntityTypes.Imp })],
+    [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
     () => SpriteAnimation,
     () => ({
       value: Animations.ImpIdle,

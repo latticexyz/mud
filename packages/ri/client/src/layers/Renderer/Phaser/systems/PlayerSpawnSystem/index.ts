@@ -1,1 +1,1 @@
-export * from "./createPlayerSpawnSystem";
+export { createPlayerSpawnSystem } from "./createPlayerSpawnSystem";

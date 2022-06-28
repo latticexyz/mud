@@ -9,3 +9,6 @@ export { createSelectionSystem } from "./SelectionSystem";
 export { createDrawDevHighlightSystem } from "./DrawDevHighlightSystem";
 export { createInputSystem } from "./InputSystem";
 export { createDrawStaminaSystem } from "./DrawStaminaSystem";
+export { createDrawHighlightCoordSystem } from "./DrawHighlightCoordSystem";
+export { createDrawPotentialPathSystem } from "./DrawPotentialPathSystem/createDrawPotentialPathSystem";
+export { createPlayerSpawnSystem } from "./PlayerSpawnSystem";

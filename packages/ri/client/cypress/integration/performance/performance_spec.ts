@@ -13,7 +13,7 @@ function spawnImp(layers: EmberWindow["layers"]) {
   const coord = { x: random(20), y: random(20) };
 
   createEntity(world, [
-    withValue(LocalEntityType, { entityType: LocalEntityTypes.Imp }),
+    withValue(LocalEntityType, { value: LocalEntityTypes.Imp }),
     withValue(Strolling, {}),
     withValue(LocalPosition, coord),
     withValue(MoveSpeed, { default: 500, current: 500 }),

@@ -1,4 +1,4 @@
-import { Has, getComponentValue, defineSystem, UpdateType } from "@latticexyz/recs";
+import { Has, getComponentValue, defineSystem, UpdateType, isComponentUpdate } from "@latticexyz/recs";
 import { tween, tileCoordToPixelCoord } from "@latticexyz/phaserx";
 import { PhaserLayer } from "../../types";
 import { Coord } from "@latticexyz/utils";
@@ -29,21 +29,32 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
   } = layer;
 
   // Set position the first time entitiy's Position component appears
-  defineSystem(world, [Has(LocalPosition), Has(Appearance)], ({ entity, type, value }) => {
-    const pos = value[0] as Coord;
-    const previousPos = value[1] as Coord;
-    const embodiedEntity = objectPool.get(entity, "Sprite");
+  defineSystem(world, [Has(LocalPosition), Has(Appearance)], (update) => {
+    const embodiedEntity = objectPool.get(update.entity, "Sprite");
 
-    if (type === UpdateType.Exit) {
-      embodiedEntity.removeComponent(LocalPosition.id);
-      // draw a map entry
-      Pixel.putTileAt(pos, Tileset.Plain);
+    let pos: Coord | undefined;
+    let prevPos: Coord | undefined;
+
+    if (isComponentUpdate(update, LocalPosition)) {
+      [pos, prevPos] = update.value;
+    } else {
+      pos = getComponentValue(LocalPosition, update.entity);
     }
 
-    if (type === UpdateType.Enter) {
-      const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
+    if (update.type === UpdateType.Exit) {
+      embodiedEntity.removeComponent(LocalPosition.id);
+      // remove previous map entry
+      if (prevPos) Pixel.putTileAt(prevPos, Tileset.Empty);
+      return;
+    }
+
+    if (!pos) throw new Error("No LocalPosition value for entity");
+
+    if (update.type === UpdateType.Enter) {
       // draw a map entry
       Pixel.putTileAt(pos, Tileset.Plain);
+
+      const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
       embodiedEntity.setComponent({
         id: LocalPosition.id,
         once: (gameObject) => {
@@ -52,15 +63,17 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
       });
     }
 
-    if (type === UpdateType.Update) {
-      const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
+    if (update.type === UpdateType.Update) {
       // draw a map entry
       Pixel.putTileAt(pos, Tileset.Plain);
-      Pixel.putTileAt(previousPos, Tileset.Empty);
+      // remove previous map entry
+      if (prevPos) Pixel.putTileAt(prevPos, Tileset.Empty);
+
+      const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
       embodiedEntity.setComponent({
         id: LocalPosition.id,
         now: async (gameObject) => {
-          const moveSpeed = getComponentValue(MoveSpeed, entity)?.current || DEFAULT_MOVE_SPEED;
+          const moveSpeed = getComponentValue(MoveSpeed, update.entity)?.current || DEFAULT_MOVE_SPEED;
           await tween({
             targets: gameObject,
             duration: moveSpeed,

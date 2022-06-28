@@ -35,7 +35,6 @@ export function createDrawDevHighlightSystem(layer: PhaserLayer) {
       once: (box) => {
         const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
 
-        // box.setVisible(true);
         box.setFillStyle(devHighlight.value ?? 0xf0e71d, 0.5);
         box.setSize(tileWidth, tileHeight);
         box.setPosition(pixelCoord.x + tileWidth / 2, pixelCoord.y + tileHeight / 2);

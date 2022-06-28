@@ -8,7 +8,7 @@ import { UsingAccessControl } from "../access/UsingAccessControl.sol";
 import { AppStorage } from "../libraries/LibAppStorage.sol";
 import { LibDiamond, DiamondStorage } from "../diamond/libraries/LibDiamond.sol";
 import { LibPersona } from "../libraries/LibPersona.sol";
-import { manhattan, getEntityAt, getEntityWithAt } from "../utils/utils.sol";
+import { LibUtils } from "../libraries/LibUtils.sol";
 import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
 import { LibQuery } from "solecs/LibQuery.sol";
 import { LibECS } from "../libraries/LibECS.sol";
@@ -72,7 +72,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   }
 
   function joinGame(Coord calldata position) external {
-    (, bool foundTargetEntity) = getEntityAt(s.world, position);
+    (, bool foundTargetEntity) = LibUtils.getEntityAt(s.world, position);
     require(!foundTargetEntity, "spot taken fool!");
 
     uint256 playerEntity = createPlayerEntity();
@@ -128,9 +128,9 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     require(movableComponent.has(entity), "trying to move non-moving entity");
 
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
-    require(manhattan(positionComponent.getValue(entity), targetPosition) == 1, "not adjacent");
+    require(LibUtils.manhattan(positionComponent.getValue(entity), targetPosition) == 1, "not adjacent");
 
-    (, bool foundTargetEntity) = getEntityWithAt(s.world, UntraversableComponentID, targetPosition);
+    (, bool foundTargetEntity) = LibUtils.getEntityWithAt(s.world, UntraversableComponentID, targetPosition);
     require(!foundTargetEntity, "entity blocking intended direction");
 
     positionComponent.set(entity, targetPosition);
@@ -176,7 +176,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     return uint32(secondsSinceGameStart / gameConfig.turnLength);
   }
 
-  function configureWorld() public {
+  function configureWorld() public onlyOwner {
     GameConfigComponent gameConfigComponent = GameConfigComponent(s.world.getComponent(GameConfigComponentID));
     gameConfigComponent.set(GodID, GameConfig({ startTime: block.timestamp, turnLength: uint256(20) }));
   }
