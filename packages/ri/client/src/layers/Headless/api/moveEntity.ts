@@ -1,10 +1,18 @@
 import { getPlayerEntity } from "@latticexyz/std-client";
-import { hasComponent, HasValue, setComponent, runQuery, getComponentValue } from "@latticexyz/recs";
+import {
+  hasComponent,
+  HasValue,
+  setComponent,
+  runQuery,
+  getComponentValue,
+  EntityIndex,
+  EntityID,
+} from "@latticexyz/recs";
 import { ActionSystem, HeadlessLayer } from "../types";
 import { Coord } from "@latticexyz/utils";
 import { Direction, Directions } from "../../../constants";
 
-export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: number, direction: Direction) {
+export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: EntityIndex, direction: Direction) {
   const {
     parentLayers: {
       network: {
@@ -42,7 +50,7 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
   const netStamina = getComponentValue(LocalCurrentStamina, entity)?.value;
   if (netStamina == null || netStamina < 1) return;
 
-  const actionID = `move ${Math.random()}`;
+  const actionID = `move ${Math.random()}` as EntityID;
   const delta = Directions[direction];
 
   actions.add({

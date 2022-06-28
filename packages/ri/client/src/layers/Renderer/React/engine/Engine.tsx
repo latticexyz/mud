@@ -1,5 +1,4 @@
 import React from "react";
-import styled from "styled-components";
 import { Layers } from "./types";
 import { LayerContext, EngineContext } from "./context";
 import { EngineStore } from "./store";

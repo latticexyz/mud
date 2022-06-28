@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layers, Type, AnyComponent, Component, Entity, Schema, World } from "@latticexyz/recs";
+import { Layers, Type, AnyComponent, Component, EntityIndex, Schema, World } from "@latticexyz/recs";
 import { BrowserContainer } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
 import { EntityEditor } from "./EntityEditor";
@@ -15,7 +15,7 @@ export const Browser = ({
   devHighlightComponent,
   world,
 }: {
-  entities: [Entity, Set<AnyComponent>][];
+  entities: [EntityIndex, Set<AnyComponent>][];
   layers: Layers;
   setContractComponentValue: SetContractComponentFunction<Schema>;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;

@@ -8,7 +8,7 @@ import {
   Component,
   QueryFragments,
   runQuery,
-  Entity,
+  EntityIndex,
 } from "@latticexyz/recs";
 import { ComponentBrowserButton, ComponentBrowserInput, QueryBuilderForm } from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
@@ -22,8 +22,8 @@ export const QueryBuilder = function ({
   devHighlightComponent,
 }: {
   layers: Layers;
-  allEntities: [Entity, Set<AnyComponent>][];
-  setFilteredEntities: (es: [Entity, Set<AnyComponent>][]) => void;
+  allEntities: [EntityIndex, Set<AnyComponent>][];
+  setFilteredEntities: (es: [EntityIndex, Set<AnyComponent>][]) => void;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
 }) {
   const queryInputRef = useRef<HTMLInputElement>(null);

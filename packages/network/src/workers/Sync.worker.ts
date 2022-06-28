@@ -11,7 +11,7 @@ import { ConnectionState, createReconnectingProvider } from "../createProvider";
 import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
 import { BigNumber, BytesLike, Contract } from "ethers";
 import { createDecoder } from "../createDecoder";
-import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
+import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
 import { Input } from "./Cache.worker";
 import { getCacheId } from "./utils";
@@ -170,12 +170,12 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       this.clientBlockNumber = cacheBlockNumber; // Set the current client block number to the cache block number to avoid refetching from blocks before that
 
       // Initialize maps
-      const indexToEntity = new Map<number, string>();
+      const indexToEntity = new Map<number, EntityID>();
       const indexToComponent = new Map<number, string>();
 
       const entities = await cache.entries("Entities");
       for (const [id, index] of entities) {
-        indexToEntity.set(index, id);
+        indexToEntity.set(index, id as EntityID);
       }
 
       const components = await cache.entries("Components");
@@ -217,7 +217,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
         const ecsEvent: NetworkComponentUpdate<Cm> = {
           ...decoded,
-          entity: BigNumber.from(entity).toHexString(),
+          entity: BigNumber.from(entity).toHexString() as EntityID,
           lastEventInTx: false,
           txHash: "checkpoint",
         };
@@ -281,7 +281,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
             return {
               component: clientComponentKey,
               value: undefined,
-              entity: BigNumber.from(entity).toHexString(),
+              entity: BigNumber.from(entity).toHexString() as EntityID,
               lastEventInTx: event.lastEventInTx,
               txHash: event.txHash,
             };
@@ -293,7 +293,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
           return {
             ...decoded,
-            entity: BigNumber.from(entity).toHexString(),
+            entity: BigNumber.from(entity).toHexString() as EntityID,
             lastEventInTx: event.lastEventInTx,
             txHash: event.txHash,
           };

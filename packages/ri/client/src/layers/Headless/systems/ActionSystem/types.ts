@@ -1,20 +1,20 @@
-import { Entity, Components, SchemaOf, Override } from "@latticexyz/recs";
+import { EntityID, EntityIndex, Components, SchemaOf, Override } from "@latticexyz/recs";
 import { ValueOf } from "@latticexyz/utils";
 
 export type ComponentUpdate<C extends Components> = ValueOf<{
   [key in keyof C]: {
     component: key;
-    entity: Entity;
+    entity: EntityIndex;
     value: Override<SchemaOf<C[key]>>["value"];
   };
 }>;
 
 export interface ActionRequest<C extends Components, T> {
   // Identifier of this action. Will be used as entity id of the Action component.
-  id: string;
+  id: EntityID;
 
   // Specify which entity this action is related to.
-  on?: Entity;
+  on?: EntityIndex;
 
   // Components this action depends on in requirement and updates
   components: C;
@@ -36,5 +36,5 @@ export interface ActionRequest<C extends Components, T> {
 
 export type ActionData = ActionRequest<Components, unknown> & {
   componentsWithPendingUpdates: Components;
-  entityIndex: number;
+  entityIndex: EntityIndex;
 };

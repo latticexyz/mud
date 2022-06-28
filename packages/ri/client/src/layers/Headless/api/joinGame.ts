@@ -1,15 +1,16 @@
 import { WorldCoord } from "@latticexyz/phaserx/src/types";
+import { EntityID } from "@latticexyz/recs";
 import { getPlayerEntity } from "@latticexyz/std-client";
 import { NetworkLayer } from "../../Network";
 import { ActionSystem } from "../types";
 
 export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPosition: WorldCoord) {
-  const { Position, Persona } = network.components;
+  const { Persona } = network.components;
 
-  const actionId = `spawn persona ${network.personaId}`;
+  const actionId = `spawn ${Math.random()}` as EntityID;
   actions.add({
     id: actionId,
-    components: { Position, Persona },
+    components: { Persona },
     requirement: ({ Persona }) => {
       if (!network.personaId) {
         console.warn("No persona ID found, canceling spawn attempt");

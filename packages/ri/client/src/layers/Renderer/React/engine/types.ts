@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import { Entity } from "@latticexyz/recs";
+import { EntityIndex } from "@latticexyz/recs";
 import { HeadlessLayer } from "../../../Headless";
 import { LocalLayer } from "../../../Local";
 import { NetworkLayer } from "../../../Network";
@@ -16,6 +16,6 @@ export type GridConfiguration = { colStart: number; colEnd: number; rowStart: nu
 
 export interface UIComponent<T> {
   gridConfig: GridConfiguration;
-  requirement(layers: Layers, selectedEntities: Set<Entity>): T | null | undefined;
+  requirement(layers: Layers, selectedEntities: Set<EntityIndex>): T | null | undefined;
   render(props: NonNullable<T>): ReactElement | null;
 }

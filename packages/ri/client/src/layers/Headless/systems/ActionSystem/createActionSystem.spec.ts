@@ -11,6 +11,8 @@ import {
   getComponentValueStrict,
   HasValue,
   runQuery,
+  EntityID,
+  EntityIndex,
 } from "@latticexyz/recs";
 import { deferred } from "@latticexyz/utils";
 import { ReplaySubject } from "rxjs";
@@ -25,6 +27,8 @@ describe("ActionSystem", () => {
   let Action: Component<{ state: Type.Number; on: Type.OptionalEntity }>;
   let actions: ReturnType<typeof createActionSystem>;
   let txReduced$: ReplaySubject<string>;
+
+  const getEntityId = (idx: EntityIndex) => world.entities[idx];
 
   beforeEach(async () => {
     world = createWorld();
@@ -41,7 +45,7 @@ describe("ActionSystem", () => {
   it("should immediately execute actions if their requirement is met and set the Action component", async () => {
     const mockFn = jest.fn();
     const entity = actions.add({
-      id: "action",
+      id: "action" as EntityID,
       components: {},
       requirement: () => true,
       updates: () => [],
@@ -59,7 +63,7 @@ describe("ActionSystem", () => {
   it("should not execute actions if their requirement is not met and set the Action component", () => {
     const mockFn = jest.fn();
     const entity = actions.add({
-      id: "action",
+      id: "action" as EntityID,
       components: {},
       requirement: () => false,
       updates: () => [],
@@ -75,7 +79,7 @@ describe("ActionSystem", () => {
   it("should set the Action component of failed actions", async () => {
     const [, reject, promise] = deferred<void>();
     const entity = actions.add({
-      id: "action",
+      id: "action" as EntityID,
       components: {},
       requirement: () => true,
       updates: () => [],
@@ -91,14 +95,14 @@ describe("ActionSystem", () => {
 
   it("should set the Action component of cancelled actions", async () => {
     const entity = actions.add({
-      id: "action",
+      id: "action" as EntityID,
       components: {},
       requirement: () => false,
       updates: () => [],
       execute: () => void 0,
     });
 
-    const cancelled = actions.cancel("action");
+    const cancelled = actions.cancel("action" as EntityID);
     await waitForActionCompletion(Action, entity!);
 
     expect(getComponentValueStrict(Action, entity!).state).toBe(ActionState.Cancelled);
@@ -108,14 +112,14 @@ describe("ActionSystem", () => {
   it("should not be possible to cancel actions that are already executing", async () => {
     const [resolve, , promise] = deferred<void>();
     const entity = actions.add({
-      id: "action",
+      id: "action" as EntityID,
       components: {},
       requirement: () => true,
       updates: () => [],
       execute: () => promise,
     });
 
-    const cancelled = actions.cancel("action");
+    const cancelled = actions.cancel("action" as EntityID);
     resolve();
     await waitForActionCompletion(Action, entity!);
     expect(getComponentValueStrict(Action, entity!).state).toBe(ActionState.Complete);
@@ -127,7 +131,7 @@ describe("ActionSystem", () => {
     const player = createEntity(world, [withValue(Resource, { amount: 0 })]);
 
     actions.add({
-      id: "action",
+      id: "action" as EntityID,
       components: { Resource },
       requirement: ({ Resource }) => getComponentValueStrict(Resource, player).amount > 100,
       updates: () => [],
@@ -148,7 +152,7 @@ describe("ActionSystem", () => {
     const settlement2 = createEntity(world);
 
     const entity1 = actions.add({
-      id: "action1",
+      id: "action1" as EntityID,
       on: settlement1,
       components: { Resource },
       requirement: () => false,
@@ -157,7 +161,7 @@ describe("ActionSystem", () => {
     });
 
     const entity2 = actions.add({
-      id: "action2",
+      id: "action2" as EntityID,
       on: settlement2,
       components: { Resource },
       requirement: () => false,
@@ -166,15 +170,15 @@ describe("ActionSystem", () => {
     });
 
     const entity3 = actions.add({
-      id: "action3",
+      id: "action3" as EntityID,
       components: { Resource },
       requirement: () => false,
       updates: () => [],
       execute: () => void 0,
     });
 
-    expect(runQuery([HasValue(Action, { on: settlement1 })])).toEqual(new Set([entity1]));
-    expect(runQuery([HasValue(Action, { on: settlement2 })])).toEqual(new Set([entity2]));
+    expect(runQuery([HasValue(Action, { on: getEntityId(settlement1) })])).toEqual(new Set([entity1]));
+    expect(runQuery([HasValue(Action, { on: getEntityId(settlement2) })])).toEqual(new Set([entity2]));
     expect(runQuery([HasValue(Action, { state: ActionState.Requested })])).toEqual(
       new Set([entity1, entity2, entity3])
     );
@@ -184,7 +188,7 @@ describe("ActionSystem", () => {
     const player = createEntity(world, [withValue(Resource, { amount: 100 })]);
 
     const entity1 = actions.add({
-      id: "action1",
+      id: "action1" as EntityID,
       components: { Resource },
       requirement: () => true,
       updates: ({ Resource }) => [
@@ -198,7 +202,7 @@ describe("ActionSystem", () => {
     });
 
     const entity2 = actions.add({
-      id: "action2",
+      id: "action2" as EntityID,
       components: { Resource },
       // Resource needs to be 100 in order for this action to be executed
       requirement: ({ Resource }) => getComponentValueStrict(Resource, player).amount === 100,
@@ -239,7 +243,7 @@ describe("ActionSystem", () => {
     // First schedule action1
     const [resolveAction1, , action1Promise] = deferred<void>();
     const entity1 = actions.add({
-      id: "action1",
+      id: "action1" as EntityID,
       components: { Resource },
       // This action requires a resource amount of 100 to be executed
       requirement: ({ Resource }) => {
@@ -270,7 +274,7 @@ describe("ActionSystem", () => {
 
     // Then shedule action3
     actions.add({
-      id: "action3",
+      id: "action3" as EntityID,
       components: { Resource },
       // This action also requires a resource amount of 100 to be executed
       requirement: ({ Resource }) => {
@@ -303,7 +307,7 @@ describe("ActionSystem", () => {
     // This action declares it will update the Resource component to be 100
     const [resolveAction2, , action2Promise] = deferred<void>();
     const entity2 = actions.add({
-      id: "action2",
+      id: "action2" as EntityID,
       components: { Resource },
       requirement: () => {
         requirementSpy2();
@@ -393,7 +397,7 @@ describe("ActionSystem", () => {
 
     const [resolve, , promise] = deferred<void>();
     const entity = actions.add({
-      id: "action",
+      id: "action" as EntityID,
       components: { Resource },
       requirement: () => true,
       updates: () => [{ component: "Resource", entity: player, value: { amount: 1000 } }],
@@ -415,7 +419,7 @@ describe("ActionSystem", () => {
     const requirementSpy = jest.fn();
 
     actions.add({
-      id: "action",
+      id: "action" as EntityID,
       components: { Resource },
       requirement: ({ Resource }) => {
         requirementSpy();
@@ -445,7 +449,7 @@ describe("ActionSystem", () => {
     const requirementSpy = jest.fn();
 
     actions.add({
-      id: "action1",
+      id: "action1" as EntityID,
       components: { Resource },
       requirement: ({ Resource }) => {
         requirementSpy();
@@ -460,7 +464,7 @@ describe("ActionSystem", () => {
 
     // Another action is executed, which does not declare any updates
     actions.add({
-      id: "action2",
+      id: "action2" as EntityID,
       components: { Resource },
       requirement: () => true,
       updates: () => [],
@@ -472,7 +476,7 @@ describe("ActionSystem", () => {
 
     // Another action declares an update to the resource amount of player2, which is unrelated to action1's requirement
     actions.add({
-      id: "action3",
+      id: "action3" as EntityID,
       components: { Resource },
       requirement: () => true,
       updates: () => [{ component: "Resource", entity: player2, value: { amount: 1000 } }],
@@ -485,7 +489,7 @@ describe("ActionSystem", () => {
     const [resolve, , promise] = deferred<void>();
     // Another action declares an update to the resource amount of player1, which is relevant to action1's requirement
     actions.add({
-      id: "action4",
+      id: "action4" as EntityID,
       components: { Resource },
       requirement: () => true,
       updates: () => [{ component: "Resource", entity: player1, value: { amount: 10000 } }],

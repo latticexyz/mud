@@ -8,6 +8,8 @@ import {
   Schema,
   overridableComponent,
   updateComponent,
+  EntityID,
+  EntityIndex,
 } from "@latticexyz/recs";
 import { mapObject, awaitStreamValue } from "@latticexyz/utils";
 import { ActionState } from "./constants";
@@ -50,7 +52,7 @@ export function createActionSystem(
    * @param actionRequest Action to be scheduled
    * @returns index of the entity created for the action
    */
-  function add<C extends Components, T>(actionRequest: ActionRequest<C, T>): number | void {
+  function add<C extends Components, T>(actionRequest: ActionRequest<C, T>): EntityIndex | void {
     // Prevent the same actions from being scheduled multiple times
     if (world.entityToIndex.get(actionRequest.id) != null) {
       return console.warn(`Action with id ${actionRequest.id} is already requested.`);
@@ -62,7 +64,7 @@ export function createActionSystem(
       [
         withValue(Action, {
           state: ActionState.Requested,
-          on: actionRequest.on ?? null,
+          on: actionRequest.on ? world.entities[actionRequest.on] : null,
         }),
       ],
       {
@@ -156,7 +158,7 @@ export function createActionSystem(
    * @param actionId ID of the action to be cancelled
    * @returns void
    */
-  function cancel(actionId: string): boolean {
+  function cancel(actionId: EntityID): boolean {
     const action = actionData.get(actionId);
     if (!action || getComponentValue(Action, action.entityIndex)?.state !== ActionState.Requested) {
       console.warn(`Action ${actionId} was not found or is not in the "Requested" state.`);
@@ -171,7 +173,7 @@ export function createActionSystem(
    * Removes actionData disposer of the action with the given ID and removes its pending updates.
    * @param actionId ID of the action to be removed
    */
-  function remove(actionId: string) {
+  function remove(actionId: EntityID) {
     const action = actionData.get(actionId);
     if (!action) throw new Error("Trying to remove an action that does not exist.");
 

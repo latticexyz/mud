@@ -1,7 +1,5 @@
 import React from "react";
-import { Layers } from "@latticexyz/recs";
-import { AnyComponent, ComponentValue, Entity, Schema } from "@latticexyz/recs";
-import { observer } from "mobx-react-lite";
+import { AnyComponent, ComponentValue, EntityIndex, Schema, Layers } from "@latticexyz/recs";
 import { SetContractComponentFunction } from "./types";
 import { ValueEditor } from "./ValueEditor";
 
@@ -12,7 +10,7 @@ export const ComponentValueEditor = ({
   layers,
   setContractComponentValue,
 }: {
-  entity: Entity;
+  entity: EntityIndex;
   component: AnyComponent;
   componentValue: ComponentValue<Schema>;
   layers: Layers;

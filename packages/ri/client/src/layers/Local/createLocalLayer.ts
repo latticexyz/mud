@@ -1,4 +1,4 @@
-import { createEntity, setComponent, Entity, getComponentValue, defineComponent, Type } from "@latticexyz/recs";
+import { createEntity, setComponent, EntityIndex, getComponentValue, defineComponent, Type } from "@latticexyz/recs";
 import { HeadlessLayer } from "../Headless";
 import {
   defineStrollingComponent,
@@ -73,7 +73,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
     setComponent(Selection, singletonEntity, { x: 0, y: 0, width: 0, height: 0 });
   }
 
-  function selectEntity(entity: Entity) {
+  function selectEntity(entity: EntityIndex) {
     if (getComponentValue(Selectable, entity)) setComponent(Selected, entity, { value: true });
   }
 

@@ -3,7 +3,7 @@ import { getComponentValueStrict, Layers, updateComponent } from "@latticexyz/re
 import {
   AnyComponent,
   ComponentValue,
-  Entity,
+  EntityIndex,
   isArrayType,
   isEntityType,
   isNumberType,
@@ -23,7 +23,7 @@ export const ValueEditor = ({
   layers,
   setContractComponentValue,
 }: {
-  entity: Entity;
+  entity: EntityIndex;
   component: AnyComponent;
   componentValue: ComponentValue<Schema>;
   valueProp: string;

@@ -1,4 +1,4 @@
-import { Component, ComponentValue, createWorld, defineComponent, Entity, Schema, Type } from "@latticexyz/recs";
+import { Component, ComponentValue, createWorld, defineComponent, EntityIndex, Schema, Type } from "@latticexyz/recs";
 import {
   definePositionComponent,
   defineEntityTypeComponent,
@@ -125,7 +125,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
    * TODO Only include this function in dev mode.
    */
   async function setContractComponentValue<T extends Schema>(
-    entity: Entity,
+    entity: EntityIndex,
     component: Component<T, { contractId: string }>,
     newValue: ComponentValue<T>
   ) {

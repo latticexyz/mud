@@ -1,3 +1,4 @@
+import { defineComponent, EntityIndex, Type } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";
@@ -27,7 +28,7 @@ export async function createHeadlessLayer(network: NetworkLayer) {
     api: {
       joinGame: curry(joinGame)(network, actions),
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      moveEntity: (entity: number, direction: Direction) => {
+      moveEntity: (entity: EntityIndex, direction: Direction) => {
         "no-op for types";
       },
     },

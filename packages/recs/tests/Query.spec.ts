@@ -4,7 +4,6 @@ import { createEntity } from "../src/Entity";
 import {
   Has,
   Not,
-  // runQuery,
   defineEnterQuery,
   defineExitQuery,
   defineQuery,
@@ -14,7 +13,7 @@ import {
   ProxyExpand,
   runQuery,
 } from "../src/Query";
-import { Component, World } from "../src/types";
+import { Component, EntityIndex, World } from "../src/types";
 import { createWorld } from "../src/World";
 
 describe("Query", () => {
@@ -27,23 +26,25 @@ describe("Query", () => {
 
   let CanMove: Component<{ value: Type.Boolean }>;
 
-  let OwnedByEntity: Component<{ entity: Type.Entity }>;
+  let OwnedByEntity: Component<{ value: Type.Entity }>;
 
   let Prototype: Component<{ value: Type.Boolean }>;
 
-  let FromPrototype: Component<{ entity: Type.Entity }>;
+  let FromPrototype: Component<{ value: Type.Entity }>;
 
   let Name: Component<{ name: Type.String }>;
+
+  const getEntityId = (idx: EntityIndex) => world.entities[idx];
 
   beforeEach(() => {
     world = createWorld();
 
     Position = defineComponent(world, { x: Type.Number, y: Type.Number });
     CanMove = defineComponent(world, { value: Type.Boolean });
-    Name = defineComponent(world, { name: Type.String });
-    OwnedByEntity = defineComponent(world, { entity: Type.Entity });
+    Name = defineComponent(world, { name: Type.String }, { id: "Name" });
+    OwnedByEntity = defineComponent(world, { value: Type.Entity }, { id: "OwnedByEntity" });
     Prototype = defineComponent(world, { value: Type.Boolean });
-    FromPrototype = defineComponent(world, { entity: Type.Entity });
+    FromPrototype = defineComponent(world, { value: Type.Entity });
   });
 
   describe("runQuery", () => {
@@ -90,45 +91,48 @@ describe("Query", () => {
 
     it("should return all player owned entities up to the given depth", () => {
       const Player = createEntity(world);
-      const Depth1 = createEntity(world, [withValue(OwnedByEntity, { entity: Player })]);
-      const Depth2 = createEntity(world, [withValue(OwnedByEntity, { entity: Depth1 })]);
-      const Depth3 = createEntity(world, [withValue(OwnedByEntity, { entity: Depth2 })]);
-      const Depth4 = createEntity(world, [withValue(OwnedByEntity, { entity: Depth3 })]);
-      const Depth5 = createEntity(world, [withValue(OwnedByEntity, { entity: Depth4 })]);
+      const Depth1 = createEntity(world, [withValue(OwnedByEntity, { value: getEntityId(Player) })]);
+      const Depth2 = createEntity(world, [withValue(OwnedByEntity, { value: getEntityId(Depth1) })]);
+      const Depth3 = createEntity(world, [withValue(OwnedByEntity, { value: getEntityId(Depth2) })]);
+      const Depth4 = createEntity(world, [withValue(OwnedByEntity, { value: getEntityId(Depth3) })]);
+      const Depth5 = createEntity(world, [withValue(OwnedByEntity, { value: getEntityId(Depth4) })]);
 
-      expect(runQuery([HasValue(OwnedByEntity, { entity: Player })])).toEqual(new Set([Depth1]));
-
-      expect(runQuery([ProxyExpand(OwnedByEntity, 0), HasValue(OwnedByEntity, { entity: Player })])).toEqual(
-        new Set([Depth1])
-      );
-
-      expect(runQuery([ProxyExpand(OwnedByEntity, 1), HasValue(OwnedByEntity, { entity: Player })])).toEqual(
-        new Set([Depth1, Depth2])
-      );
-
-      expect(runQuery([ProxyExpand(OwnedByEntity, 2), HasValue(OwnedByEntity, { entity: Player })])).toEqual(
-        new Set([Depth1, Depth2, Depth3])
-      );
-
-      expect(runQuery([ProxyExpand(OwnedByEntity, 3), HasValue(OwnedByEntity, { entity: Player })])).toEqual(
-        new Set([Depth1, Depth2, Depth3, Depth4])
-      );
-
-      expect(runQuery([ProxyExpand(OwnedByEntity, 4), HasValue(OwnedByEntity, { entity: Player })])).toEqual(
-        new Set([Depth1, Depth2, Depth3, Depth4, Depth5])
-      );
+      expect(runQuery([HasValue(OwnedByEntity, { value: getEntityId(Player) })])).toEqual(new Set([Depth1]));
 
       expect(
-        runQuery([ProxyExpand(OwnedByEntity, Number.MAX_SAFE_INTEGER), HasValue(OwnedByEntity, { entity: Player })])
+        runQuery([ProxyExpand(OwnedByEntity, 0), HasValue(OwnedByEntity, { value: getEntityId(Player) })])
+      ).toEqual(new Set([Depth1]));
+
+      expect(
+        runQuery([ProxyExpand(OwnedByEntity, 1), HasValue(OwnedByEntity, { value: getEntityId(Player) })])
+      ).toEqual(new Set([Depth1, Depth2]));
+
+      expect(
+        runQuery([ProxyExpand(OwnedByEntity, 2), HasValue(OwnedByEntity, { value: getEntityId(Player) })])
+      ).toEqual(new Set([Depth1, Depth2, Depth3]));
+
+      expect(
+        runQuery([ProxyExpand(OwnedByEntity, 3), HasValue(OwnedByEntity, { value: getEntityId(Player) })])
+      ).toEqual(new Set([Depth1, Depth2, Depth3, Depth4]));
+
+      expect(
+        runQuery([ProxyExpand(OwnedByEntity, 4), HasValue(OwnedByEntity, { value: getEntityId(Player) })])
+      ).toEqual(new Set([Depth1, Depth2, Depth3, Depth4, Depth5]));
+
+      expect(
+        runQuery([
+          ProxyExpand(OwnedByEntity, Number.MAX_SAFE_INTEGER),
+          HasValue(OwnedByEntity, { value: getEntityId(Player) }),
+        ])
       ).toEqual(new Set([Depth1, Depth2, Depth3, Depth4, Depth5]));
     });
 
     it("should return entites owned by an entity with Name component Alice", () => {
       const Player = createEntity(world, [withValue(Name, { name: "Alice" })]);
-      const Depth1 = createEntity(world, [withValue(OwnedByEntity, { entity: Player })]);
-      const Depth2 = createEntity(world, [withValue(OwnedByEntity, { entity: Depth1 })]);
-      const Depth3 = createEntity(world, [withValue(OwnedByEntity, { entity: Depth2 })]);
-      const Depth4 = createEntity(world, [withValue(OwnedByEntity, { entity: Depth3 })]);
+      const Depth1 = createEntity(world, [withValue(OwnedByEntity, { value: getEntityId(Player) })]);
+      const Depth2 = createEntity(world, [withValue(OwnedByEntity, { value: getEntityId(Depth1) })]);
+      const Depth3 = createEntity(world, [withValue(OwnedByEntity, { value: getEntityId(Depth2) })]);
+      const Depth4 = createEntity(world, [withValue(OwnedByEntity, { value: getEntityId(Depth3) })]);
 
       expect(
         runQuery(
@@ -193,12 +197,12 @@ describe("Query", () => {
       const proto = createEntity(world, [withValue(Prototype, { value: true }), withValue(CanMove, { value: true })]);
 
       const instance1 = createEntity(world, [
-        withValue(FromPrototype, { entity: proto }),
+        withValue(FromPrototype, { value: getEntityId(proto) }),
         withValue(Position, { x: 1, y: 1 }),
       ]);
 
       const instance2 = createEntity(world, [
-        withValue(FromPrototype, { entity: proto }),
+        withValue(FromPrototype, { value: getEntityId(proto) }),
         withValue(Position, { x: 1, y: 1 }),
       ]);
 
@@ -220,9 +224,15 @@ describe("Query", () => {
     it("should return all entities with Position component that can't move", () => {
       const proto = createEntity(world, [withValue(Prototype, { value: true }), withValue(CanMove, { value: true })]);
 
-      createEntity(world, [withValue(FromPrototype, { entity: proto }), withValue(Position, { x: 1, y: 1 })]);
+      createEntity(world, [
+        withValue(FromPrototype, { value: getEntityId(proto) }),
+        withValue(Position, { x: 1, y: 1 }),
+      ]);
 
-      createEntity(world, [withValue(FromPrototype, { entity: proto }), withValue(Position, { x: 1, y: 1 })]);
+      createEntity(world, [
+        withValue(FromPrototype, { value: getEntityId(proto) }),
+        withValue(Position, { x: 1, y: 1 }),
+      ]);
 
       const entity3 = createEntity(world, [withValue(Position, { x: 1, y: 1 })]);
 
@@ -237,47 +247,53 @@ describe("Query", () => {
 
       // Instance 1
       createEntity(world, [
-        withValue(FromPrototype, { entity: Proto1 }),
-        withValue(OwnedByEntity, { entity: Player1 }),
+        withValue(FromPrototype, { value: getEntityId(Proto1) }),
+        withValue(OwnedByEntity, { value: getEntityId(Player1) }),
         withValue(Position, { x: 1, y: 1 }),
       ]);
 
       // Instance 2
       createEntity(world, [
-        withValue(FromPrototype, { entity: Proto2 }),
-        withValue(OwnedByEntity, { entity: Player1 }),
+        withValue(FromPrototype, { value: getEntityId(Proto2) }),
+        withValue(OwnedByEntity, { value: getEntityId(Player1) }),
         withValue(Position, { x: 1, y: 1 }),
       ]);
 
       const Instance3 = createEntity(world, [
-        withValue(FromPrototype, { entity: Proto1 }),
-        withValue(OwnedByEntity, { entity: Player2 }),
+        withValue(FromPrototype, { value: getEntityId(Proto1) }),
+        withValue(OwnedByEntity, { value: getEntityId(Player2) }),
         withValue(Position, { x: 1, y: 1 }),
       ]);
 
       // Instance 4
       createEntity(world, [
-        withValue(FromPrototype, { entity: Proto2 }),
-        withValue(OwnedByEntity, { entity: Player2 }),
+        withValue(FromPrototype, { value: getEntityId(Proto2) }),
+        withValue(OwnedByEntity, { value: getEntityId(Player2) }),
         withValue(Position, { x: 1, y: 1 }),
       ]);
 
       // Entity 5
-      createEntity(world, [withValue(OwnedByEntity, { entity: Player1 }), withValue(Position, { x: 1, y: 1 })]);
+      createEntity(world, [
+        withValue(OwnedByEntity, { value: getEntityId(Player1) }),
+        withValue(Position, { x: 1, y: 1 }),
+      ]);
 
       // Entity 6
-      createEntity(world, [withValue(OwnedByEntity, { entity: Player2 }), withValue(Position, { x: 1, y: 1 })]);
+      createEntity(world, [
+        withValue(OwnedByEntity, { value: getEntityId(Player2) }),
+        withValue(Position, { x: 1, y: 1 }),
+      ]);
 
       // Entity 7
       createEntity(world, [
         withValue(CanMove, { value: true }),
-        withValue(OwnedByEntity, { entity: Player1 }),
+        withValue(OwnedByEntity, { value: getEntityId(Player1) }),
         withValue(Position, { x: 1, y: 1 }),
       ]);
 
       const Entity8 = createEntity(world, [
         withValue(CanMove, { value: true }),
-        withValue(OwnedByEntity, { entity: Player2 }),
+        withValue(OwnedByEntity, { value: getEntityId(Player2) }),
         withValue(Position, { x: 1, y: 1 }),
       ]);
 
@@ -330,7 +346,7 @@ describe("Query", () => {
   describe("defineEnterQuery", () => {
     it("should only return newly added entities", () => {
       const enterQuery = defineEnterQuery([Has(CanMove)]);
-      const entities: number[] = [];
+      const entities: EntityIndex[] = [];
 
       const mock = jest.fn();
       enterQuery.subscribe(mock);

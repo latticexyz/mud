@@ -1,11 +1,11 @@
 import { setComponent } from "./Component";
-import { Component, ComponentValue, Entity, World } from "./types";
+import { Component, ComponentValue, EntityID, EntityIndex, World } from "./types";
 
 export function createEntity(
   world: World,
   components?: [Component, ComponentValue][],
-  options?: { id?: string; idSuffix?: string }
-): Entity {
+  options?: { id?: EntityID; idSuffix?: string }
+): EntityIndex {
   const entity = world.registerEntity(options ?? {});
 
   if (components) {
