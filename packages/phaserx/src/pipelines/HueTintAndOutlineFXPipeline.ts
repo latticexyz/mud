@@ -66,11 +66,6 @@ export class HueTintAndOutlineFXPipeline extends Phaser.Renderer.WebGL.Pipelines
         }
         `,
     });
-    // hack needed to make the pipeline work.
-    // const width = this.game.scale.width;
-    // const height = this.game.scale.height;
-    // this.game.scale.resize(width + 1, height + 1);
-    // this.game.scale.resize(width, height);
   }
 
   onDrawSprite(obj: Phaser.GameObjects.Sprite) {
