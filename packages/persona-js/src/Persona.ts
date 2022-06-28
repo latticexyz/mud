@@ -29,20 +29,17 @@ export function Persona({ personaAddress, personaAllMinterAddress, personaMirror
     if (!persona.signer) throw new Error("Signer is not connected");
     const tx = await personaAllMinter.mintPersona(persona.signer.getAddress(), { gasLimit: 1000000, gasPrice: 0 });
     const receipt = await tx.wait();
-    let id: number | undefined;
     for (const log of receipt.logs) {
       try {
         const { args } = persona.interface.parseLog(log);
         if (args.id) {
-          id = args.id.toNumber();
-          break;
+          return args.id.toNumber();
         }
       } catch {
         // Unknown event
       }
     }
-    if (id == null) throw new Error("Could not mint persona");
-    return id;
+    throw new Error("Could not mint persona");
   }
 
   async function authorize(personaId: number, user: string, consumer: string) {
