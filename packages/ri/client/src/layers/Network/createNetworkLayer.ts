@@ -142,12 +142,12 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
 
   async function joinGame(position: WorldCoord) {
     console.log(`Joining game at position ${JSON.stringify(position)}`);
-    return txQueue.Game.joinGame(position, { gasLimit: 1000000, gasPrice: 0 });
+    return txQueue.Game.joinGame(position);
   }
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition, { gasLimit: 1_000_000 });
+    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition, { gasLimit: 200000 });
   }
 
   // Constants (load from contract later)
