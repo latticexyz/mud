@@ -131,7 +131,7 @@ describe("ActionSystem", () => {
     const player = createEntity(world, [withValue(Resource, { amount: 0 })]);
 
     actions.add({
-      id: "action" as EntityID as EntityID,
+      id: "action" as EntityID,
       components: { Resource },
       requirement: ({ Resource }) => getComponentValueStrict(Resource, player).amount > 100,
       updates: () => [],
