@@ -122,7 +122,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     // 1. stream ECS events to the main thread
     toCacheAndOutput$.subscribe(this.toOutput$);
 
-    // 2.tream ECS events to the Cache worker to store them to IndexDB
+    // 2. stream ECS events to the Cache worker to store them to IndexDB
     if (!config.disableCache) {
       fromWorker<Input<Cm>, boolean>(
         () => new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" }),
