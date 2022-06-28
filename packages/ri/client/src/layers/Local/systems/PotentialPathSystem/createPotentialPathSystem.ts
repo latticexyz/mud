@@ -1,5 +1,5 @@
 import { defineSystem, getComponentValue, Has, removeComponent, setComponent, UpdateType } from "@latticexyz/recs";
-import { LocalLayer } from "../..";
+import { LocalLayer } from "../../types";
 
 export function createPotentialPathSystem(layer: LocalLayer) {
   const {

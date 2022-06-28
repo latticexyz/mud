@@ -6,7 +6,7 @@ import { ActionSystem } from "../types";
 export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPosition: WorldCoord) {
   const { Position, Persona } = network.components;
 
-  const actionId = `spawn ${Math.random()}`;
+  const actionId = `spawn persona ${network.personaId}`;
   actions.add({
     id: actionId,
     components: { Position, Persona },

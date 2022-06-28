@@ -55,7 +55,7 @@ export async function setupContracts<C extends ContractComponents>(
     config$.next({
       provider: config.provider,
       worldContract: contractsConfig.World,
-      initialBlockNumber: 0,
+      initialBlockNumber: config.initialBlockNumber,
       mappings,
       chainId: config.chainId,
       disableCache: config.chainId === 31337 || config.chainId === 4242, // Disable cache on hardhat
@@ -66,7 +66,7 @@ export async function setupContracts<C extends ContractComponents>(
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
   const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
-  for (const [, component] of Object.entries(components)) {
+  for (const component of Object.values(components)) {
     const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
     const componentContract = new Contract(
       componentAddress,

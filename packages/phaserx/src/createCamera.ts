@@ -62,9 +62,9 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
     objectPool.ignoreCamera(phaserCamera.id, ignore);
   }
 
-  function centerCameraOnCoord(coord: Coord, tileWidth: number, tileHeight: number) {
-    const worldCoordinate = tileCoordToPixelCoord(coord, tileWidth, tileHeight);
-    phaserCamera.centerOn(worldCoordinate.x, worldCoordinate.y);
+  function centerCameraOnCoord(tileCoord: Coord, tileWidth: number, tileHeight: number) {
+    const pixelCoord = tileCoordToPixelCoord(tileCoord, tileWidth, tileHeight);
+    phaserCamera.centerOn(pixelCoord.x, pixelCoord.y);
     requestAnimationFrame(() => worldView$.next(phaserCamera.worldView));
   }
 

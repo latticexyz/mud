@@ -2,20 +2,9 @@ import { getPlayerEntity } from "@latticexyz/std-client";
 import { hasComponent, HasValue, setComponent, runQuery, getComponentValue } from "@latticexyz/recs";
 import { ActionSystem, HeadlessLayer } from "../types";
 import { Coord } from "@latticexyz/utils";
+import { Direction, Directions } from "../../../constants";
 
-export const Directions = {
-  Up: { x: 0, y: -1 },
-  Right: { x: 1, y: 0 },
-  Down: { x: 0, y: 1 },
-  Left: { x: -1, y: 0 },
-};
-
-export function moveEntity(
-  layer: HeadlessLayer,
-  actions: ActionSystem,
-  entity: number,
-  direction: keyof typeof Directions
-) {
+export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: number, direction: Direction) {
   const {
     parentLayers: {
       network: {

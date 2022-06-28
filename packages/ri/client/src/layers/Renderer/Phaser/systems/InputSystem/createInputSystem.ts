@@ -2,6 +2,7 @@ import { PhaserLayer } from "../../types";
 import { pixelToWorldCoord } from "../../utils";
 import { map } from "rxjs";
 import { Has, runQuery } from "@latticexyz/recs";
+import { Direction } from "../../../../../constants";
 
 export function createInputSystem(layer: PhaserLayer) {
   const {
@@ -19,7 +20,7 @@ export function createInputSystem(layer: PhaserLayer) {
     },
   } = layer;
 
-  const move = function (direction: string) {
+  const move = function (direction: Direction) {
     const selectedEntity = [...runQuery([Has(Selected)])][0];
     if (!selectedEntity) return;
     moveEntity(selectedEntity, direction);
@@ -27,22 +28,22 @@ export function createInputSystem(layer: PhaserLayer) {
 
   input.onKeyPress(
     (keys) => keys.has("UP"),
-    () => move("Up")
+    () => move(Direction.Top)
   );
 
   input.onKeyPress(
     (keys) => keys.has("LEFT"),
-    () => move("Left")
+    () => move(Direction.Left)
   );
 
   input.onKeyPress(
     (keys) => keys.has("DOWN"),
-    () => move("Down")
+    () => move(Direction.Bottom)
   );
 
   input.onKeyPress(
     (keys) => keys.has("RIGHT"),
-    () => move("Right")
+    () => move(Direction.Right)
   );
 
   input.pointermove$

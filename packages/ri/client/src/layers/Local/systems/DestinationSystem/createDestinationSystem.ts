@@ -29,6 +29,5 @@ export function createDestinationSystem(layer: LocalLayer) {
       y.push(coord.y);
     }
     setComponent(Path, update.entity, { x, y });
-    //
   });
 }

@@ -1,9 +1,10 @@
-import { defineComponent, Type } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";
 import { joinGame, moveEntity } from "./api";
 import { curry } from "lodash";
+import { Direction } from "../../constants";
+import { defineNumberComponent } from "@latticexyz/std-client";
 
 /**
  * The Headless layer is the second layer in the client architecture and extends the Network layer.
@@ -13,7 +14,7 @@ import { curry } from "lodash";
 export async function createHeadlessLayer(network: NetworkLayer) {
   const world = network.world;
   const Action = defineActionComponent(world);
-  const LocalCurrentStamina = defineComponent(world, { value: Type.Number }, { id: "LocalCurrentStamina" });
+  const LocalCurrentStamina = defineNumberComponent(world, { id: "LocalCurrentStamina" });
   const components = { Action, LocalCurrentStamina };
 
   const actions = createActionSystem(world, Action, network.txReduced$);
@@ -26,7 +27,7 @@ export async function createHeadlessLayer(network: NetworkLayer) {
     api: {
       joinGame: curry(joinGame)(network, actions),
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      moveEntity: (entity: number, direction: string) => {
+      moveEntity: (entity: number, direction: Direction) => {
         "no-op for types";
       },
     },

@@ -1,4 +1,5 @@
 import {
+  defineRxSystem,
   defineUpdateSystem,
   getComponentValue,
   getComponentValueStrict,
@@ -11,6 +12,7 @@ import { HeadlessLayer } from "../..";
 
 export function createCurrentStaminaSystem(layer: HeadlessLayer) {
   const {
+    world,
     parentLayers: {
       network: {
         network: { clock },
@@ -33,7 +35,7 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
       setComponent(LocalCurrentStamina, entity, { value: updatedValue.value as number });
   });
 
-  clock.time$.forEach(() => {
+  defineRxSystem(world, clock.time$, () => {
     const entities = runQuery([Has(CurrentStamina), Has(LastActionTurn), Has(StaminaRegeneration), Has(MaxStamina)]);
     const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
 

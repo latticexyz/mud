@@ -4,7 +4,7 @@ import { UpdateType } from "./constants";
 import { defineEnterQuery, defineExitQuery, defineQuery, defineUpdateQuery } from "./Query";
 import { Component, ComponentUpdate, ComponentValue, Entity, EntityQueryFragment, Schema, World } from "./types";
 
-function defineRxSystem<T>(world: World, observable$: Observable<T>, system: (event: T) => void) {
+export function defineRxSystem<T>(world: World, observable$: Observable<T>, system: (event: T) => void) {
   const subscription = observable$.subscribe(system);
   world.registerDisposer(() => subscription?.unsubscribe());
 }
