@@ -58,7 +58,7 @@ export async function setupContracts<C extends ContractComponents>(
       initialBlockNumber: config.initialBlockNumber,
       mappings,
       chainId: config.chainId,
-      disableCache: config.chainId === 31337 || config.chainId === 4242, // Disable cache on hardhat
+      disableCache: config.chainId === 31337, // Disable cache on hardhat
       checkpointServiceUrl: config.checkpointServiceUrl,
     });
   }
@@ -102,7 +102,6 @@ function applyNetworkUpdates<C extends Components>(
     .subscribe((updates) => {
       // Running this in a mobx action would result in only one system update per frame (should increase performance)
       // but it currently breaks defineUpdateAction (https://linear.app/latticexyz/issue/LAT-594/defineupdatequery-does-not-work-when-running-multiple-component)
-      // runInAction(() => {
       for (const update of updates) {
         const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
 
@@ -115,7 +114,6 @@ function applyNetworkUpdates<C extends Components>(
 
         if (update.lastEventInTx) txReduced$.next(update.txHash);
       }
-      // });
     });
 
   world.registerDisposer(() => ecsEventSub?.unsubscribe());

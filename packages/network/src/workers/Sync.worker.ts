@@ -1,25 +1,33 @@
-import { awaitPromise, awaitValue, computedToStream, deferred, filterNullish } from "@latticexyz/utils";
+import {
+  awaitPromise,
+  awaitValue,
+  computedToStream,
+  deferred,
+  DoWork,
+  filterNullish,
+  fromWorker,
+} from "@latticexyz/utils";
 import { computed, IObservableValue, observable, runInAction } from "mobx";
 import { Component, World } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import WorldAbi from "@latticexyz/solecs/abi/World.json";
-import { DoWork, fromWorker, runWorker } from "observable-webworker";
 import { combineLatest, concatMap, filter, map, Observable, of, startWith, Subject } from "rxjs";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { ConnectionState, createReconnectingProvider } from "../createProvider";
-import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
+import { ContractEvent, Contracts, NetworkComponentUpdate, SyncWorkerConfig } from "../types";
 import { BigNumber, BytesLike, Contract } from "ethers";
 import { createDecoder } from "../createDecoder";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
-import { Input } from "./Cache.worker";
+import { Input, State } from "./Cache.worker";
 import { getCacheId } from "./utils";
 import { createTopics } from "../createTopics";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { ECSStateSnapshotServiceClient } from "../snapshot.client";
 import { ECSStateReply } from "../snapshot";
 import { Provider } from "@ethersproject/providers";
+import { runWorker } from "@latticexyz/utils";
 
 async function getLatestCheckpoint(
   checkpointServiceUrl: string,
@@ -35,7 +43,7 @@ async function getLatestCheckpoint(
     const client = new ECSStateSnapshotServiceClient(transport);
     console.log("Fetching remote checkpoint");
     const { response: remoteCheckpoint } = await client.getStateLatest({});
-    cache.set("Checkpoint", "latest", remoteCheckpoint);
+    cache.set("Checkpoint", "latest", remoteCheckpoint, true);
     return remoteCheckpoint;
   } catch (e) {
     console.warn("Failed to fetch from checkpoint service:", e);
@@ -115,7 +123,6 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
     // Create streams for ECS events that should go to cache and output
     const toCacheAndOutput$ = new Subject<NetworkComponentUpdate<Cm>>();
-    const toCacheBlockNumber$ = new Subject<number>();
 
     // Setup pipes to cache and output
 
@@ -125,10 +132,9 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     // 2. stream ECS events to the Cache worker to store them to IndexDB
     if (!config.disableCache) {
       fromWorker<Input<Cm>, boolean>(
-        () => new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" }),
+        new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" }),
         combineLatest([
           toCacheAndOutput$.pipe(startWith(undefined)),
-          toCacheBlockNumber$.pipe(startWith(undefined)),
           of(config.worldContract.address),
           of(config.chainId),
         ]) // Emits if either of the sources emit and starts immediately (emitting undefined as first value for ecsEvent and blockNumber)
@@ -140,14 +146,12 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
     // Create cache and get the cache block number
     const cache = await initCache<{
-      ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>;
+      ComponentValues: State<Cm>;
       BlockNumber: number;
-      Entities: number;
-      Components: number;
       Checkpoint: ECSStateReply;
     }>(
       getCacheId(config.chainId, config.worldContract.address), // Store a separate cache for each World contract address
-      ["ComponentValues", "BlockNumber", "Entities", "Components", "Checkpoint"]
+      ["ComponentValues", "BlockNumber", "Checkpoint"]
     );
 
     const cacheBlockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
@@ -169,40 +173,28 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       console.log("Loading from cache at block", cacheBlockNumber);
       this.clientBlockNumber = cacheBlockNumber; // Set the current client block number to the cache block number to avoid refetching from blocks before that
 
-      // Initialize maps
-      const indexToEntity = new Map<number, EntityID>();
-      const indexToComponent = new Map<number, string>();
+      const state = await cache.get("ComponentValues", "current");
+      if (state) {
+        console.log("State size", Object.values(state).length);
+        for (const [key, value] of Object.entries(state)) {
+          const [component, entity] = key.split("/");
 
-      const entities = await cache.entries("Entities");
-      for (const [id, index] of entities) {
-        indexToEntity.set(index, id as EntityID);
-      }
+          if (!entity || !component) {
+            console.warn("Unknown component or entity", component, entity);
+            continue;
+          }
 
-      const components = await cache.entries("Components");
-      for (const [id, index] of components) {
-        indexToComponent.set(index, id);
-      }
+          const ecsEvent: NetworkComponentUpdate<Cm> = {
+            component,
+            entity: entity as EntityID,
+            value,
+            lastEventInTx: false,
+            txHash: "cache",
+            blockNumber: cacheBlockNumber,
+          };
 
-      const cacheEntries = await cache.entries("ComponentValues");
-      for (const [key, value] of cacheEntries) {
-        const [componentIndex, entityIndex] = key.split("/");
-        const component = indexToComponent.get(Number(componentIndex));
-        const entity = indexToEntity.get(Number(entityIndex));
-
-        if (!entity || !component) {
-          console.warn("Unknown component or entity", component, entity);
-          continue;
+          this.toOutput$.next(ecsEvent);
         }
-
-        const ecsEvent: NetworkComponentUpdate<Cm> = {
-          component,
-          entity,
-          value,
-          lastEventInTx: false,
-          txHash: "cache",
-        };
-
-        this.toOutput$.next(ecsEvent);
       }
     }
 
@@ -220,6 +212,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
           entity: BigNumber.from(entity).toHexString() as EntityID,
           lastEventInTx: false,
           txHash: "checkpoint",
+          blockNumber: Number(checkpoint.blockNumber),
         };
 
         toCacheAndOutput$.next(ecsEvent);
@@ -229,7 +222,6 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     const { blockNumber$ } = createBlockNumberStream(providers, {
       initialSync: { initialBlockNumber: this.clientBlockNumber, interval: 20 },
     });
-    blockNumber$.subscribe(toCacheBlockNumber$);
 
     // Create World topics to listen to
     const topics = createTopics<{ World: World }>({
@@ -251,11 +243,14 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
           );
 
           this.clientBlockNumber = blockNumber;
-          return events;
+
+          const [resolve, , promise] = deferred<[ContractEvent<Contracts>[], number]>();
+          events.then((e) => resolve([e, blockNumber])); // We need the block number later, so we pack the promise into a tuple with the block number
+          return promise;
         }),
         awaitPromise(), // Await promises
-        concatMap((v) => of(...v)), // Flatten contract event array into stream of contract events
-        map(async (event) => {
+        concatMap((v) => of(...v[0].map((e) => [e, v[1]] as [ContractEvent<Contracts>, number]))), // Flatten contract event array into stream of [contract event, block number] tuples
+        map(async ([event, blockNumber]) => {
           const {
             component: address,
             entity,
@@ -284,6 +279,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
               entity: BigNumber.from(entity).toHexString() as EntityID,
               lastEventInTx: event.lastEventInTx,
               txHash: event.txHash,
+              blockNumber,
             };
           }
 
@@ -296,6 +292,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
             entity: BigNumber.from(entity).toHexString() as EntityID,
             lastEventInTx: event.lastEventInTx,
             txHash: event.txHash,
+            blockNumber,
           };
         }),
         awaitPromise(),
@@ -310,4 +307,4 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
   }
 }
 
-runWorker(SyncWorker);
+runWorker(new SyncWorker());

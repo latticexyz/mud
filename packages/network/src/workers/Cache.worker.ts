@@ -1,47 +1,28 @@
-import { DoWork, runWorker } from "observable-webworker";
-import { distinctUntilChanged, map, Observable, ReplaySubject, Subject, take } from "rxjs";
+import { distinctUntilChanged, map, Observable, Subject, take } from "rxjs";
 import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
-import { awaitStreamValue, filterNullish } from "@latticexyz/utils";
+import { awaitStreamValue, DoWork, filterNullish, runWorker } from "@latticexyz/utils";
 import { getCacheId } from "./utils";
 import { NetworkComponentUpdate } from "../types";
 import { ECSStateReply } from "../snapshot";
 
 export type Input<Cm extends Components> = [
   NetworkComponentUpdate<Cm> | undefined,
-  number | undefined,
   string | undefined,
   number | undefined
 ]; // [ECSEvent, blockNumber, worldContractAddress, chainId]
 export type Output = never;
 
+export type State<Cm extends Components> = { [key: string]: ComponentValue<SchemaOf<Cm[keyof Cm]>> };
+
 export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, number> {
-  private ecsEventWithBlockNr$ = new ReplaySubject<Input<Cm>>();
+  private ecsEventWithBlockNr$ = new Subject<Input<Cm>>();
   private reducedBlockNr$ = new Subject<number>();
-  private cache: ReturnType<typeof initCache>;
-  private entityToIndex = new Map<string, number>();
-  private componentToIndex = new Map<string, number>();
+  private state: State<Cm> = {};
+  private blockNumner = 0;
 
   constructor() {
     this.init();
-  }
-
-  private getEntityIndex(id: string): number {
-    let index = this.entityToIndex.get(id);
-    if (index != null) return index;
-    index = this.entityToIndex.size;
-    this.entityToIndex.set(id, index);
-    this.cache.set("Entities", id, index);
-    return index;
-  }
-
-  private getComponentIndex(id: string): number {
-    let index = this.componentToIndex.get(id);
-    if (index != null) return index;
-    index = this.componentToIndex.size;
-    this.componentToIndex.set(id, index);
-    this.cache.set("Components", id, index);
-    return index;
   }
 
   private async init() {
@@ -49,14 +30,10 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
       map(([ecsEvent]) => ecsEvent),
       filterNullish()
     );
-    const blockNr$ = this.ecsEventWithBlockNr$.pipe(
-      map(([, blockNr]) => blockNr),
-      filterNullish()
-    );
 
     const worldAddress = await awaitStreamValue(
       this.ecsEventWithBlockNr$.pipe(
-        map(([, , worldAddress]) => worldAddress),
+        map(([, worldAddress]) => worldAddress),
         filterNullish(), // Only emit if not undefined
         take(1) // Complete after the first emit
       )
@@ -64,55 +41,43 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
 
     const chainId = await awaitStreamValue(
       this.ecsEventWithBlockNr$.pipe(
-        map(([, , , chainId]) => chainId),
+        map(([, , chainId]) => chainId),
         filterNullish(), // Only emit if not undefined
         take(1) // Complete after the first emit
       )
     );
 
     const cache = await initCache<{
-      ComponentValues: ComponentValue<SchemaOf<Cm[keyof Cm]>>;
+      ComponentValues: State<Cm>;
       BlockNumber: number;
-      Entities: number;
-      Components: number;
       Checkpoint: ECSStateReply;
     }>(
       getCacheId(chainId, worldAddress), // Store a separate cache for each World contract address
-      ["ComponentValues", "BlockNumber", "Entities", "Components", "Checkpoint"]
+      ["ComponentValues", "BlockNumber", "Checkpoint"]
     );
-    this.cache = cache;
 
-    // Initialize maps
-    const entities = await cache.entries("Entities");
-    for (const [id, index] of entities) {
-      this.entityToIndex.set(id, index);
-    }
-
-    const components = await cache.entries("Components");
-    for (const [id, index] of components) {
-      this.componentToIndex.set(id, index);
-    }
-
-    ecsEvent$
-      .pipe(
-        map((event) => ({
-          key: `${this.getComponentIndex(String(event.component))}/${this.getEntityIndex(event.entity)}`,
-          value: event.value,
-        }))
-      )
-      .subscribe(({ key, value }) => {
-        if (value === undefined) {
-          cache.remove("ComponentValues", key);
-        } else {
-          cache.set("ComponentValues", key, value);
-        }
-      });
+    ecsEvent$.subscribe(({ component, entity, value }) => {
+      const key = `${component}/${entity}`;
+      if (value == null) delete this.state[key];
+      else this.state[key] = value;
+    });
 
     // Only set this if the block number changed
-    blockNr$.pipe(distinctUntilChanged()).subscribe((blockNr) => {
-      cache.set("BlockNumber", "current", blockNr);
-      this.reducedBlockNr$.next(blockNr);
-    });
+    ecsEvent$
+      .pipe(
+        map((e) => e.blockNumber),
+        distinctUntilChanged()
+      )
+      .subscribe((blockNr) => {
+        this.blockNumner = blockNr - 1; // The previous block number is set the first time a new block number arrives
+        this.reducedBlockNr$.next(blockNr);
+      });
+
+    setInterval(() => {
+      console.log("Store cache with size", Object.values(this.state).length, "at block", this.blockNumner);
+      cache.set("ComponentValues", "current", this.state);
+      cache.set("BlockNumber", "current", this.blockNumner);
+    }, 10000);
   }
 
   public work(input$: Observable<Input<Cm>>): Observable<number> {
@@ -121,4 +86,4 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
   }
 }
 
-runWorker(CacheWorker);
+runWorker(new CacheWorker());

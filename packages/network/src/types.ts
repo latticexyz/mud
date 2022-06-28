@@ -79,6 +79,7 @@ export type NetworkComponentUpdate<C extends Components> = {
   entity: EntityID;
   lastEventInTx: boolean;
   txHash: string;
+  blockNumber: number;
 };
 
 export type SyncWorkerConfig<Cm extends Components = Components> = {

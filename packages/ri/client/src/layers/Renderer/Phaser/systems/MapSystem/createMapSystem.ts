@@ -56,6 +56,7 @@ export function createMapSystem(layer: PhaserLayer) {
     const coord = getComponentValueStrict(Position, update.entity);
     const type = getComponentValueStrict(EntityType, update.entity);
     const tile = entityTypeToTile[type.value as EntityTypes];
+    if (!tile) return;
 
     Main.putTileAt(coord, tile);
 
