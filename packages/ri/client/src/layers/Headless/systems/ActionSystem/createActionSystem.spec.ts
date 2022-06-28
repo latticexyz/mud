@@ -397,7 +397,7 @@ describe("ActionSystem", () => {
 
     const [resolve, , promise] = deferred<void>();
     const entity = actions.add({
-      id: "action" as EntityID as EntityID,
+      id: "action" as EntityID,
       components: { Resource },
       requirement: () => true,
       updates: () => [{ component: "Resource", entity: player, value: { amount: 1000 } }],
