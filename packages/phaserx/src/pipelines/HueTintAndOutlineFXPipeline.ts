@@ -2,9 +2,10 @@
 export class HueTintAndOutlineFXPipeline extends Phaser.Renderer.WebGL.Pipelines.SpriteFXPipeline {
   public static readonly KEY = "HueTintFXPipeline";
 
-  private _color = new Phaser.Display.Color();
+  private _tintColor = new Phaser.Display.Color();
 
   private _outline = 0;
+  private _outlineColor = new Phaser.Display.Color();
 
   constructor(game: Phaser.Game) {
     super({
@@ -16,6 +17,7 @@ export class HueTintAndOutlineFXPipeline extends Phaser.Renderer.WebGL.Pipelines
         uniform vec2 uTextureSize;
         uniform vec3 tintColor;
         uniform int outline;
+        uniform vec3 outlineColor;
         varying vec2 outTexCoord;
         
         vec3 rgb2hsv(vec3 c)
@@ -57,7 +59,7 @@ export class HueTintAndOutlineFXPipeline extends Phaser.Renderer.WebGL.Pipelines
               float rightAlpha = texture2D(uMainSampler, outTexCoord + vec2(distance.x, 0.0)).a;
               if (srcColor.a == 0.0 && max(max(upAlpha, downAlpha), max(leftAlpha, rightAlpha)) == 1.0)
               {
-                outColor = vec4(0.0, 0.0, 255.0, 0.5);
+                outColor = vec4(outlineColor, 1.0);
               }
             }
             gl_FragColor = outColor; 
@@ -65,31 +67,46 @@ export class HueTintAndOutlineFXPipeline extends Phaser.Renderer.WebGL.Pipelines
         `,
     });
     // hack needed to make the pipeline work.
-    const width = this.game.scale.width;
-    const height = this.game.scale.height;
-    this.game.scale.resize(width + 1, height + 1);
-    this.game.scale.resize(width, height);
+    // const width = this.game.scale.width;
+    // const height = this.game.scale.height;
+    // this.game.scale.resize(width + 1, height + 1);
+    // this.game.scale.resize(width, height);
   }
 
   onDrawSprite(obj: Phaser.GameObjects.Sprite) {
     const hueTint = (obj.pipelineData as any).hueTint;
+
     const outline = (obj.pipelineData as any).outline;
-    let color = hueTint ? hueTint : 0x000000;
-    if (typeof color === "number") {
-      color = Phaser.Display.Color.IntegerToRGB(color);
+    const outlineColor = (obj.pipelineData as any).outlineColor;
+
+    let tintColor = hueTint ? hueTint : 0x000000;
+    if (typeof tintColor === "number") {
+      tintColor = Phaser.Display.Color.IntegerToRGB(tintColor);
     }
+
     if (outline) {
       this._outline = 1;
+
+      let _outlineColor = outlineColor ?? 0x000000;
+      if (typeof _outlineColor === "number") {
+        _outlineColor = Phaser.Display.Color.IntegerToRGB(outlineColor);
+      }
+
+      this._outlineColor.setFromRGB(_outlineColor);
     } else {
       this._outline = 0;
     }
-    this._color.setFromRGB(color);
+
+    this._tintColor.setFromRGB(tintColor);
   }
 
   onDraw(renderTarget: Phaser.Renderer.WebGL.RenderTarget) {
     this.set2f("uTextureSize", this.renderer.width, this.renderer.height);
-    this.set3f("tintColor", this._color.redGL, this._color.greenGL, this._color.blueGL);
+    this.set3f("tintColor", this._tintColor.redGL, this._tintColor.greenGL, this._tintColor.blueGL);
+
     this.set1i("outline", this._outline);
+    this.set3f("outlineColor", this._outlineColor.redGL, this._outlineColor.greenGL, this._outlineColor.blueGL);
+    console.log(this._tintColor, this._outlineColor);
     this.drawToGame(renderTarget);
   }
 }

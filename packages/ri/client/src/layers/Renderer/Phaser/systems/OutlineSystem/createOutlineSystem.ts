@@ -15,10 +15,10 @@ export function createOutlineSystem(layer: PhaserLayer) {
   } = layer;
 
   defineComponentSystem(world, Outline, ({ entity, value }) => {
-    const outline = value[0]?.value;
+    const outlineColor = value[0]?.color;
     const embodiedEntity = objectPool.get(entity, "Sprite");
 
-    if (!outline) {
+    if (!outlineColor) {
       return embodiedEntity.removeComponent(Outline.id);
     }
 
@@ -27,6 +27,7 @@ export function createOutlineSystem(layer: PhaserLayer) {
       once: (gameObject) => {
         gameObject.setPipeline(HueTintAndOutlineFXPipeline.KEY);
         gameObject.setPipelineData("outline", true);
+        gameObject.setPipelineData("outlineColor", outlineColor);
       },
     });
   });
