@@ -1,8 +1,8 @@
-import { defineComponent, getComponentValue, hasComponent, withValue } from "../../src/Component";
-import { Type } from "../../src/constants";
-import { createEntity } from "../../src/Entity";
-import { World } from "../../src/types";
-import { createWorld } from "../../src/World";
+import { defineComponent, getComponentValue, hasComponent, withValue } from "../src/Component";
+import { Type } from "../src/constants";
+import { createEntity } from "../src/Entity";
+import { World } from "../src/types";
+import { createWorld } from "../src/World";
 
 describe("Entity", () => {
   let world: World;

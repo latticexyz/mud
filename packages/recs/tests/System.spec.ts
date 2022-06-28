@@ -1,10 +1,10 @@
-import { defineComponent, removeComponent, setComponent, withValue } from "../../src/Component";
-import { Type, UpdateType } from "../../src/constants";
-import { createEntity } from "../../src/Entity";
-import { Has } from "../../src/Query";
-import { defineEnterSystem, defineExitSystem, defineSystem, defineUpdateSystem } from "../../src/System";
-import { Component, Entity, World } from "../../src/types";
-import { createWorld } from "../../src/World";
+import { defineComponent, removeComponent, setComponent, withValue } from "../src/Component";
+import { Type, UpdateType } from "../src/constants";
+import { createEntity } from "../src/Entity";
+import { Has } from "../src/Query";
+import { defineEnterSystem, defineExitSystem, defineSystem, defineUpdateSystem } from "../src/System";
+import { Component, Entity, World } from "../src/types";
+import { createWorld } from "../src/World";
 
 describe("System", () => {
   let world: World;
@@ -12,17 +12,6 @@ describe("System", () => {
   beforeEach(() => {
     world = createWorld();
   });
-
-  // describe("defineSystem", () => {
-  //   it("should return a callable system", () => {
-  //     let called = false;
-  //     const system = defineSystem(world, () => {
-  //       called = true;
-  //     });
-  //     system();
-  //     expect(called).toBe(true);
-  //   });
-  // });
 
   describe("Systems", () => {
     let Position: Component<{ x: number; y: number }>;
