@@ -45,7 +45,7 @@ describe("ActionSystem", () => {
   it("should immediately execute actions if their requirement is met and set the Action component", async () => {
     const mockFn = jest.fn();
     const entity = actions.add({
-      id: "action" as EntityID as EntityID,
+      id: "action" as EntityID,
       components: {},
       requirement: () => true,
       updates: () => [],
