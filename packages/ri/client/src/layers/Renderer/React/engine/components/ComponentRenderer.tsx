@@ -6,7 +6,7 @@ import { Component, Entity } from "@latticexyz/recs";
 import { useState } from "react";
 import { useEffect } from "react";
 import { merge, throttleTime } from "rxjs";
-import { Window } from "./Window";
+import { Cell } from "./Cell";
 import styled from "styled-components";
 import { GridConfiguration } from "../types";
 
@@ -26,7 +26,7 @@ const UIComponentContainer: React.FC<{ gridConfig: GridConfiguration }> = ({ chi
   const { colStart, colEnd, rowStart, rowEnd } = gridConfig;
 
   return (
-    <Window
+    <Cell
       style={{
         gridRowStart: rowStart,
         gridRowEnd: rowEnd,
@@ -35,7 +35,7 @@ const UIComponentContainer: React.FC<{ gridConfig: GridConfiguration }> = ({ chi
       }}
     >
       {children}
-    </Window>
+    </Cell>
   );
 };
 

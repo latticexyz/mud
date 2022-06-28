@@ -5,7 +5,5 @@ import { ComponentRenderer } from "./ComponentRenderer";
 
 export const MainWindow: React.FC = observer(() => {
   const selectedEntities = useSelectedEntities();
-  return (
-    <ComponentRenderer selectedEntities={selectedEntities} />
-  );
+  return <ComponentRenderer selectedEntities={selectedEntities} />;
 });

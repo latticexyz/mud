@@ -6,7 +6,7 @@ import { filter, fromEvent } from "rxjs";
 
 const WINDOW_CLASSNAME = "react-ui-window";
 
-export const Window: React.FC<{ style: React.CSSProperties }> = observer(({ children, style }) => {
+export const Cell: React.FC<{ style: React.CSSProperties }> = observer(({ children, style }) => {
   const {
     phaser: {
       scenes: {
