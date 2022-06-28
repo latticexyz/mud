@@ -1,14 +1,7 @@
 import { getPlayerEntity } from "@latticexyz/std-client";
-import {
-  getComponentValueStrict,
-  hasComponent,
-  HasValue,
-  setComponent,
-  Type,
-  runQuery,
-  getComponentValue,
-} from "@latticexyz/recs";
+import { hasComponent, HasValue, setComponent, runQuery, getComponentValue } from "@latticexyz/recs";
 import { ActionSystem, HeadlessLayer } from "../types";
+import { Coord } from "@latticexyz/utils";
 
 export const Directions = {
   Up: { x: 0, y: -1 },
@@ -17,42 +10,51 @@ export const Directions = {
   Left: { x: -1, y: 0 },
 };
 
-interface MoveData {
-  action: string;
-  targetPosition: { x: Type.Number; y: Type.Number };
-}
-
 export function moveEntity(
   layer: HeadlessLayer,
   actions: ActionSystem,
   entity: number,
   direction: keyof typeof Directions
 ) {
-  const networkLayer = layer.parentLayers.network;
-  if (!networkLayer.personaId) {
-    console.warn("Persona ID not found.");
-    return;
+  const {
+    parentLayers: {
+      network: {
+        personaId,
+        components: {
+          Position,
+          Movable,
+          Untraversable,
+          CurrentStamina,
+          MaxStamina,
+          StaminaRegeneration,
+          Persona,
+          OwnedBy,
+        },
+      },
+    },
+    world,
+    components: { LocalCurrentStamina },
+  } = layer;
+
+  if (personaId == null) {
+    return console.warn("Persona ID not found.");
   }
 
-  const world = layer.world;
-
-  const { Position, Movable, Untraversable, CurrentStamina, MaxStamina, StaminaRegeneration, Persona, OwnedBy } =
-    networkLayer.components;
-  const { LocalCurrentStamina } = layer.components;
-
-  const playerEntityIndex = getPlayerEntity(Persona, networkLayer.personaId);
-  const delta = Directions[direction];
-
+  // Entity must be movable
   const entityCanMove = getComponentValue(Movable, entity)?.value;
   if (!entityCanMove) return;
 
+  // Entity must be owned by the player
   const movingEntityOwner = getComponentValue(OwnedBy, entity)?.value;
+  const playerEntityIndex = getPlayerEntity(Persona, personaId);
   if (movingEntityOwner !== world.entities[playerEntityIndex]) return;
 
-  const netStamina = getComponentValueStrict(LocalCurrentStamina, entity).value - 1;
-  if (netStamina < 0) return;
+  // Entity must have sufficient stamina
+  const netStamina = getComponentValue(LocalCurrentStamina, entity)?.value;
+  if (netStamina == null || netStamina < 1) return;
 
   const actionID = `move ${Math.random()}`;
+  const delta = Directions[direction];
 
   actions.add({
     id: actionID,
@@ -65,32 +67,30 @@ export function moveEntity(
       LocalCurrentStamina,
     },
     requirement: ({ Position, Untraversable }) => {
-      const currentPosition = getComponentValueStrict(Position, entity);
+      const currentPosition = getComponentValue(Position, entity);
+      if (!currentPosition) return null;
+
       const targetPosition = { x: currentPosition.x + delta.x, y: currentPosition.y + delta.y };
 
+      // Target position must be traversable
       const entities = runQuery([HasValue(Position, targetPosition)]);
       for (const entity of entities) {
         if (hasComponent(Untraversable, entity)) {
-          actions.cancel(actionID);
           return null;
         }
       }
 
-      return { action: "Position", targetPosition: targetPosition, netStamina };
+      return targetPosition;
     },
-    updates: (_, data: MoveData) => [
+    updates: (_, targetPosition: Coord) => [
       {
         component: "Position",
         entity: entity,
-        value: { x: data.targetPosition.x, y: data.targetPosition.y },
+        value: targetPosition,
       },
     ],
-    execute: async (data: MoveData) => {
-      console.log("Execute action");
-      const tx = await layer.parentLayers.network.api.moveEntity(world.entities[entity], {
-        x: data.targetPosition.x,
-        y: data.targetPosition.y,
-      });
+    execute: async (targetPosition: Coord) => {
+      const tx = await layer.parentLayers.network.api.moveEntity(world.entities[entity], targetPosition);
       await tx.wait();
       setComponent(LocalCurrentStamina, entity, { value: netStamina });
     },
