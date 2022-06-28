@@ -134,10 +134,10 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     require(!foundTargetEntity, "entity blocking intended direction");
 
     positionComponent.set(entity, targetPosition);
-    reduceStamina(entity);
+    reduceStamina(entity, 1);
   }
 
-  function reduceStamina(uint256 entity) private {
+  function reduceStamina(uint256 entity, uint32 amount) private {
     MaxStaminaComponent maxStamina = MaxStaminaComponent(s.world.getComponent(MaxStaminaComponentID));
     require(maxStamina.has(entity), "entity does not have stamina");
 
@@ -157,14 +157,15 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
       (currentTurn - lastActionTurn.getValue(entity)) * staminaRegeneration.getValue(entity)
     );
     uint32 stamina = currentStamina.getValue(entity) + staminaSinceLastAction;
-    require(stamina > 0, "not enough stamina to move");
 
     if (stamina > maxStamina.getValue(entity)) {
       stamina = maxStamina.getValue(entity);
     }
 
+    require(stamina >= amount, "not enough stamina to move");
+
     lastActionTurn.set(entity, currentTurn);
-    currentStamina.set(entity, stamina - 1);
+    currentStamina.set(entity, stamina - amount);
   }
 
   function getCurrentTurn() public view returns (uint32) {
