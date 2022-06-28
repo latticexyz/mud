@@ -419,7 +419,7 @@ describe("ActionSystem", () => {
     const requirementSpy = jest.fn();
 
     actions.add({
-      id: "action" as EntityID as EntityID,
+      id: "action" as EntityID,
       components: { Resource },
       requirement: ({ Resource }) => {
         requirementSpy();
