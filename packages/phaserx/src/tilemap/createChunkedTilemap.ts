@@ -43,8 +43,6 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
   }
   // Render maps when they're in the viewport
   const addedChunkSub = chunks.addedChunks$.subscribe((chunk) => {
-    // Only support max 100 maps at the same time
-    // if (maps.size > 100) return;
     renderChunk(chunk);
   });
 
