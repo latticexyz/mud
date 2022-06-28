@@ -12,6 +12,7 @@ import {
   HasValue,
   runQuery,
   EntityID,
+  EntityIndex,
 } from "@latticexyz/recs";
 import { deferred } from "@latticexyz/utils";
 import { ReplaySubject } from "rxjs";
@@ -26,6 +27,8 @@ describe("ActionSystem", () => {
   let Action: Component<{ state: Type.Number; on: Type.OptionalEntity }>;
   let actions: ReturnType<typeof createActionSystem>;
   let txReduced$: ReplaySubject<string>;
+
+  const getEntityId = (idx: EntityIndex) => world.entities[idx];
 
   beforeEach(async () => {
     world = createWorld();
@@ -174,8 +177,8 @@ describe("ActionSystem", () => {
       execute: () => void 0,
     });
 
-    expect(runQuery([HasValue(Action, { on: settlement1 })])).toEqual(new Set([entity1]));
-    expect(runQuery([HasValue(Action, { on: settlement2 })])).toEqual(new Set([entity2]));
+    expect(runQuery([HasValue(Action, { on: getEntityId(settlement1) })])).toEqual(new Set([entity1]));
+    expect(runQuery([HasValue(Action, { on: getEntityId(settlement2) })])).toEqual(new Set([entity2]));
     expect(runQuery([HasValue(Action, { state: ActionState.Requested })])).toEqual(
       new Set([entity1, entity2, entity3])
     );

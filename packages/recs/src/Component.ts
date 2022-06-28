@@ -23,7 +23,7 @@ export function defineComponent<S extends Schema, M extends Metadata>(
   const update$ = new Subject();
   const metadata = options?.metadata;
   const entities = () => (Object.values(values)[0] as Map<EntityIndex, unknown>).keys();
-  const component = { values, schema, id, update$, metadata, entities } as Component<S, M>;
+  const component = { values, schema, id, update$, metadata, entities, world } as Component<S, M>;
   world.registerComponent(component);
   return component;
 }

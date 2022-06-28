@@ -116,8 +116,12 @@ function passesQueryFragmentProxy<T extends Schema>(
     // If the current entity does not have the proxy component, abort
     if (!value) return null;
 
+    const entityId = value.value;
+    const entityIndex = proxyRead.component.world.entityToIndex.get(entityId);
+    if (entityIndex === undefined) return null;
+
     // Move up the proxy chain
-    proxyEntity = value.value;
+    proxyEntity = entityIndex;
     passes = passesQueryFragment(proxyEntity, fragment);
 
     if (isBreakingPassState(passes, fragment)) {
@@ -141,7 +145,8 @@ export function getChildEntities(
 ): Set<EntityIndex> {
   if (depth === 0) return new Set();
 
-  const directChildEntities = getEntitiesWithValue(component, { value: entity });
+  const entityId = component.world.entities[entity];
+  const directChildEntities = getEntitiesWithValue(component, { value: entityId });
   if (depth === 1) return directChildEntities;
 
   const indirectChildEntities = [...directChildEntities]

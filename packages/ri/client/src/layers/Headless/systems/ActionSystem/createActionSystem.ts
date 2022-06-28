@@ -64,7 +64,7 @@ export function createActionSystem(
       [
         withValue(Action, {
           state: ActionState.Requested,
-          on: actionRequest.on ?? null,
+          on: actionRequest.on ? world.entities[actionRequest.on] : null,
         }),
       ],
       {

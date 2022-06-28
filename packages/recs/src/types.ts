@@ -48,6 +48,7 @@ export interface Component<S extends Schema = Schema, M extends Metadata = Metad
   schema: S;
   metadata: M;
   entities: () => IterableIterator<EntityIndex>;
+  world: World;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   update$: Subject<ComponentUpdate<S>> & { observers: any };
 }
