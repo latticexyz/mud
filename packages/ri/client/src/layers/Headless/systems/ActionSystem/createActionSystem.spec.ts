@@ -112,7 +112,7 @@ describe("ActionSystem", () => {
   it("should not be possible to cancel actions that are already executing", async () => {
     const [resolve, , promise] = deferred<void>();
     const entity = actions.add({
-      id: "action" as EntityID as EntityID,
+      id: "action" as EntityID,
       components: {},
       requirement: () => true,
       updates: () => [],
