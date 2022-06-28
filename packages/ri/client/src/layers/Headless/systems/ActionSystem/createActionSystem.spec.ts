@@ -63,7 +63,7 @@ describe("ActionSystem", () => {
   it("should not execute actions if their requirement is not met and set the Action component", () => {
     const mockFn = jest.fn();
     const entity = actions.add({
-      id: "action" as EntityID as EntityID,
+      id: "action" as EntityID,
       components: {},
       requirement: () => false,
       updates: () => [],
