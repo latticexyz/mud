@@ -13,7 +13,8 @@
     "lint": "eslint . --ext .ts",
     "test": "jest",
     "build": "rimraf dist && rollup -c rollup.config.js",
-    "link": "yarn link"
+    "link": "yarn link",
+    "protobuf:gen": "protoc --ts_opt eslint_disable --ts_out . --proto_path protobuf protobuf/ecs-snapshot.proto && mv ecs-snapshot.ts ecs-snapshot.client.ts src/"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
@@ -50,6 +51,7 @@
   },
   "dependencies": {
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
+    "@protobuf-ts/plugin": "^2.7.0",
     "@protobuf-ts/runtime-rpc": "^2.7.0",
     "observable-webworker": "^4.0.1"
   },
