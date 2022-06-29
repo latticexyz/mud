@@ -54,7 +54,7 @@ export const ComponentRenderer: React.FC<{
       .pipe(throttleTime(1000))
       .subscribe(() => setState((i) => i + 1));
     return () => subscription?.unsubscribe();
-  });
+  }, []);
   return (
     <UIGrid>
       {filterNullishValues(
