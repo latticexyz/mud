@@ -134,7 +134,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     component: Component<T, { contractId: string }>,
     newValue: ComponentValue<T>
   ) {
-    if (!DEV_MODE) throw new Error("Not allowed to directly edit Component values outisde DEV_MODE");
+    if (!DEV_MODE) throw new Error("Not allowed to directly edit Component values outside DEV_MODE");
 
     if (!component.metadata.contractId)
       throw new Error(
