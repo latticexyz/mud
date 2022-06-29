@@ -19,7 +19,7 @@ library LibStamina {
     LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
       s().world.getComponent(LastActionTurnComponentID)
     );
-    require(lastActionTurnComponent.has(entity), "entity does not have stamina");
+    require(lastActionTurnComponent.has(entity), "entity has no LastActionTurn");
 
     Stamina memory stamina = staminaComponent.getValue(entity);
     uint32 currentTurn = getCurrentTurn();
