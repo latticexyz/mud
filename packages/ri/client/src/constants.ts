@@ -11,3 +11,5 @@ export const Directions = {
   [Direction.Bottom]: { x: 0, y: 1 },
   [Direction.Left]: { x: -1, y: 0 },
 };
+
+export const LOCAL_CHAIN_ID = 31337;
