@@ -282,12 +282,8 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
           );
 
           this.clientBlockNumber = blockNumber;
-
-          // const [resolve, , promise] = deferred<[ContractEvent<Contracts>[], number]>();
-          // events.then((e) => resolve([e, blockNumber])); // We need the block number later, so we pack the promise into a tuple with the block number
           return [events, blockNumber] as [ContractEvent<Contracts>[], number];
         }),
-        // awaitPromise(), // Await promises
         concatMap((v) => of(...v[0].map((e) => [e, v[1]] as [ContractEvent<Contracts>, number]))), // Flatten contract event array into stream of [contract event, block number] tuples
         map(async ([event, blockNumber]) => {
           const {
