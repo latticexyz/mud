@@ -50,7 +50,7 @@ export const ComponentRenderer: React.FC<{
       .map((layer) => Object.values(layer.components))
       .flat();
 
-    const subscription = merge(...components.map((c) => c.update$))
+    const subscription = merge([...components.map((c) => c.update$), layers.network.network.clock.time$])
       .pipe(throttleTime(1000))
       .subscribe(() => setState((i) => i + 1));
     return () => subscription?.unsubscribe();
