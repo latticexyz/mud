@@ -27,7 +27,7 @@ export function createDrawPotentialPathSystem(layer: PhaserLayer) {
       for (let i = 0; i < previousPaths.x.length; i++) {
         // Remove the highlight component from this game object, but don't remove the game object itself (since we can reuse it below)
         const highlight = objectPool.get(`${entity}-path-highlight-${i}`, "Rectangle");
-        highlight.removeComponent("highlight");
+        highlight.removeComponent("path-highlight");
       }
     }
 
@@ -43,12 +43,12 @@ export function createDrawPotentialPathSystem(layer: PhaserLayer) {
         const position = { x: potentialPaths.x[i], y: potentialPaths.y[i] };
 
         pathHighlight.setComponent({
-          id: `highlight`,
+          id: `path-highlight`,
           once: (box) => {
             const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
             box.setFillStyle(0xf0e71d, 0.3);
             box.setSize(tileWidth, tileHeight);
-            box.setPosition(pixelCoord.x + tileWidth / 2, pixelCoord.y + tileHeight / 2);
+            box.setPosition(pixelCoord.x, pixelCoord.y);
             box.setDepth(0);
           },
         });
