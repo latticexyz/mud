@@ -22,6 +22,7 @@ const localhost = {
 };
 
 const hardhat = {
+  initialDate: "1993-11-19",
   mining: {
     auto: false,
     interval: 1000,

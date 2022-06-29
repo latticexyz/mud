@@ -50,10 +50,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // await deployComponent(hre, world, ember.address, "SpawnPointComponent");
   await deployComponent(hre, world, ember.address, "MineableComponent");
 
-  console.log(blue("Configure world"));
-  const tx = await ember.configureWorld();
-  await tx.wait();
-
   // Deploy access controllers
   await deployAccessController(hre, ember, "PersonaAccessController");
   // Deploy content creators
@@ -79,6 +75,16 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     await tx.wait();
     console.log(blue("Local Lattice game linked"));
   }
+
+  console.log(green(`Setting hardhat time to local time.`));
+  await hre.network.provider.send("evm_setNextBlockTimestamp", [Math.round(Date.now() / 1000)]);
+
+  // Only configure the world after setting hardhat time
+  // to the correct value because it saves the game
+  // start timestamp.
+  console.log(blue("Configure world"));
+  const tx = await ember.configureWorld();
+  await tx.wait();
 };
 export default func;
 func.tags = ["Diamond"];
