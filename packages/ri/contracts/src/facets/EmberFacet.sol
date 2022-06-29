@@ -12,6 +12,7 @@ import { LibUtils } from "../libraries/LibUtils.sol";
 import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
 import { LibQuery } from "solecs/LibQuery.sol";
 import { LibECS } from "../libraries/LibECS.sol";
+import { LibStamina } from "../libraries/LibStamina.sol";
 
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
 import { PersonaComponent, ID as PersonaComponentID } from "../components/PersonaComponent.sol";
@@ -56,7 +57,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     entityTypeComponent.set(entity, uint32(0));
     positionComponent.set(entity, position);
     staminaComponent.set(entity, Stamina({ current: 0, max: 3, regeneration: 1 }));
-    lastActionTurn.set(entity, getCurrentTurn());
+    lastActionTurn.set(entity, LibStamina.getCurrentTurn());
     movableComponent.set(entity);
   }
 
@@ -87,44 +88,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     require(!foundTargetEntity, "entity blocking intended direction");
 
     positionComponent.set(entity, targetPosition);
-    reduceStamina(entity, 1);
-  }
-
-  function reduceStamina(uint256 entity, uint32 amount) private {
-    StaminaComponent staminaComponent = StaminaComponent(s.world.getComponent(StaminaComponentID));
-    require(staminaComponent.has(entity), "entity does not have stamina");
-
-    LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
-      s.world.getComponent(LastActionTurnComponentID)
-    );
-    require(lastActionTurnComponent.has(entity), "entity does not have stamina");
-
-    Stamina memory stamina = staminaComponent.getValue(entity);
-    uint32 currentTurn = getCurrentTurn();
-    uint32 staminaSinceLastAction = uint32(
-      (currentTurn - lastActionTurnComponent.getValue(entity)) * stamina.regeneration
-    );
-    uint32 updatedStamina = stamina.current + staminaSinceLastAction;
-
-    if (updatedStamina > stamina.max) {
-      updatedStamina = stamina.max;
-    }
-
-    require(updatedStamina >= amount, "not enough stamina to move");
-
-    lastActionTurnComponent.set(entity, currentTurn);
-    staminaComponent.set(
-      entity,
-      Stamina({ current: updatedStamina - amount, max: stamina.max, regeneration: stamina.regeneration })
-    );
-  }
-
-  function getCurrentTurn() public view returns (uint32) {
-    GameConfigComponent gameConfigComponent = GameConfigComponent(s.world.getComponent(GameConfigComponentID));
-    GameConfig memory gameConfig = gameConfigComponent.getValue(GodID);
-
-    uint256 secondsSinceGameStart = block.timestamp - gameConfig.startTime;
-    return uint32(secondsSinceGameStart / gameConfig.turnLength);
+    LibStamina.reduceStamina(entity, 1);
   }
 
   function configureWorld() public {
