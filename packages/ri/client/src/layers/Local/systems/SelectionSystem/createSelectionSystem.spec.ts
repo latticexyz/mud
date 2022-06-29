@@ -2,7 +2,8 @@ import { createEntity, withValue, getComponentValue, setComponent, Has, runQuery
 import { LocalLayer } from "../../types";
 import { createLocalLayer } from "../../createLocalLayer";
 import { createHeadlessLayer, HeadlessLayer } from "../../../Headless";
-import { createNetworkLayer, NetworkLayer } from "../../../Network";
+import { createNetworkLayer } from "../../../Network/createNetworkLayer";
+import { NetworkLayer } from "../../../Network/types";
 
 describe("Selection system", () => {
   let network: NetworkLayer;
@@ -19,7 +20,7 @@ describe("Selection system", () => {
     network.world.dispose();
   });
 
-  it("should select all selectable entities with position in the region", () => {
+  it("should find and select the entity at the selection coordinate", () => {
     const {
       components: { LocalPosition, Selectable, Selected, Selection },
       singletonEntity,
@@ -49,11 +50,13 @@ describe("Selection system", () => {
     const entity7 = createEntity(network.world, [withValue(Selectable, { value: true })]); // Selectable but no position
     const entity8 = createEntity(local.world, [withValue(Selectable, { value: true })]); // Selectable but no position
 
-    setComponent(Selection, singletonEntity, { x: 0, y: 0, width: 6, height: 6 });
+    setComponent(Selection, singletonEntity, { x: 1, y: 2, width: 1, height: 1 });
     const selectedEntities = runQuery([Has(Selected)]);
-    expect(selectedEntities).toEqual(new Set([entity1, entity2, entity5]));
+    expect(selectedEntities).toEqual(new Set([entity1]));
+    expect(getComponentValue(Selected, entity2)).toBeUndefined();
     expect(getComponentValue(Selected, entity3)).toBeUndefined();
     expect(getComponentValue(Selected, entity4)).toBeUndefined();
+    expect(getComponentValue(Selected, entity5)).toBeUndefined();
     expect(getComponentValue(Selected, entity6)).toBeUndefined();
     expect(getComponentValue(Selected, entity7)).toBeUndefined();
     expect(getComponentValue(Selected, entity8)).toBeUndefined();
@@ -91,8 +94,10 @@ describe("Selection system", () => {
 
     setComponent(Selection, singletonEntity, { x: 0, y: 0, width: 6, height: 6 });
     expect(runQuery([Has(Selected)])).toEqual(new Set([entity1, entity2, entity5]));
+    expect(getComponentValue(Selected, entity2)).toBeUndefined();
     expect(getComponentValue(Selected, entity3)).toBeUndefined();
     expect(getComponentValue(Selected, entity4)).toBeUndefined();
+    expect(getComponentValue(Selected, entity5)).toBeUndefined();
     expect(getComponentValue(Selected, entity6)).toBeUndefined();
     expect(getComponentValue(Selected, entity7)).toBeUndefined();
     expect(getComponentValue(Selected, entity8)).toBeUndefined();
