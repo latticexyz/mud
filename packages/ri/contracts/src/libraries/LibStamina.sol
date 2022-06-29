@@ -32,7 +32,7 @@ library LibStamina {
       updatedStamina = stamina.max;
     }
 
-    require(updatedStamina >= amount, "not enough stamina to move");
+    require(updatedStamina >= amount, "entity has not enough stamina");
 
     lastActionTurnComponent.set(entity, currentTurn);
     staminaComponent.set(
