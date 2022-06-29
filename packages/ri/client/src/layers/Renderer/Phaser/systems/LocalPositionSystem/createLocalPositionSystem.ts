@@ -2,7 +2,6 @@ import { Has, getComponentValue, defineSystem, UpdateType, isComponentUpdate } f
 import { tween, tileCoordToPixelCoord } from "@latticexyz/phaserx";
 import { PhaserLayer } from "../../types";
 import { Coord } from "@latticexyz/utils";
-import { Tileset } from "../../constants";
 
 /**
  * The LocalPosition system handles moving phaser game objects to the WorldCoord specified in their LocalPosition component.
@@ -22,7 +21,6 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
         objectPool,
         maps: {
           Main: { tileWidth, tileHeight },
-          Pixel,
         },
       },
     },
@@ -31,29 +29,20 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
   // Set position the first time entitiy's Position component appears
   defineSystem(world, [Has(LocalPosition), Has(Appearance)], (update) => {
     const embodiedEntity = objectPool.get(update.entity, "Sprite");
-
     let pos: Coord | undefined;
-    let prevPos: Coord | undefined;
-
     if (isComponentUpdate(update, LocalPosition)) {
-      [pos, prevPos] = update.value;
+      [pos] = update.value;
     } else {
       pos = getComponentValue(LocalPosition, update.entity);
     }
 
     if (update.type === UpdateType.Exit) {
       embodiedEntity.removeComponent(LocalPosition.id);
-      // remove previous map entry
-      if (prevPos) Pixel.putTileAt(prevPos, Tileset.Empty);
-      return;
     }
 
     if (!pos) throw new Error("No LocalPosition value for entity");
 
     if (update.type === UpdateType.Enter) {
-      // draw a map entry
-      Pixel.putTileAt(pos, Tileset.Plain);
-
       const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
       embodiedEntity.setComponent({
         id: LocalPosition.id,
@@ -64,11 +53,6 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
     }
 
     if (update.type === UpdateType.Update) {
-      // draw a map entry
-      Pixel.putTileAt(pos, Tileset.Plain);
-      // remove previous map entry
-      if (prevPos) Pixel.putTileAt(prevPos, Tileset.Empty);
-
       const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
       embodiedEntity.setComponent({
         id: LocalPosition.id,

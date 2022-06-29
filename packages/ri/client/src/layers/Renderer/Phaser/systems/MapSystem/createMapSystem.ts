@@ -22,7 +22,7 @@ export function createMapSystem(layer: PhaserLayer) {
     },
     scenes: {
       Main: {
-        maps: { Main, Pixel, Tactic, Strategic },
+        maps: { Main, Tactic, Strategic },
         camera,
         objectPool,
       },
@@ -33,19 +33,16 @@ export function createMapSystem(layer: PhaserLayer) {
     if (zoom < 0.1) {
       Strategic.setVisible(true);
       Tactic.setVisible(false);
-      Pixel.setVisible(false);
       Main.setVisible(false);
       camera.ignore(objectPool, true);
     } else if (zoom < 0.5) {
       Strategic.setVisible(false);
       Tactic.setVisible(true);
-      Pixel.setVisible(true);
       Main.setVisible(false);
       camera.ignore(objectPool, true);
     } else {
       Strategic.setVisible(false);
       Tactic.setVisible(false);
-      Pixel.setVisible(false);
       Main.setVisible(true);
       camera.ignore(objectPool, false);
     }

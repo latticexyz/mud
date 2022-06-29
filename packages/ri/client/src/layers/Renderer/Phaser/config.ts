@@ -50,19 +50,6 @@ export const config = {
             defaultLayer: "Background",
           },
         }),
-        [Maps.Pixel]: defineMapConfig({
-          tileWidth: TILE_WIDTH,
-          tileHeight: TILE_HEIGHT,
-          backgroundTile: [Tileset.Empty],
-          animationInterval: 100,
-          tileAnimations: TileAnimations,
-          layers: {
-            layers: {
-              Background: { tilesets: ["Default"], hasHueTintShader: false },
-            },
-            defaultLayer: "Background",
-          },
-        }),
         [Maps.Tactic]: defineMapConfig({
           tileWidth: TILE_WIDTH * 4,
           tileHeight: TILE_HEIGHT * 4,
