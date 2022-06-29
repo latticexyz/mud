@@ -60,10 +60,12 @@ export function defineSyncSystem<T extends Schema>(
   world: World,
   query: EntityQueryFragment[],
   component: (entity: EntityIndex) => Component<T>,
-  value: (entity: EntityIndex) => ComponentValue<T>
+  value: (entity: EntityIndex) => ComponentValue<T>,
+  options?: { update: boolean }
 ) {
   defineSystem(world, query, ({ entity, type }) => {
     if (type === UpdateType.Enter) setComponent(component(entity), entity, value(entity));
     if (type === UpdateType.Exit) removeComponent(component(entity), entity);
+    if (options?.update && type === UpdateType.Update) setComponent(component(entity), entity, value(entity));
   });
 }

@@ -1,7 +1,6 @@
 import {
+  defineComponentSystem,
   defineRxSystem,
-  defineUpdateSystem,
-  getComponentValue,
   getComponentValueStrict,
   Has,
   runQuery,
@@ -22,17 +21,8 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
     components: { LocalCurrentStamina },
   } = layer;
 
-  defineUpdateSystem(layer.world, [Has(CurrentStamina), Has(LocalCurrentStamina)], ({ entity, value, component }) => {
-    if (component !== CurrentStamina) return;
-
-    const localStamina = getComponentValue(LocalCurrentStamina, entity)?.value;
-    if (!localStamina) return;
-
-    const [updatedValue] = value;
-    if (!updatedValue?.value) return;
-
-    if (updatedValue.value != localStamina)
-      setComponent(LocalCurrentStamina, entity, { value: updatedValue.value as number });
+  defineComponentSystem(world, CurrentStamina, ({ entity, value }) => {
+    if (value[0]) setComponent(LocalCurrentStamina, entity, value[0]);
   });
 
   defineRxSystem(world, clock.time$, () => {
