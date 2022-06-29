@@ -112,6 +112,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
     contracts,
     supportsBatchQueries ? endBlockNumber : undefined
   );
+  console.log(`got ${logs.length} logs from range ${startBlockNumber} -> ${endBlockNumber}`);
   // we need to sort per block, transaction index, and log index
   logs.sort((a: Log, b: Log) => {
     if (a.blockNumber < b.blockNumber) {

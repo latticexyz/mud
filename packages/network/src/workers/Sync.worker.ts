@@ -6,6 +6,7 @@ import {
   DoWork,
   filterNullish,
   fromWorker,
+  unpackTuple,
 } from "@latticexyz/utils";
 import { computed, IObservableValue, observable, runInAction } from "mobx";
 import { Component, World } from "@latticexyz/solecs";
@@ -29,24 +30,32 @@ import { ECSStateReply } from "../snapshot";
 import { Provider } from "@ethersproject/providers";
 import { runWorker } from "@latticexyz/utils";
 
+const MAX_CACHE_AGE = 1000;
+
 async function getCheckpoint(
   checkpointServiceUrl: string,
-  cache: ReturnType<typeof initCache>
+  cache: ReturnType<typeof initCache>,
+  cacheBlockNumber: number
 ): Promise<ECSStateReply | undefined> {
   try {
-    const localCheckpoint: ECSStateReply = await cache.get("Checkpoint", "latest");
+    // Fetch remote block number
     const transport = new GrpcWebFetchTransport({ baseUrl: checkpointServiceUrl, format: "binary" });
     const client = new ECSStateSnapshotServiceClient(transport);
-    if (localCheckpoint) {
-      console.log("Local checkpoint available, checking for more recent remote checkpoint");
-      const {
-        response: { blockNumber: remoteBlockNumber },
-      } = await client.getStateBlockLatest({});
-      const age = remoteBlockNumber - localCheckpoint.blockNumber;
-      if (age < 1000) {
-        console.log("Local checkpoint is recent enough to be used");
-        return localCheckpoint;
-      }
+    const {
+      response: { blockNumber: remoteBlockNumber },
+    } = await client.getStateBlockLatest({});
+
+    // Ignore checkpoint if local cache is recent enough
+    const cacheAge = remoteBlockNumber - cacheBlockNumber;
+    if (cacheAge < MAX_CACHE_AGE) return undefined;
+
+    // Check local checkpoint
+    const localCheckpoint: ECSStateReply = await cache.get("Checkpoint", "latest");
+    const localCheckpointAge = remoteBlockNumber - (localCheckpoint.blockNumber ?? 0);
+    // Return local checkpoint if it is recent enough
+    if (localCheckpointAge < MAX_CACHE_AGE) {
+      console.log("Local checkpoint is recent enough to be used");
+      return localCheckpoint;
     }
     console.log("Fetching remote checkpoint");
     const { response: remoteCheckpoint } = await client.getStateLatest({});
@@ -167,12 +176,13 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
     // Create cache and get the cache block number
     const cache = await initCache<{
-      ComponentValues: State<Cm>;
+      ComponentValues: State;
       BlockNumber: number;
+      Mappings: string[];
       Checkpoint: ECSStateReply;
     }>(
       getCacheId(config.chainId, config.worldContract.address), // Store a separate cache for each World contract address
-      ["ComponentValues", "BlockNumber", "Checkpoint"]
+      ["ComponentValues", "BlockNumber", "Mappings", "Checkpoint"]
     );
 
     const cacheBlockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
@@ -180,7 +190,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     // Fetch latest checkpoint
     console.log("Checking remote checkpoint at", config.checkpointServiceUrl);
     const checkpoint = config.checkpointServiceUrl
-      ? await getCheckpoint(config.checkpointServiceUrl, cache)
+      ? await getCheckpoint(config.checkpointServiceUrl, cache, cacheBlockNumber)
       : undefined;
 
     // Load from cache if cache is enabled,
@@ -192,13 +202,17 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       cacheBlockNumber > (checkpoint?.blockNumber ?? 0)
     ) {
       console.log("Loading from cache at block", cacheBlockNumber);
-      this.clientBlockNumber = cacheBlockNumber; // Set the current client block number to the cache block number to avoid refetching from blocks before that
-
       const state = await cache.get("ComponentValues", "current");
-      if (state) {
-        console.log("State size", Object.values(state).length);
-        for (const [key, value] of Object.entries(state)) {
-          const [component, entity] = key.split("/");
+      const components = await cache.get("Mappings", "components");
+      const entities = await cache.get("Mappings", "entities");
+
+      if (state && components && entities) {
+        this.clientBlockNumber = cacheBlockNumber; // Set the current client block number to the cache block number to avoid refetching from blocks before that
+        console.log("State size", state.size);
+        for (const [key, value] of state.entries()) {
+          const [componentIndex, entityIndex] = unpackTuple(key);
+          const component = components[componentIndex];
+          const entity = entities[entityIndex];
 
           if (!entity || !component) {
             console.warn("Unknown component or entity", component, entity);
@@ -208,7 +222,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
           const ecsEvent: NetworkComponentUpdate<Cm> = {
             component,
             entity: entity as EntityID,
-            value,
+            value: value as ComponentValue<SchemaOf<Cm[keyof Cm]>>,
             lastEventInTx: false,
             txHash: "cache",
             blockNumber: cacheBlockNumber,
@@ -245,7 +259,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     }
 
     const { blockNumber$ } = createBlockNumberStream(providers, {
-      initialSync: { initialBlockNumber: this.clientBlockNumber, interval: 20 },
+      initialSync: { initialBlockNumber: this.clientBlockNumber, interval: 50 },
     });
 
     // Create World topics to listen to
@@ -257,8 +271,8 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     combineLatest([blockNumber$, computedToStream(this.config), computedToStream(connected)])
       .pipe(
         filter(([, , connectionState]) => connectionState === ConnectionState.CONNECTED),
-        map(([blockNumber, config]) => {
-          const events = fetchEventsInBlockRange(
+        concatMap(async ([blockNumber, config]) => {
+          const events = await fetchEventsInBlockRange(
             providers.get().json,
             topics,
             this.clientBlockNumber + 1,
@@ -269,11 +283,11 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
           this.clientBlockNumber = blockNumber;
 
-          const [resolve, , promise] = deferred<[ContractEvent<Contracts>[], number]>();
-          events.then((e) => resolve([e, blockNumber])); // We need the block number later, so we pack the promise into a tuple with the block number
-          return promise;
+          // const [resolve, , promise] = deferred<[ContractEvent<Contracts>[], number]>();
+          // events.then((e) => resolve([e, blockNumber])); // We need the block number later, so we pack the promise into a tuple with the block number
+          return [events, blockNumber] as [ContractEvent<Contracts>[], number];
         }),
-        awaitPromise(), // Await promises
+        // awaitPromise(), // Await promises
         concatMap((v) => of(...v[0].map((e) => [e, v[1]] as [ContractEvent<Contracts>, number]))), // Flatten contract event array into stream of [contract event, block number] tuples
         map(async ([event, blockNumber]) => {
           const {

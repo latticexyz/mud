@@ -1,4 +1,4 @@
-import { Has, getComponentValueStrict, defineEnterSystem } from "@latticexyz/recs";
+import { Has, getComponentValueStrict, defineEnterSystem, Not } from "@latticexyz/recs";
 import { EntityTypes } from "../../../../Network";
 import { Tileset } from "../../constants";
 import { PhaserLayer } from "../../types";
@@ -48,6 +48,11 @@ export function createMapSystem(layer: PhaserLayer) {
     }
   });
   world.registerDisposer(() => zoomSub?.unsubscribe());
+
+  defineEnterSystem(world, [Has(Position), Not(EntityType)], (update) => {
+    const coord = getComponentValueStrict(Position, update.entity);
+    Main.putTileAt(coord, Tileset.Plain);
+  });
 
   defineEnterSystem(world, [Has(Position), Has(EntityType)], (update) => {
     const coord = getComponentValueStrict(Position, update.entity);
