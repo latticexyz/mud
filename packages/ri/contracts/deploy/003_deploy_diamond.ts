@@ -14,9 +14,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const personaMiror = await hre.ethers.getContract("PersonaMirror", deployer);
   const LibQuery = await hre.deployments.get("LibQuery");
+  const LibStamina = await hre.deployments.get("LibStamina");
 
   console.log(blue("Deploying Diamond"));
-  const facets = ["EmberFacet", "InitializeFacet", "CastSpellFacet"];
+  const facets = ["EmberFacet", "InitializeFacet", "CastSpellFacet", "MoveFacet", "PlayerJoinFacet"];
   const chainId = await hre.getChainId();
   if (chainId === "31337") facets.push("DebugFacet");
 
@@ -31,6 +32,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     },
     libraries: {
       LibQuery: LibQuery.address,
+      LibStamina: LibStamina.address,
     },
     autoMine: true,
   });

@@ -12,6 +12,12 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     log: true,
     autoMine: true,
   });
+
+  await deploy("LibStamina", {
+    from: deployer,
+    log: true,
+    autoMine: true,
+  });
 };
 export default func;
-func.tags = ["LibQuery"];
+func.tags = ["Libraries"];
