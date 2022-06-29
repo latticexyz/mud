@@ -1,4 +1,4 @@
-import { defineComponent, EntityIndex, Type } from "@latticexyz/recs";
+import { EntityIndex } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";

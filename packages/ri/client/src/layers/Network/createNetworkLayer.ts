@@ -55,23 +55,10 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       { id: "Persona", metadata: { contractId: keccak256("ember.component.personaComponent") } }
     ),
     // Stamina
-    CurrentStamina: defineComponent(
+    Stamina: defineComponent(
       world,
-      { value: Type.Number },
-      { id: "CurrentStamina", metadata: { contractId: keccak256("ember.component.currentStaminaComponent") } }
-    ),
-    MaxStamina: defineComponent(
-      world,
-      { value: Type.Number },
-      { id: "MaxStamina", metadata: { contractId: keccak256("ember.component.maxStaminaComponent") } }
-    ),
-    StaminaRegeneration: defineComponent(
-      world,
-      { value: Type.Number },
-      {
-        id: "StaminaRegeneration",
-        metadata: { contractId: keccak256("ember.component.staminaRegenerationComponent") },
-      }
+      { current: Type.Number, max: Type.Number, regeneration: Type.Number },
+      { id: "Stamina", metadata: { contractId: keccak256("ember.component.staminaComponent") } }
     ),
     LastActionTurn: defineComponent(
       world,
@@ -88,11 +75,9 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     [keccak256("ember.component.ownedByComponent")]: "OwnedBy",
     [keccak256("ember.component.untraversableComponent")]: "Untraversable",
     [keccak256("ember.component.personaComponent")]: "Persona",
-    [keccak256("ember.component.currentStaminaComponent")]: "CurrentStamina",
-    [keccak256("ember.component.maxStaminaComponent")]: "MaxStamina",
-    [keccak256("ember.component.staminaRegenerationComponent")]: "StaminaRegeneration",
     [keccak256("ember.component.lastActionTurnComponent")]: "LastActionTurn",
     [keccak256("ember.component.gameConfigComponent")]: "GameConfig",
+    [keccak256("ember.component.staminaComponent")]: "Stamina",
   };
 
   const contractConfig: SetupContractConfig = {

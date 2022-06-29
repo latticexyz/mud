@@ -16,16 +16,7 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
     parentLayers: {
       network: {
         personaId,
-        components: {
-          Position,
-          Movable,
-          Untraversable,
-          CurrentStamina,
-          MaxStamina,
-          StaminaRegeneration,
-          Persona,
-          OwnedBy,
-        },
+        components: { Position, Movable, Untraversable, Persona, OwnedBy },
       },
     },
     world,
@@ -53,9 +44,6 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
     components: {
       Position,
       Untraversable,
-      CurrentStamina,
-      MaxStamina,
-      StaminaRegeneration,
       LocalCurrentStamina,
     },
     requirement: ({ Position, Untraversable, LocalCurrentStamina }) => {

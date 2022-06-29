@@ -20,11 +20,7 @@ import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/
 import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
-
-// Stamina
-import { MaxStaminaComponent, ID as MaxStaminaComponentID } from "../components/MaxStaminaComponent.sol";
-import { CurrentStaminaComponent, ID as CurrentStaminaComponentID } from "../components/CurrentStaminaComponent.sol";
-import { StaminaRegenerationComponent, ID as StaminaRegenerationComponentID } from "../components/StaminaRegenerationComponent.sol";
+import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
 contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
@@ -50,11 +46,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
     OwnedByComponent ownedByComponent = OwnedByComponent(s.world.getComponent(OwnedByComponentID));
-    MaxStaminaComponent maxStamina = MaxStaminaComponent(s.world.getComponent(MaxStaminaComponentID));
-    CurrentStaminaComponent currentStamina = CurrentStaminaComponent(s.world.getComponent(CurrentStaminaComponentID));
-    StaminaRegenerationComponent staminaRegeneration = StaminaRegenerationComponent(
-      s.world.getComponent(StaminaRegenerationComponentID)
-    );
+    StaminaComponent staminaComponent = StaminaComponent(s.world.getComponent(StaminaComponentID));
     LastActionTurnComponent lastActionTurn = LastActionTurnComponent(s.world.getComponent(LastActionTurnComponentID));
     MovableComponent movableComponent = MovableComponent(s.world.getComponent(MovableComponentID));
 
@@ -63,9 +55,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     ownedByComponent.set(entity, ownerId);
     entityTypeComponent.set(entity, uint32(0));
     positionComponent.set(entity, position);
-    maxStamina.set(entity, 3);
-    currentStamina.set(entity, 0);
-    staminaRegeneration.set(entity, 1);
+    staminaComponent.set(entity, Stamina({ current: 0, max: 3, regeneration: 1 }));
     lastActionTurn.set(entity, getCurrentTurn());
     movableComponent.set(entity);
   }
@@ -101,34 +91,32 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
   }
 
   function reduceStamina(uint256 entity, uint32 amount) private {
-    MaxStaminaComponent maxStamina = MaxStaminaComponent(s.world.getComponent(MaxStaminaComponentID));
-    require(maxStamina.has(entity), "entity does not have stamina");
+    StaminaComponent staminaComponent = StaminaComponent(s.world.getComponent(StaminaComponentID));
+    require(staminaComponent.has(entity), "entity does not have stamina");
 
-    CurrentStaminaComponent currentStamina = CurrentStaminaComponent(s.world.getComponent(CurrentStaminaComponentID));
-    require(currentStamina.has(entity), "entity does not have stamina");
-
-    StaminaRegenerationComponent staminaRegeneration = StaminaRegenerationComponent(
-      s.world.getComponent(StaminaRegenerationComponentID)
+    LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
+      s.world.getComponent(LastActionTurnComponentID)
     );
-    require(staminaRegeneration.has(entity), "entity does not have stamina");
+    require(lastActionTurnComponent.has(entity), "entity does not have stamina");
 
-    LastActionTurnComponent lastActionTurn = LastActionTurnComponent(s.world.getComponent(LastActionTurnComponentID));
-    require(lastActionTurn.has(entity), "entity does not have stamina");
-
+    Stamina memory stamina = staminaComponent.getValue(entity);
     uint32 currentTurn = getCurrentTurn();
     uint32 staminaSinceLastAction = uint32(
-      (currentTurn - lastActionTurn.getValue(entity)) * staminaRegeneration.getValue(entity)
+      (currentTurn - lastActionTurnComponent.getValue(entity)) * stamina.regeneration
     );
-    uint32 stamina = currentStamina.getValue(entity) + staminaSinceLastAction;
+    uint32 updatedStamina = stamina.current + staminaSinceLastAction;
 
-    if (stamina > maxStamina.getValue(entity)) {
-      stamina = maxStamina.getValue(entity);
+    if (updatedStamina > stamina.max) {
+      updatedStamina = stamina.max;
     }
 
-    require(stamina >= amount, "not enough stamina to move");
+    require(updatedStamina >= amount, "not enough stamina to move");
 
-    lastActionTurn.set(entity, currentTurn);
-    currentStamina.set(entity, stamina - amount);
+    lastActionTurnComponent.set(entity, currentTurn);
+    staminaComponent.set(
+      entity,
+      Stamina({ current: updatedStamina - amount, max: stamina.max, regeneration: stamina.regeneration })
+    );
   }
 
   function getCurrentTurn() public view returns (uint32) {

@@ -15,33 +15,31 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
     parentLayers: {
       network: {
         network: { clock },
-        components: { CurrentStamina, LastActionTurn, StaminaRegeneration, MaxStamina, GameConfig },
+        components: { Stamina, LastActionTurn, GameConfig },
       },
     },
     components: { LocalCurrentStamina },
   } = layer;
 
-  defineComponentSystem(world, CurrentStamina, ({ entity, value }) => {
-    if (value[0]) setComponent(LocalCurrentStamina, entity, value[0]);
+  defineComponentSystem(world, Stamina, ({ entity, value }) => {
+    if (value[0]) setComponent(LocalCurrentStamina, entity, { value: value[0].current });
   });
 
   defineRxSystem(world, clock.time$, () => {
-    const entities = runQuery([Has(CurrentStamina), Has(LastActionTurn), Has(StaminaRegeneration), Has(MaxStamina)]);
+    const entities = runQuery([Has(Stamina), Has(LastActionTurn)]);
     const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
 
     for (const entity of entities) {
-      const contractStamina = getComponentValueStrict(CurrentStamina, entity).value;
+      const contractStamina = getComponentValueStrict(Stamina, entity);
       const lastActionTurn = getComponentValueStrict(LastActionTurn, entity).value;
-      const staminaRegeneration = getComponentValueStrict(StaminaRegeneration, entity).value;
-      const maxStamina = getComponentValueStrict(MaxStamina, entity).value;
 
       // No new stamina tick
       if (currentTurn - lastActionTurn === 0) {
-        setComponent(LocalCurrentStamina, entity, { value: contractStamina });
+        setComponent(LocalCurrentStamina, entity, { value: contractStamina.current });
       } else {
-        const staminaTicks = (currentTurn - lastActionTurn) * staminaRegeneration;
-        let localStamina = contractStamina + staminaTicks;
-        if (localStamina > maxStamina) localStamina = maxStamina;
+        const staminaTicks = (currentTurn - lastActionTurn) * contractStamina.regeneration;
+        let localStamina = contractStamina.current + staminaTicks;
+        if (localStamina > contractStamina.max) localStamina = contractStamina.max;
         if (localStamina < 0) localStamina = 0;
 
         setComponent(LocalCurrentStamina, entity, { value: localStamina });
