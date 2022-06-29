@@ -131,12 +131,12 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
 
     // Store the local cache to IndexDB once every 10 seconds
     // (indexDB writes take too long to do then every time an event arrives)
-    setInterval(() => {
+    setInterval(async () => {
       console.log("Store cache with size", this.state.size, "at block", this.blockNumber);
-      cache.set("ComponentValues", "current", this.state);
-      cache.set("Mappings", "components", this.components);
-      cache.set("Mappings", "entities", this.entities);
-      cache.set("BlockNumber", "current", this.blockNumber ?? 0);
+      await cache.set("ComponentValues", "current", this.state);
+      await cache.set("Mappings", "components", this.components);
+      await cache.set("Mappings", "entities", this.entities);
+      await cache.set("BlockNumber", "current", this.blockNumber ?? 0);
     }, 10000);
   }
 
