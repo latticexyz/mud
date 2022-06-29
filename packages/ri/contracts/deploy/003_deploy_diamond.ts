@@ -16,11 +16,14 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const LibQuery = await hre.deployments.get("LibQuery");
 
   console.log(blue("Deploying Diamond"));
+  const facets = ["EmberFacet", "InitializeFacet", "CastSpellFacet"];
+  const chainId = await hre.getChainId();
+  if (chainId === "31337") facets.push("DebugFacet");
 
   const { newlyDeployed } = await diamond.deploy("Diamond", {
     from: deployer,
     owner: deployer,
-    facets: ["EmberFacet", "InitializeFacet", "CastSpellFacet"],
+    facets,
     log: true,
     execute: {
       methodName: "initializeExternally",

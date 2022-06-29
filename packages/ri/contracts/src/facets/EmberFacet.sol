@@ -13,12 +13,6 @@ import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
 import { LibQuery } from "solecs/LibQuery.sol";
 import { LibECS } from "../libraries/LibECS.sol";
 
-struct ECSEvent {
-  uint8 component;
-  uint32 entity;
-  bytes value;
-}
-
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
 import { PersonaComponent, ID as PersonaComponentID } from "../components/PersonaComponent.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
@@ -38,37 +32,6 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
 
   function world() external view returns (address) {
     return address(s.world);
-  }
-
-  // Debugging
-  function callerEntityID() external view returns (uint256) {
-    return s._callerEntityID;
-  }
-
-  // Debugging
-  function addComponentToEntityExternally(
-    uint256 entity,
-    uint256 componentId,
-    bytes memory value
-  ) public {
-    Component c = Component(s.world.getComponent(componentId));
-    c.set(entity, value);
-  }
-
-  // Debugging
-  function removeComponentFromEntityExternally(uint256 entity, uint256 componentId) external {
-    Component c = Component(s.world.getComponent(componentId));
-    c.remove(entity);
-  }
-
-  function bulkSetState(
-    uint256[] memory components,
-    uint256[] memory entities,
-    ECSEvent[] memory state
-  ) external {
-    for (uint256 i; i < state.length; i++) {
-      addComponentToEntityExternally(entities[state[i].entity], components[state[i].component], state[i].value);
-    }
   }
 
   function joinGame(Coord calldata position) external {
@@ -180,7 +143,4 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     GameConfigComponent gameConfigComponent = GameConfigComponent(s.world.getComponent(GameConfigComponentID));
     gameConfigComponent.set(GodID, GameConfig({ startTime: block.timestamp, turnLength: uint256(20) }));
   }
-
-  // Entry Points. Debugging only
-  function entryPoint() public populateCallerEntityID {}
 }

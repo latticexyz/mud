@@ -13,6 +13,7 @@ import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
 import { WorldCoord } from "../../types";
 import { SetupContractConfig } from "./setup/setupContracts";
+import { LOCAL_CHAIN_ID } from "../../constants";
 
 export type NetworkLayerConfig = {
   contractAddress: string;
@@ -22,6 +23,7 @@ export type NetworkLayerConfig = {
   jsonRpc?: string;
   wsRpc?: string;
   checkpointUrl?: string;
+  devMode: boolean;
 };
 
 /**
@@ -107,10 +109,12 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       },
     },
     privateKey: config?.privateKey || DEV_PRIVATE_KEY,
-    chainId: config?.chainId || 31337,
+    chainId: config?.chainId || LOCAL_CHAIN_ID,
     checkpointServiceUrl: config?.checkpointUrl || CHECKPOINT_URL,
     initialBlockNumber: 0,
   };
+
+  const DEV_MODE = contractConfig.chainId === LOCAL_CHAIN_ID || config?.devMode;
 
   // Instantiate contracts and set up mappings
   const { txQueue, txReduced$, encoders, network, startSync } = await setupContracts(
@@ -118,7 +122,8 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     contractConfig,
     world,
     components,
-    mappings
+    mappings,
+    DEV_MODE
   );
 
   /**
@@ -129,6 +134,8 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     component: Component<T, { contractId: string }>,
     newValue: ComponentValue<T>
   ) {
+    if (!DEV_MODE) throw new Error("Not allowed to directly edit Component values outside DEV_MODE");
+
     if (!component.metadata.contractId)
       throw new Error(
         `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
@@ -170,5 +177,6 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       joinGame,
       moveEntity,
     },
+    DEV_MODE,
   };
 }

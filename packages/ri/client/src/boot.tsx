@@ -41,6 +41,7 @@ async function bootLayers() {
     const jsonRpc = params.get("rpc") ?? undefined;
     const wsRpc = jsonRpc && jsonRpc.replace("http", "ws");
     const checkpointUrl = params.get("checkpoint") ?? undefined;
+    const devMode = params.get("dev") === "true" ?? false
 
     let networkLayerConfig;
     if (contractAddress && privateKey && chainIdString && personaIdString) {
@@ -52,6 +53,7 @@ async function bootLayers() {
         jsonRpc,
         wsRpc,
         checkpointUrl,
+        devMode
       };
     }
 

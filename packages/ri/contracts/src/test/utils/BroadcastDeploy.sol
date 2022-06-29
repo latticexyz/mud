@@ -17,6 +17,7 @@ import { AppStorage, Config } from "../../libraries/LibAppStorage.sol";
 // Facets
 import { EmberFacet } from "../../facets/EmberFacet.sol";
 import { InitializeFacet } from "../../facets/InitializeFacet.sol";
+import { DebugFacet } from "../../facets/DebugFacet.sol";
 // Facets: Systems
 import { CastSpellFacet } from "../../facets/systems/CastSpellFacet.sol";
 
@@ -62,6 +63,7 @@ contract Deploy is DSTest {
   World public world;
   InitializeFacet public initializeFacetOnDiamond;
   EmberFacet public emberFacetOnDiamond;
+  DebugFacet public debugFacetOnDiamond;
 
   PersonaFixture public personaFixture;
 
@@ -119,15 +121,29 @@ contract Deploy is DSTest {
     // -------------------------------------------------------------------------
     EmberFacet emberFacet = new EmberFacet();
 
-    functionSelectors = new bytes4[](5);
-    functionSelectors[0] = EmberFacet.addComponentToEntityExternally.selector;
-    functionSelectors[1] = EmberFacet.removeComponentFromEntityExternally.selector;
-    functionSelectors[2] = EmberFacet.world.selector;
-    functionSelectors[3] = EmberFacet.callerEntityID.selector;
-    functionSelectors[4] = EmberFacet.entryPoint.selector;
+    functionSelectors = new bytes4[](1);
+    functionSelectors[0] = EmberFacet.world.selector;
 
     diamondCut[1] = IDiamondCut.FacetCut({
       facetAddress: address(emberFacet),
+      action: IDiamondCut.FacetCutAction.Add,
+      functionSelectors: functionSelectors
+    });
+
+    // -------------------------------------------------------------------------
+    // adding debug facet (add function selectors here)
+    // -------------------------------------------------------------------------
+    DebugFacet debugFacet = new DebugFacet();
+
+    functionSelectors = new bytes4[](5);
+    functionSelectors[0] = DebugFacet.addComponentToEntityExternally.selector;
+    functionSelectors[1] = DebugFacet.removeComponentFromEntityExternally.selector;
+    functionSelectors[2] = DebugFacet.callerEntityID.selector;
+    functionSelectors[3] = DebugFacet.bulkSetState.selector;
+    functionSelectors[4] = DebugFacet.entryPoint.selector;
+
+    diamondCut[2] = IDiamondCut.FacetCut({
+      facetAddress: address(debugFacet),
       action: IDiamondCut.FacetCutAction.Add,
       functionSelectors: functionSelectors
     });
@@ -140,7 +156,7 @@ contract Deploy is DSTest {
     functionSelectors = new bytes4[](1);
     functionSelectors[0] = CastSpellFacet.castSpell.selector;
 
-    diamondCut[2] = IDiamondCut.FacetCut({
+    diamondCut[3] = IDiamondCut.FacetCut({
       facetAddress: address(castSpellFacet),
       action: IDiamondCut.FacetCutAction.Add,
       functionSelectors: functionSelectors
@@ -157,6 +173,7 @@ contract Deploy is DSTest {
     // Create reference to facets and the World
     emberFacetOnDiamond = EmberFacet(diamondAddress);
     initializeFacetOnDiamond = InitializeFacet(diamondAddress);
+    debugFacetOnDiamond = DebugFacet(diamondAddress);
     address worldAddress = emberFacetOnDiamond.world();
     world = World(worldAddress);
     // Create each component and transfer ownership to the ember contract

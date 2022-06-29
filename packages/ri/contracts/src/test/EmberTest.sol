@@ -8,6 +8,7 @@ import { Utilities } from "./utils/Utilities.sol";
 import { Deploy } from "./utils/Deploy.sol";
 // Facets
 import { EmberFacet } from "../facets/EmberFacet.sol";
+import { DebugFacet } from "../facets/DebugFacet.sol";
 import { InitializeFacet } from "../facets/InitializeFacet.sol";
 import { CastSpellFacet } from "../facets/systems/CastSpellFacet.sol";
 // Components
@@ -34,6 +35,7 @@ contract EmberTest is DSTest {
 
   // Facets
   EmberFacet internal emberFacet;
+  DebugFacet internal debugFacet;
   InitializeFacet internal initializeFacet;
   CastSpellFacet internal castSpellFacet;
   // Ecs
@@ -54,6 +56,7 @@ contract EmberTest is DSTest {
     deploy.deployTestFixtures();
 
     emberFacet = EmberFacet(diamondAddress);
+    debugFacet = DebugFacet(diamondAddress);
     initializeFacet = InitializeFacet(diamondAddress);
     castSpellFacet = CastSpellFacet(diamondAddress);
 

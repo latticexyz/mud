@@ -32,7 +32,8 @@ export async function setupContracts<C extends ContractComponents>(
   config: SetupContractConfig,
   world: World,
   components: C,
-  mappings: Mappings<C>
+  mappings: Mappings<C>,
+  devMode?: boolean
 ) {
   const network = await createNetwork(config);
   world.registerDisposer(network.dispose);
@@ -45,7 +46,7 @@ export async function setupContracts<C extends ContractComponents>(
     signerOrProvider,
   });
 
-  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network);
+  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, { devMode });
   world.registerDisposer(disposeTxQueue);
 
   // Create sync worker
@@ -58,7 +59,7 @@ export async function setupContracts<C extends ContractComponents>(
       initialBlockNumber: config.initialBlockNumber,
       mappings,
       chainId: config.chainId,
-      disableCache: config.chainId === 31337, // Disable cache on hardhat
+      disableCache: devMode, // Disable cache on hardhat
       checkpointServiceUrl: config.checkpointServiceUrl,
     });
   }
