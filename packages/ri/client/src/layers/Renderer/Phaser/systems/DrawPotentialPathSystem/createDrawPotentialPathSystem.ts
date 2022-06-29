@@ -22,11 +22,19 @@ export function createDrawPotentialPathSystem(layer: PhaserLayer) {
 
   defineComponentSystem(world, PotentialPath, ({ entity, value }) => {
     const [potentialPaths, previousPaths] = value;
+
+    if (previousPaths) {
+      for (let i = 0; i < previousPaths.x.length; i++) {
+        // Remove the highlight component from this game object, but don't remove the game object itself (since we can reuse it below)
+        const highlight = objectPool.get(`${entity}-path-highlight-${i}`, "Rectangle");
+        highlight.removeComponent("highlight");
+      }
+    }
+
     if (potentialPaths) {
       // add current entity position to paths just to look good
       const position = getComponentValue(LocalPosition, entity);
       if (!position) return;
-
       potentialPaths.x.push(position.x);
       potentialPaths.y.push(position.y);
 
@@ -38,19 +46,12 @@ export function createDrawPotentialPathSystem(layer: PhaserLayer) {
           id: `highlight`,
           once: (box) => {
             const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
-
             box.setFillStyle(0xf0e71d, 0.3);
             box.setSize(tileWidth, tileHeight);
             box.setPosition(pixelCoord.x + tileWidth / 2, pixelCoord.y + tileHeight / 2);
             box.setDepth(0);
           },
         });
-      }
-    } else {
-      if (!previousPaths) return;
-
-      for (let i = 0; i < previousPaths.x.length; i++) {
-        objectPool.remove(`${entity}-path-highlight-${i}`);
       }
     }
   });
