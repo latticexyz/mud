@@ -29,18 +29,25 @@ import { ECSStateReply } from "../snapshot";
 import { Provider } from "@ethersproject/providers";
 import { runWorker } from "@latticexyz/utils";
 
-async function getLatestCheckpoint(
+async function getCheckpoint(
   checkpointServiceUrl: string,
   cache: ReturnType<typeof initCache>
 ): Promise<ECSStateReply | undefined> {
   try {
     const localCheckpoint: ECSStateReply = await cache.get("Checkpoint", "latest");
-    if (localCheckpoint) {
-      console.log("Using cached checkpoint checkpoint", localCheckpoint);
-      return localCheckpoint;
-    }
     const transport = new GrpcWebFetchTransport({ baseUrl: checkpointServiceUrl, format: "binary" });
     const client = new ECSStateSnapshotServiceClient(transport);
+    if (localCheckpoint) {
+      console.log("Local checkpoint available, checking for more recent remote checkpoint");
+      const {
+        response: { blockNumber: remoteBlockNumber },
+      } = await client.getStateBlockLatest({});
+      const age = remoteBlockNumber - localCheckpoint.blockNumber;
+      if (age < 1000) {
+        console.log("Local checkpoint is recent enough to be used");
+        return localCheckpoint;
+      }
+    }
     console.log("Fetching remote checkpoint");
     const { response: remoteCheckpoint } = await client.getStateLatest({});
     cache.set("Checkpoint", "latest", remoteCheckpoint, true);
@@ -56,8 +63,9 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
   private config = observable.box<SyncWorkerConfig<Cm>>() as IObservableValue<SyncWorkerConfig<Cm>>;
   private clientBlockNumber = 0;
   private decoders: { [key: string]: Promise<(data: BytesLike) => unknown> | ((data: BytesLike) => unknown) } = {};
-  private componentIdToAddress: { [key: string]: string } = {};
+  private componentIdToAddress: { [key: string]: Promise<string> } = {};
   private toOutput$ = new Subject<Output<Cm>>();
+  private schemaCache = initCache<{ ComponentSchemas: [string[], number[]] }>("Global", ["ComponentSchemas"]);
 
   constructor() {
     this.init();
@@ -65,17 +73,32 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
   private async getComponentAddress(componentId: string, provider: Provider) {
     // If cached address is available, return it
-    let componentAddress = this.componentIdToAddress[componentId];
-    if (componentAddress) return componentAddress;
+    let componentAddressPromise = this.componentIdToAddress[componentId];
+    if (componentAddressPromise) return componentAddressPromise;
 
     // Otherwise fetch the address from the world
     const worldContract = new Contract(this.config.get().worldContract.address, WorldAbi.abi, provider) as World;
     console.log("Fetching address for component", componentId);
-    componentAddress = await worldContract.getComponent(componentId);
+    componentAddressPromise = worldContract.getComponent(componentId);
 
     // Cache the address for later before returning it
-    this.componentIdToAddress[componentId] = componentAddress;
-    return componentAddress;
+    this.componentIdToAddress[componentId] = componentAddressPromise;
+    return componentAddressPromise;
+  }
+
+  private async getComponentSchema(address: string, provider: Provider): Promise<[string[], number[]]> {
+    const schemaCache = await this.schemaCache;
+    const cachedSchema = await schemaCache.get("ComponentSchemas", address);
+    if (cachedSchema) {
+      console.log("Using cached schema");
+      return cachedSchema;
+    }
+
+    const componentContract = new Contract(address, ComponentAbi.abi, provider) as Component;
+    const schema = await componentContract.getSchema();
+    console.log("Using remote schema");
+    schemaCache.set("ComponentSchemas", address, schema);
+    return schema;
   }
 
   private async decode<C extends keyof Cm>(
@@ -99,9 +122,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     if (!this.decoders[componentId]) {
       const [resolve, , promise] = deferred<(data: BytesLike) => unknown>();
       this.decoders[componentId] = promise; // Immediately save the promise, so following calls can await it
-      const componentContract = new Contract(componentAddress, ComponentAbi.abi, provider) as Component;
-      console.log("Fetching component schema");
-      const [keys, values] = await componentContract.getSchema();
+      const [keys, values] = await this.getComponentSchema(componentAddress, provider);
       resolve(createDecoder(keys, values));
     }
 
@@ -159,7 +180,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     // Fetch latest checkpoint
     console.log("Checking remote checkpoint at", config.checkpointServiceUrl);
     const checkpoint = config.checkpointServiceUrl
-      ? await getLatestCheckpoint(config.checkpointServiceUrl, cache)
+      ? await getCheckpoint(config.checkpointServiceUrl, cache)
       : undefined;
 
     // Load from cache if cache is enabled,
@@ -203,6 +224,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     if (checkpoint && checkpoint.blockNumber > this.clientBlockNumber) {
       console.log("Loading from checkpoint at block", checkpoint.blockNumber);
       this.clientBlockNumber = Number(checkpoint.blockNumber); // Set the current client block number to the checkpoint block number to avoid refetching from blocks before that
+
       for (const { entityId: entity, componentId, value } of checkpoint.state) {
         const decoded = await this.decode(providers.get().json, value, componentId);
         if (!decoded) continue; // There might not be a decoded value if the component id is unknown
@@ -212,7 +234,10 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
           entity: BigNumber.from(entity).toHexString() as EntityID,
           lastEventInTx: false,
           txHash: "checkpoint",
-          blockNumber: Number(checkpoint.blockNumber),
+          // If the page is reloaded while the cache worker is storing cache from the checkpoint event stream,
+          // the cache can end up being incomplete. We therefore set the block number to 0, such that the client
+          // will load from the checkpoint again unless a regular event arrived in the meantime (indicating the checkpoint was fully cached).
+          blockNumber: 0,
         };
 
         toCacheAndOutput$.next(ecsEvent);
