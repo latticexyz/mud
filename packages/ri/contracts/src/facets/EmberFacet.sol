@@ -176,7 +176,7 @@ contract EmberFacet is UsingDiamondOwner, UsingAccessControl {
     return uint32(secondsSinceGameStart / gameConfig.turnLength);
   }
 
-  function configureWorld() public onlyOwner {
+  function configureWorld() public {
     GameConfigComponent gameConfigComponent = GameConfigComponent(s.world.getComponent(GameConfigComponentID));
     gameConfigComponent.set(GodID, GameConfig({ startTime: block.timestamp, turnLength: uint256(20) }));
   }

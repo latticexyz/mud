@@ -46,7 +46,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   await deployComponent(hre, world, ember.address, "StaminaRegenerationComponent");
   await deployComponent(hre, world, ember.address, "LastActionTurnComponent");
   await deployComponent(hre, world, ember.address, "GameConfigComponent");
-  await deployComponent(hre, world, ember.address, "SpawnPointComponent");
+  // await deployComponent(hre, world, ember.address, "SpawnPointComponent");
   await deployComponent(hre, world, ember.address, "MineableComponent");
 
   console.log(blue("Configure world"));
