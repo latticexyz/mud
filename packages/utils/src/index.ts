@@ -14,5 +14,6 @@ export * from "./iterable";
 export * from "./area";
 export * from "./hash";
 export * from "./worker";
+export * from "./pack";
 
 export type { Cached, PromiseValue, ValueOf, Area, Coord } from "./types";

@@ -1,7 +1,7 @@
 import { distinctUntilChanged, map, Observable, Subject, take } from "rxjs";
-import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
+import { Components, ComponentValue } from "@latticexyz/recs";
 import { initCache } from "../initCache";
-import { awaitStreamValue, DoWork, filterNullish, runWorker } from "@latticexyz/utils";
+import { awaitStreamValue, DoWork, filterNullish, packTuple, runWorker, unpackTuple } from "@latticexyz/utils";
 import { getCacheId } from "./utils";
 import { NetworkComponentUpdate } from "../types";
 import { ECSStateReply } from "../snapshot";
@@ -13,16 +13,42 @@ export type Input<Cm extends Components> = [
 ]; // [ECSEvent, blockNumber, worldContractAddress, chainId]
 export type Output = never;
 
-export type State<Cm extends Components> = { [key: string]: ComponentValue<SchemaOf<Cm[keyof Cm]>> };
+export type State = Map<number, ComponentValue>;
 
 export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, number> {
   private ecsEventWithBlockNr$ = new Subject<Input<Cm>>();
   private reducedBlockNr$ = new Subject<number>();
-  private state: State<Cm> = {};
+  private state: State = new Map<number, ComponentValue>();
+  private components: string[] = [];
+  private componentToIndex = new Map<string, number>();
+  private entities: string[] = [];
+  private entityToIndex = new Map<string, number>();
   private blockNumber?: number;
 
   constructor() {
     this.init();
+  }
+
+  // Update state with ECS event
+  private storeEvent(component: string, entity: string, value: ComponentValue | undefined) {
+    // Get component index
+    let componentIndex = this.componentToIndex.get(component);
+    if (componentIndex == null) {
+      componentIndex = this.components.push(component) - 1;
+      this.componentToIndex.set(component as string, componentIndex);
+    }
+
+    // Get entity index
+    let entityIndex = this.entityToIndex.get(entity);
+    if (entityIndex == null) {
+      entityIndex = this.entities.push(entity) - 1;
+      this.entityToIndex.set(entity, entityIndex);
+    }
+
+    // Entity index gets the right 24 bits, component index the left 8 bits
+    const key = packTuple([componentIndex, entityIndex]);
+    if (value == null) this.state.delete(key);
+    else this.state.set(key, value);
   }
 
   private async init() {
@@ -31,11 +57,7 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
       filterNullish()
     );
 
-    ecsEvent$.subscribe(({ component, entity, value }) => {
-      const key = `${component}/${entity}`;
-      if (value == null) delete this.state[key];
-      else this.state[key] = value;
-    });
+    ecsEvent$.subscribe(({ component, entity, value }) => this.storeEvent(component as string, entity, value));
 
     // Only set this if the block number changed
     ecsEvent$
@@ -66,24 +88,55 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
     );
 
     const cache = await initCache<{
-      ComponentValues: State<Cm>;
+      ComponentValues: State;
       BlockNumber: number;
+      Mappings: string[];
       Checkpoint: ECSStateReply;
     }>(
       getCacheId(chainId, worldAddress), // Store a separate cache for each World contract address
-      ["ComponentValues", "BlockNumber", "Checkpoint"]
+      ["ComponentValues", "BlockNumber", "Mappings", "Checkpoint"]
     );
 
     // Init local data
-    this.state = (await cache.get("ComponentValues", "current")) ?? {};
-    this.blockNumber = this.blockNumber ?? (await cache.get("BlockNumber", "current")) ?? 0;
+    // Store events that might have arrived before the cache was initialized
+    const prevState = this.state;
+    const prevComponents = this.components;
+    const prevEntities = this.entities;
+    const prevBlockNumber = this.blockNumber;
+
+    this.state = (await cache.get("ComponentValues", "current")) ?? new Map<number, ComponentValue>();
+    this.blockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
+    this.components = (await cache.get("Mappings", "components")) || [];
+    this.entities = (await cache.get("Mappings", "entities")) || [];
+
+    // Init componentToIndex map
+    for (let i = 0; i < this.components.length; i++) {
+      this.componentToIndex.set(this.components[i], i);
+    }
+
+    // Init entityToIndex map
+    for (let i = 0; i < this.entities.length; i++) {
+      this.entityToIndex.set(this.entities[i], i);
+    }
+
+    // Integrate events that might have arrived before the cache was initialized
+    if (prevBlockNumber != null && prevBlockNumber > this.blockNumber) {
+      for (const [prevKey, prevValue] of prevState.entries()) {
+        const [prevComponentIndex, prevEntityIndex] = unpackTuple(prevKey);
+        const prevComponent = prevComponents[prevComponentIndex];
+        const prevEntity = prevEntities[prevEntityIndex];
+        this.storeEvent(prevComponent, prevEntity, prevValue);
+      }
+    }
 
     // Store the local cache to IndexDB once every 10 seconds
     // (indexDB writes take too long to do then every time an event arrives)
-    setInterval(() => {
-      console.log("Store cache with size", Object.values(this.state).length, "at block", this.blockNumber);
-      cache.set("ComponentValues", "current", this.state);
-      cache.set("BlockNumber", "current", this.blockNumber ?? 0);
+    setInterval(async () => {
+      console.log("Store cache with size", this.state.size, "at block", this.blockNumber);
+      await cache.set("ComponentValues", "current", this.state);
+      await cache.set("Mappings", "components", this.components);
+      await cache.set("Mappings", "entities", this.entities);
+      await cache.set("BlockNumber", "current", this.blockNumber ?? 0);
     }, 10000);
   }
 
