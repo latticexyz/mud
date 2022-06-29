@@ -32,7 +32,7 @@ export function createDrawHighlightCoordSystem(layer: PhaserLayer) {
 
         box.setStrokeStyle(3, hoverHighlght.color ?? 0xf0e71d, 0.5);
         box.setSize(tileWidth, tileHeight);
-        box.setPosition(pixelCoord.x + tileWidth / 2, pixelCoord.y + tileHeight / 2);
+        box.setPosition(pixelCoord.x, pixelCoord.y);
       },
     });
   });
