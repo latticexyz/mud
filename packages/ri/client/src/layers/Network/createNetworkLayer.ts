@@ -122,7 +122,8 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     contractConfig,
     world,
     components,
-    mappings
+    mappings,
+    DEV_MODE
   );
 
   /**
