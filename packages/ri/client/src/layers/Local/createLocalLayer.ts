@@ -1,4 +1,12 @@
-import { createEntity, setComponent, EntityIndex, getComponentValue, defineComponent, Type } from "@latticexyz/recs";
+import {
+  createEntity,
+  setComponent,
+  EntityIndex,
+  getComponentValue,
+  defineComponent,
+  Type,
+  namespaceWorld,
+} from "@latticexyz/recs";
 import { HeadlessLayer } from "../Headless";
 import {
   defineStrollingComponent,
@@ -28,7 +36,7 @@ import { createPotentialPathSystem } from "./systems/PotentialPathSystem";
  * Its purpose is to add components and systems for all client-only functionality, eg. strolling imps.
  */
 export async function createLocalLayer(headless: HeadlessLayer) {
-  const { world } = headless;
+  const world = namespaceWorld(headless.parentLayers.network.world, "local");
 
   // Components
   const LocalPosition = defineLocalPositionComponent(world);

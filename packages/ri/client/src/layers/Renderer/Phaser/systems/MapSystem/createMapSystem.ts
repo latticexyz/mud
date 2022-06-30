@@ -54,23 +54,28 @@ export function createMapSystem(layer: PhaserLayer) {
     Main.putTileAt(coord, Tileset.Plain);
   });
 
-  defineEnterSystem(world, [Has(Position), Has(EntityType)], (update) => {
-    const coord = getComponentValueStrict(Position, update.entity);
-    const type = getComponentValueStrict(EntityType, update.entity);
-    const tile = entityTypeToTile[type.value as EntityTypes];
-    if (!tile) return;
+  defineEnterSystem(
+    world,
+    [Has(Position), Has(EntityType)],
+    (update) => {
+      const coord = getComponentValueStrict(Position, update.entity);
+      const type = getComponentValueStrict(EntityType, update.entity);
+      const tile = entityTypeToTile[type.value as EntityTypes];
+      if (!tile) return;
 
-    Main.putTileAt(coord, tile);
+      Main.putTileAt(coord, tile);
 
-    // compute cluster for LOD
-    if (coord.x % 4 === 0 && coord.y % 4 === 0) {
-      const tacticCoord = { x: Math.floor(coord.x / 4), y: Math.floor(coord.y / 4) };
-      Tactic.putTileAt(tacticCoord, tile);
-    }
+      // compute cluster for LOD
+      if (coord.x % 4 === 0 && coord.y % 4 === 0) {
+        const tacticCoord = { x: Math.floor(coord.x / 4), y: Math.floor(coord.y / 4) };
+        Tactic.putTileAt(tacticCoord, tile);
+      }
 
-    if (coord.x % 16 === 0 && coord.y % 16 === 0) {
-      const strategicCoord = { x: Math.floor(coord.x / 16), y: Math.floor(coord.y / 16) };
-      Strategic.putTileAt(strategicCoord, tile);
-    }
-  });
+      if (coord.x % 16 === 0 && coord.y % 16 === 0) {
+        const strategicCoord = { x: Math.floor(coord.x / 16), y: Math.floor(coord.y / 16) };
+        Strategic.putTileAt(strategicCoord, tile);
+      }
+    },
+    { runOnInit: true }
+  );
 }

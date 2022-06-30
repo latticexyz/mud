@@ -7,8 +7,8 @@ import { createChunks } from "./createChunks";
 import { createCamera } from "./createCamera";
 import { createCulling } from "./createCulling";
 import { createObjectPool } from "./createObjectPool";
-import { createAnimatedTilemap } from "./tilemap/createAnimatedTilemap";
-import { generateFrames } from "./utils/generateFrames";
+import { createAnimatedTilemap } from "./tilemap";
+import { generateFrames } from "./utils";
 import { createInput } from "./createInput";
 
 export async function createPhaserEngine<S extends ScenesConfig>(options: PhaserEngineConfig<S>) {
@@ -121,7 +121,6 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
     scenes,
     dispose: () => {
       game.destroy(true);
-
       for (const key of Object.keys(scenes)) {
         const scene = scenes[key];
         scene.camera.dispose();

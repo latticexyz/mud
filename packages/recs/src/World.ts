@@ -5,7 +5,7 @@ export function createWorld() {
   const entityToIndex = new Map<EntityID, EntityIndex>();
   const entities: EntityID[] = [];
   const components: Component[] = [];
-  let disposers: (() => void)[] = [];
+  let disposers: [string, () => void][] = [];
 
   function getEntityIndexStrict(entity: EntityID): EntityIndex {
     const index = entityToIndex.get(entity);
@@ -24,15 +24,15 @@ export function createWorld() {
     components.push(component);
   }
 
-  function dispose() {
-    for (let i = 0; i < disposers.length; i++) {
-      disposers[i]();
+  function dispose(namespace?: string) {
+    for (const [, disposer] of disposers.filter((d) => !namespace || d[0] === namespace)) {
+      disposer();
     }
-    disposers = [];
+    disposers = disposers.filter((d) => namespace && d[0] !== namespace);
   }
 
-  function registerDisposer(disposer: () => void) {
-    disposers.push(disposer);
+  function registerDisposer(disposer: () => void, namespace = "") {
+    disposers.push([namespace, disposer]);
   }
 
   function hasEntity(entity: EntityID): boolean {
@@ -49,6 +49,14 @@ export function createWorld() {
     registerDisposer,
     getEntityIndexStrict,
     hasEntity,
+  };
+}
+
+export function namespaceWorld(world: ReturnType<typeof createWorld>, namespace: string) {
+  return {
+    ...world,
+    registerDisposer: (disposer: () => void) => world.registerDisposer(disposer, namespace),
+    dispose: () => world.dispose(namespace),
   };
 }
 
