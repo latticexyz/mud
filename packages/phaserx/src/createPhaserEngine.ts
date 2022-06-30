@@ -120,7 +120,7 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
     game,
     scenes,
     dispose: () => {
-      game.destroy(true, false);
+      game.destroy(true);
       for (const key of Object.keys(scenes)) {
         const scene = scenes[key];
         scene.camera.dispose();
