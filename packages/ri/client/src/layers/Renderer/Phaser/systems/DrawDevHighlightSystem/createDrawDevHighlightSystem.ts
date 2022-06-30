@@ -37,7 +37,7 @@ export function createDrawDevHighlightSystem(layer: PhaserLayer) {
 
         box.setFillStyle(devHighlight.value ?? 0xf0e71d, 0.5);
         box.setSize(tileWidth, tileHeight);
-        box.setPosition(pixelCoord.x + tileWidth / 2, pixelCoord.y + tileHeight / 2);
+        box.setPosition(pixelCoord.x, pixelCoord.y);
       },
     });
   });
