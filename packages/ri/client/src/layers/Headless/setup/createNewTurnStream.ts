@@ -1,7 +1,7 @@
 import { Clock } from "@latticexyz/network";
 import { Component, defineEnterSystem, Has, Type, World } from "@latticexyz/recs";
 import { getCurrentTurn } from "@latticexyz/std-client";
-import { ReplaySubject } from "rxjs";
+import { filter, map, ReplaySubject } from "rxjs";
 
 export function createNewTurnStream(
   world: World,
@@ -11,14 +11,18 @@ export function createNewTurnStream(
   let lastTurn = 0;
   const newTurn$ = new ReplaySubject<number>();
 
+  function tick(newTurn: number) {
+    lastTurn = newTurn;
+    newTurn$.next(newTurn);
+  }
+
   defineEnterSystem(world, [Has(gameConfigComponent)], () => {
-    clock.time$.forEach(() => {
-      const currentTurn = getCurrentTurn(world, gameConfigComponent, clock);
-      if (currentTurn > lastTurn) {
-        lastTurn = currentTurn;
-        newTurn$.next(currentTurn);
-      }
-    });
+    clock.time$
+      .pipe(
+        map(() => getCurrentTurn(world, gameConfigComponent, clock)),
+        filter((newTurn) => newTurn > lastTurn)
+      )
+      .subscribe(tick);
   });
 
   return newTurn$;
