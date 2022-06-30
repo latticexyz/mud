@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Layers,
   removeComponent,
@@ -6,9 +6,10 @@ import {
   Type,
   AnyComponent,
   Component,
-  EntityIndex,
   Schema,
   World,
+  EntityID,
+  getEntityComponents,
 } from "@latticexyz/recs";
 import { Collapse } from "react-collapse";
 import { ComponentBrowserButton, EntityEditorContainer } from "./StyledComponents";
@@ -16,26 +17,34 @@ import { SetContractComponentFunction } from "./types";
 import { ComponentEditor } from "./ComponentEditor";
 
 export const EntityEditor = ({
-  entity,
-  components,
+  entityId,
   layers,
   setContractComponentValue,
   devHighlightComponent,
   world,
 }: {
-  entity: EntityIndex;
-  components: Set<AnyComponent>;
+  entityId: EntityID;
   layers: Layers;
   setContractComponentValue: SetContractComponentFunction<Schema>;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
   world: World;
 }) => {
   const [opened, setOpened] = useState(false);
+  const entity = world.entityToIndex.get(entityId);
+  if (!entity) return null;
+
+  const [entityComponents, setEntityComponents] = useState<AnyComponent[]>([]);
+  useEffect(() => {
+    if (opened) {
+      const components = getEntityComponents(world, entity);
+      setEntityComponents(components);
+    }
+  }, [opened, world, entity, setEntityComponents]);
 
   return (
     <EntityEditorContainer
       onMouseEnter={() => {
-        [...layers.phaser.world.entityToIndex.values()].forEach((e) => removeComponent(devHighlightComponent, e));
+        [...layers.network.world.entityToIndex.values()].forEach((e) => removeComponent(devHighlightComponent, e));
         setComponent(devHighlightComponent, entity, {
           value: null,
         });
@@ -51,7 +60,7 @@ export const EntityEditor = ({
         </ComponentBrowserButton>
       </div>
       <Collapse isOpened={opened}>
-        {[...components.values()]
+        {[...entityComponents.values()]
           .filter((c) => c.id !== devHighlightComponent.id)
           .map((c) => (
             <ComponentEditor

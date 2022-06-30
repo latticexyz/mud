@@ -8,7 +8,8 @@ import {
   Component,
   QueryFragments,
   runQuery,
-  EntityIndex,
+  EntityID,
+  World,
 } from "@latticexyz/recs";
 import { ComponentBrowserButton, ComponentBrowserInput, QueryBuilderForm } from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
@@ -19,11 +20,13 @@ export const QueryBuilder = function ({
   allEntities,
   setFilteredEntities,
   layers,
+  world,
   devHighlightComponent,
 }: {
+  world: World;
   layers: Layers;
-  allEntities: [EntityIndex, Set<AnyComponent>][];
-  setFilteredEntities: (es: [EntityIndex, Set<AnyComponent>][]) => void;
+  allEntities: EntityID[];
+  setFilteredEntities: (es: EntityID[]) => void;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
 }) {
   const queryInputRef = useRef<HTMLInputElement>(null);
@@ -31,7 +34,7 @@ export const QueryBuilder = function ({
   const [errorMessage, setErrorMessage] = useState("");
 
   const resetFilteredEntities = useCallback(() => {
-    setFilteredEntities(allEntities);
+    setFilteredEntities([]);
     setErrorMessage("");
   }, [setFilteredEntities, setErrorMessage, allEntities]);
 
@@ -71,12 +74,11 @@ export const QueryBuilder = function ({
           throw new Error("Invalid query");
         }
 
-        const entityIds = runQuery(queryArray);
-        const selectedEntities = allEntities.filter(([id]) => entityIds.has(id));
-        setFilteredEntities(selectedEntities);
+        const selectedEntities = runQuery(queryArray);
+        setFilteredEntities([...selectedEntities].map(idx => world.entities[idx]));
 
-        allEntities.forEach(([id]) => removeComponent(devHighlightComponent, id));
-        selectedEntities.forEach(([id]) => setComponent(devHighlightComponent, id, { value: 0x0000ff }));
+        selectedEntities.forEach((idx) => removeComponent(devHighlightComponent, idx));
+        selectedEntities.forEach((idx) => setComponent(devHighlightComponent, idx, { value: 0x0000ff }));
       } catch (e: unknown) {
         setErrorMessage((e as Error).message);
         console.error(e);

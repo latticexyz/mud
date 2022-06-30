@@ -111,9 +111,6 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     DEV_MODE
   );
 
-  /**
-   * TODO Only include this function in dev mode.
-   */
   async function setContractComponentValue<T extends Schema>(
     entity: EntityIndex,
     component: Component<T, { contractId: string }>,
@@ -127,9 +124,10 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       );
 
     const data = encoders[component.id](newValue);
+    const entityId = world.entities[entity];
 
-    console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entity}`);
-    await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entity), component.metadata.contractId, data);
+    console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entityId}`);
+    await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entityId), component.metadata.contractId, data);
   }
 
   async function joinGame(position: WorldCoord) {

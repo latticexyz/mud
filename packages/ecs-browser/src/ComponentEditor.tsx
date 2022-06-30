@@ -1,9 +1,10 @@
 import React from "react";
-import { getComponentValue, Layers, removeComponent } from "@latticexyz/recs";
+import { Layers, removeComponent } from "@latticexyz/recs";
 import { AnyComponent, EntityIndex, Schema } from "@latticexyz/recs/src/types";
 import { ComponentBrowserButton, ComponentEditorContainer, ComponentTitle } from "./StyledComponents";
 import { ComponentValueEditor } from "./ComponentValueEditor";
 import { SetContractComponentFunction } from "./types";
+import { useStream } from "@latticexyz/std-client";
 
 export const ComponentEditor = ({
   entity,
@@ -16,8 +17,11 @@ export const ComponentEditor = ({
   layers: Layers;
   setContractComponentValue: SetContractComponentFunction<Schema>;
 }) => {
-  const currentValue = getComponentValue(component, entity);
-  if (!currentValue) return <></>;
+  const componentUpdate = useStream(component.update$);
+  if(!componentUpdate) return null;
+  
+  const value = componentUpdate.value[0];
+  if(!value) return null;
 
   return (
     <ComponentEditorContainer>
@@ -28,7 +32,7 @@ export const ComponentEditor = ({
       <ComponentValueEditor
         entity={entity}
         component={component}
-        componentValue={currentValue}
+        componentValue={value}
         layers={layers}
         setContractComponentValue={setContractComponentValue}
       />

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layers, Type, AnyComponent, Component, EntityIndex, Schema, World } from "@latticexyz/recs";
+import { Layers, Type, Component, Schema, World, EntityID } from "@latticexyz/recs";
 import { BrowserContainer } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
 import { EntityEditor } from "./EntityEditor";
@@ -15,13 +15,13 @@ export const Browser = ({
   devHighlightComponent,
   world,
 }: {
-  entities: [EntityIndex, Set<AnyComponent>][];
+  entities: EntityID[];
   layers: Layers;
   setContractComponentValue: SetContractComponentFunction<Schema>;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
   world: World;
 }) => {
-  const [filteredEntities, setFilteredEntities] = useState(entities);
+  const [filteredEntities, setFilteredEntities] = useState<EntityID[]>([]);
 
   return (
     <BrowserContainer>
@@ -30,13 +30,13 @@ export const Browser = ({
         allEntities={entities}
         setFilteredEntities={setFilteredEntities}
         layers={layers}
+        world={world}
       />
-      {filteredEntities.map(([entity, components]) => (
+      {filteredEntities.map((entity) => (
         <EntityEditor
           world={world}
           key={`entity-editor-${entity}`}
-          entity={entity}
-          components={components}
+          entityId={entity}
           layers={layers}
           setContractComponentValue={setContractComponentValue}
           devHighlightComponent={devHighlightComponent}
