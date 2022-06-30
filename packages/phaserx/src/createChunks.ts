@@ -2,6 +2,8 @@ import { map, Observable, Subject } from "rxjs";
 import { Area, ChunkCoord } from "./types";
 import { CoordMap, getChunksInArea, subtract } from "./utils";
 
+const PADDING = 300;
+
 export function createChunks(worldView$: Observable<Area>, chunkSize: number) {
   const visibleChunks = { current: new CoordMap<boolean>() };
 
@@ -9,7 +11,17 @@ export function createChunks(worldView$: Observable<Area>, chunkSize: number) {
   const removedChunks$ = new Subject<ChunkCoord>();
 
   const visibleChunkStream = worldView$.pipe(
-    map((area) => getChunksInArea(area, chunkSize)) // Calculate current chunks from the world view
+    map((area) =>
+      getChunksInArea(
+        {
+          x: area.x - PADDING,
+          y: area.y - PADDING,
+          width: area.width + 2 * PADDING,
+          height: area.height + 2 * PADDING,
+        },
+        chunkSize
+      )
+    ) // Calculate current chunks from the world view
   );
 
   visibleChunkStream.subscribe((newVisibleChunks) => {
