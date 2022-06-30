@@ -2,11 +2,11 @@ import { getPlayerEntity } from "@latticexyz/std-client";
 import {
   hasComponent,
   HasValue,
-  setComponent,
   runQuery,
   getComponentValue,
   EntityIndex,
   EntityID,
+  setComponent,
 } from "@latticexyz/recs";
 import { ActionSystem, HeadlessLayer } from "../types";
 import { Direction, Directions } from "../../../constants";
@@ -20,7 +20,7 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
       },
     },
     world,
-    components: { LocalCurrentStamina },
+    components: { LocalStamina },
   } = layer;
 
   if (personaId == null) {
@@ -44,16 +44,15 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
     components: {
       Position,
       Untraversable,
-      LocalCurrentStamina,
+      LocalStamina,
     },
-    requirement: ({ Position, Untraversable, LocalCurrentStamina }) => {
-      let netStamina = getComponentValue(LocalCurrentStamina, entity)?.value;
-      if (!netStamina) {
+    requirement: ({ Position, Untraversable, LocalStamina }) => {
+      const localStamina = getComponentValue(LocalStamina, entity);
+      if (!localStamina) {
         actions.cancel(actionID);
         return null;
       }
-
-      netStamina -= 1;
+      const netStamina = localStamina.current - 1;
       if (netStamina < 0) {
         actions.cancel(actionID);
         return null;
@@ -88,15 +87,15 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
         value: targetPosition,
       },
       {
-        component: "LocalCurrentStamina",
+        component: "LocalStamina",
         entity,
-        value: { value: netStamina },
+        value: { current: netStamina },
       },
     ],
     execute: async ({ targetPosition, netStamina }) => {
       const tx = await layer.parentLayers.network.api.moveEntity(world.entities[entity], targetPosition);
       await tx.wait();
-      setComponent(LocalCurrentStamina, entity, { value: netStamina });
+      setComponent(LocalStamina, entity, { current: netStamina });
     },
   });
 }

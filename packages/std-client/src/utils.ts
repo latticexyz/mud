@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import { Component, EntityID, getComponentValue, getEntitiesWithValue, Type, World } from "@latticexyz/recs";
+import { Component, EntityID, getComponentValueStrict, getEntitiesWithValue, Type, World } from "@latticexyz/recs";
 import { keccak256 } from "@latticexyz/utils";
 import { BigNumber, ethers } from "ethers";
 import { Clock } from "@latticexyz/network";
@@ -37,10 +37,7 @@ export function getGameConfig(
   const godEntityIndex = world.entityToIndex.get(GodID);
   if (!godEntityIndex) return null;
 
-  const gameConfig = getComponentValue(gameConfigComponent, godEntityIndex);
-  if (!gameConfig) return null;
-
-  return gameConfig;
+  return getComponentValueStrict(gameConfigComponent, godEntityIndex);
 }
 
 export function randomColor(id: string): number {

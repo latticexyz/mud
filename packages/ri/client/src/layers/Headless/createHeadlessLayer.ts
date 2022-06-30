@@ -1,11 +1,11 @@
-import { EntityIndex, namespaceWorld } from "@latticexyz/recs";
+import { defineComponent, EntityIndex, Type, namespaceWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";
 import { joinGame, moveEntity } from "./api";
 import { curry } from "lodash";
 import { Direction } from "../../constants";
-import { defineNumberComponent } from "@latticexyz/std-client";
+import { createTurnStream } from "./setup";
 
 /**
  * The Headless layer is the second layer in the client architecture and extends the Network layer.
@@ -14,10 +14,14 @@ import { defineNumberComponent } from "@latticexyz/std-client";
 
 export async function createHeadlessLayer(network: NetworkLayer) {
   const world = namespaceWorld(network.world, "headless");
+  const {
+    components: { GameConfig },
+    network: { clock },
+  } = network;
 
   const Action = defineActionComponent(world);
-  const LocalCurrentStamina = defineNumberComponent(world, { id: "LocalCurrentStamina" });
-  const components = { Action, LocalCurrentStamina };
+  const LocalStamina = defineComponent(world, { current: Type.Number }, { id: "LocalStamina" });
+  const components = { Action, LocalStamina };
 
   const actions = createActionSystem(world, Action, network.txReduced$);
 
@@ -25,6 +29,7 @@ export async function createHeadlessLayer(network: NetworkLayer) {
     world,
     actions,
     parentLayers: { network },
+    turn$: createTurnStream(world, GameConfig, clock),
     components,
     api: {
       joinGame: curry(joinGame)(network, actions),
