@@ -8,6 +8,7 @@ import {
   setComponent,
 } from "@latticexyz/recs";
 import { getCurrentTurn } from "@latticexyz/std-client";
+import { merge } from "rxjs";
 import { HeadlessLayer } from "../..";
 
 export function createCurrentStaminaSystem(layer: HeadlessLayer) {
@@ -35,14 +36,8 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
     setComponent(LocalStamina, entity, { current: localStamina });
   };
 
-  defineComponentSystem(world, Stamina, ({ entity, value }) => {
-    if (value[0]) {
-      const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
-      updateLocalStaminaToTurn(entity, currentTurn);
-    }
-  });
-
-  defineRxSystem(world, newTurn$, () => {
+  const staminaUpdate$ = merge(newTurn$, Stamina.update$);
+  defineRxSystem(world, staminaUpdate$, () => {
     const entities = runQuery([Has(Stamina), Has(LastActionTurn)]);
     const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
 
