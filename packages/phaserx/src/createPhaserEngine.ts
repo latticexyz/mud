@@ -12,7 +12,7 @@ import { generateFrames } from "./utils";
 import { createInput } from "./createInput";
 
 export async function createPhaserEngine<S extends ScenesConfig>(options: PhaserEngineConfig<S>) {
-  const { scale, sceneConfig, cameraConfig, chunkSize } = options;
+  const { scale, sceneConfig, cameraConfig, cullingChunkSize } = options;
 
   // Set up Phaser scenes
   const sceneConstructors = Object.keys(sceneConfig).map((key) => {
@@ -60,11 +60,11 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
     // Setup camera
     const camera = createCamera(phaserScene.cameras.main, cameraConfig);
 
-    // Setup chunks
-    const chunks = createChunks(camera.worldView$, chunkSize);
+    // Setup chunks for viewport culling
+    const cullingChunks = createChunks(camera.worldView$, cullingChunkSize);
 
     // Setup viewport culling
-    const culling = createCulling(objectPool, camera, chunks);
+    const culling = createCulling(objectPool, camera, cullingChunks);
 
     // Setup sprite animations
     for (const anim of config.animations) {
@@ -87,7 +87,12 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
     // Setup maps
     const partialMaps: Partial<Maps<keyof S[typeof key]["maps"]>> = {};
     for (const mapKey of Object.keys(config.maps)) {
-      const { layers, backgroundTile, tileWidth, tileHeight, animationInterval, tileAnimations } = config.maps[mapKey];
+      const { layers, backgroundTile, tileWidth, tileHeight, animationInterval, tileAnimations, chunkSize } =
+        config.maps[mapKey];
+
+      // Setup chunks
+      const chunks = createChunks(camera.worldView$, chunkSize);
+
       const map = createAnimatedTilemap({
         scene: phaserScene,
         tilesets,
@@ -112,7 +117,7 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
 
     const input = createInput(phaserScene.input);
 
-    partialScenes[key] = { phaserScene, objectPool, camera, chunks, culling, maps, input };
+    partialScenes[key] = { phaserScene, objectPool, camera, culling, maps, input };
   }
   const scenes = partialScenes as Scenes<S>;
 

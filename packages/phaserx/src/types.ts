@@ -86,6 +86,7 @@ export type LayerConfig<A extends Assets, T extends TilesetConfig<A>> = {
 };
 
 export type MapConfig<A extends Assets, T extends TilesetConfig<A>, L extends LayerConfig<A, T>> = {
+  chunkSize: number;
   tileWidth: number;
   tileHeight: number;
   layers: { layers: L; defaultLayer: keyof L & string };
@@ -137,7 +138,6 @@ type Scene<C extends AnySceneConfig> = {
   phaserScene: Phaser.Scene;
   objectPool: ObjectPool;
   camera: Camera;
-  chunks: Chunks;
   culling: Culling;
   maps: Maps<keyof C["maps"]>;
   input: Input;
@@ -191,5 +191,5 @@ export type PhaserEngineConfig<S extends ScenesConfig> = {
   sceneConfig: S;
   scale: Phaser.Types.Core.ScaleConfig;
   cameraConfig: CameraConfig;
-  chunkSize: number;
+  cullingChunkSize: number;
 };
