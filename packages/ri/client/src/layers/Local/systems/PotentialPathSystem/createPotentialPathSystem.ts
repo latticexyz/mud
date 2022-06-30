@@ -7,15 +7,15 @@ export function createPotentialPathSystem(layer: LocalLayer) {
     components: { Selected, PotentialPath, LocalPosition },
     parentLayers: {
       headless: {
-        components: { LocalCurrentStamina },
+        components: { LocalStamina },
       },
     },
   } = layer;
 
-  defineSystem(world, [Has(Selected), Has(LocalPosition), Has(LocalCurrentStamina)], ({ type, entity }) => {
-    const currentStamina = getComponentValue(LocalCurrentStamina, entity);
+  defineSystem(world, [Has(Selected), Has(LocalPosition), Has(LocalStamina)], ({ type, entity }) => {
+    const currentStamina = getComponentValue(LocalStamina, entity);
 
-    if (type === UpdateType.Exit || currentStamina?.value === 0) {
+    if (type === UpdateType.Exit || currentStamina?.current === 0) {
       removeComponent(PotentialPath, entity);
     } else if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
       const position = getComponentValue(LocalPosition, entity);

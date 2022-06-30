@@ -1,6 +1,7 @@
 import {
   defineComponentSystem,
   defineRxSystem,
+  EntityIndex,
   getComponentValueStrict,
   Has,
   runQuery,
@@ -12,38 +13,41 @@ import { HeadlessLayer } from "../..";
 export function createCurrentStaminaSystem(layer: HeadlessLayer) {
   const {
     world,
+    newTurn$,
     parentLayers: {
       network: {
         network: { clock },
         components: { Stamina, LastActionTurn, GameConfig },
       },
     },
-    components: { LocalCurrentStamina },
+    components: { LocalStamina },
   } = layer;
 
+  const updateLocalStaminaToTurn = (entity: EntityIndex, turn: number) => {
+    const contractStamina = getComponentValueStrict(Stamina, entity);
+    const lastActionTurn = getComponentValueStrict(LastActionTurn, entity).value;
+    const staminaTicks = (turn - lastActionTurn) * contractStamina.regeneration;
+
+    let localStamina = contractStamina.current + staminaTicks;
+    if (localStamina > contractStamina.max) localStamina = contractStamina.max;
+    if (localStamina < 0) localStamina = 0;
+
+    setComponent(LocalStamina, entity, { current: localStamina });
+  };
+
   defineComponentSystem(world, Stamina, ({ entity, value }) => {
-    if (value[0]) setComponent(LocalCurrentStamina, entity, { value: value[0].current });
+    if (value[0]) {
+      const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
+      updateLocalStaminaToTurn(entity, currentTurn);
+    }
   });
 
-  defineRxSystem(world, clock.time$, () => {
+  defineRxSystem(world, newTurn$, () => {
     const entities = runQuery([Has(Stamina), Has(LastActionTurn)]);
     const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
 
     for (const entity of entities) {
-      const contractStamina = getComponentValueStrict(Stamina, entity);
-      const lastActionTurn = getComponentValueStrict(LastActionTurn, entity).value;
-
-      // No new stamina tick
-      if (currentTurn - lastActionTurn === 0) {
-        setComponent(LocalCurrentStamina, entity, { value: contractStamina.current });
-      } else {
-        const staminaTicks = (currentTurn - lastActionTurn) * contractStamina.regeneration;
-        let localStamina = contractStamina.current + staminaTicks;
-        if (localStamina > contractStamina.max) localStamina = contractStamina.max;
-        if (localStamina < 0) localStamina = 0;
-
-        setComponent(LocalCurrentStamina, entity, { value: localStamina });
-      }
+      updateLocalStaminaToTurn(entity, currentTurn);
     }
   });
 }
