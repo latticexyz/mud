@@ -24,12 +24,18 @@ import { CastSpellFacet } from "../../facets/systems/CastSpellFacet.sol";
 // Components
 import { EmbodiedSystemArgumentComponent } from "../../components/EmbodiedSystemArgumentComponent.sol";
 import { EntityTypeComponent } from "../../components/EntityTypeComponent.sol";
+import { GameConfigComponent } from "../../components/GameConfigComponent.sol";
+import { LastActionTurnComponent } from "../../components/LastActionTurnComponent.sol";
 import { LearnedSpellsComponent } from "../../components/LearnedSpellsComponent.sol";
 import { MaxDistanceComponent } from "../../components/MaxDistanceComponent.sol";
+import { MineableComponent } from "../../components/MineableComponent.sol";
+import { MovableComponent } from "../../components/MovableComponent.sol";
 import { OwnedByComponent } from "../../components/OwnedByComponent.sol";
 import { PersonaComponent } from "../../components/PersonaComponent.sol";
 import { PositionComponent } from "../../components/PositionComponent.sol";
 import { SpellComponent } from "../../components/SpellComponent.sol";
+import { StaminaComponent } from "../../components/StaminaComponent.sol";
+import { UntraversableComponent } from "../../components/UntraversableComponent.sol";
 
 // Access Controllers
 import { PersonaAccessController } from "../../access/PersonaAccessController.sol";
@@ -97,7 +103,7 @@ contract Deploy is DSTest {
 
     bytes4[] memory functionSelectors;
 
-    IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](3);
+    IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](4);
 
     // -------------------------------------------------------------------------
     // adding initialize facet (add function selectors here)
@@ -121,8 +127,9 @@ contract Deploy is DSTest {
     // -------------------------------------------------------------------------
     EmberFacet emberFacet = new EmberFacet();
 
-    functionSelectors = new bytes4[](1);
+    functionSelectors = new bytes4[](2);
     functionSelectors[0] = EmberFacet.world.selector;
+    functionSelectors[1] = EmberFacet.configureWorld.selector;
 
     diamondCut[1] = IDiamondCut.FacetCut({
       facetAddress: address(emberFacet),
@@ -179,12 +186,18 @@ contract Deploy is DSTest {
     // Create each component and transfer ownership to the ember contract
     (new EmbodiedSystemArgumentComponent(worldAddress)).transferOwnership(diamondAddress);
     (new EntityTypeComponent(worldAddress)).transferOwnership(diamondAddress);
+    (new GameConfigComponent(worldAddress)).transferOwnership(diamondAddress);
+    (new LastActionTurnComponent(worldAddress)).transferOwnership(diamondAddress);
     (new LearnedSpellsComponent(worldAddress)).transferOwnership(diamondAddress);
     (new MaxDistanceComponent(worldAddress)).transferOwnership(diamondAddress);
+    (new MineableComponent(worldAddress)).transferOwnership(diamondAddress);
+    (new MovableComponent(worldAddress)).transferOwnership(diamondAddress);
     (new OwnedByComponent(worldAddress)).transferOwnership(diamondAddress);
     (new PersonaComponent(worldAddress)).transferOwnership(diamondAddress);
     (new PositionComponent(worldAddress)).transferOwnership(diamondAddress);
     (new SpellComponent(worldAddress)).transferOwnership(diamondAddress);
+    (new StaminaComponent(worldAddress)).transferOwnership(diamondAddress);
+    (new UntraversableComponent(worldAddress)).transferOwnership(diamondAddress);
     // Register access controllers
     initializeFacetOnDiamond.registerAccessControllerExternally(address(new PersonaAccessController()));
     // Register content creators
@@ -195,6 +208,8 @@ contract Deploy is DSTest {
       createEntityFromPrototypeEmbodiedSystem,
       CreateEntityFromPrototypeEmbodiedSystem.createEntityFromPrototype.selector
     );
+
+    emberFacetOnDiamond.configureWorld();
 
     vm.stopBroadcast();
     return address(diamond);
