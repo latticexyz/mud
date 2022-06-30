@@ -1,4 +1,12 @@
-import { defineRxSystem, EntityIndex, getComponentValueStrict, Has, runQuery, setComponent } from "@latticexyz/recs";
+import {
+  defineQuery,
+  defineRxSystem,
+  EntityIndex,
+  getComponentValueStrict,
+  Has,
+  runQuery,
+  setComponent,
+} from "@latticexyz/recs";
 import { getCurrentTurn } from "@latticexyz/std-client";
 import { merge } from "rxjs";
 import { HeadlessLayer } from "../..";
@@ -6,7 +14,7 @@ import { HeadlessLayer } from "../..";
 export function createCurrentStaminaSystem(layer: HeadlessLayer) {
   const {
     world,
-    newTurn$,
+    turn$,
     parentLayers: {
       network: {
         network: { clock },
@@ -28,12 +36,13 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
     setComponent(LocalStamina, entity, { current: localStamina });
   };
 
-  const staminaUpdate$ = merge(newTurn$, Stamina.update$);
+  const staminaQuery = defineQuery([Has(Stamina), Has(LastActionTurn)]);
+  const staminaUpdate$ = merge(turn$, staminaQuery.update$);
+
   defineRxSystem(world, staminaUpdate$, () => {
-    const entities = runQuery([Has(Stamina), Has(LastActionTurn)]);
     const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
 
-    for (const entity of entities) {
+    for (const entity of staminaQuery.matching) {
       updateLocalStaminaToTurn(entity, currentTurn);
     }
   });

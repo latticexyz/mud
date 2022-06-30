@@ -5,7 +5,7 @@ import { defineActionComponent } from "./components";
 import { joinGame, moveEntity } from "./api";
 import { curry } from "lodash";
 import { Direction } from "../../constants";
-import { createNewTurnStream } from "./setup";
+import { createTurnStream } from "./setup";
 
 /**
  * The Headless layer is the second layer in the client architecture and extends the Network layer.
@@ -29,7 +29,7 @@ export async function createHeadlessLayer(network: NetworkLayer) {
     world,
     actions,
     parentLayers: { network },
-    newTurn$: createNewTurnStream(world, GameConfig, clock),
+    turn$: createTurnStream(world, GameConfig, clock),
     components,
     api: {
       joinGame: curry(joinGame)(network, actions),

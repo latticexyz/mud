@@ -6,7 +6,7 @@ import {
   getComponentValue,
   EntityIndex,
   EntityID,
-  updateComponent,
+  setComponent,
 } from "@latticexyz/recs";
 import { ActionSystem, HeadlessLayer } from "../types";
 import { Direction, Directions } from "../../../constants";
@@ -95,7 +95,7 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
     execute: async ({ targetPosition, netStamina }) => {
       const tx = await layer.parentLayers.network.api.moveEntity(world.entities[entity], targetPosition);
       await tx.wait();
-      updateComponent(LocalStamina, entity, { current: netStamina });
+      setComponent(LocalStamina, entity, { current: netStamina });
     },
   });
 }
