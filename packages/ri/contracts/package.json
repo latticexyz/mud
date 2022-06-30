@@ -24,7 +24,8 @@
     "hardhat:deploy:degen": "yarn hardhat:deploy --network degen",
     "hardhat:deploy:hardhat": "yarn hardhat:deploy --network hardhat",
     "hardhat:deploy:update": "yarn hardhat deploy --network localhost --tags Diamond",
-    "hardhat:deploy": "hardhat deploy --reset"
+    "hardhat:deploy": "hardhat deploy --reset",
+    "codegen": "yarn --silent mustache test/data.json test/template.mustache > output.txt"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
@@ -53,6 +54,7 @@
     "hardhat-deploy": "^0.11.5",
     "hardhat-diamond-abi": "^2.0.0",
     "memmove": "https://github.com/brockelmore/memmove.git#d577ecd1bc43656f4032edf4daa9797f756a8ad2",
+    "mustache": "^4.2.0",
     "npm-run-all": "^4.1.5",
     "openzeppelin-solidity": "https://github.com/OpenZeppelin/openzeppelin-contracts.git#57725120581e27ec469e1c7e497a4008aafff818",
     "prettier": "^2.6.2",
