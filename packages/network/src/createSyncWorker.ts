@@ -11,7 +11,10 @@ export function createSyncWorker<Cm extends Components>() {
 
   // Pass in a "config stream", receive a stream of ECS events
   const subscription = fromWorker<SyncWorkerConfig<Cm>, Output<Cm>>(worker, config$).subscribe(ecsEvent$);
-  const dispose = () => subscription?.unsubscribe();
+  const dispose = () => {
+    worker.terminate();
+    subscription?.unsubscribe();
+  };
 
   return {
     ecsEvent$,

@@ -7,6 +7,7 @@ import {
   createEncoder,
   SyncWorkerConfig,
   NetworkComponentUpdate,
+  NetworkConfig,
 } from "@latticexyz/network";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
@@ -24,8 +25,7 @@ export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
 };
 
-export type SetupContractConfig = Parameters<typeof createNetwork>[0] &
-  Omit<SyncWorkerConfig, "worldContract" | "mappings">;
+export type SetupContractConfig = NetworkConfig & Omit<SyncWorkerConfig, "worldContract" | "mappings">;
 
 export async function setupContracts<C extends ContractComponents>(
   address: string,
@@ -56,7 +56,7 @@ export async function setupContracts<C extends ContractComponents>(
     config$.next({
       provider: config.provider,
       worldContract: contractsConfig.World,
-      initialBlockNumber: config.initialBlockNumber,
+      initialBlockNumber: config.initialBlockNumber ?? 0,
       mappings,
       chainId: config.chainId,
       disableCache: devMode, // Disable cache on hardhat

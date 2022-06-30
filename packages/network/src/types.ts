@@ -12,6 +12,7 @@ export interface NetworkConfig {
   clock: ClockConfig;
   provider: ProviderConfig;
   checkpointServiceUrl?: string;
+  initialBlockNumber?: number;
 }
 
 export interface ClockConfig {

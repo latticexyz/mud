@@ -24,13 +24,6 @@ export enum Animations {
   HeroIdle = "HeroIdle",
 }
 
-if (import.meta.hot) {
-  import.meta.hot.accept(() => {
-    console.log("Constants changed, full reload");
-    import.meta.hot?.invalidate();
-  });
-}
-
 export enum Tileset {
   Empty = 0,
   Plain = 1,

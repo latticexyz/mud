@@ -1,4 +1,4 @@
-import { EntityIndex } from "@latticexyz/recs";
+import { EntityIndex, namespaceWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";
@@ -13,7 +13,8 @@ import { defineNumberComponent } from "@latticexyz/std-client";
  */
 
 export async function createHeadlessLayer(network: NetworkLayer) {
-  const world = network.world;
+  const world = namespaceWorld(network.world, "headless");
+
   const Action = defineActionComponent(world);
   const LocalCurrentStamina = defineNumberComponent(world, { id: "LocalCurrentStamina" });
   const components = { Action, LocalCurrentStamina };

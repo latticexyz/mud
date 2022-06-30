@@ -24,7 +24,7 @@ import {
 } from "./components";
 import { config } from "./config";
 import { defineDevHighlightComponent } from "@latticexyz/std-client";
-import { defineComponent, Type } from "@latticexyz/recs";
+import { defineComponent, namespaceWorld, Type } from "@latticexyz/recs";
 import { highlightCoord } from "./api";
 import { curry } from "lodash";
 import { Coord } from "@latticexyz/utils";
@@ -35,7 +35,7 @@ import { Coord } from "@latticexyz/utils";
  */
 export async function createPhaserLayer(local: LocalLayer) {
   // World
-  const world = local.world;
+  const world = namespaceWorld(local.parentLayers.network.world, "phaser");
 
   // Components
   const Appearance = defineAppearanceComponent(world);

@@ -69,12 +69,13 @@ async function getCheckpoint(
 export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
 
 export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfig<Cm>, Output<Cm>> {
-  private config = observable.box<SyncWorkerConfig<Cm>>() as IObservableValue<SyncWorkerConfig<Cm>>;
+  private config = observable.box() as IObservableValue<SyncWorkerConfig<Cm>>;
   private clientBlockNumber = 0;
   private decoders: { [key: string]: Promise<(data: BytesLike) => unknown> | ((data: BytesLike) => unknown) } = {};
   private componentIdToAddress: { [key: string]: Promise<string> } = {};
   private toOutput$ = new Subject<Output<Cm>>();
   private schemaCache = initCache<{ ComponentSchemas: [string[], number[]] }>("Global", ["ComponentSchemas"]);
+  private cacheWorker?: Worker;
 
   constructor() {
     this.init();
@@ -160,9 +161,10 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     toCacheAndOutput$.subscribe(this.toOutput$);
 
     // 2. stream ECS events to the Cache worker to store them to IndexDB
+    this.cacheWorker = new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" });
     if (!config.disableCache) {
       fromWorker<Input<Cm>, boolean>(
-        new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" }),
+        this.cacheWorker,
         combineLatest([
           toCacheAndOutput$.pipe(startWith(undefined)),
           of(config.worldContract.address),

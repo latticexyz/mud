@@ -32,17 +32,26 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
 
   const pointermove$ = fromEvent(document, "mousemove").pipe(
     filter(() => enabled.current),
-    map(() => inputPlugin.activePointer)
+    map(() => {
+      return inputPlugin.manager?.activePointer;
+    }),
+    filterNullish()
   );
 
   const pointerdown$ = fromEvent(document, "mousedown").pipe(
     filter(() => enabled.current),
-    map(() => inputPlugin.activePointer)
+    map(() => {
+      return inputPlugin.manager?.activePointer;
+    }),
+    filterNullish()
   );
 
   const pointerup$ = fromEvent(document, "mouseup").pipe(
     filter(() => enabled.current),
-    map(() => inputPlugin.activePointer)
+    map(() => {
+      return inputPlugin.manager?.activePointer;
+    }),
+    filterNullish()
   );
 
   // Double click stream
@@ -51,7 +60,8 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     map<Phaser.Input.Pointer, [boolean, number]>((pointer) => [pointer.leftButtonDown(), Date.now()]), // Map events to whether the left button is down and the current timestamp
     bufferCount(2, 1), // Store the last two timestamps
     filter(([prev, now]) => prev[0] && !now[0] && now[1] - prev[1] < 250), // Only care if button was pressed before and is not anymore and it happened within 500ms
-    map(() => inputPlugin.activePointer) // Return the current pointer
+    map(() => inputPlugin.manager?.activePointer), // Return the current pointer
+    filterNullish()
   );
 
   // Double click stream
@@ -61,7 +71,8 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     bufferCount(2, 1), // Store the last two timestamps
     filter(([prev, now]) => now - prev < 500), // Filter clicks with more than 500ms distance
     throttleTime(500), // A third click within 500ms is not counted as another double click
-    map(() => inputPlugin.activePointer) // Return the current pointer
+    map(() => inputPlugin.manager?.activePointer), // Return the current pointer
+    filterNullish()
   );
 
   // Drag stream
@@ -156,7 +167,6 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     drag$,
     pressedKeys,
     dispose,
-    phaserInputPlugin: inputPlugin,
     disableInput,
     enableInput,
     enabled,
