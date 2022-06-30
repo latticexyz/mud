@@ -1,12 +1,4 @@
-import {
-  defineComponentSystem,
-  defineRxSystem,
-  EntityIndex,
-  getComponentValueStrict,
-  Has,
-  runQuery,
-  setComponent,
-} from "@latticexyz/recs";
+import { defineRxSystem, EntityIndex, getComponentValueStrict, Has, runQuery, setComponent } from "@latticexyz/recs";
 import { getCurrentTurn } from "@latticexyz/std-client";
 import { merge } from "rxjs";
 import { HeadlessLayer } from "../..";
