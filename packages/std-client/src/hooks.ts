@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Observable } from "rxjs";
 
-export function useStream<T>(stream: Observable<T>) {
-  const [state, setState] = useState<T>();
+export function useStream<T>(stream: Observable<T>, defaultValue?: T) {
+  const [state, setState] = useState<T | undefined>(defaultValue);
 
   useEffect(() => {
     const sub = stream.subscribe((newState) => setState(newState));

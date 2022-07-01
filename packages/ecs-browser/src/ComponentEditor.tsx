@@ -1,5 +1,5 @@
 import React from "react";
-import { Layers, removeComponent } from "@latticexyz/recs";
+import { Layers, removeComponent, toUpdate } from "@latticexyz/recs";
 import { AnyComponent, EntityIndex, Schema } from "@latticexyz/recs/src/types";
 import { ComponentBrowserButton, ComponentEditorContainer, ComponentTitle } from "./StyledComponents";
 import { ComponentValueEditor } from "./ComponentValueEditor";
@@ -17,7 +17,7 @@ export const ComponentEditor = ({
   layers: Layers;
   setContractComponentValue: SetContractComponentFunction<Schema>;
 }) => {
-  const componentUpdate = useStream(component.update$);
+  const componentUpdate = useStream(component.update$, toUpdate(entity, component));
   if(!componentUpdate) return null;
   
   const value = componentUpdate.value[0];

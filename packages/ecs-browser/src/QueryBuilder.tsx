@@ -11,10 +11,16 @@ import {
   EntityID,
   World,
 } from "@latticexyz/recs";
-import { ComponentBrowserButton, ComponentBrowserInput, QueryBuilderForm } from "./StyledComponents";
+import {
+  ComponentBrowserButton,
+  ComponentBrowserInput,
+  QueryBuilderForm,
+  QueryShortcutContainer,
+} from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { flatten } from "lodash";
 
 export const QueryBuilder = function ({
   allEntities,
@@ -30,24 +36,43 @@ export const QueryBuilder = function ({
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
 }) {
   const queryInputRef = useRef<HTMLInputElement>(null);
+  const [componentFilters, setComponentFilters] = useState<AnyComponent[]>([]);
+  const [isManuallyEditing, setIsManuallyEditing] = useState(true);
   const [entityQueryText, setEntityQueryText] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const allComponents = flatten(Object.values(layers).map((layer) => Object.values(layer.components)));
 
   const resetFilteredEntities = useCallback(() => {
     setFilteredEntities([]);
+    setComponentFilters([]);
     setErrorMessage("");
   }, [setFilteredEntities, setErrorMessage, allEntities]);
 
-  // If there is no filter present, view all entities.
+  // If there is no filter present, view no entities.
   useEffect(() => {
     if (!entityQueryText) {
       resetFilteredEntities();
     }
   }, [setFilteredEntities, resetFilteredEntities, allEntities, entityQueryText]);
 
+  useEffect(() => {
+    if(isManuallyEditing) return;
+
+    const hasFilters = componentFilters.map((c) => `q.Has(c.${c.id})`);
+    const query = `[${hasFilters.join(",")}]`;
+    setEntityQueryText(query);
+  }, [componentFilters, isManuallyEditing]);
+
+  const editQuery = useCallback((text: string) => {
+    setIsManuallyEditing(true);
+    setEntityQueryText(text);
+    setComponentFilters([]);
+  }, []);
+
   const executeFilter = useCallback(
     (e: React.SyntheticEvent) => {
       e.preventDefault();
+      setErrorMessage("");
 
       // Do not throw an error if there is no query
       if (!entityQueryText) {
@@ -75,7 +100,7 @@ export const QueryBuilder = function ({
         }
 
         const selectedEntities = runQuery(queryArray);
-        setFilteredEntities([...selectedEntities].map(idx => world.entities[idx]));
+        setFilteredEntities([...selectedEntities].map((idx) => world.entities[idx]));
 
         selectedEntities.forEach((idx) => removeComponent(devHighlightComponent, idx));
         selectedEntities.forEach((idx) => setComponent(devHighlightComponent, idx, { value: 0x0000ff }));
@@ -115,7 +140,7 @@ export const QueryBuilder = function ({
           value={entityQueryText}
           onChange={(e) => {
             if (errorMessage) setErrorMessage("");
-            setEntityQueryText(e.target.value);
+            editQuery(e.target.value);
           }}
           onFocus={(e) => e.target.select()}
           onBlur={(e) => executeFilter(e)}
@@ -130,25 +155,29 @@ export const QueryBuilder = function ({
         }}
       >
         <h3>Query Shortcuts</h3>
-        <div style={{ flex: "row wrap", marginTop: "8px" }}>
-          <ComponentBrowserButton
-            onClick={() => {
-              setEntityQueryText("[q.Has(c.LocalPosition)]");
-              queryInputRef.current?.focus();
-            }}
-          >
-            Has(LocalPosition)
-          </ComponentBrowserButton>
+        <QueryShortcutContainer>
+          {allComponents.map((component) => {
+            const filterActive = componentFilters.includes(component);
 
-          <ComponentBrowserButton
-            onClick={() => {
-              setEntityQueryText("[q.Has(c.Position)]");
-              queryInputRef.current?.focus();
-            }}
-          >
-            Has(Position)
-          </ComponentBrowserButton>
-        </div>
+            return (
+              <ComponentBrowserButton
+                active={filterActive}
+                onClick={(e) => {
+                  setIsManuallyEditing(false);
+                  queryInputRef.current?.focus();
+
+                  if(filterActive) {
+                    setComponentFilters((f) => f.filter(f => f !== component));
+                  } else {
+                    setComponentFilters((f) => [...f, component]);
+                  }
+                }}
+              >
+                Has({component.id})
+              </ComponentBrowserButton>
+            );
+          })}
+        </QueryShortcutContainer>
       </div>
     </>
   );

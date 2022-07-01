@@ -19,9 +19,9 @@ export const ComponentBrowserInput = styled.input`
   }
 `;
 
-export const ComponentBrowserButton = styled.button`
-  background-color: #383c4a;
-  color: #8c91a0;
+export const ComponentBrowserButton = styled.button<{ active?: boolean }>`
+  background-color: ${({ active }) => (active ? "#8c91a0" : "#383c4a")};
+  color: ${({ active }) => (active ? "#383c4a" : "#8c91a0")};
   border: 1px rgba(0, 0, 0, 0.5) solid;
   border-radius: 4px;
   padding: 4px;
@@ -80,6 +80,13 @@ export const QueryBuilderForm = styled.form`
   border-bottom: 2px grey solid;
   margin-bottom: 8px;
   width: 100%;
+`;
+
+export const QueryShortcutContainer = styled.div`
+  flex: "row wrap";
+  margin-top: "8px";
+  height: 200px;
+  overflow: auto;
 `;
 
 export const DraggableNumberLabelContainer = styled.label`
