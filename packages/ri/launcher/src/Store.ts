@@ -6,8 +6,8 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 
 const burnerWalletStorageKey = "burnerWallet";
 const personaStorageKey = "personaId";
-const defaultChainSpec = "https://launcher-config.pages.dev/chainSpec.json";
-const defaultGameSpec = "https://launcher-config.pages.dev/gameSpec.json";
+const defaultChainSpec = "https://config.maps.lattice.xyz/chainSpec.json";
+const defaultGameSpec = "https://config.maps.lattice.xyz/gameSpec.json";
 
 interface ChainSpec {
   chainId: number;
@@ -60,6 +60,8 @@ export class Store {
     // Override via get params
     chainSpec.chainId = Number(params.get("chainId")) || chainSpec.chainId;
     chainSpec.personaAddress = params.get("personaAddress") || chainSpec.personaAddress;
+    chainSpec.rpc = params.get("rpc") || chainSpec.rpc;
+    chainSpec.wsRpc = params.get("wsRpc") || chainSpec.wsRpc;
     chainSpec.personaMirrorAddress = params.get("personaMirrorAddress") || chainSpec.personaMirrorAddress;
     chainSpec.personaAllMinterAddress = params.get("personaAllMinterAddress") || chainSpec.personaAllMinterAddress;
     gameSpec.address = params.get("address") || gameSpec.address;
@@ -113,7 +115,11 @@ export class Store {
 
   public get instanceUrl(): string | undefined {
     if (this.burnerWallet && this.gameSpec && this.chainSpec && this.persona != null) {
-      return `${this.gameSpec.client}?burnerWalletPrivateKey=${this.burnerWallet.privateKey}&personaId=${this.personaId}&chainId=${this.chainSpec.chainId}&contractAddress=${this.gameSpec.address}&rpc=${this.chainSpec.rpc}&checkpoint=${this.gameSpec.checkpoint}`;
+      return `${this.gameSpec.client ?? ""}?burnerWalletPrivateKey=${this.burnerWallet.privateKey ?? ""}&personaId=${
+        this.personaId ?? ""
+      }&chainId=${this.chainSpec.chainId ?? ""}&contractAddress=${this.gameSpec.address ?? ""}&rpc=${
+        this.chainSpec.rpc ?? ""
+      }&wsRpc=${this.chainSpec.wsRpc ?? ""}&checkpoint=${this.gameSpec.checkpoint ?? ""}`;
     }
   }
 }

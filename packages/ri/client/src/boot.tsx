@@ -40,10 +40,10 @@ async function bootLayers() {
     const privateKey = params.get("burnerWalletPrivateKey");
     const chainIdString = params.get("chainId");
     const personaIdString = params.get("personaId");
-    const jsonRpc = params.get("rpc") ?? undefined;
-    const wsRpc = jsonRpc && jsonRpc.replace("http", "ws");
-    const checkpointUrl = params.get("checkpoint") ?? undefined;
-    const devMode = params.get("dev") === "true" ?? false;
+    const jsonRpc = params.get("rpc") || undefined;
+    const wsRpc = params.get("wsRpc") || (jsonRpc && jsonRpc.replace("http", "ws"));
+    const checkpointUrl = params.get("checkpoint") || undefined;
+    const devMode = params.get("dev") === "true" || false;
 
     let networkLayerConfig;
     if (contractAddress && privateKey && chainIdString && personaIdString) {

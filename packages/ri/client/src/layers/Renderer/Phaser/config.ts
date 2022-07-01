@@ -38,6 +38,7 @@ export const config = {
       },
       maps: {
         [Maps.Main]: defineMapConfig({
+          chunkSize: TILE_WIDTH * 64, // tile size * tile amount
           tileWidth: TILE_WIDTH,
           tileHeight: TILE_HEIGHT,
           backgroundTile: [Tileset.Wall1],
@@ -51,6 +52,7 @@ export const config = {
           },
         }),
         [Maps.Tactic]: defineMapConfig({
+          chunkSize: TILE_WIDTH * 64, // tile size * tile amount
           tileWidth: TILE_WIDTH * 4,
           tileHeight: TILE_HEIGHT * 4,
           backgroundTile: [Tileset.Wall1],
@@ -63,6 +65,7 @@ export const config = {
           },
         }),
         [Maps.Strategic]: defineMapConfig({
+          chunkSize: TILE_WIDTH * 64 * 8, // tile size * tile amount
           tileWidth: TILE_WIDTH * 16,
           tileHeight: TILE_HEIGHT * 16,
           backgroundTile: [Tileset.Wall1],
@@ -114,5 +117,5 @@ export const config = {
     maxZoom: 2,
     minZoom: 1 / 32,
   }),
-  chunkSize: TILE_WIDTH * 16 * 4, // tile size * tile amount
+  cullingChunkSize: TILE_HEIGHT * 16,
 };
