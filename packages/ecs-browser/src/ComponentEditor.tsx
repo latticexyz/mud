@@ -18,10 +18,10 @@ export const ComponentEditor = ({
   setContractComponentValue: SetContractComponentFunction<Schema>;
 }) => {
   const componentUpdate = useStream(component.update$, toUpdate(entity, component));
-  if(!componentUpdate) return null;
-  
+  if (!componentUpdate) return null;
+
   const value = componentUpdate.value[0];
-  if(!value) return null;
+  if (!value) return null;
 
   return (
     <ComponentEditorContainer>

@@ -20,7 +20,7 @@ import {
 import * as recs from "@latticexyz/recs";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { flatten } from "lodash";
+import { flatten, orderBy } from "lodash";
 
 export const QueryBuilder = function ({
   allEntities,
@@ -56,7 +56,7 @@ export const QueryBuilder = function ({
   }, [setFilteredEntities, resetFilteredEntities, allEntities, entityQueryText]);
 
   useEffect(() => {
-    if(isManuallyEditing) return;
+    if (isManuallyEditing) return;
 
     const hasFilters = componentFilters.map((c) => `q.Has(c.${c.id})`);
     const query = `[${hasFilters.join(",")}]`;
@@ -156,27 +156,29 @@ export const QueryBuilder = function ({
       >
         <h3>Query Shortcuts</h3>
         <QueryShortcutContainer>
-          {allComponents.map((component) => {
-            const filterActive = componentFilters.includes(component);
+          {orderBy(allComponents, (c) => c.id)
+            .filter((c) => !c.id.includes("-"))
+            .map((component) => {
+              const filterActive = componentFilters.includes(component);
 
-            return (
-              <ComponentBrowserButton
-                active={filterActive}
-                onClick={(e) => {
-                  setIsManuallyEditing(false);
-                  queryInputRef.current?.focus();
+              return (
+                <ComponentBrowserButton
+                  active={filterActive}
+                  onClick={() => {
+                    setIsManuallyEditing(false);
+                    queryInputRef.current?.focus();
 
-                  if(filterActive) {
-                    setComponentFilters((f) => f.filter(f => f !== component));
-                  } else {
-                    setComponentFilters((f) => [...f, component]);
-                  }
-                }}
-              >
-                Has({component.id})
-              </ComponentBrowserButton>
-            );
-          })}
+                    if (filterActive) {
+                      setComponentFilters((f) => f.filter((f) => f !== component));
+                    } else {
+                      setComponentFilters((f) => [...f, component]);
+                    }
+                  }}
+                >
+                  Has({component.id})
+                </ComponentBrowserButton>
+              );
+            })}
         </QueryShortcutContainer>
       </div>
     </>
