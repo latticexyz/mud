@@ -16,9 +16,10 @@ import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } f
 contract InitializeFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
 
-  function initializeExternally(Config calldata config) external {
+  function initializeExternally(Config calldata config, World world) external {
     s.config = config;
-    s.world = new World();
+    World unusedWorldToMakeForgeHappy = new World();
+    s.world = world;
   }
 
   function configureWorld() external {

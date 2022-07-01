@@ -17,11 +17,22 @@ contract Deploy is DSTest {
   function deployEmber(
     address _deployer,
     address _personaMirror,
-    address payable _diamond
-  ) public returns (address) {
+    address payable _diamond,
+    address _world,
+    bool _reuseComponents
+  )
+    public
+    returns (
+      address personaMirror,
+      address diamond,
+      address world
+    )
+  {
     vm.startBroadcast(_deployer);
-    DeployResult memory result = LibDeploy.deploy(_deployer, _personaMirror, _diamond);
+    DeployResult memory result = LibDeploy.deploy(_deployer, _personaMirror, _diamond, _world, _reuseComponents);
     vm.stopBroadcast();
-    return address(result.diamond);
+    personaMirror = address(result.personaMirror);
+    diamond = address(result.diamond);
+    world = address(result.world);
   }
 }

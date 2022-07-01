@@ -58,7 +58,9 @@ library LibDeploy {
   function deploy(
     address _deployer,
     address _personaMirror,
-    address payable _diamond
+    address payable _diamond,
+    address _world,
+    bool _reuseComponents
   ) internal returns (DeployResult memory result) {
     result.deployer = _deployer;
     bool upgrade = _diamond != address(0);
@@ -120,15 +122,15 @@ library LibDeploy {
     address diamondAddress = address(result.diamond);
 
     // Call initialize on the initialize facet
-    InitializeFacet(diamondAddress).initializeExternally(Config(false, address(result.personaMirror)));
-    
-    address worldAddress = EmberFacet(diamondAddress).world();
-    result.world = World(worldAddress);
+    result.world = _world == address(0) ? new World() : World(_world);
+    InitializeFacet(diamondAddress).initializeExternally(Config(false, address(result.personaMirror)), result.world);
 
     // Deploy each component and transfer ownership to the diamond contract
+    if(!_reuseComponents) {
 <% components.forEach(component => { -%>
-    (new <%= component %>(worldAddress)).transferOwnership(diamondAddress);
+      (new <%= component %>(address(result.world))).transferOwnership(diamondAddress);
 <% });%>
+    }
     
     // ------------------------
     // Initialize 
