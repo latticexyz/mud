@@ -13,19 +13,23 @@ export function registerComponentBrowser() {
       rowEnd: 13,
     },
     (layers) => {
-      return from([{
-        layers,
-        devHighlightComponent: layers.phaser.components.DevHighlight,
-        world: layers.network.world,
-      }]);
+      return from([
+        {
+          layers,
+          devHighlightComponent: layers.phaser.components.DevHighlight,
+          hoverHighlightComponent: layers.phaser.components.HoverHighlight,
+          world: layers.network.world,
+        },
+      ]);
     },
-    ({ layers, world, devHighlightComponent }) => {
+    ({ layers, world, devHighlightComponent, hoverHighlightComponent }) => {
       return (
         <Browser
           world={world}
           entities={world.entities}
           layers={layers}
           devHighlightComponent={devHighlightComponent}
+          hoverHighlightComponent={hoverHighlightComponent}
           setContractComponentValue={layers.network.api.setContractComponentValue}
         />
       );

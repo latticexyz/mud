@@ -6,21 +6,18 @@ import {
   Type,
   AnyComponent,
   Component,
-  QueryFragments,
-  runQuery,
   EntityID,
   World,
+  defineQuery,
+  EntityQueryFragment,
 } from "@latticexyz/recs";
-import {
-  ComponentBrowserButton,
-  ComponentBrowserInput,
-  QueryBuilderForm,
-  QueryShortcutContainer,
-} from "./StyledComponents";
+import { ComponentBrowserButton, ComponentBrowserInput } from "../StyledComponents";
+import { QueryBuilderForm, QueryShortcutContainer } from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { flatten, orderBy } from "lodash";
+import { PositionFilterButton } from "./PositionFilterButton";
 
 export const QueryBuilder = function ({
   allEntities,
@@ -28,18 +25,21 @@ export const QueryBuilder = function ({
   layers,
   world,
   devHighlightComponent,
+  hoverHighlightComponent,
 }: {
   world: World;
   layers: Layers;
   allEntities: EntityID[];
   setFilteredEntities: (es: EntityID[]) => void;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
+  hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
 }) {
   const queryInputRef = useRef<HTMLInputElement>(null);
   const [componentFilters, setComponentFilters] = useState<AnyComponent[]>([]);
   const [isManuallyEditing, setIsManuallyEditing] = useState(true);
   const [entityQueryText, setEntityQueryText] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+
   const allComponents = flatten(Object.values(layers).map((layer) => Object.values(layer.components)));
 
   const resetFilteredEntities = useCallback(() => {
@@ -55,6 +55,8 @@ export const QueryBuilder = function ({
     }
   }, [setFilteredEntities, resetFilteredEntities, allEntities, entityQueryText]);
 
+  // If the user is not manually typing a query, build a query
+  // based on the selected Component filters
   useEffect(() => {
     if (isManuallyEditing) return;
 
@@ -63,6 +65,8 @@ export const QueryBuilder = function ({
     setEntityQueryText(query);
   }, [componentFilters, isManuallyEditing]);
 
+  // When the user edits a query manually,
+  // clear the selectable filters
   const editQuery = useCallback((text: string) => {
     setIsManuallyEditing(true);
     setEntityQueryText(text);
@@ -93,13 +97,13 @@ export const QueryBuilder = function ({
       }, {});
 
       try {
-        const queryArray = eval(entityQueryText) as QueryFragments;
+        const queryArray = eval(entityQueryText) as EntityQueryFragment[];
         if (!queryArray || queryArray.length === 0 || !Array.isArray(queryArray)) {
           resetFilteredEntities();
           throw new Error("Invalid query");
         }
 
-        const selectedEntities = runQuery(queryArray);
+        const selectedEntities = defineQuery(queryArray, { runOnInit: true }).matching;
         setFilteredEntities([...selectedEntities].map((idx) => world.entities[idx]));
 
         selectedEntities.forEach((idx) => removeComponent(devHighlightComponent, idx));
@@ -154,8 +158,14 @@ export const QueryBuilder = function ({
           borderBottom: "2px grey solid",
         }}
       >
-        <h3>Query Shortcuts</h3>
-        <QueryShortcutContainer>
+        <h2>Query Shortcuts</h2>
+        <PositionFilterButton
+          editQuery={editQuery}
+          hoverHighlightComponent={hoverHighlightComponent}
+          queryInputRef={queryInputRef}
+        />
+        <h3>Filter by Component</h3>
+        <QueryShortcutContainer style={{ margin: "8px auto" }}>
           {orderBy(allComponents, (c) => c.id)
             .filter((c) => !c.id.includes("-"))
             .map((component) => {
@@ -163,6 +173,7 @@ export const QueryBuilder = function ({
 
               return (
                 <ComponentBrowserButton
+                  key={`filter-toggle-${component.id}`}
                   active={filterActive}
                   onClick={() => {
                     setIsManuallyEditing(false);

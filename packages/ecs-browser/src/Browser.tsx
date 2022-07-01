@@ -13,12 +13,14 @@ export const Browser = ({
   layers,
   setContractComponentValue,
   devHighlightComponent,
+  hoverHighlightComponent,
   world,
 }: {
   entities: EntityID[];
   layers: Layers;
   setContractComponentValue: SetContractComponentFunction<Schema>;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
+  hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber; }>;
   world: World;
 }) => {
   const [filteredEntities, setFilteredEntities] = useState<EntityID[]>([]);
@@ -27,6 +29,7 @@ export const Browser = ({
     <BrowserContainer>
       <QueryBuilder
         devHighlightComponent={devHighlightComponent}
+        hoverHighlightComponent={hoverHighlightComponent}
         allEntities={entities}
         setFilteredEntities={setFilteredEntities}
         layers={layers}
