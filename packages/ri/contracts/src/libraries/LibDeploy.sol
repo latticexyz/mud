@@ -66,8 +66,14 @@ struct DeployResult {
 }
 
 library LibDeploy {
-  function deploy(address _deployer, address _personaMirror) internal returns (DeployResult memory result) {
+  function deploy(
+    address _deployer,
+    address _personaMirror,
+    address payable _diamond
+  ) internal returns (DeployResult memory result) {
     result.deployer = _deployer;
+    bool upgrade = _diamond != address(0);
+    IDiamondCut.FacetCutAction action = upgrade ? IDiamondCut.FacetCutAction.Replace : IDiamondCut.FacetCutAction.Add;
 
     Diamantaire diamantaire = new Diamantaire();
 
@@ -82,28 +88,28 @@ library LibDeploy {
     // Add InitializeFacet
     InitializeFacet _InitializeFacet = new InitializeFacet();
 
-    functionSelectors = new bytes4[](4);
+    functionSelectors = new bytes4[](5);
     functionSelectors[0] = InitializeFacet.initializeExternally.selector;
-    functionSelectors[1] = InitializeFacet.registerAccessControllerExternally.selector;
-    functionSelectors[2] = InitializeFacet.registerContentCreatorExternally.selector;
-    functionSelectors[3] = InitializeFacet.registerEmbodiedSystemExternally.selector;
+    functionSelectors[1] = InitializeFacet.configureWorld.selector;
+    functionSelectors[2] = InitializeFacet.registerAccessControllerExternally.selector;
+    functionSelectors[3] = InitializeFacet.registerContentCreatorExternally.selector;
+    functionSelectors[4] = InitializeFacet.registerEmbodiedSystemExternally.selector;
 
     diamondCut[0] = IDiamondCut.FacetCut({
       facetAddress: address(_InitializeFacet),
-      action: IDiamondCut.FacetCutAction.Add,
+      action: action,
       functionSelectors: functionSelectors
     });
 
     // Add EmberFacet
     EmberFacet _EmberFacet = new EmberFacet();
 
-    functionSelectors = new bytes4[](2);
+    functionSelectors = new bytes4[](1);
     functionSelectors[0] = EmberFacet.world.selector;
-    functionSelectors[1] = EmberFacet.configureWorld.selector;
 
     diamondCut[1] = IDiamondCut.FacetCut({
       facetAddress: address(_EmberFacet),
-      action: IDiamondCut.FacetCutAction.Add,
+      action: action,
       functionSelectors: functionSelectors
     });
 
@@ -119,7 +125,7 @@ library LibDeploy {
 
     diamondCut[2] = IDiamondCut.FacetCut({
       facetAddress: address(_DebugFacet),
-      action: IDiamondCut.FacetCutAction.Add,
+      action: action,
       functionSelectors: functionSelectors
     });
 
@@ -131,11 +137,11 @@ library LibDeploy {
 
     diamondCut[3] = IDiamondCut.FacetCut({
       facetAddress: address(_CastSpellFacet),
-      action: IDiamondCut.FacetCutAction.Add,
+      action: action,
       functionSelectors: functionSelectors
     });
 
-    // ------------------------
+    // ----------------------a-
     // Deploy
     // ------------------------
 
@@ -154,7 +160,14 @@ library LibDeploy {
     }
 
     // Deploy the diamond
-    result.diamond = diamantaire.createDiamond(result.deployer, diamondCut, new bytes(0), 0);
+    if (upgrade) {
+      // Upgrade the diamond
+      IDiamondCut(_diamond).diamondCut(diamondCut, address(0), new bytes(0));
+      result.diamond = Diamond(_diamond);
+    } else {
+      // Deploy a new diamond
+      result.diamond = diamantaire.createDiamond(result.deployer, diamondCut, new bytes(0), 0);
+    }
     address diamondAddress = address(result.diamond);
 
     // Call initialize on the initialize facet
@@ -183,20 +196,21 @@ library LibDeploy {
     // Initialize
     // ------------------------
 
-    // Register access controllers
-    InitializeFacet(diamondAddress).registerAccessControllerExternally(address(new PersonaAccessController()));
+    if (!upgrade) {
+      InitializeFacet(diamondAddress).configureWorld();
 
-    // Register content creators
-    InitializeFacet(diamondAddress).registerContentCreatorExternally(address(new SpellContentCreator()));
+      // Register access controllers
+      InitializeFacet(diamondAddress).registerAccessControllerExternally(address(new PersonaAccessController()));
 
-    // Register embodied systems
-    address createEntityFromPrototypeEmbodiedSystem = address(new CreateEntityFromPrototypeEmbodiedSystem());
-    InitializeFacet(diamondAddress).registerEmbodiedSystemExternally(
-      createEntityFromPrototypeEmbodiedSystem,
-      CreateEntityFromPrototypeEmbodiedSystem.createEntityFromPrototype.selector
-    );
+      // Register content creators
+      InitializeFacet(diamondAddress).registerContentCreatorExternally(address(new SpellContentCreator()));
 
-    // Configure world
-    EmberFacet(diamondAddress).configureWorld();
+      // Register embodied systems
+      address createEntityFromPrototypeEmbodiedSystem = address(new CreateEntityFromPrototypeEmbodiedSystem());
+      InitializeFacet(diamondAddress).registerEmbodiedSystemExternally(
+        createEntityFromPrototypeEmbodiedSystem,
+        CreateEntityFromPrototypeEmbodiedSystem.createEntityFromPrototype.selector
+      );
+    }
   }
 }

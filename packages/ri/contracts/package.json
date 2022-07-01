@@ -17,7 +17,7 @@
     "start:anvil": "run-p -l anvil:node anvil:automine",
     "anvil:node": "anvil",
     "anvil:automine": "wait-on tcp:8545 && curl -X POST localhost:8545 -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"evm_setAutomine\", \"params\": [true], \"id\": 1 }'",
-    "forge:deploy:anvil": "yarn forge:deploy --private-keys 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --fork-url http://localhost:8545 --sig \"deployEmber(address, address)\" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 0x0000000000000000000000000000000000000000",
+    "forge:deploy:anvil": "yarn forge:deploy --private-keys 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --fork-url http://localhost:8545 --sig \"deployEmber(address, address, address)\" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266 0x0000000000000000000000000000000000000000 0xac7ed4ebabecbbc634ba8953839cdf1a05a77b20",
     "forge:deploy:hardhat": "yarn forge:deploy --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --sig \"deployEmber(address, address)\" 0x1c0f0Af3262A7213E59Be7f1440282279D788335 --fork-url http://localhost:8545",
     "forge:deploy:degen": "yarn forge:deploy --private-keys 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --sig \"deployEmber(address, address)\" 0x1c0f0Af3262A7213E59Be7f1440282279D788335 --fork-url https://degen-chain.lattice.xyz --legacy",
     "forge:deploy": "forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv",

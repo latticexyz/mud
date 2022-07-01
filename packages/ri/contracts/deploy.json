@@ -20,12 +20,13 @@
       "name": "InitializeFacet",
       "functions": [
         "initializeExternally",
+        "configureWorld",
         "registerAccessControllerExternally",
         "registerContentCreatorExternally",
         "registerEmbodiedSystemExternally"
       ]
     },
-    { "name": "EmberFacet", "functions": ["world", "configureWorld"] },
+    { "name": "EmberFacet", "functions": ["world"] },
     {
       "name": "DebugFacet",
       "functions": [

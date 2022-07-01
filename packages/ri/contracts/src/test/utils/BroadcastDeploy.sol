@@ -14,9 +14,13 @@ import { LibDeploy, DeployResult } from "../../libraries/LibDeploy.sol";
 contract Deploy is DSTest {
   Cheats internal immutable vm = Cheats(HEVM_ADDRESS);
 
-  function deployEmber(address _deployer, address _personaMirror) public returns (address) {
+  function deployEmber(
+    address _deployer,
+    address _personaMirror,
+    address payable _diamond
+  ) public returns (address) {
     vm.startBroadcast(_deployer);
-    DeployResult memory result = LibDeploy.deploy(_deployer, _personaMirror);
+    DeployResult memory result = LibDeploy.deploy(_deployer, _personaMirror, _diamond);
     vm.stopBroadcast();
     return address(result.diamond);
   }

@@ -11,6 +11,7 @@ import { AppStorage, Config } from "../libraries/LibAppStorage.sol";
 import { LibContent } from "../libraries/LibContent.sol";
 import { LibAccessControl } from "../libraries/LibAccessControl.sol";
 import { LibEmbodiedSystem } from "../libraries/LibEmbodiedSystem.sol";
+import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
 
 contract InitializeFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
@@ -18,6 +19,11 @@ contract InitializeFacet is UsingDiamondOwner, UsingAccessControl {
   function initializeExternally(Config calldata config) external {
     s.config = config;
     s.world = new World();
+  }
+
+  function configureWorld() external {
+    GameConfigComponent gameConfigComponent = GameConfigComponent(s.world.getComponent(GameConfigComponentID));
+    gameConfigComponent.set(GodID, GameConfig({ startTime: block.timestamp, turnLength: uint256(20) }));
   }
 
   function registerAccessControllerExternally(address accessControllerAddr) external {
