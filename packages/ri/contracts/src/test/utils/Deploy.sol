@@ -18,7 +18,7 @@ import { EmberFacet } from "../../facets/EmberFacet.sol";
 import { InitializeFacet } from "../../facets/InitializeFacet.sol";
 import { DebugFacet } from "../../facets/DebugFacet.sol";
 // Facets: Systems
-import { CastSpellFacet } from "../../facets/systems/CastSpellFacet.sol";
+import { CastSpellFacet } from "../../facets/CastSpellFacet.sol";
 
 // Components
 import { EmbodiedSystemArgumentComponent } from "../../components/EmbodiedSystemArgumentComponent.sol";

@@ -4,16 +4,16 @@ pragma solidity >=0.8.0;
 import { World } from "solecs/World.sol";
 import { Component } from "solecs/Component.sol";
 
-import { LearnedSpellsComponent, ID as LearnedSpellsComponentID } from "../../components/LearnedSpellsComponent.sol";
-import { SpellComponent, Spell, ID as SpellComponentID } from "../../components/SpellComponent.sol";
-import { EmbodiedSystemArgumentComponent, ID as EmbodiedSystemArgumentComponentID } from "../../components/EmbodiedSystemArgumentComponent.sol";
+import { LearnedSpellsComponent, ID as LearnedSpellsComponentID } from "../components/LearnedSpellsComponent.sol";
+import { SpellComponent, Spell, ID as SpellComponentID } from "../components/SpellComponent.sol";
+import { EmbodiedSystemArgumentComponent, ID as EmbodiedSystemArgumentComponentID } from "../components/EmbodiedSystemArgumentComponent.sol";
 
-import { UsingAccessControl } from "../../access/UsingAccessControl.sol";
+import { UsingAccessControl } from "../access/UsingAccessControl.sol";
 
-import { AppStorage } from "../../libraries/LibAppStorage.sol";
-import { LibECS } from "../../libraries/LibECS.sol";
-import { LibEmbodiedSystem } from "../../libraries/LibEmbodiedSystem.sol";
-import { LibUtils } from "../../libraries/LibUtils.sol";
+import { AppStorage } from "../libraries/LibAppStorage.sol";
+import { LibECS } from "../libraries/LibECS.sol";
+import { LibEmbodiedSystem } from "../libraries/LibEmbodiedSystem.sol";
+import { LibUtils } from "../libraries/LibUtils.sol";
 
 contract CastSpellFacet is UsingAccessControl {
   AppStorage internal s;
