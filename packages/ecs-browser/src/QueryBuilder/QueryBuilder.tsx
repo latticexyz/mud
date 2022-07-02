@@ -1,7 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
   Layers,
-  removeComponent,
   setComponent,
   Type,
   AnyComponent,
@@ -16,16 +15,20 @@ import { QueryBuilderForm, QueryShortcutContainer } from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { flatten, orderBy } from "lodash";
+import { flatten, orderBy, throttle } from "lodash";
 import { PositionFilterButton } from "./PositionFilterButton";
+import { MAX_ENTITIES } from "../constants";
+import { observe } from "mobx";
 
-export const QueryBuilder = function ({
+export const QueryBuilder = ({
   allEntities,
   setFilteredEntities,
   layers,
   world,
   devHighlightComponent,
   hoverHighlightComponent,
+  clearDevHighlights,
+  setOverflow,
 }: {
   world: World;
   layers: Layers;
@@ -33,7 +36,9 @@ export const QueryBuilder = function ({
   setFilteredEntities: (es: EntityID[]) => void;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
   hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
-}) {
+  clearDevHighlights: () => void;
+  setOverflow: (overflow: number) => void;
+}) => {
   const queryInputRef = useRef<HTMLInputElement>(null);
   const [componentFilters, setComponentFilters] = useState<AnyComponent[]>([]);
   const [isManuallyEditing, setIsManuallyEditing] = useState(true);
@@ -73,6 +78,14 @@ export const QueryBuilder = function ({
     setComponentFilters([]);
   }, []);
 
+  const cancelObserver = useRef<() => void>(() => void 0);
+  // Cancel outstanding observers on unmount
+  useEffect(() => {
+    return () => {
+      if (cancelObserver.current) cancelObserver.current();
+    };
+  }, []);
+
   const executeFilter = useCallback(
     (e: React.SyntheticEvent) => {
       e.preventDefault();
@@ -103,11 +116,27 @@ export const QueryBuilder = function ({
           throw new Error("Invalid query");
         }
 
-        const selectedEntities = defineQuery(queryArray, { runOnInit: true }).matching;
-        setFilteredEntities([...selectedEntities].map((idx) => world.entities[idx]));
-
-        selectedEntities.forEach((idx) => removeComponent(devHighlightComponent, idx));
-        selectedEntities.forEach((idx) => setComponent(devHighlightComponent, idx, { value: 0x0000ff }));
+        cancelObserver.current();
+        const queryResult = defineQuery(queryArray, { runOnInit: true });
+        const subscription = queryResult.update$.subscribe();
+        const selectEntities = throttle(
+          () => {
+            const selectedEntities = [...queryResult.matching].slice(0, MAX_ENTITIES);
+            setOverflow(queryResult.matching.size - selectedEntities.length);
+            setFilteredEntities(selectedEntities.map((idx) => world.entities[idx]));
+            clearDevHighlights();
+            selectedEntities.forEach((idx) => setComponent(devHighlightComponent, idx, { value: 0x0000ff }));
+          },
+          1000,
+          { leading: true }
+        );
+        selectEntities();
+        const cancelObserve = observe(queryResult.matching, selectEntities);
+        cancelObserver.current = () => {
+          cancelObserve();
+          selectEntities.cancel();
+          subscription?.unsubscribe();
+        };
       } catch (e: unknown) {
         setErrorMessage((e as Error).message);
         console.error(e);
@@ -118,12 +147,7 @@ export const QueryBuilder = function ({
 
   return (
     <>
-      <QueryBuilderForm
-        onSubmit={(e) => {
-          e.preventDefault();
-          queryInputRef.current?.blur();
-        }}
-      >
+      <QueryBuilderForm onSubmit={executeFilter}>
         <SyntaxHighlighter wrapLongLines language="javascript" style={dracula}>
           {entityQueryText}
         </SyntaxHighlighter>
@@ -147,7 +171,6 @@ export const QueryBuilder = function ({
             editQuery(e.target.value);
           }}
           onFocus={(e) => e.target.select()}
-          onBlur={(e) => executeFilter(e)}
         />
       </QueryBuilderForm>
 

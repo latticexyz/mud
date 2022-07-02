@@ -80,3 +80,8 @@ export const DraggableNumberLabelContainer = styled.label`
   user-select: none;
   color: #8c91a0;
 `;
+
+export const SmallHeadline = styled.p`
+  padding: 8px;
+  font-size: 14px;
+`;
