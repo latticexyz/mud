@@ -46,6 +46,7 @@
     "inquirer-prompt-suggest": "^0.1.0",
     "listr2": "^4.0.5",
     "netlify": "^11.0.1",
+    "node-fetch": "^3.2.6",
     "openurl": "^1.1.1",
     "path": "^0.12.7",
     "uuid": "^8.3.2",

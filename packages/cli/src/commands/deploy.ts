@@ -8,7 +8,7 @@ import { exit } from "process";
 import fs from "fs";
 import openurl from "openurl";
 import ips from "inquirer-prompt-suggest";
-import { Arguments, CommandBuilder, options } from "yargs";
+import { Arguments, CommandBuilder } from "yargs";
 inquirer.registerPrompt("suggest", ips);
 
 // Workaround to prevent tsc to transpile dynamic imports with require, which causes an error upstream
@@ -16,6 +16,7 @@ inquirer.registerPrompt("suggest", ips);
 const importNetlify = eval('import("netlify")') as Promise<typeof import("netlify")>;
 const importChalk = eval('import("chalk")') as Promise<typeof import("chalk")>;
 const importExeca = eval('import("execa")') as Promise<typeof import("execa")>;
+const importFetch = eval('import("node-fetch")') as Promise<typeof import("node-fetch")>;
 
 interface Options {
   i?: boolean;
@@ -260,6 +261,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
       ])
     : ({} as Options);
 
+  const { default: fetch } = await importFetch;
   const chainSpecUrl = args.chainSpec ?? config.chainSpec ?? answers.chainSpec;
   const chainSpec =
     chainSpecUrl == null
@@ -275,10 +277,14 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     chainSpec: args.chainSpec ?? config.chainSpec ?? answers.chainSpec ?? defaultOptions.chainSpec,
     chainId: args.chainId ?? chainSpec?.chainId ?? config.chainId ?? answers.chainId ?? defaultOptions.chainId,
     rpc: args.rpc ?? chainSpec?.rpc ?? config.rpc ?? answers.rpc ?? defaultOptions.rpc,
-    personaMirror: args.personaMirror ?? chainSpec?.personaMirror ?? config.personaMirror ?? answers.personaMirror,
+    personaMirror:
+      args.personaMirror ?? chainSpec?.personaMirrorAddress ?? config.personaMirror ?? answers.personaMirror,
     personaAllMinter:
-      args.personaAllMinter ?? chainSpec?.personaAllMinter ?? config.personaAllMinter ?? answers.personaAllMinter,
-    persona: args.persona ?? chainSpec?.persona ?? config.persona ?? answers.persona,
+      args.personaAllMinter ??
+      chainSpec?.personaAllMinterAddress ??
+      config.personaAllMinter ??
+      answers.personaAllMinter,
+    persona: args.persona ?? chainSpec?.personaAddress ?? config.persona ?? answers.persona,
     world: args.world ?? chainSpec?.world ?? config.world ?? answers.world,
     diamond: args.diamond ?? config.diamond ?? answers.diamond,
     reuseComponents:

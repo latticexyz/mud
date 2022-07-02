@@ -29,6 +29,7 @@ inquirer_1.default.registerPrompt("suggest", inquirer_prompt_suggest_1.default);
 const importNetlify = eval('import("netlify")');
 const importChalk = eval('import("chalk")');
 const importExeca = eval('import("execa")');
+const importFetch = eval('import("node-fetch")');
 exports.command = "deploy";
 exports.desc = "Deploys the local mud contracts and optionally the client";
 const builder = (yargs) => yargs.options({
@@ -250,6 +251,7 @@ const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
             },
         ])
         : {};
+    const { default: fetch } = yield importFetch;
     const chainSpecUrl = (_b = (_a = args.chainSpec) !== null && _a !== void 0 ? _a : config.chainSpec) !== null && _b !== void 0 ? _b : answers.chainSpec;
     const chainSpec = chainSpecUrl == null
         ? null
@@ -262,9 +264,9 @@ const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
         chainSpec: (_e = (_d = (_c = args.chainSpec) !== null && _c !== void 0 ? _c : config.chainSpec) !== null && _d !== void 0 ? _d : answers.chainSpec) !== null && _e !== void 0 ? _e : defaultOptions.chainSpec,
         chainId: (_j = (_h = (_g = (_f = args.chainId) !== null && _f !== void 0 ? _f : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.chainId) !== null && _g !== void 0 ? _g : config.chainId) !== null && _h !== void 0 ? _h : answers.chainId) !== null && _j !== void 0 ? _j : defaultOptions.chainId,
         rpc: (_o = (_m = (_l = (_k = args.rpc) !== null && _k !== void 0 ? _k : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.rpc) !== null && _l !== void 0 ? _l : config.rpc) !== null && _m !== void 0 ? _m : answers.rpc) !== null && _o !== void 0 ? _o : defaultOptions.rpc,
-        personaMirror: (_r = (_q = (_p = args.personaMirror) !== null && _p !== void 0 ? _p : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.personaMirror) !== null && _q !== void 0 ? _q : config.personaMirror) !== null && _r !== void 0 ? _r : answers.personaMirror,
-        personaAllMinter: (_u = (_t = (_s = args.personaAllMinter) !== null && _s !== void 0 ? _s : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.personaAllMinter) !== null && _t !== void 0 ? _t : config.personaAllMinter) !== null && _u !== void 0 ? _u : answers.personaAllMinter,
-        persona: (_x = (_w = (_v = args.persona) !== null && _v !== void 0 ? _v : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.persona) !== null && _w !== void 0 ? _w : config.persona) !== null && _x !== void 0 ? _x : answers.persona,
+        personaMirror: (_r = (_q = (_p = args.personaMirror) !== null && _p !== void 0 ? _p : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.personaMirrorAddress) !== null && _q !== void 0 ? _q : config.personaMirror) !== null && _r !== void 0 ? _r : answers.personaMirror,
+        personaAllMinter: (_u = (_t = (_s = args.personaAllMinter) !== null && _s !== void 0 ? _s : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.personaAllMinterAddress) !== null && _t !== void 0 ? _t : config.personaAllMinter) !== null && _u !== void 0 ? _u : answers.personaAllMinter,
+        persona: (_x = (_w = (_v = args.persona) !== null && _v !== void 0 ? _v : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.personaAddress) !== null && _w !== void 0 ? _w : config.persona) !== null && _x !== void 0 ? _x : answers.persona,
         world: (_0 = (_z = (_y = args.world) !== null && _y !== void 0 ? _y : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.world) !== null && _z !== void 0 ? _z : config.world) !== null && _0 !== void 0 ? _0 : answers.world,
         diamond: (_2 = (_1 = args.diamond) !== null && _1 !== void 0 ? _1 : config.diamond) !== null && _2 !== void 0 ? _2 : answers.diamond,
         reuseComponents: (_5 = (_4 = (_3 = args.reuseComponents) !== null && _3 !== void 0 ? _3 : config.reuseComponents) !== null && _4 !== void 0 ? _4 : answers.reuseComponents) !== null && _5 !== void 0 ? _5 : defaultOptions.reuseComponents,
