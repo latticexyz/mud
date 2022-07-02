@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/std-client",
-  "version": "0.1.0",
+  "version": "0.1.8",
   "description": "Standard library for MUD client.",
   "license": "MIT",
   "main": "src/index.ts",
