@@ -14,7 +14,7 @@ export type Layers = {
 
 export type GridConfiguration = { colStart: number; colEnd: number; rowStart: number; rowEnd: number };
 
-export interface UIComponent<T> {
+export interface UIComponent<T = unknown> {
   gridConfig: GridConfiguration;
   requirement(layers: Layers): Observable<T>;
   render(props: NonNullable<T>): ReactElement | null;

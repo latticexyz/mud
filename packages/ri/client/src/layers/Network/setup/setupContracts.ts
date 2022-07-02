@@ -96,7 +96,7 @@ function applyNetworkUpdates<C extends Components>(
       // We throttle the client side event processing to 1000 events every 16ms, so 62.500 events per second.
       // This means if the chain were to emit more than 62.500 events per second, the client would not keep up.
       // The only time we get close to this number is when initializing from a checkpoint/cache.
-      bufferTime(16, null, 250),
+      bufferTime(16, null, 1000),
       filter((updates) => updates.length > 0),
       stretch(16)
     )

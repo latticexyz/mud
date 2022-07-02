@@ -16,7 +16,7 @@ export function toUpdate<S extends Schema>(entity: EntityIndex, component: Compo
     entity,
     component,
     value: [value, undefined],
-    type: value == null ? UpdateType.Enter : UpdateType.Noop,
+    type: value == null ? UpdateType.Noop : UpdateType.Enter,
   } as ComponentUpdate<S> & {
     type: UpdateType;
   };

@@ -1,11 +1,10 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { useLayers, useEngineStore } from "../hooks";
 import { filterNullishValues } from "@latticexyz/utils";
 import { Cell } from "./Cell";
 import styled from "styled-components";
-import { GridConfiguration } from "../types";
-import { Observable } from "rxjs";
+import { GridConfiguration, Layers, UIComponent } from "../types";
 import { useStream } from "@latticexyz/std-client";
 
 const UIGrid = styled.div`
@@ -37,17 +36,15 @@ const UIComponentContainer: React.FC<{ gridConfig: GridConfiguration }> = ({ chi
   );
 };
 
-export function renderUIComponent<T>({
-  requirementStream,
-  render,
-}: {
-  requirementStream: Observable<T>;
-  render(props: T): ReactElement | null;
-}) {
-  const state = useStream(requirementStream);
-  if(!state) return null;
-  
-  return render(state);
+export function renderUIComponent(layers: Layers, key: string, { requirement, render, gridConfig }: UIComponent) {
+  const state = useStream(requirement(layers));
+  if (!state) return null;
+
+  return (
+    <UIComponentContainer key={`component-${key}`} gridConfig={gridConfig}>
+      {render(state)};
+    </UIComponentContainer>
+  );
 }
 
 export const ComponentRenderer: React.FC = observer(() => {
@@ -60,12 +57,7 @@ export const ComponentRenderer: React.FC = observer(() => {
         // Iterate through all registered UIComponents
         // and return those whose requirements are fulfilled
         [...UIComponents.entries()].map(([key, UIComponent]) => {
-          const requirementStream = UIComponent.requirement(layers);
-          return (
-            <UIComponentContainer key={`component-${key}`} gridConfig={UIComponent.gridConfig}>
-              {renderUIComponent({ requirementStream, render: UIComponent.render })}
-            </UIComponentContainer>
-          );
+          return renderUIComponent(layers, key, UIComponent);
         })
       )}
     </UIGrid>

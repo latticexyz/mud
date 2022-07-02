@@ -1,20 +1,13 @@
-import { Component, defineQuery, EntityIndex, Has, removeComponent } from "@latticexyz/recs";
-import { ObservableSet } from "mobx";
-import { useCallback, useEffect, useRef } from "react";
+import { Component, Has, removeComponent } from "@latticexyz/recs";
+import { useQuery } from "@latticexyz/std-client";
+import { useCallback } from "react";
 
 export function useClearDevHighlights(devHighlightComponent: Component) {
-  const highlightedEntities = useRef<ObservableSet<EntityIndex>>();
-
-  useEffect(() => {
-    const queryResult = defineQuery([Has(devHighlightComponent)], { runOnInit: true });
-    const subscription = queryResult.update$.subscribe();
-    highlightedEntities.current = queryResult.matching;
-    return () => subscription?.unsubscribe();
-  }, []);
+  const highlightedEntities = useQuery([Has(devHighlightComponent)]);
 
   return useCallback(() => {
-    if (!highlightedEntities.current) return;
-    for (const entity of highlightedEntities.current) {
+    if (!highlightedEntities) return;
+    for (const entity of highlightedEntities) {
       removeComponent(devHighlightComponent, entity);
     }
   }, [highlightedEntities]);

@@ -3,7 +3,7 @@ import { Observable } from "rxjs";
 import { GridConfiguration, Layers, UIComponent } from "./types";
 
 export const EngineStore = observable({
-  UIComponents: new Map<string, UIComponent<unknown>>(),
+  UIComponents: new Map<string, UIComponent>(),
 });
 
 export const registerUIComponent = action(

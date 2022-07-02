@@ -98,20 +98,5 @@ export async function createPhaserLayer(local: LocalLayer) {
   createDrawPotentialPathSystem(layer);
   createPlayerSpawnSystem(layer);
 
-  // setTimeout(() => {
-  //   times(10_000).forEach((i) => {
-  //     createEntity(world, [
-  //       [
-  //         local.parentLayers.network.components.Position,
-  //         { x: Math.round(Math.random() * 10000), y: Math.round(Math.random() * 10000) },
-  //       ],
-  //       [
-  //         local.parentLayers.network.components.EntityType,
-  //         { value: EntityTypes.Hero }
-  //       ]
-  //     ]);
-  //   });
-  // })
-
   return layer;
 }
