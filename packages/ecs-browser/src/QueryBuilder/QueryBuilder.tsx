@@ -65,7 +65,7 @@ export const QueryBuilder = ({
   useEffect(() => {
     if (isManuallyEditing) return;
 
-    const hasFilters = componentFilters.map((c) => `q.Has(c.${c.id})`);
+    const hasFilters = componentFilters.map((c) => `Has(${c.id})`);
     const query = `[${hasFilters.join(",")}]`;
     setEntityQueryText(query);
   }, [componentFilters, isManuallyEditing]);
@@ -110,7 +110,23 @@ export const QueryBuilder = ({
       }, {});
 
       try {
-        const queryArray = eval(entityQueryText) as EntityQueryFragment[];
+        const assignQueryVars = Object.keys(q)
+          .map((key) => `const ${key} = q["${key}"]; `)
+          .join("");
+
+        const assignComponentVars = Object.keys(c)
+          .map((key) => `const ${key} = c["${key}"]; `)
+          .join("");
+
+        const evalString = `
+        (() => {
+          ${assignQueryVars}
+          ${assignComponentVars}
+          return (${entityQueryText});
+        })()
+        `;
+
+        const queryArray = eval(evalString) as EntityQueryFragment[];
         if (!queryArray || queryArray.length === 0 || !Array.isArray(queryArray)) {
           resetFilteredEntities();
           throw new Error("Invalid query");

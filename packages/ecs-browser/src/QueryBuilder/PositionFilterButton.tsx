@@ -18,7 +18,7 @@ export const PositionFilterButton: React.FC<{
       if (!hoverPosition) return;
 
       setSelectingPosition(false);
-      editQuery(`[q.HasValue(c.LocalPosition, { x: ${hoverPosition.x}, y: ${hoverPosition.y} })]`);
+      editQuery(`[HasValue(LocalPosition, { x: ${hoverPosition.x}, y: ${hoverPosition.y} })]`);
       queryInputRef.current?.focus();
     }
 
@@ -37,7 +37,7 @@ export const PositionFilterButton: React.FC<{
       }}
     >
       {selectingPosition
-        ? `[q.HasValue(c.LocalPosition, { x: ${hoverPosition?.x}, y: ${hoverPosition?.y} })]`
+        ? `[HasValue(LocalPosition, { x: ${hoverPosition?.x}, y: ${hoverPosition?.y} })]`
         : "Select Entities at a position"}
     </ComponentBrowserButton>
   );
