@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import { ethers } from "ethers";
+import { constants, ethers } from "ethers";
 import inquirer from "inquirer";
 import { v4 } from "uuid";
 import { Listr, Logger } from "listr2";
@@ -8,30 +8,31 @@ import { exit } from "process";
 import fs from "fs";
 import openurl from "openurl";
 import ips from "inquirer-prompt-suggest";
-import { Arguments, CommandBuilder } from "yargs";
+import { Arguments, CommandBuilder, options } from "yargs";
 inquirer.registerPrompt("suggest", ips);
 
-// Workaround to prevent tsc to transpole dynamic imports with require, which causes an error upstream
+// Workaround to prevent tsc to transpile dynamic imports with require, which causes an error upstream
 // https://github.com/microsoft/TypeScript/issues/43329#issuecomment-922544562
 const importNetlify = eval('import("netlify")') as Promise<typeof import("netlify")>;
 const importChalk = eval('import("chalk")') as Promise<typeof import("chalk")>;
 const importExeca = eval('import("execa")') as Promise<typeof import("execa")>;
 
 interface Options {
+  i?: boolean;
+  chainSpec?: string;
   chainId?: number;
-  deploymentName?: string;
+  rpc?: string;
+  personaMirror?: string;
+  personaAllMinter?: string;
+  persona?: string;
+  world?: string;
+  diamond?: string;
+  reuseComponents?: boolean;
+  deployerPrivateKey?: string;
   deployClient?: boolean;
   clientUrl?: string;
   netlifySlug?: string;
   netlifyPersonalToken?: string;
-  deployerPrivateKey?: string;
-}
-
-interface Network {
-  network: string;
-  name: string;
-  rpcUrl: string;
-  chainId: number;
 }
 
 export const command = "deploy";
@@ -39,13 +40,21 @@ export const desc = "Deploys the local mud contracts and optionally the client";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) =>
   yargs.options({
+    i: { type: "boolean" },
+    chainSpec: { type: "string" },
     chainId: { type: "number" },
-    deploymentName: { type: "string" },
+    rpc: { type: "string" },
+    personaMirror: { type: "string" },
+    persona: { type: "string" },
+    personaAllMinter: { type: "string" },
+    world: { type: "string" },
+    diamond: { type: "string" },
+    reuseComponents: { type: "boolean" },
+    deployerPrivateKey: { type: "string" },
     deployClient: { type: "boolean" },
     clientUrl: { type: "string" },
     netlifySlug: { type: "string" },
     netlifyPersonalToken: { type: "string" },
-    deployerPrivateKey: { type: "string" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -53,7 +62,7 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
   await deploy(info);
 };
 
-export function isValidHttpUrl(s: string): boolean {
+function isValidHttpUrl(s: string): boolean {
   let url: URL | undefined;
 
   try {
@@ -65,39 +74,14 @@ export function isValidHttpUrl(s: string): boolean {
   return url.protocol === "http:" || url.protocol === "https:";
 }
 
-export const findGameContractAddress = (deployLogLines: string[]): string => {
+function findLog(deployLogLines: string[], log: string): string {
   for (const logLine of deployLogLines) {
-    if (logLine.includes("0: address")) {
-      return logLine.split(" ")[2].trim();
+    if (logLine.includes(log)) {
+      return logLine.split(log)[1].trim();
     }
   }
-  throw new Error("Expected to find a log line for the deployed game");
-};
-
-export const SUPPORTED_DEPLOYMENT_CHAINS: { [key: number]: Network } = {
-  // 69: {
-  //   name: "Optimistic Kovan",
-  //   network: "optimisticKovan",
-  //   rpcUrl: "https://kovan.optimism.io",
-  // },
-  // 300: {
-  //   name: "Optimism Gnosis Chain",
-  //   network: "optimismGnosisChain",
-  //   rpcUrl: "https://optimism.gnosischain.com",
-  // },
-  31337: {
-    name: "Local",
-    network: "localhost",
-    rpcUrl: "http://localhost:8545/",
-    chainId: 31337,
-  },
-  6969: {
-    name: "Lattice Degen Chain",
-    network: "ldc",
-    rpcUrl: "https://degen-chain.lattice.xyz/",
-    chainId: 6969,
-  },
-};
+  throw new Error("Can not find log");
+}
 
 const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (args) => {
   const { default: chalk } = await importChalk;
@@ -117,103 +101,192 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     const netlifyAPI = new netlify(token);
     return (await netlifyAPI.listAccountsForUser()).map((a: { slug: string }) => a.slug);
   };
-  const answers: Options = (await inquirer.prompt([
-    {
-      type: "list",
-      name: "chainId",
-      choices: Object.entries(SUPPORTED_DEPLOYMENT_CHAINS).map(([chainId, network]) => ({
-        name: network.name,
-        value: parseInt(chainId),
-      })),
-      message: "Select an available chain",
-      loop: false,
-      when: () => args.chainId == null && config.chainId == null,
-    },
-    {
-      type: "suggest",
-      name: "deploymentName",
-      message: "Enter a name for your deployment:",
-      suggestions: ["mud game"],
-      validate: (input: string) => {
-        if (input.length < 4) {
-          return "Invalid: 4 characters minimum";
-        }
-        return true;
-      },
-      when: () => !args.deploymentName && !config.deploymentName,
-    },
-    {
-      type: "input",
-      name: "deployerPrivateKey",
-      message: "Enter private key of the account you want to deploy with:",
-      when: () => !args.deployerPrivateKey && !config.deployerPrivateKey,
-      validate: (i) => {
-        if (i[0] == "0" && i[1] && i.length === 66) return true;
-        return "Invalid private key";
-      },
-    },
-    {
-      type: "list",
-      message: "Would you like to deploy the game client?",
-      choices: [
-        { name: "Yes", value: true },
-        { name: "No", value: false },
-      ],
-      default: false,
-      name: "deployClient",
-      validate: (i) => {
-        if (Boolean(i) && config.netlifyPersonalToken && config.netlifyPersonalToken.length === 0) {
-          return "You don't have a netlify api token. Can't deploy clients using the cli.";
-        }
-      },
-      when: () => args.deployClient == null && config.deployClient == null,
-    },
-    {
-      type: "input",
-      name: "netlifyPersonalToken",
-      message: "Enter your netlify personal token:",
-      when: (answers) => answers.deployClient && !args.netlifyPersonalToken && !config.netlifyPersonalToken,
-      validate: (i) => {
-        if (i[0] == "0" && i[1] && i.length === 66) return true;
-        return "Invalid private key";
-      },
-    },
-    {
-      type: "list",
-      message: "From which netlify account?",
-      choices: async (answers) =>
-        await getNetlifyAccounts(
-          args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken!
-        ),
-      name: "netlifySlug",
-      when: (answers) => answers.deployClient && !args.netlifySlug && !config.netlifySlug,
-    },
-    {
-      type: "input",
-      name: "clientUrl",
-      message: "Enter URL of already deployed client:",
-      when: (answers) => !answers.deployClient && !args.clientUrl && !config.clientUrl,
-      default: "http://localhost:3000",
-      validate: (i) => {
-        if (isValidHttpUrl(i)) {
-          if (i[i.length - 1] === "/") {
-            return "No trailing slash";
-          }
-          return true;
-        } else {
-          return "Not a valid URL";
-        }
-      },
-    },
-  ])) as Options;
+
+  const defaultOptions: Options = {
+    chainSpec: "chainSpec.json",
+    chainId: 31337,
+    rpc: "http://localhost:8545",
+    reuseComponents: false,
+    deployClient: false,
+    clientUrl: "http://localhost:3000",
+  };
+
+  const answers: Options = args.i
+    ? await inquirer.prompt([
+        {
+          type: "input",
+          name: "chainSpec",
+          default: defaultOptions.chainSpec,
+          message: "Provide a chainSpec.json location (local or remote)",
+          when: () => args.chainSpec == null && config.chainSpec == null,
+        },
+        {
+          type: "number",
+          name: "chainId",
+          default: defaultOptions.chainId,
+          message: "Provide a chainId for the deployment",
+          when: (answers) => answers.chainSpec == null && args.chainId == null && config.chainSpec == null,
+        },
+        {
+          type: "input",
+          name: "rpc",
+          default: defaultOptions.rpc,
+          message: "Provide a JSON RPC endpoint for your deployment",
+          when: (answers) => answers.chainSpec == null && args.rpc == null && config.rpc == null,
+          validate: (i) => {
+            if (isValidHttpUrl(i)) return true;
+            return "Invalid URL";
+          },
+        },
+        {
+          type: "input",
+          name: "personaMirror",
+          message:
+            "Provide the address of an existing PersonaMirror contract. (If none is given, PersonaMirror will be deployed.)",
+          when: (answers) => answers.chainSpec == null && args.personaMirror == null && config.personaMirror == null,
+          validate: (i) => {
+            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
+            return "Invalid address";
+          },
+        },
+        {
+          type: "input",
+          name: "persona",
+          message: "Provide the address of an existing Persona contract. (If none is given, Persona will be deployed.)",
+          when: (answers) => answers.chainSpec == null && args.persona == null && config.persona == null,
+          validate: (i) => {
+            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
+            return "Invalid address";
+          },
+        },
+        {
+          type: "input",
+          name: "personaAllMinter",
+          message:
+            "Provide the address of an existing PersonaAllMinter contract. (If none is given, PersonaAllMinter will be deployed.)",
+          when: (answers) => answers.chainSpec == null && args.persona == null && config.persona == null,
+          validate: (i) => {
+            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
+            return "Invalid address";
+          },
+        },
+        {
+          type: "input",
+          name: "diamond",
+          message:
+            "Provide the address of an existing Diamond contract that should be updated. (If none is given, a new Diamond will be deployed.)",
+          when: () => args.diamond == null && config.diamond == null,
+          validate: (i) => {
+            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
+            return "Invalid address";
+          },
+        },
+        {
+          type: "input",
+          name: "world",
+          message:
+            "Provide the address of an existing World contract. (If none is given, a new World will be deployed.)",
+          when: () => args.world == null && config.world == null,
+          validate: (i) => {
+            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
+            return "Invalid address";
+          },
+        },
+        {
+          type: "list",
+          name: "reuseComponents",
+          message: "Reuse existing components?",
+          choices: [
+            { name: "Yes", value: true },
+            { name: "No", value: false },
+          ],
+          default: defaultOptions.reuseComponents,
+          when: () => args.reuseComponents == null && config.reuseComponents == null,
+        },
+        {
+          type: "input",
+          name: "deployerPrivateKey",
+          message: "Enter private key of the deployer account:",
+          when: () => !args.deployerPrivateKey && !config.deployerPrivateKey,
+          validate: (i) => {
+            if (i[0] == "0" && i[1] == "x" && i.length === 66) return true;
+            return "Invalid private key";
+          },
+        },
+        {
+          type: "list",
+          message: "Deploy the client?",
+          choices: [
+            { name: "Yes", value: true },
+            { name: "No", value: false },
+          ],
+          default: defaultOptions.deployClient,
+          name: "deployClient",
+          when: () => args.deployClient == null && config.deployClient == null,
+        },
+        {
+          type: "input",
+          name: "netlifyPersonalToken",
+          message: "Enter a netlify personal token for deploying the client:",
+          when: (answers) => answers.deployClient && !args.netlifyPersonalToken && !config.netlifyPersonalToken,
+        },
+        {
+          type: "list",
+          message: "From which netlify account?",
+          choices: async (answers) =>
+            await getNetlifyAccounts(
+              args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken!
+            ),
+          name: "netlifySlug",
+          when: (answers) => answers.deployClient && !args.netlifySlug && !config.netlifySlug,
+        },
+        {
+          type: "input",
+          name: "clientUrl",
+          message: "Enter URL of an already deployed client:",
+          when: (answers) => !answers.deployClient && !args.clientUrl && !config.clientUrl,
+          default: "http://localhost:3000",
+          validate: (i) => {
+            if (isValidHttpUrl(i)) {
+              if (i[i.length - 1] === "/") {
+                return "No trailing slash";
+              }
+              return true;
+            } else {
+              return "Not a valid URL";
+            }
+          },
+        },
+      ])
+    : ({} as Options);
+
+  const chainSpecUrl = args.chainSpec ?? config.chainSpec ?? answers.chainSpec;
+  const chainSpec =
+    chainSpecUrl == null
+      ? null
+      : isValidHttpUrl(chainSpecUrl)
+      ? await (await fetch(chainSpecUrl)).json()
+      : JSON.parse(fs.readFileSync(chainSpecUrl, "utf8"));
+
+  // Priority of config source: command line args >> chainSpec >> local config >> interactive answers >> defaults
+  // -> Command line args can override every other config, interactive questions are only asked if no other config given for this option
 
   return {
-    chainId: args.chainId ?? config.chainId ?? answers.chainId,
-    deploymentName: args.deploymentName ?? config.deploymentName ?? answers.deploymentName,
-    deployerPrivateKey: args.deployerPrivateKey ?? config.deployerPrivateKey ?? answers.netlifyPersonalToken,
-    deployClient: args.deployClient ?? config.deployClient ?? answers.deployClient,
+    chainSpec: args.chainSpec ?? config.chainSpec ?? answers.chainSpec ?? defaultOptions.chainSpec,
+    chainId: args.chainId ?? chainSpec?.chainId ?? config.chainId ?? answers.chainId ?? defaultOptions.chainId,
+    rpc: args.rpc ?? chainSpec?.rpc ?? config.rpc ?? answers.rpc ?? defaultOptions.rpc,
+    personaMirror: args.personaMirror ?? chainSpec?.personaMirror ?? config.personaMirror ?? answers.personaMirror,
+    personaAllMinter:
+      args.personaAllMinter ?? chainSpec?.personaAllMinter ?? config.personaAllMinter ?? answers.personaAllMinter,
+    persona: args.persona ?? chainSpec?.persona ?? config.persona ?? answers.persona,
+    world: args.world ?? chainSpec?.world ?? config.world ?? answers.world,
+    diamond: args.diamond ?? config.diamond ?? answers.diamond,
+    reuseComponents:
+      args.reuseComponents ?? config.reuseComponents ?? answers.reuseComponents ?? defaultOptions.reuseComponents,
+    deployerPrivateKey: args.deployerPrivateKey ?? config.deployerPrivateKey ?? answers.deployerPrivateKey,
+    deployClient: args.deployClient ?? config.deployClient ?? answers.deployClient ?? defaultOptions.deployClient,
+    clientUrl: args.clientUrl ?? config.clientUrl ?? answers.clientUrl ?? defaultOptions.clientUrl,
     netlifySlug: args.netlifySlug ?? config.netlifySlug ?? answers.netlifySlug,
-    clientUrl: args.clientUrl ?? config.clientUrl ?? answers.clientUrl,
     netlifyPersonalToken: args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken,
   };
 };
@@ -222,13 +295,15 @@ export const deploy = async (options: Options) => {
   const { default: chalk } = await importChalk;
   const { execa } = await importExeca;
   console.log();
-  console.log(chalk.yellow(`>> Deploying ${chalk.bgYellow.black.bold(" " + options.deploymentName + " ")} <<`));
+  console.log(chalk.yellow(`>> Deploying contracts <<`));
+
+  console.log("Options");
+  console.log(options);
 
   const wallet = new ethers.Wallet(options.deployerPrivateKey!);
   console.log(chalk.red(`>> Deployer address: ${chalk.bgYellow.black.bold(" " + wallet.address + " ")} <<`));
   console.log();
 
-  const network = SUPPORTED_DEPLOYMENT_CHAINS[options.chainId!];
   const logger = new Logger({ useIcons: true });
 
   const { NetlifyAPI: netlify } = await importNetlify;
@@ -236,8 +311,8 @@ export const deploy = async (options: Options) => {
   const netlifyAPI = options.deployClient && new netlify(options.netlifyPersonalToken);
   const id = v4().substring(0, 6);
 
-  let gameContractAddress: string | undefined = undefined;
-  let gameClientUrl: string | undefined = undefined;
+  let launcherUrl;
+  let gameContractAddress;
 
   try {
     const tasks = new Listr([
@@ -256,23 +331,23 @@ export const deploy = async (options: Options) => {
                     "--private-keys",
                     wallet.privateKey,
                     "--sig",
-                    "deployEmber(address)",
+                    "deployEmber(address,address,address,address,bool)",
                     wallet.address,
+                    options.personaMirror || constants.AddressZero,
+                    options.diamond || constants.AddressZero,
+                    options.world || constants.AddressZero,
+                    options.reuseComponents ? "true" : "false",
                     "--fork-url",
-                    network.rpcUrl,
+                    options.rpc!,
                   ]);
                   child.stdout?.pipe(task.stdout());
                   const { stdout } = await child;
                   const lines = stdout.split("\n");
 
-                  gameContractAddress = findGameContractAddress(lines);
-                  ctx.gameContractAddress = gameContractAddress;
+                  ctx.gameContractAddress = gameContractAddress = findLog(lines, "diamond: address");
+                  ctx.personaMirrorAddress = findLog(lines, "personaMirror: address");
 
-                  task.output = chalk.yellow(
-                    `Game deployed at: ${chalk.bgYellow.black(gameContractAddress)} on chain: ${chalk.bgYellow.black(
-                      network.name
-                    )}`
-                  );
+                  task.output = chalk.yellow(`Game deployed at: ${chalk.bgYellow.black(ctx.gameContractAddress)}`);
                 },
                 options: { bottomBar: 3 },
               },
@@ -286,7 +361,7 @@ export const deploy = async (options: Options) => {
                         task: async (_, task) => {
                           const time = Date.now();
                           task.output = "Building local client...";
-                          const child = execa("yarn", ["workspace", "client", "build"]);
+                          const child = execa("yarn", ["workspace", "ri-client", "build"]);
                           await child;
                           const duration = Date.now() - time;
                           task.output = "Client built in " + Math.round(duration / 1000) + "s";
@@ -299,7 +374,7 @@ export const deploy = async (options: Options) => {
                         task: async (ctx, task) => {
                           const site = await netlifyAPI.createSite({
                             body: {
-                              name: `lattice-starterkit-deployment-${wallet.address.substring(2, 8)}-${id}`,
+                              name: `mud-deployment-${wallet.address.substring(2, 8)}-${id}`,
                               account_slug: options.netlifySlug,
                               ssl: true,
                               force_ssl: true,
@@ -307,8 +382,6 @@ export const deploy = async (options: Options) => {
                           });
                           ctx.siteId = site.id;
                           ctx.clientUrl = site.ssl_url;
-                          gameClientUrl = site.ssl_url;
-
                           task.output = "Netlify site created with id: " + chalk.bgYellow.black(site.id);
                         },
                         skip: () => !options.deployClient,
@@ -336,12 +409,17 @@ export const deploy = async (options: Options) => {
                 },
               },
               {
-                title: "Redirect to Lattice Launcher",
+                title: "Open Launcher",
                 task: async (ctx) => {
-                  const gameContractAddress = ctx.gameContractAddress;
                   const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
-                  const deepLinkURI = `lattice://deployFromCLI?gameContractAddress=${gameContractAddress}&chainId=${options.chainId}&clientUrl=${clientUrl}&name=${options.deploymentName}`;
-                  openurl.open(deepLinkURI);
+                  launcherUrl = `https://play.lattice.xyz?address=${
+                    ctx.gameContractAddress || ""
+                  }&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${
+                    options.persona || ""
+                  }&personaAllMinter=${options.personaAllMinter || ""}&client=${clientUrl || ""}&rpc=${
+                    options.rpc || ""
+                  }&chainId=${options.chainId || ""}`;
+                  openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },
               },
@@ -352,11 +430,10 @@ export const deploy = async (options: Options) => {
       },
     ]);
     await tasks.run();
-    console.log();
     console.log(chalk.bgGreen.black.bold(" Congratulations! Deployment successful"));
     console.log();
-    console.log(chalk.green(`Game contract deployed to ${gameContractAddress}`));
-    console.log(chalk.green(`Game client deployed to ${gameClientUrl}`));
+    console.log(chalk.green(`Contract deployed to ${gameContractAddress}`));
+    console.log(chalk.green(`Open launcher at ${launcherUrl}`));
     console.log();
   } catch (e) {
     logger.fail((e as Error).message);

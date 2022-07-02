@@ -17,7 +17,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
 
 export const handler = (argv: Arguments<Options>): void => {
   const { name } = argv;
-  const greeting = `Hello, ${name}!`;
+  const greeting = `Gm, ${name}!`;
   console.log(greeting);
   process.exit(0);
 };
