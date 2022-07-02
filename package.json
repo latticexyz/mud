@@ -24,7 +24,8 @@
     "husky": ">=6",
     "lerna": "^4.0.0",
     "lint-staged": ">=10",
-    "prettier": "^2.6.2"
+    "prettier": "^2.6.2",
+    "run-pty": "^3.0.0"
   },
   "config": {
     "commitizen": {
@@ -38,7 +39,8 @@
     "lint": "eslint . --ext .ts",
     "prepare": "husky install && yarn lerna run prepare",
     "lerna:release": "lerna version --conventional-commits --yes",
-    "lerna:publish": "lerna publish --no-private --force-publish"
+    "lerna:publish": "lerna publish --no-private --force-publish",
+    "start:ri": "run-pty % yarn workspace ri-contracts run start % yarn workspace ri-client run start"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
