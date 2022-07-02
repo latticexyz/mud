@@ -11,15 +11,13 @@ describe("Sync System", () => {
   let local: LocalLayer;
 
   beforeEach(async () => {
-    network = await createNetworkLayer({ skipContracts: true });
+    network = await createNetworkLayer();
     headless = await createHeadlessLayer(network);
     local = await createLocalLayer(headless);
   });
 
   afterEach(() => {
-    network.world.disposeAll();
-    headless.world.disposeAll();
-    local.world.disposeAll();
+    network.world.dispose();
   });
 
   it("should add the Strolling component to entities with EntityType value Creature", () => {
@@ -32,7 +30,7 @@ describe("Sync System", () => {
       components: { EntityType },
     } = network;
 
-    const entity = createEntity(world, [withValue(EntityType, { entityType: EntityTypes.Creature })]);
+    const entity = createEntity(world, [withValue(EntityType, { value: EntityTypes.Hero })]);
     expect(getComponentValue(Strolling, entity)).toBeDefined();
   });
 
@@ -48,7 +46,7 @@ describe("Sync System", () => {
 
     const entity = createEntity(world, [
       withValue(Position, { x: 1, y: 2 }),
-      withValue(EntityType, { entityType: EntityTypes.Creature }),
+      withValue(EntityType, { value: EntityTypes.Hero }),
     ]);
     expect(getComponentValue(LocalPosition, entity)).toEqual({ x: 1, y: 2 });
   });
@@ -63,7 +61,7 @@ describe("Sync System", () => {
       components: { EntityType },
     } = network;
 
-    const entity = createEntity(world, [withValue(EntityType, { entityType: EntityTypes.Creature })]);
+    const entity = createEntity(world, [withValue(EntityType, { value: EntityTypes.Hero })]);
     expect(getComponentValue(MoveSpeed, entity)).toBeDefined();
   });
 });

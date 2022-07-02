@@ -1,6 +1,13 @@
-import { defineEnterQuery, Has, defineReactionSystem, getComponentValueStrict } from "@latticexyz/recs";
-import { RockWallTileset } from "../../constants";
+import { Has, getComponentValueStrict, defineEnterSystem, Not } from "@latticexyz/recs";
+import { EntityTypes } from "../../../../Network";
+import { Tileset } from "../../constants";
 import { PhaserLayer } from "../../types";
+
+const entityTypeToTile = {
+  [EntityTypes.Grass]: Tileset.Grass,
+  [EntityTypes.Mountain]: Tileset.Rock1,
+  [EntityTypes.River]: Tileset.Water,
+} as { [key in EntityTypes]: Tileset };
 
 /**
  * The Map system handles rendering the phaser tilemap
@@ -9,13 +16,13 @@ export function createMapSystem(layer: PhaserLayer) {
   const {
     world,
     parentLayers: {
-      local: {
-        components: { LocalPosition, RockWall },
+      network: {
+        components: { Position, EntityType },
       },
     },
     scenes: {
       Main: {
-        maps: { Main, Strategic },
+        maps: { Main, Tactic, Strategic },
         camera,
         objectPool,
       },
@@ -23,28 +30,52 @@ export function createMapSystem(layer: PhaserLayer) {
   } = layer;
 
   const zoomSub = camera.zoom$.subscribe((zoom) => {
-    if (zoom < 0.5) {
+    if (zoom < 0.1) {
       Strategic.setVisible(true);
+      Tactic.setVisible(false);
+      Main.setVisible(false);
+      camera.ignore(objectPool, true);
+    } else if (zoom < 0.5) {
+      Strategic.setVisible(false);
+      Tactic.setVisible(true);
       Main.setVisible(false);
       camera.ignore(objectPool, true);
     } else {
-      Main.setVisible(true);
       Strategic.setVisible(false);
+      Tactic.setVisible(false);
+      Main.setVisible(true);
       camera.ignore(objectPool, false);
     }
   });
   world.registerDisposer(() => zoomSub?.unsubscribe());
 
-  // Rock wall system
-  const rockWallQuery = defineEnterQuery(world, [Has(LocalPosition), Has(RockWall)], { runOnInit: true });
-  defineReactionSystem(
+  defineEnterSystem(world, [Has(Position), Not(EntityType)], (update) => {
+    const coord = getComponentValueStrict(Position, update.entity);
+    Main.putTileAt(coord, Tileset.Plain);
+  });
+
+  defineEnterSystem(
     world,
-    () => rockWallQuery.get(),
-    (rockWallEnities) => {
-      for (const rockWall of rockWallEnities) {
-        const coord = getComponentValueStrict(LocalPosition, rockWall);
-        Main.putTileAt(coord, RockWallTileset.single);
+    [Has(Position), Has(EntityType)],
+    (update) => {
+      const coord = getComponentValueStrict(Position, update.entity);
+      const type = getComponentValueStrict(EntityType, update.entity);
+      const tile = entityTypeToTile[type.value as EntityTypes];
+      if (!tile) return;
+
+      Main.putTileAt(coord, tile);
+
+      // compute cluster for LOD
+      if (coord.x % 4 === 0 && coord.y % 4 === 0) {
+        const tacticCoord = { x: Math.floor(coord.x / 4), y: Math.floor(coord.y / 4) };
+        Tactic.putTileAt(tacticCoord, tile);
       }
-    }
+
+      if (coord.x % 16 === 0 && coord.y % 16 === 0) {
+        const strategicCoord = { x: Math.floor(coord.x / 16), y: Math.floor(coord.y / 16) };
+        Strategic.putTileAt(strategicCoord, tile);
+      }
+    },
+    { runOnInit: true }
   );
 }

@@ -1,6 +1,7 @@
-import { defineEnterQuery, defineReactionSystem, defineUpdateQuery, Has, getComponentValue } from "@latticexyz/recs";
+import { Has, getComponentValue, defineSystem, UpdateType, isComponentUpdate } from "@latticexyz/recs";
 import { tween, tileCoordToPixelCoord } from "@latticexyz/phaserx";
 import { PhaserLayer } from "../../types";
+import { Coord } from "@latticexyz/utils";
 
 /**
  * The LocalPosition system handles moving phaser game objects to the WorldCoord specified in their LocalPosition component.
@@ -26,64 +27,51 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
   } = layer;
 
   // Set position the first time entitiy's Position component appears
-  const newEntities = defineEnterQuery(world, [Has(LocalPosition), Has(Appearance)], { runOnInit: true });
-
-  defineReactionSystem(
-    world,
-    () => newEntities.get(),
-    (entities) => {
-      for (const entity of entities) {
-        const pos = getComponentValue(LocalPosition, entity);
-        if (!pos) continue;
-
-        const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
-        const embodiedEntity = objectPool.get(entity, "Sprite");
-
-        embodiedEntity.setComponent({
-          id: LocalPosition.id,
-          once: (gameObject) => {
-            gameObject.setPosition(pixel.x, pixel.y);
-          },
-        });
-      }
+  defineSystem(world, [Has(LocalPosition), Has(Appearance)], (update) => {
+    const embodiedEntity = objectPool.get(update.entity, "Sprite");
+    let pos: Coord | undefined;
+    if (isComponentUpdate(update, LocalPosition)) {
+      [pos] = update.value;
+    } else {
+      pos = getComponentValue(LocalPosition, update.entity);
     }
-  );
 
-  // Update position if entity's Position component updated
-  const updatedEntities = defineUpdateQuery(world, [Has(LocalPosition), Has(Appearance)]);
-  defineReactionSystem(
-    world,
-    () => updatedEntities.get(),
-    (entities) => {
-      for (const entity of entities) {
-        const newPosition = getComponentValue(LocalPosition, entity);
-        if (!newPosition) continue;
-
-        const pixel = tileCoordToPixelCoord(newPosition, tileWidth, tileHeight);
-        const embodiedEntity = objectPool.get(entity, "Sprite");
-
-        embodiedEntity.setComponent({
-          id: LocalPosition.id,
-          now: async (gameObject) => {
-            const shouldTeleport = false; // manhattan(currentPosition, newPosition) > 1;
-            const moveSpeed = getComponentValue(MoveSpeed, entity)?.current || DEFAULT_MOVE_SPEED;
-
-            !shouldTeleport &&
-              (await tween({
-                targets: gameObject,
-                duration: moveSpeed,
-                props: {
-                  x: pixel.x,
-                  y: pixel.y,
-                },
-                ease: Phaser.Math.Easing.Quadratic.InOut,
-              }));
-          },
-          once: (gameObject) => {
-            gameObject.setPosition(pixel.x, pixel.y);
-          },
-        });
-      }
+    if (update.type === UpdateType.Exit) {
+      embodiedEntity.removeComponent(LocalPosition.id);
     }
-  );
+
+    if (!pos) throw new Error("No LocalPosition value for entity");
+
+    if (update.type === UpdateType.Enter) {
+      const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
+      embodiedEntity.setComponent({
+        id: LocalPosition.id,
+        once: (gameObject) => {
+          gameObject.setPosition(pixel.x, pixel.y);
+        },
+      });
+    }
+
+    if (update.type === UpdateType.Update) {
+      const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
+      embodiedEntity.setComponent({
+        id: LocalPosition.id,
+        now: async (gameObject) => {
+          const moveSpeed = getComponentValue(MoveSpeed, update.entity)?.current || DEFAULT_MOVE_SPEED;
+          await tween({
+            targets: gameObject,
+            duration: moveSpeed,
+            props: {
+              x: pixel.x,
+              y: pixel.y,
+            },
+            ease: Phaser.Math.Easing.Quadratic.InOut,
+          });
+        },
+        once: (gameObject) => {
+          gameObject.setPosition(pixel.x, pixel.y);
+        },
+      });
+    }
+  });
 }

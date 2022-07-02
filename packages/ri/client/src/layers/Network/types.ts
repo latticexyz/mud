@@ -1,7 +1,6 @@
-import { PromiseValue } from "@latticexyz/utils";
 import { createNetworkLayer } from "./createNetworkLayer";
 
-export type NetworkLayer = PromiseValue<ReturnType<typeof createNetworkLayer>>;
+export type NetworkLayer = Awaited<ReturnType<typeof createNetworkLayer>>;
 export type NetworkComponents = NetworkLayer["components"];
 
 // Contract types
@@ -11,5 +10,9 @@ export enum ContractWorldEvent {
 }
 
 export enum EntityTypes {
-  Creature,
+  Hero,
+  Grass,
+  Mountain,
+  River,
+  Wall,
 }

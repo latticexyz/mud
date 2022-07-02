@@ -14,13 +14,17 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const personaMiror = await hre.ethers.getContract("PersonaMirror", deployer);
   const LibQuery = await hre.deployments.get("LibQuery");
+  const LibStamina = await hre.deployments.get("LibStamina");
 
   console.log(blue("Deploying Diamond"));
+  const facets = ["EmberFacet", "InitializeFacet", "CastSpellFacet", "MoveFacet", "PlayerJoinFacet"];
+  const chainId = await hre.getChainId();
+  if (chainId === "31337") facets.push("DebugFacet");
 
-  await diamond.deploy("Diamond", {
+  const { newlyDeployed } = await diamond.deploy("Diamond", {
     from: deployer,
     owner: deployer,
-    facets: ["EmberFacet", "InitializeFacet", "CastSpellFacet"],
+    facets,
     log: true,
     execute: {
       methodName: "initializeExternally",
@@ -28,6 +32,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     },
     libraries: {
       LibQuery: LibQuery.address,
+      LibStamina: LibStamina.address,
     },
     autoMine: true,
   });
@@ -37,10 +42,20 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // Deploy components
   await deployComponent(hre, world, ember.address, "PositionComponent");
   await deployComponent(hre, world, ember.address, "EntityTypeComponent");
+  await deployComponent(hre, world, ember.address, "MovableComponent");
+  await deployComponent(hre, world, ember.address, "UntraversableComponent");
+  await deployComponent(hre, world, ember.address, "OwnedByComponent");
+  await deployComponent(hre, world, ember.address, "PersonaComponent");
+  await deployComponent(hre, world, ember.address, "StaminaComponent");
+  await deployComponent(hre, world, ember.address, "LastActionTurnComponent");
+  await deployComponent(hre, world, ember.address, "GameConfigComponent");
+  // await deployComponent(hre, world, ember.address, "SpawnPointComponent");
+  await deployComponent(hre, world, ember.address, "MineableComponent");
+
   // Deploy access controllers
   await deployAccessController(hre, ember, "PersonaAccessController");
   // Deploy content creators
-  // await deployContentCreator(hre, ember, "SpellContentCreator")
+  // await deployContentCreator(hre, ember, "MapContentCreator")
   // Deploy embodied systems
 
   console.log(blue("Deploying LocalLatticeGameLocator"));
@@ -51,14 +66,27 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
     args: [],
     deterministicDeployment: "0xAAAAFFFF",
   });
-  console.log(blue("Local Lattice game linked"));
   const localLatticeGameLocator = (await hre.ethers.getContract(
     "LocalLatticeGameLocator",
     deployer
   )) as LocalLatticeGameLocator;
-  const tx = await localLatticeGameLocator.setLocalLatticeGameAddress(ember.address);
-  await tx.wait();
   console.log(green("LocalLatticeGameLocator: " + localLatticeGameLocator.address));
+
+  if (newlyDeployed) {
+    const tx = await localLatticeGameLocator.setLocalLatticeGameAddress(ember.address);
+    await tx.wait();
+    console.log(blue("Local Lattice game linked"));
+  }
+
+  console.log(green(`Setting hardhat time to local time.`));
+  await hre.network.provider.send("evm_setNextBlockTimestamp", [Math.round(Date.now() / 1000)]);
+
+  // Only configure the world after setting hardhat time
+  // to the correct value because it saves the game
+  // start timestamp.
+  console.log(blue("Configure world"));
+  const tx = await ember.configureWorld();
+  await tx.wait();
 };
 export default func;
 func.tags = ["Diamond"];

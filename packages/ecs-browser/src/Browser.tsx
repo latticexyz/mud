@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { Layers, Type } from "@latticexyz/recs";
-import { AnyComponent, Component, Entity, Schema } from "@latticexyz/recs/src/types";
-import { observer } from "mobx-react-lite";
-import { BrowserContainer } from "./StyledComponents";
+import { Layers, Type, Component, Schema, World, EntityID } from "@latticexyz/recs";
+import { BrowserContainer, SmallHeadline } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
 import { EntityEditor } from "./EntityEditor";
 import { QueryBuilder } from "./QueryBuilder";
+import { useClearDevHighlights } from "./hooks";
+import { observer } from "mobx-react-lite";
 
 /**
  * An Entity Browser for viewing/editiing Component values.
@@ -16,25 +16,44 @@ export const Browser = observer(
     layers,
     setContractComponentValue,
     devHighlightComponent,
+    hoverHighlightComponent,
+    world,
   }: {
-    entities: [Entity, Set<AnyComponent>][];
+    entities: EntityID[];
     layers: Layers;
     setContractComponentValue: SetContractComponentFunction<Schema>;
-    devHighlightComponent: Component<{ color: Type.OptionalNumber }>;
+    devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
+    hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
+    world: World;
   }) => {
-    const [filteredEntities, setFilteredEntities] = useState(entities);
+    const [filteredEntities, setFilteredEntities] = useState<EntityID[]>([]);
+    const [overflow, setOverflow] = useState(0);
+    const clearDevHighlights = useClearDevHighlights(devHighlightComponent);
 
     return (
       <BrowserContainer>
-        <QueryBuilder devHighlightComponent={devHighlightComponent} allEntities={entities} setFilteredEntities={setFilteredEntities} layers={layers} />
-        {filteredEntities.map(([entity, components]) => (
+        <QueryBuilder
+          devHighlightComponent={devHighlightComponent}
+          hoverHighlightComponent={hoverHighlightComponent}
+          allEntities={entities}
+          setFilteredEntities={setFilteredEntities}
+          layers={layers}
+          world={world}
+          clearDevHighlights={clearDevHighlights}
+          setOverflow={setOverflow}
+        />
+        <SmallHeadline>
+          Showing {filteredEntities.length} of {filteredEntities.length + overflow} entities
+        </SmallHeadline>
+        {filteredEntities.map((entity) => (
           <EntityEditor
+            world={world}
             key={`entity-editor-${entity}`}
-            entity={entity}
-            components={components}
+            entityId={entity}
             layers={layers}
             setContractComponentValue={setContractComponentValue}
             devHighlightComponent={devHighlightComponent}
+            clearDevHighlights={clearDevHighlights}
           />
         ))}
       </BrowserContainer>

@@ -52,7 +52,7 @@ type ReturnTypeStrict<T> = T extends (...args: any) => any ? ReturnType<T> : nev
 export function createTxQueue<C extends Contracts>(
   computedContracts: IComputedValue<C>,
   network: Network,
-  options?: { concurrency?: number; ignoreConfirmation?: boolean }
+  options?: { concurrency?: number; ignoreConfirmation?: boolean; devMode?: boolean }
 ): { txQueue: TxQueue<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {
   const { concurrency } = options || {};
   const queue = createPriorityQueue<{
@@ -127,9 +127,10 @@ export function createTxQueue<C extends Contracts>(
           );
         }
 
-        // TODO: only set gasPrice to 0 on local chain
-        // (https://linear.app/latticexyz/issue/LAT-587/integrate-mud-reference-implementation-with-launcher)
-        const result = await member(...argsWithoutOverrides, { ...overrides, nonce });
+        const configOverrides = { ...overrides, nonce };
+        if (options?.devMode) configOverrides.gasPrice = 0;
+
+        const result = await member(...argsWithoutOverrides, configOverrides);
         resolve(result);
         return result;
       } catch (e) {

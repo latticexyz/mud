@@ -15,3 +15,4 @@ export {
 export { load } from "./load";
 export { getChunksInArea } from "./chunks";
 export { getObjectsInArea } from "./area";
+export { generateFrames } from "./generateFrames";

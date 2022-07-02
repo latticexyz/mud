@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { World } from "solecs/World.sol";
-import { EmberFacet, ECSEvent } from "../facets/EmberFacet.sol";
+import { ECSEvent } from "../facets/DebugFacet.sol";
 import { AppStorage } from "../libraries/LibAppStorage.sol";
 import { PersonaFixture } from "./fixtures/PersonaFixture.sol";
 import { EmberTest } from "./EmberTest.sol";
@@ -28,6 +28,6 @@ contract BulkUploadTest is EmberTest {
         state[index] = ECSEvent(0, 0, new bytes(0));
       }
     }
-    emberFacet.bulkSetState(components, entities, state);
+    debugFacet.bulkSetState(components, entities, state);
   }
 }

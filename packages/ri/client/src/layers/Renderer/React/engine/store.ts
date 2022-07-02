@@ -1,18 +1,18 @@
 import { observable, action } from "mobx";
-import { UIComponent } from "./types";
-import { Entity } from "@latticexyz/recs";
+import { Observable } from "rxjs";
+import { GridConfiguration, Layers, UIComponent } from "./types";
 
 export const EngineStore = observable({
-  UIComponents: new Map<string, UIComponent<unknown>>(),
-  previewEntity: undefined as Entity | undefined,
+  UIComponents: new Map<string, UIComponent>(),
 });
 
 export const registerUIComponent = action(
-  <T>(id: string, requirement: UIComponent<T>["requirement"], render: UIComponent<T>["render"]) => {
-    EngineStore.UIComponents.set(id, { requirement, render });
+  <T>(
+    id: string,
+    gridConfig: GridConfiguration,
+    requirement: (layers: Layers) => Observable<T>,
+    render: UIComponent<T>["render"]
+  ) => {
+    EngineStore.UIComponents.set(id, { requirement, render, gridConfig });
   }
 );
-
-export const setPreviewEntity = action((entity: Entity | undefined) => {
-  EngineStore.previewEntity = entity;
-});

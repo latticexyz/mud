@@ -1,5 +1,5 @@
-export const TILE_WIDTH = 24;
-export const TILE_HEIGHT = 24;
+export const TILE_WIDTH = 16;
+export const TILE_HEIGHT = 16;
 
 export enum Scenes {
   Main = "Main",
@@ -7,6 +7,8 @@ export enum Scenes {
 
 export enum Maps {
   Main = "Main",
+  Pixel = "Pixel",
+  Tactic = "Tactic",
   Strategic = "Strategic",
 }
 
@@ -19,48 +21,34 @@ export enum Assets {
 
 export enum Animations {
   ImpIdle = "ImpIdle",
-  ImpDigging = "ImpDigging",
-}
-
-if (import.meta.hot) {
-  import.meta.hot.accept(() => {
-    console.log("Constants changed, full reload");
-    import.meta.hot?.invalidate();
-  });
+  HeroIdle = "HeroIdle",
 }
 
 export enum Tileset {
-  Wall = 168,
-  WallMinedBottom = 136,
-  WallRockBottom = 136,
-  PlayerWall = 7,
-  PlayerWallMinedBottom = 6,
-  ForeignWall = 7,
-  ForeignWallBottom = 6,
-  Ground = 2,
-  OwnedGround = 1,
-  RockA = 9,
-  RockB = 3,
-  RockC = 32,
-  RockD = 33,
-  Full = 8,
-  Empty = 9,
-  Gold = 4,
-  Soul = 5,
-  SoulGroundResource = 35,
-  BedRock = 0,
-  DHa = 268,
-  DHb = 269,
-  DHc = 300,
-  DHd = 301,
-  GoldStorageA = 524,
-  GoldStorageB = 525,
-  GoldStorageC = 526,
-  GoldStorageD = 527,
-  GoldGenerator = 460,
-  SoulStorage = 428,
-  SoulGenerator = 396,
-  Lair = 492,
+  Empty = 0,
+  Plain = 1,
+  Tree1 = 55,
+  Tree2 = 56,
+  Tree3 = 57,
+  Tree4 = 58,
+  Tree5 = 59,
+  Tree6 = 60,
+  Tree7 = 61,
+  Tree8 = 62,
+  TreeSnow1 = 109,
+  TreeSnow2 = 110,
+  TreeSnow3 = 111,
+  TreeSnow4 = 112,
+  TreeSnow5 = 113,
+  TreeSnow6 = 114,
+  TreeSnow7 = 115,
+  TreeSnow8 = 116,
+  Grass = 72,
+  Water = 73,
+  Wall1 = 74,
+  Wall2 = 128,
+  Rock1 = 126,
+  Rock2 = 127,
 }
 
 export enum RockWallTileset {

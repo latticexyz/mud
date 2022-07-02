@@ -1,7 +1,7 @@
 pragma solidity ^0.8.0;
 // SPDX-License-Identifier: MIT
 import { LibAppStorage, AppStorage } from "./LibAppStorage.sol";
-import { OwnedByComponent, OwnedBy, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
+import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 
 library LibECS {
   function getAppStorage() internal pure returns (AppStorage storage) {
@@ -14,7 +14,7 @@ library LibECS {
     uint256 currentEntityID = entityID;
     while (true) {
       if (ownedByComponent.has(currentEntityID)) {
-        currentEntityID = ownedByComponent.getValue(currentEntityID).ownedBy;
+        currentEntityID = ownedByComponent.getValue(currentEntityID);
       } else {
         return currentEntityID;
       }
@@ -31,7 +31,7 @@ library LibECS {
         return true;
       }
       if (ownedByComponent.has(currentEntityID)) {
-        currentEntityID = ownedByComponent.getValue(currentEntityID).ownedBy;
+        currentEntityID = ownedByComponent.getValue(currentEntityID);
       } else {
         return false;
       }

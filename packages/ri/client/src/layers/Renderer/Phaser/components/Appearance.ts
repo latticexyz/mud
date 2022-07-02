@@ -1,5 +1,5 @@
 import { defineComponent, Type, World } from "@latticexyz/recs";
 
 export function defineAppearanceComponent(world: World) {
-  return defineComponent(world, { texture: Type.String }, { name: "Appearance" });
+  return defineComponent(world, { value: Type.String }, { id: "Appearance" });
 }

@@ -27,7 +27,7 @@ export function createBlockNumberStream(
             endWith(blockNr)
           );
         }),
-        stretch(32) // Stretch processing of block number to one every 32 milliseconds (during initial sync)
+        stretch(50) // Stretch processing of block number to one every 32 milliseconds (during initial sync)
       )
     : EMPTY;
 

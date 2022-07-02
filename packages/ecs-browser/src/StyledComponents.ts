@@ -19,9 +19,9 @@ export const ComponentBrowserInput = styled.input`
   }
 `;
 
-export const ComponentBrowserButton = styled.button`
-  background-color: #383c4a;
-  color: #8c91a0;
+export const ComponentBrowserButton = styled.button<{ active?: boolean }>`
+  background-color: ${({ active }) => (active ? "#8c91a0" : "#383c4a")};
+  color: ${({ active }) => (active ? "#383c4a" : "#8c91a0")};
   border: 1px rgba(0, 0, 0, 0.5) solid;
   border-radius: 4px;
   padding: 4px;
@@ -68,29 +68,20 @@ export const EntityEditorContainer = styled.div`
 `;
 
 export const BrowserContainer = styled.div`
-  grid-column: 3;
-  grid-row-start: 1;
-  grid-row-end: 4;
-  pointer-events: all;
-  max-height: calc(100vh - 100px);
   overflow: auto;
-
-  width: 300px;
-  justify-self: end;
-
   background-color: rgba(27, 28, 32, 1);
   color: #8c91a0;
-`;
-
-export const QueryBuilderForm = styled.form`
-  padding: 8px;
-  border-bottom: 2px grey solid;
-  margin-bottom: 8px;
-  width: 100%;
+  height: 100%;
+  pointer-events: all;
 `;
 
 export const DraggableNumberLabelContainer = styled.label`
   cursor: ew-resize;
   user-select: none;
   color: #8c91a0;
+`;
+
+export const SmallHeadline = styled.p`
+  padding: 8px;
+  font-size: 14px;
 `;

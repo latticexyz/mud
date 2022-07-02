@@ -1,5 +1,5 @@
 import { Result } from "@ethersproject/abi";
-import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
+import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { Cached } from "@latticexyz/utils";
 import { BaseContract, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
@@ -12,6 +12,7 @@ export interface NetworkConfig {
   clock: ClockConfig;
   provider: ProviderConfig;
   checkpointServiceUrl?: string;
+  initialBlockNumber?: number;
 }
 
 export interface ClockConfig {
@@ -73,12 +74,13 @@ export type Mappings<C extends Components> = {
 export type NetworkComponentUpdate<C extends Components> = {
   [key in keyof C]: {
     component: key;
-    value: ComponentValue<SchemaOf<C[key]>>;
+    value: ComponentValue<SchemaOf<C[key]>> | undefined;
   };
 }[keyof C] & {
-  entity: string;
+  entity: EntityID;
   lastEventInTx: boolean;
   txHash: string;
+  blockNumber: number;
 };
 
 export type SyncWorkerConfig<Cm extends Components = Components> = {

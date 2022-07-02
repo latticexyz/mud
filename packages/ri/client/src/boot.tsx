@@ -32,8 +32,34 @@ async function bootLayers() {
     phaser?: PhaserLayer;
   } = {};
 
+  let initialBoot = true;
+
   async function bootLayers() {
-    if (!layers.network) layers.network = await createNetworkLayer();
+    const params = new URLSearchParams(window.location.search);
+    const contractAddress = params.get("contractAddress");
+    const privateKey = params.get("burnerWalletPrivateKey");
+    const chainIdString = params.get("chainId");
+    const personaIdString = params.get("personaId");
+    const jsonRpc = params.get("rpc") || undefined;
+    const wsRpc = params.get("wsRpc") || (jsonRpc && jsonRpc.replace("http", "ws"));
+    const checkpointUrl = params.get("checkpoint") || undefined;
+    const devMode = params.get("dev") === "true" || false;
+
+    let networkLayerConfig;
+    if (contractAddress && privateKey && chainIdString && personaIdString) {
+      networkLayerConfig = {
+        contractAddress,
+        privateKey,
+        chainId: parseInt(chainIdString),
+        personaId: parseInt(personaIdString),
+        jsonRpc,
+        wsRpc,
+        checkpointUrl,
+        devMode,
+      };
+    }
+
+    if (!layers.network) layers.network = await createNetworkLayer(networkLayerConfig);
     if (!layers.headless) layers.headless = await createHeadlessLayer(layers.network);
     if (!layers.local) layers.local = await createLocalLayer(layers.headless);
     if (!layers.phaser) layers.phaser = await createPhaserLayer(layers.local);
@@ -54,11 +80,14 @@ async function bootLayers() {
     }
 
     // Start syncing once all systems have booted
-    layers.network.startSync();
+    if (initialBoot) {
+      initialBoot = false;
+      layers.network.startSync();
+    }
   }
 
   function disposeLayer(layer: keyof typeof layers) {
-    layers[layer]?.world.disposeAll();
+    layers[layer]?.world.dispose();
     layers[layer] = undefined;
   }
 
@@ -75,9 +104,16 @@ async function bootLayers() {
   (window as any).ecs = ecs;
   (window as any).time = Time.time;
 
+  let reloadingNetwork = false;
+  let reloadingHeadless = false;
+  let reloadingLocal = false;
+  let reloadingPhaser = false;
+
   if (import.meta.hot) {
     // HMR Network layer
     import.meta.hot.accept("./layers/Network/index.ts", async (module) => {
+      if (reloadingNetwork) return;
+      reloadingNetwork = true;
       createNetworkLayer = module.createNetworkLayer;
       disposeLayer("network");
       disposeLayer("headless");
@@ -85,33 +121,44 @@ async function bootLayers() {
       disposeLayer("phaser");
       await bootLayers();
       console.log("HMR Network");
+      layers.network?.startSync();
+      reloadingNetwork = false;
     });
 
     // HMR Headless layer
     import.meta.hot.accept("./layers/Headless/index.ts", async (module) => {
+      if (reloadingHeadless || reloadingNetwork) return;
+      reloadingHeadless = true;
       createHeadlessLayer = module.createHeadlessLayer;
       disposeLayer("headless");
       disposeLayer("local");
       disposeLayer("phaser");
       await bootLayers();
       console.log("HMR Headless");
+      reloadingHeadless = false;
     });
 
     // HMR Local layer
     import.meta.hot.accept("./layers/Local/index.ts", async (module) => {
+      if (reloadingLocal || reloadingHeadless || reloadingNetwork) return;
+      reloadingLocal = true;
       createLocalLayer = module.createLocalLayer;
       disposeLayer("local");
       disposeLayer("phaser");
       await bootLayers();
       console.log("HMR Local");
+      reloadingLocal = false;
     });
 
     // HMR Phaser layer
     import.meta.hot.accept("./layers/Renderer/Phaser/index.ts", async (module) => {
+      if (reloadingPhaser || reloadingLocal || reloadingHeadless || reloadingNetwork) return;
+      reloadingPhaser = true;
       createPhaserLayer = module.createPhaserLayer;
       disposeLayer("phaser");
       await bootLayers();
       console.log("HMR Phaser");
+      reloadingPhaser = false;
     });
   }
   console.log("booted");

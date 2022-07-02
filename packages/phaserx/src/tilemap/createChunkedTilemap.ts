@@ -22,6 +22,9 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
   params: ChunkedTilemapConfig<TileKeys, LayerKeys>
 ): ChunkedTilemap<TileKeys, LayerKeys> {
   const { scene, tilesets, layerConfig, chunks, backgroundTile, tiles, tileWidth, tileHeight } = params;
+  const relevantTilesets = Object.keys(layerConfig.layers)
+    .map((key) => layerConfig.layers[key as LayerKeys].tilesets)
+    .flat();
 
   // Chunk pixel size must be a multiple of tile witdth and height.
   if (mod(chunks.chunkSize, tileWidth) !== 0 || mod(chunks.chunkSize, tileHeight) !== 0) {
@@ -43,8 +46,6 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
   }
   // Render maps when they're in the viewport
   const addedChunkSub = chunks.addedChunks$.subscribe((chunk) => {
-    // Only support max 100 maps at the same time
-    if (maps.size > 100) return;
     renderChunk(chunk);
   });
 
@@ -100,7 +101,9 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
       tileWidth,
       width: chunkTileSize.x,
       height: chunkTileSize.y,
-      tilesets: Object.values(tilesets),
+      tilesets: Object.entries(tilesets)
+        .filter(([key]) => relevantTilesets.includes(key))
+        .map(([, tileset]) => tileset),
     });
 
     const map = new Phaser.Tilemaps.Tilemap(scene, data);
@@ -130,6 +133,8 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
     if (!visible.current) return;
     const map = getMapAtTileCoord(coord);
     const putTile = map.putTileAt(tile, mod(coord.x, chunkTileSize.x), mod(coord.y, chunkTileSize.y), undefined, layer);
+    putTile.width = map.tileWidth;
+    putTile.height = map.tileHeight;
 
     if (tint) {
       putTile.tint = tint;

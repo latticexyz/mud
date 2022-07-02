@@ -1,4 +1,3 @@
-import { createWorld } from "@latticexyz/recs";
 import { LocalLayer } from "../../Local";
 import {
   createMapSystem,
@@ -10,7 +9,11 @@ import {
   createHueTintSystem,
   createSelectionSystem,
   createDrawDevHighlightSystem,
-  createSpawnCreatureSystem,
+  createInputSystem,
+  createDrawStaminaSystem,
+  createDrawHighlightCoordSystem,
+  createDrawPotentialPathSystem,
+  createPlayerSpawnSystem,
 } from "./systems";
 import { createPhaserEngine } from "@latticexyz/phaserx";
 import {
@@ -20,8 +23,11 @@ import {
   defineHueTintComponent,
 } from "./components";
 import { config } from "./config";
-import { createSelectionOutlineSystem } from "./systems/SelectionOutlineSystem";
 import { defineDevHighlightComponent } from "@latticexyz/std-client";
+import { defineComponent, namespaceWorld, Type } from "@latticexyz/recs";
+import { highlightCoord } from "./api";
+import { curry } from "lodash";
+import { Coord } from "@latticexyz/utils";
 
 /**
  * The Phaser layer extends the Local layer.
@@ -29,7 +35,7 @@ import { defineDevHighlightComponent } from "@latticexyz/std-client";
  */
 export async function createPhaserLayer(local: LocalLayer) {
   // World
-  const world = createWorld({ parentWorld: local.world, name: "Phaser" });
+  const world = namespaceWorld(local.parentLayers.network.world, "phaser");
 
   // Components
   const Appearance = defineAppearanceComponent(world);
@@ -37,7 +43,12 @@ export async function createPhaserLayer(local: LocalLayer) {
   const Outline = defineOutlineComponent(world);
   const HueTint = defineHueTintComponent(world);
   const DevHighlight = defineDevHighlightComponent(world);
-  const components = { Appearance, SpriteAnimation, Outline, HueTint, DevHighlight };
+  const HoverHighlight = defineComponent(
+    world,
+    { color: Type.OptionalNumber, x: Type.OptionalNumber, y: Type.OptionalNumber },
+    { id: "HoverHighlight" }
+  );
+  const components = { Appearance, SpriteAnimation, Outline, HueTint, DevHighlight, HoverHighlight };
 
   // Create phaser engine
   const { game, scenes, dispose: disposePhaser } = await createPhaserEngine(config);
@@ -53,7 +64,14 @@ export async function createPhaserLayer(local: LocalLayer) {
     },
     game,
     scenes,
+    api: {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      highlightCoord: (coord: Coord) => {
+        "no-op for types";
+      },
+    },
   };
+  layer.api.highlightCoord = curry(highlightCoord)(layer);
 
   // Debugger
   // createDebugger(
@@ -73,9 +91,12 @@ export async function createPhaserLayer(local: LocalLayer) {
   createOutlineSystem(layer);
   createHueTintSystem(layer);
   createSelectionSystem(layer);
-  createSelectionOutlineSystem(layer);
   createDrawDevHighlightSystem(layer);
-  createSpawnCreatureSystem(layer);
+  createInputSystem(layer);
+  createDrawStaminaSystem(layer);
+  createDrawHighlightCoordSystem(layer);
+  createDrawPotentialPathSystem(layer);
+  createPlayerSpawnSystem(layer);
 
   return layer;
 }

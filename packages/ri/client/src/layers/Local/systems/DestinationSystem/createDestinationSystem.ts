@@ -1,11 +1,4 @@
-import {
-  defineReactionSystem,
-  defineUpdateQuery,
-  getComponentValue,
-  Has,
-  removeComponent,
-  setComponent,
-} from "@latticexyz/recs";
+import { defineComponentSystem, getComponentValue, removeComponent, setComponent } from "@latticexyz/recs";
 import { worldCoordEq } from "../../../../utils/coords";
 import { aStar } from "../../../../utils/pathfinding";
 import { LocalLayer } from "../../types";
@@ -19,34 +12,22 @@ export function createDestinationSystem(layer: LocalLayer) {
     components: { Destination, LocalPosition, Path },
   } = layer;
 
-  const query = defineUpdateQuery(world, [Has(Destination)], { runOnInit: true });
+  defineComponentSystem(world, Destination, (update) => {
+    const destination = update.value[0];
+    if (!destination) return;
 
-  defineReactionSystem(
-    world,
-    () => query.get(),
-    (updatedEntities) => {
-      for (const entity of updatedEntities) {
-        const localPosition = getComponentValue(LocalPosition, entity);
-        const destination = getComponentValue(Destination, entity);
+    removeComponent(Destination, update.entity);
 
-        if (!worldCoordEq(localPosition, destination)) {
-          removeComponent(Destination, entity);
-        }
+    const localPosition = getComponentValue(LocalPosition, update.entity);
+    if (!localPosition || worldCoordEq(destination, localPosition)) return;
 
-        if (!localPosition || !destination) {
-          return;
-        }
-
-        const path = aStar(localPosition, destination);
-        const x: number[] = [];
-        const y: number[] = [];
-        for (const coord of path) {
-          x.push(coord.x);
-          y.push(coord.y);
-        }
-        setComponent(Path, entity, { x, y });
-      }
-      //
+    const path = aStar(localPosition, destination);
+    const x: number[] = [];
+    const y: number[] = [];
+    for (const coord of path) {
+      x.push(coord.x);
+      y.push(coord.y);
     }
-  );
+    setComponent(Path, update.entity, { x, y });
+  });
 }

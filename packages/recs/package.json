@@ -2,7 +2,7 @@
   "name": "@latticexyz/recs",
   "license": "MIT",
   "version": "0.1.8",
-  "main": "src/v1/index.ts",
+  "main": "src/index.ts",
   "type": "module",
   "repository": {
     "type": "git",
@@ -29,12 +29,14 @@
     "rxjs": "^7.5.5",
     "ts-jest": "^27.1.3",
     "tslib": "^2.3.1",
+    "type-fest": "^2.14.0",
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
     "@latticexyz/utils": ">=0.1.4",
     "mobx": "^6.4.2",
-    "rxjs": "7.5.5"
+    "rxjs": "7.5.5",
+    "type-fest": "^2.14.0"
   },
   "gitHead": "2000994f695cee35fcc32558f399584922073016"
 }

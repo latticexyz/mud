@@ -1,4 +1,12 @@
-import { createWorld, createEntity, setComponent, Entity, getComponentValue } from "@latticexyz/recs";
+import {
+  createEntity,
+  setComponent,
+  EntityIndex,
+  getComponentValue,
+  defineComponent,
+  Type,
+  namespaceWorld,
+} from "@latticexyz/recs";
 import { HeadlessLayer } from "../Headless";
 import {
   defineStrollingComponent,
@@ -17,18 +25,18 @@ import {
   createPathSystem,
   createSyncSystem,
   createPositionSystem,
-  createImpSystem,
   createSelectionSystem,
 } from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
 import { Area } from "@latticexyz/utils";
+import { createPotentialPathSystem } from "./systems/PotentialPathSystem";
 
 /**
  * The Local layer is the thrid layer in the client architecture and extends the Headless layer.
  * Its purpose is to add components and systems for all client-only functionality, eg. strolling imps.
  */
 export async function createLocalLayer(headless: HeadlessLayer) {
-  const world = createWorld({ parentWorld: headless.world, name: "Local" });
+  const world = namespaceWorld(headless.parentLayers.network.world, "local");
 
   // Components
   const LocalPosition = defineLocalPositionComponent(world);
@@ -41,6 +49,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   const Selected = defineSelectedComponent(world);
   const Selectable = defineSelectableComponent(world);
   const RockWall = defineRockWallComponent(world);
+  const PotentialPath = defineComponent(world, { x: Type.NumberArray, y: Type.NumberArray }, { id: "PotentialPath" });
 
   const components = {
     LocalPosition,
@@ -53,6 +62,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
     Selected,
     Selectable,
     RockWall,
+    PotentialPath,
   };
 
   // Constants
@@ -71,8 +81,8 @@ export async function createLocalLayer(headless: HeadlessLayer) {
     setComponent(Selection, singletonEntity, { x: 0, y: 0, width: 0, height: 0 });
   }
 
-  function selectEntity(entity: Entity) {
-    if (getComponentValue(Selectable, entity)) setComponent(Selected, entity, {});
+  function selectEntity(entity: EntityIndex) {
+    if (getComponentValue(Selectable, entity)) setComponent(Selected, entity, { value: true });
   }
 
   // Layer
@@ -86,12 +96,12 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   };
 
   // Systems
-  createSelectionSystem(layer); // Enable selection system
-  createImpSystem(layer); // Enable imps
+  createSelectionSystem(layer);
   createSyncSystem(layer);
   createPositionSystem(layer);
   createDestinationSystem(layer);
   createPathSystem(layer);
+  createPotentialPathSystem(layer);
 
   return layer;
 }

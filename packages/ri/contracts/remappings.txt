@@ -1,3 +1,4 @@
+memmove/=../../../node_modules/memmove/src/
 persona/=../../../node_modules/@latticexyz/persona/src/
 gsn=../../../node_modules/@opengsn/contracts/src/
 ds-test/=../../../node_modules/ds-test/src/
@@ -7,3 +8,4 @@ solecs/=../../../node_modules/@latticexyz/solecs/src/
 royalty-registry/=../../../node_modules/@manifoldxyz/royalty-registry-solidity/contracts/
 @openzeppelin/=../../../node_modules/openzeppelin-solidity/
 base64/=../../../node_modules/base64-sol/
+std-contracts/=../../../node_modules/@latticexyz/std-contracts/src/

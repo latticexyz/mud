@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Gesture } from "@use-gesture/vanilla";
 import { BehaviorSubject, map, sampleTime, scan, Subject, throttleTime } from "rxjs";
-import { Camera, CameraConfig, GestureState, ObjectPool } from "./types";
+import { tileCoordToPixelCoord } from "./utils";
+import { Camera, CameraConfig, Coord, GestureState, ObjectPool } from "./types";
 
 export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, options: CameraConfig): Camera {
   const phaserGame = document.getElementById(options.phaserSelector);
@@ -61,6 +62,12 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
     objectPool.ignoreCamera(phaserCamera.id, ignore);
   }
 
+  function centerCameraOnCoord(tileCoord: Coord, tileWidth: number, tileHeight: number) {
+    const pixelCoord = tileCoordToPixelCoord(tileCoord, tileWidth, tileHeight);
+    phaserCamera.centerOn(pixelCoord.x, pixelCoord.y);
+    requestAnimationFrame(() => worldView$.next(phaserCamera.worldView));
+  }
+
   return {
     phaserCamera,
     worldView$,
@@ -71,5 +78,6 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
       wheelSub.unsubscribe();
       gesture.destroy();
     },
+    centerCameraOnCoord,
   };
 }
