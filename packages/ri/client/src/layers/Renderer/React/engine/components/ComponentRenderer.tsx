@@ -1,17 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { observer } from "mobx-react-lite";
 import { useLayers, useEngineStore } from "../hooks";
 import { filterNullishValues } from "@latticexyz/utils";
-import { Component, EntityIndex } from "@latticexyz/recs";
-import { merge, throttleTime } from "rxjs";
 import { Cell } from "./Cell";
 import styled from "styled-components";
-import { GridConfiguration } from "../types";
+import { GridConfiguration, Layers, UIComponent } from "../types";
+import { useStream } from "@latticexyz/std-client";
 
 const UIGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(6, 16.6%);
-  grid-template-rows: repeat(4, 25%);
+  grid-template-columns: repeat(12, 8.33%);
+  grid-template-rows: repeat(12, 8.33%);
   position: absolute;
   left: 0;
   top: 0;
@@ -37,37 +36,28 @@ const UIComponentContainer: React.FC<{ gridConfig: GridConfiguration }> = ({ chi
   );
 };
 
-export const ComponentRenderer: React.FC<{
-  selectedEntities: Set<EntityIndex>;
-}> = observer(({ selectedEntities }) => {
+export function renderUIComponent(layers: Layers, key: string, { requirement, render, gridConfig }: UIComponent) {
+  const state = useStream(requirement(layers));
+  if (!state) return null;
+
+  return (
+    <UIComponentContainer key={`component-${key}`} gridConfig={gridConfig}>
+      {render(state)};
+    </UIComponentContainer>
+  );
+}
+
+export const ComponentRenderer: React.FC = observer(() => {
   const { UIComponents } = useEngineStore();
   const layers = useLayers();
 
-  // TODO: remove this hack and create a useQuery hook instead that makes an individual React component rerender
-  const [, setState] = useState(0);
-  useEffect(() => {
-    const components: Component[] = Object.values(layers)
-      .map((layer) => Object.values(layer.components))
-      .flat();
-
-    const subscription = merge([...components.map((c) => c.update$), layers.network.network.clock.time$])
-      .pipe(throttleTime(1000))
-      .subscribe(() => setState((i) => i + 1));
-    return () => subscription?.unsubscribe();
-  }, []);
   return (
     <UIGrid>
       {filterNullishValues(
         // Iterate through all registered UIComponents
         // and return those whose requirements are fulfilled
         [...UIComponents.entries()].map(([key, UIComponent]) => {
-          const data = UIComponent.requirement(layers, selectedEntities);
-          if (data)
-            return (
-              <UIComponentContainer key={`component-${key}`} gridConfig={UIComponent.gridConfig}>
-                {UIComponent.render(data)}
-              </UIComponentContainer>
-            );
+          return renderUIComponent(layers, key, UIComponent);
         })
       )}
     </UIGrid>

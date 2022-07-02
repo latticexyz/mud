@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
-import { EntityIndex } from "@latticexyz/recs";
 import { HeadlessLayer } from "../../../Headless";
 import { LocalLayer } from "../../../Local";
 import { NetworkLayer } from "../../../Network";
 import { PhaserLayer } from "../../Phaser";
+import { Observable } from "rxjs";
 
 export type Layers = {
   network: NetworkLayer;
@@ -14,8 +14,8 @@ export type Layers = {
 
 export type GridConfiguration = { colStart: number; colEnd: number; rowStart: number; rowEnd: number };
 
-export interface UIComponent<T> {
+export interface UIComponent<T = unknown> {
   gridConfig: GridConfiguration;
-  requirement(layers: Layers, selectedEntities: Set<EntityIndex>): T | null | undefined;
+  requirement(layers: Layers): Observable<T>;
   render(props: NonNullable<T>): ReactElement | null;
 }

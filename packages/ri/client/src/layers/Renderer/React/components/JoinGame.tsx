@@ -1,17 +1,18 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
-import { getPersonaColor, getPlayerEntity } from "@latticexyz/std-client";
-import { getComponentValue } from "@latticexyz/recs";
-import { BigNumber } from "ethers";
+import { getPersonaColor } from "@latticexyz/std-client";
+import { defineQuery, getComponentValueStrict, HasValue } from "@latticexyz/recs";
+import { BigNumber, ethers } from "ethers";
+import { map, merge } from "rxjs";
 
 export function registerJoinGame() {
   registerUIComponent(
     "JoinGameWindow",
     {
-      colStart: 3,
-      colEnd: 4,
+      colStart: 6,
+      colEnd: 7,
       rowStart: 1,
-      rowEnd: 1,
+      rowEnd: 3,
     },
     (layers) => {
       const {
@@ -27,15 +28,21 @@ export function registerJoinGame() {
           components: { Selection },
         },
       } = layers;
-      const playerEntity = personaId ? getPlayerEntity(Persona, personaId) : undefined;
-      const selection = getComponentValue(Selection, singletonEntity);
+      const playerEntityQuery = defineQuery([
+        HasValue(Persona, { value: ethers.BigNumber.from(personaId).toHexString() }),
+      ], { runOnInit: true });
 
-      return {
-        joinGame,
-        personaId,
-        playerEntity,
-        selection,
-      };
+      return merge(playerEntityQuery.update$, Selection.update$).pipe(
+        map(() => {
+          const selection = getComponentValueStrict(Selection, singletonEntity);
+          return {
+            joinGame,
+            personaId,
+            playerEntity: [...playerEntityQuery.matching][0],
+            selection,
+          };
+        })
+      );
     },
     ({ joinGame, personaId, playerEntity, selection }) => {
       const joined = !!playerEntity;

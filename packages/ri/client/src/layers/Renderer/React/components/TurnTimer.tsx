@@ -2,6 +2,7 @@ import React from "react";
 import { registerUIComponent } from "../engine";
 import { getGameConfig } from "@latticexyz/std-client";
 import "./TurnTimer.css";
+import { map } from "rxjs";
 
 function calculateTimeFraction(timeLeft: number) {
   const rawTimeFraction = timeLeft / 20;
@@ -72,9 +73,9 @@ export function registerTurnTimer() {
     "TurnTimer",
     {
       rowStart: 1,
-      rowEnd: 1,
+      rowEnd: 3,
       colStart: 1,
-      colEnd: 1,
+      colEnd: 3,
     },
     (layers) => {
       const {
@@ -82,18 +83,24 @@ export function registerTurnTimer() {
         network: { clock },
         components: { GameConfig },
       } = layers.network;
-      const gameConfig = getGameConfig(world, GameConfig);
-      if (!gameConfig) return;
+      
+      return clock.time$.pipe(
+        map((time) => {
+          const gameConfig = getGameConfig(world, GameConfig);
+          if(!gameConfig) return { secondsUntilNextTurn: 0 };
+          
+          const gameStartTime = parseInt(gameConfig.startTime);
+          const turnLength = parseInt(gameConfig.turnLength);
 
-      const gameStartTime = parseInt(gameConfig.startTime);
-      const turnLength = parseInt(gameConfig.turnLength);
-      const currentTime = clock.currentTime / 1000;
-      const timeElapsed = currentTime - gameStartTime;
-      const secondsUntilNextTurn = turnLength - (timeElapsed % turnLength);
-
-      return {
-        secondsUntilNextTurn,
-      };
+          const currentTime = time / 1000;
+          const timeElapsed = currentTime - gameStartTime;
+          const secondsUntilNextTurn = turnLength - (timeElapsed % turnLength);
+          
+          return {
+            secondsUntilNextTurn,
+          };
+        })
+      )
     },
     ({ secondsUntilNextTurn }) => {
       return <TurnCountdown secondsLeft={secondsUntilNextTurn} />;

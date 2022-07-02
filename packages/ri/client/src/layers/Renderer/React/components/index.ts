@@ -6,6 +6,6 @@ import { registerTurnTimer } from "./TurnTimer";
 export function registerUIComponents() {
   registerSelection();
   registerTurnTimer();
-  registerComponentBrowser();
   registerJoinGame();
+  registerComponentBrowser();
 }
