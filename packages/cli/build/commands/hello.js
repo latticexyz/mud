@@ -11,7 +11,7 @@ const builder = (yargs) => yargs
 exports.builder = builder;
 const handler = (argv) => {
     const { name } = argv;
-    const greeting = `Hello, ${name}!`;
+    const greeting = `Gm, ${name}!`;
     console.log(greeting);
     process.exit(0);
 };

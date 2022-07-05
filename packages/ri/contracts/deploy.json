@@ -1,0 +1,45 @@
+{
+  "components": [
+    "EmbodiedSystemArgumentComponent",
+    "EntityTypeComponent",
+    "GameConfigComponent",
+    "LastActionTurnComponent",
+    "LearnedSpellsComponent",
+    "MaxDistanceComponent",
+    "MineableComponent",
+    "MovableComponent",
+    "OwnedByComponent",
+    "PersonaComponent",
+    "PositionComponent",
+    "SpellComponent",
+    "StaminaComponent",
+    "UntraversableComponent"
+  ],
+  "facets": [
+    {
+      "name": "InitializeFacet",
+      "functions": [
+        "initializeExternally",
+        "configureWorld",
+        "registerAccessControllerExternally",
+        "registerContentCreatorExternally",
+        "registerEmbodiedSystemExternally"
+      ]
+    },
+    { "name": "EmberFacet", "functions": ["world"] },
+    {
+      "name": "DebugFacet",
+      "functions": [
+        "addComponentToEntityExternally",
+        "removeComponentFromEntityExternally",
+        "callerEntityID",
+        "bulkSetState",
+        "entryPoint"
+      ]
+    },
+    {
+      "name": "CastSpellFacet",
+      "functions": ["castSpell"]
+    }
+  ]
+}

@@ -10,7 +10,7 @@ import { Deploy } from "./utils/Deploy.sol";
 import { EmberFacet } from "../facets/EmberFacet.sol";
 import { DebugFacet } from "../facets/DebugFacet.sol";
 import { InitializeFacet } from "../facets/InitializeFacet.sol";
-import { CastSpellFacet } from "../facets/systems/CastSpellFacet.sol";
+import { CastSpellFacet } from "../facets/CastSpellFacet.sol";
 // Components
 import { EmbodiedSystemArgumentComponent, ID as EmbodiedSystemArgumentComponentID } from "../components/EmbodiedSystemArgumentComponent.sol";
 import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";

@@ -41,7 +41,7 @@ async function bootLayers() {
     const chainIdString = params.get("chainId");
     const personaIdString = params.get("personaId");
     const jsonRpc = params.get("rpc") || undefined;
-    const wsRpc = params.get("wsRpc") || (jsonRpc && jsonRpc.replace("http", "ws"));
+    const wsRpc = params.get("wsRpc") || undefined; // || (jsonRpc && jsonRpc.replace("http", "ws"));
     const checkpointUrl = params.get("checkpoint") || undefined;
     const devMode = params.get("dev") === "true" || false;
 

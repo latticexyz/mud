@@ -53,11 +53,14 @@ export function Persona({ personaAddress, personaAllMinterAddress, personaMirror
     return tx.wait();
   }
 
-  async function mintAndBurner(consumer: string): Promise<{ personaId: number; burnerWallet: Wallet }> {
-    const personaId = await mintPersona();
+  async function mintAndBurner(
+    consumer: string,
+    overrides?: Overrides
+  ): Promise<{ personaId: number; burnerWallet: Wallet }> {
+    const personaId = await mintPersona(overrides);
     const burnerWallet = Wallet.createRandom().connect(provider);
-    await authorize(personaId, burnerWallet.address, consumer);
-    await impersonate(burnerWallet, personaId, consumer);
+    await authorize(personaId, burnerWallet.address, consumer, overrides);
+    await impersonate(burnerWallet, personaId, consumer, overrides);
     return { personaId, burnerWallet };
   }
 
