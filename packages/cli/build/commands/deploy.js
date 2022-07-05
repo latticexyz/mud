@@ -323,8 +323,10 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                                 const { stdout } = yield child;
                                 const lines = stdout.split("\n");
                                 ctx.gameContractAddress = gameContractAddress = findLog(lines, "diamond: address");
+                                ctx.personaAddress = findLog(lines, "persona: address");
                                 ctx.personaMirrorAddress = findLog(lines, "personaMirror: address");
-                                task.output = chalk.yellow(`Game deployed at: ${chalk.bgYellow.black(ctx.gameContractAddress)}`);
+                                ctx.personaAllMinterAddress = findLog(lines, "personaAllMinter: address");
+                                task.output = chalk.yellow(`Game deployed at: ${chalk.bgYellow.black(gameContractAddress)}`);
                             }),
                             options: { bottomBar: 3 },
                         },
@@ -387,7 +389,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                             title: "Open Launcher",
                             task: (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                                 const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
-                                launcherUrl = `https://play.lattice.xyz?address=${ctx.gameContractAddress || ""}&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${options.persona || ""}&personaAllMinter=${options.personaAllMinter || ""}&client=${clientUrl || ""}&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}`;
+                                launcherUrl = `https://play.lattice.xyz?address=${ctx.gameContractAddress || ""}&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${options.persona || ctx.personaAddress || ""}&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${clientUrl || ""}&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}`;
                                 openurl_1.default.open(launcherUrl);
                             }),
                             options: { bottomBar: 3 },

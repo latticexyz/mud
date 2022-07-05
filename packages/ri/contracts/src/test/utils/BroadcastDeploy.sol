@@ -23,6 +23,8 @@ contract Deploy is DSTest {
   )
     public
     returns (
+      address persona,
+      address personaAllMinter,
       address personaMirror,
       address diamond,
       address world
@@ -31,6 +33,8 @@ contract Deploy is DSTest {
     vm.startBroadcast(_deployer);
     DeployResult memory result = LibDeploy.deploy(_deployer, _personaMirror, _diamond, _world, _reuseComponents);
     vm.stopBroadcast();
+    persona = address(result.persona);
+    personaAllMinter = address(result.personaAllMinter);
     personaMirror = address(result.personaMirror);
     diamond = address(result.diamond);
     world = address(result.world);

@@ -49,7 +49,7 @@
     "test": "jest",
     "lint": "eslint . --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,tsx}'",
-    "start": "vite",
+    "start": "vite --force",
     "build": "vite build",
     "start:prod": "vite preview",
     "test:performance": "cypress run",

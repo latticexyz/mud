@@ -351,9 +351,11 @@ export const deploy = async (options: Options) => {
                   const lines = stdout.split("\n");
 
                   ctx.gameContractAddress = gameContractAddress = findLog(lines, "diamond: address");
+                  ctx.personaAddress = findLog(lines, "persona: address");
                   ctx.personaMirrorAddress = findLog(lines, "personaMirror: address");
+                  ctx.personaAllMinterAddress = findLog(lines, "personaAllMinter: address");
 
-                  task.output = chalk.yellow(`Game deployed at: ${chalk.bgYellow.black(ctx.gameContractAddress)}`);
+                  task.output = chalk.yellow(`Game deployed at: ${chalk.bgYellow.black(gameContractAddress)}`);
                 },
                 options: { bottomBar: 3 },
               },
@@ -421,10 +423,10 @@ export const deploy = async (options: Options) => {
                   launcherUrl = `https://play.lattice.xyz?address=${
                     ctx.gameContractAddress || ""
                   }&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${
-                    options.persona || ""
-                  }&personaAllMinter=${options.personaAllMinter || ""}&client=${clientUrl || ""}&rpc=${
-                    options.rpc || ""
-                  }&chainId=${options.chainId || ""}`;
+                    options.persona || ctx.personaAddress || ""
+                  }&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${
+                    clientUrl || ""
+                  }&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}`;
                   openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },

@@ -104,7 +104,11 @@ export class Store {
       console.log(this.wallet, this.persona, this.gameSpec);
       throw new Error("Mint failed: no wallet or persona or game spec");
     }
-    const { personaId, burnerWallet } = await this.persona.mintAndBurner(this.gameSpec.address);
+    const { personaId, burnerWallet } = await this.persona.mintAndBurner(this.gameSpec.address, {
+      maxPriorityFeePerGas: 0,
+      maxFeePerGas: 0,
+      gasLimit: 200000,
+    });
     localStorage.setItem(burnerWalletStorageKey, burnerWallet.privateKey);
     localStorage.setItem(personaStorageKey, String(personaId));
     runInAction(() => {
