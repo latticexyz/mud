@@ -14,6 +14,7 @@ import { LibDiamond, DiamondStorage } from "./libraries/LibDiamond.sol";
 import { IDiamondCut } from "./interfaces/IDiamondCut.sol";
 import { IDiamondLoupe } from "./interfaces/IDiamondLoupe.sol";
 import { IERC173 } from "./interfaces/IERC173.sol";
+import { console } from "forge-std/console.sol";
 
 // This is only used during forge deployments in tests
 // In development we currently use the hardhat hardcoded
@@ -38,6 +39,7 @@ contract Diamond {
   // Find facet for function that is called and execute the
   // function if a facet is found and return any value.
   fallback() external payable {
+    console.log("Diamond call");
     DiamondStorage storage ds;
     bytes32 position = LibDiamond.DIAMOND_STORAGE_POSITION;
     // get diamond storage
@@ -47,6 +49,7 @@ contract Diamond {
     // get facet from function selector
     address facet = address(bytes20(ds.facets[msg.sig]));
     require(facet != address(0), "Diamond: Function does not exist");
+    console.log("actually found the function");
     // Execute external function from facet using delegatecall and return any value.
     assembly {
       // copy function selector and any arguments

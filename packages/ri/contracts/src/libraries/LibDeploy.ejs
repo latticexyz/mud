@@ -8,6 +8,7 @@ import { Cheats } from "../test/utils/Cheats.sol";
 
 // ECS
 import { World } from "solecs/World.sol";
+import { Component } from "solecs/Component.sol";
 
 // Diamonds
 import { Diamantaire } from "../diamond/Diamantaire.sol";
@@ -70,7 +71,7 @@ library LibDeploy {
 
     bytes4[] memory functionSelectors;
 
-    IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](4);
+    IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](<%= facets.length -%>);
 
     // ------------------------
     // Add facets
@@ -127,8 +128,12 @@ library LibDeploy {
 
     // Deploy each component and transfer ownership to the diamond contract
     if(!_reuseComponents) {
+      Component comp;
 <% components.forEach(component => { -%>
-      (new <%= component %>(address(result.world))).transferOwnership(diamondAddress);
+      console.log("Deploying <%= component %>");
+      comp = new <%= component %>(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
 <% });%>
     }
     
@@ -141,16 +146,6 @@ library LibDeploy {
 
       // Register access controllers
       InitializeFacet(diamondAddress).registerAccessControllerExternally(address(new PersonaAccessController()));
-
-      // Register content creators
-      InitializeFacet(diamondAddress).registerContentCreatorExternally(address(new SpellContentCreator()));
-
-      // Register embodied systems
-      address createEntityFromPrototypeEmbodiedSystem = address(new CreateEntityFromPrototypeEmbodiedSystem());
-      InitializeFacet(diamondAddress).registerEmbodiedSystemExternally(
-        createEntityFromPrototypeEmbodiedSystem,
-        CreateEntityFromPrototypeEmbodiedSystem.createEntityFromPrototype.selector
-      );
     }
   }
 }

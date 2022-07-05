@@ -121,6 +121,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
     // No client mapping for this component contract
     if (!clientComponentKey) {
+      console.warn(componentAddress);
       console.warn("Received unknown component update", componentId);
       return;
     }

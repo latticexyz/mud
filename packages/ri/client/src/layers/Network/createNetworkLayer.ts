@@ -58,7 +58,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     Stamina: defineComponent(
       world,
       { current: Type.Number, max: Type.Number, regeneration: Type.Number },
-      { id: "Stamina", metadata: { contractId: keccak256("ember.component.personaComponent") } }
+      { id: "Stamina", metadata: { contractId: keccak256("ember.component.staminaComponent") } }
     ),
     LastActionTurn: defineComponent(
       world,
@@ -132,7 +132,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
 
   async function joinGame(position: WorldCoord) {
     console.log(`Joining game at position ${JSON.stringify(position)}`);
-    return txQueue.Game.joinGame(position);
+    return txQueue.Game.joinGame(position, { gasLimit: 7_000_000 });
   }
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {

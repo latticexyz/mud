@@ -21,11 +21,13 @@ import { MovableComponent, ID as MovableComponentID } from "../components/Movabl
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
+import { console } from "forge-std/console.sol";
 
 contract PlayerJoinFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
 
   function joinGame(Coord calldata position) external {
+    console.log("Joining game");
     (, bool foundTargetEntity) = LibUtils.getEntityAt(s.world, position);
     require(!foundTargetEntity, "spot taken fool!");
 
@@ -35,6 +37,7 @@ contract PlayerJoinFacet is UsingDiamondOwner, UsingAccessControl {
     createCreature(playerEntity, Coord(position.x - 1, position.y));
     createCreature(playerEntity, Coord(position.x, position.y + 1));
     createCreature(playerEntity, Coord(position.x, position.y - 1));
+    console.log("Joined game");
   }
 
   function createCreature(uint256 ownerId, Coord memory position) private {
