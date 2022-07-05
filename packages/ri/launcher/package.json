@@ -1,10 +1,10 @@
 {
   "name": "ri-launcher",
-  "version": "0.1.7",
+  "version": "0.2.0",
   "private": "true",
   "dependencies": {
     "@latticexyz/persona": "https://github.com/latticexyz/persona.git#a53e26a670ed6f041dc5dec365be293457a90b5d",
-    "@latticexyz/persona-js": "0.1.8",
+    "@latticexyz/persona-js": "0.2.0",
     "ethers": "^5.6.9",
     "mobx": "^6.6.0",
     "mobx-react-lite": "^3.4.0",
