@@ -23,6 +23,8 @@ import { console } from "forge-std/console.sol";
 // chain, this is why.
 contract Diamond {
   constructor(address _diamondOwner, IDiamondCut.FacetCut[] memory _diamondCut) payable {
+    console.log(2);
+    console.log("Diamond constructor");
     LibDiamond.diamondCut(_diamondCut, address(0), new bytes(0));
     LibDiamond.setContractOwner(_diamondOwner);
 
@@ -40,6 +42,7 @@ contract Diamond {
   // function if a facet is found and return any value.
   fallback() external payable {
     console.log("Diamond call");
+    console.log(1);
     DiamondStorage storage ds;
     bytes32 position = LibDiamond.DIAMOND_STORAGE_POSITION;
     // get diamond storage

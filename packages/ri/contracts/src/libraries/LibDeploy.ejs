@@ -97,19 +97,19 @@ library LibDeploy {
     // Deploy 
     // ------------------------
 
-    if (_personaMirror == address(0)) {
-      // deploy persona, persona mirror, and the bridge
-      result.bridge = new MockL2Bridge();
-      result.tokenURIGenerator = new EmptyPersonaTokenURIGenerator();
-      result.persona = new Persona("L", "L", address(result.bridge), address(0));
-      result.personaAllMinter = new PersonaAllMinter();
-      result.personaAllMinter.setPersona(address(result.persona));
-      result.persona.setMinter(address(result.personaAllMinter), true);
-      result.personaMirror = new PersonaMirror(address(result.persona), address(result.bridge));
-      result.persona.setPersonaMirrorL2(address(result.personaMirror));
-    } else {
-      result.personaMirror = PersonaMirror(_personaMirror);
-    }
+    // if (_personaMirror == address(0)) {
+    //   // deploy persona, persona mirror, and the bridge
+    //   result.bridge = new MockL2Bridge();
+    //   result.tokenURIGenerator = new EmptyPersonaTokenURIGenerator();
+    //   result.persona = new Persona("L", "L", address(result.bridge), address(0));
+    //   result.personaAllMinter = new PersonaAllMinter();
+    //   result.personaAllMinter.setPersona(address(result.persona));
+    //   result.persona.setMinter(address(result.personaAllMinter), true);
+    //   result.personaMirror = new PersonaMirror(address(result.persona), address(result.bridge));
+    //   result.persona.setPersonaMirrorL2(address(result.personaMirror));
+    // } else {
+    //   result.personaMirror = PersonaMirror(_personaMirror);
+    // }
 
     // Deploy the diamond
     if (upgrade) {

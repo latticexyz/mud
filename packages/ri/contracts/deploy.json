@@ -38,10 +38,6 @@
       ]
     },
     {
-      "name": "PlayerJoinFacet",
-      "functions": ["joinGame"]
-    },
-    {
       "name": "CastSpellFacet",
       "functions": ["castSpell"]
     }
