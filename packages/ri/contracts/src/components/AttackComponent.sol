@@ -17,10 +17,10 @@ contract AttackComponent is Component {
     values = new LibTypes.SchemaValue[](2);
 
     keys[0] = "strength";
-    values[0] = LibTypes.SchemaValue.UINT32;
+    values[0] = LibTypes.SchemaValue.INT32;
 
     keys[1] = "range";
-    values[1] = LibTypes.SchemaValue.UINT32;
+    values[1] = LibTypes.SchemaValue.INT32;
   }
 
   function set(uint256 entity, Attack calldata value) public {
