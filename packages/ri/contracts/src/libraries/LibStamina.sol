@@ -19,9 +19,19 @@ library LibStamina {
     StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
     Stamina memory stamina = staminaComponent.getValue(entity);
 
+    // Cap stamina regen at max stamina
     if (updatedStamina > stamina.max) {
       updatedStamina = stamina.max;
     }
+
+    updatedStamina += amount;
+
+    // Cap stamina modification at max stamina
+    if (updatedStamina > stamina.max) {
+      updatedStamina = stamina.max;
+    }
+
+    require(updatedStamina > 0, "not enough stamina");
 
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(entity, currentTurn);
 
@@ -33,6 +43,7 @@ library LibStamina {
 
   function getUpdatedStamina(IUint256Component components, uint256 entity)
     internal
+    view
     returns (int32 updatedStamina, int32 currentTurn)
   {
     StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
