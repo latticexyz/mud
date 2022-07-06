@@ -1,4 +1,13 @@
-import { Component, ComponentValue, createWorld, defineComponent, EntityIndex, Schema, Type } from "@latticexyz/recs";
+import {
+  Component,
+  ComponentValue,
+  createWorld,
+  defineComponent,
+  EntityID,
+  EntityIndex,
+  Schema,
+  Type,
+} from "@latticexyz/recs";
 import {
   definePositionComponent,
   defineEntityTypeComponent,
@@ -62,7 +71,6 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "Player", metadata: { contractId: keccak256("ember.component.playerComponent") } }
     ),
-    // Stamina
     Stamina: defineComponent(
       world,
       { current: Type.Number, max: Type.Number, regeneration: Type.Number },
@@ -72,6 +80,16 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       world,
       { value: Type.Number },
       { id: "LastActionTurn", metadata: { contractId: keccak256("ember.component.lastActionTurnComponent") } }
+    ),
+    Health: defineComponent(
+      world,
+      { current: Type.Number, max: Type.Number },
+      { id: "Health", metadata: { contractId: keccak256("ember.component.healthComponent") } }
+    ),
+    Attack: defineComponent(
+      world,
+      { strength: Type.Number, range: Type.Number },
+      { id: "Attack", metadata: { contractId: keccak256("ember.component.attackComponent") } }
     ),
   };
 
@@ -88,6 +106,8 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.lastActionTurnComponent")]: "LastActionTurn",
     [keccak256("ember.component.staminaComponent")]: "Stamina",
     [keccak256("ember.component.playerComponent")]: "Player",
+    [keccak256("ember.component.healthComponent")]: "Health",
+    [keccak256("ember.component.attackComponent")]: "Attack",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -150,9 +170,14 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     return systems["ember.system.playerJoin"].executeTyped(position, { gasPrice: 0 });
   }
 
-  async function moveEntity(entity: string, targetPosition: WorldCoord) {
+  async function moveEntity(entity: EntityID, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
     return systems["ember.system.move"].executeTyped(BigNumber.from(entity), targetPosition, { gasPrice: 0 });
+  }
+
+  async function attackEntity(attacker: EntityID, defender: EntityID) {
+    console.log(`Entity ${attacker} attacking ${defender}.`);
+    return systems["ember.system.attack"].executeTyped(BigNumber.from(attacker), BigNumber.from(defender));
   }
 
   // Constants (load from contract later)
@@ -174,6 +199,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       setContractComponentValue,
       joinGame,
       moveEntity,
+      attackEntity,
     },
     DEV_MODE,
   };

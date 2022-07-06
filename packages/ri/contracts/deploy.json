@@ -1,7 +1,9 @@
 {
   "components": [
+    "AttackComponent",
     "EntityTypeComponent",
     "GameConfigComponent",
+    "HealthComponent",
     "LastActionTurnComponent",
     "MaxDistanceComponent",
     "MineableComponent",
@@ -16,6 +18,7 @@
     { "name": "ComponentDevSystem", "writeAccess": ["*"] },
     { "name": "BulkSetStateSystem" },
     { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
+    { "name": "CombatSystem", "writeAccess": ["HealthComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
     {
       "name": "PlayerJoinSystem",

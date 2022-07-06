@@ -17,6 +17,8 @@ import { MovableComponent, ID as MovableComponentID } from "../components/Movabl
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
+import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
+import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.playerJoin"));
 
@@ -81,5 +83,10 @@ contract PlayerJoinSystem is ISystem {
       LibStamina.getCurrentTurn(GameConfigComponent(getAddressById(components, GameConfigComponentID)))
     );
     MovableComponent(getAddressById(components, MovableComponentID)).set(entity);
+    HealthComponent(getAddressById(components, HealthComponentID)).set(
+      entity,
+      Health({ current: 100_000, max: 100_000 })
+    );
+    AttackComponent(getAddressById(components, AttackComponentID)).set(entity, Attack({ strength: 60_000, range: 1 }));
   }
 }

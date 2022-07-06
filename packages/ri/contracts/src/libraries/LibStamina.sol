@@ -5,37 +5,50 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { getAddressById } from "solecs/utils.sol";
 
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
-import { StaminaComponent, Stamina } from "../components/StaminaComponent.sol";
-import { LastActionTurnComponent } from "../components/LastActionTurnComponent.sol";
+import { StaminaComponent, ID as StaminaComponentID, Stamina } from "../components/StaminaComponent.sol";
+import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
 library LibStamina {
   function modifyStamina(
-    StaminaComponent staminaComponent,
-    LastActionTurnComponent lastActionTurnComponent,
-    GameConfigComponent gameConfigComponent,
+    IUint256Component components,
     uint256 entity,
-    uint32 amount
+    int32 amount
   ) internal {
-    require(staminaComponent.has(entity), "entity has no stamina");
-    require(lastActionTurnComponent.has(entity), "entity has no last action turn");
+    (int32 updatedStamina, int32 currentTurn) = getUpdatedStamina(components, entity);
 
-    int32 currentTurn = getCurrentTurn(gameConfigComponent);
+    StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
     Stamina memory stamina = staminaComponent.getValue(entity);
-
-    int32 staminaSinceLastAction = (currentTurn - lastActionTurnComponent.getValue(entity)) * stamina.regeneration;
-    int32 updatedStamina = stamina.current + staminaSinceLastAction;
 
     if (updatedStamina > stamina.max) {
       updatedStamina = stamina.max;
     }
 
-    require(updatedStamina >= amount, "entity has not enough stamina");
+    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(entity, currentTurn);
 
-    lastActionTurnComponent.set(entity, currentTurn);
     staminaComponent.set(
       entity,
-      Stamina({ current: updatedStamina - amount, max: stamina.max, regeneration: stamina.regeneration })
+      Stamina({ current: updatedStamina + amount, max: stamina.max, regeneration: stamina.regeneration })
     );
+  }
+
+  function getUpdatedStamina(IUint256Component components, uint256 entity)
+    internal
+    returns (int32 updatedStamina, int32 currentTurn)
+  {
+    StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
+    GameConfigComponent gameConfigComponent = GameConfigComponent(getAddressById(components, GameConfigComponentID));
+    LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
+      getAddressById(components, LastActionTurnComponentID)
+    );
+
+    require(staminaComponent.has(entity), "entity has no stamina");
+    require(lastActionTurnComponent.has(entity), "entity has no last action turn");
+
+    currentTurn = getCurrentTurn(gameConfigComponent);
+    Stamina memory stamina = staminaComponent.getValue(entity);
+
+    int32 staminaSinceLastAction = (currentTurn - lastActionTurnComponent.getValue(entity)) * stamina.regeneration;
+    updatedStamina = stamina.current + staminaSinceLastAction;
   }
 
   function getCurrentTurn(GameConfigComponent gameConfigComponent) internal view returns (int32) {

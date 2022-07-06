@@ -51,29 +51,17 @@ contract MoveSystem is ISystem {
     );
     require(lastActionTurnComponent.has(entity), "entity has no last action turn");
 
-    return abi.encode(entity, targetPosition, positionComponent, staminaComponent, lastActionTurnComponent);
+    return abi.encode(entity, targetPosition, positionComponent);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (
-      uint256 entity,
-      Coord memory targetPosition,
-      PositionComponent positionComponent,
-      StaminaComponent staminaComponent,
-      LastActionTurnComponent lastActionTurnComponent
-    ) = abi.decode(
-        requirement(arguments),
-        (uint256, Coord, PositionComponent, StaminaComponent, LastActionTurnComponent)
-      );
+    (uint256 entity, Coord memory targetPosition, PositionComponent positionComponent) = abi.decode(
+      requirement(arguments),
+      (uint256, Coord, PositionComponent)
+    );
     positionComponent.set(entity, targetPosition);
 
-    LibStamina.modifyStamina(
-      staminaComponent,
-      lastActionTurnComponent,
-      GameConfigComponent(getAddressById(components, GameConfigComponentID)),
-      entity,
-      1
-    );
+    LibStamina.modifyStamina(components, entity, -1);
   }
 
   function requirementTyped(uint256 entity, Coord memory targetPosition) public view returns (bytes memory) {
