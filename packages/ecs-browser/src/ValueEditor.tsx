@@ -53,9 +53,9 @@ export const ValueEditor = ({
       e.preventDefault();
       const valueType = component.schema[valueProp];
 
-      if (value === null || value === "") {
+      if (value == null || value === "") {
         if (isOptionalType(valueType)) {
-          updateComponent(component, entity, { [valueProp]: null });
+          updateComponent(component, entity, { [valueProp]: undefined });
           return;
         }
 

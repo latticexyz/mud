@@ -10,7 +10,8 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
   world: World,
   network: Network,
   systems: Component<{ value: Type.String }>,
-  interfaces: { [key in keyof T]: ContractInterface }
+  interfaces: { [key in keyof T]: ContractInterface },
+  options?: { devMode?: boolean }
 ) {
   const systemContracts = observable.box({} as T);
   const systemIdPreimages: { [key: string]: string } = Object.keys(interfaces).reduce((acc, curr) => {
@@ -34,7 +35,7 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
     runInAction(() => systemContracts.set({ ...systemContracts.get(), [system.id]: system.contract }));
   });
 
-  const { txQueue, dispose } = createTxQueue<T>(systemContracts, network);
+  const { txQueue, dispose } = createTxQueue<T>(systemContracts, network, options);
   world.registerDisposer(dispose);
 
   return txQueue;

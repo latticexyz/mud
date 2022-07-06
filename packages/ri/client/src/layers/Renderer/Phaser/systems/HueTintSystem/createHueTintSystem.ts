@@ -1,4 +1,4 @@
-import { defineComponentSystem } from "@latticexyz/recs";
+import { defineSystem, getComponentValueStrict, Has, UpdateType } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { HueTintAndOutlineFXPipeline } from "@latticexyz/phaserx";
 
@@ -12,16 +12,21 @@ export function createHueTintSystem(layer: PhaserLayer) {
     scenes: {
       Main: { objectPool },
     },
+    parentLayers: {
+      local: {
+        components: { LocalPosition },
+      },
+    },
   } = layer;
 
-  defineComponentSystem(world, HueTint, ({ entity, value }) => {
+  defineSystem(world, [Has(HueTint), Has(LocalPosition)], ({ entity, type }) => {
     const embodiedEntity = objectPool.get(entity, "Sprite");
-    const hueTint = value[0]?.value;
 
-    if (hueTint == null) {
+    if (type === UpdateType.Exit) {
       return embodiedEntity.removeComponent(HueTint.id);
     }
 
+    const hueTint = getComponentValueStrict(HueTint, entity).value;
     embodiedEntity.setComponent({
       id: HueTint.id,
       once: (gameObject) => {

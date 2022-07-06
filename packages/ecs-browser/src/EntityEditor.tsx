@@ -49,7 +49,7 @@ export const EntityEditor = observer(
         onMouseEnter={() => {
           clearDevHighlights();
           setComponent(devHighlightComponent, entity, {
-            value: null,
+            value: undefined,
           });
         }}
       >

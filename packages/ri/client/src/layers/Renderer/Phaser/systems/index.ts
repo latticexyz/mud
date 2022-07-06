@@ -12,3 +12,4 @@ export { createDrawStaminaSystem } from "./DrawStaminaSystem";
 export { createDrawHighlightCoordSystem } from "./DrawHighlightCoordSystem";
 export { createDrawPotentialPathSystem } from "./DrawPotentialPathSystem/createDrawPotentialPathSystem";
 export { createPlayerSpawnSystem } from "./PlayerSpawnSystem";
+export { createDrawHealthSystem } from "./DrawHealthSystem";

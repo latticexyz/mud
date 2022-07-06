@@ -4,10 +4,11 @@ import { ISystem } from "solecs/interfaces/ISystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
-import { getAddressById, getComponentById, addressToEntity } from "solecs/utils.sol";
+import { getAddressById, getComponentById, addressToEntity, getSystemAddressById } from "solecs/utils.sol";
 
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
+import { LibPrototype } from "../libraries/LibPrototype.sol";
 
 import { PlayerComponent, ID as PlayerComponentID } from "../components/PlayerComponent.sol";
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
@@ -17,6 +18,10 @@ import { MovableComponent, ID as MovableComponentID } from "../components/Movabl
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
+import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
+import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
+
+import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.playerJoin"));
 
@@ -30,28 +35,40 @@ contract PlayerJoinSystem is ISystem {
   }
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
-    Coord memory targetPosition = abi.decode(arguments, (Coord));
-    (, bool foundTargetEntity) = LibUtils.getEntityAt(components, targetPosition);
-    require(!foundTargetEntity, "spot taken fool!");
     IComponent playerComponent = getComponentById(components, PlayerComponentID);
     require(!playerComponent.has(addressToEntity(msg.sender)), "player already spawned");
 
-    return abi.encode(playerComponent, targetPosition);
+    Coord memory position = abi.decode(arguments, (Coord));
+    Coord[] memory spawnPositions = new Coord[](5);
+
+    spawnPositions[0] = position;
+    spawnPositions[1] = Coord(position.x + 1, position.y);
+    spawnPositions[2] = Coord(position.x - 1, position.y);
+    spawnPositions[3] = Coord(position.x, position.y + 1);
+    spawnPositions[4] = Coord(position.x, position.y - 1);
+
+    PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
+    for (uint256 i; i < spawnPositions.length; i++) {
+      require(positionComponent.getEntitiesWithValue(spawnPositions[i]).length == 0, "spot taken");
+    }
+
+    return abi.encode(playerComponent, spawnPositions);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (IComponent playerComponent, Coord memory position) = abi.decode(requirement(arguments), (IComponent, Coord));
+    (IComponent playerComponent, Coord[] memory spawnPositions) = abi.decode(
+      requirement(arguments),
+      (IComponent, Coord[])
+    );
 
     // Create player entity
     uint256 playerEntity = addressToEntity(msg.sender);
-    PlayerComponent(address(playerComponent)).set(addressToEntity(msg.sender));
+    PlayerComponent(address(playerComponent)).set(playerEntity);
 
     // Spawn creatures
-    createCreature(playerEntity, Coord(position.x, position.y));
-    createCreature(playerEntity, Coord(position.x + 1, position.y));
-    createCreature(playerEntity, Coord(position.x - 1, position.y));
-    createCreature(playerEntity, Coord(position.x, position.y + 1));
-    createCreature(playerEntity, Coord(position.x, position.y - 1));
+    for (uint256 i; i < spawnPositions.length; i++) {
+      spawnSoldier(playerEntity, spawnPositions[i]);
+    }
   }
 
   function requirementTyped(Coord memory targetPosition) public view returns (bytes memory) {
@@ -66,20 +83,18 @@ contract PlayerJoinSystem is ISystem {
   // Internals
   // ------------------------
 
-  function createCreature(uint256 ownerId, Coord memory position) private {
+  function spawnSoldier(uint256 ownerId, Coord memory position) private {
     uint256 entity = world.getUniqueEntityId();
 
+    LibPrototype.copyPrototype(components, SoldierID, entity);
+
     OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
-    EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(entity, uint32(0));
+
     PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
-    StaminaComponent(getAddressById(components, StaminaComponentID)).set(
-      entity,
-      Stamina({ current: 0, max: 3, regeneration: 1 })
-    );
+
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
       entity,
       LibStamina.getCurrentTurn(GameConfigComponent(getAddressById(components, GameConfigComponentID)))
     );
-    MovableComponent(getAddressById(components, MovableComponentID)).set(entity);
   }
 }

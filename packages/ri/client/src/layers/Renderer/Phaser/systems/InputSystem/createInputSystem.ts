@@ -1,49 +1,50 @@
 import { PhaserLayer } from "../../types";
 import { pixelToWorldCoord } from "../../utils";
 import { map } from "rxjs";
-import { Has, runQuery } from "@latticexyz/recs";
+import { getComponentValueStrict, Has, HasValue, runQuery } from "@latticexyz/recs";
 import { Direction } from "../../../../../constants";
+import { WorldCoord } from "../../../../../types";
 
 export function createInputSystem(layer: PhaserLayer) {
   const {
     scenes: {
       Main: { input, maps },
     },
+    components: { HoverHighlight },
     api: { highlightCoord },
     parentLayers: {
       headless: {
-        api: { moveEntity },
+        api: { moveEntity, attackEntity },
       },
       local: {
-        components: { Selected },
+        singletonEntity,
+        components: { Selected, LocalPosition },
       },
     },
   } = layer;
 
-  const move = function (direction: Direction) {
-    const selectedEntity = [...runQuery([Has(Selected)])][0];
+  const getSelectedEntity = () => [...runQuery([Has(Selected)])][0];
+
+  const move = function (targetPosition: WorldCoord) {
+    const selectedEntity = getSelectedEntity();
     if (!selectedEntity) return;
-    moveEntity(selectedEntity, direction);
+    moveEntity(selectedEntity, targetPosition);
   };
 
   input.onKeyPress(
-    (keys) => keys.has("UP"),
-    () => move(Direction.Top)
-  );
+    (keys) => keys.has("A"),
+    () => {
+      const selectedEntity = getSelectedEntity();
+      if (!selectedEntity) return;
 
-  input.onKeyPress(
-    (keys) => keys.has("LEFT"),
-    () => move(Direction.Left)
-  );
+      const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
+      const highlightedEntity = [
+        ...runQuery([HasValue(LocalPosition, { x: hoverHighlight.x, y: hoverHighlight.y })]),
+      ][0];
+      if (!highlightedEntity) return;
 
-  input.onKeyPress(
-    (keys) => keys.has("DOWN"),
-    () => move(Direction.Bottom)
-  );
-
-  input.onKeyPress(
-    (keys) => keys.has("RIGHT"),
-    () => move(Direction.Right)
+      attackEntity(selectedEntity, highlightedEntity);
+    }
   );
 
   input.pointermove$
@@ -53,5 +54,14 @@ export function createInputSystem(layer: PhaserLayer) {
     )
     .subscribe((coord) => {
       highlightCoord(coord);
+    });
+
+  input.rightClick$
+    .pipe(
+      map((pointer) => ({ x: pointer.worldX, y: pointer.worldY })),
+      map((pixel) => pixelToWorldCoord(maps.Main, pixel))
+    )
+    .subscribe((coord) => {
+      move(coord);
     });
 }

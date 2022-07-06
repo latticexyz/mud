@@ -2,18 +2,15 @@ import { tileCoordToPixelCoord } from "@latticexyz/phaserx";
 import { Has, getComponentValueStrict, defineSystem, UpdateType } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 
-export function createDrawStaminaSystem(layer: PhaserLayer) {
+export function createDrawHealthSystem(layer: PhaserLayer) {
   const {
     world,
     parentLayers: {
       network: {
-        components: { Stamina },
+        components: { Health },
       },
       local: {
         components: { LocalPosition },
-      },
-      headless: {
-        components: { LocalStamina },
       },
     },
     scenes: {
@@ -26,23 +23,22 @@ export function createDrawStaminaSystem(layer: PhaserLayer) {
     },
   } = layer;
 
-  defineSystem(world, [Has(LocalPosition), Has(LocalStamina), Has(Stamina)], ({ entity, type }) => {
+  defineSystem(world, [Has(LocalPosition), Has(Health)], ({ entity, type }) => {
     if (type === UpdateType.Exit) {
-      objectPool.remove(`${entity}-stamina`);
+      objectPool.remove(`${entity}-health`);
     } else if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
-      const currentStamina = getComponentValueStrict(LocalStamina, entity).current;
-      const maxStamina = getComponentValueStrict(Stamina, entity).max;
+      const health = getComponentValueStrict(Health, entity);
       const position = getComponentValueStrict(LocalPosition, entity);
 
-      const highlight = objectPool.get(`${entity}-stamina`, "Text");
+      const highlight = objectPool.get(`${entity}-health`, "Text");
       highlight.setComponent({
-        id: "stamina-text",
-        once: (staminaText) => {
+        id: "health-text",
+        once: (healthText) => {
           const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
 
-          staminaText.setFontSize(8);
-          staminaText.setText(`${currentStamina} / ${maxStamina}`);
-          staminaText.setPosition(pixelCoord.x - 5, pixelCoord.y + tileHeight);
+          healthText.setFontSize(12);
+          healthText.setText(`${Math.round(health.current / 10_000)}`);
+          healthText.setPosition(pixelCoord.x, pixelCoord.y - 10);
         },
       });
     }

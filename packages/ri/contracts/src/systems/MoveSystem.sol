@@ -29,19 +29,26 @@ contract MoveSystem is ISystem {
   }
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
-    (uint256 entity, Coord memory targetPosition) = abi.decode(arguments, (uint256, Coord));
+    (uint256 entity, Coord[] memory path) = abi.decode(arguments, (uint256, Coord[]));
 
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
     require(LibECS.isOwnedByCaller(ownedByComponent, entity), "you don't own this entity");
 
     MovableComponent movableComponent = MovableComponent(getAddressById(components, MovableComponentID));
     require(movableComponent.has(entity), "trying to move non-moving entity");
+    require(movableComponent.getValue(entity) >= int32(uint32(path.length)), "not enough movespeed");
 
     PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
-    require(LibUtils.manhattan(positionComponent.getValue(entity), targetPosition) == 1, "not adjacent");
+    Coord memory position = positionComponent.getValue(entity);
+    for (uint256 i; i < path.length; i++) {
+      Coord memory targetPosition = path[i];
+      int32 distance = LibUtils.manhattan(position, targetPosition);
+      require(distance <= 1, "not adjacent");
 
-    (, bool foundTargetEntity) = LibUtils.getEntityWithAt(components, UntraversableComponentID, targetPosition);
-    require(!foundTargetEntity, "entity blocking intended direction");
+      (, bool foundTargetEntity) = LibUtils.getEntityWithAt(components, UntraversableComponentID, targetPosition);
+      require(!foundTargetEntity, "entity blocking intended direction");
+      position = targetPosition;
+    }
 
     StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
     require(staminaComponent.has(entity), "entity has no stamina");
@@ -51,36 +58,24 @@ contract MoveSystem is ISystem {
     );
     require(lastActionTurnComponent.has(entity), "entity has no last action turn");
 
-    return abi.encode(entity, targetPosition, positionComponent, staminaComponent, lastActionTurnComponent);
+    return abi.encode(entity, position, positionComponent);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (
-      uint256 entity,
-      Coord memory targetPosition,
-      PositionComponent positionComponent,
-      StaminaComponent staminaComponent,
-      LastActionTurnComponent lastActionTurnComponent
-    ) = abi.decode(
-        requirement(arguments),
-        (uint256, Coord, PositionComponent, StaminaComponent, LastActionTurnComponent)
-      );
-    positionComponent.set(entity, targetPosition);
-
-    LibStamina.modifyStamina(
-      staminaComponent,
-      lastActionTurnComponent,
-      GameConfigComponent(getAddressById(components, GameConfigComponentID)),
-      entity,
-      1
+    (uint256 entity, Coord memory targetPosition, PositionComponent positionComponent) = abi.decode(
+      requirement(arguments),
+      (uint256, Coord, PositionComponent)
     );
+
+    LibStamina.modifyStamina(components, entity, -1);
+    positionComponent.set(entity, targetPosition);
   }
 
-  function requirementTyped(uint256 entity, Coord memory targetPosition) public view returns (bytes memory) {
-    return requirement(abi.encode(entity, targetPosition));
+  function requirementTyped(uint256 entity, Coord[] memory path) public view returns (bytes memory) {
+    return requirement(abi.encode(entity, path));
   }
 
-  function executeTyped(uint256 entity, Coord memory targetPosition) public returns (bytes memory) {
-    return execute(abi.encode(entity, targetPosition));
+  function executeTyped(uint256 entity, Coord[] memory path) public returns (bytes memory) {
+    return execute(abi.encode(entity, path));
   }
 }

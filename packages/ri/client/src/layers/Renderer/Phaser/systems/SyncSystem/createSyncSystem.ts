@@ -1,4 +1,4 @@
-import { HasValue, Has, defineSyncSystem, getComponentValue } from "@latticexyz/recs";
+import { HasValue, Has, defineSyncSystem, getComponentValue, defineSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { LocalEntityTypes } from "../../../../Local/types";
 import { EntityTypes } from "../../../../Network/types";
@@ -16,31 +16,11 @@ export function createSyncSystem(layer: PhaserLayer) {
         components: { EntityType, OwnedBy },
       },
       local: {
-        components: { LocalEntityType, Selected },
+        components: { Selected, LocalPosition },
       },
     },
     components: { Appearance, SpriteAnimation, Outline, HueTint },
   } = layer;
-
-  defineSyncSystem(
-    world,
-    [HasValue(EntityType, { value: EntityTypes.Hero })],
-    () => Appearance,
-    () => {
-      return {
-        value: Assets.Legendary,
-      };
-    }
-  );
-
-  defineSyncSystem(
-    world,
-    [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
-    () => Appearance,
-    () => ({
-      value: Assets.Imp,
-    })
-  );
 
   defineSyncSystem(
     world,
@@ -66,19 +46,21 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Hero })],
-    () => SpriteAnimation,
-    () => ({
-      value: Animations.HeroIdle,
-    })
+    [HasValue(EntityType, { value: EntityTypes.Hero }), Has(LocalPosition)],
+    () => Appearance,
+    () => {
+      return {
+        value: Assets.Legendary,
+      };
+    }
   );
 
   defineSyncSystem(
     world,
-    [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
+    [HasValue(EntityType, { value: EntityTypes.Hero }), Has(LocalPosition)],
     () => SpriteAnimation,
     () => ({
-      value: Animations.ImpIdle,
+      value: Animations.HeroIdle,
     })
   );
 }

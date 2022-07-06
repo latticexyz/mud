@@ -288,7 +288,7 @@ export const deploy = async (options: Options) => {
                     "--private-keys",
                     wallet.privateKey,
                     "--sig",
-                    "deployEmber(address,address,bool)",
+                    "deploy(address,address,bool)",
                     wallet.address,
                     options.world || constants.AddressZero,
                     options.reuseComponents ? "true" : "false",

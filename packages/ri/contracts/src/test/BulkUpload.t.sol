@@ -3,12 +3,12 @@ pragma solidity >=0.8.0;
 
 // import { World } from "solecs/World.sol";
 // import { ECSEvent } from "../facets/DebugFacet.sol";
-import { EmberTest } from "./EmberTest.sol";
+import { MudTest } from "./MudTest.t.sol";
 
 // import { ID as PositionComponentID } from "../components/PositionComponent.sol";
 // import { console } from "forge-std/console.sol";
 
-contract BulkUploadTest is EmberTest {
+contract BulkUploadTest is MudTest {
   // function testInitMap() public {
   //   uint256 sizeX = 100;
   //   uint256 sizeY = 100;

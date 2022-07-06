@@ -1,18 +1,8 @@
-import {
-  hasComponent,
-  HasValue,
-  runQuery,
-  getComponentValue,
-  EntityIndex,
-  EntityID,
-  setComponent,
-  Type,
-  Component,
-  World,
-} from "@latticexyz/recs";
+import { getComponentValue, EntityIndex, EntityID, setComponent, Type, Component, World } from "@latticexyz/recs";
 import { ActionSystem } from "../systems";
-import { Direction, Directions } from "../../../constants";
 import { NetworkLayer } from "../../Network";
+import { WorldCoord } from "../../../types";
+import { aStar } from "../../../../src/utils/pathfinding";
 
 export function moveEntity(
   context: {
@@ -22,7 +12,7 @@ export function moveEntity(
     world: World;
   },
   entity: EntityIndex,
-  direction: Direction
+  targetPosition: WorldCoord
 ) {
   const {
     network: {
@@ -36,8 +26,8 @@ export function moveEntity(
   } = context;
 
   // Entity must be movable
-  const entityCanMove = getComponentValue(Movable, entity)?.value;
-  if (!entityCanMove) return;
+  const moveSpeed = getComponentValue(Movable, entity)?.value;
+  if (!moveSpeed) return;
 
   // Entity must be owned by the player
   const movingEntityOwner = getComponentValue(OwnedBy, entity)?.value;
@@ -52,7 +42,6 @@ export function moveEntity(
   }
 
   const actionID = `move ${Math.random()}` as EntityID;
-  const delta = Directions[direction];
 
   actions.add({
     id: actionID,
@@ -61,7 +50,7 @@ export function moveEntity(
       Untraversable,
       LocalStamina,
     },
-    requirement: () => {
+    requirement: ({ LocalStamina, Position }) => {
       const localStamina = getComponentValue(LocalStamina, entity);
       if (!localStamina) {
         console.warn("no local stamina");
@@ -80,18 +69,15 @@ export function moveEntity(
         actions.cancel(actionID);
         return null;
       }
-      const targetPosition = { x: currentPosition.x + delta.x, y: currentPosition.y + delta.y };
-      // Target position must be traversable
-      const entities = runQuery([HasValue(Position, targetPosition)]);
-      for (const entity of entities) {
-        if (hasComponent(Untraversable, entity)) {
-          console.warn("target is untraversable");
-          actions.cancel(actionID);
-          return null;
-        }
+
+      const path = aStar(currentPosition, targetPosition, moveSpeed + 1, context.network, Position);
+      if (path.length == 0) {
+        actions.cancel(actionID);
+        return null;
       }
       return {
         targetPosition,
+        path,
         netStamina,
       };
     },
@@ -107,8 +93,8 @@ export function moveEntity(
         value: { current: netStamina },
       },
     ],
-    execute: async ({ targetPosition, netStamina }) => {
-      const tx = await networkApi.moveEntity(world.entities[entity], targetPosition);
+    execute: async ({ path, netStamina }) => {
+      const tx = await networkApi.moveEntity(world.entities[entity], path);
       await tx.wait();
       setComponent(LocalStamina, entity, { current: netStamina });
     },
