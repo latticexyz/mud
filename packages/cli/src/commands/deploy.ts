@@ -426,7 +426,7 @@ export const deploy = async (options: Options) => {
                     options.persona || ctx.personaAddress || ""
                   }&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${
                     clientUrl || ""
-                  }&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}`;
+                  }&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}&dev=${options.chainId === 31337 || ""}`;
                   openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },

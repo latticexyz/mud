@@ -31,6 +31,7 @@ export class Store {
   public persona?: ReturnType<typeof Persona>;
   public personaId?: number;
   public burnerWallet?: Wallet;
+  public devMode?: boolean;
 
   constructor() {
     makeAutoObservable(this);
@@ -67,6 +68,7 @@ export class Store {
     gameSpec.address = params.get("address") || gameSpec.address;
     gameSpec.checkpoint = params.get("checkpoint") || gameSpec.checkpoint;
     gameSpec.client = params.get("client") || gameSpec.client;
+    this.devMode = params.get("dev") === "true";
 
     runInAction(() => {
       this.persona = Persona(chainSpec);
@@ -78,8 +80,8 @@ export class Store {
     const provider = new JsonRpcProvider(chainSpec.rpc, chainSpec.chainId);
 
     // Create wallet and impersonate
-    const burnerWalletPK = localStorage.getItem(burnerWalletStorageKey);
-    const personaString = localStorage.getItem(personaStorageKey);
+    const burnerWalletPK = this.devMode ? null : localStorage.getItem(burnerWalletStorageKey);
+    const personaString = this.devMode ? null : localStorage.getItem(personaStorageKey);
     const personaId = personaString != null ? Number(personaString) : null;
     if (burnerWalletPK && personaId != null) {
       runInAction(() => {
@@ -109,8 +111,10 @@ export class Store {
       maxFeePerGas: 0,
       gasLimit: 200000,
     });
-    localStorage.setItem(burnerWalletStorageKey, burnerWallet.privateKey);
-    localStorage.setItem(personaStorageKey, String(personaId));
+    if (!this.devMode) {
+      localStorage.setItem(burnerWalletStorageKey, burnerWallet.privateKey);
+      localStorage.setItem(personaStorageKey, String(personaId));
+    }
     runInAction(() => {
       this.personaId = personaId;
       this.burnerWallet = burnerWallet;
@@ -123,7 +127,7 @@ export class Store {
         this.personaId ?? ""
       }&chainId=${this.chainSpec.chainId ?? ""}&contractAddress=${this.gameSpec.address ?? ""}&rpc=${
         this.chainSpec.rpc ?? ""
-      }&wsRpc=${this.chainSpec.wsRpc ?? ""}&checkpoint=${this.gameSpec.checkpoint ?? ""}`;
+      }&wsRpc=${this.chainSpec.wsRpc ?? ""}&checkpoint=${this.gameSpec.checkpoint ?? ""}&dev=${this.devMode}`;
     }
   }
 }
