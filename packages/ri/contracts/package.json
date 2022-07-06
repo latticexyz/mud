@@ -19,7 +19,7 @@
     "deploy:hardhat": "yarn mud deploy --deployerPrivateKey 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF",
     "deploy:degen": "yarn mud deploy -i --deployerPrivateKey 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
-    "anvil:node": "anvil -b 1 --block-base-fee-per-gas 0 -vvvvv",
+    "anvil:node": "anvil -b 1 --block-base-fee-per-gas 0",
     "hardhat:node": "hardhat node",
     "forge:deploy": "yarn codegen && forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv",
     "codegen": "yarn ejs src/libraries/LibDeploy.ejs -f deploy.json -o src/libraries/LibDeploy.sol"
