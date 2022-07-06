@@ -20,6 +20,7 @@ library LibStamina {
       LastActionTurnComponent lastActionTurnComponent
     ) = _getRequiredStaminaComponents(entity);
     (int32 updatedStamina, int32 atTurn) = _getUpdatedStamina(entity, staminaComponent, lastActionTurnComponent);
+    require(updatedStamina >= amount, "not enough stamina");
 
     Stamina memory stamina = staminaComponent.getValue(entity);
 
