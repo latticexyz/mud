@@ -5,39 +5,47 @@ import { LibQuery } from "./LibQuery.sol";
 import { IWorld, WorldQueryFragment } from "./interfaces/IWorld.sol";
 import { IComponent } from "./interfaces/IComponent.sol";
 import { QueryFragment } from "./interfaces/Query.sol";
+import { Uint256Component } from "./components/Uint256Component.sol";
+import { addressToEntity, entityToAddress } from "./utils.sol";
+
+uint256 constant componentsComponentId = uint256(keccak256("world.component.components"));
 
 contract World is IWorld {
   Set private entities = new Set();
 
-  /// @notice This is a mapping from Component ID to the address of a deployed component connected to this world with that id
-  mapping(uint256 => address) private components;
-  mapping(address => uint256) private componentAddressToId;
+  /// @notice Mapping from component address (= entityId) to component id
+  Uint256Component public components = new Uint256Component(address(0), componentsComponentId);
 
-  event ComponentRegistered(uint256 indexed componentId, address component);
   event ComponentValueSet(uint256 indexed componentId, address indexed component, uint256 indexed entity, bytes data);
   event ComponentValueRemoved(uint256 indexed componentId, address indexed component, uint256 indexed entity);
+
+  function init() public {
+    components.registerWorld(address(this));
+  }
 
   function registerComponent(address componentAddr, uint256 id) public {
     require(id != 0, "Invalid ID");
     require(componentAddr != address(0), "Invalid component address");
-    require(components[id] == address(0), "ID already registered");
-    components[id] = componentAddr;
-    componentAddressToId[componentAddr] = id;
-    emit ComponentRegistered(id, componentAddr);
+    require(!components.has(addressToEntity(componentAddr)), "Component already registered");
+    require(components.getEntitiesWithValue(id).length == 0, "ID already registered");
+    components.set(addressToEntity(componentAddr), id);
   }
 
+  // TODO: this method is redundant, use a util or access components directly
   function getComponent(uint256 id) public view returns (address) {
-    require(components[id] != address(0), "Component hasn't been registered");
-    return components[id];
+    uint256[] memory componentEntities = components.getEntitiesWithValue(id);
+    require(componentEntities.length != 0, "Component hasn't been registered");
+    return entityToAddress(componentEntities[0]);
   }
 
+  // TODO: this method is redundant, use a util or access components directly
   function getComponentIdFromAddress(address componentAddr) public view returns (uint256) {
-    require(componentAddressToId[componentAddr] != 0, "Component hasn't been registered");
-    return componentAddressToId[componentAddr];
+    require(components.has(addressToEntity(componentAddr)), "Component hasn't been registered");
+    return components.getValue(addressToEntity(componentAddr));
   }
 
   modifier requireComponentRegistered(address component) {
-    require(componentAddressToId[component] != 0, "Component hasn't been registered");
+    require(components.has(addressToEntity(component)), "Component hasn't been registered");
     _;
   }
 
@@ -47,14 +55,14 @@ contract World is IWorld {
     bytes calldata data
   ) public requireComponentRegistered(component) {
     Set(entities).add(entity);
-    emit ComponentValueSet(componentAddressToId[component], component, entity, data);
+    emit ComponentValueSet(components.getValue(addressToEntity(component)), component, entity, data);
   }
 
   function registerComponentValueRemoved(address component, uint256 entity)
     public
     requireComponentRegistered(component)
   {
-    emit ComponentValueRemoved(componentAddressToId[component], component, entity);
+    emit ComponentValueRemoved(components.getValue(addressToEntity(component)), component, entity);
   }
 
   function getNumEntities() public view returns (uint256) {
