@@ -42,7 +42,7 @@ export function renderUIComponent(layers: Layers, key: string, { requirement, re
 
   return (
     <UIComponentContainer key={`component-${key}`} gridConfig={gridConfig}>
-      {render(state)};
+      {render(state)}
     </UIComponentContainer>
   );
 }

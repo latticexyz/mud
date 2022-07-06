@@ -12,13 +12,16 @@
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
     "test": "forge test",
     "----- BUILD/DEPLOY -----": "---------------------------",
-    "start": "run-p -l anvil:node deploy:local",
+    "start": "run-p -l hardhat:node deploy:hardhat",
     "build": "yarn codegen && rimraf out && forge build --force && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && bash exports.sh && yarn mud diamond-abi",
-    "deploy:local": "yarn mud deploy --deployerPrivateKey 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+    "deploy:anvil": "wait-on tcp:8545 && yarn mud deploy --deployerPrivateKey 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
+    "deploy:hardhat": "wait-on tcp:8545 && yarn mud deploy --deployerPrivateKey 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF && yarn hardhat:resetfee",
     "deploy:degen": "yarn mud deploy -i --deployerPrivateKey 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
-    "anvil:node": "anvil -b 1 -vvvv",
+    "anvil:node": "anvil -b 1 --block-base-fee-per-gas 0",
+    "hardhat:node": "hardhat node",
+    "hardhat:resetfee": "curl -X POST localhost:8545 -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"hardhat_setNextBlockBaseFeePerGas\", \"params\": [\"0x0\"], \"id\": 1 }'",
     "forge:deploy": "yarn codegen && forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv",
     "codegen": "yarn ejs src/libraries/LibDeploy.ejs -f deploy.json -o src/libraries/LibDeploy.sol"
   },
@@ -43,6 +46,7 @@
     "ethers": "^5.6.6",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#4d36e3f7e2168c8155c641eb0f80e85cd584bd1c",
     "glob": "^8.0.3",
+    "hardhat": "https://gitpkg.now.sh/latticexyz/hardhat/packages/hardhat-core?build",
     "memmove": "https://github.com/brockelmore/memmove.git#d577ecd1bc43656f4032edf4daa9797f756a8ad2",
     "npm-run-all": "^4.1.5",
     "openzeppelin-solidity": "https://github.com/OpenZeppelin/openzeppelin-contracts.git#57725120581e27ec469e1c7e497a4008aafff818",
@@ -54,5 +58,6 @@
     "typechain": "^7.0.1",
     "typescript": "^4.6.2",
     "wait-on": "^6.0.1"
-  }
+  },
+  "dependencies": {}
 }

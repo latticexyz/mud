@@ -58,7 +58,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     Stamina: defineComponent(
       world,
       { current: Type.Number, max: Type.Number, regeneration: Type.Number },
-      { id: "Stamina", metadata: { contractId: keccak256("ember.component.personaComponent") } }
+      { id: "Stamina", metadata: { contractId: keccak256("ember.component.staminaComponent") } }
     ),
     LastActionTurn: defineComponent(
       world,

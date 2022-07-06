@@ -8,6 +8,7 @@ import { Cheats } from "../test/utils/Cheats.sol";
 
 // ECS
 import { World } from "solecs/World.sol";
+import { Component } from "solecs/Component.sol";
 
 // Diamonds
 import { Diamantaire } from "../diamond/Diamantaire.sol";
@@ -19,7 +20,7 @@ import { AppStorage, Config } from "../libraries/LibAppStorage.sol";
 import { InitializeFacet } from "../facets/InitializeFacet.sol";
 import { EmberFacet } from "../facets/EmberFacet.sol";
 import { DebugFacet } from "../facets/DebugFacet.sol";
-import { CastSpellFacet } from "../facets/CastSpellFacet.sol";
+import { PlayerJoinFacet } from "../facets/PlayerJoinFacet.sol";
 
 // Components
 import { EmbodiedSystemArgumentComponent } from "../components/EmbodiedSystemArgumentComponent.sol";
@@ -131,14 +132,14 @@ library LibDeploy {
       functionSelectors: functionSelectors
     });
 
-    // Add CastSpellFacet
-    CastSpellFacet _CastSpellFacet = new CastSpellFacet();
+    // Add PlayerJoinFacet
+    PlayerJoinFacet _PlayerJoinFacet = new PlayerJoinFacet();
 
     functionSelectors = new bytes4[](1);
-    functionSelectors[0] = CastSpellFacet.castSpell.selector;
+    functionSelectors[0] = PlayerJoinFacet.joinGame.selector;
 
     diamondCut[3] = IDiamondCut.FacetCut({
-      facetAddress: address(_CastSpellFacet),
+      facetAddress: address(_PlayerJoinFacet),
       action: action,
       functionSelectors: functionSelectors
     });
@@ -178,20 +179,63 @@ library LibDeploy {
 
     // Deploy each component and transfer ownership to the diamond contract
     if (!_reuseComponents) {
-      (new EmbodiedSystemArgumentComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new EntityTypeComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new GameConfigComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new LastActionTurnComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new LearnedSpellsComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new MaxDistanceComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new MineableComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new MovableComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new OwnedByComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new PersonaComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new PositionComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new SpellComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new StaminaComponent(address(result.world))).transferOwnership(diamondAddress);
-      (new UntraversableComponent(address(result.world))).transferOwnership(diamondAddress);
+      Component comp;
+      console.log("Deploying EmbodiedSystemArgumentComponent");
+      comp = new EmbodiedSystemArgumentComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying EntityTypeComponent");
+      comp = new EntityTypeComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying GameConfigComponent");
+      comp = new GameConfigComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying LastActionTurnComponent");
+      comp = new LastActionTurnComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying LearnedSpellsComponent");
+      comp = new LearnedSpellsComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying MaxDistanceComponent");
+      comp = new MaxDistanceComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying MineableComponent");
+      comp = new MineableComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying MovableComponent");
+      comp = new MovableComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying OwnedByComponent");
+      comp = new OwnedByComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying PersonaComponent");
+      comp = new PersonaComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying PositionComponent");
+      comp = new PositionComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying SpellComponent");
+      comp = new SpellComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying StaminaComponent");
+      comp = new StaminaComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
+      console.log("Deploying UntraversableComponent");
+      comp = new UntraversableComponent(address(result.world));
+      console.log(address(comp));
+      comp.transferOwnership(diamondAddress);
     }
 
     // ------------------------
@@ -203,16 +247,6 @@ library LibDeploy {
 
       // Register access controllers
       InitializeFacet(diamondAddress).registerAccessControllerExternally(address(new PersonaAccessController()));
-
-      // Register content creators
-      InitializeFacet(diamondAddress).registerContentCreatorExternally(address(new SpellContentCreator()));
-
-      // Register embodied systems
-      address createEntityFromPrototypeEmbodiedSystem = address(new CreateEntityFromPrototypeEmbodiedSystem());
-      InitializeFacet(diamondAddress).registerEmbodiedSystemExternally(
-        createEntityFromPrototypeEmbodiedSystem,
-        CreateEntityFromPrototypeEmbodiedSystem.createEntityFromPrototype.selector
-      );
     }
   }
 }
