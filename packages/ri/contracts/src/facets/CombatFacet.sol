@@ -14,6 +14,7 @@ import { AppStorage } from "../libraries/LibAppStorage.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { AttackComponent, ID as AttackComponentID, Attack } from "../components/AttackComponent.sol";
 import { HealthComponent, ID as HealthComponentID, Health } from "../components/HealthComponent.sol";
+import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 
 contract CombatFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
@@ -41,15 +42,14 @@ contract CombatFacet is UsingDiamondOwner, UsingAccessControl {
 
     // Target tries to defend themselves
     // TODO check if defender is in range before retaliation
-    (int32 defenderStamina, int32 _atTurn) = LibStamina.getUpdatedStamina(defender);
-    if (
-      defenderStamina >= 1 &&
-      newDefenderHealth.current > 0 &&
-      healthComponent.has(attacker) &&
-      attackComponent.has(defender)
-    ) {
-      LibStamina.reduceStamina(defender, 1);
-      dealDamage(defender, attacker);
+    if (newDefenderHealth.current > 0 && healthComponent.has(attacker) && attackComponent.has(defender)) {
+      // Check stamina after health check, because if the defender has died
+      // they will not have stamina
+      (int32 defenderStamina, int32 _atTurn) = LibStamina.getUpdatedStamina(defender);
+      if (defenderStamina >= 1) {
+        LibStamina.reduceStamina(defender, 1);
+        dealDamage(defender, attacker);
+      }
     }
   }
 
@@ -74,6 +74,10 @@ contract CombatFacet is UsingDiamondOwner, UsingAccessControl {
     if (attackStrength > 0) {
       newDefenderHealth = calculateNewHealth(defenderHealth, attackStrength);
       healthComponent.set(defender, newDefenderHealth);
+
+      if (newDefenderHealth.current < 0) {
+        kill(defender);
+      }
     }
   }
 
@@ -84,5 +88,22 @@ contract CombatFacet is UsingDiamondOwner, UsingAccessControl {
   {
     int32 remainingHealth = health.current - attackStrength;
     newHealth = Health({ current: remainingHealth, max: health.max });
+  }
+
+  function kill(uint256 entity) private {
+    PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
+    if (positionComponent.has(entity)) {
+      positionComponent.remove(entity);
+    }
+
+    HealthComponent healthComponent = HealthComponent(s.world.getComponent(HealthComponentID));
+    if (healthComponent.has(entity)) {
+      healthComponent.remove(entity);
+    }
+
+    StaminaComponent staminaComponent = StaminaComponent(s.world.getComponent(StaminaComponentID));
+    if (staminaComponent.has(entity)) {
+      staminaComponent.remove(entity);
+    }
   }
 }
