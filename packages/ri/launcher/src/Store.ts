@@ -5,7 +5,6 @@ import { Persona } from "@latticexyz/persona-js";
 import { JsonRpcProvider } from "@ethersproject/providers";
 
 const burnerWalletStorageKey = "burnerWallet";
-const personaStorageKey = "personaId";
 const defaultChainSpec = "https://config.maps.lattice.xyz/chainSpec.json";
 const defaultGameSpec = "https://config.maps.lattice.xyz/gameSpec.json";
 
@@ -80,18 +79,26 @@ export class Store {
     const provider = new JsonRpcProvider(chainSpec.rpc, chainSpec.chainId);
 
     // Create wallet and impersonate
-    const burnerWalletPK = this.devMode ? null : localStorage.getItem(burnerWalletStorageKey);
-    const personaString = this.devMode ? null : localStorage.getItem(personaStorageKey);
-    const personaId = personaString != null ? Number(personaString) : null;
-    if (burnerWalletPK && personaId != null) {
-      runInAction(() => {
-        this.burnerWallet = new Wallet(burnerWalletPK).connect(provider);
-        this.personaId = personaId;
-      });
-    } else {
-      this.connectWallet(provider);
-      await this.mintPersonaAndBurner();
+    const burnerWalletPK = localStorage.getItem(burnerWalletStorageKey);
+
+    // Check if buner wallet has Persona
+    if (burnerWalletPK) {
+      const bunerWallet = new Wallet(burnerWalletPK).connect(provider);
+      this.persona?.connectSigner(bunerWallet);
+      const personaId = await this.persona?.getActivePersona(bunerWallet.address, gameSpec.address);
+
+      if (personaId != null) {
+        runInAction(() => {
+          this.burnerWallet = bunerWallet;
+          this.personaId = personaId;
+        });
+        return;
+      }
     }
+
+    // If burner wallet doesn't have persona
+    this.connectWallet(provider);
+    await this.mintPersonaAndBurner();
   }
 
   public connectWallet(provider: JsonRpcProvider) {
@@ -111,10 +118,7 @@ export class Store {
       maxFeePerGas: 0,
       gasLimit: 200000,
     });
-    if (!this.devMode) {
-      localStorage.setItem(burnerWalletStorageKey, burnerWallet.privateKey);
-      localStorage.setItem(personaStorageKey, String(personaId));
-    }
+    localStorage.setItem(burnerWalletStorageKey, burnerWallet.privateKey);
     runInAction(() => {
       this.personaId = personaId;
       this.burnerWallet = burnerWallet;

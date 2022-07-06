@@ -19,6 +19,11 @@ export function Persona({ personaAddress, personaAllMinterAddress, personaMirror
     return [];
   }
 
+  async function getActivePersona(user: string, consumer: string) {
+    const activePersona = await personaMirror.getActivePersona(user, consumer);
+    return activePersona.toNumber() || undefined;
+  }
+
   function connectSigner(signer: Signer) {
     persona = persona.connect(signer);
     personaMirror = personaMirror.connect(signer);
@@ -64,5 +69,5 @@ export function Persona({ personaAddress, personaAllMinterAddress, personaMirror
     return { personaId, burnerWallet };
   }
 
-  return { connectSigner, getPersonasOfAddress, mintPersona, authorize, impersonate, mintAndBurner };
+  return { connectSigner, getPersonasOfAddress, getActivePersona, mintPersona, authorize, impersonate, mintAndBurner };
 }
