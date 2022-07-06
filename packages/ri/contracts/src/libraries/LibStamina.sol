@@ -12,7 +12,9 @@ library LibStamina {
     return LibAppStorage.diamondStorage();
   }
 
-  function reduceStamina(uint256 entity, uint32 amount) public {
+  function reduceStamina(uint256 entity, int32 amount) public {
+    require(amount > 0, "nice try");
+
     StaminaComponent staminaComponent = StaminaComponent(s().world.getComponent(StaminaComponentID));
     require(staminaComponent.has(entity), "entity does not have stamina");
 
@@ -22,11 +24,9 @@ library LibStamina {
     require(lastActionTurnComponent.has(entity), "entity has no LastActionTurn");
 
     Stamina memory stamina = staminaComponent.getValue(entity);
-    uint32 currentTurn = getCurrentTurn();
-    uint32 staminaSinceLastAction = uint32(
-      (currentTurn - lastActionTurnComponent.getValue(entity)) * stamina.regeneration
-    );
-    uint32 updatedStamina = stamina.current + staminaSinceLastAction;
+    int32 currentTurn = getCurrentTurn();
+    int32 staminaSinceLastAction = (currentTurn - lastActionTurnComponent.getValue(entity)) * stamina.regeneration;
+    int32 updatedStamina = stamina.current + staminaSinceLastAction;
 
     if (updatedStamina > stamina.max) {
       updatedStamina = stamina.max;
@@ -41,11 +41,11 @@ library LibStamina {
     );
   }
 
-  function getCurrentTurn() public view returns (uint32) {
+  function getCurrentTurn() public view returns (int32) {
     GameConfigComponent gameConfigComponent = GameConfigComponent(s().world.getComponent(GameConfigComponentID));
     GameConfig memory gameConfig = gameConfigComponent.getValue(GodID);
 
     uint256 secondsSinceGameStart = block.timestamp - gameConfig.startTime;
-    return uint32(secondsSinceGameStart / gameConfig.turnLength);
+    return int32(uint32(secondsSinceGameStart / gameConfig.turnLength));
   }
 }
