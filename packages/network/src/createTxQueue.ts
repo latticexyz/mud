@@ -164,7 +164,6 @@ export function createTxQueue<C extends Contracts>(
       try {
         // Wait if nonce is not ready
         const { nonce } = await awaitValue(readyState);
-        console.log("actually executing");
         const resultPromise = txRequest.execute(nonce);
         if (txRequest.stateMutability !== "view") incNonce();
         if (!options?.ignoreConfirmation) return await resultPromise;

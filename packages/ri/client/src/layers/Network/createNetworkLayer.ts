@@ -132,7 +132,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
 
   async function joinGame(position: WorldCoord) {
     console.log(`Joining game at position ${JSON.stringify(position)}`);
-    return txQueue.Game.joinGame(position, { gasLimit: 7_000_000 });
+    return txQueue.Game.joinGame(position);
   }
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {
