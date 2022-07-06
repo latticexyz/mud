@@ -124,6 +124,7 @@ library LibDeploy {
 
     // Call initialize on the initialize facet
     result.world = _world == address(0) ? new World() : World(_world);
+    result.world.init();
     InitializeFacet(diamondAddress).initializeExternally(Config(false, address(result.personaMirror)), result.world);
 
     // Deploy each component and transfer ownership to the diamond contract

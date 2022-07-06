@@ -22,12 +22,11 @@ abstract contract Component is IComponent {
   uint256 public id;
 
   constructor(address _world, uint256 _id) {
-    world = _world;
-    IWorld(_world).registerComponent(address(this), _id);
     entities = new Set();
     valueToEntities = new MapSet();
     owner = msg.sender;
     id = _id;
+    if (_world != address(0)) registerWorld(_world);
   }
 
   modifier onlyContractOwner() {
@@ -37,6 +36,11 @@ abstract contract Component is IComponent {
 
   function transferOwnership(address newOwner) public onlyContractOwner {
     owner = newOwner;
+  }
+
+  function registerWorld(address _world) public onlyContractOwner {
+    world = _world;
+    IWorld(world).registerComponent(address(this), id);
   }
 
   function getSchema() public pure virtual returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
