@@ -1,8 +1,10 @@
 {
   "components": [
+    "AttackComponent",
     "EmbodiedSystemArgumentComponent",
     "EntityTypeComponent",
     "GameConfigComponent",
+    "HealthComponent",
     "LastActionTurnComponent",
     "LearnedSpellsComponent",
     "MaxDistanceComponent",
@@ -44,6 +46,10 @@
     {
       "name": "MoveFacet",
       "functions": ["moveEntity"]
+    },
+    {
+      "name": "CombatFacet",
+      "functions": ["attackEntity"]
     }
   ]
 }

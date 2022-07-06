@@ -14,6 +14,7 @@ import {
   createDrawHighlightCoordSystem,
   createDrawPotentialPathSystem,
   createPlayerSpawnSystem,
+  createDrawHealthSystem,
 } from "./systems";
 import { createPhaserEngine } from "@latticexyz/phaserx";
 import {
@@ -97,6 +98,7 @@ export async function createPhaserLayer(local: LocalLayer) {
   createDrawHighlightCoordSystem(layer);
   createDrawPotentialPathSystem(layer);
   createPlayerSpawnSystem(layer);
+  createDrawHealthSystem(layer);
 
   return layer;
 }

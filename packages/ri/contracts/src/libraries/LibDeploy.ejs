@@ -78,16 +78,13 @@ library LibDeploy {
     // ------------------------
 
 <% facets.forEach((facet, facetIndex) => { -%>
-    // Add <%= facet.name %>
-    <%= facet.name %> _<%= facet.name %> = new <%= facet.name %>();
-
     functionSelectors = new bytes4[](<%= facet.functions.length %>);
 <% facet.functions.forEach((func, funcIndex) => { -%>
     functionSelectors[<%= funcIndex -%>] = <%= facet.name -%>.<%= func -%>.selector;
 <% }); -%>
 
     diamondCut[<%= facetIndex %>] = IDiamondCut.FacetCut({
-      facetAddress: address(_<%= facet.name %>),
+      facetAddress: address(new <%= facet.name %>()),
       action: action,
       functionSelectors: functionSelectors
     });

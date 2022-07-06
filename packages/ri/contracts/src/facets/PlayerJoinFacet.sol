@@ -21,6 +21,8 @@ import { MovableComponent, ID as MovableComponentID } from "../components/Movabl
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
+import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
+import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
 
 contract PlayerJoinFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
@@ -44,6 +46,8 @@ contract PlayerJoinFacet is UsingDiamondOwner, UsingAccessControl {
     StaminaComponent staminaComponent = StaminaComponent(s.world.getComponent(StaminaComponentID));
     LastActionTurnComponent lastActionTurn = LastActionTurnComponent(s.world.getComponent(LastActionTurnComponentID));
     MovableComponent movableComponent = MovableComponent(s.world.getComponent(MovableComponentID));
+    HealthComponent healthComponent = HealthComponent(s.world.getComponent(HealthComponentID));
+    AttackComponent attackComponent = AttackComponent(s.world.getComponent(AttackComponentID));
 
     uint256 entity = s.world.getUniqueEntityId();
 
@@ -51,6 +55,8 @@ contract PlayerJoinFacet is UsingDiamondOwner, UsingAccessControl {
     entityTypeComponent.set(entity, uint32(0));
     positionComponent.set(entity, position);
     staminaComponent.set(entity, Stamina({ current: 0, max: 3, regeneration: 1 }));
+    healthComponent.set(entity, Health({ current: 100_000, max: 100_000 }));
+    attackComponent.set(entity, Attack({ strength: 60_000, range: 1 }));
     lastActionTurn.set(entity, LibStamina.getCurrentTurn());
     movableComponent.set(entity);
   }
