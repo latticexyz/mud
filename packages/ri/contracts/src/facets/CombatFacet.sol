@@ -71,8 +71,10 @@ contract CombatFacet is UsingDiamondOwner, UsingAccessControl {
       }
     }
 
-    newDefenderHealth = calculateNewHealth(defenderHealth, attackStrength);
-    healthComponent.set(defender, newDefenderHealth);
+    if (attackStrength > 0) {
+      newDefenderHealth = calculateNewHealth(defenderHealth, attackStrength);
+      healthComponent.set(defender, newDefenderHealth);
+    }
   }
 
   function calculateNewHealth(Health memory health, int32 attackStrength)
