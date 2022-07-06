@@ -20,7 +20,7 @@ import { AppStorage, Config } from "../libraries/LibAppStorage.sol";
 import { InitializeFacet } from "../facets/InitializeFacet.sol";
 import { EmberFacet } from "../facets/EmberFacet.sol";
 import { DebugFacet } from "../facets/DebugFacet.sol";
-import { CastSpellFacet } from "../facets/CastSpellFacet.sol";
+import { PlayerJoinFacet } from "../facets/PlayerJoinFacet.sol";
 
 // Components
 import { EmbodiedSystemArgumentComponent } from "../components/EmbodiedSystemArgumentComponent.sol";
@@ -132,14 +132,14 @@ library LibDeploy {
       functionSelectors: functionSelectors
     });
 
-    // Add CastSpellFacet
-    CastSpellFacet _CastSpellFacet = new CastSpellFacet();
+    // Add PlayerJoinFacet
+    PlayerJoinFacet _PlayerJoinFacet = new PlayerJoinFacet();
 
     functionSelectors = new bytes4[](1);
-    functionSelectors[0] = CastSpellFacet.castSpell.selector;
+    functionSelectors[0] = PlayerJoinFacet.joinGame.selector;
 
     diamondCut[3] = IDiamondCut.FacetCut({
-      facetAddress: address(_CastSpellFacet),
+      facetAddress: address(_PlayerJoinFacet),
       action: action,
       functionSelectors: functionSelectors
     });
@@ -148,19 +148,19 @@ library LibDeploy {
     // Deploy
     // ------------------------
 
-    // if (_personaMirror == address(0)) {
-    //   // deploy persona, persona mirror, and the bridge
-    //   result.bridge = new MockL2Bridge();
-    //   result.tokenURIGenerator = new EmptyPersonaTokenURIGenerator();
-    //   result.persona = new Persona("L", "L", address(result.bridge), address(0));
-    //   result.personaAllMinter = new PersonaAllMinter();
-    //   result.personaAllMinter.setPersona(address(result.persona));
-    //   result.persona.setMinter(address(result.personaAllMinter), true);
-    //   result.personaMirror = new PersonaMirror(address(result.persona), address(result.bridge));
-    //   result.persona.setPersonaMirrorL2(address(result.personaMirror));
-    // } else {
-    //   result.personaMirror = PersonaMirror(_personaMirror);
-    // }
+    if (_personaMirror == address(0)) {
+      // deploy persona, persona mirror, and the bridge
+      result.bridge = new MockL2Bridge();
+      result.tokenURIGenerator = new EmptyPersonaTokenURIGenerator();
+      result.persona = new Persona("L", "L", address(result.bridge), address(0));
+      result.personaAllMinter = new PersonaAllMinter();
+      result.personaAllMinter.setPersona(address(result.persona));
+      result.persona.setMinter(address(result.personaAllMinter), true);
+      result.personaMirror = new PersonaMirror(address(result.persona), address(result.bridge));
+      result.persona.setPersonaMirrorL2(address(result.personaMirror));
+    } else {
+      result.personaMirror = PersonaMirror(_personaMirror);
+    }
 
     // Deploy the diamond
     if (upgrade) {

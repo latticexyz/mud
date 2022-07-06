@@ -38,8 +38,8 @@
       ]
     },
     {
-      "name": "CastSpellFacet",
-      "functions": ["castSpell"]
+      "name": "PlayerJoinFacet",
+      "functions": ["joinGame"]
     }
   ]
 }
