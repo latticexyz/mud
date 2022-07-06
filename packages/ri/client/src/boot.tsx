@@ -43,7 +43,7 @@ async function bootLayers() {
     const jsonRpc = params.get("rpc") || undefined;
     const wsRpc = params.get("wsRpc") || undefined; // || (jsonRpc && jsonRpc.replace("http", "ws"));
     const checkpointUrl = params.get("checkpoint") || undefined;
-    const devMode = params.get("dev") === "true" || false;
+    const devMode = params.get("dev") === "true";
 
     let networkLayerConfig;
     if (contractAddress && privateKey && chainIdString && personaIdString) {

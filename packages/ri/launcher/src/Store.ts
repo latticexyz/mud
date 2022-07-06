@@ -5,7 +5,6 @@ import { Persona } from "@latticexyz/persona-js";
 import { JsonRpcProvider } from "@ethersproject/providers";
 
 const burnerWalletStorageKey = "burnerWallet";
-const personaStorageKey = "personaId";
 const defaultChainSpec = "https://config.maps.lattice.xyz/chainSpec.json";
 const defaultGameSpec = "https://config.maps.lattice.xyz/gameSpec.json";
 
@@ -31,6 +30,7 @@ export class Store {
   public persona?: ReturnType<typeof Persona>;
   public personaId?: number;
   public burnerWallet?: Wallet;
+  public devMode?: boolean;
 
   constructor() {
     makeAutoObservable(this);
@@ -67,6 +67,7 @@ export class Store {
     gameSpec.address = params.get("address") || gameSpec.address;
     gameSpec.checkpoint = params.get("checkpoint") || gameSpec.checkpoint;
     gameSpec.client = params.get("client") || gameSpec.client;
+    this.devMode = params.get("dev") === "true";
 
     runInAction(() => {
       this.persona = Persona(chainSpec);
@@ -79,17 +80,25 @@ export class Store {
 
     // Create wallet and impersonate
     const burnerWalletPK = localStorage.getItem(burnerWalletStorageKey);
-    const personaString = localStorage.getItem(personaStorageKey);
-    const personaId = personaString != null ? Number(personaString) : null;
-    if (burnerWalletPK && personaId != null) {
-      runInAction(() => {
-        this.burnerWallet = new Wallet(burnerWalletPK).connect(provider);
-        this.personaId = personaId;
-      });
-    } else {
-      this.connectWallet(provider);
-      await this.mintPersonaAndBurner();
+
+    // Check if buner wallet has Persona
+    if (burnerWalletPK) {
+      const bunerWallet = new Wallet(burnerWalletPK).connect(provider);
+      this.persona?.connectSigner(bunerWallet);
+      const personaId = await this.persona?.getActivePersona(bunerWallet.address, gameSpec.address);
+
+      if (personaId != null) {
+        runInAction(() => {
+          this.burnerWallet = bunerWallet;
+          this.personaId = personaId;
+        });
+        return;
+      }
     }
+
+    // If burner wallet doesn't have persona
+    this.connectWallet(provider);
+    await this.mintPersonaAndBurner();
   }
 
   public connectWallet(provider: JsonRpcProvider) {
@@ -110,7 +119,6 @@ export class Store {
       gasLimit: 200000,
     });
     localStorage.setItem(burnerWalletStorageKey, burnerWallet.privateKey);
-    localStorage.setItem(personaStorageKey, String(personaId));
     runInAction(() => {
       this.personaId = personaId;
       this.burnerWallet = burnerWallet;
@@ -123,7 +131,7 @@ export class Store {
         this.personaId ?? ""
       }&chainId=${this.chainSpec.chainId ?? ""}&contractAddress=${this.gameSpec.address ?? ""}&rpc=${
         this.chainSpec.rpc ?? ""
-      }&wsRpc=${this.chainSpec.wsRpc ?? ""}&checkpoint=${this.gameSpec.checkpoint ?? ""}`;
+      }&wsRpc=${this.chainSpec.wsRpc ?? ""}&checkpoint=${this.gameSpec.checkpoint ?? ""}&dev=${this.devMode}`;
     }
   }
 }

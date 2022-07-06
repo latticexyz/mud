@@ -389,7 +389,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                             title: "Open Launcher",
                             task: (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                                 const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
-                                launcherUrl = `https://play.lattice.xyz?address=${ctx.gameContractAddress || ""}&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${options.persona || ctx.personaAddress || ""}&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${clientUrl || ""}&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}`;
+                                launcherUrl = `https://play.lattice.xyz?address=${ctx.gameContractAddress || ""}&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${options.persona || ctx.personaAddress || ""}&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${clientUrl || ""}&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}&dev=${options.chainId === 31337 || ""}`;
                                 openurl_1.default.open(launcherUrl);
                             }),
                             options: { bottomBar: 3 },
