@@ -1,4 +1,13 @@
-import { Component, ComponentValue, createWorld, defineComponent, EntityIndex, Schema, Type } from "@latticexyz/recs";
+import {
+  Component,
+  ComponentValue,
+  createWorld,
+  defineComponent,
+  EntityID,
+  EntityIndex,
+  Schema,
+  Type,
+} from "@latticexyz/recs";
 import {
   definePositionComponent,
   defineEntityTypeComponent,
@@ -54,7 +63,6 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       { value: Type.String },
       { id: "Persona", metadata: { contractId: keccak256("ember.component.personaComponent") } }
     ),
-    // Stamina
     Stamina: defineComponent(
       world,
       { current: Type.Number, max: Type.Number, regeneration: Type.Number },
@@ -64,6 +72,16 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       world,
       { value: Type.Number },
       { id: "LastActionTurn", metadata: { contractId: keccak256("ember.component.lastActionTurnComponent") } }
+    ),
+    Health: defineComponent(
+      world,
+      { current: Type.Number, max: Type.Number },
+      { id: "Health", metadata: { contractId: keccak256("ember.component.healthComponent") } }
+    ),
+    Attack: defineComponent(
+      world,
+      { strength: Type.Number, range: Type.Number },
+      { id: "Attack", metadata: { contractId: keccak256("ember.component.attackComponent") } }
     ),
   };
 
@@ -78,6 +96,8 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     [keccak256("ember.component.lastActionTurnComponent")]: "LastActionTurn",
     [keccak256("ember.component.gameConfigComponent")]: "GameConfig",
     [keccak256("ember.component.staminaComponent")]: "Stamina",
+    [keccak256("ember.component.healthComponent")]: "Health",
+    [keccak256("ember.component.attackComponent")]: "Attack",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -135,9 +155,14 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     return txQueue.Game.joinGame(position);
   }
 
-  async function moveEntity(entity: string, targetPosition: WorldCoord) {
+  async function moveEntity(entity: EntityID, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
     return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition);
+  }
+
+  async function attackEntity(attacker: EntityID, defender: EntityID) {
+    console.log(`Entity ${attacker} attacking ${defender}.`);
+    return txQueue.Game.attackEntity(BigNumber.from(attacker), BigNumber.from(defender));
   }
 
   // Constants (load from contract later)
@@ -159,6 +184,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       setContractComponentValue,
       joinGame,
       moveEntity,
+      attackEntity,
     },
     DEV_MODE,
   };

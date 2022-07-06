@@ -24,12 +24,12 @@ export type ValueType = {
   [Type.StringArray]: string[];
   [Type.Entity]: EntityID;
   [Type.EntityArray]: EntityID[];
-  [Type.OptionalNumber]: number | null;
-  [Type.OptionalString]: string | null;
-  [Type.OptionalNumberArray]: number[] | null;
-  [Type.OptionalStringArray]: string[] | null;
-  [Type.OptionalEntity]: EntityID | null;
-  [Type.OptionalEntityArray]: EntityID[] | null;
+  [Type.OptionalNumber]: number | undefined;
+  [Type.OptionalString]: string | undefined;
+  [Type.OptionalNumberArray]: number[] | undefined;
+  [Type.OptionalStringArray]: string[] | undefined;
+  [Type.OptionalEntity]: EntityID | undefined;
+  [Type.OptionalEntityArray]: EntityID[] | undefined;
 };
 
 export type ComponentValue<S extends Schema = Schema> = {
