@@ -21,7 +21,6 @@ abstract contract Component is IComponent {
   IEntityIndexer[] internal indexers;
   uint256 public id;
 
-  // TODO: remove world from constructor
   constructor(address _world, uint256 _id) {
     entities = new Set();
     valueToEntities = new MapSet();
