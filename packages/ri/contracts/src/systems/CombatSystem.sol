@@ -14,6 +14,7 @@ import { PositionComponent, ID as PositionComponentID, Coord } from "../componen
 import { AttackComponent, ID as AttackComponentID, Attack } from "../components/AttackComponent.sol";
 import { HealthComponent, ID as HealthComponentID, Health } from "../components/HealthComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
+import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.combat"));
 
@@ -63,20 +64,19 @@ contract CombatSystem is ISystem {
     LibStamina.modifyStamina(components, attacker, -1);
     Health memory newDefenderHealth = dealDamage(attackComponent, healthComponent, attacker, defender);
 
-    (int32 defenderStamina, int32 _atTurn) = LibStamina.getUpdatedStamina(components, defender);
+    if (newDefenderHealth.current > 0 && healthComponent.has(attacker) && attackComponent.has(defender)) {
+      // Check stamina after health check, because if the defender has died
+      // they will not have stamina
+      (int32 defenderStamina, int32 _atTurn) = LibStamina.getUpdatedStamina(components, defender);
 
-    if (
-      defenderStamina >= 1 &&
-      newDefenderHealth.current > 0 &&
-      healthComponent.has(attacker) &&
-      attackComponent.has(defender)
-    ) {
-      LibStamina.modifyStamina(components, defender, -1);
-      dealDamage(attackComponent, healthComponent, defender, attacker);
+      if (defenderStamina >= 1) {
+        LibStamina.modifyStamina(components, defender, -1);
+        dealDamage(attackComponent, healthComponent, defender, attacker);
+      }
     }
   }
 
-  function requirementTyped(uint256 attacker, uint256 defender) public returns (bytes memory) {
+  function requirementTyped(uint256 attacker, uint256 defender) public view returns (bytes memory) {
     return requirement(abi.encode(attacker, defender));
   }
 
@@ -111,6 +111,10 @@ contract CombatSystem is ISystem {
     if (attackStrength > 0) {
       newDefenderHealth = calculateNewHealth(defenderHealth, attackStrength);
       healthComponent.set(defender, newDefenderHealth);
+
+      if (newDefenderHealth.current < 0) {
+        kill(defender);
+      }
     }
   }
 
@@ -121,5 +125,22 @@ contract CombatSystem is ISystem {
   {
     int32 remainingHealth = health.current - attackStrength;
     newHealth = Health({ current: remainingHealth, max: health.max });
+  }
+
+  function kill(uint256 entity) private {
+    PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
+    if (positionComponent.has(entity)) {
+      positionComponent.remove(entity);
+    }
+
+    HealthComponent healthComponent = HealthComponent(getAddressById(components, HealthComponentID));
+    if (healthComponent.has(entity)) {
+      healthComponent.remove(entity);
+    }
+
+    StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
+    if (staminaComponent.has(entity)) {
+      staminaComponent.remove(entity);
+    }
   }
 }
