@@ -40,6 +40,10 @@
     {
       "name": "PlayerJoinFacet",
       "functions": ["joinGame"]
+    },
+    {
+      "name": "MoveFacet",
+      "functions": ["moveEntity"]
     }
   ]
 }
