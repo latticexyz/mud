@@ -1,6 +1,7 @@
 import { defineComponentSystem, getComponentValue, removeComponent, setComponent } from "@latticexyz/recs";
 import { worldCoordEq } from "../../../../utils/coords";
-import { aStar } from "../../../../utils/pathfinding";
+import { manhattan } from "../../../../utils/distance";
+import { aStar, directionalPathfind } from "../../../../utils/pathfinding";
 import { LocalLayer } from "../../types";
 
 /**
@@ -10,6 +11,14 @@ export function createDestinationSystem(layer: LocalLayer) {
   const {
     world,
     components: { Destination, LocalPosition, Path },
+    parentLayers: {
+      headless: {
+        components: { LocalStamina },
+      },
+      network: {
+        components: { Movable },
+      },
+    },
   } = layer;
 
   defineComponentSystem(world, Destination, (update) => {
@@ -21,7 +30,31 @@ export function createDestinationSystem(layer: LocalLayer) {
     const localPosition = getComponentValue(LocalPosition, update.entity);
     if (!localPosition || worldCoordEq(destination, localPosition)) return;
 
-    const path = aStar(localPosition, destination);
+    const localStamina = getComponentValue(LocalStamina, update.entity);
+    if (!localStamina) return;
+
+    const netStamina = localStamina.current as number;
+    if (!netStamina) {
+      return;
+    }
+    const moveSpeed = getComponentValue(Movable, update.entity);
+    if (!moveSpeed) {
+      return;
+    }
+
+    let path = aStar(
+      localPosition,
+      destination,
+      manhattan(localPosition, destination) + 1,
+      layer.parentLayers.network,
+      LocalPosition
+    );
+
+    if (path.length == 0) {
+      // HACK if no path found just do the old method
+      path = directionalPathfind(localPosition, destination);
+    }
+
     const x: number[] = [];
     const y: number[] = [];
     for (const coord of path) {

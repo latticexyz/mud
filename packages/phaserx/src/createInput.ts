@@ -20,6 +20,8 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   const disposers = new Set<() => void>();
   const enabled = { current: true };
 
+  inputPlugin.mouse.disableContextMenu();
+
   function disableInput() {
     enabled.current = false;
   }
@@ -54,7 +56,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     filterNullish()
   );
 
-  // Double click stream
+  // Click stream
   const click$ = merge(pointerdown$, pointerup$).pipe(
     filter(() => enabled.current),
     map<Phaser.Input.Pointer, [boolean, number]>((pointer) => [pointer.leftButtonDown(), Date.now()]), // Map events to whether the left button is down and the current timestamp
@@ -71,6 +73,16 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     bufferCount(2, 1), // Store the last two timestamps
     filter(([prev, now]) => now - prev < 500), // Filter clicks with more than 500ms distance
     throttleTime(500), // A third click within 500ms is not counted as another double click
+    map(() => inputPlugin.manager?.activePointer), // Return the current pointer
+    filterNullish()
+  );
+
+  // Right click stream
+  const rightClick$ = merge(pointerdown$, pointerup$).pipe(
+    filter(() => enabled.current),
+    map<Phaser.Input.Pointer, [boolean, number]>((pointer) => [pointer.rightButtonDown(), Date.now()]), // Map events to whether the left button is down and the current timestamp
+    bufferCount(2, 1), // Store the last two timestamps
+    filter(([prev, now]) => prev[0] && !now[0] && now[1] - prev[1] < 250), // Only care if button was pressed before and is not anymore and it happened within 500ms
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer
     filterNullish()
   );
@@ -164,6 +176,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     pointerup$,
     click$,
     doubleClick$,
+    rightClick$,
     drag$,
     pressedKeys,
     dispose,
