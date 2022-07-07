@@ -12,33 +12,8 @@
     "PersonaComponent",
     "SpellComponent",
     "StaminaComponent",
-    "UntraversableComponent"
+    "UntraversableComponent",
+    "PositionComponent"
   ],
-  "facets": [
-    {
-      "name": "InitializeFacet",
-      "functions": [
-        "initializeExternally",
-        "configureWorld",
-        "registerAccessControllerExternally",
-        "registerContentCreatorExternally",
-        "registerEmbodiedSystemExternally"
-      ]
-    },
-    { "name": "EmberFacet", "functions": ["world"] },
-    {
-      "name": "DebugFacet",
-      "functions": [
-        "addComponentToEntityExternally",
-        "removeComponentFromEntityExternally",
-        "callerEntityID",
-        "bulkSetState",
-        "entryPoint"
-      ]
-    },
-    {
-      "name": "PlayerJoinFacet",
-      "functions": ["joinGame"]
-    }
-  ]
+  "systems": [{ "name": "MoveSystem", "writeAccess": ["PositionComponent"] }]
 }

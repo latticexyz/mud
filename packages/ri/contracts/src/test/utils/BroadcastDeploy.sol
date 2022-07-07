@@ -14,6 +14,7 @@ import { LibDeploy, DeployResult } from "../../libraries/LibDeploy.sol";
 contract Deploy is DSTest {
   Cheats internal immutable vm = Cheats(HEVM_ADDRESS);
 
+  // TODO: remove unused params
   function deployEmber(
     address _deployer,
     address _personaMirror,
@@ -31,12 +32,12 @@ contract Deploy is DSTest {
     )
   {
     vm.startBroadcast(_deployer);
-    DeployResult memory result = LibDeploy.deploy(_deployer, _personaMirror, _diamond, _world, _reuseComponents);
+    DeployResult memory result = LibDeploy.deploy(_deployer, _world, _reuseComponents);
     vm.stopBroadcast();
-    persona = address(result.persona);
-    personaAllMinter = address(result.personaAllMinter);
-    personaMirror = address(result.personaMirror);
-    diamond = address(result.diamond);
+    persona = address(0);
+    personaAllMinter = address(0);
+    personaMirror = address(0);
+    diamond = address(0);
     world = address(result.world);
   }
 }
