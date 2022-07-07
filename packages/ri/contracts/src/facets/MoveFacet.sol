@@ -23,7 +23,7 @@ contract MoveFacet is UsingDiamondOwner, UsingAccessControl {
 
     MovableComponent movableComponent = MovableComponent(s.world.getComponent(MovableComponentID));
     require(movableComponent.has(entity), "trying to move non-moving entity");
-    require(movableComponent.getValue(entity) >= path.length, "not enough movespeed");
+    require(movableComponent.getValue(entity) >= int32(uint32(path.length)), "not enough movespeed");
 
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
     Coord memory position = positionComponent.getValue(entity);
