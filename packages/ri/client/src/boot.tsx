@@ -84,6 +84,8 @@ async function bootLayers() {
       initialBoot = false;
       layers.network.startSync();
     }
+
+    return layers;
   }
 
   function disposeLayer(layer: keyof typeof layers) {
@@ -120,6 +122,7 @@ async function bootLayers() {
       disposeLayer("local");
       disposeLayer("phaser");
       await bootLayers();
+      await bootReact(layers as Layers);
       console.log("HMR Network");
       layers.network?.startSync();
       reloadingNetwork = false;
@@ -167,8 +170,17 @@ async function bootLayers() {
 }
 
 function bootReact(layers: Layers) {
-  const rootElement = document.getElementById("react-root");
+  let rootElement = document.getElementById("react-root");
   if (!rootElement) return console.warn("React root not found");
+
+  if (rootElement.hasChildNodes()) {
+    const newRootElement = document.createElement("div");
+    newRootElement.id = "react-root";
+    rootElement.after(newRootElement);
+    rootElement.remove();
+    rootElement = newRootElement;
+  }
+
   const root = ReactDOM.createRoot(rootElement);
 
   function renderEngine() {
