@@ -42,9 +42,13 @@ contract PlayerJoinFacet is UsingDiamondOwner, UsingAccessControl {
     require(!foundTargetEntity, "spot taken fool!");
 
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
+    LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
+      s.world.getComponent(LastActionTurnComponentID)
+    );
 
     uint256 entity = LibPrototype.createFromSoldierPrototype(ownerId);
     positionComponent.set(entity, position);
+    lastActionTurnComponent.set(entity, LibStamina.getCurrentTurn());
   }
 
   function createPlayerEntity() private returns (uint256 playerEntity) {
