@@ -18,7 +18,8 @@ export enum Assets {
   MainAtlas = "MainAtlas",
 }
 
-export enum Animations {
-  ImpIdle = "ImpIdle",
-  HeroIdle = "HeroIdle",
+export enum Sprites {
+  Imp,
 }
+
+export enum Animations {}

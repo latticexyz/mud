@@ -5,7 +5,7 @@ import {
   defineMapConfig,
   defineCameraConfig,
 } from "@latticexyz/phaserx";
-import { Animations, Assets, Maps, Scenes, TILE_HEIGHT, TILE_WIDTH } from "./constants";
+import { Animations, Sprites, Assets, Maps, Scenes, TILE_HEIGHT, TILE_WIDTH } from "./constants";
 
 import overworldTileset from "../assets/tilesets/overworld-tileset.png";
 import mountainTileset from "../assets/tilesets/mountain-tileset.png";
@@ -70,28 +70,13 @@ export const config = {
           },
         }),
       },
-      animations: [
-        {
-          key: Animations.ImpIdle,
-          frameRate: 10,
+      sprites: {
+        [Sprites.Imp]: {
           assetKey: Assets.MainAtlas,
-          startFrame: 0,
-          endFrame: 0,
-          repeat: -1,
-          prefix: "sprites/workers/bridge-builder-imp/",
-          suffix: ".png",
+          frame: "sprites/workers/bridge-builder-imp.png",
         },
-        {
-          key: Animations.HeroIdle,
-          frameRate: 10,
-          assetKey: Assets.MainAtlas,
-          startFrame: 0,
-          endFrame: 0,
-          repeat: -1,
-          prefix: "sprites/warriors/hero/",
-          suffix: ".png",
-        },
-      ],
+      },
+      animations: [],
       tilesets: {
         Default: { assetKey: Assets.OverworldTileset, tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT },
       },

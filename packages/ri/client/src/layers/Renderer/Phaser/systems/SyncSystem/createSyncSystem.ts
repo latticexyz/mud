@@ -2,7 +2,7 @@ import { HasValue, Has, defineSyncSystem, getComponentValue } from "@latticexyz/
 import { PhaserLayer } from "../../types";
 import { LocalEntityTypes } from "../../../../Local/types";
 import { EntityTypes } from "../../../../Network/types";
-import { Animations, Assets } from "../../constants";
+import { Sprites } from "../../constants";
 import { getPersonaColor } from "@latticexyz/std-client";
 
 /**
@@ -19,7 +19,7 @@ export function createSyncSystem(layer: PhaserLayer) {
         components: { LocalEntityType, Selected },
       },
     },
-    components: { Appearance, SpriteAnimation, Outline, HueTint },
+    components: { Appearance, Outline, HueTint },
   } = layer;
 
   defineSyncSystem(
@@ -28,7 +28,7 @@ export function createSyncSystem(layer: PhaserLayer) {
     () => Appearance,
     () => {
       return {
-        value: Assets.Legendary,
+        value: Sprites.Imp,
       };
     }
   );
@@ -38,7 +38,7 @@ export function createSyncSystem(layer: PhaserLayer) {
     [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
     () => Appearance,
     () => ({
-      value: Assets.Imp,
+      value: Sprites.Imp,
     })
   );
 
@@ -68,21 +68,21 @@ export function createSyncSystem(layer: PhaserLayer) {
     }
   );
 
-  defineSyncSystem(
-    world,
-    [HasValue(EntityType, { value: EntityTypes.Hero })],
-    () => SpriteAnimation,
-    () => ({
-      value: Animations.HeroIdle,
-    })
-  );
+  // defineSyncSystem(
+  //   world,
+  //   [HasValue(EntityType, { value: EntityTypes.Hero })],
+  //   () => SpriteAnimation,
+  //   () => ({
+  //     value: Animations.HeroIdle,
+  //   })
+  // );
 
-  defineSyncSystem(
-    world,
-    [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
-    () => SpriteAnimation,
-    () => ({
-      value: Animations.ImpIdle,
-    })
-  );
+  // defineSyncSystem(
+  //   world,
+  //   [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
+  //   () => SpriteAnimation,
+  //   () => ({
+  //     value: Animations.ImpIdle,
+  //   })
+  // );
 }

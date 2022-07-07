@@ -117,7 +117,7 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
 
     const input = createInput(phaserScene.input);
 
-    partialScenes[key] = { phaserScene, objectPool, camera, culling, maps, input };
+    partialScenes[key] = { phaserScene, objectPool, camera, culling, maps, input, config: sceneConfig[key] };
   }
   const scenes = partialScenes as Scenes<S>;
 

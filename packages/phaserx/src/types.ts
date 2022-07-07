@@ -97,10 +97,21 @@ export type MapConfig<A extends Assets, T extends TilesetConfig<A>, L extends La
 
 type AnyMapConfig<A extends Assets, T extends TilesetConfig<A>> = MapConfig<A, T, LayerConfig<A, T>>;
 type AnyTilesetConfig = TilesetConfig<Assets>;
-type AnySceneConfig = SceneConfig<Assets, AnyTilesetConfig, MapsConfig<Assets, AnyTilesetConfig>, Animation<Assets>[]>;
+type AnySceneConfig = SceneConfig<
+  Assets,
+  { [key: string]: Sprite<Assets> },
+  AnyTilesetConfig,
+  MapsConfig<Assets, AnyTilesetConfig>,
+  Animation<Assets>[]
+>;
 
 export type MapsConfig<A extends Assets, T extends TilesetConfig<A>> = {
   [key: string]: AnyMapConfig<A, T>;
+};
+
+export type Sprite<A extends Assets> = {
+  assetKey: keyof A & string;
+  frame?: string | number;
 };
 
 export type Animation<A extends Assets> = {
@@ -117,6 +128,7 @@ export type Animation<A extends Assets> = {
 
 export type SceneConfig<
   A extends Assets,
+  S extends { [key: string]: Sprite<Assets> },
   T extends TilesetConfig<A>,
   M extends MapsConfig<A, T>,
   Ans extends Animation<A>[]
@@ -125,6 +137,7 @@ export type SceneConfig<
   create?: (scene: Phaser.Scene) => void;
   update?: (scene: Phaser.Scene) => void;
   assets: A;
+  sprites: S;
   tilesets: T;
   maps: M;
   animations: Ans;
@@ -141,6 +154,7 @@ type Scene<C extends AnySceneConfig> = {
   culling: Culling;
   maps: Maps<keyof C["maps"]>;
   input: Input;
+  config: C;
 };
 
 export type Scenes<C extends ScenesConfig> = {
