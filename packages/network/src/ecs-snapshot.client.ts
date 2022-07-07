@@ -5,6 +5,8 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { ECSStateSnapshotService } from "./ecs-snapshot";
+import type { Worlds } from "./ecs-snapshot";
+import type { WorldsRequest } from "./ecs-snapshot";
 import type { ECSStateRequestAtBlock } from "./ecs-snapshot";
 import type { ECSStateBlockReply } from "./ecs-snapshot";
 import type { ECSStateBlockRequestLatest } from "./ecs-snapshot";
@@ -53,6 +55,12 @@ export interface IECSStateSnapshotServiceClient {
     input: ECSStateRequestAtBlock,
     options?: RpcOptions
   ): UnaryCall<ECSStateRequestAtBlock, ECSStateReply>;
+  /**
+   * Requests a list of known worlds based on chain state.
+   *
+   * @generated from protobuf rpc: GetWorlds(ecssnapshot.WorldsRequest) returns (ecssnapshot.Worlds);
+   */
+  getWorlds(input: WorldsRequest, options?: RpcOptions): UnaryCall<WorldsRequest, Worlds>;
 }
 /**
  * The Snapshot Service definition.
@@ -112,5 +120,15 @@ export class ECSStateSnapshotServiceClient implements IECSStateSnapshotServiceCl
     const method = this.methods[3],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<ECSStateRequestAtBlock, ECSStateReply>("unary", this._transport, method, opt, input);
+  }
+  /**
+   * Requests a list of known worlds based on chain state.
+   *
+   * @generated from protobuf rpc: GetWorlds(ecssnapshot.WorldsRequest) returns (ecssnapshot.Worlds);
+   */
+  getWorlds(input: WorldsRequest, options?: RpcOptions): UnaryCall<WorldsRequest, Worlds> {
+    const method = this.methods[4],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<WorldsRequest, Worlds>("unary", this._transport, method, opt, input);
   }
 }
