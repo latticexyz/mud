@@ -182,9 +182,9 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     return systems["ember.system.playerJoin"].executeTyped(position, { gasPrice: 0 });
   }
 
-  async function moveEntity(entity: EntityID, targetPosition: WorldCoord) {
-    console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), targetPosition, { gasPrice: 0 });
+  async function moveEntity(entity: string, path: WorldCoord[]) {
+    console.log(`Moving entity ${entity} to position (${path[path.length - 1].x}, ${path[path.length - 1].y})}`);
+    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), path, { gasPrice: 0 });
   }
 
   async function attackEntity(attacker: EntityID, defender: EntityID) {
