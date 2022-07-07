@@ -41,10 +41,7 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
       embodiedEntity.despawn();
     }
 
-    if (!pos) {
-      return;
-    }
-
+    if (!pos) return;
     if (update.type === UpdateType.Enter) {
       const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
       embodiedEntity.setComponent({

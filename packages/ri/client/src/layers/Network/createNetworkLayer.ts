@@ -83,6 +83,16 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       { strength: Type.Number, range: Type.Number },
       { id: "Attack", metadata: { contractId: keccak256("ember.component.attackComponent") } }
     ),
+    FromPrototype: defineComponent(
+      world,
+      { value: Type.Entity },
+      { id: "FromPrototype", metadata: { contractId: keccak256("ember.component.fromPrototypeComponent") } }
+    ),
+    IsPrototype: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "IsPrototype", metadata: { contractId: keccak256("ember.component.isPrototypeComponent") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -98,6 +108,8 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     [keccak256("ember.component.staminaComponent")]: "Stamina",
     [keccak256("ember.component.healthComponent")]: "Health",
     [keccak256("ember.component.attackComponent")]: "Attack",
+    [keccak256("ember.component.fromPrototypeComponent")]: "FromPrototype",
+    [keccak256("ember.component.isPrototypeComponent")]: "IsPrototype",
   };
 
   const contractConfig: SetupContractConfig = {

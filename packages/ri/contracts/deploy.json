@@ -3,8 +3,10 @@
     "AttackComponent",
     "EmbodiedSystemArgumentComponent",
     "EntityTypeComponent",
+    "FromPrototypeComponent",
     "GameConfigComponent",
     "HealthComponent",
+    "IsPrototypeComponent",
     "LastActionTurnComponent",
     "LearnedSpellsComponent",
     "MaxDistanceComponent",
@@ -23,6 +25,7 @@
       "functions": [
         "initializeExternally",
         "configureWorld",
+        "createPrototypes",
         "registerAccessControllerExternally",
         "registerContentCreatorExternally",
         "registerEmbodiedSystemExternally"
