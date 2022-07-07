@@ -50,7 +50,8 @@
     "openurl": "^1.1.1",
     "path": "^0.12.7",
     "uuid": "^8.3.2",
-    "yargs": "^17.5.1"
+    "yargs": "^17.5.1",
+    "typechain": "^8.1.0"
   },
   "pkg": {
     "scripts": "build/**/*.js"

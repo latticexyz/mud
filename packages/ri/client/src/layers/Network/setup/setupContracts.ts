@@ -15,12 +15,12 @@ import { abi as WorldAbi } from "ri-contracts/abi/World.json";
 import { bufferTime, filter, Observable, Subject } from "rxjs";
 import { Component, Components, removeComponent, Schema, setComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
-import { keccak256, stretch } from "@latticexyz/utils";
+import { stretch } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
-import { MoveSystem } from "ri-contracts/types/ethers-contracts/MoveSystem";
-import { abi as MoveSystemAbi } from "ri-contracts/abi/MoveSystem.json";
+import { SystemTypes } from "ri-contracts/types/SystemTypes";
+import { SystemAbis } from "ri-contracts/types/SystemAbis";
 
 export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
@@ -50,9 +50,7 @@ export async function setupContracts<C extends ContractComponents>(
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, { devMode });
   world.registerDisposer(disposeTxQueue);
 
-  const systems = createSystemExecutor<{ ["ember.system.move"]: MoveSystem }>(world, network, systemsComponent, {
-    "ember.system.move": MoveSystemAbi,
-  });
+  const systems = createSystemExecutor<SystemTypes>(world, network, systemsComponent, SystemAbis);
 
   // Create sync worker
   const { ecsEvent$, config$, dispose } = createSyncWorker<C>();
