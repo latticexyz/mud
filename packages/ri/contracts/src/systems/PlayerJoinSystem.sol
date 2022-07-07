@@ -32,28 +32,40 @@ contract PlayerJoinSystem is ISystem {
   }
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
-    Coord memory targetPosition = abi.decode(arguments, (Coord));
-    (, bool foundTargetEntity) = LibUtils.getEntityAt(components, targetPosition);
-    require(!foundTargetEntity, "spot taken fool!");
     IComponent playerComponent = getComponentById(components, PlayerComponentID);
     require(!playerComponent.has(addressToEntity(msg.sender)), "player already spawned");
 
-    return abi.encode(playerComponent, targetPosition);
+    Coord memory position = abi.decode(arguments, (Coord));
+    Coord[] memory spawnPositions = new Coord[](5);
+
+    spawnPositions[0] = position;
+    spawnPositions[1] = Coord(position.x + 1, position.y);
+    spawnPositions[2] = Coord(position.x - 1, position.y);
+    spawnPositions[3] = Coord(position.x, position.y + 1);
+    spawnPositions[4] = Coord(position.x, position.y - 1);
+
+    PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
+    for (uint256 i; i < spawnPositions.length; i++) {
+      require(positionComponent.getEntitiesWithValue(spawnPositions[i]).length == 0, "spot taken");
+    }
+
+    return abi.encode(playerComponent, spawnPositions);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (IComponent playerComponent, Coord memory position) = abi.decode(requirement(arguments), (IComponent, Coord));
+    (IComponent playerComponent, Coord[] memory spawnPositions) = abi.decode(
+      requirement(arguments),
+      (IComponent, Coord[])
+    );
 
     // Create player entity
     uint256 playerEntity = addressToEntity(msg.sender);
     PlayerComponent(address(playerComponent)).set(addressToEntity(msg.sender));
 
     // Spawn creatures
-    createCreature(playerEntity, Coord(position.x, position.y));
-    createCreature(playerEntity, Coord(position.x + 1, position.y));
-    createCreature(playerEntity, Coord(position.x - 1, position.y));
-    createCreature(playerEntity, Coord(position.x, position.y + 1));
-    createCreature(playerEntity, Coord(position.x, position.y - 1));
+    for (uint256 i; i < spawnPositions.length; i++) {
+      spawnSoldier(playerEntity, spawnPositions[i]);
+    }
   }
 
   function requirementTyped(Coord memory targetPosition) public view returns (bytes memory) {
@@ -68,25 +80,16 @@ contract PlayerJoinSystem is ISystem {
   // Internals
   // ------------------------
 
-  function createCreature(uint256 ownerId, Coord memory position) private {
+  function spawnSoldier(uint256 ownerId, Coord memory position) private {
     uint256 entity = world.getUniqueEntityId();
 
-    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
-    EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(entity, uint32(0));
+    // TODO: use blueprint here (to be added in the next rebase PR);
+
     PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
-    StaminaComponent(getAddressById(components, StaminaComponentID)).set(
-      entity,
-      Stamina({ current: 0, max: 3, regeneration: 1 })
-    );
+
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
       entity,
       LibStamina.getCurrentTurn(GameConfigComponent(getAddressById(components, GameConfigComponentID)))
     );
-    MovableComponent(getAddressById(components, MovableComponentID)).set(entity);
-    HealthComponent(getAddressById(components, HealthComponentID)).set(
-      entity,
-      Health({ current: 100_000, max: 100_000 })
-    );
-    AttackComponent(getAddressById(components, AttackComponentID)).set(entity, Attack({ strength: 60_000, range: 1 }));
   }
 }

@@ -67,9 +67,9 @@ library LibDeploy {
 <% components.forEach(comp=> { -%>
     authorizeWriter(components, <%= comp%>ID, address(system));
 <% });-%>
-<% } else { %>
+<% } else { -%>
     authorizeWriter(components, <%= component %>ID, address(system));
-<% } %>
+<% } -%>
 <% });-%>
 <% if(system.initialize) { -%>
     system.execute(<%= system.initialize -%>);
