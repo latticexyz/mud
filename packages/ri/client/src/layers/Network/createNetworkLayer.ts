@@ -14,6 +14,7 @@ import { Mappings } from "@latticexyz/network";
 import { WorldCoord } from "../../types";
 import { SetupContractConfig } from "./setup/setupContracts";
 import { LOCAL_CHAIN_ID } from "../../constants";
+import { defineStringComponent } from "@latticexyz/std-client";
 
 export type NetworkLayerConfig = {
   contractAddress: string;
@@ -44,6 +45,14 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       { startTime: Type.String, turnLength: Type.String },
       { id: "GameConfig", metadata: { contractId: keccak256("ember.component.gameConfigComponent") } }
     ),
+    Components: defineStringComponent(world, {
+      id: "Components",
+      metadata: { contractId: keccak256("world.component.components") },
+    }),
+    Systems: defineStringComponent(world, {
+      id: "Systems",
+      metadata: { contractId: keccak256("world.component.systems") },
+    }),
     Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
     EntityType: defineEntityTypeComponent(world, keccak256("ember.component.entityTypeComponent")),
     Movable: defineMovableComponent(world, keccak256("ember.component.movableComponent")),
@@ -69,6 +78,9 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
 
   // Define mappings between contract and client components
   const mappings: Mappings<typeof components> = {
+    [keccak256("world.component.components")]: "Components",
+    [keccak256("world.component.systems")]: "Systems",
+    [keccak256("ember.component.gameConfigComponent")]: "GameConfig",
     [keccak256("ember.component.positionComponent")]: "Position",
     [keccak256("ember.component.entityTypeComponent")]: "EntityType",
     [keccak256("ember.component.movableComponent")]: "Movable",
@@ -76,7 +88,6 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     [keccak256("ember.component.untraversableComponent")]: "Untraversable",
     [keccak256("ember.component.personaComponent")]: "Persona",
     [keccak256("ember.component.lastActionTurnComponent")]: "LastActionTurn",
-    [keccak256("ember.component.gameConfigComponent")]: "GameConfig",
     [keccak256("ember.component.staminaComponent")]: "Stamina",
   };
 
