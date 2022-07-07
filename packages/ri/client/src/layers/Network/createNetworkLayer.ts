@@ -83,15 +83,15 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       { strength: Type.Number, range: Type.Number },
       { id: "Attack", metadata: { contractId: keccak256("ember.component.attackComponent") } }
     ),
-    FromPrototype: defineComponent(
+    FromBlueprint: defineComponent(
       world,
       { value: Type.Entity },
-      { id: "FromPrototype", metadata: { contractId: keccak256("ember.component.fromPrototypeComponent") } }
+      { id: "FromBlueprint", metadata: { contractId: keccak256("ember.component.fromBlueprintComponent") } }
     ),
-    IsPrototype: defineComponent(
+    IsBlueprint: defineComponent(
       world,
       { value: Type.Boolean },
-      { id: "IsPrototype", metadata: { contractId: keccak256("ember.component.isPrototypeComponent") } }
+      { id: "IsBlueprint", metadata: { contractId: keccak256("ember.component.isBlueprintComponent") } }
     ),
   };
 
@@ -108,8 +108,8 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     [keccak256("ember.component.staminaComponent")]: "Stamina",
     [keccak256("ember.component.healthComponent")]: "Health",
     [keccak256("ember.component.attackComponent")]: "Attack",
-    [keccak256("ember.component.fromPrototypeComponent")]: "FromPrototype",
-    [keccak256("ember.component.isPrototypeComponent")]: "IsPrototype",
+    [keccak256("ember.component.fromBlueprintComponent")]: "FromBlueprint",
+    [keccak256("ember.component.isBlueprintComponent")]: "IsBlueprint",
   };
 
   const contractConfig: SetupContractConfig = {

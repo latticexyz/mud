@@ -11,7 +11,7 @@ import { AppStorage, Config } from "../libraries/LibAppStorage.sol";
 import { LibContent } from "../libraries/LibContent.sol";
 import { LibAccessControl } from "../libraries/LibAccessControl.sol";
 import { LibEmbodiedSystem } from "../libraries/LibEmbodiedSystem.sol";
-import { LibPrototype } from "../libraries/LibPrototype.sol";
+import { LibBlueprint } from "../libraries/LibBlueprint.sol";
 
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
 
@@ -29,8 +29,8 @@ contract InitializeFacet is UsingDiamondOwner, UsingAccessControl {
     gameConfigComponent.set(GodID, GameConfig({ startTime: block.timestamp, turnLength: uint256(20) }));
   }
 
-  function createPrototypes() external {
-    LibPrototype.createSoldierPrototype();
+  function createBlueprints() external {
+    LibBlueprint.createSoldierBlueprint();
   }
 
   function registerAccessControllerExternally(address accessControllerAddr) external {

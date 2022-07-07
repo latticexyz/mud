@@ -4,8 +4,8 @@ pragma solidity >=0.8.0;
 import { LibAppStorage, AppStorage } from "./LibAppStorage.sol";
 
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig } from "../components/GameConfigComponent.sol";
-import { IsPrototypeComponent, ID as IsPrototypeComponentID } from "../components/IsPrototypeComponent.sol";
-import { FromPrototypeComponent, ID as FromPrototypeComponentID } from "../components/FromPrototypeComponent.sol";
+import { IsBlueprintComponent, ID as IsBlueprintComponentID } from "../components/IsBlueprintComponent.sol";
+import { FromBlueprintComponent, ID as FromBlueprintComponentID } from "../components/FromBlueprintComponent.sol";
 import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
 import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
@@ -16,14 +16,14 @@ import { AttackComponent, Attack, ID as AttackComponentID } from "../components/
 
 uint256 constant SoldierID = uint256(keccak256("ember.prototype.soldier"));
 
-library LibPrototype {
+library LibBlueprint {
   function s() internal pure returns (AppStorage storage) {
     return LibAppStorage.diamondStorage();
   }
 
-  function createFromSoldierPrototype(uint256 ownerId) public returns (uint256 entity) {
-    FromPrototypeComponent fromPrototypeComponent = FromPrototypeComponent(
-      s().world.getComponent(FromPrototypeComponentID)
+  function createFromSoldierBlueprint(uint256 ownerId) public returns (uint256 entity) {
+    FromBlueprintComponent fromBlueprintComponent = FromBlueprintComponent(
+      s().world.getComponent(FromBlueprintComponentID)
     );
     EntityTypeComponent entityTypeComponent = EntityTypeComponent(s().world.getComponent(EntityTypeComponentID));
     OwnedByComponent ownedByComponent = OwnedByComponent(s().world.getComponent(OwnedByComponentID));
@@ -37,7 +37,7 @@ library LibPrototype {
 
     entity = s().world.getUniqueEntityId();
 
-    fromPrototypeComponent.set(entity, SoldierID);
+    fromBlueprintComponent.set(entity, SoldierID);
     ownedByComponent.set(entity, ownerId);
     movableComponent.set(entity);
     entityTypeComponent.set(entity, entityTypeComponent.getValue(SoldierID));
@@ -47,8 +47,8 @@ library LibPrototype {
     attackComponent.set(entity, attackComponent.getValue(SoldierID));
   }
 
-  function createSoldierPrototype() public {
-    IsPrototypeComponent isPrototypeComponent = IsPrototypeComponent(s().world.getComponent(IsPrototypeComponentID));
+  function createSoldierBlueprint() public {
+    IsBlueprintComponent isBlueprintComponent = IsBlueprintComponent(s().world.getComponent(IsBlueprintComponentID));
     EntityTypeComponent entityTypeComponent = EntityTypeComponent(s().world.getComponent(EntityTypeComponentID));
     OwnedByComponent ownedByComponent = OwnedByComponent(s().world.getComponent(OwnedByComponentID));
     StaminaComponent staminaComponent = StaminaComponent(s().world.getComponent(StaminaComponentID));
@@ -59,7 +59,7 @@ library LibPrototype {
     HealthComponent healthComponent = HealthComponent(s().world.getComponent(HealthComponentID));
     AttackComponent attackComponent = AttackComponent(s().world.getComponent(AttackComponentID));
 
-    isPrototypeComponent.set(SoldierID);
+    isBlueprintComponent.set(SoldierID);
     ownedByComponent.set(SoldierID, 0);
     entityTypeComponent.set(SoldierID, uint32(0));
     staminaComponent.set(SoldierID, Stamina({ current: 0, max: 3, regeneration: 1 }));

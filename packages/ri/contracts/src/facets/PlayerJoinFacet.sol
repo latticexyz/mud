@@ -5,7 +5,7 @@ import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
 import { LibPersona } from "../libraries/LibPersona.sol";
 import { LibQuery } from "solecs/LibQuery.sol";
-import { LibPrototype } from "../libraries/LibPrototype.sol";
+import { LibBlueprint } from "../libraries/LibBlueprint.sol";
 
 import { World } from "solecs/World.sol";
 import { UsingDiamondOwner } from "../diamond/utils/UsingDiamondOwner.sol";
@@ -46,7 +46,7 @@ contract PlayerJoinFacet is UsingDiamondOwner, UsingAccessControl {
       s.world.getComponent(LastActionTurnComponentID)
     );
 
-    uint256 entity = LibPrototype.createFromSoldierPrototype(ownerId);
+    uint256 entity = LibBlueprint.createFromSoldierBlueprint(ownerId);
     positionComponent.set(entity, position);
     lastActionTurnComponent.set(entity, LibStamina.getCurrentTurn());
   }
