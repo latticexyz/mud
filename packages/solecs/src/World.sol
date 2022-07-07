@@ -43,11 +43,11 @@ contract World is IWorld {
   }
 
   function registerComponent(address componentAddr, uint256 id) public {
-    register.execute(RegisterType.Component, componentAddr, id);
+    register.execute(abi.encode(RegisterType.Component, componentAddr, id));
   }
 
   function registerSystem(address systemAddr, uint256 id) public {
-    register.execute(RegisterType.System, systemAddr, id);
+    register.execute(abi.encode(RegisterType.System, systemAddr, id));
   }
 
   modifier requireComponentRegistered(address component) {

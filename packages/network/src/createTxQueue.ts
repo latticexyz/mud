@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseContract, CallOverrides, Overrides } from "ethers";
-import { autorun, computed, IComputedValue, observable, runInAction } from "mobx";
+import { autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
 import { mapObject, deferred, uuid, awaitValue, cacheUntilReady } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
 import { TransactionResponse } from "@ethersproject/providers";
@@ -50,7 +50,7 @@ type ReturnTypeStrict<T> = T extends (...args: any) => any ? ReturnType<T> : nev
  * @returns
  */
 export function createTxQueue<C extends Contracts>(
-  computedContracts: IComputedValue<C>,
+  computedContracts: IComputedValue<C> | IObservableValue<C>,
   network: Network,
   options?: { concurrency?: number; ignoreConfirmation?: boolean; devMode?: boolean }
 ): { txQueue: TxQueue<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {

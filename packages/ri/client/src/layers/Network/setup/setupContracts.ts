@@ -8,18 +8,19 @@ import {
   SyncWorkerConfig,
   NetworkComponentUpdate,
   NetworkConfig,
+  createSystemExecutor,
 } from "@latticexyz/network";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
-import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
-import WorldAbi from "ri-contracts/abi/World.json";
-import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
+import { abi as WorldAbi } from "ri-contracts/abi/World.json";
 import { bufferTime, filter, Observable, Subject } from "rxjs";
-import { Component, Components, removeComponent, Schema, setComponent, World } from "@latticexyz/recs";
+import { Component, Components, removeComponent, Schema, setComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
-import { stretch } from "@latticexyz/utils";
+import { keccak256, stretch } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
+import { MoveSystem } from "ri-contracts/types/ethers-contracts/MoveSystem";
+import { abi as MoveSystemAbi } from "ri-contracts/abi/MoveSystem.json";
 
 export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
@@ -28,9 +29,10 @@ export type ContractComponents = {
 export type SetupContractConfig = NetworkConfig & Omit<SyncWorkerConfig, "worldContract" | "mappings">;
 
 export async function setupContracts<C extends ContractComponents>(
-  address: string,
+  worldAddress: string,
   config: SetupContractConfig,
   world: World,
+  systemsComponent: Component<{ value: Type.String }>,
   components: C,
   mappings: Mappings<C>,
   devMode?: boolean
@@ -40,14 +42,17 @@ export async function setupContracts<C extends ContractComponents>(
 
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
-  const { contracts, config: contractsConfig } = await createContracts<{ Game: CombinedFacets; World: WorldContract }>({
-    config: { Game: { abi: CombinedFacetsAbi.abi, address } },
-    asyncConfig: async (c) => ({ World: { abi: WorldAbi.abi, address: await c.Game.world() } }),
+  const { contracts, config: contractsConfig } = await createContracts<{ World: WorldContract }>({
+    config: { World: { abi: WorldAbi, address: worldAddress } },
     signerOrProvider,
   });
 
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, { devMode });
   world.registerDisposer(disposeTxQueue);
+
+  const systems = createSystemExecutor<{ ["ember.system.move"]: MoveSystem }>(world, network, systemsComponent, {
+    "ember.system.move": MoveSystemAbi,
+  });
 
   // Create sync worker
   const { ecsEvent$, config$, dispose } = createSyncWorker<C>();
@@ -78,7 +83,7 @@ export async function setupContracts<C extends ContractComponents>(
     const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
     encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
   }
-  return { txQueue, txReduced$, encoders, network, startSync };
+  return { txQueue, txReduced$, encoders, network, startSync, systems };
 }
 
 /**

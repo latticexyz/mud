@@ -23,10 +23,6 @@ contract MoveSystem is ISystem {
     components = _components;
   }
 
-  function requirement(uint256 entity, Coord memory targetPosition) public view returns (bytes memory) {
-    return requirement(abi.encode(entity, targetPosition));
-  }
-
   function requirement(bytes memory arguments) public view returns (bytes memory) {
     (uint256 entity, Coord memory targetPosition) = abi.decode(arguments, (uint256, Coord));
 
@@ -44,10 +40,6 @@ contract MoveSystem is ISystem {
     return abi.encode(entity, targetPosition, positionComponent);
   }
 
-  function execute(uint256 entity, Coord memory targetPosition) public {
-    return execute(abi.encode(entity, targetPosition));
-  }
-
   function execute(bytes memory arguments) public {
     (uint256 entity, Coord memory targetPosition, PositionComponent positionComponent) = abi.decode(
       requirement(arguments),
@@ -55,5 +47,13 @@ contract MoveSystem is ISystem {
     );
     positionComponent.set(entity, targetPosition);
     // LibStamina.reduceStamina(entity, 1);
+  }
+
+  function requirementTyped(uint256 entity, Coord memory targetPosition) public view returns (bytes memory) {
+    return requirement(abi.encode(entity, targetPosition));
+  }
+
+  function executeTyped(uint256 entity, Coord memory targetPosition) public {
+    return execute(abi.encode(entity, targetPosition));
   }
 }

@@ -1,14 +1,4 @@
-import {
-  Component,
-  ComponentValue,
-  createWorld,
-  defineComponent,
-  EntityIndex,
-  HasValue,
-  runQuery,
-  Schema,
-  Type,
-} from "@latticexyz/recs";
+import { Component, ComponentValue, createWorld, defineComponent, EntityIndex, Schema, Type } from "@latticexyz/recs";
 import {
   definePositionComponent,
   defineEntityTypeComponent,
@@ -17,22 +7,19 @@ import {
   defineUntraversableComponent,
 } from "./components";
 import { setupContracts } from "./setup";
-import { CHECKPOINT_URL, DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.local";
-import { BigNumber, Contract } from "ethers";
+import { CHECKPOINT_URL, DEV_PRIVATE_KEY, RPC_URL, RPC_WS_URL } from "./constants.local";
+import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
 import { WorldCoord } from "../../types";
 import { SetupContractConfig } from "./setup/setupContracts";
 import { LOCAL_CHAIN_ID } from "../../constants";
 import { defineStringComponent } from "@latticexyz/std-client";
-import { MoveSystem } from "ri-contracts/types/ethers-contracts/MoveSystem";
-import { abi as MoveSystemAbi } from "ri-contracts/abi/MoveSystem.json";
 
 export type NetworkLayerConfig = {
-  contractAddress: string;
+  worldAddress: string;
   privateKey: string;
   chainId: number;
-  personaId: number;
   jsonRpc?: string;
   wsRpc?: string;
   checkpointUrl?: string;
@@ -43,7 +30,7 @@ export type NetworkLayerConfig = {
  * The Network layer is the lowest layer in the client architecture.
  * Its purpose is to synchronize the client components with the contract components.
  */
-export async function createNetworkLayer(config?: NetworkLayerConfig) {
+export async function createNetworkLayer(config: NetworkLayerConfig) {
   // World
   const world = createWorld();
 
@@ -125,10 +112,11 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
   const DEV_MODE = contractConfig.chainId === LOCAL_CHAIN_ID || config?.devMode;
 
   // Instantiate contracts and set up mappings
-  const { txQueue, txReduced$, encoders, network, startSync } = await setupContracts(
-    config?.contractAddress || DIAMOND_ADDRESS,
+  const { txQueue, systems, txReduced$, encoders, network, startSync } = await setupContracts(
+    config.worldAddress,
     contractConfig,
     world,
+    components.Systems,
     components,
     mappings,
     DEV_MODE
@@ -150,24 +138,17 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     const entityId = world.entities[entity];
 
     console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entityId}`);
-    await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entityId), component.metadata.contractId, data);
+    // await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entityId), component.metadata.contractId, data);
   }
 
   async function joinGame(position: WorldCoord) {
     console.log(`Joining game at position ${JSON.stringify(position)}`);
-    return txQueue.Game.joinGame(position);
+    // return txQueue.Game.joinGame(position);
   }
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    const systemEntities = [...runQuery([HasValue(components.Systems, { value: keccak256("ember.system.move") })])];
-    const moveSystemAddress = world.entities[systemEntities[0]];
-    console.log("SystemEntities", moveSystemAddress);
-    const moveSystem = new Contract(moveSystemAddress, MoveSystemAbi, network.signer.get()) as MoveSystem;
-    moveSystem["execute(uint256,(int32,int32))"](BigNumber.from(entity), targetPosition, {
-      gasLimit: 1000000,
-      gasPrice: 0,
-    });
+    systems["ember.system.move"].executeTyped(BigNumber.from(entity), targetPosition);
     // return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition);
   }
 
@@ -184,7 +165,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     txReduced$,
     mappings,
     startSync,
-    personaId: config?.personaId,
+    personaId: 0,
     network,
     api: {
       setContractComponentValue,

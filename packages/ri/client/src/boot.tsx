@@ -36,28 +36,28 @@ async function bootLayers() {
 
   async function bootLayers() {
     const params = new URLSearchParams(window.location.search);
-    const contractAddress = params.get("contractAddress");
+    const worldAddress = params.get("worldAddress");
     const privateKey = params.get("burnerWalletPrivateKey");
     const chainIdString = params.get("chainId");
-    const personaIdString = params.get("personaId");
     const jsonRpc = params.get("rpc") || undefined;
     const wsRpc = params.get("wsRpc") || undefined; // || (jsonRpc && jsonRpc.replace("http", "ws"));
     const checkpointUrl = params.get("checkpoint") || undefined;
     const devMode = params.get("dev") === "true";
 
     let networkLayerConfig;
-    if (contractAddress && privateKey && chainIdString && personaIdString) {
+    if (worldAddress && privateKey && chainIdString) {
       networkLayerConfig = {
-        contractAddress,
+        worldAddress,
         privateKey,
         chainId: parseInt(chainIdString),
-        personaId: parseInt(personaIdString),
         jsonRpc,
         wsRpc,
         checkpointUrl,
         devMode,
       };
     }
+
+    if (!networkLayerConfig) throw new Error("Invalid config");
 
     if (!layers.network) layers.network = await createNetworkLayer(networkLayerConfig);
     if (!layers.headless) layers.headless = await createHeadlessLayer(layers.network);

@@ -322,11 +322,11 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                                 (_a = child.stdout) === null || _a === void 0 ? void 0 : _a.pipe(task.stdout());
                                 const { stdout } = yield child;
                                 const lines = stdout.split("\n");
-                                ctx.gameContractAddress = gameContractAddress = findLog(lines, "diamond: address");
+                                ctx.worldAddress = findLog(lines, "world: address");
                                 ctx.personaAddress = findLog(lines, "persona: address");
                                 ctx.personaMirrorAddress = findLog(lines, "personaMirror: address");
                                 ctx.personaAllMinterAddress = findLog(lines, "personaAllMinter: address");
-                                task.output = chalk.yellow(`Game deployed at: ${chalk.bgYellow.black(gameContractAddress)}`);
+                                task.output = chalk.yellow(`World deployed at: ${chalk.bgYellow.black(ctx.worldAddress)}`);
                             }),
                             options: { bottomBar: 3 },
                         },
@@ -389,7 +389,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                             title: "Open Launcher",
                             task: (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                                 const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
-                                launcherUrl = `https://play.lattice.xyz?address=${ctx.gameContractAddress || ""}&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${options.persona || ctx.personaAddress || ""}&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${clientUrl || ""}&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}&dev=${options.chainId === 31337 || ""}`;
+                                launcherUrl = `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${options.persona || ctx.personaAddress || ""}&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${clientUrl || ""}&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}&dev=${options.chainId === 31337 || ""}`;
                                 openurl_1.default.open(launcherUrl);
                             }),
                             options: { bottomBar: 3 },

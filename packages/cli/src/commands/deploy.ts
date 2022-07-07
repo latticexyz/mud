@@ -350,12 +350,12 @@ export const deploy = async (options: Options) => {
                   const { stdout } = await child;
                   const lines = stdout.split("\n");
 
-                  ctx.gameContractAddress = gameContractAddress = findLog(lines, "diamond: address");
+                  ctx.worldAddress = findLog(lines, "world: address");
                   ctx.personaAddress = findLog(lines, "persona: address");
                   ctx.personaMirrorAddress = findLog(lines, "personaMirror: address");
                   ctx.personaAllMinterAddress = findLog(lines, "personaAllMinter: address");
 
-                  task.output = chalk.yellow(`Game deployed at: ${chalk.bgYellow.black(gameContractAddress)}`);
+                  task.output = chalk.yellow(`World deployed at: ${chalk.bgYellow.black(ctx.worldAddress)}`);
                 },
                 options: { bottomBar: 3 },
               },
@@ -420,13 +420,13 @@ export const deploy = async (options: Options) => {
                 title: "Open Launcher",
                 task: async (ctx) => {
                   const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
-                  launcherUrl = `https://play.lattice.xyz?address=${
-                    ctx.gameContractAddress || ""
-                  }&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${
-                    options.persona || ctx.personaAddress || ""
-                  }&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${
-                    clientUrl || ""
-                  }&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}&dev=${options.chainId === 31337 || ""}`;
+                  launcherUrl = `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&personaMirrorAddress=${
+                    ctx.personaMirrorAddress || ""
+                  }&personaAddress=${options.persona || ctx.personaAddress || ""}&personaAllMinterAddress=${
+                    options.personaAllMinter || ctx.personaAllMinterAddress || ""
+                  }&client=${clientUrl || ""}&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}&dev=${
+                    options.chainId === 31337 || ""
+                  }`;
                   openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },
