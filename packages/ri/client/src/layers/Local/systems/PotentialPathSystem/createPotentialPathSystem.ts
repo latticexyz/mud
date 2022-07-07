@@ -32,14 +32,6 @@ export function createPotentialPathSystem(layer: LocalLayer) {
       const localPosition = getComponentValue(LocalPosition, entity);
       if (!localPosition) return;
 
-      const localStamina = getComponentValue(LocalStamina, entity);
-      if (!localStamina) return;
-
-      const netStamina = localStamina.current as number;
-      if (!netStamina) {
-        return;
-      }
-
       const xArray: number[] = [];
       const yArray: number[] = [];
 

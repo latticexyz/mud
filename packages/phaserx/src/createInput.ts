@@ -81,6 +81,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   const rightClick$ = merge(pointerdown$, pointerup$).pipe(
     filter(() => enabled.current),
     map<Phaser.Input.Pointer, boolean>((pointer) => pointer.rightButtonDown()), // Map events to whether the right button is down
+    filter((rightClick) => rightClick), // Only care if right click was pressed
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer
     filterNullish()
   );
