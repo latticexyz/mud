@@ -13,15 +13,17 @@ struct WorldQueryFragment {
 }
 
 interface IWorld {
-  function getComponents() external view returns (IUint256Component);
+  function components() external view returns (IUint256Component);
 
-  function getSystems() external view returns (IUint256Component);
+  function systems() external view returns (IUint256Component);
 
   function registerComponent(address componentAddr, uint256 id) external;
 
   function getComponent(uint256 id) external view returns (address);
 
   function getComponentIdFromAddress(address componentAddr) external view returns (uint256);
+
+  function registerSystem(address systemAddr, uint256 id) external;
 
   function registerComponentValueSet(
     address component,
@@ -32,6 +34,10 @@ interface IWorld {
   function registerComponentValueRemoved(address component, uint256 entity) external;
 
   function getNumEntities() external view returns (uint256);
+
+  function hasEntity(uint256 entity) external view returns (bool);
+
+  function getUniqueEntityId() external view returns (uint256);
 
   function query(WorldQueryFragment[] calldata worldQueryFragments) external view returns (uint256[] memory);
 }

@@ -34,7 +34,7 @@ contract RegisterSystem is ISystem {
     require(id != 0, "invalid id");
     require(addr != address(0), "invalid address");
 
-    IUint256Component registry = registerType == RegisterType.Component ? world.getComponents() : world.getSystems();
+    IUint256Component registry = registerType == RegisterType.Component ? world.components() : world.systems();
     uint256 entity = addressToEntity(addr);
 
     require(!registry.has(entity), "entity already registered");
