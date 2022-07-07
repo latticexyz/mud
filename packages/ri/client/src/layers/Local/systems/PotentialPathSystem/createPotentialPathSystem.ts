@@ -29,7 +29,6 @@ export function createPotentialPathSystem(layer: LocalLayer) {
       const moveSpeed = getComponentValue(Movable, entity)?.value;
       if (!moveSpeed) return;
 
-      // TODO replace with dynamic move distance and pathfinding
       const localPosition = getComponentValue(LocalPosition, entity);
       if (!localPosition) return;
 
