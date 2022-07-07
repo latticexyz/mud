@@ -167,9 +167,9 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     return txQueue.Game.joinGame(position);
   }
 
-  async function moveEntity(entity: EntityID, targetPosition: WorldCoord) {
-    console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition);
+  async function moveEntity(entity: string, path: WorldCoord[]) {
+    console.log(`Moving entity ${entity} to position (${path[path.length - 1].x}, ${path[path.length - 1].y})}`);
+    return txQueue.Game.moveEntity(BigNumber.from(entity), path);
   }
 
   async function attackEntity(attacker: EntityID, defender: EntityID) {

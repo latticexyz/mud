@@ -39,7 +39,7 @@ library LibBlueprint {
 
     fromBlueprintComponent.set(entity, SoldierID);
     ownedByComponent.set(entity, ownerId);
-    movableComponent.set(entity);
+    movableComponent.set(entity, movableComponent.getValue(SoldierID));
     entityTypeComponent.set(entity, entityTypeComponent.getValue(SoldierID));
     lastActionTurnComponent.set(entity, lastActionTurnComponent.getValue(SoldierID));
     staminaComponent.set(entity, staminaComponent.getValue(SoldierID));
@@ -66,6 +66,6 @@ library LibBlueprint {
     healthComponent.set(SoldierID, Health({ current: 100_000, max: 100_000 }));
     attackComponent.set(SoldierID, Attack({ strength: 60_000, range: 1 }));
     lastActionTurnComponent.set(SoldierID, 0);
-    movableComponent.set(SoldierID);
+    movableComponent.set(SoldierID, int32(3));
   }
 }
