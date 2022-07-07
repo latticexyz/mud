@@ -22,6 +22,7 @@
   },
   "scripts": {
     "start": "node --loader ts-node/esm --experimental-specifier-resolution=node ./src/index.ts",
+    "bulkUpload": "node --loader ts-node/esm --experimental-specifier-resolution=node ./src/bulkUploadMap.ts",
     "txpool": "curl -X POST -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"txpool_content\", \"params\": [], \"id\":1}' https://degen-chain.lattice.xyz/"
   }
 }
