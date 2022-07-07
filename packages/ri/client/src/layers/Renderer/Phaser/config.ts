@@ -5,34 +5,26 @@ import {
   defineMapConfig,
   defineCameraConfig,
 } from "@latticexyz/phaserx";
-import { Animations, Assets, Maps, Scenes, TileAnimations, Tileset, TILE_HEIGHT, TILE_WIDTH } from "./constants";
-import tilemap from "../assets/overworld-tileset.png";
-import imp from "../assets/imp.png";
-import legendary from "../assets/legendary.png";
+import { Animations, Assets, Maps, Scenes, TILE_HEIGHT, TILE_WIDTH } from "./constants";
+
+import overworldTileset from "../assets/tilesets/overworld-tileset.png";
+import mountainTileset from "../assets/tilesets/mountain-tileset.png";
+
+import { Tileset as OverworldTileset } from "./tilesets/overworldTileset";
+import { TileAnimations as OverworldTileAnimations } from "./tilesets/overworldTileset";
 
 export const config = {
   sceneConfig: {
     [Scenes.Main]: defineSceneConfig({
       assets: {
-        [Assets.Tilemap]: { type: AssetType.Image, key: Assets.Tilemap, path: tilemap },
-        [Assets.Imp]: {
-          type: AssetType.SpriteSheet,
-          key: Assets.Imp,
-          path: imp,
-          options: { frameWidth: TILE_WIDTH, frameHeight: TILE_HEIGHT },
-        },
-        [Assets.Legendary]: {
-          type: AssetType.SpriteSheet,
-          key: Assets.Legendary,
-          path: legendary,
-          options: { frameWidth: TILE_WIDTH, frameHeight: TILE_HEIGHT },
-        },
+        [Assets.OverworldTileset]: { type: AssetType.Image, key: Assets.OverworldTileset, path: overworldTileset },
+        [Assets.MountainTileset]: { type: AssetType.Image, key: Assets.MountainTileset, path: mountainTileset },
         [Assets.MainAtlas]: {
           type: AssetType.MultiAtlas,
           key: Assets.MainAtlas,
-          path: "/atlases/atlas.json",
+          path: "/atlases/sprites/atlas.json",
           options: {
-            imagePath: "/atlases/",
+            imagePath: "/atlases/sprites/",
           },
         },
       },
@@ -41,9 +33,9 @@ export const config = {
           chunkSize: TILE_WIDTH * 64, // tile size * tile amount
           tileWidth: TILE_WIDTH,
           tileHeight: TILE_HEIGHT,
-          backgroundTile: [Tileset.Wall1],
+          backgroundTile: [OverworldTileset.Brick1],
           animationInterval: 100,
-          tileAnimations: TileAnimations,
+          tileAnimations: OverworldTileAnimations,
           layers: {
             layers: {
               Background: { tilesets: ["Default"], hasHueTintShader: true },
@@ -55,7 +47,7 @@ export const config = {
           chunkSize: TILE_WIDTH * 64, // tile size * tile amount
           tileWidth: TILE_WIDTH * 4,
           tileHeight: TILE_HEIGHT * 4,
-          backgroundTile: [Tileset.Wall1],
+          backgroundTile: [OverworldTileset.Brick1],
           animationInterval: 100,
           layers: {
             layers: {
@@ -68,7 +60,7 @@ export const config = {
           chunkSize: TILE_WIDTH * 64 * 8, // tile size * tile amount
           tileWidth: TILE_WIDTH * 16,
           tileHeight: TILE_HEIGHT * 16,
-          backgroundTile: [Tileset.Wall1],
+          backgroundTile: [OverworldTileset.Brick1],
           animationInterval: 100,
           layers: {
             layers: {
@@ -101,7 +93,7 @@ export const config = {
         },
       ],
       tilesets: {
-        Default: { assetKey: Assets.Tilemap, tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT },
+        Default: { assetKey: Assets.OverworldTileset, tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT },
       },
     }),
   },

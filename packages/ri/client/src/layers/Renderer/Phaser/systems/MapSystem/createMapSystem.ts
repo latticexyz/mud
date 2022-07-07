@@ -1,11 +1,11 @@
 import { Has, getComponentValueStrict, defineEnterSystem, Not } from "@latticexyz/recs";
 import { EntityTypes } from "../../../../Network";
-import { Tileset } from "../../constants";
+import { Tileset } from "../../tilesets/overworldTileset";
 import { PhaserLayer } from "../../types";
 
 const entityTypeToTile = {
   [EntityTypes.Grass]: Tileset.Grass,
-  [EntityTypes.Mountain]: Tileset.Rock1,
+  [EntityTypes.Mountain]: Tileset.PlainRock1,
   [EntityTypes.River]: Tileset.Water,
 } as { [key in EntityTypes]: Tileset };
 
@@ -51,7 +51,8 @@ export function createMapSystem(layer: PhaserLayer) {
 
   defineEnterSystem(world, [Has(Position), Not(EntityType)], (update) => {
     const coord = getComponentValueStrict(Position, update.entity);
-    Main.putTileAt(coord, Tileset.Plain);
+    // TODO: commented till we fix the uploader to bundle untraversable and entity type together
+    // Main.putTileAt(coord, Tileset.Plain);
   });
 
   defineEnterSystem(
