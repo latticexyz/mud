@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 import { QueryType } from "./Query.sol";
+import { IUint256Component } from "./IUint256Component.sol";
 
 // For ProxyRead and ProxyExpand QueryFragments:
 // - component must be a component whose raw value decodes to a single uint256
@@ -12,6 +13,10 @@ struct WorldQueryFragment {
 }
 
 interface IWorld {
+  function getComponents() external view returns (IUint256Component);
+
+  function getSystems() external view returns (IUint256Component);
+
   function registerComponent(address componentAddr, uint256 id) external;
 
   function getComponent(uint256 id) external view returns (address);

@@ -64,6 +64,12 @@ library LibDeploy {
     bool _reuseComponents
   ) internal returns (DeployResult memory result) {
     result.deployer = _deployer;
+
+    console.log("Deployer");
+    console.log(_deployer);
+    
+    new World().init();
+    
     bool upgrade = _diamond != address(0);
     IDiamondCut.FacetCutAction action = upgrade ? IDiamondCut.FacetCutAction.Replace : IDiamondCut.FacetCutAction.Add;
 

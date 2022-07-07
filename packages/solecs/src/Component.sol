@@ -10,10 +10,12 @@ import { IComponent } from "./interfaces/IComponent.sol";
 import { Set } from "./Set.sol";
 import { MapSet } from "./MapSet.sol";
 import { LibTypes } from "./LibTypes.sol";
+import { console } from "forge-std/console.sol";
 
 abstract contract Component is IComponent {
   address public world;
   address public owner;
+  mapping(address => bool) public writeAccess;
 
   Set private entities;
   MapSet private valueToEntities;
@@ -25,27 +27,44 @@ abstract contract Component is IComponent {
     entities = new Set();
     valueToEntities = new MapSet();
     owner = msg.sender;
+    writeAccess[msg.sender] = true;
     id = _id;
     if (_world != address(0)) registerWorld(_world);
   }
 
-  modifier onlyContractOwner() {
-    require(msg.sender == owner, "ONLY_CONTRACT_OWNER");
+  modifier onlyOwner() {
+    console.log("Owner, Sender");
+    console.log(owner);
+    console.log(msg.sender);
+    require(msg.sender == owner, "ONLY_OWNER");
     _;
   }
 
-  function transferOwnership(address newOwner) public onlyContractOwner {
-    owner = newOwner;
+  modifier onlyWriter() {
+    console.log("Sender wants to write");
+    console.log(msg.sender);
+    require(writeAccess[msg.sender], "ONLY_WRITER");
+    _;
   }
 
-  function registerWorld(address _world) public onlyContractOwner {
+  function transferOwnership(address newOwner) public onlyOwner {
+    writeAccess[msg.sender] = false;
+    owner = newOwner;
+    writeAccess[newOwner] = true;
+  }
+
+  function registerWorld(address _world) public onlyOwner {
     world = _world;
     IWorld(world).registerComponent(address(this), id);
   }
 
+  function authorizeWriter(address writer) public onlyOwner {
+    writeAccess[writer] = true;
+  }
+
   function getSchema() public pure virtual returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
-  function set(uint256 entity, bytes memory value) public onlyContractOwner {
+  function set(uint256 entity, bytes memory value) public onlyWriter {
     // Store the entity
     entities.add(entity);
 
@@ -66,7 +85,7 @@ abstract contract Component is IComponent {
     IWorld(world).registerComponentValueSet(address(this), entity, value);
   }
 
-  function remove(uint256 entity) public onlyContractOwner {
+  function remove(uint256 entity) public onlyWriter {
     // If there is no entity with this value, return
     if (valueToEntities.size(uint256(keccak256(entityToValue[entity]))) == 0) return;
 
@@ -105,7 +124,7 @@ abstract contract Component is IComponent {
     return valueToEntities.getItems(uint256(keccak256(value)));
   }
 
-  function registerIndexer(address indexer) external onlyContractOwner {
+  function registerIndexer(address indexer) external onlyWriter {
     require(
       ERC165Checker.supportsInterface(indexer, type(IEntityIndexer).interfaceId),
       "Given address is not an indexer."
