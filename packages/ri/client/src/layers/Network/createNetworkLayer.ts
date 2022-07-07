@@ -1,4 +1,14 @@
-import { Component, ComponentValue, createWorld, defineComponent, EntityIndex, Schema, Type } from "@latticexyz/recs";
+import {
+  Component,
+  ComponentValue,
+  createWorld,
+  defineComponent,
+  EntityIndex,
+  HasValue,
+  runQuery,
+  Schema,
+  Type,
+} from "@latticexyz/recs";
 import {
   definePositionComponent,
   defineEntityTypeComponent,
@@ -8,13 +18,15 @@ import {
 } from "./components";
 import { setupContracts } from "./setup";
 import { CHECKPOINT_URL, DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.local";
-import { BigNumber } from "ethers";
+import { BigNumber, Contract } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
 import { WorldCoord } from "../../types";
 import { SetupContractConfig } from "./setup/setupContracts";
 import { LOCAL_CHAIN_ID } from "../../constants";
 import { defineStringComponent } from "@latticexyz/std-client";
+import { MoveSystem } from "ri-contracts/types/ethers-contracts/MoveSystem";
+import { abi as MoveSystemAbi } from "ri-contracts/abi/MoveSystem.json";
 
 export type NetworkLayerConfig = {
   contractAddress: string;
@@ -148,7 +160,15 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition);
+    const systemEntities = [...runQuery([HasValue(components.Systems, { value: keccak256("ember.system.move") })])];
+    const moveSystemAddress = world.entities[systemEntities[0]];
+    console.log("SystemEntities", moveSystemAddress);
+    const moveSystem = new Contract(moveSystemAddress, MoveSystemAbi, network.signer.get()) as MoveSystem;
+    moveSystem["execute(uint256,(int32,int32))"](BigNumber.from(entity), targetPosition, {
+      gasLimit: 1000000,
+      gasPrice: 0,
+    });
+    // return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition);
   }
 
   // Constants (load from contract later)

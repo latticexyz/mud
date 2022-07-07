@@ -1,7 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import { World, WorldQueryFragment } from "solecs/World.sol";
-import { QueryFragment, QueryType } from "solecs/LibQuery.sol";
+import { QueryFragment, QueryType, LibQuery } from "solecs/LibQuery.sol";
+import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import { getAddressById } from "solecs/utils.sol";
+import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 
 library LibUtils {
@@ -51,6 +54,23 @@ library LibUtils {
     WorldQueryFragment[] memory fragments = new WorldQueryFragment[](1);
     fragments[0] = WorldQueryFragment(QueryType.HasValue, PositionComponentID, abi.encode(position));
     uint256[] memory entities = world.query(fragments);
+    if (entities.length == 0) return (0, false);
+    return (entities[0], true);
+  }
+
+  function getEntityWithAt(
+    IUint256Component components,
+    uint256 componentID,
+    Coord memory position
+  ) internal view returns (uint256 entity, bool found) {
+    QueryFragment[] memory fragments = new QueryFragment[](2);
+    fragments[0] = QueryFragment(
+      QueryType.HasValue,
+      IComponent(getAddressById(components, PositionComponentID)),
+      abi.encode(position)
+    );
+    fragments[1] = QueryFragment(QueryType.Has, IComponent(getAddressById(components, componentID)), new bytes(0));
+    uint256[] memory entities = LibQuery.query(fragments);
     if (entities.length == 0) return (0, false);
     return (entities[0], true);
   }

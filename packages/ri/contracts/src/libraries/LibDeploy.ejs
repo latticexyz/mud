@@ -25,6 +25,10 @@ import { <%= facet.name %> } from "../facets/<%= facet.name %>.sol";
 <% components.forEach(component => { -%>
 import { <%- component %> } from "../components/<%- component %>.sol";
 <% }); -%>
+import { PositionComponent } from "../components/PositionComponent.sol";
+
+// Systems
+import { MoveSystem, ID as MoveSystemID } from "../systems/MoveSystem.sol";
 
 // Access Controllers
 import { PersonaAccessController } from "../access/PersonaAccessController.sol";
@@ -67,8 +71,6 @@ library LibDeploy {
 
     console.log("Deployer");
     console.log(_deployer);
-    
-    new World().init();
     
     bool upgrade = _diamond != address(0);
     IDiamondCut.FacetCutAction action = upgrade ? IDiamondCut.FacetCutAction.Replace : IDiamondCut.FacetCutAction.Add;
@@ -136,13 +138,25 @@ library LibDeploy {
     // Deploy each component and transfer ownership to the diamond contract
     if(!_reuseComponents) {
       Component comp;
+
+      console.log("Deploying PositionComponent");
+      comp = new PositionComponent(address(result.world));
+      console.log(address(comp));
+      MoveSystem moveSystem = new MoveSystem(result.world.components());
+      comp.authorizeWriter(address(moveSystem));
+      result.world.registerSystem(address(moveSystem), MoveSystemID);
+      comp.transferOwnership(diamondAddress);
+      
 <% components.forEach(component => { -%>
       console.log("Deploying <%= component %>");
       comp = new <%= component %>(address(result.world));
       console.log(address(comp));
       comp.transferOwnership(diamondAddress);
 <% });%>
-    }
+
+
+    } 
+
     
     // ------------------------
     // Initialize 

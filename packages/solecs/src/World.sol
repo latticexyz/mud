@@ -7,7 +7,7 @@ import { IComponent } from "./interfaces/IComponent.sol";
 import { QueryFragment } from "./interfaces/Query.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { Uint256Component } from "./components/Uint256Component.sol";
-import { addressToEntity, entityToAddress } from "./utils.sol";
+import { addressToEntity, entityToAddress, getIdByAddress, getAddressById } from "./utils.sol";
 import { componentsComponentId, systemsComponentId } from "./constants.sol";
 import { RegisterSystem, ID as registerSystemId, RegisterType } from "./systems/RegisterSystem.sol";
 
@@ -23,7 +23,7 @@ contract World is IWorld {
   constructor() {
     _components = new Uint256Component(address(0), componentsComponentId);
     _systems = new Uint256Component(address(0), systemsComponentId);
-    register = new RegisterSystem(this);
+    register = new RegisterSystem(_components);
     _systems.authorizeWriter(address(register));
     _components.authorizeWriter(address(register));
   }
@@ -111,15 +111,4 @@ contract World is IWorld {
 
     return id;
   }
-}
-
-function getAddressById(Uint256Component registry, uint256 id) view returns (address) {
-  uint256[] memory entities = registry.getEntitiesWithValue(id);
-  require(entities.length != 0, "id not registered");
-  return entityToAddress(entities[0]);
-}
-
-function getIdByAddress(Uint256Component registry, address addr) view returns (uint256) {
-  require(registry.has(addressToEntity(addr)), "address not registered");
-  return registry.getValue(addressToEntity(addr));
 }

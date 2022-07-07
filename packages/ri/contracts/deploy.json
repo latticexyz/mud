@@ -10,7 +10,6 @@
     "MovableComponent",
     "OwnedByComponent",
     "PersonaComponent",
-    "PositionComponent",
     "SpellComponent",
     "StaminaComponent",
     "UntraversableComponent"
@@ -40,10 +39,6 @@
     {
       "name": "PlayerJoinFacet",
       "functions": ["joinGame"]
-    },
-    {
-      "name": "MoveFacet",
-      "functions": ["moveEntity"]
     }
   ]
 }

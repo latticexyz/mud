@@ -3,7 +3,8 @@ pragma solidity >=0.8.0;
 import { ISystem } from "../interfaces/ISystem.sol";
 import { IWorld } from "../interfaces/IWorld.sol";
 import { IUint256Component } from "../interfaces/IUint256Component.sol";
-import { addressToEntity } from "../utils.sol";
+import { addressToEntity, getAddressById } from "../utils.sol";
+import { systemsComponentId } from "../constants.sol";
 
 enum RegisterType {
   Component,
@@ -13,10 +14,10 @@ enum RegisterType {
 uint256 constant ID = uint256(keccak256("world.system.register"));
 
 contract RegisterSystem is ISystem {
-  IWorld world;
+  IUint256Component components;
 
-  constructor(IWorld _world) {
-    world = _world;
+  constructor(IUint256Component _components) {
+    components = _components;
   }
 
   function requirement(
@@ -34,7 +35,9 @@ contract RegisterSystem is ISystem {
     require(id != 0, "invalid id");
     require(addr != address(0), "invalid address");
 
-    IUint256Component registry = registerType == RegisterType.Component ? world.components() : world.systems();
+    IUint256Component registry = registerType == RegisterType.Component
+      ? components
+      : IUint256Component(getAddressById(components, systemsComponentId));
     uint256 entity = addressToEntity(addr);
 
     require(!registry.has(entity), "entity already registered");
