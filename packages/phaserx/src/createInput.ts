@@ -80,9 +80,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   // Right click stream
   const rightClick$ = merge(pointerdown$, pointerup$).pipe(
     filter(() => enabled.current),
-    map<Phaser.Input.Pointer, [boolean, number]>((pointer) => [pointer.rightButtonDown(), Date.now()]), // Map events to whether the left button is down and the current timestamp
-    bufferCount(2, 1), // Store the last two timestamps
-    filter(([prev, now]) => prev[0] && !now[0] && now[1] - prev[1] < 250), // Only care if button was pressed before and is not anymore and it happened within 500ms
+    map<Phaser.Input.Pointer, boolean>((pointer) => pointer.rightButtonDown()), // Map events to whether the right button is down
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer
     filterNullish()
   );
