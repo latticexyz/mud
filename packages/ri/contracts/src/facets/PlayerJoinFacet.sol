@@ -5,6 +5,7 @@ import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
 import { LibPersona } from "../libraries/LibPersona.sol";
 import { LibQuery } from "solecs/LibQuery.sol";
+import { LibBlueprint } from "../libraries/LibBlueprint.sol";
 
 import { World } from "solecs/World.sol";
 import { UsingDiamondOwner } from "../diamond/utils/UsingDiamondOwner.sol";
@@ -28,37 +29,26 @@ contract PlayerJoinFacet is UsingDiamondOwner, UsingAccessControl {
   AppStorage internal s;
 
   function joinGame(Coord calldata position) external {
+    uint256 playerEntity = createPlayerEntity();
+    spawnSoldier(playerEntity, Coord(position.x, position.y));
+    spawnSoldier(playerEntity, Coord(position.x + 1, position.y));
+    spawnSoldier(playerEntity, Coord(position.x - 1, position.y));
+    spawnSoldier(playerEntity, Coord(position.x, position.y + 1));
+    spawnSoldier(playerEntity, Coord(position.x, position.y - 1));
+  }
+
+  function spawnSoldier(uint256 ownerId, Coord memory position) private {
     (, bool foundTargetEntity) = LibUtils.getEntityAt(s.world, position);
     require(!foundTargetEntity, "spot taken fool!");
 
-    uint256 playerEntity = createPlayerEntity();
-    createCreature(playerEntity, Coord(position.x, position.y));
-    createCreature(playerEntity, Coord(position.x + 1, position.y));
-    createCreature(playerEntity, Coord(position.x - 1, position.y));
-    createCreature(playerEntity, Coord(position.x, position.y + 1));
-    createCreature(playerEntity, Coord(position.x, position.y - 1));
-  }
-
-  function createCreature(uint256 ownerId, Coord memory position) private {
-    EntityTypeComponent entityTypeComponent = EntityTypeComponent(s.world.getComponent(EntityTypeComponentID));
     PositionComponent positionComponent = PositionComponent(s.world.getComponent(PositionComponentID));
-    OwnedByComponent ownedByComponent = OwnedByComponent(s.world.getComponent(OwnedByComponentID));
-    StaminaComponent staminaComponent = StaminaComponent(s.world.getComponent(StaminaComponentID));
-    LastActionTurnComponent lastActionTurn = LastActionTurnComponent(s.world.getComponent(LastActionTurnComponentID));
-    MovableComponent movableComponent = MovableComponent(s.world.getComponent(MovableComponentID));
-    HealthComponent healthComponent = HealthComponent(s.world.getComponent(HealthComponentID));
-    AttackComponent attackComponent = AttackComponent(s.world.getComponent(AttackComponentID));
+    LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
+      s.world.getComponent(LastActionTurnComponentID)
+    );
 
-    uint256 entity = s.world.getUniqueEntityId();
-
-    ownedByComponent.set(entity, ownerId);
-    entityTypeComponent.set(entity, uint32(0));
+    uint256 entity = LibBlueprint.createFromSoldierBlueprint(ownerId);
     positionComponent.set(entity, position);
-    staminaComponent.set(entity, Stamina({ current: 0, max: 3, regeneration: 1 }));
-    healthComponent.set(entity, Health({ current: 100_000, max: 100_000 }));
-    attackComponent.set(entity, Attack({ strength: 60_000, range: 1 }));
-    lastActionTurn.set(entity, LibStamina.getCurrentTurn());
-    movableComponent.set(entity);
+    lastActionTurnComponent.set(entity, LibStamina.getCurrentTurn());
   }
 
   function createPlayerEntity() private returns (uint256 playerEntity) {
