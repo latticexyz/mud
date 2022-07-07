@@ -21,39 +21,39 @@ interface ECSEvent {
 const stateUploadCount = 400;
 const gasLimit = 95_000_000;
 const sleepTime = 950;
-let txCount = 0;
+let txCount = 1;
 
-export async function bulkUploadMap() {
+async function bulkUploadMap() {
   const { txQueue } = await setupContracts();
 
-  const components = new Array<BigNumber>();
-  const entities = new Array<BigNumber>();
-  const state = new Array<ECSEvent>();
+  const components: BigNumber[] = [];
+  const entities: BigNumber[] = [];
+  const state: ECSEvent[] = [];
 
   let uploadEntityIndex = -1;
 
   for (let stateIndex = 0; stateIndex < map.state.length; stateIndex++) {
-    const component = map.components[map.state[stateIndex].componentIndex];
-    if (component.name != "position") continue;
+    const { componentIndex, entityIndex, unencodedValue } = map.state[stateIndex];
+    const component = map.components[componentIndex];
     const componentId = BigNumber.from(keccak256(component.unhashedId));
-    let uploadComponentIndex = components.findIndex((obj) => {
-      return obj._hex === componentId._hex;
-    });
-    if (uploadComponentIndex == -1) {
+    let uploadComponentIndex = components.findIndex((obj) => obj._hex === componentId._hex);
+    if (uploadComponentIndex === -1) {
       uploadComponentIndex = components.push(componentId) - 1;
     }
 
-    if (map.state[stateIndex].entityIndex !== uploadEntityIndex) {
-      uploadEntityIndex = entities.push(BigNumber.from(map.state[stateIndex].entityIndex)) - 1;
+    // we assume that states are sorted by entity index, they can only ascend or stay the same
+    // and since entities must be unique, we only add new ones when the index increments
+    if (entityIndex > uploadEntityIndex) {
+      uploadEntityIndex = entities.push(BigNumber.from(entityIndex)) - 1;
     }
 
     state.push({
       component: uploadComponentIndex,
-      entity: uploadEntityIndex as number,
-      value: abi.encode(component.encoding, map.state[stateIndex].unencodedValue as number[]),
+      entity: uploadEntityIndex,
+      value: abi.encode(component.encoding, unencodedValue),
     });
 
-    if (state.length == stateUploadCount) {
+    if (state.length === stateUploadCount) {
       await bulkUpload(txQueue, components, entities, state);
     }
   }
@@ -83,6 +83,4 @@ async function bulkUpload(
   state.splice(0);
 }
 
-bulkUploadMap().then(() => {
-  process.exit();
-});
+bulkUploadMap();
