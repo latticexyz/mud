@@ -3,6 +3,8 @@ pragma solidity >=0.8.0;
 
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { IComponent } from "./interfaces/IComponent.sol";
+import { ISystem } from "./interfaces/ISystem.sol";
+import { systemsComponentId } from "./constants.sol";
 
 function entityToAddress(uint256 entity) pure returns (address) {
   return address(uint160(entity));
@@ -25,4 +27,13 @@ function getIdByAddress(IUint256Component registry, address addr) view returns (
 
 function getComponentById(IUint256Component components, uint256 id) view returns (IComponent) {
   return IComponent(getAddressById(components, id));
+}
+
+function getSystemAddressById(IUint256Component components, uint256 id) view returns (address) {
+  IUint256Component systems = IUint256Component(getAddressById(components, systemsComponentId));
+  return getAddressById(systems, id);
+}
+
+function getSystemById(IUint256Component components, uint256 id) view returns (ISystem) {
+  return ISystem(getSystemAddressById(components, id));
 }

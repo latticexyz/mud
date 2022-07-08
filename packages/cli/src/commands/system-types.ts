@@ -3,7 +3,7 @@ import glob from "glob";
 import type { CommandBuilder } from "yargs";
 import { deferred } from "../utils";
 
-const IDregex = new RegExp(/(?<=uint256 constant ID = uint256\(keccak256\(")(.*)(?="\))/gm);
+const IDregex = new RegExp(/(?<=uint256 constant ID = uint256\(keccak256\(")(.*)(?="\))/);
 
 type Options = Record<string, never>;
 
@@ -38,13 +38,18 @@ export const handler = async (): Promise<void> => {
     ids = matches
       .map((path) => fs.readFileSync(path).toString())
       .map((source, index) => {
-        const id = IDregex.exec(source)?.at(0);
-        if (!id)
+        const regexResult = IDregex.exec(source);
+        const id = regexResult && regexResult[0];
+        if (!id) {
+          console.log("Source:", source);
+          console.log("ID:", id);
+          console.log("Regex:", IDregex, regexResult);
           throw new Error(
             "No ID found for" +
               matches[index] +
               ". Make sure your system source file includes a ID definition (uint256 constant ID = uint256(keccak256(<ID>));)"
           );
+        }
         return id;
       });
 

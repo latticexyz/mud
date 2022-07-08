@@ -138,7 +138,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     const entityId = world.entities[entity];
 
     console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entityId}`);
-    // await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entityId), component.metadata.contractId, data);
+    await systems["ember.system.componentDev"].executeTyped(
+      component.metadata.contractId,
+      BigNumber.from(entityId),
+      data
+    );
   }
 
   async function joinGame(position: WorldCoord) {

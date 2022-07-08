@@ -16,7 +16,7 @@ exports.handler = exports.builder = exports.desc = exports.command = void 0;
 const fs_1 = __importDefault(require("fs"));
 const glob_1 = __importDefault(require("glob"));
 const utils_1 = require("../utils");
-const IDregex = new RegExp(/(?<=uint256 constant ID = uint256\(keccak256\(")(.*)(?="\))/gm);
+const IDregex = new RegExp(/(?<=uint256 constant ID = uint256\(keccak256\(")(.*)(?="\))/);
 exports.command = "system-types";
 exports.desc = "Generates system type file. Note: assumes ABIs of all systems in ./abi and typechain generated types in ./types/ethers-contracts";
 const builder = (yargs) => yargs.options({
@@ -42,12 +42,16 @@ const handler = () => __awaiter(void 0, void 0, void 0, function* () {
         ids = matches
             .map((path) => fs_1.default.readFileSync(path).toString())
             .map((source, index) => {
-            var _a;
-            const id = (_a = IDregex.exec(source)) === null || _a === void 0 ? void 0 : _a.at(0);
-            if (!id)
+            const regexResult = IDregex.exec(source);
+            const id = regexResult && regexResult[0];
+            if (!id) {
+                console.log("Source:", source);
+                console.log("ID:", id);
+                console.log("Regex:", IDregex, regexResult);
                 throw new Error("No ID found for" +
                     matches[index] +
                     ". Make sure your system source file includes a ID definition (uint256 constant ID = uint256(keccak256(<ID>));)");
+            }
             return id;
         });
         abis = systems.map((system) => `../abi/${system}.json`);

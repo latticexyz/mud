@@ -13,6 +13,8 @@
     "PlayerComponent"
   ],
   "systems": [
+    { "name": "ComponentDevSystem", "writeAccess": ["*"] },
+    { "name": "BulkSetStateSystem" },
     { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
     {
