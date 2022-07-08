@@ -13,11 +13,9 @@
     "directory": "packages/cli"
   },
   "scripts": {
-    "prepare": "chmod u+x build/cli.js",
-    "globalinstall": "yarn build && yarn prepare && yarn link && yarn global add @latticexyz/cli@link:./",
-    "build": "rimraf build && tsc -p . && yarn prepare",
-    "start": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/cli.ts",
-    "link:bin": "export PATH=\"$(yarn global bin):$PATH\""
+    "prepare": "yarn build",
+    "globalinstall": "yarn build && yarn prepare && npm link",
+    "build": "rimraf build && tsc -p . && chmod u+x build/cli.js"
   },
   "devDependencies": {
     "@types/clear": "^0.1.2",
