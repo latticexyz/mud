@@ -8,5 +8,5 @@ interface ISystem {
   function requirement(bytes memory arguments) external view returns (bytes memory);
 
   // Function to execute the system. Should use the requirement function internally.
-  function execute(bytes memory arguments) external;
+  function execute(bytes memory arguments) external returns (bytes memory);
 }

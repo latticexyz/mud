@@ -19,7 +19,7 @@ uint256 constant ID = uint256(keccak256("ember.system.move"));
 contract MoveSystem is ISystem {
   IUint256Component components;
 
-  constructor(IUint256Component _components) {
+  constructor(IUint256Component _components, IWorld) {
     components = _components;
   }
 
@@ -40,7 +40,7 @@ contract MoveSystem is ISystem {
     return abi.encode(entity, targetPosition, positionComponent);
   }
 
-  function execute(bytes memory arguments) public {
+  function execute(bytes memory arguments) public returns (bytes memory) {
     (uint256 entity, Coord memory targetPosition, PositionComponent positionComponent) = abi.decode(
       requirement(arguments),
       (uint256, Coord, PositionComponent)
@@ -53,7 +53,7 @@ contract MoveSystem is ISystem {
     return requirement(abi.encode(entity, targetPosition));
   }
 
-  function executeTyped(uint256 entity, Coord memory targetPosition) public {
+  function executeTyped(uint256 entity, Coord memory targetPosition) public returns (bytes memory) {
     return execute(abi.encode(entity, targetPosition));
   }
 }

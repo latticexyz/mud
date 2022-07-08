@@ -13,7 +13,21 @@
     "SpellComponent",
     "StaminaComponent",
     "UntraversableComponent",
-    "PositionComponent"
+    "PositionComponent",
+    "PlayerComponent"
   ],
-  "systems": [{ "name": "MoveSystem", "writeAccess": ["PositionComponent"] }]
+  "systems": [
+    { "name": "MoveSystem", "writeAccess": ["PositionComponent"] },
+    {
+      "name": "PlayerJoinSystem",
+      "writeAccess": [
+        "OwnedByComponent",
+        "EntityTypeComponent",
+        "PositionComponent",
+        "StaminaComponent",
+        "MovableComponent",
+        "PlayerComponent"
+      ]
+    }
+  ]
 }

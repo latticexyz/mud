@@ -61,7 +61,8 @@ library LibDeploy {
     IUint256Component components = result.world.components();
 <% systems.forEach(system => { -%>
       console.log("Deploying <%= system.name %>");
-      system = new <%= system.name %>(components);
+      system = new <%= system.name %>(components, result.world);
+      result.world.registerSystem(address(system), <%= system.name %>ID);
       console.log(address(system));
 
 <% system.writeAccess.forEach(component => { -%>

@@ -16,7 +16,7 @@ uint256 constant ID = uint256(keccak256("world.system.register"));
 contract RegisterSystem is ISystem {
   IUint256Component components;
 
-  constructor(IUint256Component _components) {
+  constructor(IUint256Component _components, IWorld) {
     components = _components;
   }
 
@@ -50,11 +50,11 @@ contract RegisterSystem is ISystem {
     RegisterType registerType,
     address addr,
     uint256 id
-  ) public {
+  ) public returns (bytes memory) {
     return execute(abi.encode(registerType, addr, id));
   }
 
-  function execute(bytes memory arguments) public {
+  function execute(bytes memory arguments) public returns (bytes memory) {
     (IUint256Component registry, uint256 entity, uint256 id) = abi.decode(
       requirement(arguments),
       (IUint256Component, uint256, uint256)

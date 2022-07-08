@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
+import { IComponent } from "./interfaces/IComponent.sol";
 
 function entityToAddress(uint256 entity) pure returns (address) {
   return address(uint160(entity));
@@ -20,4 +21,8 @@ function getAddressById(IUint256Component registry, uint256 id) view returns (ad
 function getIdByAddress(IUint256Component registry, address addr) view returns (uint256) {
   require(registry.has(addressToEntity(addr)), "address not registered");
   return registry.getValue(addressToEntity(addr));
+}
+
+function getComponentById(IUint256Component components, uint256 id) view returns (IComponent) {
+  return IComponent(getAddressById(components, id));
 }

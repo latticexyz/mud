@@ -142,6 +142,7 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
     value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
     component: Component;
   }>();
+
   // Channel through update events from the original component if there are no overrides
   component.update$.pipe(filter((e) => !overriddenEntityValues.get(e.entity))).subscribe(update$);
 

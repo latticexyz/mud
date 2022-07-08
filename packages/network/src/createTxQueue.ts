@@ -4,8 +4,9 @@ import { autorun, computed, IComputedValue, IObservableValue, observable, runInA
 import { mapObject, deferred, uuid, awaitValue, cacheUntilReady } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
 import { TransactionResponse } from "@ethersproject/providers";
-import { Contracts, Network, TxQueue } from "./types";
+import { Contracts, TxQueue } from "./types";
 import { ConnectionState } from "./createProvider";
+import { Network } from "./createNetwork";
 
 function createPriorityQueue<T>() {
   const queue = new Map<string, { element: T; priority: number }>();

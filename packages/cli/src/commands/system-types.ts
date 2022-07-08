@@ -26,7 +26,7 @@ export const handler = async (): Promise<void> => {
   let ids: string[] = [];
   let typePaths: string[] = [];
 
-  const systemsPath = `${wd}/src/systems/*`;
+  const systemsPath = `${wd}/src/systems/*.sol`;
 
   const [resolve, , promise] = deferred<void>();
   glob(systemsPath, {}, (_, matches) => {
@@ -67,7 +67,7 @@ export const handler = async (): Promise<void> => {
 ${typePaths.map((path, index) => `import { ${systems[index]} } from "${path.replace(".ts", "")}";`).join("\n")}
  
 export type SystemTypes = {
-  ${systems.map((system, index) => `"${ids[index]}": ${system};`)}
+${systems.map((system, index) => `  "${ids[index]}": ${system};`).join("\n")}
 };
 `;
 
@@ -75,7 +75,7 @@ export type SystemTypes = {
 ${abis.map((path, index) => `import { abi as ${systems[index]} } from "${path}";`).join("\n")}
 
 export const SystemAbis = {
-  ${systems.map((system, index) => `"${ids[index]}": ${system},`).join("\n")}
+${systems.map((system, index) => `  "${ids[index]}": ${system},`).join("\n")}
 };
 `;
 

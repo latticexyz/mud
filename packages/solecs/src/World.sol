@@ -23,7 +23,7 @@ contract World is IWorld {
   constructor() {
     _components = new Uint256Component(address(0), componentsComponentId);
     _systems = new Uint256Component(address(0), systemsComponentId);
-    register = new RegisterSystem(_components);
+    register = new RegisterSystem(_components, this);
     _systems.authorizeWriter(address(register));
     _components.authorizeWriter(address(register));
   }

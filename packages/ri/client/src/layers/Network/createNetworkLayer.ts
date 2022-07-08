@@ -57,10 +57,10 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     Movable: defineMovableComponent(world, keccak256("ember.component.movableComponent")),
     OwnedBy: defineOwnedByComponent(world, keccak256("ember.component.ownedByComponent")),
     Untraversable: defineUntraversableComponent(world, keccak256("ember.component.untraversableComponent")),
-    Persona: defineComponent(
+    Player: defineComponent(
       world,
-      { value: Type.String },
-      { id: "Persona", metadata: { contractId: keccak256("ember.component.personaComponent") } }
+      { value: Type.Boolean },
+      { id: "Player", metadata: { contractId: keccak256("ember.component.playerComponent") } }
     ),
     // Stamina
     Stamina: defineComponent(
@@ -85,9 +85,9 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.movableComponent")]: "Movable",
     [keccak256("ember.component.ownedByComponent")]: "OwnedBy",
     [keccak256("ember.component.untraversableComponent")]: "Untraversable",
-    [keccak256("ember.component.personaComponent")]: "Persona",
     [keccak256("ember.component.lastActionTurnComponent")]: "LastActionTurn",
     [keccak256("ember.component.staminaComponent")]: "Stamina",
+    [keccak256("ember.component.playerComponent")]: "Player",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -143,12 +143,13 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
 
   async function joinGame(position: WorldCoord) {
     console.log(`Joining game at position ${JSON.stringify(position)}`);
+    return systems["ember.system.playerJoin"].executeTyped(position, { gasPrice: 0 });
     // return txQueue.Game.joinGame(position);
   }
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    systems["ember.system.move"].executeTyped(BigNumber.from(entity), targetPosition);
+    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), targetPosition, { gasPrice: 0 });
     // return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition);
   }
 
@@ -162,10 +163,10 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     components,
     constants,
     txQueue,
+    systems,
     txReduced$,
     mappings,
     startSync,
-    personaId: 0,
     network,
     api: {
       setContractComponentValue,

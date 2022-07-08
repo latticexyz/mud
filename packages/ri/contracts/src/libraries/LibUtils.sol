@@ -50,6 +50,24 @@ library LibUtils {
     return dx + dy;
   }
 
+  // Using componentComponent
+  function getEntityAt(IUint256Component components, Coord memory position)
+    internal
+    view
+    returns (uint256, bool found)
+  {
+    QueryFragment[] memory fragments = new QueryFragment[](1);
+    fragments[0] = QueryFragment(
+      QueryType.HasValue,
+      IComponent(getAddressById(components, PositionComponentID)),
+      abi.encode(position)
+    );
+    uint256[] memory entities = LibQuery.query(fragments);
+    if (entities.length == 0) return (0, false);
+    return (entities[0], true);
+  }
+
+  // Using world
   function getEntityAt(World world, Coord memory position) internal view returns (uint256, bool found) {
     WorldQueryFragment[] memory fragments = new WorldQueryFragment[](1);
     fragments[0] = WorldQueryFragment(QueryType.HasValue, PositionComponentID, abi.encode(position));
@@ -58,6 +76,7 @@ library LibUtils {
     return (entities[0], true);
   }
 
+  // Using componentComponent
   function getEntityWithAt(
     IUint256Component components,
     uint256 componentID,
@@ -75,6 +94,7 @@ library LibUtils {
     return (entities[0], true);
   }
 
+  // Using world
   function getEntityWithAt(
     World world,
     uint256 componentID,
