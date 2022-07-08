@@ -10,6 +10,7 @@ export {
   chunkCoordToTileCoord,
   chunkToPixelCoord,
   pixelToChunkCoord,
+  addCoords,
   coordEq,
 } from "./coords";
 export { load } from "./load";

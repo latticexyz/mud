@@ -29,6 +29,13 @@ export function coordEq(a?: Coord, b?: Coord) {
   return a.x === b.x && a.y === b.y;
 }
 
+export function addCoords(a: Coord, b: Coord) {
+  return {
+    x: a.x + b.x,
+    y: a.y + b.y,
+  };
+}
+
 export function pixelToChunkCoord(pixelCoord: PixelCoord, chunkSize: number): ChunkCoord {
   return { x: Math.floor(pixelCoord.x / chunkSize), y: Math.floor(pixelCoord.y / chunkSize) };
 }

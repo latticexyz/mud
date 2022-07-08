@@ -32,5 +32,11 @@ export function createVirtualTilemap<TileKeys extends number, LayerKeys extends 
     }
   }
 
-  return { ...chunkedTilemap, putTileAt, tiles };
+  function getTileAt(coord: WorldCoord, layer?: LayerKeys) {
+    // Query virtual tilemap
+    const tileKey = tiles[layer || defaultLayer].get(coord);
+    return tileKey;
+  }
+
+  return { ...chunkedTilemap, putTileAt, getTileAt, tiles };
 }

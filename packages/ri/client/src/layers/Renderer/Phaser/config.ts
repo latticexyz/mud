@@ -41,6 +41,7 @@ export const config = {
           layers: {
             layers: {
               Background: { tilesets: ["Default"], hasHueTintShader: true },
+              Foreground: { tilesets: ["Default"], hasHueTintShader: true },
             },
             defaultLayer: "Background",
           },

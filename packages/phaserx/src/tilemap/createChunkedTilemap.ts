@@ -145,6 +145,15 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
     }
   }
 
+  function getTileAt(coord: WorldCoord, layer?: string) {
+    const map = getMapAtTileCoord(coord);
+    const tile = map.getTileAt(mod(coord.x, chunkTileSize.x), mod(coord.y, chunkTileSize.y), undefined, layer);
+    if (tile == null) {
+      throw new Error("No tile here");
+    }
+    return tile.index as TileKeys;
+  }
+
   function renderChunk(chunkCoord: ChunkCoord) {
     if (!visible.current) return;
     const map = getMapAtChunkCoord(chunkCoord);
@@ -190,5 +199,5 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
     }
   }
 
-  return { size, putTileAt, dispose, setVisible, visible, tileWidth, tileHeight };
+  return { size, putTileAt, getTileAt, dispose, setVisible, visible, tileWidth, tileHeight };
 }
