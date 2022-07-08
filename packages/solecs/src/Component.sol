@@ -10,7 +10,6 @@ import { IComponent } from "./interfaces/IComponent.sol";
 import { Set } from "./Set.sol";
 import { MapSet } from "./MapSet.sol";
 import { LibTypes } from "./LibTypes.sol";
-import { console } from "forge-std/console.sol";
 
 abstract contract Component is IComponent {
   address public world;
