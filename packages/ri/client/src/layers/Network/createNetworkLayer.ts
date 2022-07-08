@@ -93,6 +93,11 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "IsBlueprint", metadata: { contractId: keccak256("ember.component.isBlueprintComponent") } }
     ),
+    BlueprintComponents: defineComponent(
+      world,
+      { componentIds: Type.StringArray },
+      { id: "BlueprintComponents", metadata: { contractId: keccak256("ember.component.blueprintComponentsComponent") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -110,6 +115,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     [keccak256("ember.component.attackComponent")]: "Attack",
     [keccak256("ember.component.fromBlueprintComponent")]: "FromBlueprint",
     [keccak256("ember.component.isBlueprintComponent")]: "IsBlueprint",
+    [keccak256("ember.component.blueprintComponentsComponent")]: "BlueprintComponents",
   };
 
   const contractConfig: SetupContractConfig = {

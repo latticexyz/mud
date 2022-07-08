@@ -18,13 +18,13 @@ contract StaminaComponent is Component {
     values = new LibTypes.SchemaValue[](3);
 
     keys[0] = "current";
-    values[0] = LibTypes.SchemaValue.UINT32;
+    values[0] = LibTypes.SchemaValue.INT32;
 
     keys[1] = "max";
-    values[1] = LibTypes.SchemaValue.UINT32;
+    values[1] = LibTypes.SchemaValue.INT32;
 
     keys[2] = "regeneration";
-    values[2] = LibTypes.SchemaValue.UINT32;
+    values[2] = LibTypes.SchemaValue.INT32;
   }
 
   function set(uint256 entity, Stamina calldata value) public {
