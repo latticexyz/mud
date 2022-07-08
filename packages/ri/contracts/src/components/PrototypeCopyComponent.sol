@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 import "std-contracts/components/Uint256Component.sol";
 
-uint256 constant ID = uint256(keccak256("ember.component.fromBlueprintComponent"));
+uint256 constant ID = uint256(keccak256("ember.component.prototypeCopy"));
 
-contract FromBlueprintComponent is Uint256Component {
+contract PrototypeCopyComponent is Uint256Component {
   constructor(address world) Uint256Component(world, ID) {}
 }

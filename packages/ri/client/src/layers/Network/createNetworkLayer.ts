@@ -91,15 +91,15 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { strength: Type.Number, range: Type.Number },
       { id: "Attack", metadata: { contractId: keccak256("ember.component.attackComponent") } }
     ),
-    FromBlueprint: defineComponent(
+    PrototypeCopy: defineComponent(
       world,
       { value: Type.Entity },
-      { id: "FromBlueprint", metadata: { contractId: keccak256("ember.component.fromBlueprintComponent") } }
+      { id: "PrototypeCopy", metadata: { contractId: keccak256("ember.component.prototypeCopy") } }
     ),
-    IsBlueprint: defineComponent(
+    Prototype: defineComponent(
       world,
-      { value: Type.Boolean },
-      { id: "IsBlueprint", metadata: { contractId: keccak256("ember.component.isBlueprintComponent") } }
+      { value: Type.StringArray },
+      { id: "Prototype", metadata: { contractId: keccak256("ember.component.prototype") } }
     ),
   };
 
@@ -118,8 +118,8 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.playerComponent")]: "Player",
     [keccak256("ember.component.healthComponent")]: "Health",
     [keccak256("ember.component.attackComponent")]: "Attack",
-    [keccak256("ember.component.fromBlueprintComponent")]: "FromBlueprint",
-    [keccak256("ember.component.isBlueprintComponent")]: "IsBlueprint",
+    [keccak256("ember.component.prototype")]: "Prototype",
+    [keccak256("ember.component.prototypeCopy")]: "PrototypeCopy",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -189,7 +189,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
 
   async function attackEntity(attacker: EntityID, defender: EntityID) {
     console.log(`Entity ${attacker} attacking ${defender}.`);
-    return systems["ember.system.attack"].executeTyped(BigNumber.from(attacker), BigNumber.from(defender));
+    return systems["ember.system.combat"].executeTyped(BigNumber.from(attacker), BigNumber.from(defender));
   }
 
   // Constants (load from contract later)

@@ -2,10 +2,8 @@
   "components": [
     "AttackComponent",
     "EntityTypeComponent",
-    "FromBlueprintComponent",
     "GameConfigComponent",
     "HealthComponent",
-    "IsBlueprintComponent",
     "LastActionTurnComponent",
     "MaxDistanceComponent",
     "MineableComponent",
@@ -14,7 +12,9 @@
     "StaminaComponent",
     "UntraversableComponent",
     "PositionComponent",
-    "PlayerComponent"
+    "PlayerComponent",
+    "PrototypeComponent",
+    "PrototypeCopyComponent"
   ],
   "systems": [
     { "name": "ComponentDevSystem", "writeAccess": ["*"] },
@@ -22,19 +22,7 @@
     { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "CombatSystem", "writeAccess": ["HealthComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
-    {
-      "name": "BlueprintSystem",
-      "writeAccess": [
-        "EntityTypeComponent",
-        "OwnedByComponent",
-        "StaminaComponent",
-        "LastActionTurnComponent",
-        "MovableComponent",
-        "HealthComponent",
-        "AttackComponent",
-        "IsBlueprintComponent"
-      ]
-    },
+    { "name": "PrototypeSystem", "writeAccess": ["*"], "initialize": "new bytes(0)" },
     {
       "name": "PlayerJoinSystem",
       "writeAccess": [

@@ -4,7 +4,7 @@ import { ISystem } from "solecs/interfaces/ISystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
-import { getAddressById, getComponentById, addressToEntity } from "solecs/utils.sol";
+import { getAddressById, getComponentById, addressToEntity, getSystemAddressById } from "solecs/utils.sol";
 
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
@@ -19,6 +19,10 @@ import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../componen
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
+
+import { PrototypeSystem, ID as PrototypeSystemID, InstanceType } from "./PrototypeSystem.sol";
+
+import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.playerJoin"));
 
@@ -83,7 +87,11 @@ contract PlayerJoinSystem is ISystem {
   function spawnSoldier(uint256 ownerId, Coord memory position) private {
     uint256 entity = world.getUniqueEntityId();
 
-    // TODO: use blueprint here (to be added in the next rebase PR);
+    PrototypeSystem(getSystemAddressById(components, PrototypeSystemID)).executeTyped(
+      SoldierID,
+      ownerId,
+      InstanceType.Copy
+    );
 
     PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
 
