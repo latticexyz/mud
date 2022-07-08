@@ -1,10 +1,8 @@
 {
   "components": [
-    "EmbodiedSystemArgumentComponent",
     "EntityTypeComponent",
     "GameConfigComponent",
     "LastActionTurnComponent",
-    "LearnedSpellsComponent",
     "MaxDistanceComponent",
     "MineableComponent",
     "MovableComponent",
@@ -17,7 +15,8 @@
     "PlayerComponent"
   ],
   "systems": [
-    { "name": "MoveSystem", "writeAccess": ["PositionComponent"] },
+    { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
+    { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
     {
       "name": "PlayerJoinSystem",
       "writeAccess": [
@@ -26,8 +25,10 @@
         "PositionComponent",
         "StaminaComponent",
         "MovableComponent",
-        "PlayerComponent"
+        "PlayerComponent",
+        "LastActionTurnComponent"
       ]
     }
-  ]
+  ],
+  "initialize": ["GameConfigSystem"]
 }

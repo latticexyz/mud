@@ -48,8 +48,7 @@ library LibDeploy {
       // Deploy components
     if(!_reuseComponents) {
       Component comp;
-      
-<% components.forEach(component => { -%>
+<% components.forEach(component => { %>
       console.log("Deploying <%= component %>");
       comp = new <%= component %>(address(result.world));
       console.log(address(comp));
@@ -59,15 +58,17 @@ library LibDeploy {
     // Deploy systems
     ISystem system; 
     IUint256Component components = result.world.components();
-<% systems.forEach(system => { -%>
-      console.log("Deploying <%= system.name %>");
-      system = new <%= system.name %>(components, result.world);
-      result.world.registerSystem(address(system), <%= system.name %>ID);
-      console.log(address(system));
-
+<% systems.forEach(system => { %>
+    console.log("Deploying <%= system.name %>");
+    system = new <%= system.name %>(components, result.world);
+    result.world.registerSystem(address(system), <%= system.name %>ID);
 <% system.writeAccess.forEach(component => { -%>
-      authorizeWriter(components, <%= component %>ID, address(system));
-<% });%>
+    authorizeWriter(components, <%= component %>ID, address(system));
+<% });-%>
+<% if(system.initialize) { -%>
+    system.execute(<%= system.initialize -%>);
+<% } -%>
+    console.log(address(system));
 <% });%>
   }
   

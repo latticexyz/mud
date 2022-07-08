@@ -1,28 +1,27 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import { LibAppStorage, AppStorage } from "./LibAppStorage.sol";
+import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import { getAddressById } from "solecs/utils.sol";
 
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
-import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
-import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
+import { StaminaComponent, Stamina } from "../components/StaminaComponent.sol";
+import { LastActionTurnComponent } from "../components/LastActionTurnComponent.sol";
 
 library LibStamina {
-  function s() internal pure returns (AppStorage storage) {
-    return LibAppStorage.diamondStorage();
-  }
+  function modifyStamina(
+    StaminaComponent staminaComponent,
+    LastActionTurnComponent lastActionTurnComponent,
+    GameConfigComponent gameConfigComponent,
+    uint256 entity,
+    uint32 amount
+  ) internal {
+    require(staminaComponent.has(entity), "entity has no stamina");
+    require(lastActionTurnComponent.has(entity), "entity has no last action turn");
 
-  function reduceStamina(uint256 entity, uint32 amount) public {
-    StaminaComponent staminaComponent = StaminaComponent(s().world.getComponent(StaminaComponentID));
-    require(staminaComponent.has(entity), "entity does not have stamina");
-
-    LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
-      s().world.getComponent(LastActionTurnComponentID)
-    );
-    require(lastActionTurnComponent.has(entity), "entity has no LastActionTurn");
-
+    uint32 currentTurn = getCurrentTurn(gameConfigComponent);
     Stamina memory stamina = staminaComponent.getValue(entity);
-    uint32 currentTurn = getCurrentTurn();
+
     uint32 staminaSinceLastAction = uint32(
       (currentTurn - lastActionTurnComponent.getValue(entity)) * stamina.regeneration
     );
@@ -41,8 +40,7 @@ library LibStamina {
     );
   }
 
-  function getCurrentTurn() public view returns (uint32) {
-    GameConfigComponent gameConfigComponent = GameConfigComponent(s().world.getComponent(GameConfigComponentID));
+  function getCurrentTurn(GameConfigComponent gameConfigComponent) internal view returns (uint32) {
     GameConfig memory gameConfig = gameConfigComponent.getValue(GodID);
 
     uint256 secondsSinceGameStart = block.timestamp - gameConfig.startTime;

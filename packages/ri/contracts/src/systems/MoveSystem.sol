@@ -6,11 +6,13 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 
-// import { LibECS } from "../libraries/LibECS.sol";
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
+import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
+import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
+import { GameConfigComponent, ID as GameConfigComponentID } from "../components/GameConfigComponent.sol";
 import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 
@@ -37,16 +39,37 @@ contract MoveSystem is ISystem {
     (, bool foundTargetEntity) = LibUtils.getEntityWithAt(components, UntraversableComponentID, targetPosition);
     require(!foundTargetEntity, "entity blocking intended direction");
 
-    return abi.encode(entity, targetPosition, positionComponent);
+    StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
+    require(staminaComponent.has(entity), "entity has no stamina");
+
+    LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
+      getAddressById(components, LastActionTurnComponentID)
+    );
+    require(lastActionTurnComponent.has(entity), "entity has no last action turn");
+
+    return abi.encode(entity, targetPosition, positionComponent, staminaComponent, lastActionTurnComponent);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (uint256 entity, Coord memory targetPosition, PositionComponent positionComponent) = abi.decode(
-      requirement(arguments),
-      (uint256, Coord, PositionComponent)
-    );
+    (
+      uint256 entity,
+      Coord memory targetPosition,
+      PositionComponent positionComponent,
+      StaminaComponent staminaComponent,
+      LastActionTurnComponent lastActionTurnComponent
+    ) = abi.decode(
+        requirement(arguments),
+        (uint256, Coord, PositionComponent, StaminaComponent, LastActionTurnComponent)
+      );
     positionComponent.set(entity, targetPosition);
-    // LibStamina.reduceStamina(entity, 1);
+
+    LibStamina.modifyStamina(
+      staminaComponent,
+      lastActionTurnComponent,
+      GameConfigComponent(getAddressById(components, GameConfigComponentID)),
+      entity,
+      1
+    );
   }
 
   function requirementTyped(uint256 entity, Coord memory targetPosition) public view returns (bytes memory) {

@@ -6,14 +6,11 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById, getComponentById, addressToEntity } from "solecs/utils.sol";
 
-// import { LibECS } from "../libraries/LibECS.sol";
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
 
 import { PlayerComponent, ID as PlayerComponentID } from "../components/PlayerComponent.sol";
-
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
-import { PersonaComponent, ID as PersonaComponentID } from "../components/PersonaComponent.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
 import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
@@ -79,8 +76,10 @@ contract PlayerJoinSystem is ISystem {
       entity,
       Stamina({ current: 0, max: 3, regeneration: 1 })
     );
-    // TODO: Fix stamina
-    // getComponentById(components, LastActionTurnComponentID).set(entity, LibStamina.getCurrentTurn());
+    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
+      entity,
+      LibStamina.getCurrentTurn(GameConfigComponent(getAddressById(components, GameConfigComponentID)))
+    );
     MovableComponent(getAddressById(components, MovableComponentID)).set(entity);
   }
 }
