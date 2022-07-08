@@ -1,6 +1,6 @@
 import { Has, getComponentValueStrict, defineEnterSystem, Not } from "@latticexyz/recs";
 import { EntityTypes } from "../../../../Network";
-import { Tileset } from "../../tilesets/overworldTileset";
+import { TileAnimationKey, Tileset } from "../../tilesets/overworldTileset";
 import { PhaserLayer } from "../../types";
 
 const entityTypeToTile = {
@@ -8,6 +8,10 @@ const entityTypeToTile = {
   [EntityTypes.Mountain]: Tileset.PlainRock1,
   [EntityTypes.River]: Tileset.Water,
 } as { [key in EntityTypes]: Tileset };
+
+const entityTypeToAnimation = {
+  [EntityTypes.River]: TileAnimationKey.Water,
+} as { [key in EntityTypes]: TileAnimationKey };
 
 /**
  * The Map system handles rendering the phaser tilemap
@@ -62,7 +66,9 @@ export function createMapSystem(layer: PhaserLayer) {
       const coord = getComponentValueStrict(Position, update.entity);
       const type = getComponentValueStrict(EntityType, update.entity);
       const tile = entityTypeToTile[type.value as EntityTypes];
+      const animation = entityTypeToAnimation[type.value as EntityTypes];
       if (!tile) return;
+      if (animation) Main.putAnimationAt(coord, animation);
 
       Main.putTileAt(coord, tile);
 

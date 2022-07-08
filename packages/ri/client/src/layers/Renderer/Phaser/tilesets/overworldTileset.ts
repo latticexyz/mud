@@ -9,7 +9,6 @@ export enum Tileset {
   Tree8 = 30,
   Plain = 38,
   Grass = 40,
-  Water = 41,
   Brick1 = 42,
   SnowTree1 = 45,
   SnowTree2 = 46,
@@ -25,12 +24,13 @@ export enum Tileset {
   PlainRock1 = 62,
   PlainRock2 = 63,
   Brick2 = 64,
+  Water = 683,
 }
 export enum TileAnimationKey {
   Water = "Water",
 }
 export const TileAnimations: { [key in TileAnimationKey]: number[] } = {
-  [TileAnimationKey.Water]: [684, 685, 686, 687, 688, 689, 690],
+  [TileAnimationKey.Water]: [683, 684, 685, 686, 687, 688, 689, 690],
 };
 export enum WangSetKey {
   Road = "Road",

@@ -20,6 +20,11 @@ exports.builder = builder;
 const handler = (argv) => __awaiter(void 0, void 0, void 0, function* () {
     const { repo, commitHash } = argv;
     console.log("Syncing art repo from", repo);
+    const clean = yield (0, utils_1.exec)(`git diff --quiet --exit-code`);
+    if (!clean) {
+        console.log("Directory is not clean! Please git add and commit");
+        process.exit(0);
+    }
     console.log("Cloning...");
     yield (0, utils_1.exec)(`git clone ${repo} _artmudtemp`);
     if (commitHash) {
@@ -33,6 +38,8 @@ const handler = (argv) => __awaiter(void 0, void 0, void 0, function* () {
     yield (0, utils_1.exec)(`cp -r _artmudtemp/types/ src/layers/Renderer/Phaser/tilesets/`);
     console.log("Cleaning up...");
     yield (0, utils_1.exec)(`rm -rf _artmudtemp`);
+    console.log("Committing...");
+    yield (0, utils_1.exec)(`git add src/public && git add src/layers/Renderer && git commit -m "Adding art from ${repo}${commitHash ? " with hash " + commitHash : ""}"`);
     process.exit(0);
 });
 exports.handler = handler;

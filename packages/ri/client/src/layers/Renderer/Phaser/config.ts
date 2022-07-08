@@ -13,6 +13,8 @@ import mountainTileset from "../assets/tilesets/mountain-tileset.png";
 import { Tileset as OverworldTileset } from "./tilesets/overworldTileset";
 import { TileAnimations as OverworldTileAnimations } from "./tilesets/overworldTileset";
 
+const ANIMATION_INTERVAL = 200;
+
 export const config = {
   sceneConfig: {
     [Scenes.Main]: defineSceneConfig({
@@ -34,7 +36,7 @@ export const config = {
           tileWidth: TILE_WIDTH,
           tileHeight: TILE_HEIGHT,
           backgroundTile: [OverworldTileset.Brick1],
-          animationInterval: 100,
+          animationInterval: ANIMATION_INTERVAL,
           tileAnimations: OverworldTileAnimations,
           layers: {
             layers: {
@@ -48,7 +50,8 @@ export const config = {
           tileWidth: TILE_WIDTH * 4,
           tileHeight: TILE_HEIGHT * 4,
           backgroundTile: [OverworldTileset.Brick1],
-          animationInterval: 100,
+          animationInterval: ANIMATION_INTERVAL,
+          tileAnimations: OverworldTileAnimations,
           layers: {
             layers: {
               Background: { tilesets: ["Default"] },
@@ -61,7 +64,8 @@ export const config = {
           tileWidth: TILE_WIDTH * 16,
           tileHeight: TILE_HEIGHT * 16,
           backgroundTile: [OverworldTileset.Brick1],
-          animationInterval: 100,
+          animationInterval: ANIMATION_INTERVAL,
+          tileAnimations: OverworldTileAnimations,
           layers: {
             layers: {
               Background: { tilesets: ["Default"] },

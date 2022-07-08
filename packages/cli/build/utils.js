@@ -29,7 +29,7 @@ exports.deferred = deferred;
 /**
  * Await execution of bash scripts
  * @param command Bash script to execute
- * @returns Promise that resolves when script finished executing
+ * @returns Promise that resolves with exit code when script finished executing
  */
 function exec(command) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -41,7 +41,7 @@ function exec(command) {
             }
             console.log(stdout);
         });
-        child.on("close", () => resolve());
+        child.on("exit", (code) => resolve(code !== null && code !== void 0 ? code : 0));
         return promise;
     });
 }
