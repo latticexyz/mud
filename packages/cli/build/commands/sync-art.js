@@ -21,7 +21,7 @@ const handler = (argv) => __awaiter(void 0, void 0, void 0, function* () {
     const { repo, commitHash } = argv;
     console.log("Syncing art repo from", repo);
     const clean = yield (0, utils_1.exec)(`git diff --quiet --exit-code`);
-    if (!clean) {
+    if (clean !== 0) {
         console.log("Directory is not clean! Please git add and commit");
         process.exit(0);
     }
@@ -39,7 +39,7 @@ const handler = (argv) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Cleaning up...");
     yield (0, utils_1.exec)(`rm -rf _artmudtemp`);
     console.log("Committing...");
-    yield (0, utils_1.exec)(`git add src/public && git add src/layers/Renderer && git commit -m "Adding art from ${repo}${commitHash ? " with hash " + commitHash : ""}"`);
+    yield (0, utils_1.exec)(`git add src/public && git add src/layers/Renderer && git commit -m "feat(art): adding art from ${repo}"`);
     process.exit(0);
 });
 exports.handler = handler;

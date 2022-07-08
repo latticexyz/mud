@@ -18,7 +18,7 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const { repo, commitHash } = argv;
   console.log("Syncing art repo from", repo);
   const clean = await exec(`git diff --quiet --exit-code`);
-  if (!clean) {
+  if (clean !== 0) {
     console.log("Directory is not clean! Please git add and commit");
     process.exit(0);
   }
@@ -42,10 +42,6 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   await exec(`rm -rf _artmudtemp`);
 
   console.log("Committing...");
-  await exec(
-    `git add src/public && git add src/layers/Renderer && git commit -m "Adding art from ${repo}${
-      commitHash ? " with hash " + commitHash : ""
-    }"`
-  );
+  await exec(`git add src/public && git add src/layers/Renderer && git commit -m "feat(art): adding art from ${repo}"`);
   process.exit(0);
 };
