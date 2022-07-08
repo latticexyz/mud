@@ -5,7 +5,6 @@ import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { getAddressById } from "solecs/utils.sol";
 
-// import { LibECS } from "../libraries/LibECS.sol";
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.gameConfig"));

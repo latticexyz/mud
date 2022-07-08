@@ -6,6 +6,8 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 
+import { LibECS } from "std-contracts/libraries/LibECS.sol";
+
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
 
@@ -15,6 +17,7 @@ import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../com
 import { GameConfigComponent, ID as GameConfigComponentID } from "../components/GameConfigComponent.sol";
 import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
+import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.move"));
 
@@ -28,9 +31,10 @@ contract MoveSystem is ISystem {
   function requirement(bytes memory arguments) public view returns (bytes memory) {
     (uint256 entity, Coord memory targetPosition) = abi.decode(arguments, (uint256, Coord));
 
-    // require(LibECS.doesCallerEntityIDOwnEntity(entity), "you don't own this entity");
+    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+    require(LibECS.isOwnedByCaller(ownedByComponent, entity), "you don't own this entity");
 
-    IComponent movableComponent = IComponent(getAddressById(components, MovableComponentID));
+    MovableComponent movableComponent = MovableComponent(getAddressById(components, MovableComponentID));
     require(movableComponent.has(entity), "trying to move non-moving entity");
 
     PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));

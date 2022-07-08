@@ -26,6 +26,6 @@ contract BulkUploadTest is EmberTest {
         state[index] = ECSEvent(0, 0, new bytes(0));
       }
     }
-    debugFacet.bulkSetState(components, entities, state);
+    // debugFacet.bulkSetState(components, entities, state);
   }
 }
