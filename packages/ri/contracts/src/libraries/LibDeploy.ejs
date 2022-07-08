@@ -140,6 +140,7 @@ library LibDeploy {
 
     if(!upgrade) {
       InitializeFacet(diamondAddress).configureWorld();
+      InitializeFacet(diamondAddress).createBlueprints();
 
       // Register access controllers
       InitializeFacet(diamondAddress).registerAccessControllerExternally(address(new PersonaAccessController()));

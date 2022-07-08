@@ -83,6 +83,21 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       { strength: Type.Number, range: Type.Number },
       { id: "Attack", metadata: { contractId: keccak256("ember.component.attackComponent") } }
     ),
+    FromBlueprint: defineComponent(
+      world,
+      { value: Type.Entity },
+      { id: "FromBlueprint", metadata: { contractId: keccak256("ember.component.fromBlueprintComponent") } }
+    ),
+    IsBlueprint: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "IsBlueprint", metadata: { contractId: keccak256("ember.component.isBlueprintComponent") } }
+    ),
+    BlueprintComponents: defineComponent(
+      world,
+      { componentIds: Type.StringArray },
+      { id: "BlueprintComponents", metadata: { contractId: keccak256("ember.component.blueprintComponentsComponent") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -98,6 +113,9 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     [keccak256("ember.component.staminaComponent")]: "Stamina",
     [keccak256("ember.component.healthComponent")]: "Health",
     [keccak256("ember.component.attackComponent")]: "Attack",
+    [keccak256("ember.component.fromBlueprintComponent")]: "FromBlueprint",
+    [keccak256("ember.component.isBlueprintComponent")]: "IsBlueprint",
+    [keccak256("ember.component.blueprintComponentsComponent")]: "BlueprintComponents",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -155,9 +173,9 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     return txQueue.Game.joinGame(position);
   }
 
-  async function moveEntity(entity: EntityID, targetPosition: WorldCoord) {
-    console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition);
+  async function moveEntity(entity: string, path: WorldCoord[]) {
+    console.log(`Moving entity ${entity} to position (${path[path.length - 1].x}, ${path[path.length - 1].y})}`);
+    return txQueue.Game.moveEntity(BigNumber.from(entity), path);
   }
 
   async function attackEntity(attacker: EntityID, defender: EntityID) {

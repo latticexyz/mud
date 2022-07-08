@@ -1,4 +1,4 @@
-import { HasValue, Has, defineSyncSystem, getComponentValue } from "@latticexyz/recs";
+import { HasValue, Has, defineSyncSystem, getComponentValue, defineSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { LocalEntityTypes } from "../../../../Local/types";
 import { EntityTypes } from "../../../../Network/types";
@@ -16,7 +16,7 @@ export function createSyncSystem(layer: PhaserLayer) {
         components: { EntityType, Persona, OwnedBy },
       },
       local: {
-        components: { LocalEntityType, Selected },
+        components: { Selected, LocalPosition },
       },
     },
     components: { Appearance, Outline, HueTint },
@@ -67,22 +67,4 @@ export function createSyncSystem(layer: PhaserLayer) {
       return { value: personaColor };
     }
   );
-
-  // defineSyncSystem(
-  //   world,
-  //   [HasValue(EntityType, { value: EntityTypes.Hero })],
-  //   () => SpriteAnimation,
-  //   () => ({
-  //     value: Animations.HeroIdle,
-  //   })
-  // );
-
-  // defineSyncSystem(
-  //   world,
-  //   [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
-  //   () => SpriteAnimation,
-  //   () => ({
-  //     value: Animations.ImpIdle,
-  //   })
-  // );
 }

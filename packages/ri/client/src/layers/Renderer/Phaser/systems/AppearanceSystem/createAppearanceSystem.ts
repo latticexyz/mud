@@ -1,4 +1,4 @@
-import { defineComponentSystem } from "@latticexyz/recs";
+import { defineComponentSystem, defineSystem, getComponentValueStrict, Has, UpdateType } from "@latticexyz/recs";
 import { Assets, Sprites } from "../../constants";
 import { PhaserLayer } from "../../types";
 
@@ -12,12 +12,15 @@ export function createAppearanceSystem(layer: PhaserLayer) {
     scenes: {
       Main: { objectPool, config },
     },
+    parentLayers: {
+      local: {
+        components: { LocalPosition },
+      },
+    },
   } = layer;
 
-  defineComponentSystem(world, Appearance, ({ entity, value }) => {
-    const appearance = value[0];
-
-    if (!appearance) {
+  defineSystem(world, [Has(Appearance), Has(LocalPosition)], ({ entity, type }) => {
+    if (type === UpdateType.Exit) {
       return objectPool.remove(entity);
     }
 

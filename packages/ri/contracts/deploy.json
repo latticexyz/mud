@@ -1,10 +1,13 @@
 {
   "components": [
     "AttackComponent",
+    "BlueprintComponentsComponent",
     "EmbodiedSystemArgumentComponent",
     "EntityTypeComponent",
+    "FromBlueprintComponent",
     "GameConfigComponent",
     "HealthComponent",
+    "IsBlueprintComponent",
     "LastActionTurnComponent",
     "LearnedSpellsComponent",
     "MaxDistanceComponent",
@@ -23,6 +26,7 @@
       "functions": [
         "initializeExternally",
         "configureWorld",
+        "createBlueprints",
         "registerAccessControllerExternally",
         "registerContentCreatorExternally",
         "registerEmbodiedSystemExternally"

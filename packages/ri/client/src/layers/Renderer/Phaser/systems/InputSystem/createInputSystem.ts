@@ -3,6 +3,7 @@ import { pixelToWorldCoord } from "../../utils";
 import { map } from "rxjs";
 import { getComponentValueStrict, Has, HasValue, runQuery } from "@latticexyz/recs";
 import { Direction } from "../../../../../constants";
+import { WorldCoord } from "../../../../../types";
 
 export function createInputSystem(layer: PhaserLayer) {
   const {
@@ -24,31 +25,11 @@ export function createInputSystem(layer: PhaserLayer) {
 
   const getSelectedEntity = () => [...runQuery([Has(Selected)])][0];
 
-  const move = function (direction: Direction) {
+  const move = function (targetPosition: WorldCoord) {
     const selectedEntity = getSelectedEntity();
     if (!selectedEntity) return;
-    moveEntity(selectedEntity, direction);
+    moveEntity(selectedEntity, targetPosition);
   };
-
-  input.onKeyPress(
-    (keys) => keys.has("UP"),
-    () => move(Direction.Top)
-  );
-
-  input.onKeyPress(
-    (keys) => keys.has("LEFT"),
-    () => move(Direction.Left)
-  );
-
-  input.onKeyPress(
-    (keys) => keys.has("DOWN"),
-    () => move(Direction.Bottom)
-  );
-
-  input.onKeyPress(
-    (keys) => keys.has("RIGHT"),
-    () => move(Direction.Right)
-  );
 
   input.onKeyPress(
     (keys) => keys.has("A"),
@@ -73,5 +54,14 @@ export function createInputSystem(layer: PhaserLayer) {
     )
     .subscribe((coord) => {
       highlightCoord(coord);
+    });
+
+  input.rightClick$
+    .pipe(
+      map((pointer) => ({ x: pointer.worldX, y: pointer.worldY })),
+      map((pixel) => pixelToWorldCoord(maps.Main, pixel))
+    )
+    .subscribe((coord) => {
+      move(coord);
     });
 }

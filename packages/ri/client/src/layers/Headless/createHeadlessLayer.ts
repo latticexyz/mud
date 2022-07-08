@@ -4,8 +4,8 @@ import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";
 import { joinGame, moveEntity, attackEntity } from "./api";
 import { curry } from "lodash";
-import { Direction } from "../../constants";
 import { createTurnStream } from "./setup";
+import { WorldCoord } from "../../types";
 
 /**
  * The Headless layer is the second layer in the client architecture and extends the Network layer.
@@ -34,7 +34,7 @@ export async function createHeadlessLayer(network: NetworkLayer) {
     api: {
       joinGame: curry(joinGame)(network, actions),
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      moveEntity: (entity: EntityIndex, direction: Direction) => {
+      moveEntity: (entity: EntityIndex, targetPosition: WorldCoord) => {
         "no-op for types";
       },
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

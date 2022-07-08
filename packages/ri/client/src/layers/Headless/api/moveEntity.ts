@@ -9,9 +9,15 @@ import {
   setComponent,
 } from "@latticexyz/recs";
 import { ActionSystem, HeadlessLayer } from "../types";
-import { Direction, Directions } from "../../../constants";
+import { WorldCoord } from "../../../types";
+import { aStar } from "../../../../src/utils/pathfinding";
 
-export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: EntityIndex, direction: Direction) {
+export function moveEntity(
+  layer: HeadlessLayer,
+  actions: ActionSystem,
+  entity: EntityIndex,
+  targetPosition: WorldCoord
+) {
   const {
     parentLayers: {
       network: {
@@ -28,8 +34,8 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
   }
 
   // Entity must be movable
-  const entityCanMove = getComponentValue(Movable, entity)?.value;
-  if (!entityCanMove) return;
+  const moveSpeed = getComponentValue(Movable, entity)?.value;
+  if (!moveSpeed) return;
 
   // Entity must be owned by the player
   const movingEntityOwner = getComponentValue(OwnedBy, entity)?.value;
@@ -37,7 +43,6 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
   if (movingEntityOwner !== world.entities[playerEntityIndex]) return;
 
   const actionID = `move ${Math.random()}` as EntityID;
-  const delta = Directions[direction];
 
   actions.add({
     id: actionID,
@@ -64,19 +69,15 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
         return null;
       }
 
-      const targetPosition = { x: currentPosition.x + delta.x, y: currentPosition.y + delta.y };
-
-      // Target position must be traversable
-      const entities = runQuery([HasValue(Position, targetPosition)]);
-      for (const entity of entities) {
-        if (hasComponent(Untraversable, entity)) {
-          actions.cancel(actionID);
-          return null;
-        }
+      const path = aStar(currentPosition, targetPosition, moveSpeed + 1, layer.parentLayers.network, Position);
+      if (path.length == 0) {
+        actions.cancel(actionID);
+        return null;
       }
 
       return {
         targetPosition,
+        path,
         netStamina,
       };
     },
@@ -92,8 +93,8 @@ export function moveEntity(layer: HeadlessLayer, actions: ActionSystem, entity: 
         value: { current: netStamina },
       },
     ],
-    execute: async ({ targetPosition, netStamina }) => {
-      const tx = await layer.parentLayers.network.api.moveEntity(world.entities[entity], targetPosition);
+    execute: async ({ path, netStamina }) => {
+      const tx = await layer.parentLayers.network.api.moveEntity(world.entities[entity], path);
       await tx.wait();
       setComponent(LocalStamina, entity, { current: netStamina });
     },
