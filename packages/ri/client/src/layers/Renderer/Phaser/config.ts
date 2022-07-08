@@ -76,9 +76,9 @@ export const config = {
         }),
       },
       sprites: {
-        [Sprites.Imp]: {
+        [Sprites.Hero]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/workers/bridge-builder-imp.png",
+          frame: "sprites/warriors/hero.png",
         },
       },
       animations: [],

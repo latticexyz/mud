@@ -19,7 +19,7 @@ export enum Assets {
 }
 
 export enum Sprites {
-  Imp,
+  Hero,
 }
 
 export enum Animations {}

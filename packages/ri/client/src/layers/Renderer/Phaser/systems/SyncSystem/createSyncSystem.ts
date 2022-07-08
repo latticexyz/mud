@@ -24,26 +24,6 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Hero })],
-    () => Appearance,
-    () => {
-      return {
-        value: Sprites.Imp,
-      };
-    }
-  );
-
-  defineSyncSystem(
-    world,
-    [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
-    () => Appearance,
-    () => ({
-      value: Sprites.Imp,
-    })
-  );
-
-  defineSyncSystem(
-    world,
     [Has(Selected), Has(OwnedBy)],
     () => Outline,
     () => ({ color: 0xfff000 })
@@ -65,6 +45,17 @@ export function createSyncSystem(layer: PhaserLayer) {
 
       const personaColor = getPersonaColor(ownerPersonaId);
       return { value: personaColor };
+    }
+  );
+
+  defineSyncSystem(
+    world,
+    [HasValue(EntityType, { value: EntityTypes.Hero }), Has(LocalPosition)],
+    () => Appearance,
+    () => {
+      return {
+        value: Sprites.Hero,
+      };
     }
   );
 }
