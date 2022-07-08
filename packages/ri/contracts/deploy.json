@@ -7,8 +7,6 @@
     "MineableComponent",
     "MovableComponent",
     "OwnedByComponent",
-    "PersonaComponent",
-    "SpellComponent",
     "StaminaComponent",
     "UntraversableComponent",
     "PositionComponent",

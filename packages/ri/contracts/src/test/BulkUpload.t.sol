@@ -3,8 +3,6 @@ pragma solidity >=0.8.0;
 
 import { World } from "solecs/World.sol";
 import { ECSEvent } from "../facets/DebugFacet.sol";
-import { AppStorage } from "../libraries/LibAppStorage.sol";
-import { PersonaFixture } from "./fixtures/PersonaFixture.sol";
 import { EmberTest } from "./EmberTest.sol";
 import { ID as PositionComponentID } from "../components/PositionComponent.sol";
 import { console } from "forge-std/console.sol";
