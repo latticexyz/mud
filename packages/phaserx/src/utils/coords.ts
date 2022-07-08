@@ -1,5 +1,7 @@
 import { Area, ChunkCoord, Coord, PixelCoord, WorldCoord } from "../types";
 
+export const ZERO_VECTOR: Coord = { x: 0, y: 0 };
+
 export function cornerTileCoordsFromRegionCoords(regionCoords: WorldCoord[], regionLength: number) {
   const tileCoords: WorldCoord[] = [];
 
