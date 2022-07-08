@@ -38,8 +38,8 @@ library LibBlueprint {
     ownedByComponent.set(entity, ownerId);
 
     BlueprintComponents memory blueprintComponents = blueprintComponentsComponent.getValue(blueprintId);
-    for (uint256 i = 0; i < blueprintComponents.componentIDs.length; i++) {
-      Component _c = Component(s().world.getComponent(blueprintComponents.componentIDs[i]));
+    for (uint256 i = 0; i < blueprintComponents.componentIds.length; i++) {
+      Component _c = Component(s().world.getComponent(blueprintComponents.componentIds[i]));
       _c.set(entity, _c.getRawValue(blueprintId));
     }
   }
@@ -66,14 +66,14 @@ library LibBlueprint {
     lastActionTurnComponent.set(SoldierID, 0);
     movableComponent.set(SoldierID, int32(3));
 
-    uint256[] memory componentIDs = new uint256[](6);
-    componentIDs[0] = EntityTypeComponentID;
-    componentIDs[1] = StaminaComponentID;
-    componentIDs[2] = LastActionTurnComponentID;
-    componentIDs[3] = MovableComponentID;
-    componentIDs[4] = HealthComponentID;
-    componentIDs[5] = AttackComponentID;
+    uint256[] memory componentIds = new uint256[](6);
+    componentIds[0] = EntityTypeComponentID;
+    componentIds[1] = StaminaComponentID;
+    componentIds[2] = LastActionTurnComponentID;
+    componentIds[3] = MovableComponentID;
+    componentIds[4] = HealthComponentID;
+    componentIds[5] = AttackComponentID;
 
-    blueprintComponentsComponent.set(SoldierID, BlueprintComponents({ componentIDs: componentIDs }));
+    blueprintComponentsComponent.set(SoldierID, BlueprintComponents({ componentIds: componentIds }));
   }
 }

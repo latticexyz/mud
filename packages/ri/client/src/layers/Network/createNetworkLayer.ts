@@ -95,7 +95,7 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     ),
     BlueprintComponents: defineComponent(
       world,
-      { componentIDs: Type.StringArray },
+      { componentIds: Type.StringArray },
       { id: "BlueprintComponents", metadata: { contractId: keccak256("ember.component.blueprintComponentsComponent") } }
     ),
   };
