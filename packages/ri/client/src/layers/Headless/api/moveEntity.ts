@@ -64,8 +64,8 @@ export function moveEntity(
     requirement: () => {
       const localStamina = getComponentValue(LocalStamina, entity);
       if (!localStamina) {
-        actions.cancel(actionID);
         console.warn("no local stamina");
+        actions.cancel(actionID);
         return null;
       }
       const netStamina = localStamina.current - 1;
@@ -85,8 +85,8 @@ export function moveEntity(
       const entities = runQuery([HasValue(Position, targetPosition)]);
       for (const entity of entities) {
         if (hasComponent(Untraversable, entity)) {
-          actions.cancel(actionID);
           console.warn("target is untraversable");
+          actions.cancel(actionID);
           return null;
         }
       }

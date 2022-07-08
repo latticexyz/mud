@@ -33,16 +33,11 @@ abstract contract Component is IComponent {
   }
 
   modifier onlyOwner() {
-    console.log("Owner, Sender");
-    console.log(owner);
-    console.log(msg.sender);
     require(msg.sender == owner, "ONLY_OWNER");
     _;
   }
 
   modifier onlyWriter() {
-    console.log("Sender wants to write");
-    console.log(msg.sender);
     require(writeAccess[msg.sender], "ONLY_WRITER");
     _;
   }

@@ -60,8 +60,7 @@ export function createSyncSystem(layer: PhaserLayer) {
       const ownedByIndex = world.entityToIndex.get(ownedBy);
       if (!ownedByIndex) return { value: 0xff0000 };
 
-      const personaColor = getAddressColor(ownedBy);
-      return { value: personaColor };
+      return { value: getAddressColor(ownedBy) };
     }
   );
 

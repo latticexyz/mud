@@ -148,13 +148,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
   async function joinGame(position: WorldCoord) {
     console.log(`Joining game at position ${JSON.stringify(position)}`);
     return systems["ember.system.playerJoin"].executeTyped(position, { gasPrice: 0 });
-    // return txQueue.Game.joinGame(position);
   }
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
     return systems["ember.system.move"].executeTyped(BigNumber.from(entity), targetPosition, { gasPrice: 0 });
-    // return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition);
   }
 
   // Constants (load from contract later)

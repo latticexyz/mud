@@ -1,7 +1,7 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
 import { getAddressColor } from "@latticexyz/std-client";
-import { EntityID, getComponentValueStrict } from "@latticexyz/recs";
+import { defineQuery, EntityID, getComponentValueStrict, HasValue } from "@latticexyz/recs";
 import { map, merge } from "rxjs";
 import { computedToStream } from "@latticexyz/utils";
 
@@ -21,6 +21,7 @@ export function registerJoinGame() {
         },
         network: {
           network: { connectedAddress },
+          components: { Player },
           world,
         },
         local: {
@@ -29,7 +30,7 @@ export function registerJoinGame() {
         },
       } = layers;
 
-      return merge(computedToStream(connectedAddress), Selection.update$).pipe(
+      return merge(computedToStream(connectedAddress), Selection.update$, Player.update$).pipe(
         map(() => connectedAddress.get()),
         map((address) => {
           const playerEntity = world.entityToIndex.get(address as EntityID);

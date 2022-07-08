@@ -1,5 +1,5 @@
-pragma solidity ^0.8.0;
 // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 import { addressToEntity } from "solecs/utils.sol";
 import { Uint256Component } from "../components/Uint256Component.sol";

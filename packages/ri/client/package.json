@@ -55,6 +55,7 @@
     "start:prod": "vite preview",
     "test:performance": "cypress run",
     "test:performance:record": "cypress run --record --key 6920b67f-6bc2-46cd-9d9a-ee402330517d",
-    "test:performance:dashboard": "cypress open"
+    "test:performance:dashboard": "cypress open",
+    "check:circdepen": "dpdm ./src/index.ts"
   }
 }

@@ -31,7 +31,6 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
     if (!update.value[0]) return console.warn("System id removed unexpectedly", world.entities[update.entity]);
     const system = createSystemContract(update.entity, network.signer.get());
     if (!system) return;
-    console.log("System update", update);
     runInAction(() => systemContracts.set({ ...systemContracts.get(), [system.id]: system.contract }));
   });
 

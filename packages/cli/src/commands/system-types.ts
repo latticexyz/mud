@@ -20,8 +20,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
 
 export const handler = async (): Promise<void> => {
   const wd = process.cwd();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let abis: any[] = [];
+  let abis: string[] = [];
   let systems: string[] = [];
   let ids: string[] = [];
   let typePaths: string[] = [];
@@ -90,9 +89,4 @@ ${systems.map((system, index) => `  "${ids[index]}": ${system},`).join("\n")}
 
   fs.writeFileSync("./types/SystemTypes.ts", SystemTypes);
   fs.writeFileSync("./types/SystemAbis.ts", SystemAbis);
-
-  // fs.writeFileSync(out, JSON.stringify({ abi }));
-
-  // console.log(`Created diamond abi at ${out}`);
-  // process.exit(0);
 };

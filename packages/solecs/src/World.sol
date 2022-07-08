@@ -3,11 +3,10 @@ pragma solidity >=0.8.0;
 import { Set } from "./Set.sol";
 import { LibQuery } from "./LibQuery.sol";
 import { IWorld, WorldQueryFragment } from "./interfaces/IWorld.sol";
-import { IComponent } from "./interfaces/IComponent.sol";
 import { QueryFragment } from "./interfaces/Query.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { Uint256Component } from "./components/Uint256Component.sol";
-import { addressToEntity, entityToAddress, getIdByAddress, getAddressById } from "./utils.sol";
+import { addressToEntity, entityToAddress, getIdByAddress, getAddressById, getComponentById } from "./utils.sol";
 import { componentsComponentId, systemsComponentId } from "./constants.sol";
 import { RegisterSystem, ID as registerSystemId, RegisterType } from "./systems/RegisterSystem.sol";
 
@@ -90,7 +89,7 @@ contract World is IWorld {
     for (uint256 i; i < worldQueryFragments.length; i++) {
       fragments[i] = QueryFragment(
         worldQueryFragments[i].queryType,
-        IComponent(getAddressById(_components, worldQueryFragments[i].componentId)),
+        getComponentById(_components, worldQueryFragments[i].componentId),
         worldQueryFragments[i].value
       );
     }
