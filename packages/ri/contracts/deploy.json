@@ -1,6 +1,7 @@
 {
   "components": [
     "AttackComponent",
+    "BlueprintComponentsComponent",
     "EmbodiedSystemArgumentComponent",
     "EntityTypeComponent",
     "FromBlueprintComponent",
