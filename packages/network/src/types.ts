@@ -3,8 +3,6 @@ import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs
 import { Cached } from "@latticexyz/utils";
 import { BaseContract, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
-import { createNetwork } from "./createNetwork";
-import { createProvider } from "./createProvider";
 
 export interface NetworkConfig {
   chainId: number;
@@ -34,9 +32,6 @@ export interface ProviderConfig {
   wsRpcUrl?: string;
   options?: { batch?: boolean; pollingInterval?: number; skipNetworkCheck?: boolean };
 }
-
-export type Providers = ReturnType<typeof createProvider>;
-export type Network = Awaited<ReturnType<typeof createNetwork>>;
 
 export type Contracts = {
   [key: string]: BaseContract;

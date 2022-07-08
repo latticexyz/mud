@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 import "../Component.sol";
+import "../interfaces/IUint256Component.sol";
 
-contract Uint256Component is Component {
+contract Uint256Component is Component, IUint256Component {
   constructor(address world, uint256 id) Component(world, id) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {

@@ -1,10 +1,9 @@
-import { defineComponent, EntityIndex, Type, namespaceWorld } from "@latticexyz/recs";
+import { defineComponent, Type, namespaceWorld } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";
 import { joinGame, moveEntity } from "./api";
 import { curry } from "lodash";
-import { Direction } from "../../constants";
 import { createTurnStream } from "./setup";
 
 /**
@@ -33,14 +32,9 @@ export async function createHeadlessLayer(network: NetworkLayer) {
     components,
     api: {
       joinGame: curry(joinGame)(network, actions),
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      moveEntity: (entity: EntityIndex, direction: Direction) => {
-        "no-op for types";
-      },
+      moveEntity: curry(moveEntity)({ world, actions, network, LocalStamina }),
     },
   };
-
-  layer.api.moveEntity = curry(moveEntity)(layer, actions);
 
   createCurrentStaminaSystem(layer);
 

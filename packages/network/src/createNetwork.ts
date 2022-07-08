@@ -6,8 +6,10 @@ import { combineLatest, concatMap, EMPTY, filter, map, throttleTime } from "rxjs
 import { createClock } from "./createClock";
 import { fetchBlock } from "./networkUtils";
 import { createBlockNumberStream } from "./createBlockNumberStream";
-import { Signer } from "ethers";
+import { Signer, Wallet } from "ethers";
 import { computedToStream } from "@latticexyz/utils";
+
+export type Network = Awaited<ReturnType<typeof createNetwork>>;
 
 export async function createNetwork(initialConfig: NetworkConfig) {
   const config = observable(initialConfig);
@@ -25,6 +27,11 @@ export async function createNetwork(initialConfig: NetworkConfig) {
     const currentProviders = providers.get();
     if (privateKey && currentProviders) return createSigner(privateKey, currentProviders);
   });
+
+  // Get address
+  const connectedAddress = computed(() =>
+    config.privateKey ? new Wallet(config.privateKey).address.toLowerCase() : undefined
+  );
 
   // Listen to new block numbers
   const { blockNumber$, dispose: disposeBlockNumberStream } = createBlockNumberStream(providers);
@@ -58,5 +65,6 @@ export async function createNetwork(initialConfig: NetworkConfig) {
     },
     clock,
     config,
+    connectedAddress,
   };
 }

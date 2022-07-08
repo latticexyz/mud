@@ -3,7 +3,7 @@ import { PhaserLayer } from "../../types";
 import { LocalEntityTypes } from "../../../../Local/types";
 import { EntityTypes } from "../../../../Network/types";
 import { Animations, Assets } from "../../constants";
-import { getPersonaColor } from "@latticexyz/std-client";
+import { getAddressColor } from "@latticexyz/std-client";
 
 /**
  * The Sync system handles adding Phaser layer components to entites based on components they have on parent layers
@@ -13,7 +13,7 @@ export function createSyncSystem(layer: PhaserLayer) {
     world,
     parentLayers: {
       network: {
-        components: { EntityType, Persona, OwnedBy },
+        components: { EntityType, OwnedBy },
       },
       local: {
         components: { LocalEntityType, Selected },
@@ -60,11 +60,7 @@ export function createSyncSystem(layer: PhaserLayer) {
       const ownedByIndex = world.entityToIndex.get(ownedBy);
       if (!ownedByIndex) return { value: 0xff0000 };
 
-      const ownerPersonaId = getComponentValue(Persona, ownedByIndex)?.value;
-      if (!ownerPersonaId) return { value: 0xff0000 };
-
-      const personaColor = getPersonaColor(ownerPersonaId);
-      return { value: personaColor };
+      return { value: getAddressColor(ownedBy) };
     }
   );
 

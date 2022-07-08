@@ -2,7 +2,9 @@ import { JsonRpcBatchProvider, JsonRpcProvider, WebSocketProvider } from "@ether
 import { callWithRetry, observableToComputed, timeoutAfter } from "@latticexyz/utils";
 import { IComputedValue, IObservableValue, observable, reaction, runInAction } from "mobx";
 import { ensureNetworkIsUp } from "./networkUtils";
-import { ProviderConfig, Providers } from "./types";
+import { ProviderConfig } from "./types";
+
+export type Providers = ReturnType<typeof createProvider>;
 
 export function createProvider({ jsonRpcUrl, wsRpcUrl, options }: ProviderConfig) {
   const providers = {

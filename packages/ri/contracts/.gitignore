@@ -6,6 +6,6 @@ bindings/
 artifacts/
 deployments
 abi/
-types/ethers-contracts/
+types/
 broadcast/
 src/libraries/LibDeploy.sol

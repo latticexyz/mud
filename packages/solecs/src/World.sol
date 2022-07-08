@@ -3,49 +3,54 @@ pragma solidity >=0.8.0;
 import { Set } from "./Set.sol";
 import { LibQuery } from "./LibQuery.sol";
 import { IWorld, WorldQueryFragment } from "./interfaces/IWorld.sol";
-import { IComponent } from "./interfaces/IComponent.sol";
 import { QueryFragment } from "./interfaces/Query.sol";
+import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { Uint256Component } from "./components/Uint256Component.sol";
-import { addressToEntity, entityToAddress } from "./utils.sol";
-
-uint256 constant componentsComponentId = uint256(keccak256("world.component.components"));
+import { addressToEntity, entityToAddress, getIdByAddress, getAddressById, getComponentById } from "./utils.sol";
+import { componentsComponentId, systemsComponentId } from "./constants.sol";
+import { RegisterSystem, ID as registerSystemId, RegisterType } from "./systems/RegisterSystem.sol";
 
 contract World is IWorld {
   Set private entities = new Set();
-
-  /// @notice Mapping from component address (= entityId) to component id
-  Uint256Component public components = new Uint256Component(address(0), componentsComponentId);
+  Uint256Component private _components;
+  Uint256Component private _systems;
+  RegisterSystem public register;
 
   event ComponentValueSet(uint256 indexed componentId, address indexed component, uint256 indexed entity, bytes data);
   event ComponentValueRemoved(uint256 indexed componentId, address indexed component, uint256 indexed entity);
 
+  constructor() {
+    _components = new Uint256Component(address(0), componentsComponentId);
+    _systems = new Uint256Component(address(0), systemsComponentId);
+    register = new RegisterSystem(_components, this);
+    _systems.authorizeWriter(address(register));
+    _components.authorizeWriter(address(register));
+  }
+
   function init() public {
-    components.registerWorld(address(this));
+    _components.registerWorld(address(this));
+    _systems.registerWorld(address(this));
+    register.execute(RegisterType.System, address(register), registerSystemId);
+  }
+
+  function components() public view returns (IUint256Component) {
+    return _components;
+  }
+
+  function systems() public view returns (IUint256Component) {
+    return _systems;
   }
 
   function registerComponent(address componentAddr, uint256 id) public {
-    require(id != 0, "Invalid ID");
-    require(componentAddr != address(0), "Invalid component address");
-    require(!components.has(addressToEntity(componentAddr)), "Component already registered");
-    require(components.getEntitiesWithValue(id).length == 0, "ID already registered");
-    components.set(addressToEntity(componentAddr), id);
+    register.execute(abi.encode(RegisterType.Component, componentAddr, id));
   }
 
-  // TODO: this method is redundant, use a util or access components directly
-  function getComponent(uint256 id) public view returns (address) {
-    uint256[] memory componentEntities = components.getEntitiesWithValue(id);
-    require(componentEntities.length != 0, "Component hasn't been registered");
-    return entityToAddress(componentEntities[0]);
-  }
-
-  // TODO: this method is redundant, use a util or access components directly
-  function getComponentIdFromAddress(address componentAddr) public view returns (uint256) {
-    require(components.has(addressToEntity(componentAddr)), "Component hasn't been registered");
-    return components.getValue(addressToEntity(componentAddr));
+  function registerSystem(address systemAddr, uint256 id) public {
+    register.execute(abi.encode(RegisterType.System, systemAddr, id));
   }
 
   modifier requireComponentRegistered(address component) {
-    require(components.has(addressToEntity(component)), "Component hasn't been registered");
+    require(_components.has(addressToEntity(component)), "component not registered");
     _;
   }
 
@@ -55,14 +60,24 @@ contract World is IWorld {
     bytes calldata data
   ) public requireComponentRegistered(component) {
     Set(entities).add(entity);
-    emit ComponentValueSet(components.getValue(addressToEntity(component)), component, entity, data);
+    emit ComponentValueSet(getIdByAddress(_components, component), component, entity, data);
   }
 
   function registerComponentValueRemoved(address component, uint256 entity)
     public
     requireComponentRegistered(component)
   {
-    emit ComponentValueRemoved(components.getValue(addressToEntity(component)), component, entity);
+    emit ComponentValueRemoved(getIdByAddress(_components, component), component, entity);
+  }
+
+  // Deprecated, but left here for backward compatibility. TODO: refactor all consumers.
+  function getComponent(uint256 id) external view returns (address) {
+    return getAddressById(_components, id);
+  }
+
+  // Deprecated, but left here for backward compatibility. TODO: refactor all consumers.
+  function getComponentIdFromAddress(address componentAddr) external view returns (uint256) {
+    return getIdByAddress(_components, componentAddr);
   }
 
   function getNumEntities() public view returns (uint256) {
@@ -74,7 +89,7 @@ contract World is IWorld {
     for (uint256 i; i < worldQueryFragments.length; i++) {
       fragments[i] = QueryFragment(
         worldQueryFragments[i].queryType,
-        IComponent(getComponent(worldQueryFragments[i].componentId)),
+        getComponentById(_components, worldQueryFragments[i].componentId),
         worldQueryFragments[i].value
       );
     }

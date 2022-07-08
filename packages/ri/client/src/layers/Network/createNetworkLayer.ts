@@ -7,19 +7,19 @@ import {
   defineUntraversableComponent,
 } from "./components";
 import { setupContracts } from "./setup";
-import { CHECKPOINT_URL, DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.local";
+import { CHECKPOINT_URL, DEV_PRIVATE_KEY, RPC_URL, RPC_WS_URL } from "./constants.local";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
 import { WorldCoord } from "../../types";
 import { SetupContractConfig } from "./setup/setupContracts";
 import { LOCAL_CHAIN_ID } from "../../constants";
+import { defineStringComponent } from "@latticexyz/std-client";
 
 export type NetworkLayerConfig = {
-  contractAddress: string;
+  worldAddress: string;
   privateKey: string;
   chainId: number;
-  personaId: number;
   jsonRpc?: string;
   wsRpc?: string;
   checkpointUrl?: string;
@@ -30,7 +30,7 @@ export type NetworkLayerConfig = {
  * The Network layer is the lowest layer in the client architecture.
  * Its purpose is to synchronize the client components with the contract components.
  */
-export async function createNetworkLayer(config?: NetworkLayerConfig) {
+export async function createNetworkLayer(config: NetworkLayerConfig) {
   // World
   const world = createWorld();
 
@@ -44,15 +44,23 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
       { startTime: Type.String, turnLength: Type.String },
       { id: "GameConfig", metadata: { contractId: keccak256("ember.component.gameConfigComponent") } }
     ),
+    Components: defineStringComponent(world, {
+      id: "Components",
+      metadata: { contractId: keccak256("world.component.components") },
+    }),
+    Systems: defineStringComponent(world, {
+      id: "Systems",
+      metadata: { contractId: keccak256("world.component.systems") },
+    }),
     Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
     EntityType: defineEntityTypeComponent(world, keccak256("ember.component.entityTypeComponent")),
     Movable: defineMovableComponent(world, keccak256("ember.component.movableComponent")),
     OwnedBy: defineOwnedByComponent(world, keccak256("ember.component.ownedByComponent")),
     Untraversable: defineUntraversableComponent(world, keccak256("ember.component.untraversableComponent")),
-    Persona: defineComponent(
+    Player: defineComponent(
       world,
-      { value: Type.String },
-      { id: "Persona", metadata: { contractId: keccak256("ember.component.personaComponent") } }
+      { value: Type.Boolean },
+      { id: "Player", metadata: { contractId: keccak256("ember.component.playerComponent") } }
     ),
     // Stamina
     Stamina: defineComponent(
@@ -69,15 +77,17 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
 
   // Define mappings between contract and client components
   const mappings: Mappings<typeof components> = {
+    [keccak256("world.component.components")]: "Components",
+    [keccak256("world.component.systems")]: "Systems",
+    [keccak256("ember.component.gameConfigComponent")]: "GameConfig",
     [keccak256("ember.component.positionComponent")]: "Position",
     [keccak256("ember.component.entityTypeComponent")]: "EntityType",
     [keccak256("ember.component.movableComponent")]: "Movable",
     [keccak256("ember.component.ownedByComponent")]: "OwnedBy",
     [keccak256("ember.component.untraversableComponent")]: "Untraversable",
-    [keccak256("ember.component.personaComponent")]: "Persona",
     [keccak256("ember.component.lastActionTurnComponent")]: "LastActionTurn",
-    [keccak256("ember.component.gameConfigComponent")]: "GameConfig",
     [keccak256("ember.component.staminaComponent")]: "Stamina",
+    [keccak256("ember.component.playerComponent")]: "Player",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -102,10 +112,11 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
   const DEV_MODE = contractConfig.chainId === LOCAL_CHAIN_ID || config?.devMode;
 
   // Instantiate contracts and set up mappings
-  const { txQueue, txReduced$, encoders, network, startSync } = await setupContracts(
-    config?.contractAddress || DIAMOND_ADDRESS,
+  const { txQueue, systems, txReduced$, encoders, network, startSync } = await setupContracts(
+    config.worldAddress,
     contractConfig,
     world,
+    components.Systems,
     components,
     mappings,
     DEV_MODE
@@ -127,17 +138,21 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     const entityId = world.entities[entity];
 
     console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entityId}`);
-    await txQueue.Game.addComponentToEntityExternally(BigNumber.from(entityId), component.metadata.contractId, data);
+    await systems["ember.system.componentDev"].executeTyped(
+      component.metadata.contractId,
+      BigNumber.from(entityId),
+      data
+    );
   }
 
   async function joinGame(position: WorldCoord) {
     console.log(`Joining game at position ${JSON.stringify(position)}`);
-    return txQueue.Game.joinGame(position);
+    return systems["ember.system.playerJoin"].executeTyped(position, { gasPrice: 0 });
   }
 
   async function moveEntity(entity: string, targetPosition: WorldCoord) {
     console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    return txQueue.Game.moveEntity(BigNumber.from(entity), targetPosition);
+    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), targetPosition, { gasPrice: 0 });
   }
 
   // Constants (load from contract later)
@@ -150,10 +165,10 @@ export async function createNetworkLayer(config?: NetworkLayerConfig) {
     components,
     constants,
     txQueue,
+    systems,
     txReduced$,
     mappings,
     startSync,
-    personaId: config?.personaId,
     network,
     api: {
       setContractComponentValue,
