@@ -37,11 +37,8 @@ const builder = (yargs) => yargs.options({
     chainSpec: { type: "string" },
     chainId: { type: "number" },
     rpc: { type: "string" },
-    personaMirror: { type: "string" },
-    persona: { type: "string" },
-    personaAllMinter: { type: "string" },
+    wsRpc: { type: "string" },
     world: { type: "string" },
-    diamond: { type: "string" },
     reuseComponents: { type: "boolean" },
     deployerPrivateKey: { type: "string" },
     deployClient: { type: "boolean" },
@@ -74,7 +71,7 @@ function findLog(deployLogLines, log) {
     throw new Error("Can not find log");
 }
 const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12, _13, _14, _15, _16, _17;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m, _o, _p, _q, _r, _s, _t, _u, _v, _w, _x, _y, _z, _0, _1, _2, _3, _4, _5, _6, _7, _8, _9, _10;
     const { default: chalk } = yield importChalk;
     console.log();
     console.log(chalk.bgWhite.black.bold(" == Mud Deployer == "));
@@ -95,6 +92,7 @@ const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
         chainSpec: "chainSpec.json",
         chainId: 31337,
         rpc: "http://localhost:8545",
+        wsRpc: "ws://localhost:8545",
         reuseComponents: false,
         deployClient: false,
         clientUrl: "http://localhost:3000",
@@ -117,6 +115,13 @@ const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
             },
             {
                 type: "input",
+                name: "wsRpc",
+                default: defaultOptions.wsRpc,
+                message: "Provide a WebSocket RPC endpoint for your deployment",
+                when: (answers) => answers.chainSpec == null && args.wsRpc == null && config.wsRpc == null,
+            },
+            {
+                type: "input",
                 name: "rpc",
                 default: defaultOptions.rpc,
                 message: "Provide a JSON RPC endpoint for your deployment",
@@ -125,50 +130,6 @@ const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
                     if (isValidHttpUrl(i))
                         return true;
                     return "Invalid URL";
-                },
-            },
-            {
-                type: "input",
-                name: "personaMirror",
-                message: "Provide the address of an existing PersonaMirror contract. (If none is given, PersonaMirror will be deployed.)",
-                when: (answers) => answers.chainSpec == null && args.personaMirror == null && config.personaMirror == null,
-                validate: (i) => {
-                    if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42))
-                        return true;
-                    return "Invalid address";
-                },
-            },
-            {
-                type: "input",
-                name: "persona",
-                message: "Provide the address of an existing Persona contract. (If none is given, Persona will be deployed.)",
-                when: (answers) => answers.chainSpec == null && args.persona == null && config.persona == null,
-                validate: (i) => {
-                    if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42))
-                        return true;
-                    return "Invalid address";
-                },
-            },
-            {
-                type: "input",
-                name: "personaAllMinter",
-                message: "Provide the address of an existing PersonaAllMinter contract. (If none is given, PersonaAllMinter will be deployed.)",
-                when: (answers) => answers.chainSpec == null && args.persona == null && config.persona == null,
-                validate: (i) => {
-                    if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42))
-                        return true;
-                    return "Invalid address";
-                },
-            },
-            {
-                type: "input",
-                name: "diamond",
-                message: "Provide the address of an existing Diamond contract that should be updated. (If none is given, a new Diamond will be deployed.)",
-                when: () => args.diamond == null && config.diamond == null,
-                validate: (i) => {
-                    if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42))
-                        return true;
-                    return "Invalid address";
                 },
             },
             {
@@ -225,8 +186,8 @@ const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
                 type: "list",
                 message: "From which netlify account?",
                 choices: (answers) => __awaiter(void 0, void 0, void 0, function* () {
-                    var _18, _19;
-                    return yield getNetlifyAccounts((_19 = (_18 = args.netlifyPersonalToken) !== null && _18 !== void 0 ? _18 : config.netlifyPersonalToken) !== null && _19 !== void 0 ? _19 : answers.netlifyPersonalToken);
+                    var _11, _12;
+                    return yield getNetlifyAccounts((_12 = (_11 = args.netlifyPersonalToken) !== null && _11 !== void 0 ? _11 : config.netlifyPersonalToken) !== null && _12 !== void 0 ? _12 : answers.netlifyPersonalToken);
                 }),
                 name: "netlifySlug",
                 when: (answers) => answers.deployClient && !args.netlifySlug && !config.netlifySlug,
@@ -264,17 +225,14 @@ const getDeployInfo = (args) => __awaiter(void 0, void 0, void 0, function* () {
         chainSpec: (_e = (_d = (_c = args.chainSpec) !== null && _c !== void 0 ? _c : config.chainSpec) !== null && _d !== void 0 ? _d : answers.chainSpec) !== null && _e !== void 0 ? _e : defaultOptions.chainSpec,
         chainId: (_j = (_h = (_g = (_f = args.chainId) !== null && _f !== void 0 ? _f : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.chainId) !== null && _g !== void 0 ? _g : config.chainId) !== null && _h !== void 0 ? _h : answers.chainId) !== null && _j !== void 0 ? _j : defaultOptions.chainId,
         rpc: (_o = (_m = (_l = (_k = args.rpc) !== null && _k !== void 0 ? _k : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.rpc) !== null && _l !== void 0 ? _l : config.rpc) !== null && _m !== void 0 ? _m : answers.rpc) !== null && _o !== void 0 ? _o : defaultOptions.rpc,
-        personaMirror: (_r = (_q = (_p = args.personaMirror) !== null && _p !== void 0 ? _p : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.personaMirrorAddress) !== null && _q !== void 0 ? _q : config.personaMirror) !== null && _r !== void 0 ? _r : answers.personaMirror,
-        personaAllMinter: (_u = (_t = (_s = args.personaAllMinter) !== null && _s !== void 0 ? _s : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.personaAllMinterAddress) !== null && _t !== void 0 ? _t : config.personaAllMinter) !== null && _u !== void 0 ? _u : answers.personaAllMinter,
-        persona: (_x = (_w = (_v = args.persona) !== null && _v !== void 0 ? _v : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.personaAddress) !== null && _w !== void 0 ? _w : config.persona) !== null && _x !== void 0 ? _x : answers.persona,
-        world: (_0 = (_z = (_y = args.world) !== null && _y !== void 0 ? _y : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.world) !== null && _z !== void 0 ? _z : config.world) !== null && _0 !== void 0 ? _0 : answers.world,
-        diamond: (_2 = (_1 = args.diamond) !== null && _1 !== void 0 ? _1 : config.diamond) !== null && _2 !== void 0 ? _2 : answers.diamond,
-        reuseComponents: (_5 = (_4 = (_3 = args.reuseComponents) !== null && _3 !== void 0 ? _3 : config.reuseComponents) !== null && _4 !== void 0 ? _4 : answers.reuseComponents) !== null && _5 !== void 0 ? _5 : defaultOptions.reuseComponents,
-        deployerPrivateKey: (_7 = (_6 = args.deployerPrivateKey) !== null && _6 !== void 0 ? _6 : config.deployerPrivateKey) !== null && _7 !== void 0 ? _7 : answers.deployerPrivateKey,
-        deployClient: (_10 = (_9 = (_8 = args.deployClient) !== null && _8 !== void 0 ? _8 : config.deployClient) !== null && _9 !== void 0 ? _9 : answers.deployClient) !== null && _10 !== void 0 ? _10 : defaultOptions.deployClient,
-        clientUrl: (_13 = (_12 = (_11 = args.clientUrl) !== null && _11 !== void 0 ? _11 : config.clientUrl) !== null && _12 !== void 0 ? _12 : answers.clientUrl) !== null && _13 !== void 0 ? _13 : defaultOptions.clientUrl,
-        netlifySlug: (_15 = (_14 = args.netlifySlug) !== null && _14 !== void 0 ? _14 : config.netlifySlug) !== null && _15 !== void 0 ? _15 : answers.netlifySlug,
-        netlifyPersonalToken: (_17 = (_16 = args.netlifyPersonalToken) !== null && _16 !== void 0 ? _16 : config.netlifyPersonalToken) !== null && _17 !== void 0 ? _17 : answers.netlifyPersonalToken,
+        wsRpc: (_s = (_r = (_q = (_p = args.wsRpc) !== null && _p !== void 0 ? _p : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.wsRpc) !== null && _q !== void 0 ? _q : config.wsRpc) !== null && _r !== void 0 ? _r : answers.wsRpc) !== null && _s !== void 0 ? _s : defaultOptions.wsRpc,
+        world: (_v = (_u = (_t = args.world) !== null && _t !== void 0 ? _t : chainSpec === null || chainSpec === void 0 ? void 0 : chainSpec.world) !== null && _u !== void 0 ? _u : config.world) !== null && _v !== void 0 ? _v : answers.world,
+        reuseComponents: (_y = (_x = (_w = args.reuseComponents) !== null && _w !== void 0 ? _w : config.reuseComponents) !== null && _x !== void 0 ? _x : answers.reuseComponents) !== null && _y !== void 0 ? _y : defaultOptions.reuseComponents,
+        deployerPrivateKey: (_0 = (_z = args.deployerPrivateKey) !== null && _z !== void 0 ? _z : config.deployerPrivateKey) !== null && _0 !== void 0 ? _0 : answers.deployerPrivateKey,
+        deployClient: (_3 = (_2 = (_1 = args.deployClient) !== null && _1 !== void 0 ? _1 : config.deployClient) !== null && _2 !== void 0 ? _2 : answers.deployClient) !== null && _3 !== void 0 ? _3 : defaultOptions.deployClient,
+        clientUrl: (_6 = (_5 = (_4 = args.clientUrl) !== null && _4 !== void 0 ? _4 : config.clientUrl) !== null && _5 !== void 0 ? _5 : answers.clientUrl) !== null && _6 !== void 0 ? _6 : defaultOptions.clientUrl,
+        netlifySlug: (_8 = (_7 = args.netlifySlug) !== null && _7 !== void 0 ? _7 : config.netlifySlug) !== null && _8 !== void 0 ? _8 : answers.netlifySlug,
+        netlifyPersonalToken: (_10 = (_9 = args.netlifyPersonalToken) !== null && _9 !== void 0 ? _9 : config.netlifyPersonalToken) !== null && _10 !== void 0 ? _10 : answers.netlifyPersonalToken,
     };
 });
 const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
@@ -292,7 +250,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
     const netlifyAPI = options.deployClient && new netlify(options.netlifyPersonalToken);
     const id = (0, uuid_1.v4)().substring(0, 6);
     let launcherUrl;
-    let gameContractAddress;
+    let worldAddress;
     try {
         const tasks = new listr2_1.Listr([
             {
@@ -310,10 +268,8 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                                     "--private-keys",
                                     wallet.privateKey,
                                     "--sig",
-                                    "deployEmber(address,address,address,address,bool)",
+                                    "deployEmber(address,address,bool)",
                                     wallet.address,
-                                    options.personaMirror || ethers_1.constants.AddressZero,
-                                    options.diamond || ethers_1.constants.AddressZero,
                                     options.world || ethers_1.constants.AddressZero,
                                     options.reuseComponents ? "true" : "false",
                                     "--fork-url",
@@ -322,10 +278,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                                 (_a = child.stdout) === null || _a === void 0 ? void 0 : _a.pipe(task.stdout());
                                 const { stdout } = yield child;
                                 const lines = stdout.split("\n");
-                                ctx.worldAddress = findLog(lines, "world: address");
-                                ctx.personaAddress = findLog(lines, "persona: address");
-                                ctx.personaMirrorAddress = findLog(lines, "personaMirror: address");
-                                ctx.personaAllMinterAddress = findLog(lines, "personaAllMinter: address");
+                                ctx.worldAddress = worldAddress = findLog(lines, "world: address");
                                 task.output = chalk.yellow(`World deployed at: ${chalk.bgYellow.black(ctx.worldAddress)}`);
                             }),
                             options: { bottomBar: 3 },
@@ -389,7 +342,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
                             title: "Open Launcher",
                             task: (ctx) => __awaiter(void 0, void 0, void 0, function* () {
                                 const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
-                                launcherUrl = `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${options.persona || ctx.personaAddress || ""}&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${clientUrl || ""}&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}&dev=${options.chainId === 31337 || ""}`;
+                                launcherUrl = `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&client=${clientUrl || ""}&rpc=${options.rpc || ""}&wsRpc=${options.wsRpc || ""}&chainId=${options.chainId || ""}&dev=${options.chainId === 31337 || ""}`;
                                 openurl_1.default.open(launcherUrl);
                             }),
                             options: { bottomBar: 3 },
@@ -401,7 +354,7 @@ const deploy = (options) => __awaiter(void 0, void 0, void 0, function* () {
         yield tasks.run();
         console.log(chalk.bgGreen.black.bold(" Congratulations! Deployment successful"));
         console.log();
-        console.log(chalk.green(`Contract deployed to ${gameContractAddress}`));
+        console.log(chalk.green(`World address ${worldAddress}`));
         console.log(chalk.green(`Open launcher at ${launcherUrl}`));
         console.log();
     }
