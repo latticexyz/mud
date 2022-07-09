@@ -31,7 +31,7 @@
     "test": "jest",
     "lint": "eslint . --fix --ext .ts",
     "prettier": "prettier --write '**/*.{ts,tsx}'",
-    "start:dev": "vite",
+    "start": "vite",
     "build": "vite build",
     "start:prod": "vite preview"
   }

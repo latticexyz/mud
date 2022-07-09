@@ -1,15 +1,7 @@
-import {
-  defineQuery,
-  defineRxSystem,
-  EntityIndex,
-  getComponentValueStrict,
-  Has,
-  runQuery,
-  setComponent,
-} from "@latticexyz/recs";
+import { defineQuery, defineRxSystem, EntityIndex, getComponentValueStrict, Has, setComponent } from "@latticexyz/recs";
 import { getCurrentTurn } from "@latticexyz/std-client";
 import { merge } from "rxjs";
-import { HeadlessLayer } from "../..";
+import { HeadlessLayer } from "../../types";
 
 export function createCurrentStaminaSystem(layer: HeadlessLayer) {
   const {

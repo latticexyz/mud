@@ -54,7 +54,8 @@ export function removeComponent(component: Component, entity: EntityIndex) {
 }
 
 export function hasComponent<T extends Schema>(component: Component<T>, entity: EntityIndex): boolean {
-  return Object.values(component.values)[0].has(entity);
+  const map = Object.values(component.values)[0];
+  return map.has(entity);
 }
 
 export function getComponentValue<S extends Schema>(
@@ -142,6 +143,7 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
     value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
     component: Component;
   }>();
+
   // Channel through update events from the original component if there are no overrides
   component.update$.pipe(filter((e) => !overriddenEntityValues.get(e.entity))).subscribe(update$);
 
@@ -187,6 +189,18 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
           const overriddenValue = overriddenEntityValues.get(entity);
           return overriddenValue ? overriddenValue[key] : originalValue;
         };
+      }
+
+      // Intercept calls to component.value[key].has(entity)
+      if (prop === "has") {
+        return (entity: EntityIndex) => {
+          return target.has(entity) || overriddenEntityValues.has(entity);
+        };
+      }
+
+      // Intercept calls to component.value[key].keys()
+      if (prop === "keys") {
+        return () => new Set([...target.keys(), ...overriddenEntityValues.keys()]).values();
       }
       return Reflect.get(target, prop);
     },

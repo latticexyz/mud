@@ -8,7 +8,7 @@ import { console } from "forge-std/console.sol";
 import { Utilities } from "./Utilities.sol";
 import { Cheats } from "./Cheats.sol";
 
-// Libs
+// Libraries
 import { LibDeploy, DeployResult } from "../../libraries/LibDeploy.sol";
 
 contract Deploy is DSTest {
@@ -16,27 +16,12 @@ contract Deploy is DSTest {
 
   function deployEmber(
     address _deployer,
-    address _personaMirror,
-    address payable _diamond,
     address _world,
     bool _reuseComponents
-  )
-    public
-    returns (
-      address persona,
-      address personaAllMinter,
-      address personaMirror,
-      address diamond,
-      address world
-    )
-  {
+  ) public returns (address world) {
     vm.startBroadcast(_deployer);
-    DeployResult memory result = LibDeploy.deploy(_deployer, _personaMirror, _diamond, _world, _reuseComponents);
+    DeployResult memory result = LibDeploy.deploy(_deployer, _world, _reuseComponents);
     vm.stopBroadcast();
-    persona = address(result.persona);
-    personaAllMinter = address(result.personaAllMinter);
-    personaMirror = address(result.personaMirror);
-    diamond = address(result.diamond);
     world = address(result.world);
   }
 }

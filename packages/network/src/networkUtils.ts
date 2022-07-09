@@ -141,9 +141,11 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
 
   for (let i = 0; i < logs.length; i++) {
     const log = logs[i];
-    const contractKey = addressToContractKey[log.address];
+    const contractKey = addressToContractKey[log.address.toLowerCase()];
     if (!contractKey) {
-      throw new Error("This should not happen. An event's address is not part of the contracts dictionnary");
+      throw new Error(
+        "This should not happen. An event's address is not part of the contracts dictionnary: " + log.address
+      );
     }
 
     const { address, abi } = contracts[contractKey];
