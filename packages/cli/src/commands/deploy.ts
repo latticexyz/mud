@@ -23,11 +23,8 @@ interface Options {
   chainSpec?: string;
   chainId?: number;
   rpc?: string;
-  personaMirror?: string;
-  personaAllMinter?: string;
-  persona?: string;
+  wsRpc?: string;
   world?: string;
-  diamond?: string;
   reuseComponents?: boolean;
   deployerPrivateKey?: string;
   deployClient?: boolean;
@@ -45,11 +42,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     chainSpec: { type: "string" },
     chainId: { type: "number" },
     rpc: { type: "string" },
-    personaMirror: { type: "string" },
-    persona: { type: "string" },
-    personaAllMinter: { type: "string" },
+    wsRpc: { type: "string" },
     world: { type: "string" },
-    diamond: { type: "string" },
     reuseComponents: { type: "boolean" },
     deployerPrivateKey: { type: "string" },
     deployClient: { type: "boolean" },
@@ -107,6 +101,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     chainSpec: "chainSpec.json",
     chainId: 31337,
     rpc: "http://localhost:8545",
+    wsRpc: "ws://localhost:8545",
     reuseComponents: false,
     deployClient: false,
     clientUrl: "http://localhost:3000",
@@ -130,6 +125,13 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
         },
         {
           type: "input",
+          name: "wsRpc",
+          default: defaultOptions.wsRpc,
+          message: "Provide a WebSocket RPC endpoint for your deployment",
+          when: (answers) => answers.chainSpec == null && args.wsRpc == null && config.wsRpc == null,
+        },
+        {
+          type: "input",
           name: "rpc",
           default: defaultOptions.rpc,
           message: "Provide a JSON RPC endpoint for your deployment",
@@ -137,49 +139,6 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
           validate: (i) => {
             if (isValidHttpUrl(i)) return true;
             return "Invalid URL";
-          },
-        },
-        {
-          type: "input",
-          name: "personaMirror",
-          message:
-            "Provide the address of an existing PersonaMirror contract. (If none is given, PersonaMirror will be deployed.)",
-          when: (answers) => answers.chainSpec == null && args.personaMirror == null && config.personaMirror == null,
-          validate: (i) => {
-            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
-            return "Invalid address";
-          },
-        },
-        {
-          type: "input",
-          name: "persona",
-          message: "Provide the address of an existing Persona contract. (If none is given, Persona will be deployed.)",
-          when: (answers) => answers.chainSpec == null && args.persona == null && config.persona == null,
-          validate: (i) => {
-            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
-            return "Invalid address";
-          },
-        },
-        {
-          type: "input",
-          name: "personaAllMinter",
-          message:
-            "Provide the address of an existing PersonaAllMinter contract. (If none is given, PersonaAllMinter will be deployed.)",
-          when: (answers) => answers.chainSpec == null && args.persona == null && config.persona == null,
-          validate: (i) => {
-            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
-            return "Invalid address";
-          },
-        },
-        {
-          type: "input",
-          name: "diamond",
-          message:
-            "Provide the address of an existing Diamond contract that should be updated. (If none is given, a new Diamond will be deployed.)",
-          when: () => args.diamond == null && config.diamond == null,
-          validate: (i) => {
-            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
-            return "Invalid address";
           },
         },
         {
@@ -277,16 +236,8 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     chainSpec: args.chainSpec ?? config.chainSpec ?? answers.chainSpec ?? defaultOptions.chainSpec,
     chainId: args.chainId ?? chainSpec?.chainId ?? config.chainId ?? answers.chainId ?? defaultOptions.chainId,
     rpc: args.rpc ?? chainSpec?.rpc ?? config.rpc ?? answers.rpc ?? defaultOptions.rpc,
-    personaMirror:
-      args.personaMirror ?? chainSpec?.personaMirrorAddress ?? config.personaMirror ?? answers.personaMirror,
-    personaAllMinter:
-      args.personaAllMinter ??
-      chainSpec?.personaAllMinterAddress ??
-      config.personaAllMinter ??
-      answers.personaAllMinter,
-    persona: args.persona ?? chainSpec?.personaAddress ?? config.persona ?? answers.persona,
+    wsRpc: args.wsRpc ?? chainSpec?.wsRpc ?? config.wsRpc ?? answers.wsRpc ?? defaultOptions.wsRpc,
     world: args.world ?? chainSpec?.world ?? config.world ?? answers.world,
-    diamond: args.diamond ?? config.diamond ?? answers.diamond,
     reuseComponents:
       args.reuseComponents ?? config.reuseComponents ?? answers.reuseComponents ?? defaultOptions.reuseComponents,
     deployerPrivateKey: args.deployerPrivateKey ?? config.deployerPrivateKey ?? answers.deployerPrivateKey,
@@ -318,7 +269,7 @@ export const deploy = async (options: Options) => {
   const id = v4().substring(0, 6);
 
   let launcherUrl;
-  let gameContractAddress;
+  let worldAddress;
 
   try {
     const tasks = new Listr([
@@ -337,10 +288,8 @@ export const deploy = async (options: Options) => {
                     "--private-keys",
                     wallet.privateKey,
                     "--sig",
-                    "deployEmber(address,address,address,address,bool)",
+                    "deployEmber(address,address,bool)",
                     wallet.address,
-                    options.personaMirror || constants.AddressZero,
-                    options.diamond || constants.AddressZero,
                     options.world || constants.AddressZero,
                     options.reuseComponents ? "true" : "false",
                     "--fork-url",
@@ -350,12 +299,8 @@ export const deploy = async (options: Options) => {
                   const { stdout } = await child;
                   const lines = stdout.split("\n");
 
-                  ctx.gameContractAddress = gameContractAddress = findLog(lines, "diamond: address");
-                  ctx.personaAddress = findLog(lines, "persona: address");
-                  ctx.personaMirrorAddress = findLog(lines, "personaMirror: address");
-                  ctx.personaAllMinterAddress = findLog(lines, "personaAllMinter: address");
-
-                  task.output = chalk.yellow(`Game deployed at: ${chalk.bgYellow.black(gameContractAddress)}`);
+                  ctx.worldAddress = worldAddress = findLog(lines, "world: address");
+                  task.output = chalk.yellow(`World deployed at: ${chalk.bgYellow.black(ctx.worldAddress)}`);
                 },
                 options: { bottomBar: 3 },
               },
@@ -420,13 +365,11 @@ export const deploy = async (options: Options) => {
                 title: "Open Launcher",
                 task: async (ctx) => {
                   const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
-                  launcherUrl = `https://play.lattice.xyz?address=${
-                    ctx.gameContractAddress || ""
-                  }&personaMirrorAddress=${ctx.personaMirrorAddress || ""}&personaAddress=${
-                    options.persona || ctx.personaAddress || ""
-                  }&personaAllMinterAddress=${options.personaAllMinter || ctx.personaAllMinterAddress || ""}&client=${
+                  launcherUrl = `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&client=${
                     clientUrl || ""
-                  }&rpc=${options.rpc || ""}&chainId=${options.chainId || ""}&dev=${options.chainId === 31337 || ""}`;
+                  }&rpc=${options.rpc || ""}&wsRpc=${options.wsRpc || ""}&chainId=${options.chainId || ""}&dev=${
+                    options.chainId === 31337 || ""
+                  }`;
                   openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },
@@ -440,7 +383,7 @@ export const deploy = async (options: Options) => {
     await tasks.run();
     console.log(chalk.bgGreen.black.bold(" Congratulations! Deployment successful"));
     console.log();
-    console.log(chalk.green(`Contract deployed to ${gameContractAddress}`));
+    console.log(chalk.green(`World address ${worldAddress}`));
     console.log(chalk.green(`Open launcher at ${launcherUrl}`));
     console.log();
   } catch (e) {

@@ -1,7 +1,6 @@
 import { sleep } from "@latticexyz/utils";
 import { reaction, runInAction } from "mobx";
-import { createNetwork } from "../src/createNetwork";
-import { Network } from "../src/types";
+import { createNetwork, Network } from "../src/createNetwork";
 
 const config = {
   clock: {

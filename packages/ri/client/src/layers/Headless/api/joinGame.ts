@@ -1,25 +1,30 @@
 import { WorldCoord } from "@latticexyz/phaserx/src/types";
-import { EntityID } from "@latticexyz/recs";
-import { getPlayerEntity } from "@latticexyz/std-client";
+import { EntityID, hasComponent } from "@latticexyz/recs";
 import { NetworkLayer } from "../../Network";
-import { ActionSystem } from "../types";
+import { ActionSystem } from "../systems";
 
 export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPosition: WorldCoord) {
-  const { Persona } = network.components;
+  const {
+    components: { Player },
+    network: { connectedAddress },
+    world,
+  } = network;
 
   const actionId = `spawn ${Math.random()}` as EntityID;
   actions.add({
     id: actionId,
-    components: { Persona },
-    requirement: ({ Persona }) => {
-      if (!network.personaId) {
-        console.warn("No persona ID found, canceling spawn attempt");
+    components: { Player },
+    requirement: ({ Player }) => {
+      const address = connectedAddress.get();
+      if (!address) {
+        console.warn("No address connected");
         actions.cancel(actionId);
-        return null;
+        return;
       }
 
-      const playerEntity = getPlayerEntity(Persona, network.personaId);
-      if (playerEntity) {
+      const playerEntity = world.entityToIndex.get(address as EntityID);
+
+      if (playerEntity != null && hasComponent(Player, playerEntity)) {
         console.warn("Player already spawned, canceling spawn.");
         actions.cancel(actionId);
         return null;
@@ -29,6 +34,7 @@ export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPos
     },
     updates: () => [],
     execute: () => {
+      console.log("spawning");
       network.api.joinGame(targetPosition);
     },
   });

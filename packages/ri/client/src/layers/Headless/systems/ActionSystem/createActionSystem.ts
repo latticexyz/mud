@@ -17,6 +17,8 @@ import { ActionData, ActionRequest } from "./types";
 import { defineActionComponent } from "../../components";
 import { merge, Observable } from "rxjs";
 
+export type ActionSystem = ReturnType<typeof createActionSystem>;
+
 export function createActionSystem(
   world: World,
   Action: ReturnType<typeof defineActionComponent>,

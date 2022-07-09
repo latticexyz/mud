@@ -1,59 +1,41 @@
 {
   "components": [
     "AttackComponent",
-    "BlueprintComponentsComponent",
-    "EmbodiedSystemArgumentComponent",
     "EntityTypeComponent",
     "FromBlueprintComponent",
     "GameConfigComponent",
     "HealthComponent",
-    "IsBlueprintComponent",
     "LastActionTurnComponent",
-    "LearnedSpellsComponent",
     "MaxDistanceComponent",
     "MineableComponent",
     "MovableComponent",
     "OwnedByComponent",
-    "PersonaComponent",
-    "PositionComponent",
-    "SpellComponent",
     "StaminaComponent",
-    "UntraversableComponent"
+    "UntraversableComponent",
+    "PositionComponent",
+    "PlayerComponent",
+    "PrototypeComponent",
+    "PrototypeCopyComponent"
   ],
-  "facets": [
+  "systems": [
+    { "name": "ComponentDevSystem", "writeAccess": ["*"] },
+    { "name": "BulkSetStateSystem" },
+    { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
+    { "name": "CombatSystem", "writeAccess": ["HealthComponent", "StaminaComponent", "LastActionTurnComponent"] },
+    { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
+    { "name": "PrototypeSystem", "writeAccess": ["*"], "initialize": "new bytes(0)" },
     {
-      "name": "InitializeFacet",
-      "functions": [
-        "initializeExternally",
-        "configureWorld",
-        "createBlueprints",
-        "registerAccessControllerExternally",
-        "registerContentCreatorExternally",
-        "registerEmbodiedSystemExternally"
+      "name": "PlayerJoinSystem",
+      "writeAccess": [
+        "OwnedByComponent",
+        "EntityTypeComponent",
+        "PositionComponent",
+        "StaminaComponent",
+        "MovableComponent",
+        "PlayerComponent",
+        "LastActionTurnComponent"
       ]
-    },
-    { "name": "EmberFacet", "functions": ["world"] },
-    {
-      "name": "DebugFacet",
-      "functions": [
-        "addComponentToEntityExternally",
-        "removeComponentFromEntityExternally",
-        "callerEntityID",
-        "bulkSetState",
-        "entryPoint"
-      ]
-    },
-    {
-      "name": "PlayerJoinFacet",
-      "functions": ["joinGame"]
-    },
-    {
-      "name": "MoveFacet",
-      "functions": ["moveEntity"]
-    },
-    {
-      "name": "CombatFacet",
-      "functions": ["attackEntity"]
     }
-  ]
+  ],
+  "initialize": ["GameConfigSystem"]
 }

@@ -36,6 +36,7 @@
     "@typescript-eslint/parser": "^5.12.1",
     "cypress": "^9.5.0",
     "cypress-wait-until": "^1.7.2",
+    "dpdm": "^3.9.0",
     "eslint": "^8.9.0",
     "jest": "^27.5.1",
     "jest-canvas-mock": "^2.3.1",
@@ -55,6 +56,7 @@
     "start:prod": "vite preview",
     "test:performance": "cypress run",
     "test:performance:record": "cypress run --record --key 6920b67f-6bc2-46cd-9d9a-ee402330517d",
-    "test:performance:dashboard": "cypress open"
+    "test:performance:dashboard": "cypress open",
+    "check:circdepen": "dpdm ./src/index.ts"
   }
 }

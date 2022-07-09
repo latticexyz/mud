@@ -3,6 +3,7 @@ ABIS=(
   # Add greps to export here 
   *Component
   *Facet
+  *System
   World
   Diamond
   LocalLatticeGameLocator
