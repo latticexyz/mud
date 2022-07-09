@@ -14,7 +14,7 @@ import { LibDeploy, DeployResult } from "../../libraries/LibDeploy.sol";
 contract Deploy is DSTest {
   Cheats internal immutable vm = Cheats(HEVM_ADDRESS);
 
-  function deployEmber(
+  function deploy(
     address _deployer,
     address _world,
     bool _reuseComponents

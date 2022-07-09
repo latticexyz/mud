@@ -63,9 +63,9 @@ library LibDeploy {
     system = new <%= system.name %>(components, result.world);
     result.world.registerSystem(address(system), <%= system.name %>ID);
 <% system.writeAccess?.forEach(component => { -%>
-<% if(component === "*") { %>
+<% if(component === "*") { -%>
 <% components.forEach(comp=> { -%>
-    authorizeWriter(components, <%= comp%>ID, address(system));
+    authorizeWriter(components, <%= comp %>ID, address(system));
 <% });-%>
 <% } else { -%>
     authorizeWriter(components, <%= component %>ID, address(system));
