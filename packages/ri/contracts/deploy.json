@@ -23,19 +23,8 @@
     { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "CombatSystem", "writeAccess": ["HealthComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
-    { "name": "PrototypeSystem", "writeAccess": ["*"], "initialize": "new bytes(0)" },
-    {
-      "name": "PlayerJoinSystem",
-      "writeAccess": [
-        "OwnedByComponent",
-        "EntityTypeComponent",
-        "PositionComponent",
-        "StaminaComponent",
-        "MovableComponent",
-        "PlayerComponent",
-        "LastActionTurnComponent"
-      ]
-    }
+    { "name": "InitSystem", "writeAccess": ["*"], "initialize": "new bytes(0)" },
+    { "name": "PlayerJoinSystem", "writeAccess": ["*"] }
   ],
   "initialize": ["GameConfigSystem"]
 }

@@ -99,7 +99,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
   private async getComponentSchema(address: string, provider: Provider): Promise<[string[], number[]]> {
     const schemaCache = await this.schemaCache;
     const cachedSchema = await schemaCache.get("ComponentSchemas", address);
-    if (cachedSchema) {
+    if (cachedSchema && this.config.get().chainId !== 31337) {
       console.log("Using cached schema");
       return cachedSchema;
     }

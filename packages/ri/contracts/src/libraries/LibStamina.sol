@@ -37,7 +37,7 @@ library LibStamina {
 
     staminaComponent.set(
       entity,
-      Stamina({ current: updatedStamina + amount, max: stamina.max, regeneration: stamina.regeneration })
+      Stamina({ current: updatedStamina, max: stamina.max, regeneration: stamina.regeneration })
     );
   }
 

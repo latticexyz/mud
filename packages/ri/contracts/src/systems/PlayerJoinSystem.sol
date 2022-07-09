@@ -8,6 +8,7 @@ import { getAddressById, getComponentById, addressToEntity, getSystemAddressById
 
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
+import { LibPrototype } from "../libraries/LibPrototype.sol";
 
 import { PlayerComponent, ID as PlayerComponentID } from "../components/PlayerComponent.sol";
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
@@ -19,8 +20,6 @@ import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../componen
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
-
-import { PrototypeSystem, ID as PrototypeSystemID, InstanceType } from "./PrototypeSystem.sol";
 
 import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
 
@@ -87,11 +86,9 @@ contract PlayerJoinSystem is ISystem {
   function spawnSoldier(uint256 ownerId, Coord memory position) private {
     uint256 entity = world.getUniqueEntityId();
 
-    PrototypeSystem(getSystemAddressById(components, PrototypeSystemID)).executeTyped(
-      SoldierID,
-      ownerId,
-      InstanceType.Copy
-    );
+    LibPrototype.copyPrototype(components, SoldierID, entity);
+
+    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
 
     PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
 

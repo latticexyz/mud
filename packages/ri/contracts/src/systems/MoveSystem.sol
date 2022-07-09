@@ -71,11 +71,11 @@ contract MoveSystem is ISystem {
     positionComponent.set(entity, targetPosition);
   }
 
-  function requirementTyped(uint256 entity, Coord memory targetPosition) public view returns (bytes memory) {
-    return requirement(abi.encode(entity, targetPosition));
+  function requirementTyped(uint256 entity, Coord[] memory path) public view returns (bytes memory) {
+    return requirement(abi.encode(entity, path));
   }
 
-  function executeTyped(uint256 entity, Coord memory targetPosition) public returns (bytes memory) {
-    return execute(abi.encode(entity, targetPosition));
+  function executeTyped(uint256 entity, Coord[] memory path) public returns (bytes memory) {
+    return execute(abi.encode(entity, path));
   }
 }
