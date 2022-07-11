@@ -31,7 +31,7 @@ library LibStamina {
       updatedStamina = stamina.max;
     }
 
-    require(updatedStamina > 0, "not enough stamina");
+    require(updatedStamina >= 0, "not enough stamina");
 
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(entity, currentTurn);
 
