@@ -37,11 +37,9 @@ contract CombatSystem is ISystem {
 
     HealthComponent healthComponent = HealthComponent(getAddressById(components, HealthComponentID));
     require(healthComponent.has(defender), "defender has no health");
-    require(healthComponent.has(attacker), "attacker has no health");
 
     AttackComponent attackComponent = AttackComponent(getAddressById(components, AttackComponentID));
     require(attackComponent.has(attacker), "attacker has no attack");
-    require(attackComponent.has(defender), "defender has no attack");
 
     Attack memory attack = attackComponent.getValue(attacker);
 
