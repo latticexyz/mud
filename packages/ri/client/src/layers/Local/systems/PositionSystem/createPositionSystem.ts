@@ -1,4 +1,4 @@
-import { defineComponentSystem, getComponentValue, setComponent } from "@latticexyz/recs";
+import { defineComponentSystem, getComponentValue, removeComponent, setComponent } from "@latticexyz/recs";
 import { LocalLayer } from "../../types";
 import { aStar } from "../../../../utils/pathfinding";
 import { worldCoordEq } from "../../../../utils/coords";
@@ -19,7 +19,10 @@ export function createPositionSystem(layer: LocalLayer) {
 
   defineComponentSystem(world, Position, ({ entity, value }) => {
     const targetPosition = value[0];
-    if (targetPosition == null) return;
+    if (targetPosition == null) {
+      removeComponent(LocalPosition, entity);
+      return;
+    }
 
     const moveSpeed = getComponentValue(Movable, entity);
     // If something is not Movable, just directly set the LocalPosition
