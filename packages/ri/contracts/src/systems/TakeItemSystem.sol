@@ -93,10 +93,7 @@ contract TakeItemSystem is ISystem {
 
     ownedByComponent.set(itemEntity, takerInventoryEntity);
 
-    uint256[] memory ents = ownedByComponent.getEntitiesWithValue(itemInventoryEntity);
-
-    uint256 entlen = ents.length;
-    if (entlen == 0) {
+    if (ownedByComponent.getEntitiesWithValue(itemInventoryEntity).length == 0) {
       // delete this inventory if its empty
       positionComponent.remove(itemInventoryEntity);
     }
