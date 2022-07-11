@@ -16,7 +16,6 @@ import {
   defineUntraversableComponent,
 } from "./components";
 import { setupContracts } from "./setup";
-import { CHECKPOINT_URL, DEV_PRIVATE_KEY, RPC_URL, RPC_WS_URL } from "./constants.local";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
@@ -29,7 +28,7 @@ export type NetworkLayerConfig = {
   worldAddress: string;
   privateKey: string;
   chainId: number;
-  jsonRpc?: string;
+  jsonRpc: string;
   wsRpc?: string;
   checkpointUrl?: string;
   devMode: boolean;
@@ -129,15 +128,15 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       syncInterval: 5000,
     },
     provider: {
-      jsonRpcUrl: config?.jsonRpc || RPC_URL,
-      wsRpcUrl: config?.wsRpc || RPC_WS_URL,
+      jsonRpcUrl: config.jsonRpc,
+      wsRpcUrl: config.wsRpc,
       options: {
         batch: false,
       },
     },
-    privateKey: config?.privateKey || DEV_PRIVATE_KEY,
-    chainId: config?.chainId || LOCAL_CHAIN_ID,
-    checkpointServiceUrl: config?.checkpointUrl || CHECKPOINT_URL,
+    privateKey: config.privateKey,
+    chainId: config.chainId,
+    checkpointServiceUrl: config.checkpointUrl,
     initialBlockNumber: 0,
   };
 

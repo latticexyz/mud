@@ -58,21 +58,21 @@ async function setPosition(
   pos: { x: number; y: number },
   { txQueue, components: { Position } }: Context
 ) {
-  await txQueue.Game.addComponentToEntityExternally(
-    BigNumber.from(entity),
-    Position,
-    abi.encode(["int32", "int32"], [pos.x, pos.y]),
-    { gasPrice: GAS, gasLimit: 2500000 }
-  );
+  // await txQueue.Game.addComponentToEntityExternally(
+  //   BigNumber.from(entity),
+  //   Position,
+  //   abi.encode(["int32", "int32"], [pos.x, pos.y]),
+  //   { gasPrice: GAS, gasLimit: 2500000 }
+  // );
 }
 
 async function setEntityType(entity: number, entityType: number, { txQueue, components: { EntityType } }: Context) {
-  await txQueue.Game.addComponentToEntityExternally(
-    BigNumber.from(entity),
-    EntityType,
-    abi.encode(["uint32"], [entityType]),
-    { gasPrice: GAS, gasLimit: 2500000 }
-  );
+  // await txQueue.Game.addComponentToEntityExternally(
+  //   BigNumber.from(entity),
+  //   EntityType,
+  //   abi.encode(["uint32"], [entityType]),
+  //   { gasPrice: GAS, gasLimit: 2500000 }
+  // );
 }
 
 async function setRandomPosition(entity: number, context: Context) {

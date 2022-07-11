@@ -1,9 +1,7 @@
 import { createNetwork, createContracts, createTxQueue } from "@latticexyz/network";
-import { DEV_PRIVATE_KEY, DIAMOND_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.local";
+import { DEV_PRIVATE_KEY, WORLD_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
-import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
 import WorldAbi from "ri-contracts/abi/World.json";
-import CombinedFacetsAbi from "ri-contracts/abi/CombinedFacets.json";
 import { computed } from "mobx";
 
 const config: Parameters<typeof createNetwork>[0] = {
@@ -28,9 +26,8 @@ export async function setupContracts() {
 
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
-  const { contracts } = await createContracts<{ Game: CombinedFacets; World: WorldContract }>({
-    config: { Game: { abi: CombinedFacetsAbi.abi, address: DIAMOND_ADDRESS } },
-    asyncConfig: async (c) => ({ World: { abi: WorldAbi.abi, address: await c.Game.world() } }),
+  const { contracts } = await createContracts<{ World: WorldContract }>({
+    config: { World: { address: WORLD_ADDRESS, abi: WorldAbi.abi } },
     signerOrProvider,
   });
 
