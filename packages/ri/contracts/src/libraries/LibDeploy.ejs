@@ -6,144 +6,79 @@ import { DSTest } from "ds-test/test.sol";
 import { console } from "forge-std/console.sol";
 import { Cheats } from "../test/utils/Cheats.sol";
 
-// ECS
+// Solecs 
 import { World } from "solecs/World.sol";
 import { Component } from "solecs/Component.sol";
-
-// Diamonds
-import { Diamantaire } from "../diamond/Diamantaire.sol";
-import { Diamond } from "../diamond/Diamond.sol";
-import { IDiamondCut } from "../diamond/interfaces/IDiamondCut.sol";
-import { AppStorage, Config } from "../libraries/LibAppStorage.sol";
-
-// Facets
-<% facets.forEach(facet => { -%>
-import { <%= facet.name %> } from "../facets/<%= facet.name %>.sol";
-<% }) -%>
+import { getAddressById } from "solecs/utils.sol";
+import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import { ISystem } from "solecs/interfaces/ISystem.sol";
 
 // Components
 <% components.forEach(component => { -%>
-import { <%- component %> } from "../components/<%- component %>.sol";
+import { <%= component %>, ID as <%= component %>ID } from "../components/<%- component %>.sol";
 <% }); -%>
 
-// Access Controllers
-import { PersonaAccessController } from "../access/PersonaAccessController.sol";
-
-// Content Creators
-import { SpellContentCreator } from "../entities/SpellContentCreator.sol";
-
-// Embodied Systems
-import { CreateEntityFromPrototypeEmbodiedSystem } from "../embodied/CreateEntityFromPrototypeEmbodiedSystem.sol";
-
-// Outside World
-import { MockL2Bridge } from "persona/test/mocks/MockL2Bridge.sol";
-import { MockConsumer } from "persona/test/mocks/MockConsumer.sol";
-import { Persona } from "persona/L1/Persona.sol";
-import { EmptyPersonaTokenURIGenerator } from "persona/L1/EmptyPersonaTokenURIGenerator.sol";
-import { PersonaMirror } from "persona/L2/PersonaMirror.sol";
-import { PersonaAllMinter } from "persona/L1/PersonaAllMinter.sol";
+// Systems
+<% systems.forEach(system => { -%>
+import { <%= system.name %>, ID as <%= system.name %>ID } from "../systems/<%- system.name %>.sol";
+<% }); -%>
 
 struct DeployResult {
-  Diamond diamond;
   World world;
   address deployer;
-  MockL2Bridge bridge;
-  Persona persona;
-  PersonaAllMinter personaAllMinter;
-  PersonaMirror personaMirror;
-  EmptyPersonaTokenURIGenerator tokenURIGenerator;
 }
 
 library LibDeploy {
 
   function deploy(
     address _deployer,
-    address _personaMirror,
-    address payable _diamond,
     address _world,
     bool _reuseComponents
   ) internal returns (DeployResult memory result) {
     result.deployer = _deployer;
-    bool upgrade = _diamond != address(0);
-    IDiamondCut.FacetCutAction action = upgrade ? IDiamondCut.FacetCutAction.Replace : IDiamondCut.FacetCutAction.Add;
-
-    Diamantaire diamantaire = new Diamantaire();
-
-    bytes4[] memory functionSelectors;
-
-    IDiamondCut.FacetCut[] memory diamondCut = new IDiamondCut.FacetCut[](<%= facets.length -%>);
 
     // ------------------------
-    // Add facets
-    // ------------------------
-
-<% facets.forEach((facet, facetIndex) => { -%>
-    functionSelectors = new bytes4[](<%= facet.functions.length %>);
-<% facet.functions.forEach((func, funcIndex) => { -%>
-    functionSelectors[<%= funcIndex -%>] = <%= facet.name -%>.<%= func -%>.selector;
-<% }); -%>
-
-    diamondCut[<%= facetIndex %>] = IDiamondCut.FacetCut({
-      facetAddress: address(new <%= facet.name %>()),
-      action: action,
-      functionSelectors: functionSelectors
-    });
-
-<% }); -%>
-    // ----------------------a-
     // Deploy 
     // ------------------------
 
-    if (_personaMirror == address(0)) {
-      // deploy persona, persona mirror, and the bridge
-      result.bridge = new MockL2Bridge();
-      result.tokenURIGenerator = new EmptyPersonaTokenURIGenerator();
-      result.persona = new Persona("L", "L", address(result.bridge), address(0));
-      result.personaAllMinter = new PersonaAllMinter();
-      result.personaAllMinter.setPersona(address(result.persona));
-      result.persona.setMinter(address(result.personaAllMinter), true);
-      result.personaMirror = new PersonaMirror(address(result.persona), address(result.bridge));
-      result.persona.setPersonaMirrorL2(address(result.personaMirror));
-    } else {
-      result.personaMirror = PersonaMirror(_personaMirror);
-    }
-
-    // Deploy the diamond
-    if (upgrade) {
-      // Upgrade the diamond
-      IDiamondCut(_diamond).diamondCut(diamondCut, address(0), new bytes(0));
-      result.diamond = Diamond(_diamond);
-    } else {
-      // Deploy a new diamond
-      result.diamond = diamantaire.createDiamond(result.deployer, diamondCut, new bytes(0), 0);
-    }
-    address diamondAddress = address(result.diamond);
-
-    // Call initialize on the initialize facet
+    // Deploy world
     result.world = _world == address(0) ? new World() : World(_world);
-    InitializeFacet(diamondAddress).initializeExternally(Config(false, address(result.personaMirror)), result.world);
+    if(_world == address(0)) result.world.init(); // Init if it's a fresh world
 
-    // Deploy each component and transfer ownership to the diamond contract
+      // Deploy components
     if(!_reuseComponents) {
       Component comp;
-<% components.forEach(component => { -%>
+<% components.forEach(component => { %>
       console.log("Deploying <%= component %>");
       comp = new <%= component %>(address(result.world));
       console.log(address(comp));
-      comp.transferOwnership(diamondAddress);
 <% });%>
-    }
+    } 
     
-    // ------------------------
-    // Initialize 
-    // ------------------------
-
-    if(!upgrade) {
-      InitializeFacet(diamondAddress).configureWorld();
-      InitializeFacet(diamondAddress).createBlueprints();
-
-      // Register access controllers
-      InitializeFacet(diamondAddress).registerAccessControllerExternally(address(new PersonaAccessController()));
-    }
+    // Deploy systems
+    ISystem system; 
+    IUint256Component components = result.world.components();
+<% systems.forEach(system => { %>
+    console.log("Deploying <%= system.name %>");
+    system = new <%= system.name %>(components, result.world);
+    result.world.registerSystem(address(system), <%= system.name %>ID);
+<% system.writeAccess?.forEach(component => { -%>
+<% if(component === "*") { -%>
+<% components.forEach(comp=> { -%>
+    authorizeWriter(components, <%= comp %>ID, address(system));
+<% });-%>
+<% } else { -%>
+    authorizeWriter(components, <%= component %>ID, address(system));
+<% } -%>
+<% });-%>
+<% if(system.initialize) { -%>
+    system.execute(<%= system.initialize -%>);
+<% } -%>
+    console.log(address(system));
+<% });%>
+  }
+  
+  function authorizeWriter(IUint256Component components, uint256 componentId, address writer) internal {
+    Component(getAddressById(components, componentId)).authorizeWriter(writer);
   }
 }

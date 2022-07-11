@@ -36,28 +36,28 @@ async function bootLayers() {
 
   async function bootLayers() {
     const params = new URLSearchParams(window.location.search);
-    const contractAddress = params.get("contractAddress");
+    const worldAddress = params.get("worldAddress");
     const privateKey = params.get("burnerWalletPrivateKey");
     const chainIdString = params.get("chainId");
-    const personaIdString = params.get("personaId");
     const jsonRpc = params.get("rpc") || undefined;
     const wsRpc = params.get("wsRpc") || undefined; // || (jsonRpc && jsonRpc.replace("http", "ws"));
     const checkpointUrl = params.get("checkpoint") || undefined;
     const devMode = params.get("dev") === "true";
 
     let networkLayerConfig;
-    if (contractAddress && privateKey && chainIdString && personaIdString) {
+    if (worldAddress && privateKey && chainIdString) {
       networkLayerConfig = {
-        contractAddress,
+        worldAddress,
         privateKey,
         chainId: parseInt(chainIdString),
-        personaId: parseInt(personaIdString),
         jsonRpc,
         wsRpc,
         checkpointUrl,
         devMode,
       };
     }
+
+    if (!networkLayerConfig) throw new Error("Invalid config");
 
     if (!layers.network) layers.network = await createNetworkLayer(networkLayerConfig);
     if (!layers.headless) layers.headless = await createHeadlessLayer(layers.network);
@@ -84,6 +84,8 @@ async function bootLayers() {
       initialBoot = false;
       layers.network.startSync();
     }
+
+    return layers;
   }
 
   function disposeLayer(layer: keyof typeof layers) {
@@ -120,6 +122,7 @@ async function bootLayers() {
       disposeLayer("local");
       disposeLayer("phaser");
       await bootLayers();
+      await bootReact(layers as Layers);
       console.log("HMR Network");
       layers.network?.startSync();
       reloadingNetwork = false;
@@ -167,8 +170,17 @@ async function bootLayers() {
 }
 
 function bootReact(layers: Layers) {
-  const rootElement = document.getElementById("react-root");
+  let rootElement = document.getElementById("react-root");
   if (!rootElement) return console.warn("React root not found");
+
+  if (rootElement.hasChildNodes()) {
+    const newRootElement = document.createElement("div");
+    newRootElement.id = "react-root";
+    rootElement.after(newRootElement);
+    rootElement.remove();
+    rootElement = newRootElement;
+  }
+
   const root = ReactDOM.createRoot(rootElement);
 
   function renderEngine() {

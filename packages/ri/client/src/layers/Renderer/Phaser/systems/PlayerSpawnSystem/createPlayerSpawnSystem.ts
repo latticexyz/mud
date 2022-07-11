@@ -1,5 +1,4 @@
 import { defineEnterSystem, getComponentValue, Has } from "@latticexyz/recs";
-import { getPlayerEntity } from "@latticexyz/std-client";
 import { PhaserLayer } from "../../types";
 
 export function createPlayerSpawnSystem(layer: PhaserLayer) {
@@ -7,8 +6,8 @@ export function createPlayerSpawnSystem(layer: PhaserLayer) {
     world,
     parentLayers: {
       network: {
-        personaId,
-        components: { OwnedBy, Persona, Position },
+        components: { OwnedBy, Position },
+        network: { connectedAddress },
       },
     },
     scenes: {
@@ -25,12 +24,10 @@ export function createPlayerSpawnSystem(layer: PhaserLayer) {
 
   defineEnterSystem(world, [Has(OwnedBy), Has(Position)], ({ entity }) => {
     if (alreadyZoomed) return;
-    if (!personaId) return;
 
-    const playerEntity = getPlayerEntity(Persona, personaId);
     const ownedBy = getComponentValue(OwnedBy, entity)?.value;
 
-    if (ownedBy === world.entities[playerEntity]) {
+    if (ownedBy === connectedAddress.get()) {
       const position = getComponentValue(Position, entity);
       if (!position) return;
 

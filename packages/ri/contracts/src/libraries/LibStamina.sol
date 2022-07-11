@@ -1,70 +1,68 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import { LibAppStorage, AppStorage } from "./LibAppStorage.sol";
+import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import { getAddressById } from "solecs/utils.sol";
 
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
-import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
+import { StaminaComponent, ID as StaminaComponentID, Stamina } from "../components/StaminaComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
 library LibStamina {
-  function s() internal pure returns (AppStorage storage) {
-    return LibAppStorage.diamondStorage();
-  }
-
-  function reduceStamina(uint256 entity, int32 amount) public {
-    require(amount > 0, "nice try");
-
-    (
-      StaminaComponent staminaComponent,
-      LastActionTurnComponent lastActionTurnComponent
-    ) = _getRequiredStaminaComponents(entity);
-    (int32 updatedStamina, int32 atTurn) = _getUpdatedStamina(entity, staminaComponent, lastActionTurnComponent);
-    require(updatedStamina >= amount, "not enough stamina");
-
-    Stamina memory stamina = staminaComponent.getValue(entity);
-
-    lastActionTurnComponent.set(entity, atTurn);
-    staminaComponent.set(
-      entity,
-      Stamina({ current: updatedStamina - amount, max: stamina.max, regeneration: stamina.regeneration })
-    );
-  }
-
-  function getUpdatedStamina(uint256 entity) public view returns (int32 updatedStamina, int32 atTurn) {
-    (StaminaComponent stamina, LastActionTurnComponent lastActionTurn) = _getRequiredStaminaComponents(entity);
-    return _getUpdatedStamina(entity, stamina, lastActionTurn);
-  }
-
-  function _getUpdatedStamina(
+  function modifyStamina(
+    IUint256Component components,
     uint256 entity,
-    StaminaComponent staminaComponent,
-    LastActionTurnComponent lastActionTurnComponent
-  ) private view returns (int32 updatedStamina, int32 atTurn) {
-    Stamina memory stamina = staminaComponent.getValue(entity);
-    atTurn = getCurrentTurn();
-    int32 staminaSinceLastAction = int32((atTurn - lastActionTurnComponent.getValue(entity)) * stamina.regeneration);
-    updatedStamina = stamina.current + staminaSinceLastAction;
+    int32 amount
+  ) internal {
+    (int32 updatedStamina, int32 currentTurn) = getUpdatedStamina(components, entity);
 
+    StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
+    Stamina memory stamina = staminaComponent.getValue(entity);
+
+    // Cap stamina regen at max stamina
     if (updatedStamina > stamina.max) {
       updatedStamina = stamina.max;
     }
+
+    updatedStamina += amount;
+
+    // Cap stamina modification at max stamina
+    if (updatedStamina > stamina.max) {
+      updatedStamina = stamina.max;
+    }
+
+    require(updatedStamina >= 0, "not enough stamina");
+
+    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(entity, currentTurn);
+
+    staminaComponent.set(
+      entity,
+      Stamina({ current: updatedStamina, max: stamina.max, regeneration: stamina.regeneration })
+    );
   }
 
-  function _getRequiredStaminaComponents(uint256 entity)
-    private
+  function getUpdatedStamina(IUint256Component components, uint256 entity)
+    internal
     view
-    returns (StaminaComponent staminaComponent, LastActionTurnComponent lastActionTurnComponent)
+    returns (int32 updatedStamina, int32 currentTurn)
   {
-    staminaComponent = StaminaComponent(s().world.getComponent(StaminaComponentID));
-    require(staminaComponent.has(entity), "entity does not have stamina");
+    StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
+    GameConfigComponent gameConfigComponent = GameConfigComponent(getAddressById(components, GameConfigComponentID));
+    LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
+      getAddressById(components, LastActionTurnComponentID)
+    );
 
-    lastActionTurnComponent = LastActionTurnComponent(s().world.getComponent(LastActionTurnComponentID));
-    require(lastActionTurnComponent.has(entity), "entity has no LastActionTurn");
+    require(staminaComponent.has(entity), "entity has no stamina");
+    require(lastActionTurnComponent.has(entity), "entity has no last action turn");
+
+    currentTurn = getCurrentTurn(gameConfigComponent);
+    Stamina memory stamina = staminaComponent.getValue(entity);
+
+    int32 staminaSinceLastAction = (currentTurn - lastActionTurnComponent.getValue(entity)) * stamina.regeneration;
+    updatedStamina = stamina.current + staminaSinceLastAction;
   }
 
-  function getCurrentTurn() public view returns (int32) {
-    GameConfigComponent gameConfigComponent = GameConfigComponent(s().world.getComponent(GameConfigComponentID));
+  function getCurrentTurn(GameConfigComponent gameConfigComponent) internal view returns (int32) {
     GameConfig memory gameConfig = gameConfigComponent.getValue(GodID);
 
     uint256 secondsSinceGameStart = block.timestamp - gameConfig.startTime;

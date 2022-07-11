@@ -1,7 +1,7 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
-import { defineQuery, EntityIndex, getComponentValue, Has } from "@latticexyz/recs";
-import { getPersonaColor } from "@latticexyz/std-client";
+import { defineQuery, getComponentValue, Has } from "@latticexyz/recs";
+import { getAddressColor } from "@latticexyz/std-client";
 import { map, merge } from "rxjs";
 
 export function registerSelection() {
@@ -20,49 +20,33 @@ export function registerSelection() {
           singletonEntity,
         },
         network: {
-          components: { OwnedBy, Persona },
+          components: { OwnedBy },
         },
       } = layers;
 
       const dataQuery = defineQuery([Has(Selected)]);
+
       return merge(dataQuery.update$, Selection.update$).pipe(
         map(() => {
           const selection = getComponentValue(Selection, singletonEntity);
-
-          const getPersonaOfOwner = (selectedEntity: EntityIndex) => {
-            const ownedBy = getComponentValue(OwnedBy, selectedEntity)?.value;
-            if (!ownedBy) return undefined;
-            const ownerEntityIndex = layers.network.world.entityToIndex.get(ownedBy);
-            if (!ownerEntityIndex) return undefined;
-
-            return getComponentValue(Persona, ownerEntityIndex)?.value;
-          };
-
-          const selectedEntities = dataQuery.matching;
-          const selectedEntity = [...selectedEntities][0];
-          const ownerPersonaId = getPersonaOfOwner(selectedEntity);
+          const selectedEntity = [...dataQuery.matching][0];
+          const ownedBy = getComponentValue(OwnedBy, selectedEntity)?.value;
 
           return {
             selection,
-            selectedEntity: {
-              ownerPersonaId,
-            },
+            ownedBy,
           };
         })
       );
     },
-    ({ selection, selectedEntity }) => {
+    ({ selection, ownedBy }) => {
       return (
         <>
           x: {selection?.x}
           <br />
           y: {selection?.y}
           <br />
-          {selectedEntity?.ownerPersonaId && (
-            <p
-              style={{ color: getPersonaColor(selectedEntity.ownerPersonaId).toString(16) }}
-            >{`owner persona: ${selectedEntity.ownerPersonaId}`}</p>
-          )}
+          {ownedBy && <p style={{ color: getAddressColor(ownedBy).toString(16) }}>{`owned by: ${ownedBy}`}</p>}
           <br />
         </>
       );
