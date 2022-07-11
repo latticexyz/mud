@@ -12,6 +12,7 @@
     "MineableComponent",
     "MovableComponent",
     "OwnedByComponent",
+    "SpawnableComponent",
     "StaminaComponent",
     "UntraversableComponent",
     "PositionComponent",

@@ -50,4 +50,12 @@ export function createSyncSystem(layer: LocalLayer) {
     () => Selectable,
     () => ({ value: true })
   );
+
+  // Add Selectable to entities of type Creature
+  defineSyncSystem(
+    world,
+    [HasValue(EntityType, { value: EntityTypes.Settlement })],
+    () => Selectable,
+    () => ({ value: true })
+  );
 }

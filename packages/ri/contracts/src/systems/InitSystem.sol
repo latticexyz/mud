@@ -4,8 +4,15 @@ import { ISystem } from "solecs/interfaces/ISystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 
+import { getAddressById, getComponentById, addressToEntity, getSystemAddressById } from "solecs/utils.sol";
+
+import { LibPrototype } from "../libraries/LibPrototype.sol";
+
+import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
+import { SpawnableComponent, ID as SpawnableComponentID } from "../components/SpawnableComponent.sol";
+
 import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
-import { SettlementPrototype } from "../prototypes/SettlementPrototype.sol";
+import { SettlementPrototype, ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.init"));
 
@@ -33,5 +40,23 @@ contract InitSystem is ISystem {
     // Initialize Prototypes
     SoldierPrototype(components);
     SettlementPrototype(components);
+
+    uint256 spawnPoint = world.getUniqueEntityId();
+    LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
+
+    SpawnableComponent(getAddressById(components, SpawnableComponentID)).set(spawnPoint);
+    PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(0, 0));
+
+    spawnPoint = world.getUniqueEntityId();
+    LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
+
+    SpawnableComponent(getAddressById(components, SpawnableComponentID)).set(spawnPoint);
+    PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(20, 10));
+
+    spawnPoint = world.getUniqueEntityId();
+    LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
+
+    SpawnableComponent(getAddressById(components, SpawnableComponentID)).set(spawnPoint);
+    PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(5, 20));
   }
 }

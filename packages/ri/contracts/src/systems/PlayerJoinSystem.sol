@@ -20,6 +20,8 @@ import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../componen
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
+import { SpawnableComponent, ID as SpawnableComponentID } from "../components/SpawnableComponent.sol";
+import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
 import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
 import { ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
@@ -36,51 +38,55 @@ contract PlayerJoinSystem is ISystem {
   }
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
-    IComponent playerComponent = getComponentById(components, PlayerComponentID);
+    PlayerComponent playerComponent = PlayerComponent(getAddressById(components, PlayerComponentID));
     require(!playerComponent.has(addressToEntity(msg.sender)), "player already spawned");
 
-    Coord memory position = abi.decode(arguments, (Coord));
-    Coord[] memory spawnPositions = new Coord[](5);
-
-    spawnPositions[0] = position;
-    spawnPositions[1] = Coord(position.x + 1, position.y);
-    spawnPositions[2] = Coord(position.x - 1, position.y);
-    spawnPositions[3] = Coord(position.x, position.y + 1);
-    spawnPositions[4] = Coord(position.x, position.y - 1);
+    uint256 spawnEntity = abi.decode(arguments, (uint256));
+    require(
+      SpawnableComponent(getAddressById(components, SpawnableComponentID)).has(spawnEntity),
+      "that is not a spawn point"
+    );
 
     PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
-    for (uint256 i; i < spawnPositions.length; i++) {
-      require(positionComponent.getEntitiesWithValue(spawnPositions[i]).length == 0, "spot taken");
-    }
+    require(positionComponent.has(spawnEntity), "spawn has no location");
+    Coord memory spawnPosition = positionComponent.getValue(spawnEntity);
 
-    return abi.encode(playerComponent, spawnPositions);
+    Coord[] memory unitPositions = new Coord[](4);
+
+    unitPositions[0] = Coord(spawnPosition.x + 1, spawnPosition.y);
+    unitPositions[1] = Coord(spawnPosition.x - 1, spawnPosition.y);
+    unitPositions[2] = Coord(spawnPosition.x, spawnPosition.y + 1);
+    unitPositions[3] = Coord(spawnPosition.x, spawnPosition.y - 1);
+
+    return abi.encode(spawnEntity, unitPositions, playerComponent);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (IComponent playerComponent, Coord[] memory spawnPositions) = abi.decode(
+    (uint256 spawnEntity, Coord[] memory unitPositions, PlayerComponent playerComponent) = abi.decode(
       requirement(arguments),
-      (IComponent, Coord[])
+      (uint256, Coord[], PlayerComponent)
     );
 
     // Create player entity
     uint256 playerEntity = addressToEntity(msg.sender);
-    PlayerComponent(address(playerComponent)).set(playerEntity);
+    playerComponent.set(playerEntity);
+    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(spawnEntity, playerEntity);
+    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
+      spawnEntity,
+      LibStamina.getCurrentTurn(components)
+    );
 
-    for (uint256 i; i < spawnPositions.length; i++) {
-      if (i == 0) {
-        spawnSettlement(playerEntity, spawnPositions[i]);
-      } else {
-        spawnSoldier(playerEntity, spawnPositions[i]);
-      }
+    for (uint256 i; i < unitPositions.length; i++) {
+      spawnSoldier(playerEntity, unitPositions[i]);
     }
   }
 
-  function requirementTyped(Coord memory targetPosition) public view returns (bytes memory) {
-    return requirement(abi.encode(targetPosition));
+  function requirementTyped(uint256 spawnEntity) public view returns (bytes memory) {
+    return requirement(abi.encode(spawnEntity));
   }
 
-  function executeTyped(Coord memory targetPosition) public returns (bytes memory) {
-    return execute(abi.encode(targetPosition));
+  function executeTyped(uint256 spawnEntity) public returns (bytes memory) {
+    return execute(abi.encode(spawnEntity));
   }
 
   // ------------------------
@@ -99,21 +105,6 @@ contract PlayerJoinSystem is ISystem {
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
       entity,
       LibStamina.getCurrentTurn(components)
-    );
-  }
-
-  function spawnSettlement(uint256 ownerId, Coord memory position) private {
-    uint256 entity = world.getUniqueEntityId();
-
-    LibPrototype.copyPrototype(components, SettlementID, entity);
-
-    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
-
-    PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
-
-    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
-      entity,
-      LibStamina.getCurrentTurn(components) - 5
     );
   }
 }

@@ -111,6 +111,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "Capturable", metadata: { contractId: keccak256("ember.component.capturable") } }
     ),
+    Spawnable: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "Spawnable", metadata: { contractId: keccak256("ember.component.spawnable") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -132,6 +137,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.prototypeCopy")]: "PrototypeCopy",
     [keccak256("ember.component.factoryComponent")]: "Factory",
     [keccak256("ember.component.capturable")]: "Capturable",
+    [keccak256("ember.component.spawnable")]: "Spawnable",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -189,9 +195,9 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     );
   }
 
-  async function joinGame(position: WorldCoord) {
-    console.log(`Joining game at position ${JSON.stringify(position)}`);
-    return systems["ember.system.playerJoin"].executeTyped(position);
+  async function joinGame(spawnEntity: EntityID) {
+    console.log(`Joining game at position ${spawnEntity}`);
+    return systems["ember.system.playerJoin"].executeTyped(BigNumber.from(spawnEntity));
   }
 
   async function moveEntity(entity: string, path: WorldCoord[]) {

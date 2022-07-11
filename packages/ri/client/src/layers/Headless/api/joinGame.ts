@@ -1,9 +1,8 @@
-import { WorldCoord } from "@latticexyz/phaserx/src/types";
-import { EntityID, hasComponent } from "@latticexyz/recs";
+import { EntityID, EntityIndex, hasComponent } from "@latticexyz/recs";
 import { NetworkLayer } from "../../Network";
 import { ActionSystem } from "../systems";
 
-export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPosition: WorldCoord) {
+export function joinGame(network: NetworkLayer, actions: ActionSystem, spawnEntity: EntityIndex) {
   const {
     components: { Player },
     network: { connectedAddress },
@@ -35,7 +34,7 @@ export function joinGame(network: NetworkLayer, actions: ActionSystem, targetPos
     updates: () => [],
     execute: () => {
       console.log("spawning");
-      network.api.joinGame(targetPosition);
+      network.api.joinGame(world.entities[spawnEntity]);
     },
   });
 }
