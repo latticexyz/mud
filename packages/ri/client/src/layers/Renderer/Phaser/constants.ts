@@ -22,6 +22,7 @@ export enum Assets {
 export enum Animations {
   ImpIdle = "ImpIdle",
   HeroIdle = "HeroIdle",
+  SettlementIdle = "SettlementIdle",
 }
 
 export enum Tileset {

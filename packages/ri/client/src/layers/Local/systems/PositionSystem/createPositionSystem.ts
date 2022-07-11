@@ -21,14 +21,15 @@ export function createPositionSystem(layer: LocalLayer) {
     const targetPosition = value[0];
     if (targetPosition == null) return;
 
-    const localPosition = getComponentValue(LocalPosition, entity);
-    if (!localPosition || worldCoordEq(targetPosition, localPosition)) return;
-
     const moveSpeed = getComponentValue(Movable, entity);
+    // If something is not Movable, just directly set the LocalPosition
     if (moveSpeed == null) {
       setComponent(LocalPosition, entity, targetPosition);
       return;
     }
+
+    const localPosition = getComponentValue(LocalPosition, entity);
+    if (!localPosition || worldCoordEq(targetPosition, localPosition)) return;
 
     const path = aStar(localPosition, targetPosition, moveSpeed.value + 1, layer.parentLayers.network, LocalPosition);
 
@@ -42,6 +43,9 @@ export function createPositionSystem(layer: LocalLayer) {
 
       setComponent(Path, entity, { x, y });
     } else {
+      // If no Path to the target is found, we assume that the
+      // Position change occurred outside of normal movement
+      // and just set LocalPosition manually.
       setComponent(LocalPosition, entity, targetPosition);
     }
   });

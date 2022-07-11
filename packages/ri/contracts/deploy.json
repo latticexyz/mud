@@ -2,6 +2,7 @@
   "components": [
     "AttackComponent",
     "EntityTypeComponent",
+    "FactoryComponent",
     "FromBlueprintComponent",
     "GameConfigComponent",
     "HealthComponent",
@@ -24,7 +25,8 @@
     { "name": "CombatSystem", "writeAccess": ["HealthComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
     { "name": "InitSystem", "writeAccess": ["*"], "initialize": "new bytes(0)" },
-    { "name": "PlayerJoinSystem", "writeAccess": ["*"] }
+    { "name": "PlayerJoinSystem", "writeAccess": ["*"] },
+    { "name": "FactorySystem", "writeAccess": ["*"] }
   ],
   "initialize": ["GameConfigSystem"]
 }

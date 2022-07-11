@@ -101,6 +101,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.StringArray },
       { id: "Prototype", metadata: { contractId: keccak256("ember.component.prototype") } }
     ),
+    Factory: defineComponent(
+      world,
+      { prototypeIds: Type.StringArray, costs: Type.NumberArray },
+      { id: "Factory", metadata: { contractId: keccak256("ember.component.factoryComponent") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -120,6 +125,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.attackComponent")]: "Attack",
     [keccak256("ember.component.prototype")]: "Prototype",
     [keccak256("ember.component.prototypeCopy")]: "PrototypeCopy",
+    [keccak256("ember.component.factoryComponent")]: "Factory",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -192,6 +198,15 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     return systems["ember.system.combat"].executeTyped(BigNumber.from(attacker), BigNumber.from(defender));
   }
 
+  async function buildAt(builderId: EntityID, prototypeId: string, position: WorldCoord) {
+    console.log(`Building entity ${prototypeId} from factory ${builderId} at coord ${JSON.stringify(position)}`);
+    return systems["ember.system.factory"].executeTyped(
+      BigNumber.from(builderId),
+      BigNumber.from(prototypeId),
+      position
+    );
+  }
+
   // Constants (load from contract later)
   const constants = {
     mapSize: 50,
@@ -212,6 +227,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       joinGame,
       moveEntity,
       attackEntity,
+      buildAt,
     },
     DEV_MODE,
   };

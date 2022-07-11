@@ -2,7 +2,6 @@ import { PhaserLayer } from "../../types";
 import { pixelToWorldCoord } from "../../utils";
 import { map } from "rxjs";
 import { getComponentValueStrict, Has, HasValue, runQuery } from "@latticexyz/recs";
-import { Direction } from "../../../../../constants";
 import { WorldCoord } from "../../../../../types";
 
 export function createInputSystem(layer: PhaserLayer) {
@@ -13,6 +12,11 @@ export function createInputSystem(layer: PhaserLayer) {
     components: { HoverHighlight },
     api: { highlightCoord },
     parentLayers: {
+      network: {
+        world,
+        components: { Factory },
+        api: { buildAt },
+      },
       headless: {
         api: { moveEntity, attackEntity },
       },
@@ -30,6 +34,25 @@ export function createInputSystem(layer: PhaserLayer) {
     if (!selectedEntity) return;
     moveEntity(selectedEntity, targetPosition);
   };
+
+  input.onKeyPress(
+    (keys) => keys.has("B"),
+    () => {
+      const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
+      if (hoverHighlight.x == null || hoverHighlight.y == null) return;
+
+      const buildPosition = { x: hoverHighlight.x, y: hoverHighlight.y };
+
+      const selectedEntity = getSelectedEntity();
+      if (!selectedEntity) return;
+
+      const factory = getComponentValueStrict(Factory, selectedEntity);
+      const prototypeId = factory.prototypeIds[0];
+      if (!prototypeId) return;
+
+      buildAt(world.entities[selectedEntity], prototypeId, buildPosition);
+    }
+  );
 
   input.onKeyPress(
     (keys) => keys.has("A"),
