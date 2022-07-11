@@ -1,6 +1,7 @@
 {
   "components": [
     "AttackComponent",
+    "CapturableComponent",
     "EntityTypeComponent",
     "FactoryComponent",
     "FromBlueprintComponent",

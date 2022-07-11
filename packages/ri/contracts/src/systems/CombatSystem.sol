@@ -13,6 +13,7 @@ import { LibStamina } from "../libraries/LibStamina.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { AttackComponent, ID as AttackComponentID, Attack } from "../components/AttackComponent.sol";
 import { HealthComponent, ID as HealthComponentID, Health } from "../components/HealthComponent.sol";
+import { CapturableComponent, ID as CapturableComponentID } from "../components/CapturableComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 
@@ -50,26 +51,26 @@ contract CombatSystem is ISystem {
     int32 distanceToTarget = LibUtils.manhattan(attackerPosition, defenderPosition);
     require(distanceToTarget <= attack.range, "not in range");
 
-    return abi.encode(attackComponent, healthComponent, attacker, defender);
+    return abi.encode(attacker, defender, attackComponent, healthComponent);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (AttackComponent attackComponent, HealthComponent healthComponent, uint256 attacker, uint256 defender) = abi.decode(
+    (uint256 attacker, uint256 defender, AttackComponent attackComponent, HealthComponent healthComponent) = abi.decode(
       requirement(arguments),
-      (AttackComponent, HealthComponent, uint256, uint256)
+      (uint256, uint256, AttackComponent, HealthComponent)
     );
 
     LibStamina.modifyStamina(components, attacker, -1);
-    Health memory newDefenderHealth = dealDamage(attackComponent, healthComponent, attacker, defender);
+    bool defenderShouldRetaliate = dealDamage(attacker, defender);
 
-    if (newDefenderHealth.current > 0 && healthComponent.has(attacker) && attackComponent.has(defender)) {
+    if (defenderShouldRetaliate && healthComponent.has(attacker) && attackComponent.has(defender)) {
       // Check stamina after health check, because if the defender has died
       // they will not have stamina
       (int32 defenderStamina, int32 _atTurn) = LibStamina.getUpdatedStamina(components, defender);
 
       if (defenderStamina >= 1) {
         LibStamina.modifyStamina(components, defender, -1);
-        dealDamage(attackComponent, healthComponent, defender, attacker);
+        dealDamage(defender, attacker);
       }
     }
   }
@@ -86,17 +87,17 @@ contract CombatSystem is ISystem {
   // Internals
   // ------------------------
 
-  function dealDamage(
-    AttackComponent attackComponent,
-    HealthComponent healthComponent,
-    uint256 attacker,
-    uint256 defender
-  ) private returns (Health memory newDefenderHealth) {
+  function dealDamage(uint256 attacker, uint256 defender) private returns (bool defenderShouldRetaliate) {
+    AttackComponent attackComponent = AttackComponent(getAddressById(components, AttackComponentID));
+    HealthComponent healthComponent = HealthComponent(getAddressById(components, HealthComponentID));
+    CapturableComponent capturableComponent = CapturableComponent(getAddressById(components, CapturableComponentID));
+
     require(attackComponent.has(attacker), "attacker has no attack");
     require(healthComponent.has(defender), "defender has no health");
 
     Attack memory attackerAttack = attackComponent.getValue(attacker);
     Health memory defenderHealth = healthComponent.getValue(defender);
+    defenderShouldRetaliate = true;
 
     int32 attackStrength = attackerAttack.strength;
     if (healthComponent.has(attacker)) {
@@ -107,11 +108,17 @@ contract CombatSystem is ISystem {
     }
 
     if (attackStrength > 0) {
-      newDefenderHealth = calculateNewHealth(defenderHealth, attackStrength);
+      Health memory newDefenderHealth = calculateNewHealth(defenderHealth, attackStrength);
       healthComponent.set(defender, newDefenderHealth);
 
       if (newDefenderHealth.current < 0) {
-        kill(defender);
+        if (capturableComponent.has(defender)) {
+          capture(attacker, defender);
+        } else {
+          kill(defender);
+        }
+
+        defenderShouldRetaliate = false;
       }
     }
   }
@@ -140,5 +147,16 @@ contract CombatSystem is ISystem {
     if (staminaComponent.has(entity)) {
       staminaComponent.remove(entity);
     }
+  }
+
+  function capture(uint256 attacker, uint256 defender) private {
+    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+
+    uint256 attackerOwner = LibECS.resolveRelationshipChain(ownedByComponent, attacker);
+    ownedByComponent.set(defender, attackerOwner);
+
+    HealthComponent healthComponent = HealthComponent(getAddressById(components, HealthComponentID));
+    Health memory previousHealth = healthComponent.getValue(defender);
+    healthComponent.set(defender, Health({ current: previousHealth.max, max: previousHealth.max }));
   }
 }
