@@ -44,7 +44,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
   const world = createWorld();
 
   //Config
-  console.log("Config", config?.jsonRpc, config?.wsRpc);
+  console.log("Network config", config);
 
   // Components
   const components = {
