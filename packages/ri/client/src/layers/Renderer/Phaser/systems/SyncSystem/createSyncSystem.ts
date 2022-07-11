@@ -46,7 +46,7 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Hero }), Has(LocalPosition)],
+    [Has(EntityType), Has(LocalPosition)],
     () => Appearance,
     () => {
       return {
@@ -61,6 +61,15 @@ export function createSyncSystem(layer: PhaserLayer) {
     () => SpriteAnimation,
     () => ({
       value: Animations.HeroIdle,
+    })
+  );
+
+  defineSyncSystem(
+    world,
+    [HasValue(EntityType, { value: EntityTypes.Settlement }), Has(LocalPosition)],
+    () => SpriteAnimation,
+    () => ({
+      value: Animations.SettlementIdle,
     })
   );
 }

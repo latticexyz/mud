@@ -5,6 +5,7 @@ import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 
 import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
+import { SettlementPrototype } from "../prototypes/SettlementPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.init"));
 
@@ -31,5 +32,6 @@ contract InitSystem is ISystem {
   function execute(bytes memory) public returns (bytes memory) {
     // Initialize Prototypes
     SoldierPrototype(components);
+    SettlementPrototype(components);
   }
 }

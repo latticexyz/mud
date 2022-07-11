@@ -12,25 +12,37 @@ import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../componen
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
+import { FactoryComponent, Factory, ID as FactoryComponentID } from "../components/FactoryComponent.sol";
+import { ID as SoldierID } from "./SoldierPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.soldier"));
+uint256 constant ID = uint256(keccak256("ember.prototype.settlement"));
 
-function SoldierPrototype(IUint256Component components) {
-  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(0));
+function SettlementPrototype(IUint256Component components) {
+  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(5));
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
-    Stamina({ current: 0, max: 3, regeneration: 1 })
+    Stamina({ current: 0, max: 20, regeneration: 1 })
   );
   HealthComponent(getAddressById(components, HealthComponentID)).set(ID, Health({ current: 100_000, max: 100_000 }));
   AttackComponent(getAddressById(components, AttackComponentID)).set(ID, Attack({ strength: 60_000, range: 1 }));
-  MovableComponent(getAddressById(components, MovableComponentID)).set(ID, int32(3));
+
+  uint256[] memory prototypeIds = new uint256[](1);
+  prototypeIds[0] = SoldierID;
+
+  int32[] memory costs = new int32[](1);
+  costs[0] = 1;
+
+  FactoryComponent(getAddressById(components, FactoryComponentID)).set(
+    ID,
+    Factory({ prototypeIds: prototypeIds, costs: costs })
+  );
 
   uint256[] memory componentIds = new uint256[](5);
   componentIds[0] = EntityTypeComponentID;
   componentIds[1] = StaminaComponentID;
-  componentIds[2] = MovableComponentID;
-  componentIds[3] = HealthComponentID;
-  componentIds[4] = AttackComponentID;
+  componentIds[2] = HealthComponentID;
+  componentIds[3] = AttackComponentID;
+  componentIds[4] = FactoryComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);
 }

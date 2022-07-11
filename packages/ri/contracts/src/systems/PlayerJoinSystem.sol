@@ -22,6 +22,7 @@ import { HealthComponent, Health, ID as HealthComponentID } from "../components/
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
 
 import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
+import { ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.playerJoin"));
 
@@ -65,9 +66,12 @@ contract PlayerJoinSystem is ISystem {
     uint256 playerEntity = addressToEntity(msg.sender);
     PlayerComponent(address(playerComponent)).set(playerEntity);
 
-    // Spawn creatures
     for (uint256 i; i < spawnPositions.length; i++) {
-      spawnSoldier(playerEntity, spawnPositions[i]);
+      if (i == 0) {
+        spawnSettlement(playerEntity, spawnPositions[i]);
+      } else {
+        spawnSoldier(playerEntity, spawnPositions[i]);
+      }
     }
   }
 
@@ -94,7 +98,22 @@ contract PlayerJoinSystem is ISystem {
 
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
       entity,
-      LibStamina.getCurrentTurn(GameConfigComponent(getAddressById(components, GameConfigComponentID)))
+      LibStamina.getCurrentTurn(components)
+    );
+  }
+
+  function spawnSettlement(uint256 ownerId, Coord memory position) private {
+    uint256 entity = world.getUniqueEntityId();
+
+    LibPrototype.copyPrototype(components, SettlementID, entity);
+
+    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
+
+    PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
+
+    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
+      entity,
+      LibStamina.getCurrentTurn(components) - 5
     );
   }
 }

@@ -15,4 +15,5 @@ export enum EntityTypes {
   Mountain,
   River,
   Wall,
+  Settlement,
 }
