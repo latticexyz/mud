@@ -7,6 +7,8 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 
+import { LibECS } from "std-contracts/libraries/LibECS.sol";
+
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
 import { LibQuery } from "solecs/LibQuery.sol";
@@ -37,15 +39,8 @@ contract TakeItemSystem is ISystem {
       (uint256, uint256, uint256, uint256)
     );
 
-    // StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
-    // require(staminaComponent.has(takerEntity), "entity has no stamina");
-
-    // LastActionTurnComponent lastActionTurnComponent = LastActionTurnComponent(
-    //   getAddressById(components, LastActionTurnComponentID)
-    // );
-    // require(lastActionTurnComponent.has(takerEntity), "entity has no last action turn");
-
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+    require(LibECS.isOwnedByCaller(ownedByComponent, takerEntity), "you don't own this entity");
 
     require(
       ownedByComponent.getValue(takerInventoryEntity) == takerEntity,
@@ -69,10 +64,11 @@ contract TakeItemSystem is ISystem {
 
     InventoryComponent inventoryComponent = InventoryComponent(getAddressById(components, InventoryComponentID));
 
-    QueryFragment[] memory fragments = new QueryFragment[](1);
-    fragments[0] = QueryFragment(QueryType.HasValue, ownedByComponent, abi.encode(takerInventoryEntity));
-    uint256[] memory entities = LibQuery.query(fragments);
-    require(int32(uint32(entities.length)) < inventoryComponent.getValue(takerInventoryEntity), "inventory is full");
+    require(
+      int32(uint32(ownedByComponent.getEntitiesWithValue(takerInventoryEntity).length)) <
+        inventoryComponent.getValue(takerInventoryEntity),
+      "inventory full"
+    );
 
     return
       abi.encode(
@@ -94,17 +90,18 @@ contract TakeItemSystem is ISystem {
       OwnedByComponent ownedByComponent,
       PositionComponent positionComponent
     ) = abi.decode(requirement(arguments), (uint256, uint256, uint256, uint256, OwnedByComponent, PositionComponent));
+
     ownedByComponent.set(itemEntity, takerInventoryEntity);
-    // QueryFragment[] memory fragments = new QueryFragment[](1);
-    // fragments[0] = QueryFragment(QueryType.HasValue, ownedByComponent, abi.encode(itemInventoryEntity));
-    // uint256[] memory entities = LibQuery.query(fragments);
 
-    // if (entities.length == 0) {
-    //   // delete this inventory if its empty
-    //   positionComponent.remove(itemInventoryEntity);
-    // }
+    uint256[] memory ents = ownedByComponent.getEntitiesWithValue(itemInventoryEntity);
 
-    // LibStamina.modifyStamina(components, takerEntity, -1);
+    uint256 entlen = ents.length;
+    if (entlen == 0) {
+      // delete this inventory if its empty
+      positionComponent.remove(itemInventoryEntity);
+    }
+
+    LibStamina.modifyStamina(components, takerEntity, -1);
   }
 
   function requirementTyped(
