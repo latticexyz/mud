@@ -106,6 +106,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { prototypeIds: Type.StringArray, costs: Type.NumberArray },
       { id: "Factory", metadata: { contractId: keccak256("ember.component.factoryComponent") } }
     ),
+    Capturable: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "Capturable", metadata: { contractId: keccak256("ember.component.capturable") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -126,6 +131,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.prototype")]: "Prototype",
     [keccak256("ember.component.prototypeCopy")]: "PrototypeCopy",
     [keccak256("ember.component.factoryComponent")]: "Factory",
+    [keccak256("ember.component.capturable")]: "Capturable",
   };
 
   const contractConfig: SetupContractConfig = {

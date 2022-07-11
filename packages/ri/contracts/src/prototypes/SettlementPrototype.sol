@@ -13,6 +13,7 @@ import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../com
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
 import { FactoryComponent, Factory, ID as FactoryComponentID } from "../components/FactoryComponent.sol";
+import { CapturableComponent, ID as CapturableComponentID } from "../components/CapturableComponent.sol";
 import { ID as SoldierID } from "./SoldierPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.prototype.settlement"));
@@ -25,6 +26,7 @@ function SettlementPrototype(IUint256Component components) {
   );
   HealthComponent(getAddressById(components, HealthComponentID)).set(ID, Health({ current: 100_000, max: 100_000 }));
   AttackComponent(getAddressById(components, AttackComponentID)).set(ID, Attack({ strength: 60_000, range: 1 }));
+  CapturableComponent(getAddressById(components, CapturableComponentID)).set(ID);
 
   uint256[] memory prototypeIds = new uint256[](1);
   prototypeIds[0] = SoldierID;
@@ -37,12 +39,13 @@ function SettlementPrototype(IUint256Component components) {
     Factory({ prototypeIds: prototypeIds, costs: costs })
   );
 
-  uint256[] memory componentIds = new uint256[](5);
+  uint256[] memory componentIds = new uint256[](6);
   componentIds[0] = EntityTypeComponentID;
   componentIds[1] = StaminaComponentID;
   componentIds[2] = HealthComponentID;
   componentIds[3] = AttackComponentID;
   componentIds[4] = FactoryComponentID;
+  componentIds[5] = CapturableComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);
 }

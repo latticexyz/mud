@@ -1,6 +1,7 @@
 {
   "components": [
     "AttackComponent",
+    "CapturableComponent",
     "EntityTypeComponent",
     "FactoryComponent",
     "FromBlueprintComponent",
@@ -22,7 +23,7 @@
     { "name": "ComponentDevSystem", "writeAccess": ["*"] },
     { "name": "BulkSetStateSystem" },
     { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
-    { "name": "CombatSystem", "writeAccess": ["HealthComponent", "StaminaComponent", "LastActionTurnComponent"] },
+    { "name": "CombatSystem", "writeAccess": ["HealthComponent", "OwnedByComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
     { "name": "InitSystem", "writeAccess": ["*"], "initialize": "new bytes(0)" },
     { "name": "PlayerJoinSystem", "writeAccess": ["*"] },
