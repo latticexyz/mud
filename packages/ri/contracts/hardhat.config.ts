@@ -26,7 +26,7 @@ const hardhat = {
   },
   gasPrice: 0,
   initialBaseFeePerGas: 0,
-  blockGasLimit: 16777215,
+  blockGasLimit: 100_000_000,
   accounts: [
     // from/deployer is default the first address in accounts
     {
