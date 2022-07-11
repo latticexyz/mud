@@ -50,7 +50,7 @@ export async function setupContracts<C extends ContractComponents>(
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, { devMode });
   world.registerDisposer(disposeTxQueue);
 
-  const systems = createSystemExecutor<SystemTypes>(world, network, systemsComponent, SystemAbis);
+  const systems = createSystemExecutor<SystemTypes>(world, network, systemsComponent, SystemAbis, { devMode });
 
   // Create sync worker
   const { ecsEvent$, config$, dispose } = createSyncWorker<C>();

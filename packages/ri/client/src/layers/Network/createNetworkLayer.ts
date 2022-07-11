@@ -179,12 +179,12 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
 
   async function joinGame(position: WorldCoord) {
     console.log(`Joining game at position ${JSON.stringify(position)}`);
-    return systems["ember.system.playerJoin"].executeTyped(position, { gasPrice: 0 });
+    return systems["ember.system.playerJoin"].executeTyped(position);
   }
 
   async function moveEntity(entity: string, path: WorldCoord[]) {
     console.log(`Moving entity ${entity} to position (${path[path.length - 1].x}, ${path[path.length - 1].y})}`);
-    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), path, { gasPrice: 0 });
+    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), path);
   }
 
   async function attackEntity(attacker: EntityID, defender: EntityID) {
