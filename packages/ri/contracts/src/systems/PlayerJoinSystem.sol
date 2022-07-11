@@ -20,7 +20,7 @@ import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../componen
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
-import { SpawnableComponent, ID as SpawnableComponentID } from "../components/SpawnableComponent.sol";
+import { SpawnPointComponent, ID as SpawnPointComponentID } from "../components/SpawnPointComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
 import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
@@ -43,7 +43,7 @@ contract PlayerJoinSystem is ISystem {
 
     uint256 spawnEntity = abi.decode(arguments, (uint256));
     require(
-      SpawnableComponent(getAddressById(components, SpawnableComponentID)).has(spawnEntity),
+      SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).has(spawnEntity),
       "that is not a spawn point"
     );
 

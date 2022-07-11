@@ -9,7 +9,7 @@ import { getAddressById, getComponentById, addressToEntity, getSystemAddressById
 import { LibPrototype } from "../libraries/LibPrototype.sol";
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
-import { SpawnableComponent, ID as SpawnableComponentID } from "../components/SpawnableComponent.sol";
+import { SpawnPointComponent, ID as SpawnPointComponentID } from "../components/SpawnPointComponent.sol";
 
 import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
 import { SettlementPrototype, ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
@@ -44,19 +44,19 @@ contract InitSystem is ISystem {
     uint256 spawnPoint = world.getUniqueEntityId();
     LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
 
-    SpawnableComponent(getAddressById(components, SpawnableComponentID)).set(spawnPoint);
+    SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(0, 0));
 
     spawnPoint = world.getUniqueEntityId();
     LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
 
-    SpawnableComponent(getAddressById(components, SpawnableComponentID)).set(spawnPoint);
+    SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(20, 10));
 
     spawnPoint = world.getUniqueEntityId();
     LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
 
-    SpawnableComponent(getAddressById(components, SpawnableComponentID)).set(spawnPoint);
+    SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(5, 20));
   }
 }

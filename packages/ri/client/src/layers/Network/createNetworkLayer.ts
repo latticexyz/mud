@@ -111,10 +111,10 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "Capturable", metadata: { contractId: keccak256("ember.component.capturable") } }
     ),
-    Spawnable: defineComponent(
+    SpawnPoint: defineComponent(
       world,
       { value: Type.Boolean },
-      { id: "Spawnable", metadata: { contractId: keccak256("ember.component.spawnable") } }
+      { id: "SpawnPoint", metadata: { contractId: keccak256("ember.component.spawnPoint") } }
     ),
   };
 
@@ -137,7 +137,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.prototypeCopy")]: "PrototypeCopy",
     [keccak256("ember.component.factoryComponent")]: "Factory",
     [keccak256("ember.component.capturable")]: "Capturable",
-    [keccak256("ember.component.spawnable")]: "Spawnable",
+    [keccak256("ember.component.spawnPoint")]: "SpawnPoint",
   };
 
   const contractConfig: SetupContractConfig = {
