@@ -63,7 +63,7 @@ contract PlayerJoinSystem is ISystem {
 
     // Create player entity
     uint256 playerEntity = addressToEntity(msg.sender);
-    PlayerComponent(address(playerComponent)).set(addressToEntity(msg.sender));
+    PlayerComponent(address(playerComponent)).set(playerEntity);
 
     // Spawn creatures
     for (uint256 i; i < spawnPositions.length; i++) {
