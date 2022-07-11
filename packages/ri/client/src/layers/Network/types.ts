@@ -16,4 +16,6 @@ export enum EntityTypes {
   River,
   Wall,
   Settlement,
+  Inventory,
+  Gold,
 }

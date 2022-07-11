@@ -116,6 +116,16 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "SpawnPoint", metadata: { contractId: keccak256("ember.component.spawnPoint") } }
     ),
+    Inventory: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "Inventory", metadata: { contractId: keccak256("ember.component.inventoryComponent") } }
+    ),
+    Gold: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "Gold", metadata: { contractId: keccak256("ember.component.goldComponent") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -138,6 +148,8 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.factoryComponent")]: "Factory",
     [keccak256("ember.component.capturable")]: "Capturable",
     [keccak256("ember.component.spawnPoint")]: "SpawnPoint",
+    [keccak256("ember.component.inventoryComponent")]: "Inventory",
+    [keccak256("ember.component.goldComponent")]: "Gold",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -219,6 +231,27 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     );
   }
 
+  async function takeItem(
+    takerEntity: EntityID,
+    takerInventoryEntity: EntityID,
+    itemEntity: EntityID,
+    itemInventoryEntity: EntityID
+  ) {
+    console.log(`Entity ${takerEntity} taking item ${itemEntity} from  ${itemInventoryEntity}.`);
+    return systems["ember.system.takeItem"].executeTyped(
+      BigNumber.from(takerEntity),
+      BigNumber.from(takerInventoryEntity),
+      BigNumber.from(itemEntity),
+      BigNumber.from(itemInventoryEntity)
+    );
+  }
+
+  // debug functions
+  async function spawnGold(targetPosition: WorldCoord) {
+    console.log(`Spawn gold at position ${JSON.stringify(targetPosition)}`);
+    return systems["ember.system.spawnGoldDev"].executeTyped(targetPosition);
+  }
+
   // Constants (load from contract later)
   const constants = {
     mapSize: 50,
@@ -240,6 +273,10 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       moveEntity,
       attackEntity,
       buildAt,
+      takeItem,
+      dev: {
+        spawnGold,
+      },
     },
     DEV_MODE,
   };
