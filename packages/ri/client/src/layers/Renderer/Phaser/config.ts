@@ -99,6 +99,16 @@ export const config = {
           prefix: "sprites/warriors/hero/",
           suffix: ".png",
         },
+        {
+          key: Animations.SettlementIdle,
+          frameRate: 10,
+          assetKey: Assets.MainAtlas,
+          startFrame: 0,
+          endFrame: 0,
+          repeat: -1,
+          prefix: "sprites/base/small-base/",
+          suffix: ".png",
+        },
       ],
       tilesets: {
         Default: { assetKey: Assets.Tilemap, tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT },
