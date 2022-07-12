@@ -7,7 +7,6 @@
     "FromBlueprintComponent",
     "GameConfigComponent",
     "HealthComponent",
-    "IsBlueprintComponent",
     "LastActionTurnComponent",
     "MaxDistanceComponent",
     "MineableComponent",
