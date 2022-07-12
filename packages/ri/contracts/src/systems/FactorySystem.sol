@@ -73,8 +73,7 @@ contract FactorySystem is ISystem {
       (uint256, uint256, Coord, uint256)
     );
 
-    uint256 newEntityId = world.getUniqueEntityId();
-    LibPrototype.copyPrototype(components, world, prototypeId, newEntityId);
+    uint256 newEntityId = LibPrototype.copyPrototype(components, world, prototypeId);
 
     OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(newEntityId, ownerId);
     PositionComponent(getAddressById(components, PositionComponentID)).set(newEntityId, position);

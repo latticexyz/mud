@@ -34,12 +34,10 @@ contract SpawnGoldDevSystem is ISystem {
     PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
 
-    uint256 inventoryEntity = world.getUniqueEntityId();
-    LibPrototype.copyPrototype(components, world, InventoryID, inventoryEntity);
+    uint256 inventoryEntity = LibPrototype.copyPrototype(components, world, InventoryID);
     positionComponent.set(inventoryEntity, targetPosition);
 
-    uint256 goldEntity = world.getUniqueEntityId();
-    LibPrototype.copyPrototype(components, world, GoldID, goldEntity);
+    uint256 goldEntity = LibPrototype.copyPrototype(components, world, GoldID);
     ownedByComponent.set(goldEntity, inventoryEntity);
   }
 

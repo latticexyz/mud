@@ -95,9 +95,7 @@ contract PlayerJoinSystem is ISystem {
   // ------------------------
 
   function spawnSoldier(uint256 ownerId, Coord memory position) private {
-    uint256 entity = world.getUniqueEntityId();
-
-    LibPrototype.copyPrototype(components, world, SoldierID, entity);
+    uint256 entity = LibPrototype.copyPrototype(components, world, SoldierID);
 
     OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
 
@@ -110,9 +108,7 @@ contract PlayerJoinSystem is ISystem {
   }
 
   function spawnSettlement(uint256 ownerId, Coord memory position) private {
-    uint256 entity = world.getUniqueEntityId();
-
-    LibPrototype.copyPrototype(components, world, SettlementID, entity);
+    uint256 entity = LibPrototype.copyPrototype(components, world, SettlementID);
 
     OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
 

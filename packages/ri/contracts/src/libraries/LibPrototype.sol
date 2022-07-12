@@ -16,9 +16,10 @@ library LibPrototype {
   function copyPrototype(
     IUint256Component components,
     IWorld world,
-    uint256 prototypeId,
-    uint256 entityId
-  ) internal returns (uint256) {
+    uint256 prototypeId
+  ) internal returns (uint256 entityId) {
+    entityId = world.getUniqueEntityId();
+
     PrototypeCopyComponent(getAddressById(components, PrototypeCopyComponentID)).set(entityId, prototypeId);
 
     uint256[] memory prototypeComponents = PrototypeComponent(getAddressById(components, PrototypeComponentID))
@@ -31,9 +32,8 @@ library LibPrototype {
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
     uint256[] memory ownedEntities = ownedByComponent.getEntitiesWithValue(prototypeId);
     for (uint256 i = 0; i < ownedEntities.length; i++) {
-      uint256 entity = world.getUniqueEntityId();
-      copyPrototype(components, world, ownedEntities[i], entity);
-      ownedByComponent.set(entity, entityId);
+      uint256 createdEntityId = copyPrototype(components, world, ownedEntities[i]);
+      ownedByComponent.set(createdEntityId, entityId);
     }
   }
 
@@ -48,8 +48,7 @@ library LibPrototype {
       "Trying to copy non-existing prototype"
     );
 
-    newPrototype = world.getUniqueEntityId();
-    copyPrototype(components, world, fromPrototypeId, newPrototype);
+    newPrototype = copyPrototype(components, world, fromPrototypeId);
     OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(newPrototype, ownerPrototypeId);
 
     uint256[] memory prototypeComponents = PrototypeComponent(getAddressById(components, PrototypeComponentID))
