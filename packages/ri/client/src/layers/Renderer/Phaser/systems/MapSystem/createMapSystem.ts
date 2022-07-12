@@ -9,6 +9,11 @@ const entityTypeToTile = {
   [EntityTypes.Grass]: Tileset.Grass,
   [EntityTypes.Mountain]: Tileset.PlainRock1,
   [EntityTypes.River]: Tileset.Water,
+  [EntityTypes.Tree]: Tileset.Grass,
+} as { [key in EntityTypes]: Tileset };
+
+const entityTypeToForegroundTile = {
+  [EntityTypes.Tree]: Tileset.Tree1,
 } as { [key in EntityTypes]: Tileset };
 
 const entityTypeToAnimation = {
@@ -132,10 +137,12 @@ export function createMapSystem(layer: PhaserLayer) {
       const coord = getComponentValueStrict(Position, update.entity);
       const type = getComponentValueStrict(EntityType, update.entity);
       const tile = entityTypeToTile[type.value as EntityTypes];
+      const foregroundTile = entityTypeToForegroundTile[type.value as EntityTypes];
       const animation = entityTypeToAnimation[type.value as EntityTypes];
       if (!tile) return;
       if (animation) Main.putAnimationAt(coord, animation);
       Main.putTileAt(coord, tile);
+      if (foregroundTile) Main.putTileAt(coord, foregroundTile, "Foreground");
       drawWangSetAtCoord(coord, type.value);
 
       // compute cluster for LOD

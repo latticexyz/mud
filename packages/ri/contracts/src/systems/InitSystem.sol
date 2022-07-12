@@ -20,7 +20,14 @@ import { EmberCrownPrototype, ID as EmberCrownID } from "../prototypes/EmberCrow
 import { EscapePortalPrototype, ID as EscapePortalID } from "../prototypes/EscapePortalPrototype.sol";
 import { InventoryPrototype } from "../prototypes/InventoryPrototype.sol";
 import { GoldPrototype } from "../prototypes/GoldPrototype.sol";
-import { GoldShrinePrototype, ID as GoldShrineID } from "../prototypes/GoldShrinePrototype.sol";
+import { EmberCrownPrototype } from "../prototypes/EmberCrownPrototype.sol";
+import { EmptySettlementPrototype } from "../prototypes/EmptySettlementPrototype.sol";
+import { EscapePortalPrototype } from "../prototypes/EscapePortalPrototype.sol";
+import { GoldShrinePrototype } from "../prototypes/GoldShrinePrototype.sol";
+import { GrassPrototype } from "../prototypes/GrassPrototype.sol";
+import { GuardPrototype } from "../prototypes/GuardPrototype.sol";
+import { TreePrototype } from "../prototypes/TreePrototype.sol";
+import { WaterPrototype } from "../prototypes/WaterPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.init"));
 
@@ -50,47 +57,13 @@ contract InitSystem is ISystem {
     GoldPrototype(components);
     SoldierPrototype(components, world);
     SettlementPrototype(components, world);
-    GoldShrinePrototype(components, world);
     EmberCrownPrototype(components);
+    EmptySettlementPrototype(components);
     EscapePortalPrototype(components);
-    InventoryPrototype(components);
-
-    PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
-    SpawnPointComponent spawnPointComponent = SpawnPointComponent(getAddressById(components, SpawnPointComponentID));
-
-    uint256 spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
-
-    spawnPointComponent.set(spawnPoint);
-    positionComponent.set(spawnPoint, Coord(-5, -10));
-
-    spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
-
-    spawnPointComponent.set(spawnPoint);
-    positionComponent.set(spawnPoint, Coord(20, 10));
-
-    spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
-
-    spawnPointComponent.set(spawnPoint);
-    positionComponent.set(spawnPoint, Coord(5, 20));
-
-    uint256 goldShrine = LibPrototype.copyPrototype(components, world, GoldShrineID);
-
-    positionComponent.set(goldShrine, Coord(7, 7));
-    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(goldShrine, 0);
-
-    uint256 escapePortal = LibPrototype.copyPrototype(components, world, EscapePortalID);
-    positionComponent.set(escapePortal, Coord(40, 30));
-
-    escapePortal = LibPrototype.copyPrototype(components, world, EscapePortalID);
-    positionComponent.set(escapePortal, Coord(-40, -10));
-
-    escapePortal = LibPrototype.copyPrototype(components, world, EscapePortalID);
-    positionComponent.set(escapePortal, Coord(-20, 30));
-
-    uint256 inventory = LibPrototype.copyPrototype(components, world, InventoryID);
-    positionComponent.set(inventory, Coord(0, 0));
-
-    uint256 emberCrown = LibPrototype.copyPrototype(components, world, EmberCrownID);
-    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(emberCrown, inventory);
+    GoldShrinePrototype(components);
+    GrassPrototype(components);
+    GuardPrototype(components, world);
+    TreePrototype(components);
+    WaterPrototype(components);
   }
 }
