@@ -3,6 +3,7 @@
   "license": "MIT",
   "version": "0.2.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "----- DEV -----": "---------------------------",
     "prepare": "yarn build && chmod u+x git-install.sh && chmod u+x exports.sh",

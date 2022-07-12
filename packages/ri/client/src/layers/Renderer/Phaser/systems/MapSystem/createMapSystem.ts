@@ -120,6 +120,7 @@ export function createMapSystem(layer: PhaserLayer) {
       const entities = runQuery([HasValue(Position, coordToRedraw), HasValue(EntityType, { value: entityType })]);
       if (entities.size === 0) continue;
       const wangId = calculateWangId(coordToRedraw, entityType);
+      if (wangSet[wangId] == null) continue;
       Main.putTileAt(coordToRedraw, wangSet[wangId], "Foreground");
     }
   }

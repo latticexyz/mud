@@ -80,6 +80,10 @@ contract World is IWorld {
     return getIdByAddress(_components, componentAddr);
   }
 
+  function getSystemAddress(uint256 systemId) external view returns (address) {
+    return getAddressById(_systems, systemId);
+  }
+
   function getNumEntities() public view returns (uint256) {
     return Set(entities).size();
   }
