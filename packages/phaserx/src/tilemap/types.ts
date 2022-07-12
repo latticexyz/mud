@@ -4,7 +4,6 @@ import { WorldCoord } from "../types";
 export interface ChunkedTilemap<TileKeys extends number, LayerKeys extends string> {
   size: () => number;
   putTileAt: (coord: WorldCoord, tile: TileKeys, layer?: LayerKeys, tint?: number) => void;
-  getTileAt: (coord: WorldCoord, layer?: LayerKeys) => TileKeys | undefined;
   dispose: () => void;
   setVisible: (visible: boolean) => void;
   visible: { current: boolean };
