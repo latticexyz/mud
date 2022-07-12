@@ -17,10 +17,10 @@ export function deferred<T>(): [(t: T) => void, (t: Error) => void, Promise<T>] 
 /**
  * Await execution of bash scripts
  * @param command Bash script to execute
- * @returns Promise that resolves when script finished executing
+ * @returns Promise that resolves with exit code when script finished executing
  */
-export async function exec(command: string): Promise<void> {
-  const [resolve, , promise] = deferred<void>();
+export async function exec(command: string): Promise<number> {
+  const [resolve, , promise] = deferred<number>();
 
   const child = nodeExec(command, (error, stdout, stderr) => {
     if (error || stderr) {
@@ -30,7 +30,7 @@ export async function exec(command: string): Promise<void> {
     console.log(stdout);
   });
 
-  child.on("close", () => resolve());
+  child.on("exit", (code) => resolve(code ?? 0));
 
   return promise;
 }

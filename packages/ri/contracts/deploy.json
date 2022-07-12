@@ -7,6 +7,7 @@
     "FromBlueprintComponent",
     "GameConfigComponent",
     "HealthComponent",
+    "IsBlueprintComponent",
     "LastActionTurnComponent",
     "MaxDistanceComponent",
     "MineableComponent",
@@ -29,6 +30,5 @@
     { "name": "InitSystem", "writeAccess": ["*"], "initialize": "new bytes(0)" },
     { "name": "PlayerJoinSystem", "writeAccess": ["*"] },
     { "name": "FactorySystem", "writeAccess": ["*"] }
-  ],
-  "initialize": ["GameConfigSystem"]
+  ]
 }
