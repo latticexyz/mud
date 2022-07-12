@@ -37,4 +37,15 @@ export function createSyncSystem(layer: PhaserLayer) {
       };
     }
   );
+
+  defineSyncSystem(
+    world,
+    [HasValue(EntityType, { value: EntityTypes.Settlement }), Has(LocalPosition)],
+    () => Appearance,
+    () => {
+      return {
+        value: Sprites.Settlement,
+      };
+    }
+  );
 }

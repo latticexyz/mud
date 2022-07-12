@@ -80,6 +80,10 @@ export const config = {
           assetKey: Assets.MainAtlas,
           frame: "sprites/warriors/hero.png",
         },
+        [Sprites.Settlement]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/resources/crystal.png",
+        },
       },
       animations: [],
       tilesets: {
