@@ -41,7 +41,7 @@ export function moveEntity(
     return;
   }
 
-  const actionID = `move ${Math.random()}` as EntityID;
+  const actionID = `move ${Date.now()}` as EntityID; // Date.now to have the actions ordered in the component browser
 
   actions.add<
     // Need to debug why typescript can't automatically infer these in this case, but for now manually typing removes the error
