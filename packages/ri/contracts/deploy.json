@@ -28,6 +28,7 @@
   ],
   "systems": [
     { "name": "ComponentDevSystem", "writeAccess": ["*"] },
+    { "name": "PrototypeDevSystem", "writeAccess": ["*"] },
     { "name": "BulkSetStateSystem" },
     { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "TakeItemSystem", "writeAccess": ["OwnedByComponent", "PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },

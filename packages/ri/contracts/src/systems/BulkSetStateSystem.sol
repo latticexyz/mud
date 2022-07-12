@@ -7,6 +7,7 @@ import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById, getSystemAddressById } from "solecs/utils.sol";
 
 import { ComponentDevSystem, ID as ComponentDevSystemID } from "./ComponentDevSystem.sol";
+import { PrototypeDevSystem, ID as PrototypeDevSystemID } from "./PrototypeDevSystem.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.bulkSetStateSystem"));
 
@@ -36,9 +37,14 @@ contract BulkSetStateSystem is ISystem {
     );
 
     ComponentDevSystem componentDevSystem = ComponentDevSystem(getSystemAddressById(components, ComponentDevSystemID));
+    PrototypeDevSystem prototypeDevSystem = PrototypeDevSystem(getSystemAddressById(components, PrototypeDevSystemID));
 
     for (uint256 i; i < state.length; i++) {
-      componentDevSystem.executeTyped(componentIds[state[i].component], entities[state[i].entity], state[i].value);
+      if (componentIds[state[i].component] == 0) {
+        prototypeDevSystem.executeTyped(abi.decode(state[i].value, (uint256)), entities[state[i].entity]);
+      } else {
+        componentDevSystem.executeTyped(componentIds[state[i].component], entities[state[i].entity], state[i].value);
+      }
     }
   }
 
