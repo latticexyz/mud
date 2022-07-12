@@ -1,7 +1,7 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
 import { getAddressColor } from "@latticexyz/std-client";
-import { defineQuery, EntityID, getComponentValueStrict, HasValue } from "@latticexyz/recs";
+import { defineQuery, EntityID, getComponentValue, getComponentValueStrict, Has, HasValue, runQuery } from "@latticexyz/recs";
 import { map, merge } from "rxjs";
 import { computedToStream } from "@latticexyz/utils";
 
@@ -25,26 +25,29 @@ export function registerJoinGame() {
           world,
         },
         local: {
-          singletonEntity,
-          components: { Selection },
+          components: { Selected, LocalPosition },
         },
       } = layers;
 
-      return merge(computedToStream(connectedAddress), Selection.update$, Player.update$).pipe(
+      return merge(computedToStream(connectedAddress), Selected.update$, Player.update$).pipe(
         map(() => connectedAddress.get()),
         map((address) => {
           const playerEntity = world.entityToIndex.get(address as EntityID);
-          const selection = getComponentValueStrict(Selection, singletonEntity);
+          
+          const selectedEntity = [...runQuery([Has(Selected)])][0];
+          const position = getComponentValue(LocalPosition, selectedEntity);
+
           return {
             joinGame,
-            selection,
+            selectedEntity,
+            position,
             playerEntity,
             address,
           };
         })
       );
     },
-    ({ joinGame, playerEntity, selection, address }) => {
+    ({ joinGame, playerEntity, selectedEntity, position, address }) => {
       const joined = playerEntity != undefined;
       const playerColor = getAddressColor(address || "");
 
@@ -53,15 +56,13 @@ export function registerJoinGame() {
           {!joined && <h1>Join Game</h1>}
           <p style={{ color: playerColor.toString(16) }}>Address: {address}</p>
           <p>Joined? {joined ? "yes" : "no"}</p>
-          {!joined && (
+          {!joined && selectedEntity != null && (
             <button
-              disabled={!selection}
               onClick={() => {
-                if (!selection) return;
-                joinGame({ x: selection.x, y: selection.y });
+                joinGame(selectedEntity);
               }}
             >
-              Join at Position ({selection?.x},{selection?.y})
+              Join at Position ({position?.x},{position?.y})
             </button>
           )}
         </div>

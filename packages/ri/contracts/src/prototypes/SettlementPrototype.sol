@@ -14,6 +14,7 @@ import { HealthComponent, Health, ID as HealthComponentID } from "../components/
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
 import { FactoryComponent, Factory, ID as FactoryComponentID } from "../components/FactoryComponent.sol";
 import { CapturableComponent, ID as CapturableComponentID } from "../components/CapturableComponent.sol";
+
 import { ID as SoldierID } from "./SoldierPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.prototype.settlement"));

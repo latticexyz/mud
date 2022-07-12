@@ -1,4 +1,4 @@
-import { HasValue, Has, defineSyncSystem, getComponentValue, defineSystem, setComponent } from "@latticexyz/recs";
+import { HasValue, Has, defineSyncSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { EntityTypes } from "../../../../Network/types";
 import { Animations, Assets } from "../../constants";
@@ -11,18 +11,18 @@ export function createSyncSystem(layer: PhaserLayer) {
     world,
     parentLayers: {
       network: {
-        components: { EntityType, OwnedBy },
+        components: { EntityType },
       },
       local: {
         components: { Selected, LocalPosition },
       },
     },
-    components: { Appearance, SpriteAnimation, Outline, HueTint },
+    components: { Appearance, SpriteAnimation, Outline },
   } = layer;
 
   defineSyncSystem(
     world,
-    [Has(Selected), Has(OwnedBy)],
+    [Has(Selected)],
     () => Outline,
     () => ({ color: 0xfff000 })
   );
