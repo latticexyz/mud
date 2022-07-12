@@ -39,7 +39,7 @@ export function registerSelection() {
           ][0];
           const hasInventory = inventoryIndex != null;
 
-          const inventoryItemNames = [] as string[];
+          const inventoryItemNames: string[] = [];
           let inventorySize = 0;
           if (hasInventory) {
             inventorySize = getComponentValueStrict(Inventory, inventoryIndex).value;
