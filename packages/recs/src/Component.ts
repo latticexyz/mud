@@ -68,7 +68,6 @@ export function getComponentValue<S extends Schema>(
   const schemaKeys = Object.keys(component.schema);
   for (const key of schemaKeys) {
     const val = component.values[key].get(entity);
-    if (val === undefined) return undefined;
     value[key] = val;
   }
 
