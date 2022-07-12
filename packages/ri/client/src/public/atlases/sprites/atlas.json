@@ -2177,7 +2177,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/base/small-base/0.png",
+                    "filename": "sprites/base/small-base.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
