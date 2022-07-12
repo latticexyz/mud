@@ -25,10 +25,10 @@ export function createActionSystem(
   txReduced$: Observable<string>
 ) {
   // Components that scheduled actions depend on including pending updates
-  const componentsWithPendingUpdates: { [key: string]: OverridableComponent<Schema> } = {};
+  const componentsWithOptimisticUpdates: { [key: string]: OverridableComponent<Schema> } = {};
 
   // ActionData contains requirements and execute logic of scheduled actions.
-  // We also store the relevant subset of all componentsWithPendingUpdates in the action data,
+  // We also store the relevant subset of all componentsWithOptimisticUpdates in the action data,
   // to recheck requirements only if relevant components updated.
   const actionData = new Map<string, ActionData>();
 
@@ -43,8 +43,11 @@ export function createActionSystem(
    * @param components Components to be mapped to components including pending updates
    * @returns Components including pending updates
    */
-  function withPendingUpdates<C extends Components>(components: C): C {
-    return mapObject(components, (_, key) => componentsWithPendingUpdates[key as string]) as unknown as C;
+  function withOptimisticUpdates<C extends Components>(components: C): C {
+    return mapObject(
+      components,
+      (_, key) => componentsWithOptimisticUpdates[key as string] || components[key]
+    ) as unknown as C;
   }
 
   /**
@@ -77,22 +80,22 @@ export function createActionSystem(
     // Add components that are not tracked yet to internal overridable component map.
     // Pending updates will be applied to internal overridable components.
     for (const [key, component] of Object.entries(actionRequest.components)) {
-      if (!componentsWithPendingUpdates[key]) componentsWithPendingUpdates[key] = overridableComponent(component);
+      if (!componentsWithOptimisticUpdates[key]) componentsWithOptimisticUpdates[key] = overridableComponent(component);
     }
 
     // Store relevant components with pending updates along the action's requirement and execution logic
     const action = {
       ...actionRequest,
       entityIndex,
-      componentsWithPendingUpdates: withPendingUpdates(actionRequest.components),
+      componentsWithOptimisticUpdates: withOptimisticUpdates(actionRequest.components),
     } as unknown as ActionData;
     actionData.set(action.id, action);
 
     // This subscriotion makes sure the action requirement is checked again every time
     // one of the referenced components changes or the pending updates map changes
-    const subscription = merge(...Object.values(action.componentsWithPendingUpdates).map((c) => c.update$)).subscribe(
-      () => checkRequirement(action)
-    );
+    const subscription = merge(
+      ...Object.values(action.componentsWithOptimisticUpdates).map((c) => c.update$)
+    ).subscribe(() => checkRequirement(action));
     checkRequirement(action);
     disposer.set(action.id, { dispose: () => subscription?.unsubscribe() });
 
@@ -110,7 +113,7 @@ export function createActionSystem(
     if (getComponentValue(Action, action.entityIndex)?.state !== ActionState.Requested) return;
 
     // Check requirement on components including pending updates
-    const requirementResult = action.requirement(action.componentsWithPendingUpdates);
+    const requirementResult = action.requirement(action.componentsWithOptimisticUpdates);
 
     // Execute the action if the requirements are met
     if (requirementResult) executeAction(action, requirementResult);
@@ -130,8 +133,11 @@ export function createActionSystem(
     updateComponent(Action, action.entityIndex, { state: ActionState.Executing });
 
     // Set all pending updates of this action
-    for (const { component, value, entity } of action.updates(action.componentsWithPendingUpdates, requirementResult)) {
-      componentsWithPendingUpdates[component as string].addOverride(action.id, { entity, value });
+    for (const { component, value, entity } of action.updates(
+      action.componentsWithOptimisticUpdates,
+      requirementResult
+    )) {
+      componentsWithOptimisticUpdates[component as string].addOverride(action.id, { entity, value });
     }
 
     try {
@@ -181,7 +187,7 @@ export function createActionSystem(
     if (!action) throw new Error("Trying to remove an action that does not exist.");
 
     // Remove this action's pending updates
-    for (const component of Object.values(componentsWithPendingUpdates)) {
+    for (const component of Object.values(componentsWithOptimisticUpdates)) {
       component.removeOverride(actionId);
     }
 
@@ -193,5 +199,5 @@ export function createActionSystem(
     actionData.delete(actionId);
   }
 
-  return { add, cancel };
+  return { add, cancel, withOptimisticUpdates };
 }

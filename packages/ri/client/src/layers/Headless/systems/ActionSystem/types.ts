@@ -20,13 +20,13 @@ export interface ActionRequest<C extends Components, T> {
   components: C;
 
   // Action will be executed once requirement function returns a truthy value.
-  // Requirement will be rechecked if any component values including pending updates
+  // Requirement will be rechecked if any component values including optimistic updates
   // accessed in the requirement function change.
-  requirement: (componentsWithPendingUpdates: C) => T | null;
+  requirement: (componentsWithOptimisticUpdates: C) => T | null;
 
   // Declare effects this action will have on components.
-  // Used to compute component values with pending updates for other requested actions.
-  updates: (componentsWithPendingUpdates: C, data: T) => ComponentUpdate<C>[];
+  // Used to compute component values with optimistic updates for other requested actions.
+  updates: (componentsWithOptimisticUpdates: C, data: T) => ComponentUpdate<C>[];
 
   // Logic to be executed when the action is executed.
   // If txHashes are returned from the txQueue, the action will only be completed (and pending updates removed)
@@ -35,6 +35,6 @@ export interface ActionRequest<C extends Components, T> {
 }
 
 export type ActionData = ActionRequest<Components, unknown> & {
-  componentsWithPendingUpdates: Components;
+  componentsWithOptimisticUpdates: Components;
   entityIndex: EntityIndex;
 };
