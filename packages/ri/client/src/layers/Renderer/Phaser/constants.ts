@@ -1,3 +1,5 @@
+import { EntityTypes } from "../../Network";
+
 export const TILE_WIDTH = 16;
 export const TILE_HEIGHT = 16;
 
@@ -21,6 +23,15 @@ export enum Assets {
 export enum Sprites {
   Hero,
   Settlement,
+  Gold,
+  Inventory,
 }
 
 export enum Animations {}
+
+export const EntityTypeSprites: Record<number, Sprites> = {
+  [EntityTypes.Hero]: Sprites.Hero,
+  [EntityTypes.Gold]: Sprites.Gold,
+  [EntityTypes.Inventory]: Sprites.Inventory,
+  [EntityTypes.Settlement]: Sprites.Settlement,
+};

@@ -1,6 +1,6 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
-import { defineQuery, getComponentValue, getComponentValueStrict, Has, HasValue, runQuery } from "@latticexyz/recs";
+import { defineQuery, EntityIndex, getComponentValue, getComponentValueStrict, Has, hasComponent, HasValue, ProxyExpand, runQuery } from "@latticexyz/recs";
 import { getAddressColor } from "@latticexyz/std-client";
 import { map, merge } from "rxjs";
 
@@ -34,9 +34,9 @@ export function registerSelection() {
           const ownedBy = getComponentValue(OwnedBy, selectedEntity)?.value;
           const name = getComponentValue(Name, selectedEntity)?.value;
 
-          const inventoryIndex = [
-            ...runQuery([Has(Inventory), HasValue(OwnedBy, { value: world.entities[selectedEntity] })]),
-          ][0];
+          const inventoryResults = [...runQuery([ProxyExpand(OwnedBy, 1), Has(Inventory)], new Set([selectedEntity]))];
+          const inventoryIndex = inventoryResults[0];
+
           const hasInventory = inventoryIndex != null;
 
           const inventoryItemNames: string[] = [];
@@ -89,8 +89,8 @@ export function registerSelection() {
                 {inventoryItemNames.length} / {inventorySize}
               </h3>
               <ul>
-                {inventoryItemNames.map((itemName) => {
-                  return <li>{itemName}</li>;
+                {inventoryItemNames.map((itemName, i) => {
+                  return <li key={`${itemName}-${i}`}>{itemName}</li>;
                 })}
               </ul>
             </div>
