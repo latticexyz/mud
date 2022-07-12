@@ -7,8 +7,6 @@ import { abi as GameConfigSystem } from "../abi/GameConfigSystem.json";
 import { abi as InitSystem } from "../abi/InitSystem.json";
 import { abi as MoveSystem } from "../abi/MoveSystem.json";
 import { abi as PlayerJoinSystem } from "../abi/PlayerJoinSystem.json";
-import { abi as SpawnGoldDevSystem } from "../abi/SpawnGoldDevSystem.json";
-import { abi as TakeItemSystem } from "../abi/TakeItemSystem.json";
 
 export const SystemAbis = {
   "ember.system.bulkSetStateSystem": BulkSetStateSystem,
@@ -19,6 +17,4 @@ export const SystemAbis = {
   "ember.system.init": InitSystem,
   "ember.system.move": MoveSystem,
   "ember.system.playerJoin": PlayerJoinSystem,
-  "ember.system.spawnGoldDev": SpawnGoldDevSystem,
-  "ember.system.takeItem": TakeItemSystem,
 };

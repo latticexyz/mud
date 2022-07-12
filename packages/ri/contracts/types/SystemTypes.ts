@@ -7,8 +7,6 @@ import { GameConfigSystem } from "./ethers-contracts/GameConfigSystem";
 import { InitSystem } from "./ethers-contracts/InitSystem";
 import { MoveSystem } from "./ethers-contracts/MoveSystem";
 import { PlayerJoinSystem } from "./ethers-contracts/PlayerJoinSystem";
-import { SpawnGoldDevSystem } from "./ethers-contracts/SpawnGoldDevSystem";
-import { TakeItemSystem } from "./ethers-contracts/TakeItemSystem";
 
 export type SystemTypes = {
   "ember.system.bulkSetStateSystem": BulkSetStateSystem;
@@ -19,6 +17,4 @@ export type SystemTypes = {
   "ember.system.init": InitSystem;
   "ember.system.move": MoveSystem;
   "ember.system.playerJoin": PlayerJoinSystem;
-  "ember.system.spawnGoldDev": SpawnGoldDevSystem;
-  "ember.system.takeItem": TakeItemSystem;
 };
