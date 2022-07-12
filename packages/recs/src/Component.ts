@@ -1,6 +1,7 @@
 import { uuid } from "@latticexyz/utils";
 import { mapObject } from "@latticexyz/utils";
 import { filter, Subject } from "rxjs";
+import { OptionalTypes } from "./constants";
 import {
   Component,
   ComponentValue,
@@ -68,7 +69,7 @@ export function getComponentValue<S extends Schema>(
   const schemaKeys = Object.keys(component.schema);
   for (const key of schemaKeys) {
     const val = component.values[key].get(entity);
-    if (val === undefined) return undefined;
+    if (val === undefined && !OptionalTypes.includes(component.schema[key])) return undefined;
     value[key] = val;
   }
 

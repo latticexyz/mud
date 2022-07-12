@@ -43,7 +43,11 @@ export function moveEntity(
 
   const actionID = `move ${Math.random()}` as EntityID;
 
-  actions.add({
+  actions.add<
+    // Need to debug why typescript can't automatically infer these in this case, but for now manually typing removes the error
+    { Position: typeof Position; Untraversable: typeof Untraversable; LocalStamina: typeof LocalStamina },
+    { targetPosition: WorldCoord; path: WorldCoord[]; netStamina: number }
+  >({
     id: actionID,
     components: {
       Position,
