@@ -44,10 +44,17 @@ export function createActionSystem(
    * @returns Components including pending updates
    */
   function withOptimisticUpdates<C extends Components>(components: C): C {
-    return mapObject(
-      components,
-      (_, key) => componentsWithOptimisticUpdates[key as string] || components[key]
-    ) as unknown as C;
+    return mapObject(components, (_, key) => {
+      // If the component is not tracked yet, add it to the map of overridable components
+      const optimisticComponent =
+        componentsWithOptimisticUpdates[key as string] || overridableComponent(components[key]);
+
+      if (!componentsWithOptimisticUpdates[key as string]) {
+        componentsWithOptimisticUpdates[key as string] = optimisticComponent;
+      }
+
+      return optimisticComponent;
+    }) as unknown as C;
   }
 
   /**

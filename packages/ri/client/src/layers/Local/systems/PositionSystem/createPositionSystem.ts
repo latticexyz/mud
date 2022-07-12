@@ -13,11 +13,15 @@ export function createPositionSystem(layer: LocalLayer) {
       network: {
         components: { Position, Movable },
       },
+      headless: {
+        actions: { withOptimisticUpdates },
+      },
     },
     components: { LocalPosition, Path },
   } = layer;
 
-  defineComponentSystem(world, Position, ({ entity, value }) => {
+  defineComponentSystem(world, withOptimisticUpdates({ Position }).Position, (update) => {
+    const { entity, value } = update;
     const targetPosition = value[0];
     if (targetPosition == null) {
       removeComponent(LocalPosition, entity);
