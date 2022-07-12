@@ -43,7 +43,7 @@ contract InitSystem is ISystem {
     InventoryPrototype(components);
     GoldPrototype(components);
     SoldierPrototype(components, world);
-    SettlementPrototype(components);
+    SettlementPrototype(components, world);
 
     uint256 spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
 

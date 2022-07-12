@@ -41,7 +41,7 @@ library LibInventory {
     fragments[1] = QueryFragment(QueryType.Has, inventoryComponent, new bytes(0));
     uint256[] memory inventoryEntities = LibQuery.query(fragments);
 
-    require(inventoryEntities.length <= 1, "entities cannot have more than 1 inventory, something is wrong here!");
+    require(inventoryEntities.length == 1, "inventory not found");
 
     return inventoryEntities[0];
   }
@@ -53,6 +53,10 @@ library LibInventory {
   ) internal {
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
     ownedByComponent.set(itemEntity, receiverInventoryEntity);
+  }
+
+  function getItems(IUint256Component components, uint256 inventoryId) internal view returns (uint256[] memory items) {
+    items = OwnedByComponent(getAddressById(components, OwnedByComponentID)).getEntitiesWithValue(inventoryId);
   }
 
   function burnItem(IUint256Component components, uint256 itemEntity) internal {
