@@ -92,6 +92,10 @@ contract FactorySystem is ISystem {
       if (goldComponent.has(item)) {
         LibInventory.burnItem(components, item);
         spentResourceCount++;
+
+        if (spentResourceCount == factoryPlan.cost) {
+          break;
+        }
       }
     }
     require(spentResourceCount == factoryPlan.cost, "not enough resources spent");
