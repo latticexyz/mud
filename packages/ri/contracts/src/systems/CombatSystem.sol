@@ -3,12 +3,15 @@ pragma solidity >=0.8.0;
 import { ISystem } from "solecs/interfaces/ISystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
 import { getAddressById } from "solecs/utils.sol";
 
 import { LibECS } from "std-contracts/libraries/LibECS.sol";
+import { LibQuery } from "solecs/LibQuery.sol";
 
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
+import { LibInventory } from "../libraries/LibInventory.sol";
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { AttackComponent, ID as AttackComponentID, Attack } from "../components/AttackComponent.sol";
@@ -16,6 +19,7 @@ import { HealthComponent, ID as HealthComponentID, Health } from "../components/
 import { CapturableComponent, ID as CapturableComponentID } from "../components/CapturableComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
+import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.combat"));
 
@@ -111,7 +115,7 @@ contract CombatSystem is ISystem {
       Health memory newDefenderHealth = calculateNewHealth(defenderHealth, attackStrength);
       healthComponent.set(defender, newDefenderHealth);
 
-      if (newDefenderHealth.current < 0) {
+      if (newDefenderHealth.current <= 0) {
         if (capturableComponent.has(defender)) {
           capture(attacker, defender);
         } else {
@@ -134,6 +138,7 @@ contract CombatSystem is ISystem {
 
   function kill(uint256 entity) private {
     PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
+    Coord memory position = positionComponent.getValue(entity);
     if (positionComponent.has(entity)) {
       positionComponent.remove(entity);
     }
@@ -146,6 +151,12 @@ contract CombatSystem is ISystem {
     StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
     if (staminaComponent.has(entity)) {
       staminaComponent.remove(entity);
+    }
+
+    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+    uint256 inventoryEntity = LibInventory.getInventory(components, entity);
+    if (ownedByComponent.getEntitiesWithValue(inventoryEntity).length > 0) {
+      LibInventory.dropInventory(components, inventoryEntity, position);
     }
   }
 

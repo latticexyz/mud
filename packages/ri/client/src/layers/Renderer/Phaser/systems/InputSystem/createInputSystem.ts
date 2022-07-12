@@ -17,7 +17,7 @@ export function createInputSystem(layer: PhaserLayer) {
       network: {
         world,
         components: { Factory },
-        api: { buildAt },
+        api: { buildAt, dropInventory },
       },
       headless: {
         api: { moveEntity, attackEntity },
@@ -144,6 +144,23 @@ export function createInputSystem(layer: PhaserLayer) {
     }
   );
 
+  input.onKeyPress(
+    (keys) => keys.has("D"),
+    () => {
+      const selectedEntity = getSelectedEntity();
+      if (!selectedEntity) return;
+
+      const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
+
+      const inventoryEntity = [
+        ...runQuery([Has(Inventory), HasValue(OwnedBy, { value: world.entities[selectedEntity] })]),
+      ][0];
+
+      if (hoverHighlight.x != undefined && hoverHighlight.y != undefined && inventoryEntity != null) {
+        dropInventory(world.entities[inventoryEntity], { x: hoverHighlight.x, y: hoverHighlight.y });
+      } else console.log("hoverHightlight not valid position");
+    }
+  );
   input.pointermove$
     .pipe(
       map((pointer) => ({ x: pointer.worldX, y: pointer.worldY })), // Map pointer to pointer pixel cood

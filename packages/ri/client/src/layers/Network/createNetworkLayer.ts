@@ -239,6 +239,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     );
   }
 
+  async function dropInventory(ownedInventoryEntity: EntityID, targetPosition: WorldCoord) {
+    console.log(`Drop Inventory at position ${JSON.stringify(targetPosition)}`);
+    return systems["ember.system.dropInventory"].executeTyped(BigNumber.from(ownedInventoryEntity), targetPosition);
+  }
+
   // debug functions
   async function spawnGold(targetPosition: WorldCoord) {
     console.log(`Spawn gold at position ${JSON.stringify(targetPosition)}`);
@@ -267,6 +272,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       attackEntity,
       buildAt,
       takeItem,
+      dropInventory,
       dev: {
         spawnGold,
       },
