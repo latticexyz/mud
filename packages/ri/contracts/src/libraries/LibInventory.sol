@@ -57,12 +57,7 @@ library LibInventory {
   }
 
   function getItems(IUint256Component components, uint256 inventoryId) internal view returns (uint256[] memory items) {
-    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
-
-    QueryFragment[] memory fragments = new QueryFragment[](1);
-    fragments[0] = QueryFragment(QueryType.HasValue, ownedByComponent, abi.encode(inventoryId));
-
-    items = LibQuery.query(fragments);
+    items = OwnedByComponent(getAddressById(components, OwnedByComponentID)).getEntitiesWithValue(inventoryId);
   }
 
   function burnItem(IUint256Component components, uint256 itemEntity) internal {
