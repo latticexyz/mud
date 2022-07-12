@@ -9,8 +9,6 @@ import { LibQuery } from "solecs/LibQuery.sol";
 import { LibPrototype } from "../libraries/LibPrototype.sol";
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
-import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
-import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 
 import { ID as InventoryID } from "../prototypes/InventoryPrototype.sol";
@@ -34,15 +32,11 @@ contract SpawnGoldDevSystem is ISystem {
   function execute(bytes memory arguments) public returns (bytes memory) {
     Coord memory targetPosition = abi.decode(arguments, (Coord));
     PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
-    InventoryComponent inventoryComponent = InventoryComponent(getAddressById(components, InventoryComponentID));
-    EntityTypeComponent entityTypeComponent = EntityTypeComponent(getAddressById(components, EntityTypeComponentID));
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
 
     uint256 inventoryEntity = world.getUniqueEntityId();
-
-    inventoryComponent.set(inventoryEntity, int32(3));
+    LibPrototype.copyPrototype(components, world, InventoryID, inventoryEntity);
     positionComponent.set(inventoryEntity, targetPosition);
-    entityTypeComponent.set(inventoryEntity, uint32(5));
 
     uint256 goldEntity = world.getUniqueEntityId();
     LibPrototype.copyPrototype(components, world, GoldID, goldEntity);

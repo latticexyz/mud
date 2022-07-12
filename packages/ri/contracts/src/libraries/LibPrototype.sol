@@ -37,12 +37,11 @@ library LibPrototype {
     }
   }
 
-  // LibPrototype.createPrototypeFromPrototype(components, world, InventoryID, SoldierID);
   function createPrototypeFromPrototype(
     IUint256Component components,
     IWorld world,
-    uint256 fromPrototypeId, // inventoryId
-    uint256 ownerPrototypeId // soldierId
+    uint256 fromPrototypeId,
+    uint256 ownerPrototypeId
   ) internal returns (uint256 newPrototype) {
     require(
       PrototypeComponent(getAddressById(components, PrototypeComponentID)).has(fromPrototypeId),
