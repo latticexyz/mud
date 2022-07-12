@@ -20,16 +20,14 @@ export function createAppearanceSystem(layer: PhaserLayer) {
   } = layer;
 
   defineSystem(world, [Has(Appearance), Has(LocalPosition)], ({ entity, type }) => {
-    const embodiedEntity = objectPool.get(entity, "Sprite");
-
     if (type === UpdateType.Exit) {
-      embodiedEntity.despawn();
       return objectPool.remove(entity);
     }
 
     if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
       const appearance = getComponentValueStrict(Appearance, entity);
       const sprite = config.sprites[appearance.value as Sprites];
+      const embodiedEntity = objectPool.get(entity, "Sprite");
       embodiedEntity.setComponent({
         id: Appearance.id,
         once: (gameObject) => {
