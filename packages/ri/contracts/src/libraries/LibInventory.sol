@@ -41,8 +41,7 @@ library LibInventory {
     fragments[1] = QueryFragment(QueryType.Has, inventoryComponent, new bytes(0));
     uint256[] memory inventoryEntities = LibQuery.query(fragments);
 
-    require(inventoryEntities.length == 1, "entities cannot have more than 1 inventory, something is wrong here!");
-    require(inventoryEntities.length != 0, "no inventory found");
+    require(inventoryEntities.length == 1, "inventory not found");
 
     return inventoryEntities[0];
   }
