@@ -42,6 +42,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   const Selectable = defineSelectableComponent(world);
   const RockWall = defineRockWallComponent(world);
   const PotentialPath = defineComponent(world, { x: Type.NumberArray, y: Type.NumberArray }, { id: "PotentialPath" });
+  const Name = defineComponent(world, { value: Type.String }, { id: "Name" });
 
   const components = {
     LocalPosition,
@@ -54,6 +55,7 @@ export async function createLocalLayer(headless: HeadlessLayer) {
     Selectable,
     RockWall,
     PotentialPath,
+    Name,
   };
 
   // Constants
