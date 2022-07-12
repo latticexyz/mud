@@ -1,9 +1,16 @@
 import { PhaserLayer } from "../../types";
 import { pixelToWorldCoord } from "../../utils";
 import { map } from "rxjs";
-import { EntityIndex, getComponentValue, getComponentValueStrict, Has, HasValue, runQuery } from "@latticexyz/recs";
+import {
+  EntityIndex,
+  getComponentValue,
+  getComponentValueStrict,
+  Has,
+  HasValue,
+  ProxyExpand,
+  runQuery,
+} from "@latticexyz/recs";
 import { WorldCoord } from "../../../../../types";
-import { getPlayerEntity } from "@latticexyz/std-client";
 import { manhattan } from "../../../../../utils/distance";
 
 export function createInputSystem(layer: PhaserLayer) {
@@ -17,13 +24,13 @@ export function createInputSystem(layer: PhaserLayer) {
       network: {
         world,
         components: { Factory },
-        api: { buildAt, dropInventory },
+        api: { buildAt, dropInventory, gatherResource },
       },
       headless: {
         api: { moveEntity, attackEntity },
       },
       network: {
-        components: { OwnedBy, Inventory, Health },
+        components: { OwnedBy, Inventory, Health, ResourceGenerator },
         api: {
           takeItem,
           dev: { spawnGold },
@@ -40,6 +47,19 @@ export function createInputSystem(layer: PhaserLayer) {
 
   const attemptMove = function (selectedEntity: EntityIndex, targetPosition: WorldCoord) {
     moveEntity(selectedEntity, targetPosition);
+  };
+
+  const attemptGatherResource = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
+    const inventoryResults = [...runQuery([ProxyExpand(OwnedBy, 1), Has(Inventory)], new Set([selectedEntity]))];
+    const gathererInventory = inventoryResults[0];
+    if (gathererInventory == null) return false;
+
+    const resourceGenerator = getComponentValue(ResourceGenerator, highlightedEntity);
+    if (!resourceGenerator) return false;
+
+    gatherResource(world.entities[highlightedEntity], world.entities[selectedEntity]);
+
+    return true;
   };
 
   const attemptTakeItem = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
@@ -92,6 +112,7 @@ export function createInputSystem(layer: PhaserLayer) {
       ][0];
 
       if (highlightedEntity) {
+        if (attemptGatherResource(selectedEntity, highlightedEntity)) return;
         if (attemptTakeItem(selectedEntity, highlightedEntity)) return;
         if (attemptAttack(selectedEntity, highlightedEntity)) return;
       }

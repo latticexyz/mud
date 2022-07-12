@@ -14,6 +14,7 @@
     "MineableComponent",
     "MovableComponent",
     "OwnedByComponent",
+    "ResourceGeneratorComponent",
     "SpawnPointComponent",
     "StaminaComponent",
     "UntraversableComponent",
@@ -33,6 +34,7 @@
     { "name": "InitSystem", "writeAccess": ["*"], "initialize": "new bytes(0)" },
     { "name": "PlayerJoinSystem", "writeAccess": ["*"] },
     { "name": "SpawnGoldDevSystem", "writeAccess": ["*"] },
-    { "name": "FactorySystem", "writeAccess": ["*"] }
+    { "name": "FactorySystem", "writeAccess": ["*"] },
+    { "name": "GatherResourceSystem", "writeAccess": ["*"] }
   ]
 }

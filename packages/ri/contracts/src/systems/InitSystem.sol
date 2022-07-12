@@ -10,11 +10,13 @@ import { LibPrototype } from "../libraries/LibPrototype.sol";
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { SpawnPointComponent, ID as SpawnPointComponentID } from "../components/SpawnPointComponent.sol";
+import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
 import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
 import { SettlementPrototype, ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
 import { InventoryPrototype } from "../prototypes/InventoryPrototype.sol";
 import { GoldPrototype } from "../prototypes/GoldPrototype.sol";
+import { GoldShrinePrototype, ID as GoldShrineID } from "../prototypes/GoldShrinePrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.init"));
 
@@ -44,6 +46,7 @@ contract InitSystem is ISystem {
     GoldPrototype(components);
     SoldierPrototype(components, world);
     SettlementPrototype(components, world);
+    GoldShrinePrototype(components, world);
 
     uint256 spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
 
@@ -59,5 +62,10 @@ contract InitSystem is ISystem {
 
     SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(5, 20));
+
+    uint256 goldShrine = LibPrototype.copyPrototype(components, world, GoldShrineID);
+
+    PositionComponent(getAddressById(components, PositionComponentID)).set(goldShrine, Coord(7, 7));
+    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(goldShrine, 0);
   }
 }
