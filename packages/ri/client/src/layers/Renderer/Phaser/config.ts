@@ -6,12 +6,9 @@ import {
   defineCameraConfig,
 } from "@latticexyz/phaserx";
 import { Sprites, Assets, Maps, Scenes, TILE_HEIGHT, TILE_WIDTH } from "./constants";
-
+import { Tileset as OverworldTileset, TileAnimations as OverworldTileAnimations } from "./tilesets/overworldTileset";
 import overworldTileset from "../assets/tilesets/overworld-tileset.png";
 import mountainTileset from "../assets/tilesets/mountain-tileset.png";
-
-import { Tileset as OverworldTileset } from "./tilesets/overworldTileset";
-import { TileAnimations as OverworldTileAnimations } from "./tilesets/overworldTileset";
 
 const ANIMATION_INTERVAL = 200;
 

@@ -1,7 +1,6 @@
-import { AnimatedTilemap } from "@latticexyz/phaserx";
-import { Coord } from "@latticexyz/phaserx/src/types";
-import { addCoords, ZERO_VECTOR } from "@latticexyz/phaserx/src/utils";
-import { Has, getComponentValueStrict, defineEnterSystem, Not, runQuery, HasValue } from "@latticexyz/recs";
+import { Coord } from "@latticexyz/phaserx";
+import { addCoords, ZERO_VECTOR } from "@latticexyz/phaserx";
+import { Has, getComponentValueStrict, defineEnterSystem, runQuery, HasValue } from "@latticexyz/recs";
 import { EntityTypes } from "../../../../Network";
 import { TileAnimationKey, Tileset, WangSetKey, WangSets } from "../../tilesets/overworldTileset";
 import { PhaserLayer } from "../../types";
@@ -60,11 +59,12 @@ export function createMapSystem(layer: PhaserLayer) {
   });
   world.registerDisposer(() => zoomSub?.unsubscribe());
 
-  defineEnterSystem(world, [Has(Position), Not(EntityType)], (update) => {
-    const coord = getComponentValueStrict(Position, update.entity);
-    // TODO: commented till we fix the uploader to bundle untraversable and entity type together
-    // Main.putTileAt(coord, Tileset.Plain);
-  });
+  // TODO: commented till we fix the uploader to bundle untraversable and entity type together
+  // defineEnterSystem(world, [Has(Position), Not(EntityType)], (update) => {
+  // const coord = getComponentValueStrict(Position, update.entity);
+  // Main.putTileAt(coord, Tileset.Plain);
+  // });
+  //
   const WANG_OFFSET = [
     { x: 0, y: -1 },
     { x: 1, y: -1 },
@@ -76,7 +76,7 @@ export function createMapSystem(layer: PhaserLayer) {
     { x: -1, y: -1 },
   ];
 
-  const calculateWangId = (coord: Coord, entityType: EntityTypes) => {
+  function calculateWangId(coord: Coord, entityType: EntityTypes) {
     const bits = [];
     for (const offset of WANG_OFFSET) {
       const checkCoord = addCoords(coord, offset);
@@ -87,6 +87,7 @@ export function createMapSystem(layer: PhaserLayer) {
         bits.push(0);
       }
     }
+
     // turn the bitstring into a decimal number (with MSB on the right!)
     // ignore "corner" bits if their neighbors are not set
     // corner bits are bits [1,3,5,7]
@@ -106,9 +107,9 @@ export function createMapSystem(layer: PhaserLayer) {
         }
       }
     });
-  };
+  }
 
-  const drawWangSetAtCoord = (coord: Coord, entityType: EntityTypes) => {
+  function drawWangSetAtCoord(coord: Coord, entityType: EntityTypes) {
     const wangSetKey = entityTypeToWangSet[entityType as EntityTypes];
     if (!wangSetKey) return;
     const wangSet = WangSets[wangSetKey];
@@ -121,7 +122,7 @@ export function createMapSystem(layer: PhaserLayer) {
       const wangId = calculateWangId(coordToRedraw, entityType);
       Main.putTileAt(coordToRedraw, wangSet[wangId], "Foreground");
     }
-  };
+  }
 
   defineEnterSystem(
     world,
@@ -135,6 +136,7 @@ export function createMapSystem(layer: PhaserLayer) {
       if (animation) Main.putAnimationAt(coord, animation);
       Main.putTileAt(coord, tile);
       drawWangSetAtCoord(coord, type.value);
+
       // compute cluster for LOD
       if (coord.x % 4 === 0 && coord.y % 4 === 0) {
         const tacticCoord = { x: Math.floor(coord.x / 4), y: Math.floor(coord.y / 4) };
