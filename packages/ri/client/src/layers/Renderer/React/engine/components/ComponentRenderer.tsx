@@ -19,7 +19,7 @@ const UIGrid = styled.div`
   pointer-events: none;
 `;
 
-const UIComponentContainer: React.FC<{ gridConfig: GridConfiguration }> = ({ children, gridConfig }) => {
+const UIComponentContainer: React.FC<{ gridConfig: GridConfiguration }> = React.memo(({ children, gridConfig }) => {
   const { colStart, colEnd, rowStart, rowEnd } = gridConfig;
 
   return (
@@ -34,30 +34,35 @@ const UIComponentContainer: React.FC<{ gridConfig: GridConfiguration }> = ({ chi
       {children}
     </Cell>
   );
-};
+});
 
-export function renderUIComponent(layers: Layers, key: string, { requirement, render, gridConfig }: UIComponent) {
-  const state = useStream(requirement(layers));
-  if (!state) return null;
+export const UIComponentRenderer: React.FC<{ layers: Layers; id: string; uiComponent: UIComponent }> = React.memo(
+  ({ layers, id, uiComponent: { requirement, render, gridConfig } }) => {
+    const state = useStream(requirement(layers));
+    if (!state) return null;
 
-  return (
-    <UIComponentContainer key={`component-${key}`} gridConfig={gridConfig}>
-      {render(state)}
-    </UIComponentContainer>
-  );
-}
+    return (
+      <UIComponentContainer key={`component-${id}`} gridConfig={gridConfig}>
+        {render(state)}
+      </UIComponentContainer>
+    );
+  }
+);
 
 export const ComponentRenderer: React.FC = observer(() => {
   const { UIComponents } = useEngineStore();
   const layers = useLayers();
+  if (!layers) return null;
 
   return (
     <UIGrid>
       {filterNullishValues(
         // Iterate through all registered UIComponents
         // and return those whose requirements are fulfilled
-        [...UIComponents.entries()].map(([key, UIComponent]) => {
-          return renderUIComponent(layers, key, UIComponent);
+        [...UIComponents.entries()].map(([id, uiComponent]) => {
+          return (
+            <UIComponentRenderer layers={layers} id={id} key={`componentRenderer-${id}`} uiComponent={uiComponent} />
+          );
         })
       )}
     </UIGrid>

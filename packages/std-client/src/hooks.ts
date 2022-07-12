@@ -8,7 +8,7 @@ export function useStream<T>(stream: Observable<T>, defaultValue?: T) {
 
   useEffect(() => {
     const sub = stream.subscribe((newState) => setState(newState));
-    return () => sub.unsubscribe();
+    return () => sub?.unsubscribe();
   }, []);
 
   return state;

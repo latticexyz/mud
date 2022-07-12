@@ -66,7 +66,7 @@ export function createActionSystem(
       [
         withValue(Action, {
           state: ActionState.Requested,
-          on: actionRequest.on ? world.entities[actionRequest.on] : null,
+          on: actionRequest.on ? world.entities[actionRequest.on] : undefined,
         }),
       ],
       {
@@ -105,7 +105,8 @@ export function createActionSystem(
    * @returns void
    */
   function checkRequirement(action: ActionData) {
-    // Only check requirements of requested actions
+    // Only check requirements of requested actionis
+    getComponentValue(Action, action.entityIndex);
     if (getComponentValue(Action, action.entityIndex)?.state !== ActionState.Requested) return;
 
     // Check requirement on components including pending updates

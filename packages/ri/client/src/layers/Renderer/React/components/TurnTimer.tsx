@@ -30,19 +30,19 @@ const ALERT_THRESHOLD = 5;
 
 const COLOR_CODES = {
   info: {
-    color: "green"
+    color: "green",
   },
   warning: {
     color: "orange",
-    threshold: WARNING_THRESHOLD
+    threshold: WARNING_THRESHOLD,
   },
   alert: {
     color: "red",
-    threshold: ALERT_THRESHOLD
-  }
+    threshold: ALERT_THRESHOLD,
+  },
 };
 
-const TurnCountdown: React.FC<{ secondsLeft: number }> = ({ secondsLeft }) => {
+const TurnCountdown: React.FC<{ secondsLeft: number }> = React.memo(({ secondsLeft }) => {
   return (
     <div className="base-timer">
       <svg className="base-timer__svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
@@ -66,7 +66,7 @@ const TurnCountdown: React.FC<{ secondsLeft: number }> = ({ secondsLeft }) => {
       </span>
     </div>
   );
-};
+});
 
 export function registerTurnTimer() {
   registerUIComponent(
@@ -83,24 +83,24 @@ export function registerTurnTimer() {
         network: { clock },
         components: { GameConfig },
       } = layers.network;
-      
+
       return clock.time$.pipe(
         map((time) => {
           const gameConfig = getGameConfig(world, GameConfig);
-          if(!gameConfig) return { secondsUntilNextTurn: 0 };
-          
+          if (!gameConfig) return { secondsUntilNextTurn: 0 };
+
           const gameStartTime = parseInt(gameConfig.startTime);
           const turnLength = parseInt(gameConfig.turnLength);
 
           const currentTime = time / 1000;
           const timeElapsed = currentTime - gameStartTime;
           const secondsUntilNextTurn = turnLength - (timeElapsed % turnLength);
-          
+
           return {
             secondsUntilNextTurn,
           };
         })
-      )
+      );
     },
     ({ secondsUntilNextTurn }) => {
       return <TurnCountdown secondsLeft={secondsUntilNextTurn} />;
