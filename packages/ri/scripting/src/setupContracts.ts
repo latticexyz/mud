@@ -4,7 +4,7 @@ import { World as WorldContract } from "ri-contracts/types/ethers-contracts/Worl
 import WorldAbi from "ri-contracts/abi/World.json";
 import { computed } from "mobx";
 import { SystemTypes } from "ri-contracts/types/SystemTypes";
-import { SystemAbis } from "ri-contracts/types/SystemAbis";
+import { SystemAbis } from "ri-contracts/types/SystemAbis.mjs";
 import { createWorld, defineComponent, EntityID, setComponent, Type } from "@latticexyz/recs";
 import { keccak256 } from "./utils";
 

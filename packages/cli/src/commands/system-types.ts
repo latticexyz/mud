@@ -85,8 +85,8 @@ ${systems.map((system, index) => `  "${ids[index]}": ${system}.abi,`).join("\n")
 
   console.log("Generating files:");
   console.log("SystemTypes.ts", SystemTypes);
-  console.log("SystemAbis.ts", SystemAbis);
+  console.log("SystemAbis.mts", SystemAbis);
 
   fs.writeFileSync("./types/SystemTypes.ts", SystemTypes);
-  fs.writeFileSync("./types/SystemAbis.ts", SystemAbis);
+  fs.writeFileSync("./types/SystemAbis.mts", SystemAbis);
 };

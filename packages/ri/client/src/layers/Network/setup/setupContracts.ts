@@ -20,7 +20,7 @@ import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 import { SystemTypes } from "ri-contracts/types/SystemTypes";
-import { SystemAbis } from "ri-contracts/types/SystemAbis";
+import { SystemAbis } from "ri-contracts/types/SystemAbis.mjs";
 
 export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
