@@ -11,6 +11,7 @@ import { LibECS } from "std-contracts/libraries/LibECS.sol";
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
 import { LibPrototype } from "../libraries/LibPrototype.sol";
+import { LibInventory } from "../libraries/LibInventory.sol";
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
@@ -20,8 +21,14 @@ import { MovableComponent, ID as MovableComponentID } from "../components/Movabl
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { FactoryComponent, Factory, ID as FactoryComponentID } from "../components/FactoryComponent.sol";
+import { GoldComponent, ID as GoldComponentID } from "../components/GoldComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.factory"));
+
+struct FactoryPlan {
+  uint256 prototypeId;
+  int32 cost;
+}
 
 contract FactorySystem is ISystem {
   IUint256Component components;
@@ -37,16 +44,6 @@ contract FactorySystem is ISystem {
 
     FactoryComponent factoryComponent = FactoryComponent(getAddressById(components, FactoryComponentID));
     require(factoryComponent.has(builderId), "no factory");
-
-    Factory memory factory = factoryComponent.getValue(builderId);
-
-    bool ableToBuildPrototype = false;
-    for (uint256 i = 0; i < factory.prototypeIds.length; i++) {
-      if (factory.prototypeIds[i] == prototypeId) {
-        ableToBuildPrototype = true;
-      }
-    }
-    require(ableToBuildPrototype, "unable to build");
 
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
     require(LibECS.isOwnedByCaller(ownedByComponent, builderId), "you don't own this entity");
@@ -73,6 +70,32 @@ contract FactorySystem is ISystem {
       (uint256, uint256, Coord, uint256)
     );
 
+    Factory memory factory = FactoryComponent(getAddressById(components, FactoryComponentID)).getValue(builderId);
+    FactoryPlan memory factoryPlan;
+
+    bool ableToBuildPrototype = false;
+    for (uint256 i = 0; i < factory.prototypeIds.length; i++) {
+      if (factory.prototypeIds[i] == prototypeId) {
+        ableToBuildPrototype = true;
+        factoryPlan = FactoryPlan(factory.prototypeIds[i], factory.costs[i]);
+        break;
+      }
+    }
+    require(ableToBuildPrototype, "unable to build");
+
+    GoldComponent goldComponent = GoldComponent(getAddressById(components, GoldComponentID));
+    int32 spentResourceCount = 0;
+    uint256 inventory = LibInventory.getInventory(components, builderId);
+    uint256[] memory items = LibInventory.getItems(components, inventory);
+    for (uint256 i = 0; i < items.length; i++) {
+      uint256 item = items[i];
+      if (goldComponent.has(item)) {
+        LibInventory.burnItem(components, item);
+        spentResourceCount++;
+      }
+    }
+    require(spentResourceCount == factoryPlan.cost, "not enough resources spent");
+
     uint256 newEntityId = LibPrototype.copyPrototype(components, world, prototypeId);
 
     OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(newEntityId, ownerId);
@@ -82,7 +105,7 @@ contract FactorySystem is ISystem {
       LibStamina.getCurrentTurn(components)
     );
 
-    LibStamina.modifyStamina(components, builderId, -5);
+    LibStamina.modifyStamina(components, builderId, -1);
   }
 
   function requirementTyped(

@@ -1,6 +1,6 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
-import { defineQuery, getComponentValue, Has, HasValue, runQuery } from "@latticexyz/recs";
+import { defineQuery, getComponentValue, getComponentValueStrict, Has, HasValue, runQuery } from "@latticexyz/recs";
 import { getAddressColor } from "@latticexyz/std-client";
 import { map, merge } from "rxjs";
 
@@ -40,7 +40,10 @@ export function registerSelection() {
           const hasInventory = inventoryIndex != null;
 
           const inventoryItemNames = [] as string[];
+          let inventorySize = 0;
           if (hasInventory) {
+            inventorySize = getComponentValueStrict(Inventory, inventoryIndex).value;
+
             const inventoryItems = [...runQuery([HasValue(OwnedBy, { value: world.entities[inventoryIndex] })])];
             inventoryItems.forEach((itemIndex) => {
               const name = getComponentValue(Name, itemIndex)?.value;
@@ -54,13 +57,22 @@ export function registerSelection() {
             name,
             hasInventory,
             inventoryItemNames,
+            inventorySize,
           };
         })
       );
     },
-    ({ selection, ownedBy, name, hasInventory, inventoryItemNames }) => {
+    ({ selection, ownedBy, name, hasInventory, inventoryItemNames, inventorySize }) => {
       return (
-        <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", border: "1px grey solid", width: "100%" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+            border: "1px grey solid",
+            width: "100%",
+          }}
+        >
           <div>
             <h2>{name}</h2>
             x: {selection?.x}
@@ -73,6 +85,9 @@ export function registerSelection() {
           {hasInventory && (
             <div>
               <h2>Inventory</h2>
+              <h3>
+                {inventoryItemNames.length} / {inventorySize}
+              </h3>
               <ul>
                 {inventoryItemNames.map((itemName) => {
                   return <li>{itemName}</li>;
