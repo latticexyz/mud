@@ -10,7 +10,9 @@ export {
   chunkCoordToTileCoord,
   chunkToPixelCoord,
   pixelToChunkCoord,
+  addCoords,
   coordEq,
+  ZERO_VECTOR,
 } from "./coords";
 export { load } from "./load";
 export { getChunksInArea } from "./chunks";

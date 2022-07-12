@@ -2,15 +2,8 @@ import map from "../assets/ecs-map.json";
 import { setupContracts } from "./setupContracts";
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
 import { BigNumber, BytesLike } from "ethers";
-import { keccak256 as keccak256Bytes, toUtf8Bytes } from "ethers/lib/utils";
 import { callWithRetry, sleep } from "@latticexyz/utils";
-import { TxQueue } from "@latticexyz/network";
-import { CombinedFacets } from "ri-contracts/types/ethers-contracts/CombinedFacets";
-import { World } from "ri-contracts/types/ethers-contracts/World";
-
-export function keccak256(data: string) {
-  return keccak256Bytes(toUtf8Bytes(data));
-}
+import { keccak256 } from "./utils";
 
 interface ECSEvent {
   component: number; // index into component array passed into bulk function, NOT component ID
@@ -18,13 +11,13 @@ interface ECSEvent {
   value: BytesLike;
 }
 
-const stateUploadCount = 400;
-const gasLimit = 95_000_000;
+const stateUploadCount = 20;
+const gasLimit = 30_000_000;
 const sleepTime = 950;
 let txCount = 1;
 
 async function bulkUploadMap() {
-  const { txQueue } = await setupContracts();
+  const { systems } = await setupContracts();
 
   const components: BigNumber[] = [];
   const entities: BigNumber[] = [];
@@ -54,25 +47,29 @@ async function bulkUploadMap() {
     });
 
     if (state.length === stateUploadCount) {
-      await bulkUpload(txQueue, components, entities, state);
+      await bulkUpload(systems, components, entities, state);
     }
   }
 
   // if the total state count doesnt divide evenly by stateUploadCount then handle the leftovers
-  if (state.length > 0) await bulkUpload(txQueue, components, entities, state);
+  if (state.length > 0) await bulkUpload(systems, components, entities, state);
 
   console.log("done");
 }
 
 async function bulkUpload(
-  txQueue: TxQueue<{ Game: CombinedFacets; World: World }>,
+  systems: Awaited<ReturnType<typeof setupContracts>>["systems"],
   components: Array<BigNumber>,
   entities: Array<BigNumber>,
   state: Array<ECSEvent>
 ) {
   let tx: any;
   try {
-    tx = callWithRetry(txQueue.Game.bulkSetState, [components, entities, state, { gasLimit: gasLimit }], 10);
+    tx = callWithRetry(
+      systems["ember.system.bulkSetStateSystem"].executeTyped,
+      [components, entities, state, { gasLimit: gasLimit }],
+      10
+    );
     await sleep(sleepTime);
     console.log(`Send tx: ${txCount++} (${(await tx).hash})`);
   } catch (e) {

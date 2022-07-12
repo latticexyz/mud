@@ -1,4 +1,5 @@
-import { defineComponentSystem, defineSystem, getComponentValueStrict, Has, UpdateType } from "@latticexyz/recs";
+import { defineSystem, getComponentValueStrict, Has, UpdateType } from "@latticexyz/recs";
+import { Sprites } from "../../constants";
 import { PhaserLayer } from "../../types";
 
 /**
@@ -9,7 +10,7 @@ export function createAppearanceSystem(layer: PhaserLayer) {
     world,
     components: { Appearance },
     scenes: {
-      Main: { objectPool },
+      Main: { objectPool, config },
     },
     parentLayers: {
       local: {
@@ -23,13 +24,16 @@ export function createAppearanceSystem(layer: PhaserLayer) {
       return objectPool.remove(entity);
     }
 
-    const appearance = getComponentValueStrict(Appearance, entity);
-    const embodiedEntity = objectPool.get(entity, "Sprite");
-    embodiedEntity.setComponent({
-      id: Appearance.id,
-      once: (gameObject) => {
-        gameObject.setTexture(appearance.value);
-      },
-    });
+    if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
+      const appearance = getComponentValueStrict(Appearance, entity);
+      const sprite = config.sprites[appearance.value as Sprites];
+      const embodiedEntity = objectPool.get(entity, "Sprite");
+      embodiedEntity.setComponent({
+        id: Appearance.id,
+        once: (gameObject) => {
+          gameObject.setTexture(sprite.assetKey, sprite.frame);
+        },
+      });
+    }
   });
 }

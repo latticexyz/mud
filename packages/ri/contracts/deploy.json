@@ -34,6 +34,5 @@
     { "name": "PlayerJoinSystem", "writeAccess": ["*"] },
     { "name": "SpawnGoldDevSystem", "writeAccess": ["*"] },
     { "name": "FactorySystem", "writeAccess": ["*"] }
-  ],
-  "initialize": ["GameConfigSystem"]
+  ]
 }

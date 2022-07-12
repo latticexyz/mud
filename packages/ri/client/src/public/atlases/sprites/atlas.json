@@ -2177,7 +2177,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/base/small-base/0.png",
+                    "filename": "sprites/base/small-base.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2192,6 +2192,216 @@
                     },
                     "frame": {
                         "x": 176,
+                        "y": 480,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/chest.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 176,
+                        "y": 496,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/crystal.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 192,
+                        "y": 480,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/dai-coin.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 192,
+                        "y": 496,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/dai.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 208,
+                        "y": 480,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/gems.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 208,
+                        "y": 496,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/gold.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 224,
+                        "y": 480,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/oil.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 224,
+                        "y": 496,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/rock.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 240,
+                        "y": 480,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/sulfur.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 240,
+                        "y": 496,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/resources/wood.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 256,
                         "y": 480,
                         "w": 16,
                         "h": 16
@@ -2212,14 +2422,14 @@
                         "h": 16
                     },
                     "frame": {
-                        "x": 176,
+                        "x": 256,
                         "y": 496,
                         "w": 16,
                         "h": 16
                     }
                 },
                 {
-                    "filename": "sprites/warriors/hero/0.png",
+                    "filename": "sprites/warriors/hero.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2233,14 +2443,14 @@
                         "h": 16
                     },
                     "frame": {
-                        "x": 192,
+                        "x": 272,
                         "y": 480,
                         "w": 16,
                         "h": 16
                     }
                 },
                 {
-                    "filename": "sprites/workers/bridge-builder-imp/0.png",
+                    "filename": "sprites/workers/bridge-builder-imp.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2254,7 +2464,7 @@
                         "h": 16
                     },
                     "frame": {
-                        "x": 192,
+                        "x": 272,
                         "y": 496,
                         "w": 16,
                         "h": 16
@@ -2275,7 +2485,7 @@
                         "h": 16
                     },
                     "frame": {
-                        "x": 208,
+                        "x": 288,
                         "y": 480,
                         "w": 16,
                         "h": 16
@@ -2296,7 +2506,7 @@
                         "h": 16
                     },
                     "frame": {
-                        "x": 208,
+                        "x": 288,
                         "y": 496,
                         "w": 16,
                         "h": 16
@@ -2317,7 +2527,7 @@
                         "h": 16
                     },
                     "frame": {
-                        "x": 224,
+                        "x": 304,
                         "y": 480,
                         "w": 16,
                         "h": 16
@@ -2338,7 +2548,7 @@
                         "h": 16
                     },
                     "frame": {
-                        "x": 224,
+                        "x": 304,
                         "y": 496,
                         "w": 16,
                         "h": 16
@@ -2359,7 +2569,7 @@
                         "h": 16
                     },
                     "frame": {
-                        "x": 240,
+                        "x": 320,
                         "y": 480,
                         "w": 16,
                         "h": 16
@@ -2380,7 +2590,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 240,
+                        "x": 320,
                         "y": 496,
                         "w": 5,
                         "h": 5
@@ -2401,7 +2611,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 240,
+                        "x": 320,
                         "y": 501,
                         "w": 5,
                         "h": 5
@@ -2422,7 +2632,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 240,
+                        "x": 320,
                         "y": 506,
                         "w": 5,
                         "h": 5
@@ -2443,7 +2653,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 245,
+                        "x": 325,
                         "y": 496,
                         "w": 5,
                         "h": 5
@@ -2464,7 +2674,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 245,
+                        "x": 325,
                         "y": 501,
                         "w": 5,
                         "h": 5
@@ -2485,7 +2695,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 245,
+                        "x": 325,
                         "y": 506,
                         "w": 5,
                         "h": 5
@@ -2506,7 +2716,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 250,
+                        "x": 330,
                         "y": 496,
                         "w": 5,
                         "h": 5
@@ -2527,7 +2737,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 250,
+                        "x": 330,
                         "y": 501,
                         "w": 5,
                         "h": 5
@@ -2548,7 +2758,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 250,
+                        "x": 330,
                         "y": 506,
                         "w": 5,
                         "h": 5
@@ -2569,7 +2779,7 @@
                         "h": 5
                     },
                     "frame": {
-                        "x": 255,
+                        "x": 335,
                         "y": 496,
                         "w": 5,
                         "h": 5

@@ -1,8 +1,12 @@
-import { createNetwork, createContracts, createTxQueue } from "@latticexyz/network";
+import { createNetwork, createContracts, createSystemExecutor } from "@latticexyz/network";
 import { DEV_PRIVATE_KEY, WORLD_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import WorldAbi from "ri-contracts/abi/World.json";
 import { computed } from "mobx";
+import { SystemTypes } from "ri-contracts/types/SystemTypes";
+import { SystemAbis } from "ri-contracts/types/SystemAbis";
+import { createWorld, defineComponent, EntityID, setComponent, Type } from "@latticexyz/recs";
+import { keccak256 } from "./utils";
 
 const config: Parameters<typeof createNetwork>[0] = {
   clock: {
@@ -31,7 +35,21 @@ export async function setupContracts() {
     signerOrProvider,
   });
 
-  const { txQueue } = createTxQueue(contracts, network);
+  const world = createWorld();
+  const SystemsComponent = defineComponent(world, { value: Type.String });
 
-  return { txQueue, provider: computed(() => network.providers.get().json), signer: network.signer };
+  console.log("Fetching systems...");
+  for (const systemId of Object.keys(SystemAbis)) {
+    const hashedSystemId = keccak256(systemId);
+    const address = await contracts.get().World.getSystemAddress(hashedSystemId);
+    console.log("Got address for", systemId, address);
+    const entity = world.registerEntity({ id: address as EntityID });
+    setComponent(SystemsComponent, entity, { value: hashedSystemId });
+  }
+
+  const systems = createSystemExecutor<SystemTypes>(world, network, SystemsComponent, SystemAbis, {
+    devMode: true,
+  });
+
+  return { systems, provider: computed(() => network.providers.get().json), signer: network.signer, contracts };
 }

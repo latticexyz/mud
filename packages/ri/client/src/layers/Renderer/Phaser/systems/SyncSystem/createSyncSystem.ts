@@ -1,7 +1,7 @@
 import { HasValue, Has, defineSyncSystem } from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { EntityTypes } from "../../../../Network/types";
-import { Animations, Assets } from "../../constants";
+import { Sprites } from "../../constants";
 
 /**
  * The Sync system handles adding Phaser layer components to entites based on components they have on parent layers
@@ -17,7 +17,7 @@ export function createSyncSystem(layer: PhaserLayer) {
         components: { Selected, LocalPosition },
       },
     },
-    components: { Appearance, SpriteAnimation, Outline },
+    components: { Appearance, Outline },
   } = layer;
 
   defineSyncSystem(
@@ -29,31 +29,24 @@ export function createSyncSystem(layer: PhaserLayer) {
 
   defineSyncSystem(
     world,
-    [Has(EntityType), Has(LocalPosition)],
+    [HasValue(EntityType, { value: EntityTypes.Hero }), Has(LocalPosition)],
     () => Appearance,
     () => {
       return {
-        value: Assets.Legendary,
+        value: Sprites.Hero,
       };
     }
   );
 
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Hero }), Has(LocalPosition)],
-    () => SpriteAnimation,
-    () => ({
-      value: Animations.HeroIdle,
-    })
-  );
-
-  defineSyncSystem(
-    world,
     [HasValue(EntityType, { value: EntityTypes.Settlement }), Has(LocalPosition)],
-    () => SpriteAnimation,
-    () => ({
-      value: Animations.SettlementIdle,
-    })
+    () => Appearance,
+    () => {
+      return {
+        value: Sprites.Settlement,
+      };
+    }
   );
   defineSyncSystem(
     world,
