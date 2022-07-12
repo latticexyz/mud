@@ -34,22 +34,24 @@ contract TakeItemSystem is ISystem {
   }
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
-    (uint256 takerEntity, uint256 takerInventoryEntity, uint256 itemEntity, uint256 itemInventoryEntity) = abi.decode(
-      arguments,
-      (uint256, uint256, uint256, uint256)
-    );
-
+    (uint256 takerInventoryEntity, uint256 itemEntity) = abi.decode(arguments, (uint256, uint256));
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+    uint256 takerEntity = ownedByComponent.getValue(takerInventoryEntity);
+
     require(LibECS.isOwnedByCaller(ownedByComponent, takerEntity), "you don't own this entity");
 
     require(
       ownedByComponent.getValue(takerInventoryEntity) == takerEntity,
       "taker entity does not own taker inventory entity"
     );
+
+    uint256 itemInventoryEntity = ownedByComponent.getValue(itemEntity);
     require(
       ownedByComponent.getValue(itemEntity) == itemInventoryEntity,
       "item entity not owned by item inventory entity"
     );
+
+    require(!ownedByComponent.has(itemInventoryEntity), "item inventory cannot be owned, thats stealing!");
 
     PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
 
@@ -101,21 +103,11 @@ contract TakeItemSystem is ISystem {
     LibStamina.modifyStamina(components, takerEntity, -1);
   }
 
-  function requirementTyped(
-    uint256 takerEntity,
-    uint256 takerInventoryEntity,
-    uint256 itemEntity,
-    uint256 itemInventoryEntity
-  ) public view returns (bytes memory) {
-    return requirement(abi.encode(takerEntity, takerInventoryEntity, itemEntity, itemInventoryEntity));
+  function requirementTyped(uint256 takerInventoryEntity, uint256 itemEntity) public view returns (bytes memory) {
+    return requirement(abi.encode(takerInventoryEntity, itemEntity));
   }
 
-  function executeTyped(
-    uint256 takerEntity,
-    uint256 takerInventoryEntity,
-    uint256 itemEntity,
-    uint256 itemInventoryEntity
-  ) public returns (bytes memory) {
-    return execute(abi.encode(takerEntity, takerInventoryEntity, itemEntity, itemInventoryEntity));
+  function executeTyped(uint256 takerInventoryEntity, uint256 itemEntity) public returns (bytes memory) {
+    return execute(abi.encode(takerInventoryEntity, itemEntity));
   }
 }

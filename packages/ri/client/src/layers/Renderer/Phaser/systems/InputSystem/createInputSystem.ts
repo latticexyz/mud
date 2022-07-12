@@ -4,6 +4,7 @@ import { map } from "rxjs";
 import { EntityIndex, getComponentValue, getComponentValueStrict, Has, HasValue, runQuery } from "@latticexyz/recs";
 import { WorldCoord } from "../../../../../types";
 import { getPlayerEntity } from "@latticexyz/std-client";
+import { manhattan } from "../../../../../utils/distance";
 
 export function createInputSystem(layer: PhaserLayer) {
   const {
@@ -60,13 +61,12 @@ export function createInputSystem(layer: PhaserLayer) {
           const takerInventoryCapacity = getComponentValue(Inventory, takerInventoryEntity)?.value;
           if (takerInventoryCapacity && takerInventoryCapacity > takerInventoryItems.length) {
             // if we have enough capacity
-            takeItem(
-              world.entities[selectedEntity],
-              world.entities[takerInventoryEntity],
-              world.entities[itemEntity],
-              world.entities[highlightedEntity]
-            );
-            return true;
+            const selectedEntityPos = getComponentValue(LocalPosition, selectedEntity);
+            const itemInventoryPos = getComponentValue(LocalPosition, highlightedEntity);
+            if (selectedEntityPos && itemInventoryPos && manhattan(selectedEntityPos, itemInventoryPos) <= 1) {
+              takeItem(world.entities[takerInventoryEntity], world.entities[itemEntity]);
+              return true;
+            }
           }
         }
       }

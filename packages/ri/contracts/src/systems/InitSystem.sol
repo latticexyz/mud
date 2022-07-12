@@ -45,20 +45,17 @@ contract InitSystem is ISystem {
     SoldierPrototype(components, world);
     SettlementPrototype(components);
 
-    uint256 spawnPoint = world.getUniqueEntityId();
-    LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
+    uint256 spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
 
     SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(0, 0));
 
-    spawnPoint = world.getUniqueEntityId();
-    LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
+    spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
 
     SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(20, 10));
 
-    spawnPoint = world.getUniqueEntityId();
-    LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
+    spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
 
     SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(5, 20));

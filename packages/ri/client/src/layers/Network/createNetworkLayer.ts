@@ -231,18 +231,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     );
   }
 
-  async function takeItem(
-    takerEntity: EntityID,
-    takerInventoryEntity: EntityID,
-    itemEntity: EntityID,
-    itemInventoryEntity: EntityID
-  ) {
-    console.log(`Entity ${takerEntity} taking item ${itemEntity} from  ${itemInventoryEntity}.`);
+  async function takeItem(takerInventoryEntity: EntityID, itemEntity: EntityID) {
+    console.log(`taking item ${itemEntity}.`);
     return systems["ember.system.takeItem"].executeTyped(
-      BigNumber.from(takerEntity),
       BigNumber.from(takerInventoryEntity),
-      BigNumber.from(itemEntity),
-      BigNumber.from(itemInventoryEntity)
+      BigNumber.from(itemEntity)
     );
   }
 
