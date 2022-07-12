@@ -8,25 +8,51 @@ import { getAddressById } from "solecs/utils.sol";
 
 import { PrototypeComponent, ID as PrototypeComponentID } from "../components/PrototypeComponent.sol";
 import { PrototypeCopyComponent, ID as PrototypeCopyComponentID } from "../components/PrototypeCopyComponent.sol";
-
-import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
+import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.prototype"));
 
 library LibPrototype {
   function copyPrototype(
     IUint256Component components,
-    uint256 prototypeId,
-    uint256 entityId
-  ) internal returns (uint256) {
+    IWorld world,
+    uint256 prototypeId
+  ) internal returns (uint256 entityId) {
+    entityId = world.getUniqueEntityId();
+
     PrototypeCopyComponent(getAddressById(components, PrototypeCopyComponentID)).set(entityId, prototypeId);
 
     uint256[] memory prototypeComponents = PrototypeComponent(getAddressById(components, PrototypeComponentID))
       .getValue(prototypeId);
-
     for (uint256 i; i < prototypeComponents.length; i++) {
       IComponent c = IComponent(getAddressById(components, prototypeComponents[i]));
       c.set(entityId, c.getRawValue(prototypeId));
     }
+
+    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+    uint256[] memory ownedEntities = ownedByComponent.getEntitiesWithValue(prototypeId);
+    for (uint256 i = 0; i < ownedEntities.length; i++) {
+      uint256 createdEntityId = copyPrototype(components, world, ownedEntities[i]);
+      ownedByComponent.set(createdEntityId, entityId);
+    }
+  }
+
+  function createPrototypeFromPrototype(
+    IUint256Component components,
+    IWorld world,
+    uint256 fromPrototypeId,
+    uint256 ownerPrototypeId
+  ) internal returns (uint256 newPrototype) {
+    require(
+      PrototypeComponent(getAddressById(components, PrototypeComponentID)).has(fromPrototypeId),
+      "Trying to copy non-existing prototype"
+    );
+
+    newPrototype = copyPrototype(components, world, fromPrototypeId);
+    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(newPrototype, ownerPrototypeId);
+
+    uint256[] memory prototypeComponents = PrototypeComponent(getAddressById(components, PrototypeComponentID))
+      .getValue(fromPrototypeId);
+    PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(newPrototype, prototypeComponents);
   }
 }

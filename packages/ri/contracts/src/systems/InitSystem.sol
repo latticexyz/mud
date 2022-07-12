@@ -13,6 +13,8 @@ import { SpawnPointComponent, ID as SpawnPointComponentID } from "../components/
 
 import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
 import { SettlementPrototype, ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
+import { InventoryPrototype } from "../prototypes/InventoryPrototype.sol";
+import { GoldPrototype } from "../prototypes/GoldPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.init"));
 
@@ -38,23 +40,22 @@ contract InitSystem is ISystem {
 
   function execute(bytes memory) public returns (bytes memory) {
     // Initialize Prototypes
-    SoldierPrototype(components);
+    InventoryPrototype(components);
+    GoldPrototype(components);
+    SoldierPrototype(components, world);
     SettlementPrototype(components);
 
-    uint256 spawnPoint = world.getUniqueEntityId();
-    LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
+    uint256 spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
 
     SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(0, 0));
 
-    spawnPoint = world.getUniqueEntityId();
-    LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
+    spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
 
     SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(20, 10));
 
-    spawnPoint = world.getUniqueEntityId();
-    LibPrototype.copyPrototype(components, SettlementID, spawnPoint);
+    spawnPoint = LibPrototype.copyPrototype(components, world, SettlementID);
 
     SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(spawnPoint);
     PositionComponent(getAddressById(components, PositionComponentID)).set(spawnPoint, Coord(5, 20));

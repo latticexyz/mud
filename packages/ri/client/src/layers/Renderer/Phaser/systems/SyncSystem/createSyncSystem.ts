@@ -55,4 +55,12 @@ export function createSyncSystem(layer: PhaserLayer) {
       value: Animations.SettlementIdle,
     })
   );
+  defineSyncSystem(
+    world,
+    [HasValue(EntityType, { value: EntityTypes.Inventory }), Has(LocalPosition)],
+    () => SpriteAnimation,
+    () => ({
+      value: Animations.ImpIdle,
+    })
+  );
 }

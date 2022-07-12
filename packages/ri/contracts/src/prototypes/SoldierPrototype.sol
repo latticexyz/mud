@@ -2,7 +2,10 @@
 pragma solidity >=0.8.0;
 
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { getAddressById } from "solecs/utils.sol";
+
+import { LibPrototype } from "../libraries/LibPrototype.sol";
 
 import { PrototypeComponent, ID as PrototypeComponentID } from "../components/PrototypeComponent.sol";
 import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
@@ -13,9 +16,11 @@ import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../com
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
 
+import { ID as InventoryID } from "./InventoryPrototype.sol";
+
 uint256 constant ID = uint256(keccak256("ember.prototype.soldier"));
 
-function SoldierPrototype(IUint256Component components) {
+function SoldierPrototype(IUint256Component components, IWorld world) {
   EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(0));
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
@@ -33,4 +38,6 @@ function SoldierPrototype(IUint256Component components) {
   componentIds[4] = AttackComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);
+
+  LibPrototype.createPrototypeFromPrototype(components, world, InventoryID, ID);
 }

@@ -115,6 +115,16 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "SpawnPoint", metadata: { contractId: keccak256("ember.component.spawnPoint") } }
     ),
+    Inventory: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "Inventory", metadata: { contractId: keccak256("ember.component.inventoryComponent") } }
+    ),
+    Gold: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "Gold", metadata: { contractId: keccak256("ember.component.goldComponent") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -137,6 +147,8 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.factoryComponent")]: "Factory",
     [keccak256("ember.component.capturable")]: "Capturable",
     [keccak256("ember.component.spawnPoint")]: "SpawnPoint",
+    [keccak256("ember.component.inventoryComponent")]: "Inventory",
+    [keccak256("ember.component.goldComponent")]: "Gold",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -218,6 +230,25 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     );
   }
 
+  async function takeItem(takerInventoryEntity: EntityID, itemEntity: EntityID) {
+    console.log(`taking item ${itemEntity}.`);
+    return systems["ember.system.takeItem"].executeTyped(
+      BigNumber.from(takerInventoryEntity),
+      BigNumber.from(itemEntity)
+    );
+  }
+
+  async function dropInventory(ownedInventoryEntity: EntityID, targetPosition: WorldCoord) {
+    console.log(`Drop Inventory at position ${JSON.stringify(targetPosition)}`);
+    return systems["ember.system.dropInventory"].executeTyped(BigNumber.from(ownedInventoryEntity), targetPosition);
+  }
+
+  // debug functions
+  async function spawnGold(targetPosition: WorldCoord) {
+    console.log(`Spawn gold at position ${JSON.stringify(targetPosition)}`);
+    return systems["ember.system.spawnGoldDev"].executeTyped(targetPosition);
+  }
+
   // Constants (load from contract later)
   const constants = {
     mapSize: 50,
@@ -239,6 +270,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       moveEntity,
       attackEntity,
       buildAt,
+      takeItem,
+      dropInventory,
+      dev: {
+        spawnGold,
+      },
     },
     DEV_MODE,
   };

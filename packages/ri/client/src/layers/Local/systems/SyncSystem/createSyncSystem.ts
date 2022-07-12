@@ -1,4 +1,11 @@
-import { getComponentValueStrict, Has, HasValue, defineSyncSystem } from "@latticexyz/recs";
+import {
+  getComponentValueStrict,
+  Has,
+  HasValue,
+  defineSyncSystem,
+  defineEnterSystem,
+  setComponent,
+} from "@latticexyz/recs";
 import { LocalLayer } from "../../types";
 import { EntityTypes } from "../../../Network/types";
 
@@ -13,7 +20,7 @@ export function createSyncSystem(layer: LocalLayer) {
         components: { EntityType, Position },
       },
     },
-    components: { Strolling, LocalPosition, MoveSpeed, Selectable },
+    components: { Strolling, LocalPosition, MoveSpeed, Selectable, Name },
   } = layer;
 
   // Add Strolling component to entities with type Creature
@@ -58,4 +65,19 @@ export function createSyncSystem(layer: LocalLayer) {
     () => Selectable,
     () => ({ value: true })
   );
+  
+  defineEnterSystem(world, [Has(EntityType)], ({ entity, value }) => {
+    let name = "Unknown";
+    const entityType = value[0]?.value;
+
+    if (entityType === EntityTypes.Hero) {
+      name = "Soldier";
+    } else if (entityType === EntityTypes.Settlement) {
+      name = "Settlement";
+    } else if (entityType === EntityTypes.Gold) {
+      name = "Gold";
+    }
+
+    setComponent(Name, entity, { value: name });
+  });
 }
