@@ -6,12 +6,14 @@ import {
   Component,
   ComponentValue,
   EntityIndex,
+  Indexer,
   Metadata,
   OverridableComponent,
   Override,
   Schema,
   World,
 } from "./types";
+import { isFullComponentValue, isIndexer } from "./utils";
 
 export function defineComponent<S extends Schema, M extends Metadata>(
   world: World,
@@ -104,11 +106,16 @@ export function withValue<S extends Schema>(
   return [component, value];
 }
 
-// TODO: Trivial implementation, needs to be more efficient for performant HasValue queries
 export function getEntitiesWithValue<T extends Schema>(
-  component: Component<T>,
+  component: Component<T> | Indexer<T>,
   value: Partial<ComponentValue<T>>
 ): Set<EntityIndex> {
+  // Shortcut for indexers
+  if (isIndexer(component) && isFullComponentValue(component, value)) {
+    return component.getEntitiesWithValue(value);
+  }
+
+  // Trivial implementation for regular components
   const entities = new Set<EntityIndex>();
   for (const entity of getComponentEntities(component)) {
     const val = getComponentValue(component, entity);
