@@ -32,6 +32,7 @@ function SettlementPrototype(IUint256Component components, IWorld world) {
   AttackComponent(getAddressById(components, AttackComponentID)).set(ID, Attack({ strength: 60_000, range: 1 }));
   CapturableComponent(getAddressById(components, CapturableComponentID)).set(ID);
   UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
+  LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(ID, 0);
 
   uint256[] memory prototypeIds = new uint256[](1);
   prototypeIds[0] = SoldierID;
@@ -44,7 +45,7 @@ function SettlementPrototype(IUint256Component components, IWorld world) {
     Factory({ prototypeIds: prototypeIds, costs: costs })
   );
 
-  uint256[] memory componentIds = new uint256[](7);
+  uint256[] memory componentIds = new uint256[](8);
   componentIds[0] = EntityTypeComponentID;
   componentIds[1] = StaminaComponentID;
   componentIds[2] = HealthComponentID;
@@ -52,6 +53,7 @@ function SettlementPrototype(IUint256Component components, IWorld world) {
   componentIds[4] = FactoryComponentID;
   componentIds[5] = CapturableComponentID;
   componentIds[6] = UntraversableComponentID;
+  componentIds[7] = LastActionTurnComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);
 

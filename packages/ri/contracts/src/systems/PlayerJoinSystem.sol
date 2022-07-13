@@ -103,7 +103,7 @@ contract PlayerJoinSystem is ISystem {
 
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
       entity,
-      LibStamina.getCurrentTurn(components)
+      LibStamina.getCurrentTurn(components) - 3
     );
   }
 
