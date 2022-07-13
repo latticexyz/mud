@@ -37,8 +37,6 @@ export function createSyncSystem(layer: PhaserLayer) {
   defineSystem(world, [Has(EntityType), Has(LocalPosition)], ({ entity, type }) => {
     const entityType = getComponentValueStrict(EntityType, entity).value;
 
-    if (EntityTypeSprites[entityType] == null) return;
-
     if (type === UpdateType.Exit) removeComponent(Appearance, entity);
 
     setComponent(Appearance, entity, {
