@@ -28,7 +28,7 @@ contract GameConfigSystem is ISystem {
     requirement(arguments);
     GameConfigComponent(getAddressById(components, GameConfigComponentID)).set(
       GodID,
-      GameConfig({ startTime: block.timestamp, turnLength: uint256(20) })
+      GameConfig({ startTime: block.timestamp, turnLength: uint256(2) })
     );
   }
 

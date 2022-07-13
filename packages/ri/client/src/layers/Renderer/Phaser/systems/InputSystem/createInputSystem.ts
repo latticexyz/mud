@@ -30,9 +30,10 @@ export function createInputSystem(layer: PhaserLayer) {
         api: { moveEntity, attackEntity },
       },
       network: {
-        components: { OwnedBy, Inventory, Health, ResourceGenerator },
+        components: { OwnedBy, Inventory, Health, ResourceGenerator, EscapePortal },
         api: {
           takeItem,
+          escapePortal,
           dev: { spawnGold },
         },
       },
@@ -103,6 +104,15 @@ export function createInputSystem(layer: PhaserLayer) {
     return false;
   };
 
+  const attemptEscapePortal = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
+    const escapePortalValue = getComponentValue(EscapePortal, highlightedEntity);
+    if (escapePortalValue) {
+      escapePortal(world.entities[selectedEntity], world.entities[highlightedEntity]);
+      return true;
+    }
+    return false;
+  };
+
   const onRightClick = function (targetPosition: WorldCoord) {
     const selectedEntity = getSelectedEntity();
     if (selectedEntity) {
@@ -112,6 +122,7 @@ export function createInputSystem(layer: PhaserLayer) {
       ][0];
 
       if (highlightedEntity) {
+        if (attemptEscapePortal(selectedEntity, highlightedEntity)) return;
         if (attemptGatherResource(selectedEntity, highlightedEntity)) return;
         if (attemptTakeItem(selectedEntity, highlightedEntity)) return;
         if (attemptAttack(selectedEntity, highlightedEntity)) return;

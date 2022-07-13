@@ -19,4 +19,6 @@ export enum EntityTypes {
   Inventory,
   Gold,
   GoldShrine,
+  EmberCrown,
+  EscapePortal,
 }
