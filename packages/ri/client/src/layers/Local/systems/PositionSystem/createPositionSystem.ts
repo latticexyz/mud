@@ -1,4 +1,10 @@
-import { defineComponentSystem, getComponentValue, removeComponent, setComponent } from "@latticexyz/recs";
+import {
+  defineComponentSystem,
+  getComponentValue,
+  hasComponent,
+  removeComponent,
+  setComponent,
+} from "@latticexyz/recs";
 import { LocalLayer } from "../../types";
 import { aStar } from "../../../../utils/pathfinding";
 import { worldCoordEq } from "../../../../utils/coords";
@@ -19,6 +25,12 @@ export function createPositionSystem(layer: LocalLayer) {
     },
     components: { LocalPosition, Path },
   } = layer;
+
+  defineComponentSystem(world, Position, (update) => {
+    const { entity, value } = update;
+    const [currentValue] = value;
+    if (!hasComponent(LocalPosition, entity) && currentValue) setComponent(LocalPosition, entity, currentValue);
+  });
 
   defineComponentSystem(world, withOptimisticUpdates(Position), (update) => {
     const { entity, value } = update;
