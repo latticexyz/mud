@@ -1,7 +1,7 @@
 import { map, pipe } from "rxjs";
 import { getComponentValue } from "./Component";
 import { UpdateType } from "./constants";
-import { Component, ComponentUpdate, EntityIndex, Schema } from "./types";
+import { Component, ComponentUpdate, ComponentValue, EntityIndex, Indexer, Schema } from "./types";
 
 export function isComponentUpdate<S extends Schema>(
   update: ComponentUpdate,
@@ -24,4 +24,15 @@ export function toUpdate<S extends Schema>(entity: EntityIndex, component: Compo
 
 export function toUpdateStream<S extends Schema>(component: Component<S>) {
   return pipe(map((entity: EntityIndex) => toUpdate(entity, component)));
+}
+
+export function isIndexer<S extends Schema>(c: Component<S> | Indexer<S>): c is Indexer<S> {
+  return "getEntitiesWithValue" in c;
+}
+
+export function isFullComponentValue<S extends Schema>(
+  component: Component<S>,
+  value: Partial<ComponentValue<S>>
+): value is ComponentValue<S> {
+  return Object.keys(component.schema).every((key) => key in value);
 }
