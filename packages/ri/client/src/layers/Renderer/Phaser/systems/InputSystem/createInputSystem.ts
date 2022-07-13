@@ -97,6 +97,12 @@ export function createInputSystem(layer: PhaserLayer) {
   };
 
   const attemptAttack = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
+    const selectedEntityOwner = getComponentValue(OwnedBy, selectedEntity);
+    const highlightedEntityOwner = getComponentValue(OwnedBy, highlightedEntity);
+
+    if (!selectedEntityOwner) return false;
+    if (selectedEntityOwner.value === highlightedEntityOwner?.value) return false;
+
     const healthEntity = getComponentValue(Health, highlightedEntity);
     if (healthEntity) {
       attackEntity(selectedEntity, highlightedEntity);

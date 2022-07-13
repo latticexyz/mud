@@ -35,6 +35,8 @@ contract CombatSystem is ISystem {
   function requirement(bytes memory arguments) public view returns (bytes memory) {
     (uint256 attacker, uint256 defender) = abi.decode(arguments, (uint256, uint256));
 
+    require(attacker != defender, "no seppuku");
+
     require(
       LibECS.isOwnedByCaller(OwnedByComponent(getAddressById(components, OwnedByComponentID)), attacker),
       "attacker must be owned by caller"
