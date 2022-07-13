@@ -2,6 +2,7 @@
   "components": [
     "AttackComponent",
     "CapturableComponent",
+    "EmberCrownComponent",
     "EntityTypeComponent",
     "FactoryComponent",
     "FromBlueprintComponent",
@@ -18,10 +19,12 @@
     "SpawnPointComponent",
     "StaminaComponent",
     "UntraversableComponent",
+    "EscapePortalComponent",
     "PositionComponent",
     "PlayerComponent",
     "PrototypeComponent",
-    "PrototypeCopyComponent"
+    "PrototypeCopyComponent",
+    "WinnerComponent"
   ],
   "systems": [
     { "name": "ComponentDevSystem", "writeAccess": ["*"] },
@@ -30,6 +33,7 @@
     { "name": "TakeItemSystem", "writeAccess": ["OwnedByComponent", "PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "DropInventorySystem", "writeAccess": ["*"] },
     { "name": "CombatSystem", "writeAccess": ["*"] },
+    { "name": "EscapePortalSystem", "writeAccess": ["*"] },
     { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
     { "name": "InitSystem", "writeAccess": ["*"], "initialize": "new bytes(0)" },
     { "name": "PlayerJoinSystem", "writeAccess": ["*"] },

@@ -93,6 +93,14 @@ export const config = {
           assetKey: Assets.MainAtlas,
           frame: "sprites/resources/sulfur.png",
         },
+        [Sprites.EmberCrown]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/resources/donkey.png",
+        },
+        [Sprites.EscapePortal]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/resources/oil.png",
+        },
       },
       animations: [],
       tilesets: {

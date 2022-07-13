@@ -65,7 +65,7 @@ export function createSyncSystem(layer: LocalLayer) {
     () => Selectable,
     () => ({ value: true })
   );
-  
+
   defineEnterSystem(world, [Has(EntityType)], ({ entity, value }) => {
     let name = "Unknown";
     const entityType = value[0]?.value;
@@ -76,6 +76,10 @@ export function createSyncSystem(layer: LocalLayer) {
       name = "Settlement";
     } else if (entityType === EntityTypes.Gold) {
       name = "Gold";
+    } else if (entityType === EntityTypes.EmberCrown) {
+      name = "EmberCrown";
+    } else if (entityType === EntityTypes.EscapePortal) {
+      name = "EscapePortal";
     }
 
     setComponent(Name, entity, { value: name });

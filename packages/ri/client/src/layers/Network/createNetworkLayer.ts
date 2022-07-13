@@ -130,6 +130,21 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.String },
       { id: "ResourceGenerator", metadata: { contractId: keccak256("ember.component.resourceGenerator") } }
     ),
+    EmberCrown: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "EmberCrown", metadata: { contractId: keccak256("ember.component.emberCrown") } }
+    ),
+    EscapePortal: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "EscapePortal", metadata: { contractId: keccak256("ember.component.escapePortal") } }
+    ),
+    Winner: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "Winner", metadata: { contractId: keccak256("ember.component.winner") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -155,6 +170,9 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.inventoryComponent")]: "Inventory",
     [keccak256("ember.component.goldComponent")]: "Gold",
     [keccak256("ember.component.resourceGenerator")]: "ResourceGenerator",
+    [keccak256("ember.component.emberCrown")]: "EmberCrown",
+    [keccak256("ember.component.escapePortal")]: "EscapePortal",
+    [keccak256("ember.component.winner")]: "Winner",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -254,6 +272,14 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     return systems["ember.system.gatherResource"].executeTyped(BigNumber.from(generator), BigNumber.from(gatherer));
   }
 
+  async function escapePortal(entity: EntityID, escapePortalEntity: EntityID) {
+    console.log(`Entity ${entity} taking escapePortal ${escapePortalEntity}`);
+    return systems["ember.system.escapePortal"].executeTyped(
+      BigNumber.from(entity),
+      BigNumber.from(escapePortalEntity)
+    );
+  }
+
   // debug functions
   async function spawnGold(targetPosition: WorldCoord) {
     console.log(`Spawn gold at position ${JSON.stringify(targetPosition)}`);
@@ -284,6 +310,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       takeItem,
       dropInventory,
       gatherResource,
+      escapePortal,
       dev: {
         spawnGold,
       },
