@@ -3,7 +3,7 @@ import { Subject } from "rxjs";
 import { defineComponent, setComponent } from "../src/Component";
 import { Type } from "../src/constants";
 import { createEntity } from "../src/Entity";
-import { World, AnyComponent, Entity } from "../src/types";
+import { World, AnyComponent, EntityIndex } from "../src/types";
 import { createWorld, getEntityComponents } from "../src/World";
 
 describe("World", () => {
@@ -31,12 +31,13 @@ describe("World", () => {
         rawComponent = {
           id: "some-id",
           values: {
-            value: new Map<Entity, number>(),
+            value: new Map<EntityIndex, number>(),
           },
           update$: new Subject(),
           schema: { value: Type.Number },
           metadata: {},
           entities: () => arrayToIterator([]),
+          world,
         };
       });
 
