@@ -7,6 +7,7 @@ import {
   getComponentValueStrict,
   Has,
   HasValue,
+  Not,
   ProxyExpand,
   runQuery,
 } from "@latticexyz/recs";
@@ -23,7 +24,7 @@ export function createInputSystem(layer: PhaserLayer) {
     parentLayers: {
       network: {
         world,
-        components: { Factory },
+        components: { Factory, TerrainType },
         api: { buildAt, dropInventory, gatherResource },
       },
       headless: {
@@ -118,7 +119,7 @@ export function createInputSystem(layer: PhaserLayer) {
     if (selectedEntity) {
       const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
       const highlightedEntity = [
-        ...runQuery([HasValue(LocalPosition, { x: hoverHighlight.x, y: hoverHighlight.y })]),
+        ...runQuery([HasValue(LocalPosition, { x: hoverHighlight.x, y: hoverHighlight.y }), Not(TerrainType)]),
       ][0];
 
       if (highlightedEntity) {

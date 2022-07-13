@@ -20,6 +20,7 @@ import { EmberCrownPrototype, ID as EmberCrownID } from "../prototypes/EmberCrow
 import { EscapePortalPrototype, ID as EscapePortalID } from "../prototypes/EscapePortalPrototype.sol";
 import { InventoryPrototype } from "../prototypes/InventoryPrototype.sol";
 import { GoldPrototype } from "../prototypes/GoldPrototype.sol";
+import { EmberCrownInventoryPrototype } from "../prototypes/EmberCrownInventoryPrototype.sol";
 import { EmberCrownPrototype } from "../prototypes/EmberCrownPrototype.sol";
 import { EmptySettlementPrototype } from "../prototypes/EmptySettlementPrototype.sol";
 import { EscapePortalPrototype } from "../prototypes/EscapePortalPrototype.sol";
@@ -58,7 +59,8 @@ contract InitSystem is ISystem {
     SoldierPrototype(components, world);
     SettlementPrototype(components, world);
     EmberCrownPrototype(components);
-    EmptySettlementPrototype(components);
+    EmberCrownInventoryPrototype(components, world);
+    EmptySettlementPrototype(components, world);
     EscapePortalPrototype(components);
     GoldShrinePrototype(components);
     GrassPrototype(components);

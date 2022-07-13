@@ -1,4 +1,12 @@
-import { Has, defineSyncSystem, getComponentValueStrict } from "@latticexyz/recs";
+import {
+  Has,
+  defineSyncSystem,
+  getComponentValueStrict,
+  defineSystem,
+  setComponent,
+  UpdateType,
+  removeComponent,
+} from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
 import { EntityTypeSprites } from "../../constants";
 
@@ -26,16 +34,15 @@ export function createSyncSystem(layer: PhaserLayer) {
     () => ({ color: 0xfff000 })
   );
 
-  defineSyncSystem(
-    world,
-    [Has(EntityType), Has(LocalPosition)],
-    () => Appearance,
-    (entity) => {
-      const entityType = getComponentValueStrict(EntityType, entity).value;
+  defineSystem(world, [Has(EntityType), Has(LocalPosition)], ({ entity, type }) => {
+    const entityType = getComponentValueStrict(EntityType, entity).value;
 
-      return {
-        value: EntityTypeSprites[entityType],
-      };
-    }
-  );
+    if (EntityTypeSprites[entityType] == null) return;
+
+    if (type === UpdateType.Exit) removeComponent(Appearance, entity);
+
+    setComponent(Appearance, entity, {
+      value: EntityTypeSprites[entityType],
+    });
+  });
 }

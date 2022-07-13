@@ -11,15 +11,18 @@ export enum ContractWorldEvent {
 
 export enum EntityTypes {
   Hero,
-  Grass,
-  Mountain,
-  River,
-  Wall,
   Settlement,
   Inventory,
   Gold,
-  Tree,
   GoldShrine,
   EmberCrown,
   EscapePortal,
+}
+
+export enum TerrainTypes {
+  Grass,
+  Mountain,
+  Water,
+  Wall,
+  Tree,
 }

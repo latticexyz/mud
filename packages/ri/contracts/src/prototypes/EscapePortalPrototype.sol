@@ -12,7 +12,7 @@ uint256 constant ID = uint256(keccak256("ember.prototype.escapePortal"));
 
 function EscapePortalPrototype(IUint256Component components) {
   EscapePortalComponent(getAddressById(components, EscapePortalComponentID)).set(ID);
-  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(10));
+  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(6));
 
   uint256[] memory componentIds = new uint256[](2);
   componentIds[0] = EscapePortalComponentID;

@@ -24,7 +24,8 @@
     "PlayerComponent",
     "PrototypeComponent",
     "PrototypeCopyComponent",
-    "WinnerComponent"
+    "WinnerComponent",
+    "TerrainTypeComponent"
   ],
   "systems": [
     { "name": "ComponentDevSystem", "writeAccess": ["*"] },

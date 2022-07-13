@@ -5,18 +5,18 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { getAddressById } from "solecs/utils.sol";
 
 import { PrototypeComponent, ID as PrototypeComponentID } from "../components/PrototypeComponent.sol";
-import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
+import { TerrainTypeComponent, ID as TerrainTypeComponentID } from "../components/TerrainTypeComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { GoldComponent, ID as GoldComponentID } from "../components/GoldComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.prototype.water"));
 
 function WaterPrototype(IUint256Component components) {
-  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(3));
+  TerrainTypeComponent(getAddressById(components, TerrainTypeComponentID)).set(ID, uint32(2));
   UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
 
   uint256[] memory componentIds = new uint256[](2);
-  componentIds[0] = EntityTypeComponentID;
+  componentIds[0] = TerrainTypeComponentID;
   componentIds[1] = UntraversableComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);

@@ -20,10 +20,6 @@ export function createAppearanceSystem(layer: PhaserLayer) {
   } = layer;
 
   defineSystem(world, [Has(Appearance), Has(LocalPosition)], ({ entity, type }) => {
-    if (type === UpdateType.Exit) {
-      return objectPool.remove(entity);
-    }
-
     if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
       const appearance = getComponentValueStrict(Appearance, entity);
       const sprite = config.sprites[appearance.value as Sprites];

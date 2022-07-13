@@ -15,6 +15,7 @@ import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../componen
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
+import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 
 import { ID as InventoryID } from "./InventoryPrototype.sol";
 
@@ -29,13 +30,17 @@ function GuardPrototype(IUint256Component components, IWorld world) {
   HealthComponent(getAddressById(components, HealthComponentID)).set(ID, Health({ current: 100_000, max: 100_000 }));
   AttackComponent(getAddressById(components, AttackComponentID)).set(ID, Attack({ strength: 120_000, range: 1 }));
   MovableComponent(getAddressById(components, MovableComponentID)).set(ID, int32(0));
+  UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
+  LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(ID, 0);
 
-  uint256[] memory componentIds = new uint256[](5);
+  uint256[] memory componentIds = new uint256[](7);
   componentIds[0] = EntityTypeComponentID;
   componentIds[1] = StaminaComponentID;
   componentIds[2] = MovableComponentID;
   componentIds[3] = HealthComponentID;
   componentIds[4] = AttackComponentID;
+  componentIds[5] = UntraversableComponentID;
+  componentIds[6] = LastActionTurnComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);
 
