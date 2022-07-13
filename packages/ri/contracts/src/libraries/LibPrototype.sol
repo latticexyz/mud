@@ -28,6 +28,11 @@ library LibPrototype {
     uint256 prototypeId,
     uint256 entityId
   ) internal {
+    require(
+      PrototypeComponent(getAddressById(components, PrototypeComponentID)).has(prototypeId),
+      "Trying to copy non-existing prototype"
+    );
+
     PrototypeCopyComponent(getAddressById(components, PrototypeCopyComponentID)).set(entityId, prototypeId);
 
     uint256[] memory prototypeComponents = PrototypeComponent(getAddressById(components, PrototypeComponentID))
