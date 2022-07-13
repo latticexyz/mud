@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import { console } from "forge-std/console.sol";
 import { ISystem } from "solecs/interfaces/ISystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
@@ -51,23 +50,22 @@ contract EscapePortalSystem is ISystem {
     );
     require(escapePortalComponent.getValue(escapePortalEntity) == true, "not a escapePortal!");
 
-    return abi.encode(entity, ownedByComponent, positionComponent);
+    return abi.encode(entity, positionComponent);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (uint256 entity, OwnedByComponent ownedByComponent, PositionComponent positionComponent) = abi.decode(
+    (uint256 entity, PositionComponent positionComponent) = abi.decode(
       requirement(arguments),
-      (uint256, OwnedByComponent, PositionComponent)
+      (uint256, PositionComponent)
     );
 
     uint256 inventoryEntity = LibInventory.getInventory(components, entity);
+    uint256[] memory items = LibInventory.getItems(components, inventoryEntity);
 
     EmberCrownComponent emberCrownComponent = EmberCrownComponent(getAddressById(components, EmberCrownComponentID));
-    uint256[] memory emberCrowns = emberCrownComponent.getEntitiesWithValue(true);
-
-    if (emberCrowns.length >= 2) {
-      uint256 realEmberCrownOwner = ownedByComponent.getValue(emberCrowns[1]); // the second ember crown is the real one because the first is the prototype
-      if (realEmberCrownOwner == inventoryEntity) {
+    for (uint256 i = 0; i < items.length; i++) {
+      uint256 itemEntity = items[i];
+      if (emberCrownComponent.has(itemEntity)) {
         WinnerComponent winnerComponent = WinnerComponent(getAddressById(components, WinnerComponentID));
         winnerComponent.set(entity);
         endGame(); // lol
@@ -84,10 +82,8 @@ contract EscapePortalSystem is ISystem {
   function endGame() private {
     PlayerComponent playerComponent = PlayerComponent(getAddressById(components, PlayerComponentID));
     uint256[] memory playerEntities = playerComponent.getEntitiesWithValue(true);
-    console.log("player count", playerEntities.length);
     for (uint256 i = 0; i < playerEntities.length; i++) {
       uint256 player = playerEntities[i];
-      console.log("removing player", player);
       playerComponent.remove(player);
     }
   }
