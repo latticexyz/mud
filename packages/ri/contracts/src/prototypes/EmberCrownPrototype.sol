@@ -12,7 +12,7 @@ uint256 constant ID = uint256(keccak256("ember.prototype.emberCrown"));
 
 function EmberCrownPrototype(IUint256Component components) {
   EmberCrownComponent(getAddressById(components, EmberCrownComponentID)).set(ID);
-  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(9));
+  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(5));
 
   uint256[] memory componentIds = new uint256[](2);
   componentIds[0] = EmberCrownComponentID;

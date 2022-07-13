@@ -19,7 +19,15 @@ library LibPrototype {
     uint256 prototypeId
   ) internal returns (uint256 entityId) {
     entityId = world.getUniqueEntityId();
+    copyPrototypeOnEntity(components, world, prototypeId, entityId);
+  }
 
+  function copyPrototypeOnEntity(
+    IUint256Component components,
+    IWorld world,
+    uint256 prototypeId,
+    uint256 entityId
+  ) internal {
     PrototypeCopyComponent(getAddressById(components, PrototypeCopyComponentID)).set(entityId, prototypeId);
 
     uint256[] memory prototypeComponents = PrototypeComponent(getAddressById(components, PrototypeComponentID))

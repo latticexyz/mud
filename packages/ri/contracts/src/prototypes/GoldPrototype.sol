@@ -12,7 +12,7 @@ uint256 constant ID = uint256(keccak256("ember.prototype.gold"));
 
 function GoldPrototype(IUint256Component components) {
   GoldComponent(getAddressById(components, GoldComponentID)).set(ID);
-  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(7));
+  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(3));
 
   uint256[] memory componentIds = new uint256[](2);
   componentIds[0] = GoldComponentID;

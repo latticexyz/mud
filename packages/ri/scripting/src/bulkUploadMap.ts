@@ -28,7 +28,8 @@ async function bulkUploadMap() {
   for (let stateIndex = 0; stateIndex < map.state.length; stateIndex++) {
     const { componentIndex, entityIndex, unencodedValue } = map.state[stateIndex];
     const component = map.components[componentIndex];
-    const componentId = BigNumber.from(keccak256(component.unhashedId));
+    const componentId =
+      component.unhashedId.length === 0 ? BigNumber.from(0) : BigNumber.from(keccak256(component.unhashedId));
     let uploadComponentIndex = components.findIndex((obj) => obj._hex === componentId._hex);
     if (uploadComponentIndex === -1) {
       uploadComponentIndex = components.push(componentId) - 1;
@@ -39,11 +40,14 @@ async function bulkUploadMap() {
     if (entityIndex > uploadEntityIndex) {
       uploadEntityIndex = entities.push(BigNumber.from(entityIndex)) - 1;
     }
-
+    const value =
+      typeof unencodedValue === "string"
+        ? abi.encode(["uint256"], [keccak256(unencodedValue)])
+        : abi.encode(component.encoding, unencodedValue);
     state.push({
       component: uploadComponentIndex,
       entity: uploadEntityIndex,
-      value: abi.encode(component.encoding, unencodedValue),
+      value,
     });
 
     if (state.length === stateUploadCount) {
@@ -64,6 +68,7 @@ async function bulkUpload(
   state: Array<ECSEvent>
 ) {
   let tx: any;
+  console.log(components, entities, state);
   try {
     tx = callWithRetry(
       systems["ember.system.bulkSetStateSystem"].executeTyped,

@@ -91,7 +91,15 @@ export const config = {
         },
         [Sprites.GoldShrine]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/sulfur.png",
+          frame: "sprites/resources/gold.png",
+        },
+        [Sprites.EscapePortal]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/resources/wood.png",
+        },
+        [Sprites.EmberCrown]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/resources/oil.png",
         },
         [Sprites.EmberCrown]: {
           assetKey: Assets.MainAtlas,

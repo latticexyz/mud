@@ -62,6 +62,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     }),
     Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
     EntityType: defineEntityTypeComponent(world, keccak256("ember.component.entityTypeComponent")),
+    TerrainType: defineComponent(
+      world,
+      { value: Type.Number },
+      { metadata: { contractId: keccak256("ember.component.terrainType") } }
+    ),
     Movable: defineMovableComponent(world, keccak256("ember.component.movableComponent")),
     OwnedBy: defineOwnedByComponent(world, keccak256("ember.component.ownedByComponent")),
     Untraversable: defineUntraversableComponent(world, keccak256("ember.component.untraversableComponent")),
@@ -154,6 +159,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.gameConfigComponent")]: "GameConfig",
     [keccak256("ember.component.positionComponent")]: "Position",
     [keccak256("ember.component.entityTypeComponent")]: "EntityType",
+    [keccak256("ember.component.terrainType")]: "TerrainType",
     [keccak256("ember.component.movableComponent")]: "Movable",
     [keccak256("ember.component.ownedByComponent")]: "OwnedBy",
     [keccak256("ember.component.untraversableComponent")]: "Untraversable",
