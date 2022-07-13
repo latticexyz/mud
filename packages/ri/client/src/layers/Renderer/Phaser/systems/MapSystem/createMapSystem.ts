@@ -1,7 +1,7 @@
 import { Coord } from "@latticexyz/phaserx";
 import { addCoords, ZERO_VECTOR } from "@latticexyz/phaserx";
 import { Has, getComponentValueStrict, defineEnterSystem, runQuery, HasValue } from "@latticexyz/recs";
-import { TerrainTypes } from "../../../../Network/types";
+import { TerrainTypes } from "../../../../Network";
 import { TileAnimationKey, Tileset, WangSetKey, WangSets } from "../../tilesets/overworldTileset";
 import { PhaserLayer } from "../../types";
 

@@ -7,7 +7,6 @@ import { getAddressById } from "solecs/utils.sol";
 import { PrototypeComponent, ID as PrototypeComponentID } from "../components/PrototypeComponent.sol";
 import { TerrainTypeComponent, ID as TerrainTypeComponentID } from "../components/TerrainTypeComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
-import { GoldComponent, ID as GoldComponentID } from "../components/GoldComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.prototype.water"));
 
