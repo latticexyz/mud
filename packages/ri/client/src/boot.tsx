@@ -46,6 +46,8 @@ async function bootLayers() {
     const wsRpc = params.get("wsRpc") || undefined; // || (jsonRpc && jsonRpc.replace("http", "ws"));
     const checkpointUrl = params.get("checkpoint") || undefined;
     const devMode = params.get("dev") === "true";
+    const initialBlockNumberString = params.get("initialBlockNumber");
+    const initialBlockNumber = initialBlockNumberString ? parseInt(initialBlockNumberString) : 0;
 
     let networkLayerConfig;
     if (worldAddress && privateKey && chainIdString && jsonRpc) {
@@ -57,6 +59,7 @@ async function bootLayers() {
         wsRpc,
         checkpointUrl,
         devMode,
+        initialBlockNumber,
       };
     }
 

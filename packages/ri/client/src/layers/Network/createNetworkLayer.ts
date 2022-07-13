@@ -32,6 +32,7 @@ export type NetworkLayerConfig = {
   wsRpc?: string;
   checkpointUrl?: string;
   devMode: boolean;
+  initialBlockNumber: number;
 };
 
 /**
@@ -197,7 +198,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     privateKey: config.privateKey,
     chainId: config.chainId,
     checkpointServiceUrl: config.checkpointUrl,
-    initialBlockNumber: 0,
+    initialBlockNumber: config.initialBlockNumber,
   };
 
   const DEV_MODE = contractConfig.chainId === LOCAL_CHAIN_ID || config?.devMode;
