@@ -89,6 +89,10 @@ export const config = {
           assetKey: Assets.MainAtlas,
           frame: "sprites/resources/chest.png",
         },
+        [Sprites.GoldShrine]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/resources/sulfur.png",
+        },
       },
       animations: [],
       tilesets: {

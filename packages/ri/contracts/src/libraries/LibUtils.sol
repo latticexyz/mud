@@ -5,7 +5,7 @@ import { QueryFragment, QueryType, LibQuery } from "solecs/LibQuery.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { getAddressById } from "solecs/utils.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
-import { ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
+import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 
 library LibUtils {
   function toHex(bytes memory data) internal pure returns (bytes memory res) {
@@ -42,6 +42,19 @@ library LibUtils {
       }
     }
     return returnData;
+  }
+
+  function distanceBetween(
+    IUint256Component components,
+    uint256 e1,
+    uint256 e2
+  ) internal view returns (int32) {
+    PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
+
+    require(positionComponent.has(e1), "no position");
+    require(positionComponent.has(e2), "no position");
+
+    return manhattan(positionComponent.getValue(e1), positionComponent.getValue(e2));
   }
 
   function manhattan(Coord memory a, Coord memory b) internal pure returns (int32) {

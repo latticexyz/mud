@@ -18,4 +18,5 @@ export enum EntityTypes {
   Settlement,
   Inventory,
   Gold,
+  GoldShrine,
 }

@@ -1,6 +1,6 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
-import { defineQuery, EntityIndex, getComponentValue, getComponentValueStrict, Has, hasComponent, HasValue, ProxyExpand, runQuery } from "@latticexyz/recs";
+import { defineQuery, getComponentValue, getComponentValueStrict, Has, HasValue, ProxyExpand, runQuery } from "@latticexyz/recs";
 import { getAddressColor } from "@latticexyz/std-client";
 import { map, merge } from "rxjs";
 

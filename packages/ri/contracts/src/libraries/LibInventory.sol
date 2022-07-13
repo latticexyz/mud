@@ -51,6 +51,8 @@ library LibInventory {
     uint256 itemEntity,
     uint256 receiverInventoryEntity
   ) internal {
+    requireHasSpace(components, receiverInventoryEntity);
+
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
     ownedByComponent.set(itemEntity, receiverInventoryEntity);
   }
@@ -67,11 +69,22 @@ library LibInventory {
   function spawnItem(
     IUint256Component components,
     IWorld world,
-    uint256 prototypeId,
-    uint256 receiverInventoryEntity
+    uint256 receiverInventoryEntity,
+    uint256 prototypeId
   ) internal {
+    requireHasSpace(components, receiverInventoryEntity);
+
     uint256 itemEntity = LibPrototype.copyPrototype(components, world, prototypeId);
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
     ownedByComponent.set(itemEntity, receiverInventoryEntity);
+  }
+
+  function requireHasSpace(IUint256Component components, uint256 inventory) internal view returns (bool) {
+    uint256[] memory items = getItems(components, inventory);
+    require(
+      int32(uint32(items.length)) <
+        InventoryComponent(getAddressById(components, InventoryComponentID)).getValue(inventory),
+      "inventory full"
+    );
   }
 }

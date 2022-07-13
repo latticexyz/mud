@@ -25,6 +25,7 @@ export enum Sprites {
   Settlement,
   Gold,
   Inventory,
+  GoldShrine,
 }
 
 export enum Animations {}
@@ -34,4 +35,5 @@ export const EntityTypeSprites: Record<number, Sprites> = {
   [EntityTypes.Gold]: Sprites.Gold,
   [EntityTypes.Inventory]: Sprites.Inventory,
   [EntityTypes.Settlement]: Sprites.Settlement,
+  [EntityTypes.GoldShrine]: Sprites.GoldShrine,
 };

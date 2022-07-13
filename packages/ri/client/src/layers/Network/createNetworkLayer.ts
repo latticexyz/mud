@@ -125,6 +125,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "Gold", metadata: { contractId: keccak256("ember.component.goldComponent") } }
     ),
+    ResourceGenerator: defineComponent(
+      world,
+      { value: Type.String },
+      { id: "ResourceGenerator", metadata: { contractId: keccak256("ember.component.resourceGenerator") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -149,6 +154,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.spawnPoint")]: "SpawnPoint",
     [keccak256("ember.component.inventoryComponent")]: "Inventory",
     [keccak256("ember.component.goldComponent")]: "Gold",
+    [keccak256("ember.component.resourceGenerator")]: "ResourceGenerator",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -243,6 +249,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     return systems["ember.system.dropInventory"].executeTyped(BigNumber.from(ownedInventoryEntity), targetPosition);
   }
 
+  async function gatherResource(generator: EntityID, gatherer: EntityID) {
+    console.log(`Gathering resource`);
+    return systems["ember.system.gatherResource"].executeTyped(BigNumber.from(generator), BigNumber.from(gatherer));
+  }
+
   // debug functions
   async function spawnGold(targetPosition: WorldCoord) {
     console.log(`Spawn gold at position ${JSON.stringify(targetPosition)}`);
@@ -272,6 +283,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       buildAt,
       takeItem,
       dropInventory,
+      gatherResource,
       dev: {
         spawnGold,
       },
