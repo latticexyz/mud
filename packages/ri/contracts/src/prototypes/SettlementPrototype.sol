@@ -16,6 +16,7 @@ import { FactoryComponent, Factory, ID as FactoryComponentID } from "../componen
 import { CapturableComponent, ID as CapturableComponentID } from "../components/CapturableComponent.sol";
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
+import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
 import { ID as SoldierID } from "./SoldierPrototype.sol";
 import { ID as InventoryID } from "./InventoryPrototype.sol";
