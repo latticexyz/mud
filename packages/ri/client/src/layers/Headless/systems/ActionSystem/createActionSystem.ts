@@ -10,6 +10,7 @@ import {
   updateComponent,
   EntityID,
   EntityIndex,
+  Component,
 } from "@latticexyz/recs";
 import { mapObject, awaitStreamValue } from "@latticexyz/utils";
 import { ActionState } from "./constants";
@@ -25,7 +26,7 @@ export function createActionSystem(
   txReduced$: Observable<string>
 ) {
   // Components that scheduled actions depend on including pending updates
-  const componentsWithOptimisticUpdates: { [key: string]: OverridableComponent<Schema> } = {};
+  const componentsWithOptimisticUpdates: { [id: string]: OverridableComponent<Schema> } = {};
 
   // ActionData contains requirements and execute logic of scheduled actions.
   // We also store the relevant subset of all componentsWithOptimisticUpdates in the action data,
@@ -43,18 +44,16 @@ export function createActionSystem(
    * @param components Components to be mapped to components including pending updates
    * @returns Components including pending updates
    */
-  function withOptimisticUpdates<C extends Components>(components: C): C {
-    return mapObject(components, (_, key) => {
-      // If the component is not tracked yet, add it to the map of overridable components
-      const optimisticComponent =
-        componentsWithOptimisticUpdates[key as string] || overridableComponent(components[key]);
+  function withOptimisticUpdates<C extends Component>(component: C): C {
+    const optimisticComponent = componentsWithOptimisticUpdates[component.id] || overridableComponent(component);
 
-      if (!componentsWithOptimisticUpdates[key as string]) {
-        componentsWithOptimisticUpdates[key as string] = optimisticComponent;
-      }
+    // If the component is not tracked yet, add it to the map of overridable components
+    if (!componentsWithOptimisticUpdates[component.id]) {
+      componentsWithOptimisticUpdates[component.id] = optimisticComponent;
+    }
 
-      return optimisticComponent;
-    }) as unknown as C;
+    // Typescript can't know that the optimistic component with this id has the same type as C
+    return optimisticComponent as unknown as C;
   }
 
   /**
@@ -94,7 +93,7 @@ export function createActionSystem(
     const action = {
       ...actionRequest,
       entityIndex,
-      componentsWithOptimisticUpdates: withOptimisticUpdates(actionRequest.components),
+      componentsWithOptimisticUpdates: mapObject(actionRequest.components, (c) => withOptimisticUpdates(c)),
     } as unknown as ActionData;
     actionData.set(action.id, action);
 

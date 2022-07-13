@@ -20,7 +20,7 @@ export function createPositionSystem(layer: LocalLayer) {
     components: { LocalPosition, Path },
   } = layer;
 
-  defineComponentSystem(world, withOptimisticUpdates({ Position }).Position, (update) => {
+  defineComponentSystem(world, withOptimisticUpdates(Position), (update) => {
     const { entity, value } = update;
     const targetPosition = value[0];
     if (targetPosition == null) {
