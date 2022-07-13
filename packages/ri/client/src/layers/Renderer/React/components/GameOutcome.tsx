@@ -11,8 +11,8 @@ export function registerGameOutcome() {
     {
       colStart: 6,
       colEnd: 6,
-      rowStart: 6,
-      rowEnd: 6,
+      rowStart: 12,
+      rowEnd: 12,
     },
     (layers) => {
       const {
