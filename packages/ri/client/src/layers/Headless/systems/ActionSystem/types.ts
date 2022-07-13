@@ -20,8 +20,7 @@ export interface ActionRequest<C extends Components, T> {
   components: C;
 
   // Action will be executed once requirement function returns a truthy value.
-  // Requirement will be rechecked if any component values including optimistic updates
-  // accessed in the requirement function change.
+  // Requirement will be rechecked if any component value accessed in the requirement changes (including optimistic updates)
   requirement: (componentsWithOptimisticUpdates: C) => T | null;
 
   // Declare effects this action will have on components.
