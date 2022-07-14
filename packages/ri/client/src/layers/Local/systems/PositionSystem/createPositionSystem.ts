@@ -8,6 +8,8 @@ import {
 import { LocalLayer } from "../../types";
 import { aStar } from "../../../../utils/pathfinding";
 import { worldCoordEq } from "../../../../utils/coords";
+import { isUntraversable } from "@latticexyz/std-client";
+import { WorldCoord } from "@latticexyz/phaserx/src/types";
 
 /**
  * The Position system handles pathing locally for entities if their network layer Position changed.
@@ -17,7 +19,7 @@ export function createPositionSystem(layer: LocalLayer) {
     world,
     parentLayers: {
       network: {
-        components: { Position, Movable },
+        components: { Position, Movable, Untraversable },
       },
       headless: {
         actions: { withOptimisticUpdates },
@@ -53,7 +55,9 @@ export function createPositionSystem(layer: LocalLayer) {
     const localPosition = getComponentValue(LocalPosition, entity);
     if (!localPosition || worldCoordEq(targetPosition, localPosition)) return;
 
-    const path = aStar(localPosition, targetPosition, moveSpeed.value, layer.parentLayers.network, LocalPosition);
+    const isUntraversableFunc = (targetPosition: WorldCoord) =>
+      isUntraversable(Untraversable, LocalPosition, targetPosition);
+    const path = aStar(localPosition, targetPosition, moveSpeed.value, isUntraversableFunc);
 
     if (path.length > 0) {
       const x: number[] = [];

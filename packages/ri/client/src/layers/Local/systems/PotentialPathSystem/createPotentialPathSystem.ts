@@ -1,6 +1,8 @@
 import { defineSystem, getComponentValue, Has, removeComponent, setComponent, UpdateType } from "@latticexyz/recs";
+import { isUntraversable } from "@latticexyz/std-client";
 import { BFS } from "../../../../utils/pathfinding";
 import { LocalLayer } from "../../types";
+import { WorldCoord } from "@latticexyz/phaserx/src/types";
 
 export function createPotentialPathSystem(layer: LocalLayer) {
   const {
@@ -11,7 +13,7 @@ export function createPotentialPathSystem(layer: LocalLayer) {
         components: { LocalStamina },
       },
       network: {
-        components: { Movable },
+        components: { Movable, Untraversable },
       },
     },
   } = layer;
@@ -34,7 +36,9 @@ export function createPotentialPathSystem(layer: LocalLayer) {
       const xArray: number[] = [];
       const yArray: number[] = [];
 
-      const paths = BFS(localPosition, moveSpeed, layer.parentLayers.network, LocalPosition);
+      const isUntraversableFunc = (targetPosition: WorldCoord) =>
+        isUntraversable(Untraversable, LocalPosition, targetPosition);
+      const paths = BFS(localPosition, moveSpeed, isUntraversableFunc);
 
       for (const coord of paths) {
         xArray.push(coord.x);
