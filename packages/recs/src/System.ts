@@ -14,7 +14,7 @@ export function defineUpdateSystem(
   world: World,
   query: EntityQueryFragment[],
   system: (update: ComponentUpdate) => void,
-  options?: { runOnInit?: boolean }
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   defineRxSystem(world, defineUpdateQuery(query, options), system);
 }
@@ -23,7 +23,7 @@ export function defineEnterSystem(
   world: World,
   query: EntityQueryFragment[],
   system: (update: ComponentUpdate) => void,
-  options?: { runOnInit?: boolean }
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   defineRxSystem(world, defineEnterQuery(query, options), system);
 }
@@ -32,7 +32,7 @@ export function defineExitSystem(
   world: World,
   query: EntityQueryFragment[],
   system: (update: ComponentUpdate) => void,
-  options?: { runOnInit?: boolean }
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   defineRxSystem(world, defineExitQuery(query, options), system);
 }
@@ -41,7 +41,7 @@ export function defineSystem(
   world: World,
   query: EntityQueryFragment[],
   system: (update: ComponentUpdate & { type: UpdateType }) => void,
-  options?: { runOnInit?: boolean }
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   defineRxSystem(world, defineQuery(query, options).update$, system);
 }
@@ -50,7 +50,7 @@ export function defineComponentSystem<S extends Schema>(
   world: World,
   component: Component<S>,
   system: (update: ComponentUpdate<S>) => void,
-  options?: { runOnInit?: boolean }
+  options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
   const initial$ = options?.runOnInit ? from(getComponentEntities(component)).pipe(toUpdateStream(component)) : EMPTY;
   defineRxSystem(world, concat(initial$, component.update$), system);
@@ -68,7 +68,7 @@ export function defineSyncSystem<T extends Schema>(
   query: EntityQueryFragment[],
   component: (entity: EntityIndex) => Component<T>,
   value: (entity: EntityIndex) => ComponentValue<T>,
-  options?: { update?: boolean; runOnInit?: boolean }
+  options: { update?: boolean; runOnInit?: boolean } = { update: false, runOnInit: true }
 ) {
   defineSystem(
     world,
