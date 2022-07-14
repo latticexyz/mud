@@ -1,6 +1,16 @@
 import Phaser from "phaser";
-import { Component, EntityID, getComponentValueStrict, getEntitiesWithValue, Type, World } from "@latticexyz/recs";
-import { keccak256 } from "@latticexyz/utils";
+import {
+  Component,
+  EntityID,
+  getComponentValueStrict,
+  getEntitiesWithValue,
+  Has,
+  HasValue,
+  runQuery,
+  Type,
+  World,
+} from "@latticexyz/recs";
+import { Coord, keccak256 } from "@latticexyz/utils";
 import { BigNumber, ethers } from "ethers";
 import { Clock } from "@latticexyz/network";
 
@@ -38,6 +48,18 @@ export function getGameConfig(
   if (!godEntityIndex) return null;
 
   return getComponentValueStrict(gameConfigComponent, godEntityIndex);
+}
+
+export function isUntraversable(
+  untraversableComponent: Component<{ value: Type.Boolean }>,
+  positionComponent: Component<{ x: Type.Number; y: Type.Number }>,
+  targetPosition: Coord
+): boolean {
+  const untraversableEntitiesAtPosition = runQuery([
+    HasValue(positionComponent, targetPosition),
+    Has(untraversableComponent),
+  ]);
+  return untraversableEntitiesAtPosition.size > 0;
 }
 
 export function randomColor(id: string): number {

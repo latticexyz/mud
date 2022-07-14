@@ -1,4 +1,4 @@
-import { CoordMap } from "./CoordMap";
+import { CoordMap } from "@latticexyz/utils";
 import { Area } from "../types";
 import { pixelToChunkCoord } from "./coords";
 

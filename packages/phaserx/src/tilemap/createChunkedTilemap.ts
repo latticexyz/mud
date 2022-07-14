@@ -1,6 +1,7 @@
 import { ChunkedTilemap } from "./types";
 import { ChunkCoord, Chunks, WorldCoord } from "../types";
-import { mod, CoordMap, chunkToPixelCoord, tileCoordToChunkCoord, chunkCoordToTileCoord } from "../utils";
+import { mod, chunkToPixelCoord, tileCoordToChunkCoord, chunkCoordToTileCoord } from "../utils";
+import { CoordMap } from "@latticexyz/utils";
 import { MultiHueTintPipeline } from "../pipelines";
 import { pickRandom } from "@latticexyz/utils";
 

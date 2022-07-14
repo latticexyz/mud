@@ -1,6 +1,7 @@
 import { AnimatedTilemap } from ".";
 import { WorldCoord } from "../types";
-import { CoordMap, mod } from "../utils";
+import { mod } from "../utils";
+import { CoordMap } from "@latticexyz/utils";
 import { ChunkedTilemapConfig } from "./createChunkedTilemap";
 import { createVirtualTilemap } from "./createVirtualTilemap";
 import { TileAnimation } from "./types";

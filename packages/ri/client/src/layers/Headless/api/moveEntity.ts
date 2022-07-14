@@ -3,6 +3,7 @@ import { ActionSystem } from "../systems";
 import { NetworkLayer } from "../../Network";
 import { WorldCoord } from "../../../types";
 import { aStar } from "../../../../src/utils/pathfinding";
+import { isUntraversable } from "@latticexyz/std-client";
 
 export function moveEntity(
   context: {
@@ -81,7 +82,9 @@ export function moveEntity(
         return null;
       }
 
-      const path = aStar(currentPosition, targetPosition, moveSpeed + 1, context.network, Position);
+      const isUntraversableFunc = (targetPosition: WorldCoord) =>
+        isUntraversable(Untraversable, Position, targetPosition);
+      const path = aStar(currentPosition, targetPosition, moveSpeed, isUntraversableFunc);
       if (path.length == 0) {
         actions.cancel(actionID);
         return null;
