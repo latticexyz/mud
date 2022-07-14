@@ -1,6 +1,5 @@
 import { defineSystem, getComponentValue, Has, removeComponent, setComponent, UpdateType } from "@latticexyz/recs";
-import { WorldCoord } from "../../../../types";
-import { aStar } from "../../../../utils/pathfinding";
+import { BFS } from "../../../../utils/pathfinding";
 import { LocalLayer } from "../../types";
 
 export function createPotentialPathSystem(layer: LocalLayer) {
@@ -35,23 +34,11 @@ export function createPotentialPathSystem(layer: LocalLayer) {
       const xArray: number[] = [];
       const yArray: number[] = [];
 
-      const paths = new Set<string>();
-
-      const maxDistance = moveSpeed + 1;
-      for (let x = 0; x < maxDistance * 2; x++) {
-        for (let y = 0; y < maxDistance * 2; y++) {
-          const zero = { x: localPosition.x - maxDistance, y: localPosition.y - maxDistance };
-          const destination = { x: x + zero.x, y: y + zero.y };
-          const path = aStar(localPosition, destination, maxDistance, layer.parentLayers.network, LocalPosition);
-
-          for (const coord of path) paths.add(JSON.stringify(coord)); // hack to get a set of coordinates
-        }
-      }
+      const paths = BFS(localPosition, moveSpeed, layer.parentLayers.network, LocalPosition);
 
       for (const coord of paths) {
-        const c = JSON.parse(coord);
-        xArray.push(c.x);
-        yArray.push(c.y);
+        xArray.push(coord.x);
+        yArray.push(coord.y);
       }
 
       const potentialPaths = {

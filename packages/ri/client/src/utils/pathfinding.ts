@@ -1,8 +1,11 @@
-import { runQuery, HasValue, Component, hasComponent } from "@latticexyz/recs";
+import { runQuery, HasValue, Component, hasComponent, Type, Has } from "@latticexyz/recs";
 import { WorldCoord } from "../types";
 import { manhattan } from "./distance";
 import Heap from "heap-js";
 import { NetworkLayer } from "../layers/Network";
+import { worldCoordEq } from "./coords";
+import { Coord } from "@latticexyz/utils";
+import { translate } from "./directions";
 
 interface gridNode {
   x: number;
@@ -15,9 +18,16 @@ interface gridNode {
   closed: boolean;
   parent: gridNode | null;
 }
+interface bfsNode {
+  x: number;
+  y: number;
+  f: number;
+  cost: number;
+  visited: boolean;
+}
 
-function getNeighbors(grid: Array<Array<gridNode>>, node: gridNode) {
-  const neighbors = new Array<gridNode>();
+function getNeighbors<T extends Coord>(grid: T[][], node: T) {
+  const neighbors: T[] = [];
 
   // Up
   if (grid[node.x] && grid[node.x][node.y + 1]) neighbors.push(grid[node.x][node.y + 1]);
@@ -53,7 +63,7 @@ export function aStar(
   } = network;
 
   const path: WorldCoord[] = [];
-  const gridLength = maxDistance * 2;
+  const gridLength = maxDistance * 2 + 1;
 
   const grid = new Array<gridNode[]>(gridLength);
   for (let x = 0; x < gridLength; x++) {
@@ -86,7 +96,7 @@ export function aStar(
     const currentNode = openHeap.pop() as gridNode;
     if (!currentNode) return [];
 
-    if (currentNode === end) {
+    if (worldCoordEq(currentNode, end)) {
       let curr = currentNode;
       while (curr && curr.parent) {
         path.push({ x: curr.x + zero.x, y: curr.y + zero.y });
@@ -119,7 +129,7 @@ export function aStar(
       const gScore = currentNode.g + neighbor.cost;
       const beenVisited = neighbor.visited;
 
-      if (gScore < maxDistance && (!beenVisited || gScore < neighbor.g)) {
+      if (gScore <= maxDistance && (!beenVisited || gScore < neighbor.g)) {
         neighbor.visited = true;
         neighbor.parent = currentNode;
         neighbor.h = neighbor.h || manhattan({ x: neighbor.x, y: neighbor.y }, { x: end.x, y: end.y });
@@ -152,6 +162,78 @@ export function directionalPathfind(from: WorldCoord, to: WorldCoord): WorldCoor
 
   for (let y = from.y + directionY; directionY * y <= directionY * to.y; y = y + directionY) {
     path.push({ x: to.x, y });
+  }
+
+  return path;
+}
+
+/**
+ * @param from Coordinate to start from (included in the path)
+ * @param network The network layer, used to get the required components
+ * @param positionComponent Either the networked Position or LocalPosition component, better to use local if possible
+ * @returns Finds all traversable paths up to maxDistance
+ */
+export function BFS(
+  from: WorldCoord,
+  maxDistance: number,
+  network: NetworkLayer,
+  positionComponent: Component<{ x: Type.Number; y: Type.Number }>
+): WorldCoord[] {
+  const {
+    components: { Untraversable },
+  } = network;
+
+  const path: WorldCoord[] = [];
+  const gridLength = maxDistance * 2 + 1;
+  const grid: bfsNode[][] = [];
+
+  for (let x = 0; x < gridLength; x++) {
+    grid[x] = new Array<bfsNode>(gridLength);
+    for (let y = 0; y < gridLength; y++) {
+      grid[x][y] = {
+        x: x,
+        y: y,
+        f: 0,
+        cost: 1, // TODO: change cost to reflect terrain
+        visited: false,
+      };
+    }
+  }
+
+  const zero: WorldCoord = translate(from, { x: -maxDistance, y: -maxDistance });
+  const start = grid[maxDistance][maxDistance]; // center of the zeroed grid, maxDistance from ends
+
+  const unvisitedCoords: bfsNode[] = [];
+
+  unvisitedCoords.push(start);
+
+  while (unvisitedCoords.length > 0) {
+    const currentNode = unvisitedCoords.shift()!;
+    const neighbors = getNeighbors(grid, currentNode);
+
+    for (let i = 0; i < neighbors.length; i++) {
+      const neighbor = neighbors[i];
+
+      const neighborRealCoord = translate(neighbor, zero);
+      const untraversableEntitiesAtPosition = runQuery([
+        HasValue(positionComponent, neighborRealCoord),
+        Has(Untraversable),
+      ]);
+      if (untraversableEntitiesAtPosition.size > 0) continue;
+
+      const totalCost = currentNode.f + neighbor.cost;
+      const beenVisited = neighbor.visited;
+
+      if (totalCost <= maxDistance) {
+        neighbor.f = totalCost;
+
+        if (!beenVisited) {
+          unvisitedCoords.push(neighbor);
+          path.push({ x: neighborRealCoord.x, y: neighborRealCoord.y });
+          neighbor.visited = true;
+        }
+      }
+    }
   }
 
   return path;

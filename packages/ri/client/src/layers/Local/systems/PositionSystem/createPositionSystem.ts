@@ -53,7 +53,7 @@ export function createPositionSystem(layer: LocalLayer) {
     const localPosition = getComponentValue(LocalPosition, entity);
     if (!localPosition || worldCoordEq(targetPosition, localPosition)) return;
 
-    const path = aStar(localPosition, targetPosition, moveSpeed.value + 1, layer.parentLayers.network, LocalPosition);
+    const path = aStar(localPosition, targetPosition, moveSpeed.value, layer.parentLayers.network, LocalPosition);
 
     if (path.length > 0) {
       const x: number[] = [];

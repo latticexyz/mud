@@ -81,7 +81,7 @@ export function moveEntity(
         return null;
       }
 
-      const path = aStar(currentPosition, targetPosition, moveSpeed + 1, context.network, Position);
+      const path = aStar(currentPosition, targetPosition, moveSpeed, context.network, Position);
       if (path.length == 0) {
         actions.cancel(actionID);
         return null;
