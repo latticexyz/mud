@@ -26,6 +26,8 @@ import { EscapePortalComponent, ID as EscapePortalComponentID } from "../compone
 import { ItemTypeComponent, ID as ItemTypeComponentID } from "../components/ItemTypeComponent.sol";
 import { PlayerComponent, ID as PlayerComponentID } from "../components/PlayerComponent.sol";
 
+import { ItemTypes } from "../utils/Types.sol";
+
 uint256 constant ID = uint256(keccak256("ember.system.escapePortal"));
 
 contract EscapePortalSystem is ISystem {
@@ -65,8 +67,7 @@ contract EscapePortalSystem is ISystem {
     ItemTypeComponent itemTypeComponent = ItemTypeComponent(getAddressById(components, ItemTypeComponentID));
     for (uint256 i = 0; i < items.length; i++) {
       uint256 item = items[i];
-      // 2 == EmberCrown type
-      if (itemTypeComponent.getValue(item) == 2) {
+      if (itemTypeComponent.getValue(item) == uint32(ItemTypes.EmberCrown)) {
         WinnerComponent winnerComponent = WinnerComponent(getAddressById(components, WinnerComponentID));
         winnerComponent.set(entity);
         endGame(); // lol

@@ -7,10 +7,12 @@ import { getAddressById } from "solecs/utils.sol";
 import { PrototypeComponent, ID as PrototypeComponentID } from "../components/PrototypeComponent.sol";
 import { ItemTypeComponent, ID as ItemTypeComponentID } from "../components/ItemTypeComponent.sol";
 
+import { ItemTypes } from "../utils/Types.sol";
+
 uint256 constant ID = uint256(keccak256("ember.prototype.emberCrown"));
 
 function EmberCrownPrototype(IUint256Component components) {
-  ItemTypeComponent(getAddressById(components, ItemTypeComponentID)).set(ID, uint32(2));
+  ItemTypeComponent(getAddressById(components, ItemTypeComponentID)).set(ID, uint32(ItemTypes.EmberCrown));
 
   uint256[] memory componentIds = new uint256[](1);
   componentIds[0] = ItemTypeComponentID;
