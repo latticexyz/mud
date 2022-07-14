@@ -28,6 +28,7 @@ export enum Sprites {
   GoldShrine,
   EmberCrown,
   EscapePortal,
+  Donkey,
 }
 
 export enum Animations {}
@@ -40,4 +41,5 @@ export const EntityTypeSprites: Record<number, Sprites> = {
   [EntityTypes.GoldShrine]: Sprites.GoldShrine,
   [EntityTypes.EmberCrown]: Sprites.EmberCrown,
   [EntityTypes.EscapePortal]: Sprites.EscapePortal,
+  [EntityTypes.Donkey]: Sprites.Donkey,
 };

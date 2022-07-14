@@ -14,6 +14,7 @@ import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../com
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 
 import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
+import { DonkeyPrototype } from "../prototypes/DonkeyPrototype.sol";
 import { SettlementPrototype, ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
 import { InventoryPrototype, ID as InventoryID } from "../prototypes/InventoryPrototype.sol";
 import { EmberCrownPrototype, ID as EmberCrownID } from "../prototypes/EmberCrownPrototype.sol";
@@ -23,7 +24,6 @@ import { GoldPrototype } from "../prototypes/GoldPrototype.sol";
 import { EmberCrownInventoryPrototype } from "../prototypes/EmberCrownInventoryPrototype.sol";
 import { EmberCrownPrototype } from "../prototypes/EmberCrownPrototype.sol";
 import { EmptySettlementPrototype } from "../prototypes/EmptySettlementPrototype.sol";
-import { EscapePortalPrototype } from "../prototypes/EscapePortalPrototype.sol";
 import { GoldShrinePrototype } from "../prototypes/GoldShrinePrototype.sol";
 import { GrassPrototype } from "../prototypes/GrassPrototype.sol";
 import { GuardPrototype } from "../prototypes/GuardPrototype.sol";
@@ -57,6 +57,7 @@ contract InitSystem is ISystem {
     InventoryPrototype(components);
     GoldPrototype(components);
     SoldierPrototype(components, world);
+    DonkeyPrototype(components, world);
     SettlementPrototype(components, world);
     EmberCrownPrototype(components);
     EmberCrownInventoryPrototype(components, world);

@@ -99,15 +99,11 @@ export const config = {
         },
         [Sprites.EmberCrown]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/oil.png",
+          frame: "sprites/resources/wood.png",
         },
-        [Sprites.EmberCrown]: {
+        [Sprites.Donkey]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/donkey.png",
-        },
-        [Sprites.EscapePortal]: {
-          assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/oil.png",
+          frame: "sprites/workers/donkey.png",
         },
       },
       animations: [],

@@ -24,6 +24,7 @@ import { SpawnPointComponent, ID as SpawnPointComponentID } from "../components/
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
 import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
+import { ID as DonkeyID } from "../prototypes/DonkeyPrototype.sol";
 import { ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
 import { ID as InventoryID } from "../prototypes/InventoryPrototype.sol";
 
@@ -78,7 +79,7 @@ contract PlayerJoinSystem is ISystem {
     );
 
     for (uint256 i; i < unitPositions.length; i++) {
-      spawnSoldier(playerEntity, unitPositions[i]);
+      spawnDonkey(playerEntity, unitPositions[i]);
     }
   }
 
@@ -94,8 +95,8 @@ contract PlayerJoinSystem is ISystem {
   // Internals
   // ------------------------
 
-  function spawnSoldier(uint256 ownerId, Coord memory position) private {
-    uint256 entity = LibPrototype.copyPrototype(components, world, SoldierID);
+  function spawnDonkey(uint256 ownerId, Coord memory position) private {
+    uint256 entity = LibPrototype.copyPrototype(components, world, DonkeyID);
 
     OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
 
