@@ -75,8 +75,7 @@ export function aStar(
   openHeap.push(start);
 
   while (openHeap.size() > 0) {
-    const currentNode = openHeap.pop();
-    if (!currentNode) return [];
+    const currentNode = openHeap.pop()!;
 
     if (worldCoordEq(currentNode, to)) {
       let curr = currentNode;
