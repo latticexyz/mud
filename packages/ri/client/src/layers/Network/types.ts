@@ -17,6 +17,7 @@ export enum EntityTypes {
   GoldShrine,
   EmberCrown,
   EscapePortal,
+  Donkey,
 }
 
 export enum TerrainTypes {
