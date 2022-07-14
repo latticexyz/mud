@@ -47,7 +47,7 @@ export function createSyncSystem(layer: LocalLayer) {
   defineComponentSystem(world, UnitType, ({ entity, value }) => {
     const [newValue] = value;
     const type = newValue?.value;
-    if (!type) return;
+    if (type == null) return;
 
     let name = "Unknown";
     if (UnitTypeNames[type]) name = UnitTypeNames[type];
@@ -58,7 +58,7 @@ export function createSyncSystem(layer: LocalLayer) {
   defineComponentSystem(world, StructureType, ({ entity, value }) => {
     const [newValue] = value;
     const type = newValue?.value;
-    if (!type) return;
+    if (type == null) return;
 
     let name = "Unknown";
     if (StructureTypeNames[type]) name = StructureTypeNames[type];
@@ -69,7 +69,7 @@ export function createSyncSystem(layer: LocalLayer) {
   defineComponentSystem(world, ItemType, ({ entity, value }) => {
     const [newValue] = value;
     const type = newValue?.value;
-    if (!type) return;
+    if (type == null) return;
 
     let name = "Unknown";
     if (ItemTypeNames[type]) name = ItemTypeNames[type];
