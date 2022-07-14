@@ -10,7 +10,6 @@ import {
 } from "@latticexyz/recs";
 import {
   definePositionComponent,
-  defineEntityTypeComponent,
   defineMovableComponent,
   defineOwnedByComponent,
   defineUntraversableComponent,
@@ -61,13 +60,27 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       id: "Systems",
       metadata: { contractId: keccak256("world.component.systems") },
     }),
-    Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
-    EntityType: defineEntityTypeComponent(world, keccak256("ember.component.entityTypeComponent")),
+    UnitType: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "UnitType", metadata: { contractId: keccak256("ember.component.unitType") } }
+    ),
+    StructureType: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "StructureType", metadata: { contractId: keccak256("ember.component.structureType") } }
+    ),
+    ItemType: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "ItemType", metadata: { contractId: keccak256("ember.component.itemType") } }
+    ),
     TerrainType: defineComponent(
       world,
       { value: Type.Number },
       { metadata: { contractId: keccak256("ember.component.terrainType") } }
     ),
+    Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
     Movable: defineMovableComponent(world, keccak256("ember.component.movableComponent")),
     OwnedBy: defineOwnedByComponent(world, keccak256("ember.component.ownedByComponent")),
     Untraversable: defineUntraversableComponent(world, keccak256("ember.component.untraversableComponent")),
@@ -157,9 +170,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
   const mappings: Mappings<typeof components> = {
     [keccak256("world.component.components")]: "Components",
     [keccak256("world.component.systems")]: "Systems",
+    [keccak256("ember.component.unitType")]: "UnitType",
+    [keccak256("ember.component.structureType")]: "StructureType",
+    [keccak256("ember.component.itemType")]: "ItemType",
     [keccak256("ember.component.gameConfigComponent")]: "GameConfig",
     [keccak256("ember.component.positionComponent")]: "Position",
-    [keccak256("ember.component.entityTypeComponent")]: "EntityType",
     [keccak256("ember.component.terrainType")]: "TerrainType",
     [keccak256("ember.component.movableComponent")]: "Movable",
     [keccak256("ember.component.ownedByComponent")]: "OwnedBy",
