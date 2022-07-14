@@ -8,7 +8,7 @@ import {
   fromWorker,
   unpackTuple,
 } from "@latticexyz/utils";
-import { computed, IObservableValue, observable, runInAction } from "mobx";
+import { computed, IObservableValue, observable, runInAction, toJS } from "mobx";
 import { Component, World } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import WorldAbi from "@latticexyz/solecs/abi/World.json";
@@ -148,6 +148,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
   private async init() {
     // Only run this once we have an initial config
     const config = await awaitValue(this.config);
+    console.log("Sync worker config", toJS(config));
 
     // Create providers
     const { providers, connected } = await createReconnectingProvider(computed(() => this.config.get().provider));
