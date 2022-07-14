@@ -21,9 +21,9 @@ import { Component } from "solecs/Component.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
-import { EmberCrownComponent, ID as EmberCrownComponentID } from "../components/EmberCrownComponent.sol";
 import { WinnerComponent, ID as WinnerComponentID } from "../components/WinnerComponent.sol";
 import { EscapePortalComponent, ID as EscapePortalComponentID } from "../components/EscapePortalComponent.sol";
+import { ItemTypeComponent, ID as ItemTypeComponentID } from "../components/ItemTypeComponent.sol";
 import { PlayerComponent, ID as PlayerComponentID } from "../components/PlayerComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.escapePortal"));
@@ -62,10 +62,11 @@ contract EscapePortalSystem is ISystem {
     uint256 inventoryEntity = LibInventory.getInventory(components, entity);
     uint256[] memory items = LibInventory.getItems(components, inventoryEntity);
 
-    EmberCrownComponent emberCrownComponent = EmberCrownComponent(getAddressById(components, EmberCrownComponentID));
+    ItemTypeComponent itemTypeComponent = ItemTypeComponent(getAddressById(components, ItemTypeComponentID));
     for (uint256 i = 0; i < items.length; i++) {
-      uint256 itemEntity = items[i];
-      if (emberCrownComponent.has(itemEntity)) {
+      uint256 item = items[i];
+      // 2 == EmberCrown type
+      if (itemTypeComponent.getValue(item) == 2) {
         WinnerComponent winnerComponent = WinnerComponent(getAddressById(components, WinnerComponentID));
         winnerComponent.set(entity);
         endGame(); // lol

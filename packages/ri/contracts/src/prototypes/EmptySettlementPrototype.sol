@@ -40,10 +40,10 @@ function EmptySettlementPrototype(IUint256Component components, IWorld world) {
   int32[] memory costs = new int32[](1);
   costs[0] = 1;
 
-  FactoryComponent(getAddressById(components, FactoryComponentID)).set(
-    ID,
-    Factory({ prototypeIds: prototypeIds, costs: costs })
-  );
+  uint32[] memory costItemTypes = new uint32[](1);
+  costItemTypes[0] = 1;
+
+  FactoryComponent(getAddressById(components, FactoryComponentID)).set(ID, Factory(prototypeIds, costs, costItemTypes));
 
   SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(ID);
 

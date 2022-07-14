@@ -21,13 +21,14 @@ import { MovableComponent, ID as MovableComponentID } from "../components/Movabl
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { FactoryComponent, Factory, ID as FactoryComponentID } from "../components/FactoryComponent.sol";
-import { GoldComponent, ID as GoldComponentID } from "../components/GoldComponent.sol";
+import { ItemTypeComponent, ID as ItemTypeComponentID } from "../components/ItemTypeComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.factory"));
 
 struct FactoryPlan {
   uint256 prototypeId;
   int32 cost;
+  uint32 costItemType;
 }
 
 contract FactorySystem is ISystem {
@@ -77,19 +78,19 @@ contract FactorySystem is ISystem {
     for (uint256 i = 0; i < factory.prototypeIds.length; i++) {
       if (factory.prototypeIds[i] == prototypeId) {
         ableToBuildPrototype = true;
-        factoryPlan = FactoryPlan(factory.prototypeIds[i], factory.costs[i]);
+        factoryPlan = FactoryPlan(factory.prototypeIds[i], factory.costs[i], factory.costItemTypes[i]);
         break;
       }
     }
     require(ableToBuildPrototype, "unable to build");
 
-    GoldComponent goldComponent = GoldComponent(getAddressById(components, GoldComponentID));
+    ItemTypeComponent itemTypeComponent = ItemTypeComponent(getAddressById(components, ItemTypeComponentID));
     int32 spentResourceCount = 0;
     uint256 inventory = LibInventory.getInventory(components, builderId);
     uint256[] memory items = LibInventory.getItems(components, inventory);
     for (uint256 i = 0; i < items.length; i++) {
       uint256 item = items[i];
-      if (goldComponent.has(item)) {
+      if (itemTypeComponent.getValue(item) == factoryPlan.costItemType) {
         LibInventory.burnItem(components, item);
         spentResourceCount++;
 
