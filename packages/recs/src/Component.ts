@@ -2,6 +2,7 @@ import { uuid } from "@latticexyz/utils";
 import { mapObject } from "@latticexyz/utils";
 import { filter, Subject } from "rxjs";
 import { OptionalTypes } from "./constants";
+import { createIndexer } from "./Indexer";
 import {
   Component,
   ComponentValue,
@@ -18,7 +19,7 @@ import { isFullComponentValue, isIndexer } from "./utils";
 export function defineComponent<S extends Schema, M extends Metadata>(
   world: World,
   schema: S,
-  options?: { id?: string; metadata?: M }
+  options?: { id?: string; metadata?: M; indexed?: boolean }
 ) {
   if (Object.keys(schema).length === 0) throw new Error("Component schema must have at least one key");
   const id = options?.id ?? uuid();
@@ -26,7 +27,8 @@ export function defineComponent<S extends Schema, M extends Metadata>(
   const update$ = new Subject();
   const metadata = options?.metadata;
   const entities = () => (Object.values(values)[0] as Map<EntityIndex, unknown>).keys();
-  const component = { values, schema, id, update$, metadata, entities, world } as Component<S, M>;
+  let component = { values, schema, id, update$, metadata, entities, world } as Component<S, M>;
+  if (options?.indexed) component = createIndexer(component);
   world.registerComponent(component);
   return component;
 }

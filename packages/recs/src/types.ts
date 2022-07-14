@@ -53,7 +53,7 @@ export interface Component<S extends Schema = Schema, M extends Metadata = Metad
   update$: Subject<ComponentUpdate<S>> & { observers: any };
 }
 
-export type Indexer<S extends Schema> = Component<S> & {
+export type Indexer<S extends Schema, M extends Metadata = Metadata> = Component<S, M> & {
   getEntitiesWithValue: (value: ComponentValue<S>) => Set<EntityIndex>;
 };
 
