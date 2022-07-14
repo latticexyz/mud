@@ -1,4 +1,13 @@
-import { getComponentValue, EntityIndex, EntityID, setComponent, Type, Component, World } from "@latticexyz/recs";
+import {
+  getComponentValue,
+  EntityIndex,
+  EntityID,
+  setComponent,
+  Type,
+  Component,
+  World,
+  ComponentValue,
+} from "@latticexyz/recs";
 import { ActionSystem } from "../systems";
 import { NetworkLayer } from "../../Network";
 import { WorldCoord } from "../../../types";
@@ -16,7 +25,7 @@ export function moveEntity(
 ) {
   const {
     network: {
-      components: { Position, Movable, Untraversable, OwnedBy },
+      components: { Position, Movable, Untraversable, OwnedBy, Stamina },
       network: { connectedAddress },
       api: networkApi,
     },
@@ -45,22 +54,35 @@ export function moveEntity(
 
   actions.add<
     // Need to debug why typescript can't automatically infer these in this case, but for now manually typing removes the error
-    { Position: typeof Position; Untraversable: typeof Untraversable; LocalStamina: typeof LocalStamina },
-    { targetPosition: WorldCoord; path: WorldCoord[]; netStamina: number }
+    {
+      Position: typeof Position;
+      Untraversable: typeof Untraversable;
+      LocalStamina: typeof LocalStamina;
+      Stamina: typeof Stamina;
+    },
+    { targetPosition: WorldCoord; path: WorldCoord[]; newStamina: ComponentValue }
   >({
     id: actionID,
     components: {
       Position,
       Untraversable,
       LocalStamina,
+      Stamina,
     },
-    requirement: ({ LocalStamina, Position }) => {
+    requirement: ({ LocalStamina, Stamina, Position }) => {
       const localStamina = getComponentValue(LocalStamina, entity);
       if (!localStamina) {
         console.warn("no local stamina");
         actions.cancel(actionID);
         return null;
       }
+
+      const stamina = getComponentValue(Stamina, entity);
+      if (!stamina) {
+        actions.cancel(actionID);
+        return null;
+      }
+
       const netStamina = localStamina.current - 1;
       if (netStamina < 0) {
         console.warn("net stamina below 0");
@@ -82,25 +104,26 @@ export function moveEntity(
       return {
         targetPosition,
         path,
-        netStamina,
+        newStamina: {
+          ...stamina,
+          current: netStamina,
+        },
       };
     },
-    updates: (_, { targetPosition, netStamina }) => [
+    updates: (_, { targetPosition, newStamina }) => [
       {
         component: "Position",
         entity: entity,
         value: targetPosition,
       },
       {
-        component: "LocalStamina",
+        component: "Stamina",
         entity,
-        value: { current: netStamina },
+        value: newStamina,
       },
     ],
-    execute: async ({ path, netStamina }) => {
-      const tx = await networkApi.moveEntity(world.entities[entity], path);
-      await tx.wait();
-      setComponent(LocalStamina, entity, { current: netStamina });
+    execute: async ({ path }) => {
+      return networkApi.moveEntity(world.entities[entity], path);
     },
   });
 }
