@@ -18,13 +18,18 @@ import { SpawnPointComponent, ID as SpawnPointComponentID } from "../components/
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 
+import { StructureTypes } from "../utils/Types.sol";
+
 import { ID as SoldierID } from "./SoldierPrototype.sol";
 import { ID as InventoryID } from "./InventoryPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.prototype.emptySettlement"));
 
 function EmptySettlementPrototype(IUint256Component components, IWorld world) {
-  StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(ID, uint32(0));
+  StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(
+    ID,
+    uint32(StructureTypes.Settlement)
+  );
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
     Stamina({ current: 0, max: 20, regeneration: 1 })
