@@ -121,7 +121,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     ),
     Factory: defineComponent(
       world,
-      { prototypeIds: Type.StringArray, costs: Type.NumberArray },
+      { prototypeIds: Type.StringArray, costs: Type.NumberArray, costItemTypes: Type.NumberArray },
       { id: "Factory", metadata: { contractId: keccak256("ember.component.factoryComponent") } }
     ),
     Capturable: defineComponent(
@@ -139,20 +139,10 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Number },
       { id: "Inventory", metadata: { contractId: keccak256("ember.component.inventoryComponent") } }
     ),
-    Gold: defineComponent(
-      world,
-      { value: Type.Boolean },
-      { id: "Gold", metadata: { contractId: keccak256("ember.component.goldComponent") } }
-    ),
     ResourceGenerator: defineComponent(
       world,
       { value: Type.String },
       { id: "ResourceGenerator", metadata: { contractId: keccak256("ember.component.resourceGenerator") } }
-    ),
-    EmberCrown: defineComponent(
-      world,
-      { value: Type.Boolean },
-      { id: "EmberCrown", metadata: { contractId: keccak256("ember.component.emberCrown") } }
     ),
     EscapePortal: defineComponent(
       world,
@@ -190,9 +180,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.capturable")]: "Capturable",
     [keccak256("ember.component.spawnPoint")]: "SpawnPoint",
     [keccak256("ember.component.inventoryComponent")]: "Inventory",
-    [keccak256("ember.component.goldComponent")]: "Gold",
     [keccak256("ember.component.resourceGenerator")]: "ResourceGenerator",
-    [keccak256("ember.component.emberCrown")]: "EmberCrown",
     [keccak256("ember.component.escapePortal")]: "EscapePortal",
     [keccak256("ember.component.winner")]: "Winner",
   };

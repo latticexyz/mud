@@ -7,10 +7,12 @@ import { getAddressById } from "solecs/utils.sol";
 import { PrototypeComponent, ID as PrototypeComponentID } from "../components/PrototypeComponent.sol";
 import { TerrainTypeComponent, ID as TerrainTypeComponentID } from "../components/TerrainTypeComponent.sol";
 
+import { TerrainTypes } from "../utils/Types.sol";
+
 uint256 constant ID = uint256(keccak256("ember.prototype.grass"));
 
 function GrassPrototype(IUint256Component components) {
-  TerrainTypeComponent(getAddressById(components, TerrainTypeComponentID)).set(ID, uint32(0));
+  TerrainTypeComponent(getAddressById(components, TerrainTypeComponentID)).set(ID, uint32(TerrainTypes.Grass));
 
   uint256[] memory componentIds = new uint256[](1);
   componentIds[0] = TerrainTypeComponentID;

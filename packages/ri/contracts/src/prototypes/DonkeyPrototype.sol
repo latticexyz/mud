@@ -15,12 +15,14 @@ import { HealthComponent, Health, ID as HealthComponentID } from "../components/
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 
+import { UnitTypes } from "../utils/Types.sol";
+
 import { ID as InventoryID } from "./InventoryPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.prototype.donkey"));
 
 function DonkeyPrototype(IUint256Component components, IWorld world) {
-  UnitTypeComponent(getAddressById(components, UnitTypeComponentID)).set(ID, uint32(1));
+  UnitTypeComponent(getAddressById(components, UnitTypeComponentID)).set(ID, uint32(UnitTypes.Donkey));
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
     Stamina({ current: 0, max: 4, regeneration: 2 })

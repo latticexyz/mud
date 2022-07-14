@@ -18,13 +18,18 @@ import { InventoryComponent, ID as InventoryComponentID } from "../components/In
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
+import { StructureTypes } from "../utils/Types.sol";
+
 import { ID as SoldierID } from "./SoldierPrototype.sol";
 import { ID as InventoryID } from "./InventoryPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.prototype.settlement"));
 
 function SettlementPrototype(IUint256Component components, IWorld world) {
-  StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(ID, uint32(0));
+  StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(
+    ID,
+    uint32(StructureTypes.Settlement)
+  );
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
     Stamina({ current: 0, max: 5, regeneration: 1 })
@@ -41,10 +46,10 @@ function SettlementPrototype(IUint256Component components, IWorld world) {
   int32[] memory costs = new int32[](1);
   costs[0] = 1;
 
-  FactoryComponent(getAddressById(components, FactoryComponentID)).set(
-    ID,
-    Factory({ prototypeIds: prototypeIds, costs: costs })
-  );
+  uint32[] memory costItemTypes = new uint32[](1);
+  costItemTypes[0] = 1;
+
+  FactoryComponent(getAddressById(components, FactoryComponentID)).set(ID, Factory(prototypeIds, costs, costItemTypes));
 
   uint256[] memory componentIds = new uint256[](8);
   componentIds[0] = StructureTypeComponentID;

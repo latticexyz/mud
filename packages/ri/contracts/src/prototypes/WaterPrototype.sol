@@ -8,10 +8,12 @@ import { PrototypeComponent, ID as PrototypeComponentID } from "../components/Pr
 import { TerrainTypeComponent, ID as TerrainTypeComponentID } from "../components/TerrainTypeComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 
+import { TerrainTypes } from "../utils/Types.sol";
+
 uint256 constant ID = uint256(keccak256("ember.prototype.water"));
 
 function WaterPrototype(IUint256Component components) {
-  TerrainTypeComponent(getAddressById(components, TerrainTypeComponentID)).set(ID, uint32(2));
+  TerrainTypeComponent(getAddressById(components, TerrainTypeComponentID)).set(ID, uint32(TerrainTypes.Water));
   UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
 
   uint256[] memory componentIds = new uint256[](2);

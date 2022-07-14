@@ -8,11 +8,16 @@ import { PrototypeComponent, ID as PrototypeComponentID } from "../components/Pr
 import { StructureTypeComponent, ID as StructureTypeComponentID } from "../components/StructureTypeComponent.sol";
 import { EscapePortalComponent, ID as EscapePortalComponentID } from "../components/EscapePortalComponent.sol";
 
+import { StructureTypes } from "../utils/Types.sol";
+
 uint256 constant ID = uint256(keccak256("ember.prototype.escapePortal"));
 
 function EscapePortalPrototype(IUint256Component components) {
   EscapePortalComponent(getAddressById(components, EscapePortalComponentID)).set(ID);
-  StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(ID, uint32(2));
+  StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(
+    ID,
+    uint32(StructureTypes.EscapePortal)
+  );
 
   uint256[] memory componentIds = new uint256[](2);
   componentIds[0] = EscapePortalComponentID;
