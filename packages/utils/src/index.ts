@@ -15,5 +15,6 @@ export * from "./area";
 export * from "./hash";
 export * from "./worker";
 export * from "./pack";
+export * from "./CoordMap";
 
 export type { Cached, PromiseValue, ValueOf, Area, Coord } from "./types";

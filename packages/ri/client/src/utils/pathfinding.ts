@@ -1,8 +1,8 @@
 import { WorldCoord } from "../types";
-import { manhattan } from "./distance";
-import Heap from "heap-js";
 import { worldCoordEq } from "./coords";
-import { CoordMap } from "@latticexyz/phaserx";
+import { manhattan } from "./distance";
+import { CoordMap } from "@latticexyz/utils";
+import { Heap } from "heap-js";
 
 interface gridNode {
   x: number;

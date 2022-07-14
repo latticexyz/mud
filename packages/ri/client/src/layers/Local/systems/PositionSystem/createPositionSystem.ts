@@ -9,7 +9,7 @@ import { LocalLayer } from "../../types";
 import { aStar } from "../../../../utils/pathfinding";
 import { worldCoordEq } from "../../../../utils/coords";
 import { isUntraversable } from "@latticexyz/std-client";
-import { WorldCoord } from "@latticexyz/phaserx/src/types";
+import { WorldCoord } from "../../../../types";
 
 /**
  * The Position system handles pathing locally for entities if their network layer Position changed.

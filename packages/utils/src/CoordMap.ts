@@ -1,5 +1,4 @@
-import { WorldCoord } from "../types";
-import { transformIterator } from "@latticexyz/utils";
+import { Coord, transformIterator } from ".";
 
 const LOWER_HALF_MASK = 2 ** 16 - 1;
 const MAX_SUPPORTED = 2 ** 15 - 1;
@@ -15,7 +14,7 @@ export function subtract(from: CoordMap<boolean>, subtract: CoordMap<boolean>): 
   return result;
 }
 
-export function coordToKey(coord: WorldCoord) {
+export function coordToKey(coord: Coord) {
   const key = (coord.x << 16) | (coord.y & LOWER_HALF_MASK);
   return key;
 
@@ -23,7 +22,7 @@ export function coordToKey(coord: WorldCoord) {
   // return `${coord.x}/${coord.y}`;
 }
 
-export function keyToCoord(key: number): WorldCoord {
+export function keyToCoord(key: number): Coord {
   const x = key >> 16;
   const y = (key << 16) >> 16;
   return { x, y };
@@ -49,7 +48,7 @@ export class CoordMap<T> {
     return coordMap;
   }
 
-  set(coord: WorldCoord, value: T) {
+  set(coord: Coord, value: T) {
     if (
       coord.x > MAX_SUPPORTED ||
       coord.x < -1 * MAX_SUPPORTED ||
@@ -61,7 +60,7 @@ export class CoordMap<T> {
     return this.map.set(coordToKey(coord), value);
   }
 
-  get(coord: WorldCoord) {
+  get(coord: Coord) {
     return this.map.get(coordToKey(coord)) ?? this.defaultValue;
   }
 
@@ -69,7 +68,7 @@ export class CoordMap<T> {
     return this.map.keys();
   }
 
-  coords(): IterableIterator<WorldCoord> {
+  coords(): IterableIterator<Coord> {
     return transformIterator(this.map.keys(), (key) => keyToCoord(key));
   }
 
@@ -77,7 +76,7 @@ export class CoordMap<T> {
     return this.map.entries();
   }
 
-  toArray(): [WorldCoord, T][] {
+  toArray(): [Coord, T][] {
     const entries = Array.from(this.map.entries());
     return entries.map(([key, value]) => [keyToCoord(key), value]);
   }
@@ -86,11 +85,11 @@ export class CoordMap<T> {
     return this.map.values();
   }
 
-  delete(coord: WorldCoord) {
+  delete(coord: Coord) {
     return this.map.delete(coordToKey(coord));
   }
 
-  has(coord: WorldCoord): boolean {
+  has(coord: Coord): boolean {
     return this.map.has(coordToKey(coord));
   }
 

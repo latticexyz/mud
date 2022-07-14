@@ -1,5 +1,4 @@
 export { tween, removeAllTweens } from "./tween";
-export { CoordMap, subtract } from "./CoordMap";
 export { mod } from "./math";
 export {
   cornerTileCoordsFromRegionCoords,

@@ -2,7 +2,7 @@ import { defineSystem, getComponentValue, Has, removeComponent, setComponent, Up
 import { isUntraversable } from "@latticexyz/std-client";
 import { BFS } from "../../../../utils/pathfinding";
 import { LocalLayer } from "../../types";
-import { WorldCoord } from "@latticexyz/phaserx/src/types";
+import { WorldCoord } from "../../../../types";
 
 export function createPotentialPathSystem(layer: LocalLayer) {
   const {
