@@ -1,6 +1,14 @@
-import { defineQuery, defineRxSystem, EntityIndex, getComponentValueStrict, Has, setComponent } from "@latticexyz/recs";
+import {
+  defineComponentSystem,
+  defineQuery,
+  defineRxSystem,
+  EntityIndex,
+  getComponentValueStrict,
+  Has,
+  setComponent,
+  UpdateType,
+} from "@latticexyz/recs";
 import { getCurrentTurn } from "@latticexyz/std-client";
-import { merge } from "rxjs";
 import { HeadlessLayer } from "../../types";
 
 export function createCurrentStaminaSystem(layer: HeadlessLayer) {
@@ -13,13 +21,17 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
         components: { Stamina, LastActionTurn, GameConfig },
       },
     },
+    actions: { withOptimisticUpdates },
     components: { LocalStamina },
   } = layer;
 
-  const updateLocalStaminaToTurn = (entity: EntityIndex, turn: number) => {
-    const contractStamina = getComponentValueStrict(Stamina, entity);
+  const optimisticStamina = withOptimisticUpdates(Stamina);
+
+  const setLocalStaminaToCurrentTurn = (entity: EntityIndex) => {
+    const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
+    const contractStamina = getComponentValueStrict(optimisticStamina, entity);
     const lastActionTurn = getComponentValueStrict(LastActionTurn, entity).value;
-    const staminaTicks = (turn - lastActionTurn) * contractStamina.regeneration;
+    const staminaTicks = (currentTurn - lastActionTurn) * contractStamina.regeneration;
 
     let localStamina = contractStamina.current + staminaTicks;
     if (localStamina > contractStamina.max) localStamina = contractStamina.max;
@@ -28,14 +40,23 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
     setComponent(LocalStamina, entity, { current: localStamina });
   };
 
+  defineComponentSystem(world, optimisticStamina, ({ entity, value }) => {
+    const [newValue] = value;
+    const newCurrentStamina = newValue?.current;
+    if (newCurrentStamina == null) return;
+
+    setComponent(LocalStamina, entity, { current: newCurrentStamina });
+  });
+
   const staminaQuery = defineQuery([Has(Stamina), Has(LastActionTurn)]);
-  const staminaUpdate$ = merge(turn$, staminaQuery.update$);
 
-  defineRxSystem(world, staminaUpdate$, () => {
-    const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
+  defineRxSystem(world, staminaQuery.update$, ({ entity, type }) => {
+    if (type === UpdateType.Enter) setLocalStaminaToCurrentTurn(entity);
+  });
 
+  defineRxSystem(world, turn$, () => {
     for (const entity of staminaQuery.matching) {
-      updateLocalStaminaToTurn(entity, currentTurn);
+      setLocalStaminaToCurrentTurn(entity);
     }
   });
 }
