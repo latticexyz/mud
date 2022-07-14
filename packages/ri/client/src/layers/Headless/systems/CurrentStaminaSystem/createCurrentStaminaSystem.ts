@@ -40,8 +40,12 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
     setComponent(LocalStamina, entity, { current: localStamina });
   };
 
-  defineComponentSystem(world, optimisticStamina, ({ entity }) => {
-    setComponent(LocalStamina, entity, { current: getComponentValueStrict(optimisticStamina, entity).current });
+  defineComponentSystem(world, optimisticStamina, ({ entity, value }) => {
+    const [newValue] = value;
+    const newCurrentStamina = newValue?.current;
+    if (newCurrentStamina == null) return;
+
+    setComponent(LocalStamina, entity, { current: newCurrentStamina });
   });
 
   const staminaQuery = defineQuery([Has(Stamina), Has(LastActionTurn)]);

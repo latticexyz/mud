@@ -1,13 +1,4 @@
-import {
-  getComponentValue,
-  EntityIndex,
-  EntityID,
-  setComponent,
-  Type,
-  Component,
-  World,
-  ComponentValue,
-} from "@latticexyz/recs";
+import { getComponentValue, EntityIndex, EntityID, Type, Component, World } from "@latticexyz/recs";
 import { ActionSystem } from "../systems";
 import { NetworkLayer } from "../../Network";
 import { WorldCoord } from "../../../types";
@@ -60,7 +51,7 @@ export function moveEntity(
       LocalStamina: typeof LocalStamina;
       Stamina: typeof Stamina;
     },
-    { targetPosition: WorldCoord; path: WorldCoord[]; newStamina: ComponentValue }
+    { targetPosition: WorldCoord; path: WorldCoord[]; netStamina: number }
   >({
     id: actionID,
     components: {
@@ -69,16 +60,10 @@ export function moveEntity(
       LocalStamina,
       Stamina,
     },
-    requirement: ({ LocalStamina, Stamina, Position }) => {
+    requirement: ({ LocalStamina, Position }) => {
       const localStamina = getComponentValue(LocalStamina, entity);
       if (!localStamina) {
         console.warn("no local stamina");
-        actions.cancel(actionID);
-        return null;
-      }
-
-      const stamina = getComponentValue(Stamina, entity);
-      if (!stamina) {
         actions.cancel(actionID);
         return null;
       }
@@ -104,13 +89,10 @@ export function moveEntity(
       return {
         targetPosition,
         path,
-        newStamina: {
-          ...stamina,
-          current: netStamina,
-        },
+        netStamina,
       };
     },
-    updates: (_, { targetPosition, newStamina }) => [
+    updates: (_, { targetPosition, netStamina }) => [
       {
         component: "Position",
         entity: entity,
@@ -119,7 +101,7 @@ export function moveEntity(
       {
         component: "Stamina",
         entity,
-        value: newStamina,
+        value: { current: netStamina },
       },
     ],
     execute: async ({ path }) => {
