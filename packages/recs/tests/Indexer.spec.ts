@@ -24,7 +24,7 @@ describe("Indexer", () => {
 
   it("emit changes to its stream", () => {
     const entity = createEntity(world);
-    const component = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+    const component = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
 
     const mock = jest.fn();
     component.update$.subscribe((update) => {
@@ -62,7 +62,7 @@ describe("Indexer", () => {
     let value: number;
 
     beforeEach(() => {
-      component = createIndexer(world, defineComponent(world, { value: Type.Number }));
+      component = defineComponent(world, { value: Type.Number }, { indexed: true });
       entity = createEntity(world);
       value = 1;
       setComponent(component, entity, { value });
@@ -85,7 +85,7 @@ describe("Indexer", () => {
     let value: number;
 
     beforeEach(() => {
-      component = createIndexer(world, defineComponent(world, { value: Type.Number }));
+      component = defineComponent(world, { value: Type.Number }, { indexed: true });
       entity = createEntity(world);
       value = 1;
       setComponent(component, entity, { value });
@@ -107,7 +107,7 @@ describe("Indexer", () => {
 
   describe("hasComponent", () => {
     it("should return true if the entity has the component", () => {
-      const component = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+      const component = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
       const entity = createEntity(world);
       const value = { x: 1, y: 2 };
       setComponent(component, entity, value);
@@ -118,7 +118,7 @@ describe("Indexer", () => {
 
   describe("getComponentValue", () => {
     it("should return the correct component value", () => {
-      const component = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+      const component = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
       const entity = createEntity(world);
       const value = { x: 1, y: 2 };
       setComponent(component, entity, value);
@@ -146,7 +146,7 @@ describe("Indexer", () => {
 
   describe("withValue", () => {
     it("should return a ComponentWithValue", () => {
-      const component = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+      const component = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
       const value = { x: 1, y: 2 };
       const componentWithValue = withValue(component, value);
       expect(componentWithValue).toEqual([component, value]);
@@ -155,7 +155,7 @@ describe("Indexer", () => {
 
   describe("getEntitiesWithValue", () => {
     it("Should return all and only entities with this value", () => {
-      const Position = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+      const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
       const entity1 = createEntity(world, [withValue(Position, { x: 1, y: 2 })]);
       createEntity(world, [withValue(Position, { x: 2, y: 1 })]);
       createEntity(world);
@@ -169,7 +169,7 @@ describe("Indexer", () => {
       const entity1 = createEntity(world, [withValue(Position, { x: 1, y: 2 })]);
       const entity2 = createEntity(world, [withValue(Position, { x: 2, y: 1 })]);
       createEntity(world);
-      const PositionIndexer = createIndexer(world, Position);
+      const PositionIndexer = createIndexer(Position);
       expect(getEntitiesWithValue(PositionIndexer, { x: 1, y: 2 })).toEqual(new Set([entity1]));
 
       const entity3 = createEntity(world, [withValue(Position, { x: 1, y: 2 })]);
@@ -185,14 +185,14 @@ describe("Indexer", () => {
 
   describe("overridableComponent", () => {
     it("should return a overridable component", () => {
-      const Position = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+      const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
       const OverridablePosition = overridableComponent(Position);
       expect("addOverride" in OverridablePosition).toBe(true);
       expect("addOverride" in OverridablePosition).toBe(true);
     });
 
     it("should mirror all values of the source component", () => {
-      const Position = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+      const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
       const entity1 = createEntity(world);
       setComponent(Position, entity1, { x: 1, y: 2 });
 
@@ -201,7 +201,7 @@ describe("Indexer", () => {
     });
 
     it("the overridable component should be updated if the original component is updated", () => {
-      const Position = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+      const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
       const entity1 = createEntity(world);
       setComponent(Position, entity1, { x: 1, y: 2 });
 
@@ -215,7 +215,7 @@ describe("Indexer", () => {
     });
 
     it("should return the updated component value if there is a relevant update for the given entity", () => {
-      const Position = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+      const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
       const entity1 = createEntity(world);
       const entity2 = createEntity(world);
       setComponent(Position, entity1, { x: 1, y: 2 });
@@ -240,7 +240,7 @@ describe("Indexer", () => {
     });
 
     it("adding an override should trigger reactions depending on the getComponentValue of the overriden component", () => {
-      const Position = createIndexer(world, defineComponent(world, { x: Type.Number, y: Type.Number }));
+      const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { indexed: true });
       const entity1 = createEntity(world);
       setComponent(Position, entity1, { x: 1, y: 2 });
 

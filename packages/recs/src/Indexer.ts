@@ -1,17 +1,18 @@
 import { getComponentEntities, getComponentValue } from "./Component";
-import { Component, ComponentValue, EntityIndex, Indexer, Schema, World } from "./types";
+import { Component, ComponentValue, EntityIndex, Indexer, Metadata, Schema } from "./types";
 
 // Simple implementation of a "reverse mapping" indexer.
 // Could be made more memory efficient by using a hash of the value as key.
-export function createIndexer<S extends Schema>(world: World, component: Component<S>): Indexer<S> {
+export function createIndexer<S extends Schema, M extends Metadata>(component: Component<S, M>): Indexer<S, M> {
   const valueToEntities = new Map<string, Set<EntityIndex>>();
 
   function getEntitiesWithValue(value: ComponentValue<S>) {
-    return valueToEntities.get(getValueKey(value)) ?? new Set<EntityIndex>();
+    const entities = valueToEntities.get(getValueKey(value));
+    return entities ? new Set([...entities]) : new Set<EntityIndex>();
   }
 
   function getValueKey(value: ComponentValue<S>): string {
-    return JSON.stringify(value);
+    return Object.values(value).join("/");
   }
 
   function add(entity: EntityIndex, value: ComponentValue<S> | undefined) {
@@ -48,7 +49,7 @@ export function createIndexer<S extends Schema>(world: World, component: Compone
     add(entity, value[0]);
   });
 
-  world.registerDisposer(() => subscription?.unsubscribe());
+  component.world.registerDisposer(() => subscription?.unsubscribe());
 
-  return { ...component, id: `index/${component.id}`, getEntitiesWithValue };
+  return { ...component, getEntitiesWithValue };
 }

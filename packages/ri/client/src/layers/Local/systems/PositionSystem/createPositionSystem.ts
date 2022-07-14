@@ -34,6 +34,9 @@ export function createPositionSystem(layer: LocalLayer) {
 
   defineComponentSystem(world, withOptimisticUpdates(Position), (update) => {
     const { entity, value } = update;
+    // Remove any outstanding Paths before computing the new location
+    removeComponent(Path, entity);
+
     const targetPosition = value[0];
     if (targetPosition == null) {
       removeComponent(LocalPosition, entity);
