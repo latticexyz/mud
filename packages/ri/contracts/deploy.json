@@ -1,9 +1,11 @@
 {
   "components": [
+    "UnitTypeComponent",
+    "StructureTypeComponent",
+    "ItemTypeComponent",
     "AttackComponent",
     "CapturableComponent",
     "EmberCrownComponent",
-    "EntityTypeComponent",
     "FactoryComponent",
     "FromBlueprintComponent",
     "GameConfigComponent",

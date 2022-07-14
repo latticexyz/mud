@@ -1,4 +1,4 @@
-import { EntityTypes } from "../../Network";
+import { UnitTypes, ItemTypes, StructureTypes } from "../../Network";
 
 export const TILE_WIDTH = 16;
 export const TILE_HEIGHT = 16;
@@ -33,13 +33,19 @@ export enum Sprites {
 
 export enum Animations {}
 
-export const EntityTypeSprites: Record<number, Sprites> = {
-  [EntityTypes.Hero]: Sprites.Hero,
-  [EntityTypes.Gold]: Sprites.Gold,
-  [EntityTypes.Inventory]: Sprites.Inventory,
-  [EntityTypes.Settlement]: Sprites.Settlement,
-  [EntityTypes.GoldShrine]: Sprites.GoldShrine,
-  [EntityTypes.EmberCrown]: Sprites.EmberCrown,
-  [EntityTypes.EscapePortal]: Sprites.EscapePortal,
-  [EntityTypes.Donkey]: Sprites.Donkey,
+export const UnitTypeSprites: Record<number, Sprites> = {
+  [UnitTypes.Hero]: Sprites.Hero,
+  [UnitTypes.Donkey]: Sprites.Donkey,
+};
+
+export const ItemTypeSprites: Record<number, Sprites> = {
+  [ItemTypes.Inventory]: Sprites.Inventory,
+  [ItemTypes.Gold]: Sprites.Gold,
+  [ItemTypes.EmberCrown]: Sprites.EmberCrown,
+};
+
+export const StructureTypeSprites: Record<number, Sprites> = {
+  [StructureTypes.Settlement]: Sprites.Settlement,
+  [StructureTypes.GoldShrine]: Sprites.GoldShrine,
+  [StructureTypes.EscapePortal]: Sprites.EscapePortal,
 };

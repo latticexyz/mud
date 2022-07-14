@@ -8,7 +8,7 @@ import { getAddressById } from "solecs/utils.sol";
 import { LibPrototype } from "../libraries/LibPrototype.sol";
 
 import { PrototypeComponent, ID as PrototypeComponentID } from "../components/PrototypeComponent.sol";
-import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
+import { StructureTypeComponent, ID as StructureTypeComponentID } from "../components/StructureTypeComponent.sol";
 import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
@@ -24,7 +24,7 @@ import { ID as InventoryID } from "./InventoryPrototype.sol";
 uint256 constant ID = uint256(keccak256("ember.prototype.emptySettlement"));
 
 function EmptySettlementPrototype(IUint256Component components, IWorld world) {
-  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(1));
+  StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(ID, uint32(0));
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
     Stamina({ current: 0, max: 20, regeneration: 1 })
@@ -48,7 +48,7 @@ function EmptySettlementPrototype(IUint256Component components, IWorld world) {
   SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(ID);
 
   uint256[] memory componentIds = new uint256[](8);
-  componentIds[0] = EntityTypeComponentID;
+  componentIds[0] = StructureTypeComponentID;
   componentIds[1] = StaminaComponentID;
   componentIds[2] = HealthComponentID;
   componentIds[3] = AttackComponentID;

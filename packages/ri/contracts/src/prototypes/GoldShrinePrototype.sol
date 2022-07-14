@@ -8,7 +8,7 @@ import { getAddressById } from "solecs/utils.sol";
 import { LibPrototype } from "../libraries/LibPrototype.sol";
 
 import { PrototypeComponent, ID as PrototypeComponentID } from "../components/PrototypeComponent.sol";
-import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
+import { StructureTypeComponent, ID as StructureTypeComponentID } from "../components/StructureTypeComponent.sol";
 import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { ResourceGeneratorComponent, ID as ResourceGeneratorComponentID } from "../components/ResourceGeneratorComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
@@ -19,7 +19,7 @@ import { ID as GoldID } from "./GoldPrototype.sol";
 uint256 constant ID = uint256(keccak256("ember.prototype.goldShrine"));
 
 function GoldShrinePrototype(IUint256Component components) {
-  EntityTypeComponent(getAddressById(components, EntityTypeComponentID)).set(ID, uint32(4));
+  StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(ID, uint32(1));
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
     Stamina({ current: 0, max: 6, regeneration: 1 })
@@ -29,7 +29,7 @@ function GoldShrinePrototype(IUint256Component components) {
   UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
 
   uint256[] memory componentIds = new uint256[](5);
-  componentIds[0] = EntityTypeComponentID;
+  componentIds[0] = StructureTypeComponentID;
   componentIds[1] = StaminaComponentID;
   componentIds[2] = ResourceGeneratorComponentID;
   componentIds[3] = LastActionTurnComponentID;

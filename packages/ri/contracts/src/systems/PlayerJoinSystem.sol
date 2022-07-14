@@ -13,7 +13,6 @@ import { LibPrototype } from "../libraries/LibPrototype.sol";
 import { PlayerComponent, ID as PlayerComponentID } from "../components/PlayerComponent.sol";
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
-import { EntityTypeComponent, ID as EntityTypeComponentID } from "../components/EntityTypeComponent.sol";
 import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";

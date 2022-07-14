@@ -9,16 +9,39 @@ export enum ContractWorldEvent {
   ComponentValueRemoved = "ComponentValueRemoved",
 }
 
-export enum EntityTypes {
+export enum UnitTypes {
   Hero,
-  Settlement,
-  Inventory,
-  Gold,
-  GoldShrine,
-  EmberCrown,
-  EscapePortal,
   Donkey,
 }
+
+export const UnitTypeNames: Record<number, string> = {
+  [UnitTypes.Hero]: "Hero",
+  [UnitTypes.Donkey]: "Donkey",
+};
+
+export enum StructureTypes {
+  Settlement,
+  GoldShrine,
+  EscapePortal,
+}
+
+export const StructureTypeNames: Record<number, string> = {
+  [StructureTypes.Settlement]: "Settlement",
+  [StructureTypes.GoldShrine]: "Gold Shrine",
+  [StructureTypes.EscapePortal]: "Escape Portal",
+};
+
+export enum ItemTypes {
+  Inventory,
+  Gold,
+  EmberCrown,
+}
+
+export const ItemTypeNames: Record<number, string> = {
+  [ItemTypes.Inventory]: "Inventory",
+  [ItemTypes.Gold]: "Gold",
+  [ItemTypes.EmberCrown]: "Ember Crown",
+};
 
 export enum TerrainTypes {
   Grass,
@@ -27,3 +50,11 @@ export enum TerrainTypes {
   Wall,
   Tree,
 }
+
+export const TerrainTypeNames: Record<number, string> = {
+  [TerrainTypes.Grass]: "Grass",
+  [TerrainTypes.Mountain]: "Mountain",
+  [TerrainTypes.Water]: "Water",
+  [TerrainTypes.Wall]: "Wall",
+  [TerrainTypes.Tree]: "Tree",
+};
