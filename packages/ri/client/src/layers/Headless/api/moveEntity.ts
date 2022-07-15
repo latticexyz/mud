@@ -86,6 +86,7 @@ export function moveEntity(
         isUntraversable(Untraversable, Position, targetPosition);
       const path = aStar(currentPosition, targetPosition, moveSpeed, isUntraversableFunc);
       if (path.length == 0) {
+        console.warn("no path found from", currentPosition, "to", targetPosition);
         actions.cancel(actionID);
         return null;
       }
