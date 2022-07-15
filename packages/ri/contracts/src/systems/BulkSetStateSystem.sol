@@ -1,9 +1,6 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import { ISystem } from "solecs/interfaces/ISystem.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
-import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
-import { IComponent } from "solecs/interfaces/IComponent.sol";
+import "solecs/System.sol";
 import { getAddressById, getSystemAddressById } from "solecs/utils.sol";
 
 import { ComponentDevSystem, ID as ComponentDevSystemID } from "./ComponentDevSystem.sol";
@@ -17,14 +14,8 @@ struct ECSEvent {
   bytes value;
 }
 
-contract BulkSetStateSystem is ISystem {
-  IUint256Component components;
-  IWorld world;
-
-  constructor(IUint256Component _components, IWorld _world) {
-    components = _components;
-    world = _world;
-  }
+contract BulkSetStateSystem is System {
+  constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}
 
   function requirement(bytes memory) public view returns (bytes memory) {
     // NOTE: Make sure to not include this system in a production deployment, as anyone can cahnge all component values

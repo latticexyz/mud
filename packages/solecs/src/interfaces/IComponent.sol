@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-interface IComponent {
+import "./IOwned.sol";
+
+interface IComponent is IOwned {
   function transferOwnership(address newOwner) external;
 
   function set(uint256 entity, bytes memory value) external;

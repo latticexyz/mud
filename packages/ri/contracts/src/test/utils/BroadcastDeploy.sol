@@ -25,4 +25,15 @@ contract Deploy is DSTest {
     vm.stopBroadcast();
     world = address(result.world);
   }
+
+  function upgradeSystems(address _deployer, address _world)
+    public
+    returns (address world, uint256 initialBlockNumber)
+  {
+    vm.startBroadcast(_deployer);
+    initialBlockNumber = block.number;
+    world = _world;
+    LibDeploy.deploySystems(_world, false);
+    vm.stopBroadcast();
+  }
 }

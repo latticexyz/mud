@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import { ISystem } from "solecs/interfaces/ISystem.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
-import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import "solecs/System.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 
@@ -26,12 +24,8 @@ import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../com
 
 uint256 constant ID = uint256(keccak256("ember.system.takeItem"));
 
-contract TakeItemSystem is ISystem {
-  IUint256Component components;
-
-  constructor(IUint256Component _components, IWorld) {
-    components = _components;
-  }
+contract TakeItemSystem is System {
+  constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
     (uint256 takerInventoryEntity, uint256 itemEntity) = abi.decode(arguments, (uint256, uint256));

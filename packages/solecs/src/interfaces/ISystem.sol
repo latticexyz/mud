@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-interface ISystem {
+import "./IOwned.sol";
+
+interface ISystem is IOwned {
   // View function to check whether the system can be executed with the provided arguments.
   // If the function does not revert, the requirements are fulfilled.
   // The returned bytes can be used by the execute function to avoid redundant computation.
