@@ -2135,7 +2135,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/0.png",
+                    "filename": "sprites/structures/big/gold-shrine/0.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2156,7 +2156,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/1.png",
+                    "filename": "sprites/structures/big/gold-shrine/1.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2177,7 +2177,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/10.png",
+                    "filename": "sprites/structures/big/gold-shrine/10.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2198,7 +2198,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/11.png",
+                    "filename": "sprites/structures/big/gold-shrine/11.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2219,7 +2219,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/12.png",
+                    "filename": "sprites/structures/big/gold-shrine/12.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2240,7 +2240,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/13.png",
+                    "filename": "sprites/structures/big/gold-shrine/13.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2261,7 +2261,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/14.png",
+                    "filename": "sprites/structures/big/gold-shrine/14.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2282,7 +2282,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/15.png",
+                    "filename": "sprites/structures/big/gold-shrine/15.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2303,7 +2303,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/16.png",
+                    "filename": "sprites/structures/big/gold-shrine/16.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2324,7 +2324,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/17.png",
+                    "filename": "sprites/structures/big/gold-shrine/17.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2345,7 +2345,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/18.png",
+                    "filename": "sprites/structures/big/gold-shrine/18.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2366,7 +2366,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/19.png",
+                    "filename": "sprites/structures/big/gold-shrine/19.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2387,7 +2387,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/21.png",
+                    "filename": "sprites/structures/big/gold-shrine/21.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2408,7 +2408,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/22.png",
+                    "filename": "sprites/structures/big/gold-shrine/22.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2429,7 +2429,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/23.png",
+                    "filename": "sprites/structures/big/gold-shrine/23.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2450,7 +2450,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/24.png",
+                    "filename": "sprites/structures/big/gold-shrine/24.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2471,7 +2471,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/25.png",
+                    "filename": "sprites/structures/big/gold-shrine/25.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2492,7 +2492,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/26.png",
+                    "filename": "sprites/structures/big/gold-shrine/26.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2513,7 +2513,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/27.png",
+                    "filename": "sprites/structures/big/gold-shrine/27.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2534,7 +2534,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/29.png",
+                    "filename": "sprites/structures/big/gold-shrine/29.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2555,7 +2555,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/3.png",
+                    "filename": "sprites/structures/big/gold-shrine/3.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2576,7 +2576,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/30.png",
+                    "filename": "sprites/structures/big/gold-shrine/30.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2597,7 +2597,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/32.png",
+                    "filename": "sprites/structures/big/gold-shrine/32.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2618,7 +2618,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/33.png",
+                    "filename": "sprites/structures/big/gold-shrine/33.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2639,7 +2639,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/34.png",
+                    "filename": "sprites/structures/big/gold-shrine/34.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2660,7 +2660,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/36.png",
+                    "filename": "sprites/structures/big/gold-shrine/36.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2681,7 +2681,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/37.png",
+                    "filename": "sprites/structures/big/gold-shrine/37.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2702,7 +2702,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/38.png",
+                    "filename": "sprites/structures/big/gold-shrine/38.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2723,7 +2723,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/39.png",
+                    "filename": "sprites/structures/big/gold-shrine/39.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2744,7 +2744,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/4.png",
+                    "filename": "sprites/structures/big/gold-shrine/4.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2765,7 +2765,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/40.png",
+                    "filename": "sprites/structures/big/gold-shrine/40.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2786,7 +2786,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/41.png",
+                    "filename": "sprites/structures/big/gold-shrine/41.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2807,7 +2807,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/42.png",
+                    "filename": "sprites/structures/big/gold-shrine/42.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2828,7 +2828,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/43.png",
+                    "filename": "sprites/structures/big/gold-shrine/43.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2849,7 +2849,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/44.png",
+                    "filename": "sprites/structures/big/gold-shrine/44.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2870,7 +2870,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/45.png",
+                    "filename": "sprites/structures/big/gold-shrine/45.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2891,7 +2891,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/46.png",
+                    "filename": "sprites/structures/big/gold-shrine/46.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2912,7 +2912,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/47.png",
+                    "filename": "sprites/structures/big/gold-shrine/47.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2933,7 +2933,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/48.png",
+                    "filename": "sprites/structures/big/gold-shrine/48.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2954,7 +2954,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/49.png",
+                    "filename": "sprites/structures/big/gold-shrine/49.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2975,7 +2975,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/50.png",
+                    "filename": "sprites/structures/big/gold-shrine/50.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -2996,7 +2996,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/51.png",
+                    "filename": "sprites/structures/big/gold-shrine/51.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3017,7 +3017,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/52.png",
+                    "filename": "sprites/structures/big/gold-shrine/52.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3038,7 +3038,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/53.png",
+                    "filename": "sprites/structures/big/gold-shrine/53.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3059,7 +3059,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/54.png",
+                    "filename": "sprites/structures/big/gold-shrine/54.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3080,7 +3080,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/55.png",
+                    "filename": "sprites/structures/big/gold-shrine/55.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3101,7 +3101,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/56.png",
+                    "filename": "sprites/structures/big/gold-shrine/56.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3122,7 +3122,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/57.png",
+                    "filename": "sprites/structures/big/gold-shrine/57.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3143,7 +3143,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/59.png",
+                    "filename": "sprites/structures/big/gold-shrine/59.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3164,7 +3164,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/6.png",
+                    "filename": "sprites/structures/big/gold-shrine/6.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3185,7 +3185,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/7.png",
+                    "filename": "sprites/structures/big/gold-shrine/7.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3206,7 +3206,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/8.png",
+                    "filename": "sprites/structures/big/gold-shrine/8.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3227,7 +3227,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/9.png",
+                    "filename": "sprites/structures/big/gold-shrine/9.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3248,7 +3248,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/ruin.png",
+                    "filename": "sprites/structures/big/ruin.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3269,7 +3269,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/settlement.png",
+                    "filename": "sprites/structures/big/settlement.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3290,7 +3290,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/village.png",
+                    "filename": "sprites/structures/big/village.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3332,7 +3332,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/chest.png",
+                    "filename": "sprites/items/bag.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3353,7 +3353,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/gold-shrine.png",
+                    "filename": "sprites/items/crystal.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3374,7 +3374,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/0.png",
+                    "filename": "sprites/items/dai.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3395,7 +3395,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/1.png",
+                    "filename": "sprites/items/gems.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3416,7 +3416,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/10.png",
+                    "filename": "sprites/items/gold.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3437,7 +3437,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/11.png",
+                    "filename": "sprites/items/oil.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3458,7 +3458,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/12.png",
+                    "filename": "sprites/items/rock.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3479,7 +3479,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/13.png",
+                    "filename": "sprites/items/sulfur.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3500,7 +3500,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/14.png",
+                    "filename": "sprites/items/wood.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3521,7 +3521,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/15.png",
+                    "filename": "sprites/structures/small/chest.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3542,7 +3542,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/16.png",
+                    "filename": "sprites/structures/small/gold-shrine.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3563,7 +3563,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/17.png",
+                    "filename": "sprites/structures/small/portal/0.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3584,7 +3584,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/18.png",
+                    "filename": "sprites/structures/small/portal/1.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3605,7 +3605,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/19.png",
+                    "filename": "sprites/structures/small/portal/10.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3626,7 +3626,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/2.png",
+                    "filename": "sprites/structures/small/portal/11.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3647,7 +3647,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/20.png",
+                    "filename": "sprites/structures/small/portal/12.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3668,7 +3668,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/21.png",
+                    "filename": "sprites/structures/small/portal/13.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3689,7 +3689,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/22.png",
+                    "filename": "sprites/structures/small/portal/14.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3710,7 +3710,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/23.png",
+                    "filename": "sprites/structures/small/portal/15.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3731,7 +3731,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/24.png",
+                    "filename": "sprites/structures/small/portal/16.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3752,7 +3752,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/25.png",
+                    "filename": "sprites/structures/small/portal/17.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3773,7 +3773,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/26.png",
+                    "filename": "sprites/structures/small/portal/18.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3794,7 +3794,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/27.png",
+                    "filename": "sprites/structures/small/portal/19.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3815,7 +3815,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/28.png",
+                    "filename": "sprites/structures/small/portal/2.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3836,7 +3836,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/29.png",
+                    "filename": "sprites/structures/small/portal/20.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3857,7 +3857,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/3.png",
+                    "filename": "sprites/structures/small/portal/21.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3878,7 +3878,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/30.png",
+                    "filename": "sprites/structures/small/portal/22.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3899,7 +3899,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/31.png",
+                    "filename": "sprites/structures/small/portal/23.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3920,7 +3920,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/32.png",
+                    "filename": "sprites/structures/small/portal/24.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3941,7 +3941,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/33.png",
+                    "filename": "sprites/structures/small/portal/25.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3962,7 +3962,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/34.png",
+                    "filename": "sprites/structures/small/portal/26.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -3983,7 +3983,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/4.png",
+                    "filename": "sprites/structures/small/portal/27.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4004,7 +4004,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/5.png",
+                    "filename": "sprites/structures/small/portal/28.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4025,7 +4025,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/51.png",
+                    "filename": "sprites/structures/small/portal/29.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4046,7 +4046,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/52.png",
+                    "filename": "sprites/structures/small/portal/3.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4067,7 +4067,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/53.png",
+                    "filename": "sprites/structures/small/portal/30.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4088,7 +4088,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/portal/54.png",
+                    "filename": "sprites/structures/small/portal/31.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4109,7 +4109,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/small/settlement.png",
+                    "filename": "sprites/structures/small/portal/32.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4130,7 +4130,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/items/bag.png",
+                    "filename": "sprites/structures/small/portal/33.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4151,7 +4151,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/items/crystal.png",
+                    "filename": "sprites/structures/small/portal/34.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4172,7 +4172,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/items/dai.png",
+                    "filename": "sprites/structures/small/portal/4.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4193,7 +4193,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/items/gems.png",
+                    "filename": "sprites/structures/small/portal/5.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4214,7 +4214,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/items/gold.png",
+                    "filename": "sprites/structures/small/portal/51.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4235,7 +4235,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/items/oil.png",
+                    "filename": "sprites/structures/small/portal/52.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4256,7 +4256,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/items/rock.png",
+                    "filename": "sprites/structures/small/portal/53.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4277,7 +4277,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/items/sulfur.png",
+                    "filename": "sprites/structures/small/portal/54.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4298,7 +4298,7 @@
                     }
                 },
                 {
-                    "filename": "sprites/items/wood.png",
+                    "filename": "sprites/structures/small/settlement.png",
                     "rotated": false,
                     "trimmed": false,
                     "sourceSize": {
@@ -4844,678 +4844,6 @@
                     }
                 },
                 {
-                    "filename": "sprites/buildings/big/gold-shrine/2.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 32,
-                        "h": 32
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 32,
-                        "h": 32
-                    },
-                    "frame": {
-                        "x": 144,
-                        "y": 480,
-                        "w": 32,
-                        "h": 32
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/big/gold-shrine/20.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 32,
-                        "h": 32
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 32,
-                        "h": 32
-                    },
-                    "frame": {
-                        "x": 416,
-                        "y": 432,
-                        "w": 32,
-                        "h": 32
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/big/gold-shrine/28.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 32,
-                        "h": 32
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 32,
-                        "h": 32
-                    },
-                    "frame": {
-                        "x": 480,
-                        "y": 128,
-                        "w": 32,
-                        "h": 32
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/big/gold-shrine/31.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 32,
-                        "h": 32
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 32,
-                        "h": 32
-                    },
-                    "frame": {
-                        "x": 480,
-                        "y": 224,
-                        "w": 32,
-                        "h": 32
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/big/gold-shrine/35.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 32,
-                        "h": 32
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 32,
-                        "h": 32
-                    },
-                    "frame": {
-                        "x": 480,
-                        "y": 320,
-                        "w": 32,
-                        "h": 32
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/big/gold-shrine/5.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 32,
-                        "h": 32
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 32,
-                        "h": 32
-                    },
-                    "frame": {
-                        "x": 464,
-                        "y": 480,
-                        "w": 32,
-                        "h": 32
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/big/gold-shrine/58.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 32,
-                        "h": 32
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 32,
-                        "h": 32
-                    },
-                    "frame": {
-                        "x": 32,
-                        "y": 512,
-                        "w": 32,
-                        "h": 32
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/59.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 320,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/50.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 320,
-                        "y": 528,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/49.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 336,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/48.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 336,
-                        "y": 528,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/47.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 352,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/46.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 352,
-                        "y": 528,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/45.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 368,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/44.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 368,
-                        "y": 528,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/43.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 384,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/42.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 384,
-                        "y": 528,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/41.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 400,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/58.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 400,
-                        "y": 496,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/40.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 400,
-                        "y": 528,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/39.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 416,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/38.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 416,
-                        "y": 496,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/37.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 416,
-                        "y": 528,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/36.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 432,
-                        "y": 496,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/35.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 448,
-                        "y": 496,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/57.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 464,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/56.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 512,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/55.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 512,
-                        "y": 528,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/9.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 528,
-                        "y": 512,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/8.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 528,
-                        "y": 528,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/7.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 544,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
-                    "filename": "sprites/buildings/small/portal/6.png",
-                    "rotated": false,
-                    "trimmed": false,
-                    "sourceSize": {
-                        "w": 16,
-                        "h": 16
-                    },
-                    "spriteSourceSize": {
-                        "x": 0,
-                        "y": 0,
-                        "w": 16,
-                        "h": 16
-                    },
-                    "frame": {
-                        "x": 544,
-                        "y": 16,
-                        "w": 16,
-                        "h": 16
-                    }
-                },
-                {
                     "filename": "sprites/portraits/clothes/10.png",
                     "rotated": false,
                     "trimmed": false,
@@ -5744,6 +5072,678 @@
                         "y": 240,
                         "w": 48,
                         "h": 48
+                    }
+                },
+                {
+                    "filename": "sprites/structures/big/gold-shrine/2.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 32,
+                        "h": 32
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 32,
+                        "h": 32
+                    },
+                    "frame": {
+                        "x": 144,
+                        "y": 480,
+                        "w": 32,
+                        "h": 32
+                    }
+                },
+                {
+                    "filename": "sprites/structures/big/gold-shrine/20.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 32,
+                        "h": 32
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 32,
+                        "h": 32
+                    },
+                    "frame": {
+                        "x": 416,
+                        "y": 432,
+                        "w": 32,
+                        "h": 32
+                    }
+                },
+                {
+                    "filename": "sprites/structures/big/gold-shrine/28.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 32,
+                        "h": 32
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 32,
+                        "h": 32
+                    },
+                    "frame": {
+                        "x": 480,
+                        "y": 128,
+                        "w": 32,
+                        "h": 32
+                    }
+                },
+                {
+                    "filename": "sprites/structures/big/gold-shrine/31.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 32,
+                        "h": 32
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 32,
+                        "h": 32
+                    },
+                    "frame": {
+                        "x": 480,
+                        "y": 224,
+                        "w": 32,
+                        "h": 32
+                    }
+                },
+                {
+                    "filename": "sprites/structures/big/gold-shrine/35.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 32,
+                        "h": 32
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 32,
+                        "h": 32
+                    },
+                    "frame": {
+                        "x": 480,
+                        "y": 320,
+                        "w": 32,
+                        "h": 32
+                    }
+                },
+                {
+                    "filename": "sprites/structures/big/gold-shrine/5.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 32,
+                        "h": 32
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 32,
+                        "h": 32
+                    },
+                    "frame": {
+                        "x": 464,
+                        "y": 480,
+                        "w": 32,
+                        "h": 32
+                    }
+                },
+                {
+                    "filename": "sprites/structures/big/gold-shrine/58.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 32,
+                        "h": 32
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 32,
+                        "h": 32
+                    },
+                    "frame": {
+                        "x": 32,
+                        "y": 512,
+                        "w": 32,
+                        "h": 32
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/59.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 384,
+                        "y": 528,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/50.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 400,
+                        "y": 512,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/49.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 400,
+                        "y": 496,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/48.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 400,
+                        "y": 528,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/47.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 416,
+                        "y": 512,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/46.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 416,
+                        "y": 496,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/45.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 416,
+                        "y": 528,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/44.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 432,
+                        "y": 496,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/43.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 448,
+                        "y": 496,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/42.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 432,
+                        "y": 512,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/41.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 432,
+                        "y": 528,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/58.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 448,
+                        "y": 512,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/40.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 448,
+                        "y": 528,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/39.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 464,
+                        "y": 512,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/38.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 464,
+                        "y": 528,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/37.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 480,
+                        "y": 512,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/36.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 480,
+                        "y": 528,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/35.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 496,
+                        "y": 512,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/57.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 528,
+                        "y": 528,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/56.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 544,
+                        "y": 80,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/55.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 544,
+                        "y": 96,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/9.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 544,
+                        "y": 112,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/8.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 544,
+                        "y": 128,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/7.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 544,
+                        "y": 144,
+                        "w": 16,
+                        "h": 16
+                    }
+                },
+                {
+                    "filename": "sprites/structures/small/portal/6.png",
+                    "rotated": false,
+                    "trimmed": false,
+                    "sourceSize": {
+                        "w": 16,
+                        "h": 16
+                    },
+                    "spriteSourceSize": {
+                        "x": 0,
+                        "y": 0,
+                        "w": 16,
+                        "h": 16
+                    },
+                    "frame": {
+                        "x": 544,
+                        "y": 160,
+                        "w": 16,
+                        "h": 16
                     }
                 }
             ]
