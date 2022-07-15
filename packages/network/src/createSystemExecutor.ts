@@ -29,7 +29,7 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
 
   // Keep up to date
   systems.update$.subscribe((update) => {
-    if (!update.value[0]) return console.warn("System id removed unexpectedly", world.entities[update.entity]);
+    if (!update.value[0]) return;
     const system = createSystemContract(update.entity, network.signer.get());
     if (!system) return;
     runInAction(() => systemContracts.set({ ...systemContracts.get(), [system.id]: system.contract }));

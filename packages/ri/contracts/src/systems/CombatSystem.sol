@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import { ISystem } from "solecs/interfaces/ISystem.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
-import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import "solecs/System.sol";
 import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
 import { getAddressById } from "solecs/utils.sol";
 
@@ -25,14 +23,8 @@ import { HeroComponent, ID as HeroComponentID } from "../components/HeroComponen
 
 uint256 constant ID = uint256(keccak256("ember.system.combat"));
 
-contract CombatSystem is ISystem {
-  IUint256Component components;
-  IWorld world;
-
-  constructor(IUint256Component _components, IWorld _world) {
-    components = _components;
-    world = _world;
-  }
+contract CombatSystem is System {
+  constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
     (uint256 attacker, uint256 defender) = abi.decode(arguments, (uint256, uint256));
