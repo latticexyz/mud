@@ -6,7 +6,7 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 
-import { LibECS } from "std-contracts/libraries/LibECS.sol";
+import { LibECS } from "../libraries/LibECS.sol";
 
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
@@ -38,7 +38,7 @@ contract GatherResourceSystem is ISystem {
     (uint256 generator, uint256 gatherer) = abi.decode(arguments, (uint256, uint256));
 
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
-    require(LibECS.isOwnedByCaller(ownedByComponent, gatherer), "you don't own this entity");
+    require(LibECS.isOwnedByCaller(components, gatherer), "you don't own this entity");
 
     require(LibUtils.distanceBetween(components, generator, gatherer) <= 1, "too far from generator");
 

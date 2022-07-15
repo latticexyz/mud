@@ -29,6 +29,7 @@ export enum Sprites {
   EmberCrown,
   EscapePortal,
   Donkey,
+  Player,
 }
 
 export enum Animations {}
@@ -36,6 +37,7 @@ export enum Animations {}
 export const UnitTypeSprites: Record<number, Sprites> = {
   [UnitTypes.Hero]: Sprites.Hero,
   [UnitTypes.Donkey]: Sprites.Donkey,
+  [UnitTypes.Player]: Sprites.Player,
 };
 
 export const ItemTypeSprites: Record<number, Sprites> = {

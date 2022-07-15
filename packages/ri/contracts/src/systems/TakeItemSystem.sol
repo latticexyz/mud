@@ -7,7 +7,7 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 
-import { LibECS } from "std-contracts/libraries/LibECS.sol";
+import { LibECS } from "../libraries/LibECS.sol";
 
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
@@ -38,7 +38,7 @@ contract TakeItemSystem is ISystem {
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
     uint256 takerEntity = ownedByComponent.getValue(takerInventoryEntity);
 
-    require(LibECS.isOwnedByCaller(ownedByComponent, takerEntity), "you don't own this entity");
+    require(LibECS.isOwnedByCaller(components, takerEntity), "you don't own this entity");
 
     require(
       ownedByComponent.getValue(takerInventoryEntity) == takerEntity,

@@ -6,7 +6,7 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
 import { getAddressById } from "solecs/utils.sol";
 
-import { LibECS } from "std-contracts/libraries/LibECS.sol";
+import { LibECS } from "../libraries/LibECS.sol";
 import { LibQuery } from "solecs/LibQuery.sol";
 
 import { LibUtils } from "../libraries/LibUtils.sol";
@@ -20,6 +20,7 @@ import { CapturableComponent, ID as CapturableComponentID } from "../components/
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
+import { DeathComponent, ID as DeathComponentID } from "../components/DeathComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.combat"));
 
@@ -37,10 +38,7 @@ contract CombatSystem is ISystem {
 
     require(attacker != defender, "no seppuku");
 
-    require(
-      LibECS.isOwnedByCaller(OwnedByComponent(getAddressById(components, OwnedByComponentID)), attacker),
-      "attacker must be owned by caller"
-    );
+    require(LibECS.isOwnedByCaller(components, attacker), "attacker must be owned by caller");
 
     HealthComponent healthComponent = HealthComponent(getAddressById(components, HealthComponentID));
     require(healthComponent.has(defender), "defender has no health");
@@ -154,6 +152,8 @@ contract CombatSystem is ISystem {
     if (staminaComponent.has(entity)) {
       staminaComponent.remove(entity);
     }
+    DeathComponent deathComponent = DeathComponent(getAddressById(components, DeathComponentID));
+    deathComponent.set(entity);
 
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
     uint256 inventoryEntity = LibInventory.getInventory(components, entity);

@@ -6,8 +6,7 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 
-import { LibECS } from "std-contracts/libraries/LibECS.sol";
-
+import { LibECS } from "../libraries/LibECS.sol";
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
 import { LibInventory } from "../libraries/LibInventory.sol";
@@ -45,7 +44,7 @@ contract EscapePortalSystem is ISystem {
       getAddressById(components, EscapePortalComponentID)
     );
 
-    require(LibECS.isOwnedByCaller(ownedByComponent, entity), "you don't own this entity");
+    require(LibECS.isOwnedByCaller(components, entity), "you don't own this entity");
     require(
       LibUtils.manhattan(positionComponent.getValue(entity), positionComponent.getValue(escapePortalEntity)) <= 1,
       "not close enough to escapePortal"

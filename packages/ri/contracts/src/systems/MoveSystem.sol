@@ -6,7 +6,7 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 
-import { LibECS } from "std-contracts/libraries/LibECS.sol";
+import { LibECS } from "../libraries/LibECS.sol";
 
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
@@ -32,7 +32,7 @@ contract MoveSystem is ISystem {
     (uint256 entity, Coord[] memory path) = abi.decode(arguments, (uint256, Coord[]));
 
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
-    require(LibECS.isOwnedByCaller(ownedByComponent, entity), "you don't own this entity");
+    require(LibECS.isOwnedByCaller(components, entity), "you don't own this entity");
 
     MovableComponent movableComponent = MovableComponent(getAddressById(components, MovableComponentID));
     require(movableComponent.has(entity), "trying to move non-moving entity");

@@ -105,6 +105,10 @@ export const config = {
           assetKey: Assets.MainAtlas,
           frame: "sprites/workers/donkey.png",
         },
+        [Sprites.Player]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/workers/crypto-picker-imp.png",
+        },
       },
       animations: [],
       tilesets: {

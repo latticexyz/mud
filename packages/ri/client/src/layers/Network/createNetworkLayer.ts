@@ -78,7 +78,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     TerrainType: defineComponent(
       world,
       { value: Type.Number },
-      { metadata: { contractId: keccak256("ember.component.terrainType") } }
+      { id: "TerrainType", metadata: { contractId: keccak256("ember.component.terrainType") } }
     ),
     Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
     Movable: defineMovableComponent(world, keccak256("ember.component.movableComponent")),
@@ -154,6 +154,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "Winner", metadata: { contractId: keccak256("ember.component.winner") } }
     ),
+    Death: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "Death", metadata: { contractId: keccak256("ember.component.Death") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -183,6 +188,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.resourceGenerator")]: "ResourceGenerator",
     [keccak256("ember.component.escapePortal")]: "EscapePortal",
     [keccak256("ember.component.winner")]: "Winner",
+    [keccak256("ember.component.Death")]: "Death",
   };
 
   const contractConfig: SetupContractConfig = {

@@ -5,6 +5,7 @@
     "ItemTypeComponent",
     "AttackComponent",
     "CapturableComponent",
+    "DeathComponent",
     "FactoryComponent",
     "FromBlueprintComponent",
     "GameConfigComponent",
