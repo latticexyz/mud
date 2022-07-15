@@ -11,6 +11,7 @@ import {
   EntityID,
   EntityIndex,
   Component,
+  removeComponent,
 } from "@latticexyz/recs";
 import { mapObject, awaitStreamValue } from "@latticexyz/utils";
 import { ActionState } from "./constants";
@@ -202,6 +203,10 @@ export function createActionSystem(
 
     // Remove the action data
     actionData.delete(actionId);
+
+    // Remove the action entity after some time
+    const actionIndex = world.entityToIndex.get(actionId);
+    actionIndex != null && setTimeout(() => removeComponent(Action, actionIndex), 5000);
   }
 
   return { add, cancel, withOptimisticUpdates };
