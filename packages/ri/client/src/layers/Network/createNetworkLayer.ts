@@ -260,7 +260,8 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
 
   async function moveEntity(entity: string, path: WorldCoord[]) {
     console.log(`Moving entity ${entity} to position (${path[path.length - 1].x}, ${path[path.length - 1].y})}`);
-    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), path);
+    // TODO: debug why moving tx fails when stamina is going from 1 to 0 and we estimate gas
+    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), path, { gasLimit: 1_000_000 });
   }
 
   async function attackEntity(attacker: EntityID, defender: EntityID) {
