@@ -12,9 +12,9 @@ import { GuardPrototype } from "../prototypes/GuardPrototype.sol";
 import { SettlementPrototype } from "../prototypes/SettlementPrototype.sol";
 import { EmptySettlementPrototype } from "../prototypes/EmptySettlementPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.init"));
+uint256 constant ID = uint256(keccak256("ember.system.init1"));
 
-contract InitSystem is ISystem {
+contract Init1System is ISystem {
   IUint256Component components;
   IWorld world;
   address owner;
