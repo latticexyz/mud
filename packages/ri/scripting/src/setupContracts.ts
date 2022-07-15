@@ -48,7 +48,7 @@ export async function setupContracts() {
   }
 
   const systems = createSystemExecutor<SystemTypes>(world, network, SystemsComponent, SystemAbis, {
-    devMode: true,
+    devMode: false,
   });
 
   return { systems, provider: computed(() => network.providers.get().json), signer: network.signer, contracts };

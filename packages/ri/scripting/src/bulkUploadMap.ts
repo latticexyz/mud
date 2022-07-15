@@ -4,6 +4,7 @@ import { defaultAbiCoder as abi } from "ethers/lib/utils";
 import { BigNumber, BytesLike } from "ethers";
 import { callWithRetry, sleep } from "@latticexyz/utils";
 import { keccak256 } from "./utils";
+import { GAS_PRICE } from "./constants.local";
 
 interface ECSEvent {
   component: number; // index into component array passed into bulk function, NOT component ID
@@ -11,9 +12,9 @@ interface ECSEvent {
   value: BytesLike;
 }
 
-const stateUploadCount = 20;
+const stateUploadCount = 40;
 const gasLimit = 30_000_000;
-const sleepTime = 950;
+const sleepTime = 350;
 let txCount = 1;
 
 async function bulkUploadMap() {
@@ -68,11 +69,11 @@ async function bulkUpload(
   state: Array<ECSEvent>
 ) {
   let tx: any;
-  console.log(components, entities, state);
+  // console.log(components, entities, state);
   try {
     tx = callWithRetry(
       systems["ember.system.bulkSetStateSystem"].executeTyped,
-      [components, entities, state, { gasLimit: gasLimit }],
+      [components, entities, state, { gasLimit: gasLimit, gasPrice: GAS_PRICE }],
       10
     );
     await sleep(sleepTime);
