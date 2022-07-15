@@ -107,13 +107,25 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     clientUrl: "http://localhost:3000",
   };
 
+  const { default: fetch } = await importFetch;
+
+  // Fetch deployed lattice chains
+  const latticeChains = args.i
+    ? ((await (await fetch("https://registry.lattice.xyz/api")).json()) as { specUrl: string }[] | undefined)
+    : [];
+
+  const chainSpecs = latticeChains?.map((e) => e.specUrl) || [];
+  console.log("Available Lattice chains");
+  console.log(JSON.stringify(latticeChains, null, 2));
+
   const answers: Options = args.i
     ? await inquirer.prompt([
         {
-          type: "input",
+          type: "suggest",
           name: "chainSpec",
           default: defaultOptions.chainSpec,
           message: "Provide a chainSpec.json location (local or remote)",
+          suggestions: chainSpecs,
           when: () => args.chainSpec == null && config.chainSpec == null,
         },
         {
@@ -220,7 +232,6 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
       ])
     : ({} as Options);
 
-  const { default: fetch } = await importFetch;
   const chainSpecUrl = args.chainSpec ?? config.chainSpec ?? answers.chainSpec;
   const chainSpec =
     chainSpecUrl == null
