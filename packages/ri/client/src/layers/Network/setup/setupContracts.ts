@@ -108,7 +108,6 @@ async function createEncoders(
       ComponentAbi.abi,
       signerOrProvider.get()
     ) as SolecsComponent;
-    console.log("Fetching component schema for", componentId);
     const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
     encoders[componentId] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
   }
