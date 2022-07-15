@@ -3,7 +3,6 @@ pragma solidity >=0.8.0;
 
 import { ISystem } from "solecs/interfaces/ISystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
-import { console } from "forge-std/console.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
@@ -63,17 +62,13 @@ contract TransferInventorySystem is ISystem {
       requirement(arguments),
       (uint256, uint256, int32)
     );
-    console.log("executing");
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
     uint256[] memory giverItems = LibInventory.getItems(components, giverInventory);
-    console.log("got giver items");
     for (uint256 i = 0; i < giverItems.length && i < uint32(spaceLeft); i++) {
       ownedByComponent.set(giverItems[i], receiverInventory);
-      console.log("set owner of item", i, giverItems[i]);
     }
 
     LibStamina.modifyStamina(components, ownedByComponent.getValue(giverInventory), -1);
-    console.log("mod stam");
   }
 
   function requirementTyped(uint256 giverInventory, uint256 receiverInventory) public view returns (bytes memory) {
