@@ -212,6 +212,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     contractConfig,
     world,
     components.Systems,
+    components.Components,
     components,
     mappings,
     DEV_MODE
@@ -229,7 +230,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
         `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
       );
 
-    const data = encoders[component.id](newValue);
+    const data = (await encoders)[component.metadata.contractId](newValue);
     const entityId = world.entities[entity];
 
     console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entityId}`);
