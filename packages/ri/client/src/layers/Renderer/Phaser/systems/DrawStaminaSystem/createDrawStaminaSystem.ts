@@ -14,6 +14,7 @@ export function createDrawStaminaSystem(layer: PhaserLayer) {
       },
       headless: {
         components: { LocalStamina },
+        actions: { withOptimisticUpdates },
       },
     },
     scenes: {
@@ -26,11 +27,13 @@ export function createDrawStaminaSystem(layer: PhaserLayer) {
     },
   } = layer;
 
-  defineSystem(world, [Has(LocalPosition), Has(LocalStamina), Has(Stamina)], ({ entity, type }) => {
+  const OptimisticLocalStamina = withOptimisticUpdates(LocalStamina);
+
+  defineSystem(world, [Has(LocalPosition), Has(OptimisticLocalStamina), Has(Stamina)], ({ entity, type }) => {
     if (type === UpdateType.Exit) {
       objectPool.remove(`${entity}-stamina`);
     } else if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
-      const currentStamina = getComponentValueStrict(LocalStamina, entity).current;
+      const currentStamina = getComponentValueStrict(OptimisticLocalStamina, entity).current;
       const maxStamina = getComponentValueStrict(Stamina, entity).max;
       const position = getComponentValueStrict(LocalPosition, entity);
 

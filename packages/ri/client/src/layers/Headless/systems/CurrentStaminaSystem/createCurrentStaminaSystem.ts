@@ -21,16 +21,13 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
         components: { Stamina, LastActionTurn, GameConfig },
       },
     },
-    actions: { withOptimisticUpdates },
     components: { LocalStamina },
   } = layer;
 
-  const optimisticStamina = withOptimisticUpdates(Stamina);
-
   const setLocalStaminaToCurrentTurn = (entity: EntityIndex) => {
     const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
-    const contractStamina = getComponentValueStrict(optimisticStamina, entity);
-    const lastActionTurn = getComponentValueStrict(LastActionTurn, entity).value;
+    const contractStamina = getComponentValueStrict(Stamina, entity);
+    const lastActionTurn = getComponentValueStrict(LastActionTurn, entity)?.value;
     const staminaTicks = (currentTurn - lastActionTurn) * contractStamina.regeneration;
 
     let localStamina = contractStamina.current + staminaTicks;
@@ -40,7 +37,7 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
     setComponent(LocalStamina, entity, { current: localStamina });
   };
 
-  defineComponentSystem(world, optimisticStamina, ({ entity, value }) => {
+  defineComponentSystem(world, Stamina, ({ entity, value }) => {
     const [newValue] = value;
     const newCurrentStamina = newValue?.current;
     if (newCurrentStamina == null) return;

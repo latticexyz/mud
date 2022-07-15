@@ -98,11 +98,11 @@ export function moveEntity(
     updates: (_, { targetPosition, netStamina }) => [
       {
         component: "Position",
-        entity: entity,
+        entity,
         value: targetPosition,
       },
       {
-        component: "Stamina",
+        component: "LocalStamina",
         entity,
         value: { current: netStamina },
       },
