@@ -311,6 +311,7 @@ export const deploy = async (options: Options) => {
                   const lines = stdout.split("\n");
 
                   ctx.worldAddress = worldAddress = findLog(lines, "world: address");
+                  ctx.initialBlockNumber = findLog(lines, "initialBlockNumber: uint256");
                   task.output = chalk.yellow(`World deployed at: ${chalk.bgYellow.black(ctx.worldAddress)}`);
                 },
                 options: { bottomBar: 3 },
@@ -380,7 +381,7 @@ export const deploy = async (options: Options) => {
                     clientUrl || ""
                   }&rpc=${options.rpc || ""}&wsRpc=${options.wsRpc || ""}&chainId=${options.chainId || ""}&dev=${
                     options.chainId === 31337 || ""
-                  }`;
+                  }&initialBlockNumber=${ctx.initialBlockNumber}`;
                   openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },

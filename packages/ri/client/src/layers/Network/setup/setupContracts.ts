@@ -40,6 +40,12 @@ export async function setupContracts<C extends ContractComponents>(
   const network = await createNetwork(config);
   world.registerDisposer(network.dispose);
 
+  console.log(
+    "Initial block",
+    config.initialBlockNumber,
+    await network.providers.get().json.getBlock(config.initialBlockNumber)
+  );
+
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
   const { contracts, config: contractsConfig } = await createContracts<{ World: WorldContract }>({
