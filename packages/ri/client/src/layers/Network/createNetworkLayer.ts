@@ -272,6 +272,14 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     );
   }
 
+  async function transferInventory(giverInventory: EntityID, receiverInventory: EntityID) {
+    console.log(`transfering inventory ${giverInventory} to inventory ${receiverInventory}.`);
+    return systems["ember.system.TransferInventory"].executeTyped(
+      BigNumber.from(giverInventory),
+      BigNumber.from(receiverInventory)
+    );
+  }
+
   async function dropInventory(ownedInventoryEntity: EntityID, targetPosition: WorldCoord) {
     console.log(`Drop Inventory at position ${JSON.stringify(targetPosition)}`);
     return systems["ember.system.dropInventory"].executeTyped(BigNumber.from(ownedInventoryEntity), targetPosition);
@@ -318,6 +326,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       attackEntity,
       buildAt,
       takeItem,
+      transferInventory,
       dropInventory,
       gatherResource,
       escapePortal,

@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
+import { console } from "forge-std/console.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { getAddressById } from "solecs/utils.sol";
@@ -46,6 +47,19 @@ library LibInventory {
     return inventoryEntities[0];
   }
 
+  function getInventoryPosition(IUint256Component components, uint256 inventory) internal view returns (Coord memory) {
+    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+    PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
+    Coord memory position;
+    if (positionComponent.has(inventory)) {
+      position = positionComponent.getValue(inventory);
+      console.log("inventory has pos");
+    }
+    position = positionComponent.getValue(ownedByComponent.getValue(inventory));
+    console.log(uint32(position.x), uint32(position.y));
+    return position;
+  }
+
   function transferItem(
     IUint256Component components,
     uint256 itemEntity,
@@ -79,12 +93,13 @@ library LibInventory {
     ownedByComponent.set(itemEntity, receiverInventoryEntity);
   }
 
-  function requireHasSpace(IUint256Component components, uint256 inventory) internal view returns (bool) {
+  function requireHasSpace(IUint256Component components, uint256 inventory) internal view returns (int32) {
     uint256[] memory items = getItems(components, inventory);
-    require(
-      int32(uint32(items.length)) <
-        InventoryComponent(getAddressById(components, InventoryComponentID)).getValue(inventory),
-      "inventory full"
-    );
+    console.log("got items");
+    int32 spaceLeft = InventoryComponent(getAddressById(components, InventoryComponentID)).getValue(inventory) -
+      int32(uint32(items.length));
+    console.log("got space left");
+    require(spaceLeft > 0, "inventory full");
+    return spaceLeft;
   }
 }

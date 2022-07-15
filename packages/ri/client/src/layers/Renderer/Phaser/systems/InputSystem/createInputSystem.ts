@@ -34,6 +34,7 @@ export function createInputSystem(layer: PhaserLayer) {
         components: { OwnedBy, Inventory, Health, ResourceGenerator, EscapePortal },
         api: {
           takeItem,
+          transferInventory,
           escapePortal,
           dev: { spawnGold },
         },
@@ -96,6 +97,33 @@ export function createInputSystem(layer: PhaserLayer) {
     return false;
   };
 
+  const attemptTransferInventory = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
+    const receiverInventoryEntity = [
+      ...runQuery([HasValue(OwnedBy, { value: world.entities[highlightedEntity] }), Has(Inventory)]),
+    ][0];
+    if (receiverInventoryEntity) {
+      const receiverInventoryItems = [
+        ...runQuery([HasValue(OwnedBy, { value: world.entities[receiverInventoryEntity] })]),
+      ];
+      const receiverInventoryCapacity = getComponentValue(Inventory, receiverInventoryEntity)?.value;
+      if (receiverInventoryCapacity && receiverInventoryItems.length < receiverInventoryCapacity) {
+        const giverInventoryEntity = [
+          ...runQuery([HasValue(OwnedBy, { value: world.entities[selectedEntity] }), Has(Inventory)]),
+        ][0];
+        if (giverInventoryEntity) {
+          const giverInventoryItems = [
+            ...runQuery([HasValue(OwnedBy, { value: world.entities[giverInventoryEntity] })]),
+          ];
+          if (giverInventoryItems.length > 0) {
+            transferInventory(world.entities[giverInventoryEntity], world.entities[receiverInventoryEntity]);
+            return true;
+          }
+        }
+      }
+    }
+    return false;
+  };
+
   const attemptAttack = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
     const selectedEntityOwner = getComponentValue(OwnedBy, selectedEntity);
     const highlightedEntityOwner = getComponentValue(OwnedBy, highlightedEntity);
@@ -132,6 +160,7 @@ export function createInputSystem(layer: PhaserLayer) {
         if (attemptEscapePortal(selectedEntity, highlightedEntity)) return;
         if (attemptGatherResource(selectedEntity, highlightedEntity)) return;
         if (attemptTakeItem(selectedEntity, highlightedEntity)) return;
+        if (attemptTransferInventory(selectedEntity, highlightedEntity)) return;
         if (attemptAttack(selectedEntity, highlightedEntity)) return;
       }
 
