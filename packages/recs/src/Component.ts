@@ -200,7 +200,7 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
         return (entity: EntityIndex) => {
           const originalValue = target.get(entity);
           const overriddenValue = overriddenEntityValues.get(entity);
-          return overriddenValue ? overriddenValue[key] : originalValue;
+          return overriddenValue && overriddenValue[key] != null ? overriddenValue[key] : originalValue;
         };
       }
 

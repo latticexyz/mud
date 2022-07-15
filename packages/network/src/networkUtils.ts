@@ -154,7 +154,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
       const logDescription = contract.interface.parseLog(log);
 
       // Set a flag if this is the last event in this transaction
-      const lastEventInTx = i === logs.length - 1 || logs[i + 1].transactionHash !== log.transactionHash;
+      const lastEventInTx = logs[i + 1]?.transactionHash !== log.transactionHash;
 
       contractEvents.push({
         contractKey,
