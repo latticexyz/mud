@@ -2,27 +2,44 @@ import { Coord } from "@latticexyz/phaserx";
 import { addCoords, ZERO_VECTOR } from "@latticexyz/phaserx";
 import { Has, getComponentValueStrict, defineEnterSystem, runQuery, HasValue } from "@latticexyz/recs";
 import { TerrainTypes } from "../../../../Network";
-import { TileAnimationKey, Tileset, WangSetKey, WangSets } from "../../tilesets/overworldTileset";
+import { Layers } from "../../constants";
+import {
+  TileAnimationKey as OverworldTileAnimationKey,
+  Tileset as OverworldTileset,
+  WangSetKey as OverworldWangSetKey,
+  WangSets as OverworldWangSets,
+} from "../../tilesets/overworldTileset";
+import { TileAnimationKey as TreesTileAnimationKey, Tileset as TreesTileset } from "../../tilesets/treesTileset";
 import { PhaserLayer } from "../../types";
 
-const terrainTypeToTile = {
-  [TerrainTypes.Grass]: Tileset.Grass,
-  [TerrainTypes.Mountain]: Tileset.PlainRock1,
-  [TerrainTypes.Water]: Tileset.Water,
-  [TerrainTypes.Tree]: Tileset.Grass,
-} as { [key in TerrainTypes]: Tileset };
+const terrainTypeToBackgroundTile = {
+  [TerrainTypes.Grass]: OverworldTileset.Grass,
+  // [TerrainTypes.Mountain]: OverworldTileset.PlainRock1,
+  // [TerrainTypes.Water]: OverworldTileset.Water,
+  // [TerrainTypes.Tree]: OverworldTileset.Grass,
+} as { [key in TerrainTypes]: OverworldTileset };
 
-const terrainTypesToForegroundTile = {
-  [TerrainTypes.Tree]: Tileset.Tree1,
-} as { [key in TerrainTypes]: Tileset };
+const terrainTypeToBackgroundWangSet = {} as { [key in TerrainTypes]: OverworldWangSetKey };
 
-const entityTypeToAnimation = {
-  [TerrainTypes.Water]: TileAnimationKey.Water,
-} as { [key in TerrainTypes]: TileAnimationKey };
+const terrainTypeToBackgroundAnimation = {
+  [TerrainTypes.Water]: OverworldTileAnimationKey.Water,
+} as { [key in TerrainTypes]: OverworldTileAnimationKey };
 
-const terrainTypeToWangSet = {
-  [TerrainTypes.Water]: WangSetKey.Water,
-} as { [key in TerrainTypes]: WangSetKey };
+const terrainTypeToForegroundTile = {} as { [key in TerrainTypes]: OverworldTileset };
+
+const terrainTypeToForegroundWangSet = {
+  [TerrainTypes.Water]: OverworldWangSetKey.Water,
+} as { [key in TerrainTypes]: OverworldWangSetKey };
+
+const terrainTypeToForegroundAnimation = {} as { [key in TerrainTypes]: OverworldTileAnimationKey };
+
+const terrainTypeToTreesTile = {} as { [key in TerrainTypes]: TreesTileset };
+
+const terrainTypeToTreesWangset = {} as { [key in TerrainTypes]: never };
+
+const terrainTypeToTreesAnimation = {
+  [TerrainTypes.Tree]: TreesTileAnimationKey.Azalea,
+} as { [key in TerrainTypes]: TreesTileAnimationKey };
 
 /**
  * The Map system handles rendering the phaser tilemap
@@ -114,10 +131,13 @@ export function createMapSystem(layer: PhaserLayer) {
     });
   }
 
-  function drawWangSetAtCoord(coord: Coord, entityType: TerrainTypes) {
-    const wangSetKey = terrainTypeToWangSet[entityType as TerrainTypes];
+  function drawWangSetAtCoord(coord: Coord, entityType: TerrainTypes, mapping: any, wangSets: any, layer: Layers) {
+    const wangSetKey = mapping[entityType as TerrainTypes];
     if (!wangSetKey) return;
-    const wangSet = WangSets[wangSetKey];
+    const wangSet = wangSets[wangSetKey];
+    if (!wangSet) {
+      throw new Error("no wang set!");
+    }
     // redraw itself then all neighbors
     for (const offset of [ZERO_VECTOR, ...WANG_OFFSET]) {
       // is this tile an entity of type entityType?
@@ -126,7 +146,7 @@ export function createMapSystem(layer: PhaserLayer) {
       if (entities.size === 0) continue;
       const wangId = calculateWangId(coordToRedraw, entityType);
       if (wangSet[wangId] == null) continue;
-      Main.putTileAt(coordToRedraw, wangSet[wangId], "Foreground");
+      Main.putTileAt(coordToRedraw, wangSet[wangId], layer);
     }
   }
 
@@ -136,25 +156,36 @@ export function createMapSystem(layer: PhaserLayer) {
     (update) => {
       const coord = getComponentValueStrict(Position, update.entity);
       const type = getComponentValueStrict(TerrainType, update.entity);
-      const tile = terrainTypeToTile[type.value as TerrainTypes];
-      const foregroundTile = terrainTypesToForegroundTile[type.value as TerrainTypes];
-      const animation = entityTypeToAnimation[type.value as TerrainTypes];
-      if (!tile) return;
-      if (animation) Main.putAnimationAt(coord, animation);
-      Main.putTileAt(coord, tile);
-      if (foregroundTile) Main.putTileAt(coord, foregroundTile, "Foreground");
-      drawWangSetAtCoord(coord, type.value);
+      const backgroundTile = terrainTypeToBackgroundTile[type.value as TerrainTypes];
+      const foregroundTile = terrainTypeToForegroundTile[type.value as TerrainTypes];
+      const treesTile = terrainTypeToTreesTile[type.value as TerrainTypes];
 
-      // compute cluster for LOD
-      if (coord.x % 4 === 0 && coord.y % 4 === 0) {
-        const tacticCoord = { x: Math.floor(coord.x / 4), y: Math.floor(coord.y / 4) };
-        Tactic.putTileAt(tacticCoord, tile);
-      }
+      const backgroundAnimation = terrainTypeToBackgroundAnimation[type.value as TerrainTypes];
+      // const foregroundAnimation = terrainTypeToForegroundAnimation[type.value as TerrainTypes];
+      const treesAnimation = terrainTypeToTreesAnimation[type.value as TerrainTypes];
 
-      if (coord.x % 16 === 0 && coord.y % 16 === 0) {
-        const strategicCoord = { x: Math.floor(coord.x / 16), y: Math.floor(coord.y / 16) };
-        Strategic.putTileAt(strategicCoord, tile);
-      }
+      if (backgroundAnimation) Main.putAnimationAt(coord, backgroundAnimation, Layers.Background);
+      // if (foregroundAnimation) Main.putAnimationAt(coord, foregroundAnimation, Layers.Foreground);
+      // if (treesAnimaton) Main.putAnimationAt(coord, treesAnimaton, Layers.Trees);
+
+      if (backgroundTile) Main.putTileAt(coord, backgroundTile, Layers.Background);
+      // if (foregroundTile) Main.putTileAt(coord, foregroundTile, Layers.Foreground);
+      // if (treesTile) Main.putTileAt(coord, treesTile, Layers.Trees);
+
+      // drawWangSetAtCoord(coord, type.value, terrainTypeToBackgroundWangSet, OverworldWangSets, Layers.Background);
+      // drawWangSetAtCoord(coord, type.value, terrainTypeToForegroundWangSet, OverworldWangSets, Layers.Foreground);
+      // drawWangSetAtCoord(coord, type.value, terrainTypeToTreesWangset, TreesWangSets, Layers.Trees);
+
+      // // compute cluster for LOD
+      // if (coord.x % 4 === 0 && coord.y % 4 === 0) {
+      //   const tacticCoord = { x: Math.floor(coord.x / 4), y: Math.floor(coord.y / 4) };
+      //   Tactic.putTileAt(tacticCoord, tile);
+      // }
+
+      // if (coord.x % 16 === 0 && coord.y % 16 === 0) {
+      //   const strategicCoord = { x: Math.floor(coord.x / 16), y: Math.floor(coord.y / 16) };
+      //   Strategic.putTileAt(strategicCoord, tile);
+      // }
     },
     { runOnInit: true }
   );

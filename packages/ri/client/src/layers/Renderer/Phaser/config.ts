@@ -5,12 +5,17 @@ import {
   defineMapConfig,
   defineCameraConfig,
 } from "@latticexyz/phaserx";
-import { Sprites, Assets, Maps, Scenes, TILE_HEIGHT, TILE_WIDTH } from "./constants";
+import { Sprites, Animations, Assets, Maps, Scenes, TILE_HEIGHT, TILE_WIDTH, Tilesets, Layers } from "./constants";
 import { Tileset as OverworldTileset, TileAnimations as OverworldTileAnimations } from "./tilesets/overworldTileset";
+import { Tileset as TreesTileset, TileAnimations as TreesTileAnimations } from "./tilesets/treesTileset";
 import overworldTileset from "../assets/tilesets/overworld-tileset.png";
 import mountainTileset from "../assets/tilesets/mountain-tileset.png";
+import treesTileset from "../assets/tilesets/trees-tileset.png";
 
-const ANIMATION_INTERVAL = 200;
+const FRAME_RATE = 10;
+const SIXTY_FPS_FRAME_RATE = 20;
+const ANIMATION_INTERVAL = Math.floor(1000 / FRAME_RATE);
+const SIXTY_FPS_ANIMATION_INTERVAL = Math.floor(1000 / SIXTY_FPS_FRAME_RATE);
 
 export const config = {
   sceneConfig: {
@@ -18,6 +23,7 @@ export const config = {
       assets: {
         [Assets.OverworldTileset]: { type: AssetType.Image, key: Assets.OverworldTileset, path: overworldTileset },
         [Assets.MountainTileset]: { type: AssetType.Image, key: Assets.MountainTileset, path: mountainTileset },
+        [Assets.TreesTileset]: { type: AssetType.Image, key: Assets.TreesTileset, path: treesTileset },
         [Assets.MainAtlas]: {
           type: AssetType.MultiAtlas,
           key: Assets.MainAtlas,
@@ -34,13 +40,14 @@ export const config = {
           tileHeight: TILE_HEIGHT,
           backgroundTile: [OverworldTileset.Brick1],
           animationInterval: ANIMATION_INTERVAL,
-          tileAnimations: OverworldTileAnimations,
+          tileAnimations: { ...OverworldTileAnimations, ...TreesTileAnimations },
           layers: {
             layers: {
-              Background: { tilesets: ["Default"], hasHueTintShader: true },
-              Foreground: { tilesets: ["Default"], hasHueTintShader: true },
+              [Layers.Background]: { tilesets: [Tilesets.Overworld], hasHueTintShader: true },
+              [Layers.Foreground]: { tilesets: [Tilesets.Overworld], hasHueTintShader: true },
+              [Layers.Trees]: { tilesets: [Tilesets.Trees], hasHueTintShader: true },
             },
-            defaultLayer: "Background",
+            defaultLayer: Layers.Background,
           },
         }),
         [Maps.Tactic]: defineMapConfig({
@@ -52,9 +59,9 @@ export const config = {
           tileAnimations: OverworldTileAnimations,
           layers: {
             layers: {
-              Background: { tilesets: ["Default"] },
+              [Layers.Background]: { tilesets: [Tilesets.Overworld] },
             },
-            defaultLayer: "Background",
+            defaultLayer: Layers.Background,
           },
         }),
         [Maps.Strategic]: defineMapConfig({
@@ -66,9 +73,9 @@ export const config = {
           tileAnimations: OverworldTileAnimations,
           layers: {
             layers: {
-              Background: { tilesets: ["Default"] },
+              [Layers.Background]: { tilesets: [Tilesets.Overworld] },
             },
-            defaultLayer: "Background",
+            defaultLayer: Layers.Background,
           },
         }),
       },
@@ -79,36 +86,48 @@ export const config = {
         },
         [Sprites.Settlement]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/crystal.png",
+          frame: "sprites/structures/small/settlement.png",
         },
         [Sprites.Gold]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/gold.png",
+          frame: "sprites/items/gold.png",
         },
         [Sprites.Inventory]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/chest.png",
+          frame: "sprites/items/bag.png",
         },
         [Sprites.GoldShrine]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/gold.png",
+          frame: "sprites/structures/small/gold-shrine.png",
         },
         [Sprites.EscapePortal]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/wood.png",
+          frame: "sprites/structures/small/portal/0.png",
         },
         [Sprites.EmberCrown]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/wood.png",
+          frame: "sprites/items/wood.png",
         },
         [Sprites.Donkey]: {
           assetKey: Assets.MainAtlas,
           frame: "sprites/workers/donkey.png",
         },
       },
-      animations: [],
+      animations: [
+        {
+          key: Animations.EscapePortalAnimation,
+          assetKey: Assets.MainAtlas,
+          startFrame: 0,
+          endFrame: 59,
+          frameRate: SIXTY_FPS_FRAME_RATE,
+          repeat: -1,
+          prefix: "sprites/structures/small/portal/",
+          suffix: ".png",
+        },
+      ],
       tilesets: {
-        Default: { assetKey: Assets.OverworldTileset, tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT },
+        [Tilesets.Overworld]: { assetKey: Assets.OverworldTileset, tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT },
+        [Tilesets.Trees]: { assetKey: Assets.TreesTileset, tileWidth: TILE_WIDTH, tileHeight: TILE_HEIGHT },
       },
     }),
   },

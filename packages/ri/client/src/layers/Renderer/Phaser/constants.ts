@@ -17,6 +17,7 @@ export enum Maps {
 export enum Assets {
   OverworldTileset = "OverworldTileset",
   MountainTileset = "MountainTileset",
+  TreesTileset = "TreesTileset",
   MainAtlas = "MainAtlas",
 }
 
@@ -31,12 +32,27 @@ export enum Sprites {
   Donkey,
 }
 
-export enum Animations {}
+export enum Animations {
+  EscapePortalAnimation = "EscapePortalAnimation",
+}
+
+export enum Layers {
+  Background = "Background",
+  Foreground = "Foreground",
+  Trees = "Trees",
+}
+
+export enum Tilesets {
+  Overworld = "Overworld",
+  Trees = "Trees",
+}
 
 export const UnitTypeSprites: Record<number, Sprites> = {
   [UnitTypes.Hero]: Sprites.Hero,
   [UnitTypes.Donkey]: Sprites.Donkey,
 };
+
+export const UnitTypeAnimations: Record<number, Animations> = {};
 
 export const ItemTypeSprites: Record<number, Sprites> = {
   [ItemTypes.Inventory]: Sprites.Inventory,
@@ -44,8 +60,14 @@ export const ItemTypeSprites: Record<number, Sprites> = {
   [ItemTypes.EmberCrown]: Sprites.EmberCrown,
 };
 
+export const ItemTypeAnimations: Record<number, Animations> = {};
+
 export const StructureTypeSprites: Record<number, Sprites> = {
   [StructureTypes.Settlement]: Sprites.Settlement,
   [StructureTypes.GoldShrine]: Sprites.GoldShrine,
   [StructureTypes.EscapePortal]: Sprites.EscapePortal,
+};
+
+export const StructureTypeAnimations: Record<number, Animations> = {
+  [StructureTypes.EscapePortal]: Animations.EscapePortalAnimation,
 };
