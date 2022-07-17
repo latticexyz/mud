@@ -37,7 +37,6 @@ contract RegisterSystem is System {
       (address, RegisterType, address, uint256)
     );
     require(msg.sender == address(world), "system can only be called via World");
-
     require(registerType == RegisterType.Component || registerType == RegisterType.System, "invalid type");
     require(id != 0, "invalid id");
     require(addr != address(0), "invalid address");
