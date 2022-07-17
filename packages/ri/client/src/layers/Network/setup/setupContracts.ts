@@ -26,7 +26,7 @@ import {
   World,
 } from "@latticexyz/recs";
 import { computed, IComputedValue } from "mobx";
-import { stretch } from "@latticexyz/utils";
+import { stretch, toEthAddress } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract, Signer } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
@@ -101,7 +101,7 @@ async function createEncoders(
   const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
 
   async function fetchAndCreateEncoder(entity: EntityIndex) {
-    const componentAddress = world.entities[entity];
+    const componentAddress = toEthAddress(world.entities[entity]);
     const componentId = getComponentValueStrict(components, entity).value;
     const componentContract = new Contract(
       componentAddress,

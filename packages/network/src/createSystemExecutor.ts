@@ -1,6 +1,6 @@
 import { Provider } from "@ethersproject/providers";
 import { Component, EntityIndex, getComponentEntities, getComponentValue, Type, World } from "@latticexyz/recs";
-import { keccak256 } from "@latticexyz/utils";
+import { keccak256, toEthAddress } from "@latticexyz/utils";
 import { Contract, ContractInterface, Signer } from "ethers";
 import { observable, runInAction } from "mobx";
 import { createTxQueue } from "./createTxQueue";
@@ -53,7 +53,7 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
     }
     return {
       id,
-      contract: new Contract(world.entities[entity], interfaces[id], signerOrProvider) as C,
+      contract: new Contract(toEthAddress(world.entities[entity]), interfaces[id], signerOrProvider) as C,
     };
   }
 }
