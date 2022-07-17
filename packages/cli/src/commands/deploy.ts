@@ -114,7 +114,9 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
 
   // Fetch deployed lattice chains
   const latticeChains = args.i
-    ? ((await (await fetch("https://registry.lattice.xyz/api")).json()) as { specUrl: string }[] | undefined)
+    ? ((await (await fetch("https://registry.lattice.xyz/api?update=true")).json()) as
+        | { specUrl: string }[]
+        | undefined)
     : [];
 
   const chainSpecs = latticeChains?.map((e) => e.specUrl) || [];
