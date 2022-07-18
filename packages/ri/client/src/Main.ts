@@ -1,13 +1,12 @@
 import { createWorld } from "@latticexyz/recs";
 import { definePositionComponent } from "./components";
-import { setupContracts } from "./setup";
+import { setupContracts, setupDevSystems } from "./setup";
 import { BigNumber } from "ethers";
 import { Coord, keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
 import { createActionSystem } from "@latticexyz/std-client";
 import { createPhaserEngine } from "@latticexyz/phaserx";
 import { GameConfig, phaserConfig } from "./config";
-import { setupDevSystems } from "./setup/setupDevSystems";
 
 /**
  * The Network layer is the lowest layer in the client architecture.
@@ -62,7 +61,6 @@ export async function Main(config: GameConfig) {
     game,
     scenes,
     actions,
-
     api: {
       move,
     },

@@ -53,11 +53,11 @@ async function bootGame() {
 
     if (!networkLayerConfig) throw new Error("Invalid config");
 
-    if (!game.current) game.current = await Main(networkLayerConfig);
+    if (!game.main) game.main = await Main(networkLayerConfig);
 
     // Sync global time with phaser clock
     Time.time.setPacemaker((setTimestamp) => {
-      game.current?.game.events.on("poststep", (time: number) => {
+      game.main?.game.events.on("poststep", (time: number) => {
         setTimestamp(time);
       });
     });
@@ -73,7 +73,7 @@ async function bootGame() {
     // Start syncing once all systems have booted
     if (initialBoot) {
       initialBoot = false;
-      game.current?.startSync();
+      game.main?.startSync();
     }
 
     // Reboot react if layers have changed
@@ -83,8 +83,8 @@ async function bootGame() {
   }
 
   function dispose() {
-    game.current?.world.dispose();
-    game.current = undefined;
+    game.main?.world.dispose();
+    game.main = undefined;
   }
 
   await rebootGame();
@@ -109,7 +109,7 @@ async function bootGame() {
       dispose();
       await rebootGame();
       console.log("HMR Game");
-      game.current?.startSync();
+      game.main?.startSync();
       reloading = false;
     });
   }

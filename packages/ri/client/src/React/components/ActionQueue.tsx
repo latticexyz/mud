@@ -15,7 +15,7 @@ export function registerActionQueue() {
     },
     (game) => {
       const {
-        current: {
+        main: {
           actions: { Action },
         },
       } = game;

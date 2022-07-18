@@ -15,12 +15,12 @@ export function registerComponentBrowser() {
     (game) => {
       return (
         <Browser
-          world={game.current.world}
-          entities={game.current.world.entities}
+          world={game.main.world}
+          entities={game.main.world.entities}
           layers={game}
-          devHighlightComponent={game.current.dev.DevHighlightComponent}
-          hoverHighlightComponent={game.current.dev.HoverHighlightComponent}
-          setContractComponentValue={game.current.dev.setContractComponentValue}
+          devHighlightComponent={game.main.dev.DevHighlightComponent}
+          hoverHighlightComponent={game.main.dev.HoverHighlightComponent}
+          setContractComponentValue={game.main.dev.setContractComponentValue}
         />
       );
     }
