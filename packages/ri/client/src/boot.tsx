@@ -1,21 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { createHeadlessLayer as createHeadlessLayerImport, HeadlessLayer } from "./layers/Headless";
-import { createNetworkLayer as createNetworkLayerImport, NetworkLayer } from "./layers/Network";
-import { createLocalLayer as createLocalLayerImport, LocalLayer } from "./layers/Local";
-import { createPhaserLayer as createPhaserLayerImport, PhaserLayer } from "./layers/Renderer/Phaser";
-import { Engine as EngineImport } from "./layers/Renderer/React/engine/Engine";
-import { registerUIComponents as registerUIComponentsImport } from "./layers/Renderer/React/components";
-import { Layers } from "./layers/Renderer/React/engine/types";
 import { getComponentValue, removeComponent, setComponent } from "@latticexyz/recs";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Time } from "./utils/time";
+import { Main as MainImport } from "./Main";
+import { Engine as EngineImport } from "./React/engine/Engine";
+import { registerUIComponents as registerUIComponentsImport } from "./React/components";
+import { Game } from "./types";
 
 // Assign variables that can be overridden by HMR
-let createNetworkLayer = createNetworkLayerImport;
-let createHeadlessLayer = createHeadlessLayerImport;
-let createLocalLayer = createLocalLayerImport;
-let createPhaserLayer = createPhaserLayerImport;
+let Main = MainImport;
 let Engine = EngineImport;
 let registerUIComponents = registerUIComponentsImport;
 
@@ -24,17 +18,11 @@ let registerUIComponents = registerUIComponentsImport;
  * It creates all the layers and their hierarchy.
  * Add new layers here.
  */
-async function bootLayers() {
-  const layers: {
-    network?: NetworkLayer;
-    headless?: HeadlessLayer;
-    local?: LocalLayer;
-    phaser?: PhaserLayer;
-  } = {};
-
+async function bootGame() {
+  const game: Partial<Game> = {};
   let initialBoot = true;
 
-  async function bootLayers() {
+  async function rebootGame(): Promise<Game> {
     // Remove react when starting to reboot layers, reboot react once layers are rebooted
     mountReact.current(false);
 
@@ -65,14 +53,11 @@ async function bootLayers() {
 
     if (!networkLayerConfig) throw new Error("Invalid config");
 
-    if (!layers.network) layers.network = await createNetworkLayer(networkLayerConfig);
-    if (!layers.headless) layers.headless = await createHeadlessLayer(layers.network);
-    if (!layers.local) layers.local = await createLocalLayer(layers.headless);
-    if (!layers.phaser) layers.phaser = await createPhaserLayer(layers.local);
+    if (!game.current) game.current = await Main(networkLayerConfig);
 
     // Sync global time with phaser clock
     Time.time.setPacemaker((setTimestamp) => {
-      layers.phaser?.game.events.on("poststep", (time: number) => {
+      game.current?.game.events.on("poststep", (time: number) => {
         setTimestamp(time);
       });
     });
@@ -88,23 +73,21 @@ async function bootLayers() {
     // Start syncing once all systems have booted
     if (initialBoot) {
       initialBoot = false;
-      layers.network.startSync();
+      game.current?.startSync();
     }
 
     // Reboot react if layers have changed
     mountReact.current(true);
 
-    return layers;
+    return game as Game;
   }
 
-  function disposeLayer(layer: keyof typeof layers) {
-    layers[layer]?.world.dispose();
-    layers[layer] = undefined;
+  function dispose() {
+    game.current?.world.dispose();
+    game.current = undefined;
   }
 
-  await bootLayers();
-
-  (window as any).layers = layers;
+  await rebootGame();
 
   const ecs = {
     setComponent,
@@ -112,81 +95,39 @@ async function bootLayers() {
     getComponentValue,
   };
 
+  (window as any).game = game;
   (window as any).ecs = ecs;
   (window as any).time = Time.time;
 
-  let reloadingNetwork = false;
-  let reloadingHeadless = false;
-  let reloadingLocal = false;
-  let reloadingPhaser = false;
+  let reloading = false;
 
   if (import.meta.hot) {
-    // HMR Network layer
-    import.meta.hot.accept("./layers/Network/index.ts", async (module) => {
-      if (reloadingNetwork) return;
-      reloadingNetwork = true;
-      createNetworkLayer = module.createNetworkLayer;
-      disposeLayer("network");
-      disposeLayer("headless");
-      disposeLayer("local");
-      disposeLayer("phaser");
-      await bootLayers();
-      console.log("HMR Network");
-      layers.network?.startSync();
-      reloadingNetwork = false;
-    });
-
-    // HMR Headless layer
-    import.meta.hot.accept("./layers/Headless/index.ts", async (module) => {
-      if (reloadingHeadless || reloadingNetwork) return;
-      reloadingHeadless = true;
-      createHeadlessLayer = module.createHeadlessLayer;
-      disposeLayer("headless");
-      disposeLayer("local");
-      disposeLayer("phaser");
-      await bootLayers();
-      console.log("HMR Headless");
-      reloadingHeadless = false;
-    });
-
-    // HMR Local layer
-    import.meta.hot.accept("./layers/Local/index.ts", async (module) => {
-      if (reloadingLocal || reloadingHeadless || reloadingNetwork) return;
-      reloadingLocal = true;
-      createLocalLayer = module.createLocalLayer;
-      disposeLayer("local");
-      disposeLayer("phaser");
-      await bootLayers();
-      console.log("HMR Local");
-      reloadingLocal = false;
-    });
-
-    // HMR Phaser layer
-    import.meta.hot.accept("./layers/Renderer/Phaser/index.ts", async (module) => {
-      if (reloadingPhaser || reloadingLocal || reloadingHeadless || reloadingNetwork) return;
-      reloadingPhaser = true;
-      createPhaserLayer = module.createPhaserLayer;
-      disposeLayer("phaser");
-      await bootLayers();
-      console.log("HMR Phaser");
-      reloadingPhaser = false;
+    import.meta.hot.accept("./Main.ts", async (module) => {
+      if (reloading) return;
+      reloading = true;
+      Main = module.Main;
+      dispose();
+      await rebootGame();
+      console.log("HMR Game");
+      game.current?.startSync();
+      reloading = false;
     });
   }
   console.log("booted");
 
-  return { layers, ecs };
+  return { game, ecs };
 }
 
 const mountReact: { current: (mount: boolean) => void } = { current: () => void 0 };
 
-function bootReact(layers: Layers) {
+function bootReact(game: Game) {
   const rootElement = document.getElementById("react-root");
   if (!rootElement) return console.warn("React root not found");
 
   const root = ReactDOM.createRoot(rootElement);
 
   function renderEngine() {
-    root.render(<Engine layers={layers} mountReact={mountReact} />);
+    root.render(<Engine game={game} mountReact={mountReact} />);
   }
 
   renderEngine();
@@ -210,6 +151,6 @@ function bootReact(layers: Layers) {
 }
 
 export async function boot() {
-  const { layers } = await bootLayers();
-  bootReact(layers as Layers);
+  const { game } = await bootGame();
+  bootReact(game as Game);
 }

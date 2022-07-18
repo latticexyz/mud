@@ -3,12 +3,8 @@ pragma solidity >=0.8.0;
 
 import "./IOwned.sol";
 
+// The minimum requirement for a system is to have an `execute` function.
+// For convenience having an `executeTyped` function with typed arguments is recommended.
 interface ISystem is IOwned {
-  // View function to check whether the system can be executed with the provided arguments.
-  // If the function does not revert, the requirements are fulfilled.
-  // The returned bytes can be used by the execute function to avoid redundant computation.
-  function requirement(bytes memory arguments) external view returns (bytes memory);
-
-  // Function to execute the system. Should use the requirement function internally.
   function execute(bytes memory arguments) external returns (bytes memory);
 }

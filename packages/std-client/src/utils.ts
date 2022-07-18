@@ -9,10 +9,16 @@ import {
   runQuery,
   Type,
   World,
+  Schema,
+  ComponentValue,
+  componentValueEquals,
+  EntityIndex,
 } from "@latticexyz/recs";
 import { Coord, keccak256 } from "@latticexyz/utils";
 import { BigNumber, ethers } from "ethers";
 import { Clock } from "@latticexyz/network";
+import { deferred } from "@latticexyz/utils";
+import { filter } from "rxjs";
 
 export function getPlayerEntity(personaComponent: Component<{ value: Type.String }>, personaId: number) {
   const playerEntitySet = getEntitiesWithValue(personaComponent, {
@@ -102,4 +108,34 @@ export function randomColor(id: string): number {
 
 export function getAddressColor(address: string) {
   return randomColor(keccak256(address).substring(2));
+}
+
+export function waitForComponentValueIn<S extends Schema>(
+  component: Component<S>,
+  entity: EntityIndex,
+  values: Partial<ComponentValue<S>>[]
+): Promise<void> {
+  const [resolve, , promise] = deferred<void>();
+
+  let dispose = resolve;
+  const subscription = component.update$
+    .pipe(
+      filter((e) => e.entity === entity && Boolean(values.find((value) => componentValueEquals(value, e.value[0]))))
+    )
+    .subscribe(() => {
+      resolve();
+      dispose();
+    });
+
+  dispose = () => subscription?.unsubscribe();
+
+  return promise;
+}
+
+export async function waitForComponentValue<S extends Schema>(
+  component: Component<S>,
+  entity: EntityIndex,
+  value: Partial<ComponentValue<S>>
+): Promise<void> {
+  await waitForComponentValueIn(component, entity, [value]);
 }

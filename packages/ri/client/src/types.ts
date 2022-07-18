@@ -1,9 +1,6 @@
 import { boot } from "./boot";
-import { PromiseValue } from "@latticexyz/utils";
+import { Main } from "./Main";
 
-export interface WorldCoord {
-  x: number;
-  y: number;
-}
+export type EmberWindow = Awaited<ReturnType<typeof boot>>;
 
-export type EmberWindow = PromiseValue<ReturnType<typeof boot>>;
+export type Game = { current: Awaited<ReturnType<typeof Main>> };

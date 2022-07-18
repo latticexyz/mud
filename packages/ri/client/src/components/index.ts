@@ -1,0 +1,1 @@
+export { definePositionComponent } from "./Position";
