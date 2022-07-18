@@ -1,1 +1,0 @@
-export { highlightCoord } from "./highlightCoord";

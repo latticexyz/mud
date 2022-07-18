@@ -1,1 +1,0 @@
-export { createPathSystem } from "./createPathSystem";

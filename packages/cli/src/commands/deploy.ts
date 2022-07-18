@@ -32,6 +32,7 @@ interface Options {
   netlifySlug?: string;
   netlifyPersonalToken?: string;
   upgradeSystems?: boolean;
+  codespace?: boolean;
 }
 
 export const command = "deploy";
@@ -52,6 +53,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     netlifySlug: { type: "string" },
     netlifyPersonalToken: { type: "string" },
     upgradeSystems: { type: "boolean" },
+    codespace: { type: "boolean" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -96,7 +98,10 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
   const getNetlifyAccounts = async (token: string) => {
     const { NetlifyAPI: netlify } = await importNetlify;
     const netlifyAPI = new netlify(token);
-    return (await netlifyAPI.listAccountsForUser()).map((a: { slug: string }) => a.slug);
+    console.log("Netlify api");
+    const accounts = await netlifyAPI.listAccountsForUser();
+    console.log("Accounts");
+    return accounts.map((a: { slug: string }) => a.slug);
   };
 
   const defaultOptions: Options = {
@@ -270,12 +275,11 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
       : ({} as Options);
 
   const chainSpecUrl = args.chainSpec ?? config.chainSpec ?? answers.chainSpec;
-  const chainSpec =
-    chainSpecUrl == null
-      ? null
-      : isValidHttpUrl(chainSpecUrl)
-      ? await (await fetch(chainSpecUrl)).json()
-      : JSON.parse(fs.readFileSync(chainSpecUrl, "utf8"));
+  const chainSpec = !chainSpecUrl
+    ? null
+    : isValidHttpUrl(chainSpecUrl)
+    ? await (await fetch(chainSpecUrl)).json()
+    : JSON.parse(fs.readFileSync(chainSpecUrl, "utf8"));
 
   // Priority of config source: command line args >> chainSpec >> local config >> interactive answers >> defaults
   // -> Command line args can override every other config, interactive questions are only asked if no other config given for this option
@@ -294,6 +298,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     clientUrl: args.clientUrl ?? config.clientUrl ?? answers.clientUrl ?? defaultOptions.clientUrl,
     netlifySlug: args.netlifySlug ?? config.netlifySlug ?? answers.netlifySlug,
     netlifyPersonalToken: args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken,
+    codespace: args.codespace,
   };
 };
 
@@ -409,12 +414,16 @@ export const deploy = async (options: Options) => {
                       {
                         title: "Deploying",
                         task: async (ctx, task) => {
-                          const child = execa("yarn", ["workspace", "client", "run", "netlify", "deploy", "--prod"], {
-                            env: {
-                              NETLIFY_AUTH_TOKEN: options.netlifyPersonalToken,
-                              NETLIFY_SITE_ID: ctx.siteId,
-                            },
-                          });
+                          const child = execa(
+                            "yarn",
+                            ["workspace", "ri-client", "run", "netlify", "deploy", "--prod", "--dir", "dist"],
+                            {
+                              env: {
+                                NETLIFY_AUTH_TOKEN: options.netlifyPersonalToken,
+                                NETLIFY_SITE_ID: ctx.siteId,
+                              },
+                            }
+                          );
                           child.stdout?.pipe(task.stdout());
                           await child;
                           task.output = chalk.yellow("Netlify site deployed!");
@@ -430,12 +439,26 @@ export const deploy = async (options: Options) => {
               {
                 title: "Open Launcher",
                 task: async (ctx) => {
-                  const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
-                  launcherUrl = `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&client=${
-                    clientUrl || ""
-                  }&rpc=${options.rpc || ""}&wsRpc=${options.wsRpc || ""}&chainId=${options.chainId || ""}&dev=${
-                    options.chainId === 31337 || ""
-                  }&initialBlockNumber=${ctx.initialBlockNumber}`;
+                  function getCodespaceUrl(port: number, protocol = "https") {
+                    return `${protocol}://${process.env["CODESPACE_NAME"]}-${port}.app.online.visualstudio.com`;
+                  }
+
+                  let clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
+
+                  if (options.codespace) {
+                    clientUrl = getCodespaceUrl(3000);
+                    options.rpc = getCodespaceUrl(8545);
+                  }
+
+                  launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${options.rpc}&wsRpc=${options.wsRpc}&checkpoint=&initialBlockNumber=${ctx.initialBlockNumber}&dev=true`;
+
+                  // Launcher version:
+                  // `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&client=${
+                  //   clientUrl || ""
+                  // }&rpc=${options.rpc || ""}&wsRpc=${options.wsRpc || ""}&chainId=${options.chainId || ""}&dev=${
+                  //   options.chainId === 31337 || ""
+                  // }&initialBlockNumber=${ctx.initialBlockNumber}`;
+
                   if (!options.upgradeSystems) openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },

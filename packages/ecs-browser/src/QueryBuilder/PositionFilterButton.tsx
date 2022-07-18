@@ -1,24 +1,25 @@
 import { Component, Type } from "@latticexyz/recs";
-import { useComponentValueStream } from "@latticexyz/std-client";
 import React, { useEffect, useState } from "react";
 import { ComponentBrowserButton } from "../StyledComponents";
+import { pixelCoordToTileCoord } from "@latticexyz/phaserx";
 
 export const PositionFilterButton: React.FC<{
   editQuery: (queryText: string) => void;
   queryInputRef: React.RefObject<HTMLInputElement>;
   hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
-}> = ({ hoverHighlightComponent, editQuery, queryInputRef }) => {
+  input: any;
+}> = ({ editQuery, queryInputRef, input }) => {
   const [selectingPosition, setSelectingPosition] = useState(false);
-  const hoverPosition = useComponentValueStream(hoverHighlightComponent);
 
   useEffect(() => {
     if (!selectingPosition) return;
 
     function onMouseDown() {
-      if (!hoverPosition) return;
-
+      const pointer = input.activePointer;
+      const pos = { x: pointer.worldX, y: pointer.worldY };
+      const worldCoord = pixelCoordToTileCoord(pos, 16, 16);
       setSelectingPosition(false);
-      editQuery(`[HasValue(LocalPosition, { x: ${hoverPosition.x}, y: ${hoverPosition.y} })]`);
+      editQuery(`[HasValue(Position, { x: ${worldCoord.x}, y: ${worldCoord.y} })]`);
       queryInputRef.current?.focus();
     }
 
@@ -26,7 +27,7 @@ export const PositionFilterButton: React.FC<{
     return () => {
       document.removeEventListener("mousedown", onMouseDown);
     };
-  }, [selectingPosition, hoverPosition]);
+  }, [selectingPosition]);
 
   return (
     <ComponentBrowserButton
@@ -36,9 +37,7 @@ export const PositionFilterButton: React.FC<{
         setSelectingPosition(true);
       }}
     >
-      {selectingPosition
-        ? `[HasValue(LocalPosition, { x: ${hoverPosition?.x}, y: ${hoverPosition?.y} })]`
-        : "Select Entities at a position"}
+      {selectingPosition ? `Click on tile to select position` : "Select Entities at a position"}
     </ComponentBrowserButton>
   );
 };

@@ -1,1 +1,0 @@
-export { createInputSystem } from "./createInputSystem";
