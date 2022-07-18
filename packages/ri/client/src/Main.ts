@@ -7,6 +7,7 @@ import { Mappings } from "@latticexyz/network";
 import { createActionSystem } from "@latticexyz/std-client";
 import { createPhaserEngine } from "@latticexyz/phaserx";
 import { GameConfig, phaserConfig } from "./config";
+import { setupDevSystems } from "./setup/setupDevSystems";
 
 /**
  * The Network layer is the lowest layer in the client architecture.
@@ -29,7 +30,7 @@ export async function Main(config: GameConfig) {
   };
 
   // Instantiate contracts and set up mappings
-  const { txQueue, systems, txReduced$, network, startSync } = await setupContracts(
+  const { txQueue, systems, txReduced$, network, startSync, encoders } = await setupContracts(
     config,
     world,
     components,
@@ -59,33 +60,12 @@ export async function Main(config: GameConfig) {
     startSync,
     network,
     game,
+    scenes,
     actions,
+
     api: {
       move,
     },
+    dev: setupDevSystems(world, encoders, systems),
   };
 }
-
-// TODO: integrate:
-// async function setContractComponentValue<T extends Schema>(
-//   entity: EntityIndex,
-//   component: Component<T, { contractId: string }>,
-//   newValue: ComponentValue<T>
-// ) {
-//   if (!DEV_MODE) throw new Error("Not allowed to directly edit Component values outside DEV_MODE");
-
-//   if (!component.metadata.contractId)
-//     throw new Error(
-//       `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
-//     );
-
-//   const data = (await encoders)[component.metadata.contractId](newValue);
-//   const entityId = world.entities[entity];
-
-//   console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entityId}`);
-//   await systems["ember.system.componentDev"].executeTyped(
-//     component.metadata.contractId,
-//     BigNumber.from(entityId),
-//     data
-//   );
-// }

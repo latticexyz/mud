@@ -1,9 +1,7 @@
 import React from "react";
 import { Browser } from "@latticexyz/ecs-browser";
 import { registerUIComponent } from "../engine";
-import { from } from "rxjs";
-import { defineComponent, Type } from "@latticexyz/recs";
-
+import { of } from "rxjs";
 export function registerComponentBrowser() {
   registerUIComponent(
     "ComponentBrowser",
@@ -13,28 +11,16 @@ export function registerComponentBrowser() {
       rowStart: 1,
       rowEnd: 13,
     },
+    (game) => of(game),
     (game) => {
-      return from([
-        {
-          game,
-          devHighlightComponent: defineComponent(game.current.world, { value: Type.OptionalNumber }),
-          hoverHighlightComponent: defineComponent(game.current.world, {
-            x: Type.OptionalNumber,
-            y: Type.OptionalNumber,
-          }),
-          world: game.current.world,
-        },
-      ]);
-    },
-    ({ game, world, devHighlightComponent, hoverHighlightComponent }) => {
       return (
         <Browser
-          world={world}
-          entities={world.entities}
+          world={game.current.world}
+          entities={game.current.world.entities}
           layers={game}
-          devHighlightComponent={devHighlightComponent}
-          hoverHighlightComponent={hoverHighlightComponent}
-          setContractComponentValue={() => void 0}
+          devHighlightComponent={game.current.dev.DevHighlightComponent}
+          hoverHighlightComponent={game.current.dev.HoverHighlightComponent}
+          setContractComponentValue={game.current.dev.setContractComponentValue}
         />
       );
     }

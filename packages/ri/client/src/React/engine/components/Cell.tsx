@@ -8,7 +8,7 @@ const WINDOW_CLASSNAME = "react-ui-window";
 
 export const Cell: React.FC<{ style: React.CSSProperties }> = observer(({ children, style }) => {
   const {
-    phaser: {
+    current: {
       scenes: {
         Main: { input },
       },
