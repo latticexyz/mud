@@ -207,7 +207,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
   const DEV_MODE = contractConfig.chainId === LOCAL_CHAIN_ID || config?.devMode;
 
   // Instantiate contracts and set up mappings
-  const { txQueue, systems, txReduced$, encoders, network, startSync } = await setupContracts(
+  const { txQueue, systems, txReduced$, encoders, network, startSync, localEVM } = await setupContracts(
     config.worldAddress,
     contractConfig,
     world,
@@ -217,6 +217,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     mappings,
     DEV_MODE
   );
+  console.log(localEVM);
+
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  //@ts-ignore
+  window.evm = localEVM;
 
   async function setContractComponentValue<T extends Schema>(
     entity: EntityIndex,

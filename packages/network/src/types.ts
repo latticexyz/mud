@@ -48,6 +48,8 @@ export type ContractsConfig<C extends Contracts> = {
 
 export type TxQueue<C extends Contracts> = Cached<C>;
 
+export type LocalEVM<C extends Contracts> = any;
+
 export type ContractTopics = {
   key: string;
   topics: string[][];

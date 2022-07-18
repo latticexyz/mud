@@ -103,7 +103,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
   contracts: ContractsConfig<C>,
   supportsBatchQueries?: boolean
 ): Promise<Array<ContractEvent<C>>> {
-  console.log(`fetching from ${startBlockNumber} -> ${endBlockNumber}`);
+  // console.log(`fetching from ${startBlockNumber} -> ${endBlockNumber}`);
   const logs: Array<Log> = await fetchLogs(
     provider,
     topics,
@@ -112,7 +112,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
     contracts,
     supportsBatchQueries ? endBlockNumber : undefined
   );
-  console.log(`got ${logs.length} logs from range ${startBlockNumber} -> ${endBlockNumber}`);
+  // console.log(`got ${logs.length} logs from range ${startBlockNumber} -> ${endBlockNumber}`);
   // we need to sort per block, transaction index, and log index
   logs.sort((a: Log, b: Log) => {
     if (a.blockNumber < b.blockNumber) {
