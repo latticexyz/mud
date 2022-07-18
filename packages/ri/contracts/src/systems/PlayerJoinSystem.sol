@@ -27,7 +27,7 @@ import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
 import { ID as DonkeyID } from "../prototypes/DonkeyPrototype.sol";
 import { ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
 import { ID as InventoryID } from "../prototypes/InventoryPrototype.sol";
-import { ID as PlayerID } from "../prototypes/PlayerPrototype.sol";
+import { ID as HeroID } from "../prototypes/HeroPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.playerJoin"));
 
@@ -58,8 +58,8 @@ contract PlayerJoinSystem is ISystem {
 
     unitPositions[0] = Coord(spawnPosition.x, spawnPosition.y - 1);
     unitPositions[1] = Coord(spawnPosition.x + 1, spawnPosition.y);
-    unitPositions[2] = Coord(spawnPosition.x - 1, spawnPosition.y);
-    unitPositions[3] = Coord(spawnPosition.x, spawnPosition.y + 1);
+    unitPositions[2] = Coord(spawnPosition.x, spawnPosition.y + 1);
+    unitPositions[3] = Coord(spawnPosition.x - 1, spawnPosition.y);
 
     return abi.encode(spawnEntity, unitPositions);
   }
@@ -69,13 +69,15 @@ contract PlayerJoinSystem is ISystem {
 
     // Create player entity
     uint256 playerEntity = addressToEntity(msg.sender);
-    spawnPlayer(playerEntity, unitPositions[0]);
+    PlayerComponent(getAddressById(components, PlayerComponentID)).set(playerEntity);
+
     OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(spawnEntity, playerEntity);
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
       spawnEntity,
       LibStamina.getCurrentTurn(components)
     );
 
+    spawnHero(playerEntity, unitPositions[0]);
     for (uint256 i = 1; i < unitPositions.length; i++) {
       spawnDonkey(playerEntity, unitPositions[i]);
     }
@@ -92,12 +94,16 @@ contract PlayerJoinSystem is ISystem {
   // ------------------------
   // Internals
   // ------------------------
-  function spawnPlayer(uint256 playerEntity, Coord memory position) private {
-    LibPrototype.copyPrototypeOnEntity(components, world, PlayerID, playerEntity);
-    PositionComponent(getAddressById(components, PositionComponentID)).set(playerEntity, position);
+  function spawnHero(uint256 ownerId, Coord memory position) private {
+    uint256 entity = LibPrototype.copyPrototype(components, world, HeroID);
+
+    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
+
+    PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
+
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
-      playerEntity,
-      LibStamina.getCurrentTurn(components)
+      entity,
+      LibStamina.getCurrentTurn(components) - 3
     );
   }
 

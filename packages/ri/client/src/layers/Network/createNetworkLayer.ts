@@ -159,6 +159,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "Death", metadata: { contractId: keccak256("ember.component.Death") } }
     ),
+    Hero: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "Hero", metadata: { contractId: keccak256("ember.component.Hero") } }
+    ),
   };
 
   // Define mappings between contract and client components
@@ -189,6 +194,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("ember.component.escapePortal")]: "EscapePortal",
     [keccak256("ember.component.winner")]: "Winner",
     [keccak256("ember.component.Death")]: "Death",
+    [keccak256("ember.component.Hero")]: "Hero",
   };
 
   const contractConfig: SetupContractConfig = {

@@ -21,6 +21,7 @@ import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedB
 import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 import { DeathComponent, ID as DeathComponentID } from "../components/DeathComponent.sol";
+import { HeroComponent, ID as HeroComponentID } from "../components/HeroComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.combat"));
 
@@ -152,10 +153,16 @@ contract CombatSystem is ISystem {
     if (staminaComponent.has(entity)) {
       staminaComponent.remove(entity);
     }
+
     DeathComponent deathComponent = DeathComponent(getAddressById(components, DeathComponentID));
     deathComponent.set(entity);
 
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+    if (HeroComponent(getAddressById(components, HeroComponentID)).has(entity)) {
+      uint256 owner = LibECS.resolveRelationshipChain(ownedByComponent, entity);
+      deathComponent.set(owner);
+    }
+
     uint256 inventoryEntity = LibInventory.getInventory(components, entity);
     if (ownedByComponent.getEntitiesWithValue(inventoryEntity).length > 0) {
       LibInventory.dropInventory(components, inventoryEntity, position);

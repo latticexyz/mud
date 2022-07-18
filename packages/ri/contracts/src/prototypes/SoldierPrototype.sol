@@ -22,7 +22,7 @@ import { ID as InventoryID } from "./InventoryPrototype.sol";
 uint256 constant ID = uint256(keccak256("ember.prototype.soldier"));
 
 function SoldierPrototype(IUint256Component components, IWorld world) {
-  UnitTypeComponent(getAddressById(components, UnitTypeComponentID)).set(ID, uint32(UnitTypes.Hero));
+  UnitTypeComponent(getAddressById(components, UnitTypeComponentID)).set(ID, uint32(UnitTypes.Soldier));
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
     Stamina({ current: 0, max: 3, regeneration: 1 })

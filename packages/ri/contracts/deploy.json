@@ -10,6 +10,7 @@
     "FromBlueprintComponent",
     "GameConfigComponent",
     "HealthComponent",
+    "HeroComponent",
     "InventoryComponent",
     "LastActionTurnComponent",
     "MaxDistanceComponent",
