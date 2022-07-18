@@ -13,7 +13,10 @@ contract MoveSystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    // TODO: implement
+    (uint256 entity, Coord memory target) = abi.decode(arguments, (uint256, Coord));
+
+    PositionComponent position = PositionComponent(getAddressById(components, PositionComponentID));
+    position.set(entity, target);
   }
 
   function executeTyped(uint256 entity, Coord memory target) public returns (bytes memory) {
