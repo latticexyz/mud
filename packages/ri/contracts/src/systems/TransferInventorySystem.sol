@@ -78,7 +78,11 @@ contract TransferInventorySystem is System {
     StructureTypeComponent structureTypeComponent = StructureTypeComponent(
       getAddressById(components, StructureTypeComponentID)
     );
-    if (ownedItems.length <= spaceLeft && structureTypeComponent.has(inventoryOwnerEntity)) {
+    if (
+      ownedItems.length <= spaceLeft &&
+      structureTypeComponent.has(inventoryOwnerEntity) &&
+      structureTypeComponent.getValue(inventoryOwnerEntity) == uint32(StructureTypes.Container)
+    ) {
       positionComponent.remove(inventoryOwnerEntity);
       structureTypeComponent.remove(inventoryOwnerEntity);
       InventoryComponent(getAddressById(components, InventoryComponentID)).remove(inventoryOwnerEntity);
