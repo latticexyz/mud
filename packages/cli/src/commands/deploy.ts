@@ -32,6 +32,7 @@ interface Options {
   netlifySlug?: string;
   netlifyPersonalToken?: string;
   upgradeSystems?: boolean;
+  codespace?: boolean;
 }
 
 export const command = "deploy";
@@ -52,6 +53,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     netlifySlug: { type: "string" },
     netlifyPersonalToken: { type: "string" },
     upgradeSystems: { type: "boolean" },
+    codespace: { type: "boolean" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -296,6 +298,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     clientUrl: args.clientUrl ?? config.clientUrl ?? answers.clientUrl ?? defaultOptions.clientUrl,
     netlifySlug: args.netlifySlug ?? config.netlifySlug ?? answers.netlifySlug,
     netlifyPersonalToken: args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken,
+    codespace: args.codespace,
   };
 };
 
@@ -436,7 +439,17 @@ export const deploy = async (options: Options) => {
               {
                 title: "Open Launcher",
                 task: async (ctx) => {
-                  const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
+                  function getCodespaceUrl(port: number, protocol = "https") {
+                    return `${protocol}://${process.env["CODESPACE_NAME"]}-${port}.app.online.visualstudio.com`;
+                  }
+
+                  let clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
+
+                  if (options.codespace) {
+                    clientUrl = getCodespaceUrl(3000);
+                    options.rpc = getCodespaceUrl(8545);
+                  }
+
                   launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${options.rpc}&wsRpc=${options.wsRpc}&checkpoint=&initialBlockNumber=${ctx.initialBlockNumber}&dev=true`;
 
                   // Launcher version:
