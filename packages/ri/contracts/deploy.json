@@ -7,7 +7,6 @@
     "CapturableComponent",
     "DeathComponent",
     "FactoryComponent",
-    "FromBlueprintComponent",
     "GameConfigComponent",
     "HealthComponent",
     "HeroComponent",
