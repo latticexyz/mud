@@ -40,7 +40,6 @@ export function createInputSystem(layer: PhaserLayer) {
           EscapePortal,
           Player,
           Death,
-          ItemType,
         },
         api: {
           buildAt,
@@ -49,8 +48,8 @@ export function createInputSystem(layer: PhaserLayer) {
           transferInventory,
           escapePortal,
           dev: { spawnGold },
-          util: { getItems },
         },
+        utils: { getItems },
         network: { connectedAddress },
       },
       headless: {

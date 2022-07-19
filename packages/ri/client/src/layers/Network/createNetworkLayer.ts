@@ -6,6 +6,9 @@ import {
   EntityID,
   EntityIndex,
   getComponentValue,
+  Has,
+  HasValue,
+  runQuery,
   Schema,
   Type,
 } from "@latticexyz/recs";
@@ -23,7 +26,6 @@ import { WorldCoord } from "../../types";
 import { SetupContractConfig } from "./setup/setupContracts";
 import { LOCAL_CHAIN_ID } from "../../constants";
 import { defineStringComponent } from "@latticexyz/std-client";
-import { getItems } from "./utils";
 
 export type NetworkLayerConfig = {
   worldAddress: string;
@@ -321,6 +323,10 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     return entityOwner && entityOwner === network.connectedAddress.get();
   };
 
+  const getItems = (entity: EntityIndex) => {
+    return [...runQuery([HasValue(components.OwnedBy, { value: world.entities[entity] }), Has(components.ItemType)])];
+  };
+
   return {
     world,
     components,
@@ -344,12 +350,10 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       dev: {
         spawnGold,
       },
-      util: {
-        getItems: getItems(components.OwnedBy, components.ItemType, world.entities),
-      },
     },
     utils: {
       checkOwnEntity,
+      getItems,
     },
     DEV_MODE,
   };
