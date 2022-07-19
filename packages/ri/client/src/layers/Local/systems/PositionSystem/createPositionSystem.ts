@@ -1,7 +1,11 @@
 import {
-  defineComponentSystem,
-  getComponentValue,
+  defineEnterSystem,
+  defineExitSystem,
+  defineUpdateSystem,
+  getComponentValueStrict,
+  Has,
   hasComponent,
+  Not,
   removeComponent,
   setComponent,
 } from "@latticexyz/recs";
@@ -28,36 +32,38 @@ export function createPositionSystem(layer: LocalLayer) {
     components: { LocalPosition, Path },
   } = layer;
 
-  defineComponentSystem(world, Position, (update) => {
-    const { entity, value } = update;
+  defineEnterSystem(world, [Has(Position)], ({ entity, value }) => {
     const [currentValue] = value;
     if (!hasComponent(LocalPosition, entity) && currentValue) {
       setComponent(LocalPosition, entity, currentValue);
     }
   });
 
-  defineComponentSystem(world, withOptimisticUpdates(Position), (update) => {
-    const { entity, value } = update;
+  defineExitSystem(world, [Has(Position)], ({ entity }) => {
+    removeComponent(LocalPosition, entity);
+  });
+
+  const OptimisticPosition = withOptimisticUpdates(Position);
+
+  defineUpdateSystem(world, [Has(OptimisticPosition), Not(Movable)], ({ entity, component, value }) => {
+    if (component !== OptimisticPosition) return;
+    const [targetPosition] = value;
+    if (!targetPosition) return;
+
+    setComponent(LocalPosition, entity, targetPosition);
+  });
+
+  defineUpdateSystem(world, [Has(OptimisticPosition), Has(Movable), Has(LocalPosition)], (update) => {
+    const { entity, component } = update;
+    if (component !== OptimisticPosition) return;
+
     // Remove any outstanding Paths before computing the new location
     removeComponent(Path, entity);
 
-    const targetPosition = value[0];
-    if (targetPosition == null) {
-      removeComponent(LocalPosition, entity);
-      return;
-    }
-
-    const moveSpeed = getComponentValue(Movable, entity);
-    // If something is not Movable, just directly set the LocalPosition
-    if (moveSpeed == null) {
-      setComponent(LocalPosition, entity, targetPosition);
-      return;
-    }
-
-    const localPosition = getComponentValue(LocalPosition, entity);
-    if (!localPosition || worldCoordEq(targetPosition, localPosition)) {
-      return;
-    }
+    const moveSpeed = getComponentValueStrict(Movable, entity);
+    const targetPosition = getComponentValueStrict(OptimisticPosition, entity);
+    const localPosition = getComponentValueStrict(LocalPosition, entity);
+    if (worldCoordEq(targetPosition, localPosition)) return;
 
     const isUntraversableFunc = (targetPosition: WorldCoord) =>
       isUntraversable(Untraversable, LocalPosition, targetPosition);
