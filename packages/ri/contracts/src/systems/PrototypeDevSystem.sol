@@ -5,7 +5,7 @@ import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 import { LibPrototype } from "../libraries/LibPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.prototypeDev"));
+uint256 constant ID = uint256(keccak256("mudwar.system.PrototypeDev"));
 
 contract PrototypeDevSystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

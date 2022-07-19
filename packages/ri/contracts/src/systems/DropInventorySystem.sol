@@ -19,7 +19,7 @@ import { PositionComponent, ID as PositionComponentID, Coord } from "../componen
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.dropInventory"));
+uint256 constant ID = uint256(keccak256("mudwar.system.DropInventory"));
 
 contract DropInventorySystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

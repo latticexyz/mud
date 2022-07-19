@@ -27,7 +27,7 @@ import { StructureTypeComponent, ID as StructureTypeComponentID } from "../compo
 
 import { StructureTypes } from "../utils/Types.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.TransferInventory"));
+uint256 constant ID = uint256(keccak256("mudwar.system.TransferInventory"));
 
 contract TransferInventorySystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

@@ -15,8 +15,8 @@ export async function main() {
   // const pendingNonces = await getPendingNonces(provider, signer);
   // console.log("Pending nonces", pendingNonces);
 
-  const Position = await contracts.get().World.getComponent(keccak256("ember.component.positionComponent"));
-  const EntityType = await contracts.get().World.getComponent(keccak256("ember.component.entityTypeComponent"));
+  const Position = await contracts.get().World.getComponent(keccak256("mudwar.component.Position"));
+  const EntityType = await contracts.get().World.getComponent(keccak256("mudwar.component.EntityType"));
 
   const context = { systems, components: { Position, EntityType }, provider, signer };
 
@@ -58,7 +58,7 @@ async function setPosition(
   pos: { x: number; y: number },
   { systems, components: { Position } }: Context
 ) {
-  await systems["ember.system.componentDev"].executeTyped(
+  await systems["mudwar.system.componentDev"].ExecuteTyped(
     BigNumber.from(entity),
     Position,
     abi.encode(["int32", "int32"], [pos.x, pos.y]),
@@ -67,7 +67,7 @@ async function setPosition(
 }
 
 async function setEntityType(entity: number, entityType: number, { systems, components: { EntityType } }: Context) {
-  await systems["ember.system.componentDev"].executeTyped(
+  await systems["mudwar.system.componentDev"].ExecuteTyped(
     BigNumber.from(entity),
     EntityType,
     abi.encode(["uint32"], [entityType]),

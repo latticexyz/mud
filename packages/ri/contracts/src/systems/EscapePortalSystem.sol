@@ -24,7 +24,7 @@ import { PlayerComponent, ID as PlayerComponentID } from "../components/PlayerCo
 
 import { ItemTypes } from "../utils/Types.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.escapePortal"));
+uint256 constant ID = uint256(keccak256("mudwar.system.EscapePortal"));
 
 contract EscapePortalSystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

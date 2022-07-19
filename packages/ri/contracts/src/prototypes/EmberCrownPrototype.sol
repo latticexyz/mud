@@ -9,7 +9,7 @@ import { ItemTypeComponent, ID as ItemTypeComponentID } from "../components/Item
 
 import { ItemTypes } from "../utils/Types.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.emberCrown"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.EmberCrown"));
 
 function EmberCrownPrototype(IUint256Component components) {
   ItemTypeComponent(getAddressById(components, ItemTypeComponentID)).set(ID, uint32(ItemTypes.EmberCrown));

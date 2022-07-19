@@ -18,7 +18,7 @@ import { StructureTypes } from "../utils/Types.sol";
 
 import { ID as GoldID } from "./GoldPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.goldShrine"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.GoldShrine"));
 
 function GoldShrinePrototype(IUint256Component components) {
   StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(

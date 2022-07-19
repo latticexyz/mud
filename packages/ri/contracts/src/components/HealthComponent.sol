@@ -7,7 +7,7 @@ struct Health {
   int32 max;
 }
 
-uint256 constant ID = uint256(keccak256("ember.component.healthComponent"));
+uint256 constant ID = uint256(keccak256("mudwar.component.Health"));
 
 contract HealthComponent is Component {
   constructor(address world) Component(world, ID) {}

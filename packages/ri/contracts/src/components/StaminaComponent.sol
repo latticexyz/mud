@@ -8,7 +8,7 @@ struct Stamina {
   int32 regeneration;
 }
 
-uint256 constant ID = uint256(keccak256("ember.component.staminaComponent"));
+uint256 constant ID = uint256(keccak256("mudwar.component.Stamina"));
 
 contract StaminaComponent is Component {
   constructor(address world) Component(world, ID) {}

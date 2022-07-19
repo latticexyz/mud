@@ -9,7 +9,7 @@ import { ItemTypeComponent, ID as ItemTypeComponentID } from "../components/Item
 
 import { ItemTypes } from "../utils/Types.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.gold"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.Gold"));
 
 function GoldPrototype(IUint256Component components) {
   ItemTypeComponent(getAddressById(components, ItemTypeComponentID)).set(ID, uint32(ItemTypes.Gold));

@@ -13,7 +13,7 @@ import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedB
 
 import { ID as GoldID } from "../prototypes/GoldPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.spawnGoldDev"));
+uint256 constant ID = uint256(keccak256("mudwar.system.SpawnGoldDev"));
 
 contract SpawnGoldDevSystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

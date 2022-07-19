@@ -10,7 +10,7 @@ import { EscapePortalComponent, ID as EscapePortalComponentID } from "../compone
 
 import { StructureTypes } from "../utils/Types.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.escapePortal"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.EscapePortal"));
 
 function EscapePortalPrototype(IUint256Component components) {
   EscapePortalComponent(getAddressById(components, EscapePortalComponentID)).set(ID);

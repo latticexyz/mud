@@ -7,7 +7,7 @@ struct Attack {
   int32 range;
 }
 
-uint256 constant ID = uint256(keccak256("ember.component.attackComponent"));
+uint256 constant ID = uint256(keccak256("mudwar.component.Attack"));
 
 contract AttackComponent is Component {
   constructor(address world) Component(world, ID) {}

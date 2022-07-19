@@ -17,7 +17,7 @@ import { StructureTypes } from "../utils/Types.sol";
 
 import { ID as EmberCrownID } from "./EmberCrownPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.emberCrownContainer"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.EmberCrownContainer"));
 
 function EmberCrownContainerPrototype(IUint256Component components, IWorld world) {
   InventoryComponent(getAddressById(components, InventoryComponentID)).set(ID, uint32(1));

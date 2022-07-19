@@ -10,7 +10,7 @@ struct Position {
   int64 y;
 }
 
-uint256 constant ID = uint256(keccak256("ember.components.PositionComponent"));
+uint256 constant ID = uint256(keccak256("mudwar.components.Position"));
 
 contract PositionComponent is Component {
   constructor(address world) Component(world, ID) {}

@@ -7,7 +7,7 @@ import { getAddressById } from "solecs/utils.sol";
 
 import { GameConfigComponent, ID as GameConfigComponentID, GameConfig, GodID } from "../components/GameConfigComponent.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.gameConfig"));
+uint256 constant ID = uint256(keccak256("mudwar.system.GameConfig"));
 
 contract GameConfigSystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

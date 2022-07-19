@@ -9,8 +9,8 @@ struct GameConfig {
   uint256 turnLength;
 }
 
-uint256 constant GodID = uint256(keccak256("ember.god"));
-uint256 constant ID = uint256(keccak256("ember.component.gameConfigComponent"));
+uint256 constant GodID = uint256(keccak256("mudwar.god"));
+uint256 constant ID = uint256(keccak256("mudwar.component.GameConfig"));
 
 contract GameConfigComponent is Component {
   constructor(address world) Component(world, ID) {}
