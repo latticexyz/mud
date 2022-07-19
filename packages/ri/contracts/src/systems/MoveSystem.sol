@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import { ISystem } from "solecs/interfaces/ISystem.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
-import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import "solecs/System.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 
@@ -18,15 +16,12 @@ import { GameConfigComponent, ID as GameConfigComponentID } from "../components/
 import { MovableComponent, ID as MovableComponentID } from "../components/MovableComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
+import { console } from "forge-std/console.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.move"));
 
-contract MoveSystem is ISystem {
-  IUint256Component components;
-
-  constructor(IUint256Component _components, IWorld) {
-    components = _components;
-  }
+contract MoveSystem is System {
+  constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
     (uint256 entity, Coord[] memory path) = abi.decode(arguments, (uint256, Coord[]));
@@ -69,6 +64,7 @@ contract MoveSystem is ISystem {
 
     LibStamina.modifyStamina(components, entity, -1);
     positionComponent.set(entity, targetPosition);
+    console.log("Moved 2");
   }
 
   function requirementTyped(uint256 entity, Coord[] memory path) public view returns (bytes memory) {

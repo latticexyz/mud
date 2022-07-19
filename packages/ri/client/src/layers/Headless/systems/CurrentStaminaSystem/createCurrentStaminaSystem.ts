@@ -3,6 +3,7 @@ import {
   defineQuery,
   defineRxSystem,
   EntityIndex,
+  getComponentValue,
   getComponentValueStrict,
   Has,
   setComponent,
@@ -21,31 +22,34 @@ export function createCurrentStaminaSystem(layer: HeadlessLayer) {
         components: { Stamina, LastActionTurn, GameConfig },
       },
     },
-    actions: { withOptimisticUpdates },
     components: { LocalStamina },
+    actions: { withOptimisticUpdates },
   } = layer;
 
-  const optimisticStamina = withOptimisticUpdates(Stamina);
+  const OptimisticStamina = withOptimisticUpdates(Stamina);
 
   const setLocalStaminaToCurrentTurn = (entity: EntityIndex) => {
     const currentTurn = getCurrentTurn(layer.world, GameConfig, clock);
-    const contractStamina = getComponentValueStrict(optimisticStamina, entity);
-    const lastActionTurn = getComponentValueStrict(LastActionTurn, entity).value;
-    const staminaTicks = (currentTurn - lastActionTurn) * contractStamina.regeneration;
+    const contractStamina = getComponentValueStrict(Stamina, entity);
+    const lastActionTurn = getComponentValue(LastActionTurn, entity);
+    if (!lastActionTurn) return;
 
-    let localStamina = contractStamina.current + staminaTicks;
-    if (localStamina > contractStamina.max) localStamina = contractStamina.max;
+    const staminaTicks = (currentTurn - lastActionTurn.value) * contractStamina.regeneration;
+
+    let localStamina = staminaTicks;
+    if (contractStamina.current + localStamina > contractStamina.max)
+      localStamina = contractStamina.max - contractStamina.current;
     if (localStamina < 0) localStamina = 0;
 
     setComponent(LocalStamina, entity, { current: localStamina });
   };
 
-  defineComponentSystem(world, optimisticStamina, ({ entity, value }) => {
+  defineComponentSystem(world, OptimisticStamina, ({ entity, value }) => {
     const [newValue] = value;
     const newCurrentStamina = newValue?.current;
     if (newCurrentStamina == null) return;
 
-    setComponent(LocalStamina, entity, { current: newCurrentStamina });
+    setComponent(LocalStamina, entity, { current: 0 });
   });
 
   const staminaQuery = defineQuery([Has(Stamina), Has(LastActionTurn)]);

@@ -34,7 +34,7 @@ export function joinGame(network: NetworkLayer, actions: ActionSystem, spawnEnti
     updates: () => [],
     execute: () => {
       console.log("spawning");
-      network.api.joinGame(world.entities[spawnEntity]);
+      return network.api.joinGame(world.entities[spawnEntity]);
     },
   });
 }

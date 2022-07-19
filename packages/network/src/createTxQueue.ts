@@ -175,7 +175,6 @@ export function createTxQueue<C extends Contracts>(
         console.warn("TXQUEUE EXECUTION FAILED", e);
         // Nonce is handled centrally in finally block (for both failing and successful tx)
         error = e;
-        throw e; // Rethrow the error to catch it in the action queue
       } finally {
         // If the error includes information about the transaction,
         // then the transaction was submitted and the nonce needs to be

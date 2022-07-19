@@ -39,7 +39,7 @@ export async function setupContracts() {
   const SystemsComponent = defineComponent(world, { value: Type.String });
 
   console.log("Fetching systems...");
-  for (const systemId of Object.keys(SystemAbis)) {
+  for (const systemId of ["ember.system.bulkSetStateSystem"]) {
     const hashedSystemId = keccak256(systemId);
     const address = await contracts.get().World.getSystemAddress(hashedSystemId);
     console.log("Got address for", systemId, address);
@@ -48,7 +48,7 @@ export async function setupContracts() {
   }
 
   const systems = createSystemExecutor<SystemTypes>(world, network, SystemsComponent, SystemAbis, {
-    devMode: true,
+    devMode: false,
   });
 
   return { systems, provider: computed(() => network.providers.get().json), signer: network.signer, contracts };

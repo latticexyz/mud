@@ -11,6 +11,7 @@ import {
   EntityID,
   EntityIndex,
   Component,
+  removeComponent,
 } from "@latticexyz/recs";
 import { mapObject, awaitStreamValue } from "@latticexyz/utils";
 import { ActionState } from "./constants";
@@ -148,15 +149,14 @@ export function createActionSystem(
 
     try {
       // Execute the action
-      const result = await action.execute(requirementResult);
+      const tx = await action.execute(requirementResult);
 
       // If the result includes a hash key (single tx) or hashes (multiple tx) key, wait for the transactions to complete before removing the pending actions
-      if (result?.hashes || result?.hash) {
+      if (tx) {
         // Wait for all tx events to be reduced
-        if (!result.hashes) result.hashes = [];
-        if (result.hash) result.hashes.push(result.hash);
         updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents });
-        await Promise.all(result.hashes.map((txHash) => awaitStreamValue(txReduced$, (v) => v === txHash)));
+        const txReduced = awaitStreamValue(txReduced$, (v) => v === tx.hash);
+        await Promise.all([tx.wait(), txReduced]);
       }
 
       updateComponent(Action, action.entityIndex, { state: ActionState.Complete });
@@ -203,6 +203,10 @@ export function createActionSystem(
 
     // Remove the action data
     actionData.delete(actionId);
+
+    // Remove the action entity after some time
+    const actionIndex = world.entityToIndex.get(actionId);
+    actionIndex != null && setTimeout(() => removeComponent(Action, actionIndex), 5000);
   }
 
   return { add, cancel, withOptimisticUpdates };

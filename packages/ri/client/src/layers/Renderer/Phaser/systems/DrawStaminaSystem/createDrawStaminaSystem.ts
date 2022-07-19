@@ -14,6 +14,7 @@ export function createDrawStaminaSystem(layer: PhaserLayer) {
       },
       headless: {
         components: { LocalStamina },
+        actions: { withOptimisticUpdates },
       },
     },
     scenes: {
@@ -26,12 +27,14 @@ export function createDrawStaminaSystem(layer: PhaserLayer) {
     },
   } = layer;
 
-  defineSystem(world, [Has(LocalPosition), Has(LocalStamina), Has(Stamina)], ({ entity, type }) => {
+  const OptimisticStamina = withOptimisticUpdates(Stamina);
+
+  defineSystem(world, [Has(LocalPosition), Has(LocalStamina), Has(OptimisticStamina)], ({ entity, type }) => {
     if (type === UpdateType.Exit) {
       objectPool.remove(`${entity}-stamina`);
     } else if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
-      const currentStamina = getComponentValueStrict(LocalStamina, entity).current;
-      const maxStamina = getComponentValueStrict(Stamina, entity).max;
+      const stamina = getComponentValueStrict(OptimisticStamina, entity);
+      const currentStamina = getComponentValueStrict(LocalStamina, entity).current + stamina.current;
       const position = getComponentValueStrict(LocalPosition, entity);
 
       const highlight = objectPool.get(`${entity}-stamina`, "Text");
@@ -41,7 +44,7 @@ export function createDrawStaminaSystem(layer: PhaserLayer) {
           const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
 
           staminaText.setFontSize(8);
-          staminaText.setText(`${currentStamina} / ${maxStamina}`);
+          staminaText.setText(`${currentStamina} / ${stamina.max}`);
           staminaText.setPosition(pixelCoord.x - 5, pixelCoord.y + tileHeight);
         },
       });

@@ -13,7 +13,7 @@ import { LibTypes } from "./LibTypes.sol";
 
 abstract contract Component is IComponent {
   address public world;
-  address public owner;
+  address _owner;
   mapping(address => bool) public writeAccess;
 
   Set private entities;
@@ -25,14 +25,14 @@ abstract contract Component is IComponent {
   constructor(address _world, uint256 _id) {
     entities = new Set();
     valueToEntities = new MapSet();
-    owner = msg.sender;
+    _owner = msg.sender;
     writeAccess[msg.sender] = true;
     id = _id;
     if (_world != address(0)) registerWorld(_world);
   }
 
   modifier onlyOwner() {
-    require(msg.sender == owner, "ONLY_OWNER");
+    require(msg.sender == _owner, "ONLY_OWNER");
     _;
   }
 
@@ -41,9 +41,13 @@ abstract contract Component is IComponent {
     _;
   }
 
+  function owner() public view returns (address) {
+    return _owner;
+  }
+
   function transferOwnership(address newOwner) public onlyOwner {
     writeAccess[msg.sender] = false;
-    owner = newOwner;
+    _owner = newOwner;
     writeAccess[newOwner] = true;
   }
 

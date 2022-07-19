@@ -33,13 +33,21 @@ export function getCurrentTurn(
   gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String }>,
   clock: Clock
 ) {
+  return getTurnAtTime(world, gameConfigComponent, clock.currentTime);
+}
+
+export function getTurnAtTime(
+  world: World,
+  gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String }>,
+  time: number
+) {
   const gameConfig = getGameConfig(world, gameConfigComponent);
   if (!gameConfig) return -1;
 
   const startTime = BigNumber.from(gameConfig.startTime);
   const turnLength = BigNumber.from(gameConfig.turnLength);
 
-  return BigNumber.from(clock.currentTime / 1000)
+  return BigNumber.from(Math.floor(time / 1000))
     .sub(startTime)
     .div(turnLength)
     .toNumber();

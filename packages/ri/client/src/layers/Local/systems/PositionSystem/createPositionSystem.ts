@@ -31,7 +31,9 @@ export function createPositionSystem(layer: LocalLayer) {
   defineComponentSystem(world, Position, (update) => {
     const { entity, value } = update;
     const [currentValue] = value;
-    if (!hasComponent(LocalPosition, entity) && currentValue) setComponent(LocalPosition, entity, currentValue);
+    if (!hasComponent(LocalPosition, entity) && currentValue) {
+      setComponent(LocalPosition, entity, currentValue);
+    }
   });
 
   defineComponentSystem(world, withOptimisticUpdates(Position), (update) => {
@@ -53,7 +55,9 @@ export function createPositionSystem(layer: LocalLayer) {
     }
 
     const localPosition = getComponentValue(LocalPosition, entity);
-    if (!localPosition || worldCoordEq(targetPosition, localPosition)) return;
+    if (!localPosition || worldCoordEq(targetPosition, localPosition)) {
+      return;
+    }
 
     const isUntraversableFunc = (targetPosition: WorldCoord) =>
       isUntraversable(Untraversable, LocalPosition, targetPosition);

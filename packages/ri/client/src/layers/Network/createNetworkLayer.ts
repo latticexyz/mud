@@ -224,6 +224,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     contractConfig,
     world,
     components.Systems,
+    components.Components,
     components,
     mappings,
     DEV_MODE
@@ -241,7 +242,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
         `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
       );
 
-    const data = encoders[component.id](newValue);
+    const data = (await encoders)[component.metadata.contractId](newValue);
     const entityId = world.entities[entity];
 
     console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entityId}`);
@@ -259,7 +260,8 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
 
   async function moveEntity(entity: string, path: WorldCoord[]) {
     console.log(`Moving entity ${entity} to position (${path[path.length - 1].x}, ${path[path.length - 1].y})}`);
-    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), path);
+    // TODO: debug why moving tx fails when stamina is going from 1 to 0 and we estimate gas
+    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), path, { gasLimit: 1_000_000 });
   }
 
   async function attackEntity(attacker: EntityID, defender: EntityID) {

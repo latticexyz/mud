@@ -13,14 +13,26 @@ import {
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import { abi as WorldAbi } from "ri-contracts/abi/World.json";
 import { bufferTime, filter, Observable, Subject } from "rxjs";
-import { Component, Components, removeComponent, Schema, setComponent, Type, World } from "@latticexyz/recs";
-import { computed } from "mobx";
-import { stretch } from "@latticexyz/utils";
+import {
+  Component,
+  Components,
+  EntityIndex,
+  getComponentEntities,
+  getComponentValueStrict,
+  removeComponent,
+  Schema,
+  setComponent,
+  Type,
+  World,
+} from "@latticexyz/recs";
+import { computed, IComputedValue } from "mobx";
+import { stretch, toEthAddress } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
-import { Contract } from "ethers";
+import { Contract, Signer } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 import { SystemTypes } from "ri-contracts/types/SystemTypes";
 import { SystemAbis } from "ri-contracts/types/SystemAbis.mjs";
+import { JsonRpcProvider } from "@ethersproject/providers";
 
 export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
@@ -33,12 +45,19 @@ export async function setupContracts<C extends ContractComponents>(
   config: SetupContractConfig,
   world: World,
   systemsComponent: Component<{ value: Type.String }>,
+  componentsComponent: Component<{ value: Type.String }>,
   components: C,
   mappings: Mappings<C>,
   devMode?: boolean
 ) {
   const network = await createNetwork(config);
   world.registerDisposer(network.dispose);
+
+  console.log(
+    "Initial block",
+    config.initialBlockNumber,
+    await network.providers.get().json.getBlock(config.initialBlockNumber)
+  );
 
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
@@ -69,19 +88,38 @@ export async function setupContracts<C extends ContractComponents>(
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
+  const encoders = createEncoders(world, componentsComponent, signerOrProvider);
+
+  return { txQueue, txReduced$, encoders, network, startSync, systems };
+}
+
+async function createEncoders(
+  world: World,
+  components: Component<{ value: Type.String }>,
+  signerOrProvider: IComputedValue<JsonRpcProvider | Signer>
+) {
   const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
-  for (const component of Object.values(components)) {
-    const componentAddress = await txQueue.World.getComponent(component.metadata.contractId);
+
+  async function fetchAndCreateEncoder(entity: EntityIndex) {
+    const componentAddress = toEthAddress(world.entities[entity]);
+    const componentId = getComponentValueStrict(components, entity).value;
     const componentContract = new Contract(
       componentAddress,
       ComponentAbi.abi,
       signerOrProvider.get()
     ) as SolecsComponent;
-
     const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
-    encoders[component.id] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
+    encoders[componentId] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
   }
-  return { txQueue, txReduced$, encoders, network, startSync, systems };
+
+  // Initial setup
+  for (const entity of getComponentEntities(components)) fetchAndCreateEncoder(entity);
+
+  // Keep up to date
+  const subscription = components.update$.subscribe((update) => fetchAndCreateEncoder(update.entity));
+  world.registerDisposer(() => subscription?.unsubscribe());
+
+  return encoders;
 }
 
 /**

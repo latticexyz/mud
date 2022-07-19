@@ -3,6 +3,7 @@ import { registerJoinGame } from "./JoinGame";
 import { registerGameOutcome } from "./GameOutcome";
 import { registerSelection } from "./Selection";
 import { registerTurnTimer } from "./TurnTimer";
+import { registerActionQueue } from "./ActionQueue";
 
 export function registerUIComponents() {
   registerSelection();
@@ -10,4 +11,5 @@ export function registerUIComponents() {
   registerJoinGame();
   registerGameOutcome();
   registerComponentBrowser();
+  registerActionQueue();
 }
