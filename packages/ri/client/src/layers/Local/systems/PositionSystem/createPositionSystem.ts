@@ -77,7 +77,6 @@ export function createPositionSystem(layer: LocalLayer) {
 
       setComponent(Path, entity, { x, y });
     } else {
-      console.log("manually setting LocalPosition");
       // If no Path to the target is found, we assume that the
       // Position change occurred outside of normal movement
       // and just set LocalPosition manually.
