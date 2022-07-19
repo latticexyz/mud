@@ -11,45 +11,58 @@ export function createPotentialPathSystem(layer: LocalLayer) {
     parentLayers: {
       headless: {
         components: { LocalStamina },
+        actions: { withOptimisticUpdates },
       },
       network: {
-        components: { Movable, Untraversable },
+        components: { Movable, Untraversable, Stamina },
       },
     },
   } = layer;
 
-  defineSystem(world, [Has(Selected), Has(LocalPosition), Has(LocalStamina)], ({ type, entity }) => {
-    const currentStamina = getComponentValue(LocalStamina, entity);
+  const OptimisticStamina = withOptimisticUpdates(Stamina);
 
-    if (type === UpdateType.Exit || currentStamina?.current === 0) {
-      removeComponent(PotentialPath, entity);
-    } else if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
-      const position = getComponentValue(LocalPosition, entity);
-      if (!position) return;
+  defineSystem(
+    world,
+    [Has(Selected), Has(LocalPosition), Has(LocalStamina), Has(OptimisticStamina)],
+    ({ type, entity }) => {
+      const localStamina = getComponentValue(LocalStamina, entity);
+      if (!localStamina) return;
 
-      const moveSpeed = getComponentValue(Movable, entity)?.value;
-      if (!moveSpeed) return;
+      const stamina = getComponentValue(OptimisticStamina, entity);
+      if (!stamina) return;
 
-      const localPosition = getComponentValue(LocalPosition, entity);
-      if (!localPosition) return;
+      const currentStamina = localStamina.current + stamina.current;
 
-      const xArray: number[] = [];
-      const yArray: number[] = [];
+      if (type === UpdateType.Exit || currentStamina === 0) {
+        removeComponent(PotentialPath, entity);
+      } else if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
+        const position = getComponentValue(LocalPosition, entity);
+        if (!position) return;
 
-      const isUntraversableFunc = (targetPosition: WorldCoord) =>
-        isUntraversable(Untraversable, LocalPosition, targetPosition);
-      const paths = BFS(localPosition, moveSpeed, isUntraversableFunc);
+        const moveSpeed = getComponentValue(Movable, entity)?.value;
+        if (!moveSpeed) return;
 
-      for (const coord of paths) {
-        xArray.push(coord.x);
-        yArray.push(coord.y);
+        const localPosition = getComponentValue(LocalPosition, entity);
+        if (!localPosition) return;
+
+        const xArray: number[] = [];
+        const yArray: number[] = [];
+
+        const isUntraversableFunc = (targetPosition: WorldCoord) =>
+          isUntraversable(Untraversable, LocalPosition, targetPosition);
+        const paths = BFS(localPosition, moveSpeed, isUntraversableFunc);
+
+        for (const coord of paths) {
+          xArray.push(coord.x);
+          yArray.push(coord.y);
+        }
+
+        const potentialPaths = {
+          x: xArray,
+          y: yArray,
+        };
+        setComponent(PotentialPath, entity, potentialPaths);
       }
-
-      const potentialPaths = {
-        x: xArray,
-        y: yArray,
-      };
-      setComponent(PotentialPath, entity, potentialPaths);
     }
-  });
+  );
 }

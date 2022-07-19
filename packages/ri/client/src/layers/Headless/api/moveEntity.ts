@@ -17,7 +17,7 @@ export function moveEntity(
 ) {
   const {
     network: {
-      components: { Position, Movable, Untraversable, OwnedBy, Stamina },
+      components: { Position, Movable, Untraversable, OwnedBy, Stamina, LastActionTurn },
       network: { connectedAddress },
       api: networkApi,
     },
@@ -62,6 +62,13 @@ export function moveEntity(
       Stamina,
     },
     requirement: ({ LocalStamina, Position }) => {
+      const stamina = getComponentValue(Stamina, entity);
+      if (!stamina) {
+        console.warn("no stamina");
+        actions.cancel(actionID);
+        return null;
+      }
+
       const localStamina = getComponentValue(LocalStamina, entity);
       if (!localStamina) {
         console.warn("no local stamina");
@@ -69,7 +76,7 @@ export function moveEntity(
         return null;
       }
 
-      const netStamina = localStamina.current - 1;
+      const netStamina = stamina.current + localStamina.current - 1;
       if (netStamina < 0) {
         console.warn("net stamina below 0");
         actions.cancel(actionID);
@@ -103,7 +110,7 @@ export function moveEntity(
         value: targetPosition,
       },
       {
-        component: "LocalStamina",
+        component: "Stamina",
         entity,
         value: { current: netStamina },
       },

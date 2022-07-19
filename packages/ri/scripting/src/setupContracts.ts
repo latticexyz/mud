@@ -1,5 +1,5 @@
 import { createNetwork, createContracts, createSystemExecutor } from "@latticexyz/network";
-import { DEV_PRIVATE_KEY, WORLD_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.degen";
+import { DEV_PRIVATE_KEY, WORLD_ADDRESS, RPC_URL, RPC_WS_URL } from "./constants.local";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
 import WorldAbi from "ri-contracts/abi/World.json";
 import { computed } from "mobx";
