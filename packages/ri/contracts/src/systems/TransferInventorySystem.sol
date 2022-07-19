@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import { ISystem } from "solecs/interfaces/ISystem.sol";
+import "solecs/System.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
@@ -29,12 +29,8 @@ import { StructureTypes } from "../utils/Types.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.TransferInventory"));
 
-contract TransferInventorySystem is ISystem {
-  IUint256Component components;
-
-  constructor(IUint256Component _components, IWorld) {
-    components = _components;
-  }
+contract TransferInventorySystem is System {
+  constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
     (uint256 inventoryOwnerEntity, uint256 receiverEntity) = abi.decode(arguments, (uint256, uint256));
