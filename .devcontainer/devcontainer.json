@@ -1,4 +1,4 @@
 {
-  "onCreateCommand": "curl -L https://foundry.paradigm.xyz | bash && source /home/codespace/.bashrc && foundryup",
+  "onCreateCommand": "curl -L https://foundry.paradigm.xyz | bash && . /home/codespace/.bashrc && foundryup",
   "updateContentCommand": "yarn"
 }
