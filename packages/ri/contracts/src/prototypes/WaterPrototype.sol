@@ -10,7 +10,7 @@ import { UntraversableComponent, ID as UntraversableComponentID } from "../compo
 
 import { TerrainTypes } from "../utils/Types.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.water"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.Water"));
 
 function WaterPrototype(IUint256Component components) {
   TerrainTypeComponent(getAddressById(components, TerrainTypeComponentID)).set(ID, uint32(TerrainTypes.Water));

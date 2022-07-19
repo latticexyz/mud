@@ -21,7 +21,7 @@ import { StructureTypes, ItemTypes } from "../utils/Types.sol";
 
 import { ID as SoldierID } from "./SoldierPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.emptySettlement"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.EmptySettlement"));
 
 function EmptySettlementPrototype(IUint256Component components) {
   StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(

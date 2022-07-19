@@ -10,7 +10,7 @@ import { PrototypeComponent, ID as PrototypeComponentID } from "../components/Pr
 import { PrototypeCopyComponent, ID as PrototypeCopyComponentID } from "../components/PrototypeCopyComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.prototype"));
+uint256 constant ID = uint256(keccak256("mudwar.system.Prototype"));
 
 library LibPrototype {
   function copyPrototype(

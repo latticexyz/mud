@@ -22,7 +22,7 @@ import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedB
 import { FactoryComponent, Factory, ID as FactoryComponentID } from "../components/FactoryComponent.sol";
 import { ItemTypeComponent, ID as ItemTypeComponentID } from "../components/ItemTypeComponent.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.factory"));
+uint256 constant ID = uint256(keccak256("mudwar.system.Factory"));
 
 struct FactoryPlan {
   uint256 prototypeId;

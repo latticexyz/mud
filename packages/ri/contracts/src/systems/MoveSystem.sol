@@ -18,7 +18,7 @@ import { UntraversableComponent, ID as UntraversableComponentID } from "../compo
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { console } from "forge-std/console.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.move"));
+uint256 constant ID = uint256(keccak256("mudwar.system.Move"));
 
 contract MoveSystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

@@ -17,7 +17,7 @@ import { InventoryComponent, ID as InventoryComponentID } from "../components/In
 
 import { UnitTypes } from "../utils/Types.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.donkey"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.Donkey"));
 
 function DonkeyPrototype(IUint256Component components) {
   UnitTypeComponent(getAddressById(components, UnitTypeComponentID)).set(ID, uint32(UnitTypes.Donkey));

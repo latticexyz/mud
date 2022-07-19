@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 import "std-contracts/components/BoolComponent.sol";
 
-uint256 constant ID = uint256(keccak256("ember.component.spawnPoint"));
+uint256 constant ID = uint256(keccak256("mudwar.component.SpawnPoint"));
 
 contract SpawnPointComponent is BoolComponent {
   constructor(address world) BoolComponent(world, ID) {}

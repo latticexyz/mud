@@ -21,7 +21,7 @@ import { InventoryComponent, ID as InventoryComponentID } from "../components/In
 import { DeathComponent, ID as DeathComponentID } from "../components/DeathComponent.sol";
 import { HeroComponent, ID as HeroComponentID } from "../components/HeroComponent.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.combat"));
+uint256 constant ID = uint256(keccak256("mudwar.system.Combat"));
 
 contract CombatSystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

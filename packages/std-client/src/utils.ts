@@ -26,7 +26,7 @@ import { Clock } from "@latticexyz/network";
 //   return [...playerEntitySet][0];
 // }
 
-export const GodID = keccak256("ember.god") as EntityID;
+export const GodID = keccak256("mudwar.god") as EntityID;
 
 export function getCurrentTurn(
   world: World,

@@ -9,7 +9,7 @@ import { TerrainTypeComponent, ID as TerrainTypeComponentID } from "../component
 
 import { TerrainTypes } from "../utils/Types.sol";
 
-uint256 constant ID = uint256(keccak256("ember.prototype.grass"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.Grass"));
 
 function GrassPrototype(IUint256Component components) {
   TerrainTypeComponent(getAddressById(components, TerrainTypeComponentID)).set(ID, uint32(TerrainTypes.Grass));

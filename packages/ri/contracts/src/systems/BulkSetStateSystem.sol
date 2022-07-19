@@ -6,7 +6,7 @@ import { getAddressById, getSystemAddressById } from "solecs/utils.sol";
 import { ComponentDevSystem, ID as ComponentDevSystemID } from "./ComponentDevSystem.sol";
 import { PrototypeDevSystem, ID as PrototypeDevSystemID } from "./PrototypeDevSystem.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.bulkSetStateSystem"));
+uint256 constant ID = uint256(keccak256("mudwar.system.BulkSetState"));
 
 struct ECSEvent {
   uint8 component;

@@ -8,7 +8,7 @@ struct Factory {
   uint32[] costItemTypes;
 }
 
-uint256 constant ID = uint256(keccak256("ember.component.factoryComponent"));
+uint256 constant ID = uint256(keccak256("mudwar.component.Factory"));
 
 contract FactoryComponent is Component {
   constructor(address world) Component(world, ID) {}

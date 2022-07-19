@@ -25,7 +25,7 @@ import { ID as DonkeyID } from "../prototypes/DonkeyPrototype.sol";
 import { ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
 import { ID as HeroID } from "../prototypes/HeroPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.playerJoin"));
+uint256 constant ID = uint256(keccak256("mudwar.system.PlayerJoin"));
 
 contract PlayerJoinSystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

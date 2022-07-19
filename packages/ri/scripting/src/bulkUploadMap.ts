@@ -72,7 +72,7 @@ async function bulkUpload(
   // console.log(components, entities, state);
   try {
     tx = callWithRetry(
-      systems["ember.system.bulkSetStateSystem"].executeTyped,
+      systems["mudwar.system.BulkSetState"].executeTyped,
       [components, entities, state, { gasLimit: gasLimit, gasPrice: GAS_PRICE }],
       10
     );

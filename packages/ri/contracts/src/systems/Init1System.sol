@@ -10,7 +10,7 @@ import { GuardPrototype } from "../prototypes/GuardPrototype.sol";
 import { SettlementPrototype } from "../prototypes/SettlementPrototype.sol";
 import { EmptySettlementPrototype } from "../prototypes/EmptySettlementPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.init1"));
+uint256 constant ID = uint256(keccak256("mudwar.system.Init1"));
 
 contract Init1System is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}

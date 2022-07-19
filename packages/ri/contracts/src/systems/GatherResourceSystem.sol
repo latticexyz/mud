@@ -21,7 +21,7 @@ import { ResourceGeneratorComponent, ID as ResourceGeneratorComponentID } from "
 
 import { ID as GoldID } from "../prototypes/GoldPrototype.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.gatherResource"));
+uint256 constant ID = uint256(keccak256("mudwar.system.GatherResource"));
 
 contract GatherResourceSystem is System {
   constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}
