@@ -2,6 +2,7 @@
   "components": ["PositionComponent"],
   "systems": [
     { "name": "ComponentDevSystem", "writeAccess": ["*"] },
-    { "name": "MoveSystem", "writeAccess": ["PositionComponent"] }
+    { "name": "MoveSystem", "writeAccess": ["PositionComponent"] },
+    { "name": "CatchSystem", "writeAccess": ["PositionComponent"] }
   ]
 }
