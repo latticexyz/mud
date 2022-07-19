@@ -17,7 +17,7 @@ import { SpawnPointComponent, ID as SpawnPointComponentID } from "../components/
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 
-import { StructureTypes } from "../utils/Types.sol";
+import { StructureTypes, ItemTypes } from "../utils/Types.sol";
 
 import { ID as SoldierID } from "./SoldierPrototype.sol";
 
@@ -45,7 +45,7 @@ function EmptySettlementPrototype(IUint256Component components) {
   costs[0] = 1;
 
   uint32[] memory costItemTypes = new uint32[](1);
-  costItemTypes[0] = 1;
+  costItemTypes[0] = uint32(ItemTypes.Gold);
 
   FactoryComponent(getAddressById(components, FactoryComponentID)).set(ID, Factory(prototypeIds, costs, costItemTypes));
 
