@@ -75,7 +75,7 @@ export const config = {
       sprites: {
         [Sprites.Hero]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/warriors/hero.png",
+          frame: "sprites/workers/crypto-picker-imp.png",
         },
         [Sprites.Settlement]: {
           assetKey: Assets.MainAtlas,
@@ -104,6 +104,10 @@ export const config = {
         [Sprites.Donkey]: {
           assetKey: Assets.MainAtlas,
           frame: "sprites/workers/donkey.png",
+        },
+        [Sprites.Soldier]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/warriors/hero.png",
         },
       },
       animations: [],

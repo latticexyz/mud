@@ -6,6 +6,7 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 
 import { InventoryPrototype } from "../prototypes/InventoryPrototype.sol";
 import { GoldPrototype } from "../prototypes/GoldPrototype.sol";
+import { HeroPrototype } from "../prototypes/HeroPrototype.sol";
 import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
 import { DonkeyPrototype } from "../prototypes/DonkeyPrototype.sol";
 import { GuardPrototype } from "../prototypes/GuardPrototype.sol";
@@ -33,6 +34,7 @@ contract Init1System is ISystem {
     // Initialize Prototypes
     InventoryPrototype(components);
     GoldPrototype(components);
+    HeroPrototype(components, world);
     SoldierPrototype(components, world);
     DonkeyPrototype(components, world);
     GuardPrototype(components, world);

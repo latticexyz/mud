@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
+import { console } from "forge-std/console.sol";
 import { ISystem } from "solecs/interfaces/ISystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
@@ -26,6 +27,7 @@ import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
 import { ID as DonkeyID } from "../prototypes/DonkeyPrototype.sol";
 import { ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
 import { ID as InventoryID } from "../prototypes/InventoryPrototype.sol";
+import { ID as HeroID } from "../prototypes/HeroPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.playerJoin"));
 
@@ -54,30 +56,29 @@ contract PlayerJoinSystem is ISystem {
 
     Coord[] memory unitPositions = new Coord[](4);
 
-    unitPositions[0] = Coord(spawnPosition.x + 1, spawnPosition.y);
-    unitPositions[1] = Coord(spawnPosition.x - 1, spawnPosition.y);
+    unitPositions[0] = Coord(spawnPosition.x, spawnPosition.y - 1);
+    unitPositions[1] = Coord(spawnPosition.x + 1, spawnPosition.y);
     unitPositions[2] = Coord(spawnPosition.x, spawnPosition.y + 1);
-    unitPositions[3] = Coord(spawnPosition.x, spawnPosition.y - 1);
+    unitPositions[3] = Coord(spawnPosition.x - 1, spawnPosition.y);
 
-    return abi.encode(spawnEntity, unitPositions, playerComponent);
+    return abi.encode(spawnEntity, unitPositions);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (uint256 spawnEntity, Coord[] memory unitPositions, PlayerComponent playerComponent) = abi.decode(
-      requirement(arguments),
-      (uint256, Coord[], PlayerComponent)
-    );
+    (uint256 spawnEntity, Coord[] memory unitPositions) = abi.decode(requirement(arguments), (uint256, Coord[]));
 
     // Create player entity
     uint256 playerEntity = addressToEntity(msg.sender);
-    playerComponent.set(playerEntity);
+    PlayerComponent(getAddressById(components, PlayerComponentID)).set(playerEntity);
+
     OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(spawnEntity, playerEntity);
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
       spawnEntity,
       LibStamina.getCurrentTurn(components)
     );
 
-    for (uint256 i; i < unitPositions.length; i++) {
+    spawnHero(playerEntity, unitPositions[0]);
+    for (uint256 i = 1; i < unitPositions.length; i++) {
       spawnDonkey(playerEntity, unitPositions[i]);
     }
   }
@@ -93,6 +94,18 @@ contract PlayerJoinSystem is ISystem {
   // ------------------------
   // Internals
   // ------------------------
+  function spawnHero(uint256 ownerId, Coord memory position) private {
+    uint256 entity = LibPrototype.copyPrototype(components, world, HeroID);
+
+    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
+
+    PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
+
+    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
+      entity,
+      LibStamina.getCurrentTurn(components) - 3
+    );
+  }
 
   function spawnDonkey(uint256 ownerId, Coord memory position) private {
     uint256 entity = LibPrototype.copyPrototype(components, world, DonkeyID);

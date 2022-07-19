@@ -12,11 +12,13 @@ export enum ContractWorldEvent {
 export enum UnitTypes {
   Hero,
   Donkey,
+  Soldier,
 }
 
 export const UnitTypeNames: Record<number, string> = {
   [UnitTypes.Hero]: "Hero",
   [UnitTypes.Donkey]: "Donkey",
+  [UnitTypes.Soldier]: "Soldier",
 };
 
 export enum StructureTypes {

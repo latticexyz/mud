@@ -2,10 +2,12 @@ import { PhaserLayer } from "../../types";
 import { pixelToWorldCoord } from "../../utils";
 import { map } from "rxjs";
 import {
+  EntityID,
   EntityIndex,
   getComponentValue,
   getComponentValueStrict,
   Has,
+  hasComponent,
   HasValue,
   Not,
   ProxyExpand,
@@ -24,19 +26,29 @@ export function createInputSystem(layer: PhaserLayer) {
     parentLayers: {
       network: {
         world,
-        components: { Factory, TerrainType },
-        api: { buildAt, dropInventory, gatherResource },
-      },
-      headless: {
-        api: { moveEntity, attackEntity },
-      },
-      network: {
-        components: { OwnedBy, Inventory, Health, ResourceGenerator, EscapePortal },
+        components: {
+          Factory,
+          TerrainType,
+          OwnedBy,
+          Inventory,
+          Health,
+          ResourceGenerator,
+          EscapePortal,
+          Player,
+          Death,
+        },
         api: {
+          buildAt,
+          dropInventory,
+          gatherResource,
           takeItem,
           escapePortal,
           dev: { spawnGold },
         },
+        network: { connectedAddress },
+      },
+      headless: {
+        api: { moveEntity, attackEntity },
       },
       local: {
         singletonEntity,
@@ -121,6 +133,12 @@ export function createInputSystem(layer: PhaserLayer) {
   };
 
   const onRightClick = function (targetPosition: WorldCoord) {
+    const playerEntity = world.entityToIndex.get(connectedAddress.get() as EntityID);
+
+    if (playerEntity != null && hasComponent(Player, playerEntity) && hasComponent(Death, playerEntity)) {
+      return;
+    }
+
     const selectedEntity = getSelectedEntity();
     if (selectedEntity) {
       const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
@@ -166,7 +184,7 @@ export function createInputSystem(layer: PhaserLayer) {
 
       const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
       const highlightedEntity = [
-        ...runQuery([HasValue(LocalPosition, { x: hoverHighlight.x, y: hoverHighlight.y })]),
+        ...runQuery([HasValue(LocalPosition, { x: hoverHighlight.x, y: hoverHighlight.y }), Not(TerrainType)]),
       ][0];
       if (!highlightedEntity) return;
 
