@@ -27,7 +27,7 @@
     "anvil:node": "anvil -b 1 --block-base-fee-per-gas 0",
     "hardhat:node": "hardhat node",
     "hardhat:resetfee": "curl -X POST localhost:8545 -H \"Content-Type: application/json\" --data '{\"jsonrpc\": \"2.0\", \"method\": \"hardhat_setNextBlockBaseFeePerGas\", \"params\": [\"0x0\"], \"id\": 1 }'",
-    "forge:deploy": "yarn codegen && forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv",
+    "forge:deploy": "yarn build && forge script ./src/test/utils/BroadcastDeploy.sol --target-contract Deploy --broadcast -vvv",
     "codegen": "yarn ejs src/libraries/LibDeploy.ejs -f deploy.json -o src/libraries/LibDeploy.sol"
   },
   "devDependencies": {
