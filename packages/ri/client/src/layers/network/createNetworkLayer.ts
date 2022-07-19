@@ -1,6 +1,6 @@
 import { createWorld } from "@latticexyz/recs";
 import { setupContracts, setupDevSystems } from "./setup";
-import { createActionSystem } from "@latticexyz/std-client";
+import { createActionSystem, defineCoordComponent } from "@latticexyz/std-client";
 import { GameConfig } from "./config";
 
 /**
@@ -14,7 +14,9 @@ export async function createNetworkLayer(config: GameConfig) {
   const world = createWorld();
 
   // --- COMPONENTS -----------------------------------------------------------------
-  const components = {};
+  const components = {
+    Position: defineCoordComponent(world, { id: "Position", metadata: { contractId: "ember.component.position" } }),
+  };
 
   // --- SETUP ----------------------------------------------------------------------
   const { txQueue, systems, txReduced$, network, startSync, encoders } = await setupContracts(
