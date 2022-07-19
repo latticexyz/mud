@@ -248,7 +248,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     const entityId = world.entities[entity];
 
     console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entityId}`);
-    await systems["mudwar.component.ComponentDev"].executeTyped(
+    await systems["mudwar.system.ComponentDev"].executeTyped(
       component.metadata.contractId,
       BigNumber.from(entityId),
       data
