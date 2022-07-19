@@ -5,8 +5,7 @@ export function getItems(
   itemTypeComponent: Component<{ value: Type.Number }>,
   entityIndexToID: EntityID[]
 ) {
-  const func = (entity: EntityIndex) => [
+  return (entity: EntityIndex) => [
     ...runQuery([HasValue(ownedByComponent, { value: entityIndexToID[entity] }), Has(itemTypeComponent)]),
   ];
-  return func;
 }
