@@ -31,9 +31,10 @@ export function moveEntity(
   if (!moveSpeed) return;
 
   // Entity must be owned by the player
-  let movingEntityOwner = getComponentValue(OwnedBy, entity)?.value;
+  const movingEntityOwner = getComponentValue(OwnedBy, entity)?.value;
   if (movingEntityOwner == null) {
-    movingEntityOwner = world.entities[entity]; // entity can be the player entity
+    console.warn("Entity has no owner");
+    return;
   }
 
   if (movingEntityOwner !== connectedAddress.get()) {
