@@ -19,11 +19,9 @@ import { UntraversableComponent, ID as UntraversableComponentID } from "../compo
 
 import { UnitTypes } from "../utils/Types.sol";
 
-import { ID as InventoryID } from "./InventoryPrototype.sol";
-
 uint256 constant ID = uint256(keccak256("ember.prototype.Hero"));
 
-function HeroPrototype(IUint256Component components, IWorld world) {
+function HeroPrototype(IUint256Component components) {
   UnitTypeComponent(getAddressById(components, UnitTypeComponentID)).set(ID, uint32(UnitTypes.Hero));
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
@@ -33,19 +31,18 @@ function HeroPrototype(IUint256Component components, IWorld world) {
   AttackComponent(getAddressById(components, AttackComponentID)).set(ID, Attack({ strength: 60_000, range: 1 }));
   MovableComponent(getAddressById(components, MovableComponentID)).set(ID, int32(3));
   UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
+  InventoryComponent(getAddressById(components, InventoryComponentID)).set(ID, 6);
   HeroComponent(getAddressById(components, HeroComponentID)).set(ID);
 
-  uint256[] memory componentIds = new uint256[](7);
+  uint256[] memory componentIds = new uint256[](8);
   componentIds[0] = UnitTypeComponentID;
   componentIds[1] = StaminaComponentID;
   componentIds[2] = MovableComponentID;
   componentIds[3] = HealthComponentID;
   componentIds[4] = AttackComponentID;
   componentIds[5] = UntraversableComponentID;
-  componentIds[6] = HeroComponentID;
+  componentIds[6] = InventoryComponentID;
+  componentIds[7] = HeroComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);
-
-  uint256 inventoryEntity = LibPrototype.createPrototypeFromPrototype(components, world, InventoryID, ID);
-  InventoryComponent(getAddressById(components, InventoryComponentID)).set(inventoryEntity, 6);
 }

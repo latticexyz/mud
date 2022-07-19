@@ -7,11 +7,11 @@ import { getAddressById } from "solecs/utils.sol";
 
 import { LibQuery } from "solecs/LibQuery.sol";
 import { LibPrototype } from "../libraries/LibPrototype.sol";
+import { LibInventory } from "../libraries/LibInventory.sol";
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 
-import { ID as InventoryID } from "../prototypes/InventoryPrototype.sol";
 import { ID as GoldID } from "../prototypes/GoldPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.spawnGoldDev"));
@@ -34,11 +34,11 @@ contract SpawnGoldDevSystem is ISystem {
     PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
 
-    uint256 inventoryEntity = LibPrototype.copyPrototype(components, world, InventoryID);
-    positionComponent.set(inventoryEntity, targetPosition);
+    uint256 containerEntity = LibInventory.createContainer(components, world, 1);
+    positionComponent.set(containerEntity, targetPosition);
 
     uint256 goldEntity = LibPrototype.copyPrototype(components, world, GoldID);
-    ownedByComponent.set(goldEntity, inventoryEntity);
+    ownedByComponent.set(goldEntity, containerEntity);
   }
 
   function executeTyped(Coord memory targetPosition) public returns (bytes memory) {

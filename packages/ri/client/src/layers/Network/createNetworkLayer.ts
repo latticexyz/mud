@@ -276,17 +276,17 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     );
   }
 
-  async function takeItem(takerInventoryEntity: EntityID, itemEntity: EntityID) {
-    console.log(`taking item ${itemEntity}.`);
-    return systems["ember.system.takeItem"].executeTyped(
-      BigNumber.from(takerInventoryEntity),
-      BigNumber.from(itemEntity)
+  async function transferInventory(inventoryOwnerEntity: EntityID, receiverEntity: EntityID) {
+    console.log(`transfering inventory from  ${inventoryOwnerEntity} to ${receiverEntity}.`);
+    return systems["ember.system.TransferInventory"].executeTyped(
+      BigNumber.from(inventoryOwnerEntity),
+      BigNumber.from(receiverEntity)
     );
   }
 
-  async function dropInventory(ownedInventoryEntity: EntityID, targetPosition: WorldCoord) {
+  async function dropInventory(ownedEntity: EntityID, targetPosition: WorldCoord) {
     console.log(`Drop Inventory at position ${JSON.stringify(targetPosition)}`);
-    return systems["ember.system.dropInventory"].executeTyped(BigNumber.from(ownedInventoryEntity), targetPosition);
+    return systems["ember.system.dropInventory"].executeTyped(BigNumber.from(ownedEntity), targetPosition);
   }
 
   async function gatherResource(generator: EntityID, gatherer: EntityID) {
@@ -329,7 +329,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       moveEntity,
       attackEntity,
       buildAt,
-      takeItem,
+      transferInventory,
       dropInventory,
       gatherResource,
       escapePortal,

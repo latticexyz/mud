@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import "std-contracts/components/Int32Component.sol";
+import "std-contracts/components/Uint32Component.sol";
 
 uint256 constant ID = uint256(keccak256("ember.component.inventoryComponent"));
 
-contract InventoryComponent is Int32Component {
-  constructor(address world) Int32Component(world, ID) {}
+contract InventoryComponent is Uint32Component {
+  constructor(address world) Uint32Component(world, ID) {}
 }

@@ -10,11 +10,11 @@ enum UnitTypes {
 enum StructureTypes {
   Settlement,
   GoldShrine,
-  EscapePortal
+  EscapePortal,
+  Container
 }
 
 enum ItemTypes {
-  Inventory,
   Gold,
   EmberCrown
 }

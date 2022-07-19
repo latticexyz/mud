@@ -4,7 +4,6 @@ import { ISystem } from "solecs/interfaces/ISystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 
-import { InventoryPrototype } from "../prototypes/InventoryPrototype.sol";
 import { GoldPrototype } from "../prototypes/GoldPrototype.sol";
 import { HeroPrototype } from "../prototypes/HeroPrototype.sol";
 import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
@@ -32,13 +31,12 @@ contract Init1System is ISystem {
 
   function execute(bytes memory) public returns (bytes memory) {
     // Initialize Prototypes
-    InventoryPrototype(components);
     GoldPrototype(components);
-    HeroPrototype(components, world);
-    SoldierPrototype(components, world);
-    DonkeyPrototype(components, world);
-    GuardPrototype(components, world);
-    SettlementPrototype(components, world);
-    EmptySettlementPrototype(components, world);
+    HeroPrototype(components);
+    SoldierPrototype(components);
+    DonkeyPrototype(components);
+    GuardPrototype(components);
+    SettlementPrototype(components);
+    EmptySettlementPrototype(components);
   }
 }

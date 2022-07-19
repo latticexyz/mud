@@ -42,20 +42,15 @@ contract GatherResourceSystem is ISystem {
 
     require(LibUtils.distanceBetween(components, generator, gatherer) <= 1, "too far from generator");
 
-    uint256 gathererInventory = LibInventory.getInventory(components, gatherer);
-
-    return abi.encode(generator, gatherer, gathererInventory);
+    return abi.encode(generator, gatherer);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (uint256 generator, uint256 gatherer, uint256 gathererInventory) = abi.decode(
-      requirement(arguments),
-      (uint256, uint256, uint256)
-    );
+    (uint256 generator, uint256 gatherer) = abi.decode(requirement(arguments), (uint256, uint256));
 
     LibStamina.modifyStamina(components, generator, -2);
     LibStamina.modifyStamina(components, gatherer, -1);
-    LibInventory.spawnItem(components, world, gathererInventory, GoldID);
+    LibInventory.spawnItem(components, world, gatherer, GoldID);
   }
 
   function requirementTyped(uint256 generator, uint256 gatherer) public view returns (bytes memory) {

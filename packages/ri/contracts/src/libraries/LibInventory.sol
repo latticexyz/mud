@@ -14,51 +14,70 @@ import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibPrototype } from "../libraries/LibPrototype.sol";
 
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
+import { ItemTypeComponent, ID as ItemTypeComponentID } from "../components/ItemTypeComponent.sol";
+import { StructureTypeComponent, ID as StructureTypeComponentID } from "../components/StructureTypeComponent.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
+import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
+
+import { ItemTypes, StructureTypes } from "../utils/Types.sol";
 
 library LibInventory {
   function dropInventory(
     IUint256Component components,
-    uint256 inventoryEntity,
+    IWorld world,
+    uint256 entity,
     Coord memory targetPosition
   ) internal {
-    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
-    ownedByComponent.remove(inventoryEntity);
+    uint256[] memory items = LibInventory.getItems(components, entity);
+    if (items.length == 0) return;
 
-    if (ownedByComponent.getEntitiesWithValue(inventoryEntity).length > 0) {
-      PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
-      positionComponent.set(inventoryEntity, targetPosition);
+    uint256 containerEntity = createContainer(components, world, uint32(items.length));
+    PositionComponent(getAddressById(components, PositionComponentID)).set(containerEntity, targetPosition);
+
+    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+    for (uint256 i = 0; i < items.length; i++) {
+      ownedByComponent.set(items[i], containerEntity);
     }
-  }
-
-  function getInventory(IUint256Component components, uint256 ownerEntity) internal view returns (uint256) {
-    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
-    InventoryComponent inventoryComponent = InventoryComponent(getAddressById(components, InventoryComponentID));
-
-    QueryFragment[] memory fragments = new QueryFragment[](2);
-    fragments[0] = QueryFragment(QueryType.HasValue, ownedByComponent, abi.encode(ownerEntity));
-    fragments[1] = QueryFragment(QueryType.Has, inventoryComponent, new bytes(0));
-    uint256[] memory inventoryEntities = LibQuery.query(fragments);
-
-    require(inventoryEntities.length == 1, "inventory not found");
-
-    return inventoryEntities[0];
   }
 
   function transferItem(
     IUint256Component components,
     uint256 itemEntity,
-    uint256 receiverInventoryEntity
+    uint256 receiverEntity
   ) internal {
-    requireHasSpace(components, receiverInventoryEntity);
+    requireHasSpace(components, receiverEntity);
 
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
-    ownedByComponent.set(itemEntity, receiverInventoryEntity);
+    ownedByComponent.set(itemEntity, receiverEntity);
   }
 
-  function getItems(IUint256Component components, uint256 inventoryId) internal view returns (uint256[] memory items) {
-    items = OwnedByComponent(getAddressById(components, OwnedByComponentID)).getEntitiesWithValue(inventoryId);
+  function transferItems(
+    IUint256Component components,
+    uint256 giverEntity,
+    uint256 receiverEntity
+  ) internal {
+    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
+    uint32 capacity = InventoryComponent(getAddressById(components, InventoryComponentID)).getValue(receiverEntity);
+    uint256[] memory giverItems = LibInventory.getItems(components, giverEntity);
+    for (uint256 i = 0; i < giverItems.length && i < capacity; i++) {
+      ownedByComponent.set(giverItems[i], receiverEntity);
+    }
+  }
+
+  function getItems(IUint256Component components, uint256 entity) internal view returns (uint256[] memory) {
+    QueryFragment[] memory fragments = new QueryFragment[](2);
+    fragments[0] = QueryFragment(
+      QueryType.HasValue,
+      OwnedByComponent(getAddressById(components, OwnedByComponentID)),
+      abi.encode(entity)
+    );
+    fragments[1] = QueryFragment(
+      QueryType.Has,
+      ItemTypeComponent(getAddressById(components, ItemTypeComponentID)),
+      new bytes(0)
+    );
+    return LibQuery.query(fragments);
   }
 
   function burnItem(IUint256Component components, uint256 itemEntity) internal {
@@ -69,22 +88,35 @@ library LibInventory {
   function spawnItem(
     IUint256Component components,
     IWorld world,
-    uint256 receiverInventoryEntity,
+    uint256 receiverEntity,
     uint256 prototypeId
   ) internal {
-    requireHasSpace(components, receiverInventoryEntity);
+    requireHasSpace(components, receiverEntity);
 
     uint256 itemEntity = LibPrototype.copyPrototype(components, world, prototypeId);
     OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
-    ownedByComponent.set(itemEntity, receiverInventoryEntity);
+    ownedByComponent.set(itemEntity, receiverEntity);
   }
 
-  function requireHasSpace(IUint256Component components, uint256 inventory) internal view returns (bool) {
-    uint256[] memory items = getItems(components, inventory);
-    require(
-      int32(uint32(items.length)) <
-        InventoryComponent(getAddressById(components, InventoryComponentID)).getValue(inventory),
-      "inventory full"
+  function createContainer(
+    IUint256Component components,
+    IWorld world,
+    uint32 capacity
+  ) internal returns (uint256 containerEntity) {
+    containerEntity = world.getUniqueEntityId();
+    InventoryComponent(getAddressById(components, InventoryComponentID)).set(containerEntity, capacity);
+    StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(
+      containerEntity,
+      uint32(StructureTypes.Container)
     );
+    UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(containerEntity);
+  }
+
+  function requireHasSpace(IUint256Component components, uint256 entity) internal view returns (uint32) {
+    uint256[] memory items = getItems(components, entity);
+    uint32 spaceLeft = InventoryComponent(getAddressById(components, InventoryComponentID)).getValue(entity) -
+      uint32(items.length);
+    require(spaceLeft > 0, "inventory full");
+    return spaceLeft;
   }
 }

@@ -85,7 +85,7 @@ export const config = {
           assetKey: Assets.MainAtlas,
           frame: "sprites/resources/gold.png",
         },
-        [Sprites.Inventory]: {
+        [Sprites.Container]: {
           assetKey: Assets.MainAtlas,
           frame: "sprites/resources/chest.png",
         },

@@ -2,7 +2,6 @@
 pragma solidity >=0.8.0;
 
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { getAddressById } from "solecs/utils.sol";
 
 import { LibPrototype } from "../libraries/LibPrototype.sol";
@@ -21,11 +20,10 @@ import { InventoryComponent, ID as InventoryComponentID } from "../components/In
 import { StructureTypes } from "../utils/Types.sol";
 
 import { ID as SoldierID } from "./SoldierPrototype.sol";
-import { ID as InventoryID } from "./InventoryPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.prototype.emptySettlement"));
 
-function EmptySettlementPrototype(IUint256Component components, IWorld world) {
+function EmptySettlementPrototype(IUint256Component components) {
   StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(
     ID,
     uint32(StructureTypes.Settlement)
@@ -38,6 +36,7 @@ function EmptySettlementPrototype(IUint256Component components, IWorld world) {
   AttackComponent(getAddressById(components, AttackComponentID)).set(ID, Attack({ strength: 60_000, range: 1 }));
   CapturableComponent(getAddressById(components, CapturableComponentID)).set(ID);
   UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
+  InventoryComponent(getAddressById(components, InventoryComponentID)).set(ID, uint32(10));
 
   uint256[] memory prototypeIds = new uint256[](1);
   prototypeIds[0] = SoldierID;
@@ -52,7 +51,7 @@ function EmptySettlementPrototype(IUint256Component components, IWorld world) {
 
   SpawnPointComponent(getAddressById(components, SpawnPointComponentID)).set(ID);
 
-  uint256[] memory componentIds = new uint256[](8);
+  uint256[] memory componentIds = new uint256[](9);
   componentIds[0] = StructureTypeComponentID;
   componentIds[1] = StaminaComponentID;
   componentIds[2] = HealthComponentID;
@@ -61,9 +60,7 @@ function EmptySettlementPrototype(IUint256Component components, IWorld world) {
   componentIds[5] = CapturableComponentID;
   componentIds[6] = SpawnPointComponentID;
   componentIds[7] = UntraversableComponentID;
+  componentIds[8] = InventoryComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);
-
-  uint256 inventoryEntity = LibPrototype.createPrototypeFromPrototype(components, world, InventoryID, ID);
-  InventoryComponent(getAddressById(components, InventoryComponentID)).set(inventoryEntity, 10);
 }

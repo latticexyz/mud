@@ -24,7 +24,7 @@ export enum Sprites {
   Hero,
   Settlement,
   Gold,
-  Inventory,
+  Container,
   GoldShrine,
   EmberCrown,
   EscapePortal,
@@ -41,7 +41,6 @@ export const UnitTypeSprites: Record<number, Sprites> = {
 };
 
 export const ItemTypeSprites: Record<number, Sprites> = {
-  [ItemTypes.Inventory]: Sprites.Inventory,
   [ItemTypes.Gold]: Sprites.Gold,
   [ItemTypes.EmberCrown]: Sprites.EmberCrown,
 };
@@ -50,4 +49,5 @@ export const StructureTypeSprites: Record<number, Sprites> = {
   [StructureTypes.Settlement]: Sprites.Settlement,
   [StructureTypes.GoldShrine]: Sprites.GoldShrine,
   [StructureTypes.EscapePortal]: Sprites.EscapePortal,
+  [StructureTypes.Container]: Sprites.Container,
 };
