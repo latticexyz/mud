@@ -54,9 +54,7 @@ export function createPositionSystem(layer: LocalLayer) {
   });
 
   defineUpdateSystem(world, [Has(OptimisticPosition), Has(Movable), Has(LocalPosition)], (update) => {
-    const { entity, component } = update;
-    if (component !== OptimisticPosition) return;
-
+    const { entity } = update;
     // Remove any outstanding Paths before computing the new location
     removeComponent(Path, entity);
 
@@ -79,6 +77,7 @@ export function createPositionSystem(layer: LocalLayer) {
 
       setComponent(Path, entity, { x, y });
     } else {
+      console.log("manually setting LocalPosition");
       // If no Path to the target is found, we assume that the
       // Position change occurred outside of normal movement
       // and just set LocalPosition manually.

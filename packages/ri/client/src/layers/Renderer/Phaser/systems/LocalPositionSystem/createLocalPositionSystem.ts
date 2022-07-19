@@ -38,7 +38,6 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
 
     if (update.type === UpdateType.Exit) {
       embodiedEntity.removeComponent(LocalPosition.id);
-      embodiedEntity.despawn();
       return;
     }
 
