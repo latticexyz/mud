@@ -1,8 +1,5 @@
 import { createWorld } from "@latticexyz/recs";
 import { setupContracts, setupDevSystems } from "./setup";
-import { BigNumber } from "ethers";
-import { Coord } from "@latticexyz/utils";
-import { Mappings } from "@latticexyz/network";
 import { createActionSystem } from "@latticexyz/std-client";
 import { GameConfig } from "./config";
 
@@ -19,25 +16,17 @@ export async function createNetworkLayer(config: GameConfig) {
   // --- COMPONENTS -----------------------------------------------------------------
   const components = {};
 
-  // --- CONTRACT / CLIENT MAPPING --------------------------------------------------
-  const mappings: Mappings<typeof components> = {};
-
   // --- SETUP ----------------------------------------------------------------------
   const { txQueue, systems, txReduced$, network, startSync, encoders } = await setupContracts(
     config,
     world,
-    components,
-    mappings
+    components
   );
 
   // --- ACTION SYSTEM --------------------------------------------------------------
   const actions = createActionSystem(world, txReduced$);
 
   // --- API ------------------------------------------------------------------------
-  async function move(coord: Coord) {
-    console.log(`calling move`);
-    return systems["ember.system.move"].executeTyped(BigNumber.from(network.connectedAddress.get()), coord);
-  }
 
   // --- CONTEXT --------------------------------------------------------------------
   const context = {
@@ -46,13 +35,10 @@ export async function createNetworkLayer(config: GameConfig) {
     txQueue,
     systems,
     txReduced$,
-    mappings,
     startSync,
     network,
     actions,
-    api: {
-      move,
-    },
+    api: {},
     dev: setupDevSystems(world, encoders, systems),
   };
 

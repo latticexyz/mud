@@ -38,14 +38,16 @@ export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
 };
 
-export async function setupContracts<C extends ContractComponents>(
-  config: GameConfig,
-  world: World,
-  components: C,
-  mappings: Mappings<C>
-) {
-  const SystemsRegistry = defineStringComponent(world, { id: "SystemsRegistry" });
-  const ComponentsRegistry = defineStringComponent(world, { id: "ComponentsRegistry" });
+export async function setupContracts<C extends ContractComponents>(config: GameConfig, world: World, components: C) {
+  const SystemsRegistry = defineStringComponent(world, {
+    id: "SystemsRegistry",
+    metadata: { contractId: "world.component.systems" },
+  });
+
+  const ComponentsRegistry = defineStringComponent(world, {
+    id: "ComponentsRegistry",
+    metadata: { contractId: "world.component.components" },
+  });
 
   components = {
     ...components,
@@ -53,11 +55,11 @@ export async function setupContracts<C extends ContractComponents>(
     ComponentsRegistry,
   };
 
-  mappings = {
-    ...mappings,
-    [keccak256("world.component.systems")]: "SystemsRegistry",
-    [keccak256("world.component.components")]: "ComponentsRegistry",
-  };
+  const mappings: Mappings<C> = {};
+  for (const key of Object.keys(components)) {
+    const { contractId } = components[key].metadata;
+    mappings[keccak256(contractId)] = key;
+  }
 
   const networkConfig = getNetworkConfig(config);
   const network = await createNetwork(networkConfig);
