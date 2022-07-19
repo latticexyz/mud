@@ -5,9 +5,7 @@ import {
   createTxQueue,
   createSyncWorker,
   createEncoder,
-  SyncWorkerConfig,
   NetworkComponentUpdate,
-  NetworkConfig,
   createSystemExecutor,
 } from "@latticexyz/network";
 import { World as WorldContract } from "ri-contracts/types/ethers-contracts/World";
@@ -26,35 +24,47 @@ import {
   World,
 } from "@latticexyz/recs";
 import { computed, IComputedValue } from "mobx";
-import { stretch, toEthAddress } from "@latticexyz/utils";
+import { keccak256, stretch, toEthAddress } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract, Signer } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 import { SystemTypes } from "ri-contracts/types/SystemTypes";
 import { SystemAbis } from "ri-contracts/types/SystemAbis.mjs";
 import { JsonRpcProvider } from "@ethersproject/providers";
+import { GameConfig, getNetworkConfig } from "../config";
+import { defineStringComponent } from "@latticexyz/std-client";
 
 export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
 };
 
-export type SetupContractConfig = NetworkConfig & Omit<SyncWorkerConfig, "worldContract" | "mappings">;
-
 export async function setupContracts<C extends ContractComponents>(
-  worldAddress: string,
-  config: SetupContractConfig,
+  config: GameConfig,
   world: World,
-  systemsComponent: Component<{ value: Type.String }>,
-  componentsComponent: Component<{ value: Type.String }>,
   components: C,
-  mappings: Mappings<C>,
-  devMode?: boolean
+  mappings: Mappings<C>
 ) {
-  const network = await createNetwork(config);
+  const SystemsRegistry = defineStringComponent(world, { id: "SystemsRegistry" });
+  const ComponentsRegistry = defineStringComponent(world, { id: "ComponentsRegistry" });
+
+  components = {
+    ...components,
+    SystemsRegistry,
+    ComponentsRegistry,
+  };
+
+  mappings = {
+    ...mappings,
+    [keccak256("world.component.systems")]: "SystemsRegistry",
+    [keccak256("world.component.components")]: "ComponentsRegistry",
+  };
+
+  const networkConfig = getNetworkConfig(config);
+  const network = await createNetwork(networkConfig);
   world.registerDisposer(network.dispose);
 
   console.log(
-    "Initial block",
+    "initial block",
     config.initialBlockNumber,
     await network.providers.get().json.getBlock(config.initialBlockNumber)
   );
@@ -62,33 +72,35 @@ export async function setupContracts<C extends ContractComponents>(
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
   const { contracts, config: contractsConfig } = await createContracts<{ World: WorldContract }>({
-    config: { World: { abi: WorldAbi, address: worldAddress } },
+    config: { World: { abi: WorldAbi, address: config.worldAddress } },
     signerOrProvider,
   });
 
-  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, { devMode });
+  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, { devMode: config.devMode });
   world.registerDisposer(disposeTxQueue);
 
-  const systems = createSystemExecutor<SystemTypes>(world, network, systemsComponent, SystemAbis, { devMode });
+  const systems = createSystemExecutor<SystemTypes>(world, network, SystemsRegistry, SystemAbis, {
+    devMode: config.devMode,
+  });
 
   // Create sync worker
   const { ecsEvent$, config$, dispose } = createSyncWorker<C>();
   world.registerDisposer(dispose);
   function startSync() {
     config$.next({
-      provider: config.provider,
+      provider: networkConfig.provider,
       worldContract: contractsConfig.World,
       initialBlockNumber: config.initialBlockNumber ?? 0,
       mappings,
       chainId: config.chainId,
-      disableCache: devMode, // Disable cache on hardhat
-      checkpointServiceUrl: config.checkpointServiceUrl,
+      disableCache: config.devMode, // Disable cache on hardhat
+      checkpointServiceUrl: networkConfig.checkpointServiceUrl,
     });
   }
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$);
 
-  const encoders = createEncoders(world, componentsComponent, signerOrProvider);
+  const encoders = createEncoders(world, ComponentsRegistry, signerOrProvider);
 
   return { txQueue, txReduced$, encoders, network, startSync, systems };
 }

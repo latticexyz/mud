@@ -3,15 +3,17 @@ import { getComponentValue, removeComponent, setComponent } from "@latticexyz/re
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { Time } from "./utils/time";
-import { Main as MainImport } from "./Main";
-import { Engine as EngineImport } from "./React/engine/Engine";
-import { registerUIComponents as registerUIComponentsImport } from "./React/components";
-import { Game } from "./types";
+import { createNetworkLayer as createNetworkLayerImport } from "./layers/network";
+import { createPhaserLayer as createPhaserLayerImport } from "./layers/phaser";
+import { Layers } from "./types";
+import { Engine as EngineImport } from "./layers/react/engine/Engine";
+import { registerUIComponents as registerUIComponentsImport } from "./layers/react/components";
 
 // Assign variables that can be overridden by HMR
-let Main = MainImport;
-let Engine = EngineImport;
+let createNetworkLayer = createNetworkLayerImport;
+let createPhaserLayer = createPhaserLayerImport;
 let registerUIComponents = registerUIComponentsImport;
+let Engine = EngineImport;
 
 /**
  * This function is called once when the game boots up.
@@ -19,10 +21,10 @@ let registerUIComponents = registerUIComponentsImport;
  * Add new layers here.
  */
 async function bootGame() {
-  const game: Partial<Game> = {};
+  const layers: Partial<Layers> = {};
   let initialBoot = true;
 
-  async function rebootGame(): Promise<Game> {
+  async function rebootGame(): Promise<Layers> {
     // Remove react when starting to reboot layers, reboot react once layers are rebooted
     mountReact.current(false);
 
@@ -53,11 +55,12 @@ async function bootGame() {
 
     if (!networkLayerConfig) throw new Error("Invalid config");
 
-    if (!game.main) game.main = await Main(networkLayerConfig);
+    if (!layers.network) layers.network = await createNetworkLayer(networkLayerConfig);
+    if (!layers.phaser) layers.phaser = await createPhaserLayer(layers.network);
 
     // Sync global time with phaser clock
     Time.time.setPacemaker((setTimestamp) => {
-      game.main?.game.events.on("poststep", (time: number) => {
+      layers.phaser?.game.events.on("poststep", (time: number) => {
         setTimestamp(time);
       });
     });
@@ -73,18 +76,18 @@ async function bootGame() {
     // Start syncing once all systems have booted
     if (initialBoot) {
       initialBoot = false;
-      game.main?.startSync();
+      layers.network.startSync();
     }
 
     // Reboot react if layers have changed
     mountReact.current(true);
 
-    return game as Game;
+    return layers as Layers;
   }
 
-  function dispose() {
-    game.main?.world.dispose();
-    game.main = undefined;
+  function dispose(layer: keyof Layers) {
+    layers[layer]?.world.dispose();
+    layers[layer] = undefined;
   }
 
   await rebootGame();
@@ -95,39 +98,51 @@ async function bootGame() {
     getComponentValue,
   };
 
-  (window as any).game = game;
+  (window as any).layers = layers;
   (window as any).ecs = ecs;
   (window as any).time = Time.time;
 
-  let reloading = false;
+  let reloadingNetwork = false;
+  let reloadingPhaser = false;
 
   if (import.meta.hot) {
-    import.meta.hot.accept("./Main.ts", async (module) => {
-      if (reloading) return;
-      reloading = true;
-      Main = module.Main;
-      dispose();
+    import.meta.hot.accept("./layers/network/index.ts", async (module) => {
+      if (reloadingNetwork) return;
+      reloadingNetwork = true;
+      createNetworkLayer = module.createNetworkLayer;
+      dispose("network");
+      dispose("phaser");
       await rebootGame();
-      console.log("HMR Game");
-      game.main?.startSync();
-      reloading = false;
+      console.log("HMR Network");
+      layers.network?.startSync();
+      reloadingNetwork = false;
+    });
+
+    import.meta.hot.accept("./layers/phaser/index.ts", async (module) => {
+      if (reloadingPhaser) return;
+      reloadingPhaser = true;
+      createPhaserLayer = module.createPhaserLayer;
+      dispose("phaser");
+      await rebootGame();
+      console.log("HMR Phaser");
+      reloadingPhaser = false;
     });
   }
   console.log("booted");
 
-  return { game, ecs };
+  return { layers, ecs };
 }
 
 const mountReact: { current: (mount: boolean) => void } = { current: () => void 0 };
 
-function bootReact(game: Game) {
+function bootReact(layers: Layers) {
   const rootElement = document.getElementById("react-root");
   if (!rootElement) return console.warn("React root not found");
 
   const root = ReactDOM.createRoot(rootElement);
 
   function renderEngine() {
-    root.render(<Engine game={game} mountReact={mountReact} />);
+    root.render(<Engine layers={layers} mountReact={mountReact} />);
   }
 
   renderEngine();
@@ -151,6 +166,6 @@ function bootReact(game: Game) {
 }
 
 export async function boot() {
-  const { game } = await bootGame();
-  bootReact(game as Game);
+  const { layers } = await bootGame();
+  bootReact(layers as Layers);
 }

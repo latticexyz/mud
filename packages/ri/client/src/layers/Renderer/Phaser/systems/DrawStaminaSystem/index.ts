@@ -1,1 +1,0 @@
-export { createDrawStaminaSystem } from "./createDrawStaminaSystem";

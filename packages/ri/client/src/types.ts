@@ -1,8 +1,7 @@
 import { boot } from "./boot";
-import { Main } from "./Main";
+import { NetworkLayer } from "./layers/network";
+import { PhaserLayer } from "./layers/phaser";
 
 export type EmberWindow = Awaited<ReturnType<typeof boot>>;
 
-export type Main = Awaited<ReturnType<typeof Main>>;
-
-export type Game = { main: Main };
+export type Layers = { network: NetworkLayer; phaser: PhaserLayer };

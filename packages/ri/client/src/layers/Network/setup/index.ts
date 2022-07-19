@@ -1,2 +1,2 @@
 export { setupContracts } from "./setupContracts";
-export { load } from "./load";
+export { setupDevSystems } from "./setupDevSystems";
