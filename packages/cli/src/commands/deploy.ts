@@ -96,7 +96,10 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
   const getNetlifyAccounts = async (token: string) => {
     const { NetlifyAPI: netlify } = await importNetlify;
     const netlifyAPI = new netlify(token);
-    return (await netlifyAPI.listAccountsForUser()).map((a: { slug: string }) => a.slug);
+    console.log("Netlify api");
+    const accounts = await netlifyAPI.listAccountsForUser();
+    console.log("Accounts");
+    return accounts.map((a: { slug: string }) => a.slug);
   };
 
   const defaultOptions: Options = {
@@ -270,12 +273,11 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
       : ({} as Options);
 
   const chainSpecUrl = args.chainSpec ?? config.chainSpec ?? answers.chainSpec;
-  const chainSpec =
-    chainSpecUrl == null
-      ? null
-      : isValidHttpUrl(chainSpecUrl)
-      ? await (await fetch(chainSpecUrl)).json()
-      : JSON.parse(fs.readFileSync(chainSpecUrl, "utf8"));
+  const chainSpec = !chainSpecUrl
+    ? null
+    : isValidHttpUrl(chainSpecUrl)
+    ? await (await fetch(chainSpecUrl)).json()
+    : JSON.parse(fs.readFileSync(chainSpecUrl, "utf8"));
 
   // Priority of config source: command line args >> chainSpec >> local config >> interactive answers >> defaults
   // -> Command line args can override every other config, interactive questions are only asked if no other config given for this option
@@ -409,12 +411,16 @@ export const deploy = async (options: Options) => {
                       {
                         title: "Deploying",
                         task: async (ctx, task) => {
-                          const child = execa("yarn", ["workspace", "client", "run", "netlify", "deploy", "--prod"], {
-                            env: {
-                              NETLIFY_AUTH_TOKEN: options.netlifyPersonalToken,
-                              NETLIFY_SITE_ID: ctx.siteId,
-                            },
-                          });
+                          const child = execa(
+                            "yarn",
+                            ["workspace", "ri-client", "run", "netlify", "deploy", "--prod", "--dir", "dist"],
+                            {
+                              env: {
+                                NETLIFY_AUTH_TOKEN: options.netlifyPersonalToken,
+                                NETLIFY_SITE_ID: ctx.siteId,
+                              },
+                            }
+                          );
                           child.stdout?.pipe(task.stdout());
                           await child;
                           task.output = chalk.yellow("Netlify site deployed!");
