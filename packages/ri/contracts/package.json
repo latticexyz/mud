@@ -19,6 +19,7 @@
     "deploy:anvil": "wait-on tcp:8545 && mud deploy --deployerPrivateKey 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
     "deploy:hardhat": "wait-on tcp:8545 && yarn hardhat:resetfee && mud deploy --deployerPrivateKey 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF && yarn hardhat:resetfee && yarn types",
     "deploy:degen": "mud deploy -i --deployerPrivateKey 0x26e86e45f6fc45ec6e2ecd128cec80fa1d1505e5507dcd2ae58c3130a7a97b48",
+    "deploy:prod": "mud deploy --deployerPrivateKey 0x26e86e45f6fc45ec6e2ecd128cec80fa1d1505e5507dcd2ae58c3130a7a97b48 --chainSpec https://mud-config.pages.dev/chainSpec.json --deployClient --netlifySlug mud --netlifyPersonalToken q49-wyrS2OGAMk60KsCyfyQGD0QgCcjfqKmtiu8RtQc",
     "upgrade:anvil": "wait-on tcp:8545 && mud deploy --deployerPrivateKey 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80 --upgradeSystems",
     "upgrade:hardhat": "wait-on tcp:8545 && yarn hardhat:resetfee && mud deploy --deployerPrivateKey 0x044C7963E9A89D4F8B64AB23E02E97B2E00DD57FCB60F316AC69B77135003AEF --upgradeSystems && yarn hardhat:resetfee && yarn types",
     "upgrade:degen": "mud deploy -i --deployerPrivateKey 0x26e86e45f6fc45ec6e2ecd128cec80fa1d1505e5507dcd2ae58c3130a7a97b48 --upgradeSystems",
