@@ -17,7 +17,7 @@ export function moveEntity(
 ) {
   const {
     network: {
-      components: { Position, Movable, Untraversable, OwnedBy, Stamina, LastActionTurn },
+      components: { Position, Movable, Untraversable, OwnedBy, Stamina },
       network: { connectedAddress },
       api: networkApi,
     },

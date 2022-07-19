@@ -1,4 +1,4 @@
-import { defineComponent, Type, namespaceWorld } from "@latticexyz/recs";
+import { defineComponent, Type, namespaceWorld, EntityIndex, getComponentValue } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";
@@ -35,7 +35,7 @@ export async function createHeadlessLayer(network: NetworkLayer) {
     api: {
       joinGame: curry(joinGame)(network, actions),
       moveEntity: curry(moveEntity)({ world, actions, network, LocalStamina }),
-      attackEntity: curry(attackEntity)(network),
+      attackEntity: curry(attackEntity)({ network, actions }),
     },
   };
 

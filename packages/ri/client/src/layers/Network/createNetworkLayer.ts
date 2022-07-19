@@ -5,6 +5,7 @@ import {
   defineComponent,
   EntityID,
   EntityIndex,
+  getComponentValue,
   Schema,
   Type,
 } from "@latticexyz/recs";
@@ -315,6 +316,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     mapSize: 50,
   };
 
+  const checkOwnEntity = (entity: EntityIndex) => {
+    const entityOwner = getComponentValue(components.OwnedBy, entity)?.value;
+    return entityOwner && entityOwner === network.connectedAddress.get();
+  };
+
   return {
     world,
     components,
@@ -338,6 +344,9 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       dev: {
         spawnGold,
       },
+    },
+    utils: {
+      checkOwnEntity,
     },
     DEV_MODE,
   };
