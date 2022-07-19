@@ -437,11 +437,15 @@ export const deploy = async (options: Options) => {
                 title: "Open Launcher",
                 task: async (ctx) => {
                   const clientUrl = options.deployClient ? ctx.clientUrl : options.clientUrl;
-                  launcherUrl = `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&client=${
-                    clientUrl || ""
-                  }&rpc=${options.rpc || ""}&wsRpc=${options.wsRpc || ""}&chainId=${options.chainId || ""}&dev=${
-                    options.chainId === 31337 || ""
-                  }&initialBlockNumber=${ctx.initialBlockNumber}`;
+                  launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${options.rpc}&wsRpc=${options.wsRpc}&checkpoint=&initialBlockNumber=${ctx.initialBlockNumber}&dev=true`;
+
+                  // Launcher version:
+                  // `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&client=${
+                  //   clientUrl || ""
+                  // }&rpc=${options.rpc || ""}&wsRpc=${options.wsRpc || ""}&chainId=${options.chainId || ""}&dev=${
+                  //   options.chainId === 31337 || ""
+                  // }&initialBlockNumber=${ctx.initialBlockNumber}`;
+
                   if (!options.upgradeSystems) openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },

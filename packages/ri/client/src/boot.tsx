@@ -8,6 +8,7 @@ import { createPhaserLayer as createPhaserLayerImport } from "./layers/phaser";
 import { Layers } from "./types";
 import { Engine as EngineImport } from "./layers/react/engine/Engine";
 import { registerUIComponents as registerUIComponentsImport } from "./layers/react/components";
+import { Wallet } from "ethers";
 
 // Assign variables that can be overridden by HMR
 let createNetworkLayer = createNetworkLayerImport;
@@ -30,7 +31,7 @@ async function bootGame() {
 
     const params = new URLSearchParams(window.location.search);
     const worldAddress = params.get("worldAddress");
-    const privateKey = params.get("burnerWalletPrivateKey");
+    let privateKey = params.get("burnerWalletPrivateKey");
     const chainIdString = params.get("chainId");
     const jsonRpc = params.get("rpc") || undefined;
     const wsRpc = params.get("wsRpc") || undefined; // || (jsonRpc && jsonRpc.replace("http", "ws"));
@@ -38,6 +39,11 @@ async function bootGame() {
     const devMode = params.get("dev") === "true";
     const initialBlockNumberString = params.get("initialBlockNumber");
     const initialBlockNumber = initialBlockNumberString ? parseInt(initialBlockNumberString) : 0;
+
+    if (!privateKey) {
+      privateKey = localStorage.getItem("burnerWallet") || Wallet.createRandom().privateKey;
+      localStorage.setItem("burnerWallet", privateKey);
+    }
 
     let networkLayerConfig;
     if (worldAddress && privateKey && chainIdString && jsonRpc) {
