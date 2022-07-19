@@ -23,6 +23,7 @@ import { WorldCoord } from "../../types";
 import { SetupContractConfig } from "./setup/setupContracts";
 import { LOCAL_CHAIN_ID } from "../../constants";
 import { defineStringComponent } from "@latticexyz/std-client";
+import { getItems } from "./utils";
 
 export type NetworkLayerConfig = {
   worldAddress: string;
@@ -342,6 +343,9 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       escapePortal,
       dev: {
         spawnGold,
+      },
+      util: {
+        getItems: getItems(components.OwnedBy, components.ItemType, world.entities),
       },
     },
     utils: {

@@ -49,6 +49,7 @@ export function createInputSystem(layer: PhaserLayer) {
           transferInventory,
           escapePortal,
           dev: { spawnGold },
+          util: { getItems },
         },
         network: { connectedAddress },
       },
@@ -89,13 +90,9 @@ export function createInputSystem(layer: PhaserLayer) {
     if (!isOwnedByCaller(OwnedBy, selectedEntity, player, world.entityToIndex)) return false;
     if (hasComponent(OwnedBy, highlightedEntity)) return false;
 
-    const highlightedItems = [
-      ...runQuery([HasValue(OwnedBy, { value: world.entities[highlightedEntity] }), Has(ItemType)]),
-    ];
+    const highlightedItems = getItems(highlightedEntity);
     if (highlightedItems.length > 0) {
-      const selectedItems = [
-        ...runQuery([HasValue(OwnedBy, { value: world.entities[selectedEntity] }), Has(ItemType)]),
-      ];
+      const selectedItems = getItems(selectedEntity);
       const selectedCapacity = getComponentValue(Inventory, selectedEntity);
       if (selectedCapacity && selectedCapacity.value > selectedItems.length) {
         const selectedEntityPos = getComponentValue(LocalPosition, selectedEntity);
@@ -120,11 +117,9 @@ export function createInputSystem(layer: PhaserLayer) {
     )
       return false;
 
-    const selectedItems = [...runQuery([HasValue(OwnedBy, { value: world.entities[selectedEntity] }), Has(ItemType)])];
+    const selectedItems = getItems(selectedEntity);
     if (selectedItems.length > 0) {
-      const highlightedItems = [
-        ...runQuery([HasValue(OwnedBy, { value: world.entities[highlightedEntity] }), Has(ItemType)]),
-      ];
+      const highlightedItems = getItems(highlightedEntity);
       const highlightedCapacity = getComponentValue(Inventory, highlightedEntity);
       if (highlightedCapacity && highlightedCapacity.value > highlightedItems.length) {
         const highlightedEntityPos = getComponentValue(LocalPosition, highlightedEntity);
