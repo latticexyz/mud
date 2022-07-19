@@ -1,6 +1,6 @@
 import React from "react";
 import { registerUIComponent } from "../engine";
-import { defineQuery, getComponentValue, getComponentValueStrict, Has, HasValue, ProxyExpand, runQuery } from "@latticexyz/recs";
+import { defineQuery, getComponentValue, getComponentValueStrict, Has, hasComponent, HasValue, ProxyExpand, runQuery } from "@latticexyz/recs";
 import { getAddressColor } from "@latticexyz/std-client";
 import { map, merge } from "rxjs";
 
@@ -21,7 +21,7 @@ export function registerSelection() {
         },
         network: {
           world,
-          components: { OwnedBy, Inventory },
+          components: { OwnedBy, Inventory, ItemType },
         },
       } = layers;
 
@@ -34,17 +34,14 @@ export function registerSelection() {
           const ownedBy = getComponentValue(OwnedBy, selectedEntity)?.value;
           const name = getComponentValue(Name, selectedEntity)?.value;
 
-          const inventoryResults = [...runQuery([ProxyExpand(OwnedBy, 1), Has(Inventory)], new Set([selectedEntity]))];
-          const inventoryIndex = inventoryResults[0];
-
-          const hasInventory = inventoryIndex != null;
+          const hasInventory = hasComponent(Inventory, selectedEntity);
 
           const inventoryItemNames: string[] = [];
           let inventorySize = 0;
           if (hasInventory) {
-            inventorySize = getComponentValueStrict(Inventory, inventoryIndex).value;
+            inventorySize = getComponentValueStrict(Inventory, selectedEntity).value;
 
-            const inventoryItems = [...runQuery([HasValue(OwnedBy, { value: world.entities[inventoryIndex] })])];
+            const inventoryItems = [...runQuery([HasValue(OwnedBy, { value: world.entities[selectedEntity] }), Has(ItemType)])];
             inventoryItems.forEach((itemIndex) => {
               const name = getComponentValue(Name, itemIndex)?.value;
               if (name) inventoryItemNames.push(name);

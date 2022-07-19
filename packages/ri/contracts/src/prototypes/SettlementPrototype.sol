@@ -2,7 +2,6 @@
 pragma solidity >=0.8.0;
 
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { getAddressById } from "solecs/utils.sol";
 
 import { LibPrototype } from "../libraries/LibPrototype.sol";
@@ -17,15 +16,15 @@ import { CapturableComponent, ID as CapturableComponentID } from "../components/
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
+import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 
-import { StructureTypes } from "../utils/Types.sol";
+import { StructureTypes, ItemTypes } from "../utils/Types.sol";
 
 import { ID as SoldierID } from "./SoldierPrototype.sol";
-import { ID as InventoryID } from "./InventoryPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.prototype.settlement"));
 
-function SettlementPrototype(IUint256Component components, IWorld world) {
+function SettlementPrototype(IUint256Component components) {
   StructureTypeComponent(getAddressById(components, StructureTypeComponentID)).set(
     ID,
     uint32(StructureTypes.Settlement)
@@ -39,6 +38,7 @@ function SettlementPrototype(IUint256Component components, IWorld world) {
   CapturableComponent(getAddressById(components, CapturableComponentID)).set(ID);
   UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
   LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(ID, 0);
+  InventoryComponent(getAddressById(components, InventoryComponentID)).set(ID, uint32(10));
 
   uint256[] memory prototypeIds = new uint256[](1);
   prototypeIds[0] = SoldierID;
@@ -47,11 +47,11 @@ function SettlementPrototype(IUint256Component components, IWorld world) {
   costs[0] = 1;
 
   uint32[] memory costItemTypes = new uint32[](1);
-  costItemTypes[0] = 1;
+  costItemTypes[0] = uint32(ItemTypes.Gold);
 
   FactoryComponent(getAddressById(components, FactoryComponentID)).set(ID, Factory(prototypeIds, costs, costItemTypes));
 
-  uint256[] memory componentIds = new uint256[](8);
+  uint256[] memory componentIds = new uint256[](9);
   componentIds[0] = StructureTypeComponentID;
   componentIds[1] = StaminaComponentID;
   componentIds[2] = HealthComponentID;
@@ -60,9 +60,7 @@ function SettlementPrototype(IUint256Component components, IWorld world) {
   componentIds[5] = CapturableComponentID;
   componentIds[6] = UntraversableComponentID;
   componentIds[7] = LastActionTurnComponentID;
+  componentIds[8] = InventoryComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);
-
-  uint256 inventoryEntity = LibPrototype.createPrototypeFromPrototype(components, world, InventoryID, ID);
-  InventoryComponent(getAddressById(components, InventoryComponentID)).set(inventoryEntity, 10);
 }

@@ -22,8 +22,7 @@ import { Component } from "solecs/Component.sol";
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
-
-import { ID as InventoryID } from "../prototypes/InventoryPrototype.sol";
+import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.dropInventory"));
 
@@ -37,27 +36,21 @@ contract DropInventorySystem is ISystem {
   }
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
-    (uint256 inventoryEntity, Coord memory targetPosition) = abi.decode(arguments, (uint256, Coord));
+    (uint256 entity, Coord memory targetPosition) = abi.decode(arguments, (uint256, Coord));
 
-    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
-    uint256 ownerEntity = ownedByComponent.getValue(inventoryEntity);
-    require(LibECS.isOwnedByCaller(components, ownerEntity), "you don't own this entity");
-
-    require(ownedByComponent.getValue(inventoryEntity) == ownerEntity, "owner entity does not own inventory entity");
+    require(LibECS.isOwnedByCaller(components, entity), "you don't own this entity");
 
     PositionComponent positionComponent = PositionComponent(getAddressById(components, PositionComponentID));
-    require(LibUtils.manhattan(positionComponent.getValue(ownerEntity), targetPosition) <= 1, "not close enough");
+    require(LibUtils.manhattan(positionComponent.getValue(entity), targetPosition) <= 1, "not close enough");
 
-    return abi.encode(inventoryEntity, targetPosition, ownerEntity, ownedByComponent);
+    require(LibInventory.getItems(components, entity).length > 0, "no items to drop!");
+
+    return abi.encode(entity, targetPosition);
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    (uint256 inventoryEntity, Coord memory targetPosition, uint256 ownerEntity, OwnedByComponent ownedByComponent) = abi
-      .decode(requirement(arguments), (uint256, Coord, uint256, OwnedByComponent));
-    LibInventory.dropInventory(components, inventoryEntity, targetPosition);
-
-    uint256 newInventory = LibPrototype.copyPrototype(components, world, InventoryID);
-    ownedByComponent.set(newInventory, ownerEntity);
+    (uint256 entity, Coord memory targetPosition) = abi.decode(requirement(arguments), (uint256, Coord));
+    LibInventory.dropInventory(components, world, entity, targetPosition);
   }
 
   function requirementTyped(uint256 entity, Coord memory targetPosition) public view returns (bytes memory) {

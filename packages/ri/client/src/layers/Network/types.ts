@@ -25,22 +25,22 @@ export enum StructureTypes {
   Settlement,
   GoldShrine,
   EscapePortal,
+  Container,
 }
 
 export const StructureTypeNames: Record<number, string> = {
   [StructureTypes.Settlement]: "Settlement",
   [StructureTypes.GoldShrine]: "Gold Shrine",
   [StructureTypes.EscapePortal]: "Escape Portal",
+  [StructureTypes.Container]: "Container",
 };
 
 export enum ItemTypes {
-  Inventory,
   Gold,
   EmberCrown,
 }
 
 export const ItemTypeNames: Record<number, string> = {
-  [ItemTypes.Inventory]: "Inventory",
   [ItemTypes.Gold]: "Gold",
   [ItemTypes.EmberCrown]: "Ember Crown",
 };

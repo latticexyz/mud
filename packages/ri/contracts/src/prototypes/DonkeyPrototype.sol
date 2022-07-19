@@ -2,7 +2,6 @@
 pragma solidity >=0.8.0;
 
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { getAddressById } from "solecs/utils.sol";
 
 import { LibPrototype } from "../libraries/LibPrototype.sol";
@@ -14,14 +13,13 @@ import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../componen
 import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
 import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
 import { UntraversableComponent, ID as UntraversableComponentID } from "../components/UntraversableComponent.sol";
+import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
 
 import { UnitTypes } from "../utils/Types.sol";
 
-import { ID as InventoryID } from "./InventoryPrototype.sol";
-
 uint256 constant ID = uint256(keccak256("ember.prototype.donkey"));
 
-function DonkeyPrototype(IUint256Component components, IWorld world) {
+function DonkeyPrototype(IUint256Component components) {
   UnitTypeComponent(getAddressById(components, UnitTypeComponentID)).set(ID, uint32(UnitTypes.Donkey));
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
@@ -31,16 +29,16 @@ function DonkeyPrototype(IUint256Component components, IWorld world) {
   AttackComponent(getAddressById(components, AttackComponentID)).set(ID, Attack({ strength: 10_000, range: 1 }));
   MovableComponent(getAddressById(components, MovableComponentID)).set(ID, int32(4));
   UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
+  InventoryComponent(getAddressById(components, InventoryComponentID)).set(ID, uint32(3));
 
-  uint256[] memory componentIds = new uint256[](6);
+  uint256[] memory componentIds = new uint256[](7);
   componentIds[0] = UnitTypeComponentID;
   componentIds[1] = StaminaComponentID;
   componentIds[2] = MovableComponentID;
   componentIds[3] = HealthComponentID;
   componentIds[4] = AttackComponentID;
   componentIds[5] = UntraversableComponentID;
+  componentIds[6] = InventoryComponentID;
 
   PrototypeComponent(getAddressById(components, PrototypeComponentID)).set(ID, componentIds);
-
-  LibPrototype.createPrototypeFromPrototype(components, world, InventoryID, ID);
 }

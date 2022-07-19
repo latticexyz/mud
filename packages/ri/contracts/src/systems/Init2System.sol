@@ -5,7 +5,7 @@ import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 
 import { EmberCrownPrototype } from "../prototypes/EmberCrownPrototype.sol";
-import { EmberCrownInventoryPrototype } from "../prototypes/EmberCrownInventoryPrototype.sol";
+import { EmberCrownContainerPrototype } from "../prototypes/EmberCrownContainerPrototype.sol";
 import { EscapePortalPrototype } from "../prototypes/EscapePortalPrototype.sol";
 import { GoldShrinePrototype } from "../prototypes/GoldShrinePrototype.sol";
 import { GrassPrototype } from "../prototypes/GrassPrototype.sol";
@@ -32,7 +32,7 @@ contract Init2System is ISystem {
   function execute(bytes memory) public returns (bytes memory) {
     // Initialize Prototypes
     EmberCrownPrototype(components);
-    EmberCrownInventoryPrototype(components, world);
+    EmberCrownContainerPrototype(components, world);
     EscapePortalPrototype(components);
     GoldShrinePrototype(components);
     GrassPrototype(components);

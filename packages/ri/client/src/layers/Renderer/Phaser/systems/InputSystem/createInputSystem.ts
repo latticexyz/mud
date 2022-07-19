@@ -15,6 +15,10 @@ import {
 } from "@latticexyz/recs";
 import { WorldCoord } from "../../../../../types";
 import { manhattan } from "../../../../../utils/distance";
+import { getPlayerEntity, isOwnedByCaller } from "@latticexyz/std-client";
+import { attackEntity } from "../../../../Headless/api";
+import { highlightCoord } from "../../api";
+import { findLastKey, has } from "lodash";
 
 export function createInputSystem(layer: PhaserLayer) {
   const {
@@ -36,12 +40,13 @@ export function createInputSystem(layer: PhaserLayer) {
           EscapePortal,
           Player,
           Death,
+          ItemType,
         },
         api: {
           buildAt,
           dropInventory,
           gatherResource,
-          takeItem,
+          transferInventory,
           escapePortal,
           dev: { spawnGold },
         },
@@ -64,9 +69,9 @@ export function createInputSystem(layer: PhaserLayer) {
   };
 
   const attemptGatherResource = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
-    const inventoryResults = [...runQuery([ProxyExpand(OwnedBy, 1), Has(Inventory)], new Set([selectedEntity]))];
-    const gathererInventory = inventoryResults[0];
-    if (gathererInventory == null) return false;
+    const inventory = getComponentValue(Inventory, selectedEntity);
+
+    if (inventory == null) return false;
 
     const resourceGenerator = getComponentValue(ResourceGenerator, highlightedEntity);
     if (!resourceGenerator) return false;
@@ -76,32 +81,57 @@ export function createInputSystem(layer: PhaserLayer) {
     return true;
   };
 
-  const attemptTakeItem = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
-    const itemInventoryEntity = getComponentValue(Inventory, highlightedEntity);
-    if (itemInventoryEntity != null) {
-      // if the entity is an inventory
-      const itemEntity = [...runQuery([HasValue(OwnedBy, { value: world.entities[highlightedEntity] })])][0];
+  const attemptTakeInventory = function (
+    selectedEntity: EntityIndex,
+    highlightedEntity: EntityIndex,
+    player: EntityIndex
+  ) {
+    if (!isOwnedByCaller(OwnedBy, selectedEntity, player, world.entityToIndex)) return false;
+    if (hasComponent(OwnedBy, highlightedEntity)) return false;
 
-      if (itemEntity) {
-        // if the inventory has items
-        const takerInventoryEntity = [
-          ...runQuery([Has(Inventory), HasValue(OwnedBy, { value: world.entities[selectedEntity] })]),
-        ][0];
-        if (takerInventoryEntity) {
-          // if our unit has an inventory
-          const takerInventoryItems = [
-            ...runQuery([HasValue(OwnedBy, { value: world.entities[takerInventoryEntity] })]),
-          ];
-          const takerInventoryCapacity = getComponentValue(Inventory, takerInventoryEntity)?.value;
-          if (takerInventoryCapacity && takerInventoryCapacity > takerInventoryItems.length) {
-            // if we have enough capacity
-            const selectedEntityPos = getComponentValue(LocalPosition, selectedEntity);
-            const itemInventoryPos = getComponentValue(LocalPosition, highlightedEntity);
-            if (selectedEntityPos && itemInventoryPos && manhattan(selectedEntityPos, itemInventoryPos) <= 1) {
-              takeItem(world.entities[takerInventoryEntity], world.entities[itemEntity]);
-              return true;
-            }
-          }
+    const highlightedItems = [
+      ...runQuery([HasValue(OwnedBy, { value: world.entities[highlightedEntity] }), Has(ItemType)]),
+    ];
+    if (highlightedItems.length > 0) {
+      const selectedItems = [
+        ...runQuery([HasValue(OwnedBy, { value: world.entities[selectedEntity] }), Has(ItemType)]),
+      ];
+      const selectedCapacity = getComponentValue(Inventory, selectedEntity);
+      if (selectedCapacity && selectedCapacity.value > selectedItems.length) {
+        const selectedEntityPos = getComponentValue(LocalPosition, selectedEntity);
+        const highlightedEntityPos = getComponentValue(LocalPosition, highlightedEntity);
+        if (selectedEntityPos && highlightedEntityPos && manhattan(selectedEntityPos, highlightedEntityPos) <= 1) {
+          transferInventory(world.entities[highlightedEntity], world.entities[selectedEntity]);
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  const attemptGiveInventory = function (
+    selectedEntity: EntityIndex,
+    highlightedEntity: EntityIndex,
+    player: EntityIndex
+  ) {
+    if (
+      !isOwnedByCaller(OwnedBy, selectedEntity, player, world.entityToIndex) ||
+      !isOwnedByCaller(OwnedBy, highlightedEntity, player, world.entityToIndex)
+    )
+      return false;
+
+    const selectedItems = [...runQuery([HasValue(OwnedBy, { value: world.entities[selectedEntity] }), Has(ItemType)])];
+    if (selectedItems.length > 0) {
+      const highlightedItems = [
+        ...runQuery([HasValue(OwnedBy, { value: world.entities[highlightedEntity] }), Has(ItemType)]),
+      ];
+      const highlightedCapacity = getComponentValue(Inventory, highlightedEntity);
+      if (highlightedCapacity && highlightedCapacity.value > highlightedItems.length) {
+        const highlightedEntityPos = getComponentValue(LocalPosition, highlightedEntity);
+        const selectedEntityPos = getComponentValue(LocalPosition, selectedEntity);
+        if (highlightedEntityPos && selectedEntityPos && manhattan(highlightedEntityPos, selectedEntityPos) <= 1) {
+          transferInventory(world.entities[selectedEntity], world.entities[highlightedEntity]);
+          return true;
         }
       }
     }
@@ -135,9 +165,9 @@ export function createInputSystem(layer: PhaserLayer) {
   const onRightClick = function (targetPosition: WorldCoord) {
     const playerEntity = world.entityToIndex.get(connectedAddress.get() as EntityID);
 
-    if (playerEntity != null && hasComponent(Player, playerEntity) && hasComponent(Death, playerEntity)) {
-      return;
-    }
+    if (!playerEntity) return;
+
+    if (!hasComponent(Player, playerEntity) || hasComponent(Death, playerEntity)) return;
 
     const selectedEntity = getSelectedEntity();
     if (selectedEntity) {
@@ -149,7 +179,8 @@ export function createInputSystem(layer: PhaserLayer) {
       if (highlightedEntity) {
         if (attemptEscapePortal(selectedEntity, highlightedEntity)) return;
         if (attemptGatherResource(selectedEntity, highlightedEntity)) return;
-        if (attemptTakeItem(selectedEntity, highlightedEntity)) return;
+        if (attemptTakeInventory(selectedEntity, highlightedEntity, playerEntity)) return;
+        if (attemptGiveInventory(selectedEntity, highlightedEntity, playerEntity)) return;
         if (attemptAttack(selectedEntity, highlightedEntity)) return;
       }
 
@@ -209,12 +240,9 @@ export function createInputSystem(layer: PhaserLayer) {
 
       const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
 
-      const inventoryEntity = [
-        ...runQuery([Has(Inventory), HasValue(OwnedBy, { value: world.entities[selectedEntity] })]),
-      ][0];
-
-      if (hoverHighlight.x != undefined && hoverHighlight.y != undefined && inventoryEntity != null) {
-        dropInventory(world.entities[inventoryEntity], { x: hoverHighlight.x, y: hoverHighlight.y });
+      const hasInventory = getComponentValue(Inventory, selectedEntity);
+      if (hasInventory && hoverHighlight.x != undefined && hoverHighlight.y != undefined) {
+        dropInventory(world.entities[selectedEntity], { x: hoverHighlight.x, y: hoverHighlight.y });
       } else console.log("hoverHightlight not valid position");
     }
   );

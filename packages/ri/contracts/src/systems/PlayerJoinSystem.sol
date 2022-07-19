@@ -26,7 +26,6 @@ import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../com
 import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
 import { ID as DonkeyID } from "../prototypes/DonkeyPrototype.sol";
 import { ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
-import { ID as InventoryID } from "../prototypes/InventoryPrototype.sol";
 import { ID as HeroID } from "../prototypes/HeroPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.playerJoin"));

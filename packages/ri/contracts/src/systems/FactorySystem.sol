@@ -86,8 +86,7 @@ contract FactorySystem is ISystem {
 
     ItemTypeComponent itemTypeComponent = ItemTypeComponent(getAddressById(components, ItemTypeComponentID));
     int32 spentResourceCount = 0;
-    uint256 inventory = LibInventory.getInventory(components, builderId);
-    uint256[] memory items = LibInventory.getItems(components, inventory);
+    uint256[] memory items = LibInventory.getItems(components, builderId);
     for (uint256 i = 0; i < items.length; i++) {
       uint256 item = items[i];
       if (itemTypeComponent.getValue(item) == factoryPlan.costItemType) {

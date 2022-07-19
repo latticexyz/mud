@@ -995,7 +995,7 @@
     { "componentIndex": 1, "entityIndex": 492, "unencodedValue": [-1, 0] },
     { "componentIndex": 2, "entityIndex": 493, "unencodedValue": "ember.prototype.grass" },
     { "componentIndex": 1, "entityIndex": 493, "unencodedValue": [0, 0] },
-    { "componentIndex": 2, "entityIndex": 494, "unencodedValue": "ember.prototype.emberCrownInventory" },
+    { "componentIndex": 2, "entityIndex": 494, "unencodedValue": "ember.prototype.emberCrownContainer" },
     { "componentIndex": 1, "entityIndex": 494, "unencodedValue": [0, 0] },
     { "componentIndex": 2, "entityIndex": 495, "unencodedValue": "ember.prototype.grass" },
     { "componentIndex": 1, "entityIndex": 495, "unencodedValue": [1, 0] },

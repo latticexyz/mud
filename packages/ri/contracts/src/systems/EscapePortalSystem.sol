@@ -60,8 +60,7 @@ contract EscapePortalSystem is ISystem {
       (uint256, PositionComponent)
     );
 
-    uint256 inventoryEntity = LibInventory.getInventory(components, entity);
-    uint256[] memory items = LibInventory.getItems(components, inventoryEntity);
+    uint256[] memory items = LibInventory.getItems(components, entity);
 
     ItemTypeComponent itemTypeComponent = ItemTypeComponent(getAddressById(components, ItemTypeComponentID));
     for (uint256 i = 0; i < items.length; i++) {
@@ -73,9 +72,7 @@ contract EscapePortalSystem is ISystem {
       }
     }
 
-    //TODO: add logic to 'store' the inventory of the entity when escapePortaling out of the game
-    // uint256 inventory = LibInventory.getInventory(components, entity);
-    // uint256[] memory ownedItems = ownedByComponent.getEntitiesWithValue(inventory);
+    //TODO: add logic to 'store' the items of the entity when escapePortaling out of the game
 
     positionComponent.remove(entity);
   }

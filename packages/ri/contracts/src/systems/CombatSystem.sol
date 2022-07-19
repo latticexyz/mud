@@ -163,9 +163,8 @@ contract CombatSystem is ISystem {
       deathComponent.set(owner);
     }
 
-    uint256 inventoryEntity = LibInventory.getInventory(components, entity);
-    if (ownedByComponent.getEntitiesWithValue(inventoryEntity).length > 0) {
-      LibInventory.dropInventory(components, inventoryEntity, position);
+    if (InventoryComponent(getAddressById(components, InventoryComponentID)).has(entity)) {
+      LibInventory.dropInventory(components, world, entity, position);
     }
   }
 
