@@ -202,6 +202,7 @@ export const QueryBuilder = ({
           editQuery={editQuery}
           hoverHighlightComponent={hoverHighlightComponent}
           queryInputRef={queryInputRef}
+          input={(layers.phaser as any).scenes.Main.phaserScene.input}
         />
         <h3>Filter by Component</h3>
         <QueryShortcutContainer style={{ margin: "8px auto" }}>
