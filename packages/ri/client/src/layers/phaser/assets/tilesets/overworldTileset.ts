@@ -10,6 +10,7 @@ export enum Tileset {
   Plain = 38,
   Grass = 40,
   Brick1 = 42,
+  Tron = 43,
   SnowTree1 = 45,
   SnowTree2 = 46,
   SnowTree3 = 47,
