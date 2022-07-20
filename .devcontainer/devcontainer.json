@@ -1,1 +1,4 @@
-{}
+{
+  "onCreateCommand": "curl -L https://foundry.paradigm.xyz | bash && exec \"$SHELL\" && foundryup",
+  "updateContentCommand": "yarn"
+}
