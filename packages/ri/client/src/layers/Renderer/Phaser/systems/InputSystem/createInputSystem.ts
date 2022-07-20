@@ -2,7 +2,6 @@ import { PhaserLayer } from "../../types";
 import { pixelToWorldCoord } from "../../utils";
 import { map } from "rxjs";
 import {
-  EntityID,
   EntityIndex,
   getComponentValue,
   getComponentValueStrict,
@@ -10,15 +9,10 @@ import {
   hasComponent,
   HasValue,
   Not,
-  ProxyExpand,
   runQuery,
 } from "@latticexyz/recs";
 import { WorldCoord } from "../../../../../types";
-import { manhattan } from "../../../../../utils/distance";
 import { getPlayerEntity, isOwnedByCaller } from "@latticexyz/std-client";
-import { attackEntity } from "../../../../Headless/api";
-import { highlightCoord } from "../../api";
-import { findLastKey, has } from "lodash";
 
 export function createInputSystem(layer: PhaserLayer) {
   const {
@@ -62,22 +56,48 @@ export function createInputSystem(layer: PhaserLayer) {
     },
   } = layer;
 
-  const getSelectedEntity = () => [...runQuery([Has(Selected)])][0];
+  const getInventory = (entity: EntityIndex) => {
+    const capacity = getComponentValue(Inventory, entity)?.value;
+    if (capacity == null) return;
 
-  const attemptMove = function (selectedEntity: EntityIndex, targetPosition: WorldCoord) {
-    moveEntity(selectedEntity, targetPosition);
+    const items = getItems(entity);
+    const isFull = () => items.length >= capacity;
+
+    return {
+      capacity,
+      items,
+      isFull,
+    };
+  };
+
+  const getSelectedEntity = () => [...runQuery([Has(Selected)])][0];
+  const getHighlightedEntity = () => {
+    const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
+    const highlightedEntity = [
+      ...runQuery([HasValue(LocalPosition, { x: hoverHighlight.x, y: hoverHighlight.y }), Not(TerrainType)]),
+    ][0];
+
+    return highlightedEntity;
+  };
+  const getHoverPosition = () => {
+    const hoverHighlight = getComponentValue(HoverHighlight, singletonEntity);
+    if (!hoverHighlight) return;
+    if (!hoverHighlight.x || !hoverHighlight.y) return;
+
+    return {
+      x: hoverHighlight.x,
+      y: hoverHighlight.y,
+    };
   };
 
   const attemptGatherResource = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
     const inventory = getComponentValue(Inventory, selectedEntity);
-
     if (inventory == null) return false;
 
     const resourceGenerator = getComponentValue(ResourceGenerator, highlightedEntity);
     if (!resourceGenerator) return false;
 
     gatherResource(world.entities[highlightedEntity], world.entities[selectedEntity]);
-
     return true;
   };
 
@@ -90,19 +110,13 @@ export function createInputSystem(layer: PhaserLayer) {
     if (hasComponent(OwnedBy, highlightedEntity)) return false;
 
     const highlightedItems = getItems(highlightedEntity);
-    if (highlightedItems.length > 0) {
-      const selectedItems = getItems(selectedEntity);
-      const selectedCapacity = getComponentValue(Inventory, selectedEntity);
-      if (selectedCapacity && selectedCapacity.value > selectedItems.length) {
-        const selectedEntityPos = getComponentValue(LocalPosition, selectedEntity);
-        const highlightedEntityPos = getComponentValue(LocalPosition, highlightedEntity);
-        if (selectedEntityPos && highlightedEntityPos && manhattan(selectedEntityPos, highlightedEntityPos) <= 1) {
-          transferInventory(world.entities[highlightedEntity], world.entities[selectedEntity]);
-          return true;
-        }
-      }
-    }
-    return false;
+    if (highlightedItems.length === 0) return false;
+
+    const selectedInventory = getInventory(selectedEntity);
+    if (!selectedInventory || selectedInventory.isFull()) return false;
+
+    transferInventory(world.entities[highlightedEntity], world.entities[selectedEntity]);
+    return true;
   };
 
   const attemptGiveInventory = function (
@@ -117,19 +131,13 @@ export function createInputSystem(layer: PhaserLayer) {
       return false;
 
     const selectedItems = getItems(selectedEntity);
-    if (selectedItems.length > 0) {
-      const highlightedItems = getItems(highlightedEntity);
-      const highlightedCapacity = getComponentValue(Inventory, highlightedEntity);
-      if (highlightedCapacity && highlightedCapacity.value > highlightedItems.length) {
-        const highlightedEntityPos = getComponentValue(LocalPosition, highlightedEntity);
-        const selectedEntityPos = getComponentValue(LocalPosition, selectedEntity);
-        if (highlightedEntityPos && selectedEntityPos && manhattan(highlightedEntityPos, selectedEntityPos) <= 1) {
-          transferInventory(world.entities[selectedEntity], world.entities[highlightedEntity]);
-          return true;
-        }
-      }
-    }
-    return false;
+    if (selectedItems.length === 0) return false;
+
+    const highlightedInventory = getInventory(highlightedEntity);
+    if (!highlightedInventory || highlightedInventory.isFull()) return false;
+
+    transferInventory(world.entities[selectedEntity], world.entities[highlightedEntity]);
+    return true;
   };
 
   const attemptAttack = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
@@ -139,61 +147,52 @@ export function createInputSystem(layer: PhaserLayer) {
     if (!selectedEntityOwner) return false;
     if (selectedEntityOwner.value === highlightedEntityOwner?.value) return false;
 
-    const healthEntity = getComponentValue(Health, highlightedEntity);
-    if (healthEntity) {
-      attackEntity(selectedEntity, highlightedEntity);
-      return true;
-    }
-    return false;
+    const health = getComponentValue(Health, highlightedEntity);
+    if (!health) return false;
+
+    attackEntity(selectedEntity, highlightedEntity);
+    return true;
   };
 
   const attemptEscapePortal = function (selectedEntity: EntityIndex, highlightedEntity: EntityIndex) {
     const escapePortalValue = getComponentValue(EscapePortal, highlightedEntity);
-    if (escapePortalValue) {
-      escapePortal(world.entities[selectedEntity], world.entities[highlightedEntity]);
-      return true;
-    }
-    return false;
+    if (!escapePortalValue) return false;
+
+    escapePortal(world.entities[selectedEntity], world.entities[highlightedEntity]);
+    return true;
   };
 
-  const onRightClick = function (targetPosition: WorldCoord) {
-    const playerEntity = world.entityToIndex.get(connectedAddress.get() as EntityID);
-
+  const onRightClick = function (clickedPosition: WorldCoord) {
+    const playerEntity = getPlayerEntity(connectedAddress.get(), world, Player);
     if (!playerEntity) return;
-
-    if (!hasComponent(Player, playerEntity) || hasComponent(Death, playerEntity)) return;
+    if (hasComponent(Death, playerEntity)) return;
 
     const selectedEntity = getSelectedEntity();
-    if (selectedEntity) {
-      const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
-      const highlightedEntity = [
-        ...runQuery([HasValue(LocalPosition, { x: hoverHighlight.x, y: hoverHighlight.y }), Not(TerrainType)]),
-      ][0];
+    if (selectedEntity == null) return;
 
-      if (highlightedEntity) {
-        if (attemptEscapePortal(selectedEntity, highlightedEntity)) return;
-        if (attemptGatherResource(selectedEntity, highlightedEntity)) return;
-        if (attemptTakeInventory(selectedEntity, highlightedEntity, playerEntity)) return;
-        if (attemptGiveInventory(selectedEntity, highlightedEntity, playerEntity)) return;
-        if (attemptAttack(selectedEntity, highlightedEntity)) return;
-      }
+    const highlightedEntity = getHighlightedEntity();
+    if (highlightedEntity == null) return;
 
-      attemptMove(selectedEntity, targetPosition);
-    }
+    if (attemptEscapePortal(selectedEntity, highlightedEntity)) return;
+    if (attemptGatherResource(selectedEntity, highlightedEntity)) return;
+    if (attemptTakeInventory(selectedEntity, highlightedEntity, playerEntity)) return;
+    if (attemptGiveInventory(selectedEntity, highlightedEntity, playerEntity)) return;
+    if (attemptAttack(selectedEntity, highlightedEntity)) return;
+
+    moveEntity(selectedEntity, clickedPosition);
   };
 
   input.onKeyPress(
     (keys) => keys.has("B"),
     () => {
-      const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
-      if (hoverHighlight.x == null || hoverHighlight.y == null) return;
-
-      const buildPosition = { x: hoverHighlight.x, y: hoverHighlight.y };
+      const buildPosition = getHoverPosition();
+      if (!buildPosition) return;
 
       const selectedEntity = getSelectedEntity();
       if (!selectedEntity) return;
 
-      const factory = getComponentValueStrict(Factory, selectedEntity);
+      const factory = getComponentValue(Factory, selectedEntity);
+      if (!factory) return;
       const prototypeId = factory.prototypeIds[0];
       if (!prototypeId) return;
 
@@ -207,10 +206,7 @@ export function createInputSystem(layer: PhaserLayer) {
       const selectedEntity = getSelectedEntity();
       if (!selectedEntity) return;
 
-      const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
-      const highlightedEntity = [
-        ...runQuery([HasValue(LocalPosition, { x: hoverHighlight.x, y: hoverHighlight.y }), Not(TerrainType)]),
-      ][0];
+      const highlightedEntity = getHighlightedEntity();
       if (!highlightedEntity) return;
 
       attackEntity(selectedEntity, highlightedEntity);
@@ -220,9 +216,10 @@ export function createInputSystem(layer: PhaserLayer) {
   input.onKeyPress(
     (keys) => keys.has("G"),
     () => {
-      const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
-      if (hoverHighlight.x && hoverHighlight.y) spawnGold({ x: hoverHighlight.x, y: hoverHighlight.y });
-      else console.log("hoverHightlight not valid position");
+      const position = getHoverPosition();
+      if (!position) return;
+
+      spawnGold(position);
     }
   );
 
@@ -232,14 +229,16 @@ export function createInputSystem(layer: PhaserLayer) {
       const selectedEntity = getSelectedEntity();
       if (!selectedEntity) return;
 
-      const hoverHighlight = getComponentValueStrict(HoverHighlight, singletonEntity);
+      const hoverPosition = getHoverPosition();
+      if (!hoverPosition) return;
 
       const hasInventory = getComponentValue(Inventory, selectedEntity);
-      if (hasInventory && hoverHighlight.x != undefined && hoverHighlight.y != undefined) {
-        dropInventory(world.entities[selectedEntity], { x: hoverHighlight.x, y: hoverHighlight.y });
-      } else console.log("hoverHightlight not valid position");
+      if (!hasInventory) return;
+
+      dropInventory(world.entities[selectedEntity], hoverPosition);
     }
   );
+
   input.pointermove$
     .pipe(
       map((pointer) => ({ x: pointer.worldX, y: pointer.worldY })), // Map pointer to pointer pixel cood

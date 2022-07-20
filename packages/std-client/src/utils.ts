@@ -1,30 +1,20 @@
 import Phaser from "phaser";
 import {
   Component,
-  ComponentValue,
   EntityID,
   EntityIndex,
   getComponentValue,
   getComponentValueStrict,
-  getEntitiesWithValue,
   Has,
   hasComponent,
   HasValue,
   runQuery,
-  Schema,
   Type,
   World,
 } from "@latticexyz/recs";
 import { Coord, keccak256 } from "@latticexyz/utils";
-import { BigNumber, ethers } from "ethers";
+import { BigNumber } from "ethers";
 import { Clock } from "@latticexyz/network";
-
-// export function getPlayerEntity(personaComponent: Component<{ value: Type.String }>, personaId: number) {
-//   const playerEntitySet = getEntitiesWithValue(personaComponent, {
-//     value: ethers.BigNumber.from(personaId).toHexString(),
-//   });
-//   return [...playerEntitySet][0];
-// }
 
 export const GodID = keccak256("mudwar.god") as EntityID;
 
@@ -90,22 +80,20 @@ export function isOwnedByCaller(
     tempId = getComponentValue(ownedByComponent, entity)?.value;
   }
 
-  if (entity === playerEntity) return true;
-  return false;
+  return entity === playerEntity;
 }
 
 export function getPlayerEntity(
   address: string | undefined,
-  entityToIndex: Map<EntityID, EntityIndex>,
+  world: World,
   Player: Component<{ value: Type.Boolean }, { contractId: string }>
 ): EntityIndex | undefined {
-  if (!address) {
-    return;
-  }
-  const playerEntity = entityToIndex.get(address as EntityID);
-  if (playerEntity != null && hasComponent(Player, playerEntity)) {
-    return playerEntity;
-  }
+  if (!address) return;
+
+  const playerEntity = world.entityToIndex.get(address as EntityID);
+  if (playerEntity == null || !hasComponent(Player, playerEntity)) return;
+
+  return playerEntity;
 }
 
 export function randomColor(id: string): number {
