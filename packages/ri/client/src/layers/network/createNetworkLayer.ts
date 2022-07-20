@@ -35,6 +35,10 @@ export async function createNetworkLayer(config: GameConfig) {
     systems["ember.system.move"].executeTyped(BigNumber.from(network.connectedAddress.get()), coord);
   }
 
+  function kidnap(coord: Coord) {
+    systems["ember.system.catch"].executeTyped(coord);
+  }
+
   // --- CONTEXT --------------------------------------------------------------------
   const context = {
     world,
@@ -45,7 +49,7 @@ export async function createNetworkLayer(config: GameConfig) {
     startSync,
     network,
     actions,
-    api: { move },
+    api: { move, kidnap },
     dev: setupDevSystems(world, encoders, systems),
   };
 

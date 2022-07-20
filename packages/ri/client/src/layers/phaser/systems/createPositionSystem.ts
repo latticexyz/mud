@@ -24,7 +24,11 @@ export function createPositionSystem(network: NetworkLayer, phaser: PhaserLayer)
 
   defineComponentSystem(world, Position, (update) => {
     const position = update.value[0];
-    if (!position) return console.warn("no position");
+    if (!position) {
+      objectPool.remove(update.entity);
+      // Position got removed
+      return;
+    }
 
     const object = objectPool.get(update.entity, "Sprite");
     const { x, y } = tileCoordToPixelCoord(position, tileWidth, tileHeight);
