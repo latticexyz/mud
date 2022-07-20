@@ -171,13 +171,14 @@ export function createInputSystem(layer: PhaserLayer) {
     if (selectedEntity == null) return;
 
     const highlightedEntity = getHighlightedEntity();
-    if (highlightedEntity == null) return;
 
-    if (attemptEscapePortal(selectedEntity, highlightedEntity)) return;
-    if (attemptGatherResource(selectedEntity, highlightedEntity)) return;
-    if (attemptTakeInventory(selectedEntity, highlightedEntity, playerEntity)) return;
-    if (attemptGiveInventory(selectedEntity, highlightedEntity, playerEntity)) return;
-    if (attemptAttack(selectedEntity, highlightedEntity)) return;
+    if (highlightedEntity != null) {
+      if (attemptEscapePortal(selectedEntity, highlightedEntity)) return;
+      if (attemptGatherResource(selectedEntity, highlightedEntity)) return;
+      if (attemptTakeInventory(selectedEntity, highlightedEntity, playerEntity)) return;
+      if (attemptGiveInventory(selectedEntity, highlightedEntity, playerEntity)) return;
+      if (attemptAttack(selectedEntity, highlightedEntity)) return;
+    }
 
     moveEntity(selectedEntity, clickedPosition);
   };
