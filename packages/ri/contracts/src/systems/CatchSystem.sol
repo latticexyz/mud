@@ -8,6 +8,7 @@ import { getAddressById, addressToEntity } from "solecs/utils.sol";
 
 import { LibUtils } from "std-contracts/libraries/LibUtils.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
+import { CarriedByComponent, ID as CarriedByComponentID } from "../components/CarriedByComponent.sol";
 
 uint256 constant ID = uint256(keccak256("ember.system.catch"));
 
@@ -27,9 +28,12 @@ contract CatchSystem is System {
     uint256[] memory entities = position.getEntitiesWithValue(targetPosition);
     require(entities.length > 0, "no entities at this position");
 
+    CarriedByComponent carriedBy = CarriedByComponent(getAddressById(components, CarriedByComponentID));
+
     // Catch all the entities
     for (uint256 i; i < entities.length; i++) {
       position.remove(entities[i]);
+      carriedBy.set(entities[i], addressToEntity(msg.sender));
     }
   }
 

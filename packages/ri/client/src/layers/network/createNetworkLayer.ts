@@ -1,6 +1,6 @@
 import { createWorld } from "@latticexyz/recs";
 import { setupContracts, setupDevSystems } from "./setup";
-import { createActionSystem, defineCoordComponent } from "@latticexyz/std-client";
+import { createActionSystem, defineCoordComponent, defineStringComponent } from "@latticexyz/std-client";
 import { GameConfig } from "./config";
 import { Coord } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
@@ -18,6 +18,7 @@ export async function createNetworkLayer(config: GameConfig) {
   // --- COMPONENTS -----------------------------------------------------------------
   const components = {
     Position: defineCoordComponent(world, { id: "Position", metadata: { contractId: "ember.component.position" } }),
+    CarriedBy: defineStringComponent(world, { id: "CarriedBy", metadata: { contractId: "ember.component.carriedBy" } }),
   };
 
   // --- SETUP ----------------------------------------------------------------------
