@@ -20,6 +20,7 @@ globalThis.Buffer = BrowserBuffer;
 interface MUDStateManagerConfig {
   common: Common;
   provider: JsonRpcProvider;
+  bytecodes: { [key: string]: string };
 }
 
 const bufferFromHex = (hex: string) => {
@@ -32,16 +33,36 @@ const bufferToHex = (buff: Buffer) => {
 
 class MUDStateManager extends DefaultStateManager {
   provider: JsonRpcProvider;
+  codeCache: { [key: string]: string };
   storageCache: { [key: string]: { [key: string]: string } };
   constructor(config: MUDStateManagerConfig) {
     super({ common: config.common });
     this.provider = config.provider;
     this.storageCache = {};
+    this.codeCache = config.bytecodes;
+    console.log(this.codeCache);
   }
   async getContractCode(address: Address): Promise<globalThis.Buffer> {
-    console.log("getting contract code from network", bufferToHex(address.buf));
-    const code = await this.provider.getCode(bufferToHex(address.buf));
-    return bufferFromHex(code);
+    const maybeCode = this.getCodeCache(address);
+    if (maybeCode) {
+      return maybeCode;
+    }
+    console.warn("getting contract code from network", bufferToHex(address.buf));
+    const code = bufferFromHex(await this.provider.getCode(bufferToHex(address.buf)));
+    this.storeCodeCache(address, code);
+    return code;
+  }
+
+  getCodeCache(address: Address): Buffer | undefined {
+    if (this.codeCache[bufferToHex(address.buf)]) {
+      console.log("reading from code cache", bufferToHex(address.buf));
+      return bufferFromHex(this.codeCache[bufferToHex(address.buf)]);
+    }
+  }
+
+  storeCodeCache(address: Address, code: Buffer) {
+    console.log("writing to code cache", bufferToHex(address.buf), bufferToHex(code));
+    this.codeCache[bufferToHex(address.buf)] = bufferToHex(code);
   }
 
   getStorageCache(address: Address, key: Buffer): Buffer | undefined {
@@ -91,69 +112,79 @@ export function createLocalEVM<C extends Contracts>(
     const contracts = computedContracts.get();
     const signer = network.signer.get();
     const provider = network.providers.get()?.json;
+    if (!contracts) return undefined;
+    const bytecodes: { [key: string]: string } = {};
+    for (const contractId of Object.keys(contracts)) {
+      bytecodes[contracts[contractId].address] = (contracts[contractId] as any).bytecode;
+    }
+    // left to do
+    // - give address: (Component, schema) dictionary to the MUD State Manager
+    // - load the World bytecode and add it to the bytecode object
+    // - 2 possibilities to mock components
+    // A. mock the function calls directly, by abi encoding the reads using our cache; and changing our states on writes
+    // there might be a way using the runHookm given it give access to its internal. We could somehow immediately return from a known CALL sig to a known component contract
+    // with the right return value encoded in the return stack
+    // pretty degen but it could work. I probably want to create a test case for this
+    // B. dynamically providing storage slots for each component and their set + metaset. Might be a bit tricky given we need to mock quite a lot of storage slots
+    // Notes on this:
+    // * allows return true for all the writer storage slot
+    // * return zero for indexers
+    // * return the keccak hash of the id for id
+    // * return 0 address for _owner
+    // * return world address for _world
+    // * entityToValue is easy:
+    // - have a global bytecode cache and re-use between invocations
 
     if (connected !== ConnectionState.CONNECTED || !contracts || !signer || !provider) return undefined;
 
-    return { contracts, signer, provider };
+    return { contracts, signer, provider, bytecodes };
   });
 
-  async function simulateCall<Contract extends C[keyof C]>(contract: Contract, key: keyof BaseContract, ...arg: any[]) {
-    const bytecode = (contract as any).bytecode as string;
+  async function simulateCall<Contract extends C[keyof C]>(
+    contract: Contract,
+    bytecodes: { [key: string]: string },
+    key: keyof BaseContract,
+    ...arg: any[]
+  ) {
     const provider = network.providers.get().json;
     const signer = network.signer.get()!;
-    // const common = new Common({ chain: network.config.chainId });
     const common = new Common({ chain: 1 });
-    const vm = await VM.create({ common, stateManager: new MUDStateManager({ common, provider }) });
+    const vm = await VM.create({ common, stateManager: new MUDStateManager({ common, provider, bytecodes }) });
     const contractArg = arg[0];
     const ethersTx = await contract.populateTransaction[key](...contractArg);
-    // ethersTx.maxFeePerGas = 10 * 10 ** 9;
-    console.log(ethersTx);
     ethersTx.gasPrice = BigNumber.from(10 * 10 ** 9);
     ethersTx.gasLimit = BigNumber.from(10_000_000);
-    // ethersTx.nonce = await signer.getTransactionCount()
     ethersTx.nonce = 0;
     const signedTx = await signer.signTransaction(ethersTx);
     const buffer = bufferFromHex(signedTx);
     const tx = Transaction.fromSerializedTx(buffer);
-    console.log(tx);
     const out = await vm.runTx({ tx, skipBalance: true });
     console.log(out);
   }
 
-  function proxyContract<Contract extends C[keyof C]>(contract: Contract): Contract {
-    return mapObject(contract as any, (value, key) => {
-      // Relay all base contract methods to the original target
-      if (key in BaseContract.prototype) return value;
+  function createProxyContrat<Contract extends C[keyof C]>(bytecodes: {
+    [key: string]: string;
+  }): (c: Contract) => Contract {
+    const proxyContract = (contract: Contract): Contract => {
+      return mapObject(contract as any, (value, key) => {
+        // Relay all base contract methods to the original target
+        if (key in BaseContract.prototype) return value;
 
-      // Relay everything that is not a function call to the original target
-      if (!(value instanceof Function)) return value;
-      return (...args: unknown[]) => simulateCall(contract, key as keyof BaseContract, args);
-    }) as Contract;
+        // Relay everything that is not a function call to the original target
+        if (!(value instanceof Function)) return value;
+        return (...args: unknown[]) => simulateCall(contract, bytecodes, key as keyof BaseContract, args);
+      }) as Contract;
+    };
+    return proxyContract;
   }
 
   const proxiedContracts = computed(() => {
-    const contracts = readyState.get()?.contracts;
-    if (!contracts) return undefined;
+    const currentReadyState = readyState.get();
+    if (!currentReadyState) return undefined;
+    const { contracts, bytecodes } = currentReadyState;
+    const proxyContract = createProxyContrat(bytecodes);
     return mapObject(contracts, proxyContract);
   });
-
-  // const run = async () => {
-  //   const common = new Common({ chain: 1 });
-  //   const vm = await VM.create({ common });
-
-  //   const tx = Transaction.fromTxData({
-  //     gasLimit: BigInt(21000),
-  //     value: BigInt(1),
-  //     to: Address.zero(),
-  //     v: BigInt(37),
-  //     r: BigInt("62886504200765677832366398998081608852310526822767264927793100349258111544447"),
-  //     s: BigInt("21948396863567062449199529794141973192314514851405455194940751428901681436138"),
-  //   });
-  //   console.log("tx", tx);
-  //   const out = await vm.runTx({ tx, skipBalance: true });
-  //   console.log(out);
-  // };
-  // run();
 
   const cachedProxiedContracts = cacheUntilReady(proxiedContracts);
 
