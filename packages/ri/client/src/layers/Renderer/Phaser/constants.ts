@@ -21,7 +21,6 @@ export enum Assets {
 }
 
 export enum Sprites {
-  Hero,
   Settlement,
   Gold,
   Container,
@@ -35,7 +34,6 @@ export enum Sprites {
 export enum Animations {}
 
 export const UnitTypeSprites: Record<number, Sprites> = {
-  [UnitTypes.Hero]: Sprites.Hero,
   [UnitTypes.Donkey]: Sprites.Donkey,
   [UnitTypes.Soldier]: Sprites.Soldier,
 };

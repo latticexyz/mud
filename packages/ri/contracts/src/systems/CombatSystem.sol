@@ -18,8 +18,6 @@ import { CapturableComponent, ID as CapturableComponentID } from "../components/
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
-import { DeathComponent, ID as DeathComponentID } from "../components/DeathComponent.sol";
-import { HeroComponent, ID as HeroComponentID } from "../components/HeroComponent.sol";
 
 uint256 constant ID = uint256(keccak256("mudwar.system.Combat"));
 
@@ -144,15 +142,6 @@ contract CombatSystem is System {
     StaminaComponent staminaComponent = StaminaComponent(getAddressById(components, StaminaComponentID));
     if (staminaComponent.has(entity)) {
       staminaComponent.remove(entity);
-    }
-
-    DeathComponent deathComponent = DeathComponent(getAddressById(components, DeathComponentID));
-    deathComponent.set(entity);
-
-    OwnedByComponent ownedByComponent = OwnedByComponent(getAddressById(components, OwnedByComponentID));
-    if (HeroComponent(getAddressById(components, HeroComponentID)).has(entity)) {
-      uint256 owner = LibECS.resolveRelationshipChain(ownedByComponent, entity);
-      deathComponent.set(owner);
     }
 
     if (InventoryComponent(getAddressById(components, InventoryComponentID)).has(entity)) {

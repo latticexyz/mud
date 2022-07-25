@@ -73,10 +73,6 @@ export const config = {
         }),
       },
       sprites: {
-        [Sprites.Hero]: {
-          assetKey: Assets.MainAtlas,
-          frame: "sprites/workers/crypto-picker-imp.png",
-        },
         [Sprites.Settlement]: {
           assetKey: Assets.MainAtlas,
           frame: "sprites/resources/crystal.png",
