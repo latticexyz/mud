@@ -17,6 +17,7 @@ interface GameSpec {
   worldAddress: string;
   client: string;
   checkpoint: string;
+  initialBlockNumber: number;
 }
 
 export class Store {
@@ -40,8 +41,6 @@ export class Store {
 
     const responses = await Promise.all([fetch(chainSpecUrl), fetch(gameSpecUrl)]);
     const [chainSpec, gameSpec] = (await Promise.all(responses.map((r) => r.json()))) as [ChainSpec, GameSpec];
-    console.info("Chain spec:", chainSpec);
-    console.info("Game spec:", gameSpec);
 
     // Override via get params
     chainSpec.chainId = Number(params.get("chainId")) || chainSpec.chainId;
@@ -50,7 +49,14 @@ export class Store {
     gameSpec.worldAddress = params.get("worldAddress") || gameSpec.worldAddress;
     gameSpec.checkpoint = params.get("checkpoint") || gameSpec.checkpoint;
     gameSpec.client = params.get("client") || gameSpec.client;
+    const initialBlockNumberString = params.get("initialBlockNumber");
+    gameSpec.initialBlockNumber = initialBlockNumberString
+      ? Number(initialBlockNumberString)
+      : gameSpec.initialBlockNumber;
     this.devMode = params.get("dev") === "true";
+
+    console.info("Chain spec:", chainSpec);
+    console.info("Game spec:", gameSpec);
 
     runInAction(() => {
       this.gameSpec = gameSpec;
@@ -85,7 +91,9 @@ export class Store {
         this.chainSpec.chainId ?? ""
       }&worldAddress=${this.gameSpec.worldAddress ?? ""}&rpc=${this.chainSpec.rpc ?? ""}&wsRpc=${
         this.chainSpec.wsRpc ?? ""
-      }&checkpoint=${this.gameSpec.checkpoint ?? ""}&dev=${this.devMode}`;
+      }&checkpoint=${this.gameSpec.checkpoint ?? ""}&dev=${this.devMode}&initialBlockNumber=${
+        this.gameSpec.initialBlockNumber ?? ""
+      }`;
     }
   }
 }

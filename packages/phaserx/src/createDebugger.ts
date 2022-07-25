@@ -1,4 +1,5 @@
-import { CoordMap, chunkToPixelCoord } from "./utils";
+import { chunkToPixelCoord } from "./utils";
+import { CoordMap } from "@latticexyz/utils";
 import { Camera, Chunks, ObjectPool } from "./types";
 import { AnimatedTilemap } from "./tilemap";
 

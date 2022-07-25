@@ -55,30 +55,36 @@ library LibDeploy {
 <% });%>
     } 
     
-    // Deploy systems
-    ISystem system; 
-    IUint256Component components = result.world.components();
-<% systems.forEach(system => { %>
-    console.log("Deploying <%= system.name %>");
-    system = new <%= system.name %>(components, result.world);
-    result.world.registerSystem(address(system), <%= system.name %>ID);
-<% system.writeAccess?.forEach(component => { -%>
-<% if(component === "*") { %>
-<% components.forEach(comp=> { -%>
-    authorizeWriter(components, <%= comp%>ID, address(system));
-<% });-%>
-<% } else { %>
-    authorizeWriter(components, <%= component %>ID, address(system));
-<% } %>
-<% });-%>
-<% if(system.initialize) { -%>
-    system.execute(<%= system.initialize -%>);
-<% } -%>
-    console.log(address(system));
-<% });%>
+    deploySystems(address(result.world), true);
   }
+    
   
   function authorizeWriter(IUint256Component components, uint256 componentId, address writer) internal {
     Component(getAddressById(components, componentId)).authorizeWriter(writer);
+  }
+  
+  function deploySystems(address _world, bool init) internal {
+    World world = World(_world);
+    // Deploy systems
+    ISystem system; 
+    IUint256Component components = world.components();
+<% systems.forEach(system => { %>
+    console.log("Deploying <%= system.name %>");
+    system = new <%= system.name %>(components, world);
+    world.registerSystem(address(system), <%= system.name %>ID);
+<% system.writeAccess?.forEach(component => { -%>
+<% if(component === "*") { -%>
+<% components.forEach(comp=> { -%>
+    authorizeWriter(components, <%= comp %>ID, address(system));
+<% });-%>
+<% } else { -%>
+    authorizeWriter(components, <%= component %>ID, address(system));
+<% } -%>
+<% });-%>
+<% if(system.initialize) { -%>
+    if(init) system.execute(<%= system.initialize -%>);
+<% } -%>
+    console.log(address(system));
+<% });%>
   }
 }

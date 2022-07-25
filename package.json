@@ -33,11 +33,11 @@
     }
   },
   "scripts": {
+    "prepare": "husky install && cd packages/cli && npm link && cd .. && yarn lerna run prepare",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
-    "prepare": "husky install && yarn lerna run prepare",
     "lerna:release": "lerna version --conventional-commits --yes",
     "lerna:publish": "lerna publish --no-private --force-publish",
     "start:ri": "run-pty % yarn workspace ri-contracts run start % yarn workspace ri-client run start"

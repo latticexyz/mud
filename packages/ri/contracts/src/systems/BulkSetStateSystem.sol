@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import { ISystem } from "solecs/interfaces/ISystem.sol";
-import { IWorld } from "solecs/interfaces/IWorld.sol";
-import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
-import { IComponent } from "solecs/interfaces/IComponent.sol";
+import "solecs/System.sol";
 import { getAddressById, getSystemAddressById } from "solecs/utils.sol";
 
 import { ComponentDevSystem, ID as ComponentDevSystemID } from "./ComponentDevSystem.sol";
+import { PrototypeDevSystem, ID as PrototypeDevSystemID } from "./PrototypeDevSystem.sol";
 
-uint256 constant ID = uint256(keccak256("ember.system.bulkSetStateSystem"));
+uint256 constant ID = uint256(keccak256("mudwar.system.BulkSetState"));
 
 struct ECSEvent {
   uint8 component;
@@ -16,14 +14,8 @@ struct ECSEvent {
   bytes value;
 }
 
-contract BulkSetStateSystem is ISystem {
-  IUint256Component components;
-  IWorld world;
-
-  constructor(IUint256Component _components, IWorld _world) {
-    components = _components;
-    world = _world;
-  }
+contract BulkSetStateSystem is System {
+  constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}
 
   function requirement(bytes memory) public view returns (bytes memory) {
     // NOTE: Make sure to not include this system in a production deployment, as anyone can cahnge all component values
@@ -36,9 +28,14 @@ contract BulkSetStateSystem is ISystem {
     );
 
     ComponentDevSystem componentDevSystem = ComponentDevSystem(getSystemAddressById(components, ComponentDevSystemID));
+    PrototypeDevSystem prototypeDevSystem = PrototypeDevSystem(getSystemAddressById(components, PrototypeDevSystemID));
 
     for (uint256 i; i < state.length; i++) {
-      componentDevSystem.executeTyped(componentIds[state[i].component], entities[state[i].entity], state[i].value);
+      if (componentIds[state[i].component] == 0) {
+        prototypeDevSystem.executeTyped(abi.decode(state[i].value, (uint256)), entities[state[i].entity]);
+      } else {
+        componentDevSystem.executeTyped(componentIds[state[i].component], entities[state[i].entity], state[i].value);
+      }
     }
   }
 

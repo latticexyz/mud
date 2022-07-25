@@ -1,22 +1,35 @@
 import Phaser from "phaser";
-import { Component, EntityID, getComponentValueStrict, getEntitiesWithValue, Type, World } from "@latticexyz/recs";
-import { keccak256 } from "@latticexyz/utils";
-import { BigNumber, ethers } from "ethers";
+import {
+  Component,
+  EntityID,
+  EntityIndex,
+  getComponentValue,
+  getComponentValueStrict,
+  Has,
+  hasComponent,
+  HasValue,
+  runQuery,
+  Type,
+  World,
+} from "@latticexyz/recs";
+import { Coord, keccak256 } from "@latticexyz/utils";
+import { BigNumber } from "ethers";
 import { Clock } from "@latticexyz/network";
 
-export function getPlayerEntity(personaComponent: Component<{ value: Type.String }>, personaId: number) {
-  const playerEntitySet = getEntitiesWithValue(personaComponent, {
-    value: ethers.BigNumber.from(personaId).toHexString(),
-  });
-  return [...playerEntitySet][0];
-}
-
-export const GodID = keccak256("ember.god") as EntityID;
+export const GodID = keccak256("mudwar.god") as EntityID;
 
 export function getCurrentTurn(
   world: World,
   gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String }>,
   clock: Clock
+) {
+  return getTurnAtTime(world, gameConfigComponent, clock.currentTime);
+}
+
+export function getTurnAtTime(
+  world: World,
+  gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String }>,
+  time: number
 ) {
   const gameConfig = getGameConfig(world, gameConfigComponent);
   if (!gameConfig) return -1;
@@ -24,7 +37,7 @@ export function getCurrentTurn(
   const startTime = BigNumber.from(gameConfig.startTime);
   const turnLength = BigNumber.from(gameConfig.turnLength);
 
-  return BigNumber.from(clock.currentTime / 1000)
+  return BigNumber.from(Math.floor(time / 1000))
     .sub(startTime)
     .div(turnLength)
     .toNumber();
@@ -38,6 +51,49 @@ export function getGameConfig(
   if (!godEntityIndex) return null;
 
   return getComponentValueStrict(gameConfigComponent, godEntityIndex);
+}
+
+export function isUntraversable(
+  untraversableComponent: Component<{ value: Type.Boolean }>,
+  positionComponent: Component<{ x: Type.Number; y: Type.Number }>,
+  targetPosition: Coord
+): boolean {
+  const untraversableEntitiesAtPosition = runQuery([
+    HasValue(positionComponent, targetPosition),
+    Has(untraversableComponent),
+  ]);
+  return untraversableEntitiesAtPosition.size > 0;
+}
+
+export function isOwnedByCaller(
+  ownedByComponent: Component<{ value: Type.Entity }, { contractId: string }>,
+  entity: EntityIndex,
+  playerEntity: EntityIndex,
+  entityToIndex: Map<EntityID, EntityIndex>
+): boolean {
+  let tempId = getComponentValue(ownedByComponent, entity)?.value;
+  let tempIndex: EntityIndex | undefined;
+  while (tempId) {
+    tempIndex = entityToIndex.get(tempId);
+    if (!tempIndex) break;
+    entity = tempIndex;
+    tempId = getComponentValue(ownedByComponent, entity)?.value;
+  }
+
+  return entity === playerEntity;
+}
+
+export function getPlayerEntity(
+  address: string | undefined,
+  world: World,
+  Player: Component<{ value: Type.Boolean }, { contractId: string }>
+): EntityIndex | undefined {
+  if (!address) return;
+
+  const playerEntity = world.entityToIndex.get(address as EntityID);
+  if (playerEntity == null || !hasComponent(Player, playerEntity)) return;
+
+  return playerEntity;
 }
 
 export function randomColor(id: string): number {

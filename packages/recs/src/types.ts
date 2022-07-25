@@ -24,12 +24,12 @@ export type ValueType = {
   [Type.StringArray]: string[];
   [Type.Entity]: EntityID;
   [Type.EntityArray]: EntityID[];
-  [Type.OptionalNumber]: number | null;
-  [Type.OptionalString]: string | null;
-  [Type.OptionalNumberArray]: number[] | null;
-  [Type.OptionalStringArray]: string[] | null;
-  [Type.OptionalEntity]: EntityID | null;
-  [Type.OptionalEntityArray]: EntityID[] | null;
+  [Type.OptionalNumber]: number | undefined;
+  [Type.OptionalString]: string | undefined;
+  [Type.OptionalNumberArray]: number[] | undefined;
+  [Type.OptionalStringArray]: string[] | undefined;
+  [Type.OptionalEntity]: EntityID | undefined;
+  [Type.OptionalEntityArray]: EntityID[] | undefined;
 };
 
 export type ComponentValue<S extends Schema = Schema> = {
@@ -52,6 +52,10 @@ export interface Component<S extends Schema = Schema, M extends Metadata = Metad
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   update$: Subject<ComponentUpdate<S>> & { observers: any };
 }
+
+export type Indexer<S extends Schema, M extends Metadata = Metadata> = Component<S, M> & {
+  getEntitiesWithValue: (value: ComponentValue<S>) => Set<EntityIndex>;
+};
 
 export type Components = {
   [key: string]: Component<Schema>;
@@ -146,7 +150,7 @@ export type SchemaOf<C extends Component<Schema>> = C extends Component<infer S>
 
 export type Override<T extends Schema> = {
   entity: EntityIndex;
-  value: ComponentValue<T>;
+  value: Partial<ComponentValue<T>>;
 };
 
 export type OverridableComponent<T extends Schema = Schema> = Component<T> & {

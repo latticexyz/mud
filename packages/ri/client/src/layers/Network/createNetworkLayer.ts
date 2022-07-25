@@ -1,13 +1,24 @@
-import { Component, ComponentValue, createWorld, defineComponent, EntityIndex, Schema, Type } from "@latticexyz/recs";
+import {
+  Component,
+  ComponentValue,
+  createWorld,
+  defineComponent,
+  EntityID,
+  EntityIndex,
+  getComponentValue,
+  Has,
+  HasValue,
+  runQuery,
+  Schema,
+  Type,
+} from "@latticexyz/recs";
 import {
   definePositionComponent,
-  defineEntityTypeComponent,
   defineMovableComponent,
   defineOwnedByComponent,
   defineUntraversableComponent,
 } from "./components";
 import { setupContracts } from "./setup";
-import { CHECKPOINT_URL, DEV_PRIVATE_KEY, RPC_URL, RPC_WS_URL } from "./constants.local";
 import { BigNumber } from "ethers";
 import { keccak256 } from "@latticexyz/utils";
 import { Mappings } from "@latticexyz/network";
@@ -20,10 +31,11 @@ export type NetworkLayerConfig = {
   worldAddress: string;
   privateKey: string;
   chainId: number;
-  jsonRpc?: string;
+  jsonRpc: string;
   wsRpc?: string;
   checkpointUrl?: string;
   devMode: boolean;
+  initialBlockNumber: number;
 };
 
 /**
@@ -35,14 +47,14 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
   const world = createWorld();
 
   //Config
-  console.log("Config", config?.jsonRpc, config?.wsRpc);
+  console.log("Network config", config);
 
   // Components
   const components = {
     GameConfig: defineComponent(
       world,
       { startTime: Type.String, turnLength: Type.String },
-      { id: "GameConfig", metadata: { contractId: keccak256("ember.component.gameConfigComponent") } }
+      { id: "GameConfig", metadata: { contractId: keccak256("mudwar.component.GameConfig") } }
     ),
     Components: defineStringComponent(world, {
       id: "Components",
@@ -52,26 +64,99 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       id: "Systems",
       metadata: { contractId: keccak256("world.component.systems") },
     }),
-    Position: definePositionComponent(world, keccak256("ember.component.positionComponent")),
-    EntityType: defineEntityTypeComponent(world, keccak256("ember.component.entityTypeComponent")),
-    Movable: defineMovableComponent(world, keccak256("ember.component.movableComponent")),
-    OwnedBy: defineOwnedByComponent(world, keccak256("ember.component.ownedByComponent")),
-    Untraversable: defineUntraversableComponent(world, keccak256("ember.component.untraversableComponent")),
+    UnitType: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "UnitType", metadata: { contractId: keccak256("mudwar.component.UnitType") } }
+    ),
+    StructureType: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "StructureType", metadata: { contractId: keccak256("mudwar.component.StructureType") } }
+    ),
+    ItemType: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "ItemType", metadata: { contractId: keccak256("mudwar.component.ItemType") } }
+    ),
+    TerrainType: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "TerrainType", metadata: { contractId: keccak256("mudwar.component.TerrainType") } }
+    ),
+    Position: definePositionComponent(world, keccak256("mudwar.component.Position")),
+    Movable: defineMovableComponent(world, keccak256("mudwar.component.Movable")),
+    OwnedBy: defineOwnedByComponent(world, keccak256("mudwar.component.OwnedBy")),
+    Untraversable: defineUntraversableComponent(world, keccak256("mudwar.component.Untraversable")),
     Player: defineComponent(
       world,
       { value: Type.Boolean },
-      { id: "Player", metadata: { contractId: keccak256("ember.component.playerComponent") } }
+      { id: "Player", metadata: { contractId: keccak256("mudwar.component.Player") } }
     ),
-    // Stamina
     Stamina: defineComponent(
       world,
       { current: Type.Number, max: Type.Number, regeneration: Type.Number },
-      { id: "Stamina", metadata: { contractId: keccak256("ember.component.staminaComponent") } }
+      { id: "Stamina", metadata: { contractId: keccak256("mudwar.component.Stamina") } }
     ),
     LastActionTurn: defineComponent(
       world,
       { value: Type.Number },
-      { id: "LastActionTurn", metadata: { contractId: keccak256("ember.component.lastActionTurnComponent") } }
+      { id: "LastActionTurn", metadata: { contractId: keccak256("mudwar.component.LastActionTurn") } }
+    ),
+    Health: defineComponent(
+      world,
+      { current: Type.Number, max: Type.Number },
+      { id: "Health", metadata: { contractId: keccak256("mudwar.component.Health") } }
+    ),
+    Attack: defineComponent(
+      world,
+      { strength: Type.Number, range: Type.Number },
+      { id: "Attack", metadata: { contractId: keccak256("mudwar.component.Attack") } }
+    ),
+    PrototypeCopy: defineComponent(
+      world,
+      { value: Type.Entity },
+      { id: "PrototypeCopy", metadata: { contractId: keccak256("mudwar.component.PrototypeCopy") } }
+    ),
+    Prototype: defineComponent(
+      world,
+      { value: Type.StringArray },
+      { id: "Prototype", metadata: { contractId: keccak256("mudwar.component.Prototype") } }
+    ),
+    Factory: defineComponent(
+      world,
+      { prototypeIds: Type.StringArray, costs: Type.NumberArray, costItemTypes: Type.NumberArray },
+      { id: "Factory", metadata: { contractId: keccak256("mudwar.component.Factory") } }
+    ),
+    Capturable: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "Capturable", metadata: { contractId: keccak256("mudwar.component.Capturable") } }
+    ),
+    SpawnPoint: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "SpawnPoint", metadata: { contractId: keccak256("mudwar.component.SpawnPoint") } }
+    ),
+    Inventory: defineComponent(
+      world,
+      { value: Type.Number },
+      { id: "Inventory", metadata: { contractId: keccak256("mudwar.component.Inventory") } }
+    ),
+    ResourceGenerator: defineComponent(
+      world,
+      { value: Type.String },
+      { id: "ResourceGenerator", metadata: { contractId: keccak256("mudwar.component.ResourceGenerator") } }
+    ),
+    EscapePortal: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "EscapePortal", metadata: { contractId: keccak256("mudwar.component.EscapePortal") } }
+    ),
+    Winner: defineComponent(
+      world,
+      { value: Type.Boolean },
+      { id: "Winner", metadata: { contractId: keccak256("mudwar.component.Winner") } }
     ),
   };
 
@@ -79,15 +164,29 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
   const mappings: Mappings<typeof components> = {
     [keccak256("world.component.components")]: "Components",
     [keccak256("world.component.systems")]: "Systems",
-    [keccak256("ember.component.gameConfigComponent")]: "GameConfig",
-    [keccak256("ember.component.positionComponent")]: "Position",
-    [keccak256("ember.component.entityTypeComponent")]: "EntityType",
-    [keccak256("ember.component.movableComponent")]: "Movable",
-    [keccak256("ember.component.ownedByComponent")]: "OwnedBy",
-    [keccak256("ember.component.untraversableComponent")]: "Untraversable",
-    [keccak256("ember.component.lastActionTurnComponent")]: "LastActionTurn",
-    [keccak256("ember.component.staminaComponent")]: "Stamina",
-    [keccak256("ember.component.playerComponent")]: "Player",
+    [keccak256("mudwar.component.UnitType")]: "UnitType",
+    [keccak256("mudwar.component.StructureType")]: "StructureType",
+    [keccak256("mudwar.component.ItemType")]: "ItemType",
+    [keccak256("mudwar.component.GameConfig")]: "GameConfig",
+    [keccak256("mudwar.component.Position")]: "Position",
+    [keccak256("mudwar.component.TerrainType")]: "TerrainType",
+    [keccak256("mudwar.component.Movable")]: "Movable",
+    [keccak256("mudwar.component.OwnedBy")]: "OwnedBy",
+    [keccak256("mudwar.component.Untraversable")]: "Untraversable",
+    [keccak256("mudwar.component.LastActionTurn")]: "LastActionTurn",
+    [keccak256("mudwar.component.Stamina")]: "Stamina",
+    [keccak256("mudwar.component.Player")]: "Player",
+    [keccak256("mudwar.component.Health")]: "Health",
+    [keccak256("mudwar.component.Attack")]: "Attack",
+    [keccak256("mudwar.component.Prototype")]: "Prototype",
+    [keccak256("mudwar.component.PrototypeCopy")]: "PrototypeCopy",
+    [keccak256("mudwar.component.Factory")]: "Factory",
+    [keccak256("mudwar.component.Capturable")]: "Capturable",
+    [keccak256("mudwar.component.SpawnPoint")]: "SpawnPoint",
+    [keccak256("mudwar.component.Inventory")]: "Inventory",
+    [keccak256("mudwar.component.ResourceGenerator")]: "ResourceGenerator",
+    [keccak256("mudwar.component.EscapePortal")]: "EscapePortal",
+    [keccak256("mudwar.component.Winner")]: "Winner",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -97,16 +196,16 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       syncInterval: 5000,
     },
     provider: {
-      jsonRpcUrl: config?.jsonRpc || RPC_URL,
-      wsRpcUrl: config?.wsRpc || RPC_WS_URL,
+      jsonRpcUrl: config.jsonRpc,
+      wsRpcUrl: config.wsRpc,
       options: {
         batch: false,
       },
     },
-    privateKey: config?.privateKey || DEV_PRIVATE_KEY,
-    chainId: config?.chainId || LOCAL_CHAIN_ID,
-    checkpointServiceUrl: config?.checkpointUrl || CHECKPOINT_URL,
-    initialBlockNumber: 0,
+    privateKey: config.privateKey,
+    chainId: config.chainId,
+    checkpointServiceUrl: config.checkpointUrl,
+    initialBlockNumber: config.initialBlockNumber,
   };
 
   const DEV_MODE = contractConfig.chainId === LOCAL_CHAIN_ID || config?.devMode;
@@ -117,6 +216,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     contractConfig,
     world,
     components.Systems,
+    components.Components,
     components,
     mappings,
     DEV_MODE
@@ -134,30 +234,85 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
         `Attempted to set the contract value of Component ${component.id} without a deployed contract backing it.`
       );
 
-    const data = encoders[component.id](newValue);
+    const data = (await encoders)[component.metadata.contractId](newValue);
     const entityId = world.entities[entity];
 
     console.log(`Sent transaction to edit networked Component ${component.id} for Entity ${entityId}`);
-    await systems["ember.system.componentDev"].executeTyped(
+    await systems["mudwar.system.ComponentDev"].executeTyped(
       component.metadata.contractId,
       BigNumber.from(entityId),
       data
     );
   }
 
-  async function joinGame(position: WorldCoord) {
-    console.log(`Joining game at position ${JSON.stringify(position)}`);
-    return systems["ember.system.playerJoin"].executeTyped(position, { gasPrice: 0 });
+  async function joinGame(spawnEntity: EntityID) {
+    console.log(`Joining game at position ${spawnEntity}`);
+    return systems["mudwar.system.PlayerJoin"].executeTyped(BigNumber.from(spawnEntity));
   }
 
-  async function moveEntity(entity: string, targetPosition: WorldCoord) {
-    console.log(`Moving entity ${entity} to position (${targetPosition.x}, ${targetPosition.y})}`);
-    return systems["ember.system.move"].executeTyped(BigNumber.from(entity), targetPosition, { gasPrice: 0 });
+  async function moveEntity(entity: string, path: WorldCoord[]) {
+    console.log(`Moving entity ${entity} to position (${path[path.length - 1].x}, ${path[path.length - 1].y})}`);
+    return systems["mudwar.system.Move"].executeTyped(BigNumber.from(entity), path, { gasLimit: 1_000_000 });
+  }
+
+  async function attackEntity(attacker: EntityID, defender: EntityID) {
+    console.log(`Entity ${attacker} attacking ${defender}.`);
+    return systems["mudwar.system.Combat"].executeTyped(BigNumber.from(attacker), BigNumber.from(defender));
+  }
+
+  async function buildAt(builderId: EntityID, prototypeId: string, position: WorldCoord) {
+    console.log(`Building entity ${prototypeId} from factory ${builderId} at coord ${JSON.stringify(position)}`);
+    return systems["mudwar.system.Factory"].executeTyped(
+      BigNumber.from(builderId),
+      BigNumber.from(prototypeId),
+      position
+    );
+  }
+
+  async function transferInventory(inventoryOwnerEntity: EntityID, receiverEntity: EntityID) {
+    console.log(`transfering inventory from  ${inventoryOwnerEntity} to ${receiverEntity}.`);
+    return systems["mudwar.system.TransferInventory"].executeTyped(
+      BigNumber.from(inventoryOwnerEntity),
+      BigNumber.from(receiverEntity)
+    );
+  }
+
+  async function dropInventory(ownedEntity: EntityID, targetPosition: WorldCoord) {
+    console.log(`Drop Inventory at position ${JSON.stringify(targetPosition)}`);
+    return systems["mudwar.system.DropInventory"].executeTyped(BigNumber.from(ownedEntity), targetPosition);
+  }
+
+  async function gatherResource(generator: EntityID, gatherer: EntityID) {
+    console.log(`Gathering resource`);
+    return systems["mudwar.system.GatherResource"].executeTyped(BigNumber.from(generator), BigNumber.from(gatherer));
+  }
+
+  async function escapePortal(entity: EntityID, escapePortalEntity: EntityID) {
+    console.log(`Entity ${entity} taking escapePortal ${escapePortalEntity}`);
+    return systems["mudwar.system.EscapePortal"].executeTyped(
+      BigNumber.from(entity),
+      BigNumber.from(escapePortalEntity)
+    );
+  }
+
+  // debug functions
+  async function spawnGold(targetPosition: WorldCoord) {
+    console.log(`Spawn gold at position ${JSON.stringify(targetPosition)}`);
+    return systems["mudwar.system.SpawnGoldDev"].executeTyped(targetPosition);
   }
 
   // Constants (load from contract later)
   const constants = {
     mapSize: 50,
+  };
+
+  const checkOwnEntity = (entity: EntityIndex) => {
+    const entityOwner = getComponentValue(components.OwnedBy, entity)?.value;
+    return entityOwner && entityOwner === network.connectedAddress.get();
+  };
+
+  const getItems = (entity: EntityIndex) => {
+    return [...runQuery([HasValue(components.OwnedBy, { value: world.entities[entity] }), Has(components.ItemType)])];
   };
 
   return {
@@ -174,6 +329,19 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       setContractComponentValue,
       joinGame,
       moveEntity,
+      attackEntity,
+      buildAt,
+      transferInventory,
+      dropInventory,
+      gatherResource,
+      escapePortal,
+      dev: {
+        spawnGold,
+      },
+    },
+    utils: {
+      checkOwnEntity,
+      getItems,
     },
     DEV_MODE,
   };

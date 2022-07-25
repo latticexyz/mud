@@ -9,6 +9,7 @@ import {
   Animation,
   GameObjectTypes,
   GameObject,
+  Sprite,
 } from "./types";
 
 // Add type safety to config definitions
@@ -25,10 +26,11 @@ export function defineMapConfig<A extends Assets, T extends TilesetConfig<A>, L 
 
 export function defineSceneConfig<
   A extends Assets,
+  S extends { [key: string]: Sprite<Assets> },
   T extends TilesetConfig<A>,
   M extends MapsConfig<A, T>,
   Ans extends Animation<A>[]
->(config: SceneConfig<A, T, M, Ans>) {
+>(config: SceneConfig<A, S, T, M, Ans>) {
   return config;
 }
 

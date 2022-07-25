@@ -1,8 +1,8 @@
-import { defineComponent, Type, namespaceWorld } from "@latticexyz/recs";
+import { defineComponent, Type, namespaceWorld, EntityIndex, getComponentValue } from "@latticexyz/recs";
 import { NetworkLayer } from "../Network";
 import { createActionSystem, createCurrentStaminaSystem } from "./systems";
 import { defineActionComponent } from "./components";
-import { joinGame, moveEntity } from "./api";
+import { joinGame, moveEntity, attackEntity } from "./api";
 import { curry } from "lodash";
 import { createTurnStream } from "./setup";
 
@@ -24,15 +24,18 @@ export async function createHeadlessLayer(network: NetworkLayer) {
 
   const actions = createActionSystem(world, Action, network.txReduced$);
 
+  const turn$ = createTurnStream(world, GameConfig, clock);
+
   const layer = {
     world,
     actions,
     parentLayers: { network },
-    turn$: createTurnStream(world, GameConfig, clock),
     components,
+    turn$,
     api: {
       joinGame: curry(joinGame)(network, actions),
       moveEntity: curry(moveEntity)({ world, actions, network, LocalStamina }),
+      attackEntity: curry(attackEntity)({ network, actions }),
     },
   };
 

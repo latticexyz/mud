@@ -1,5 +1,7 @@
 import { Area, ChunkCoord, Coord, PixelCoord, WorldCoord } from "../types";
 
+export const ZERO_VECTOR: Coord = { x: 0, y: 0 };
+
 export function cornerTileCoordsFromRegionCoords(regionCoords: WorldCoord[], regionLength: number) {
   const tileCoords: WorldCoord[] = [];
 
@@ -27,6 +29,13 @@ export function coordEq(a?: Coord, b?: Coord) {
   if (!a && !b) return true;
   if (!a || !b) return false;
   return a.x === b.x && a.y === b.y;
+}
+
+export function addCoords(a: Coord, b: Coord) {
+  return {
+    x: a.x + b.x,
+    y: a.y + b.y,
+  };
 }
 
 export function pixelToChunkCoord(pixelCoord: PixelCoord, chunkSize: number): ChunkCoord {

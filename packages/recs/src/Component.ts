@@ -1,21 +1,25 @@
 import { uuid } from "@latticexyz/utils";
 import { mapObject } from "@latticexyz/utils";
 import { filter, Subject } from "rxjs";
+import { OptionalTypes } from "./constants";
+import { createIndexer } from "./Indexer";
 import {
   Component,
   ComponentValue,
   EntityIndex,
+  Indexer,
   Metadata,
   OverridableComponent,
   Override,
   Schema,
   World,
 } from "./types";
+import { isFullComponentValue, isIndexer } from "./utils";
 
 export function defineComponent<S extends Schema, M extends Metadata>(
   world: World,
   schema: S,
-  options?: { id?: string; metadata?: M }
+  options?: { id?: string; metadata?: M; indexed?: boolean }
 ) {
   if (Object.keys(schema).length === 0) throw new Error("Component schema must have at least one key");
   const id = options?.id ?? uuid();
@@ -23,7 +27,8 @@ export function defineComponent<S extends Schema, M extends Metadata>(
   const update$ = new Subject();
   const metadata = options?.metadata;
   const entities = () => (Object.values(values)[0] as Map<EntityIndex, unknown>).keys();
-  const component = { values, schema, id, update$, metadata, entities, world } as Component<S, M>;
+  let component = { values, schema, id, update$, metadata, entities, world } as Component<S, M>;
+  if (options?.indexed) component = createIndexer(component);
   world.registerComponent(component);
   return component;
 }
@@ -68,7 +73,7 @@ export function getComponentValue<S extends Schema>(
   const schemaKeys = Object.keys(component.schema);
   for (const key of schemaKeys) {
     const val = component.values[key].get(entity);
-    if (val === undefined) return undefined;
+    if (val === undefined && !OptionalTypes.includes(component.schema[key])) return undefined;
     value[key] = val;
   }
 
@@ -103,11 +108,16 @@ export function withValue<S extends Schema>(
   return [component, value];
 }
 
-// TODO: Trivial implementation, needs to be more efficient for performant HasValue queries
 export function getEntitiesWithValue<T extends Schema>(
-  component: Component<T>,
+  component: Component<T> | Indexer<T>,
   value: Partial<ComponentValue<T>>
 ): Set<EntityIndex> {
+  // Shortcut for indexers
+  if (isIndexer(component) && isFullComponentValue(component, value)) {
+    return component.getEntitiesWithValue(value);
+  }
+
+  // Trivial implementation for regular components
   const entities = new Set<EntityIndex>();
   for (const entity of getComponentEntities(component)) {
     const val = getComponentValue(component, entity);
@@ -135,7 +145,7 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
   const overrides = new Map<string, { update: Override<S>; nonce: number }>();
 
   // Map from EntityIndex to current overridden component value
-  const overriddenEntityValues = new Map<EntityIndex, ComponentValue<S>>();
+  const overriddenEntityValues = new Map<EntityIndex, Partial<ComponentValue<S>>>();
 
   // Update event stream that takes into account overridden entity values
   const update$ = new Subject<{
@@ -175,9 +185,12 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
   }
 
   // Internal function to get the current overridden value or value of the source component
-  function getOverriddenComponentValue(entity: EntityIndex) {
+  function getOverriddenComponentValue(entity: EntityIndex): ComponentValue<S> | undefined {
+    const originalValue = getComponentValue(component, entity);
     const overriddenValue = overriddenEntityValues.get(entity);
-    return overriddenValue ?? getComponentValue(component, entity);
+    return originalValue || overriddenValue
+      ? ({ ...originalValue, ...overriddenValue } as ComponentValue<S>)
+      : undefined;
   }
 
   const valueProxyHandler: (key: keyof S) => ProxyHandler<typeof component.values[typeof key]> = (key: keyof S) => ({
@@ -187,7 +200,7 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
         return (entity: EntityIndex) => {
           const originalValue = target.get(entity);
           const overriddenValue = overriddenEntityValues.get(entity);
-          return overriddenValue ? overriddenValue[key] : originalValue;
+          return overriddenValue && overriddenValue[key] != null ? overriddenValue[key] : originalValue;
         };
       }
 
@@ -228,7 +241,7 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
   }) as OverridableComponent<S>;
 
   // Internal function to set the current overridden component value and emit the update event
-  function setOverriddenComponentValue(entity: EntityIndex, value?: ComponentValue<S>) {
+  function setOverriddenComponentValue(entity: EntityIndex, value?: Partial<ComponentValue<S>>) {
     const prevValue = getOverriddenComponentValue(entity);
     if (value) overriddenEntityValues.set(entity, value);
     else overriddenEntityValues.delete(entity);

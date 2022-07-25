@@ -14,19 +14,12 @@ import {
   defineLocalEntityTypeComponent,
   definePathComponent,
   defineMoveSpeedComponent,
-  defineDestinationComponent,
   defineSelectionComponent,
   defineSelectedComponent,
   defineSelectableComponent,
   defineRockWallComponent,
 } from "./components";
-import {
-  createDestinationSystem,
-  createPathSystem,
-  createSyncSystem,
-  createPositionSystem,
-  createSelectionSystem,
-} from "./systems";
+import { createPathSystem, createSyncSystem, createPositionSystem, createSelectionSystem } from "./systems";
 import { DEFAULT_MOVE_SPEED } from "./constants";
 import { Area } from "@latticexyz/utils";
 import { createPotentialPathSystem } from "./systems/PotentialPathSystem";
@@ -43,13 +36,13 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   const LocalEntityType = defineLocalEntityTypeComponent(world);
   const Strolling = defineStrollingComponent(world);
   const Path = definePathComponent(world);
-  const Destination = defineDestinationComponent(world);
   const MoveSpeed = defineMoveSpeedComponent(world);
   const Selection = defineSelectionComponent(world);
   const Selected = defineSelectedComponent(world);
   const Selectable = defineSelectableComponent(world);
   const RockWall = defineRockWallComponent(world);
   const PotentialPath = defineComponent(world, { x: Type.NumberArray, y: Type.NumberArray }, { id: "PotentialPath" });
+  const Name = defineComponent(world, { value: Type.String }, { id: "Name" });
 
   const components = {
     LocalPosition,
@@ -57,12 +50,12 @@ export async function createLocalLayer(headless: HeadlessLayer) {
     Strolling,
     Path,
     MoveSpeed,
-    Destination,
     Selection,
     Selected,
     Selectable,
     RockWall,
     PotentialPath,
+    Name,
   };
 
   // Constants
@@ -99,7 +92,6 @@ export async function createLocalLayer(headless: HeadlessLayer) {
   createSelectionSystem(layer);
   createSyncSystem(layer);
   createPositionSystem(layer);
-  createDestinationSystem(layer);
   createPathSystem(layer);
   createPotentialPathSystem(layer);
 

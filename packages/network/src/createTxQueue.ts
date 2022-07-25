@@ -162,19 +162,44 @@ export function createTxQueue<C extends Contracts>(
     // Increase utilization to prevent executing more tx than allowed by capacity
     utilization++;
     const txResult = await submissionMutex.runExclusive(async () => {
+      // Define variables in scope visible to finally block
+      let error: any;
+      const stateMutability = txRequest.stateMutability;
+
       try {
         // Wait if nonce is not ready
         const { nonce } = await awaitValue(readyState);
         const resultPromise = txRequest.execute(nonce);
-        if (txRequest.stateMutability !== "view") incNonce();
         if (!options?.ignoreConfirmation) return await resultPromise;
       } catch (e: any) {
         console.warn("TXQUEUE EXECUTION FAILED", e);
+        // Nonce is handled centrally in finally block (for both failing and successful tx)
+        error = e;
+      } finally {
         // If the error includes information about the transaction,
         // then the transaction was submitted and the nonce needs to be
-        // increased regardless of the error;
-        if ("transaction" in e && txRequest.stateMutability !== "view") incNonce();
-        if ("code" in e && e.code === "NONCE_EXPIRED") await resetNonce();
+        // increased regardless of the error unless the error occured during
+        // gas estimation;
+        const isGasEstimationError = error && "code" in error && error.code === "UNPREDICTABLE_GAS_LIMIT";
+        const isNonViewTransaction = error && "transaction" in error && txRequest.stateMutability !== "view";
+        const shouldIncreaseNonce =
+          (!error && stateMutability !== "view") || (isNonViewTransaction && !isGasEstimationError);
+        const shouldResetNonce =
+          error &&
+          (("code" in error && error.code === "NONCE_EXPIRED") ||
+            JSON.stringify(error).includes("transaction already imported"));
+
+        console.log("TxQueue:", {
+          error,
+          isGasEstimationError,
+          isNonViewTransaction,
+          shouldIncreaseNonce,
+          shouldResetNonce,
+        });
+
+        // Nonce handeling
+        if (shouldIncreaseNonce) incNonce();
+        if (shouldResetNonce) await resetNonce();
       }
     });
 

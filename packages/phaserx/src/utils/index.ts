@@ -1,5 +1,4 @@
 export { tween, removeAllTweens } from "./tween";
-export { CoordMap, subtract } from "./CoordMap";
 export { mod } from "./math";
 export {
   cornerTileCoordsFromRegionCoords,
@@ -10,7 +9,9 @@ export {
   chunkCoordToTileCoord,
   chunkToPixelCoord,
   pixelToChunkCoord,
+  addCoords,
   coordEq,
+  ZERO_VECTOR,
 } from "./coords";
 export { load } from "./load";
 export { getChunksInArea } from "./chunks";

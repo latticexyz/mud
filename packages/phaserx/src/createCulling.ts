@@ -2,7 +2,8 @@ import { computed, observe, reaction } from "mobx";
 import { from, map, mergeMap, pipe } from "rxjs";
 import { filterNullish } from "@latticexyz/utils";
 import { Camera, ChunkCoord, Chunks, Coord, EmbodiedEntity, ObjectPool } from "./types";
-import { CoordMap, pixelToChunkCoord, coordEq } from "./utils";
+import { pixelToChunkCoord, coordEq } from "./utils";
+import { CoordMap } from "@latticexyz/utils";
 
 function createRegistry() {
   const coordToIds = new CoordMap<Set<string>>();

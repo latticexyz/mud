@@ -1,9 +1,14 @@
-import { HasValue, Has, defineSyncSystem, getComponentValue } from "@latticexyz/recs";
+import {
+  Has,
+  defineSyncSystem,
+  getComponentValueStrict,
+  defineSystem,
+  setComponent,
+  UpdateType,
+  removeComponent,
+} from "@latticexyz/recs";
 import { PhaserLayer } from "../../types";
-import { LocalEntityTypes } from "../../../../Local/types";
-import { EntityTypes } from "../../../../Network/types";
-import { Animations, Assets } from "../../constants";
-import { getAddressColor } from "@latticexyz/std-client";
+import { UnitTypeSprites, StructureTypeSprites, ItemTypeSprites } from "../../constants";
 
 /**
  * The Sync system handles adding Phaser layer components to entites based on components they have on parent layers
@@ -13,72 +18,49 @@ export function createSyncSystem(layer: PhaserLayer) {
     world,
     parentLayers: {
       network: {
-        components: { EntityType, OwnedBy },
+        components: { UnitType, StructureType, ItemType },
       },
       local: {
-        components: { LocalEntityType, Selected },
+        components: { Selected, LocalPosition },
       },
     },
-    components: { Appearance, SpriteAnimation, Outline, HueTint },
+    components: { Appearance, Outline },
   } = layer;
 
   defineSyncSystem(
     world,
-    [HasValue(EntityType, { value: EntityTypes.Hero })],
-    () => Appearance,
-    () => {
-      return {
-        value: Assets.Legendary,
-      };
-    }
-  );
-
-  defineSyncSystem(
-    world,
-    [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
-    () => Appearance,
-    () => ({
-      value: Assets.Imp,
-    })
-  );
-
-  defineSyncSystem(
-    world,
-    [Has(Selected), Has(OwnedBy)],
+    [Has(Selected)],
     () => Outline,
     () => ({ color: 0xfff000 })
   );
 
-  defineSyncSystem(
-    world,
-    [Has(OwnedBy)],
-    () => HueTint,
-    (entity) => {
-      const ownedBy = getComponentValue(OwnedBy, entity)?.value;
-      if (!ownedBy) return { value: 0xff0000 };
+  defineSystem(world, [Has(UnitType), Has(LocalPosition)], ({ entity, type }) => {
+    const entityType = getComponentValueStrict(UnitType, entity).value;
 
-      const ownedByIndex = world.entityToIndex.get(ownedBy);
-      if (!ownedByIndex) return { value: 0xff0000 };
+    if (type === UpdateType.Exit) removeComponent(Appearance, entity);
 
-      return { value: getAddressColor(ownedBy) };
-    }
-  );
+    setComponent(Appearance, entity, {
+      value: UnitTypeSprites[entityType],
+    });
+  });
 
-  defineSyncSystem(
-    world,
-    [HasValue(EntityType, { value: EntityTypes.Hero })],
-    () => SpriteAnimation,
-    () => ({
-      value: Animations.HeroIdle,
-    })
-  );
+  defineSystem(world, [Has(StructureType), Has(LocalPosition)], ({ entity, type }) => {
+    const entityType = getComponentValueStrict(StructureType, entity).value;
 
-  defineSyncSystem(
-    world,
-    [HasValue(LocalEntityType, { value: LocalEntityTypes.Imp })],
-    () => SpriteAnimation,
-    () => ({
-      value: Animations.ImpIdle,
-    })
-  );
+    if (type === UpdateType.Exit) removeComponent(Appearance, entity);
+
+    setComponent(Appearance, entity, {
+      value: StructureTypeSprites[entityType],
+    });
+  });
+
+  defineSystem(world, [Has(ItemType), Has(LocalPosition)], ({ entity, type }) => {
+    const entityType = getComponentValueStrict(ItemType, entity).value;
+
+    if (type === UpdateType.Exit) removeComponent(Appearance, entity);
+
+    setComponent(Appearance, entity, {
+      value: ItemTypeSprites[entityType],
+    });
+  });
 }

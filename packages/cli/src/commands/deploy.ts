@@ -31,6 +31,7 @@ interface Options {
   clientUrl?: string;
   netlifySlug?: string;
   netlifyPersonalToken?: string;
+  upgradeSystems?: boolean;
 }
 
 export const command = "deploy";
@@ -50,6 +51,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     clientUrl: { type: "string" },
     netlifySlug: { type: "string" },
     netlifyPersonalToken: { type: "string" },
+    upgradeSystems: { type: "boolean" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -105,122 +107,168 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     reuseComponents: false,
     deployClient: false,
     clientUrl: "http://localhost:3000",
+    upgradeSystems: false,
   };
 
-  const answers: Options = args.i
-    ? await inquirer.prompt([
-        {
-          type: "input",
-          name: "chainSpec",
-          default: defaultOptions.chainSpec,
-          message: "Provide a chainSpec.json location (local or remote)",
-          when: () => args.chainSpec == null && config.chainSpec == null,
-        },
-        {
-          type: "number",
-          name: "chainId",
-          default: defaultOptions.chainId,
-          message: "Provide a chainId for the deployment",
-          when: (answers) => answers.chainSpec == null && args.chainId == null && config.chainSpec == null,
-        },
-        {
-          type: "input",
-          name: "wsRpc",
-          default: defaultOptions.wsRpc,
-          message: "Provide a WebSocket RPC endpoint for your deployment",
-          when: (answers) => answers.chainSpec == null && args.wsRpc == null && config.wsRpc == null,
-        },
-        {
-          type: "input",
-          name: "rpc",
-          default: defaultOptions.rpc,
-          message: "Provide a JSON RPC endpoint for your deployment",
-          when: (answers) => answers.chainSpec == null && args.rpc == null && config.rpc == null,
-          validate: (i) => {
-            if (isValidHttpUrl(i)) return true;
-            return "Invalid URL";
-          },
-        },
-        {
-          type: "input",
-          name: "world",
-          message:
-            "Provide the address of an existing World contract. (If none is given, a new World will be deployed.)",
-          when: () => args.world == null && config.world == null,
-          validate: (i) => {
-            if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
-            return "Invalid address";
-          },
-        },
-        {
-          type: "list",
-          name: "reuseComponents",
-          message: "Reuse existing components?",
-          choices: [
-            { name: "Yes", value: true },
-            { name: "No", value: false },
-          ],
-          default: defaultOptions.reuseComponents,
-          when: () => args.reuseComponents == null && config.reuseComponents == null,
-        },
-        {
-          type: "input",
-          name: "deployerPrivateKey",
-          message: "Enter private key of the deployer account:",
-          when: () => !args.deployerPrivateKey && !config.deployerPrivateKey,
-          validate: (i) => {
-            if (i[0] == "0" && i[1] == "x" && i.length === 66) return true;
-            return "Invalid private key";
-          },
-        },
-        {
-          type: "list",
-          message: "Deploy the client?",
-          choices: [
-            { name: "Yes", value: true },
-            { name: "No", value: false },
-          ],
-          default: defaultOptions.deployClient,
-          name: "deployClient",
-          when: () => args.deployClient == null && config.deployClient == null,
-        },
-        {
-          type: "input",
-          name: "netlifyPersonalToken",
-          message: "Enter a netlify personal token for deploying the client:",
-          when: (answers) => answers.deployClient && !args.netlifyPersonalToken && !config.netlifyPersonalToken,
-        },
-        {
-          type: "list",
-          message: "From which netlify account?",
-          choices: async (answers) =>
-            await getNetlifyAccounts(
-              args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken!
-            ),
-          name: "netlifySlug",
-          when: (answers) => answers.deployClient && !args.netlifySlug && !config.netlifySlug,
-        },
-        {
-          type: "input",
-          name: "clientUrl",
-          message: "Enter URL of an already deployed client:",
-          when: (answers) => !answers.deployClient && !args.clientUrl && !config.clientUrl,
-          default: "http://localhost:3000",
-          validate: (i) => {
-            if (isValidHttpUrl(i)) {
-              if (i[i.length - 1] === "/") {
-                return "No trailing slash";
-              }
-              return true;
-            } else {
-              return "Not a valid URL";
-            }
-          },
-        },
-      ])
-    : ({} as Options);
-
   const { default: fetch } = await importFetch;
+
+  // Fetch deployed lattice chains
+  const latticeChains = args.i
+    ? ((await (await fetch("https://registry.lattice.xyz/api?update=true")).json()) as
+        | { specUrl: string }[]
+        | undefined)
+    : [];
+
+  const chainSpecs = latticeChains?.map((e) => e.specUrl) || [];
+  console.log("Available Lattice chains");
+  console.log(JSON.stringify(latticeChains, null, 2));
+
+  const answers: Options =
+    args.upgradeSystems && !args.world
+      ? await inquirer.prompt([
+          {
+            type: "input",
+            name: "world",
+            message: "Provide the address of the World contract to upgrade the systems on.",
+            when: () => args.world == null && config.world == null,
+            validate: (i) => {
+              if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
+              return "Invalid address";
+            },
+          },
+        ])
+      : args.i
+      ? await inquirer.prompt([
+          {
+            type: "suggest",
+            name: "chainSpec",
+            message: "Provide a chainSpec.json location (local or remote)",
+            suggestions: chainSpecs,
+            when: () => args.chainSpec == null && config.chainSpec == null,
+          },
+          {
+            type: "number",
+            name: "chainId",
+            default: defaultOptions.chainId,
+            message: "Provide a chainId for the deployment",
+            when: (answers) => answers.chainSpec == null && args.chainId == null && config.chainSpec == null,
+          },
+          {
+            type: "input",
+            name: "wsRpc",
+            default: defaultOptions.wsRpc,
+            message: "Provide a WebSocket RPC endpoint for your deployment",
+            when: (answers) => answers.chainSpec == null && args.wsRpc == null && config.wsRpc == null,
+          },
+          {
+            type: "input",
+            name: "rpc",
+            default: defaultOptions.rpc,
+            message: "Provide a JSON RPC endpoint for your deployment",
+            when: (answers) => answers.chainSpec == null && args.rpc == null && config.rpc == null,
+            validate: (i) => {
+              if (isValidHttpUrl(i)) return true;
+              return "Invalid URL";
+            },
+          },
+          {
+            type: "input",
+            name: "world",
+            message:
+              "Provide the address of an existing World contract. (If none is given, a new World will be deployed.)",
+            when: () => args.world == null && config.world == null,
+            validate: (i) => {
+              if (!i || (i[0] == "0" && i[1] == "x" && i.length === 42)) return true;
+              return "Invalid address";
+            },
+          },
+          {
+            type: "list",
+            name: "upgradeSystems",
+            message: "Only upgrade systems?",
+            choices: [
+              { name: "Yes", value: true },
+              { name: "No", value: false },
+            ],
+            default: defaultOptions.upgradeSystems,
+            when: (answers) =>
+              (args.world || config.world || answers.world) &&
+              args.upgradeSystems == null &&
+              config.upgradeSystems == null,
+          },
+          {
+            type: "list",
+            name: "reuseComponents",
+            message: "Reuse existing components?",
+            choices: [
+              { name: "Yes", value: true },
+              { name: "No", value: false },
+            ],
+            default: defaultOptions.reuseComponents,
+            when: (answers) =>
+              !answers.upgradeSystems &&
+              !args.upgradeSystems &&
+              !config.upgradeSystems &&
+              args.reuseComponents == null &&
+              config.reuseComponents == null,
+          },
+          {
+            type: "input",
+            name: "deployerPrivateKey",
+            message: "Enter private key of the deployer account:",
+            when: () => !args.deployerPrivateKey && !config.deployerPrivateKey,
+            validate: (i) => {
+              if (i[0] == "0" && i[1] == "x" && i.length === 66) return true;
+              return "Invalid private key";
+            },
+          },
+          {
+            type: "list",
+            message: "Deploy the client?",
+            choices: [
+              { name: "Yes", value: true },
+              { name: "No", value: false },
+            ],
+            default: defaultOptions.deployClient,
+            name: "deployClient",
+            when: () => args.deployClient == null && config.deployClient == null,
+          },
+          {
+            type: "input",
+            name: "netlifyPersonalToken",
+            message: "Enter a netlify personal token for deploying the client:",
+            when: (answers) => answers.deployClient && !args.netlifyPersonalToken && !config.netlifyPersonalToken,
+          },
+          {
+            type: "list",
+            message: "From which netlify account?",
+            choices: async (answers) =>
+              await getNetlifyAccounts(
+                args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken!
+              ),
+            name: "netlifySlug",
+            when: (answers) => answers.deployClient && !args.netlifySlug && !config.netlifySlug,
+          },
+          {
+            type: "input",
+            name: "clientUrl",
+            message: "Enter URL of an already deployed client:",
+            when: (answers) => !answers.deployClient && !args.clientUrl && !config.clientUrl,
+            default: "http://localhost:3000",
+            validate: (i) => {
+              if (isValidHttpUrl(i)) {
+                if (i[i.length - 1] === "/") {
+                  return "No trailing slash";
+                }
+                return true;
+              } else {
+                return "Not a valid URL";
+              }
+            },
+          },
+        ])
+      : ({} as Options);
+
   const chainSpecUrl = args.chainSpec ?? config.chainSpec ?? answers.chainSpec;
   const chainSpec =
     chainSpecUrl == null
@@ -238,6 +286,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     rpc: args.rpc ?? chainSpec?.rpc ?? config.rpc ?? answers.rpc ?? defaultOptions.rpc,
     wsRpc: args.wsRpc ?? chainSpec?.wsRpc ?? config.wsRpc ?? answers.wsRpc ?? defaultOptions.wsRpc,
     world: args.world ?? chainSpec?.world ?? config.world ?? answers.world,
+    upgradeSystems: args.upgradeSystems ?? config.upgradeSystems ?? answers.upgradeSystems,
     reuseComponents:
       args.reuseComponents ?? config.reuseComponents ?? answers.reuseComponents ?? defaultOptions.reuseComponents,
     deployerPrivateKey: args.deployerPrivateKey ?? config.deployerPrivateKey ?? answers.deployerPrivateKey,
@@ -271,6 +320,35 @@ export const deploy = async (options: Options) => {
   let launcherUrl;
   let worldAddress;
 
+  const cmdArgs = options.upgradeSystems
+    ? [
+        "workspace",
+        "ri-contracts",
+        "forge:deploy",
+        "--private-keys",
+        wallet.privateKey,
+        "--sig",
+        "upgradeSystems(address,address)",
+        wallet.address,
+        options.world || constants.AddressZero,
+        "--fork-url",
+        options.rpc!,
+      ]
+    : [
+        "workspace",
+        "ri-contracts",
+        "forge:deploy",
+        "--private-keys",
+        wallet.privateKey,
+        "--sig",
+        "deploy(address,address,bool)",
+        wallet.address,
+        options.world || constants.AddressZero,
+        options.reuseComponents ? "true" : "false",
+        "--fork-url",
+        options.rpc!,
+      ];
+
   try {
     const tasks = new Listr([
       {
@@ -281,25 +359,13 @@ export const deploy = async (options: Options) => {
               {
                 title: "Contracts",
                 task: async (ctx, task) => {
-                  const child = execa("yarn", [
-                    "workspace",
-                    "ri-contracts",
-                    "forge:deploy",
-                    "--private-keys",
-                    wallet.privateKey,
-                    "--sig",
-                    "deployEmber(address,address,bool)",
-                    wallet.address,
-                    options.world || constants.AddressZero,
-                    options.reuseComponents ? "true" : "false",
-                    "--fork-url",
-                    options.rpc!,
-                  ]);
+                  const child = execa("yarn", cmdArgs);
                   child.stdout?.pipe(task.stdout());
                   const { stdout } = await child;
                   const lines = stdout.split("\n");
 
                   ctx.worldAddress = worldAddress = findLog(lines, "world: address");
+                  ctx.initialBlockNumber = findLog(lines, "initialBlockNumber: uint256");
                   task.output = chalk.yellow(`World deployed at: ${chalk.bgYellow.black(ctx.worldAddress)}`);
                 },
                 options: { bottomBar: 3 },
@@ -369,8 +435,8 @@ export const deploy = async (options: Options) => {
                     clientUrl || ""
                   }&rpc=${options.rpc || ""}&wsRpc=${options.wsRpc || ""}&chainId=${options.chainId || ""}&dev=${
                     options.chainId === 31337 || ""
-                  }`;
-                  openurl.open(launcherUrl);
+                  }&initialBlockNumber=${ctx.initialBlockNumber}`;
+                  if (!options.upgradeSystems) openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },
               },

@@ -1,18 +1,9 @@
-import {
-  hasComponent,
-  HasValue,
-  runQuery,
-  getComponentValue,
-  EntityIndex,
-  EntityID,
-  setComponent,
-  Type,
-  Component,
-  World,
-} from "@latticexyz/recs";
+import { getComponentValue, EntityIndex, EntityID, Type, Component, World } from "@latticexyz/recs";
 import { ActionSystem } from "../systems";
-import { Direction, Directions } from "../../../constants";
 import { NetworkLayer } from "../../Network";
+import { WorldCoord } from "../../../types";
+import { aStar } from "../../../../src/utils/pathfinding";
+import { isUntraversable } from "@latticexyz/std-client";
 
 export function moveEntity(
   context: {
@@ -22,11 +13,11 @@ export function moveEntity(
     world: World;
   },
   entity: EntityIndex,
-  direction: Direction
+  targetPosition: WorldCoord
 ) {
   const {
     network: {
-      components: { Position, Movable, Untraversable, OwnedBy },
+      components: { Position, Movable, Untraversable, OwnedBy, Stamina },
       network: { connectedAddress },
       api: networkApi,
     },
@@ -36,8 +27,8 @@ export function moveEntity(
   } = context;
 
   // Entity must be movable
-  const entityCanMove = getComponentValue(Movable, entity)?.value;
-  if (!entityCanMove) return;
+  const moveSpeed = getComponentValue(Movable, entity)?.value;
+  if (!moveSpeed) return;
 
   // Entity must be owned by the player
   const movingEntityOwner = getComponentValue(OwnedBy, entity)?.value;
@@ -51,24 +42,41 @@ export function moveEntity(
     return;
   }
 
-  const actionID = `move ${Math.random()}` as EntityID;
-  const delta = Directions[direction];
+  const actionID = `move ${Date.now()}` as EntityID; // Date.now to have the actions ordered in the component browser
 
-  actions.add({
+  actions.add<
+    // Need to debug why typescript can't automatically infer these in this case, but for now manually typing removes the error
+    {
+      Position: typeof Position;
+      Untraversable: typeof Untraversable;
+      LocalStamina: typeof LocalStamina;
+      Stamina: typeof Stamina;
+    },
+    { targetPosition: WorldCoord; path: WorldCoord[]; netStamina: number }
+  >({
     id: actionID,
     components: {
       Position,
       Untraversable,
       LocalStamina,
+      Stamina,
     },
-    requirement: () => {
+    requirement: ({ LocalStamina, Position }) => {
+      const stamina = getComponentValue(Stamina, entity);
+      if (!stamina) {
+        console.warn("no stamina");
+        actions.cancel(actionID);
+        return null;
+      }
+
       const localStamina = getComponentValue(LocalStamina, entity);
       if (!localStamina) {
         console.warn("no local stamina");
         actions.cancel(actionID);
         return null;
       }
-      const netStamina = localStamina.current - 1;
+
+      const netStamina = stamina.current + localStamina.current - 1;
       if (netStamina < 0) {
         console.warn("net stamina below 0");
         actions.cancel(actionID);
@@ -80,37 +88,35 @@ export function moveEntity(
         actions.cancel(actionID);
         return null;
       }
-      const targetPosition = { x: currentPosition.x + delta.x, y: currentPosition.y + delta.y };
-      // Target position must be traversable
-      const entities = runQuery([HasValue(Position, targetPosition)]);
-      for (const entity of entities) {
-        if (hasComponent(Untraversable, entity)) {
-          console.warn("target is untraversable");
-          actions.cancel(actionID);
-          return null;
-        }
+
+      const isUntraversableFunc = (targetPosition: WorldCoord) =>
+        isUntraversable(Untraversable, Position, targetPosition);
+      const path = aStar(currentPosition, targetPosition, moveSpeed, isUntraversableFunc);
+      if (path.length == 0) {
+        console.warn("no path found from", currentPosition, "to", targetPosition);
+        actions.cancel(actionID);
+        return null;
       }
       return {
         targetPosition,
+        path,
         netStamina,
       };
     },
     updates: (_, { targetPosition, netStamina }) => [
       {
         component: "Position",
-        entity: entity,
+        entity,
         value: targetPosition,
       },
       {
-        component: "LocalStamina",
+        component: "Stamina",
         entity,
         value: { current: netStamina },
       },
     ],
-    execute: async ({ targetPosition, netStamina }) => {
-      const tx = await networkApi.moveEntity(world.entities[entity], targetPosition);
-      await tx.wait();
-      setComponent(LocalStamina, entity, { current: netStamina });
+    execute: async ({ path }) => {
+      return networkApi.moveEntity(world.entities[entity], path);
     },
   });
 }

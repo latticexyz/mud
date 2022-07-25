@@ -38,10 +38,11 @@ export function createLocalPositionSystem(layer: PhaserLayer) {
 
     if (update.type === UpdateType.Exit) {
       embodiedEntity.removeComponent(LocalPosition.id);
+      embodiedEntity.despawn();
+      return;
     }
 
-    if (!pos) throw new Error("No LocalPosition value for entity");
-
+    if (!pos) return;
     if (update.type === UpdateType.Enter) {
       const pixel = tileCoordToPixelCoord(pos, tileWidth, tileHeight);
       embodiedEntity.setComponent({

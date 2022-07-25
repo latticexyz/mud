@@ -5,6 +5,7 @@ import {
   getComponentEntities,
   runQuery,
   HasValue,
+  Has,
 } from "@latticexyz/recs";
 import { LocalLayer } from "../../types";
 
@@ -14,7 +15,7 @@ import { LocalLayer } from "../../types";
 export function createSelectionSystem(layer: LocalLayer) {
   const {
     world,
-    components: { LocalPosition, Selection, Selected },
+    components: { LocalPosition, Selection, Selected, Selectable },
   } = layer;
 
   // Get all selectable entities in the selected area
@@ -30,7 +31,7 @@ export function createSelectionSystem(layer: LocalLayer) {
       return;
     }
 
-    const entitiesAtPosition = runQuery([HasValue(LocalPosition, { x: selection.x, y: selection.y })]);
+    const entitiesAtPosition = runQuery([Has(Selectable), HasValue(LocalPosition, { x: selection.x, y: selection.y })]);
     for (const entity of entitiesAtPosition) {
       setComponent(Selected, entity, { value: true });
     }

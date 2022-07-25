@@ -19,28 +19,4 @@ describe("Position System", () => {
   afterEach(() => {
     network.world.dispose();
   });
-
-  it.only("should add the Destination component to entities if their network layer Position component changed", () => {
-    const {
-      world,
-      components: { Position },
-    } = network;
-    const {
-      components: { Destination },
-    } = local;
-
-    const entity = createEntity(world, [withValue(Position, { x: 1, y: 1 })]);
-
-    let changed = 0;
-    reaction(
-      () => getComponentValue(Destination, entity),
-      () => changed++
-    );
-
-    expect(changed).toBe(0);
-    setComponent(Position, entity, { x: 1, y: 8 });
-
-    // Destination should be added after the Position value changed and then be replaced with a Path component by the DestinationSystem
-    expect(changed).toBe(2);
-  });
 });

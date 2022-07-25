@@ -35,6 +35,9 @@ async function bootLayers() {
   let initialBoot = true;
 
   async function bootLayers() {
+    // Remove react when starting to reboot layers, reboot react once layers are rebooted
+    mountReact.current(false);
+
     const params = new URLSearchParams(window.location.search);
     const worldAddress = params.get("worldAddress");
     const privateKey = params.get("burnerWalletPrivateKey");
@@ -43,9 +46,11 @@ async function bootLayers() {
     const wsRpc = params.get("wsRpc") || undefined; // || (jsonRpc && jsonRpc.replace("http", "ws"));
     const checkpointUrl = params.get("checkpoint") || undefined;
     const devMode = params.get("dev") === "true";
+    const initialBlockNumberString = params.get("initialBlockNumber");
+    const initialBlockNumber = initialBlockNumberString ? parseInt(initialBlockNumberString) : 0;
 
     let networkLayerConfig;
-    if (worldAddress && privateKey && chainIdString) {
+    if (worldAddress && privateKey && chainIdString && jsonRpc) {
       networkLayerConfig = {
         worldAddress,
         privateKey,
@@ -54,6 +59,7 @@ async function bootLayers() {
         wsRpc,
         checkpointUrl,
         devMode,
+        initialBlockNumber,
       };
     }
 
@@ -84,6 +90,9 @@ async function bootLayers() {
       initialBoot = false;
       layers.network.startSync();
     }
+
+    // Reboot react if layers have changed
+    mountReact.current(true);
 
     return layers;
   }
@@ -122,7 +131,6 @@ async function bootLayers() {
       disposeLayer("local");
       disposeLayer("phaser");
       await bootLayers();
-      await bootReact(layers as Layers);
       console.log("HMR Network");
       layers.network?.startSync();
       reloadingNetwork = false;
@@ -169,22 +177,16 @@ async function bootLayers() {
   return { layers, ecs };
 }
 
-function bootReact(layers: Layers) {
-  let rootElement = document.getElementById("react-root");
-  if (!rootElement) return console.warn("React root not found");
+const mountReact: { current: (mount: boolean) => void } = { current: () => void 0 };
 
-  if (rootElement.hasChildNodes()) {
-    const newRootElement = document.createElement("div");
-    newRootElement.id = "react-root";
-    rootElement.after(newRootElement);
-    rootElement.remove();
-    rootElement = newRootElement;
-  }
+function bootReact(layers: Layers) {
+  const rootElement = document.getElementById("react-root");
+  if (!rootElement) return console.warn("React root not found");
 
   const root = ReactDOM.createRoot(rootElement);
 
   function renderEngine() {
-    root.render(<Engine layers={layers} />);
+    root.render(<Engine layers={layers} mountReact={mountReact} />);
   }
 
   renderEngine();

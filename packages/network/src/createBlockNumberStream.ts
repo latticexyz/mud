@@ -2,7 +2,7 @@
 import { stretch } from "@latticexyz/utils";
 import { IComputedValue, reaction } from "mobx";
 import { concat, concatMap, EMPTY, endWith, filter, map, range, ReplaySubject, take } from "rxjs";
-import { Providers } from "./types";
+import { Providers } from "./createProvider";
 
 export function createBlockNumberStream(
   providers: IComputedValue<Providers | undefined>,

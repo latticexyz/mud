@@ -30,7 +30,7 @@ contract World is IWorld {
   function init() public {
     _components.registerWorld(address(this));
     _systems.registerWorld(address(this));
-    register.execute(RegisterType.System, address(register), registerSystemId);
+    register.execute(abi.encode(msg.sender, RegisterType.System, address(register), registerSystemId));
   }
 
   function components() public view returns (IUint256Component) {
@@ -42,11 +42,11 @@ contract World is IWorld {
   }
 
   function registerComponent(address componentAddr, uint256 id) public {
-    register.execute(abi.encode(RegisterType.Component, componentAddr, id));
+    register.execute(abi.encode(msg.sender, RegisterType.Component, componentAddr, id));
   }
 
   function registerSystem(address systemAddr, uint256 id) public {
-    register.execute(abi.encode(RegisterType.System, systemAddr, id));
+    register.execute(abi.encode(msg.sender, RegisterType.System, systemAddr, id));
   }
 
   modifier requireComponentRegistered(address component) {
@@ -78,6 +78,10 @@ contract World is IWorld {
   // Deprecated, but left here for backward compatibility. TODO: refactor all consumers.
   function getComponentIdFromAddress(address componentAddr) external view returns (uint256) {
     return getIdByAddress(_components, componentAddr);
+  }
+
+  function getSystemAddress(uint256 systemId) external view returns (address) {
+    return getAddressById(_systems, systemId);
   }
 
   function getNumEntities() public view returns (uint256) {

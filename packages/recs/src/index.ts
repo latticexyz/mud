@@ -1,4 +1,5 @@
 export * from "./Component";
+export * from "./Indexer";
 export * from "./Entity";
 export * from "./System";
 export * from "./World";
