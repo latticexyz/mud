@@ -23,7 +23,6 @@ import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../com
 import { ID as SoldierID } from "../prototypes/SoldierPrototype.sol";
 import { ID as DonkeyID } from "../prototypes/DonkeyPrototype.sol";
 import { ID as SettlementID } from "../prototypes/SettlementPrototype.sol";
-import { ID as HeroID } from "../prototypes/HeroPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("mudwar.system.PlayerJoin"));
 
@@ -67,8 +66,7 @@ contract PlayerJoinSystem is System {
       LibStamina.getCurrentTurn(components)
     );
 
-    spawnHero(playerEntity, unitPositions[0]);
-    for (uint256 i = 1; i < unitPositions.length; i++) {
+    for (uint256 i = 0; i < unitPositions.length; i++) {
       spawnDonkey(playerEntity, unitPositions[i]);
     }
   }
@@ -84,19 +82,6 @@ contract PlayerJoinSystem is System {
   // ------------------------
   // Internals
   // ------------------------
-  function spawnHero(uint256 ownerId, Coord memory position) private {
-    uint256 entity = LibPrototype.copyPrototype(components, world, HeroID);
-
-    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
-
-    PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
-
-    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
-      entity,
-      LibStamina.getCurrentTurn(components) - 3
-    );
-  }
-
   function spawnDonkey(uint256 ownerId, Coord memory position) private {
     uint256 entity = LibPrototype.copyPrototype(components, world, DonkeyID);
 

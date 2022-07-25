@@ -158,16 +158,6 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Boolean },
       { id: "Winner", metadata: { contractId: keccak256("mudwar.component.Winner") } }
     ),
-    Death: defineComponent(
-      world,
-      { value: Type.Boolean },
-      { id: "Death", metadata: { contractId: keccak256("mudwar.component.Death") } }
-    ),
-    Hero: defineComponent(
-      world,
-      { value: Type.Boolean },
-      { id: "Hero", metadata: { contractId: keccak256("mudwar.component.Hero") } }
-    ),
   };
 
   // Define mappings between contract and client components
@@ -197,8 +187,6 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("mudwar.component.ResourceGenerator")]: "ResourceGenerator",
     [keccak256("mudwar.component.EscapePortal")]: "EscapePortal",
     [keccak256("mudwar.component.Winner")]: "Winner",
-    [keccak256("mudwar.component.Death")]: "Death",
-    [keccak256("mudwar.component.Hero")]: "Hero",
   };
 
   const contractConfig: SetupContractConfig = {

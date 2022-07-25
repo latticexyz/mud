@@ -7,7 +7,6 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { Uint256Component } from "std-contracts/components/Uint256Component.sol";
 
 import { PlayerComponent, ID as PlayerComponentID } from "../components/PlayerComponent.sol";
-import { DeathComponent, ID as DeathComponentID } from "../components/DeathComponent.sol";
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 
 library LibECS {
@@ -30,8 +29,7 @@ library LibECS {
     );
     if (
       addressToEntity(msg.sender) == ownerEntity &&
-      PlayerComponent(getAddressById(components, PlayerComponentID)).has(ownerEntity) &&
-      !DeathComponent(getAddressById(components, DeathComponentID)).has(ownerEntity)
+      PlayerComponent(getAddressById(components, PlayerComponentID)).has(ownerEntity)
     ) {
       return true;
     }

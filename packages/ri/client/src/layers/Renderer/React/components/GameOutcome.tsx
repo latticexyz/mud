@@ -17,12 +17,12 @@ export function registerGameOutcome() {
       const {
         network: {
           network: { connectedAddress },
-          components: { Winner, OwnedBy, Death },
+          components: { Winner, OwnedBy },
           world,
         },
       } = layers;
 
-      return merge(computedToStream(connectedAddress), Winner.update$, Death.update$).pipe(
+      return merge(computedToStream(connectedAddress), Winner.update$).pipe(
         map(() => connectedAddress.get()),
         map((address) => {
           const playerEntity = world.entityToIndex.get(address as EntityID);
@@ -30,18 +30,13 @@ export function registerGameOutcome() {
           const winnerInventory = [...runQuery([Has(Winner)])][0];
           const owner = getComponentValue(OwnedBy, winnerInventory);
 
-          let playerDead = false;
-          if( playerEntity ) {
-            playerDead = getComponentValue(Death, playerEntity) ? true : false;
-          }
-
           return {
-            playerEntity, owner, world, playerDead
+            playerEntity, owner, world
           };
         })
       );
     },
-    ({ playerEntity, owner, world, playerDead }) => {
+    ({ playerEntity, owner, world }) => {
       let outcome = "";
       
       if(owner) {
@@ -51,9 +46,6 @@ export function registerGameOutcome() {
         else {
           outcome = "You Lose";
         }
-      }
-      else if( playerDead ){
-        outcome = "You Died";
       }
       
       return (

@@ -24,17 +24,7 @@ export function createInputSystem(layer: PhaserLayer) {
     parentLayers: {
       network: {
         world,
-        components: {
-          Factory,
-          TerrainType,
-          OwnedBy,
-          Inventory,
-          Health,
-          ResourceGenerator,
-          EscapePortal,
-          Player,
-          Death,
-        },
+        components: { Factory, TerrainType, OwnedBy, Inventory, Health, ResourceGenerator, EscapePortal, Player },
         api: {
           buildAt,
           dropInventory,
@@ -165,7 +155,6 @@ export function createInputSystem(layer: PhaserLayer) {
   const onRightClick = function (clickedPosition: WorldCoord) {
     const playerEntity = getPlayerEntity(connectedAddress.get(), world, Player);
     if (!playerEntity) return;
-    if (hasComponent(Death, playerEntity)) return;
 
     const selectedEntity = getSelectedEntity();
     if (selectedEntity == null) return;
