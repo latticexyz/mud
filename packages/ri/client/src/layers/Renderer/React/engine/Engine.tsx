@@ -1,11 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Layers } from "./types";
 import { LayerContext, EngineContext } from "./context";
 import { EngineStore } from "./store";
 import { MainWindow } from "./components";
 import { observer } from "mobx-react-lite";
-import { useEffect } from "react";
-import { useState } from "react";
 
 export const Engine: React.FC<{ layers: Layers; mountReact: { current: (mount: boolean) => void } }> = observer(
   ({ layers, mountReact }) => {
