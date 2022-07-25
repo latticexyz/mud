@@ -32,6 +32,7 @@
     { "name": "PrototypeDevSystem", "writeAccess": ["*"] },
     { "name": "BulkSetStateSystem" },
     { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
+    { "name": "SimpleSystem", "writeAccess": ["PositionComponent"] },
     { "name": "TakeItemSystem", "writeAccess": ["OwnedByComponent", "PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
     { "name": "DropInventorySystem", "writeAccess": ["*"] },
     { "name": "CombatSystem", "writeAccess": ["*"] },

@@ -1,18 +1,33 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseContract, BigNumber, CallOverrides, ethers, Overrides } from "ethers";
+import { BaseContract, BigNumber, CallOverrides, Contract, ethers, Overrides } from "ethers";
 import { Address } from "@ethereumjs/util";
 import { Common } from "@ethereumjs/common";
 import { Buffer as BrowserBuffer } from "buffer/";
 import { StateManager, DefaultStateManager } from "@ethereumjs/statemanager";
 import { Transaction } from "@ethereumjs/tx";
 import { VM } from "@ethereumjs/vm";
+import { EVM } from "@ethereumjs/evm";
+import { addressToBuffer } from "@ethereumjs/evm/src/opcodes/util";
+import { Stack } from "@ethereumjs/evm/src/stack";
+import { Component, getComponentValue, getComponentValueStrict, Type, World } from "@latticexyz/recs";
+import { InterpreterStep } from "@ethereumjs/evm/src/interpreter";
 import { autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
-import { mapObject, deferred, uuid, awaitValue, cacheUntilReady, streamToComputed } from "@latticexyz/utils";
+import {
+  mapObject,
+  deferred,
+  uuid,
+  awaitValue,
+  cacheUntilReady,
+  streamToComputed,
+  toEthAddress,
+} from "@latticexyz/utils";
 import { Contracts, LocalEVM } from "./types";
 import { ConnectionState } from "./createProvider";
 import { Network } from "./createNetwork";
-import { JsonRpcProvider } from "@ethersproject/providers";
-import { buffer } from "stream/consumers";
+import { JsonRpcProvider, Provider } from "@ethersproject/providers";
+import WorldAbi from "@latticexyz/solecs/abi/World.json";
+import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
+import { Component as ComponentContract, World as WorldContract } from "@latticexyz/solecs";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 globalThis.Buffer = BrowserBuffer;
@@ -29,6 +44,10 @@ const bufferFromHex = (hex: string) => {
 
 const bufferToHex = (buff: Buffer) => {
   return "0x" + buff.toString("hex");
+};
+
+const addressToString = (addr: Address): string => {
+  return "0x" + addr.buf.toString("hex");
 };
 
 class MUDStateManager extends DefaultStateManager {
@@ -55,20 +74,20 @@ class MUDStateManager extends DefaultStateManager {
 
   getCodeCache(address: Address): Buffer | undefined {
     if (this.codeCache[bufferToHex(address.buf)]) {
-      console.log("reading from code cache", bufferToHex(address.buf));
+      // console.log("reading from code cache", bufferToHex(address.buf));
       return bufferFromHex(this.codeCache[bufferToHex(address.buf)]);
     }
   }
 
   storeCodeCache(address: Address, code: Buffer) {
-    console.log("writing to code cache", bufferToHex(address.buf), bufferToHex(code));
+    // console.log("writing to code cache", bufferToHex(address.buf), bufferToHex(code));
     this.codeCache[bufferToHex(address.buf)] = bufferToHex(code);
   }
 
   getStorageCache(address: Address, key: Buffer): Buffer | undefined {
     if (this.storageCache[bufferToHex(address.buf)]) {
       if (this.storageCache[bufferToHex(address.buf)][bufferToHex(key)]) {
-        console.log("reading from cache", bufferToHex(address.buf), bufferToHex(key));
+        // console.log("reading from cache", bufferToHex(address.buf), bufferToHex(key));
         return bufferFromHex(this.storageCache[bufferToHex(address.buf)][bufferToHex(key)]);
       }
     }
@@ -78,7 +97,7 @@ class MUDStateManager extends DefaultStateManager {
     if (!this.storageCache[bufferToHex(address.buf)]) {
       this.storageCache[bufferToHex(address.buf)] = {};
     }
-    console.log("writing to cache", bufferToHex(address.buf), bufferToHex(key), bufferToHex(value));
+    // console.log("writing to cache", bufferToHex(address.buf), bufferToHex(key), bufferToHex(value));
     this.storageCache[bufferToHex(address.buf)][bufferToHex(key)] = bufferToHex(value);
   }
 
@@ -88,7 +107,7 @@ class MUDStateManager extends DefaultStateManager {
       return maybeSlot;
     }
     const slot = bufferFromHex(await this.provider.getStorageAt(bufferToHex(address.buf), bufferToHex(key)));
-    console.log("reading from network", bufferToHex(address.buf), bufferToHex(key), bufferToHex(slot));
+    console.warn("reading from network", bufferToHex(address.buf), bufferToHex(key), bufferToHex(slot));
     this.storeStorageCache(address, key, slot);
     return slot;
   }
@@ -100,12 +119,30 @@ class MUDStateManager extends DefaultStateManager {
 
 export function createLocalEVM<C extends Contracts>(
   computedContracts: IComputedValue<C> | IObservableValue<C>,
+  worldAddress: string,
+  world: World,
+  systems: Component<{ value: Type.String }>,
+  components: Component<{ value: Type.String }>,
   network: Network,
   options?: { devMode?: boolean }
 ): { localEVM: LocalEVM<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {
   const dispose = () => {
     return;
   };
+
+  async function getComponentAddress(componentId: string, provider: Provider) {
+    // Otherwise fetch the address from the world
+    const worldContract = new Contract(worldAddress, WorldAbi.abi, provider) as WorldContract;
+    console.log("Fetching address for component", componentId);
+    const componentAddressPromise = worldContract.getComponent(componentId);
+    return componentAddressPromise;
+  }
+
+  async function getComponentSchema(address: string, provider: Provider): Promise<[string[], number[]]> {
+    const componentContract = new Contract(address, ComponentAbi.abi, provider) as ComponentContract;
+    const schema = await componentContract.getSchema();
+    return schema;
+  }
 
   const readyState = computed(() => {
     const connected = network.connected.get();
@@ -147,6 +184,22 @@ export function createLocalEVM<C extends Contracts>(
     ...arg: any[]
   ) {
     const provider = network.providers.get().json;
+    // 1) add the component bytecode
+    const addressToComponent: { [key: string]: Component } = {};
+    for (const e of components.entities()) {
+      const address = toEthAddress(world.entities[e]);
+      const { value: id } = getComponentValueStrict(components, e);
+      const bytecode = await provider.getCode(address);
+      bytecodes[address] = bytecode;
+      const componentIndex = world.components.findIndex((c) => {
+        return c.metadata?.contractId === id;
+      });
+      if (componentIndex === -1) {
+        console.warn("Ignoring non client component with id " + id);
+      } else {
+        addressToComponent[address] = world.components[componentIndex]!;
+      }
+    }
     const signer = network.signer.get()!;
     const common = new Common({ chain: 1 });
     const vm = await VM.create({ common, stateManager: new MUDStateManager({ common, provider, bytecodes }) });
@@ -158,6 +211,26 @@ export function createLocalEVM<C extends Contracts>(
     const signedTx = await signer.signTransaction(ethersTx);
     const buffer = bufferFromHex(signedTx);
     const tx = Transaction.fromSerializedTx(buffer);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    (vm.evm as EVM).on("step", (d) => {
+      const data = d as InterpreterStep;
+      if (data.opcode.name === "CALL" || data.opcode.name === "STATICCALL") {
+        if (data.opcode.name === "STATICCALL") {
+          const stack = new Stack();
+          stack._store = data.stack;
+          const [_currentGasLimit, toAddr, inOffset, inLength, outOffset, outLength] = stack.peek(6);
+          const toAddress = new Address(addressToBuffer(toAddr));
+          console.log(addressToString(toAddress));
+          const c = addressToComponent[addressToString(toAddress)];
+          if (c) {
+            // we calling a component! time to trick the EVM
+          }
+        }
+      }
+    });
+
+    // we can simplify this further by running an emv.runCall, no need to execute an entire tx!
     const out = await vm.runTx({ tx, skipBalance: true });
     console.log(out);
   }

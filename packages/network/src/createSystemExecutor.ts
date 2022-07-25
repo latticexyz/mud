@@ -9,8 +9,10 @@ import { createLocalEVM } from "./createLocalEVM";
 
 export async function createSystemExecutor<T extends { [key: string]: Contract }>(
   world: World,
+  worldAddress: string,
   network: Network,
   systems: Component<{ value: Type.String }>,
+  components: Component<{ value: Type.String }>,
   interfaces: { [key in keyof T]: ContractInterface },
   options?: { devMode?: boolean }
 ) {
@@ -40,7 +42,15 @@ export async function createSystemExecutor<T extends { [key: string]: Contract }
   });
 
   const { txQueue, dispose: disposeTxQueue } = createTxQueue<T>(systemContracts, network, options);
-  const { localEVM, dispose: disposeLocalEVM } = createLocalEVM<T>(systemContracts, network, options);
+  const { localEVM, dispose: disposeLocalEVM } = createLocalEVM<T>(
+    systemContracts,
+    worldAddress,
+    world,
+    systems,
+    components,
+    network,
+    options
+  );
   world.registerDisposer(disposeTxQueue);
   world.registerDisposer(disposeLocalEVM);
 
