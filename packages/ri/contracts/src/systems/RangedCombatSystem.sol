@@ -6,23 +6,14 @@ import { QueryFragment, QueryType } from "solecs/interfaces/Query.sol";
 import { getAddressById } from "solecs/utils.sol";
 
 import { LibECS } from "../libraries/LibECS.sol";
-import { LibQuery } from "solecs/LibQuery.sol";
-
 import { LibUtils } from "../libraries/LibUtils.sol";
 import { LibStamina } from "../libraries/LibStamina.sol";
-import { LibInventory } from "../libraries/LibInventory.sol";
 import { LibCombat } from "../libraries/LibCombat.sol";
 
 import { PositionComponent, ID as PositionComponentID, Coord } from "../components/PositionComponent.sol";
 import { RangedCombatComponent, ID as RangedCombatComponentID, RangedCombat } from "../components/RangedCombatComponent.sol";
 import { CombatComponent, ID as CombatComponentID, Combat } from "../components/CombatComponent.sol";
-import { CombatStrengthComponent, ID as CombatStrengthComponentID, CombatStrength } from "../components/CombatStrengthComponent.sol";
 import { CapturableComponent, ID as CapturableComponentID } from "../components/CapturableComponent.sol";
-import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
-import { StaminaComponent, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
-import { InventoryComponent, ID as InventoryComponentID } from "../components/InventoryComponent.sol";
-import { DeathComponent, ID as DeathComponentID } from "../components/DeathComponent.sol";
-import { HeroComponent, ID as HeroComponentID } from "../components/HeroComponent.sol";
 
 import { CombatTypes } from "../utils/Types.sol";
 
