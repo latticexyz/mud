@@ -1,1 +1,0 @@
-export { createDrawHighlightCoordSystem } from "./createDrawHighlightCoordSystem";

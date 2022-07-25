@@ -1,1 +1,0 @@
-export { defineActionComponent } from "./Action";

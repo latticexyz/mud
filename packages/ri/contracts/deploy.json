@@ -1,46 +1,4 @@
 {
-  "components": [
-    "UnitTypeComponent",
-    "StructureTypeComponent",
-    "ItemTypeComponent",
-    "AttackComponent",
-    "CapturableComponent",
-    "FactoryComponent",
-    "GameConfigComponent",
-    "HealthComponent",
-    "InventoryComponent",
-    "LastActionTurnComponent",
-    "MaxDistanceComponent",
-    "MineableComponent",
-    "MovableComponent",
-    "OwnedByComponent",
-    "ResourceGeneratorComponent",
-    "SpawnPointComponent",
-    "StaminaComponent",
-    "UntraversableComponent",
-    "EscapePortalComponent",
-    "PositionComponent",
-    "PlayerComponent",
-    "PrototypeComponent",
-    "PrototypeCopyComponent",
-    "WinnerComponent",
-    "TerrainTypeComponent"
-  ],
-  "systems": [
-    { "name": "ComponentDevSystem", "writeAccess": ["*"] },
-    { "name": "PrototypeDevSystem", "writeAccess": ["*"] },
-    { "name": "BulkSetStateSystem" },
-    { "name": "MoveSystem", "writeAccess": ["PositionComponent", "StaminaComponent", "LastActionTurnComponent"] },
-    { "name": "TransferInventorySystem", "writeAccess": ["*"] },
-    { "name": "DropInventorySystem", "writeAccess": ["*"] },
-    { "name": "CombatSystem", "writeAccess": ["*"] },
-    { "name": "EscapePortalSystem", "writeAccess": ["*"] },
-    { "name": "GameConfigSystem", "writeAccess": ["GameConfigComponent"], "initialize": "new bytes(0)" },
-    { "name": "Init1System", "writeAccess": ["*"], "initialize": "new bytes(0)" },
-    { "name": "Init2System", "writeAccess": ["*"], "initialize": "new bytes(0)" },
-    { "name": "PlayerJoinSystem", "writeAccess": ["*"] },
-    { "name": "SpawnGoldDevSystem", "writeAccess": ["*"] },
-    { "name": "FactorySystem", "writeAccess": ["*"] },
-    { "name": "GatherResourceSystem", "writeAccess": ["*"] }
-  ]
+  "components": ["ExampleComponent"],
+  "systems": [{ "name": "ComponentDevSystem", "writeAccess": ["*"] }]
 }

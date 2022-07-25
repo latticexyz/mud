@@ -1,9 +1,7 @@
 import { boot } from "./boot";
-import { PromiseValue } from "@latticexyz/utils";
+import { NetworkLayer } from "./layers/network";
+import { PhaserLayer } from "./layers/phaser";
 
-export interface WorldCoord {
-  x: number;
-  y: number;
-}
+export type EmberWindow = Awaited<ReturnType<typeof boot>>;
 
-export type EmberWindow = PromiseValue<ReturnType<typeof boot>>;
+export type Layers = { network: NetworkLayer; phaser: PhaserLayer };

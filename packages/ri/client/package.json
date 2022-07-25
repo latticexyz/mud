@@ -41,6 +41,8 @@
     "jest": "^27.5.1",
     "jest-canvas-mock": "^2.3.1",
     "lodash": "^4.17.21",
+    "netlify": "^11.0.2",
+    "netlify-cli": "^10.10.2",
     "prettier": "^2.5.1",
     "process": "^0.11.10",
     "ts-jest": "^27.1.3",

@@ -1,1 +1,0 @@
-export { createCurrentStaminaSystem } from "./createCurrentStaminaSystem";

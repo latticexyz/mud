@@ -1,1 +1,0 @@
-export { createLocalPositionSystem } from "./createLocalPositionSystem";

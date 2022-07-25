@@ -40,7 +40,8 @@
     "lint": "eslint . --ext .ts",
     "lerna:release": "lerna version --conventional-commits --yes",
     "lerna:publish": "lerna publish --no-private --force-publish",
-    "start:ri": "run-pty % yarn workspace ri-contracts run start % yarn workspace ri-client run start"
+    "start:ri": "run-pty % yarn workspace ri-contracts run start % yarn workspace ri-client run start",
+    "foundryup": "curl -L https://foundry.paradigm.xyz | bash && exec \"$SHELL\" && foundryup"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
