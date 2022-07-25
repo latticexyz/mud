@@ -13,18 +13,28 @@ import {
 } from "@latticexyz/recs";
 import { WorldCoord } from "../../../../../types";
 import { getPlayerEntity, isOwnedByCaller } from "@latticexyz/std-client";
+import { Key } from "@latticexyz/phaserx";
 
 export function createInputSystem(layer: PhaserLayer) {
   const {
     scenes: {
-      Main: { input, maps },
+      Main: { input, camera, maps },
     },
     components: { HoverHighlight },
     api: { highlightCoord },
     parentLayers: {
       network: {
         world,
-        components: { Factory, TerrainType, OwnedBy, Inventory, Health, ResourceGenerator, EscapePortal, Player },
+        components: {
+          Factory,
+          TerrainType,
+          OwnedBy,
+          Inventory,
+          Combat,
+          ResourceGenerator,
+          EscapePortal,
+          Player
+        },
         api: {
           buildAt,
           dropInventory,
@@ -45,6 +55,32 @@ export function createInputSystem(layer: PhaserLayer) {
       },
     },
   } = layer;
+
+  const { phaserCamera } = camera;
+  input.onKeyPress(
+    (keys) => keys.has("UP"),
+    () => {
+      phaserCamera.setScroll(phaserCamera.scrollX, phaserCamera.scrollY - 20);
+    }
+  );
+  input.onKeyPress(
+    (keys) => keys.has("DOWN"),
+    () => {
+      phaserCamera.setScroll(phaserCamera.scrollX, phaserCamera.scrollY + 20);
+    }
+  );
+  input.onKeyPress(
+    (keys) => keys.has("LEFT"),
+    () => {
+      phaserCamera.setScroll(phaserCamera.scrollX - 20, phaserCamera.scrollY);
+    }
+  );
+  input.onKeyPress(
+    (keys) => keys.has("RIGHT"),
+    () => {
+      phaserCamera.setScroll(phaserCamera.scrollX + 20, phaserCamera.scrollY);
+    }
+  );
 
   const getInventory = (entity: EntityIndex) => {
     const capacity = getComponentValue(Inventory, entity)?.value;
@@ -137,8 +173,8 @@ export function createInputSystem(layer: PhaserLayer) {
     if (!selectedEntityOwner) return false;
     if (selectedEntityOwner.value === highlightedEntityOwner?.value) return false;
 
-    const health = getComponentValue(Health, highlightedEntity);
-    if (!health) return false;
+    const combat = getComponentValue(Combat, highlightedEntity);
+    if (!combat) return false;
 
     attackEntity(selectedEntity, highlightedEntity);
     return true;
@@ -172,23 +208,27 @@ export function createInputSystem(layer: PhaserLayer) {
     moveEntity(selectedEntity, clickedPosition);
   };
 
-  input.onKeyPress(
-    (keys) => keys.has("B"),
-    () => {
-      const buildPosition = getHoverPosition();
-      if (!buildPosition) return;
+  const NumberKeyNames = ["ONE", "TWO", "THREE", "FOUR", "FIVE"];
 
-      const selectedEntity = getSelectedEntity();
-      if (!selectedEntity) return;
+  for (let i = 0; i < 5; i++) {
+    input.onKeyPress(
+      (keys) => keys.has(NumberKeyNames[i] as Key),
+      () => {
+        const buildPosition = getHoverPosition();
+        if (!buildPosition) return;
 
-      const factory = getComponentValue(Factory, selectedEntity);
-      if (!factory) return;
-      const prototypeId = factory.prototypeIds[0];
-      if (!prototypeId) return;
+        const selectedEntity = getSelectedEntity();
+        if (!selectedEntity) return;
 
-      buildAt(world.entities[selectedEntity], prototypeId, buildPosition);
-    }
-  );
+        const factory = getComponentValue(Factory, selectedEntity);
+        if (!factory) return;
+        const prototypeId = factory.prototypeIds[i];
+        if (!prototypeId) return;
+
+        buildAt(world.entities[selectedEntity], prototypeId, buildPosition);
+      }
+    );
+  }
 
   input.onKeyPress(
     (keys) => keys.has("A"),

@@ -15,8 +15,6 @@ import { MovableComponent, ID as MovableComponentID } from "../components/Movabl
 import { OwnedByComponent, ID as OwnedByComponentID } from "../components/OwnedByComponent.sol";
 import { StaminaComponent, Stamina, ID as StaminaComponentID } from "../components/StaminaComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
-import { HealthComponent, Health, ID as HealthComponentID } from "../components/HealthComponent.sol";
-import { AttackComponent, Attack, ID as AttackComponentID } from "../components/AttackComponent.sol";
 import { SpawnPointComponent, ID as SpawnPointComponentID } from "../components/SpawnPointComponent.sol";
 import { LastActionTurnComponent, ID as LastActionTurnComponentID } from "../components/LastActionTurnComponent.sol";
 
@@ -43,12 +41,10 @@ contract PlayerJoinSystem is System {
     require(positionComponent.has(spawnEntity), "spawn has no location");
     Coord memory spawnPosition = positionComponent.getValue(spawnEntity);
 
-    Coord[] memory unitPositions = new Coord[](4);
+    Coord[] memory unitPositions = new Coord[](2);
 
     unitPositions[0] = Coord(spawnPosition.x, spawnPosition.y - 1);
     unitPositions[1] = Coord(spawnPosition.x + 1, spawnPosition.y);
-    unitPositions[2] = Coord(spawnPosition.x, spawnPosition.y + 1);
-    unitPositions[3] = Coord(spawnPosition.x - 1, spawnPosition.y);
 
     return abi.encode(spawnEntity, unitPositions);
   }
@@ -92,19 +88,6 @@ contract PlayerJoinSystem is System {
     LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
       entity,
       LibStamina.getCurrentTurn(components) - 3
-    );
-  }
-
-  function spawnSettlement(uint256 ownerId, Coord memory position) private {
-    uint256 entity = LibPrototype.copyPrototype(components, world, SettlementID);
-
-    OwnedByComponent(getAddressById(components, OwnedByComponentID)).set(entity, ownerId);
-
-    PositionComponent(getAddressById(components, PositionComponentID)).set(entity, position);
-
-    LastActionTurnComponent(getAddressById(components, LastActionTurnComponentID)).set(
-      entity,
-      LibStamina.getCurrentTurn(components) - 5
     );
   }
 }

@@ -102,7 +102,7 @@ contract FactorySystem is System {
       LibStamina.getCurrentTurn(components)
     );
 
-    LibStamina.modifyStamina(components, builderId, -1);
+    LibStamina.modifyStamina(components, builderId, -2);
   }
 
   function requirementTyped(

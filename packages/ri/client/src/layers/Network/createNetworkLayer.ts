@@ -103,15 +103,31 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       { value: Type.Number },
       { id: "LastActionTurn", metadata: { contractId: keccak256("mudwar.component.LastActionTurn") } }
     ),
-    Health: defineComponent(
+    Combat: defineComponent(
       world,
-      { current: Type.Number, max: Type.Number },
-      { id: "Health", metadata: { contractId: keccak256("mudwar.component.Health") } }
+      {
+        _type: Type.Number,
+        strength: Type.Number,
+        health: Type.Number,
+        passive: Type.Boolean,
+      },
+      { id: "Combat", metadata: { contractId: keccak256("mudwar.component.Combat") } }
     ),
-    Attack: defineComponent(
+    RangedCombat: defineComponent(
       world,
-      { strength: Type.Number, range: Type.Number },
-      { id: "Attack", metadata: { contractId: keccak256("mudwar.component.Attack") } }
+      {
+        strength: Type.Number,
+        minRange: Type.Number,
+        maxRange: Type.Number,
+      },
+      { id: "RangedCombat", metadata: { contractId: keccak256("mudwar.component.RangedCombat") } }
+    ),
+    CombatStrength: defineComponent(
+      world,
+      {
+        combatTypeStrengthBonuses: Type.NumberArray,
+      },
+      { id: "CombatStrength", metadata: { contractId: keccak256("mudwar.component.CombatStrength") } }
     ),
     PrototypeCopy: defineComponent(
       world,
@@ -176,8 +192,6 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("mudwar.component.LastActionTurn")]: "LastActionTurn",
     [keccak256("mudwar.component.Stamina")]: "Stamina",
     [keccak256("mudwar.component.Player")]: "Player",
-    [keccak256("mudwar.component.Health")]: "Health",
-    [keccak256("mudwar.component.Attack")]: "Attack",
     [keccak256("mudwar.component.Prototype")]: "Prototype",
     [keccak256("mudwar.component.PrototypeCopy")]: "PrototypeCopy",
     [keccak256("mudwar.component.Factory")]: "Factory",
@@ -187,6 +201,9 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     [keccak256("mudwar.component.ResourceGenerator")]: "ResourceGenerator",
     [keccak256("mudwar.component.EscapePortal")]: "EscapePortal",
     [keccak256("mudwar.component.Winner")]: "Winner",
+    [keccak256("mudwar.component.Combat")]: "Combat",
+    [keccak256("mudwar.component.RangedCombat")]: "RangedCombat",
+    [keccak256("mudwar.component.CombatStrength")]: "CombatStrength",
   };
 
   const contractConfig: SetupContractConfig = {
@@ -260,6 +277,11 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
     return systems["mudwar.system.Combat"].executeTyped(BigNumber.from(attacker), BigNumber.from(defender));
   }
 
+  async function rangedAttack(attacker: EntityID, defender: EntityID) {
+    console.log(`Entity ${attacker} attacking ${defender}.`);
+    return systems["mudwar.system.RangedCombat"].executeTyped(BigNumber.from(attacker), BigNumber.from(defender));
+  }
+
   async function buildAt(builderId: EntityID, prototypeId: string, position: WorldCoord) {
     console.log(`Building entity ${prototypeId} from factory ${builderId} at coord ${JSON.stringify(position)}`);
     return systems["mudwar.system.Factory"].executeTyped(
@@ -330,6 +352,7 @@ export async function createNetworkLayer(config: NetworkLayerConfig) {
       joinGame,
       moveEntity,
       attackEntity,
+      rangedAttack,
       buildAt,
       transferInventory,
       dropInventory,

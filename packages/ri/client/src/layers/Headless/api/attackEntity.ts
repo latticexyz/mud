@@ -11,8 +11,8 @@ export function attackEntity(
   const { network, actions } = context;
   const {
     world,
-    api: { attackEntity },
-    components: { Position, Attack },
+    api: { attackEntity, rangedAttack },
+    components: { Position, Combat, RangedCombat },
     utils: { checkOwnEntity },
   } = network;
 
@@ -20,8 +20,8 @@ export function attackEntity(
 
   if (!checkOwnEntity(attacker)) return;
 
-  const attackerAttack = getComponentValue(Attack, attacker);
-  if (!attackerAttack) return;
+  const attackerEntityID = world.entities[attacker];
+  const defenderEntityID = world.entities[defender];
 
   const attackerPosition = getComponentValue(OptimisticPosition, attacker);
   if (!attackerPosition) return;
@@ -29,9 +29,18 @@ export function attackEntity(
   const defenderPosition = getComponentValue(OptimisticPosition, defender);
   if (!defenderPosition) return;
 
-  if (manhattan(attackerPosition, defenderPosition) > attackerAttack.range) return;
+  const distanceToTarget = manhattan(attackerPosition, defenderPosition);
+  const attackerRangedCombat = getComponentValue(RangedCombat, attacker);
+  if (attackerRangedCombat) {
+    if (distanceToTarget > attackerRangedCombat.maxRange || distanceToTarget < attackerRangedCombat.minRange) return;
 
-  const attackerEntityID = world.entities[attacker];
-  const defenderEntityID = world.entities[defender];
-  attackEntity(attackerEntityID, defenderEntityID);
+    rangedAttack(attackerEntityID, defenderEntityID);
+  } else {
+    const attackerCombat = getComponentValue(Combat, attacker);
+    if (!attackerCombat) return;
+
+    if (distanceToTarget > 1) return;
+
+    attackEntity(attackerEntityID, defenderEntityID);
+  }
 }

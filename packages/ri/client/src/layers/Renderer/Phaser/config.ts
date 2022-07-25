@@ -75,27 +75,27 @@ export const config = {
       sprites: {
         [Sprites.Settlement]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/crystal.png",
+          frame: "sprites/items/crystal.png",
         },
         [Sprites.Gold]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/gold.png",
+          frame: "sprites/items/gold.png",
         },
         [Sprites.Container]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/chest.png",
+          frame: "sprites/structures/small/chest.png",
         },
         [Sprites.GoldShrine]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/gold.png",
+          frame: "sprites/items/gold.png",
         },
         [Sprites.EscapePortal]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/wood.png",
+          frame: "sprites/items/wood.png",
         },
         [Sprites.EmberCrown]: {
           assetKey: Assets.MainAtlas,
-          frame: "sprites/resources/wood.png",
+          frame: "sprites/items/wood.png",
         },
         [Sprites.Donkey]: {
           assetKey: Assets.MainAtlas,
@@ -104,6 +104,18 @@ export const config = {
         [Sprites.Soldier]: {
           assetKey: Assets.MainAtlas,
           frame: "sprites/warriors/hero.png",
+        },
+        [Sprites.Spear]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/warriors/pikeman.png",
+        },
+        [Sprites.Cavalry]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/warriors/wizard.png",
+        },
+        [Sprites.Archer]: {
+          assetKey: Assets.MainAtlas,
+          frame: "sprites/warriors/archer.png",
         },
       },
       animations: [],

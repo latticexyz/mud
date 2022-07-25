@@ -4,6 +4,8 @@ import "solecs/System.sol";
 
 import { GoldPrototype } from "../prototypes/GoldPrototype.sol";
 import { SoldierPrototype } from "../prototypes/SoldierPrototype.sol";
+import { SpearPrototype } from "../prototypes/SpearPrototype.sol";
+import { ArcherPrototype } from "../prototypes/ArcherPrototype.sol";
 import { DonkeyPrototype } from "../prototypes/DonkeyPrototype.sol";
 import { GuardPrototype } from "../prototypes/GuardPrototype.sol";
 import { SettlementPrototype } from "../prototypes/SettlementPrototype.sol";
@@ -23,6 +25,9 @@ contract Init1System is System {
     GoldPrototype(components);
     SoldierPrototype(components);
     DonkeyPrototype(components);
+    SoldierPrototype(components);
+    ArcherPrototype(components);
+    SpearPrototype(components);
     GuardPrototype(components);
     SettlementPrototype(components);
     EmptySettlementPrototype(components);

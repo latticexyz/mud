@@ -4,12 +4,14 @@ import { registerGameOutcome } from "./GameOutcome";
 import { registerSelection } from "./Selection";
 import { registerTurnTimer } from "./TurnTimer";
 import { registerActionQueue } from "./ActionQueue";
+import { registerFactoryView } from "./Factory";
 
 export function registerUIComponents() {
-  registerSelection();
   registerTurnTimer();
   registerJoinGame();
   registerGameOutcome();
   registerComponentBrowser();
   registerActionQueue();
+  registerFactoryView();
+  registerSelection();
 }

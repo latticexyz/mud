@@ -37,15 +37,18 @@ export function createDrawStaminaSystem(layer: PhaserLayer) {
       const currentStamina = getComponentValueStrict(LocalStamina, entity).current + stamina.current;
       const position = getComponentValueStrict(LocalPosition, entity);
 
-      const highlight = objectPool.get(`${entity}-stamina`, "Text");
-      highlight.setComponent({
-        id: "stamina-text",
-        once: (staminaText) => {
+      const bar = objectPool.get(`${entity}-stamina`, "Rectangle");
+      bar.setComponent({
+        id: "stamina-bar",
+        once: (staminaBar) => {
           const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
 
-          staminaText.setFontSize(8);
-          staminaText.setText(`${currentStamina} / ${stamina.max}`);
-          staminaText.setPosition(pixelCoord.x - 5, pixelCoord.y + tileHeight);
+          const staminaPercent = currentStamina / stamina.max;
+          staminaBar.width = (tileWidth - 2) * staminaPercent;
+          staminaBar.height = 2;
+
+          staminaBar.setFillStyle(0xffffff);
+          staminaBar.setPosition(pixelCoord.x + 1, pixelCoord.y + tileHeight - 2);
         },
       });
     }

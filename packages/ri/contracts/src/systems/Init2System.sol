@@ -9,6 +9,7 @@ import { GoldShrinePrototype } from "../prototypes/GoldShrinePrototype.sol";
 import { GrassPrototype } from "../prototypes/GrassPrototype.sol";
 import { TreePrototype } from "../prototypes/TreePrototype.sol";
 import { WaterPrototype } from "../prototypes/WaterPrototype.sol";
+import { CavalryPrototype } from "../prototypes/CavalryPrototype.sol";
 
 uint256 constant ID = uint256(keccak256("mudwar.system.Init2"));
 
@@ -28,5 +29,6 @@ contract Init2System is System {
     GrassPrototype(components);
     TreePrototype(components);
     WaterPrototype(components);
+    CavalryPrototype(components);
   }
 }

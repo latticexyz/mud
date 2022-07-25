@@ -16,19 +16,19 @@ import { InventoryComponent, ID as InventoryComponentID } from "../components/In
 
 import { UnitTypes, CombatTypes } from "../utils/Types.sol";
 
-uint256 constant ID = uint256(keccak256("mudwar.prototype.Soldier"));
+uint256 constant ID = uint256(keccak256("mudwar.prototype.Cavalry"));
 
-function SoldierPrototype(IUint256Component components) {
-  UnitTypeComponent(getAddressById(components, UnitTypeComponentID)).set(ID, uint32(UnitTypes.Soldier));
+function CavalryPrototype(IUint256Component components) {
+  UnitTypeComponent(getAddressById(components, UnitTypeComponentID)).set(ID, uint32(UnitTypes.Cavalry));
   StaminaComponent(getAddressById(components, StaminaComponentID)).set(
     ID,
     Stamina({ current: 0, max: 3, regeneration: 1 })
   );
   CombatComponent(getAddressById(components, CombatComponentID)).set(
     ID,
-    Combat({ _type: uint32(CombatTypes.Sword), strength: 20_000, health: 100_000, passive: false })
+    Combat({ _type: uint32(CombatTypes.Cavalry), strength: 30_000, health: 100_000, passive: false })
   );
-  MovableComponent(getAddressById(components, MovableComponentID)).set(ID, int32(4));
+  MovableComponent(getAddressById(components, MovableComponentID)).set(ID, int32(5));
   UntraversableComponent(getAddressById(components, UntraversableComponentID)).set(ID);
   InventoryComponent(getAddressById(components, InventoryComponentID)).set(ID, uint32(3));
 

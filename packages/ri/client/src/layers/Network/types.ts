@@ -12,11 +12,33 @@ export enum ContractWorldEvent {
 export enum UnitTypes {
   Donkey,
   Soldier,
+  Spear,
+  Cavalry,
+  Archer,
 }
 
 export const UnitTypeNames: Record<number, string> = {
   [UnitTypes.Donkey]: "Donkey",
   [UnitTypes.Soldier]: "Soldier",
+  [UnitTypes.Spear]: "Spear",
+  [UnitTypes.Cavalry]: "Cavalry",
+  [UnitTypes.Archer]: "Archer",
+};
+
+export enum CombatTypes {
+  Passive,
+  Sword,
+  Spear,
+  Cavalry,
+  Ranged,
+}
+
+export const CombatTypeNames: Record<number, string> = {
+  [CombatTypes.Passive]: "Passive",
+  [CombatTypes.Sword]: "Sword",
+  [CombatTypes.Spear]: "Spear",
+  [CombatTypes.Cavalry]: "Cavalry",
+  [CombatTypes.Ranged]: "Ranged",
 };
 
 export enum StructureTypes {

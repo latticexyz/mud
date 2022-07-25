@@ -7,7 +7,7 @@ export function createDrawHealthSystem(layer: PhaserLayer) {
     world,
     parentLayers: {
       network: {
-        components: { Health },
+        components: { Combat },
       },
       local: {
         components: { LocalPosition },
@@ -23,22 +23,30 @@ export function createDrawHealthSystem(layer: PhaserLayer) {
     },
   } = layer;
 
-  defineSystem(world, [Has(LocalPosition), Has(Health)], ({ entity, type }) => {
+  defineSystem(world, [Has(LocalPosition), Has(Combat)], ({ entity, type }) => {
     if (type === UpdateType.Exit) {
       objectPool.remove(`${entity}-health`);
     } else if ([UpdateType.Enter, UpdateType.Update].includes(type)) {
-      const health = getComponentValueStrict(Health, entity);
+      const combat = getComponentValueStrict(Combat, entity);
       const position = getComponentValueStrict(LocalPosition, entity);
 
-      const highlight = objectPool.get(`${entity}-health`, "Text");
+      const highlight = objectPool.get(`${entity}-health`, "Rectangle");
       highlight.setComponent({
-        id: "health-text",
-        once: (healthText) => {
+        id: "health-bar",
+        once: (healthBar) => {
           const pixelCoord = tileCoordToPixelCoord(position, tileWidth, tileHeight);
 
-          healthText.setFontSize(12);
-          healthText.setText(`${Math.round(health.current / 10_000)}`);
-          healthText.setPosition(pixelCoord.x, pixelCoord.y - 10);
+          const healthPercent = combat.health / 100_000;
+          healthBar.width = (tileWidth - 2) * healthPercent;
+          healthBar.height = 2;
+
+          let color = 0x00ff00;
+          if (healthPercent < 0.75) color = 0xffff00;
+          if (healthPercent < 0.5) color = 0xffa500;
+          if (healthPercent < 0.25) color = 0xff0000;
+
+          healthBar.setFillStyle(color);
+          healthBar.setPosition(pixelCoord.x + 1, pixelCoord.y);
         },
       });
     }
