@@ -14,7 +14,7 @@ import { observable, reaction, runInAction } from "mobx";
 import { Area } from "./types";
 import { filterNullish } from "@latticexyz/utils";
 
-type Key = keyof typeof Phaser.Input.Keyboard.KeyCodes | "POINTER_LEFT" | "POINTER_RIGHT";
+export type Key = keyof typeof Phaser.Input.Keyboard.KeyCodes | "POINTER_LEFT" | "POINTER_RIGHT";
 
 export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   const disposers = new Set<() => void>();
@@ -28,6 +28,10 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
 
   function enableInput() {
     enabled.current = true;
+  }
+
+  function setCursor(cursor: string) {
+    inputPlugin.setDefaultCursor(cursor);
   }
 
   const keyboard$ = new Subject<Phaser.Input.Keyboard.Key>();
@@ -179,6 +183,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     dispose,
     disableInput,
     enableInput,
+    setCursor,
     enabled,
     onKeyPress,
   };
