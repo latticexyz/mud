@@ -2,7 +2,7 @@ import { concat, EMPTY, from, Observable } from "rxjs";
 import { getComponentEntities, removeComponent, setComponent } from "./Component";
 import { UpdateType } from "./constants";
 import { defineEnterQuery, defineExitQuery, defineQuery, defineUpdateQuery } from "./Query";
-import { Component, ComponentUpdate, ComponentValue, EntityIndex, EntityQueryFragment, Schema, World } from "./types";
+import { Component, ComponentUpdate, ComponentValue, EntityIndex, QueryFragment, Schema, World } from "./types";
 import { toUpdateStream } from "./utils";
 
 export function defineRxSystem<T>(world: World, observable$: Observable<T>, system: (event: T) => void) {
@@ -12,7 +12,7 @@ export function defineRxSystem<T>(world: World, observable$: Observable<T>, syst
 
 export function defineUpdateSystem(
   world: World,
-  query: EntityQueryFragment[],
+  query: QueryFragment[],
   system: (update: ComponentUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
@@ -21,7 +21,7 @@ export function defineUpdateSystem(
 
 export function defineEnterSystem(
   world: World,
-  query: EntityQueryFragment[],
+  query: QueryFragment[],
   system: (update: ComponentUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
@@ -30,7 +30,7 @@ export function defineEnterSystem(
 
 export function defineExitSystem(
   world: World,
-  query: EntityQueryFragment[],
+  query: QueryFragment[],
   system: (update: ComponentUpdate) => void,
   options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
@@ -39,7 +39,7 @@ export function defineExitSystem(
 
 export function defineSystem(
   world: World,
-  query: EntityQueryFragment[],
+  query: QueryFragment[],
   system: (update: ComponentUpdate & { type: UpdateType }) => void,
   options: { runOnInit?: boolean } = { runOnInit: true }
 ) {
@@ -65,7 +65,7 @@ export function defineComponentSystem<S extends Schema>(
  */
 export function defineSyncSystem<T extends Schema>(
   world: World,
-  query: EntityQueryFragment[],
+  query: QueryFragment[],
   component: (entity: EntityIndex) => Component<T>,
   value: (entity: EntityIndex) => ComponentValue<T>,
   options: { update?: boolean; runOnInit?: boolean } = { update: false, runOnInit: true }

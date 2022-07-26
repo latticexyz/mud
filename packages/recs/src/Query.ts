@@ -1,6 +1,6 @@
 import { filterNullish } from "@latticexyz/utils";
 import { observable, ObservableSet } from "mobx";
-import { concat, concatMap, EMPTY, filter, from, map, merge, Observable, of, switchMap } from "rxjs";
+import { concat, concatMap, filter, from, map, merge, Observable, of } from "rxjs";
 import {
   componentValueEquals,
   getComponentEntities,
@@ -337,7 +337,7 @@ export function defineQuery(
  * @returns Stream of component updates of entities that had already matched the query
  */
 export function defineUpdateQuery(
-  fragments: EntityQueryFragment[],
+  fragments: QueryFragment[],
   options?: { runOnInit?: boolean }
 ): Observable<ComponentUpdate & { type: UpdateType }> {
   return defineQuery(fragments, options).update$.pipe(filter((e) => e.type === UpdateType.Update));
@@ -348,7 +348,7 @@ export function defineUpdateQuery(
  * @returns Stream of component updates of entities matching the query for the first time
  */
 export function defineEnterQuery(
-  fragments: EntityQueryFragment[],
+  fragments: QueryFragment[],
   options?: { runOnInit?: boolean }
 ): Observable<ComponentUpdate> {
   return defineQuery(fragments, options).update$.pipe(filter((e) => e.type === UpdateType.Enter));
@@ -359,7 +359,7 @@ export function defineEnterQuery(
  * @returns Stream of component updates of entities not matching the query anymore for the first time
  */
 export function defineExitQuery(
-  fragments: EntityQueryFragment[],
+  fragments: QueryFragment[],
   options?: { runOnInit?: boolean }
 ): Observable<ComponentUpdate> {
   return defineQuery(fragments, options).update$.pipe(filter((e) => e.type === UpdateType.Exit));
