@@ -30,6 +30,10 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     enabled.current = true;
   }
 
+  function setCursor(cursor: string) {
+    inputPlugin.setDefaultCursor(cursor);
+  }
+
   const keyboard$ = new Subject<Phaser.Input.Keyboard.Key>();
 
   const pointermove$ = fromEvent(document, "mousemove").pipe(
@@ -179,6 +183,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     dispose,
     disableInput,
     enableInput,
+    setCursor,
     enabled,
     onKeyPress,
   };
