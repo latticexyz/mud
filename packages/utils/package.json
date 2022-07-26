@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/utils",
   "license": "MIT",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "main": "src/index.ts",
   "repository": {
@@ -37,5 +37,5 @@
     "proxy-deep": "^3.1.1",
     "rxjs": "^7.5.5"
   },
-  "gitHead": "2000994f695cee35fcc32558f399584922073016"
+  "gitHead": "79ef4b0233cd396a0b605935b2f0b10175011bc2"
 }
