@@ -15,7 +15,8 @@
   "scripts": {
     "prepare": "yarn build",
     "globalinstall": "yarn build && yarn prepare && npm link",
-    "build": "rimraf build && tsc -p . && chmod u+x build/cli.js"
+    "build": "rimraf build && tsc -p . && chmod u+x build/cli.js",
+    "link": "yarn link"
   },
   "devDependencies": {
     "@types/clear": "^0.1.2",

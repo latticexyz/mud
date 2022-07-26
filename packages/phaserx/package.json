@@ -11,7 +11,8 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "build": "rimraf dist && rollup -c rollup.config.js",
-    "test": "jest"
+    "test": "jest",
+    "link": "yarn link"
   },
   "devDependencies": {
     "@latticexyz/utils": "^0.3.2",

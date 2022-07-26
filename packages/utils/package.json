@@ -12,7 +12,8 @@
   "scripts": {
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "build": "rimraf dist && rollup -c rollup.config.js"
+    "build": "rimraf dist && rollup -c rollup.config.js",
+    "link": "yarn link"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.1.3",

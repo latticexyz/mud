@@ -10,7 +10,8 @@
     "directory": "packages/std-client"
   },
   "scripts": {
-    "build": "rimraf dist && rollup -c rollup.config.js"
+    "build": "rimraf dist && rollup -c rollup.config.js",
+    "link": "yarn link"
   },
   "devDependencies": {
     "@latticexyz/network": "^0.3.2",

@@ -19,7 +19,8 @@
     "types": "rimraf types && yarn removebytecode && typechain --target=ethers-v5 abi/*.json",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "lint": "yarn prettier && yarn solhint"
+    "lint": "yarn prettier && yarn solhint",
+    "link": "yarn link"
   },
   "devDependencies": {
     "@latticexyz/solecs": "^0.3.2",

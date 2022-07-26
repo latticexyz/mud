@@ -10,7 +10,8 @@
     "directory": "packages/ecs-browser"
   },
   "scripts": {
-    "build": "rimraf dist && rollup -c rollup.config.js"
+    "build": "rimraf dist && rollup -c rollup.config.js",
+    "link": "yarn link"
   },
   "devDependencies": {
     "@latticexyz/recs": "^0.3.2",

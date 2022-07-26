@@ -1371,9 +1371,74 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@latticexyz/cli@0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@latticexyz/cli/0.2.0/b5afcbc2595d12eaadc617e6126af25a8c31a1c3889e2ff046a21ff295235b08#698339ed478e4a5376e0a392ee1a4975cc082222"
+  integrity sha512-/7wQS19qCTInDDWjJJHpzYKRMB4C4qfd6liGTthDp6eeI/bhW5iAHnMhAxlVRze9baeaE0w3jAM8rtr5Deo9Rg==
+  dependencies:
+    "@latticexyz/utils" "^0.2.0"
+    chalk "^5.0.1"
+    clear "^0.1.0"
+    commander "^9.2.0"
+    esm "^3.2.25"
+    ethers "^5.6.7"
+    execa "^6.1.0"
+    figlet "^1.5.2"
+    glob "^8.0.3"
+    inquirer "^8.2.4"
+    inquirer-prompt-suggest "^0.1.0"
+    listr2 "^4.0.5"
+    netlify "^11.0.1"
+    node-fetch "^3.2.6"
+    openurl "^1.1.1"
+    path "^0.12.7"
+    uuid "^8.3.2"
+    yargs "^17.5.1"
+
+"@latticexyz/network@^0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@latticexyz/network/0.2.0/7eb2dbf065d1bd79ed79253371357d116796fe7aa580678600c50b047cda7d07#de488a6e7a71e66352aa15ae0419c02ad4fa2c7f"
+  integrity sha512-63qRbFek7VAwDJi299CMx++nK1vjX9goChFOY0QYXRQ8FGifzjgeVjcY3WjvXu/yG6IATs3zd7kPakb96kcyOQ==
+  dependencies:
+    "@protobuf-ts/grpcweb-transport" "^2.7.0"
+    "@protobuf-ts/runtime-rpc" "^2.7.0"
+    observable-webworker "^4.0.1"
+
+"@latticexyz/persona-js@0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@latticexyz/persona-js/0.2.0/94d4c9433f79f1e1248da0e5b0953792343fee51b43b099b91226f0b5cafc70a#7f05176d1cfe4a5020c6714299e0d29a782601e2"
+  integrity sha512-lDG88UWMu8F6nL832AxhAHWuobBH8c9rYsv0tEYPo5Q1S+FbhBlZXpDFPFgEen/y/QK0q/QdLJc8zQHPHiqaZQ==
+
 "@latticexyz/persona@https://github.com/latticexyz/persona.git#a53e26a670ed6f041dc5dec365be293457a90b5d":
   version "1.2.0"
   resolved "https://github.com/latticexyz/persona.git#a53e26a670ed6f041dc5dec365be293457a90b5d"
+
+"@latticexyz/phaserx@^0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@latticexyz/phaserx/0.2.0/7694d39678b0523ea038f4a9132b3a83d53d7651ed78ea48937e9105f3bef9f6#afce5615b34cc1eb5f5013d076aef40c39bbc509"
+  integrity sha512-z+v/2alCC4P0KTE3OaYDYMtB00UNFe29wmNn/E7A5p60052b1zBllKbYnR85JGc8DkF7FA1GqLJTf/5BEp+lRg==
+  dependencies:
+    "@use-gesture/vanilla" "^10.2.9"
+
+"@latticexyz/recs@^0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@latticexyz/recs/0.2.0/7e0abd8e3edfc324640ecf1ae94ab8b279d41702c06af73f1aa528ba22c4288c#e7d23c1c2827d6341253e1b1a43ecbd97434b931"
+  integrity sha512-S87CSEhxJ/hKbWkGp0dJSUpLN/DzKbUfKMmnxUuOtoofrnmzRsKh/nMfQ/x/bDzHF6NmQ8j7C/5dYyy6Z8vb0g==
+
+"@latticexyz/solecs@0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@latticexyz/solecs/0.2.0/97812615dda6ee06cd3cf714abfcfcd844a4bbfbc8871115cfb0b0212fc0dbf5#0b79150527571e79dd6d231ac121ce8ce4b340e9"
+  integrity sha512-dL3sx4yUOFN72vabjGtjdmdhzu7LcpbiB+8egjJrWMMyJQhAeo/nuiehPSMPwYp48j90YIOwBtjCF+ER9fjWNg==
+
+"@latticexyz/std-contracts@^0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@latticexyz/std-contracts/0.2.0/0e272720c37f400ee1b5fc770fc0c375941a5e160d6aaf8d61337dca073c3f68#0e2064ae3ff612e9bed07b744bbae4c08f8fa34b"
+  integrity sha512-7klWCkK4PkvavZhQ5jiC5z3PGclzw6DMJR9e3fagpBovarmStHQCRrpVFai0T4DIptvi3g/vZViCyhOaF11EjQ==
+
+"@latticexyz/utils@^0.2.0":
+  version "0.2.0"
+  resolved "https://npm.pkg.github.com/download/@latticexyz/utils/0.2.0/d10b0b304d1c2d073937dd57c2636e06c6e74ee172c4141f2d17c8680e893887#120930975969a069dee671e97667c250c12764a5"
+  integrity sha512-Gl02jLhqBvlJlHMJtR4++hcwtIY/HQgM3A2Vizo/dSnVGTG52dca5w0H6ceoETK1F2xQ0JwZe1ypZF97T2AeGg==
 
 "@lerna/add@4.0.0":
   version "4.0.0"
