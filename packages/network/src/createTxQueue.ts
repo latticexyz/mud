@@ -168,8 +168,17 @@ export function createTxQueue<C extends Contracts>(
     utilization++;
 
     // Run exclusive to avoid two tx requests awaiting the nonce in parallel and submitting with the same nonce.
-    // Two tx can still be part of the same block, because we do not await the receipt inside of the mutex.
+    let gasLimit: BigNumberish | undefined;
+    try {
+      gasLimit = await txRequest.estimateGas();
+    } catch (e) {
+      console.warn("TXQUEUE: gas estimation failed, tx not sent.");
+    }
+
     const txResult = await submissionMutex.runExclusive(async () => {
+      // Don't attempt to send the tx if gas estimation failed
+      if (gasLimit == null) return;
+
       // Define variables in scope visible to finally block
       let error: any;
       const stateMutability = txRequest.stateMutability;
@@ -178,9 +187,7 @@ export function createTxQueue<C extends Contracts>(
         // Wait if nonce is not ready
         const { nonce } = await awaitValue(readyState);
         // Await gas estimation to avoid increasing nonce before tx is actually sent
-        const gasLimit = await txRequest.estimateGas();
-        // Do not await result promise to trigger nonce increase
-        return txRequest.execute(nonce, gasLimit);
+        return await txRequest.execute(nonce, gasLimit);
       } catch (e: any) {
         console.warn("TXQUEUE EXECUTION FAILED", e);
         // Nonce is handled centrally in finally block (for both failing and successful tx)
@@ -188,12 +195,10 @@ export function createTxQueue<C extends Contracts>(
       } finally {
         // If the error includes information about the transaction,
         // then the transaction was submitted and the nonce needs to be
-        // increased regardless of the error unless the error occured during
-        // gas estimation;
-        const isGasEstimationError = error && "code" in error && error.code === "UNPREDICTABLE_GAS_LIMIT";
+        // increased regardless of the error
         const isNonViewTransaction = error && "transaction" in error && txRequest.stateMutability !== "view";
-        const shouldIncreaseNonce =
-          (!error && stateMutability !== "view") || (isNonViewTransaction && !isGasEstimationError);
+        const shouldIncreaseNonce = (!error && stateMutability !== "view") || isNonViewTransaction;
+
         const shouldResetNonce =
           error &&
           (("code" in error && error.code === "NONCE_EXPIRED") ||
@@ -201,7 +206,6 @@ export function createTxQueue<C extends Contracts>(
 
         console.log("TxQueue:", {
           error,
-          isGasEstimationError,
           isNonViewTransaction,
           shouldIncreaseNonce,
           shouldResetNonce,
