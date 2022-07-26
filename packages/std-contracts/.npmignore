@@ -1,0 +1,7 @@
+*
+
+!src/**
+!abi/**
+!types/**
+!package.json
+!README.md
