@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Command line interface for mud",
   "main": "./build/cli.js",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@latticexyz/utils": "^0.2.0",
+    "@latticexyz/utils": "^0.3.0",
     "chalk": "^5.0.1",
     "clear": "^0.1.0",
     "commander": "^9.2.0",
@@ -47,9 +47,9 @@
     "node-fetch": "^3.2.6",
     "openurl": "^1.1.1",
     "path": "^0.12.7",
+    "typechain": "^8.1.0",
     "uuid": "^8.3.2",
-    "yargs": "^17.5.1",
-    "typechain": "^8.1.0"
+    "yargs": "^17.5.1"
   },
   "pkg": {
     "scripts": "build/**/*.js"
