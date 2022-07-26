@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseContract, CallOverrides, Overrides } from "ethers";
+import { BaseContract, BigNumberish, CallOverrides, Overrides } from "ethers";
 import { autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
 import { mapObject, deferred, uuid, awaitValue, cacheUntilReady } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
@@ -53,11 +53,12 @@ type ReturnTypeStrict<T> = T extends (...args: any) => any ? ReturnType<T> : nev
 export function createTxQueue<C extends Contracts>(
   computedContracts: IComputedValue<C> | IObservableValue<C>,
   network: Network,
-  options?: { concurrency?: number; ignoreConfirmation?: boolean; devMode?: boolean }
+  options?: { concurrency?: number; devMode?: boolean }
 ): { txQueue: TxQueue<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {
   const { concurrency } = options || {};
   const queue = createPriorityQueue<{
-    execute: (nonce: number) => Promise<TransactionResponse>;
+    execute: (nonce: number, gasLimit: BigNumberish) => Promise<TransactionResponse>;
+    estimateGas: () => BigNumberish | Promise<BigNumberish>;
     cancel: () => void;
     stateMutability?: string;
   }>();
@@ -112,8 +113,12 @@ export function createTxQueue<C extends Contracts>(
     const fragment = target.interface.fragments.find((fragment) => fragment.name === prop);
     const stateMutability = fragment && (fragment as { stateMutability?: string }).stateMutability;
 
+    // Create a function that estimates gas if no gas is provided
+    const gasLimit = overrides["gasLimit"];
+    const estimateGas = gasLimit == null ? () => target.estimateGas[prop as string](...args) : () => gasLimit;
+
     // Create a function that executes the tx when called
-    const execute = async (nonce: number) => {
+    const execute = async (nonce: number, gasLimit: BigNumberish) => {
       try {
         const member = target[prop];
         if (member == undefined) {
@@ -128,7 +133,7 @@ export function createTxQueue<C extends Contracts>(
           );
         }
 
-        const configOverrides = { ...overrides, nonce };
+        const configOverrides = { ...overrides, nonce, gasLimit };
         if (options?.devMode) configOverrides.gasPrice = 0;
 
         const result = await member(...argsWithoutOverrides, configOverrides);
@@ -141,7 +146,7 @@ export function createTxQueue<C extends Contracts>(
     };
 
     // Queue the tx execution
-    queue.add(uuid(), { execute, cancel: () => reject(new Error("TX_CANCELLED")), stateMutability });
+    queue.add(uuid(), { execute, estimateGas, cancel: () => reject(new Error("TX_CANCELLED")), stateMutability });
 
     // Start processing the queue
     processQueue();
@@ -161,6 +166,9 @@ export function createTxQueue<C extends Contracts>(
 
     // Increase utilization to prevent executing more tx than allowed by capacity
     utilization++;
+
+    // Run exclusive to avoid two tx requests awaiting the nonce in parallel and submitting with the same nonce.
+    // Two tx can still be part of the same block, because we do not await the receipt inside of the mutex.
     const txResult = await submissionMutex.runExclusive(async () => {
       // Define variables in scope visible to finally block
       let error: any;
@@ -169,8 +177,10 @@ export function createTxQueue<C extends Contracts>(
       try {
         // Wait if nonce is not ready
         const { nonce } = await awaitValue(readyState);
-        const resultPromise = txRequest.execute(nonce);
-        if (!options?.ignoreConfirmation) return await resultPromise;
+        // Await gas estimation to avoid increasing nonce before tx is actually sent
+        const gasLimit = await txRequest.estimateGas();
+        // Do not await result promise to trigger nonce increase
+        return txRequest.execute(nonce, gasLimit);
       } catch (e: any) {
         console.warn("TXQUEUE EXECUTION FAILED", e);
         // Nonce is handled centrally in finally block (for both failing and successful tx)
