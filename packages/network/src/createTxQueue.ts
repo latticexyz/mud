@@ -172,7 +172,7 @@ export function createTxQueue<C extends Contracts>(
     try {
       gasLimit = await txRequest.estimateGas();
     } catch (e) {
-      console.warn("TXQUEUE: gas estimation failed, tx not sent.");
+      console.warn("TXQUEUE: gas estimation failed, tx not sent.", e);
     }
 
     const txResult = await submissionMutex.runExclusive(async () => {
