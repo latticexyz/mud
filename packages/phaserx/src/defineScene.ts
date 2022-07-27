@@ -18,8 +18,8 @@ export function defineScene(options: {
 
     create() {
       create && create(this);
-      if (this.renderer) {
-        const renderer = this.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+      const renderer = this.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
+      if (renderer?.pipelines) {
         renderer.pipelines.add(HueTintAndOutlineFXPipeline.KEY, new HueTintAndOutlineFXPipeline(this.game));
         renderer.pipelines.add(MultiHueTintPipeline.KEY, new MultiHueTintPipeline(this.game));
       }
