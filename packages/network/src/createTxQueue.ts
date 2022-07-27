@@ -7,6 +7,7 @@ import { TransactionResponse } from "@ethersproject/providers";
 import { Contracts, TxQueue } from "./types";
 import { ConnectionState } from "./createProvider";
 import { Network } from "./createNetwork";
+import { getRevertReason } from "./networkUtils";
 
 function createPriorityQueue<T>() {
   const queue = new Map<string, { element: T; priority: number }>();
@@ -171,8 +172,9 @@ export function createTxQueue<C extends Contracts>(
     let gasLimit: BigNumberish | undefined;
     try {
       gasLimit = await txRequest.estimateGas();
-    } catch (e) {
+    } catch (e: any) {
       console.warn("TXQUEUE: gas estimation failed, tx not sent.", e);
+      console.warn(e.reason);
     }
 
     const txResult = await submissionMutex.runExclusive(async () => {
@@ -219,8 +221,17 @@ export function createTxQueue<C extends Contracts>(
 
     // Await confirmation
     if (txResult?.hash) {
-      const { provider } = await awaitValue(readyState);
-      await provider.waitForTransaction(txResult.hash);
+      try {
+        await txResult.wait();
+      } catch (e) {
+        console.warn("tx failed in block", e);
+
+        // Decode and log the revert reason.
+        // Use `then` instead of `await` to avoid letting consumers wait.
+        getRevertReason(txResult.hash, network.providers.get().json).then((reason) =>
+          console.warn("Revert reason:", reason)
+        );
+      }
     }
 
     utilization--;

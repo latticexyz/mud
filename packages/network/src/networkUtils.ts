@@ -1,7 +1,15 @@
-import { JsonRpcProvider, WebSocketProvider, Block, Log, Formatter } from "@ethersproject/providers";
+import {
+  JsonRpcProvider,
+  WebSocketProvider,
+  Block,
+  Log,
+  Formatter,
+  BaseProvider,
+  TransactionRequest,
+} from "@ethersproject/providers";
 import { callWithRetry, range, sleep } from "@latticexyz/utils";
 import { BigNumber, Contract } from "ethers";
-import { resolveProperties } from "ethers/lib/utils";
+import { resolveProperties, defaultAbiCoder as abi } from "ethers/lib/utils";
 import { Contracts, ContractTopics, ContractEvent, ContractsConfig } from "./types";
 
 export async function ensureNetworkIsUp(provider: JsonRpcProvider, wssProvider?: WebSocketProvider): Promise<void> {
@@ -170,4 +178,13 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
   }
 
   return contractEvents;
+}
+
+export async function getRevertReason(txHash: string, provider: BaseProvider): Promise<string> {
+  // Decoding the revert reason: https://docs.soliditylang.org/en/latest/control-structures.html#revert
+  const tx = await provider.getTransaction(txHash);
+  tx.gasPrice = undefined; // tx object contains both gasPrice and maxFeePerGas
+  const encodedRevertReason = await provider.call(tx as TransactionRequest);
+  const decodedRevertReason = abi.decode(["string"], "0x" + encodedRevertReason.substring(10));
+  return decodedRevertReason[0];
 }
