@@ -10,6 +10,7 @@ import { createObjectPool } from "./createObjectPool";
 import { createAnimatedTilemap } from "./tilemap";
 import { generateFrames } from "./utils";
 import { createInput } from "./createInput";
+import { deferred } from "@latticexyz/utils";
 
 export async function createPhaserEngine<S extends ScenesConfig>(options: PhaserEngineConfig<S>) {
   const { scale, sceneConfig, cameraConfig, cullingChunkSize } = options;
@@ -20,10 +21,20 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
     return defineScene({ key, preload, create, update });
   });
 
-  const game = new Phaser.Game(definePhaserConfig({ scenes: sceneConstructors, scale }));
+  const phaserConfig = definePhaserConfig({ scenes: sceneConstructors, scale });
+  const game = new Phaser.Game(phaserConfig);
 
   // Wait for phaser to boot
-  await new Promise((resolve) => game.events.on("ready", resolve));
+  const [resolve, , promise] = deferred();
+
+  game.events.on("ready", resolve);
+
+  // skip texture loading in headless mode for unit testing
+  if (phaserConfig.type == Phaser.HEADLESS) {
+    game.textures.emit("ready");
+  }
+
+  await promise;
 
   // Bind the game's size to the window size
   function resize() {

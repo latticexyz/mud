@@ -3736,6 +3736,18 @@
   resolved "https://registry.yarnpkg.com/@use-gesture/core/-/core-10.2.15.tgz#ed55e85211eb6129a7979f177f1831d078087d22"
   integrity sha512-R8k5GHKR6J3n48K1xiWCBSnTsxmfiVCp+MYPMhFaoHT1/oIjrFA6SeMmWDl0REwP/CpBfNdQ0FwOo/0dGjPhwA==
 
+"@use-gesture/core@10.2.9":
+  version "10.2.9"
+  resolved "https://registry.yarnpkg.com/@use-gesture/core/-/core-10.2.9.tgz#51eb2a12747c750dd0ac60af48fb7653382cf58a"
+  integrity sha512-MsPUCWZ6BSir8XqSrfQCyrFuBz405YI2D0hfZ7TXX/hhF0kekN+noPhHjg7m85vMyCYf92fjt3J5AbjoGV4eMw==
+
+"@use-gesture/vanilla@10.2.9":
+  version "10.2.9"
+  resolved "https://registry.yarnpkg.com/@use-gesture/vanilla/-/vanilla-10.2.9.tgz#0f6d8390ad2af0100f5d70b722c4e17c1685e842"
+  integrity sha512-DVH5d0Owaw1qsviNPt6o632q8YqSXM4GMPkeMlPevzpeXwRvPPFh3ngKX/zTRER9LXKvCDOMSL7WFY1l4J+a6Q==
+  dependencies:
+    "@use-gesture/core" "10.2.9"
+
 "@use-gesture/vanilla@^10.2.9":
   version "10.2.15"
   resolved "https://registry.yarnpkg.com/@use-gesture/vanilla/-/vanilla-10.2.15.tgz#df6ea2017cf9b80f37dc44720bef83f89c5824ef"

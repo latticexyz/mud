@@ -38,7 +38,7 @@
     "rxjs": "^7.5.5"
   },
   "dependencies": {
-    "@use-gesture/vanilla": "^10.2.9"
+    "@use-gesture/vanilla": "10.2.9"
   },
   "gitHead": "79ef4b0233cd396a0b605935b2f0b10175011bc2"
 }

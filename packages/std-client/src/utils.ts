@@ -14,7 +14,6 @@ import {
   Schema,
   ComponentValue,
   componentValueEquals,
-  EntityIndex,
 } from "@latticexyz/recs";
 import { Coord, keccak256 } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
