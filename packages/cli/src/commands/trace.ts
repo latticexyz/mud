@@ -18,11 +18,11 @@ export const desc = "Display the trace of a transaction";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) =>
   yargs.options({
-    config: { type: "string" },
-    world: { type: "string", required: true },
-    tx: { type: "string", required: true },
-    rpc: { type: "string" },
-    debug: { type: "boolean" },
+    config: { type: "string", description: "path to mud deploy config (deploy.json)" },
+    world: { type: "string", required: true, description: "world contract address" },
+    tx: { type: "string", required: true, description: "tx hash to replay" },
+    rpc: { type: "string", description: "json rpc endpoint, defaults to http://localhost:8545" },
+    debug: { type: "boolean", description: "open debugger" },
   });
 
 export const handler = async (argv: Arguments<Options>): Promise<void> => {

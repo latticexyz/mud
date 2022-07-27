@@ -15,19 +15,22 @@ type Options = {
 };
 
 export const command = "call-system";
-export const desc = "Call mud system";
+export const desc = "Execute a mud system";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) =>
   yargs.options({
-    rpc: { type: "string" },
-    caller: { type: "string" },
-    world: { type: "string", required: true },
-    system: { type: "string", required: true },
-    argTypes: { type: "array", required: true },
-    args: { type: "array", required: true },
-    broadcast: { type: "boolean" },
-    callerPrivateKey: { type: "string" },
-    debug: { type: "boolean" },
+    rpc: { type: "string", description: "json rpc endpoint, defaults to http://localhost:8545" },
+    caller: { type: "string", description: "caller address" },
+    world: { type: "string", required: true, description: "world contract address" },
+    system: { type: "string", required: true, description: "system id preimage (eg mud.system.Move)" },
+    argTypes: { type: "array", required: true, description: "system argument types for abi encoding" },
+    args: { type: "array", required: true, description: "system arguments" },
+    broadcast: { type: "boolean", description: "send txs to the chain" },
+    callerPrivateKey: {
+      type: "string",
+      description: "must be set if broadcast is set, must correspond to caller address",
+    },
+    debug: { type: "boolean", description: "open debugger" },
   });
 
 export const handler = async (argv: Arguments<Options>): Promise<void> => {
