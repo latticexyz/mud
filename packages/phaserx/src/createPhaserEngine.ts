@@ -30,7 +30,7 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
   game.events.on("ready", resolve);
 
   // skip texture loading in headless mode for unit testing
-  if (phaserConfig.type == Phaser.HEADLESS) {
+  if (phaserConfig.type === Phaser.HEADLESS) {
     game.textures.emit("ready");
   }
 

@@ -86,8 +86,8 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
         height
       );
 
-      if (layer.hasHueTintShader) {
-        layers[key].pipeline = (scene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer)?.pipelines?.get(
+      if (layer.hasHueTintShader && scene.game.renderer) {
+        layers[key].pipeline = (scene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer).pipelines.get(
           MultiHueTintPipeline.KEY
         );
       }
