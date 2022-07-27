@@ -7,9 +7,19 @@ import { StateManager, DefaultStateManager } from "@ethereumjs/statemanager";
 import { Transaction } from "@ethereumjs/tx";
 import { VM } from "@ethereumjs/vm";
 import { EVM } from "@ethereumjs/evm";
-import { addressToBuffer } from "@ethereumjs/evm/src/opcodes/util";
+import { addressToBuffer, getDataSlice } from "@ethereumjs/evm/src/opcodes/util";
 import { Stack } from "@ethereumjs/evm/src/stack";
-import { Component, getComponentValue, getComponentValueStrict, Type, World } from "@latticexyz/recs";
+import { Memory } from "@ethereumjs/evm/src/memory";
+import {
+  Component,
+  ComponentValue,
+  getComponentValue,
+  getComponentValueStrict,
+  getEntitiesWithValue,
+  SchemaOf,
+  Type,
+  World,
+} from "@latticexyz/recs";
 import { InterpreterStep } from "@ethereumjs/evm/src/interpreter";
 import { autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
 import {
@@ -20,15 +30,17 @@ import {
   cacheUntilReady,
   streamToComputed,
   toEthAddress,
+  keccak256,
 } from "@latticexyz/utils";
-import { Contracts, LocalEVM } from "./types";
+import { Contracts, ContractSchemaValue, ContractSchemaValueId, LocalEVM } from "./types";
 import { ConnectionState } from "./createProvider";
 import { Network } from "./createNetwork";
 import { JsonRpcProvider, Provider } from "@ethersproject/providers";
 import WorldAbi from "@latticexyz/solecs/abi/World.json";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Component as ComponentContract, World as WorldContract } from "@latticexyz/solecs";
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+import { createDecoder } from "./createDecoder";
+import { BytesLike, defaultAbiCoder as abi } from "ethers/lib/utils"; // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 globalThis.Buffer = BrowserBuffer;
 
@@ -48,6 +60,60 @@ const bufferToHex = (buff: Buffer) => {
 
 const addressToString = (addr: Address): string => {
   return "0x" + addr.buf.toString("hex");
+};
+
+enum Selector {
+  GET_ENTITIES_WITH_VALUE_RAW = "GET_ENTITIES_WITH_VALUE_RAW",
+  GET_ENTITIES_WITH_VALUE = "GET_ENTITIES_WITH_VALUE",
+  HAS = "HAS",
+  GET_RAW_VALUE = "GET_RAW_VALUE",
+  GET_VALUE = "GET_VALUE",
+}
+
+const bytes4 = (hex: string): string => {
+  return hex.slice(0, 2 + 4 * 2);
+};
+
+const GET_ENTITIES_WITH_VALUE_RAW_SELECTOR = bytes4(keccak256("getEntitiesWithValue(bytes)"));
+const HAS_SELECTOR = bytes4(keccak256("has(uint256)"));
+const GET_RAW_VALUE_SELECTOR = bytes4(keccak256("getRawValue(uint256)"));
+//TODO: Set and Remove
+
+const KNOWN_SELECTOR: { [key: string]: Selector } = {
+  [GET_ENTITIES_WITH_VALUE_RAW_SELECTOR]: Selector.GET_ENTITIES_WITH_VALUE_RAW,
+  [HAS_SELECTOR]: Selector.HAS,
+  [GET_RAW_VALUE_SELECTOR]: Selector.GET_RAW_VALUE,
+};
+
+const getKnownSelectorsForComponentWithSchema = (schema: [string[], number[]]): { [key: string]: Selector } => {
+  console.log(schema[1].map((id: ContractSchemaValue) => ContractSchemaValueId[id]).join(","));
+  const GET_ENTITIES_WITH_VALUE_SELECTOR = bytes4(
+    keccak256(
+      "getEntitiesWithValue(" + schema[1].map((id: ContractSchemaValue) => ContractSchemaValueId[id]).join(",") + ")"
+    )
+  );
+  return {
+    [GET_ENTITIES_WITH_VALUE_SELECTOR]: Selector.GET_ENTITIES_WITH_VALUE,
+    ...KNOWN_SELECTOR,
+  };
+};
+
+const readFromState = (
+  component: Component,
+  selector: Selector,
+  calldata: string,
+  schema: [string[], number[]]
+): string => {
+  const decoder = createDecoder(schema[0], schema[1]);
+  if (selector === Selector.GET_ENTITIES_WITH_VALUE || selector === Selector.GET_ENTITIES_WITH_VALUE_RAW) {
+    const value = decoder(calldata);
+    const entitiesWithValue = getEntitiesWithValue(component, value as ComponentValue<SchemaOf<Component>>);
+    const entities: string[] = [];
+    entitiesWithValue.forEach((e) => entities.push(component.world.entities[e]));
+    return abi.encode(["uint256[]"], [entities]);
+  }
+  return calldata;
+  // throw new Error("unknown selector")
 };
 
 class MUDStateManager extends DefaultStateManager {
@@ -107,7 +173,7 @@ class MUDStateManager extends DefaultStateManager {
       return maybeSlot;
     }
     const slot = bufferFromHex(await this.provider.getStorageAt(bufferToHex(address.buf), bufferToHex(key)));
-    console.warn("reading from network", bufferToHex(address.buf), bufferToHex(key), bufferToHex(slot));
+    // console.warn("reading from network", bufferToHex(address.buf), bufferToHex(key), bufferToHex(slot));
     this.storeStorageCache(address, key, slot);
     return slot;
   }
@@ -116,6 +182,23 @@ class MUDStateManager extends DefaultStateManager {
     this.storeStorageCache(address, key, value);
   }
 }
+
+const hashData = (data: InterpreterStep) => {
+  const stackHash = keccak256(data.stack.map((a) => a.toString()).join(","));
+  const returnStackHash = keccak256(data.returnStack.map((a) => a.toString()).join(","));
+  const memoryHash = keccak256(bufferToHex(data.memory));
+  const obj = {
+    accountStateRoot: bufferToHex(data.account.stateRoot),
+    stackHash,
+    returnStackHash,
+    memoryHash,
+    codeAddress: addressToString(data.codeAddress),
+    address: addressToString(data.address),
+    pc: data.pc,
+  };
+  console.log(JSON.stringify(obj, null, 2));
+  console.log("data hash: ", keccak256(JSON.stringify(obj, null, 2)));
+};
 
 export function createLocalEVM<C extends Contracts>(
   computedContracts: IComputedValue<C> | IObservableValue<C>,
@@ -129,14 +212,6 @@ export function createLocalEVM<C extends Contracts>(
   const dispose = () => {
     return;
   };
-
-  async function getComponentAddress(componentId: string, provider: Provider) {
-    // Otherwise fetch the address from the world
-    const worldContract = new Contract(worldAddress, WorldAbi.abi, provider) as WorldContract;
-    console.log("Fetching address for component", componentId);
-    const componentAddressPromise = worldContract.getComponent(componentId);
-    return componentAddressPromise;
-  }
 
   async function getComponentSchema(address: string, provider: Provider): Promise<[string[], number[]]> {
     const componentContract = new Contract(address, ComponentAbi.abi, provider) as ComponentContract;
@@ -184,8 +259,9 @@ export function createLocalEVM<C extends Contracts>(
     ...arg: any[]
   ) {
     const provider = network.providers.get().json;
-    // 1) add the component bytecode
+    // 1) add the component bytecode to the bytecode cache and create the address => component mapping
     const addressToComponent: { [key: string]: Component } = {};
+    const addressToSchema: { [key: string]: [string[], number[]] } = {};
     for (const e of components.entities()) {
       const address = toEthAddress(world.entities[e]);
       const { value: id } = getComponentValueStrict(components, e);
@@ -198,8 +274,11 @@ export function createLocalEVM<C extends Contracts>(
         console.warn("Ignoring non client component with id " + id);
       } else {
         addressToComponent[address] = world.components[componentIndex]!;
+        addressToSchema[address] = await getComponentSchema(address, provider);
       }
     }
+    bytecodes[ethers.constants.AddressZero] =
+      "0x6080604052348015600f57600080fd5b50604880601d6000396000f3fe6080604052348015600f57600080fd5b5000fea2646970667358221220ac8ad8a7dd9737160e7a86255271c7e599e7eb38aec8b70e50d7346afc63eab064736f6c63430008070033";
     const signer = network.signer.get()!;
     const common = new Common({ chain: 1 });
     const vm = await VM.create({ common, stateManager: new MUDStateManager({ common, provider, bytecodes }) });
@@ -211,26 +290,131 @@ export function createLocalEVM<C extends Contracts>(
     const signedTx = await signer.signTransaction(ethersTx);
     const buffer = bufferFromHex(signedTx);
     const tx = Transaction.fromSerializedTx(buffer);
+    let postCondition: ((stack: Stack, memory: Memory) => void) | undefined;
+    let preReturn: ((stack: Stack, memory: Memory) => void) | undefined;
+    let logN = 0;
+    let pcPostcondition: undefined | number;
+    let addressPostcondition: undefined | string;
+    let tricked = false;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     (vm.evm as EVM).on("step", (d) => {
       const data = d as InterpreterStep;
+      const stack = new Stack();
+      stack._store = data.stack;
+      const memory = new Memory();
+      memory._store = data.memory;
+      if (logN) {
+        logN--;
+        console.log(logN, data.pc, data.opcode);
+        hashData(data);
+      }
+      if (postCondition && data.pc === pcPostcondition && addressToString(data.address) === addressPostcondition) {
+        console.log("Executing postcondition");
+        postCondition(stack, memory);
+        hashData(data);
+        console.log("clearing postcondition");
+        postCondition = undefined;
+        logN = 0;
+      }
       if (data.opcode.name === "CALL" || data.opcode.name === "STATICCALL") {
-        if (data.opcode.name === "STATICCALL") {
-          const stack = new Stack();
-          stack._store = data.stack;
-          const [_currentGasLimit, toAddr, inOffset, inLength, outOffset, outLength] = stack.peek(6);
+        if (data.opcode.name === "STATICCALL" && !tricked) {
+          // for now we can only trick once
+          tricked = true;
+          console.log(data.pc);
+          console.log(stack._store.map((s) => s.toString()));
+          const [_, toAddr, inOffset, inLength, outOffset, outLength] = stack.peek(6);
+          console.log(inOffset, inLength, outOffset, outLength);
+          const toAddress = addressToString(new Address(addressToBuffer(toAddr)));
+          const c = addressToComponent[toAddress];
+          if (c) {
+            // we calling a component! time to trick the EVM
+            console.log("Call to component " + c.id);
+            // find the selector
+            let inputData = Buffer.alloc(0);
+            if (inLength !== BigInt(0)) {
+              inputData = memory.read(Number(inOffset), Number(inLength));
+            }
+            const knownSelectors = getKnownSelectorsForComponentWithSchema(addressToSchema[toAddress]);
+            const selector = knownSelectors[bytes4(bufferToHex(inputData))];
+            if (selector) {
+              console.log("Selector: " + selector);
+              console.log("We can trick the EVM!");
+              console.log(data.pc);
+              pcPostcondition = data.pc + 1;
+              addressPostcondition = addressToString(data.address);
+              // Compute the output
+              const calldata = "0x" + bufferToHex(inputData).slice(2 + 2 * 4);
+              const output = readFromState(c, selector, calldata, addressToSchema[toAddress]);
+              console.log("We return " + output);
+              const returnData = bufferFromHex(output);
+              // Write the return data
+              const memOffset = Number(outOffset);
+              let dataLength = Number(outLength);
+              console.log(dataLength, returnData.length);
+              if (BigInt(returnData.length) < dataLength) {
+                dataLength = returnData.length;
+              }
+              const outData = getDataSlice(returnData, BigInt(0), BigInt(dataLength));
+              console.log("outdata " + bufferToHex(outData));
+              console.log("data length " + dataLength);
+              // MUTATION TO STATE
+              // pop the stack for real
+              // make this call the empty address with no input nor output expected
+              // // TODO: will probably need to add a no-op contract that just returns
+              stack.popN(2);
+              stack.push(BigInt(0));
+              stack.push(BigInt(0));
+              // write the output to memory
+              postCondition = (s: Stack, m: Memory) => {
+                console.log("executing postcondition");
+                m.extend(memOffset, dataLength);
+                m.write(memOffset, dataLength, outData);
+                // pop the previous call
+                s.pop();
+                // Add a BigInt(1) to mark it as success
+                s.push(BigInt(1));
+              };
+              preReturn = (s: Stack, m: Memory) => {
+                console.log("executing prereturn");
+                m.extend(0, returnData.length);
+                m.write(0, returnData.length, returnData);
+                s.popN(2);
+                s.push(BigInt(returnData.length));
+                s.push(BigInt(0));
+              };
+            } else {
+              console.warn("Unknown selector on a STATICALL with a Component: " + bytes4(bufferToHex(inputData)));
+            }
+          }
+        } else {
+          const [_currentGasLimit, toAddr, value, inOffset, inLength, outOffset, outLength] = stack.peek(6);
           const toAddress = new Address(addressToBuffer(toAddr));
-          console.log(addressToString(toAddress));
           const c = addressToComponent[addressToString(toAddress)];
           if (c) {
+            console.log("MUTATING Call to component " + c.id + " addr: " + addressToString(toAddress));
             // we calling a component! time to trick the EVM
           }
         }
       }
+      if (data.opcode.name === "RETURN" && preReturn) {
+        hashData(data);
+        preReturn(stack, memory);
+        preReturn = undefined;
+        hashData(data);
+        const [offset, length] = stack.peek(2);
+        console.log(offset, length);
+        let returnData = Buffer.alloc(0);
+        if (length !== BigInt(0)) {
+          returnData = memory.read(Number(offset), Number(length));
+        }
+        console.log("Return: " + bufferToHex(returnData));
+      }
     });
 
     // we can simplify this further by running an emv.runCall, no need to execute an entire tx!
+    console.log("[SIMULATE] simulate a call to " + addressToString(tx.to!));
+    console.log(vm._common.isActivatedEIP(3540));
     const out = await vm.runTx({ tx, skipBalance: true });
     console.log(out);
   }
