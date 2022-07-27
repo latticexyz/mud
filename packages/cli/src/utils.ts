@@ -1,4 +1,9 @@
 import { exec as nodeExec, spawn } from "child_process";
+import { keccak256 as keccak256Bytes, toUtf8Bytes } from "ethers/lib/utils";
+import { readFileSync } from "fs";
+
+export const IDregex = new RegExp(/(?<=uint256 constant ID = uint256\(keccak256\(")(.*)(?="\))/);
+
 /**
  * A convenient way to create a promise with resolve and reject functions.
  * @returns Tuple with resolve function, reject function and promise.
@@ -51,4 +56,14 @@ export async function execLog(command: string, options: string[]): Promise<numbe
   child.on("exit", (code) => resolve(code ?? 0));
 
   return promise;
+}
+
+export function extractIdFromFile(path: string): string | null {
+  const content = readFileSync(path).toString();
+  const regexResult = IDregex.exec(content);
+  return regexResult && regexResult[0];
+}
+
+export function keccak256(data: string) {
+  return keccak256Bytes(toUtf8Bytes(data));
 }
