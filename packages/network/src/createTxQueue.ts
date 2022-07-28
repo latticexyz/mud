@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseContract, CallOverrides, Overrides } from "ethers";
+import { BaseContract, BigNumberish, CallOverrides, Overrides } from "ethers";
 import { autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
 import { mapObject, deferred, uuid, awaitValue, cacheUntilReady } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
@@ -7,6 +7,7 @@ import { TransactionResponse } from "@ethersproject/providers";
 import { Contracts, TxQueue } from "./types";
 import { ConnectionState } from "./createProvider";
 import { Network } from "./createNetwork";
+import { getRevertReason } from "./networkUtils";
 
 function createPriorityQueue<T>() {
   const queue = new Map<string, { element: T; priority: number }>();
@@ -53,11 +54,12 @@ type ReturnTypeStrict<T> = T extends (...args: any) => any ? ReturnType<T> : nev
 export function createTxQueue<C extends Contracts>(
   computedContracts: IComputedValue<C> | IObservableValue<C>,
   network: Network,
-  options?: { concurrency?: number; ignoreConfirmation?: boolean; devMode?: boolean }
+  options?: { concurrency?: number; devMode?: boolean }
 ): { txQueue: TxQueue<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {
   const { concurrency } = options || {};
   const queue = createPriorityQueue<{
-    execute: (nonce: number) => Promise<TransactionResponse>;
+    execute: (nonce: number, gasLimit: BigNumberish) => Promise<TransactionResponse>;
+    estimateGas: () => BigNumberish | Promise<BigNumberish>;
     cancel: () => void;
     stateMutability?: string;
   }>();
@@ -112,8 +114,12 @@ export function createTxQueue<C extends Contracts>(
     const fragment = target.interface.fragments.find((fragment) => fragment.name === prop);
     const stateMutability = fragment && (fragment as { stateMutability?: string }).stateMutability;
 
+    // Create a function that estimates gas if no gas is provided
+    const gasLimit = overrides["gasLimit"];
+    const estimateGas = gasLimit == null ? () => target.estimateGas[prop as string](...args) : () => gasLimit;
+
     // Create a function that executes the tx when called
-    const execute = async (nonce: number) => {
+    const execute = async (nonce: number, gasLimit: BigNumberish) => {
       try {
         const member = target[prop];
         if (member == undefined) {
@@ -128,7 +134,7 @@ export function createTxQueue<C extends Contracts>(
           );
         }
 
-        const configOverrides = { ...overrides, nonce };
+        const configOverrides = { ...overrides, nonce, gasLimit };
         if (options?.devMode) configOverrides.gasPrice = 0;
 
         const result = await member(...argsWithoutOverrides, configOverrides);
@@ -141,7 +147,7 @@ export function createTxQueue<C extends Contracts>(
     };
 
     // Queue the tx execution
-    queue.add(uuid(), { execute, cancel: () => reject(new Error("TX_CANCELLED")), stateMutability });
+    queue.add(uuid(), { execute, estimateGas, cancel: () => reject(new Error("TX_CANCELLED")), stateMutability });
 
     // Start processing the queue
     processQueue();
@@ -161,7 +167,20 @@ export function createTxQueue<C extends Contracts>(
 
     // Increase utilization to prevent executing more tx than allowed by capacity
     utilization++;
+
+    // Run exclusive to avoid two tx requests awaiting the nonce in parallel and submitting with the same nonce.
+    let gasLimit: BigNumberish | undefined;
+    try {
+      gasLimit = await txRequest.estimateGas();
+    } catch (e: any) {
+      console.warn("TXQUEUE: gas estimation failed, tx not sent.", e);
+      console.warn(e.reason);
+    }
+
     const txResult = await submissionMutex.runExclusive(async () => {
+      // Don't attempt to send the tx if gas estimation failed
+      if (gasLimit == null) return;
+
       // Define variables in scope visible to finally block
       let error: any;
       const stateMutability = txRequest.stateMutability;
@@ -169,8 +188,8 @@ export function createTxQueue<C extends Contracts>(
       try {
         // Wait if nonce is not ready
         const { nonce } = await awaitValue(readyState);
-        const resultPromise = txRequest.execute(nonce);
-        if (!options?.ignoreConfirmation) return await resultPromise;
+        // Await gas estimation to avoid increasing nonce before tx is actually sent
+        return await txRequest.execute(nonce, gasLimit);
       } catch (e: any) {
         console.warn("TXQUEUE EXECUTION FAILED", e);
         // Nonce is handled centrally in finally block (for both failing and successful tx)
@@ -178,12 +197,10 @@ export function createTxQueue<C extends Contracts>(
       } finally {
         // If the error includes information about the transaction,
         // then the transaction was submitted and the nonce needs to be
-        // increased regardless of the error unless the error occured during
-        // gas estimation;
-        const isGasEstimationError = error && "code" in error && error.code === "UNPREDICTABLE_GAS_LIMIT";
+        // increased regardless of the error
         const isNonViewTransaction = error && "transaction" in error && txRequest.stateMutability !== "view";
-        const shouldIncreaseNonce =
-          (!error && stateMutability !== "view") || (isNonViewTransaction && !isGasEstimationError);
+        const shouldIncreaseNonce = (!error && stateMutability !== "view") || isNonViewTransaction;
+
         const shouldResetNonce =
           error &&
           (("code" in error && error.code === "NONCE_EXPIRED") ||
@@ -191,7 +208,6 @@ export function createTxQueue<C extends Contracts>(
 
         console.log("TxQueue:", {
           error,
-          isGasEstimationError,
           isNonViewTransaction,
           shouldIncreaseNonce,
           shouldResetNonce,
@@ -205,8 +221,17 @@ export function createTxQueue<C extends Contracts>(
 
     // Await confirmation
     if (txResult?.hash) {
-      const { provider } = await awaitValue(readyState);
-      await provider.waitForTransaction(txResult.hash);
+      try {
+        await txResult.wait();
+      } catch (e) {
+        console.warn("tx failed in block", e);
+
+        // Decode and log the revert reason.
+        // Use `then` instead of `await` to avoid letting consumers wait.
+        getRevertReason(txResult.hash, network.providers.get().json).then((reason) =>
+          console.warn("Revert reason:", reason)
+        );
+      }
     }
 
     utilization--;
