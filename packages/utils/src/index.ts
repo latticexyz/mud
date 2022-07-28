@@ -18,4 +18,4 @@ export * from "./pack";
 export * from "./CoordMap";
 export * from "./eth";
 
-export type { Cached, PromiseValue, ValueOf, Area, Coord } from "./types";
+export type { Cached, PromiseValue, ValueOf, Area, Coord, VoxelCoord } from "./types";

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-export class HueTintAndOutlineFXPipeline extends Phaser.Renderer.WebGL.Pipelines.SpriteFXPipeline {
+const SpritePipeline = Phaser.Renderer.WebGL.Pipelines.SpriteFXPipeline || Object;
+export class HueTintAndOutlineFXPipeline extends SpritePipeline {
   public static readonly KEY = "HueTintFXPipeline";
 
   private _tintColor = new Phaser.Display.Color();

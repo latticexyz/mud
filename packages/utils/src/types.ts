@@ -36,3 +36,9 @@ export type Coord = {
   x: number;
   y: number;
 };
+
+export type VoxelCoord = {
+  x: number;
+  y: number;
+  z: number;
+};

@@ -15,6 +15,7 @@ export const PositionFilterButton: React.FC<{
     if (!selectingPosition) return;
 
     function onMouseDown() {
+      if (!input) return;
       const pointer = input.activePointer;
       const pos = { x: pointer.worldX, y: pointer.worldY };
       const worldCoord = pixelCoordToTileCoord(pos, 16, 16);
