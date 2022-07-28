@@ -13,6 +13,8 @@ import { Memory } from "@ethereumjs/evm/src/memory";
 import {
   Component,
   ComponentValue,
+  EntityID,
+  getComponentEntities,
   getComponentValue,
   getComponentValueStrict,
   getEntitiesWithValue,
@@ -41,6 +43,8 @@ import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Component as ComponentContract, World as WorldContract } from "@latticexyz/solecs";
 import { createDecoder } from "./createDecoder";
 import { BytesLike, defaultAbiCoder as abi } from "ethers/lib/utils"; // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+import { createEncoder } from "./createEncoder";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 globalThis.Buffer = BrowserBuffer;
 
@@ -48,6 +52,7 @@ interface MUDStateManagerConfig {
   common: Common;
   provider: JsonRpcProvider;
   bytecodes: { [key: string]: string };
+  storage: { [key: string]: { [key: string]: string } };
 }
 
 const bufferFromHex = (hex: string) => {
@@ -62,6 +67,16 @@ const addressToString = (addr: Address): string => {
   return "0x" + addr.buf.toString("hex");
 };
 
+const addressToUint256 = (addr: string): string => {
+  const hex = addr.slice(2);
+  return "0x" + new Array(64 - hex.length).fill("0").join("") + hex;
+};
+
+const numberToUint256 = (n: number): string => {
+  const hex = BigInt(n).toString(16);
+  return "0x" + new Array(64 - hex.length).fill("0").join("") + hex;
+};
+
 enum Selector {
   GET_ENTITIES_WITH_VALUE_RAW = "GET_ENTITIES_WITH_VALUE_RAW",
   GET_ENTITIES_WITH_VALUE = "GET_ENTITIES_WITH_VALUE",
@@ -74,15 +89,18 @@ const bytes4 = (hex: string): string => {
   return hex.slice(0, 2 + 4 * 2);
 };
 
+// Read
 const GET_ENTITIES_WITH_VALUE_RAW_SELECTOR = bytes4(keccak256("getEntitiesWithValue(bytes)"));
 const HAS_SELECTOR = bytes4(keccak256("has(uint256)"));
 const GET_RAW_VALUE_SELECTOR = bytes4(keccak256("getRawValue(uint256)"));
-//TODO: Set and Remove
+const GET_VALUE_SELECTOR = bytes4(keccak256("getValue(uint256)"));
+// Write
 
 const KNOWN_SELECTOR: { [key: string]: Selector } = {
   [GET_ENTITIES_WITH_VALUE_RAW_SELECTOR]: Selector.GET_ENTITIES_WITH_VALUE_RAW,
   [HAS_SELECTOR]: Selector.HAS,
   [GET_RAW_VALUE_SELECTOR]: Selector.GET_RAW_VALUE,
+  [GET_VALUE_SELECTOR]: Selector.GET_VALUE,
 };
 
 const getKnownSelectorsForComponentWithSchema = (schema: [string[], number[]]): { [key: string]: Selector } => {
@@ -103,17 +121,33 @@ const readFromState = (
   selector: Selector,
   calldata: string,
   schema: [string[], number[]]
-): string => {
+): string | undefined => {
   const decoder = createDecoder(schema[0], schema[1]);
+  const encoder = createEncoder(schema[0], schema[1]);
   if (selector === Selector.GET_ENTITIES_WITH_VALUE || selector === Selector.GET_ENTITIES_WITH_VALUE_RAW) {
     const value = decoder(calldata);
     const entitiesWithValue = getEntitiesWithValue(component, value as ComponentValue<SchemaOf<Component>>);
     const entities: string[] = [];
     entitiesWithValue.forEach((e) => entities.push(component.world.entities[e]));
     return abi.encode(["uint256[]"], [entities]);
+  } else if (selector === Selector.HAS) {
+    const entityId = abi.decode(["uint256"], calldata)[0].toHexString() as EntityID;
+    const entitiesWithValue = [...getComponentEntities(component)].map((index) => component.world.entities[index]);
+    const found = entitiesWithValue.includes(entityId);
+    return abi.encode(["bool"], [found]);
+  } else if (selector === Selector.GET_VALUE || selector === Selector.GET_RAW_VALUE) {
+    const entityId = abi.decode(["uint256"], calldata)[0].toHexString() as EntityID;
+    const entityIndex = component.world.entityToIndex.get(entityId);
+    if (!entityIndex) {
+      throw new Error("[GET_VALUE] EntityID " + entityId + " does not exist");
+    }
+    const componentValue = getComponentValue(component, entityIndex);
+    if (!componentValue) {
+      return undefined;
+    }
+    return encoder(componentValue as any);
   }
-  return calldata;
-  // throw new Error("unknown selector")
+  throw new Error("unknown selector");
 };
 
 class MUDStateManager extends DefaultStateManager {
@@ -123,7 +157,7 @@ class MUDStateManager extends DefaultStateManager {
   constructor(config: MUDStateManagerConfig) {
     super({ common: config.common });
     this.provider = config.provider;
-    this.storageCache = {};
+    this.storageCache = config.storage;
     this.codeCache = config.bytecodes;
     console.log(this.codeCache);
   }
@@ -173,7 +207,7 @@ class MUDStateManager extends DefaultStateManager {
       return maybeSlot;
     }
     const slot = bufferFromHex(await this.provider.getStorageAt(bufferToHex(address.buf), bufferToHex(key)));
-    // console.warn("reading from network", bufferToHex(address.buf), bufferToHex(key), bufferToHex(slot));
+    console.warn("reading from network", bufferToHex(address.buf), bufferToHex(key), bufferToHex(slot));
     this.storeStorageCache(address, key, slot);
     return slot;
   }
@@ -229,24 +263,6 @@ export function createLocalEVM<C extends Contracts>(
     for (const contractId of Object.keys(contracts)) {
       bytecodes[contracts[contractId].address] = (contracts[contractId] as any).bytecode;
     }
-    // left to do
-    // - give address: (Component, schema) dictionary to the MUD State Manager
-    // - load the World bytecode and add it to the bytecode object
-    // - 2 possibilities to mock components
-    // A. mock the function calls directly, by abi encoding the reads using our cache; and changing our states on writes
-    // there might be a way using the runHookm given it give access to its internal. We could somehow immediately return from a known CALL sig to a known component contract
-    // with the right return value encoded in the return stack
-    // pretty degen but it could work. I probably want to create a test case for this
-    // B. dynamically providing storage slots for each component and their set + metaset. Might be a bit tricky given we need to mock quite a lot of storage slots
-    // Notes on this:
-    // * allows return true for all the writer storage slot
-    // * return zero for indexers
-    // * return the keccak hash of the id for id
-    // * return 0 address for _owner
-    // * return world address for _world
-    // * entityToValue is easy:
-    // - have a global bytecode cache and re-use between invocations
-
     if (connected !== ConnectionState.CONNECTED || !contracts || !signer || !provider) return undefined;
 
     return { contracts, signer, provider, bytecodes };
@@ -259,6 +275,22 @@ export function createLocalEVM<C extends Contracts>(
     ...arg: any[]
   ) {
     const provider = network.providers.get().json;
+    const storage: { [key: string]: { [key: string]: string } } = {};
+    const componentComponentIndex = [
+      ...getEntitiesWithValue(components, { value: keccak256("world.component.components") }).values(),
+    ][0];
+    if (!componentComponentIndex) {
+      throw new Error("no component component can be found on the component component");
+    }
+    const componentComponentAddress = toEthAddress(world.entities[componentComponentIndex]);
+    // 2) Create the storage cache for each system
+    for (const a of Object.keys(bytecodes)) {
+      storage[a] = {
+        [numberToUint256(0)]: addressToUint256(componentComponentAddress),
+        [numberToUint256(1)]: addressToUint256(worldAddress),
+      };
+    }
+    console.log(storage);
     // 1) add the component bytecode to the bytecode cache and create the address => component mapping
     const addressToComponent: { [key: string]: Component } = {};
     const addressToSchema: { [key: string]: [string[], number[]] } = {};
@@ -281,7 +313,7 @@ export function createLocalEVM<C extends Contracts>(
       "0x6080604052348015600f57600080fd5b50604880601d6000396000f3fe6080604052348015600f57600080fd5b5000fea2646970667358221220ac8ad8a7dd9737160e7a86255271c7e599e7eb38aec8b70e50d7346afc63eab064736f6c63430008070033";
     const signer = network.signer.get()!;
     const common = new Common({ chain: 1 });
-    const vm = await VM.create({ common, stateManager: new MUDStateManager({ common, provider, bytecodes }) });
+    const vm = await VM.create({ common, stateManager: new MUDStateManager({ common, provider, bytecodes, storage }) });
     const contractArg = arg[0];
     const ethersTx = await contract.populateTransaction[key](...contractArg);
     ethersTx.gasPrice = BigNumber.from(10 * 10 ** 9);
@@ -295,7 +327,6 @@ export function createLocalEVM<C extends Contracts>(
     let logN = 0;
     let pcPostcondition: undefined | number;
     let addressPostcondition: undefined | string;
-    let tricked = false;
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     (vm.evm as EVM).on("step", (d) => {
@@ -318,9 +349,7 @@ export function createLocalEVM<C extends Contracts>(
         logN = 0;
       }
       if (data.opcode.name === "CALL" || data.opcode.name === "STATICCALL") {
-        if (data.opcode.name === "STATICCALL" && !tricked) {
-          // for now we can only trick once
-          tricked = true;
+        if (data.opcode.name === "STATICCALL") {
           console.log(data.pc);
           console.log(stack._store.map((s) => s.toString()));
           const [_, toAddr, inOffset, inLength, outOffset, outLength] = stack.peek(6);
@@ -346,43 +375,47 @@ export function createLocalEVM<C extends Contracts>(
               // Compute the output
               const calldata = "0x" + bufferToHex(inputData).slice(2 + 2 * 4);
               const output = readFromState(c, selector, calldata, addressToSchema[toAddress]);
-              console.log("We return " + output);
-              const returnData = bufferFromHex(output);
-              // Write the return data
-              const memOffset = Number(outOffset);
-              let dataLength = Number(outLength);
-              console.log(dataLength, returnData.length);
-              if (BigInt(returnData.length) < dataLength) {
-                dataLength = returnData.length;
+              if (!output) {
+                // we have to revert
+                throw new Error("STATICCALL reverted");
+              } else {
+                console.log("We return " + output);
+                const returnData = bufferFromHex(output);
+                // Write the return data
+                const memOffset = Number(outOffset);
+                let dataLength = Number(outLength);
+                console.log(dataLength, returnData.length);
+                if (BigInt(returnData.length) < dataLength) {
+                  dataLength = returnData.length;
+                }
+                const outData = getDataSlice(returnData, BigInt(0), BigInt(dataLength));
+                console.log("outdata " + bufferToHex(outData));
+                console.log("data length " + dataLength);
+                // MUTATION TO STATE
+                // pop the stack for real
+                // make this call the empty address with no input nor output expected
+                stack.popN(2);
+                stack.push(BigInt(0));
+                stack.push(BigInt(0));
+                // write the output to memory
+                postCondition = (s: Stack, m: Memory) => {
+                  console.log("executing postcondition");
+                  m.extend(memOffset, dataLength);
+                  m.write(memOffset, dataLength, outData);
+                  // pop the previous call
+                  s.pop();
+                  // Add a BigInt(1) to mark it as success
+                  s.push(BigInt(1));
+                };
+                preReturn = (s: Stack, m: Memory) => {
+                  console.log("executing prereturn");
+                  m.extend(0, returnData.length);
+                  m.write(0, returnData.length, returnData);
+                  s.popN(2);
+                  s.push(BigInt(returnData.length));
+                  s.push(BigInt(0));
+                };
               }
-              const outData = getDataSlice(returnData, BigInt(0), BigInt(dataLength));
-              console.log("outdata " + bufferToHex(outData));
-              console.log("data length " + dataLength);
-              // MUTATION TO STATE
-              // pop the stack for real
-              // make this call the empty address with no input nor output expected
-              // // TODO: will probably need to add a no-op contract that just returns
-              stack.popN(2);
-              stack.push(BigInt(0));
-              stack.push(BigInt(0));
-              // write the output to memory
-              postCondition = (s: Stack, m: Memory) => {
-                console.log("executing postcondition");
-                m.extend(memOffset, dataLength);
-                m.write(memOffset, dataLength, outData);
-                // pop the previous call
-                s.pop();
-                // Add a BigInt(1) to mark it as success
-                s.push(BigInt(1));
-              };
-              preReturn = (s: Stack, m: Memory) => {
-                console.log("executing prereturn");
-                m.extend(0, returnData.length);
-                m.write(0, returnData.length, returnData);
-                s.popN(2);
-                s.push(BigInt(returnData.length));
-                s.push(BigInt(0));
-              };
             } else {
               console.warn("Unknown selector on a STATICALL with a Component: " + bytes4(bufferToHex(inputData)));
             }
