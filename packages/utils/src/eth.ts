@@ -12,3 +12,9 @@ export function toEthAddress(input: string) {
   // Prefix with 0x
   return `0x${input}`;
 }
+
+export function extractEncodedArguments(input: string) {
+  // Cutting off the first 4 bytes, which represent the function selector
+  if (input[0] !== "0" && input[1] !== "x") throw new Error("Invalid hex string");
+  return "0x" + input.substring(10);
+}
