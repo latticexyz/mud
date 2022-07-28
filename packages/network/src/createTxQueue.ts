@@ -231,6 +231,22 @@ export function createTxQueue<C extends Contracts>(
         getRevertReason(txResult.hash, network.providers.get().json).then((reason) =>
           console.warn("Revert reason:", reason)
         );
+
+        const params = new URLSearchParams(window.location.search);
+        const worldAddress = params.get("worldAddress");
+        // Log useful commands that can be used to replay this tx
+        const trace = `mud trace --config deploy.json --world ${worldAddress} --tx ${txResult.hash}`;
+        const call = `mud call-system --world ${worldAddress} --caller ${network.connectedAddress.get()} --calldata ${
+          txResult.data
+        } --systemId <SYSTEM_ID>`;
+
+        console.log("---------- DEBUG COMMANDS (RUN IN TERMINAL) -------------");
+        console.log("Trace:");
+        console.log(trace);
+        console.log("//");
+        console.log("Call system:");
+        console.log(call);
+        console.log("---------------------------------------------------------");
       }
     }
 
