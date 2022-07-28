@@ -7,7 +7,7 @@ import {
   BaseProvider,
   TransactionRequest,
 } from "@ethersproject/providers";
-import { callWithRetry, range, sleep } from "@latticexyz/utils";
+import { callWithRetry, extractEncodedArguments, range, sleep } from "@latticexyz/utils";
 import { BigNumber, Contract } from "ethers";
 import { resolveProperties, defaultAbiCoder as abi } from "ethers/lib/utils";
 import { Contracts, ContractTopics, ContractEvent, ContractsConfig } from "./types";
@@ -185,6 +185,6 @@ export async function getRevertReason(txHash: string, provider: BaseProvider): P
   const tx = await provider.getTransaction(txHash);
   tx.gasPrice = undefined; // tx object contains both gasPrice and maxFeePerGas
   const encodedRevertReason = await provider.call(tx as TransactionRequest);
-  const decodedRevertReason = abi.decode(["string"], "0x" + encodedRevertReason.substring(10));
+  const decodedRevertReason = abi.decode(["string"], extractEncodedArguments(encodedRevertReason));
   return decodedRevertReason[0];
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseContract, BigNumberish, CallOverrides, Overrides } from "ethers";
 import { autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
-import { mapObject, deferred, uuid, awaitValue, cacheUntilReady } from "@latticexyz/utils";
+import { mapObject, deferred, uuid, awaitValue, cacheUntilReady, extractEncodedArguments } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
 import { TransactionResponse } from "@ethersproject/providers";
 import { Contracts, TxQueue } from "./types";
@@ -236,9 +236,9 @@ export function createTxQueue<C extends Contracts>(
         const worldAddress = params.get("worldAddress");
         // Log useful commands that can be used to replay this tx
         const trace = `mud trace --config deploy.json --world ${worldAddress} --tx ${txResult.hash}`;
-        const call = `mud call-system --world ${worldAddress} --caller ${network.connectedAddress.get()} --calldata ${
+        const call = `mud call-system --world ${worldAddress} --caller ${network.connectedAddress.get()} --calldata ${extractEncodedArguments(
           txResult.data
-        } --systemId <SYSTEM_ID>`;
+        )} --systemId <SYSTEM_ID>`;
 
         console.log("---------- DEBUG COMMANDS (RUN IN TERMINAL) -------------");
         console.log("Trace:");
