@@ -15,7 +15,13 @@ export function createWorld() {
 
   function registerEntity({ id, idSuffix }: { id?: EntityID; idSuffix?: string } = {}) {
     const entity = (id || entities.length + (idSuffix ? "-" + idSuffix : "")) as EntityID;
-    const index = (entities.push(entity) - 1) as EntityIndex;
+
+    // Skip if entity already exists
+    let index = entityToIndex.get(entity);
+    if (index != null) return index;
+
+    // Register entity
+    index = (entities.push(entity) - 1) as EntityIndex;
     entityToIndex.set(entity, index);
     return index;
   }

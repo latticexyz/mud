@@ -145,7 +145,7 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
   const overrides = new Map<string, { update: Override<S>; nonce: number }>();
 
   // Map from EntityIndex to current overridden component value
-  const overriddenEntityValues = new Map<EntityIndex, Partial<ComponentValue<S>>>();
+  const overriddenEntityValues = new Map<EntityIndex, Partial<ComponentValue<S>> | null>();
 
   // Update event stream that takes into account overridden entity values
   const update$ = new Subject<{
@@ -188,7 +188,7 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
   function getOverriddenComponentValue(entity: EntityIndex): ComponentValue<S> | undefined {
     const originalValue = getComponentValue(component, entity);
     const overriddenValue = overriddenEntityValues.get(entity);
-    return originalValue || overriddenValue
+    return (originalValue || overriddenValue) && overriddenValue !== null // null is a valid override, in this case return undefined
       ? ({ ...originalValue, ...overriddenValue } as ComponentValue<S>)
       : undefined;
   }
@@ -241,9 +241,10 @@ export function overridableComponent<S extends Schema>(component: Component<S>):
   }) as OverridableComponent<S>;
 
   // Internal function to set the current overridden component value and emit the update event
-  function setOverriddenComponentValue(entity: EntityIndex, value?: Partial<ComponentValue<S>>) {
+  function setOverriddenComponentValue(entity: EntityIndex, value?: Partial<ComponentValue<S>> | null) {
+    // Check specifically for undefined - null is a valid override
     const prevValue = getOverriddenComponentValue(entity);
-    if (value) overriddenEntityValues.set(entity, value);
+    if (value !== undefined) overriddenEntityValues.set(entity, value);
     else overriddenEntityValues.delete(entity);
     update$.next({ entity, value: [getOverriddenComponentValue(entity), prevValue], component: overriddenComponent });
   }

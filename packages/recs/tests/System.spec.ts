@@ -22,7 +22,7 @@ describe("System", () => {
       entity = createEntity(world, [withValue(Position, { x: 1, y: 2 })]);
     });
 
-    it("defineSystem should rerun the system if the query result changes (enter, update, exit)", () => {
+    it.only("defineSystem should rerun the system if the query result changes (enter, update, exit)", () => {
       const mock = jest.fn();
       defineSystem(world, [Has(Position)], mock);
 

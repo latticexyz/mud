@@ -150,7 +150,7 @@ export type SchemaOf<C extends Component<Schema>> = C extends Component<infer S>
 
 export type Override<T extends Schema> = {
   entity: EntityIndex;
-  value: Partial<ComponentValue<T>>;
+  value: Partial<ComponentValue<T>> | null;
 };
 
 export type OverridableComponent<T extends Schema = Schema> = Component<T> & {
