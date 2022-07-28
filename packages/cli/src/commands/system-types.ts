@@ -1,9 +1,7 @@
 import fs from "fs";
 import glob from "glob";
 import type { CommandBuilder } from "yargs";
-import { deferred } from "../utils";
-
-const IDregex = new RegExp(/(?<=uint256 constant ID = uint256\(keccak256\(")(.*)(?="\))/);
+import { deferred, extractIdFromFile } from "../utils";
 
 type Options = Record<string, never>;
 
@@ -34,23 +32,19 @@ export const handler = async (): Promise<void> => {
       return fragments[fragments.length - 1].split(".sol")[0];
     });
 
-    ids = matches
-      .map((path) => fs.readFileSync(path).toString())
-      .map((source, index) => {
-        const regexResult = IDregex.exec(source);
-        const id = regexResult && regexResult[0];
-        if (!id) {
-          console.log("Source:", source);
-          console.log("ID:", id);
-          console.log("Regex:", IDregex, regexResult);
-          throw new Error(
-            "No ID found for" +
-              matches[index] +
-              ". Make sure your system source file includes a ID definition (uint256 constant ID = uint256(keccak256(<ID>));)"
-          );
-        }
-        return id;
-      });
+    ids = matches.map((path, index) => {
+      const id = extractIdFromFile(path);
+      if (!id) {
+        console.log("Path:", path);
+        console.log("ID:", id);
+        throw new Error(
+          "No ID found for" +
+            matches[index] +
+            ". Make sure your system source file includes a ID definition (uint256 constant ID = uint256(keccak256(<ID>));)"
+        );
+      }
+      return id;
+    });
 
     abis = systems.map((system) => `../abi/${system}.json`);
 
