@@ -22,13 +22,13 @@ describe("System", () => {
       entity = createEntity(world, [withValue(Position, { x: 1, y: 2 })]);
     });
 
-    it.only("defineSystem should rerun the system if the query result changes (enter, update, exit)", () => {
+    it("defineSystem should rerun the system if the query result changes (enter, update, exit)", () => {
       const mock = jest.fn();
       defineSystem(world, [Has(Position)], mock);
 
       setComponent(Position, entity, { x: 2, y: 3 });
 
-      expect(mock).toHaveBeenCalledTimes(1);
+      expect(mock).toHaveBeenCalledTimes(2);
       expect(mock).toHaveBeenCalledWith({
         entity,
         component: Position,
@@ -36,11 +36,11 @@ describe("System", () => {
           { x: 2, y: 3 },
           { x: 1, y: 2 },
         ],
-        type: UpdateType.Enter,
+        type: UpdateType.Update,
       });
 
       setComponent(Position, entity, { x: 3, y: 3 });
-      expect(mock).toHaveBeenCalledTimes(2);
+      expect(mock).toHaveBeenCalledTimes(3);
       expect(mock).toHaveBeenCalledWith({
         entity,
         component: Position,
@@ -52,7 +52,7 @@ describe("System", () => {
       });
 
       removeComponent(Position, entity);
-      expect(mock).toHaveBeenCalledTimes(3);
+      expect(mock).toHaveBeenCalledTimes(4);
       expect(mock).toHaveBeenCalledWith({
         entity,
         component: Position,
@@ -65,12 +65,13 @@ describe("System", () => {
       const mock = jest.fn();
       defineUpdateSystem(world, [Has(Position)], mock);
 
-      // First time is the "enter" event
-      setComponent(Position, entity, { x: 2, y: 3 });
-      expect(mock).toHaveBeenCalledTimes(0);
-
+      // The entity already had a position when the system was created and the system runs on init,
+      // so this position update is an update
       setComponent(Position, entity, { x: 2, y: 3 });
       expect(mock).toHaveBeenCalledTimes(1);
+
+      setComponent(Position, entity, { x: 2, y: 3 });
+      expect(mock).toHaveBeenCalledTimes(2);
       expect(mock).toHaveBeenCalledWith({
         entity,
         component: Position,
@@ -83,10 +84,10 @@ describe("System", () => {
 
       // Setting the same value again should rerun the system
       setComponent(Position, entity, { x: 2, y: 3 });
-      expect(mock).toHaveBeenCalledTimes(2);
+      expect(mock).toHaveBeenCalledTimes(3);
 
       setComponent(Position, entity, { x: 3, y: 3 });
-      expect(mock).toHaveBeenCalledTimes(3);
+      expect(mock).toHaveBeenCalledTimes(4);
     });
 
     it("defineEnterSystem should rerun once with entities matching the query for the first time", () => {
