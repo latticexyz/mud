@@ -1,4 +1,0 @@
-{
-  "components": ["ExampleComponent"],
-  "systems": [{ "name": "ComponentDevSystem", "writeAccess": ["*"] }]
-}
