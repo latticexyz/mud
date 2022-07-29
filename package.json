@@ -1,7 +1,7 @@
 {
   "name": "mud",
   "version": "0.0.0",
-  "description": "A toolkit for building on-chain worlds",
+  "description": "Mud is the fabric of autonomous worlds",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git"
@@ -37,7 +37,7 @@
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
-    "publ": "yarn && lerna publish --no-private --force-publish",
+    "release": "yarn && lerna publish --no-private --force-publish",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && exec \"$SHELL\" && foundryup",
     "link:packages": "yarn lerna run link"
   },
