@@ -48,6 +48,7 @@
     "mobx": "^6.4.2",
     "mobx-react-lite": "^3.4.0",
     "react": "^18.1.0",
+    "recat-dom": "^18.2.0",
     "react-collapse": "^5.1.1",
     "react-syntax-highlighter": "^15.5.0",
     "rxjs": "7.5.5",

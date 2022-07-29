@@ -29,8 +29,9 @@
     "lodash": "^4.17.21",
     "mobx": "^6.4.2",
     "phaser": "^3.55.2",
-    "react": "^18.1.0",
+    "react": "^18.2.0",
     "react-collapse": "^5.1.1",
+    "react-dom": "^18.2.0",
     "react-syntax-highlighter": "^15.5.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.69.0",
@@ -48,17 +49,11 @@
     "lodash": "^4.17.21",
     "mobx": "^6.4.2",
     "phaser": "^3.55.2",
-    "react": "^18.1.0",
+    "react": "^18.2.0",
     "react-collapse": "^5.1.1",
+    "react-dom": "^18.2.0",
     "react-syntax-highlighter": "^15.5.0",
     "rxjs": "7.5.5"
-  },
-  "dependencies": {
-    "ethers": "^5.6.6",
-    "lodash": "^4.17.21",
-    "react": "^18.1.0",
-    "react-collapse": "^5.1.1",
-    "react-syntax-highlighter": "^15.5.0"
   },
   "gitHead": "79ef4b0233cd396a0b605935b2f0b10175011bc2"
 }
