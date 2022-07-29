@@ -21,7 +21,7 @@ import { BigNumber, BytesLike, Contract } from "ethers";
 import { createDecoder } from "../createDecoder";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
-import { Input, State } from "./Cache.worker";
+import { Input, State } from "./Cache/Cache.worker";
 import { getCacheId } from "./utils";
 import { createTopics } from "../createTopics";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
@@ -99,10 +99,10 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
   private async getComponentSchema(address: string, provider: Provider): Promise<[string[], number[]]> {
     const schemaCache = await this.schemaCache;
     const cachedSchema = await schemaCache.get("ComponentSchemas", address);
-    if (cachedSchema && !this.config.get().disableCache) {
-      console.log("Using cached schema");
-      return cachedSchema;
-    }
+    // if (cachedSchema && !this.config.get().disableCache) {
+    //   console.log("Using cached schema");
+    //   return cachedSchema;
+    // }
 
     const componentContract = new Contract(address, ComponentAbi.abi, provider) as Component;
     const schema = await componentContract.getSchema();
@@ -116,7 +116,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     data: BytesLike,
     componentId: string,
     componentAddress?: string
-  ): Promise<{ component: C; value: ComponentValue<SchemaOf<Cm[C]>> } | undefined> {
+  ): Promise<{ component: C & string; value: ComponentValue<SchemaOf<Cm[C]>> } | undefined> {
     const clientComponentKey = this.config.get().mappings[componentId];
 
     // No client mapping for this component contract
@@ -140,7 +140,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     const decoder = await this.decoders[componentId];
 
     return {
-      component: clientComponentKey as C,
+      component: clientComponentKey as C & string,
       value: decoder(data) as ComponentValue<SchemaOf<Cm[typeof clientComponentKey]>>,
     };
   }
@@ -162,8 +162,9 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     toCacheAndOutput$.subscribe(this.toOutput$);
 
     // 2. stream ECS events to the Cache worker to store them to IndexDB
-    this.cacheWorker = new Worker(new URL("./Cache.worker.ts", import.meta.url), { type: "module" });
+    this.cacheWorker = new Worker(new URL("./Cache/Cache.worker.ts", import.meta.url), { type: "module" });
     if (!config.disableCache) {
+      console.log("Streaming to cache worker");
       fromWorker<Input<Cm>, boolean>(
         this.cacheWorker,
         combineLatest([
@@ -216,6 +217,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
           const [componentIndex, entityIndex] = unpackTuple(key);
           const component = components[componentIndex];
           const entity = entities[entityIndex];
+          console.log("load", key, componentIndex, entityIndex, component, entity);
 
           if (!entity || !component) {
             console.warn("Unknown component or entity", component, entity);
@@ -312,7 +314,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
               return;
             }
             return {
-              component: clientComponentKey,
+              component: clientComponentKey as string,
               value: undefined,
               entity: BigNumber.from(entity).toHexString() as EntityID,
               lastEventInTx: event.lastEventInTx,

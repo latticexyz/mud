@@ -141,5 +141,5 @@ export async function initCache<S extends Stores>(id: string, stores: StoreKey<S
     return mergeIterators(keyIterator, valueIterator);
   }
 
-  return { set, get, remove, keys, values, entries };
+  return { set, get, remove, keys, values, entries, db };
 }
