@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/ecs-browser",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Component Browser for RECS",
   "license": "MIT",
   "main": "src/index.ts",
@@ -17,9 +17,10 @@
     "link": "yarn link"
   },
   "devDependencies": {
-    "@latticexyz/recs": "^0.4.1",
-    "@latticexyz/std-client": "^0.4.1",
-    "@latticexyz/utils": "^0.4.1",
+    "@latticexyz/phaserx": "^0.4.2",
+    "@latticexyz/recs": "^0.4.2",
+    "@latticexyz/std-client": "^0.4.2",
+    "@latticexyz/utils": "^0.4.2",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/jest": "^27.4.1",
@@ -42,10 +43,10 @@
     "rxjs": "^7.5.5",
     "styled-components": "^5.3.5",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.5",
-    "@latticexyz/phaserx": "^0.4.1"
+    "typescript": "^4.5.5"
   },
   "peerDependencies": {
+    "@latticexyz/phaserx": "^0.4.1",
     "@latticexyz/recs": "^0.1.8",
     "@latticexyz/std-client": "^0.1.8",
     "@latticexyz/utils": ">=0.1.4",
@@ -57,9 +58,7 @@
     "react-syntax-highlighter": "^15.5.0",
     "recat-dom": "^18.2.0",
     "rxjs": "7.5.5",
-    "styled-components": "^5.3.5",
-    "@latticexyz/phaserx": "^0.4.1"
+    "styled-components": "^5.3.5"
   },
-  "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f",
-  "dependencies": {}
+  "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f"
 }
