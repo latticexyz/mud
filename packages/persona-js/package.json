@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/persona-js",
   "license": "MIT",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "src/index.ts",
   "type": "module",
   "repository": {
@@ -37,5 +37,5 @@
     "@latticexyz/persona": "https://github.com/latticexyz/persona.git#a53e26a670ed6f041dc5dec365be293457a90b5d",
     "ethers": "^5.6.9"
   },
-  "gitHead": "79ef4b0233cd396a0b605935b2f0b10175011bc2"
+  "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f"
 }

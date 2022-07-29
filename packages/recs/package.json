@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/recs",
   "license": "MIT",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "main": "src/index.ts",
   "type": "module",
   "repository": {
@@ -16,7 +16,7 @@
     "link": "yarn link"
   },
   "devDependencies": {
-    "@latticexyz/utils": "^0.4.0",
+    "@latticexyz/utils": "^0.4.1",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/jest": "^27.4.1",
@@ -39,5 +39,5 @@
     "rxjs": "7.5.5",
     "type-fest": "^2.14.0"
   },
-  "gitHead": "79ef4b0233cd396a0b605935b2f0b10175011bc2"
+  "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f"
 }
