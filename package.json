@@ -37,8 +37,7 @@
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
-    "lerna:release": "lerna version --conventional-commits --yes",
-    "lerna:publish": "lerna publish --no-private --force-publish",
+    "publ": "yarn && lerna publish --no-private --force-publish",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && exec \"$SHELL\" && foundryup",
     "link:packages": "yarn lerna run link"
   },
