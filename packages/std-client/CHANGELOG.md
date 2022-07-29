@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/latticexyz/mud/compare/v0.3.2...v0.4.0) (2022-07-29)
+
+### Features
+
+- add 3d components ([d230339](https://github.com/latticexyz/mud/commit/d230339bdf3fbfaf4596de759a25fb616a7ab572))
+- **phaserx:** allow running phaser in headless mode for unit testing in jest ([#112](https://github.com/latticexyz/mud/issues/112)) ([22bc4d8](https://github.com/latticexyz/mud/commit/22bc4d8812a69d35f73cc1d0e34064ec6cab2a0e))
+
 ## [0.3.2](https://github.com/latticexyz/mud/compare/v0.3.1...v0.3.2) (2022-07-26)
 
 **Note:** Version bump only for package @latticexyz/std-client

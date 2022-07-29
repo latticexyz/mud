@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.4.0](https://github.com/latticexyz/mud/compare/v0.3.2...v0.4.0) (2022-07-29)
+
+### Bug Fixes
+
+- **cli:** extract encoded arguments from signature ([#116](https://github.com/latticexyz/mud/issues/116)) ([f630319](https://github.com/latticexyz/mud/commit/f6303194c5d7147a64542e43669fddebf3abad1a))
+- **recs:** fix fragment types in system definitions ([#109](https://github.com/latticexyz/mud/issues/109)) ([c74f393](https://github.com/latticexyz/mud/commit/c74f393255af46336e9823b08a2aa7f366cad866))
+
+### Features
+
+- add 3d components ([d230339](https://github.com/latticexyz/mud/commit/d230339bdf3fbfaf4596de759a25fb616a7ab572))
+- allow component overrides to be null ([f9baf44](https://github.com/latticexyz/mud/commit/f9baf446e3ddb346792b169bb0942b41c60ac9fb))
+- **cli:** cli commands for better debugging ([#113](https://github.com/latticexyz/mud/issues/113)) ([80ae128](https://github.com/latticexyz/mud/commit/80ae128545533a929f272de7461bfa2575cc22fd))
+- **network:** faster execution of multiple tx, better revert message logging ([#111](https://github.com/latticexyz/mud/issues/111)) ([bee34dc](https://github.com/latticexyz/mud/commit/bee34dc38194bd54d02cfb7f763025359b49fb05))
+- **phaser:** expose set cursor function in phaser input ([#110](https://github.com/latticexyz/mud/issues/110)) ([e377bb0](https://github.com/latticexyz/mud/commit/e377bb0b827a41c32b19f26f03b0bdc8861ff1de))
+- **phaserx:** allow running phaser in headless mode for unit testing in jest ([#112](https://github.com/latticexyz/mud/issues/112)) ([22bc4d8](https://github.com/latticexyz/mud/commit/22bc4d8812a69d35f73cc1d0e34064ec6cab2a0e))
+
 ## [0.3.2](https://github.com/latticexyz/mud/compare/v0.3.1...v0.3.2) (2022-07-26)
 
 **Note:** Version bump only for package mud
