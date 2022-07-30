@@ -10,9 +10,6 @@
     "directory": "packages/recs"
   },
   "scripts": {
-    "prepare": "yarn build",
-    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
-    "postpack": "mv package.json.bak package.json",
     "lint": "eslint . --ext .ts",
     "test": "jest",
     "build": "rimraf dist && rollup -c rollup.config.js",
