@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/persona-js",
   "license": "MIT",
-  "version": "0.4.2",
+  "version": "0.4.3",
   "main": "src/index.ts",
   "type": "module",
   "repository": {
