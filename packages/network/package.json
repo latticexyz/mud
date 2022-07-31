@@ -28,6 +28,7 @@
     "@types/node": "^17.0.21",
     "async-mutex": "^0.3.2",
     "ethers": "^5.6.6",
+    "fake-indexeddb": "^4.0.0",
     "jest": "^27.5.1",
     "mobx": "^6.5.0",
     "rimraf": "^3.0.2",

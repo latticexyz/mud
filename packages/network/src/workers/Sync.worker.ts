@@ -6,7 +6,6 @@ import {
   DoWork,
   filterNullish,
   fromWorker,
-  unpackTuple,
 } from "@latticexyz/utils";
 import { computed, IObservableValue, observable, runInAction, toJS } from "mobx";
 import { Component, World } from "@latticexyz/solecs";
@@ -21,16 +20,18 @@ import { BigNumber, BytesLike, Contract } from "ethers";
 import { createDecoder } from "../createDecoder";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { initCache } from "../initCache";
-import { Input, State } from "./Cache/Cache.worker";
-import { getCacheId } from "./utils";
+import { Input } from "./Cache/Cache.worker";
 import { createTopics } from "../createTopics";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { ECSStateSnapshotServiceClient } from "../snapshot.client";
 import { ECSStateReply } from "../snapshot";
 import { Provider } from "@ethersproject/providers";
 import { runWorker } from "@latticexyz/utils";
+import { getCacheStoreEntries, getIndexDbCache, loadIndexDbCacheStore } from "./Cache/CacheStore";
 
 const MAX_CACHE_AGE = 1000;
+
+// TODO: Split this file up into utils and testable functions
 
 async function getCheckpoint(
   checkpointServiceUrl: string,
@@ -179,22 +180,13 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     if (config.initialBlockNumber) this.clientBlockNumber = config.initialBlockNumber;
 
     // Create cache and get the cache block number
-    const cache = await initCache<{
-      ComponentValues: State;
-      BlockNumber: number;
-      Mappings: string[];
-      Checkpoint: ECSStateReply;
-    }>(
-      getCacheId(config.chainId, config.worldContract.address), // Store a separate cache for each World contract address
-      ["ComponentValues", "BlockNumber", "Mappings", "Checkpoint"]
-    );
-
-    const cacheBlockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
+    const cache = await getIndexDbCache(config.chainId, config.worldContract.address);
+    const cacheStore = await loadIndexDbCacheStore(cache);
 
     // Fetch latest checkpoint
     console.log("Checking remote checkpoint at", config.checkpointServiceUrl);
     const checkpoint = config.checkpointServiceUrl
-      ? await getCheckpoint(config.checkpointServiceUrl, cache, cacheBlockNumber)
+      ? await getCheckpoint(config.checkpointServiceUrl, cache, cacheStore.blockNumber)
       : undefined;
 
     // Load from cache if cache is enabled,
@@ -202,39 +194,12 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     // and there is no checkpoint with a higher number available
     if (
       !config.disableCache &&
-      cacheBlockNumber > this.clientBlockNumber &&
-      cacheBlockNumber > (checkpoint?.blockNumber ?? 0)
+      cacheStore.blockNumber > this.clientBlockNumber &&
+      cacheStore.blockNumber > (checkpoint?.blockNumber ?? 0)
     ) {
-      console.log("Loading from cache at block", cacheBlockNumber);
-      const state = await cache.get("ComponentValues", "current");
-      const components = await cache.get("Mappings", "components");
-      const entities = await cache.get("Mappings", "entities");
-
-      if (state && components && entities) {
-        this.clientBlockNumber = cacheBlockNumber; // Set the current client block number to the cache block number to avoid refetching from blocks before that
-        console.log("State size", state.size);
-        for (const [key, value] of state.entries()) {
-          const [componentIndex, entityIndex] = unpackTuple(key);
-          const component = components[componentIndex];
-          const entity = entities[entityIndex];
-          console.log("load", key, componentIndex, entityIndex, component, entity);
-
-          if (!entity || !component) {
-            console.warn("Unknown component or entity", component, entity);
-            continue;
-          }
-
-          const ecsEvent: NetworkComponentUpdate<Cm> = {
-            component,
-            entity: entity as EntityID,
-            value: value as ComponentValue<SchemaOf<Cm[keyof Cm]>>,
-            lastEventInTx: false,
-            txHash: "cache",
-            blockNumber: cacheBlockNumber,
-          };
-
-          this.toOutput$.next(ecsEvent);
-        }
+      console.log("Loading from cache at block", cacheStore.blockNumber);
+      for (const ecsEvent of getCacheStoreEntries(cacheStore)) {
+        this.toOutput$.next(ecsEvent as NetworkComponentUpdate<Cm>);
       }
     }
 

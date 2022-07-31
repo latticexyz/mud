@@ -7,20 +7,31 @@ import { getCacheId } from "../utils";
 import { State } from "./Cache.worker";
 
 export type CacheStore = ReturnType<typeof createCacheStore>;
+export type Cache = Awaited<ReturnType<typeof getIndexDbCache>>;
+
+export function createCacheStore() {
+  const components: string[] = [];
+  const componentToIndex = new Map<string, number>();
+  const entities: string[] = [];
+  const entityToIndex = new Map<string, number>();
+  const blockNumber = 0;
+  const state: State = new Map<number, ComponentValue>();
+
+  return { components, componentToIndex, entities, entityToIndex, blockNumber, state };
+}
 
 export function storeEvent<Cm extends Components>(
-  { components, entities, componentToIndex, entityToIndex, state }: CacheStore,
-  { component, entity, value }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash" | "blockNumber">
+  cacheStore: CacheStore,
+  { component, entity, value, blockNumber }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
-  console.log("start store event", components);
+  const { components, entities, componentToIndex, entityToIndex, state } = cacheStore;
+
   // Get component index
   let componentIndex = componentToIndex.get(component);
   if (componentIndex == null) {
     componentIndex = components.push(component) - 1;
     componentToIndex.set(component as string, componentIndex);
   }
-
-  console.log("components after", components);
 
   // Get entity index
   let entityIndex = entityToIndex.get(entity);
@@ -31,28 +42,25 @@ export function storeEvent<Cm extends Components>(
 
   // Entity index gets the right 24 bits, component index the left 8 bits
   const key = packTuple([componentIndex, entityIndex]);
-  console.log("store", key, componentIndex, entityIndex, component, entity, value);
   if (value == null) state.delete(key);
   else state.set(key, value);
 
-  console.log("done storing event", components);
+  // Set block number to one less than the last received event's block number
+  // (Events are expected to be ordered, so once a new block number appears,
+  // the previous block number is done processing)
+  cacheStore.blockNumber = blockNumber - 1;
 }
 
-function getCacheStoreEntries<Cm extends Components>({
+export function getCacheStoreEntries<Cm extends Components>({
   blockNumber,
   state,
   components,
   entities,
 }: CacheStore): IterableIterator<NetworkComponentUpdate<Cm>> {
-  console.log("Loading from cache at block", blockNumber);
-  console.log("State size", state.size);
-
   return transformIterator(state.entries(), ([key, value]) => {
     const [componentIndex, entityIndex] = unpackTuple(key);
     const component = components[componentIndex];
     const entity = entities[entityIndex];
-
-    console.log("load", key, componentIndex, entityIndex, component, entity);
 
     if (component == null || entity == null) {
       throw new Error(`Unknown component / entity: ${component}, ${entity}`);
@@ -71,19 +79,7 @@ function getCacheStoreEntries<Cm extends Components>({
   });
 }
 
-export function createCacheStore() {
-  const components: string[] = [];
-  const componentToIndex = new Map<string, number>();
-  const entities: string[] = [];
-  const entityToIndex = new Map<string, number>();
-  const blockNumber = 0;
-  const state: State = new Map<number, ComponentValue>();
-
-  return { components, componentToIndex, entities, entityToIndex, blockNumber, state };
-}
-
 export function mergeCacheStores(stores: CacheStore[]): CacheStore {
-  console.log("Merging cache stores");
   const result = createCacheStore();
 
   // Sort by block number (increasing)
@@ -96,13 +92,20 @@ export function mergeCacheStores(stores: CacheStore[]): CacheStore {
     }
   }
 
-  console.log("Done mergint cache stores");
+  result.blockNumber = sortedStores[sortedStores.length - 1].blockNumber;
+
   return result;
 }
 
-export async function loadIndexDbCacheStore(chainId: number, worldAddress: string): Promise<CacheStore> {
-  const cache = await getIndexDbCache(chainId, worldAddress);
+export async function saveCacheStoreToIndexDb(cache: Cache, store: CacheStore) {
+  console.log("Store cache with size", store.state.size, "at block", store.blockNumber);
+  await cache.set("ComponentValues", "current", store.state);
+  await cache.set("Mappings", "components", store.components);
+  await cache.set("Mappings", "entities", store.entities);
+  await cache.set("BlockNumber", "current", store.blockNumber);
+}
 
+export async function loadIndexDbCacheStore(cache: Cache): Promise<CacheStore> {
   const state = (await cache.get("ComponentValues", "current")) ?? new Map<number, ComponentValue>();
   const blockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
   const components = (await cache.get("Mappings", "components")) ?? [];
@@ -120,27 +123,10 @@ export async function loadIndexDbCacheStore(chainId: number, worldAddress: strin
     entityToIndex.set(entities[i], i);
   }
 
-  // Close db connection
-  cache.db.close();
-
   return { state, blockNumber, components, entities, componentToIndex, entityToIndex };
 }
 
-export async function saveCacheStoreToIndexDb(store: CacheStore, chainId: number, worldAddress: string) {
-  const cache = await getIndexDbCache(chainId, worldAddress);
-
-  console.log("Store cache with size", store.state.size, "at block", store.blockNumber);
-  await cache.set("ComponentValues", "current", store.state);
-  await cache.set("Mappings", "components", store.components);
-  await cache.set("Mappings", "entities", store.entities);
-  await cache.set("BlockNumber", "current", store.blockNumber);
-
-  // Close db connection
-  cache.db.close();
-  console.log("Done storing cache");
-}
-
-export function getIndexDbCache(chainId: number, worldAddress: string) {
+export function getIndexDbCache(chainId: number, worldAddress: string, version?: number, idb?: IDBFactory) {
   return initCache<{
     ComponentValues: State;
     BlockNumber: number;
@@ -148,6 +134,8 @@ export function getIndexDbCache(chainId: number, worldAddress: string) {
     Checkpoint: ECSStateReply;
   }>(
     getCacheId(chainId, worldAddress), // Store a separate cache for each World contract address
-    ["ComponentValues", "BlockNumber", "Mappings", "Checkpoint"]
+    ["ComponentValues", "BlockNumber", "Mappings", "Checkpoint"],
+    version,
+    idb
   );
 }

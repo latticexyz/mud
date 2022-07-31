@@ -66,7 +66,7 @@ export type Mappings<C extends Components> = {
   [hashedContractId: string]: keyof C;
 };
 
-export type NetworkComponentUpdate<C extends Components> = {
+export type NetworkComponentUpdate<C extends Components = Components> = {
   [key in keyof C]: {
     component: key & string;
     value: ComponentValue<SchemaOf<C[key]>> | undefined;
