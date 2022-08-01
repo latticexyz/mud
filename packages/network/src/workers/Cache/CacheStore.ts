@@ -7,7 +7,7 @@ import { getCacheId } from "../utils";
 import { State } from "./Cache.worker";
 
 export type CacheStore = ReturnType<typeof createCacheStore>;
-export type Cache = Awaited<ReturnType<typeof getIndexDbCache>>;
+export type ECSCache = Awaited<ReturnType<typeof getIndexDbECSCache>>;
 
 export function createCacheStore() {
   const components: string[] = [];
@@ -97,7 +97,7 @@ export function mergeCacheStores(stores: CacheStore[]): CacheStore {
   return result;
 }
 
-export async function saveCacheStoreToIndexDb(cache: Cache, store: CacheStore) {
+export async function saveCacheStoreToIndexDb(cache: ECSCache, store: CacheStore) {
   console.log("Store cache with size", store.state.size, "at block", store.blockNumber);
   await cache.set("ComponentValues", "current", store.state);
   await cache.set("Mappings", "components", store.components);
@@ -105,7 +105,7 @@ export async function saveCacheStoreToIndexDb(cache: Cache, store: CacheStore) {
   await cache.set("BlockNumber", "current", store.blockNumber);
 }
 
-export async function loadIndexDbCacheStore(cache: Cache): Promise<CacheStore> {
+export async function loadIndexDbCacheStore(cache: ECSCache): Promise<CacheStore> {
   const state = (await cache.get("ComponentValues", "current")) ?? new Map<number, ComponentValue>();
   const blockNumber = (await cache.get("BlockNumber", "current")) ?? 0;
   const components = (await cache.get("Mappings", "components")) ?? [];
@@ -126,14 +126,14 @@ export async function loadIndexDbCacheStore(cache: Cache): Promise<CacheStore> {
   return { state, blockNumber, components, entities, componentToIndex, entityToIndex };
 }
 
-export function getIndexDbCache(chainId: number, worldAddress: string, version?: number, idb?: IDBFactory) {
+export function getIndexDbECSCache(chainId: number, worldAddress: string, version?: number, idb?: IDBFactory) {
   return initCache<{
     ComponentValues: State;
     BlockNumber: number;
     Mappings: string[];
     Checkpoint: ECSStateReply;
   }>(
-    getCacheId(chainId, worldAddress), // Store a separate cache for each World contract address
+    getCacheId("ECSCache", chainId, worldAddress), // Store a separate cache for each World contract address
     ["ComponentValues", "BlockNumber", "Mappings", "Checkpoint"],
     version,
     idb

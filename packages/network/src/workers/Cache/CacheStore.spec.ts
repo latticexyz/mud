@@ -4,7 +4,7 @@ import { NetworkComponentUpdate } from "../../types";
 import {
   createCacheStore,
   getCacheStoreEntries,
-  getIndexDbCache,
+  getIndexDbECSCache,
   loadIndexDbCacheStore,
   mergeCacheStores,
   saveCacheStoreToIndexDb,
@@ -252,7 +252,7 @@ describe("CacheStore", () => {
 
   describe("indexDB", () => {
     it("should store and load a cacheStore to/from indexDB", async () => {
-      const cache = await getIndexDbCache(4242, "0x0", 1, indexedDB);
+      const cache = await getIndexDbECSCache(4242, "0x0", 1, indexedDB);
 
       const cacheStore = createCacheStore();
 

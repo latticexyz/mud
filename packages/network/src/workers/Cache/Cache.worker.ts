@@ -1,10 +1,10 @@
-import { distinctUntilChanged, EMPTY, map, Observable, Subject, take } from "rxjs";
+import { map, Observable, Subject, take } from "rxjs";
 import { Components, ComponentValue } from "@latticexyz/recs";
 import { awaitStreamValue, DoWork, filterNullish, runWorker } from "@latticexyz/utils";
 import { NetworkComponentUpdate } from "../../types";
 import {
   createCacheStore,
-  getIndexDbCache,
+  getIndexDbECSCache,
   loadIndexDbCacheStore,
   mergeCacheStores,
   saveCacheStoreToIndexDb,
@@ -54,7 +54,7 @@ export class CacheWorker<Cm extends Components> implements DoWork<Input<Cm>, num
     );
 
     // Load index db cache store and merge into existing cache store (event that arrived before initialization)
-    const cache = await getIndexDbCache(chainId, worldAddress);
+    const cache = await getIndexDbECSCache(chainId, worldAddress);
     const indexDbCacheStore = await loadIndexDbCacheStore(cache);
     const prevCacheStore = this.store;
     this.store = mergeCacheStores([prevCacheStore, indexDbCacheStore]);

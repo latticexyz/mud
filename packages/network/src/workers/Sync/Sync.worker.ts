@@ -12,60 +12,21 @@ import { Component, World } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import WorldAbi from "@latticexyz/solecs/abi/World.json";
 import { combineLatest, concatMap, filter, map, Observable, of, startWith, Subject } from "rxjs";
-import { fetchEventsInBlockRange } from "../networkUtils";
-import { createBlockNumberStream } from "../createBlockNumberStream";
-import { ConnectionState, createReconnectingProvider } from "../createProvider";
-import { ContractEvent, Contracts, NetworkComponentUpdate, SyncWorkerConfig } from "../types";
+import { fetchEventsInBlockRange } from "../../networkUtils";
+import { createBlockNumberStream } from "../../createBlockNumberStream";
+import { ConnectionState, createReconnectingProvider } from "../../createProvider";
+import { ContractEvent, Contracts, NetworkComponentUpdate, SyncWorkerConfig } from "../../types";
 import { BigNumber, BytesLike, Contract } from "ethers";
-import { createDecoder } from "../createDecoder";
+import { createDecoder } from "../../createDecoder";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
-import { initCache } from "../initCache";
-import { Input } from "./Cache/Cache.worker";
-import { createTopics } from "../createTopics";
-import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
-import { ECSStateSnapshotServiceClient } from "../snapshot.client";
-import { ECSStateReply } from "../snapshot";
+import { Input } from "../Cache/Cache.worker";
+import { createTopics } from "../../createTopics";
 import { Provider } from "@ethersproject/providers";
 import { runWorker } from "@latticexyz/utils";
-import { getCacheStoreEntries, getIndexDbCache, loadIndexDbCacheStore } from "./Cache/CacheStore";
-
-const MAX_CACHE_AGE = 1000;
+import { getCacheStoreEntries, getIndexDbECSCache, loadIndexDbCacheStore } from "../Cache/CacheStore";
+import { getCheckpoint } from "./utils";
 
 // TODO: Split this file up into utils and testable functions
-
-async function getCheckpoint(
-  checkpointServiceUrl: string,
-  cache: ReturnType<typeof initCache>,
-  cacheBlockNumber: number
-): Promise<ECSStateReply | undefined> {
-  try {
-    // Fetch remote block number
-    const transport = new GrpcWebFetchTransport({ baseUrl: checkpointServiceUrl, format: "binary" });
-    const client = new ECSStateSnapshotServiceClient(transport);
-    const {
-      response: { blockNumber: remoteBlockNumber },
-    } = await client.getStateBlockLatest({});
-
-    // Ignore checkpoint if local cache is recent enough
-    const cacheAge = remoteBlockNumber - cacheBlockNumber;
-    if (cacheAge < MAX_CACHE_AGE) return undefined;
-
-    // Check local checkpoint
-    const localCheckpoint: ECSStateReply = await cache.get("Checkpoint", "latest");
-    const localCheckpointAge = remoteBlockNumber - (localCheckpoint.blockNumber ?? 0);
-    // Return local checkpoint if it is recent enough
-    if (localCheckpointAge < MAX_CACHE_AGE) {
-      console.log("Local checkpoint is recent enough to be used");
-      return localCheckpoint;
-    }
-    console.log("Fetching remote checkpoint");
-    const { response: remoteCheckpoint } = await client.getStateLatest({});
-    cache.set("Checkpoint", "latest", remoteCheckpoint, true);
-    return remoteCheckpoint;
-  } catch (e) {
-    console.warn("Failed to fetch from checkpoint service:", e);
-  }
-}
 
 export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
 
@@ -75,7 +36,6 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
   private decoders: { [key: string]: Promise<(data: BytesLike) => unknown> | ((data: BytesLike) => unknown) } = {};
   private componentIdToAddress: { [key: string]: Promise<string> } = {};
   private toOutput$ = new Subject<Output<Cm>>();
-  private schemaCache = initCache<{ ComponentSchemas: [string[], number[]] }>("Global", ["ComponentSchemas"]);
   private cacheWorker?: Worker;
 
   constructor() {
@@ -98,8 +58,8 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
   }
 
   private async getComponentSchema(address: string, provider: Provider): Promise<[string[], number[]]> {
-    const schemaCache = await this.schemaCache;
-    const cachedSchema = await schemaCache.get("ComponentSchemas", address);
+    // const schemaCache = await this.schemaCache;
+    // const cachedSchema = await schemaCache.get("ComponentSchemas", address);
     // if (cachedSchema && !this.config.get().disableCache) {
     //   console.log("Using cached schema");
     //   return cachedSchema;
@@ -108,7 +68,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     const componentContract = new Contract(address, ComponentAbi.abi, provider) as Component;
     const schema = await componentContract.getSchema();
     console.log("Using remote schema");
-    schemaCache.set("ComponentSchemas", address, schema);
+    // schemaCache.set("ComponentSchemas", address, schema);
     return schema;
   }
 
@@ -163,7 +123,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     toCacheAndOutput$.subscribe(this.toOutput$);
 
     // 2. stream ECS events to the Cache worker to store them to IndexDB
-    this.cacheWorker = new Worker(new URL("./Cache/Cache.worker.ts", import.meta.url), { type: "module" });
+    this.cacheWorker = new Worker(new URL("../Cache/Cache.worker.ts", import.meta.url), { type: "module" });
     if (!config.disableCache) {
       console.log("Streaming to cache worker");
       fromWorker<Input<Cm>, boolean>(
@@ -180,7 +140,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     if (config.initialBlockNumber) this.clientBlockNumber = config.initialBlockNumber;
 
     // Create cache and get the cache block number
-    const cache = await getIndexDbCache(config.chainId, config.worldContract.address);
+    const cache = await getIndexDbECSCache(config.chainId, config.worldContract.address);
     const cacheStore = await loadIndexDbCacheStore(cache);
 
     // Fetch latest checkpoint
