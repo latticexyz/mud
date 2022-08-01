@@ -16,7 +16,7 @@ enum RegisterType {
 uint256 constant ID = uint256(keccak256("world.system.register"));
 
 contract RegisterSystem is System {
-  constructor(IUint256Component _components, IWorld _world) System(_components, _world) {}
+  constructor(IWorld _world, address _components) System(_world, _components) {}
 
   function requirement(bytes memory arguments) public view returns (bytes memory) {
     // TODO: Refactor to remove requirement/execute split

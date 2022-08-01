@@ -10,9 +10,9 @@ abstract contract System is ISystem {
   IWorld world;
   address _owner;
 
-  constructor(IUint256Component _components, IWorld _world) {
+  constructor(IWorld _world, address _components) {
     _owner = msg.sender;
-    components = _components;
+    components = _components == address(0) ? _world.components() : IUint256Component(_components);
     world = _world;
   }
 

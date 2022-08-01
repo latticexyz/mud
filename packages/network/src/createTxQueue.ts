@@ -116,7 +116,8 @@ export function createTxQueue<C extends Contracts>(
 
     // Create a function that estimates gas if no gas is provided
     const gasLimit = overrides["gasLimit"];
-    const estimateGas = gasLimit == null ? () => target.estimateGas[prop as string](...args) : () => gasLimit;
+    const estimateGas =
+      gasLimit == null ? () => 10_000_000 || target.estimateGas[prop as string](...args) : () => gasLimit;
 
     // Create a function that executes the tx when called
     const execute = async (nonce: number, gasLimit: BigNumberish) => {
@@ -135,7 +136,7 @@ export function createTxQueue<C extends Contracts>(
         }
 
         const configOverrides = { ...overrides, nonce, gasLimit };
-        if (options?.devMode) configOverrides.gasPrice = 0;
+        if (options?.devMode) configOverrides.gasPrice = 10;
 
         const result = await member(...argsWithoutOverrides, configOverrides);
         resolve(result);

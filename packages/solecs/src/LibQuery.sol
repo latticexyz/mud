@@ -113,7 +113,7 @@ struct QueryVars {
 library LibQuery {
   using LinkedListLib for LinkedList;
 
-  function query(QueryFragment[] calldata fragments) public view returns (uint256[] memory) {
+  function query(QueryFragment[] memory fragments) internal view returns (uint256[] memory) {
     QueryVars memory v;
     v.entities = LinkedListLib.newLinkedList(32);
     v.numEntities = 0;
@@ -265,7 +265,7 @@ library LibQuery {
     uint256 entity,
     IComponent component,
     uint256 depth
-  ) public view returns (uint256[] memory) {
+  ) internal view returns (uint256[] memory) {
     if (depth == 0) return new uint256[](0);
 
     uint256[] memory directChildren = component.getEntitiesWithValue(abi.encode(entity));
@@ -295,7 +295,7 @@ library LibQuery {
     uint256 entity,
     IComponent proxyComponent,
     uint256 depth
-  ) public view returns (bytes memory value, bool found) {
+  ) internal view returns (bytes memory value, bool found) {
     uint256 proxyEntity = entity;
     for (uint256 i; i <= depth; i++) {
       // Check if the current entity has the requested value
