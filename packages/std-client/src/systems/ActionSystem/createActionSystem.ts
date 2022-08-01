@@ -204,6 +204,8 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
 
     // Remove the action entity after some time
     const actionIndex = world.entityToIndex.get(actionId);
+    world.entityToIndex.delete(actionId);
+
     actionIndex != null && setTimeout(() => removeComponent(Action, actionIndex), 5000);
   }
 
