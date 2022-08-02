@@ -6,6 +6,8 @@ import { EntityEditor } from "./EntityEditor";
 import { QueryBuilder } from "./QueryBuilder";
 import { useClearDevHighlights } from "./hooks";
 import { observer } from "mobx-react-lite";
+import { PrototypeCreator } from "./PrototypeCreator";
+import { Coord } from "@latticexyz/phaserx";
 
 /**
  * An Entity Browser for viewing/editiing Component values.
@@ -17,6 +19,8 @@ export const Browser = observer(
     setContractComponentValue,
     devHighlightComponent,
     hoverHighlightComponent,
+    prototypeComponent,
+    spawnPrototypeAt,
     world,
   }: {
     entities: EntityID[];
@@ -24,6 +28,8 @@ export const Browser = observer(
     setContractComponentValue: SetContractComponentFunction<Schema>;
     devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
     hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
+    prototypeComponent: Component<{ value: Type.StringArray }>;
+    spawnPrototypeAt: (prototypeId: EntityID, position: Coord) => void;
     world: World;
   }) => {
     const [filteredEntities, setFilteredEntities] = useState<EntityID[]>([]);
@@ -41,6 +47,12 @@ export const Browser = observer(
           world={world}
           clearDevHighlights={clearDevHighlights}
           setOverflow={setOverflow}
+        />
+        <PrototypeCreator
+          layers={layers}
+          hoverHighlightComponent={hoverHighlightComponent}
+          prototypeComponent={prototypeComponent}
+          spawnPrototypeAt={spawnPrototypeAt}
         />
         <SmallHeadline>
           Showing {filteredEntities.length} of {filteredEntities.length + overflow} entities

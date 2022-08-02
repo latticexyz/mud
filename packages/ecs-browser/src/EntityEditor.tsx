@@ -52,6 +52,7 @@ export const EntityEditor = observer(
             value: undefined,
           });
         }}
+        onMouseLeave={() => clearDevHighlights()}
       >
         <div onClick={() => setOpened(!opened)} style={{ cursor: "pointer" }}>
           <h3 style={{ color: "white" }}>{world.entities[entity]}</h3>
