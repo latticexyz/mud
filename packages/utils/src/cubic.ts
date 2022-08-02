@@ -1,7 +1,8 @@
-export function randomize(seed: number, x: number, y: number) {
-  const RND_A = 134775813;
-  const RND_B = 1103515245;
+const RND_A = 134775813;
+const RND_B = 1103515245;
+const ACCURACY = 1000;
 
+export function randomize(seed: number, x: number, y: number) {
   return (((((x ^ y) * RND_A) ^ (seed + x)) * (((RND_B * x) << 16) ^ (RND_B * y - RND_A))) >>> 0) / 4294967295;
 }
 
@@ -10,10 +11,11 @@ export function tile(coordinate: number, period: number) {
   return coordinate % period;
 }
 
-export function interpolate(a: number, b: number, c: number, d: number, x: number) {
+export function interpolate(a: number, b: number, c: number, d: number, x: number, s: number, scale: number) {
   const p = d - c - (a - b);
+  return (b * Math.pow(s, 3) + x * (c * Math.pow(s, 2) + a * s * (-s + x) + x * (-(b + p) * s + p * x))) * scale;
 
-  return x * (x * (x * p + (a - b - p)) + (c - a)) + b;
+  // return (x) * ((x ) * ((x ) * p + (a - b - p)) + (c - a)) + b;
 }
 
 /**
@@ -26,6 +28,7 @@ export function interpolate(a: number, b: number, c: number, d: number, x: numbe
 export function cubicNoiseConfig(
   seed: number,
   octave: number,
+  scale: number,
   periodX = Number.MAX_SAFE_INTEGER,
   periodY = Number.MAX_SAFE_INTEGER
 ) {
@@ -34,6 +37,7 @@ export function cubicNoiseConfig(
     periodX: periodX,
     periodY: periodY,
     octave,
+    scale,
   };
 }
 
@@ -53,7 +57,9 @@ export function cubicNoiseSample1(config: ReturnType<typeof cubicNoiseConfig>, x
       randomize(config.seed, tile(xi, config.periodX), 0),
       randomize(config.seed, tile(xi + 1, config.periodX), 0),
       randomize(config.seed, tile(xi + 2, config.periodX), 0),
-      lerp
+      lerp,
+      1,
+      1
     ) *
       0.666666 +
     0.166666
@@ -68,14 +74,14 @@ export function cubicNoiseSample1(config: ReturnType<typeof cubicNoiseConfig>, x
  * @returns {Number} A noise value in the range [0, 1].
  */
 export function cubicNoiseSample2(
-  { octave, periodX, periodY, seed }: ReturnType<typeof cubicNoiseConfig>,
+  { octave, periodX, periodY, seed, scale }: ReturnType<typeof cubicNoiseConfig>,
   x: number,
   y: number
 ) {
   const xi = Math.floor(x / octave);
-  const lerpX = x / octave - xi;
+  const lerpX = Math.floor((x * ACCURACY) / octave) - xi * ACCURACY;
   const yi = Math.floor(y / octave);
-  const lerpY = y / octave - yi;
+  const lerpY = Math.floor((y * ACCURACY) / octave) - yi * ACCURACY;
   const x0 = tile(xi - 1, periodX);
   const x1 = tile(xi, periodX);
   const x2 = tile(xi + 1, periodX);
@@ -91,9 +97,13 @@ export function cubicNoiseSample2(
       randomize(seed, x1, y),
       randomize(seed, x2, y),
       randomize(seed, x3, y),
-      lerpX
+      lerpX,
+      ACCURACY,
+      1
     );
   }
 
-  return interpolate(xSamples[0], xSamples[1], xSamples[2], xSamples[3], lerpY) * 0.5 + 0.25;
+  return Math.floor(
+    interpolate(xSamples[0], xSamples[1], xSamples[2], xSamples[3], lerpY, ACCURACY, scale) / Math.pow(ACCURACY, 6)
+  );
 }
