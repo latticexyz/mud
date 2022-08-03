@@ -1,5 +1,5 @@
-import { Clock } from "../src/types";
-import { createClock } from "../src/createClock";
+import { Clock } from "./types";
+import { createClock } from "./createClock";
 
 describe("Clock", () => {
   let clock: Clock;

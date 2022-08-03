@@ -9,10 +9,10 @@ function initStore(db: IDBDatabase, storeId: string) {
   }
 }
 
-function initDb(dbId: string, stores: string[], version = VERSION) {
+function initDb(dbId: string, stores: string[], version = VERSION, idb: IDBFactory = indexedDB) {
   const [resolve, reject, promise] = deferred<IDBDatabase>();
 
-  const request = indexedDB.open(dbId, version);
+  const request = idb.open(dbId, version);
 
   // Create store and index
   request.onupgradeneeded = () => {
@@ -37,8 +37,13 @@ function initDb(dbId: string, stores: string[], version = VERSION) {
 type Stores = { [key: string]: unknown };
 type StoreKey<S extends Stores> = keyof S & string;
 
-export async function initCache<S extends Stores>(id: string, stores: StoreKey<S>[]) {
-  const db = await initDb(id, stores);
+export async function initCache<S extends Stores>(
+  id: string,
+  stores: StoreKey<S>[],
+  version?: number,
+  idb?: IDBFactory
+) {
+  const db = await initDb(id, stores, version, idb);
 
   function openStore(store: StoreKey<S>): IDBObjectStore {
     const tx = db.transaction(store, "readwrite");
@@ -141,5 +146,5 @@ export async function initCache<S extends Stores>(id: string, stores: StoreKey<S
     return mergeIterators(keyIterator, valueIterator);
   }
 
-  return { set, get, remove, keys, values, entries };
+  return { set, get, remove, keys, values, entries, db };
 }

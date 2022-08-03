@@ -3,7 +3,7 @@
   "version": "0.4.3",
   "description": "Component Browser for RECS",
   "license": "MIT",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",

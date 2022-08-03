@@ -17,7 +17,7 @@
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json",
     "globalinstall": "yarn build && yarn prepare && npm link",
-    "build": "rimraf build && tsc -p . && chmod u+x dist/index.js",
+    "build": "rimraf dist && tsc -p . && chmod u+x dist/index.js",
     "link": "yarn link"
   },
   "devDependencies": {
