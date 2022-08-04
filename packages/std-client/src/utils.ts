@@ -101,6 +101,31 @@ export function getPlayerEntity(
   return playerEntity;
 }
 
+export function resolveRelationshipChain(
+  entity: EntityIndex,
+  world: World,
+  relationshipComponent: Component<{ value: Type.Entity }, { contractId: string }>
+): EntityIndex | undefined {
+  while (hasComponent(relationshipComponent, entity)) {
+    const entityValue = world.entityToIndex.get(getComponentValueStrict(relationshipComponent, entity).value);
+    if (!entityValue) return;
+    entity = entityValue;
+  }
+  return entity;
+}
+
+export function getOwningPlayer(
+  entity: EntityIndex,
+  world: World,
+  Player: Component<{ value: Type.Boolean }, { contractId: string }>,
+  OwnedBy: Component<{ value: Type.Entity }, { contractId: string }>
+): EntityIndex | undefined {
+  const playerEntity = resolveRelationshipChain(entity, world, OwnedBy);
+  if (playerEntity == null || !hasComponent(Player, playerEntity)) return;
+
+  return playerEntity;
+}
+
 export function randomColor(id: string): number {
   const randSeed = new Array(4); // Xorshift: [x, y, z, w] 32 bit values
   function seedRand(seed: string) {
