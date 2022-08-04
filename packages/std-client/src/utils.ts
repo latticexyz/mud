@@ -25,15 +25,23 @@ export const GodID = keccak256("mudwar.god") as EntityID;
 
 export function getCurrentTurn(
   world: World,
-  gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String }>,
+  gameConfigComponent: Component<{
+    startTime: Type.String;
+    turnLength: Type.String;
+    actionCooldownLength: Type.String;
+  }>,
   clock: Clock
 ) {
-  return getTurnAtTime(world, gameConfigComponent, clock.currentTime);
+  return getTurnAtTime(world, gameConfigComponent, clock.currentTime / 1000);
 }
 
 export function getTurnAtTime(
   world: World,
-  gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String }>,
+  gameConfigComponent: Component<{
+    startTime: Type.String;
+    turnLength: Type.String;
+    actionCooldownLength: Type.String;
+  }>,
   time: number
 ) {
   const gameConfig = getGameConfig(world, gameConfigComponent);
@@ -42,15 +50,12 @@ export function getTurnAtTime(
   const startTime = BigNumber.from(gameConfig.startTime);
   const turnLength = BigNumber.from(gameConfig.turnLength);
 
-  return BigNumber.from(Math.floor(time / 1000))
-    .sub(startTime)
-    .div(turnLength)
-    .toNumber();
+  return BigNumber.from(Math.floor(time)).sub(startTime).div(turnLength).toNumber();
 }
 
 export function getGameConfig(
   world: World,
-  gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String }>
+  gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String; actionCooldownLength: Type.String }>
 ) {
   const godEntityIndex = world.entityToIndex.get(GodID);
   if (!godEntityIndex) return null;
