@@ -9,13 +9,15 @@ type TweenBuilderConfig = { targets: Phaser.GameObjects.Sprite } & Omit<
  * Add a tween to the provided game object.
  * @returns Promise that resolves when the tween is done.
  */
-export async function tween(config: TweenBuilderConfig) {
+export async function tween(config: TweenBuilderConfig, options?: { keepExistingTweens?: boolean }) {
   const [resolve, , promise] = deferred<void>();
   const { targets } = config;
   if (!targets.scene || !targets.scene.tweens) return;
 
   // Kill old tweens
-  removeAllTweens(targets);
+  if (!options?.keepExistingTweens) {
+    removeAllTweens(targets);
+  }
 
   // Add new tween
   targets.scene.tweens.add({
