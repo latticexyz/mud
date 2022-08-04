@@ -85,7 +85,7 @@ export function getComponentValueStrict<T extends Schema>(
   entity: EntityIndex
 ): ComponentValue<T> {
   const value = getComponentValue(component, entity);
-  if (!value) throw new Error("No component value for this entity");
+  if (!value) throw new Error(`No value for component ${component.id} on entity ${component.world.entities[entity]}`);
   return value;
 }
 
