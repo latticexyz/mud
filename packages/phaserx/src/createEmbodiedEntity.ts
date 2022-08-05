@@ -63,13 +63,13 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     if (activeGameObject && once) once(activeGameObject);
   }
 
-  function removeComponent(id: string) {
+  function removeComponent(id: string, stop?: boolean) {
     onOnce.delete(id);
     onUpdate.delete(id);
 
     // Reset the entity and reapply all onOnce components
     if (activeGameObject) {
-      reset(activeGameObject, false);
+      reset(activeGameObject, stop);
       executeGameObjectFunctions(activeGameObject, onOnce.values());
     }
   }
@@ -84,6 +84,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     gameObject.resetPipeline(true, true);
     gameObject.setScale(1, 1);
     gameObject.setOrigin(0, 0);
+    gameObject.setAlpha(1);
     if (isSprite(gameObject, type)) {
       gameObject.clearTint();
       gameObject.setTexture("");
