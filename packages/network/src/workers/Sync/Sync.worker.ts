@@ -67,7 +67,6 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
     const componentContract = new Contract(address, ComponentAbi.abi, provider) as Component;
     const schema = await componentContract.getSchema();
-    console.log("Using remote schema");
     // schemaCache.set("ComponentSchemas", address, schema);
     return schema;
   }

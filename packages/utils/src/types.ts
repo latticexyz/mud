@@ -1,3 +1,5 @@
+import { enableLogger } from "./console";
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export type Func<A extends any[], R> = (...args: A) => R;
 export type AsyncFunc<A extends any[], R> = R extends Promise<unknown> ? (...args: A) => R : (...args: A) => Promise<R>;
@@ -42,3 +44,5 @@ export type VoxelCoord = {
   y: number;
   z: number;
 };
+
+export type Logger = ReturnType<typeof enableLogger>;
