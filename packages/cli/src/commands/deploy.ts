@@ -33,6 +33,7 @@ interface Options {
   netlifyPersonalToken?: string;
   upgradeSystems?: boolean;
   codespace?: boolean;
+  dry?: boolean;
 }
 
 export const command = "deploy";
@@ -54,6 +55,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     netlifyPersonalToken: { type: "string" },
     upgradeSystems: { type: "boolean" },
     codespace: { type: "boolean" },
+    dry: { type: "boolean" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -299,6 +301,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     netlifySlug: args.netlifySlug ?? config.netlifySlug ?? answers.netlifySlug,
     netlifyPersonalToken: args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken,
     codespace: args.codespace,
+    dry: args.dry,
   };
 };
 
@@ -330,8 +333,7 @@ export const deploy = async (options: Options) => {
         "workspace",
         "ri-contracts",
         "forge:deploy",
-        "--private-keys",
-        wallet.privateKey,
+        ...(options.dry ? [] : ["--broadcast", "--private-keys", wallet.privateKey]),
         "--sig",
         "upgradeSystems(address,address)",
         wallet.address,
@@ -343,8 +345,7 @@ export const deploy = async (options: Options) => {
         "workspace",
         "ri-contracts",
         "forge:deploy",
-        "--private-keys",
-        wallet.privateKey,
+        ...(options.dry ? [] : ["--broadcast", "--private-keys", wallet.privateKey]),
         "--sig",
         "deploy(address,address,bool)",
         wallet.address,

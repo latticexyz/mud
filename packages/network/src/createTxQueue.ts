@@ -179,7 +179,7 @@ export function createTxQueue<C extends Contracts>(
 
     const txResult = await submissionMutex.runExclusive(async () => {
       // Don't attempt to send the tx if gas estimation failed
-      if (gasLimit == null) return;
+      if (gasLimit == null) return txRequest.cancel();
 
       // Define variables in scope visible to finally block
       let error: any;

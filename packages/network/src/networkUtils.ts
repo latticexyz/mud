@@ -141,7 +141,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
   // construct an object: address => keyof C
   const addressToContractKey: { [key in string]: keyof C } = {};
   for (const contractKey of Object.keys(contracts)) {
-    addressToContractKey[contracts[contractKey].address] = contractKey;
+    addressToContractKey[contracts[contractKey].address.toLowerCase()] = contractKey;
   }
 
   // parse the logs to get the logs description, then turn them into contract events

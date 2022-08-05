@@ -17,5 +17,6 @@ export * from "./worker";
 export * from "./pack";
 export * from "./CoordMap";
 export * from "./eth";
+export * from "./cubic";
 
 export type { Cached, PromiseValue, ValueOf, Area, Coord, VoxelCoord } from "./types";
