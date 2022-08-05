@@ -63,7 +63,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     if (activeGameObject && once) once(activeGameObject);
   }
 
-  function removeComponent(id: string, stop: boolean) {
+  function removeComponent(id: string, stop?: boolean) {
     onOnce.delete(id);
     onUpdate.delete(id);
 
