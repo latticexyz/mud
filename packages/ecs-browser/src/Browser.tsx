@@ -48,12 +48,14 @@ export const Browser = observer(
           clearDevHighlights={clearDevHighlights}
           setOverflow={setOverflow}
         />
-        <PrototypeCreator
-          layers={layers}
-          hoverHighlightComponent={hoverHighlightComponent}
-          prototypeComponent={prototypeComponent}
-          spawnPrototypeAt={spawnPrototypeAt}
-        />
+        {hoverHighlightComponent && prototypeComponent && spawnPrototypeAt && (
+          <PrototypeCreator
+            layers={layers}
+            hoverHighlightComponent={hoverHighlightComponent}
+            prototypeComponent={prototypeComponent}
+            spawnPrototypeAt={spawnPrototypeAt}
+          />
+        )}
         <SmallHeadline>
           Showing {filteredEntities.length} of {filteredEntities.length + overflow} entities
         </SmallHeadline>
