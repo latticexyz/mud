@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/latticexyz/mud/compare/v0.4.3...v0.5.0) (2022-08-05)
+
+### Bug Fixes
+
+- better getComponentValueStrict error message, small std-client fixes ([#121](https://github.com/latticexyz/mud/issues/121)) ([5c78b82](https://github.com/latticexyz/mud/commit/5c78b82a88a9d50091bf3c4e65100eb3cb6230b2))
+- CacheWorker ([#118](https://github.com/latticexyz/mud/issues/118)) ([bfe006e](https://github.com/latticexyz/mud/commit/bfe006e6adf064982a14d5dc1541d39b1b6016e2))
+
+### Features
+
+- **std-client:** add player getter utils for std client ([#120](https://github.com/latticexyz/mud/issues/120)) ([7a06f0b](https://github.com/latticexyz/mud/commit/7a06f0b90b56b916166a5ab2e5409209765352af))
+
 ## [0.4.3](https://github.com/latticexyz/mud/compare/v0.4.2...v0.4.3) (2022-07-30)
 
 **Note:** Version bump only for package @latticexyz/std-client

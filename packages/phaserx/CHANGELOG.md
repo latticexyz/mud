@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.5.0](https://github.com/latticexyz/mud/compare/v0.4.3...v0.5.0) (2022-08-05)
+
+### Bug Fixes
+
+- **phaserx:** allow for multiple tweens on same objects by passing in… ([#122](https://github.com/latticexyz/mud/issues/122)) ([d129836](https://github.com/latticexyz/mud/commit/d129836aa2e46c1c8ef737e234bcea3a7c0c4628))
+
 ## [0.4.3](https://github.com/latticexyz/mud/compare/v0.4.2...v0.4.3) (2022-07-30)
 
 **Note:** Version bump only for package @latticexyz/phaserx
