@@ -64,7 +64,7 @@ export type Input = ReturnType<typeof createInput>;
 
 export type EmbodiedEntity<Type extends keyof GameObjectTypes> = {
   setComponent: (component: GameObjectComponent<Type>) => void;
-  removeComponent: (id: string, stop: boolean) => void;
+  removeComponent: (id: string, stop?: boolean) => void;
   spawn: () => void;
   despawn: () => void;
   position: Coord;
