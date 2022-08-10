@@ -8,7 +8,9 @@ export function padToBitLength(input: string, bits: number) {
   // Cut off 0x prefix
   if (input.substring(0, 2) == "0x") input = input.substring(2);
   // Pad start with 0 to get desired bit length
-  input = input.padStart(bits / 4, "0");
+  const length = bits / 4;
+  input = input.padStart(length, "0");
+  input = input.substring(input.length - length);
   // Prefix with 0x
   return `0x${input}`;
 }

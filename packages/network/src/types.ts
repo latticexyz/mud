@@ -82,7 +82,6 @@ export type SyncWorkerConfig<Cm extends Components = Components> = {
   provider: ProviderConfig;
   initialBlockNumber: number;
   worldContract: ContractConfig;
-  mappings: Mappings<Cm>;
   disableCache?: boolean;
   chainId: number;
   checkpointServiceUrl?: string;

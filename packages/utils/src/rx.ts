@@ -15,6 +15,7 @@ import {
 } from "rxjs";
 import { computed, IComputedValue, IObservableValue, observable, reaction, runInAction, toJS } from "mobx";
 import { deferred } from "./deferred";
+import { awaitValue } from "./mobx";
 
 export function filterNullish<T>(): OperatorFunction<T, NonNullable<T>> {
   return pipe<Observable<T>, Observable<NonNullable<T>>>(
@@ -87,6 +88,14 @@ export function streamToComputed<T>(stream$: Observable<T>): IComputedValue<T | 
   return computed(() => value.get());
 }
 
+export async function streamToDefinedComputed<T>(stream$: Observable<T>): Promise<IComputedValue<T>> {
+  const value = observable.box<T>();
+  stream$.subscribe((val) => runInAction(() => value.set(val)));
+  const computedValue = computed(() => value.get());
+  await awaitValue(computedValue);
+  return computedValue as IComputedValue<T>;
+}
+
 /**
  *
  * @param stream$ RxJS observable to check for the given value
@@ -100,4 +109,16 @@ export async function awaitStreamValue<T>(
   const [resolve, , promise] = deferred<T>();
   stream$.pipe(first(predicate)).subscribe(resolve);
   return promise;
+}
+
+/**
+ * Turns a stream into an updating object for easy access outside of rxjs
+ * @param stream$ Stream to turn into a wrapped value
+ * @returns Object with `current` key corresponding to last stream value
+ */
+export async function streamToWrappedValue<T>(stream$: Observable<T>): Promise<{ current: T }> {
+  const value: { current?: T } = {};
+  stream$.subscribe((v) => (value.current = v));
+  value.current = await awaitStreamValue(stream$);
+  return value as { current: T };
 }

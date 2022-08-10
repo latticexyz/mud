@@ -1,11 +1,11 @@
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { packTuple, transformIterator, unpackTuple } from "@latticexyz/utils";
 import { initCache } from "../../initCache";
-import { ECSStateReply } from "../../snapshot";
+import { ECSStateReply } from "../../protogen/ecs-snapshot";
 import { NetworkComponentUpdate } from "../../types";
 import { getCacheId } from "../utils";
-import { State } from "./Cache.worker";
 
+export type State = Map<number, ComponentValue>;
 export type CacheStore = ReturnType<typeof createCacheStore>;
 export type ECSCache = Awaited<ReturnType<typeof getIndexDbECSCache>>;
 
@@ -124,6 +124,10 @@ export async function loadIndexDbCacheStore(cache: ECSCache): Promise<CacheStore
   }
 
   return { state, blockNumber, components, entities, componentToIndex, entityToIndex };
+}
+
+export async function getIndexDBCacheStoreBlockNumber(cache: ECSCache): Promise<number> {
+  return (await cache.get("BlockNumber", "current")) ?? 0;
 }
 
 export function getIndexDbECSCache(chainId: number, worldAddress: string, version?: number, idb?: IDBFactory) {
