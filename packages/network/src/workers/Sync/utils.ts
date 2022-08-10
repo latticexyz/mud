@@ -1,7 +1,7 @@
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { initCache } from "../../initCache";
-import { ECSStateReply } from "../../snapshot";
-import { ECSStateSnapshotServiceClient } from "../../snapshot.client";
+import { ECSStateReply } from "../../protogen/ecs-snapshot";
+import { ECSStateSnapshotServiceClient } from "../../protogen/ecs-snapshot.client";
 import { getCacheId } from "../utils";
 
 const MAX_CACHE_AGE = 1000;
@@ -11,7 +11,8 @@ export type SchemaCache = ReturnType<typeof getIndexDbSchemaCache>;
 export async function getCheckpoint(
   checkpointServiceUrl: string,
   cache: ReturnType<typeof initCache>,
-  cacheBlockNumber: number
+  cacheBlockNumber: number,
+  worldAddress: string
 ): Promise<ECSStateReply | undefined> {
   try {
     // Fetch remote block number
@@ -19,7 +20,7 @@ export async function getCheckpoint(
     const client = new ECSStateSnapshotServiceClient(transport);
     const {
       response: { blockNumber: remoteBlockNumber },
-    } = await client.getStateBlockLatest({});
+    } = await client.getStateBlockLatest({ worldAddress });
 
     // Ignore checkpoint if local cache is recent enough
     const cacheAge = remoteBlockNumber - cacheBlockNumber;
@@ -34,7 +35,7 @@ export async function getCheckpoint(
       return localCheckpoint;
     }
     console.log("Fetching remote checkpoint");
-    const { response: remoteCheckpoint } = await client.getStateLatest({});
+    const { response: remoteCheckpoint } = await client.getStateLatest({ worldAddress });
     cache.set("Checkpoint", "latest", remoteCheckpoint, true);
     return remoteCheckpoint;
   } catch (e) {

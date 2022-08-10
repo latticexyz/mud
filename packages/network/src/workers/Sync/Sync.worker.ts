@@ -145,7 +145,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     // Fetch latest checkpoint
     console.log("Checking remote checkpoint at", config.checkpointServiceUrl);
     const checkpoint = config.checkpointServiceUrl
-      ? await getCheckpoint(config.checkpointServiceUrl, cache, cacheStore.blockNumber)
+      ? await getCheckpoint(config.checkpointServiceUrl, cache, cacheStore.blockNumber, config.worldContract.address)
       : undefined;
 
     // Load from cache if cache is enabled,
@@ -168,7 +168,11 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       console.log("Loading from checkpoint at block", checkpoint.blockNumber);
       this.clientBlockNumber = Number(checkpoint.blockNumber); // Set the current client block number to the checkpoint block number to avoid refetching from blocks before that
 
-      for (const { entityId: entity, componentId, value } of checkpoint.state) {
+      for (const checkpointState of checkpoint.state) {
+        const { entityIdIdx, componentIdIdx, value } = checkpointState;
+        const entity = checkpoint.stateEntities[entityIdIdx];
+        const componentId = checkpoint.stateComponents[componentIdIdx];
+
         const decoded = await this.decode(providers.get().json, value, componentId);
         if (!decoded) continue; // There might not be a decoded value if the component id is unknown
 
@@ -182,6 +186,8 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
           // will load from the checkpoint again unless a regular event arrived in the meantime (indicating the checkpoint was fully cached).
           blockNumber: 0,
         };
+
+        console.log("ECS state from checkpoint", ecsEvent);
 
         toCacheAndOutput$.next(ecsEvent);
       }
