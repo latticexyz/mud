@@ -6,6 +6,7 @@ import {
   DoWork,
   filterNullish,
   fromWorker,
+  to256BitString,
 } from "@latticexyz/utils";
 import { computed, IObservableValue, observable, runInAction, toJS } from "mobx";
 import { Component, World } from "@latticexyz/solecs";
@@ -77,7 +78,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     componentId: string,
     componentAddress?: string
   ): Promise<{ component: C & string; value: ComponentValue<SchemaOf<Cm[C]>> } | undefined> {
-    const clientComponentKey = this.config.get().mappings[componentId];
+    const clientComponentKey = this.config.get().mappings[to256BitString(componentId)];
 
     // No client mapping for this component contract
     if (!clientComponentKey) {

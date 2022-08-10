@@ -18,9 +18,10 @@ export async function getCheckpoint(
     // Fetch remote block number
     const transport = new GrpcWebFetchTransport({ baseUrl: checkpointServiceUrl, format: "binary" });
     const client = new ECSStateSnapshotServiceClient(transport);
+    const reply = await client.getStateBlockLatest({ worldAddress });
     const {
       response: { blockNumber: remoteBlockNumber },
-    } = await client.getStateBlockLatest({ worldAddress });
+    } = reply;
 
     // Ignore checkpoint if local cache is recent enough
     const cacheAge = remoteBlockNumber - cacheBlockNumber;
@@ -28,7 +29,7 @@ export async function getCheckpoint(
 
     // Check local checkpoint
     const localCheckpoint: ECSStateReply = await cache.get("Checkpoint", "latest");
-    const localCheckpointAge = remoteBlockNumber - (localCheckpoint.blockNumber ?? 0);
+    const localCheckpointAge = remoteBlockNumber - (localCheckpoint?.blockNumber ?? 0);
     // Return local checkpoint if it is recent enough
     if (localCheckpointAge < MAX_CACHE_AGE) {
       console.log("Local checkpoint is recent enough to be used");
