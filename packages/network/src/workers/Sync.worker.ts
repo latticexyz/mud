@@ -73,6 +73,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     );
 
     // Start syncing current events, but only start streaming to output once gap between initial state and current block is closed
+    console.log("[SyncWorker] start initial sync");
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
@@ -85,10 +86,12 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     // Load initial state from cache or snapshot service
     const cacheBlockNumber = await getIndexDBCacheStoreBlockNumber(indexDbCache);
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
-    const initialState =
-      snapshotClient && snapshotBlockNumber > cacheBlockNumber + 100 // Load from cache if the snapshot is less than 100 blocks newer than the cache
-        ? await fetchSnapshot(snapshotClient, worldContract.address, decode)
-        : await loadIndexDbCacheStore(indexDbCache);
+    const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + 100; // Load from cache if the snapshot is less than 100 blocks newer than the cache
+    console.log(`[SyncWorker] cache block: ${cacheBlockNumber}, snapshot block: ${snapshotBlockNumber}`);
+    const initialState = syncFromSnapshot
+      ? await fetchSnapshot(snapshotClient, worldContract.address, decode)
+      : await loadIndexDbCacheStore(indexDbCache);
+    console.log(`[SyncWorker] got ${initialState.state.size} items from ${syncFromSnapshot ? "snapshot" : "cache"}`);
 
     // Load events from gap between initial state and current block number from RPC
     const gapState = await fetchStateInBlockRange(
@@ -96,9 +99,15 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       initialState.blockNumber,
       await streamStartBlockNumber
     );
+    console.log(
+      `[SyncWorker] got ${gapState.state.size} items from block range ${
+        initialState.blockNumber
+      } -> ${await streamStartBlockNumber}`
+    );
 
     // Merge initial state, gap state and live events since initial sync started
     cacheStore.current = mergeCacheStores([initialState, gapState, cacheStore.current]);
+    console.log(`[SyncWorker] initial sync state size: ${cacheStore.current.state.size}`);
 
     // Pass current cacheStore to output and start passing live events
     for (const update of getCacheStoreEntries(cacheStore.current)) {

@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { EntityID, ComponentValue } from "@latticexyz/recs";
-import { to256BitString, awaitPromise, range } from "@latticexyz/utils";
+import { to256BitString, awaitPromise, range, sleep } from "@latticexyz/utils";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { BytesLike, Contract, BigNumber } from "ethers";
 import { Observable, map, concatMap, of } from "rxjs";
@@ -25,10 +25,14 @@ export async function getSnapshotBlockNumber(
   snapshotClient: ECSStateSnapshotServiceClient | undefined,
   worldAddress: string
 ): Promise<number> {
-  if (!snapshotClient) return -1;
-  const {
-    response: { blockNumber },
-  } = await snapshotClient.getStateBlockLatest({ worldAddress });
+  let blockNumber = -1;
+  if (!snapshotClient) return blockNumber;
+  try {
+    const { response } = await snapshotClient.getStateBlockLatest({ worldAddress });
+    blockNumber = response.blockNumber;
+  } catch (e) {
+    console.error(e);
+  }
   return blockNumber;
 }
 
@@ -40,16 +44,21 @@ export async function fetchSnapshot(
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
 
-  const {
-    response: { state, blockNumber, stateComponents, stateEntities },
-  } = await snapshotClient.getStateLatest({ worldAddress });
+  try {
+    const {
+      response: { state, blockNumber, stateComponents, stateEntities },
+    } = await snapshotClient.getStateLatest({ worldAddress });
 
-  for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
-    const component = to256BitString(stateComponents[componentIdIdx]);
-    const entity = stateEntities[entityIdIdx] as EntityID;
-    const value = await decode(component, rawValue);
-    storeEvent(cacheStore, { component, entity, value, blockNumber });
+    for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
+      const component = to256BitString(stateComponents[componentIdIdx]);
+      const entity = stateEntities[entityIdIdx] as EntityID;
+      const value = await decode(component, rawValue);
+      storeEvent(cacheStore, { component, entity, value, blockNumber });
+    }
+  } catch (e) {
+    console.error(e);
   }
+
   return cacheStore;
 }
 
@@ -61,12 +70,14 @@ export function createLatestEventStream(
   let lastSyncedBlockNumber: number | undefined;
 
   return blockNumber$.pipe(
-    map((blockNumber) => {
+    map(async (blockNumber) => {
       const from =
         lastSyncedBlockNumber == null || lastSyncedBlockNumber >= blockNumber ? blockNumber : lastSyncedBlockNumber + 1;
       const to = blockNumber;
       lastSyncedBlockNumber = to;
-      return fetchWorldEvents(from, to);
+      const events = await fetchWorldEvents(from, to);
+      console.log(`[SyncWorker] fetched ${events.length} events from block range ${from} -> ${to}`);
+      return events;
     }),
     awaitPromise(),
     concatMap((v) => of(...v))
@@ -89,6 +100,7 @@ export async function fetchStateInBlockRange(
     const from = steps[i];
     const to = i === steps.length - 1 ? toBlockNumber : steps[i + 1] - 1;
     const events = await fetchWorldEvents(from, to);
+    console.log(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
 
     for (const event of events) {
       storeEvent(cacheStore, event);

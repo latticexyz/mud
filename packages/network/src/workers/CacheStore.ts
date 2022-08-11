@@ -101,7 +101,7 @@ export function mergeCacheStores(stores: CacheStore[]): CacheStore {
 }
 
 export async function saveCacheStoreToIndexDb(cache: ECSCache, store: CacheStore) {
-  console.log("Store cache with size", store.state.size, "at block", store.blockNumber);
+  console.log("[Cache] store cache with size", store.state.size, "at block", store.blockNumber);
   await cache.set("ComponentValues", "current", store.state);
   await cache.set("Mappings", "components", store.components);
   await cache.set("Mappings", "entities", store.entities);
