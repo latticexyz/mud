@@ -3,11 +3,8 @@ import { EntityID, ComponentValue } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range } from "@latticexyz/utils";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { BytesLike, Contract, BigNumber } from "ethers";
-import { IComputedValue } from "mobx";
 import { Observable, map, concatMap, of } from "rxjs";
-import { createBlockNumberStream } from "../createBlockNumberStream";
 import { createDecoder } from "../createDecoder";
-import { Providers } from "../createProvider";
 import { createTopics } from "../createTopics";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { ECSStateSnapshotServiceClient } from "../protogen/ecs-snapshot.client";
@@ -18,10 +15,6 @@ import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
 
 // TODO: Add tests
-
-export function getCacheId(namespace: string, chainId: number, worldAddress: string) {
-  return `${namespace}-${chainId}-${worldAddress}`;
-}
 
 // Create a ECSStateSnapshotServiceClient
 export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient {
@@ -64,15 +57,15 @@ export async function fetchSnapshot(
 
 // Use streaming service if available, otherwise fetch events from RPC
 export function createLatestEventStream(
-  providers: IComputedValue<Providers>,
+  blockNumber$: Observable<number>,
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>
 ): Observable<NetworkComponentUpdate> {
   let lastSyncedBlockNumber: number | undefined;
-  const { blockNumber$ } = createBlockNumberStream(providers);
 
   return blockNumber$.pipe(
     map((blockNumber) => {
-      const from = lastSyncedBlockNumber == null ? blockNumber : lastSyncedBlockNumber + 1;
+      const from =
+        lastSyncedBlockNumber == null || lastSyncedBlockNumber >= blockNumber ? blockNumber : lastSyncedBlockNumber + 1;
       const to = blockNumber;
       lastSyncedBlockNumber = to;
       return fetchWorldEvents(from, to);
@@ -83,13 +76,13 @@ export function createLatestEventStream(
 }
 
 // Fetch events in blocks between fromBlockNumber to toBlockNumber (can be replaced by own service in the future)
-export async function getGapState(
+export async function fetchStateInBlockRange(
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
   fromBlockNumber: number,
-  toBlockNumber: number
+  toBlockNumber: number,
+  interval = 50
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
-  const interval = 50;
   const delta = toBlockNumber - fromBlockNumber;
   const numSteps = Math.ceil(delta / interval);
   const steps = [...range(numSteps, interval, fromBlockNumber)];
@@ -116,7 +109,7 @@ export function createDecode(worldConfig: ContractConfig, provider: JsonRpcProvi
     // Create the decoder if it doesn't exist yet
     if (!decoders[componentId]) {
       const address = componentAddress || (await world.getComponent(componentId));
-      console.log("Creating de for", address);
+      console.log("Creating decoder for", address);
       const component = new Contract(address, ComponentAbi, provider) as Component;
       const [keys, values] = await component.getSchema();
       decoders[componentId] = createDecoder(keys, values);

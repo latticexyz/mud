@@ -1,13 +1,16 @@
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { packTuple, transformIterator, unpackTuple } from "@latticexyz/utils";
-import { initCache } from "../../initCache";
-import { ECSStateReply } from "../../protogen/ecs-snapshot";
-import { NetworkComponentUpdate } from "../../types";
-import { getCacheId } from "../utils";
+import { initCache } from "../initCache";
+import { ECSStateReply } from "../protogen/ecs-snapshot";
+import { NetworkComponentUpdate } from "../types";
 
 export type State = Map<number, ComponentValue>;
 export type CacheStore = ReturnType<typeof createCacheStore>;
 export type ECSCache = Awaited<ReturnType<typeof getIndexDbECSCache>>;
+
+export function getCacheId(namespace: string, chainId: number, worldAddress: string) {
+  return `${namespace}-${chainId}-${worldAddress}`;
+}
 
 export function createCacheStore() {
   const components: string[] = [];

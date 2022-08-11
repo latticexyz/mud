@@ -1,4 +1,4 @@
-import { DoWork, streamToDefinedComputed } from "@latticexyz/utils";
+import { awaitStreamValue, DoWork, streamToDefinedComputed } from "@latticexyz/utils";
 import { Observable, Subject } from "rxjs";
 import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
 import { Components } from "@latticexyz/recs";
@@ -22,8 +22,9 @@ import {
   createLatestEventStream,
   getSnapshotBlockNumber,
   fetchSnapshot,
-  getGapState,
-} from "./utils";
+  fetchStateInBlockRange,
+} from "./syncUtils";
+import { createBlockNumberStream } from "../createBlockNumberStream";
 
 // Process:
 // 1. Get config
@@ -72,11 +73,12 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     // Start syncing current events, but only start streaming to output once gap between initial state and current block is closed
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
-    createLatestEventStream(providers, fetchWorldEvents).subscribe((event) => {
+    const { blockNumber$ } = createBlockNumberStream(providers);
+    createLatestEventStream(blockNumber$, fetchWorldEvents).subscribe((event) => {
       storeEvent(cacheStore.current, event);
       if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
     });
-    const streamStartBlockNumber = providers.get().json.blockNumber;
+    const streamStartBlockNumber = awaitStreamValue(blockNumber$);
 
     // Load initial state
     const cacheBlockNumber = await getIndexDBCacheStoreBlockNumber(indexDbCache);
@@ -87,7 +89,11 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
         : await loadIndexDbCacheStore(indexDbCache);
 
     // Load events from gap between initial state and sync start block number
-    const gapState = await getGapState(fetchWorldEvents, initialState.blockNumber, streamStartBlockNumber);
+    const gapState = await fetchStateInBlockRange(
+      fetchWorldEvents,
+      initialState.blockNumber,
+      await streamStartBlockNumber
+    );
 
     // Merge initial state, gap state and events synced until now
     cacheStore.current = mergeCacheStores([initialState, gapState, cacheStore.current]);
@@ -99,7 +105,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     passLiveEventsToOutput = true;
 
     // Store the local cache to IndexDB once every 10 seconds
-    // (indexDB writes take too long to do then every time an event arrives)
+    // (indexDB writes take too long to write for every event)
     setInterval(() => saveCacheStoreToIndexDb(indexDbCache, cacheStore.current), 10000);
   }
 

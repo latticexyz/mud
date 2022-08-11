@@ -1,6 +1,6 @@
 import { EntityID } from "@latticexyz/recs";
 import { packTuple } from "@latticexyz/utils";
-import { NetworkComponentUpdate } from "../../types";
+import { NetworkComponentUpdate } from "../types";
 import {
   createCacheStore,
   getCacheStoreEntries,
