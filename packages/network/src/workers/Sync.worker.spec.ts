@@ -2,13 +2,12 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { sleep } from "@latticexyz/utils";
 import { computed } from "mobx";
 import { SyncWorker } from "./Sync.worker";
-
-import "fake-indexeddb/auto";
 import { Subject } from "rxjs";
 import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
 import { EntityID } from "@latticexyz/recs";
 import { createCacheStore, storeEvent } from "./CacheStore";
 import * as syncUtils from "./syncUtils";
+import "fake-indexeddb/auto";
 
 // Test constants
 const cacheBlockNumber = 99;

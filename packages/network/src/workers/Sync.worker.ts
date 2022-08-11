@@ -26,16 +26,18 @@ import {
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 
-// Process:
-// 1. Get config
-// 2. Load initial state
-//    2.1 Get cache block number
-//    2.2 Get snapshot block number
-//    2.3 Load from more recent source
-// 3. Cach up to current block number by requesting events from RPC ( -> TODO: Replace with own service)
-// 4. Keep in sync
-//    4.1 If available keep in sync with streaming service
-//    4.2 Else keep in sync with RPC
+/************************
+ * Sync process:
+ * 1. Get config
+ * 2. Load initial state
+ *   2.1 Get cache block number
+ *   2.2 Get snapshot block number
+ *   2.3 Load from more recent source
+ * 3. Cach up to current block number by requesting events from RPC ( -> TODO: Replace with own service)
+ * 4. Keep in sync
+ *  4.1 If available keep in sync with streaming service
+ *  4.2 Else keep in sync with RPC
+ *************************/
 
 export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
 
@@ -80,7 +82,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     });
     const streamStartBlockNumber = awaitStreamValue(blockNumber$);
 
-    // Load initial state
+    // Load initial state from cache or snapshot service
     const cacheBlockNumber = await getIndexDBCacheStoreBlockNumber(indexDbCache);
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
     const initialState =
@@ -88,14 +90,14 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
         ? await fetchSnapshot(snapshotClient, worldContract.address, decode)
         : await loadIndexDbCacheStore(indexDbCache);
 
-    // Load events from gap between initial state and sync start block number
+    // Load events from gap between initial state and current block number from RPC
     const gapState = await fetchStateInBlockRange(
       fetchWorldEvents,
       initialState.blockNumber,
       await streamStartBlockNumber
     );
 
-    // Merge initial state, gap state and events synced until now
+    // Merge initial state, gap state and live events since initial sync started
     cacheStore.current = mergeCacheStores([initialState, gapState, cacheStore.current]);
 
     // Pass current cacheStore to output and start passing live events

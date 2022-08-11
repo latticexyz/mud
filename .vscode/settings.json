@@ -11,6 +11,5 @@
     "solecs/=node_modules/@latticexyz/solecs/src/",
     "royalty-registry/=node_modules/@manifoldxzy/royalty-registry/contracts/",
     "std-contracts/=node_modules/@latticexyz/std-contracts/src/"
-  ],
-  "jest.jestCommandLine": "yarn jest"
+  ]
 }

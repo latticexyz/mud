@@ -30,7 +30,6 @@ export async function fetchBlock(provider: JsonRpcProvider, requireMinimumBlockN
       });
       return provider.formatter.block(rawBlock);
     };
-    console.log("fetch block");
     const block = await callWithRetry<Block>(blockPromise, [], 10, 1000);
     if (requireMinimumBlockNumber && block.number < requireMinimumBlockNumber) {
       await sleep(300);
@@ -89,7 +88,6 @@ export async function fetchLogs<C extends Contracts>(
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (const _ in range(10)) {
       const call = () => Promise.all([blockPromise(), ...getLogPromises()]);
-      console.log("fetch blocks");
       const [blockNumber, logs] = await callWithRetry<[number, ...Array<Array<Log>>]>(call, [], 10, 1000);
       if (blockNumber < requireMinimumBlockNumber) {
         await sleep(500);
@@ -100,7 +98,6 @@ export async function fetchLogs<C extends Contracts>(
     throw new Error("Could not fetch logs with a required minimum block number");
   } else {
     const call = () => Promise.all([...getLogPromises()]);
-    console.log("min block number");
     const logs = await callWithRetry<Array<Array<Log>>>(call, [], 10, 1000);
     return logs.flat();
   }

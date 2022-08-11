@@ -14,8 +14,6 @@ import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
 
-// TODO: Add tests
-
 // Create a ECSStateSnapshotServiceClient
 export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient {
   const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
