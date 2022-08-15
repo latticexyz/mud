@@ -20,4 +20,15 @@ export * from "./eth";
 export * from "./cubic";
 export * from "./console";
 
-export type { Cached, PromiseValue, ValueOf, Area, Coord, VoxelCoord, Logger } from "./types";
+export type {
+  Cached,
+  CachedValue,
+  Func,
+  AsyncFunc,
+  PromiseValue,
+  ValueOf,
+  Area,
+  Coord,
+  VoxelCoord,
+  Logger,
+} from "./types";
