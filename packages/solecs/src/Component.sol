@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import "@openzeppelin/contracts/utils/introspection/ERC165Checker.sol";
-
 import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 import { IComponent } from "./interfaces/IComponent.sol";
@@ -123,10 +121,6 @@ abstract contract Component is IComponent {
   }
 
   function registerIndexer(address indexer) external onlyWriter {
-    require(
-      ERC165Checker.supportsInterface(indexer, type(IEntityIndexer).interfaceId),
-      "Given address is not an indexer."
-    );
     indexers.push(IEntityIndexer(indexer));
   }
 }

@@ -259,7 +259,7 @@ library LibQuery {
    * @param entity Entity to get all child entities up to the specified depth
    * @param component Entity reference component
    * @param depth Depth up to which the recursion should be applied
-   * returns Set of entities that are child entities of the given entity via the given component
+   * @return Set of entities that are child entities of the given entity via the given component
    */
   function getChildEntities(
     uint256 entity,
