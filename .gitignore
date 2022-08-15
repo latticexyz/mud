@@ -2,3 +2,4 @@ node_modules
 .eslintcache
 .DS_STORE
 .parcel-cache
+docs
