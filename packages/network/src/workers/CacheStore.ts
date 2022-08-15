@@ -1,13 +1,16 @@
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { packTuple, transformIterator, unpackTuple } from "@latticexyz/utils";
-import { initCache } from "../../initCache";
-import { ECSStateReply } from "../../snapshot";
-import { NetworkComponentUpdate } from "../../types";
-import { getCacheId } from "../utils";
-import { State } from "./Cache.worker";
+import { initCache } from "../initCache";
+import { ECSStateReply } from "../protogen/ecs-snapshot";
+import { NetworkComponentUpdate } from "../types";
 
+export type State = Map<number, ComponentValue>;
 export type CacheStore = ReturnType<typeof createCacheStore>;
 export type ECSCache = Awaited<ReturnType<typeof getIndexDbECSCache>>;
+
+export function getCacheId(namespace: string, chainId: number, worldAddress: string) {
+  return `${namespace}-${chainId}-${worldAddress}`;
+}
 
 export function createCacheStore() {
   const components: string[] = [];
@@ -98,7 +101,7 @@ export function mergeCacheStores(stores: CacheStore[]): CacheStore {
 }
 
 export async function saveCacheStoreToIndexDb(cache: ECSCache, store: CacheStore) {
-  console.log("Store cache with size", store.state.size, "at block", store.blockNumber);
+  console.log("[Cache] store cache with size", store.state.size, "at block", store.blockNumber);
   await cache.set("ComponentValues", "current", store.state);
   await cache.set("Mappings", "components", store.components);
   await cache.set("Mappings", "entities", store.entities);
@@ -124,6 +127,10 @@ export async function loadIndexDbCacheStore(cache: ECSCache): Promise<CacheStore
   }
 
   return { state, blockNumber, components, entities, componentToIndex, entityToIndex };
+}
+
+export async function getIndexDBCacheStoreBlockNumber(cache: ECSCache): Promise<number> {
+  return (await cache.get("BlockNumber", "current")) ?? 0;
 }
 
 export function getIndexDbECSCache(chainId: number, worldAddress: string, version?: number, idb?: IDBFactory) {
