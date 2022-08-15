@@ -1,6 +1,5 @@
 Component
 Indexer
-QuadtreeIndexer
 Set
 World
 IEntityContainer
