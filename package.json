@@ -40,7 +40,8 @@
     "release": "yarn && lerna publish --no-private --force-publish",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && exec \"$SHELL\" && foundryup",
     "link:packages": "yarn lerna run link",
-    "yalc:release": "yarn lerna exec yalc push"
+    "yalc:release": "yarn lerna exec yalc push",
+    "docs": "yarn lerna run docs"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
