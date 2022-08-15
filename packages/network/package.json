@@ -16,7 +16,8 @@
     "link": "yarn link",
     "protobuf:gen:snapshot": "protoc --ts_opt eslint_disable --ts_out . --proto_path protobuf protobuf/ecs-snapshot.proto && mv ecs-snapshot.ts ecs-snapshot.client.ts src/protogen/",
     "protobuf:gen:stream": "protoc --ts_opt eslint_disable --ts_out . --proto_path protobuf protobuf/ecs-stream.proto && mv ecs-stream.ts ecs-stream.client.ts src/protogen",
-    "protobuf:gen": "rimraf src/protogen && mkdir src/protogen && yarn protobuf:gen:snapshot && yarn protobuf:gen:stream"
+    "protobuf:gen": "rimraf src/protogen && mkdir src/protogen && yarn protobuf:gen:snapshot && yarn protobuf:gen:stream",
+    "docs": "rimraf docs && typedoc --hideGenerator --out docs src"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
@@ -41,6 +42,7 @@
     "ts-jest": "^27.1.3",
     "ts-node": "^10.7.0",
     "tslib": "^2.3.1",
+    "typedoc": "^0.23.10",
     "typescript": "^4.6.2"
   },
   "peerDependencies": {

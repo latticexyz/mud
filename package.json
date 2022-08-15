@@ -24,6 +24,7 @@
     "lerna": "^4.0.0",
     "lint-staged": ">=10",
     "prettier": "^2.6.2",
+    "rimraf": "^3.0.2",
     "run-pty": "^3.0.0"
   },
   "config": {
@@ -40,7 +41,8 @@
     "release": "yarn && lerna publish --no-private --force-publish",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && exec \"$SHELL\" && foundryup",
     "link:packages": "yarn lerna run link",
-    "yalc:release": "yarn lerna exec yalc push"
+    "yalc:release": "yarn lerna exec yalc push",
+    "docs": "yarn lerna run docs && rimraf docs && mkdir docs && for i in network phaserx recs solecs std-client std-contracts utils; do mkdir docs/$i && cp -r packages/$i/docs/* docs/$i; done && cp index.html docs/"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",

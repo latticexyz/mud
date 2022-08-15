@@ -3,7 +3,6 @@ pragma solidity >=0.8.0;
 
 import { Component } from "../../Component.sol";
 import { LibTypes } from "../../LibTypes.sol";
-import { Point } from "../../QuadtreeIndexer.sol";
 
 struct Position {
   int64 x;

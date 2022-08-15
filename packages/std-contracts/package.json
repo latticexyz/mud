@@ -20,7 +20,8 @@
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "lint": "yarn prettier && yarn solhint",
-    "link": "yarn link"
+    "link": "yarn link",
+    "docs": "hardhat docgen && cat README.md _docs/index.md > DOCS.md && typedoc --out docs . --readme DOCS.md "
   },
   "devDependencies": {
     "@latticexyz/solecs": "^0.6.0",
@@ -28,11 +29,14 @@
     "@typechain/ethers-v5": "^9.0.0",
     "ds-test": "https://github.com/dapphub/ds-test.git#c7a36fb236f298e04edf28e2fee385b80f53945f",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#37a3fe48c3a4d8239cda93445f0b5e76b1507436",
+    "hardhat": "^2.10.1",
     "prettier": "^2.6.2",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
-    "typechain": "^8.0.0"
+    "solidity-docgen": "^0.6.0-beta.22",
+    "typechain": "^8.0.0",
+    "typedoc": "^0.23.10"
   },
   "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f"
 }

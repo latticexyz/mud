@@ -1,6 +1,6 @@
 import { EntityIndex } from "@latticexyz/recs";
-import { waitForComponentValueIn } from "../../../../../utils/components";
 import { defineActionComponent } from "../../../components";
+import { waitForComponentValueIn } from "../../../utils";
 import { ActionState } from "../constants";
 
 export async function waitForActionCompletion(
