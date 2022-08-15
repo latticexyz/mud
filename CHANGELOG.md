@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.6.0](https://github.com/latticexyz/mud/compare/v0.5.1...v0.6.0) (2022-08-15)
+
+### Code Refactoring
+
+- sync worker (+ integrated snapshot service) ([#125](https://github.com/latticexyz/mud/issues/125)) ([6173b59](https://github.com/latticexyz/mud/commit/6173b596713b0dad73d14288ece3ac66ca3972d3))
+
+### BREAKING CHANGES
+
+- sync worker update stream returns component id instead of component key
+
+- test(network): add tests for sync utils and SyncWorker logic
+
+- chore: remove logs and improve comments
+
+- chore: add logs
+
+Co-authored-by: andrii dobroshynski <24281657+andriidski@users.noreply.github.com>
+
 ## [0.5.1](https://github.com/latticexyz/mud/compare/v0.5.0...v0.5.1) (2022-08-05)
 
 ### Bug Fixes
