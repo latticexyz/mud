@@ -8,15 +8,8 @@ subtask(TASK_COMPILE_SOLIDITY).setAction(async (_: { force: boolean; quiet: bool
   const symlinks: string[] = [];
   const libraries = [
     ["solmate", "@rari-capital/solmate/src"],
-    // ["solecs", "@latticexyz/solecs/src"],
-    // ["std-contracts", "@latticexyz/std-contracts/src"],
     ["ds-test", "ds-test/src"],
     ["forge-std", "forge-std/src"],
-    // ["persona", "@latticexyz/persona/src"],
-    // ["base64", "base64-sol"],
-    // ["gsn", "@opengsn/contracts/src"],
-    // ["royalty-registry", "@manifoldxyz/royalty-registry-solidity/contracts"],
-    // ["@openzeppelin", "openzeppelin-solidity"],
     ["memmove", "memmove/src"],
   ];
   for (const [library, libraryPath] of libraries) {
