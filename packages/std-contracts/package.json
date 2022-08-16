@@ -12,8 +12,8 @@
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
-    "test": "forge test",
-    "build": "rimraf out && forge build && yarn dist && yarn types",
+    "test": "~/.foundry/bin/forge test",
+    "build": "rimraf out && ~/.foundry/bin/forge build && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh",
     "removebytecode": "for i in abi/*; do jq 'del(.bytecode) | del(.deployedBytecode) | del(.ast)' \"$i\" > \"$i\".tmp && mv \"$i\".tmp \"$i\"; done",
     "types": "rimraf types && yarn removebytecode && typechain --target=ethers-v5 abi/*.json",
