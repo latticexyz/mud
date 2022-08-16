@@ -10,8 +10,8 @@
   "workspaces": {
     "packages": [
       "packages/utils",
-      "packages/cli",
       "packages/solecs",
+      "packages/cli",
       "packages/recs",
       "packages/phaserx",
       "packages/network",
