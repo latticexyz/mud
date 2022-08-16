@@ -9,7 +9,15 @@
   "private": true,
   "workspaces": {
     "packages": [
-      "packages/*"
+      "packages/utils",
+      "packages/cli",
+      "packages/solecs",
+      "packages/recs",
+      "packages/phaserx",
+      "packages/network",
+      "packages/std-contracts",
+      "packages/std-client",
+      "packages/ecs-browser"
     ]
   },
   "devDependencies": {
