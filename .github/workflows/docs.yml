@@ -1,0 +1,33 @@
+# .github/workflows/docs.yml
+name: Build documentation from main branch and push to docs branch
+
+on:
+  push:
+    branches:
+      - test
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Build and Push
+    steps:
+      - name: git-checkout
+        uses: actions/checkout@v2
+
+      - name: Install all dependencies
+        run: yarn
+
+      - name: Build
+        run: yarn docs # The build command of your project
+
+      - name: Unignore docs
+        run: echo '\n!docs' >> .gitignore
+
+      - name: Push
+        uses: s0/git-publish-subdir-action@develop
+        env:
+          REPO: self
+          BRANCH: docs # The branch name where you want to push the assets
+          FOLDER: docs # The directory where your assets are generated
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # GitHub will automatically add this - you don't need to bother getting a token
+          MESSAGE: "Docs: ({sha}) {msg}" # The commit message
