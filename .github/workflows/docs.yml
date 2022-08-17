@@ -4,7 +4,7 @@ name: Build documentation from main branch and push to docs branch
 on:
   push:
     branches:
-      - main
+      - alvrs/realdocs
 
 jobs:
   build:
