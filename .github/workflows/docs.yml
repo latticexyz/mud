@@ -21,7 +21,7 @@ jobs:
         run: yarn docs # The build command of your project
 
       - name: Unignore docs
-        run: echo '\n!docs' >> .gitignore
+        run: echo '\n!public' >> .gitignore
 
       - name: Push
         uses: s0/git-publish-subdir-action@develop
