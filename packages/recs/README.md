@@ -1,23 +1,24 @@
 # recs - Reactive Entity Component System
 
-Recs is built with reactivity in mind.
+`recs` is built with reactivity in mind.
 `Components` and `Queries` expose an `update$` stream, that `Systems` can react to.
 
-To build some fundamental intuition about ECS, have a look at [our MUD ECS introduction](TODO).
-This library is part of MUD and works best in combination with the other MUD libraries, but can also be used independently.
+To build some fundamental intuition about ECS, have a look at [our MUD ECS introduction](https://mud.dev/ecs).
+
+`recs` is seamlessly integrated with the other MUD libraries, but can be used independently.
 
 For detailed documentation, check out [mud.dev/recs](https://mud.dev/recs).
 
-## Features
+# Features
 
 - Reactive components, queries, and systems
 - Powerful queries, including advanced indirect relationship queries
-- Seamless integration with other MUD libraries
+- Seamless integration with other MUD libraries and services
 - Simple, declarative API
 - Ultra high performance
 - TypeScript support
 
-## Example
+# Example
 
 ```typescript
 import {
@@ -55,6 +56,6 @@ setInterval(() => {
 }, 1000);
 ```
 
-## Acknowledgements
+# Acknowledgements
 
 - Syntax originally inspired by [bitECS](https://github.com/NateTheGreatt/bitECS)
