@@ -1,6 +1,15 @@
 import { hasComponent } from "./Component";
 import { Component, EntityIndex, EntityID, World } from "./types";
 
+/**
+ * Create a new World.
+ *
+ * @remarks
+ * A World is the central object of an ECS application, where all {@link defineComponent Components},
+ * {@link registerEntity Entities} and {@link defineSystem Systems} are registerd.
+ *
+ * @returns A new World
+ */
 export function createWorld() {
   const entityToIndex = new Map<EntityID, EntityIndex>();
   const entities: EntityID[] = [];
@@ -58,6 +67,14 @@ export function createWorld() {
   };
 }
 
+/**
+ * Create a new namespace from an existing World.
+ * The `dispose` method of a namespaced World only calls disposers registered on this namespace.
+ *
+ * @param world World to create a new namespace for.
+ * @param namespace String descriptor of the new namespace.
+ * @returns World with a new namespace.
+ */
 export function namespaceWorld(world: ReturnType<typeof createWorld>, namespace: string) {
   return {
     ...world,
@@ -66,8 +83,16 @@ export function namespaceWorld(world: ReturnType<typeof createWorld>, namespace:
   };
 }
 
-// Design decision: don't store a list of components for each entity but compute it dynamically when needed
-// because there are less components than entities and maintaining a list of components per entity is a large overhead
+/**
+ * Get all components that have a value for the given entity.
+ *
+ * @dev Design decision: don't store a list of components for each entity but compute it dynamically when needed
+ * because there are less components than entities and maintaining a list of components per entity is a large overhead.
+ *
+ * @param world World object the given entity is registered on.
+ * @param entity {@link EntityIndex} of the entity to get the list of components for.
+ * @returns Array of components that have a value for the given entity.
+ */
 export function getEntityComponents(world: World, entity: EntityIndex): Component[] {
   return world.components.filter((component) => hasComponent(component, entity));
 }
