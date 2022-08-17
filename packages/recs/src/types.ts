@@ -3,19 +3,37 @@ import { Subject } from "rxjs";
 import { Type } from "./constants";
 import type { Opaque } from "type-fest";
 
+/**
+ * Used to refer to the index of an entity in a {@link World}.
+ */
 export type EntityIndex = Opaque<number, "EntityIndex">;
+
+/**
+ * Used to refer to the string id of an entity (independent from a {@link World}).
+ */
 export type EntityID = Opaque<string, "EntityID">;
 
+/**
+ * Used to define the schema of a {@link Component}.
+ * Uses {@link Type} enum to be able to access the component type in JavaScript as well as have TypeScript type checks.
+ */
 export type Schema = {
   [key: string]: Type;
 };
 
+/**
+ * Used to add arbitrary metadata to components.
+ * (Eg `contractId` for components that have a corresponding solecs component contract.)
+ */
 export type Metadata =
   | {
       [key: string]: unknown;
     }
   | undefined;
 
+/**
+ * Mapping between JavaScript {@link Type} enum and corresponding TypeScript type.
+ */
 export type ValueType = {
   [Type.Boolean]: boolean;
   [Type.Number]: number;
@@ -32,16 +50,25 @@ export type ValueType = {
   [Type.OptionalEntityArray]: EntityID[] | undefined;
 };
 
+/**
+ * Used to infer the TypeScript type of a component value corresponding to a given {@link Schema}.
+ */
 export type ComponentValue<S extends Schema = Schema> = {
   [key in keyof S]: ValueType[S[key]];
 };
 
+/**
+ * Type of a component update corresponding to a given {@link Schema}.
+ */
 export type ComponentUpdate<S extends Schema = Schema> = {
   entity: EntityIndex;
   value: [ComponentValue<S> | undefined, ComponentValue<S> | undefined];
   component: Component<S>;
 };
 
+/**
+ * Type of component returned by {@link defineComponent}.
+ */
 export interface Component<S extends Schema = Schema, M extends Metadata = Metadata> {
   id: string;
   values: { [key in keyof S]: Map<EntityIndex, ValueType[S[key]]> };
@@ -53,6 +80,9 @@ export interface Component<S extends Schema = Schema, M extends Metadata = Metad
   update$: Subject<ComponentUpdate<S>> & { observers: any };
 }
 
+/**
+ * Type of indexer returned by {@link createIndexer}.
+ */
 export type Indexer<S extends Schema, M extends Metadata = Metadata> = Component<S, M> & {
   getEntitiesWithValue: (value: ComponentValue<S>) => Set<EntityIndex>;
 };
@@ -65,12 +95,13 @@ export interface ComponentWithStream<T extends Schema> extends Component<T> {
   stream$: Subject<{ entity: EntityIndex; value: ComponentValue<T> | undefined }>;
 }
 
-export type ComponentWithValue<T extends Schema> = { component: Component<T>; value: ComponentValue<T> };
-
 export type AnyComponentValue = ComponentValue<Schema>;
 
 export type AnyComponent = Component<Schema>;
 
+/**
+ * Type of World returned by {@link createWorld}.
+ */
 export type World = {
   registerEntity: (options?: { id?: EntityID; idSuffix?: string }) => EntityIndex;
   registerComponent: (component: Component) => void;
@@ -82,8 +113,6 @@ export type World = {
   registerDisposer: (disposer: () => void) => void;
   hasEntity: (entity: EntityID) => boolean;
 };
-
-export type Query = IComputedValue<Set<EntityIndex>>;
 
 export enum QueryFragmentType {
   Has,
@@ -153,6 +182,9 @@ export type Override<T extends Schema> = {
   value: Partial<ComponentValue<T>> | null;
 };
 
+/**
+ * Type of overridable component returned by {@link overridableComponent}.
+ */
 export type OverridableComponent<T extends Schema = Schema> = Component<T> & {
   addOverride: (actionEntityId: EntityID, update: Override<T>) => void;
   removeOverride: (actionEntityId: EntityID) => void;
