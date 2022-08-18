@@ -288,5 +288,3 @@ uint256[] memory entities = LibQuery.query(fragments);
 ```
 
 Proxy queries are significantly less performant (more gas intensive) than regular queries and should be used sparingly.
-
-# API
