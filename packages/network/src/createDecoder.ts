@@ -62,11 +62,12 @@ export function flattenValue<V extends ContractSchemaValue>(
 }
 
 /**
- * Constructs a decoder function from given keys and valueTypes.
+ * Construct a decoder function from given keys and valueTypes.
  * The consumer is responsible for providing a type D matching the keys and valueTypes.
- * @param keys Keys of the component value schema
- * @param valueTypes Value types if the component value schema
- * @returns Function to decode encoded hex value to component value
+ *
+ * @param keys Keys of the component value schema.
+ * @param valueTypes Value types if the component value schema.
+ * @returns Function to decode encoded hex value to component value.
  */
 export function createDecoder<D extends { [key: string]: unknown }>(
   keys: (keyof D)[],

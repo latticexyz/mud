@@ -6,6 +6,15 @@ import { ProviderConfig } from "./types";
 
 export type Providers = ReturnType<typeof createProvider>;
 
+/**
+ * Create a JsonRpcProvider and WebsocketProvider pair
+ *
+ * @param config Config for the provider pair (see {@link ProviderConfig}).
+ * @returns Provider pair: {
+ *   json: JsonRpcProvider,
+ *   ws: WebSocketProvider
+ * }
+ */
 export function createProvider({ jsonRpcUrl, wsRpcUrl, options }: ProviderConfig) {
   const providers = {
     json: options?.batch ? new JsonRpcBatchProvider(jsonRpcUrl) : new JsonRpcProvider(jsonRpcUrl),
@@ -25,6 +34,14 @@ export enum ConnectionState {
   CONNECTED,
 }
 
+/**
+ * Creates a {@link createProvider provider pair} that automatically updates if the config changes
+ * and automatically reconnects if the connection is lost.
+ *
+ * @param config Mobx computed provider config object (see {@link ProviderConfig}).
+ * Automatically updates the returned provider pair if the config changes.
+ * @returns Automatically reconnecting {@link createProvider provider pair} that updates if the config changes.
+ */
 export async function createReconnectingProvider(config: IComputedValue<ProviderConfig>) {
   const connected = observable.box<ConnectionState>(ConnectionState.DISCONNECTED);
   const providers = observable.box<Providers>() as IObservableValue<Providers>;

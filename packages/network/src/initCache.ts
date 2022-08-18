@@ -3,12 +3,27 @@ import { arrayToIterator, deferred, mergeIterators, transformIterator } from "@l
 const indexedDB = self.indexedDB;
 const VERSION = 2;
 
+/**
+ * Initialize an indexedDB store.
+ *
+ * @param db IDBDatabase
+ * @param storeId Id of the store to initialize
+ */
 function initStore(db: IDBDatabase, storeId: string) {
   if (!db.objectStoreNames.contains(storeId)) {
     db.createObjectStore(storeId);
   }
 }
 
+/**
+ * Initialize an indexedDB database.
+ *
+ * @param dbId Id of the database to initialize.
+ * @param stores Keys of the stores to initialize.
+ * @param version Optional: version of the database to initialize.
+ * @param idb Optional: custom indexedDB factory
+ * @returns Promise resolving with IDBDatabase object
+ */
 function initDb(dbId: string, stores: string[], version = VERSION, idb: IDBFactory = indexedDB) {
   const [resolve, reject, promise] = deferred<IDBDatabase>();
 
@@ -37,6 +52,15 @@ function initDb(dbId: string, stores: string[], version = VERSION, idb: IDBFacto
 type Stores = { [key: string]: unknown };
 type StoreKey<S extends Stores> = keyof S & string;
 
+/**
+ * Initialize an abstracted Cache object to simplify interaction with the indexedDB database.
+ *
+ * @param id Id of the database to initialize.
+ * @param stores Keys of the stores to initialize.
+ * @param version Optional: version of the database to initialize.
+ * @param idb Optional: custom indexedDB factory
+ * @returns Promise resolving with Cache object
+ */
 export async function initCache<S extends Stores>(
   id: string,
   stores: StoreKey<S>[],

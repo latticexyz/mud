@@ -9,47 +9,16 @@ import { ConnectionState } from "./createProvider";
 import { Network } from "./createNetwork";
 import { getRevertReason } from "./networkUtils";
 
-function createPriorityQueue<T>() {
-  const queue = new Map<string, { element: T; priority: number }>();
-
-  function queueByPriority() {
-    // Entries with a higher priority get executed first
-    return [...queue.entries()].sort((a, b) => (a[1].priority >= b[1].priority ? -1 : 1));
-  }
-
-  function add(id: string, element: T, priority = 1) {
-    queue.set(id, { element, priority });
-  }
-
-  function remove(id: string) {
-    queue.delete(id);
-  }
-
-  function setPriority(id: string, priority: number) {
-    const entry = queue.get(id);
-    if (!entry) return;
-    queue.set(id, { ...entry, priority });
-  }
-
-  function next(): T | undefined {
-    if (queue.size === 0) return;
-    const [key, value] = queueByPriority()[0];
-    queue.delete(key);
-    return value.element;
-  }
-
-  return { add, remove, setPriority, next };
-}
-
 type ReturnTypeStrict<T> = T extends (...args: any) => any ? ReturnType<T> : never;
 
 /**
  * The TxQueue takes care of nonce management, concurrency and caching calls if the contracts are not connected.
  * Cached calls are passed to the queue once the contracts are available.
+ *
  * @param computedContracts A computed object containing the contracts to be channelled through the txQueue
  * @param network A network object containing provider, signer, etc
  * @param options The concurrency declares how many transactions can wait for confirmation at the same time.
- * @returns
+ * @returns TxQueue object
  */
 export function createTxQueue<C extends Contracts>(
   computedContracts: IComputedValue<C> | IObservableValue<C>,
@@ -295,4 +264,40 @@ function isOverrides(obj: any): obj is Overrides {
     "blockTag" in obj ||
     "from" in obj
   );
+}
+
+/**
+ * Simple priority queue
+ * @returns priority queue object
+ */
+function createPriorityQueue<T>() {
+  const queue = new Map<string, { element: T; priority: number }>();
+
+  function queueByPriority() {
+    // Entries with a higher priority get executed first
+    return [...queue.entries()].sort((a, b) => (a[1].priority >= b[1].priority ? -1 : 1));
+  }
+
+  function add(id: string, element: T, priority = 1) {
+    queue.set(id, { element, priority });
+  }
+
+  function remove(id: string) {
+    queue.delete(id);
+  }
+
+  function setPriority(id: string, priority: number) {
+    const entry = queue.get(id);
+    if (!entry) return;
+    queue.set(id, { ...entry, priority });
+  }
+
+  function next(): T | undefined {
+    if (queue.size === 0) return;
+    const [key, value] = queueByPriority()[0];
+    queue.delete(key);
+    return value.element;
+  }
+
+  return { add, remove, setPriority, next };
 }

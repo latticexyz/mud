@@ -12,6 +12,13 @@ import { BigNumber, Contract } from "ethers";
 import { resolveProperties, defaultAbiCoder as abi } from "ethers/lib/utils";
 import { Contracts, ContractTopics, ContractEvent, ContractsConfig } from "./types";
 
+/**
+ * Await network to be reachable.
+ *
+ * @param provider ethers JsonRpcProvider
+ * @param wssProvider ethers WebSocketProvider
+ * @returns Promise resolving once the network is reachable
+ */
 export async function ensureNetworkIsUp(provider: JsonRpcProvider, wssProvider?: WebSocketProvider): Promise<void> {
   const networkInfoPromise = () => {
     return Promise.all([provider.getBlockNumber(), wssProvider ? wssProvider.getBlockNumber() : Promise.resolve()]);
@@ -20,6 +27,14 @@ export async function ensureNetworkIsUp(provider: JsonRpcProvider, wssProvider?:
   return;
 }
 
+/**
+ * Fetch the latest Ethereum block
+ *
+ * @param provider ethers JsonRpcProvider
+ * @param requireMinimumBlockNumber Minimal required block number.
+ * If the latest block number is below this number, the method waits for 1300ms and tries again, for at most 10 times.
+ * @returns Promise resolving with the latest Ethereum block
+ */
 export async function fetchBlock(provider: JsonRpcProvider, requireMinimumBlockNumber?: number): Promise<Block> {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   for (const _ of range(10)) {
@@ -41,6 +56,17 @@ export async function fetchBlock(provider: JsonRpcProvider, requireMinimumBlockN
   throw new Error("Could not fetch a block with blockNumber " + requireMinimumBlockNumber);
 }
 
+/**
+ * Fetch logs with the given topics from a given block range.
+ *
+ * @param provider ethers JsonRpcProvider
+ * @param topics Topics to fetch logs for
+ * @param startBlockNumber Start of block range to fetch logs from (inclusive)
+ * @param endBlockNumber End of block range to fetch logs from (inclusive)
+ * @param contracts Contracts to fetch logs from
+ * @param requireMinimumBlockNumber Minimal block number required to fetch blocks
+ * @returns Promise resolving with an array of logs from the specified block range and topics
+ */
 export async function fetchLogs<C extends Contracts>(
   provider: JsonRpcProvider,
   topics: ContractTopics[],
@@ -103,6 +129,17 @@ export async function fetchLogs<C extends Contracts>(
   }
 }
 
+/**
+ * Fetch events from block range, ordered by block, transaction index and log index
+ *
+ * @param provider ethers JsonRpcProvider
+ * @param topics Topics to fetch events for
+ * @param startBlockNumber Start of block range to fetch events from (inclusive)
+ * @param endBlockNumber End of block range to fetch events from (inclusive)
+ * @param contracts Contracts to fetch events from
+ * @param supportsBatchQueries Set to true if the provider supports batch queries (recommended)
+ * @returns Promise resolving with an array of ContractEvents
+ */
 export async function fetchEventsInBlockRange<C extends Contracts>(
   provider: JsonRpcProvider,
   topics: ContractTopics[],
@@ -180,6 +217,13 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
   return contractEvents;
 }
 
+/**
+ * Get the revert reason from a given transaction hash
+ *
+ * @param txHash Transaction hash to get the revert reason from
+ * @param provider ethers Provider
+ * @returns Promise resolving with revert reason string
+ */
 export async function getRevertReason(txHash: string, provider: BaseProvider): Promise<string> {
   // Decoding the revert reason: https://docs.soliditylang.org/en/latest/control-structures.html#revert
   const tx = await provider.getTransaction(txHash);

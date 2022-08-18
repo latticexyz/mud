@@ -10,3 +10,4 @@ export * from "./createDecoder";
 export * from "./createEncoder";
 export * from "./createSystemExecutor";
 export * from "./networkUtils";
+export * from "./workers";

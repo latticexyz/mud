@@ -11,6 +11,12 @@ import { computedToStream } from "@latticexyz/utils";
 
 export type Network = Awaited<ReturnType<typeof createNetwork>>;
 
+/**
+ * Set up network.
+ *
+ * @param initialConfig Initial config (see {@link NetworkConfig}).
+ * @returns Network object
+ */
 export async function createNetwork(initialConfig: NetworkConfig) {
   const config = observable(initialConfig);
   const disposers: (() => void)[] = [];
