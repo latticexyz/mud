@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
+/**
+ * Set of unique uint256
+ */
 contract Set {
   uint256[] private items;
   mapping(uint256 => uint256) private itemToIndex;

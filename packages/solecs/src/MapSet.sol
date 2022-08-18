@@ -2,6 +2,9 @@
 pragma solidity >=0.8.0;
 import { console } from "forge-std/console.sol";
 
+/**
+ * Key value store with uint256 key and uint256 Set value
+ */
 contract MapSet {
   mapping(uint256 => uint256[]) private items;
   mapping(uint256 => mapping(uint256 => uint256)) private itemToIndex;

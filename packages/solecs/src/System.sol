@@ -5,6 +5,9 @@ import { ISystem } from "./interfaces/ISystem.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 
+/**
+ * System base contract
+ */
 abstract contract System is ISystem {
   IUint256Component components;
   IWorld world;

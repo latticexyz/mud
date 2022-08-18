@@ -3,6 +3,9 @@ pragma solidity >=0.8.0;
 import "../Component.sol";
 import "../interfaces/IUint256Component.sol";
 
+/**
+ * Reference implementation of a component storing a uint256 value for each entity.
+ */
 contract Uint256Component is Component, IUint256Component {
   constructor(address world, uint256 id) Component(world, id) {}
 
