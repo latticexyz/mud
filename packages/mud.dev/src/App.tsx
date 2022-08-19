@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import logo from "./assets/mud-logo.png";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Docs, Home } from "./components";
+import { Docs, Home, Markdown } from "./components";
 
 function App() {
   return (
@@ -17,6 +17,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/docs/:packageName" element={<Docs />} />
+          <Route path="/blog/:post" element={<Markdown />} />
         </Routes>
       </Layout>
     </BrowserRouter>
