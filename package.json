@@ -17,7 +17,8 @@
       "packages/network",
       "packages/std-contracts",
       "packages/std-client",
-      "packages/ecs-browser"
+      "packages/ecs-browser",
+      "packages/services"
     ]
   },
   "devDependencies": {
