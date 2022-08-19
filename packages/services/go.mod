@@ -1,4 +1,4 @@
-module latticexyz/chain-sidecar
+module latticexyz/mud/packages/services
 
 go 1.18
 

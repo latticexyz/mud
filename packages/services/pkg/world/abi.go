@@ -1,7 +1,7 @@
 package world
 
 import (
-	"latticexyz/chain-sidecar/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/logger"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"

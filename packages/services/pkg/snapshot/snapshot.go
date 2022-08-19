@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
-	"latticexyz/chain-sidecar/pkg/logger"
-	pb "latticexyz/chain-sidecar/protobuf/go-ecs-snapshot"
+	"latticexyz/mud/packages/services/pkg/logger"
+	pb "latticexyz/mud/packages/services/protobuf/go-ecs-snapshot"
 
 	"math"
 	"os"

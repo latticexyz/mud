@@ -2,8 +2,8 @@ package eth
 
 import (
 	"context"
-	"latticexyz/chain-sidecar/pkg/logger"
-	utils "latticexyz/chain-sidecar/pkg/utils"
+	"latticexyz/mud/packages/services/pkg/logger"
+	utils "latticexyz/mud/packages/services/pkg/utils"
 	"math/big"
 
 	"github.com/avast/retry-go"

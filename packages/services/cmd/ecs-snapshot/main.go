@@ -6,11 +6,11 @@ import (
 
 	"go.uber.org/zap"
 
-	"latticexyz/chain-sidecar/pkg/eth"
-	"latticexyz/chain-sidecar/pkg/grpc"
-	"latticexyz/chain-sidecar/pkg/logger"
-	"latticexyz/chain-sidecar/pkg/snapshot"
-	"latticexyz/chain-sidecar/pkg/utils"
+	"latticexyz/mud/packages/services/pkg/eth"
+	"latticexyz/mud/packages/services/pkg/grpc"
+	"latticexyz/mud/packages/services/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/snapshot"
+	"latticexyz/mud/packages/services/pkg/utils"
 )
 
 var (

@@ -3,11 +3,11 @@ package main
 import (
 	"flag"
 
-	eth "latticexyz/chain-sidecar/pkg/eth"
-	grpc "latticexyz/chain-sidecar/pkg/grpc"
-	"latticexyz/chain-sidecar/pkg/logger"
-	"latticexyz/chain-sidecar/pkg/multiplexer"
-	"latticexyz/chain-sidecar/pkg/stream"
+	eth "latticexyz/mud/packages/services/pkg/eth"
+	grpc "latticexyz/mud/packages/services/pkg/grpc"
+	"latticexyz/mud/packages/services/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/multiplexer"
+	"latticexyz/mud/packages/services/pkg/stream"
 )
 
 var (

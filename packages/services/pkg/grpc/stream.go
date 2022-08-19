@@ -3,10 +3,10 @@ package grpc
 import (
 	"time"
 
-	"latticexyz/chain-sidecar/pkg/ecs"
-	"latticexyz/chain-sidecar/pkg/eth"
-	multiplexer "latticexyz/chain-sidecar/pkg/multiplexer"
-	pb "latticexyz/chain-sidecar/protobuf/go-ecs-stream"
+	"latticexyz/mud/packages/services/pkg/ecs"
+	"latticexyz/mud/packages/services/pkg/eth"
+	multiplexer "latticexyz/mud/packages/services/pkg/multiplexer"
+	pb "latticexyz/mud/packages/services/protobuf/go-ecs-stream"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"

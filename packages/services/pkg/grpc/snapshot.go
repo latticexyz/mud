@@ -1,7 +1,7 @@
 package grpc
 
 import (
-	pb "latticexyz/chain-sidecar/protobuf/go-ecs-snapshot"
+	pb "latticexyz/mud/packages/services/protobuf/go-ecs-snapshot"
 )
 
 type ecsSnapshotServer struct {

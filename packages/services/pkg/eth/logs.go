@@ -2,7 +2,7 @@ package eth
 
 import (
 	"fmt"
-	"latticexyz/chain-sidecar/pkg/world"
+	"latticexyz/mud/packages/services/pkg/world"
 	"sort"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"

@@ -1,9 +1,9 @@
 package snapshot
 
 import (
-	"latticexyz/chain-sidecar/pkg/eth"
-	"latticexyz/chain-sidecar/pkg/logger"
-	"latticexyz/chain-sidecar/pkg/world"
+	"latticexyz/mud/packages/services/pkg/eth"
+	"latticexyz/mud/packages/services/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/world"
 	"math"
 
 	"github.com/ethereum/go-ethereum/common"

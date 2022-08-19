@@ -2,8 +2,8 @@ package eth
 
 import (
 	"context"
-	"latticexyz/chain-sidecar/pkg/logger"
-	"latticexyz/chain-sidecar/pkg/world"
+	"latticexyz/mud/packages/services/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/world"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum"

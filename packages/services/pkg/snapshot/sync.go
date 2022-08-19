@@ -1,8 +1,8 @@
 package snapshot
 
 import (
-	"latticexyz/chain-sidecar/pkg/eth"
-	"latticexyz/chain-sidecar/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/eth"
+	"latticexyz/mud/packages/services/pkg/logger"
 	"math"
 	"math/big"
 	"time"

@@ -1,6 +1,6 @@
 # MUD services
 
-This package contains the source code for MUD services -- ECS Snapshot Service and ECS Stream Service.
+This package contains the source code for MUD services for enhanced interactions with on-chain ECS state -- ECS Snapshot Service and ECS Stream Service.
 
 [ECS State Snapshot Service](./cmd/ecs-snapshot/main.go) -- The service's function is to compute and save ECS state from the chain via "snapshots", such that a client can perform an initial sync to the ECS world state without having to process all ECS state changes (in the form of events).
 
@@ -46,7 +46,7 @@ The service can be built and used within a Kubernetes cluster (via a resource th
 docker build -f Dockerfile.snapshot --tag ghcr.io/latticexyz/lattice-ecs-snapshot:<YOUR_TAG>
 ```
 
-This will build the service and tag the image such that you can push it to the Lattice GitHub Container Registry, for example
+This will build the service and tag the image such that you can push to a container registry, for example
 
 ```
 docker push ghcr.io/latticexyz/lattice-ecs-snapshot:<YOUR_TAG>

@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"latticexyz/chain-sidecar/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/logger"
 	"os"
 	"path/filepath"
 

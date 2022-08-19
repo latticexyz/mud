@@ -2,9 +2,9 @@ package stream
 
 import (
 	"context"
-	"latticexyz/chain-sidecar/pkg/eth"
-	"latticexyz/chain-sidecar/pkg/multiplexer"
-	"latticexyz/chain-sidecar/pkg/utils"
+	"latticexyz/mud/packages/services/pkg/eth"
+	"latticexyz/mud/packages/services/pkg/multiplexer"
+	"latticexyz/mud/packages/services/pkg/utils"
 
 	"github.com/avast/retry-go"
 	"github.com/ethereum/go-ethereum/core/types"

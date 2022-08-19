@@ -1,10 +1,10 @@
 package ecs
 
 import (
-	"latticexyz/chain-sidecar/pkg/eth"
-	"latticexyz/chain-sidecar/pkg/logger"
-	"latticexyz/chain-sidecar/pkg/world"
-	pb "latticexyz/chain-sidecar/protobuf/go-ecs-stream"
+	"latticexyz/mud/packages/services/pkg/eth"
+	"latticexyz/mud/packages/services/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/world"
+	pb "latticexyz/mud/packages/services/protobuf/go-ecs-stream"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"

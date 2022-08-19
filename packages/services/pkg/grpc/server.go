@@ -2,9 +2,9 @@ package grpc
 
 import (
 	"fmt"
-	multiplexer "latticexyz/chain-sidecar/pkg/multiplexer"
-	pb_snapshot "latticexyz/chain-sidecar/protobuf/go-ecs-snapshot"
-	pb_stream "latticexyz/chain-sidecar/protobuf/go-ecs-stream"
+	multiplexer "latticexyz/mud/packages/services/pkg/multiplexer"
+	pb_snapshot "latticexyz/mud/packages/services/protobuf/go-ecs-snapshot"
+	pb_stream "latticexyz/mud/packages/services/protobuf/go-ecs-stream"
 	"net"
 	"net/http"
 
