@@ -6,6 +6,18 @@ import { observable, runInAction } from "mobx";
 import { createTxQueue } from "./createTxQueue";
 import { Network } from "./createNetwork";
 
+/**
+ * Create a system executor object.
+ * The system executor object is an object indexed by available system ids (given in the interfaces object)
+ * with {@link createTxQueue tx-queue enabled system contracts} as value.
+ *
+ * @param world Recs World object.
+ * @param network Network ({@link createNetwork}).
+ * @param systems Recs registry component containing the mapping from system address to system id.
+ * @param interfaces Interfaces of the systems to create.
+ * @param options
+ * @returns Systems object to call system contracts.
+ */
 export function createSystemExecutor<T extends { [key: string]: Contract }>(
   world: World,
   network: Network,

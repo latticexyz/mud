@@ -14,13 +14,23 @@ import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
 
-// Create a ECSStateSnapshotServiceClient
+/**
+ * Create a ECSStateSnapshotServiceClient
+ * @param url ECSStateSnapshotService URL
+ * @returns ECSStateSnapshotServiceClient
+ */
 export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient {
   const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
   return new ECSStateSnapshotServiceClient(transport);
 }
 
-// Return the snapshot block number
+/**
+ * Return the snapshot block number.
+ *
+ * @param snapshotClient ECSStateSnapshotServiceClient
+ * @param worldAddress Address of the World contract to get the snapshot for.
+ * @returns Snapsot block number
+ */
 export async function getSnapshotBlockNumber(
   snapshotClient: ECSStateSnapshotServiceClient | undefined,
   worldAddress: string
@@ -36,7 +46,14 @@ export async function getSnapshotBlockNumber(
   return blockNumber;
 }
 
-// Load from remote snapshot service
+/**
+ * Load from the remote snapshot service.
+ *
+ * @param snapshotClient ECSStateSnapshotServiceClient
+ * @param worldAddress Address of the World contract to get the snapshot for.
+ * @param decode Function to decode raw component values ({@link createDecode}).
+ * @returns Promise resolving with {@link CacheStore} containing the snapshot state.
+ */
 export async function fetchSnapshot(
   snapshotClient: ECSStateSnapshotServiceClient,
   worldAddress: string,
@@ -62,7 +79,14 @@ export async function fetchSnapshot(
   return cacheStore;
 }
 
-// Use streaming service if available, otherwise fetch events from RPC
+/**
+ * Create a RxJS stream of {@link NetworkComponentUpdate}s.
+ * Use streaming service if available, otherwise fetch events from RPC.
+ *
+ * @param blockNumber$ Block number stream
+ * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
+ * @returns Stream of {@link NetworkComponentUpdate}s.
+ */
 export function createLatestEventStream(
   blockNumber$: Observable<number>,
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>
@@ -84,7 +108,15 @@ export function createLatestEventStream(
   );
 }
 
-// Fetch events in blocks between fromBlockNumber to toBlockNumber (can be replaced by own service in the future)
+/**
+ * Fetch ECS state from contracts in the given block range.
+ *
+ * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
+ * @param fromBlockNumber Start of block range (inclusive).
+ * @param toBlockNumber End of block range (inclusive).
+ * @param interval Chunk fetching the blocks in intervals to avoid overwhelming the client.
+ * @returns Promise resolving with {@link CacheStore} containing the contract ECS state in the given block range.
+ */
 export async function fetchStateInBlockRange(
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
   fromBlockNumber: number,
@@ -111,6 +143,14 @@ export async function fetchStateInBlockRange(
 }
 
 // Creates a function to decode raw component values
+/**
+ * Create a function to decode raw component values.
+ * Fetches component schemas from the contracts and caches them.
+ *
+ * @param worldConfig Contract address and interface of the World contract
+ * @param provider ethers JsonRpcProvider
+ * @returns Function to decode raw component values using their contract component id
+ */
 export function createDecode(worldConfig: ContractConfig, provider: JsonRpcProvider) {
   const decoders: { [key: string]: (data: BytesLike) => ComponentValue } = {};
   const world = new Contract(worldConfig.address, worldConfig.abi, provider) as World;
@@ -132,14 +172,24 @@ export function createDecode(worldConfig: ContractConfig, provider: JsonRpcProvi
   return decode;
 }
 
-// Create world contract event topics
+/**
+ * Create World contract topics for the `ComponentValueSet` and `ComponentVaueRemoved` events.
+ * @returns World contract topics for the `ComponentValueSet` and `ComponentVaueRemoved` events.
+ */
 export function createWorldTopics() {
   return createTopics<{ World: World }>({
     World: { abi: WorldAbi, topics: ["ComponentValueSet", "ComponentValueRemoved"] },
   });
 }
 
-// Generator function for fetchWorldEventsInBlockRange
+/**
+ * Create a function to fetch World contract events in a given block range.
+ * @param provider ethers JsonRpcProvider
+ * @param worldConfig Contract address and interface of the World contract.
+ * @param batch Set to true if the provider supports batch queries (recommended).
+ * @param decode Function to decode raw component values ({@link createDecode})
+ * @returns Function to fetch World contract events in a given block range.
+ */
 export function createFetchWorldEventsInBlockRange(
   provider: JsonRpcProvider,
   worldConfig: ContractConfig,

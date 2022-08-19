@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.13;
 
+/**
+ * Enum of supported schema types
+ */
 library LibTypes {
   enum SchemaValue {
     BOOL,

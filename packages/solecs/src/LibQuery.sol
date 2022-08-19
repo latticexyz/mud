@@ -95,9 +95,11 @@ function passesQueryFragmentProxy(
   return (passes, true);
 }
 
-// For positive fragments (Has/HasValue) we need to find any passing entity up the proxy chain
-// so as soon as passes is true, we can early return. For negative fragments (Not/NotValue) every entity
-// up the proxy chain must pass, so we can early return if we find one that doesn't pass.
+/**
+ * For positive fragments (Has/HasValue) we need to find any passing entity up the proxy chain
+ * so as soon as passes is true, we can early return. For negative fragments (Not/NotValue) every entity
+ * up the proxy chain must pass, so we can early return if we find one that doesn't pass.
+ */
 function isBreakingPassState(bool passes, QueryFragment memory fragment) pure returns (bool) {
   return (passes && isPositiveFragment(fragment)) || (!passes && isNegativeFragment(fragment));
 }
@@ -113,6 +115,11 @@ struct QueryVars {
 library LibQuery {
   using LinkedListLib for LinkedList;
 
+  /**
+   * Execute the given query and return a list of entity ids
+   * @param fragments List of query fragments to execute
+   * @return entities List of entities matching the query
+   */
   function query(QueryFragment[] memory fragments) internal view returns (uint256[] memory) {
     QueryVars memory v;
     v.entities = LinkedListLib.newLinkedList(32);
@@ -313,6 +320,9 @@ library LibQuery {
     return (new bytes(0), false);
   }
 
+  /**
+   * Helper function to turn a linked list into an array
+   */
   function listToArray(LinkedList list, uint256 length) public pure returns (uint256[] memory array) {
     array = new uint256[](length);
     if (length == 0) return array;
@@ -329,6 +339,9 @@ library LibQuery {
     }
   }
 
+  /**
+   * Helper function to turn an array into a linked list
+   */
   function arrayToList(uint256[] memory array) public pure returns (LinkedList list) {
     list = LinkedListLib.newLinkedList(32);
     for (uint256 i; i < array.length; i++) {

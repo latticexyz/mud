@@ -4,6 +4,12 @@ import { Provider } from "@ethersproject/providers";
 import { computed, IComputedValue } from "mobx";
 import { mapObject } from "@latticexyz/utils";
 
+/**
+ * Create an object of contracts connected to the currently connected provider.
+ *
+ * @param config: {@link ContractsConfig}
+ * @returns Object with contracts connected to the currently connected provider.
+ */
 export async function createContracts<C extends Contracts>({
   config,
   asyncConfig,

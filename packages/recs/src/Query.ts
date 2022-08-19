@@ -28,14 +28,63 @@ import {
 } from "./types";
 import { toUpdateStream } from "./utils";
 
+/**
+ * Create a {@link HasQueryFragment}.
+ *
+ * @remarks
+ * The {@link HasQueryFragment} filters for entities that have the given component,
+ * independent from the component value.
+ *
+ * @example
+ * Query for all entities with a `Position`.
+ * ```
+ * runQuery([Has(Position)]);
+ * ```
+ *
+ * @param component Component this query fragment refers to.
+ * @returns query fragment to be used in {@link runQuery} or {@link defineQuery}.
+ */
 export function Has<T extends Schema>(component: Component<T>): HasQueryFragment<T> {
   return { type: QueryFragmentType.Has, component };
 }
 
+/**
+ * Create a {@link NotQueryFragment}.
+ *
+ * @remarks
+ * The {@link NotQueryFragment} filters for entities that don't have the given component,
+ * independent from the component value.
+ *
+ * @example
+ * Query for all entities with a `Position` that are not `Movable`.
+ * ```
+ * runQuery([Has(Position), Not(Movable)]);
+ * ```
+ *
+ * @param component Component this query fragment refers to.
+ * @returns query fragment to be used in {@link runQuery} or {@link defineQuery}.
+ */
 export function Not<T extends Schema>(component: Component<T>): NotQueryFragment<T> {
   return { type: QueryFragmentType.Not, component };
 }
 
+/**
+ * Create a {@link HasValueQueryFragment}.
+ *
+ * @remarks
+ * The {@link HasValueQueryFragment} filters for entities that have the given component
+ * with the given component value.
+ *
+ * @example
+ * Query for all entities at Position (0,0).
+ * ```
+ * runQuery([HasValue(Position, { x: 0, y: 0 })]);
+ * ```
+ *
+ * @param component Component this query fragment refers to.
+ * @param value Only include entities with this (partial) component value from the result.
+ * @returns query fragment to be used in {@link runQuery} or {@link defineQuery}.
+ */
 export function HasValue<T extends Schema>(
   component: Component<T>,
   value: Partial<ComponentValue<T>>
@@ -43,6 +92,23 @@ export function HasValue<T extends Schema>(
   return { type: QueryFragmentType.HasValue, component, value };
 }
 
+/**
+ * Create a {@link NotValueQueryFragment}.
+ *
+ * @remarks
+ * The {@link NotValueQueryFragment} filters for entities that don't have the given component
+ * with the given component value.
+ *
+ * @example
+ * Query for all entities that have a `Position`, except for those at `Position` (0,0).
+ * ```
+ * runQuery([Has(Position), NotValue(Position, { x: 0, y: 0 })]);
+ * ```
+ *
+ * @param component Component this query fragment refers to.
+ * @param value Exclude entities with this (partial) component value from the result.
+ * @returns query fragment to be used in {@link runQuery} or {@link defineQuery}.
+ */
 export function NotValue<T extends Schema>(
   component: Component<T>,
   value: Partial<ComponentValue<T>>
@@ -50,14 +116,57 @@ export function NotValue<T extends Schema>(
   return { type: QueryFragmentType.NotValue, component, value };
 }
 
+/**
+ * Create a {@link ProxyReadQueryFragment}.
+ *
+ * @remarks
+ * The {@link ProxyReadQueryFragment} activates the "proxy read mode" for the rest of the query.
+ * This means that for all remaining fragments in the query not only the entities themselves are checked, but also
+ * their "ancestors" up to the given `depth` on the relationship chain defined by the given `component`.
+ *
+ * @example
+ * Query for all entities that have a `Position` and are (directly or indirectly) owned by an entity with `Name` "Alice".
+ * ```
+ * runQuery([Has(Position), ProxyRead(OwnedByEntity, Number.MAX_SAFE_INTEGER), HasValue(Name, { name: "Alice" })]);
+ * ```
+ *
+ * @param component Component this query fragment refers to.
+ * @param depth Max depth in the relationship chain to traverse.
+ * @returns query fragment to be used in {@link runQuery} or {@link defineQuery}.
+ */
 export function ProxyRead(component: Component<{ value: Type.Entity }>, depth: number): ProxyReadQueryFragment {
   return { type: QueryFragmentType.ProxyRead, component, depth };
 }
 
+/**
+ * Create a {@link ProxyExpandQueryFragment}.
+ *
+ * @remarks
+ * The {@link ProxyExpandQueryFragment} activates the "proxy expand mode" for the rest of the query.
+ * This means that for all remaining fragments in the query not only the matching entities themselves are included in the intermediate set,
+ * but also all their "children" down to the given `depth` on the relationship chain defined by the given `component`.
+ *
+ * @example
+ * Query for all entities (directly or indirectly) owned by an entity with `Name` "Alice".
+ * ```
+ * runQuery([ProxyExpand(OwnedByEntity, Number.MAX_SAFE_INTEGER), HasValue(Name, { name: "Alice" })]);
+ * ```
+ *
+ * @param component Component to apply this query fragment to.
+ * @param depth Max depth in the relationship chain to traverse.
+ * @returns query fragment to be used in {@link runQuery} or {@link defineQuery}.
+ */
 export function ProxyExpand(component: Component<{ value: Type.Entity }>, depth: number): ProxyExpandQueryFragment {
   return { type: QueryFragmentType.ProxyExpand, component, depth };
 }
 
+/**
+ * Helper function to check whether a given entity passes a given query fragment.
+ *
+ * @param entity Entity to check.
+ * @param fragment Query fragment to check.
+ * @returns True if the entity passes the query fragment, else false.
+ */
 function passesQueryFragment<T extends Schema>(entity: EntityIndex, fragment: EntityQueryFragment<T>): boolean {
   if (fragment.type === QueryFragmentType.Has) {
     // Entity must have the given component
@@ -82,29 +191,64 @@ function passesQueryFragment<T extends Schema>(entity: EntityIndex, fragment: En
   throw new Error("Unknown query fragment");
 }
 
+/**
+ * Helper function to check whether a query fragment is "positive" (ie `Has` or `HasValue`)
+ *
+ * @param fragment Query fragment to check.
+ * @returns True if the query fragment is positive, else false.
+ */
 function isPositiveFragment<T extends Schema>(
   fragment: QueryFragment<T>
 ): fragment is HasQueryFragment<T> | HasValueQueryFragment<T> {
   return fragment.type === QueryFragmentType.Has || fragment.type == QueryFragmentType.HasValue;
 }
 
+/**
+ * Helper function to check whether a query fragment is "negative" (ie `Not` or `NotValue`)
+ *
+ * @param fragment Query fragment to check.
+ * @returns True if the query fragment is negative, else false.
+ */
 function isNegativeFragment<T extends Schema>(
   fragment: QueryFragment<T>
 ): fragment is NotQueryFragment<T> | NotValueQueryFragment<T> {
   return fragment.type === QueryFragmentType.Not || fragment.type == QueryFragmentType.NotValue;
 }
 
+/**
+ * Helper function to check whether a query fragment is a setting fragment (ie `ProxyExpand` or `ProxyRead`)
+ *
+ * @param fragment Query fragment to check.
+ * @returns True if the query fragment is a setting fragment, else false.
+ */
 function isSettingFragment<T extends Schema>(fragment: QueryFragment<T>): fragment is SettingQueryFragment {
   return fragment.type === QueryFragmentType.ProxyExpand || fragment.type == QueryFragmentType.ProxyRead;
 }
 
-// For positive fragments (Has/HasValue) we need to find any passing entity up the proxy chain
-// so as soon as passes is true, we can early return. For negative fragments (Not/NotValue) every entity
-// up the proxy chain must pass, so we can early return if we find one that doesn't pass.
+/**
+ * Helper function to check whether the result of a query pass check is a breaking state.
+ *
+ * @remarks
+ * For positive fragments (Has/HasValue) we need to find any passing entity up the proxy chain
+ * so as soon as passes is true, we can early return. For negative fragments (Not/NotValue) every entity
+ * up the proxy chain must pass, so we can early return if we find one that doesn't pass.
+ *
+ * @param passes Boolean result of previous query pass check.
+ * @param fragment Fragment that was used in the query pass check.
+ * @returns True if the result is breaking pass state, else false.
+ */
 function isBreakingPassState(passes: boolean, fragment: EntityQueryFragment<Schema>) {
   return (passes && isPositiveFragment(fragment)) || (!passes && isNegativeFragment(fragment));
 }
 
+/**
+ * Helper function to check whether an entity passes a query fragment when taking into account a {@link ProxyReadQueryFragment}.
+ *
+ * @param entity {@link EntityIndex} of the entity to check.
+ * @param fragment Query fragment to check.
+ * @param proxyRead {@link ProxyReadQueryFragment} to take into account.
+ * @returns True if the entity passes the query fragment, else false.
+ */
 function passesQueryFragmentProxy<T extends Schema>(
   entity: EntityIndex,
   fragment: EntityQueryFragment<T>,
@@ -133,11 +277,13 @@ function passesQueryFragmentProxy<T extends Schema>(
 }
 
 /**
- * Recursively computes all direct and indirect child entities up to the specified depth
- * @param entity Entity to get all child entities up to the specified depth
- * @param component Entity reference component
- * @param depth Depth up to which the recursion should be applied
- * @returns Set of entities that are child entities of the given entity via the given component
+ * Recursively compute all direct and indirect child entities up to the specified depth
+ * down the relationship chain defined by the given component.
+ *
+ * @param entity Entity to get all child entities for up to the specified depth
+ * @param component Component to use for the relationship chain.
+ * @param depth Depth up to which the recursion should be applied.
+ * @returns Set of entities that are child entities of the given entity via the given component.
  */
 export function getChildEntities(
   entity: EntityIndex,
@@ -157,6 +303,21 @@ export function getChildEntities(
   return new Set([...directChildEntities, ...indirectChildEntities]);
 }
 
+/**
+ * Execute a list of query fragments to receive a Set of matching entities.
+ *
+ * @remarks
+ * The query fragments are executed from left to right and are concatenated with a logical `AND`.
+ * For performance reasons, the most restrictive query fragment should be first in the list of query fragments,
+ * in order to reduce the number of entities the next query fragment needs to be checked for.
+ * If no proxy fragments are used, every entity in the resulting set passes every query fragment.
+ * If setting fragments are used, the order of the query fragments influences the result, since settings only apply to
+ * fragments after the setting fragment.
+ *
+ * @param fragments Query fragments to execute.
+ * @param initialSet Optional: provide a Set of entities to execute the query on. If none is given, all existing entities are used for the query.
+ * @returns Set of entities matching the query fragments.
+ */
 export function runQuery(fragments: QueryFragment[], initialSet?: Set<EntityIndex>): Set<EntityIndex> {
   let entities: Set<EntityIndex> | undefined = initialSet ? new Set([...initialSet]) : undefined; // Copy to a fresh set because it will be modified in place
   let proxyRead: ProxyReadQueryFragment | undefined = undefined;
@@ -225,9 +386,34 @@ export function runQuery(fragments: QueryFragment[], initialSet?: Set<EntityInde
 }
 
 /**
- * @param fragments Query fragments
- * @returns Stream of updates for entities that are matching the query or used to match and now stopped matching the query
- * Note: runOnInit was removed in V2. Make sure your queries are defined before any component update events arrive.
+ * Create a query object including an update$ stream and a Set of entities currently matching the query.
+ *
+ * @remarks
+ * `update$` stream needs to be subscribed to in order for the logic inside the stream to be executed and therefore
+ * in order for the `matching` set to be updated.
+ *
+ * `defineQuery` should be strongly preferred over `runQuery` if the query is used for systems or other
+ * use cases that repeatedly require the query result or updates to the query result. `defineQuery` does not
+ * reevaluate the entire query if an accessed component changes, but only performs the minimal set of checks
+ * on the updated entity to evaluate wether the entity still matches the query, resulting in significant performance
+ * advantages over `runQuery`.
+ *
+ * The query fragments are executed from left to right and are concatenated with a logical `AND`.
+ * For performance reasons, the most restrictive query fragment should be first in the list of query fragments,
+ * in order to reduce the number of entities the next query fragment needs to be checked for.
+ * If no proxy fragments are used, every entity in the resulting set passes every query fragment.
+ * If setting fragments are used, the order of the query fragments influences the result, since settings only apply to
+ * fragments after the setting fragment.
+ *
+ * @param fragments Query fragments to execute.
+ * @param options Optional: {
+ *   runOnInit: if true, the query is executed once with `runQuery` to build an iniital Set of matching entities. If false only updates after the query was created are considered.
+ *   initialSet: if given, this set is passed to `runOnInit` when building the initial Set of matching entities.
+ * }
+ * @returns Query object: {
+ *  update$: RxJS stream of updates to the query result. The update contains the component update that caused the query update, as well as the {@link UpdateType update type}.
+ *  matching: Mobx observable set of entities currently matching the query.
+ * }.
  */
 export function defineQuery(
   fragments: QueryFragment[],
@@ -333,6 +519,9 @@ export function defineQuery(
 }
 
 /**
+ * Define a query object that only passes update events of type {@link UpdateType}.Update to the `update$` stream.
+ * See {@link defineQuery} for details.
+ *
  * @param fragments Query fragments
  * @returns Stream of component updates of entities that had already matched the query
  */
@@ -344,6 +533,9 @@ export function defineUpdateQuery(
 }
 
 /**
+ * Define a query object that only passes update events of type {@link UpdateType}.Enter to the `update$` stream.
+ * See {@link defineQuery} for details.
+ *
  * @param fragments Query fragments
  * @returns Stream of component updates of entities matching the query for the first time
  */
@@ -355,6 +547,9 @@ export function defineEnterQuery(
 }
 
 /**
+ * Define a query object that only passes update events of type {@link UpdateType}.Exit to the `update$` stream.
+ * See {@link defineQuery} for details.
+ *
  * @param fragments Query fragments
  * @returns Stream of component updates of entities not matching the query anymore for the first time
  */

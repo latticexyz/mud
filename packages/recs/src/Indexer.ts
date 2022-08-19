@@ -1,8 +1,20 @@
 import { getComponentEntities, getComponentValue } from "./Component";
 import { Component, ComponentValue, EntityIndex, Indexer, Metadata, Schema } from "./types";
 
-// Simple implementation of a "reverse mapping" indexer.
-// Could be made more memory efficient by using a hash of the value as key.
+/**
+ * Create an indexed component from a given component.
+ *
+ * @remarks
+ * An indexed component keeps a "reverse mapping" from {@link ComponentValue} to the Set of {@link createEntity Entities} with this value.
+ * This adds a performance overhead to modifying component values and a memory overhead since in the worst case there is one Set per entity (if every entity has a different component value).
+ * In return the performance for querying for entities with a given component value is close to O(1) (instead of O(#entities) in a regular non-indexed component).
+ * As a rule of thumb only components that are added to many entities and are queried with {@link HasValue} a lot should be indexed (eg. the Position component).
+ *
+ * @dev This could be made more (memory) efficient by using a hash of the component value as key, but would require handling hash collisions.
+ *
+ * @param component {@link defineComponent Component} to index.
+ * @returns Indexed version of the component.
+ */
 export function createIndexer<S extends Schema, M extends Metadata>(component: Component<S, M>): Indexer<S, M> {
   const valueToEntities = new Map<string, Set<EntityIndex>>();
 

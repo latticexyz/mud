@@ -1,7 +1,7 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { sleep } from "@latticexyz/utils";
 import { computed } from "mobx";
-import { SyncWorker } from "./Sync.worker";
+import { SyncWorker } from "./SyncWorker";
 import { Subject } from "rxjs";
 import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
 import { EntityID } from "@latticexyz/recs";

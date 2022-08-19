@@ -4,6 +4,13 @@ import { IComputedValue, reaction } from "mobx";
 import { concat, concatMap, EMPTY, endWith, filter, map, range, ReplaySubject, take } from "rxjs";
 import { Providers } from "./createProvider";
 
+/**
+ * Creates a stream of block numbers based on the `block` event of the currently connected provider.
+ *
+ * @param providers Mobx computed providers object (created by {@link createReconnectingProvider}).
+ * @param options
+ * @returns Stream of block numbers based on connected provider's `block` event.
+ */
 export function createBlockNumberStream(
   providers: IComputedValue<Providers | undefined>,
   options?: {
