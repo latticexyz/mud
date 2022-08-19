@@ -1,0 +1,75 @@
+syntax = "proto3";
+package ecssnapshot;
+
+option go_package = "protobuf/go-ecs-snapshot";
+
+message ECSState {
+    uint32 component_id_idx = 1;
+    uint32 entity_id_idx = 2;
+    bytes value = 3;
+}
+
+message ECSStateSnapshot {
+    repeated ECSState state = 1;
+    repeated string stateComponents = 2;
+    repeated string stateEntities = 3;
+    string stateHash = 4;
+    uint32 startBlockNumber = 5;
+    uint32 endBlockNumber = 6;
+    string worldAddress = 7;
+}
+
+message Worlds {
+  repeated string worldAddress = 1;
+}
+
+// The Snapshot Service definition.
+service ECSStateSnapshotService {
+  // Requests the latest ECS state.
+  rpc GetStateLatest (ECSStateRequestLatest) returns (ECSStateReply) {}
+
+  // Requests the latest ECS state in stream format, which will chunk the state.
+  rpc GetStateLatestStream (ECSStateRequestLatest) returns (stream ECSStateReply) {}
+
+  // Requests the latest block number based on the latest ECS state.
+  rpc GetStateBlockLatest (ECSStateBlockRequestLatest) returns (ECSStateBlockReply) {}
+
+  // Requests the ECS state at specific block.
+  rpc GetStateAtBlock (ECSStateRequestAtBlock) returns (ECSStateReply) {}
+
+  // Requests a list of known worlds based on chain state.
+  rpc GetWorlds (WorldsRequest) returns (Worlds) {}
+}
+
+// The request message for the latest ECS state.
+message ECSStateRequestLatest {
+  string worldAddress = 1;
+}
+
+// The request message for the latest block based on latest ECS state.
+message ECSStateBlockRequestLatest {
+  string worldAddress = 1;
+}
+
+// The request message for the ECS state given a block number.
+message ECSStateRequestAtBlock {
+  uint64 blockNumber = 1;
+}
+
+// The request message for all worlds.
+message WorldsRequest {
+
+}
+
+// The response message containing the current state, hash of that state, and the block number of that state.
+message ECSStateReply {
+  repeated ECSState state = 1;
+  repeated string stateComponents = 2;
+  repeated string stateEntities = 3;
+  string stateHash = 4;
+  uint32 blockNumber = 5;
+}
+
+message ECSStateBlockReply {
+   uint32 blockNumber = 1;
+}
