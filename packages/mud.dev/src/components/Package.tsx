@@ -1,9 +1,10 @@
+import { Link as RouterLink } from "react-router-dom";
 import styled from "styled-components";
 import { Description, Headline } from "./styled";
 
 export const Package: React.FC<{ name: string; description: string; link: string }> = ({ name, description, link }) => {
   return (
-    <Link href={link}>
+    <Link to={link}>
       <Container>
         <Name>{name}</Name>
         <Desc>{description}</Desc>
@@ -12,7 +13,7 @@ export const Package: React.FC<{ name: string; description: string; link: string
   );
 };
 
-const Link = styled.a`
+const Link = styled(RouterLink)`
   text-decoration: none;
 `;
 

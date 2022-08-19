@@ -1,44 +1,25 @@
 import React from "react";
 import styled from "styled-components";
 import logo from "./assets/mud-logo.png";
-import { Description, Headline, Package } from "./components";
-
-const packages = [
-  { name: "solecs", description: "a good package", link: "/solecs" },
-  { name: "solecs", description: "a good package", link: "/solecs" },
-  { name: "solecs", description: "a good package", link: "/solecs" },
-  { name: "solecs", description: "a good package", link: "/solecs" },
-  { name: "solecs", description: "a good package", link: "/solecs" },
-  { name: "solecs", description: "a good package", link: "/solecs" },
-  { name: "solecs", description: "a good package", link: "/solecs" },
-  { name: "solecs", description: "a good package", link: "/solecs" },
-  { name: "solecs", description: "a good package", link: "/solecs" },
-];
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Docs, Home } from "./components";
 
 function App() {
   return (
-    <Layout>
-      <Sidebar>
-        <Logo src={logo} alt={"MUD logo"} />
-        <LogoText>
-          <p>MUD.DEV</p>
-        </LogoText>
-      </Sidebar>
-      <Main>
-        <MainHeadline>MUD</MainHeadline>
-        <MainDescription>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ut enim ad minim veniam. Luis nostrud exercitation ullamco laboris.
-        </MainDescription>
-        <PackageGrid>
-          {packages.map((p) => (
-            <PackageWrapper>
-              <Package key={p.name} {...p} />
-            </PackageWrapper>
-          ))}
-        </PackageGrid>
-      </Main>
-    </Layout>
+    <BrowserRouter>
+      <Layout>
+        <Sidebar>
+          <Logo src={logo} alt={"MUD logo"} />
+          <LogoText>
+            <a href="/">MUD.DEV</a>
+          </LogoText>
+        </Sidebar>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/docs/:packageName" element={<Docs />} />
+        </Routes>
+      </Layout>
+    </BrowserRouter>
   );
 }
 
@@ -69,30 +50,11 @@ const LogoText = styled.div`
   align-items: start;
   justify-content: center;
 
-  p {
+  a {
     writing-mode: tb-rl;
     transform: rotate(-180deg);
     font-weight: 700;
+    text-decoration: none;
+    color: #fff;
   }
-`;
-
-const Main = styled.div`
-  padding: 20px 100px;
-`;
-
-const MainHeadline = styled(Headline)`
-  font-size: 150px;
-`;
-
-const MainDescription = styled(Description)`
-  font-size: 25px;
-`;
-
-const PackageGrid = styled.div`
-  margin-top: 60px;
-`;
-
-const PackageWrapper = styled.div`
-  display: inline-block;
-  margin: 20px 20px 0 0;
 `;
