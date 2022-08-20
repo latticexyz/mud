@@ -14,7 +14,7 @@
     "test": "jest",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "link": "yarn link",
-    "docs": "rimraf docs && typedoc --hideGenerator --out docs src"
+    "docs": "typedoc src"
   },
   "devDependencies": {
     "@latticexyz/utils": "^0.7.0",
