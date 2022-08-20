@@ -22,7 +22,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/docs/:packageName" element={<Docs />} />
           <Route path="/blog/" element={<Blog />} />
-          <Route path="/blog/:post" element={<Markdown />} />
+          <Route path="/blog/*" element={<Markdown />} />
         </Routes>
       </Layout>
     </BrowserRouter>
