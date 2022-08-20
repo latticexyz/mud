@@ -4,23 +4,23 @@ import { Package } from "./Package";
 import { Description, Headline } from "./styled";
 
 const packages = [
-  { name: "solecs", description: "solidity entity component system", link: "/docs/solecs" },
-  { name: "recs", description: "reactive entity component system in typescript", link: "/docs/recs" },
+  { name: "solecs", description: "solidity entity component system", href: "/docs/solecs" },
+  { name: "recs", description: "reactive entity component system in typescript", href: "/docs/recs" },
   {
     name: "network",
     description: "typescript library for synchronizing contract and client state",
-    link: "/docs/network",
+    href: "/docs/network",
   },
-  { name: "services", description: "go chain indexing and streaming services", link: "/docs/services" },
+  { name: "services", description: "go chain indexing and streaming services", href: "/docs/services" },
   {
     name: "cli",
     description: "mud command line interface",
-    external: "https://github.com/latticexyz/mud/tree/main/packages/cli",
+    href: "https://github.com/latticexyz/mud/tree/main/packages/cli",
   },
-  { name: "phaserx", description: "mud wrapper around phaser 2D game engine", link: "/docs/phaserx" },
-  { name: "utils", description: "various utilities", link: "/docs/utils" },
-  { name: "std-contracts", description: "mud contract standard library", link: "/docs/std-contracts" },
-  { name: "std-client", description: "mud client standard library", link: "/docs/std-contracts" },
+  { name: "phaserx", description: "mud wrapper around phaser 2D game engine", href: "/docs/phaserx" },
+  { name: "utils", description: "various utilities", href: "/docs/utils" },
+  { name: "std-contracts", description: "mud contract standard library", href: "/docs/std-contracts" },
+  { name: "std-client", description: "mud client standard library", href: "/docs/std-client" },
 ];
 
 export function Home() {

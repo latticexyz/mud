@@ -2,7 +2,7 @@ import React from "react";
 import styled from "styled-components";
 import logo from "./assets/mud-logo.png";
 import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
-import { Blog, Docs, Home, Markdown } from "./components";
+import { Blog, Home, Markdown } from "./components";
 
 function App() {
   return (
@@ -24,7 +24,6 @@ function App() {
         <SidebarPlaceholder />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/docs/*" element={<Docs />} />
           <Route path="/blog/" element={<Blog />} />
           <Route path="/blog/*" element={<Markdown />} />
         </Routes>
