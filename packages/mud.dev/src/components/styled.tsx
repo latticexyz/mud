@@ -10,5 +10,5 @@ export const Description = styled.p`
 export const Headline = styled.h2`
   font-family: Space Mono;
   font-weight: 700;
-  color: var(--accent-color);
+  color: var(--primary-color);
 `;

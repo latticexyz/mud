@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
 import logo from "./assets/mud-logo.png";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Docs, Home, Markdown } from "./components";
+import { BrowserRouter, Link, Route, Routes } from "react-router-dom";
+import { Blog, Docs, Home, Markdown } from "./components";
 
 function App() {
   return (
@@ -10,13 +10,18 @@ function App() {
       <Layout>
         <Sidebar>
           <Logo src={logo} alt={"MUD logo"} />
-          <LogoText>
-            <a href="/">MUD.DEV</a>
-          </LogoText>
+          <Menu>
+            <LogoText to="/">MUD</LogoText>
+            <MenuItem to="/blog">blog</MenuItem>
+            <MenuAnchor href="https://github.com/latticexyz/mud">github</MenuAnchor>
+            <MenuAnchor href="https://twitter.com/latticexyz">twitter</MenuAnchor>
+          </Menu>
         </Sidebar>
+        <SidebarPlaceholder />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/docs/:packageName" element={<Docs />} />
+          <Route path="/blog/" element={<Blog />} />
           <Route path="/blog/:post" element={<Markdown />} />
         </Routes>
       </Layout>
@@ -27,8 +32,8 @@ function App() {
 export default App;
 
 const Layout = styled.div`
-  display: grid;
   min-height: 100vh;
+  display: grid;
   width: 100%;
   grid-template-columns: 50px 1fr;
 `;
@@ -39,23 +44,44 @@ const Sidebar = styled.div`
   grid-template-rows: 50px 1fr;
   justify-content: center;
   grid-gap: 10px;
+  position: fixed;
+  left: 0;
+  height: 100%;
+  width: 50px;
 `;
+
+const SidebarPlaceholder = styled.div``;
 
 const Logo = styled.img`
   height: 100%;
   padding: 10px;
 `;
 
-const LogoText = styled.div`
+const Menu = styled.div`
   display: grid;
-  align-items: start;
+  align-content: start;
   justify-content: center;
+  grid-gap: 30px;
+`;
 
-  a {
-    writing-mode: tb-rl;
-    transform: rotate(-180deg);
-    font-weight: 700;
-    text-decoration: none;
-    color: #fff;
-  }
+const MenuAnchor = styled.a`
+  font-family: "Space Grotesk", sans-serif;
+  writing-mode: tb-rl;
+  transform: rotate(-180deg);
+  text-decoration: none;
+  color: #fff;
+`;
+
+const MenuItem = styled(Link)`
+  font-family: "Space Grotesk", sans-serif;
+  writing-mode: tb-rl;
+  transform: rotate(-180deg);
+  text-decoration: none;
+  color: #fff;
+`;
+
+const LogoText = styled(MenuItem)`
+  font-family: "Space Mono", sans-serif;
+  font-weight: 700;
+  color: var(--primary-color);
 `;

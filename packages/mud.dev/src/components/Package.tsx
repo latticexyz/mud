@@ -3,9 +3,20 @@ import styled from "styled-components";
 import { Description, Headline } from "./styled";
 
 export const Package: React.FC<{ name: string; description: string; link: string }> = ({ name, description, link }) => {
+  function handleMouseEnter(e: any) {
+    const color = `hsl(${Math.floor(Math.random() * 360)} 100% 80%)`;
+    document.documentElement.style.setProperty("--primary-color", color);
+    document.documentElement.style.setProperty("--secondary-color", "white");
+  }
+
+  function handleMouseLeave(e: any) {
+    document.documentElement.style.setProperty("--primary-color", "#eb4926");
+    document.documentElement.style.setProperty("--secondary-color", "#eb4926");
+  }
+
   return (
     <Link to={link}>
-      <Container>
+      <Container onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
         <Name>{name}</Name>
         <Desc>{description}</Desc>
       </Container>
@@ -22,6 +33,13 @@ const Container = styled.div`
   width: 250px;
   height: 250px;
   padding: 30px;
+
+  :hover {
+    border-color: var(--primary-color);
+    h2 {
+      color: var(--primary-color);
+    }
+  }
 `;
 
 const Desc = styled(Description)`
@@ -30,4 +48,5 @@ const Desc = styled(Description)`
 
 const Name = styled(Headline)`
   font-size: 30px;
+  color: var(--secondary-color);
 `;
