@@ -4,7 +4,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/logger"
 	"latticexyz/mud/packages/services/pkg/world"
-	pb "latticexyz/mud/packages/services/protobuf/go-ecs-stream"
+	pb "latticexyz/mud/packages/services/protobuf/go/ecs-stream"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/core/types"

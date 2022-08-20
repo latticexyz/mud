@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"latticexyz/mud/packages/services/pkg/logger"
-	pb "latticexyz/mud/packages/services/protobuf/go-ecs-snapshot"
+	pb "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 
 	"math"
 	"os"

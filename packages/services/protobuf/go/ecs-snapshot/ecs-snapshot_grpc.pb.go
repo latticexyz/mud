@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.3
-// source: protobufs/ecs-snapshot.proto
+// source: proto/ecs-snapshot.proto
 
-package go_ecs_snapshot
+package ecs_snapshot
 
 import (
 	context "context"
@@ -284,5 +284,5 @@ var ECSStateSnapshotService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "protobufs/ecs-snapshot.proto",
+	Metadata: "proto/ecs-snapshot.proto",
 }

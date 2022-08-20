@@ -12,15 +12,15 @@ protoc: protoc-go protoc-ts
 .PHONY: protoc
 
 protoc-go:
-	protoc --go_out=. --go-grpc_out=. ./protobufs/ecs-stream.proto
-	protoc --go_out=. --go-grpc_out=. ./protobufs/ecs-snapshot.proto
+	protoc --go_out=. --go-grpc_out=. ./proto/ecs-stream.proto
+	protoc --go_out=. --go-grpc_out=. ./proto/ecs-snapshot.proto
 .PHONY: protoc-go
 
 protoc-ts:
-	mkdir -p ./protobuf/ts-ecs-stream
-	mkdir -p ./protobuf/ts-ecs-snapshot
-	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts-ecs-stream --proto_path protobufs protobufs/ecs-stream.proto
-	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts-ecs-snapshot --proto_path protobufs protobufs/ecs-snapshot.proto
+	mkdir -p ./protobuf/ts/ecs-stream
+	mkdir -p ./protobuf/ts/ecs-snapshot
+	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/ecs-stream --proto_path proto proto/ecs-stream.proto
+	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/ecs-snapshot --proto_path proto proto/ecs-snapshot.proto
 .PHONY: protoc-ts
 
 build: ecs-stream ecs-snapshot

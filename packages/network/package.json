@@ -54,6 +54,7 @@
     "rxjs": "^7.5.5"
   },
   "dependencies": {
+    "@latticexyz/services": "0.7.0",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "@protobuf-ts/plugin": "^2.7.0",
     "@protobuf-ts/runtime-rpc": "^2.7.0",

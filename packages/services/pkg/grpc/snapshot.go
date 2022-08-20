@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/snapshot"
-	pb "latticexyz/mud/packages/services/protobuf/go-ecs-snapshot"
+	pb "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 )
 
 type ecsSnapshotServer struct {

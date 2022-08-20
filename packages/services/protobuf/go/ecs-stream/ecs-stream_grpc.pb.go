@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.21.3
-// source: protobufs/ecs-stream.proto
+// source: proto/ecs-stream.proto
 
-package go_ecs_stream
+package ecs_stream
 
 import (
 	context "context"
@@ -130,5 +130,5 @@ var ECSStreamService_ServiceDesc = grpc.ServiceDesc{
 			ServerStreams: true,
 		},
 	},
-	Metadata: "protobufs/ecs-stream.proto",
+	Metadata: "proto/ecs-stream.proto",
 }
