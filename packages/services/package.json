@@ -14,5 +14,10 @@
   },
   "devDependencies": {
     "typedoc": "^0.23.10"
+  },
+  "dependencies": {
+    "@protobuf-ts/grpcweb-transport": "^2.7.0",
+    "@protobuf-ts/plugin": "^2.7.0",
+    "@protobuf-ts/runtime-rpc": "^2.7.0"
   }
 }

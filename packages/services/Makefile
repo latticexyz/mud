@@ -8,10 +8,20 @@ LDFLAGSSTRING +=-X main.GitCommit=$(GITCOMMIT)
 LDFLAGSSTRING +=-X main.GitDate=$(GITDATE)
 LDFLAGS := -ldflags "$(LDFLAGSSTRING)"
 
-protoc:
+protoc: protoc-go protoc-ts
+.PHONY: protoc
+
+protoc-go:
 	protoc --go_out=. --go-grpc_out=. ./protobufs/ecs-stream.proto
 	protoc --go_out=. --go-grpc_out=. ./protobufs/ecs-snapshot.proto
-.PHONY: protoc
+.PHONY: protoc-go
+
+protoc-ts:
+	mkdir -p ./protobuf/ts-ecs-stream
+	mkdir -p ./protobuf/ts-ecs-snapshot
+	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts-ecs-stream --proto_path protobufs protobufs/ecs-stream.proto
+	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts-ecs-snapshot --proto_path protobufs protobufs/ecs-snapshot.proto
+.PHONY: protoc-ts
 
 build: ecs-stream ecs-snapshot
 .PHONY: build

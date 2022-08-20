@@ -10,7 +10,7 @@ require (
 	github.com/improbable-eng/grpc-web v0.15.0
 	go.uber.org/zap v1.22.0
 	google.golang.org/grpc v1.48.0
-	google.golang.org/protobuf v1.27.1
+	google.golang.org/protobuf v1.28.1
 )
 
 require (
