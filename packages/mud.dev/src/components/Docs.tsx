@@ -1,9 +1,13 @@
-import { useParams } from "react-router-dom";
+import { useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 
 export function Docs() {
-  const { packageName } = useParams();
-  return <IFrame src={`https://mud.dev/${packageName}`}></IFrame>;
+  const location = useLocation();
+  const path = useMemo(() => {
+    return location.pathname.replace("/docs/", "");
+  }, [location]);
+  return <IFrame src={`https://docs.mud.dev/${path}`}></IFrame>;
 }
 
 const IFrame = styled.iframe`

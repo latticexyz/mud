@@ -13,14 +13,18 @@ function App() {
           <Menu>
             <LogoText to="/">MUD</LogoText>
             <MenuItem to="/blog">blog</MenuItem>
-            <MenuAnchor href="https://github.com/latticexyz/mud">github</MenuAnchor>
-            <MenuAnchor href="https://twitter.com/latticexyz">twitter</MenuAnchor>
+            <MenuAnchor href="https://github.com/latticexyz/mud" target="_blank">
+              github
+            </MenuAnchor>
+            <MenuAnchor href="https://twitter.com/latticexyz" target="_blank">
+              twitter
+            </MenuAnchor>
           </Menu>
         </Sidebar>
         <SidebarPlaceholder />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/docs/:packageName" element={<Docs />} />
+          <Route path="/docs/*" element={<Docs />} />
           <Route path="/blog/" element={<Blog />} />
           <Route path="/blog/*" element={<Markdown />} />
         </Routes>

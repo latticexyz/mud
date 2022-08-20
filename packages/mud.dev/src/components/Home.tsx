@@ -5,14 +5,18 @@ import { Description, Headline } from "./styled";
 
 const packages = [
   { name: "solecs", description: "solidity entity component system", link: "/docs/solecs" },
-  { name: "recs", description: "reactive typescript entity component system", link: "/docs/recs" },
+  { name: "recs", description: "reactive entity component system in typescript", link: "/docs/recs" },
   {
     name: "network",
     description: "typescript library for synchronizing contract and client state",
     link: "/docs/network",
   },
   { name: "services", description: "go chain indexing and streaming services", link: "/docs/services" },
-  { name: "cli", description: "mud command line interface", link: "/docs/cli" },
+  {
+    name: "cli",
+    description: "mud command line interface",
+    external: "https://github.com/latticexyz/mud/tree/main/packages/cli",
+  },
   { name: "phaserx", description: "mud wrapper around phaser 2D game engine", link: "/docs/phaserx" },
   { name: "utils", description: "various utilities", link: "/docs/utils" },
   { name: "std-contracts", description: "mud contract standard library", link: "/docs/std-contracts" },
@@ -29,8 +33,8 @@ export function Home() {
         autonomous worlds
       </MainSubheadline>
       <MainDescription>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-        magna aliqua. Ut enim ad minim veniam. Luis nostrud exercitation ullamco laboris.
+        MUD aims to solve all the hard problems of building on-chain games. It is open source and built with
+        composability and interoperability in mind.
       </MainDescription>
       <PackageGrid>
         {packages.map((p) => (

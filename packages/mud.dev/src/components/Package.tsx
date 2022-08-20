@@ -2,7 +2,12 @@ import { Link as RouterLink } from "react-router-dom";
 import styled from "styled-components";
 import { Description, Headline } from "./styled";
 
-export const Package: React.FC<{ name: string; description: string; link: string }> = ({ name, description, link }) => {
+export const Package: React.FC<{ name: string; description: string; link?: string; external?: string }> = ({
+  name,
+  description,
+  link,
+  external,
+}) => {
   function setRandomPrimaryColor() {
     const color = `hsl(${Math.floor(Math.random() * 360)} 100% 80%)`;
     document.documentElement.style.setProperty("--primary-color", color);
@@ -15,7 +20,12 @@ export const Package: React.FC<{ name: string; description: string; link: string
   }
 
   return (
-    <Link to={link}>
+    <Link
+      to={link ?? "#"}
+      onClick={() => {
+        if (external) window.open(external);
+      }}
+    >
       <Container onMouseEnter={setRandomPrimaryColor} onClick={resetPrimaryColor} onMouseLeave={resetPrimaryColor}>
         <Name>{name}</Name>
         <Desc>{description}</Desc>
