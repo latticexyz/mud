@@ -1,9 +1,11 @@
 # Introduction to the Entity Component System (ECS) pattern
 
-This document outlines the basics of the ECS pattern (or the ECS variant we use in MUD).
+_by [alvarius](https://twitter.com/_alvarius)_
+
+This article outlines the basics of the ECS pattern (or the ECS variant we use in MUD).
 It is recommended to first read this introduction to create some general intuition for ECS before diving into more specific documentation of the MUD packages.
 
-![intro to ecs](assets/ecs-intro.png)
+![intro to ecs](/assets/ecs-intro.png)
 
 ## Motivation
 
@@ -46,7 +48,7 @@ Now implementing our entities is trivial:
 - `Tower`: [`Combat`]
 - `Chest`: [`Inventory`]
 
-![entities in ECS](assets/ecs-solution.png)
+![entities in ECS](/assets/ecs-solution.png)
 
 And we even get the option to add more types of entities for free:
 
@@ -54,7 +56,7 @@ And we even get the option to add more types of entities for free:
 - `Warchest`: [`Combat`, `Inventory`]
 - `Hero`: [`Movable`, `Combat`, `Inventory`]
 
-Note how every component we add exponentially increases the number of entity types we can create (Number of possible combinations of `n` components = 2<sup>`n`</sup>).
+Note how every component we add exponentially increases the number of entity types we can create (Number of possible combinations of `n` components = `2^n`).
 
 And since each system only cares about a limited set of components, our logic is highly decoupled and very extendable.
 

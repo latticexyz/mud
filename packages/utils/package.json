@@ -14,7 +14,7 @@
     "test": "jest",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "link": "yarn link",
-    "docs": "rimraf docs && typedoc --hideGenerator --out docs src"
+    "docs": "typedoc src"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.1.3",

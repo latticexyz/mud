@@ -1,0 +1,40 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  transition: color 100ms ease-in, border-color 100ms ease-in;
+}
+
+body {
+  font-family: "Space Grotesk", sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: black;
+  min-height: 100vh;
+  width: 100vw;
+  position: relative;
+  color: #fff;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Space Mono", sans-serif;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+:root {
+  --primary-color: #eb4926;
+  --secondary-color: #eb4926;
+}
+
+a {
+  color: var(--primary-color);
+  text-decoration: none;
+}
