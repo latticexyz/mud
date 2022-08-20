@@ -7,7 +7,7 @@ import { Observable, map, concatMap, of } from "rxjs";
 import { createDecoder } from "../createDecoder";
 import { createTopics } from "../createTopics";
 import { fetchEventsInBlockRange } from "../networkUtils";
-import { ECSStateSnapshotServiceClient } from "../protogen/ecs-snapshot.client";
+import { ECSStateSnapshotServiceClient } from "@latticexyz/services/protobuf/ts-ecs-snapshot/ecs-snapshot.client";
 import { NetworkComponentUpdate, ContractConfig } from "../types";
 import { CacheStore, createCacheStore, storeEvent } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
