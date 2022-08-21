@@ -5,15 +5,18 @@
   transition: color 100ms ease-in, border-color 100ms ease-in;
 }
 
+html {
+  zoom: 1;
+}
+
 body {
   font-family: "Space Grotesk", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: black;
-  min-height: 100vh;
-  width: 100vw;
   position: relative;
   color: #fff;
+  width: 100%;
 }
 
 h1,
