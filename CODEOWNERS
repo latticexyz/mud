@@ -1,0 +1,12 @@
+# These owners will be the default owners for everything in
+# the repo. Unless a later match takes precedence.
+
+*       @alvrs
+
+# Package-specific owners. Order is important; the last matching
+# pattern takes the most precedence. When someone opens a pull request
+# that only modifies a specific package for which there is an owner
+# specified, only that owner and not the global owner(s) will be requested
+# for a review.
+
+/packages/services/ @authcall
