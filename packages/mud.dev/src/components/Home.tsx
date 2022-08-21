@@ -50,6 +50,11 @@ export function Home() {
 const Main = styled.div`
   padding: 20px 100px;
   max-width: 1600px;
+  min-width: 300px;
+
+  @media (max-width: 600px) {
+    padding: 40px;
+  }
 `;
 
 const MainHeadline = styled(Headline)`
@@ -57,6 +62,10 @@ const MainHeadline = styled(Headline)`
   display: inline-block;
   margin-right: 30px;
   vertical-align: sub;
+
+  @media (max-width: 600px) {
+    font-size: 100px;
+  }
 `;
 
 const MainSubheadline = styled(Description)`
@@ -65,10 +74,18 @@ const MainSubheadline = styled(Description)`
   font-style: italic;
   display: inline-block;
   margin-bottom: 45px;
+
+  @media (max-width: 600px) {
+    font-size: 30px;
+  }
 `;
 
 const MainDescription = styled(Description)`
   font-size: 25px;
+
+  @media (max-width: 600px) {
+    font-size: 22px;
+  }
 `;
 
 const PackageGrid = styled.div`

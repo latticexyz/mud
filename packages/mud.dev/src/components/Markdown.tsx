@@ -57,7 +57,7 @@ export function Markdown(args: { path?: string }) {
 const Container = styled.div`
   padding: 0 100px 100px 100px;
   max-width: 1000px;
-  min-width: 400px;
+  min-width: 300px;
 
   @media (max-width: 600px) {
     padding: 40px;
@@ -79,10 +79,15 @@ const Container = styled.div`
     font-size: 70px;
     padding-top: 45px;
     color: var(--primary-color);
+
+    @media (max-width: 600px) {
+      padding-top: 0;
+      font-size: 30px;
+    }
   }
 
   h2 {
-    font-size: 28px;
+    font-size: 25px;
     padding-top: 45px;
   }
 
