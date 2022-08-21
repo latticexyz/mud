@@ -2,7 +2,7 @@
 
 `solecs` is a framework to build highly composable, extendable and maintainable on-chain Worlds.
 
-It is designed around the Entity Component System architecture pattern. To build some fundamental intuition around ECS, have a look at [our MUD ECS introduction](https://mud.dev/ecs).
+It is designed around the Entity Component System architecture pattern. To build some fundamental intuition around ECS, have a look at [our MUD ECS introduction](https://mud.dev/blog/ecs).
 
 `solecs` is seamlessly integrated with the other MUD libraries, but can be used independently.
 

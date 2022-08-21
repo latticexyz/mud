@@ -3,7 +3,7 @@
 `recs` is built with reactivity in mind.
 `Components` and `Queries` expose an `update$` stream, that `Systems` can react to.
 
-To build some fundamental intuition about ECS, have a look at [our MUD ECS introduction](https://mud.dev/ecs).
+To build some fundamental intuition about ECS, have a look at [our MUD ECS introduction](https://mud.dev/blog/ecs).
 
 `recs` is seamlessly integrated with the other MUD libraries, but can be used independently.
 
