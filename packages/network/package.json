@@ -14,9 +14,6 @@
     "test": "jest",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "link": "yarn link",
-    "protobuf:gen:snapshot": "protoc --ts_opt eslint_disable --ts_out . --proto_path protobuf protobuf/ecs-snapshot.proto && mv ecs-snapshot.ts ecs-snapshot.client.ts src/protogen/",
-    "protobuf:gen:stream": "protoc --ts_opt eslint_disable --ts_out . --proto_path protobuf protobuf/ecs-stream.proto && mv ecs-stream.ts ecs-stream.client.ts src/protogen",
-    "protobuf:gen": "rimraf src/protogen && mkdir src/protogen && yarn protobuf:gen:snapshot && yarn protobuf:gen:stream",
     "docs": "typedoc src"
   },
   "devDependencies": {
@@ -54,9 +51,7 @@
     "rxjs": "^7.5.5"
   },
   "dependencies": {
-    "@protobuf-ts/grpcweb-transport": "^2.7.0",
-    "@protobuf-ts/plugin": "^2.7.0",
-    "@protobuf-ts/runtime-rpc": "^2.7.0",
+    "@latticexyz/services": "0.7.0",
     "observable-webworker": "^4.0.1"
   },
   "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f"

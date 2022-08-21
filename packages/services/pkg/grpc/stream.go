@@ -6,7 +6,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/ecs"
 	"latticexyz/mud/packages/services/pkg/eth"
 	multiplexer "latticexyz/mud/packages/services/pkg/multiplexer"
-	pb "latticexyz/mud/packages/services/protobuf/go-ecs-stream"
+	pb "latticexyz/mud/packages/services/protobuf/go/ecs-stream"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"

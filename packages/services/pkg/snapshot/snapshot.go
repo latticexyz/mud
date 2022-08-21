@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"latticexyz/mud/packages/services/pkg/logger"
-	pb "latticexyz/mud/packages/services/protobuf/go-ecs-snapshot"
+	pb "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 
 	"math"
 	"os"
@@ -37,7 +37,7 @@ func snapshotTypeToName(snapshotType SnapshotType) (string, error) {
 	}
 }
 
-func isSnaphotAvailableLatest(worldAddress string) bool {
+func IsSnaphotAvailableLatest(worldAddress string) bool {
 	_, err := os.Stat(getSnapshotFilenameLatest(worldAddress))
 	return err == nil
 }
@@ -263,12 +263,12 @@ func readStateSnapshotLatest(worldAddress string) ECSState {
 	return decodeState(readStateLatest(worldAddress))
 }
 
-func rawReadStateSnapshotLatest(worldAddress string) *pb.ECSStateSnapshot {
+func RawReadStateSnapshotLatest(worldAddress string) *pb.ECSStateSnapshot {
 	logger.GetLogger().Info("reading latest raw snapshot", zap.String("category", "Snapshot"))
 	return decodeSnapshot(readStateLatest(worldAddress))
 }
 
-func chunkRawStateSnapshot(rawStateSnapshot *pb.ECSStateSnapshot, chunkPercentage int) []*pb.ECSStateSnapshot {
+func ChunkRawStateSnapshot(rawStateSnapshot *pb.ECSStateSnapshot, chunkPercentage int) []*pb.ECSStateSnapshot {
 	chunked := []*pb.ECSStateSnapshot{}
 	chunkIdx := 0
 	chunkSize := int(math.Ceil(float64(len(rawStateSnapshot.State))/float64(100))) * chunkPercentage
@@ -400,7 +400,7 @@ func takeWorldAddressesSnapshot(worldAddresses []string) {
 }
 
 func readWorldAddressesSnapshot() []string {
-	if !isWorldAddressSnapshotAvailable() {
+	if !IsWorldAddressSnapshotAvailable() {
 		return []string{}
 	}
 	encoding := readState(SerializedWorldsFilename)
@@ -409,11 +409,11 @@ func readWorldAddressesSnapshot() []string {
 	return worldAddressList
 }
 
-func rawReadWorldAddressesSnapshot() *pb.Worlds {
+func RawReadWorldAddressesSnapshot() *pb.Worlds {
 	return decodeWorldAddresses(readState(SerializedWorldsFilename))
 }
 
-func isWorldAddressSnapshotAvailable() bool {
+func IsWorldAddressSnapshotAvailable() bool {
 	_, err := os.Stat(SerializedWorldsFilename)
 	return err == nil
 }

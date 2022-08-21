@@ -1,7 +1,7 @@
 syntax = "proto3";
 package ecssnapshot;
 
-option go_package = "protobuf/go-ecs-snapshot";
+option go_package = "protobuf/go/ecs-snapshot";
 
 message ECSState {
     uint32 component_id_idx = 1;

@@ -3,4 +3,4 @@
 !bin/**
 !package.json
 !README.md
-!protobufs/**
+!protobuf/**

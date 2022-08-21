@@ -1,7 +1,7 @@
 syntax = "proto3";
 package ecsstream;
 
-option go_package = "protobuf/go-ecs-stream";
+option go_package = "protobuf/go/ecs-stream";
 
 message ECSEvent {
   string eventType = 1;

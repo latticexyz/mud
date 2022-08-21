@@ -58,7 +58,7 @@ func getInitialStateChain() (ChainECSState, uint64) {
 
 func getInitialState(worldAddress string) (ECSState, uint64) {
 	// Check if a local snapshot is available, and if yes, sync from that.
-	if !isSnaphotAvailableLatest(worldAddress) {
+	if !IsSnaphotAvailableLatest(worldAddress) {
 		return getEmptyState(), 0
 	}
 
