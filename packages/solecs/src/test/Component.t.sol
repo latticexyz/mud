@@ -15,8 +15,9 @@ contract ComponentTest is DSTestPlus {
   TestComponent internal component;
 
   function setUp() public {
-    address world = address(new World());
-    component = new TestComponent(world);
+    World world = new World();
+    world.init();
+    component = new TestComponent(address(world));
   }
 
   function testSetAndGetValue() public {

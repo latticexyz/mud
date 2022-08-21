@@ -18,7 +18,8 @@
     "postpack": "mv package.json.bak package.json",
     "globalinstall": "yarn build && yarn prepare && npm link",
     "build": "rimraf dist && tsc -p . && chmod u+x dist/index.js",
-    "link": "yarn link"
+    "link": "yarn link",
+    "test": "echo 'todo: add tests'"
   },
   "devDependencies": {
     "@types/clear": "^0.1.2",

@@ -11,7 +11,7 @@
   },
   "scripts": {
     "lint": "eslint . --ext .ts",
-    "test": "jest",
+    "test": "jest --forceExit",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "link": "yarn link",
     "docs": "typedoc src"

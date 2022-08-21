@@ -11,7 +11,8 @@
   },
   "scripts": {
     "build": "rimraf dist && rollup -c rollup.config.js",
-    "link": "yarn link"
+    "link": "yarn link",
+    "test": "echo 'todo: add tests'"
   },
   "devDependencies": {
     "@latticexyz/phaserx": "^0.7.0",

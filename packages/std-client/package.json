@@ -12,7 +12,8 @@
   "scripts": {
     "build": "rimraf dist && rollup -c rollup.config.js",
     "link": "yarn link",
-    "docs": "typedoc src"
+    "docs": "typedoc src",
+    "test": "echo 'todo: add tests'"
   },
   "devDependencies": {
     "@latticexyz/network": "^0.7.0",

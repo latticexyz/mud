@@ -10,7 +10,8 @@
   },
   "scripts": {
     "prepare": "make build",
-    "docs": "typedoc . --readme README.md"
+    "docs": "typedoc . --readme README.md",
+    "test": "echo 'todo: add tests'"
   },
   "devDependencies": {
     "typedoc": "^0.23.10"
