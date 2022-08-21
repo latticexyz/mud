@@ -14,7 +14,10 @@ jobs:
       - name: git-checkout
         uses: actions/checkout@v2
 
-      - name: Install all dependencies
+      - name: Clean yarn cache
+        run: yarn cache clean
+
+      - name: Install dependencies
         run: yarn
 
       - name: Build docs
