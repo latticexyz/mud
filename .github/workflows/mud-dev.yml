@@ -4,7 +4,7 @@ name: Build documentation and mud.dev page and push to mud.dev branch
 on:
   push:
     branches:
-      - alvrs/mud.dev
+      - main
 
 jobs:
   build:
