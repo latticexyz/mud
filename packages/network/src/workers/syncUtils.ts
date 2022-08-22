@@ -9,6 +9,7 @@ import { createTopics } from "../createTopics";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import { ECSStateSnapshotServiceClient } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot.client";
+import { ECSStreamServiceClient } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream.client";
 import { NetworkComponentUpdate, ContractConfig } from "../types";
 import { CacheStore, createCacheStore, storeEvent } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
@@ -23,6 +24,35 @@ import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
 export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient {
   const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
   return new ECSStateSnapshotServiceClient(transport);
+}
+
+/**
+ * Create a ECSStreamServiceClient
+ * @param url ECSStreamService URL
+ * @returns ECSStreamServiceClient
+ */
+export function createStreamClient(url: string): ECSStreamServiceClient {
+  const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
+  return new ECSStreamServiceClient(transport);
+}
+
+export async function openStream(
+  streamClient: ECSStreamServiceClient,
+  worldAddress: string
+): Observable<NetworkComponentUpdate> {
+  const stream = streamClient.subscribeToStreamLatest({
+    worldAddress: worldAddress,
+    blockNumber: true,
+    blockHash: true,
+    blockTimestamp: true,
+    transactionsConfirmed: true,
+    ecsEvents: true,
+  });
+
+  for await (const message of stream.responses) {
+    console.log("received message from ECSStream service");
+    console.log(message);
+  }
 }
 
 /**
