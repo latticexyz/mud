@@ -55,6 +55,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       chainId,
       worldContract,
       provider: { options: providerOptions },
+      initialBlockNumber,
     } = computedConfig.get();
 
     // Set up
@@ -84,17 +85,24 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     // Load initial state from cache or snapshot service
     const cacheBlockNumber = await getIndexDBCacheStoreBlockNumber(indexDbCache);
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
-    const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + 100; // Load from cache if the snapshot is less than 100 blocks newer than the cache
-    console.log(`[SyncWorker] cache block: ${cacheBlockNumber}, snapshot block: ${snapshotBlockNumber}`);
-    const initialState = syncFromSnapshot
-      ? await fetchSnapshot(snapshotClient, worldContract.address, decode)
-      : await loadIndexDbCacheStore(indexDbCache);
-    console.log(`[SyncWorker] got ${initialState.state.size} items from ${syncFromSnapshot ? "snapshot" : "cache"}`);
+    console.log(
+      `[SyncWorker] cache block: ${cacheBlockNumber}, snapshot block: ${snapshotBlockNumber}, start sync at ${initialBlockNumber}`
+    );
+    let initialState = createCacheStore();
+    if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber)) {
+      initialState.blockNumber = initialBlockNumber;
+    } else {
+      const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + 100; // Load from cache if the snapshot is less than 100 blocks newer than the cache
+      initialState = syncFromSnapshot
+        ? await fetchSnapshot(snapshotClient, worldContract.address, decode)
+        : await loadIndexDbCacheStore(indexDbCache);
+      console.log(`[SyncWorker] got ${initialState.state.size} items from ${syncFromSnapshot ? "snapshot" : "cache"}`);
+    }
 
     // Load events from gap between initial state and current block number from RPC
     const gapState = await fetchStateInBlockRange(
       fetchWorldEvents,
-      initialState.blockNumber,
+      initialState.blockNumber || initialBlockNumber,
       await streamStartBlockNumber
     );
     console.log(
