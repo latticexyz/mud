@@ -14,11 +14,8 @@ jobs:
       - name: git-checkout
         uses: actions/checkout@v2
 
-      - name: Clean yarn cache
-        run: yarn cache clean
-
       - name: Install dependencies
-        run: yarn
+        run: yarn install --network-concurrency 1
 
       - name: Build docs
         run: yarn docs # Build fresh docs
