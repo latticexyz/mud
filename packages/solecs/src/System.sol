@@ -13,6 +13,11 @@ abstract contract System is ISystem {
   IWorld world;
   address _owner;
 
+  modifier onlyOwner() {
+    require(msg.sender == _owner, "ONLY_OWNER");
+    _;
+  }
+
   constructor(IWorld _world, address _components) {
     _owner = msg.sender;
     components = _components == address(0) ? _world.components() : IUint256Component(_components);
