@@ -33,6 +33,7 @@
     "mobx-react-lite": "^3.4.0",
     "react": "^18.1.0",
     "react-collapse": "^5.1.1",
+    "react-dom": "^18.2.0",
     "react-syntax-highlighter": "^15.5.0",
     "rimraf": "^3.0.2",
     "rollup": "^2.69.0",
