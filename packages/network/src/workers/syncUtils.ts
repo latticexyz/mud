@@ -36,10 +36,7 @@ export function createStreamClient(url: string): ECSStreamServiceClient {
   return new ECSStreamServiceClient(transport);
 }
 
-export async function openStream(
-  streamClient: ECSStreamServiceClient,
-  worldAddress: string
-): Observable<NetworkComponentUpdate> {
+export async function openStream(streamClient: ECSStreamServiceClient, worldAddress: string) {
   const stream = streamClient.subscribeToStreamLatest({
     worldAddress: worldAddress,
     blockNumber: true,

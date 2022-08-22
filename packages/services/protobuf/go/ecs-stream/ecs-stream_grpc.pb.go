@@ -22,7 +22,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ECSStreamServiceClient interface {
-	// Requests the latest ECS state.
+	// Opens a cursor to receive the latest ECS events and additional data specified via request.
 	SubscribeToStreamLatest(ctx context.Context, in *ECSStreamBlockBundleRequest, opts ...grpc.CallOption) (ECSStreamService_SubscribeToStreamLatestClient, error)
 }
 
@@ -70,7 +70,7 @@ func (x *eCSStreamServiceSubscribeToStreamLatestClient) Recv() (*ECSStreamBlockB
 // All implementations must embed UnimplementedECSStreamServiceServer
 // for forward compatibility
 type ECSStreamServiceServer interface {
-	// Requests the latest ECS state.
+	// Opens a cursor to receive the latest ECS events and additional data specified via request.
 	SubscribeToStreamLatest(*ECSStreamBlockBundleRequest, ECSStreamService_SubscribeToStreamLatestServer) error
 	mustEmbedUnimplementedECSStreamServiceServer()
 }

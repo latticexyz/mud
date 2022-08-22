@@ -8,6 +8,7 @@ message ECSEvent {
   string componentId = 2;
   string entityId = 3;
   bytes value = 4;
+  string tx = 5;
 }
 
 // The Stream Service definition.
