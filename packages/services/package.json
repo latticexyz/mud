@@ -11,7 +11,8 @@
   "scripts": {
     "prepare": "make build",
     "docs": "typedoc . --readme README.md",
-    "test": "echo 'todo: add tests'"
+    "test": "echo 'todo: add tests'",
+    "link": "yarn link"
   },
   "devDependencies": {
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
