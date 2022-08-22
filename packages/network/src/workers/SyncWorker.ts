@@ -101,7 +101,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     } else {
       const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + 100; // Load from cache if the snapshot is less than 100 blocks newer than the cache
       initialState = syncFromSnapshot
-        ? await fetchSnapshot(snapshotClient, worldContract.address, decode)
+        ? await fetchSnapshotChunked(snapshotClient, worldContract.address, decode)
         : await loadIndexDbCacheStore(indexDbCache);
       console.log(`[SyncWorker] got ${initialState.state.size} items from ${syncFromSnapshot ? "snapshot" : "cache"}`);
     }
@@ -113,7 +113,8 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       await streamStartBlockNumber
     );
     console.log(
-      `[SyncWorker] got ${gapState.state.size} items from block range ${initialState.blockNumber
+      `[SyncWorker] got ${gapState.state.size} items from block range ${
+        initialState.blockNumber
       } -> ${await streamStartBlockNumber}`
     );
 
