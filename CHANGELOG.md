@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/latticexyz/mud/compare/v0.7.0...v0.8.0) (2022-08-22)
+
+### Bug Fixes
+
+- fix mud.dev build and improve responsiveness ([#134](https://github.com/latticexyz/mud/issues/134)) ([a3f2b24](https://github.com/latticexyz/mud/commit/a3f2b2438203697f1dd9f8710b15caa5cd83e40d))
+
+### Features
+
+- add codeowners file ([#132](https://github.com/latticexyz/mud/issues/132)) ([258c9e5](https://github.com/latticexyz/mud/commit/258c9e53d411f9062f525b1767dbe9243f5eeb71))
+- add mud.dev ([#133](https://github.com/latticexyz/mud/issues/133)) ([302588c](https://github.com/latticexyz/mud/commit/302588cbbab2803396b894bc006d13e6ac943da9))
+- integrate proto from services into network ([#131](https://github.com/latticexyz/mud/issues/131)) ([756fdb7](https://github.com/latticexyz/mud/commit/756fdb7cae6441e692088fd9cbbc8d9d327a70e0))
+
 # [0.7.0](https://github.com/latticexyz/mud/compare/v0.6.0...v0.7.0) (2022-08-19)
 
 ### Features

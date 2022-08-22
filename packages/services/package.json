@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/services",
   "license": "MIT",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "repository": {
     "type": "git",
@@ -14,10 +14,10 @@
     "test": "echo 'todo: add tests'"
   },
   "devDependencies": {
-    "typedoc": "^0.23.10",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "@protobuf-ts/plugin": "^2.7.0",
-    "@protobuf-ts/runtime-rpc": "^2.7.0"
+    "@protobuf-ts/runtime-rpc": "^2.7.0",
+    "typedoc": "^0.23.10"
   },
   "peerDependencies": {
     "@protobuf-ts/grpcweb-transport": "^2.7.0",

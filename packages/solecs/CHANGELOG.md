@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.8.0](https://github.com/latticexyz/mud/compare/v0.7.0...v0.8.0) (2022-08-22)
+
+### Bug Fixes
+
+- fix mud.dev build and improve responsiveness ([#134](https://github.com/latticexyz/mud/issues/134)) ([a3f2b24](https://github.com/latticexyz/mud/commit/a3f2b2438203697f1dd9f8710b15caa5cd83e40d))
+
+### Features
+
+- add mud.dev ([#133](https://github.com/latticexyz/mud/issues/133)) ([302588c](https://github.com/latticexyz/mud/commit/302588cbbab2803396b894bc006d13e6ac943da9))
+
 # [0.7.0](https://github.com/latticexyz/mud/compare/v0.6.0...v0.7.0) (2022-08-19)
 
 **Note:** Version bump only for package @latticexyz/solecs
