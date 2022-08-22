@@ -30,6 +30,7 @@ contract WorldTest is DSTest {
 
   function setUp() public {
     world = new World();
+    world.init();
     address worldAddress = address(world);
     component1 = new TestComponent1(worldAddress);
     component2 = new TestComponent2(worldAddress);

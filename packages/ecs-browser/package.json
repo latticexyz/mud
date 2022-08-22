@@ -11,7 +11,8 @@
   },
   "scripts": {
     "build": "rimraf dist && rollup -c rollup.config.js",
-    "link": "yarn link"
+    "link": "yarn link",
+    "test": "echo 'todo: add tests'"
   },
   "devDependencies": {
     "@latticexyz/phaserx": "^0.7.0",
@@ -43,17 +44,17 @@
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
-    "@latticexyz/phaserx": "^0.4.1",
-    "@latticexyz/recs": "^0.1.8",
-    "@latticexyz/std-client": "^0.1.8",
-    "@latticexyz/utils": ">=0.1.4",
+    "@latticexyz/phaserx": "^0.7.0",
+    "@latticexyz/recs": "^0.7.0",
+    "@latticexyz/std-client": "^0.7.0",
+    "@latticexyz/utils": "^0.7.0",
     "lodash": "^4.17.21",
     "mobx": "^6.4.2",
     "mobx-react-lite": "^3.4.0",
     "react": "^18.1.0",
     "react-collapse": "^5.1.1",
     "react-syntax-highlighter": "^15.5.0",
-    "recat-dom": "^18.2.0",
+    "react-dom": "^18.2.0",
     "rxjs": "7.5.5",
     "styled-components": "^5.3.5"
   },

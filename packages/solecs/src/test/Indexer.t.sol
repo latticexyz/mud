@@ -18,9 +18,11 @@ contract IndexerTest is DSTestPlus {
   Indexer internal regionCreatures;
 
   function setUp() public {
-    address world = address(new World());
-    position = new PositionComponent(world);
-    damage = new DamageComponent(world);
+    World world = new World();
+    world.init();
+
+    position = new PositionComponent(address(world));
+    damage = new DamageComponent(address(world));
     Component[] memory components = new Component[](2);
     components[0] = position;
     components[1] = damage;

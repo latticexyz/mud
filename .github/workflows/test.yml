@@ -1,0 +1,19 @@
+# .github/workflows/test.yml
+name: Run tests
+
+on:
+  push:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    name: Run tests
+    steps:
+      - name: git-checkout
+        uses: actions/checkout@v2
+
+      - name: Install dependencies
+        run: yarn
+
+      - name: Run tests
+        run: yarn test

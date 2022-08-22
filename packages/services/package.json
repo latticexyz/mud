@@ -10,12 +10,16 @@
   },
   "scripts": {
     "prepare": "make build",
-    "docs": "typedoc . --readme README.md"
+    "docs": "typedoc . --readme README.md",
+    "test": "echo 'todo: add tests'"
   },
   "devDependencies": {
-    "typedoc": "^0.23.10"
+    "typedoc": "^0.23.10",
+    "@protobuf-ts/grpcweb-transport": "^2.7.0",
+    "@protobuf-ts/plugin": "^2.7.0",
+    "@protobuf-ts/runtime-rpc": "^2.7.0"
   },
-  "dependencies": {
+  "peerDependencies": {
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "@protobuf-ts/plugin": "^2.7.0",
     "@protobuf-ts/runtime-rpc": "^2.7.0"

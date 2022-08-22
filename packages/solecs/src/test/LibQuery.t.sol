@@ -27,13 +27,14 @@ contract LibQueryTest is DSTest {
   OwnedByEntityComponent internal ownedByEntity;
 
   function setUp() public {
-    address world = address(new World());
-    component1 = new TestComponent1(world);
-    component2 = new TestComponent2(world);
-    component3 = new TestComponent3(world);
-    prototypeTag = new PrototypeTagComponent(world);
-    fromPrototype = new FromPrototypeComponent(world);
-    ownedByEntity = new OwnedByEntityComponent(world);
+    World world = new World();
+    world.init();
+    component1 = new TestComponent1(address(world));
+    component2 = new TestComponent2(address(world));
+    component3 = new TestComponent3(address(world));
+    prototypeTag = new PrototypeTagComponent(address(world));
+    fromPrototype = new FromPrototypeComponent(address(world));
+    ownedByEntity = new OwnedByEntityComponent(address(world));
   }
 
   function testHasQuery() public {

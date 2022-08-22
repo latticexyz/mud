@@ -55,7 +55,7 @@ describe("TypedArray", () => {
   beforeAll(() => {
     // Set up array
     array = [];
-    const randomOtherArr = [];
+    const randomOtherArr: number[] = [];
     for (let i = 0; i < size; i++) {
       array.push(i);
       randomOtherArr.push(i);
