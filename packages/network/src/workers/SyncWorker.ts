@@ -22,6 +22,7 @@ import {
   getSnapshotBlockNumber,
   fetchSnapshot,
   fetchStateInBlockRange,
+  fetchSnapshotChunked,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
@@ -106,8 +107,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       await streamStartBlockNumber
     );
     console.log(
-      `[SyncWorker] got ${gapState.state.size} items from block range ${
-        initialState.blockNumber
+      `[SyncWorker] got ${gapState.state.size} items from block range ${initialState.blockNumber
       } -> ${await streamStartBlockNumber}`
     );
 
