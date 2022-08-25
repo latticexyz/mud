@@ -218,7 +218,7 @@ export function createFetchWorldEventsInBlockRange(
       };
 
       const component = to256BitString(BigNumber.from(rawComponentId).toHexString());
-      const entity = to256BitString(BigNumber.from(entityId).toHexString()) as EntityID;
+      const entity = BigNumber.from(entityId).toHexString() as EntityID;
       const blockNumber = to;
 
       const ecsEvent = {
