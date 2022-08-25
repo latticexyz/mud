@@ -1,0 +1,11 @@
+{
+  "componentIds": ["0x3cb5a04c491973ef3e6b8956b1f91e820a6ef59a96ceac588d239c3063b993e4"],
+  "entities": ["0x993ea46c820076019f44d4b49e6daf808920edf45be6d2fd934a879224e0142f"],
+  "state": [
+    {
+      "component": 0,
+      "entity": 0,
+      "value": "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe2ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe2"
+    }
+  ]
+}
