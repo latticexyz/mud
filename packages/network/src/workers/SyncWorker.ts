@@ -1,7 +1,7 @@
-import { awaitStreamValue, DoWork, streamToDefinedComputed } from "@latticexyz/utils";
+import { awaitStreamValue, DoWork, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
 import { Observable, Subject } from "rxjs";
 import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
-import { Components } from "@latticexyz/recs";
+import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
 import {
   createCacheStore,
   getCacheStoreEntries,
@@ -24,6 +24,7 @@ import {
   fetchStateInBlockRange,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
+import { GodID, SyncState } from "./constants";
 export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
 
 export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfig<Cm>, Output<Cm>> {
@@ -32,6 +33,27 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
   constructor() {
     this.init();
+  }
+
+  /**
+   * Pass a loading state component update to the main thread.
+   * Can be used to indicate the initial loading state on a loading screen.
+   * @param state {@link SyncState}
+   * @param msg Message to describe the current loading step.
+   * @param percentage Number between 0 and 100 to describe the loading progress.
+   * @param blockNumber Optional: block number to pass in the component update.
+   */
+  private setLoadingState(state: SyncState, msg: string, percentage: number, blockNumber = 0) {
+    const update: Output<Cm> = {
+      component: keccak256("component.LoadingState"),
+      value: { state, msg, percentage } as unknown as ComponentValue<SchemaOf<Cm[keyof Cm]>>,
+      entity: GodID,
+      txHash: "worker",
+      lastEventInTx: false,
+      blockNumber,
+    };
+
+    this.output$.next(update);
   }
 
   /**
@@ -48,6 +70,8 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
    *  4.2 Else keep in sync with RPC
    */
   private async init() {
+    this.setLoadingState(SyncState.CONNECTING, "Connecting...", 0);
+
     // Turn config into variable accessible outside the stream
     const computedConfig = await streamToDefinedComputed(this.input$);
     const {
@@ -72,7 +96,9 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     );
 
     // Start syncing current events, but only start streaming to output once gap between initial state and current block is closed
+
     console.log("[SyncWorker] start initial sync");
+    this.setLoadingState(SyncState.INITIAL, "Starting initial sync", 0);
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
@@ -80,9 +106,10 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       storeEvent(cacheStore.current, event);
       if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
     });
-    const streamStartBlockNumber = awaitStreamValue(blockNumber$);
+    const streamStartBlockNumberPromise = awaitStreamValue(blockNumber$);
 
     // Load initial state from cache or snapshot service
+    this.setLoadingState(SyncState.INITIAL, "Fetching cache block number", 20);
     const cacheBlockNumber = await getIndexDBCacheStoreBlockNumber(indexDbCache);
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
     console.log(
@@ -93,32 +120,43 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       initialState.blockNumber = initialBlockNumber;
     } else {
       const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + 100; // Load from cache if the snapshot is less than 100 blocks newer than the cache
-      initialState = syncFromSnapshot
-        ? await fetchSnapshot(snapshotClient, worldContract.address, decode)
-        : await loadIndexDbCacheStore(indexDbCache);
+
+      if (syncFromSnapshot) {
+        this.setLoadingState(SyncState.INITIAL, "Fetching initial state from snapshot", 50);
+        initialState = await fetchSnapshot(snapshotClient, worldContract.address, decode);
+      } else {
+        this.setLoadingState(SyncState.INITIAL, "Fetching initial state from cache", 50);
+        initialState = await loadIndexDbCacheStore(indexDbCache);
+      }
+
       console.log(`[SyncWorker] got ${initialState.state.size} items from ${syncFromSnapshot ? "snapshot" : "cache"}`);
     }
 
     // Load events from gap between initial state and current block number from RPC
-    const gapState = await fetchStateInBlockRange(
-      fetchWorldEvents,
-      initialState.blockNumber || initialBlockNumber,
-      await streamStartBlockNumber
+    const streamStartBlockNumber = await streamStartBlockNumberPromise;
+    this.setLoadingState(
+      SyncState.INITIAL,
+      `Fetching state from block ${initialState.blockNumber} to ${streamStartBlockNumber}`,
+      80
     );
+    const gapState = await fetchStateInBlockRange(fetchWorldEvents, initialState.blockNumber, streamStartBlockNumber);
     console.log(
-      `[SyncWorker] got ${gapState.state.size} items from block range ${
-        initialState.blockNumber
-      } -> ${await streamStartBlockNumber}`
+      `[SyncWorker] got ${gapState.state.size} items from block range ${initialState.blockNumber} -> ${streamStartBlockNumber}`
     );
 
     // Merge initial state, gap state and live events since initial sync started
     cacheStore.current = mergeCacheStores([initialState, gapState, cacheStore.current]);
     console.log(`[SyncWorker] initial sync state size: ${cacheStore.current.state.size}`);
 
+    this.setLoadingState(SyncState.INITIAL, `Initializing with ${cacheStore.current.state.size} state entries`, 90);
+
     // Pass current cacheStore to output and start passing live events
     for (const update of getCacheStoreEntries(cacheStore.current)) {
       this.output$.next(update as Output<Cm>);
     }
+
+    // Let the client know loading is complete
+    this.setLoadingState(SyncState.LIVE, `Streaming live events`, 100, cacheStore.current.blockNumber);
     passLiveEventsToOutput = true;
 
     // Store the local cache to IndexDB once every 10 seconds
