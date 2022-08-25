@@ -29,7 +29,7 @@ describe("CacheStore", () => {
   describe("storeEvent", () => {
     it("should store events to the cacheStore", () => {
       const event: NetworkComponentUpdate = {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
@@ -41,15 +41,15 @@ describe("CacheStore", () => {
       storeEvent(cacheStore, event);
 
       expect(cacheStore.components).toEqual(["Position"]);
-      expect(cacheStore.entities).toEqual(["0x0"]);
+      expect(cacheStore.entities).toEqual(["0x00"]);
       expect(cacheStore.componentToIndex.get("Position")).toBe(0);
-      expect(cacheStore.entityToIndex.get("0x0")).toBe(0);
+      expect(cacheStore.entityToIndex.get("0x00")).toBe(0);
       expect(cacheStore.state.size).toBe(1);
       expect(cacheStore.blockNumber).toBe(0);
       expect([...cacheStore.state.entries()]).toEqual([[packTuple([0, 0]), { x: 1, y: 2 }]]);
 
       const event2: NetworkComponentUpdate = {
-        entity: "0x1" as EntityID,
+        entity: "0x01" as EntityID,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: true,
@@ -59,10 +59,10 @@ describe("CacheStore", () => {
       storeEvent(cacheStore, event2);
 
       expect(cacheStore.components).toEqual(["Position"]);
-      expect(cacheStore.entities).toEqual(["0x0", "0x1"]);
+      expect(cacheStore.entities).toEqual(["0x00", "0x01"]);
       expect(cacheStore.componentToIndex.get("Position")).toBe(0);
-      expect(cacheStore.entityToIndex.get("0x0")).toBe(0);
-      expect(cacheStore.entityToIndex.get("0x1")).toBe(1);
+      expect(cacheStore.entityToIndex.get("0x00")).toBe(0);
+      expect(cacheStore.entityToIndex.get("0x01")).toBe(1);
       expect(cacheStore.state.size).toBe(2);
       expect(cacheStore.blockNumber).toBe(0);
       expect([...cacheStore.state.entries()]).toEqual([
@@ -71,9 +71,44 @@ describe("CacheStore", () => {
       ]);
     });
 
+    it("should normalize hex entity ids to the same padding", () => {
+      const event1: NetworkComponentUpdate = {
+        entity: "0x00000000000000000000000001" as EntityID,
+        component: "Position",
+        value: { x: 1, y: 2 },
+        lastEventInTx: true,
+        blockNumber: 1,
+        txHash: "",
+      };
+
+      const event2: NetworkComponentUpdate = {
+        entity: "0x00001" as EntityID,
+        component: "Position",
+        value: { x: 1, y: 3 },
+        lastEventInTx: true,
+        blockNumber: 1,
+        txHash: "",
+      };
+
+      const cacheStore = createCacheStore();
+      storeEvent(cacheStore, event1);
+      storeEvent(cacheStore, event2);
+
+      const events = [...getCacheStoreEntries(cacheStore)];
+      expect(events.length).toBe(1);
+      expect(events[0]).toEqual({
+        entity: "0x01" as EntityID,
+        component: "Position",
+        value: { x: 1, y: 3 },
+        lastEventInTx: false,
+        blockNumber: 0,
+        txHash: "cache",
+      });
+    });
+
     it("should set block number to one less than the last received event", () => {
       const event: NetworkComponentUpdate = {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
@@ -95,7 +130,7 @@ describe("CacheStore", () => {
       const cacheStore = createCacheStore();
 
       const event: NetworkComponentUpdate = {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
@@ -107,7 +142,7 @@ describe("CacheStore", () => {
 
       expect([...getCacheStoreEntries(cacheStore)]).toEqual([
         {
-          entity: "0x0",
+          entity: "0x00",
           component: "Position",
           value: { x: 1, y: 2 },
           lastEventInTx: false,
@@ -117,7 +152,7 @@ describe("CacheStore", () => {
       ]);
 
       const event2: NetworkComponentUpdate = {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Position",
         value: { x: 2, y: 2 },
         lastEventInTx: false,
@@ -129,7 +164,7 @@ describe("CacheStore", () => {
 
       expect([...getCacheStoreEntries(cacheStore)]).toEqual([
         {
-          entity: "0x0",
+          entity: "0x00",
           component: "Position",
           value: { x: 2, y: 2 },
           lastEventInTx: false,
@@ -139,7 +174,7 @@ describe("CacheStore", () => {
       ]);
 
       const event3: NetworkComponentUpdate = {
-        entity: "0x1" as EntityID,
+        entity: "0x01" as EntityID,
         component: "Position",
         value: { x: -1, y: 2 },
         lastEventInTx: false,
@@ -151,7 +186,7 @@ describe("CacheStore", () => {
 
       expect([...getCacheStoreEntries(cacheStore)]).toEqual([
         {
-          entity: "0x0",
+          entity: "0x00",
           component: "Position",
           value: { x: 2, y: 2 },
           lastEventInTx: false,
@@ -159,7 +194,7 @@ describe("CacheStore", () => {
           txHash: "cache",
         },
         {
-          entity: "0x1",
+          entity: "0x01",
           component: "Position",
           value: { x: -1, y: 2 },
           lastEventInTx: false,
@@ -176,7 +211,7 @@ describe("CacheStore", () => {
       const cacheStore2 = createCacheStore();
 
       const event1: NetworkComponentUpdate = {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
@@ -185,7 +220,7 @@ describe("CacheStore", () => {
       };
 
       const event2: NetworkComponentUpdate = {
-        entity: "0x1" as EntityID,
+        entity: "0x01" as EntityID,
         component: "Health",
         value: { value: 1 },
         lastEventInTx: false,
@@ -197,7 +232,7 @@ describe("CacheStore", () => {
       storeEvent(cacheStore1, event2);
 
       const event3: NetworkComponentUpdate = {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Position",
         value: { x: 3, y: 2 },
         lastEventInTx: false,
@@ -206,7 +241,7 @@ describe("CacheStore", () => {
       };
 
       const event4: NetworkComponentUpdate = {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Speed",
         value: { value: 10 },
         lastEventInTx: true,
@@ -223,7 +258,7 @@ describe("CacheStore", () => {
 
       expect(entries).toEqual([
         {
-          entity: "0x0",
+          entity: "0x00",
           component: "Position",
           value: { x: 3, y: 2 },
           lastEventInTx: false,
@@ -231,7 +266,7 @@ describe("CacheStore", () => {
           txHash: "cache",
         },
         {
-          entity: "0x1",
+          entity: "0x01",
           component: "Health",
           value: { value: 1 },
           lastEventInTx: false,
@@ -239,7 +274,7 @@ describe("CacheStore", () => {
           txHash: "cache",
         },
         {
-          entity: "0x0",
+          entity: "0x00",
           component: "Speed",
           value: { value: 10 },
           lastEventInTx: false,
@@ -257,28 +292,28 @@ describe("CacheStore", () => {
       const cacheStore = createCacheStore();
 
       storeEvent(cacheStore, {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Position",
         value: { x: 1, y: 2 },
         blockNumber: 1,
       });
 
       storeEvent(cacheStore, {
-        entity: "0x1" as EntityID,
+        entity: "0x01" as EntityID,
         component: "Health",
         value: { value: 1 },
         blockNumber: 2,
       });
 
       storeEvent(cacheStore, {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Position",
         value: { x: 3, y: 2 },
         blockNumber: 3,
       });
 
       storeEvent(cacheStore, {
-        entity: "0x0" as EntityID,
+        entity: "0x00" as EntityID,
         component: "Speed",
         value: { value: 10 },
         blockNumber: 4,
