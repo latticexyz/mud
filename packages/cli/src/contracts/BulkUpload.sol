@@ -35,7 +35,11 @@ struct State {
 contract BulkUpload is DSTest {
   Cheats internal immutable vm = Cheats(HEVM_ADDRESS);
 
-  function run(string memory path, address worldAddress) public {
+  function run(
+    string memory path,
+    address worldAddress,
+    uint256 split
+  ) public {
     vm.startBroadcast();
 
     // Read JSON
@@ -76,8 +80,30 @@ contract BulkUpload is DSTest {
       getAddressById(world.systems(), oldBulkSetStateSystemID)
     );
 
-    // TODO: split up into chunks and call in a loop to support bigger states
-    bulkSetStateSystem.execute(abi.encode(componentIds, entities, state));
+    // Split up into chunks and call in a loop to support bigger states
+    uint256 entriesPerRound = state.length / split;
+    uint256 overflow = state.length - entriesPerRound * split;
+    for (uint256 i; i <= split; i++) {
+      ECSEvent[] memory stateRound = new ECSEvent[](i == split ? overflow : entriesPerRound);
+
+      if (i == split) {
+        for (uint256 j; j < overflow; j++) {
+          console.log(j);
+          stateRound[j] = state[entriesPerRound * split + j];
+        }
+      } else {
+        for (uint256 j; j < entriesPerRound; j++) {
+          console.log(j);
+          uint256 index = i * split + j;
+          stateRound[j] = state[index];
+        }
+      }
+
+      // TODO: Create a new component and entity array with only the components and entities of this state round
+      // and remap the state indices to those arrays. Right now we submit the entire entity and component array with each call,
+      // which is extremely inefficient.
+      bulkSetStateSystem.execute(abi.encode(componentIds, entities, stateRound));
+    }
 
     vm.stopBroadcast();
   }
