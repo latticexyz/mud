@@ -6,9 +6,11 @@ import {console} from "forge-std/console.sol";
 import {Cheats} from "./Cheats.sol";
 import {BulkSetStateSystem, ID as BulkSetStateSystemID, ECSEvent} from "std-contracts/systems/BulkSetStateSystem.sol";
 import {World} from "solecs/World.sol";
+import {System} from "solecs/System.sol";
 import {getAddressById} from "solecs/utils.sol";
 
 uint256 constant oldBulkSetStateSystemID = uint256(keccak256("mudwar.system.BulkSetState"));
+uint256 constant oldComponentDevSystemID = uint256(keccak256("mudwar.system.ComponentDev"));
 
 struct ParsedState {
   string[] componentIds;
@@ -76,34 +78,44 @@ contract BulkUpload is DSTest {
 
     // Set state
     World world = World(worldAddress);
-    BulkSetStateSystem bulkSetStateSystem = BulkSetStateSystem(
-      getAddressById(world.systems(), oldBulkSetStateSystemID)
-    );
+    System componentDevSystem = System(getAddressById(world.systems(), oldComponentDevSystemID));
 
-    // Split up into chunks and call in a loop to support bigger states
-    uint256 entriesPerRound = state.length / split;
-    uint256 overflow = state.length - entriesPerRound * split;
-    for (uint256 i; i <= split; i++) {
-      ECSEvent[] memory stateRound = new ECSEvent[](i == split ? overflow : entriesPerRound);
-
-      if (i == split) {
-        for (uint256 j; j < overflow; j++) {
-          console.log(j);
-          stateRound[j] = state[entriesPerRound * split + j];
-        }
-      } else {
-        for (uint256 j; j < entriesPerRound; j++) {
-          console.log(j);
-          uint256 index = i * split + j;
-          stateRound[j] = state[index];
-        }
-      }
-
-      // TODO: Create a new component and entity array with only the components and entities of this state round
-      // and remap the state indices to those arrays. Right now we submit the entire entity and component array with each call,
-      // which is extremely inefficient.
-      bulkSetStateSystem.execute(abi.encode(componentIds, entities, stateRound));
+    // Trivial version but much more gas intensive
+    for (uint256 i; i < state.length; i++) {
+      ECSEvent memory e = state[i];
+      uint256 component = componentIds[e.component];
+      uint256 entity = entities[e.entity];
+      componentDevSystem.execute(abi.encode(component, entity, e.value));
     }
+
+    // Proper version with Bulkupload (but incomplete, one TODO left, see below)
+    // BulkSetStateSystem bulkSetStateSystem = BulkSetStateSystem(
+    //   getAddressById(world.systems(), oldBulkSetStateSystemID)
+    // );
+    // // Split up into chunks and call in a loop to support bigger states
+    // uint256 entriesPerRound = state.length / split;
+    // uint256 overflow = state.length - entriesPerRound * split;
+    // for (uint256 i; i <= split; i++) {
+    //   ECSEvent[] memory stateRound = new ECSEvent[](i == split ? overflow : entriesPerRound);
+
+    //   if (i == split) {
+    //     for (uint256 j; j < overflow; j++) {
+    //       console.log(j);
+    //       stateRound[j] = state[entriesPerRound * split + j];
+    //     }
+    //   } else {
+    //     for (uint256 j; j < entriesPerRound; j++) {
+    //       console.log(j);
+    //       uint256 index = i * split + j;
+    //       stateRound[j] = state[index];
+    //     }
+    //   }
+
+    //   // TODO: Create a new component and entity array with only the components and entities of this state round
+    //   // and remap the state indices to those arrays. Right now we submit the entire entity and component array with each call,
+    //   // which is extremely inefficient.
+    //   bulkSetStateSystem.execute(abi.encode(componentIds, entities, stateRound));
+    // }
 
     vm.stopBroadcast();
   }
