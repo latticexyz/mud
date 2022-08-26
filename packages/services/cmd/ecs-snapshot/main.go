@@ -15,7 +15,7 @@ import (
 
 var (
 	wsUrl          = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
-	port           = flag.Int("port", 50051, "gRPC Server Port")
+	port           = flag.Int("port", 50061, "gRPC Server Port")
 	worldAddresses = flag.String("worldAdresses", "", "List of world addresses to index ECS state for. Defaults to empty string which will listen for all world events from all addresses")
 )
 

@@ -137,7 +137,7 @@ describe("Sync.worker", () => {
 
   it("should sync from the snapshot if the snapshot block number is more than 100 blocks newer than then cache", async () => {
     input$.next({
-      checkpointServiceUrl: "http://localhost:50052",
+      checkpointServiceUrl: "http://localhost:50062",
       chainId: 4242,
       worldContract: { address: "0x0", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },

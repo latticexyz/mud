@@ -8,7 +8,7 @@ import { createLatestEventStream, createSnapshotClient, createWorldTopics, fetch
 describe("syncUtils", () => {
   describe("createSnapshotClient", () => {
     it("should not error", () => {
-      const snapshotClient = createSnapshotClient("http://localhost:50052");
+      const snapshotClient = createSnapshotClient("http://localhost:50062");
       expect(snapshotClient).toBeDefined();
     });
   });
