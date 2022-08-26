@@ -24,7 +24,6 @@ import {
   fetchStateInBlockRange,
   fetchSnapshotChunked,
   createStreamClient,
-  openStream,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
@@ -55,6 +54,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     const computedConfig = await streamToDefinedComputed(this.input$);
     const {
       checkpointServiceUrl,
+      streamServiceUrl,
       chainId,
       worldContract,
       provider: { options: providerOptions },
@@ -80,10 +80,8 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
 
-    const streamClient = createStreamClient("http://localhost:50052");
-    openStream(streamClient, worldContract.address);
-
-    createLatestEventStream(blockNumber$, fetchWorldEvents).subscribe((event) => {
+    const streamClient = streamServiceUrl ? createStreamClient(streamServiceUrl) : undefined;
+    createLatestEventStream(blockNumber$, fetchWorldEvents, streamClient).subscribe((event) => {
       storeEvent(cacheStore.current, event);
       if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
     });

@@ -36,22 +36,6 @@ export function createStreamClient(url: string): ECSStreamServiceClient {
   return new ECSStreamServiceClient(transport);
 }
 
-export async function openStream(streamClient: ECSStreamServiceClient, worldAddress: string) {
-  const stream = streamClient.subscribeToStreamLatest({
-    worldAddress: worldAddress,
-    blockNumber: true,
-    blockHash: true,
-    blockTimestamp: true,
-    transactionsConfirmed: true,
-    ecsEvents: true,
-  });
-
-  for await (const message of stream.responses) {
-    console.log("received message from ECSStream service");
-    console.log(message);
-  }
-}
-
 /**
  * Return the snapshot block number.
  *
@@ -159,7 +143,8 @@ export async function reduceFetchedState(
  */
 export function createLatestEventStream(
   blockNumber$: Observable<number>,
-  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>
+  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  streamServiceClient?: ECSStreamServiceClient
 ): Observable<NetworkComponentUpdate> {
   let lastSyncedBlockNumber: number | undefined;
 
