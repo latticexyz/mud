@@ -11,6 +11,7 @@ import {getAddressById} from "solecs/utils.sol";
 
 uint256 constant oldBulkSetStateSystemID = uint256(keccak256("mudwar.system.BulkSetState"));
 uint256 constant oldComponentDevSystemID = uint256(keccak256("mudwar.system.ComponentDev"));
+uint256 constant PrototypeDevSystemID = uint256(keccak256("mudwar.system.PrototypeDev"));
 
 struct ParsedState {
   string[] componentIds;
@@ -48,7 +49,6 @@ contract BulkUpload is DSTest {
     console.log(path);
     string memory json = vm.readFile(path);
 
-    console.log(json);
     console.log(worldAddress);
 
     // Parse JSON
@@ -66,26 +66,37 @@ contract BulkUpload is DSTest {
     for (uint256 i; i < entities.length; i++) {
       entities[i] = hexToUint256(parsedState.entities[i]);
     }
+    World world = World(worldAddress);
+    System componentDevSystem = System(getAddressById(world.systems(), oldComponentDevSystemID));
+    System prototypeDevSystem = System(getAddressById(world.systems(), PrototypeDevSystemID));
 
     // Convert state
     ECSEvent[] memory state = new ECSEvent[](parsedState.state.length);
     for (uint256 i; i < parsedState.state.length; i++) {
       ParsedECSEvent memory p = parsedState.state[i];
-      // Convert value hex string to bytes
-      bytes memory value = hexToBytes(substring(p.value, 2, bytes(p.value).length));
-      state[i] = ECSEvent(p.component, p.entity, value);
+
+      // this is a dumb special way of setting prototypes
+      uint256 component = componentIds[p.component];
+      if (component == uint256(keccak256(""))) {
+        uint256 prototypeId = hexToUint256(p.value);
+        prototypeDevSystem.execute(abi.encode(prototypeId, p.entity));
+      } else {
+        // Convert value hex string to bytes
+        bytes memory value = hexToBytes(substring(p.value, 2, bytes(p.value).length));
+        state[i] = ECSEvent(p.component, p.entity, value);
+      }
     }
 
     // Set state
-    World world = World(worldAddress);
-    System componentDevSystem = System(getAddressById(world.systems(), oldComponentDevSystemID));
 
     // Trivial version but much more gas intensive
     for (uint256 i; i < state.length; i++) {
       ECSEvent memory e = state[i];
       uint256 component = componentIds[e.component];
       uint256 entity = entities[e.entity];
-      componentDevSystem.execute(abi.encode(component, entity, e.value));
+      if (component != uint256(keccak256(""))) {
+        componentDevSystem.execute(abi.encode(component, entity, e.value));
+      }
     }
 
     // Proper version with Bulkupload (but incomplete, one TODO left, see below)
