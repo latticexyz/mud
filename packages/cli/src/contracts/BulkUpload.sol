@@ -79,7 +79,8 @@ contract BulkUpload is DSTest {
       uint256 component = componentIds[p.component];
       if (component == uint256(keccak256(""))) {
         uint256 prototypeId = hexToUint256(p.value);
-        prototypeDevSystem.execute(abi.encode(prototypeId, p.entity));
+        uint256 entity = entities[p.entity]; // Convert entity index to entity id
+        prototypeDevSystem.execute(abi.encode(prototypeId, entity));
       } else {
         // Convert value hex string to bytes
         bytes memory value = hexToBytes(substring(p.value, 2, bytes(p.value).length));
