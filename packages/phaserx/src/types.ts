@@ -16,7 +16,9 @@ export type Camera = {
   zoom$: Observable<number>;
   ignore: (objectPool: ObjectPool, ignore: boolean) => void;
   dispose: () => void;
-  centerCameraOnCoord: (tileCoord: Coord, tileWidth: number, tileHeight: number) => void;
+  centerOnCoord: (tileCoord: Coord, tileWidth: number, tileHeight: number) => void;
+  centerOn: (x: number, y: number) => void;
+  setScroll: (x: number, y: number) => void;
 };
 
 export type GameObjectTypes = typeof GameObjectClasses;
