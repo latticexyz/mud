@@ -3,7 +3,7 @@ import { Area, ChunkCoord } from "./types";
 import { getChunksInArea } from "./utils";
 import { CoordMap, subtract } from "@latticexyz/utils";
 
-export function createChunks(worldView$: Observable<Area>, chunkSize: number, padding = 100) {
+export function createChunks(worldView$: Observable<Area>, chunkSize: number, padding = 300) {
   const visibleChunks = { current: new CoordMap<boolean>() };
 
   const addedChunks$ = new Subject<ChunkCoord>();
