@@ -118,7 +118,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   for (const key of Object.keys(Phaser.Input.Keyboard.KeyCodes)) addKey(key);
 
   // Subscriptions
-  const keySub = keyboard$.subscribe((key) => {
+  const keySub = keyboard$.pipe(filter(() => enabled.current)).subscribe((key) => {
     const keyName = codeToKey.get(key.keyCode);
     if (!keyName) return;
     runInAction(() => {
