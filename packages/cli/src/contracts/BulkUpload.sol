@@ -10,8 +10,6 @@ import {System} from "solecs/System.sol";
 import {getAddressById} from "solecs/utils.sol";
 
 uint256 constant oldBulkSetStateSystemID = uint256(keccak256("mudwar.system.BulkSetState"));
-uint256 constant oldComponentDevSystemID = uint256(keccak256("mudwar.system.ComponentDev"));
-uint256 constant PrototypeDevSystemID = uint256(keccak256("mudwar.system.PrototypeDev"));
 
 struct ParsedState {
   string[] componentIds;
@@ -41,7 +39,7 @@ contract BulkUpload is DSTest {
   function run(
     string memory path,
     address worldAddress,
-    uint256 split
+    uint256 eventsPerTx
   ) public {
     vm.startBroadcast();
 
@@ -67,67 +65,40 @@ contract BulkUpload is DSTest {
       entities[i] = hexToUint256(parsedState.entities[i]);
     }
     World world = World(worldAddress);
-    System componentDevSystem = System(getAddressById(world.systems(), oldComponentDevSystemID));
-    System prototypeDevSystem = System(getAddressById(world.systems(), PrototypeDevSystemID));
+    // System componentDevSystem = System(getAddressById(world.systems(), oldComponentDevSystemID));
+    // System prototypeDevSystem = System(getAddressById(world.systems(), PrototypeDevSystemID));
+    System bulkSetStateSystem = System(getAddressById(world.systems(), oldBulkSetStateSystemID));
 
     // Convert state
-    ECSEvent[] memory state = new ECSEvent[](parsedState.state.length);
+    ECSEvent[] memory allEvents = new ECSEvent[](parsedState.state.length);
     for (uint256 i; i < parsedState.state.length; i++) {
       ParsedECSEvent memory p = parsedState.state[i];
 
-      // this is a dumb special way of setting prototypes
-      uint256 component = componentIds[p.component];
-      if (component == uint256(keccak256(""))) {
-        uint256 prototypeId = hexToUint256(p.value);
-        uint256 entity = entities[p.entity]; // Convert entity index to entity id
-        prototypeDevSystem.execute(abi.encode(prototypeId, entity));
-      } else {
-        // Convert value hex string to bytes
-        bytes memory value = hexToBytes(substring(p.value, 2, bytes(p.value).length));
-        state[i] = ECSEvent(p.component, p.entity, value);
-      }
+      // Convert value hex string to bytes
+      bytes memory value = hexToBytes(substring(p.value, 2, bytes(p.value).length));
+      allEvents[i] = ECSEvent(p.component, p.entity, value);
     }
 
-    // Set state
+    uint256 numTxs = allEvents.length / eventsPerTx;
 
-    // Trivial version but much more gas intensive
-    for (uint256 i; i < state.length; i++) {
-      ECSEvent memory e = state[i];
-      uint256 component = componentIds[e.component];
-      uint256 entity = entities[e.entity];
-      if (component != uint256(keccak256(""))) {
-        componentDevSystem.execute(abi.encode(component, entity, e.value));
+    for (uint256 i = 0; i < numTxs; i++) {
+      ECSEvent[] memory events = new ECSEvent[](eventsPerTx);
+      for (uint256 j = 0; j < eventsPerTx; j++) {
+        events[j] = allEvents[i * eventsPerTx + j];
       }
+
+      bulkSetStateSystem.execute(abi.encode(componentIds, entities, events));
     }
 
-    // Proper version with Bulkupload (but incomplete, one TODO left, see below)
-    // BulkSetStateSystem bulkSetStateSystem = BulkSetStateSystem(
-    //   getAddressById(world.systems(), oldBulkSetStateSystemID)
-    // );
-    // // Split up into chunks and call in a loop to support bigger states
-    // uint256 entriesPerRound = state.length / split;
-    // uint256 overflow = state.length - entriesPerRound * split;
-    // for (uint256 i; i <= split; i++) {
-    //   ECSEvent[] memory stateRound = new ECSEvent[](i == split ? overflow : entriesPerRound);
+    // overflow tx
+    uint256 overflowEventCount = allEvents.length - numTxs * eventsPerTx;
 
-    //   if (i == split) {
-    //     for (uint256 j; j < overflow; j++) {
-    //       console.log(j);
-    //       stateRound[j] = state[entriesPerRound * split + j];
-    //     }
-    //   } else {
-    //     for (uint256 j; j < entriesPerRound; j++) {
-    //       console.log(j);
-    //       uint256 index = i * split + j;
-    //       stateRound[j] = state[index];
-    //     }
-    //   }
+    ECSEvent[] memory overflowEvents = new ECSEvent[](overflowEventCount);
+    for (uint256 j = 0; j < overflowEventCount; j++) {
+      overflowEvents[j] = allEvents[numTxs * eventsPerTx + j];
+    }
 
-    //   // TODO: Create a new component and entity array with only the components and entities of this state round
-    //   // and remap the state indices to those arrays. Right now we submit the entire entity and component array with each call,
-    //   // which is extremely inefficient.
-    //   bulkSetStateSystem.execute(abi.encode(componentIds, entities, stateRound));
-    // }
+    bulkSetStateSystem.execute(abi.encode(componentIds, entities, overflowEvents));
 
     vm.stopBroadcast();
   }
