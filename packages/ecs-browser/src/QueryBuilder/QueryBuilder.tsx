@@ -204,6 +204,12 @@ export const QueryBuilder = ({
           queryInputRef={queryInputRef}
           input={(layers.phaser as any)?.scenes.Main.phaserScene.input}
         />
+        <ComponentBrowserButton onClick={() => {
+          queryInputRef.current?.focus();
+          editQuery('[Has(Selected)]');
+        }}>
+          View Selected Entity
+        </ComponentBrowserButton>
         <h3>Filter by Component</h3>
         <QueryShortcutContainer style={{ margin: "8px auto" }}>
           {orderBy(allComponents, (c) => c.id)

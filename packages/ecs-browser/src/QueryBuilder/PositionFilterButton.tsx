@@ -38,7 +38,7 @@ export const PositionFilterButton: React.FC<{
         setSelectingPosition(true);
       }}
     >
-      {selectingPosition ? `Click on tile to select position` : "Select Entities at a position"}
+      {selectingPosition ? `Click on tile to select position` : "View Entities at a position"}
     </ComponentBrowserButton>
   );
 };
