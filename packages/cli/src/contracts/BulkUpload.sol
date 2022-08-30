@@ -52,7 +52,6 @@ contract BulkUpload is DSTest {
 
     // Parse JSON
     ParsedState memory parsedState = abi.decode(vm.parseJson(json), (ParsedState));
-    console.log(hexToUint256(parsedState.entities[0]));
 
     // Convert component ids
     uint256[] memory componentIds = new uint256[](parsedState.componentIds.length);

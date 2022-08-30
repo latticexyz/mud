@@ -56,9 +56,9 @@ export function getGameConfig(
   gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String; actionCooldownLength: Type.String }>
 ) {
   const godEntityIndex = world.entityToIndex.get(GodID);
-  if (!godEntityIndex) return null;
+  if (!godEntityIndex) return;
 
-  return getComponentValueStrict(gameConfigComponent, godEntityIndex);
+  return getComponentValue(gameConfigComponent, godEntityIndex);
 }
 
 export function isUntraversable(
