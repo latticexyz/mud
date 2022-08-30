@@ -111,7 +111,7 @@ describe("Sync.worker", () => {
     input$.next({
       checkpointServiceUrl: "",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -121,10 +121,10 @@ describe("Sync.worker", () => {
     await sleep(0);
 
     const event: NetworkComponentUpdate = {
-      component: "0x0",
-      entity: "0x1" as EntityID,
+      component: "0x00",
+      entity: "0x01" as EntityID,
       value: {},
-      txHash: "0x2",
+      txHash: "0x02",
       lastEventInTx: true,
       blockNumber: 111,
     };
@@ -139,7 +139,7 @@ describe("Sync.worker", () => {
     input$.next({
       checkpointServiceUrl: "http://localhost:50052",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -162,7 +162,7 @@ describe("Sync.worker", () => {
     input$.next({
       checkpointServiceUrl: "",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -185,7 +185,7 @@ describe("Sync.worker", () => {
     input$.next({
       checkpointServiceUrl: "",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -216,7 +216,7 @@ describe("Sync.worker", () => {
     input$.next({
       checkpointServiceUrl: "",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -226,27 +226,27 @@ describe("Sync.worker", () => {
 
     const event1: NetworkComponentUpdate = {
       component: "0x99",
-      entity: "0x1" as EntityID,
+      entity: "0x01" as EntityID,
       value: {},
-      txHash: "0x2",
+      txHash: "0x02",
       lastEventInTx: true,
       blockNumber: firstLiveBlockNumber,
     };
 
     const event2: NetworkComponentUpdate = {
-      component: "0x999",
-      entity: "0x1" as EntityID,
+      component: "0x0999",
+      entity: "0x01" as EntityID,
       value: {},
-      txHash: "0x2",
+      txHash: "0x02",
       lastEventInTx: true,
       blockNumber: secondLiveBlockNumber,
     };
 
     const event3: NetworkComponentUpdate = {
       component: "0x9999",
-      entity: "0x1" as EntityID,
+      entity: "0x01" as EntityID,
       value: {},
-      txHash: "0x2",
+      txHash: "0x02",
       lastEventInTx: true,
       blockNumber: 1003,
     };

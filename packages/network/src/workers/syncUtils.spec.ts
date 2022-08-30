@@ -65,11 +65,11 @@ describe("syncUtils", () => {
   describe("fetchStateInBlockRange", () => {
     it("should fetch world events in the given range with the given interval", async () => {
       const event: NetworkComponentUpdate = {
-        component: "0x1",
-        entity: "0x0" as EntityID,
+        component: "0x01",
+        entity: "0x00" as EntityID,
         value: {},
         lastEventInTx: true,
-        txHash: "0x2",
+        txHash: "0x02",
         blockNumber: 4242,
       };
 
@@ -85,8 +85,8 @@ describe("syncUtils", () => {
       expect(state.blockNumber).toBe(4241);
       expect([...getCacheStoreEntries(state)]).toEqual([
         {
-          component: "0x1",
-          entity: "0x0" as EntityID,
+          component: "0x01",
+          entity: "0x00" as EntityID,
           value: {},
           lastEventInTx: false,
           txHash: "cache",

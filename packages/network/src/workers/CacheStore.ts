@@ -3,6 +3,7 @@ import { packTuple, transformIterator, unpackTuple } from "@latticexyz/utils";
 import { initCache } from "../initCache";
 import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import { NetworkComponentUpdate } from "../types";
+import { BigNumber } from "ethers";
 
 export type State = Map<number, ComponentValue>;
 export type CacheStore = ReturnType<typeof createCacheStore>;
@@ -27,6 +28,9 @@ export function storeEvent<Cm extends Components>(
   cacheStore: CacheStore,
   { component, entity, value, blockNumber }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
+  // Remove the 0 padding from all entityes
+  const normalizedEntity = entity[0] === "0" && entity[1] === "x" ? BigNumber.from(entity).toHexString() : entity;
+
   const { components, entities, componentToIndex, entityToIndex, state } = cacheStore;
 
   // Get component index
@@ -37,10 +41,10 @@ export function storeEvent<Cm extends Components>(
   }
 
   // Get entity index
-  let entityIndex = entityToIndex.get(entity);
+  let entityIndex = entityToIndex.get(normalizedEntity);
   if (entityIndex == null) {
-    entityIndex = entities.push(entity) - 1;
-    entityToIndex.set(entity, entityIndex);
+    entityIndex = entities.push(normalizedEntity) - 1;
+    entityToIndex.set(normalizedEntity, entityIndex);
   }
 
   // Entity index gets the right 24 bits, component index the left 8 bits
