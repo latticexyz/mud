@@ -8,6 +8,7 @@ import {BulkSetStateSystem, ID as BulkSetStateSystemID, ECSEvent} from "std-cont
 import {World} from "solecs/World.sol";
 import {System} from "solecs/System.sol";
 import {getAddressById} from "solecs/utils.sol";
+import {Set} from "solecs/Set.sol";
 
 uint256 constant oldBulkSetStateSystemID = uint256(keccak256("mudwar.system.BulkSetState"));
 
@@ -65,8 +66,6 @@ contract BulkUpload is DSTest {
       entities[i] = hexToUint256(parsedState.entities[i]);
     }
     World world = World(worldAddress);
-    // System componentDevSystem = System(getAddressById(world.systems(), oldComponentDevSystemID));
-    // System prototypeDevSystem = System(getAddressById(world.systems(), PrototypeDevSystemID));
     System bulkSetStateSystem = System(getAddressById(world.systems(), oldBulkSetStateSystemID));
 
     // Convert state
@@ -87,7 +86,12 @@ contract BulkUpload is DSTest {
         events[j] = allEvents[i * eventsPerTx + j];
       }
 
-      bulkSetStateSystem.execute(abi.encode(componentIds, entities, events));
+      (uint256[] memory newEntities, ECSEvent[] memory newEvents) = transformEventsToOnlyUseNeededEntities(
+        entities,
+        events
+      );
+
+      bulkSetStateSystem.execute(abi.encode(componentIds, newEntities, newEvents));
     }
 
     // overflow tx
@@ -98,10 +102,42 @@ contract BulkUpload is DSTest {
       overflowEvents[j] = allEvents[numTxs * eventsPerTx + j];
     }
 
-    bulkSetStateSystem.execute(abi.encode(componentIds, entities, overflowEvents));
+    (
+      uint256[] memory newOverflowEntities,
+      ECSEvent[] memory newOverflowEvents
+    ) = transformEventsToOnlyUseNeededEntities(entities, overflowEvents);
+
+    bulkSetStateSystem.execute(abi.encode(componentIds, newOverflowEntities, newOverflowEvents));
 
     vm.stopBroadcast();
   }
+}
+
+function transformEventsToOnlyUseNeededEntities(uint256[] memory entities, ECSEvent[] memory events)
+  returns (uint256[] memory, ECSEvent[] memory)
+{
+  Set uniqueEntityIndices = new Set();
+
+  // Find unique entity indices
+  for (uint256 i = 0; i < events.length; i++) {
+    ECSEvent memory e = events[i];
+
+    uniqueEntityIndices.add(e.entity);
+  }
+
+  // Grab the Entity IDs from the big entities array and put them into our new array
+  uint256[] memory relevantEntities = new uint256[](uniqueEntityIndices.size());
+  for (uint256 i = 0; i < uniqueEntityIndices.size(); i++) {
+    relevantEntities[i] = entities[uniqueEntityIndices.getItems()[i]];
+  }
+
+  // Re-assign event entity indices to point to our new array
+  for (uint256 i = 0; i < events.length; i++) {
+    (, uint256 index) = uniqueEntityIndices.getIndex(events[i].entity);
+    events[i].entity = uint32(index);
+  }
+
+  return (relevantEntities, events);
 }
 
 function hexToUint8(bytes1 b) pure returns (uint8 res) {
