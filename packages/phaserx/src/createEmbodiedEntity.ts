@@ -85,6 +85,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     gameObject.setScale(1, 1);
     gameObject.setOrigin(0, 0);
     gameObject.setAlpha(1);
+    gameObject.setScrollFactor(1);
     if (isSprite(gameObject, type)) {
       gameObject.clearTint();
       gameObject.setTexture("");

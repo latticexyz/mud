@@ -62,9 +62,18 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
     objectPool.ignoreCamera(phaserCamera.id, ignore);
   }
 
-  function centerCameraOnCoord(tileCoord: Coord, tileWidth: number, tileHeight: number) {
+  function centerOnCoord(tileCoord: Coord, tileWidth: number, tileHeight: number) {
     const pixelCoord = tileCoordToPixelCoord(tileCoord, tileWidth, tileHeight);
-    phaserCamera.centerOn(pixelCoord.x, pixelCoord.y);
+    centerOn(pixelCoord.x, pixelCoord.y);
+  }
+
+  function centerOn(x: number, y: number) {
+    phaserCamera.centerOn(x, y);
+    requestAnimationFrame(() => worldView$.next(phaserCamera.worldView));
+  }
+
+  function setScroll(x: number, y: number) {
+    phaserCamera.setScroll(x, y);
     requestAnimationFrame(() => worldView$.next(phaserCamera.worldView));
   }
 
@@ -78,6 +87,8 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
       wheelSub.unsubscribe();
       gesture.destroy();
     },
-    centerCameraOnCoord,
+    centerOnCoord,
+    centerOn,
+    setScroll,
   };
 }
