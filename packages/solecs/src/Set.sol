@@ -31,6 +31,12 @@ contract Set {
     items.pop();
   }
 
+  function getIndex(uint256 item) public view returns (bool, uint256) {
+    if (!has(item)) return (false, 0);
+
+    return (true, itemToIndex[item]);
+  }
+
   function has(uint256 item) public view returns (bool) {
     if (items.length == 0) return false;
     if (itemToIndex[item] == 0) return items[0] == item;
