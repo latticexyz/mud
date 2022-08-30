@@ -12279,13 +12279,12 @@ phaser@3.60.0-beta.4:
   dependencies:
     eventemitter3 "^4.0.7"
 
-phaser@^3.55.2:
-  version "3.55.2"
-  resolved "https://registry.yarnpkg.com/phaser/-/phaser-3.55.2.tgz#c1e2e9e70de7085502885e06f46b7eb4bd95e29a"
-  integrity sha512-amKXsbb2Ht29dGPKvt1edq3yGGYKtq8373GpJYGKPNPnneYY6MtVTOgjHDuZwtmUyK4v86FugkT3hzW/N4tjxQ==
+phaser@^3.60.0-beta.4:
+  version "3.60.0-beta.9"
+  resolved "https://registry.yarnpkg.com/phaser/-/phaser-3.60.0-beta.9.tgz#503c027844b08efd8f6a1a753801119dad9a1a4b"
+  integrity sha512-+teX76tkRlAjx9wvACD7cZLLbOjr+S5cl3iJztcgEBR8D6M6daaG8f0QLF0S5/R6CpZPzKLl3sxDRczGPIT6IQ==
   dependencies:
     eventemitter3 "^4.0.7"
-    path "^0.12.7"
 
 picocolors@^0.2.1:
   version "0.2.1"
