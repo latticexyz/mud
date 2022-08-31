@@ -4,22 +4,40 @@
   "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
-    "test": "hardhat test"
+    "test": "hardhat test",
+    "asbuild:debug": "asc assembly/index.ts --target debug",
+    "asbuild:release": "asc assembly/index.ts --target release",
+    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
+    "start": "npx serve ."
   },
   "dependencies": {
+    "@types/big-integer": "^0.0.31",
     "WasmNoise": "https://github.com/latticexyz/WasmNoise"
   },
   "devDependencies": {
+    "@graphprotocol/graph-ts": "^0.27.0",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
     "@nomiclabs/hardhat-ethers": "^2.1.1",
     "@types/chai": "^4.3.3",
     "@types/mocha": "^9.1.1",
     "@types/node-fetch": "^2.6.2",
+    "abdk-libraries-solidity": "^3.0.0",
+    "assemblyscript": "^0.21.2",
+    "base64-sol": "^1.1.0",
+    "big-integer": "^1.6.51",
     "chai": "^4.3.6",
     "ethers": "^5.7.0",
     "hardhat": "^2.10.2",
+    "keccak-wasm": "^0.10.3",
     "mocha": "^10.0.0",
     "ts-jest": "^28.0.8",
-    "typescript": "^4.8.2"
+    "typescript": "^4.8.2",
+    "web3-utils": "^1.7.5"
+  },
+  "exports": {
+    ".": {
+      "import": "./build/release.js",
+      "types": "./build/release.d.ts"
+    }
   }
 }
