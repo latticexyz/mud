@@ -10,6 +10,10 @@ async function fetchAndCompileWasmModule(url: URL) {
   }
 }
 
+/**
+ * Initialize perlin wasm functions.
+ * @returns { {@link perlinSingle}, {@link perlinRect}, {@link memory} }
+ */
 export async function createPerlinWasm(): Promise<{
   perlinSingle: typeof _perlinSingle;
   perlinRect: typeof _perlinRect;
