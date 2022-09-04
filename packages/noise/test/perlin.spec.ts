@@ -1,14 +1,9 @@
 import { expect } from "chai";
-import fs from "fs";
 import { ethers } from "hardhat";
 import { perlin } from "../src/ts";
 import { soliditySha3 } from "web3-utils";
+import { createPerlinWasm } from "../src/wasm";
 import { InitializeKeccak, keccak256 } from "keccak-wasm";
-
-function fetchAndCompileWasmModule(url: string) {
-  const wasmBuffer = fs.readFileSync(url);
-  return WebAssembly.compile(wasmBuffer);
-}
 
 function encodePackedU32(inputs: number[]): Buffer {
   const buffer = Buffer.from(inputs.map((i) => i.toString(16).padStart(8, "0")).join(""), "hex");
@@ -29,8 +24,6 @@ describe("Perlin", () => {
   let getPerlinTs: (x: number, y: number) => number = () => 0;
 
   before(async () => {
-    await InitializeKeccak(); // This must be called before using this library.
-
     // Sol setup
     const PerlinSol = await ethers.getContractFactory("Perlin");
     const deployedPerlinNoise = await PerlinSol.deploy();
@@ -41,30 +34,10 @@ describe("Perlin", () => {
       perlin({ x, y }, { seed: SEED, scale: SCALE, mirrorX: false, mirrorY: false, floor: true });
 
     // AssemblyScript setup
-    const wasmModule = await fetchAndCompileWasmModule("src/wasm/build/release.wasm");
-    const wasmInstance: any = await WebAssembly.instantiate(wasmModule, {
-      env: {
-        rand(dataOffset: number) {
-          const data = new Uint8Array(wasmInstance.exports.memory.buffer.slice(dataOffset, dataOffset + 16));
-          const result: ArrayBuffer = keccak256(data, false);
-          return new Uint8Array(result)[result.byteLength - 1];
-        },
-        abort: function () {
-          throw new Error("Abort called!");
-        },
-        logFloat(f: number) {
-          console.log(f);
-        },
-        log(b: Buffer) {
-          console.log("wasm buffer", b);
-        },
-      },
-    });
-
-    getPerlinWasm = (x: number, y: number) => wasmInstance.exports.perlinSingle(x, y, SEED, SCALE, true);
+    const { perlinSingle, perlinRect } = await createPerlinWasm();
+    getPerlinWasm = (x: number, y: number) => perlinSingle(x, y, SEED, SCALE, true);
     getPerlinRectWasm = (x: number, y: number, w: number, h: number) => {
-      const offset = wasmInstance.exports.perlinRect(x, y, w, h, SEED, SCALE, true);
-      return new Float64Array(wasmInstance.exports.memory.buffer.slice(offset, offset + w * h * 8));
+      return perlinRect(x, y, w, h, SEED, SCALE, true) as Float64Array;
     };
   });
 
@@ -154,6 +127,10 @@ describe("Perlin", () => {
   });
 
   describe("keccak256", () => {
+    before(async () => {
+      await InitializeKeccak();
+    });
+
     it("should compute the same hash as soliditySha3 for a string", () => {
       const msg = "test";
       expect("0x" + keccak256(msg)).to.eq(soliditySha3(msg));
@@ -165,6 +142,7 @@ describe("Perlin", () => {
       const scale = 12;
       const seed = 13;
 
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const correctHash = soliditySha3(
         { t: "uint32", v: x },
         { t: "uint32", v: y },

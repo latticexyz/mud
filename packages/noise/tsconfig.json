@@ -1,10 +1,12 @@
 {
   "ts-node": {
-    // these options are overrides used only by ts-node
-    // same as our --compilerOptions flag and our TS_NODE_COMPILER_OPTIONS environment variable
     "compilerOptions": {
-      "module": "commonjs"
-    }
+      "module": "CommonJS",
+      "plugins": [{ "transform": "@magic-works/commonjs-import.meta" }]
+    },
+    "compiler": "ttypescript",
+    // One of:
+    "ignoreDiagnostics": [1343]
   },
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
