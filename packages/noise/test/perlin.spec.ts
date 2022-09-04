@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import fs from "fs";
 import { ethers } from "hardhat";
-import { perlin } from "../src/utils";
+import { perlin } from "../src/ts";
 import { soliditySha3 } from "web3-utils";
 import { InitializeKeccak, keccak256 } from "keccak-wasm";
 
@@ -41,7 +41,7 @@ describe("Perlin", () => {
       perlin({ x, y }, { seed: SEED, scale: SCALE, mirrorX: false, mirrorY: false, floor: true });
 
     // AssemblyScript setup
-    const wasmModule = await fetchAndCompileWasmModule("build/release.wasm");
+    const wasmModule = await fetchAndCompileWasmModule("src/wasm/build/release.wasm");
     const wasmInstance: any = await WebAssembly.instantiate(wasmModule, {
       env: {
         rand(dataOffset: number) {

@@ -4,10 +4,11 @@
   "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
+    "prepare": "yarn asbuild:release",
     "test": "hardhat test",
-    "asbuild:debug": "asc assembly/index.ts --target debug",
-    "asbuild:release": "asc assembly/index.ts --target release",
-    "asbuild": "npm run asbuild:debug && npm run asbuild:release",
+    "asbuild:debug": "asc src/wasm/assembly/index.ts --target debug",
+    "asbuild:release": "asc src/wasm/assembly/index.ts --target release",
+    "asbuild": "yarn asbuild:debug && yarn asbuild:release",
     "start": "npx serve ."
   },
   "dependencies": {
