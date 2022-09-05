@@ -1,7 +1,10 @@
 {
   "name": "@latticexyz/noise",
   "version": "0.8.1",
-  "main": "src/index.ts",
+  "src": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "browser": "dist/index.web.js",
   "license": "MIT",
   "scripts": {
     "prepare": "yarn asbuild:release",
@@ -9,11 +12,13 @@
     "asbuild:debug": "asc src/wasm/assembly/index.ts --target debug",
     "asbuild:release": "asc src/wasm/assembly/index.ts --target release",
     "asbuild": "yarn asbuild:debug && yarn asbuild:release",
-    "start": "npx serve ."
+    "start": "npx serve .",
+    "build": "parcel build"
   },
   "dependencies": {
     "@types/big-integer": "^0.0.31",
-    "WasmNoise": "https://github.com/latticexyz/WasmNoise"
+    "WasmNoise": "https://github.com/latticexyz/WasmNoise",
+    "keccak-wasm": "^0.10.3"
   },
   "devDependencies": {
     "@graphprotocol/graph-ts": "^0.27.0",
@@ -30,8 +35,8 @@
     "chai": "^4.3.6",
     "ethers": "^5.7.0",
     "hardhat": "^2.10.2",
-    "keccak-wasm": "^0.10.3",
     "mocha": "^10.0.0",
+    "parcel": "^2.7.0",
     "ts-jest": "^28.0.8",
     "ttypescript": "^1.5.13",
     "typescript": "^4.8.2",

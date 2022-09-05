@@ -4,6 +4,8 @@ import { perlin } from "../src/ts";
 import { soliditySha3 } from "web3-utils";
 import { createPerlinWasm } from "../src/wasm";
 import { InitializeKeccak, keccak256 } from "keccak-wasm";
+import fs from "fs";
+import { BigNumber } from "ethers";
 
 function encodePackedU32(inputs: number[]): Buffer {
   const buffer = Buffer.from(inputs.map((i) => i.toString(16).padStart(8, "0")).join(""), "hex");
@@ -15,7 +17,7 @@ function encodePackedU32(inputs: number[]): Buffer {
 // the existing perlin implementation to WebAssembly and use this port on the client.
 
 const SEED = 42;
-const SCALE = 1;
+const SCALE = 2;
 
 describe("Perlin", () => {
   let getPerlinWasm: (x: number, y: number) => number = () => 0;
@@ -23,36 +25,58 @@ describe("Perlin", () => {
   let getPerlinSol: (x: number, y: number) => Promise<number> = async () => 0;
   let getPerlinTs: (x: number, y: number) => number = () => 0;
 
+  let smoothStepSol: (x: number) => Promise<BigNumber> = async () => BigNumber.from(0);
+  let smoothStepWasm: (x: bigint) => number = () => 0;
+
   before(async () => {
     // Sol setup
     const PerlinSol = await ethers.getContractFactory("Perlin");
     const deployedPerlinNoise = await PerlinSol.deploy();
     getPerlinSol = (x: number, y: number) => deployedPerlinNoise.computePerlin(x, y, SEED, SCALE);
+    smoothStepSol = (x: number) => deployedPerlinNoise.smoothStep(x, SCALE);
 
     // TS setup
     getPerlinTs = (x: number, y: number) =>
       perlin({ x, y }, { seed: SEED, scale: SCALE, mirrorX: false, mirrorY: false, floor: true });
 
     // AssemblyScript setup
-    const { perlinSingle, perlinRect } = await createPerlinWasm();
+    const { perlinSingle, perlinRect, smoothStep } = await createPerlinWasm();
     getPerlinWasm = (x: number, y: number) => perlinSingle(x, y, SEED, SCALE, true);
     getPerlinRectWasm = (x: number, y: number, w: number, h: number) => {
       return perlinRect(x, y, w, h, SEED, SCALE, true) as Float64Array;
     };
+    smoothStepWasm = (x: bigint) => smoothStep(x, SCALE);
+  });
+
+  describe("smoothStep", () => {
+    describe("smoothStepSol", () => {
+      it("should compute the same function as smoothStepWasm", async () => {
+        const vals = [0, 0.25, 0.5, 0.75, 1];
+        for (const val of vals) {
+          const denom = SCALE * SCALE;
+          const wasm = smoothStepWasm(BigInt(val * denom));
+          const sol = await smoothStepSol(val * denom);
+          const solNum = sol.div(BigNumber.from(2).pow(54)).toNumber() / 2 ** 10;
+          expect(solNum).to.eq(wasm);
+        }
+      });
+    });
   });
 
   describe("getPerlinSol", () => {
     it("should return sol perlin noise", async () => {
-      expect(await getPerlinSol(10, 10)).to.eq(31);
+      expect(await getPerlinSol(10, 10)).to.eq(29);
     });
   });
 
   describe("getPerlinTs", () => {
-    it("should return ts perlin noise", async () => {
-      expect(getPerlinTs(10, 10)).to.eq(31);
+    // skipped because the typescript implementation wasn't updated to use smoothStep interpolation yet
+    it.skip("should return ts perlin noise", async () => {
+      expect(getPerlinTs(10, 10)).to.eq(29);
     });
 
-    it("should return the same perlin result as getPerlinSol", async () => {
+    // skipped because the typescript implementation wasn't updated to use smoothStep interpolation yet
+    it.skip("should return the same perlin result as getPerlinSol", async () => {
       for (let x = 0; x < 10; x++) {
         for (let y = 0; y < 10; y++) {
           const solPerlin = await getPerlinSol(x, y);
@@ -78,15 +102,26 @@ describe("Perlin", () => {
   describe("getPerlinWasm", () => {
     it("should return wasm perlin noise", () => {
       const noise = getPerlinWasm(10, 10);
-      expect(noise).to.eq(31);
+      expect(noise).to.eq(29);
     });
 
-    it("should return the same perlin result as getPerlinTs", async () => {
+    // skipped because the typescript implementation wasn't updated to use smoothStep interpolation yet
+    it.skip("should return the same perlin result as getPerlinTs", async () => {
       for (let x = 0; x < 10; x++) {
         for (let y = 0; y < 10; y++) {
           const tsPerlin = getPerlinTs(x, y);
           const wasmPerlin = getPerlinWasm(x, y);
           expect(tsPerlin).to.eq(wasmPerlin);
+        }
+      }
+    });
+
+    it("should return the same perlin result as getPerlinSol", async () => {
+      for (let x = 0; x < 10; x++) {
+        for (let y = 0; y < 10; y++) {
+          const solPerlin = await getPerlinSol(x, y);
+          const wasmPerlin = getPerlinWasm(x, y);
+          expect(solPerlin).to.eq(wasmPerlin);
         }
       }
     });
@@ -124,6 +159,15 @@ describe("Perlin", () => {
       const duration = end - start;
       expect(duration).to.be.lte(1000);
     });
+
+    it.skip("should compute perlin values in a 512x512 rect in < 10s", () => {
+      const start = Date.now();
+      const values = getPerlinRectWasm(0, 0, 512, 412);
+      const end = Date.now();
+      const duration = end - start;
+      expect(duration).to.be.lte(10000);
+      fs.writeFileSync("values.json", JSON.stringify([...values]));
+    });
   });
 
   describe("keccak256", () => {
@@ -132,8 +176,9 @@ describe("Perlin", () => {
     });
 
     it("should compute the same hash as soliditySha3 for a string", () => {
-      const msg = "test";
+      const msg = "hello";
       expect("0x" + keccak256(msg)).to.eq(soliditySha3(msg));
+      expect(keccak256(msg)).to.eq("1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8");
     });
 
     it("should compute the same hash as soliditySha3 for abi.encodePacked params", () => {

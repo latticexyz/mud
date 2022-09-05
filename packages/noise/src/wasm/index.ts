@@ -1,6 +1,11 @@
 import fs from "fs";
 import { InitializeKeccak, keccak256 } from "keccak-wasm";
-import { perlinSingle as _perlinSingle, perlinRect as _perlinRect, memory as _memory } from "./types";
+import {
+  perlinSingle as _perlinSingle,
+  perlinRect as _perlinRect,
+  memory as _memory,
+  smoothStep as _smoothStep,
+} from "./types";
 
 async function fetchAndCompileWasmModule(url: URL) {
   try {
@@ -18,6 +23,7 @@ export async function createPerlinWasm(): Promise<{
   perlinSingle: typeof _perlinSingle;
   perlinRect: typeof _perlinRect;
   memory: typeof _memory;
+  smoothStep: typeof _smoothStep;
 }> {
   const url = new URL("./build/release.wasm", import.meta.url);
   const wasmModule = await fetchAndCompileWasmModule(url);

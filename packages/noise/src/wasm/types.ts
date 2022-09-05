@@ -1,6 +1,13 @@
 /** Exported memory */
 export declare const memory: WebAssembly.Memory;
 /**
+ * src/wasm/assembly/index/smoothStep
+ * @param x `i64`
+ * @param scale `i32`
+ * @returns `f64`
+ */
+export declare function smoothStep(x: bigint, scale: number): number;
+/**
  * src/wasm/assembly/index/perlinSingle
  * @param x `i32`
  * @param y `i32`

@@ -126,9 +126,9 @@ const dot: (a: Vector, b: Vector) => Fraction = (a, b) => {
   return a.x.mul(b.x).add(a.y.mul(b.y));
 };
 
+// 6 t^5 - 15 t^4 + 10 t^3
 const smoothStep: (x: Fraction) => Fraction = (x) => {
-  // return 6 * x ** 5 - 15 * x ** 4 + 10 * x ** 3;
-  return x;
+  return x.pow(5).mul(6).sub(x.pow(4).mul(15)).add(x.pow(3).mul(10));
 };
 
 const scalarMultiply: (s: Fraction, v: Vector) => Vector = (s, v) => ({

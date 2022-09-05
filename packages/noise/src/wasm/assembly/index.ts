@@ -41,10 +41,17 @@ function getGradientAt(x: i32, y: i32, scale: i32, seed: i32): i16[] {
   return vecs[idx];
 }
 
+// 6 t^5 - 15 t^4 + 10 t^3
+export function smoothStep(x: i64, scale: i32): f64 {
+  const t: f64 = f64(x) / f64(scale ** 2); // Remove the implicit denominator
+  const f = t * t * t * (t * (t * 6 - 15) + 10);
+  return f * scale ** 2; // Readd the implicit denominator
+}
+
 // the computed perlin value at a point is a weighted average of dot products with
 // gradient vectors at the four corners of a grid square.
 // this isn't scaled; there's an implicit denominator of scale ** 2
-function getWeight(cornerX: i32, cornerY: i32, x: i32, y: i32, scale: i32): i64 {
+function getWeight(cornerX: i32, cornerY: i32, x: i32, y: i32, scale: i32): f64 {
   let res: i64 = 1;
 
   if (cornerX > x) res *= scale - (cornerX - x);
@@ -53,7 +60,7 @@ function getWeight(cornerX: i32, cornerY: i32, x: i32, y: i32, scale: i32): i64 
   if (cornerY > y) res *= scale - (cornerY - y);
   else res *= scale - (y - cornerY);
 
-  return res;
+  return smoothStep(res, scale);
 }
 
 function getCorners(x: i32, y: i32, scale: i32): i32[][] {
@@ -71,7 +78,7 @@ function getCorners(x: i32, y: i32, scale: i32): i32[][] {
 function getSingleScalePerlin(x: i32, y: i32, scale: i32, seed: i32): f64 {
   const corners: i32[][] = getCorners(x, y, scale);
 
-  let resNumerator: i64 = 0; // i64 instead of int128
+  let resNumerator: f64 = 0; // f64 instead of int128
 
   for (let i = 0; i < 4; i++) {
     const corner: i32[] = corners[i];
@@ -86,10 +93,10 @@ function getSingleScalePerlin(x: i32, y: i32, scale: i32, seed: i32): f64 {
     const dot: i64 = offset[0] * gradient[0] + offset[1] * gradient[1];
 
     // this has an implicit denominator of scale ** 2
-    const weight: i64 = getWeight(corner[0], corner[1], x, y, scale);
+    const weight: f64 = getWeight(corner[0], corner[1], x, y, scale);
 
     // this has an implicit denominator of vecsDenom * scale ** 3
-    resNumerator += weight * dot;
+    resNumerator += weight * f64(dot);
   }
 
   return f64(resNumerator) / f64(vecsDenom * scale ** 3);
