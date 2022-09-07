@@ -37,3 +37,10 @@ export declare function perlinRect(
   scale: number,
   floor: boolean
 ): ArrayLike<number>;
+/**
+ * src/wasm/assembly/perlin2/noise2d
+ * @param x `i64`
+ * @param y `i64`
+ * @returns `i64`
+ */
+export declare function noise2d(x: bigint, y: bigint): bigint;

@@ -1,7 +1,8 @@
 import { rand } from "./env";
+export { noise2d } from "./perlin2";
 
 // https://github.com/nalinbhardwaj/devconnect-procgen-workshop/blob/master/eth/contracts/Perlin.sol
-// Ported to AssemblyScript by @alvrs
+// Modified and ported to AssemblyScript by @alvrs
 
 const vecsDenom = 1000;
 const perlinMax = 64;

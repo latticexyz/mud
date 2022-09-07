@@ -5,7 +5,16 @@ import {
   perlinRect as _perlinRect,
   memory as _memory,
   smoothStep as _smoothStep,
+  noise2d as _noise2d,
 } from "./types";
+
+async function fetchBuffer(url: URL) {
+  try {
+    return fetch(url).then((res) => res.arrayBuffer());
+  } catch {
+    return fs.readFileSync(url);
+  }
+}
 
 async function fetchAndCompileWasmModule(url: URL) {
   try {
@@ -17,18 +26,22 @@ async function fetchAndCompileWasmModule(url: URL) {
 
 /**
  * Initialize perlin wasm functions.
- * @returns { {@link perlinSingle}, {@link perlinRect}, {@link memory} }
+ * @returns { {@link _perlinSingle}, {@link _perlinRect}, {@link _memory} }
  */
 export async function createPerlinWasm(): Promise<{
   perlinSingle: typeof _perlinSingle;
   perlinRect: typeof _perlinRect;
   memory: typeof _memory;
   smoothStep: typeof _smoothStep;
+  noise2d: typeof _noise2d;
 }> {
   const url = new URL("./build/release.wasm", import.meta.url);
   const wasmModule = await fetchAndCompileWasmModule(url);
+  const keccakModule = await fetchBuffer(
+    new URL("../../../../node_modules/keccak-wasm/bin/keccak.wasm", import.meta.url)
+  );
 
-  await InitializeKeccak();
+  await InitializeKeccak(keccakModule);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const wasmInstance: any = await WebAssembly.instantiate(wasmModule, {

@@ -21,8 +21,10 @@ const SCALE = 2;
 
 describe("Perlin", () => {
   let getPerlinWasm: (x: number, y: number) => number = () => 0;
+  let getPerlin2Wasm: (x: number, y: number) => bigint = () => 1n;
   let getPerlinRectWasm: (x: number, y: number, w: number, h: number) => Float64Array = () => new Float64Array();
   let getPerlinSol: (x: number, y: number) => Promise<number> = async () => 0;
+  let getPerlin2Sol: (x: number, y: number) => Promise<number> = async () => 0;
   let getPerlinTs: (x: number, y: number) => number = () => 0;
 
   let smoothStepSol: (x: number) => Promise<BigNumber> = async () => BigNumber.from(0);
@@ -35,17 +37,24 @@ describe("Perlin", () => {
     getPerlinSol = (x: number, y: number) => deployedPerlinNoise.computePerlin(x, y, SEED, SCALE);
     smoothStepSol = (x: number) => deployedPerlinNoise.smoothStep(x, SCALE);
 
+    const Perlin2Sol = await ethers.getContractFactory("Perlin2");
+    const deployedPerlin2Noise = await Perlin2Sol.deploy();
+    getPerlin2Sol = (x: number, y: number) =>
+      deployedPerlin2Noise.noise2d(Math.floor(x * 2 ** 16), Math.floor(y * 2 ** 16));
+
     // TS setup
     getPerlinTs = (x: number, y: number) =>
       perlin({ x, y }, { seed: SEED, scale: SCALE, mirrorX: false, mirrorY: false, floor: true });
 
     // AssemblyScript setup
-    const { perlinSingle, perlinRect, smoothStep } = await createPerlinWasm();
+    const { perlinSingle, perlinRect, smoothStep, noise2d } = await createPerlinWasm();
     getPerlinWasm = (x: number, y: number) => perlinSingle(x, y, SEED, SCALE, true);
     getPerlinRectWasm = (x: number, y: number, w: number, h: number) => {
       return perlinRect(x, y, w, h, SEED, SCALE, true) as Float64Array;
     };
     smoothStepWasm = (x: bigint) => smoothStep(x, SCALE);
+    getPerlin2Wasm = (x: number, y: number) =>
+      noise2d(BigInt(Math.floor(x * 2 ** 16)), BigInt(Math.floor(y * 2 ** 16)));
   });
 
   describe("smoothStep", () => {
@@ -66,6 +75,56 @@ describe("Perlin", () => {
   describe("getPerlinSol", () => {
     it("should return sol perlin noise", async () => {
       expect(await getPerlinSol(10, 10)).to.eq(29);
+    });
+  });
+
+  describe("getPerlin2Sol", () => {
+    it("should return sol perlin noise", async () => {
+      expect(await getPerlin2Sol(10, 10)).to.eq(20);
+    });
+  });
+
+  describe("getPerlin2Wasm", () => {
+    it("should return wasm perlin noise", async () => {
+      expect(getPerlin2Wasm(0.5, 0.5)).to.eq(20);
+    });
+
+    // skipped because the typescript implementation wasn't updated to use smoothStep interpolation yet
+    it("should return the same perlin result as getPerlin2Sol", async () => {
+      for (let x = 0; x < 10; x++) {
+        for (let y = 0; y < 10; y++) {
+          const solPerlin = await getPerlin2Sol(x / 10, y / 10);
+          const wasmPerlin = getPerlin2Wasm(x / 10, y / 10);
+          expect(solPerlin).to.eq(wasmPerlin);
+        }
+      }
+    });
+
+    it("should compute 512x512 single perlin values in < 1s", () => {
+      const start = Date.now();
+      for (let x = 0; x < 512; x++) {
+        for (let y = 0; y < 512; y++) {
+          getPerlin2Wasm(x / 512, y / 512);
+        }
+      }
+      const end = Date.now();
+      const duration = end - start;
+      expect(duration).to.be.lte(1000);
+      console.log("Duration", duration);
+    });
+
+    it("should compute perlin values in a 512x512 rect in < 10s", () => {
+      const start = Date.now();
+      const values: number[] = [];
+      for (let y = 0; y < 512; y++) {
+        for (let x = 0; x < 512; x++) {
+          values.push(Number(getPerlin2Wasm(x / 30, y / 30)));
+        }
+      }
+      const end = Date.now();
+      const duration = end - start;
+      expect(duration).to.be.lte(10000);
+      fs.writeFileSync("values_perlin2.json", JSON.stringify([...values]));
     });
   });
 
@@ -167,6 +226,14 @@ describe("Perlin", () => {
       const duration = end - start;
       expect(duration).to.be.lte(10000);
       fs.writeFileSync("values.json", JSON.stringify([...values]));
+    });
+
+    it("should generate perlin values between 0 and 255", () => {
+      const values = getPerlinRectWasm(0, 0, 254, 254);
+      for (const value of values) {
+        expect(value).to.lte(255);
+        expect(value).to.gte(0);
+      }
     });
   });
 

@@ -24,10 +24,16 @@
 
       console.log("hex", bytesToHex(hexToBytes(hex_sha256("abc"), "hex")));
 
-      fetch("../values.json")
+      // fetch("./values.json")
+      //   .then((res) => res.json())
+      //   .then((values) => {
+      //     generateTexture(512, 512, "offline", values);
+      //   });
+
+      fetch("./values_perlin2.json")
         .then((res) => res.json())
         .then((values) => {
-          generateTexture(512, 512, "offline", values);
+          generateTexture2(512, 512, "offline", values);
         });
 
       function fetchAndCompileWasmModules(urls) {
@@ -189,6 +195,42 @@
           imageData[di + 2] = (values[vi] / MAX) * 255 * AFTERSCALE;
           imageData[di + 3] = 255;
           imgVals.push((values[vi] / MAX) * 255 * AFTERSCALE);
+        }
+
+        console.log("Image values", imgVals);
+
+        // Present the texture
+        context.putImageData(imageDataObject, 0, 0);
+      }
+
+      function generateTexture2(width, height, id, values) {
+        // Create the canvas for this texture
+        let div = document.createElement("div");
+        div.id = id;
+        let canvas = document.createElement("canvas");
+        canvas.style.width = "512px";
+        canvas.style.imageRendering = "pixelated";
+        canvas.width = width;
+        canvas.height = height;
+        div.appendChild(canvas);
+        document.body.appendChild(div);
+
+        let context = canvas.getContext("2d");
+        let imageDataObject = context.createImageData(width, height);
+        let imageData = imageDataObject.data;
+
+        // Fill out the image data with our values
+        let imageDataSize = width * height * 8;
+
+        const imgVals = [];
+        const max = 1024;
+
+        for (let di = 0, vi = 0; di < imageDataSize; di += 4, vi++) {
+          imageData[di] = (values[vi] / max) * 255;
+          imageData[di + 1] = (values[vi] / max) * 255;
+          imageData[di + 2] = (values[vi] / max) * 255;
+          imageData[di + 3] = 255;
+          imgVals.push((values[vi] / max) * 255);
         }
 
         console.log("Image values", imgVals);

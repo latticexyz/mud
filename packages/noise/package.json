@@ -1,10 +1,7 @@
 {
   "name": "@latticexyz/noise",
   "version": "0.8.1",
-  "src": "src/index.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.esm.js",
-  "browser": "dist/index.web.js",
+  "main": "src/index.ts",
   "license": "MIT",
   "scripts": {
     "prepare": "yarn asbuild:release",
@@ -13,7 +10,8 @@
     "asbuild:release": "asc src/wasm/assembly/index.ts --target release",
     "asbuild": "yarn asbuild:debug && yarn asbuild:release",
     "start": "npx serve .",
-    "build": "parcel build"
+    "build": "parcel build",
+    "link": "yarn link"
   },
   "dependencies": {
     "@types/big-integer": "^0.0.31",
@@ -41,11 +39,5 @@
     "ttypescript": "^1.5.13",
     "typescript": "^4.8.2",
     "web3-utils": "^1.7.5"
-  },
-  "exports": {
-    ".": {
-      "import": "./build/release.js",
-      "types": "./build/release.d.ts"
-    }
   }
 }
