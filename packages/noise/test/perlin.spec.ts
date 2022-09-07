@@ -25,6 +25,7 @@ describe("Perlin", () => {
   let getPerlinRectWasm: (x: number, y: number, w: number, h: number) => Float64Array = () => new Float64Array();
   let getPerlinSol: (x: number, y: number) => Promise<number> = async () => 0;
   let getPerlin2Sol: (x: number, y: number) => Promise<number> = async () => 0;
+  let getPerlin3Sol: (x: number, y: number) => Promise<number> = async () => 0;
   let getPerlinTs: (x: number, y: number) => number = () => 0;
 
   let smoothStepSol: (x: number) => Promise<BigNumber> = async () => BigNumber.from(0);
@@ -41,6 +42,12 @@ describe("Perlin", () => {
     const deployedPerlin2Noise = await Perlin2Sol.deploy();
     getPerlin2Sol = (x: number, y: number) =>
       deployedPerlin2Noise.noise2d(Math.floor(x * 2 ** 16), Math.floor(y * 2 ** 16));
+
+    const Perlin3Sol = await ethers.getContractFactory("Perlin3");
+    const deployedPerlin3Noise = await Perlin3Sol.deploy();
+    getPerlin3Sol = async (x: number, y: number) => {
+      return (await deployedPerlin3Noise.noise(x, y, 0, 7, 10)) / 2 ** 10;
+    };
 
     // TS setup
     getPerlinTs = (x: number, y: number) =>
@@ -81,6 +88,27 @@ describe("Perlin", () => {
   describe("getPerlin2Sol", () => {
     it("should return sol perlin noise", async () => {
       expect(await getPerlin2Sol(10, 10)).to.eq(20);
+    });
+  });
+
+  describe("getPerlin3Sol", () => {
+    it("should return sol perlin noise", async () => {
+      expect(await getPerlin3Sol(10, 10)).to.eq(0.748046875);
+    });
+
+    it.only("should compute perlin values in a 512x512 rect", async () => {
+      const start = Date.now();
+      const values: number[] = [];
+      for (let y = -16; y < 16; y++) {
+        for (let x = -16; x < 16; x++) {
+          values.push(Number(await getPerlin3Sol(x, y)));
+          console.log(x, y);
+        }
+      }
+      const end = Date.now();
+      const duration = end - start;
+      fs.writeFileSync("values_perlin3.json", JSON.stringify([...values]));
+      expect(duration).to.be.lte(10000);
     });
   });
 

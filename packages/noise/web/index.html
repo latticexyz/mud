@@ -30,10 +30,12 @@
       //     generateTexture(512, 512, "offline", values);
       //   });
 
-      fetch("./values_perlin2.json")
+      fetch("./values_perlin3.json")
         .then((res) => res.json())
         .then((values) => {
-          generateTexture2(512, 512, "offline", values);
+          const len = Math.sqrt(values.length);
+          console.log(len);
+          generateTexture2(len, len, "offline", values);
         });
 
       function fetchAndCompileWasmModules(urls) {
@@ -223,7 +225,7 @@
         let imageDataSize = width * height * 8;
 
         const imgVals = [];
-        const max = 1024;
+        const max = 1;
 
         for (let di = 0, vi = 0; di < imageDataSize; di += 4, vi++) {
           imageData[di] = (values[vi] / max) * 255;
