@@ -1,1 +1,0 @@
-export { createPerlinWasm } from "./wasm";

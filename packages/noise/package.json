@@ -1,16 +1,16 @@
 {
   "name": "@latticexyz/noise",
   "version": "0.8.1",
-  "main": "src/index.ts",
+  "main": "build/release.mjs",
+  "types": "build/release.d.ts",
   "license": "MIT",
   "scripts": {
     "prepare": "yarn asbuild:release",
     "test": "hardhat test",
-    "asbuild:debug": "asc src/wasm/assembly/index.ts --target debug",
-    "asbuild:release": "asc src/wasm/assembly/index.ts --target release",
+    "asbuild:debug": "asc assembly/index.ts --target debug",
+    "asbuild:release": "asc assembly/index.ts --target release && cp build/release.js build/release.mjs",
     "asbuild": "yarn asbuild:debug && yarn asbuild:release",
     "start": "npx serve .",
-    "build": "parcel build",
     "link": "yarn link"
   },
   "dependencies": {

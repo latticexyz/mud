@@ -1,6 +1,6 @@
-// Ported by @alvrs from perlin reference implementation at https://cs.nyu.edu/~perlin/noise/
+// Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/) by @alvrs
 
-export function noise(_x: i32, _y: i32, _z: i32, denom: i32): f64 {
+export function perlin(_x: i32, _y: i32, _z: i32, denom: i32): f64 {
   // Convert fraction into f64
   let x: f64 = f64(_x) / f64(denom);
   let y: f64 = f64(_y) / f64(denom);
