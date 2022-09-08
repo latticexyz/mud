@@ -1,5 +1,6 @@
 import { rand } from "./env";
 export { noise2d } from "./perlin2";
+export { noise } from "./perlin3";
 
 // https://github.com/nalinbhardwaj/devconnect-procgen-workshop/blob/master/eth/contracts/Perlin.sol
 // Modified and ported to AssemblyScript by @alvrs

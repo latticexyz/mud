@@ -21,11 +21,14 @@ const SCALE = 2;
 
 describe("Perlin", () => {
   let getPerlinWasm: (x: number, y: number) => number = () => 0;
-  let getPerlin2Wasm: (x: number, y: number) => bigint = () => 1n;
   let getPerlinRectWasm: (x: number, y: number, w: number, h: number) => Float64Array = () => new Float64Array();
+  let getPerlin2Wasm: (x: number, y: number) => bigint = () => 1n;
+  let getPerlin3Wasm: (x: number, y: number) => number = () => 1;
+
   let getPerlinSol: (x: number, y: number) => Promise<number> = async () => 0;
   let getPerlin2Sol: (x: number, y: number) => Promise<number> = async () => 0;
   let getPerlin3Sol: (x: number, y: number) => Promise<number> = async () => 0;
+
   let getPerlinTs: (x: number, y: number) => number = () => 0;
 
   let smoothStepSol: (x: number) => Promise<BigNumber> = async () => BigNumber.from(0);
@@ -54,7 +57,7 @@ describe("Perlin", () => {
       perlin({ x, y }, { seed: SEED, scale: SCALE, mirrorX: false, mirrorY: false, floor: true });
 
     // AssemblyScript setup
-    const { perlinSingle, perlinRect, smoothStep, noise2d } = await createPerlinWasm();
+    const { perlinSingle, perlinRect, smoothStep, noise2d, noise } = await createPerlinWasm();
     getPerlinWasm = (x: number, y: number) => perlinSingle(x, y, SEED, SCALE, true);
     getPerlinRectWasm = (x: number, y: number, w: number, h: number) => {
       return perlinRect(x, y, w, h, SEED, SCALE, true) as Float64Array;
@@ -62,6 +65,7 @@ describe("Perlin", () => {
     smoothStepWasm = (x: bigint) => smoothStep(x, SCALE);
     getPerlin2Wasm = (x: number, y: number) =>
       noise2d(BigInt(Math.floor(x * 2 ** 16)), BigInt(Math.floor(y * 2 ** 16)));
+    getPerlin3Wasm = (x: number, y: number) => Math.floor(noise(x, y, 0, 7) * 2 ** 10) / 2 ** 10;
   });
 
   describe("smoothStep", () => {
@@ -96,7 +100,7 @@ describe("Perlin", () => {
       expect(await getPerlin3Sol(10, 10)).to.eq(0.748046875);
     });
 
-    it.only("should compute perlin values in a 512x512 rect", async () => {
+    it("should compute perlin values in a 512x512 rect", async () => {
       const start = Date.now();
       const values: number[] = [];
       for (let y = -16; y < 16; y++) {
@@ -153,6 +157,49 @@ describe("Perlin", () => {
       const duration = end - start;
       expect(duration).to.be.lte(10000);
       fs.writeFileSync("values_perlin2.json", JSON.stringify([...values]));
+    });
+  });
+
+  describe("getPerlin3Wasm", () => {
+    it("should return wasm perlin noise", async () => {
+      expect(getPerlin3Wasm(10, 10)).to.eq(0.748046875);
+    });
+
+    it("should compute 512x512 single perlin values in < 1s", () => {
+      const start = Date.now();
+      for (let x = 0; x < 512; x++) {
+        for (let y = 0; y < 512; y++) {
+          getPerlin3Wasm(x, y);
+        }
+      }
+      const end = Date.now();
+      const duration = end - start;
+      expect(duration).to.be.lte(1000);
+      console.log("Duration", duration);
+    });
+
+    it.only("should return the same perlin result as getPerlin3Sol", async () => {
+      for (let x = -5; x < 5; x++) {
+        for (let y = -5; y < 5; y++) {
+          const solPerlin = await getPerlin3Sol(x, y);
+          const wasmPerlin = getPerlin3Wasm(x, y);
+          expect(solPerlin).to.eq(wasmPerlin);
+        }
+      }
+    });
+
+    it("should compute perlin values in a 512x512 rect in < 10s", () => {
+      const start = Date.now();
+      const values: number[] = [];
+      for (let y = -16; y < 16; y++) {
+        for (let x = -16; x < 16; x++) {
+          values.push(Number(getPerlin3Wasm(x, y)));
+        }
+      }
+      const end = Date.now();
+      const duration = end - start;
+      expect(duration).to.be.lte(10000);
+      fs.writeFileSync("web/values_perlin3.json", JSON.stringify([...values]));
     });
   });
 

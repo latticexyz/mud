@@ -34,176 +34,177 @@
         .then((res) => res.json())
         .then((values) => {
           const len = Math.sqrt(values.length);
-          console.log(len);
+          console.log("val 3 len", len);
           generateTexture2(len, len, "offline", values);
         });
 
-      function fetchAndCompileWasmModules(urls) {
-        return Promise.all(
-          urls.map((url) => {
-            return fetch(url)
-              .then((res) => {
-                if (res.ok) {
-                  return res.arrayBuffer();
-                } else {
-                  throw new Error("Unable to fetch WebAssembly file ${url}");
-                }
-              })
-              .then((bytes) => WebAssembly.compile(bytes));
-          })
-        );
-      }
+      // function fetchAndCompileWasmModules(urls) {
+      //   return Promise.all(
+      //     urls.map((url) => {
+      //       return fetch(url)
+      //         .then((res) => {
+      //           if (res.ok) {
+      //             return res.arrayBuffer();
+      //           } else {
+      //             throw new Error("Unable to fetch WebAssembly file ${url}");
+      //           }
+      //         })
+      //         .then((bytes) => WebAssembly.compile(bytes));
+      //     })
+      //   );
+      // }
 
-      const SEED = 42;
-      const SCALE = 32;
-      const WIDTH = 128;
-      const HEIGHT = 128;
-      const MAX = 64;
-      const AFTERSCALE = 1;
+      // const SEED = 42;
+      // const SCALE = 32;
+      // const WIDTH = 128;
+      // const HEIGHT = 128;
+      // const MAX = 64;
+      // const AFTERSCALE = 1;
 
-      let WasmNoise = null;
-      let WasmNoiseMemory = new WebAssembly.Memory({ initial: 9 });
-      fetchAndCompileWasmModules(["../src/wasm/build/release.wasm"]).then(([wasmnoiseModule]) => {
-        WebAssembly.instantiate(wasmnoiseModule, {
-          env: {
-            __errno_location: function () {
-              return 8;
-            },
-            abort: function () {
-              throw new Error("Abort called!");
-            },
-            sbrk: function (len) {
-              return WasmNoiseMemory.grow(len >> 16) << 16;
-            },
-            memory: WasmNoiseMemory,
-            rand(dataOffset) {
-              const data = new Uint8Array(WasmNoise.exports.memory.buffer.slice(dataOffset, dataOffset + 16));
-              const hex = bytesToHex(data);
-              const hash = hex_sha256(hex);
-              const bytes = hexToBytes(hash);
-              // console.log("data", hash);
-              // const result = keccak256(data);
-              return new Uint8Array(bytes)[bytes.length - 1];
-              // return Math.floor(Math.random() * 16);
-            },
-          },
-        }).then((instance) => {
-          document.getElementById("loaded").innerText = "Loaded!";
-          console.log(instance);
-          WasmNoise = instance;
-          // WasmNoise.exports["_GLOBAL__sub_I_WasmNoiseInterface.cpp"]();
-          //WasmNoise.exports.SetSeed(Date.now());
-          // WasmNoise.exports.SetFrequency(0.025);
-          // 2D Square to Texture
-          {
-            console.log("Start generating ");
-            let startGenValues = performance.now();
-            let offset = WasmNoise.exports.perlinRect(0, 0, WIDTH, HEIGHT, SEED, SCALE, false);
-            let endGenValues = performance.now();
-            let startGenTexture = performance.now();
-            let values = new Float64Array(WasmNoise.exports.memory.buffer.slice(offset, offset + WIDTH * HEIGHT * 8));
-            generateTexture(WIDTH, HEIGHT, "square2d", values);
-            let endGenTexture = performance.now();
-            let diffValues = endGenValues - startGenValues;
-            let diffTex = endGenTexture - startGenTexture;
-            console.log(
-              `Time to generate values for ${WIDTH}*${HEIGHT} texture with 2D Perlin Noise: ` +
-                diffValues +
-                "ms\n" +
-                "Time to generate texture: " +
-                diffTex +
-                "ms\n" +
-                "Total time: " +
-                (diffValues + diffTex) +
-                "ms"
-            );
-            console.log("values", values);
-          }
+      // let WasmNoise = null;
+      // let WasmNoiseMemory = new WebAssembly.Memory({ initial: 9 });
+      // fetchAndCompileWasmModules(["../src/wasm/build/release.wasm"]).then(([wasmnoiseModule]) => {
+      //   WebAssembly.instantiate(wasmnoiseModule, {
+      //     env: {
+      //       __errno_location: function () {
+      //         return 8;
+      //       },
+      //       abort: function () {
+      //         throw new Error("Abort called!");
+      //       },
+      //       sbrk: function (len) {
+      //         return WasmNoiseMemory.grow(len >> 16) << 16;
+      //       },
+      //       memory: WasmNoiseMemory,
+      //       rand(dataOffset) {
+      //         const data = new Uint8Array(WasmNoise.exports.memory.buffer.slice(dataOffset, dataOffset + 16));
+      //         const hex = bytesToHex(data);
+      //         const hash = hex_sha256(hex);
+      //         const bytes = hexToBytes(hash);
+      //         // console.log("data", hash);
+      //         // const result = keccak256(data);
+      //         return new Uint8Array(bytes)[bytes.length - 1];
+      //         // return Math.floor(Math.random() * 16);
+      //       },
+      //     },
+      //   }).then((instance) => {
+      //     document.getElementById("loaded").innerText = "Loaded!";
+      //     console.log(instance);
+      //     WasmNoise = instance;
+      //     // WasmNoise.exports["_GLOBAL__sub_I_WasmNoiseInterface.cpp"]();
+      //     //WasmNoise.exports.SetSeed(Date.now());
+      //     // WasmNoise.exports.SetFrequency(0.025);
+      //     // 2D Square to Texture
+      //     {
+      //       console.log("Start generating ");
+      //       let startGenValues = performance.now();
+      //       let offset = WasmNoise.exports.perlinRect(0, 0, WIDTH, HEIGHT, SEED, SCALE, false);
+      //       let endGenValues = performance.now();
+      //       let startGenTexture = performance.now();
+      //       let values = new Float64Array(WasmNoise.exports.memory.buffer.slice(offset, offset + WIDTH * HEIGHT * 8));
+      //       generateTexture(WIDTH, HEIGHT, "square2d", values);
+      //       let endGenTexture = performance.now();
+      //       let diffValues = endGenValues - startGenValues;
+      //       let diffTex = endGenTexture - startGenTexture;
+      //       console.log(
+      //         `Time to generate values for ${WIDTH}*${HEIGHT} texture with 2D Perlin Noise: ` +
+      //           diffValues +
+      //           "ms\n" +
+      //           "Time to generate texture: " +
+      //           diffTex +
+      //           "ms\n" +
+      //           "Total time: " +
+      //           (diffValues + diffTex) +
+      //           "ms"
+      //       );
+      //       console.log("values", values);
+      //     }
 
-          // 3D Square to Texture
-          // {
-          //   let startGenValues = performance.now();
-          //   let offset = WasmNoise.exports.GetSimplex3_Square(0.5, 0.5, 0.5, 512, 512, 0);
-          //   let endGenValues = performance.now();
-          //   let startGenTexture = performance.now();
-          //   let values = new Float32Array(WasmNoiseMemory.buffer.slice(offset, offset + 512 * 512 * 4));
-          //   generateTexture(512, 512, "square3d", values);
-          //   let endGenTexture = performance.now();
-          //   let diffValues = endGenValues - startGenValues;
-          //   let diffTex = endGenTexture - startGenTexture;
-          //   console.log(
-          //     "Time to generate values for 512*512 texture with 3D Perlin Noise: " +
-          //       diffValues +
-          //       "ms\n" +
-          //       "Time to generate texture: " +
-          //       diffTex +
-          //       "ms\n" +
-          //       "Total time: " +
-          //       (diffValues + diffTex) +
-          //       "ms"
-          //   );
-          // }
+      //     // 3D Square to Texture
+      //     // {
+      //     //   let startGenValues = performance.now();
+      //     //   let offset = WasmNoise.exports.GetSimplex3_Square(0.5, 0.5, 0.5, 512, 512, 0);
+      //     //   let endGenValues = performance.now();
+      //     //   let startGenTexture = performance.now();
+      //     //   let values = new Float32Array(WasmNoiseMemory.buffer.slice(offset, offset + 512 * 512 * 4));
+      //     //   generateTexture(512, 512, "square3d", values);
+      //     //   let endGenTexture = performance.now();
+      //     //   let diffValues = endGenValues - startGenValues;
+      //     //   let diffTex = endGenTexture - startGenTexture;
+      //     //   console.log(
+      //     //     "Time to generate values for 512*512 texture with 3D Perlin Noise: " +
+      //     //       diffValues +
+      //     //       "ms\n" +
+      //     //       "Time to generate texture: " +
+      //     //       diffTex +
+      //     //       "ms\n" +
+      //     //       "Total time: " +
+      //     //       (diffValues + diffTex) +
+      //     //       "ms"
+      //     //   );
+      //     // }
 
-          // 4D Square to Texture
-          // {
-          //   let startGenValues = performance.now();
-          //   let offset = WasmNoise.exports.GetSimplex4_Square(0.5, 0.5, 0.5, 0.5, 512, 512, 0);
-          //   let endGenValues = performance.now();
-          //   let startGenTexture = performance.now();
-          //   let values = new Float32Array(WasmNoiseMemory.buffer.slice(offset, offset + 512 * 512 * 4));
-          //   generateTexture(512, 512, "square4d", values);
-          //   let endGenTexture = performance.now();
-          //   let diffValues = endGenValues - startGenValues;
-          //   let diffTex = endGenTexture - startGenTexture;
-          //   console.log(
-          //     "Time to generate values for 512*512 texture with 4D Perlin Noise: " +
-          //       diffValues +
-          //       "ms\n" +
-          //       "Time to generate texture: " +
-          //       diffTex +
-          //       "ms\n" +
-          //       "Total time: " +
-          //       (diffValues + diffTex) +
-          //       "ms"
-          //   );
-          // }
-        });
-      });
+      //     // 4D Square to Texture
+      //     // {
+      //     //   let startGenValues = performance.now();
+      //     //   let offset = WasmNoise.exports.GetSimplex4_Square(0.5, 0.5, 0.5, 0.5, 512, 512, 0);
+      //     //   let endGenValues = performance.now();
+      //     //   let startGenTexture = performance.now();
+      //     //   let values = new Float32Array(WasmNoiseMemory.buffer.slice(offset, offset + 512 * 512 * 4));
+      //     //   generateTexture(512, 512, "square4d", values);
+      //     //   let endGenTexture = performance.now();
+      //     //   let diffValues = endGenValues - startGenValues;
+      //     //   let diffTex = endGenTexture - startGenTexture;
+      //     //   console.log(
+      //     //     "Time to generate values for 512*512 texture with 4D Perlin Noise: " +
+      //     //       diffValues +
+      //     //       "ms\n" +
+      //     //       "Time to generate texture: " +
+      //     //       diffTex +
+      //     //       "ms\n" +
+      //     //       "Total time: " +
+      //     //       (diffValues + diffTex) +
+      //     //       "ms"
+      //     //   );
+      //     // }
+      //   });
+      // });
 
-      function generateTexture(width, height, id, values) {
-        // Create the canvas for this texture
-        let div = document.createElement("div");
-        div.id = id;
-        let canvas = document.createElement("canvas");
-        canvas.style.width = "512px";
-        canvas.style.imageRendering = "pixelated";
-        canvas.width = width;
-        canvas.height = height;
-        div.appendChild(canvas);
-        document.body.appendChild(div);
+      // function generateTexture(width, height, id, values) {
+      //   return console.warn("skipping generate texture");
+      //   // Create the canvas for this texture
+      //   let div = document.createElement("div");
+      //   div.id = id;
+      //   let canvas = document.createElement("canvas");
+      //   canvas.style.width = "512px";
+      //   canvas.style.imageRendering = "pixelated";
+      //   canvas.width = width;
+      //   canvas.height = height;
+      //   div.appendChild(canvas);
+      //   document.body.appendChild(div);
 
-        let context = canvas.getContext("2d");
-        let imageDataObject = context.createImageData(width, height);
-        let imageData = imageDataObject.data;
+      //   let context = canvas.getContext("2d");
+      //   let imageDataObject = context.createImageData(width, height);
+      //   let imageData = imageDataObject.data;
 
-        // Fill out the image data with our values
-        let imageDataSize = width * height * 8;
+      //   // Fill out the image data with our values
+      //   let imageDataSize = width * height * 8;
 
-        const imgVals = [];
+      //   const imgVals = [];
 
-        for (let di = 0, vi = 0; di < imageDataSize; di += 4, vi++) {
-          imageData[di] = (values[vi] / MAX) * 255 * AFTERSCALE;
-          imageData[di + 1] = (values[vi] / MAX) * 255 * AFTERSCALE;
-          imageData[di + 2] = (values[vi] / MAX) * 255 * AFTERSCALE;
-          imageData[di + 3] = 255;
-          imgVals.push((values[vi] / MAX) * 255 * AFTERSCALE);
-        }
+      //   for (let di = 0, vi = 0; di < imageDataSize; di += 4, vi++) {
+      //     imageData[di] = (values[vi] / MAX) * 255 * AFTERSCALE;
+      //     imageData[di + 1] = (values[vi] / MAX) * 255 * AFTERSCALE;
+      //     imageData[di + 2] = (values[vi] / MAX) * 255 * AFTERSCALE;
+      //     imageData[di + 3] = 255;
+      //     imgVals.push((values[vi] / MAX) * 255 * AFTERSCALE);
+      //   }
 
-        console.log("Image values", imgVals);
+      //   console.log("Image values", imgVals);
 
-        // Present the texture
-        context.putImageData(imageDataObject, 0, 0);
-      }
+      //   // Present the texture
+      //   context.putImageData(imageDataObject, 0, 0);
+      // }
 
       function generateTexture2(width, height, id, values) {
         // Create the canvas for this texture

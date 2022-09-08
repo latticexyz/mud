@@ -6,6 +6,7 @@ import {
   memory as _memory,
   smoothStep as _smoothStep,
   noise2d as _noise2d,
+  noise as _noise,
 } from "./types";
 
 async function fetchBuffer(url: URL) {
@@ -34,6 +35,7 @@ export async function createPerlinWasm(): Promise<{
   memory: typeof _memory;
   smoothStep: typeof _smoothStep;
   noise2d: typeof _noise2d;
+  noise: typeof _noise;
 }> {
   const url = new URL("./build/release.wasm", import.meta.url);
   const wasmModule = await fetchAndCompileWasmModule(url);
