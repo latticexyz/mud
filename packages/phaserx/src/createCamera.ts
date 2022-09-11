@@ -31,6 +31,12 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
   //   return Math.pow(2, Math.floor(Math.log(currentZoom * 2) / Math.log(2))) / 2;
   // }
 
+  function setZoom(zoom: number) {
+    phaserCamera.setZoom(zoom);
+    worldView$.next(phaserCamera.worldView);
+    zoom$.next(zoom);
+  }
+
   const pinchSub = pinchStream$
     .pipe(
       throttleTime(10),
@@ -41,9 +47,7 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
     .subscribe(([, zoom]) => {
       // Set the gesture zoom state to the current zoom value to avoid zooming beyond the max values
       if (gesture._ctrl.state.pinch) gesture._ctrl.state.pinch.offset[0] = zoom;
-      phaserCamera.setZoom(zoom);
-      worldView$.next(phaserCamera.worldView);
-      zoom$.next(zoom);
+      setZoom(zoom);
     });
 
   const wheelSub = wheelStream$
@@ -90,5 +94,6 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
     centerOnCoord,
     centerOn,
     setScroll,
+    setZoom,
   };
 }
