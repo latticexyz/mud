@@ -19,6 +19,7 @@ export type Camera = {
   centerOnCoord: (tileCoord: Coord, tileWidth: number, tileHeight: number) => void;
   centerOn: (x: number, y: number) => void;
   setScroll: (x: number, y: number) => void;
+  setZoom: (zoom: number) => void;
 };
 
 export type GameObjectTypes = typeof GameObjectClasses;
