@@ -1,5 +1,5 @@
 import { awaitStreamValue, DoWork, streamToDefinedComputed } from "@latticexyz/utils";
-import { Observable, Subject } from "rxjs";
+import { expand, from, map, Observable, Subject, takeWhile } from "rxjs";
 import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
 import { Components } from "@latticexyz/recs";
 import {
@@ -18,12 +18,13 @@ import {
   createSnapshotClient,
   createDecode,
   createFetchWorldEventsInBlockRange,
-  createLatestEventStream,
   getSnapshotBlockNumber,
   fetchSnapshot,
   fetchStateInBlockRange,
   fetchSnapshotChunked,
   createStreamClient,
+  createLatestEventStreamRPC,
+  convertStreamServiceMessageToEvent,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
@@ -80,11 +81,29 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
 
-    const streamClient = streamServiceUrl ? createStreamClient(streamServiceUrl) : undefined;
-    createLatestEventStream(blockNumber$, fetchWorldEvents, streamClient).subscribe((event) => {
-      storeEvent(cacheStore.current, event);
-      if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
-    });
+    const streamServiceClient = streamServiceUrl ? createStreamClient(streamServiceUrl) : undefined;
+    if (streamServiceClient) {
+      const stream = streamServiceClient.subscribeToStreamLatest({
+        worldAddress: worldContract.address,
+        blockNumber: true,
+        blockHash: true,
+        blockTimestamp: true,
+        transactionsConfirmed: true,
+        ecsEvents: true,
+      });
+
+      for await (const message of stream.responses) {
+        const event = convertStreamServiceMessageToEvent(message);
+        storeEvent(cacheStore.current, event);
+        if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
+      }
+    } else {
+      createLatestEventStreamRPC(blockNumber$, fetchWorldEvents).subscribe((event) => {
+        storeEvent(cacheStore.current, event);
+        if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
+      });
+    }
+
     const streamStartBlockNumber = awaitStreamValue(blockNumber$);
 
     // Load initial state from cache or snapshot service

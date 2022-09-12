@@ -15,6 +15,7 @@ import { CacheStore, createCacheStore, storeEvent } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
+import { ECSStreamBlockBundleReply } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
 
 /**
  * Create a ECSStateSnapshotServiceClient
@@ -141,10 +142,9 @@ export async function reduceFetchedState(
  * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
  * @returns Stream of {@link NetworkComponentUpdate}s.
  */
-export function createLatestEventStream(
+export function createLatestEventStreamRPC(
   blockNumber$: Observable<number>,
-  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
-  streamServiceClient?: ECSStreamServiceClient
+  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>
 ): Observable<NetworkComponentUpdate> {
   let lastSyncedBlockNumber: number | undefined;
 
@@ -296,5 +296,28 @@ export function createFetchWorldEventsInBlockRange(
     }
 
     return ecsEvents;
+  };
+}
+
+export function convertStreamServiceMessageToEvent(message: ECSStreamBlockBundleReply): NetworkComponentUpdate {
+  const { blockNumber, ecsEvents } = message;
+
+  // TODO: not implemented, just a potential example stub.
+  const ecsEvent = ecsEvents[0];
+  const rawComponentId = ecsEvent.componentId;
+  const entityId = ecsEvent.entityId;
+  const txHash = ecsEvent.tx;
+  const lastEventInTx = true;
+
+  const component = to256BitString(BigNumber.from(rawComponentId).toHexString());
+  const entity = to256BitString(BigNumber.from(entityId).toHexString()) as EntityID;
+
+  return {
+    component,
+    entity,
+    value: undefined,
+    blockNumber,
+    lastEventInTx,
+    txHash,
   };
 }
