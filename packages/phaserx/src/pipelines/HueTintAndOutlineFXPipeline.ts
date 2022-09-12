@@ -44,7 +44,7 @@ export class HueTintAndOutlineFXPipeline extends SpritePipeline {
             vec3 rgbColor;
             srcColor = texture2D(uMainSampler, outTexCoord);
             hsvColor = rgb2hsv(srcColor.rgb);
-            if (hsvColor.g == 0.0 && srcColor.a == 1. && !(tintColor.r == 0.0 && tintColor.g == 0.0 && tintColor.b == 0.0))
+            if (hsvColor.g == 0.0 && !(tintColor.r == 0.0 && tintColor.g == 0.0 && tintColor.b == 0.0))
             {
               vec3 color = hsv2rgb(hsvColor);
               rgbColor = color * tintColor;
