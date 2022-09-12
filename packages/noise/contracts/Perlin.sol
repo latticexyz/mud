@@ -31,7 +31,7 @@ library Perlin {
     int256 _z,
     int256 denom,
     uint8 precision
-  ) public view returns (int128) {
+  ) public pure returns (int128) {
     H memory h = H(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Convert fraction into 64.64 fixed point number

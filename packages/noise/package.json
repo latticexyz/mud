@@ -3,6 +3,7 @@
   "version": "0.8.1",
   "main": "build/release.mjs",
   "types": "build/release.d.ts",
+  "type": "module",
   "license": "MIT",
   "scripts": {
     "prepare": "yarn asbuild:release",
@@ -14,11 +15,10 @@
     "link": "yarn link"
   },
   "dependencies": {
-    "@types/big-integer": "^0.0.31",
-    "WasmNoise": "https://github.com/latticexyz/WasmNoise",
-    "keccak-wasm": "^0.10.3"
+    "@types/big-integer": "^0.0.31"
   },
   "devDependencies": {
+    "@flatten-js/interval-tree": "^1.0.19",
     "@graphprotocol/graph-ts": "^0.27.0",
     "@magic-works/commonjs-import.meta": "^1.0.1",
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
@@ -39,5 +39,8 @@
     "ttypescript": "^1.5.13",
     "typescript": "^4.8.2",
     "web3-utils": "^1.7.5"
+  },
+  "peerDependencies": {
+    "@flatten-js/interval-tree": "^1.0.19"
   }
 }
