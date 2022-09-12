@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { EntityID, ComponentValue } from "@latticexyz/recs";
-import { to256BitString, awaitPromise, range, sleep } from "@latticexyz/utils";
+import { EntityID, ComponentValue, Components } from "@latticexyz/recs";
+import { to256BitString, awaitPromise, range } from "@latticexyz/utils";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { BytesLike, Contract, BigNumber } from "ethers";
 import { Observable, map, concatMap, of } from "rxjs";
@@ -8,7 +8,14 @@ import { createDecoder } from "../createDecoder";
 import { createTopics } from "../createTopics";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import { ECSStateSnapshotServiceClient } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot.client";
-import { NetworkComponentUpdate, ContractConfig } from "../types";
+import {
+  NetworkComponentUpdate,
+  ContractConfig,
+  SystemCall,
+  NetworkEvent,
+  NetworkEvents,
+  SystemCallTransaction,
+} from "../types";
 import { CacheStore, createCacheStore, storeEvent } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
@@ -70,7 +77,7 @@ export async function fetchSnapshot(
       const component = to256BitString(stateComponents[componentIdIdx]);
       const entity = stateEntities[entityIdIdx] as EntityID;
       const value = await decode(component, rawValue);
-      storeEvent(cacheStore, { component, entity, value, blockNumber });
+      storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
     }
   } catch (e) {
     console.error(e);
@@ -89,8 +96,9 @@ export async function fetchSnapshot(
  */
 export function createLatestEventStream(
   blockNumber$: Observable<number>,
-  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>
-): Observable<NetworkComponentUpdate> {
+  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  fetchSystemCallData?: ReturnType<typeof createFetchSystemCallData>
+): Observable<NetworkEvent> {
   let lastSyncedBlockNumber: number | undefined;
 
   return blockNumber$.pipe(
@@ -101,6 +109,12 @@ export function createLatestEventStream(
       lastSyncedBlockNumber = to;
       const events = await fetchWorldEvents(from, to);
       console.log(`[SyncWorker] fetched ${events.length} events from block range ${from} -> ${to}`);
+
+      if (fetchSystemCallData && events.length > 0) {
+        const systemCalls = await fetchSystemCallsFromEvents(events, fetchSystemCallData);
+        return [...events, ...systemCalls];
+      }
+
       return events;
     }),
     awaitPromise(),
@@ -190,7 +204,7 @@ export function createWorldTopics() {
  * @param decode Function to decode raw component values ({@link createDecode})
  * @returns Function to fetch World contract events in a given block range.
  */
-export function createFetchWorldEventsInBlockRange(
+export function createFetchWorldEventsInBlockRange<C extends Components>(
   provider: JsonRpcProvider,
   worldConfig: ContractConfig,
   batch: boolean | undefined,
@@ -201,7 +215,7 @@ export function createFetchWorldEventsInBlockRange(
   // Fetches World events in the provided block range (including from and to)
   return async (from: number, to: number) => {
     const contractsEvents = await fetchEventsInBlockRange(provider, topics, from, to, { World: worldConfig }, batch);
-    const ecsEvents: NetworkComponentUpdate[] = [];
+    const ecsEvents: NetworkComponentUpdate<C>[] = [];
 
     for (const event of contractsEvents) {
       const { lastEventInTx, txHash, args } = event;
@@ -222,16 +236,17 @@ export function createFetchWorldEventsInBlockRange(
       const blockNumber = to;
 
       const ecsEvent = {
+        type: NetworkEvents.NetworkComponentUpdate,
         component,
         entity,
         value: undefined,
         blockNumber,
         lastEventInTx,
         txHash,
-      };
+      } as NetworkComponentUpdate<C>;
 
       if (event.eventKey === "ComponentValueRemoved") {
-        ecsEvents.push(ecsEvent);
+        ecsEvents.push({ ...ecsEvent });
       }
 
       if (event.eventKey === "ComponentValueSet") {
@@ -241,5 +256,46 @@ export function createFetchWorldEventsInBlockRange(
     }
 
     return ecsEvents;
+  };
+}
+
+async function fetchSystemCallsFromEvents<C extends Components>(
+  events: NetworkComponentUpdate<C>[],
+  fetchSystemCallData: (txHash: string) => Promise<SystemCallTransaction>
+) {
+  const systemCalls: SystemCall<C>[] = [];
+  const transactionHashToEvents = events.reduce((acc, event) => {
+    if (["worker", "cache"].includes(event.txHash)) return acc;
+
+    if (!acc[event.txHash]) acc[event.txHash] = [];
+
+    acc[event.txHash].push(event);
+
+    return acc;
+  }, {} as { [key: string]: NetworkComponentUpdate<C>[] });
+
+  const txData = await Promise.all(Object.keys(transactionHashToEvents).map(fetchSystemCallData));
+  for (const tx of txData) {
+    systemCalls.push({
+      type: NetworkEvents.SystemCall,
+      tx,
+      updates: transactionHashToEvents[tx.hash],
+    });
+  }
+
+  return systemCalls;
+}
+
+export function createFetchSystemCallData(
+  provider: JsonRpcProvider
+): (txHash: string) => Promise<SystemCallTransaction> {
+  return async (txHash: string) => {
+    const tx = await provider.getTransaction(txHash);
+    return {
+      to: tx.to,
+      data: tx.data,
+      value: tx.value,
+      hash: tx.hash,
+    } as SystemCallTransaction;
   };
 }

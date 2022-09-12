@@ -1,6 +1,12 @@
 import { awaitStreamValue, DoWork, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
 import { Observable, Subject } from "rxjs";
-import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
+import {
+  isNetworkComponentUpdateEvent,
+  NetworkComponentUpdate,
+  NetworkEvent,
+  NetworkEvents,
+  SyncWorkerConfig,
+} from "../types";
 import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
 import {
   createCacheStore,
@@ -22,14 +28,14 @@ import {
   getSnapshotBlockNumber,
   fetchSnapshot,
   fetchStateInBlockRange,
+  createFetchSystemCallData,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { GodID, SyncState } from "./constants";
-export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
 
-export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfig<Cm>, Output<Cm>> {
-  private input$ = new Subject<SyncWorkerConfig<Cm>>();
-  private output$ = new Subject<Output<Cm>>();
+export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig, NetworkEvent<C>> {
+  private input$ = new Subject<SyncWorkerConfig>();
+  private output$ = new Subject<NetworkEvent<C>>();
 
   constructor() {
     this.init();
@@ -44,9 +50,10 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
    * @param blockNumber Optional: block number to pass in the component update.
    */
   private setLoadingState(state: SyncState, msg: string, percentage: number, blockNumber = 0) {
-    const update: Output<Cm> = {
+    const update: NetworkComponentUpdate<C> = {
+      type: NetworkEvents.NetworkComponentUpdate,
       component: keccak256("component.LoadingState"),
-      value: { state, msg, percentage } as unknown as ComponentValue<SchemaOf<Cm[keyof Cm]>>,
+      value: { state, msg, percentage } as unknown as ComponentValue<SchemaOf<C[keyof C]>>,
       entity: GodID,
       txHash: "worker",
       lastEventInTx: false,
@@ -80,6 +87,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       worldContract,
       provider: { options: providerOptions },
       initialBlockNumber,
+      fetchSystemCalls,
     } = computedConfig.get();
 
     // Set up
@@ -102,9 +110,13 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
-    createLatestEventStream(blockNumber$, fetchWorldEvents).subscribe((event) => {
-      storeEvent(cacheStore.current, event);
-      if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
+    createLatestEventStream(
+      blockNumber$,
+      fetchWorldEvents,
+      fetchSystemCalls ? createFetchSystemCallData(provider) : undefined
+    ).subscribe((event) => {
+      if (isNetworkComponentUpdateEvent(event)) storeEvent(cacheStore.current, event);
+      if (passLiveEventsToOutput) this.output$.next(event as NetworkEvent<C>);
     });
     const streamStartBlockNumberPromise = awaitStreamValue(blockNumber$);
 
@@ -152,7 +164,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
     // Pass current cacheStore to output and start passing live events
     for (const update of getCacheStoreEntries(cacheStore.current)) {
-      this.output$.next(update as Output<Cm>);
+      this.output$.next(update as NetworkEvent<C>);
     }
 
     // Let the client know loading is complete
@@ -164,7 +176,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     setInterval(() => saveCacheStoreToIndexDb(indexDbCache, cacheStore.current), 10000);
   }
 
-  public work(input$: Observable<SyncWorkerConfig<Cm>>): Observable<Output<Cm>> {
+  public work(input$: Observable<SyncWorkerConfig>): Observable<NetworkEvent<C>> {
     input$.subscribe(this.input$);
     return this.output$.asObservable();
   }
