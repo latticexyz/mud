@@ -3,7 +3,7 @@ import { EntityID, ComponentValue } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range, sleep } from "@latticexyz/utils";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { BytesLike, Contract, BigNumber } from "ethers";
-import { Observable, map, concatMap, of } from "rxjs";
+import { Observable, map, concatMap, of, from } from "rxjs";
 import { createDecoder } from "../createDecoder";
 import { createTopics } from "../createTopics";
 import { fetchEventsInBlockRange } from "../networkUtils";
@@ -135,8 +135,34 @@ export async function reduceFetchedState(
 }
 
 /**
- * Create a RxJS stream of {@link NetworkComponentUpdate}s.
- * Use streaming service if available, otherwise fetch events from RPC.
+ * Create a RxJS stream of {@link NetworkComponentUpdate}s by subscribing to a
+ * gRPC streaming service.
+ *
+ * @param streamServiceUrl URL of the gPRC stream service to subscribe to.
+ * @param worldAddress Contract address of the World contract to subscribe to.
+ * @returns Stream of {@link NetworkComponentUpdate}s.
+ */
+export function createLatestEventStreamService(streamServiceUrl: string, worldAddress: string) {
+  const streamServiceClient = createStreamClient(streamServiceUrl);
+  const stream = streamServiceClient.subscribeToStreamLatest({
+    worldAddress,
+    blockNumber: true,
+    blockHash: true,
+    blockTimestamp: true,
+    transactionsConfirmed: true,
+    ecsEvents: true,
+  });
+
+  // Turn stream responses into rxjs NetworkComponentUpdate
+  return from(stream.responses).pipe(map(convertStreamServiceMessageToEvent));
+}
+
+/**
+ * Create a RxJS stream of {@link NetworkComponentUpdate}s by listening to new
+ * blocks from the blockNumber$ stream and fetching the corresponding block
+ * from the connected RPC.
+ *
+ * @dev Only use if {@link createLatestEventStreamRPC} is not available.
  *
  * @param blockNumber$ Block number stream
  * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
