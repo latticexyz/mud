@@ -7,7 +7,9 @@
   "license": "MIT",
   "scripts": {
     "prepare": "yarn asbuild:release",
-    "test": "hardhat test",
+    "test:forge": "forge test",
+    "test:hardhat": "NODE_OPTIONS='--loader ts-node/esm --experimental-specifier-resolution=node' yarn hardhat test",
+    "test": "yarn test:forge && yarn test:hardhat",
     "asbuild:debug": "asc assembly/index.ts --target debug",
     "asbuild:release": "asc assembly/index.ts --target release && cp build/release.js build/release.mjs",
     "asbuild": "yarn asbuild:debug && yarn asbuild:release",
@@ -33,6 +35,7 @@
     "chai": "^4.3.6",
     "ethers": "^5.7.0",
     "hardhat": "^2.10.2",
+    "keccak-wasm": "^0.10.3",
     "mocha": "^10.0.0",
     "parcel": "^2.7.0",
     "ts-jest": "^28.0.8",

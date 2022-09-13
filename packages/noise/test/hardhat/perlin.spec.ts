@@ -1,7 +1,9 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import hardhat from "hardhat";
 import fs from "fs";
-import { fetchAndCompileWasmModule } from "../ts/utils";
+import { fetchAndCompileWasmModule } from "../../ts/utils";
+
+const { ethers } = hardhat;
 
 const SCALE = 7;
 const PRECISION = 10;
@@ -21,7 +23,7 @@ describe("Perlin", () => {
     // In esm environments the compiled function can be imported directly
     // but hardhat does not support esm
     // import { perlin } from "../build/release";
-    const wasmModule = await fetchAndCompileWasmModule(new URL("../build/release.wasm", import.meta.url));
+    const wasmModule = await fetchAndCompileWasmModule(new URL("../../build/release.wasm", import.meta.url));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const wasmInstance: any = await WebAssembly.instantiate(wasmModule, {
       env: {
