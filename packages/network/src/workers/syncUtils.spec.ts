@@ -3,7 +3,12 @@ import { sleep } from "@latticexyz/utils";
 import { Subject } from "rxjs";
 import { NetworkComponentUpdate } from "../types";
 import { getCacheStoreEntries } from "./CacheStore";
-import { createLatestEventStream, createSnapshotClient, createWorldTopics, fetchStateInBlockRange } from "./syncUtils";
+import {
+  createLatestEventStreamRPC,
+  createSnapshotClient,
+  createWorldTopics,
+  fetchStateInBlockRange,
+} from "./syncUtils";
 
 describe("syncUtils", () => {
   describe("createSnapshotClient", () => {
@@ -21,7 +26,7 @@ describe("syncUtils", () => {
     it.todo("end-to-end test");
   });
 
-  describe("createLatestEventStream", () => {
+  describe("createLatestEventStreamRPC", () => {
     it("should fetch world events for new block range when a new block number arrives", async () => {
       const blockNumber$ = new Subject<number>();
       const event: NetworkComponentUpdate = {
@@ -36,7 +41,7 @@ describe("syncUtils", () => {
       const fetchWorldEvents = jest.fn(() => Promise.resolve([event, event]));
       const latestEvent = jest.fn();
 
-      createLatestEventStream(blockNumber$, fetchWorldEvents).subscribe(latestEvent);
+      createLatestEventStreamRPC(blockNumber$, fetchWorldEvents).subscribe(latestEvent);
 
       expect(fetchWorldEvents).not.toHaveBeenCalled();
 

@@ -78,7 +78,7 @@ jest.mock("../createBlockNumberStream", () => ({
 jest.mock("./syncUtils", () => ({
   ...jest.requireActual("./syncUtils"),
   createFetchWorldEventsInBlockRange: () => () => Promise.resolve([]),
-  createLatestEventStream: () => latestEvent$,
+  createLatestEventStreamRPC: () => latestEvent$,
   getSnapshotBlockNumber: () => Promise.resolve(snapshotBlockNumber),
   fetchSnapshotChunked: () => {
     const store = createCacheStore();
