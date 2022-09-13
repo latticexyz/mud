@@ -1,13 +1,14 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { sleep } from "@latticexyz/utils";
+import { keccak256, sleep } from "@latticexyz/utils";
 import { computed } from "mobx";
-import { SyncWorker } from "./SyncWorker";
-import { Subject } from "rxjs";
+import { Output, SyncWorker } from "./SyncWorker";
+import { Subject, Subscription } from "rxjs";
 import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
-import { EntityID } from "@latticexyz/recs";
+import { Components, EntityID } from "@latticexyz/recs";
 import { createCacheStore, storeEvent } from "./CacheStore";
 import * as syncUtils from "./syncUtils";
 import "fake-indexeddb/auto";
+import { GodID, SyncState } from "./constants";
 
 // Test constants
 const cacheBlockNumber = 99;
@@ -98,13 +99,56 @@ jest.mock("./syncUtils", () => ({
 describe("Sync.worker", () => {
   let input$: Subject<SyncWorkerConfig>;
   let output: jest.Mock;
+  let subscription: Subscription;
+  let worker: SyncWorker<Components>;
 
   beforeEach(async () => {
     input$ = new Subject<SyncWorkerConfig>();
-    const worker = new SyncWorker();
+    worker = new SyncWorker();
 
     output = jest.fn();
-    worker.work(input$).subscribe(output);
+    subscription = worker.work(input$).subscribe((e) => {
+      if (e.component !== keccak256("component.LoadingState")) {
+        console.log("Called with", e);
+        output(e);
+      }
+    });
+  });
+
+  afterEach(() => {
+    subscription?.unsubscribe();
+  });
+
+  it("should report the current loading state via the `component.LoadingState` component", async () => {
+    const freshOutput = jest.fn();
+    const freshWorker = new SyncWorker();
+    const freshInput$ = new Subject<SyncWorkerConfig>();
+
+    const sub = (subscription = freshWorker.work(freshInput$).subscribe(freshOutput));
+
+    freshInput$.next({
+      checkpointServiceUrl: "",
+      chainId: 4242,
+      worldContract: { address: "0x00", abi: [] },
+      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      initialBlockNumber: 0,
+    });
+
+    const finalUpdate: Output<Components> = {
+      component: keccak256("component.LoadingState"),
+      value: { state: SyncState.LIVE, msg: "Streaming live events", percentage: 100 },
+      entity: GodID,
+      txHash: "worker",
+      lastEventInTx: false,
+      blockNumber: 99,
+    };
+
+    await sleep(0);
+    blockNumber$.next(101);
+    await sleep(0);
+    expect(freshOutput).toHaveBeenCalledWith(finalUpdate);
+
+    sub?.unsubscribe();
   });
 
   it("should pass live events to the output", async () => {
@@ -112,7 +156,7 @@ describe("Sync.worker", () => {
       checkpointServiceUrl: "",
       streamServiceUrl: "",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -122,10 +166,10 @@ describe("Sync.worker", () => {
     await sleep(0);
 
     const event: NetworkComponentUpdate = {
-      component: "0x0",
-      entity: "0x1" as EntityID,
+      component: "0x00",
+      entity: "0x01" as EntityID,
       value: {},
-      txHash: "0x2",
+      txHash: "0x02",
       lastEventInTx: true,
       blockNumber: 111,
     };
@@ -141,7 +185,7 @@ describe("Sync.worker", () => {
       checkpointServiceUrl: "http://localhost:50062",
       streamServiceUrl: "",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -165,7 +209,7 @@ describe("Sync.worker", () => {
       checkpointServiceUrl: "",
       streamServiceUrl: "",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -189,7 +233,7 @@ describe("Sync.worker", () => {
       checkpointServiceUrl: "",
       streamServiceUrl: "",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -221,7 +265,7 @@ describe("Sync.worker", () => {
       checkpointServiceUrl: "",
       streamServiceUrl: "",
       chainId: 4242,
-      worldContract: { address: "0x0", abi: [] },
+      worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
       initialBlockNumber: 0,
     });
@@ -231,27 +275,27 @@ describe("Sync.worker", () => {
 
     const event1: NetworkComponentUpdate = {
       component: "0x99",
-      entity: "0x1" as EntityID,
+      entity: "0x01" as EntityID,
       value: {},
-      txHash: "0x2",
+      txHash: "0x02",
       lastEventInTx: true,
       blockNumber: firstLiveBlockNumber,
     };
 
     const event2: NetworkComponentUpdate = {
-      component: "0x999",
-      entity: "0x1" as EntityID,
+      component: "0x0999",
+      entity: "0x01" as EntityID,
       value: {},
-      txHash: "0x2",
+      txHash: "0x02",
       lastEventInTx: true,
       blockNumber: secondLiveBlockNumber,
     };
 
     const event3: NetworkComponentUpdate = {
       component: "0x9999",
-      entity: "0x1" as EntityID,
+      entity: "0x01" as EntityID,
       value: {},
-      txHash: "0x2",
+      txHash: "0x02",
       lastEventInTx: true,
       blockNumber: 1003,
     };

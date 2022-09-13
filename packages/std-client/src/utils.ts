@@ -17,11 +17,9 @@ import {
 } from "@latticexyz/recs";
 import { Coord, keccak256 } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
-import { Clock } from "@latticexyz/network";
+import { Clock, GodID } from "@latticexyz/network";
 import { deferred } from "@latticexyz/utils";
 import { filter } from "rxjs";
-
-export const GodID = keccak256("mudwar.god") as EntityID;
 
 export function getCurrentTurn(
   world: World,
