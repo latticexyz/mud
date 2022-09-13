@@ -23,6 +23,7 @@ import {
   fetchSnapshotChunked,
   createLatestEventStreamRPC,
   createLatestEventStreamService,
+  createTransformWorldEventsFromStream,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
@@ -72,6 +73,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       providerOptions?.batch,
       decode
     );
+    const transformWorldEvents = createTransformWorldEventsFromStream(decode);
 
     // Start syncing current events, but only start streaming to output once gap between initial state and current block is closed
     console.log("[SyncWorker] start initial sync");
@@ -79,7 +81,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
     const latestEventStream = streamServiceUrl
-      ? createLatestEventStreamService(streamServiceUrl, worldContract.address)
+      ? createLatestEventStreamService(streamServiceUrl, worldContract.address, transformWorldEvents)
       : createLatestEventStreamRPC(blockNumber$, fetchWorldEvents);
 
     latestEventStream.subscribe((event) => {

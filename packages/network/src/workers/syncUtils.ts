@@ -142,19 +142,31 @@ export async function reduceFetchedState(
  * @param worldAddress Contract address of the World contract to subscribe to.
  * @returns Stream of {@link NetworkComponentUpdate}s.
  */
-export function createLatestEventStreamService(streamServiceUrl: string, worldAddress: string) {
+export function createLatestEventStreamService(
+  streamServiceUrl: string,
+  worldAddress: string,
+  transformWorldEvents: ReturnType<typeof createTransformWorldEventsFromStream>
+) {
   const streamServiceClient = createStreamClient(streamServiceUrl);
   const stream = streamServiceClient.subscribeToStreamLatest({
     worldAddress,
     blockNumber: true,
     blockHash: true,
     blockTimestamp: true,
-    transactionsConfirmed: true,
+    transactionsConfirmed: false, // do not need txs since each ECSEvent contains the hash
     ecsEvents: true,
   });
 
   // Turn stream responses into rxjs NetworkComponentUpdate
-  return from(stream.responses).pipe(map(convertStreamServiceMessageToEvent));
+  return from(stream.responses).pipe(
+    map(async (responseChunk) => {
+      const events = await transformWorldEvents(responseChunk);
+      console.log(`[SyncWorker] got ${events.length} events from block ${responseChunk.blockNumber}`);
+      return events;
+    }),
+    awaitPromise(),
+    concatMap((v) => of(...v))
+  );
 }
 
 /**
@@ -325,25 +337,39 @@ export function createFetchWorldEventsInBlockRange(
   };
 }
 
-export function convertStreamServiceMessageToEvent(message: ECSStreamBlockBundleReply): NetworkComponentUpdate {
-  const { blockNumber, ecsEvents } = message;
+export function createTransformWorldEventsFromStream(decode: ReturnType<typeof createDecode>) {
+  return async (message: ECSStreamBlockBundleReply) => {
+    const { blockNumber, ecsEvents } = message;
 
-  // TODO: not implemented, just a potential example stub.
-  const ecsEvent = ecsEvents[0];
-  const rawComponentId = ecsEvent.componentId;
-  const entityId = ecsEvent.entityId;
-  const txHash = ecsEvent.tx;
-  const lastEventInTx = true;
+    const convertedEcsEvents: NetworkComponentUpdate[] = [];
 
-  const component = to256BitString(BigNumber.from(rawComponentId).toHexString());
-  const entity = to256BitString(BigNumber.from(entityId).toHexString()) as EntityID;
+    for (let i = 0; i < ecsEvents.length; i++) {
+      const ecsEvent = ecsEvents[i];
 
-  return {
-    component,
-    entity,
-    value: undefined,
-    blockNumber,
-    lastEventInTx,
-    txHash,
+      const rawComponentId = ecsEvent.componentId;
+      const entityId = ecsEvent.entityId;
+      const txHash = ecsEvent.tx;
+
+      const component = to256BitString(BigNumber.from(rawComponentId).toHexString());
+      const entity = to256BitString(BigNumber.from(entityId).toHexString()) as EntityID;
+
+      const value = ecsEvent.value ? await decode(component, ecsEvent.value) : undefined;
+
+      // Since ECS events are coming in ordered over the wire, we check if the following event has a
+      // different transaction then the current, which would mean an event associated with another
+      // tx
+      const lastEventInTx = ecsEvents[i + 1]?.tx !== ecsEvent.tx;
+
+      convertedEcsEvents.push({
+        component,
+        entity,
+        value,
+        blockNumber,
+        lastEventInTx,
+        txHash,
+      });
+    }
+
+    return convertedEcsEvents;
   };
 }
