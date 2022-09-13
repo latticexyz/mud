@@ -6,7 +6,8 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "prepare": "yarn asbuild:release",
+    "prepare": "yarn asbuild:release && chmod u+x git-install.sh",
+    "git:install": "bash git-install.sh",
     "test:forge": "forge test",
     "test:hardhat": "NODE_OPTIONS='--loader ts-node/esm --experimental-specifier-resolution=node' yarn hardhat test",
     "test": "yarn test:forge && yarn test:hardhat",
@@ -41,7 +42,9 @@
     "ts-jest": "^28.0.8",
     "ttypescript": "^1.5.13",
     "typescript": "^4.8.2",
-    "web3-utils": "^1.7.5"
+    "web3-utils": "^1.7.5",
+    "ds-test": "https://github.com/dapphub/ds-test.git#9310e879db8ba3ea6d5c6489a579118fd264a3f5",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#82e6f5376c15341629ca23098e0b32d303f44f02"
   },
   "peerDependencies": {
     "@flatten-js/interval-tree": "^1.0.19"

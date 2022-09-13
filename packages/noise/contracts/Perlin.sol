@@ -5,16 +5,29 @@ pragma solidity ^0.8.0;
 
 import {ABDKMath64x64 as Math} from "abdk-libraries-solidity/ABDKMath64x64.sol";
 
+int128 constant _1 = 2**64;
+int128 constant _2 = 2 * 2**64;
+int128 constant _6 = 6 * 2**64;
+int128 constant _10 = 10 * 2**64;
+int128 constant _15 = 15 * 2**64;
+
 struct H {
-  int64 X;
-  int64 Y;
-  int64 Z;
-  int64 A;
-  int64 AA;
-  int64 AB;
-  int64 B;
-  int64 BA;
-  int64 BB;
+  int16 X;
+  int16 Y;
+  int16 Z;
+  int16 A;
+  int16 AA;
+  int16 AB;
+  int16 B;
+  int16 BA;
+  int16 BB;
+  int16 pX;
+  int16 pA;
+  int16 pB;
+  int16 pAA;
+  int16 pAB;
+  int16 pBA;
+  int16 pBB;
   int128 x;
   int128 y;
   int128 z;
@@ -24,7 +37,70 @@ struct H {
   int128 r;
 }
 
+struct H2 {
+  int16 X;
+  int16 Y;
+  int16 A;
+  int16 AA;
+  int16 AB;
+  int16 B;
+  int16 BA;
+  int16 BB;
+  int16 pX;
+  int16 pA;
+  int16 pB;
+  int128 x;
+  int128 y;
+  int128 u;
+  int128 r;
+}
+
 library Perlin {
+  function noise2d(
+    int256 _x,
+    int256 _y,
+    int256 denom,
+    uint8 precision
+  ) public pure returns (int128) {
+    H2 memory h = H2(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+    // Convert fraction into 64.64 fixed point number
+    h.x = Math.divi(_x, denom);
+    h.y = Math.divi(_y, denom);
+
+    // Find unit cube that contains point
+    h.X = int16(Math.toInt(h.x)) & 0xff;
+    h.Y = int16(Math.toInt(h.y)) & 0xff;
+
+    // Find relative x,y,z of point in cube
+    h.x = Math.sub(h.x, floor(h.x));
+    h.y = Math.sub(h.y, floor(h.y));
+
+    // Compute fade curves for each x,y,z
+    h.u = fade(h.x);
+
+    // Hash coordinates of the 8 cube corners
+    h.pX = p2(h.X);
+    h.A = i0(h.pX) + h.Y;
+    h.pA = p2(h.A);
+    h.AA = i0(h.pA);
+    h.AB = i1(h.pA);
+    h.B = i1(h.pX) + h.Y;
+    h.pB = p2(h.B);
+    h.BA = i0(h.pB);
+    h.BB = i1(h.pB);
+
+    // Add blended results from 8 corners of cube
+    h.r = lerp(
+      fade(h.y),
+      lerp(h.u, grad2d(int16(p(h.AA)), h.x, h.y), grad2d(int16(p(h.BA)), dec(h.x), h.y)),
+      lerp(h.u, grad2d(int16(p(h.AB)), h.x, dec(h.y)), grad2d(int16(p(h.BB)), dec(h.x), dec(h.y)))
+    );
+
+    // Shift to range from 0 to 1
+    return Math.div(Math.add(h.r, _1), _2) >> (64 - precision);
+  }
+
   function noise(
     int256 _x,
     int256 _y,
@@ -32,7 +108,7 @@ library Perlin {
     int256 denom,
     uint8 precision
   ) public pure returns (int128) {
-    H memory h = H(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    H memory h = H(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Convert fraction into 64.64 fixed point number
     h.x = Math.divi(_x, denom);
@@ -40,9 +116,9 @@ library Perlin {
     h.z = Math.divi(_z, denom);
 
     // Find unit cube that contains point
-    h.X = Math.toInt(h.x) & 255;
-    h.Y = Math.toInt(h.y) & 255;
-    h.Z = Math.toInt(h.z) & 255;
+    h.X = int16(Math.toInt(h.x)) & 255;
+    h.Y = int16(Math.toInt(h.y)) & 255;
+    h.Z = int16(Math.toInt(h.z)) & 255;
 
     // Find relative x,y,z of point in cube
     h.x = Math.sub(h.x, floor(h.x));
@@ -55,38 +131,45 @@ library Perlin {
     h.w = fade(h.z);
 
     // Hash coordinates of the 8 cube corners
-    h.A = p(h.X) + h.Y;
-    h.AA = p(h.A) + h.Z;
-    h.AB = p(h.A + 1) + h.Z;
-    h.B = p(h.X + 1) + h.Y;
-    h.BA = p(h.B) + h.Z;
-    h.BB = p(h.B + 1) + h.Z;
+    h.pX = p2(h.X);
+    h.A = i0(h.pX) + h.Y;
+    h.pA = p2(h.A);
+    h.AA = i0(h.pA) + h.Z;
+    h.AB = i1(h.pA) + h.Z;
+    h.B = i1(h.pX) + h.Y;
+    h.pB = p2(h.B);
+    h.BA = i0(h.pB) + h.Z;
+    h.BB = i1(h.pB) + h.Z;
+    h.pAA = p2(h.AA);
+    h.pAB = p2(h.AB);
+    h.pBA = p2(h.BA);
+    h.pBB = p2(h.BB);
 
     // Add blended results from 8 corners of cube
     h.r = lerp(
       h.w,
       lerp(
         h.v,
-        lerp(h.u, grad(p(h.AA), h.x, h.y, h.z), grad(p(h.BA), subi(h.x, 1), h.y, h.z)),
-        lerp(h.u, grad(p(h.AB), h.x, subi(h.y, 1), h.z), grad(p(h.BB), subi(h.x, 1), subi(h.y, 1), h.z))
+        lerp(h.u, grad(i0(h.pAA), h.x, h.y, h.z), grad(i0(h.pBA), dec(h.x), h.y, h.z)),
+        lerp(h.u, grad(i0(h.pAB), h.x, dec(h.y), h.z), grad(i0(h.pBB), dec(h.x), dec(h.y), h.z))
       ),
       lerp(
         h.v,
-        lerp(h.u, grad(p(h.AA + 1), h.x, h.y, subi(h.z, 1)), grad(p(h.BA + 1), subi(h.x, 1), h.y, subi(h.z, 1))),
-        lerp(
-          h.u,
-          grad(p(h.AB + 1), h.x, subi(h.y, 1), subi(h.z, 1)),
-          grad(p(h.BB + 1), subi(h.x, 1), subi(h.y, 1), subi(h.z, 1))
-        )
+        lerp(h.u, grad(i1(h.pAA), h.x, h.y, dec(h.z)), grad(i1(h.pBA), dec(h.x), h.y, dec(h.z))),
+        lerp(h.u, grad(i1(h.pAB), h.x, dec(h.y), dec(h.z)), grad(i1(h.pBB), dec(h.x), dec(h.y), dec(h.z)))
       )
     );
 
     // Shift to range from 0 to 1
-    return Math.div(Math.add(h.r, Math.fromUInt(1)), Math.fromUInt(2)) >> (64 - precision);
+    return Math.div(Math.add(h.r, _1), _2) >> (64 - precision);
   }
 
   function subi(int128 x, int256 y) public pure returns (int128) {
     return Math.sub(x, Math.fromInt(y));
+  }
+
+  function dec(int128 x) public pure returns (int128) {
+    return Math.sub(x, _1);
   }
 
   function floor(int128 x) public pure returns (int128) {
@@ -95,17 +178,7 @@ library Perlin {
 
   // t * t * t * (t * (t * 6 - 15) + 10)
   function fade(int128 t) public pure returns (int128) {
-    return
-      Math.mul(
-        t,
-        Math.mul(
-          t,
-          Math.mul(
-            t,
-            (Math.add(Math.mul(t, (Math.sub(Math.mul(t, Math.fromUInt(6)), Math.fromUInt(15)))), Math.fromUInt(10)))
-          )
-        )
-      );
+    return Math.mul(t, Math.mul(t, Math.mul(t, (Math.add(Math.mul(t, (Math.sub(Math.mul(t, _6), _15))), _10)))));
   }
 
   // a + t * (b - a)
@@ -119,33 +192,114 @@ library Perlin {
 
   // Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
   function grad(
-    int64 _hash,
+    int16 _hash,
     int128 x,
     int128 y,
     int128 z
   ) public pure returns (int128) {
     // Convert lower 4 bits to hash code into 12 gradient directions
-    int64 h = _hash & 0xF;
-    if (h == 0x0) return Math.add(x, y);
-    if (h == 0x1) return Math.sub(y, x);
-    if (h == 0x2) return Math.sub(x, y);
-    if (h == 0x3) return Math.sub(Math.neg(x), y);
-    if (h == 0x4) return Math.add(x, z);
-    if (h == 0x5) return Math.sub(z, x);
-    if (h == 0x6) return Math.sub(x, z);
-    if (h == 0x7) return Math.sub(Math.neg(x), z);
-    if (h == 0x8) return Math.add(y, z);
-    if (h == 0x9) return Math.sub(z, y);
-    if (h == 0xA) return Math.sub(y, z);
-    if (h == 0xB) return Math.sub(Math.neg(y), z);
-    if (h == 0xC) return Math.add(y, x);
-    if (h == 0xD) return Math.add(Math.neg(y), z);
-    if (h == 0xE) return Math.sub(y, x);
-    if (h == 0xF) return Math.sub(Math.neg(y), z);
+    int16 h = _hash & 0xF;
+
+    if (h <= 0x7) {
+      if (h <= 0x3) {
+        if (h <= 0x1) {
+          if (h == 0x0) return Math.add(x, y);
+          return Math.sub(y, x);
+        } else {
+          if (h == 0x2) return Math.sub(x, y);
+          return Math.sub(Math.neg(x), y);
+        }
+      } else {
+        if (h <= 0x5) {
+          if (h == 0x4) return Math.add(x, z);
+          return Math.sub(z, x);
+        } else {
+          if (h == 0x6) return Math.sub(x, z);
+          return Math.sub(Math.neg(x), z);
+        }
+      }
+    } else {
+      if (h <= 0xB) {
+        if (h <= 0x9) {
+          if (h == 0x8) return Math.add(y, z);
+          return Math.sub(z, y);
+        } else {
+          if (h == 0xA) return Math.sub(y, z);
+          return Math.sub(Math.neg(y), z);
+        }
+      } else {
+        if (h <= 0xD) {
+          if (h == 0xC) return Math.add(y, x);
+          return Math.add(Math.neg(y), z);
+        } else {
+          if (h == 0xE) return Math.sub(y, x);
+          return Math.sub(Math.neg(y), z);
+        }
+      }
+    }
+  }
+
+  function grad2d(
+    int16 _hash,
+    int128 x,
+    int128 y
+  ) public pure returns (int128) {
+    // Convert lower 4 bits to hash code into 12 gradient directions
+    int16 h = _hash & 0xF;
+    if (h <= 0x7) {
+      if (h <= 0x3) {
+        if (h <= 0x1) {
+          if (h == 0x0) return Math.add(x, y);
+          return Math.sub(y, x);
+        } else {
+          if (h == 0x2) return Math.sub(x, y);
+          return Math.sub(Math.neg(x), y);
+        }
+      } else {
+        if (h <= 0x5) {
+          if (h == 0x4) return x;
+          return Math.neg(x);
+        } else {
+          if (h == 0x6) return x;
+          return Math.neg(x);
+        }
+      }
+    } else {
+      if (h <= 0xB) {
+        if (h <= 0x9) {
+          if (h == 0x8) return y;
+          return Math.neg(y);
+        } else {
+          if (h == 0xA) return y;
+          return Math.neg(y);
+        }
+      } else {
+        if (h <= 0xD) {
+          if (h == 0xC) return Math.add(y, x);
+          return Math.neg(y);
+        } else {
+          if (h == 0xE) return Math.sub(y, x);
+          return Math.neg(y);
+        }
+      }
+    }
   }
 
   function p(int64 i) public pure returns (int64) {
     return int64(ptable(int256(i)) >> 8);
+  }
+
+  // Requested value is at i0(result), subsequent value is at i1(result)
+  function p2(int16 i) public pure returns (int16) {
+    return int16(ptable(int256(i)));
+  }
+
+  function i0(int16 tuple) public pure returns (int16) {
+    return tuple >> 8;
+  }
+
+  function i1(int16 tuple) public pure returns (int16) {
+    return tuple & 0xff;
   }
 
   /**
