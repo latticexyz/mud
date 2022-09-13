@@ -140,6 +140,7 @@ export async function reduceFetchedState(
  *
  * @param streamServiceUrl URL of the gPRC stream service to subscribe to.
  * @param worldAddress Contract address of the World contract to subscribe to.
+ * @param transformWorldEvents Function to transform World events from a stream service ({@link createTransformWorldEventsFromStream}).
  * @returns Stream of {@link NetworkComponentUpdate}s.
  */
 export function createLatestEventStreamService(
@@ -337,6 +338,11 @@ export function createFetchWorldEventsInBlockRange(
   };
 }
 
+/**
+ * Create a function to transform World contract events from a stream service response chunk.
+ * @param decode Function to decode raw component values ({@link createDecode})
+ * @returns Function to transform World contract events from a stream service.
+ */
 export function createTransformWorldEventsFromStream(decode: ReturnType<typeof createDecode>) {
   return async (message: ECSStreamBlockBundleReply) => {
     const { blockNumber, ecsEvents } = message;
