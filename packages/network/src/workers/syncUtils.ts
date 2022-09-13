@@ -267,8 +267,8 @@ export function createDecode(worldConfig: ContractConfig, provider: JsonRpcProvi
 }
 
 /**
- * Create World contract topics for the `ComponentValueSet` and `ComponentVaueRemoved` events.
- * @returns World contract topics for the `ComponentValueSet` and `ComponentVaueRemoved` events.
+ * Create World contract topics for the `ComponentValueSet` and `ComponentValueRemoved` events.
+ * @returns World contract topics for the `ComponentValueSet` and `ComponentValueRemoved` events.
  */
 export function createWorldTopics() {
   return createTopics<{ World: World }>({
