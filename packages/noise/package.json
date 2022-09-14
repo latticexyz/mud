@@ -49,5 +49,6 @@
   },
   "peerDependencies": {
     "@flatten-js/interval-tree": "^1.0.19"
-  }
+  },
+  "gitHead": "724f4545c36989b25e47046bfaa0903e9b8d4bab"
 }

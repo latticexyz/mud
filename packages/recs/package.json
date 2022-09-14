@@ -41,7 +41,7 @@
     "rxjs": "7.5.5",
     "type-fest": "^2.14.0"
   },
-  "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f",
+  "gitHead": "724f4545c36989b25e47046bfaa0903e9b8d4bab",
   "dependencies": {
     "react-syntax-highlighter": "^15.5.0"
   }
