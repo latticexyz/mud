@@ -1,4 +1,4 @@
-// Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/) by @alvrs
+// Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/)
 
 export function perlin(_x: i32, _y: i32, _z: i32, denom: i32): f64 {
   // Convert fraction into f64

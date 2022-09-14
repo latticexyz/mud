@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.0;
 
-// Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/) by @alvrs
+// Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/)
 
 import {ABDKMath64x64 as Math} from "abdk-libraries-solidity/ABDKMath64x64.sol";
 
@@ -79,7 +79,7 @@ library Perlin {
     // Compute fade curves for each x,y,z
     h.u = fade(h.x);
 
-    // Hash coordinates of the 8 cube corners
+    // Hash coordinates of the 4 square corners
     h.pX = p2(h.X);
     h.A = i0(h.pX) + h.Y;
     h.pA = p2(h.A);
@@ -90,7 +90,7 @@ library Perlin {
     h.BA = i0(h.pB);
     h.BB = i1(h.pB);
 
-    // Add blended results from 8 corners of cube
+    // Add blended results from 4 corners of square
     h.r = lerp(
       fade(h.y),
       lerp(h.u, grad2d(int16(p(h.AA)), h.x, h.y), grad2d(int16(p(h.BA)), dec(h.x), h.y)),
@@ -164,10 +164,6 @@ library Perlin {
     return Math.div(Math.add(h.r, _1), _2) >> (64 - precision);
   }
 
-  function subi(int128 x, int256 y) public pure returns (int128) {
-    return Math.sub(x, Math.fromInt(y));
-  }
-
   function dec(int128 x) public pure returns (int128) {
     return Math.sub(x, _1);
   }
@@ -176,12 +172,16 @@ library Perlin {
     return Math.fromInt(int256(Math.toInt(x)));
   }
 
-  // t * t * t * (t * (t * 6 - 15) + 10)
+  /**
+   * Computes t * t * t * (t * (t * 6 - 15) + 10)
+   **/
   function fade(int128 t) public pure returns (int128) {
     return Math.mul(t, Math.mul(t, Math.mul(t, (Math.add(Math.mul(t, (Math.sub(Math.mul(t, _6), _15))), _10)))));
   }
 
-  // a + t * (b - a)
+  /**
+   * Computes a + t * (b - a)
+   **/
   function lerp(
     int128 t,
     int128 a,
@@ -190,7 +190,9 @@ library Perlin {
     return Math.add(a, Math.mul(t, (Math.sub(b, a))));
   }
 
-  // Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
+  /**
+   * Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
+   **/
   function grad(
     int16 _hash,
     int128 x,
@@ -239,6 +241,9 @@ library Perlin {
     }
   }
 
+  /**
+   * Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
+   **/
   function grad2d(
     int16 _hash,
     int128 x,
@@ -285,19 +290,31 @@ library Perlin {
     }
   }
 
+  /**
+   * Returns the value at the given index from the ptable
+   */
   function p(int64 i) public pure returns (int64) {
     return int64(ptable(int256(i)) >> 8);
   }
 
-  // Requested value is at i0(result), subsequent value is at i1(result)
+  /**
+   * Returns an encoded tuple of the value at the given index and the subsequent value from the ptable.
+   * Value of the requested index is at i0(result), subsequent value is at i1(result)
+   */
   function p2(int16 i) public pure returns (int16) {
     return int16(ptable(int256(i)));
   }
 
+  /**
+   * Helper function to access value at index 0 from the encoded tuple returned by p2
+   */
   function i0(int16 tuple) public pure returns (int16) {
     return tuple >> 8;
   }
 
+  /**
+   * Helper function to access value at index 1 from the encoded tuple returned by p2
+   */
   function i1(int16 tuple) public pure returns (int16) {
     return tuple & 0xff;
   }

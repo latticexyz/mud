@@ -8,7 +8,7 @@
   "scripts": {
     "prepare": "yarn asbuild:release && chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
-    "test:forge": "forge test",
+    "test:forge": "~/.foundry/bin/forge test",
     "test:hardhat": "NODE_OPTIONS='--loader ts-node/esm --experimental-specifier-resolution=node' yarn hardhat test",
     "test": "yarn test:forge && yarn test:hardhat",
     "asbuild:debug": "asc assembly/index.ts --target debug",
