@@ -106,11 +106,11 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
-    const latestEventStream = streamServiceUrl
+    const latestEvent$ = streamServiceUrl
       ? createLatestEventStreamService(streamServiceUrl, worldContract.address, transformWorldEvents)
       : createLatestEventStreamRPC(blockNumber$, fetchWorldEvents);
 
-    latestEventStream.subscribe((event) => {
+    latestEvent$.subscribe((event) => {
       storeEvent(cacheStore.current, event);
       if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
     });
