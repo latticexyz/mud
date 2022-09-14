@@ -147,7 +147,12 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       `Fetching state from block ${initialState.blockNumber} to ${streamStartBlockNumber}`,
       80
     );
-    const gapState = await fetchStateInBlockRange(fetchWorldEvents, initialState.blockNumber, streamStartBlockNumber);
+    const gapState = await fetchStateInBlockRange(
+      fetchWorldEvents,
+      initialState.blockNumber,
+      streamStartBlockNumber,
+      this.setLoadingState.bind(this)
+    );
     console.log(
       `[SyncWorker] got ${gapState.state.size} items from block range ${initialState.blockNumber} -> ${streamStartBlockNumber}`
     );
