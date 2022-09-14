@@ -9,6 +9,7 @@ import { createCacheStore, storeEvent } from "./CacheStore";
 import * as syncUtils from "./syncUtils";
 import "fake-indexeddb/auto";
 import { GodID, SyncState } from "./constants";
+import { createLatestEventStreamRPC, createLatestEventStreamService } from "./syncUtils";
 
 // Test constants
 const cacheBlockNumber = 99;
@@ -79,9 +80,10 @@ jest.mock("../createBlockNumberStream", () => ({
 jest.mock("./syncUtils", () => ({
   ...jest.requireActual("./syncUtils"),
   createFetchWorldEventsInBlockRange: () => () => Promise.resolve([]),
-  createLatestEventStream: () => latestEvent$,
+  createLatestEventStreamRPC: jest.fn(() => latestEvent$),
+  createLatestEventStreamService: jest.fn(() => latestEvent$),
   getSnapshotBlockNumber: () => Promise.resolve(snapshotBlockNumber),
-  fetchSnapshot: () => {
+  fetchSnapshotChunked: () => {
     const store = createCacheStore();
     for (const event of snapshotEvents) storeEvent(store, event);
     return store;
@@ -117,6 +119,7 @@ describe("Sync.worker", () => {
 
   afterEach(() => {
     subscription?.unsubscribe();
+    jest.clearAllMocks();
   });
 
   it("should report the current loading state via the `component.LoadingState` component", async () => {
@@ -154,6 +157,7 @@ describe("Sync.worker", () => {
   it("should pass live events to the output", async () => {
     input$.next({
       checkpointServiceUrl: "",
+      streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
@@ -179,9 +183,38 @@ describe("Sync.worker", () => {
     expect(output).toHaveBeenCalledWith(event);
   });
 
+  it("should sync live events from rpc if streaming service is not available", async () => {
+    input$.next({
+      checkpointServiceUrl: "",
+      streamServiceUrl: "",
+      chainId: 4242,
+      worldContract: { address: "0x00", abi: [] },
+      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      initialBlockNumber: 0,
+    });
+    await sleep(0);
+    expect(createLatestEventStreamRPC).toHaveBeenCalled();
+    expect(createLatestEventStreamService).not.toHaveBeenCalled();
+  });
+
+  it("should sync live events from streaming service if streaming service is available", async () => {
+    input$.next({
+      checkpointServiceUrl: "",
+      streamServiceUrl: "http://localhost:50052",
+      chainId: 4242,
+      worldContract: { address: "0x00", abi: [] },
+      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      initialBlockNumber: 0,
+    });
+    await sleep(0);
+    expect(createLatestEventStreamRPC).not.toHaveBeenCalled();
+    expect(createLatestEventStreamService).toHaveBeenCalled();
+  });
+
   it("should sync from the snapshot if the snapshot block number is more than 100 blocks newer than then cache", async () => {
     input$.next({
-      checkpointServiceUrl: "http://localhost:50052",
+      checkpointServiceUrl: "http://localhost:50062",
+      streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
@@ -205,6 +238,7 @@ describe("Sync.worker", () => {
   it("should sync from the cache if the snapshot service is not available", async () => {
     input$.next({
       checkpointServiceUrl: "",
+      streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
@@ -228,6 +262,7 @@ describe("Sync.worker", () => {
   it("should fetch the state diff between cache/snapshot and current block number", async () => {
     input$.next({
       checkpointServiceUrl: "",
+      streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
@@ -259,6 +294,7 @@ describe("Sync.worker", () => {
   it("should first load from cache, then fetch the state gap, then pass live events", async () => {
     input$.next({
       checkpointServiceUrl: "",
+      streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
       provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },

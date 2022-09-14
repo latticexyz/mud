@@ -45,6 +45,7 @@ func parseEventComponentRegistered(log types.Log) *pb.ECSEvent {
 	return &pb.ECSEvent{
 		EventType:   "ComponentRegistered",
 		ComponentId: componentId,
+		Tx:          log.TxHash.String(),
 	}
 }
 
@@ -61,6 +62,7 @@ func parseEventComponentValueSet(log types.Log) *pb.ECSEvent {
 		ComponentId: componentId,
 		EntityId:    entityId,
 		Value:       event.Data,
+		Tx:          log.TxHash.String(),
 	}
 }
 
@@ -76,5 +78,6 @@ func parseEventComponentValueRemoved(log types.Log) *pb.ECSEvent {
 		EventType:   "ComponentValueRemoved",
 		ComponentId: componentId,
 		EntityId:    entityId,
+		Tx:          log.TxHash.String(),
 	}
 }

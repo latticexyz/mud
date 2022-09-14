@@ -28,11 +28,6 @@ func startHTTPServer(httpServer *http.Server, logger *zap.Logger) {
 }
 
 func StartStreamServer(port int, ethclient *ethclient.Client, multiplexer *multiplexer.Multiplexer, logger *zap.Logger) {
-	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
-	if err != nil {
-		logger.Info("failed to listen", zap.String("category", "gRPC server"), zap.Error(err))
-	}
-
 	var options []grpc.ServerOption
 	grpcServer := grpc.NewServer(options...)
 
@@ -41,10 +36,13 @@ func StartStreamServer(port int, ethclient *ethclient.Client, multiplexer *multi
 	// Register reflection service on gRPC server.
 	reflection.Register(grpcServer)
 
-	logger.Info("started listening", zap.String("category", "gRPC server"), zap.String("address", listener.Addr().String()))
-	if err := grpcServer.Serve(listener); err != nil {
-		logger.Fatal("failed to server", zap.String("category", "gRPC server"), zap.Error(err))
+	// Start the RPC server at PORT.
+	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	if err != nil {
+		logger.Info("failed to listen", zap.String("category", "gRPC server"), zap.Error(err))
 	}
+	go startRPCServer(grpcServer, listener, logger)
+	logger.Info("started listening", zap.String("category", "gRPC server"), zap.String("address", listener.Addr().String()))
 
 	// Wrap gRPC server into a gRPC-web HTTP server.
 	grpcWebServer := grpcweb.WrapServer(
@@ -53,16 +51,13 @@ func StartStreamServer(port int, ethclient *ethclient.Client, multiplexer *multi
 		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
 		grpcweb.WithOriginFunc(func(origin string) bool { return true }),
 	)
-
-	srv := &http.Server{
+	// Create and start the HTTP server at PORT+1.
+	httpServer := &http.Server{
 		Handler: grpcWebServer,
 		Addr:    fmt.Sprintf("0.0.0.0:%d", port+1),
 	}
-
-	logger.Info("started listening", zap.String("category", "http server"), zap.String("address", srv.Addr))
-	if err := srv.ListenAndServe(); err != nil {
-		logger.Fatal("failed to serve", zap.String("category", "http server"), zap.Error(err))
-	}
+	go startHTTPServer(httpServer, logger)
+	logger.Info("started listening", zap.String("category", "http server"), zap.String("address", httpServer.Addr))
 }
 
 func StartSnapshotServer(port int, logger *zap.Logger) {

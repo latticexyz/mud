@@ -8,14 +8,17 @@ message ECSEvent {
   string componentId = 2;
   string entityId = 3;
   bytes value = 4;
+  string tx = 5;
 }
 
 // The Stream Service definition.
 service ECSStreamService {
-  // Requests the latest ECS state.
+  // Opens a cursor to receive the latest ECS events and additional data specified via request.
   rpc SubscribeToStreamLatest (ECSStreamBlockBundleRequest) returns (stream ECSStreamBlockBundleReply) {}
 }
 
+// Request to subscribe to an ECSStream. The required parameter is 'worldAddress', while others
+// are opt-in based on which data the client is interested in receiving.
 message ECSStreamBlockBundleRequest {
   string worldAddress = 1;
   bool blockNumber = 2;
@@ -25,6 +28,8 @@ message ECSStreamBlockBundleRequest {
   bool ecsEvents = 6; 
 }
 
+// ECSStream response. The fields are populated based on the request which must have been sent when
+// starting the subscription.
 message ECSStreamBlockBundleReply {
   uint32 blockNumber = 1;
   string blockHash = 2;

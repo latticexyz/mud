@@ -3,16 +3,19 @@ import { EntityID, ComponentValue } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range, sleep } from "@latticexyz/utils";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { BytesLike, Contract, BigNumber } from "ethers";
-import { Observable, map, concatMap, of } from "rxjs";
+import { Observable, map, concatMap, of, from } from "rxjs";
 import { createDecoder } from "../createDecoder";
 import { createTopics } from "../createTopics";
 import { fetchEventsInBlockRange } from "../networkUtils";
+import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import { ECSStateSnapshotServiceClient } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot.client";
+import { ECSStreamServiceClient } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream.client";
 import { NetworkComponentUpdate, ContractConfig } from "../types";
 import { CacheStore, createCacheStore, storeEvent } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
+import { ECSStreamBlockBundleReply } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
 
 /**
  * Create a ECSStateSnapshotServiceClient
@@ -22,6 +25,16 @@ import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
 export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient {
   const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
   return new ECSStateSnapshotServiceClient(transport);
+}
+
+/**
+ * Create a ECSStreamServiceClient
+ * @param url ECSStreamService URL
+ * @returns ECSStreamServiceClient
+ */
+export function createStreamClient(url: string): ECSStreamServiceClient {
+  const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
+  return new ECSStreamServiceClient(transport);
 }
 
 /**
@@ -62,15 +75,34 @@ export async function fetchSnapshot(
   const cacheStore = createCacheStore();
 
   try {
-    const {
-      response: { state, blockNumber, stateComponents, stateEntities },
-    } = await snapshotClient.getStateLatest({ worldAddress });
+    const { response } = await snapshotClient.getStateLatest({ worldAddress });
+    await reduceFetchedState(response, cacheStore, decode);
+  } catch (e) {
+    console.error(e);
+  }
 
-    for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
-      const component = to256BitString(stateComponents[componentIdIdx]);
-      const entity = stateEntities[entityIdIdx] as EntityID;
-      const value = await decode(component, rawValue);
-      storeEvent(cacheStore, { component, entity, value, blockNumber });
+  return cacheStore;
+}
+
+/**
+ * Load from the remote snapshot service in chunks via a stream.
+ *
+ * @param snapshotClient ECSStateSnapshotServiceClient
+ * @param worldAddress Address of the World contract to get the snapshot for.
+ * @param decode Function to decode raw component values ({@link createDecode}).
+ * @returns Promise resolving with {@link CacheStore} containing the snapshot state.
+ */
+export async function fetchSnapshotChunked(
+  snapshotClient: ECSStateSnapshotServiceClient,
+  worldAddress: string,
+  decode: ReturnType<typeof createDecode>
+): Promise<CacheStore> {
+  const cacheStore = createCacheStore();
+
+  try {
+    const stream = snapshotClient.getStateLatestStream({ worldAddress });
+    for await (const responseChunk of stream.responses) {
+      await reduceFetchedState(responseChunk, cacheStore, decode);
     }
   } catch (e) {
     console.error(e);
@@ -80,14 +112,76 @@ export async function fetchSnapshot(
 }
 
 /**
- * Create a RxJS stream of {@link NetworkComponentUpdate}s.
- * Use streaming service if available, otherwise fetch events from RPC.
+ * Reduces a snapshot response by storing corresponding ECS events into the cache store.
+ *
+ * @param response ECSStateReply
+ * @param cacheStore {@link CacheStore} to store snapshot state into.
+ * @param decode Function to decode raw component values ({@link createDecode}).
+ * @returns Promise resolving once state is reduced into {@link CacheStore}.
+ */
+export async function reduceFetchedState(
+  response: ECSStateReply,
+  cacheStore: CacheStore,
+  decode: ReturnType<typeof createDecode>
+): Promise<void> {
+  const { state, blockNumber, stateComponents, stateEntities } = response;
+
+  for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
+    const component = to256BitString(stateComponents[componentIdIdx]);
+    const entity = stateEntities[entityIdIdx] as EntityID;
+    const value = await decode(component, rawValue);
+    storeEvent(cacheStore, { component, entity, value, blockNumber });
+  }
+}
+
+/**
+ * Create a RxJS stream of {@link NetworkComponentUpdate}s by subscribing to a
+ * gRPC streaming service.
+ *
+ * @param streamServiceUrl URL of the gPRC stream service to subscribe to.
+ * @param worldAddress Contract address of the World contract to subscribe to.
+ * @param transformWorldEvents Function to transform World events from a stream service ({@link createTransformWorldEventsFromStream}).
+ * @returns Stream of {@link NetworkComponentUpdate}s.
+ */
+export function createLatestEventStreamService(
+  streamServiceUrl: string,
+  worldAddress: string,
+  transformWorldEvents: ReturnType<typeof createTransformWorldEventsFromStream>
+) {
+  const streamServiceClient = createStreamClient(streamServiceUrl);
+  const stream = streamServiceClient.subscribeToStreamLatest({
+    worldAddress,
+    blockNumber: true,
+    blockHash: true,
+    blockTimestamp: true,
+    transactionsConfirmed: false, // do not need txs since each ECSEvent contains the hash
+    ecsEvents: true,
+  });
+
+  // Turn stream responses into rxjs NetworkComponentUpdate
+  return from(stream.responses).pipe(
+    map(async (responseChunk) => {
+      const events = await transformWorldEvents(responseChunk);
+      console.log(`[SyncWorker] got ${events.length} events from block ${responseChunk.blockNumber}`);
+      return events;
+    }),
+    awaitPromise(),
+    concatMap((v) => of(...v))
+  );
+}
+
+/**
+ * Create a RxJS stream of {@link NetworkComponentUpdate}s by listening to new
+ * blocks from the blockNumber$ stream and fetching the corresponding block
+ * from the connected RPC.
+ *
+ * @dev Only use if {@link createLatestEventStreamRPC} is not available.
  *
  * @param blockNumber$ Block number stream
  * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
  * @returns Stream of {@link NetworkComponentUpdate}s.
  */
-export function createLatestEventStream(
+export function createLatestEventStreamRPC(
   blockNumber$: Observable<number>,
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>
 ): Observable<NetworkComponentUpdate> {
@@ -173,8 +267,8 @@ export function createDecode(worldConfig: ContractConfig, provider: JsonRpcProvi
 }
 
 /**
- * Create World contract topics for the `ComponentValueSet` and `ComponentVaueRemoved` events.
- * @returns World contract topics for the `ComponentValueSet` and `ComponentVaueRemoved` events.
+ * Create World contract topics for the `ComponentValueSet` and `ComponentValueRemoved` events.
+ * @returns World contract topics for the `ComponentValueSet` and `ComponentValueRemoved` events.
  */
 export function createWorldTopics() {
   return createTopics<{ World: World }>({
@@ -241,5 +335,47 @@ export function createFetchWorldEventsInBlockRange(
     }
 
     return ecsEvents;
+  };
+}
+
+/**
+ * Create a function to transform World contract events from a stream service response chunk.
+ * @param decode Function to decode raw component values ({@link createDecode})
+ * @returns Function to transform World contract events from a stream service.
+ */
+export function createTransformWorldEventsFromStream(decode: ReturnType<typeof createDecode>) {
+  return async (message: ECSStreamBlockBundleReply) => {
+    const { blockNumber, ecsEvents } = message;
+
+    const convertedEcsEvents: NetworkComponentUpdate[] = [];
+
+    for (let i = 0; i < ecsEvents.length; i++) {
+      const ecsEvent = ecsEvents[i];
+
+      const rawComponentId = ecsEvent.componentId;
+      const entityId = ecsEvent.entityId;
+      const txHash = ecsEvent.tx;
+
+      const component = to256BitString(BigNumber.from(rawComponentId).toHexString());
+      const entity = to256BitString(BigNumber.from(entityId).toHexString()) as EntityID;
+
+      const value = ecsEvent.value ? await decode(component, ecsEvent.value) : undefined;
+
+      // Since ECS events are coming in ordered over the wire, we check if the following event has a
+      // different transaction then the current, which would mean an event associated with another
+      // tx
+      const lastEventInTx = ecsEvents[i + 1]?.tx !== ecsEvent.tx;
+
+      convertedEcsEvents.push({
+        component,
+        entity,
+        value,
+        blockNumber,
+        lastEventInTx,
+        txHash,
+      });
+    }
+
+    return convertedEcsEvents;
   };
 }

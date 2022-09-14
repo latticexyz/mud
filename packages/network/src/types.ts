@@ -10,6 +10,7 @@ export interface NetworkConfig {
   clock: ClockConfig;
   provider: ProviderConfig;
   checkpointServiceUrl?: string;
+  streamServiceUrl?: string;
   initialBlockNumber?: number;
 }
 
@@ -85,6 +86,7 @@ export type SyncWorkerConfig<Cm extends Components = Components> = {
   disableCache?: boolean;
   chainId: number;
   checkpointServiceUrl?: string;
+  streamServiceUrl?: string;
 };
 
 export enum ContractSchemaValue {
