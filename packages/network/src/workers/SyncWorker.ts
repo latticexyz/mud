@@ -151,6 +151,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       fetchWorldEvents,
       initialState.blockNumber,
       streamStartBlockNumber,
+      50,
       this.setLoadingState.bind(this)
     );
     console.log(

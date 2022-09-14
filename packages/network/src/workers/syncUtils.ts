@@ -216,8 +216,8 @@ export async function fetchStateInBlockRange(
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
   fromBlockNumber: number,
   toBlockNumber: number,
-  setLoadingState: (state: SyncState, msg: string, percentage: number) => void,
-  interval = 50
+  interval = 50,
+  setLoadingState?: (state: SyncState, msg: string, percentage: number) => void
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
   const delta = toBlockNumber - fromBlockNumber;
@@ -229,11 +229,14 @@ export async function fetchStateInBlockRange(
     const to = i === steps.length - 1 ? toBlockNumber : steps[i + 1] - 1;
     const events = await fetchWorldEvents(from, to);
 
-    setLoadingState(
-      SyncState.INITIAL,
-      `Fetching state from block ${fromBlockNumber} to ${toBlockNumber} (${i * interval}/${delta})`,
-      80
-    );
+    if (setLoadingState) {
+      setLoadingState(
+        SyncState.INITIAL,
+        `Fetching state from block ${fromBlockNumber} to ${toBlockNumber} (${i * interval}/${delta})`,
+        80
+      );
+    }
+
     console.log(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
 
     for (const event of events) {
