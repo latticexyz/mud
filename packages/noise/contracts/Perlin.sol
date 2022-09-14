@@ -1,10 +1,9 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-
-// Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/)
 
 import {ABDKMath64x64 as Math} from "abdk-libraries-solidity/ABDKMath64x64.sol";
 
+// Commonly used numbers as 64.64 fixed point
 int128 constant _1 = 2**64;
 int128 constant _2 = 2 * 2**64;
 int128 constant _6 = 6 * 2**64;
@@ -55,6 +54,9 @@ struct H2 {
   int128 r;
 }
 
+/// @title Perlin noise library
+/// @author alvarius
+/// @notice Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/)
 library Perlin {
   function noise2d(
     int256 _x,
