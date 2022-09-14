@@ -19,7 +19,8 @@
       "packages/std-client",
       "packages/ecs-browser",
       "packages/mud.dev",
-      "packages/services"
+      "packages/services",
+      "packages/noise"
     ]
   },
   "devDependencies": {

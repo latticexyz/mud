@@ -19,6 +19,8 @@ export * from "./CoordMap";
 export * from "./eth";
 export * from "./cubic";
 export * from "./console";
+export * from "./distance";
+export * from "./math";
 
 export type {
   Cached,
