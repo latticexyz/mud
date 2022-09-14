@@ -12,6 +12,8 @@ import (
 	"go.uber.org/zap"
 )
 
+// Start starts the process of piping data from an Ethereum client connection to a channel that
+// gRPC clients can subscribe to and receive processed block data.
 func Start(client *ethclient.Client, multiplexer *multiplexer.Multiplexer, logger *zap.Logger) {
 	// Get an instance of a websocket subscription to the client.
 	headers := make(chan *types.Header)

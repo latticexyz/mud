@@ -7,6 +7,7 @@ import (
 	pb "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 )
 
+// A ecsSnapshotServer is the server on which gRPC methods for getting the snapshot data exist.
 type ecsSnapshotServer struct {
 	pb.UnimplementedECSStateSnapshotServiceServer
 }
@@ -15,6 +16,8 @@ type ecsSnapshotServer struct {
 /// gRPC ENDPOINTS
 ///
 
+// GetWorlds is a gRPC endpoint that returns a list of World addresses that the snapshots have been
+// taken for, if any.
 func (server *ecsSnapshotServer) GetWorlds(ctx context.Context, in *pb.WorldsRequest) (*pb.Worlds, error) {
 	if !snapshot.IsWorldAddressSnapshotAvailable() {
 		return nil, fmt.Errorf("no worlds snapshot")
@@ -26,6 +29,9 @@ func (server *ecsSnapshotServer) GetWorlds(ctx context.Context, in *pb.WorldsReq
 	}, nil
 }
 
+// GetStateLatest is a gRPC endpoint that returns the latest snapshot, if any, for a given
+// WorldAddress provided via ECSStateRequestLatest. The snapshot is sent as one object over the
+// wire.
 func (server *ecsSnapshotServer) GetStateLatest(ctx context.Context, in *pb.ECSStateRequestLatest) (*pb.ECSStateReply, error) {
 	if !snapshot.IsSnaphotAvailableLatest(in.WorldAddress) {
 		return nil, fmt.Errorf("no snapshot")
@@ -41,6 +47,9 @@ func (server *ecsSnapshotServer) GetStateLatest(ctx context.Context, in *pb.ECSS
 	}, nil
 }
 
+// GetStateLatestStream is a gRPC endpoint that returns the latest snapshot, if any, for a given
+// WorldAddress provided via ECSStateRequestLatest. The snapshot is sent chunked via a stream over
+// the wire.
 func (server *ecsSnapshotServer) GetStateLatestStream(in *pb.ECSStateRequestLatest, stream pb.ECSStateSnapshotService_GetStateLatestStreamServer) error {
 	if !snapshot.IsSnaphotAvailableLatest(in.WorldAddress) {
 		return fmt.Errorf("no snapshot")
@@ -62,6 +71,8 @@ func (server *ecsSnapshotServer) GetStateLatestStream(in *pb.ECSStateRequestLate
 	return nil
 }
 
+// GetStateLatestStream is a gRPC endpoint that returns the block number for the latest available
+// snapshot, if any, for a given WorldAddress provided via ECSStateBlockRequestLatest.
 func (server *ecsSnapshotServer) GetStateBlockLatest(ctx context.Context, in *pb.ECSStateBlockRequestLatest) (*pb.ECSStateBlockReply, error) {
 	if !snapshot.IsSnaphotAvailableLatest(in.WorldAddress) {
 		return nil, fmt.Errorf("no snapshot")

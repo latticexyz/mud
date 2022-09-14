@@ -6,6 +6,8 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
+// SplitAddressList splits a list of addresses initially given as a string addressList along with a
+// separator to use to split the string.
 func SplitAddressList(addressList string, separator string) []common.Address {
 	addresses := []common.Address{}
 	if len(addressList) == 0 {

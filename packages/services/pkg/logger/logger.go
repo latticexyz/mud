@@ -9,6 +9,7 @@ import (
 
 var logger *zap.Logger
 
+// InitLogger initialized the global logger instance.
 func InitLogger() {
 	loggerConfig := zap.NewProductionConfig()
 	loggerConfig.EncoderConfig.TimeKey = "timestamp"
@@ -16,6 +17,7 @@ func InitLogger() {
 	logger, _ = loggerConfig.Build()
 }
 
+// GetLogger returns the global logger instance.
 func GetLogger() *zap.Logger {
 	return logger
 }

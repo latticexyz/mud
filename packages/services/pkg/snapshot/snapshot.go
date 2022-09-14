@@ -17,12 +17,13 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// A SnapshotType distinguishes between snapshot types if those are required.
 type SnapshotType int
 
 const (
-	Latest SnapshotType = iota
-	BlockSpecific
-	InitialSync
+	Latest        SnapshotType = iota // latest available snapshot
+	BlockSpecific                     // snapshot at a specific block
+	InitialSync                       // snapshot taken right after the service has performed a sync
 )
 
 func snapshotTypeToName(snapshotType SnapshotType) (string, error) {
@@ -263,11 +264,15 @@ func readStateSnapshotLatest(worldAddress string) ECSState {
 	return decodeState(readStateLatest(worldAddress))
 }
 
+// RawReadStateSnapshotLatest returns the latest ECS state snapshot in protobuf format.
 func RawReadStateSnapshotLatest(worldAddress string) *pb.ECSStateSnapshot {
 	logger.GetLogger().Info("reading latest raw snapshot", zap.String("category", "Snapshot"))
 	return decodeSnapshot(readStateLatest(worldAddress))
 }
 
+// ChunkRawStateSnapshot splits a rawStateSnapshot ECSStateSnapshot in protobuf format into a list
+// of ECSStateSnapshot's also in protobuf format. Each ECSStateSnapshot after chunking is
+// chunkPercentage fraction size of the original snapshot.
 func ChunkRawStateSnapshot(rawStateSnapshot *pb.ECSStateSnapshot, chunkPercentage int) []*pb.ECSStateSnapshot {
 	chunked := []*pb.ECSStateSnapshot{}
 	chunkIdx := 0
@@ -409,10 +414,14 @@ func readWorldAddressesSnapshot() []string {
 	return worldAddressList
 }
 
+// RawReadWorldAddressesSnapshot returns a snapshot of all indexed World addresses in protobuf
+// format.
 func RawReadWorldAddressesSnapshot() *pb.Worlds {
 	return decodeWorldAddresses(readState(SerializedWorldsFilename))
 }
 
+// IsWorldAddressSnapshotAvailable returns if a snapshot of all indexed World addresses is
+// available.
 func IsWorldAddressSnapshotAvailable() bool {
 	_, err := os.Stat(SerializedWorldsFilename)
 	return err == nil
