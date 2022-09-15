@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import hardhat from "hardhat";
 import fs from "fs";
-import { fetchAndCompileWasmModule } from "../../ts/utils";
+import { fetchAndCompileWasmModule } from "../../ts";
 
 const { ethers } = hardhat;
 

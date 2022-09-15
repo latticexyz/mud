@@ -1,9 +1,11 @@
 import fs from "fs";
+// import * as buffer from "buffer";
+// const { Buffer } = buffer;
 
-export function encodePackedU32(inputs: number[]): Buffer {
-  const buffer = Buffer.from(inputs.map((i) => i.toString(16).padStart(8, "0")).join(""), "hex");
-  return buffer;
-}
+// export function encodePackedU32(inputs: number[]): Buffer {
+//   const buffer = Buffer.from(inputs.map((i) => i.toString(16).padStart(8, "0")).join(""), "hex");
+//   return buffer;
+// }
 
 export async function fetchAndCompileWasmModule(url: URL) {
   try {
@@ -34,4 +36,19 @@ export function createSplines(splines: [number, number][]): (x: number) => numbe
 
     return height;
   };
+}
+
+type Perlin = (_x: number, _y: number, _z: number, denom: number) => number;
+
+export async function createPerlin(): Promise<Perlin> {
+  const wasmModule = await fetchAndCompileWasmModule(new URL("../build/release.wasm", import.meta.url));
+  const wasmInstance = await WebAssembly.instantiate(wasmModule, {
+    env: {
+      abort: (e: string) => {
+        throw new Error("abort called in wasm perlin: " + e);
+      },
+    },
+  });
+
+  return wasmInstance.exports.perlin as Perlin;
 }
