@@ -24,3 +24,5 @@ artifacts
 yarn-error.log
 
 out
+dist
+build

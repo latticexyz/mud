@@ -2,6 +2,7 @@
   "name": "@latticexyz/recs",
   "license": "MIT",
   "version": "0.10.0",
+  "source": "src/index.ts",
   "main": "src/index.ts",
   "type": "module",
   "repository": {
@@ -10,11 +11,14 @@
     "directory": "packages/recs"
   },
   "scripts": {
+    "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "build": "rimraf dist && rollup -c rollup.config.js",
     "link": "yarn link",
-    "docs": "typedoc src"
+    "docs": "typedoc src",
+    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
+    "postpack": "mv package.json.bak package.json",
+    "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "devDependencies": {
     "@latticexyz/utils": "^0.10.0",

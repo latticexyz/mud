@@ -3,6 +3,7 @@
   "version": "0.10.0",
   "description": "Standard library for MUD client.",
   "license": "MIT",
+  "source": "src/index.ts",
   "main": "src/index.ts",
   "repository": {
     "type": "git",
@@ -10,10 +11,13 @@
     "directory": "packages/std-client"
   },
   "scripts": {
-    "build": "rimraf dist && rollup -c rollup.config.js",
+    "prepare": "yarn build",
     "link": "yarn link",
     "docs": "typedoc src",
-    "test": "echo 'todo: add tests'"
+    "test": "echo 'todo: add tests'",
+    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
+    "postpack": "mv package.json.bak package.json",
+    "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "devDependencies": {
     "@latticexyz/network": "^0.10.0",
