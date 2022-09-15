@@ -16,9 +16,11 @@
     "asbuild:debug": "asc assembly/index.ts --target debug",
     "asbuild:release": "asc assembly/index.ts --target release",
     "asbuild": "yarn asbuild:debug && yarn asbuild:release",
-    "build": "yarn asbuild:release && yarn parcel build",
     "start": "npx serve .",
-    "link": "yarn link"
+    "link": "yarn link",
+    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
+    "postpack": "mv package.json.bak package.json",
+    "build": "yarn asbuild:release && yarn prepack && yarn parcel build && yarn postpack"
   },
   "dependencies": {
     "@types/big-integer": "^0.0.31"

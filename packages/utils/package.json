@@ -4,7 +4,7 @@
   "version": "0.10.0",
   "type": "module",
   "source": "src/index.ts",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -14,9 +14,11 @@
     "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "build": "rimraf dist && rollup -c rollup.config.js",
     "link": "yarn link",
-    "docs": "typedoc src"
+    "docs": "typedoc src",
+    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
+    "postpack": "mv package.json.bak package.json",
+    "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.1.3",
