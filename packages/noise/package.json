@@ -1,22 +1,26 @@
 {
   "name": "@latticexyz/noise",
-  "version": "0.8.1",
-  "main": "build/release.mjs",
-  "types": "build/release.d.ts",
+  "version": "0.10.0",
+  "source": "ts/index.ts",
+  "main": "ts/index.ts",
+  "types": "dist/types.d.ts",
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "prepare": "yarn asbuild:release && chmod u+x git-install.sh",
+    "prepare": "yarn build && chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
     "test:forge": "~/.foundry/bin/forge test",
     "test:hardhat": "NODE_OPTIONS='--loader ts-node/esm --experimental-specifier-resolution=node' yarn hardhat test",
     "// Hardhat skipped in GH action until hardhat officially supports TS/ESM": "https://github.com/NomicFoundation/hardhat/pull/3156",
     "test": "yarn test:forge",
     "asbuild:debug": "asc assembly/index.ts --target debug",
-    "asbuild:release": "asc assembly/index.ts --target release && cp build/release.js build/release.mjs",
+    "asbuild:release": "asc assembly/index.ts --target release",
     "asbuild": "yarn asbuild:debug && yarn asbuild:release",
     "start": "npx serve .",
-    "link": "yarn link"
+    "link": "yarn link",
+    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
+    "postpack": "mv package.json.bak package.json",
+    "build": "yarn asbuild:release && yarn prepack && yarn parcel build && yarn postpack"
   },
   "dependencies": {
     "@types/big-integer": "^0.0.31"
@@ -35,7 +39,9 @@
     "base64-sol": "^1.1.0",
     "big-integer": "^1.6.51",
     "chai": "^4.3.6",
+    "ds-test": "https://github.com/dapphub/ds-test.git#9310e879db8ba3ea6d5c6489a579118fd264a3f5",
     "ethers": "^5.7.0",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#82e6f5376c15341629ca23098e0b32d303f44f02",
     "hardhat": "^2.10.2",
     "keccak-wasm": "^0.10.3",
     "mocha": "^10.0.0",
@@ -43,11 +49,10 @@
     "ts-jest": "^28.0.8",
     "ttypescript": "^1.5.13",
     "typescript": "^4.8.2",
-    "web3-utils": "^1.7.5",
-    "ds-test": "https://github.com/dapphub/ds-test.git#9310e879db8ba3ea6d5c6489a579118fd264a3f5",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#82e6f5376c15341629ca23098e0b32d303f44f02"
+    "web3-utils": "^1.7.5"
   },
   "peerDependencies": {
     "@flatten-js/interval-tree": "^1.0.19"
-  }
+  },
+  "gitHead": "724f4545c36989b25e47046bfaa0903e9b8d4bab"
 }

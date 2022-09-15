@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.10.0](https://github.com/latticexyz/mud/compare/v0.9.0...v0.10.0) (2022-09-14)
+
+### Features
+
+- add chunk snapshot and stream service ([#139](https://github.com/latticexyz/mud/issues/139)) ([8c9d4b3](https://github.com/latticexyz/mud/commit/8c9d4b30ed70470ca8770565b6472359e0e0f2bc))
+- matching Perlin noise implementations in Solidity and AssemblyScript ([#145](https://github.com/latticexyz/mud/issues/145)) ([29094c4](https://github.com/latticexyz/mud/commit/29094c4b0c3eeeacd3af690310c7de93a0c45e14))
+
 # [0.9.0](https://github.com/latticexyz/mud/compare/v0.8.1...v0.9.0) (2022-09-13)
 
 ### Bug Fixes

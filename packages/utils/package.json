@@ -1,8 +1,9 @@
 {
   "name": "@latticexyz/utils",
   "license": "MIT",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "type": "module",
+  "source": "src/index.ts",
   "main": "src/index.ts",
   "repository": {
     "type": "git",
@@ -10,11 +11,14 @@
     "directory": "packages/utils"
   },
   "scripts": {
+    "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "build": "rimraf dist && rollup -c rollup.config.js",
     "link": "yarn link",
-    "docs": "typedoc src"
+    "docs": "typedoc src",
+    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
+    "postpack": "mv package.json.bak package.json",
+    "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.1.3",
@@ -40,5 +44,5 @@
     "proxy-deep": "^3.1.1",
     "rxjs": "^7.5.5"
   },
-  "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f"
+  "gitHead": "724f4545c36989b25e47046bfaa0903e9b8d4bab"
 }

@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/std-contracts",
   "license": "MIT",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "MUD Contracts Standard Library",
   "types": "./types/ethers-contracts/",
   "repository": {
@@ -24,7 +24,7 @@
     "docs": "hardhat docgen && cat README.md _docs/index.md > DOCS.md && typedoc . --readme DOCS.md "
   },
   "devDependencies": {
-    "@latticexyz/solecs": "^0.9.0",
+    "@latticexyz/solecs": "^0.10.0",
     "@rari-capital/solmate": "https://github.com/Rari-Capital/solmate.git#b6ae78e6ff490f8fec7695c7b65d06e5614f1b65",
     "@typechain/ethers-v5": "^9.0.0",
     "ds-test": "https://github.com/dapphub/ds-test.git#c7a36fb236f298e04edf28e2fee385b80f53945f",
@@ -38,5 +38,5 @@
     "typechain": "^8.0.0",
     "typedoc": "^0.23.10"
   },
-  "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f"
+  "gitHead": "724f4545c36989b25e47046bfaa0903e9b8d4bab"
 }

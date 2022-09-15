@@ -3,7 +3,7 @@
 import { InitializeKeccak, keccak256 } from "keccak-wasm";
 import { expect } from "chai";
 import web3Utils from "web3-utils";
-import { encodePackedU32 } from "../../ts/utils";
+import { encodePackedU32 } from "../../ts";
 
 const { soliditySha3 } = web3Utils;
 
