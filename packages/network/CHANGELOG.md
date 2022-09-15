@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.11.0](https://github.com/latticexyz/mud/compare/v0.10.0...v0.11.0) (2022-09-15)
+
+### Features
+
+- add more granularity to initial sync state report ([#146](https://github.com/latticexyz/mud/issues/146)) ([d4ba338](https://github.com/latticexyz/mud/commit/d4ba338a50048c2d5180ce4f917d94f5b0893935))
+
 # [0.10.0](https://github.com/latticexyz/mud/compare/v0.9.0...v0.10.0) (2022-09-14)
 
 ### Features
