@@ -28,7 +28,7 @@ import {
   getSnapshotBlockNumber,
   fetchSnapshot,
   fetchStateInBlockRange,
-  createFetchSystemCallData,
+  createFetchSystemCallsFromEvents,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { GodID, SyncState } from "./constants";
@@ -110,10 +110,11 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
+
     createLatestEventStream(
       blockNumber$,
       fetchWorldEvents,
-      fetchSystemCalls ? createFetchSystemCallData(provider) : undefined
+      fetchSystemCalls ? createFetchSystemCallsFromEvents(provider) : undefined
     ).subscribe((event) => {
       if (isNetworkComponentUpdateEvent(event)) storeEvent(cacheStore.current, event);
       if (passLiveEventsToOutput) this.output$.next(event as NetworkEvent<C>);

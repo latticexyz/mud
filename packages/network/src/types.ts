@@ -86,7 +86,7 @@ export type SystemCallTransaction = {
   value: BigNumber;
 };
 
-export type SystemCall<C extends Components> = {
+export type SystemCall<C extends Components = Components> = {
   type: NetworkEvents.SystemCall;
   tx: SystemCallTransaction;
   updates: NetworkComponentUpdate<C>[];

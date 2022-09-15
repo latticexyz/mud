@@ -97,7 +97,7 @@ export async function fetchSnapshot(
 export function createLatestEventStream(
   blockNumber$: Observable<number>,
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
-  fetchSystemCallData?: ReturnType<typeof createFetchSystemCallData>
+  fetchSystemCallsFromEvents?: ReturnType<typeof createFetchSystemCallsFromEvents>
 ): Observable<NetworkEvent> {
   let lastSyncedBlockNumber: number | undefined;
 
@@ -110,8 +110,8 @@ export function createLatestEventStream(
       const events = await fetchWorldEvents(from, to);
       console.log(`[SyncWorker] fetched ${events.length} events from block range ${from} -> ${to}`);
 
-      if (fetchSystemCallData && events.length > 0) {
-        const systemCalls = await fetchSystemCallsFromEvents(events, fetchSystemCallData);
+      if (fetchSystemCallsFromEvents && events.length > 0) {
+        const systemCalls = await fetchSystemCallsFromEvents(events, blockNumber);
         return [...events, ...systemCalls];
       }
 
@@ -259,43 +259,66 @@ export function createFetchWorldEventsInBlockRange<C extends Components>(
   };
 }
 
-async function fetchSystemCallsFromEvents<C extends Components>(
-  events: NetworkComponentUpdate<C>[],
-  fetchSystemCallData: (txHash: string) => Promise<SystemCallTransaction>
-) {
-  const systemCalls: SystemCall<C>[] = [];
-  const transactionHashToEvents = events.reduce((acc, event) => {
-    if (["worker", "cache"].includes(event.txHash)) return acc;
+export function createFetchSystemCallsFromEvents(provider: JsonRpcProvider) {
+  const { fetchBlock, clearBlock } = createBlockCache(provider);
+  const fetchSystemCallData = createFetchSystemCallData(fetchBlock);
 
-    if (!acc[event.txHash]) acc[event.txHash] = [];
+  return async (events: NetworkComponentUpdate[], blockNumber: number) => {
+    const systemCalls: SystemCall[] = [];
+    const transactionHashToEvents = events.reduce((acc, event) => {
+      if (["worker", "cache"].includes(event.txHash)) return acc;
 
-    acc[event.txHash].push(event);
+      if (!acc[event.txHash]) acc[event.txHash] = [];
 
-    return acc;
-  }, {} as { [key: string]: NetworkComponentUpdate<C>[] });
+      acc[event.txHash].push(event);
 
-  const txData = await Promise.all(Object.keys(transactionHashToEvents).map(fetchSystemCallData));
-  for (const tx of txData) {
-    systemCalls.push({
-      type: NetworkEvents.SystemCall,
-      tx,
-      updates: transactionHashToEvents[tx.hash],
-    });
-  }
+      return acc;
+    }, {} as { [key: string]: NetworkComponentUpdate[] });
 
-  return systemCalls;
+    const txData = await Promise.all(
+      Object.keys(transactionHashToEvents).map((hash) => fetchSystemCallData(hash, blockNumber))
+    );
+    clearBlock(blockNumber);
+
+    for (const tx of txData) {
+      if (!tx) continue;
+
+      systemCalls.push({
+        type: NetworkEvents.SystemCall,
+        tx,
+        updates: transactionHashToEvents[tx.hash],
+      });
+    }
+
+    return systemCalls;
+  };
 }
 
-export function createFetchSystemCallData(
-  provider: JsonRpcProvider
-): (txHash: string) => Promise<SystemCallTransaction> {
-  return async (txHash: string) => {
-    const tx = await provider.getTransaction(txHash);
+function createFetchSystemCallData(fetchBlock: ReturnType<typeof createBlockCache>["fetchBlock"]) {
+  return async (txHash: string, blockNumber: number) => {
+    const block = await fetchBlock(blockNumber);
+    const tx = block.transactions.find((tx) => tx.hash === txHash);
+
+    if (!tx) return;
+
     return {
       to: tx.to,
       data: tx.data,
       value: tx.value,
       hash: tx.hash,
     } as SystemCallTransaction;
+  };
+}
+
+function createBlockCache(provider: JsonRpcProvider) {
+  const blocks: Record<number, Awaited<ReturnType<typeof provider.getBlockWithTransactions>>> = {};
+
+  return {
+    fetchBlock: async (blockNumber: number) => {
+      if (blocks[blockNumber]) return blocks[blockNumber];
+
+      return await provider.getBlockWithTransactions(blockNumber);
+    },
+    clearBlock: (blockNumber: number) => delete blocks[blockNumber],
   };
 }
