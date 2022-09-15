@@ -17,7 +17,7 @@
     "link": "yarn link",
     "docs": "typedoc src",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
-    "postpack": "mv package.json.bak package.json",
+    "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "build": "rimraf dist && rollup -c rollup.config.js"
   },
   "devDependencies": {
@@ -45,7 +45,7 @@
     "rxjs": "7.5.5",
     "type-fest": "^2.14.0"
   },
-  "gitHead": "724f4545c36989b25e47046bfaa0903e9b8d4bab",
+  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65",
   "dependencies": {
     "react-syntax-highlighter": "^15.5.0"
   }

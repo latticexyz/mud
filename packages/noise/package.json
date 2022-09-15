@@ -19,7 +19,7 @@
     "start": "npx serve .",
     "link": "yarn link",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
-    "postpack": "mv package.json.bak package.json",
+    "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "build": "yarn asbuild:release && yarn prepack && yarn parcel build && yarn postpack"
   },
   "dependencies": {
@@ -54,5 +54,5 @@
   "peerDependencies": {
     "@flatten-js/interval-tree": "^1.0.19"
   },
-  "gitHead": "724f4545c36989b25e47046bfaa0903e9b8d4bab"
+  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65"
 }

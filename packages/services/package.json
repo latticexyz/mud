@@ -25,5 +25,5 @@
     "@protobuf-ts/plugin": "^2.7.0",
     "@protobuf-ts/runtime-rpc": "^2.7.0"
   },
-  "gitHead": "724f4545c36989b25e47046bfaa0903e9b8d4bab"
+  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65"
 }

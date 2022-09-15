@@ -2,7 +2,7 @@
   "name": "@latticexyz/cli",
   "version": "0.11.0",
   "description": "Command line interface for mud",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "bin": {
     "mud": "./dist/index.js"
@@ -14,9 +14,7 @@
   },
   "scripts": {
     "prepare": "yarn build",
-    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
-    "postpack": "mv package.json.bak package.json",
-    "globalinstall": "yarn build && yarn prepare && npm link",
+    "globalinstall": "yarn build && npm link",
     "build": "rimraf dist && tsc -p . && chmod u+x dist/index.js",
     "link": "yarn link",
     "test": "echo 'todo: add tests'"
@@ -60,5 +58,5 @@
   "pkg": {
     "scripts": "build/**/*.js"
   },
-  "gitHead": "724f4545c36989b25e47046bfaa0903e9b8d4bab"
+  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65"
 }
