@@ -154,7 +154,9 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
         // Wait for all tx events to be reduced
         updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents });
         const txReduced = awaitStreamValue(txReduced$, (v) => v === tx.hash);
-        await Promise.all([tx.wait(), txReduced]);
+        await txReduced;
+        updateComponent(Action, action.entityIndex, { state: ActionState.TxReduced });
+        await tx.wait();
       }
 
       updateComponent(Action, action.entityIndex, { state: ActionState.Complete });
