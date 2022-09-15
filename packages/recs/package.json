@@ -2,7 +2,8 @@
   "name": "@latticexyz/recs",
   "license": "MIT",
   "version": "0.10.0",
-  "main": "src/index.ts",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
   "type": "module",
   "repository": {
     "type": "git",
@@ -10,6 +11,7 @@
     "directory": "packages/recs"
   },
   "scripts": {
+    "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
     "test": "jest",
     "build": "rimraf dist && rollup -c rollup.config.js",
