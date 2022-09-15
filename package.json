@@ -57,9 +57,10 @@
     "release": "yarn && lerna publish --no-private --force-publish",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "yarn lerna run link",
-    "yalc:release": "yarn lerna exec yalc push",
     "docs": "yarn lerna run docs && rimraf .docs && mkdir .docs && for i in network phaserx recs solecs std-client std-contracts utils services; do mkdir .docs/$i && cp -r packages/$i/docs/* .docs/$i; done && rimraf packages/mud.dev/public/docs && mv .docs packages/mud.dev/public/docs",
     "test": "yarn workspaces run test",
+    "yalc:release": "yarn prepack && yarn lerna exec yalc push",
+    "yalc:reset": "yarn postpack",
     "prepack": "yarn lerna run prepack",
     "postpack": "yarn lerna run postpack"
   },
