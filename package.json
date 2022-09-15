@@ -26,6 +26,10 @@
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
     "@commitlint/config-conventional": "^16.2.4",
+    "@parcel/optimizer-data-url": "2.7.0",
+    "@parcel/packager-ts": "2.7.0",
+    "@parcel/transformer-inline-string": "2.7.0",
+    "@parcel/transformer-typescript-types": "2.7.0",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "commitizen": "^4.2.4",
@@ -36,7 +40,8 @@
     "lint-staged": ">=10",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
-    "run-pty": "^3.0.0"
+    "run-pty": "^3.0.0",
+    "typescript": ">=3.0.0"
   },
   "config": {
     "commitizen": {
