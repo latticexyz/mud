@@ -12,6 +12,11 @@ jobs:
       - name: git-checkout
         uses: actions/checkout@v2
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
       - name: Install dependencies
         run: yarn install --network-concurrency 1
 
