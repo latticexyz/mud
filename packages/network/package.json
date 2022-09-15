@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/network",
   "license": "MIT",
-  "version": "0.11.0",
+  "version": "0.11.1",
   "source": "src/index.ts",
   "main": "src/index.ts",
   "engines": {
@@ -25,10 +25,10 @@
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
     "@ethersproject/providers": "^5.6.1",
-    "@latticexyz/recs": "^0.11.0",
-    "@latticexyz/services": "^0.11.0",
-    "@latticexyz/solecs": "^0.11.0",
-    "@latticexyz/utils": "^0.11.0",
+    "@latticexyz/recs": "^0.11.1",
+    "@latticexyz/services": "^0.11.1",
+    "@latticexyz/solecs": "^0.11.1",
+    "@latticexyz/utils": "^0.11.1",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.21",
