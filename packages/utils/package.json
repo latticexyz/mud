@@ -3,13 +3,15 @@
   "license": "MIT",
   "version": "0.10.0",
   "type": "module",
-  "main": "src/index.ts",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/utils"
   },
   "scripts": {
+    "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
     "test": "jest",
     "build": "rimraf dist && rollup -c rollup.config.js",
