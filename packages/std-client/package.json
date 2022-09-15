@@ -3,13 +3,15 @@
   "version": "0.10.0",
   "description": "Standard library for MUD client.",
   "license": "MIT",
-  "main": "src/index.ts",
+  "source": "src/index.ts",
+  "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/std-client"
   },
   "scripts": {
+    "prepare": "yarn build",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "link": "yarn link",
     "docs": "typedoc src",
