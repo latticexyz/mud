@@ -279,7 +279,9 @@ describe("Sync.worker", () => {
     expect(syncUtils.fetchStateInBlockRange).toHaveBeenLastCalledWith(
       expect.anything(),
       cacheBlockNumber,
-      currentBlockNumber
+      currentBlockNumber,
+      expect.anything(),
+      expect.anything()
     );
 
     // Expect output to contain the events from the the gap state
@@ -357,7 +359,9 @@ describe("Sync.worker", () => {
     expect(syncUtils.fetchStateInBlockRange).toHaveBeenLastCalledWith(
       expect.anything(),
       cacheBlockNumber,
-      firstLiveBlockNumber
+      firstLiveBlockNumber,
+      expect.anything(),
+      expect.anything()
     );
 
     // Expect output to contain the events from the cache and the gap state

@@ -15,6 +15,7 @@ import { CacheStore, createCacheStore, storeEvent } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
+import { SyncState } from "./constants";
 import { ECSStreamBlockBundleReply } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
 
 /**
@@ -215,7 +216,8 @@ export async function fetchStateInBlockRange(
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
   fromBlockNumber: number,
   toBlockNumber: number,
-  interval = 50
+  interval = 50,
+  setLoadingState?: (state: SyncState, msg: string, percentage: number) => void
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
   const delta = toBlockNumber - fromBlockNumber;
@@ -226,6 +228,15 @@ export async function fetchStateInBlockRange(
     const from = steps[i];
     const to = i === steps.length - 1 ? toBlockNumber : steps[i + 1] - 1;
     const events = await fetchWorldEvents(from, to);
+
+    if (setLoadingState) {
+      setLoadingState(
+        SyncState.INITIAL,
+        `Fetching state from block ${fromBlockNumber} to ${toBlockNumber} (${i * interval}/${delta})`,
+        80
+      );
+    }
+
     console.log(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
 
     for (const event of events) {
