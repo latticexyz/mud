@@ -56,7 +56,7 @@ export function getGameConfig(
   gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String; actionCooldownLength: Type.String }>
 ) {
   const godEntityIndex = world.entityToIndex.get(GodID);
-  if (!godEntityIndex) return;
+  if (godEntityIndex == null) return;
 
   return getComponentValue(gameConfigComponent, godEntityIndex);
 }
