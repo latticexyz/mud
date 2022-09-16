@@ -10,8 +10,6 @@ import {System} from "solecs/System.sol";
 import {getAddressById} from "solecs/utils.sol";
 import {Set} from "solecs/Set.sol";
 
-uint256 constant oldBulkSetStateSystemID = uint256(keccak256("mudwar.system.BulkSetState"));
-
 struct ParsedState {
   string[] componentIds;
   string[] entities;
@@ -65,7 +63,7 @@ contract BulkUpload is DSTest {
       entities[i] = hexToUint256(parsedState.entities[i]);
     }
     World world = World(worldAddress);
-    System bulkSetStateSystem = System(getAddressById(world.systems(), oldBulkSetStateSystemID));
+    System bulkSetStateSystem = System(getAddressById(world.systems(), BulkSetStateSystemID));
 
     // Convert state
     ECSEvent[] memory allEvents = new ECSEvent[](parsedState.state.length);
