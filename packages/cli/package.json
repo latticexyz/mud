@@ -13,11 +13,12 @@
     "directory": "packages/cli"
   },
   "scripts": {
-    "prepare": "yarn build",
-    "globalinstall": "yarn build && npm link",
+    "prepare": "yarn build && chmod u+x git-install.sh",
+    "globalinstall": "yarn prepare && npm link",
     "build": "rimraf dist && tsc -p . && chmod u+x dist/index.js",
     "link": "yarn link",
-    "test": "echo 'todo: add tests'"
+    "test": "echo 'todo: add tests'",
+    "git:install": "bash git-install.sh"
   },
   "devDependencies": {
     "@types/clear": "^0.1.2",
@@ -36,13 +37,17 @@
   "dependencies": {
     "@latticexyz/solecs": "^0.11.1",
     "@latticexyz/utils": "^0.11.1",
+    "@latticexyz/std-contracts": "^0.11.1",
+    
     "chalk": "^5.0.1",
     "clear": "^0.1.0",
     "commander": "^9.2.0",
+    "ds-test": "https://github.com/dapphub/ds-test.git#9310e879db8ba3ea6d5c6489a579118fd264a3f5",
     "esm": "^3.2.25",
     "ethers": "^5.6.7",
     "execa": "^6.1.0",
     "figlet": "^1.5.2",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#6b4ca42943f093642bac31783b08aa52a5a6ff64",
     "glob": "^8.0.3",
     "inquirer": "^8.2.4",
     "inquirer-prompt-suggest": "^0.1.0",
@@ -51,6 +56,7 @@
     "node-fetch": "^3.2.6",
     "openurl": "^1.1.1",
     "path": "^0.12.7",
+    "solmate": "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
     "typechain": "^8.1.0",
     "uuid": "^8.3.2",
     "yargs": "^17.5.1"

@@ -6,4 +6,4 @@ export enum SyncState {
   LIVE,
 }
 
-export const GodID = "0x060D" as EntityID;
+export const GodID = "0x060d" as EntityID;
