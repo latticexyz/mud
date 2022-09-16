@@ -331,7 +331,7 @@ export const deploy = async (options: Options) => {
   const cmdArgs = options.upgradeSystems
     ? [
         "workspace",
-        "ri-contracts",
+        "contracts",
         "forge:deploy",
         ...(options.dry ? [] : ["--broadcast", "--private-keys", wallet.privateKey]),
         "--sig",
@@ -343,7 +343,7 @@ export const deploy = async (options: Options) => {
       ]
     : [
         "workspace",
-        "ri-contracts",
+        "contracts",
         "forge:deploy",
         ...(options.dry ? [] : ["--broadcast", "--private-keys", wallet.privateKey]),
         "--sig",
