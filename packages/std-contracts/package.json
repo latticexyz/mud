@@ -21,7 +21,8 @@
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "lint": "yarn prettier && yarn solhint",
     "link": "yarn link",
-    "docs": "hardhat docgen && cat README.md _docs/index.md > DOCS.md && typedoc . --readme DOCS.md "
+    "docs": "hardhat docgen && cat README.md _docs/index.md > DOCS.md && typedoc . --readme DOCS.md",
+    "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
     "@latticexyz/solecs": "^0.12.0",
@@ -38,5 +39,5 @@
     "typechain": "^8.0.0",
     "typedoc": "^0.23.10"
   },
-  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65"
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }

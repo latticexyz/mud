@@ -55,6 +55,7 @@
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
     "release": "yarn && lerna publish --no-private --force-publish",
+    "release:force": "yarn lerna run release",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "yarn lerna run link",
     "docs": "yarn lerna run docs && rimraf .docs && mkdir .docs && for i in network phaserx recs solecs std-client std-contracts utils services; do mkdir .docs/$i && cp -r packages/$i/docs/* .docs/$i; done && rimraf packages/mud.dev/public/docs && mv .docs packages/mud.dev/public/docs",

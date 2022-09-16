@@ -20,7 +20,8 @@
     "link": "yarn link",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
-    "build": "yarn asbuild:release && yarn prepack && yarn parcel build && yarn postpack"
+    "build": "yarn asbuild:release && yarn prepack && yarn parcel build && yarn postpack",
+    "release": "npm publish || echo 'version already published'"
   },
   "dependencies": {
     "@types/big-integer": "^0.0.31"
@@ -54,5 +55,5 @@
   "peerDependencies": {
     "@flatten-js/interval-tree": "^1.0.19"
   },
-  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65"
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }

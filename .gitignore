@@ -3,3 +3,4 @@ node_modules
 .DS_STORE
 .parcel-cache
 .docs
+lerna-debug.log

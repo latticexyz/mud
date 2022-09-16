@@ -18,7 +18,8 @@
     "build": "rimraf dist && tsc -p . && chmod u+x dist/index.js",
     "link": "yarn link",
     "test": "echo 'todo: add tests'",
-    "git:install": "bash git-install.sh"
+    "git:install": "bash git-install.sh",
+    "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
     "@types/clear": "^0.1.2",
@@ -63,5 +64,5 @@
   "pkg": {
     "scripts": "build/**/*.js"
   },
-  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65"
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }

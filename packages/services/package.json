@@ -12,7 +12,8 @@
     "prepare": "make build",
     "docs": "typedoc . --readme README.md",
     "test": "echo 'todo: add tests'",
-    "link": "yarn link"
+    "link": "yarn link",
+    "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
@@ -25,5 +26,5 @@
     "@protobuf-ts/plugin": "^2.7.0",
     "@protobuf-ts/runtime-rpc": "^2.7.0"
   },
-  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65"
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }
