@@ -13,6 +13,8 @@ import (
 	"go.uber.org/zap"
 )
 
+// GetEthereumClient returns a connection to an Ethereum client via a websocket URL specified by
+// wsUrl. In the case that a connection cannot be established, will retry for a fixed duration.
 func GetEthereumClient(wsUrl string, logger *zap.Logger) *ethclient.Client {
 	var client *ethclient.Client
 	var retrying bool = false
@@ -35,10 +37,12 @@ func GetEthereumClient(wsUrl string, logger *zap.Logger) *ethclient.Client {
 	return client
 }
 
+// GetEthereumSubscription returns a subscription to new blocks.
 func GetEthereumSubscription(client *ethclient.Client, headers chan *types.Header) (ethereum.Subscription, error) {
 	return client.SubscribeNewHead(context.Background(), headers)
 }
 
+// GetCurrentBlockHead returns the block number of the block at the tip of the chain.
 func GetCurrentBlockHead(client *ethclient.Client) *big.Int {
 	currentHead, err := client.HeaderByNumber(context.Background(), nil)
 	if err != nil {

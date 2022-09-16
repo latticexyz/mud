@@ -12,11 +12,11 @@ import (
 	"go.uber.org/zap"
 )
 
-// The service mimics a simple state machine, hence every transformation must return the updated
+// ECSState mimics a simple state machine, hence every transformation must return the updated
 // state and there are no objects. This type represents an ECS state on the world.
 type ECSState = map[string]map[string][]byte
 
-// The full state of a chain is a mapping from all worlds to their ECS state.
+// ChainECSState is the full state of a chain, which is a mapping from all worlds to their ECSState.
 type ChainECSState = map[string]ECSState
 
 func getEmptyStateChain() ChainECSState {

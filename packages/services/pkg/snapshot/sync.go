@@ -12,6 +12,14 @@ import (
 	"go.uber.org/zap"
 )
 
+// Sync performs an initial sync to the state of the chain from block number fromBlock to block
+// number toBlock with an optional worldAddresses filter to filter the state.
+//
+// If there is a snapshot available to load, uses that snapshot as the initial state and starts the
+// sync up to the specified toBlock, otherwise starts with an empty ECS state and syncs everything
+// while reducing the state.
+//
+// Returns the entire ECS state once the sync is complete.
 func Sync(client *ethclient.Client, fromBlock *big.Int, toBlock *big.Int, worldAddresses []common.Address) ChainECSState {
 	logger := logger.GetLogger()
 	logger.Info("starting initial sync",

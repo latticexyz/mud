@@ -1,5 +1,6 @@
 package multiplexer
 
+// A Multiplexer is the structure that implements sub/unsub to pipe data between channels.
 type Multiplexer struct {
 	stopChannel    chan struct{}
 	publishChannel chan interface{}

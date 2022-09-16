@@ -27,6 +27,8 @@ func startHTTPServer(httpServer *http.Server, logger *zap.Logger) {
 	}
 }
 
+// StartStreamServer starts a gRPC server and a HTTP web-gRPC server wrapper for an ECS stream
+// service. The gRPC server is started at port and HTTP server at port + 1.
 func StartStreamServer(port int, ethclient *ethclient.Client, multiplexer *multiplexer.Multiplexer, logger *zap.Logger) {
 	var options []grpc.ServerOption
 	grpcServer := grpc.NewServer(options...)
@@ -60,6 +62,8 @@ func StartStreamServer(port int, ethclient *ethclient.Client, multiplexer *multi
 	logger.Info("started listening", zap.String("category", "http server"), zap.String("address", httpServer.Addr))
 }
 
+// StartStreamServer starts a gRPC server and a HTTP web-gRPC server wrapper for an ECS snapshot
+// service. The gRPC server is started at port and HTTP server at port + 1.
 func StartSnapshotServer(port int, logger *zap.Logger) {
 	var options []grpc.ServerOption
 	grpcServer := grpc.NewServer(options...)

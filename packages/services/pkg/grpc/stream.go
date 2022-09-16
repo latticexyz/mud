@@ -14,6 +14,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// A ecsStreamServer is the server on which gRPC methods for subscribing to stream data exist.
 type ecsStreamServer struct {
 	pb.UnimplementedECSStreamServiceServer
 	ethclient   *ethclient.Client
@@ -25,6 +26,7 @@ type ecsStreamServer struct {
 /// gRPC ENDPOINTS
 ///
 
+// SubscribeToStreamLatest is a gRPC endpoint that returns a stream of block data events.
 func (server *ecsStreamServer) SubscribeToStreamLatest(
 	request *pb.ECSStreamBlockBundleRequest,
 	stream pb.ECSStreamService_SubscribeToStreamLatestServer,

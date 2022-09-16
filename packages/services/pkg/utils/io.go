@@ -8,6 +8,7 @@ import (
 	"go.uber.org/zap"
 )
 
+// EnsureDir creates a given dir directory in case it does not already exist.
 func EnsureDir(dir string) {
 	path := filepath.Join(".", dir)
 	err := os.MkdirAll(path, os.ModePerm)

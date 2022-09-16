@@ -1,3 +1,28 @@
+/*
+ecs-stream multiplexes ECS event data by subscribing to a feed of data from a chain and allowing
+multiple clients to selectively subscribe to subsets of the data which they care about.
+
+It exposes a gRPC RPC server for opening a stream data cursor and a gRPC-web HTTP server wrapper
+to allow clients which are web applications to open a cursor with a POST request. Once the cursor
+is opened, data will be piped via a channel and returned to the client via gRPC unless there is a
+chain disconnect or when a client purposefully closes the cursor and disconnects. At that time, the
+service will clean up the channel subscription and only keep piping data into the channels that
+have a client connected.
+
+By default, ecs-stream attempts to connect to a local development chain.
+
+Usage:
+
+    ecs-stream [flags]
+
+The flags are:
+
+    -ws-url
+        Websocket URL for getting block data from chain.
+    -port
+        Port to expose the gRPC server.
+
+*/
 package main
 
 import (
