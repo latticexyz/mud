@@ -107,6 +107,7 @@ export async function setupContracts<C extends ContractComponents>(world: World,
       chainId: config.chainId,
       disableCache: false,
       checkpointServiceUrl: networkConfig.checkpointServiceUrl,
+      streamServiceUrl: networkConfig.streamServiceUrl,
     });
   }
 

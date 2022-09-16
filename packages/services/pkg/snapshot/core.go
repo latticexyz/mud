@@ -13,6 +13,8 @@ import (
 	"go.uber.org/zap"
 )
 
+// Start starts the process of processing data from an Ethereum client, reducing the ECS state, and
+// taking intermittent snapshots.
 func Start(state ChainECSState, client *ethclient.Client, startBlock *big.Int, worldAddresses []common.Address, logger *zap.Logger) {
 	// Get an instance of a websocket subscription to the client.
 	headers := make(chan *types.Header)

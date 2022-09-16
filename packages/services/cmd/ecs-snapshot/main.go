@@ -1,3 +1,30 @@
+/*
+ecs-snapshot computes and saves ECS state from a chain via snapshots, such that the client can
+perform an initial sync to the ECS world state without having to process all ECS state changes
+in form of events.
+
+It exposes a [pkg.grpc.StartSnapshotServer] for getting the snapshot data and a gRPC-web HTTP server
+wrapper to allow clients which are web applications to request snapshots with a POST request.
+
+By default, ecs-snapshot attempts to connect to a local development chain and also by default,
+ecs-snapshot indexes and snapshots all ECS state it finds via emitted events, which can be
+restricted by specifying contract addresses.
+
+Usage:
+
+    ecs-snapshot [flags]
+
+The flags are:
+
+    -ws-url
+        Websocket URL for chain to index and snapshot.
+    -port
+        Port to expose the gRPC server.
+	-worldAddresses
+		Comma-separated list of contract addresses to limit the indexing to. If left blank, index
+		everything, otherwise, use this list as a filter.
+
+*/
 package main
 
 import (
@@ -15,8 +42,8 @@ import (
 
 var (
 	wsUrl          = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
-	port           = flag.Int("port", 50051, "gRPC Server Port")
-	worldAddresses = flag.String("worldAdresses", "", "List of world addresses to index ECS state for. Defaults to empty string which will listen for all world events from all addresses")
+	port           = flag.Int("port", 50061, "gRPC Server Port")
+	worldAddresses = flag.String("worldAddresses", "", "List of world addresses to index ECS state for. Defaults to empty string which will listen for all world events from all addresses")
 )
 
 func main() {

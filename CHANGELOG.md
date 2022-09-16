@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.1](https://github.com/latticexyz/mud/compare/v0.11.0...v0.11.1) (2022-09-15)
+
+### Bug Fixes
+
+- do not run prepack multiple times when publishing ([4f6f4c3](https://github.com/latticexyz/mud/commit/4f6f4c35a53c105951b32a071e47a748b2502cda))
+
+# [0.11.0](https://github.com/latticexyz/mud/compare/v0.10.0...v0.11.0) (2022-09-15)
+
+### Features
+
+- add more granularity to initial sync state report ([#146](https://github.com/latticexyz/mud/issues/146)) ([d4ba338](https://github.com/latticexyz/mud/commit/d4ba338a50048c2d5180ce4f917d94f5b0893935))
+
+# [0.10.0](https://github.com/latticexyz/mud/compare/v0.9.0...v0.10.0) (2022-09-14)
+
+### Features
+
+- add chunk snapshot and stream service ([#139](https://github.com/latticexyz/mud/issues/139)) ([8c9d4b3](https://github.com/latticexyz/mud/commit/8c9d4b30ed70470ca8770565b6472359e0e0f2bc))
+- matching Perlin noise implementations in Solidity and AssemblyScript ([#145](https://github.com/latticexyz/mud/issues/145)) ([29094c4](https://github.com/latticexyz/mud/commit/29094c4b0c3eeeacd3af690310c7de93a0c45e14))
+
+# [0.9.0](https://github.com/latticexyz/mud/compare/v0.8.1...v0.9.0) (2022-09-13)
+
+### Bug Fixes
+
+- **network:** align hex entity id formatting ([#140](https://github.com/latticexyz/mud/issues/140)) ([93b1bd6](https://github.com/latticexyz/mud/commit/93b1bd6688780dc185a1c7e353954e2c5c85f648))
+
+### Features
+
+- **network:** add loading state component update stream to SyncWorker ([#141](https://github.com/latticexyz/mud/issues/141)) ([824c4f3](https://github.com/latticexyz/mud/commit/824c4f366775be1f0e636b3781c743333421b679))
+
+### BREAKING CHANGES
+
+- **network:** The loading state component is attached to the entity with id 0x060D (GodID). The
+  std-client package previously exported a different mudwar specific GodID, which has been replaced
+  with the 0x060D GodID exported by the network package.
+
+- test(network): add test for LoadingState and fix existing tests
+
 ## [0.8.1](https://github.com/latticexyz/mud/compare/v0.8.0...v0.8.1) (2022-08-22)
 
 ### Bug Fixes

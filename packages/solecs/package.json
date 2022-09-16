@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/solecs",
   "license": "MIT",
-  "version": "0.8.1",
+  "version": "0.11.1",
   "description": "Solidity Entity Component System",
   "types": "./types/ethers-contracts/",
   "repository": {
@@ -12,8 +12,8 @@
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
-    "test": "~/.foundry/bin/forge test",
-    "build": "rimraf out && ~/.foundry/bin/forge build && yarn dist && yarn types",
+    "test": "forge test",
+    "build": "rimraf out && forge build && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh && rimraf abi/*.metadata.json",
     "removebytecode": "for i in abi/*; do jq 'del(.bytecode) | del(.deployedBytecode) | del(.ast)' \"$i\" > \"$i\".tmp && mv \"$i\".tmp \"$i\"; done",
     "types": "rimraf types && yarn removebytecode && typechain --target=ethers-v5 abi/*.json",
@@ -37,8 +37,9 @@
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
+    "ts-node": "10.7",
     "typechain": "^8.1.0",
     "typedoc": "^0.23.10"
   },
-  "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f"
+  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65"
 }

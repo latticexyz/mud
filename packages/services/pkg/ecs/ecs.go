@@ -11,6 +11,8 @@ import (
 	"go.uber.org/zap"
 )
 
+// LogsToEcsEvents transforms a list of filteredLogs coming directly from the block into a list of
+// ECSEvents extracted from those logs. Returns the list of ECSEvents in protobuf format.
 func LogsToEcsEvents(filteredLogs []types.Log) []*pb.ECSEvent {
 	ecsEvents := []*pb.ECSEvent{}
 
@@ -45,6 +47,7 @@ func parseEventComponentRegistered(log types.Log) *pb.ECSEvent {
 	return &pb.ECSEvent{
 		EventType:   "ComponentRegistered",
 		ComponentId: componentId,
+		Tx:          log.TxHash.String(),
 	}
 }
 
@@ -61,6 +64,7 @@ func parseEventComponentValueSet(log types.Log) *pb.ECSEvent {
 		ComponentId: componentId,
 		EntityId:    entityId,
 		Value:       event.Data,
+		Tx:          log.TxHash.String(),
 	}
 }
 
@@ -76,5 +80,6 @@ func parseEventComponentValueRemoved(log types.Log) *pb.ECSEvent {
 		EventType:   "ComponentValueRemoved",
 		ComponentId: componentId,
 		EntityId:    entityId,
+		Tx:          log.TxHash.String(),
 	}
 }

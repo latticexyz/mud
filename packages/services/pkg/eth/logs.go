@@ -9,6 +9,7 @@ import (
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
+// FilterLogs applies ordering and filters to a list of logs.
 func FilterLogs(logs []types.Log) []types.Log {
 	// Filter removed logs due to chain reorgs.
 	filteredLogs := []types.Log{}
@@ -40,6 +41,7 @@ func FilterLogs(logs []types.Log) []types.Log {
 	return filteredLogs
 }
 
+// UnpackLog extracts an event from a log given an eventName and places it into out.
 func UnpackLog(out interface{}, eventName string, log types.Log) error {
 	worldAbi := world.GetWorldABI()
 	if log.Topics[0] != worldAbi.Events[eventName].ID {

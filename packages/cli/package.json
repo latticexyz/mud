@@ -1,8 +1,8 @@
 {
   "name": "@latticexyz/cli",
-  "version": "0.8.1",
+  "version": "0.11.1",
   "description": "Command line interface for mud",
-  "main": "./dist/index.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "bin": {
     "mud": "./dist/index.js"
@@ -14,9 +14,7 @@
   },
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
-    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
-    "postpack": "mv package.json.bak package.json",
-    "globalinstall": "yarn build && yarn prepare && npm link",
+    "globalinstall": "yarn prepare && npm link",
     "build": "rimraf dist && tsc -p . && chmod u+x dist/index.js",
     "link": "yarn link",
     "test": "echo 'todo: add tests'",
@@ -37,9 +35,10 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@latticexyz/solecs": "^0.8.1",
-    "@latticexyz/std-contracts": "^0.8.1",
-    "@latticexyz/utils": "^0.8.1",
+    "@latticexyz/solecs": "^0.11.1",
+    "@latticexyz/utils": "^0.11.1",
+    "@latticexyz/std-contracts": "^0.11.1",
+    
     "chalk": "^5.0.1",
     "clear": "^0.1.0",
     "commander": "^9.2.0",
@@ -65,5 +64,5 @@
   "pkg": {
     "scripts": "build/**/*.js"
   },
-  "gitHead": "cba00788b48f91e2858207c7e26475213b220d0f"
+  "gitHead": "238b6350a4be68eda2885c1a198e53e97bd22f65"
 }

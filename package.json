@@ -19,12 +19,17 @@
       "packages/std-client",
       "packages/ecs-browser",
       "packages/mud.dev",
-      "packages/services"
+      "packages/services",
+      "packages/noise"
     ]
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
     "@commitlint/config-conventional": "^16.2.4",
+    "@parcel/optimizer-data-url": "2.7.0",
+    "@parcel/packager-ts": "2.7.0",
+    "@parcel/transformer-inline-string": "2.7.0",
+    "@parcel/transformer-typescript-types": "2.7.0",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "commitizen": "^4.2.4",
@@ -35,7 +40,8 @@
     "lint-staged": ">=10",
     "prettier": "^2.6.2",
     "rimraf": "^3.0.2",
-    "run-pty": "^3.0.0"
+    "run-pty": "^3.0.0",
+    "typescript": ">=3.0.0"
   },
   "config": {
     "commitizen": {
@@ -51,9 +57,12 @@
     "release": "yarn && lerna publish --no-private --force-publish",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "yarn lerna run link",
-    "yalc:release": "yarn lerna exec yalc push",
     "docs": "yarn lerna run docs && rimraf .docs && mkdir .docs && for i in network phaserx recs solecs std-client std-contracts utils services; do mkdir .docs/$i && cp -r packages/$i/docs/* .docs/$i; done && rimraf packages/mud.dev/public/docs && mv .docs packages/mud.dev/public/docs",
-    "test": "yarn workspaces run test"
+    "test": "yarn workspaces run test",
+    "yalc:release": "yarn entry:dist && yarn lerna exec yalc push",
+    "yalc:reset": "yarn entry:src",
+    "entry:dist": "yarn lerna run prepack",
+    "entry:src": "yarn lerna run postpack"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",

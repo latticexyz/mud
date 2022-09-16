@@ -18,10 +18,12 @@ import {
   createSnapshotClient,
   createDecode,
   createFetchWorldEventsInBlockRange,
-  createLatestEventStream,
   getSnapshotBlockNumber,
-  fetchSnapshot,
   fetchStateInBlockRange,
+  fetchSnapshotChunked,
+  createLatestEventStreamRPC,
+  createLatestEventStreamService,
+  createTransformWorldEventsFromStream,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { GodID, SyncState } from "./constants";
@@ -76,6 +78,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     const computedConfig = await streamToDefinedComputed(this.input$);
     const {
       checkpointServiceUrl,
+      streamServiceUrl,
       chainId,
       worldContract,
       provider: { options: providerOptions },
@@ -94,6 +97,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       providerOptions?.batch,
       decode
     );
+    const transformWorldEvents = createTransformWorldEventsFromStream(decode);
 
     // Start syncing current events, but only start streaming to output once gap between initial state and current block is closed
 
@@ -102,7 +106,11 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
-    createLatestEventStream(blockNumber$, fetchWorldEvents).subscribe((event) => {
+    const latestEvent$ = streamServiceUrl
+      ? createLatestEventStreamService(streamServiceUrl, worldContract.address, transformWorldEvents)
+      : createLatestEventStreamRPC(blockNumber$, fetchWorldEvents);
+
+    latestEvent$.subscribe((event) => {
       storeEvent(cacheStore.current, event);
       if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
     });
@@ -123,7 +131,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
 
       if (syncFromSnapshot) {
         this.setLoadingState(SyncState.INITIAL, "Fetching initial state from snapshot", 50);
-        initialState = await fetchSnapshot(snapshotClient, worldContract.address, decode);
+        initialState = await fetchSnapshotChunked(snapshotClient, worldContract.address, decode);
       } else {
         this.setLoadingState(SyncState.INITIAL, "Fetching initial state from cache", 50);
         initialState = await loadIndexDbCacheStore(indexDbCache);
@@ -139,7 +147,13 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       `Fetching state from block ${initialState.blockNumber} to ${streamStartBlockNumber}`,
       80
     );
-    const gapState = await fetchStateInBlockRange(fetchWorldEvents, initialState.blockNumber, streamStartBlockNumber);
+    const gapState = await fetchStateInBlockRange(
+      fetchWorldEvents,
+      initialState.blockNumber,
+      streamStartBlockNumber,
+      50,
+      this.setLoadingState.bind(this)
+    );
     console.log(
       `[SyncWorker] got ${gapState.state.size} items from block range ${initialState.blockNumber} -> ${streamStartBlockNumber}`
     );
