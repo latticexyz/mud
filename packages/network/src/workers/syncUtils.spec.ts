@@ -1,7 +1,7 @@
 import { EntityID } from "@latticexyz/recs";
 import { sleep } from "@latticexyz/utils";
 import { Subject } from "rxjs";
-import { NetworkComponentUpdate } from "../types";
+import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { getCacheStoreEntries } from "./CacheStore";
 import {
   createLatestEventStreamRPC,
@@ -30,6 +30,7 @@ describe("syncUtils", () => {
     it("should fetch world events for new block range when a new block number arrives", async () => {
       const blockNumber$ = new Subject<number>();
       const event: NetworkComponentUpdate = {
+        type: NetworkEvents.NetworkComponentUpdate,
         component: "0x1",
         entity: "0x0" as EntityID,
         value: {},
@@ -70,6 +71,7 @@ describe("syncUtils", () => {
   describe("fetchStateInBlockRange", () => {
     it("should fetch world events in the given range with the given interval", async () => {
       const event: NetworkComponentUpdate = {
+        type: NetworkEvents.NetworkComponentUpdate,
         component: "0x01",
         entity: "0x00" as EntityID,
         value: {},
@@ -90,6 +92,7 @@ describe("syncUtils", () => {
       expect(state.blockNumber).toBe(4241);
       expect([...getCacheStoreEntries(state)]).toEqual([
         {
+          type: NetworkEvents.NetworkComponentUpdate,
           component: "0x01",
           entity: "0x00" as EntityID,
           value: {},

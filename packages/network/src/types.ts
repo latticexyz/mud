@@ -1,7 +1,7 @@
 import { Result } from "@ethersproject/abi";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { Cached } from "@latticexyz/utils";
-import { BaseContract, ContractInterface } from "ethers";
+import { BaseContract, BigNumber, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
 
 export interface NetworkConfig {
@@ -69,6 +69,7 @@ export type Mappings<C extends Components> = {
 
 export type NetworkComponentUpdate<C extends Components = Components> = {
   [key in keyof C]: {
+    type: NetworkEvents.NetworkComponentUpdate;
     component: key & string;
     value: ComponentValue<SchemaOf<C[key]>> | undefined;
   };
@@ -79,7 +80,37 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
   blockNumber: number;
 };
 
-export type SyncWorkerConfig<Cm extends Components = Components> = {
+export type SystemCallTransaction = {
+  hash: string;
+  to: string;
+  data: string;
+  value: BigNumber;
+};
+
+export type SystemCall<C extends Components = Components> = {
+  type: NetworkEvents.SystemCall;
+  tx: SystemCallTransaction;
+  updates: NetworkComponentUpdate<C>[];
+};
+
+export enum NetworkEvents {
+  SystemCall = "SystemCall",
+  NetworkComponentUpdate = "NetworkComponentUpdate",
+}
+
+export type NetworkEvent<C extends Components = Components> = NetworkComponentUpdate<C> | SystemCall<C>;
+
+export function isSystemCallEvent<C extends Components>(e: NetworkEvent<C>): e is SystemCall<C> {
+  return e.type === NetworkEvents.SystemCall;
+}
+
+export function isNetworkComponentUpdateEvent<C extends Components>(
+  e: NetworkEvent<C>
+): e is NetworkComponentUpdate<C> {
+  return e.type === NetworkEvents.NetworkComponentUpdate;
+}
+
+export type SyncWorkerConfig = {
   provider: ProviderConfig;
   initialBlockNumber: number;
   worldContract: ContractConfig;
@@ -87,6 +118,7 @@ export type SyncWorkerConfig<Cm extends Components = Components> = {
   chainId: number;
   checkpointServiceUrl?: string;
   streamServiceUrl?: string;
+  fetchSystemCalls?: boolean;
 };
 
 export enum ContractSchemaValue {

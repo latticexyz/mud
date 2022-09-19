@@ -1,9 +1,9 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { keccak256, sleep } from "@latticexyz/utils";
 import { computed } from "mobx";
-import { Output, SyncWorker } from "./SyncWorker";
+import { SyncWorker } from "./SyncWorker";
 import { Subject, Subscription } from "rxjs";
-import { NetworkComponentUpdate, SyncWorkerConfig } from "../types";
+import { isNetworkComponentUpdateEvent, NetworkComponentUpdate, NetworkEvents, SyncWorkerConfig } from "../types";
 import { Components, EntityID } from "@latticexyz/recs";
 import { createCacheStore, storeEvent } from "./CacheStore";
 import * as syncUtils from "./syncUtils";
@@ -14,16 +14,18 @@ import { createLatestEventStreamRPC, createLatestEventStreamService } from "./sy
 // Test constants
 const cacheBlockNumber = 99;
 const cacheEvent = {
+  type: NetworkEvents.NetworkComponentUpdate,
   component: "0x10",
   entity: "0x11" as EntityID,
   value: {},
   txHash: "0x12",
   lastEventInTx: true,
   blockNumber: cacheBlockNumber + 1,
-};
+} as NetworkComponentUpdate;
 const snapshotBlockNumber = 9999;
 const snapshotEvents = [
   {
+    type: NetworkEvents.NetworkComponentUpdate,
     component: "0x42",
     entity: "0x11" as EntityID,
     value: {},
@@ -31,12 +33,13 @@ const snapshotEvents = [
     lastEventInTx: true,
     blockNumber: snapshotBlockNumber + 1,
   },
-];
+] as NetworkComponentUpdate[];
 const blockNumber$ = new Subject<number>();
 const latestEvent$ = new Subject<NetworkComponentUpdate>();
 const lastGapStateEventBlockNumber = 999;
 const gapStateEvents = [
   {
+    type: NetworkEvents.NetworkComponentUpdate,
     component: "0x20",
     entity: "0x21" as EntityID,
     value: {},
@@ -44,7 +47,7 @@ const gapStateEvents = [
     lastEventInTx: true,
     blockNumber: lastGapStateEventBlockNumber,
   },
-];
+] as NetworkComponentUpdate[];
 
 // Mocks
 jest.mock("../createProvider", () => ({
@@ -110,7 +113,7 @@ describe("Sync.worker", () => {
 
     output = jest.fn();
     subscription = worker.work(input$).subscribe((e) => {
-      if (e.component !== keccak256("component.LoadingState")) {
+      if (isNetworkComponentUpdateEvent(e) && e.component !== keccak256("component.LoadingState")) {
         console.log("Called with", e);
         output(e);
       }
@@ -137,7 +140,8 @@ describe("Sync.worker", () => {
       initialBlockNumber: 0,
     });
 
-    const finalUpdate: Output<Components> = {
+    const finalUpdate: NetworkComponentUpdate = {
+      type: NetworkEvents.NetworkComponentUpdate,
       component: keccak256("component.LoadingState"),
       value: { state: SyncState.LIVE, msg: "Streaming live events", percentage: 100 },
       entity: GodID,
@@ -169,6 +173,7 @@ describe("Sync.worker", () => {
     await sleep(0);
 
     const event: NetworkComponentUpdate = {
+      type: NetworkEvents.NetworkComponentUpdate,
       component: "0x00",
       entity: "0x01" as EntityID,
       value: {},
@@ -307,6 +312,7 @@ describe("Sync.worker", () => {
     const secondLiveBlockNumber = 1002;
 
     const event1: NetworkComponentUpdate = {
+      type: NetworkEvents.NetworkComponentUpdate,
       component: "0x99",
       entity: "0x01" as EntityID,
       value: {},
@@ -316,6 +322,7 @@ describe("Sync.worker", () => {
     };
 
     const event2: NetworkComponentUpdate = {
+      type: NetworkEvents.NetworkComponentUpdate,
       component: "0x0999",
       entity: "0x01" as EntityID,
       value: {},
@@ -325,6 +332,7 @@ describe("Sync.worker", () => {
     };
 
     const event3: NetworkComponentUpdate = {
+      type: NetworkEvents.NetworkComponentUpdate,
       component: "0x9999",
       entity: "0x01" as EntityID,
       value: {},
