@@ -1,11 +1,11 @@
 import fs from "fs";
-// import * as buffer from "buffer";
-// const { Buffer } = buffer;
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import Buffer from "buffer-lite";
 
-// export function encodePackedU32(inputs: number[]): Buffer {
-//   const buffer = Buffer.from(inputs.map((i) => i.toString(16).padStart(8, "0")).join(""), "hex");
-//   return buffer;
-// }
+export function encodePackedU32(inputs: number[]): Buffer {
+  return Buffer.from(inputs.map((i) => i.toString(16).padStart(8, "0")).join(""), "hex");
+}
 
 export async function fetchAndCompileWasmModule(url: URL) {
   try {

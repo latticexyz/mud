@@ -39,6 +39,7 @@
     "assemblyscript": "^0.21.2",
     "base64-sol": "^1.1.0",
     "big-integer": "^1.6.51",
+    "buffer-lite": "^1.0.0",
     "chai": "^4.3.6",
     "ds-test": "https://github.com/dapphub/ds-test.git#9310e879db8ba3ea6d5c6489a579118fd264a3f5",
     "ethers": "^5.7.0",
@@ -53,7 +54,8 @@
     "web3-utils": "^1.7.5"
   },
   "peerDependencies": {
-    "@flatten-js/interval-tree": "^1.0.19"
+    "@flatten-js/interval-tree": "^1.0.19",
+    "buffer-lite": "^1.0.0"
   },
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }

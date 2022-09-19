@@ -6125,6 +6125,11 @@ buffer-from@^1.0.0:
   resolved "https://registry.yarnpkg.com/buffer-from/-/buffer-from-1.1.2.tgz#2b146a6fd72e80b4f55d255f35ed59a3a9a41bd5"
   integrity sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==
 
+buffer-lite@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/buffer-lite/-/buffer-lite-1.0.0.tgz#677f42bd0d5cb63fa2ee41e17903d04a84ff6b71"
+  integrity sha512-PGWl2OKxX317hJJaQpLW6Gikg4bEyyyMqJKlIH0NY56ePbqCATg02OctB/CWkvjtJG/kWxvM1ObEkNQFx8xJnA==
+
 buffer-xor@^1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"

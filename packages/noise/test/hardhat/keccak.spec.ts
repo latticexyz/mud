@@ -16,6 +16,7 @@ describe("keccak256", () => {
     expect("0x" + keccak256(msg)).to.eq(soliditySha3(msg));
     expect(keccak256(msg)).to.eq("1c8aff950685c2ed4bc3174f3472287b56d9517b9c948127319a09a7a36deac8");
   });
+
   it("should compute the same hash as soliditySha3 for abi.encodePacked params", () => {
     const x = 10;
     const y = 11;
