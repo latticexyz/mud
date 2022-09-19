@@ -41,7 +41,7 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
 
   /**
    * Maps all components in a given components map to the respective components including pending updates
-   * @param components Components to be mapped to components including pending updates
+   * @param component Component to be mapped to components including pending updates
    * @returns Components including pending updates
    */
   function withOptimisticUpdates<C extends Component>(component: C): C {
@@ -110,7 +110,7 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
 
   /**
    * Checks the requirement of a given action and executes the action if the requirement is fulfilled
-   * @param actionId ID of the action to check the requirement of
+   * @param action Action to check the requirement of
    * @returns void
    */
   function checkRequirement(action: ActionData) {
@@ -153,17 +153,24 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
       if (tx) {
         // Wait for all tx events to be reduced
         updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents });
-        const txReduced = awaitStreamValue(txReduced$, (v) => v === tx.hash);
-        await Promise.all([tx.wait(), txReduced]);
+        const txConfirmed = tx.wait().catch(() => handleError(action)); // Also catch the error if not awaiting
+        await awaitStreamValue(txReduced$, (v) => v === tx.hash);
+        updateComponent(Action, action.entityIndex, { state: ActionState.TxReduced });
+        if (action.awaitConfirmation) await txConfirmed;
       }
 
       updateComponent(Action, action.entityIndex, { state: ActionState.Complete });
     } catch (e) {
-      updateComponent(Action, action.entityIndex, { state: ActionState.Failed });
+      handleError(action);
     }
 
     // After the action is done executing (failed or completed), remove its actionData and remove the Action component
     remove(action.id);
+  }
+
+  // Set the action's state to ActionState.Failed
+  function handleError(action: ActionData) {
+    updateComponent(Action, action.entityIndex, { state: ActionState.Failed });
   }
 
   /**

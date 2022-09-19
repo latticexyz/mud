@@ -167,7 +167,7 @@ export function randomColor(id: string): number {
   return Phaser.Display.Color.HSLToColor(h, s, l).color;
 }
 
-export function getAddressColor(address: string) {
+export function getStringColor(address: string) {
   return randomColor(keccak256(address).substring(2));
 }
 

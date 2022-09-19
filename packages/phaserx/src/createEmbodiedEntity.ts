@@ -63,6 +63,10 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     if (activeGameObject && once) once(activeGameObject);
   }
 
+  function hasComponent(id: string): boolean {
+    return onOnce.has(id) || onUpdate.has(id);
+  }
+
   function removeComponent(id: string, stop?: boolean) {
     onOnce.delete(id);
     onUpdate.delete(id);
@@ -85,6 +89,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     gameObject.setScale(1, 1);
     gameObject.setOrigin(0, 0);
     gameObject.setAlpha(1);
+    gameObject.setScrollFactor(1);
     if (isSprite(gameObject, type)) {
       gameObject.clearTint();
       gameObject.setTexture("");
@@ -123,7 +128,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     activeGameObject = undefined;
   }
 
-  return { setComponent, removeComponent, spawn, despawn, position, id, setCameraFilter, type };
+  return { setComponent, hasComponent, removeComponent, spawn, despawn, position, id, setCameraFilter, type };
 }
 
 function executeGameObjectFunctions<Type extends keyof GameObjectTypes>(

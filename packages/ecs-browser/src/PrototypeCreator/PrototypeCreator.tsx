@@ -1,4 +1,4 @@
-import { Component, EntityID, Has, Layers, Type } from "@latticexyz/recs";
+import { Component, EntityID, getComponentValue, Has, Layers, Type } from "@latticexyz/recs";
 import React, { useEffect, useState } from "react";
 import { ComponentBrowserButton, ComponentBrowserSelect } from "../StyledComponents";
 import { Coord } from "@latticexyz/phaserx";
@@ -8,8 +8,9 @@ export const PrototypeCreator: React.FC<{
   layers: Layers;
   spawnPrototypeAt: (prototypeId: EntityID, position: Coord) => void;
   prototypeComponent: Component<{ value: Type.StringArray }>;
+  nameComponent: Component<{ value: Type.String }>;
   hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
-}> = ({ layers, prototypeComponent, hoverHighlightComponent, spawnPrototypeAt }) => {
+}> = ({ layers, prototypeComponent, nameComponent, hoverHighlightComponent, spawnPrototypeAt }) => {
   const [selectingPosition, setSelectingPosition] = useState(false);
   const [selectedPrototype, setSelectedPrototype] = useState<string | undefined>(undefined);
   const hoverHighlight = useComponentValueStream(hoverHighlightComponent);
@@ -52,9 +53,10 @@ export const PrototypeCreator: React.FC<{
         <option value="">None</option>
         {[...prototypes].map((entityIndex) => {
           const entityId = layers.network.world.entities[entityIndex];
+          const name = getComponentValue(nameComponent, entityIndex)?.value;
           return (
             <option key={entityId} value={entityId}>
-              {entityId}
+              {name || entityId}
             </option>
           );
         })}
