@@ -32,6 +32,9 @@ export interface ActionRequest<C extends Components, T> {
   // If txHashes are returned from the txQueue, the action will only be completed (and pending updates removed)
   // once all events from the given txHashes have been received and reduced.
   execute: (data: T) => Promise<ContractTransaction> | Promise<void> | void | undefined;
+
+  // Flag to set if the queue should wait for the underlying transaction to be confirmed (in addition to being reduced)
+  awaitConfirmation?: boolean;
 }
 
 export type ActionData = ActionRequest<Components, unknown> & {
