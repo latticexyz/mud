@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.13.0](https://github.com/latticexyz/mud/compare/v0.12.0...v0.13.0) (2022-09-19)
+
+### Features
+
+- various tweaks for mudwar ([#151](https://github.com/latticexyz/mud/issues/151)) ([53bc3cc](https://github.com/latticexyz/mud/commit/53bc3cc4405c7916821d219963e592e09b51db2a))
+
 # [0.12.0](https://github.com/latticexyz/mud/compare/v0.11.1...v0.12.0) (2022-09-16)
 
 **Note:** Version bump only for package @latticexyz/phaserx
