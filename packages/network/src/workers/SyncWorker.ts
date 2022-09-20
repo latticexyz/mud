@@ -111,7 +111,13 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       : createLatestEventStreamRPC(blockNumber$, fetchWorldEvents);
 
     latestEvent$.subscribe((event) => {
+      // Store cache to indexdb every block
+      if (event.blockNumber > cacheStore.current.blockNumber + 1)
+        saveCacheStoreToIndexDb(indexDbCache, cacheStore.current);
+
+      // Store event to cache
       storeEvent(cacheStore.current, event);
+
       if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
     });
     const streamStartBlockNumberPromise = awaitStreamValue(blockNumber$);
@@ -169,13 +175,12 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       this.output$.next(update as Output<Cm>);
     }
 
+    // Save initial state to cache
+    saveCacheStoreToIndexDb(indexDbCache, cacheStore.current);
+
     // Let the client know loading is complete
     this.setLoadingState(SyncState.LIVE, `Streaming live events`, 100, cacheStore.current.blockNumber);
     passLiveEventsToOutput = true;
-
-    // Store the local cache to IndexDB once every 10 seconds
-    // (indexDB writes take too long to write for every event)
-    setInterval(() => saveCacheStoreToIndexDb(indexDbCache, cacheStore.current), 10000);
   }
 
   public work(input$: Observable<SyncWorkerConfig<Cm>>): Observable<Output<Cm>> {
