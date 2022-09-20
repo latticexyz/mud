@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/recs",
   "license": "MIT",
-  "version": "0.13.0",
+  "version": "0.14.0",
   "source": "src/index.ts",
   "main": "src/index.ts",
   "type": "module",
@@ -22,7 +22,7 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "@latticexyz/utils": "^0.13.0",
+    "@latticexyz/utils": "^0.14.0",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/jest": "^27.4.1",

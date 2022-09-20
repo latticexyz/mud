@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.14.0](https://github.com/latticexyz/mud/compare/v0.13.0...v0.14.0) (2022-09-20)
+
+### Bug Fixes
+
+- phaser input click$ stream ([#152](https://github.com/latticexyz/mud/issues/152)) ([a7e1cfe](https://github.com/latticexyz/mud/commit/a7e1cfe5f0282b3a244ad224e907ae51e0cc5ce0))
+- **phaserx:** distinguish left and right click in click$ stream ([#155](https://github.com/latticexyz/mud/issues/155)) ([004753d](https://github.com/latticexyz/mud/commit/004753d9261a11ca2fcfad6b25c003af59b1e997))
+- **std-client:** remove references to old phaser version ([#153](https://github.com/latticexyz/mud/issues/153)) ([c691c6e](https://github.com/latticexyz/mud/commit/c691c6e9288a375dae68cf2969ef42a2a33189fc))
+
+### Features
+
+- **std-client:** add setupContracts ([#154](https://github.com/latticexyz/mud/issues/154)) ([be86d24](https://github.com/latticexyz/mud/commit/be86d243ff3d7efae7225933066246f2747ea759))
+
 # [0.13.0](https://github.com/latticexyz/mud/compare/v0.12.0...v0.13.0) (2022-09-19)
 
 ### Features
