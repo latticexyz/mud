@@ -55,6 +55,7 @@
     "@latticexyz/network": "^0.7.0",
     "@latticexyz/recs": "^0.7.0",
     "@latticexyz/utils": "^0.7.0",
+    "@latticexyz/solecs": "0.13.0",
     "ethers": "^5.6.6",
     "lodash": "^4.17.21",
     "mobx": "^6.4.2",
@@ -65,8 +66,5 @@
     "react-syntax-highlighter": "^15.5.0",
     "rxjs": "7.5.5"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
-  "dependencies": {
-    "@latticexyz/solecs": "0.13.0"
-  }
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }
