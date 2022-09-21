@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.14.1](https://github.com/latticexyz/mud/compare/v0.14.0...v0.14.1) (2022-09-21)
+
+### Bug Fixes
+
+- **network:** initial sync ([#156](https://github.com/latticexyz/mud/issues/156)) ([6116585](https://github.com/latticexyz/mud/commit/611658584ffd52c63f837f239d888aa55959320e))
+
 # [0.14.0](https://github.com/latticexyz/mud/compare/v0.13.0...v0.14.0) (2022-09-20)
 
 **Note:** Version bump only for package @latticexyz/network
