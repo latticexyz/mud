@@ -3,6 +3,7 @@ package grpc
 import (
 	"fmt"
 	multiplexer "latticexyz/mud/packages/services/pkg/multiplexer"
+	pb_relay "latticexyz/mud/packages/services/protobuf/go/ecs-relay"
 	pb_snapshot "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 	pb_stream "latticexyz/mud/packages/services/protobuf/go/ecs-stream"
 	"net"
@@ -97,6 +98,39 @@ func StartSnapshotServer(port int, logger *zap.Logger) {
 	logger.Info("started listening", zap.String("category", "http server"), zap.String("address", httpServer.Addr))
 }
 
+func StartRelayServer(port int, logger *zap.Logger) {
+	var options []grpc.ServerOption
+	grpcServer := grpc.NewServer(options...)
+	relayerServer := createRelayServer(logger)
+
+	pb_relay.RegisterECSRelayServiceServer(grpcServer, relayerServer)
+
+	// Register reflection service on gRPC server.
+	reflection.Register(grpcServer)
+
+	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	if err != nil {
+		logger.Fatal("failed to listen", zap.String("category", "gRPC server"), zap.Error(err))
+	}
+	go startRPCServer(grpcServer, listener, logger)
+	logger.Info("started listening", zap.String("category", "gRPC server"), zap.String("address", listener.Addr().String()))
+
+	// Wrap gRPC server into a gRPC-web HTTP server.
+	grpcWebServer := grpcweb.WrapServer(
+		grpcServer,
+		// Enable CORS.
+		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
+		grpcweb.WithOriginFunc(func(origin string) bool { return true }),
+	)
+	// Create and start the HTTP server at PORT+1.
+	httpServer := &http.Server{
+		Handler: grpcWebServer,
+		Addr:    fmt.Sprintf("0.0.0.0:%d", port+1),
+	}
+	logger.Info("started listening", zap.String("category", "http server"), zap.String("address", httpServer.Addr))
+	startHTTPServer(httpServer, logger)
+}
+
 func createStreamServer(ethclient *ethclient.Client, multiplexer *multiplexer.Multiplexer, logger *zap.Logger) *ecsStreamServer {
 	return &ecsStreamServer{
 		ethclient:   ethclient,
@@ -107,4 +141,12 @@ func createStreamServer(ethclient *ethclient.Client, multiplexer *multiplexer.Mu
 
 func createSnapshotServer() *ecsSnapshotServer {
 	return &ecsSnapshotServer{}
+}
+
+func createRelayServer(logger *zap.Logger) *ecsRelayServer {
+	server := &ecsRelayServer{
+		logger: logger,
+	}
+	server.Init()
+	return server
 }
