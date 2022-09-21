@@ -10,6 +10,7 @@
     "directory": "packages/phaserx"
   },
   "scripts": {
+    "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
     "test": "jest --passWithNoTests",
     "link": "yarn link",
