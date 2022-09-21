@@ -8,9 +8,9 @@ import {
   getIndexDBCacheStoreBlockNumber,
   getIndexDbECSCache,
   loadIndexDbCacheStore,
-  mergeCacheStores,
   saveCacheStoreToIndexDb,
   storeEvent,
+  storeEvents,
 } from "./CacheStore";
 import { createReconnectingProvider } from "../createProvider";
 import { computed } from "mobx";
@@ -19,11 +19,11 @@ import {
   createDecode,
   createFetchWorldEventsInBlockRange,
   getSnapshotBlockNumber,
-  fetchStateInBlockRange,
   fetchSnapshotChunked,
   createLatestEventStreamRPC,
   createLatestEventStreamService,
   createTransformWorldEventsFromStream,
+  fetchEventsInBlockRangeChunked,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { GodID, SyncState } from "./constants";
@@ -109,16 +109,18 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     const latestEvent$ = streamServiceUrl
       ? createLatestEventStreamService(streamServiceUrl, worldContract.address, transformWorldEvents)
       : createLatestEventStreamRPC(blockNumber$, fetchWorldEvents);
+    const initialLiveEvents: NetworkComponentUpdate<Components>[] = [];
 
     latestEvent$.subscribe((event) => {
+      // If initial sync is in progress, temporary store the events to apply later
+      if (!passLiveEventsToOutput) return initialLiveEvents.push(event);
+
       // Store cache to indexdb every block
       if (event.blockNumber > cacheStore.current.blockNumber + 1)
         saveCacheStoreToIndexDb(indexDbCache, cacheStore.current);
 
-      // Store event to cache
       storeEvent(cacheStore.current, event);
-
-      if (passLiveEventsToOutput) this.output$.next(event as Output<Cm>);
+      this.output$.next(event as Output<Cm>);
     });
     const streamStartBlockNumberPromise = awaitStreamValue(blockNumber$);
 
@@ -153,19 +155,22 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
       `Fetching state from block ${initialState.blockNumber} to ${streamStartBlockNumber}`,
       80
     );
-    const gapState = await fetchStateInBlockRange(
+
+    const gapStateEvents = await fetchEventsInBlockRangeChunked(
       fetchWorldEvents,
       initialState.blockNumber,
       streamStartBlockNumber,
       50,
       this.setLoadingState.bind(this)
     );
+
     console.log(
-      `[SyncWorker] got ${gapState.state.size} items from block range ${initialState.blockNumber} -> ${streamStartBlockNumber}`
+      `[SyncWorker] got ${gapStateEvents.length} items from block range ${initialState.blockNumber} -> ${streamStartBlockNumber}`
     );
 
     // Merge initial state, gap state and live events since initial sync started
-    cacheStore.current = mergeCacheStores([initialState, gapState, cacheStore.current]);
+    storeEvents(initialState, [...gapStateEvents, ...initialLiveEvents]);
+    cacheStore.current = initialState;
     console.log(`[SyncWorker] initial sync state size: ${cacheStore.current.state.size}`);
 
     this.setLoadingState(SyncState.INITIAL, `Initializing with ${cacheStore.current.state.size} state entries`, 90);
