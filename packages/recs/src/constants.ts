@@ -16,6 +16,7 @@ export enum Type {
   OptionalEntity,
   EntityArray,
   OptionalEntityArray,
+  T,
 }
 
 /**
