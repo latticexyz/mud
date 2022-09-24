@@ -110,7 +110,10 @@ export function updateComponent<S extends Schema, T = undefined>(
  * @param component {@link defineComponent Component} to be updated.
  * @param entity {@link EntityIndex} of the entity whose value should be removed from this component.
  */
-export function removeComponent(component: Component, entity: EntityIndex) {
+export function removeComponent<S extends Schema, M extends Metadata, T>(
+  component: Component<S, M, T>,
+  entity: EntityIndex
+) {
   const prevValue = getComponentValue(component, entity);
   for (const key of Object.keys(component.values)) {
     component.values[key].delete(entity);

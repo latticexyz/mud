@@ -48,6 +48,7 @@ export type ValueType<T = undefined> = {
   [Type.OptionalEntity]: EntityID | undefined;
   [Type.OptionalEntityArray]: EntityID[] | undefined;
   [Type.T]: T;
+  [Type.OptionalT]: T | undefined;
 };
 
 /**
