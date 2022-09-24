@@ -3,6 +3,32 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [0.15.0](https://github.com/latticexyz/mud/compare/v0.14.2...v0.15.0) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+## [0.14.2](https://github.com/latticexyz/mud/compare/v0.14.1...v0.14.2) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+## [0.14.1](https://github.com/latticexyz/mud/compare/v0.14.0...v0.14.1) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [0.14.0](https://github.com/latticexyz/mud/compare/v0.13.0...v0.14.0) (2022-09-20)
+
+### Bug Fixes
+
+- **std-client:** remove references to old phaser version ([#153](https://github.com/latticexyz/mud/issues/153)) ([c691c6e](https://github.com/latticexyz/mud/commit/c691c6e9288a375dae68cf2969ef42a2a33189fc))
+
+### Features
+
+- **std-client:** add setupContracts ([#154](https://github.com/latticexyz/mud/issues/154)) ([be86d24](https://github.com/latticexyz/mud/commit/be86d243ff3d7efae7225933066246f2747ea759))
+
 # [0.13.0](https://github.com/latticexyz/mud/compare/v0.12.0...v0.13.0) (2022-09-19)
 
 ### Features

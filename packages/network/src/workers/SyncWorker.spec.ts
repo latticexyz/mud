@@ -73,6 +73,7 @@ jest.mock("./CacheStore", () => ({
 
     return cache;
   },
+  saveCacheStoreToIndexDb: jest.fn(),
 }));
 
 jest.mock("../createBlockNumberStream", () => ({
@@ -97,6 +98,12 @@ jest.mock("./syncUtils", () => ({
       for (const event of gapStateEvents) storeEvent(store, event);
     }
     return store;
+  }),
+  fetchEventsInBlockRangeChunked: jest.fn((fetchWorldEvents: any, from: number, to: number) => {
+    if (to > 1000) {
+      return gapStateEvents;
+    }
+    return [];
   }),
 }));
 
@@ -281,7 +288,7 @@ describe("Sync.worker", () => {
     await sleep(0);
 
     // Expect state between cache block number and current block number to have been fetched
-    expect(syncUtils.fetchStateInBlockRange).toHaveBeenLastCalledWith(
+    expect(syncUtils.fetchEventsInBlockRangeChunked).toHaveBeenLastCalledWith(
       expect.anything(),
       cacheBlockNumber,
       currentBlockNumber,
@@ -364,7 +371,7 @@ describe("Sync.worker", () => {
     });
 
     // Expect state between cache block number and current block number to have been fetched
-    expect(syncUtils.fetchStateInBlockRange).toHaveBeenLastCalledWith(
+    expect(syncUtils.fetchEventsInBlockRangeChunked).toHaveBeenLastCalledWith(
       expect.anything(),
       cacheBlockNumber,
       firstLiveBlockNumber,

@@ -58,6 +58,15 @@ export function storeEvent<Cm extends Components>(
   cacheStore.blockNumber = blockNumber - 1;
 }
 
+export function storeEvents<Cm extends Components>(
+  cacheStore: CacheStore,
+  events: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">[]
+) {
+  for (const event of events) {
+    storeEvent(cacheStore, event);
+  }
+}
+
 export function getCacheStoreEntries<Cm extends Components>({
   blockNumber,
   state,

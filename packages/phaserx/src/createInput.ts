@@ -45,27 +45,31 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     filterNullish()
   );
 
-  const pointerdown$: Observable<{ type: "down"; pointer: Phaser.Input.Pointer }> = fromEvent(
+  const pointerdown$: Observable<{ pointer: Phaser.Input.Pointer; event: MouseEvent }> = fromEvent(
     document,
     "mousedown"
   ).pipe(
     filter(() => enabled.current),
-    map(() => ({ type: "down" as const, pointer: inputPlugin.manager?.activePointer })),
+    map((event) => ({ pointer: inputPlugin.manager?.activePointer, event: event as MouseEvent })),
     filterNullish()
   );
 
-  const pointerup$: Observable<{ type: "up"; pointer: Phaser.Input.Pointer }> = fromEvent(document, "mouseup").pipe(
+  const pointerup$: Observable<{ pointer: Phaser.Input.Pointer; event: MouseEvent }> = fromEvent(
+    document,
+    "mouseup"
+  ).pipe(
     filter(() => enabled.current),
-    map(() => ({ type: "up" as const, pointer: inputPlugin.manager?.activePointer })),
+    map((event) => ({ pointer: inputPlugin.manager?.activePointer, event: event as MouseEvent })),
     filterNullish()
   );
 
   // Click stream
   const click$ = merge(pointerdown$, pointerup$).pipe(
     filter(() => enabled.current),
-    map<{ type: string; pointer: Phaser.Input.Pointer }, [boolean, number]>(({ type }) => {
-      return [type === "down", Date.now()];
-    }), // Map events to whether the left button is down and the current timestamp
+    map<{ pointer: Phaser.Input.Pointer; event: MouseEvent }, [boolean, number]>(({ event }) => [
+      event.type === "mousedown" && event.button === 0,
+      Date.now(),
+    ]), // Map events to whether the left button is down and the current timestamp
     bufferCount(2, 1), // Store the last two timestamps
     filter(([prev, now]) => prev[0] && !now[0] && now[1] - prev[1] < 250), // Only care if button was pressed before and is not anymore and it happened within 500ms
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer

@@ -13,12 +13,12 @@ import { ECSStreamServiceClient } from "@latticexyz/services/protobuf/ts/ecs-str
 import {
   NetworkComponentUpdate,
   ContractConfig,
+  SystemCallTransaction,
+  NetworkEvents,
   SystemCall,
   NetworkEvent,
-  NetworkEvents,
-  SystemCallTransaction,
 } from "../types";
-import { CacheStore, createCacheStore, storeEvent } from "./CacheStore";
+import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
@@ -218,6 +218,48 @@ export function createLatestEventStreamRPC(
 }
 
 /**
+ * Fetch ECS events from contracts in the given block range.
+ *
+ * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
+ * @param fromBlockNumber Start of block range (inclusive).
+ * @param toBlockNumber End of block range (inclusive).
+ * @param interval Chunk fetching the blocks in intervals to avoid overwhelming the client.
+ * @returns Promise resolving with array containing the contract ECS events in the given block range.
+ */
+export async function fetchEventsInBlockRangeChunked(
+  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  fromBlockNumber: number,
+  toBlockNumber: number,
+  interval = 50,
+  setLoadingState?: (state: SyncState, msg: string, percentage: number) => void
+): Promise<NetworkComponentUpdate<Components>[]> {
+  const events: NetworkComponentUpdate<Components>[] = [];
+  const delta = toBlockNumber - fromBlockNumber;
+  const numSteps = Math.ceil(delta / interval);
+  const steps = [...range(numSteps, interval, fromBlockNumber)];
+
+  for (let i = 0; i < steps.length; i++) {
+    const from = steps[i];
+    const to = i === steps.length - 1 ? toBlockNumber : steps[i + 1] - 1;
+    const chunkEvents = await fetchWorldEvents(from, to);
+
+    if (setLoadingState) {
+      setLoadingState(
+        SyncState.INITIAL,
+        `Fetching state from block ${fromBlockNumber} to ${toBlockNumber} (${i * interval}/${delta})`,
+        80
+      );
+    }
+
+    console.log(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
+
+    events.push(...chunkEvents);
+  }
+
+  return events;
+}
+
+/**
  * Fetch ECS state from contracts in the given block range.
  *
  * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
@@ -234,29 +276,16 @@ export async function fetchStateInBlockRange(
   setLoadingState?: (state: SyncState, msg: string, percentage: number) => void
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
-  const delta = toBlockNumber - fromBlockNumber;
-  const numSteps = Math.ceil(delta / interval);
-  const steps = [...range(numSteps, interval, fromBlockNumber)];
 
-  for (let i = 0; i < steps.length; i++) {
-    const from = steps[i];
-    const to = i === steps.length - 1 ? toBlockNumber : steps[i + 1] - 1;
-    const events = await fetchWorldEvents(from, to);
+  const events = await fetchEventsInBlockRangeChunked(
+    fetchWorldEvents,
+    fromBlockNumber,
+    toBlockNumber,
+    interval,
+    setLoadingState
+  );
 
-    if (setLoadingState) {
-      setLoadingState(
-        SyncState.INITIAL,
-        `Fetching state from block ${fromBlockNumber} to ${toBlockNumber} (${i * interval}/${delta})`,
-        80
-      );
-    }
-
-    console.log(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
-
-    for (const event of events) {
-      storeEvent(cacheStore, event);
-    }
-  }
+  storeEvents(cacheStore, events);
 
   return cacheStore;
 }

@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [0.15.0](https://github.com/latticexyz/mud/compare/v0.14.2...v0.15.0) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [0.14.2](https://github.com/latticexyz/mud/compare/v0.14.1...v0.14.2) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [0.14.1](https://github.com/latticexyz/mud/compare/v0.14.0...v0.14.1) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [0.14.0](https://github.com/latticexyz/mud/compare/v0.13.0...v0.14.0) (2022-09-20)
+
+### Bug Fixes
+
+- phaser input click$ stream ([#152](https://github.com/latticexyz/mud/issues/152)) ([a7e1cfe](https://github.com/latticexyz/mud/commit/a7e1cfe5f0282b3a244ad224e907ae51e0cc5ce0))
+- **phaserx:** distinguish left and right click in click$ stream ([#155](https://github.com/latticexyz/mud/issues/155)) ([004753d](https://github.com/latticexyz/mud/commit/004753d9261a11ca2fcfad6b25c003af59b1e997))
+
 # [0.13.0](https://github.com/latticexyz/mud/compare/v0.12.0...v0.13.0) (2022-09-19)
 
 ### Features

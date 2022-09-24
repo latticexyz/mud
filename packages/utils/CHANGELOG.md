@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [0.15.0](https://github.com/latticexyz/mud/compare/v0.14.2...v0.15.0) (2022-09-21)
+
+### Features
+
+- add keccak256Coord ([d0d4500](https://github.com/latticexyz/mud/commit/d0d450075f2afba3f94fda368ce0f6854113f714))
+
+## [0.14.2](https://github.com/latticexyz/mud/compare/v0.14.1...v0.14.2) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+## [0.14.1](https://github.com/latticexyz/mud/compare/v0.14.0...v0.14.1) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [0.14.0](https://github.com/latticexyz/mud/compare/v0.13.0...v0.14.0) (2022-09-20)
+
+**Note:** Version bump only for package @latticexyz/utils
+
 # [0.13.0](https://github.com/latticexyz/mud/compare/v0.12.0...v0.13.0) (2022-09-19)
 
 **Note:** Version bump only for package @latticexyz/utils
