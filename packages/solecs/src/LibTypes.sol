@@ -22,6 +22,8 @@ library LibTypes {
     UINT256,
     BYTES,
     STRING,
+    ADDRESS,
+    BYTES4,
     BOOL_ARRAY,
     INT8_ARRAY,
     INT16_ARRAY,

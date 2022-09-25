@@ -48,6 +48,8 @@ export function flattenValue<V extends ContractSchemaValue>(
       ContractSchemaValue.UINT128,
       ContractSchemaValue.UINT256,
       ContractSchemaValue.BYTES,
+      ContractSchemaValue.ADDRESS,
+      ContractSchemaValue.BYTES4,
     ].includes(valueType)
   ) {
     return value.toHexString() as ContractSchemaValueTypes[V];
