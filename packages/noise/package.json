@@ -20,8 +20,7 @@
     "link": "yarn link",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.cjs\\\"\" package.json.bak > package.json.tmp && jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && jq \"del(\".type\")\" package.json.tmp2 > package.json",
     "postpack": "(mv package.json.bak package.json || true) && (rm package.json.tmp || true) && (rm package.json.tmp2 || true)",
-    "build": "yarn asbuild:release && yarn prepack && rimraf dist && yarn parcel build && yarn postpack",
-    "build:cjs": "yarn asbuild:release && yarn prepack && rimraf dist && yarn parcel build --target commonjs && yarn postpack",
+    "build": "rimraf dist && yarn asbuild:release && yarn prepack && yarn parcel build && yarn postpack",
     "release": "npm publish || echo 'version already published'"
   },
   "dependencies": {
