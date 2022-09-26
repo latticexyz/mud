@@ -124,19 +124,19 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
 
     const initialLiveEvents: NetworkComponentUpdate<Components>[] = [];
     latestEvent$.subscribe((event) => {
+      // If initial sync is in progress, temporary store the events to apply later
+      // Ignore system calls during initial sync
+      if (!passLiveEventsToOutput) {
+        if (isNetworkComponentUpdateEvent(event)) initialLiveEvents.push(event);
+        return;
+      }
+
       if (isNetworkComponentUpdateEvent(event)) {
         // Store cache to indexdb every block
         if (event.blockNumber > cacheStore.current.blockNumber + 1)
           saveCacheStoreToIndexDb(indexDbCache, cacheStore.current);
 
         storeEvent(cacheStore.current, event);
-      }
-
-      // If initial sync is in progress, temporary store the events to apply later
-      // Ignore system calls during initial sync
-      if (!passLiveEventsToOutput) {
-        if (isNetworkComponentUpdateEvent(event)) initialLiveEvents.push(event);
-        return;
       }
 
       this.output$.next(event as NetworkEvent<C>);
