@@ -10,7 +10,14 @@ import { fetchEventsInBlockRange } from "../networkUtils";
 import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import { ECSStateSnapshotServiceClient } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot.client";
 import { ECSStreamServiceClient } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream.client";
-import { NetworkComponentUpdate, ContractConfig } from "../types";
+import {
+  NetworkComponentUpdate,
+  ContractConfig,
+  SystemCallTransaction,
+  NetworkEvents,
+  SystemCall,
+  NetworkEvent,
+} from "../types";
 import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
@@ -131,7 +138,7 @@ export async function reduceFetchedState(
     const component = to256BitString(stateComponents[componentIdIdx]);
     const entity = stateEntities[entityIdIdx] as EntityID;
     const value = await decode(component, rawValue);
-    storeEvent(cacheStore, { component, entity, value, blockNumber });
+    storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
   }
 }
 
@@ -184,8 +191,9 @@ export function createLatestEventStreamService(
  */
 export function createLatestEventStreamRPC(
   blockNumber$: Observable<number>,
-  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>
-): Observable<NetworkComponentUpdate> {
+  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  fetchSystemCallsFromEvents?: ReturnType<typeof createFetchSystemCallsFromEvents>
+): Observable<NetworkEvent> {
   let lastSyncedBlockNumber: number | undefined;
 
   return blockNumber$.pipe(
@@ -196,6 +204,12 @@ export function createLatestEventStreamRPC(
       lastSyncedBlockNumber = to;
       const events = await fetchWorldEvents(from, to);
       console.log(`[SyncWorker] fetched ${events.length} events from block range ${from} -> ${to}`);
+
+      if (fetchSystemCallsFromEvents && events.length > 0) {
+        const systemCalls = await fetchSystemCallsFromEvents(events, blockNumber);
+        return [...events, ...systemCalls];
+      }
+
       return events;
     }),
     awaitPromise(),
@@ -324,7 +338,7 @@ export function createWorldTopics() {
  * @param decode Function to decode raw component values ({@link createDecode})
  * @returns Function to fetch World contract events in a given block range.
  */
-export function createFetchWorldEventsInBlockRange(
+export function createFetchWorldEventsInBlockRange<C extends Components>(
   provider: JsonRpcProvider,
   worldConfig: ContractConfig,
   batch: boolean | undefined,
@@ -335,7 +349,7 @@ export function createFetchWorldEventsInBlockRange(
   // Fetches World events in the provided block range (including from and to)
   return async (from: number, to: number) => {
     const contractsEvents = await fetchEventsInBlockRange(provider, topics, from, to, { World: worldConfig }, batch);
-    const ecsEvents: NetworkComponentUpdate[] = [];
+    const ecsEvents: NetworkComponentUpdate<C>[] = [];
 
     for (const event of contractsEvents) {
       const { lastEventInTx, txHash, args } = event;
@@ -356,13 +370,14 @@ export function createFetchWorldEventsInBlockRange(
       const blockNumber = to;
 
       const ecsEvent = {
+        type: NetworkEvents.NetworkComponentUpdate,
         component,
         entity,
         value: undefined,
         blockNumber,
         lastEventInTx,
         txHash,
-      };
+      } as NetworkComponentUpdate<C>;
 
       if (event.eventKey === "ComponentValueRemoved") {
         ecsEvents.push(ecsEvent);
@@ -407,6 +422,7 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
       const lastEventInTx = ecsEvents[i + 1]?.tx !== ecsEvent.tx;
 
       convertedEcsEvents.push({
+        type: NetworkEvents.NetworkComponentUpdate,
         component,
         entity,
         value,
@@ -417,5 +433,72 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
     }
 
     return convertedEcsEvents;
+  };
+}
+
+export function createFetchSystemCallsFromEvents(provider: JsonRpcProvider) {
+  const { fetchBlock, clearBlock } = createBlockCache(provider);
+  const fetchSystemCallData = createFetchSystemCallData(fetchBlock);
+
+  return async (events: NetworkComponentUpdate[], blockNumber: number) => {
+    const systemCalls: SystemCall[] = [];
+    const transactionHashToEvents = events.reduce((acc, event) => {
+      if (["worker", "cache"].includes(event.txHash)) return acc;
+
+      if (!acc[event.txHash]) acc[event.txHash] = [];
+
+      acc[event.txHash].push(event);
+
+      return acc;
+    }, {} as { [key: string]: NetworkComponentUpdate[] });
+
+    const txData = await Promise.all(
+      Object.keys(transactionHashToEvents).map((hash) => fetchSystemCallData(hash, blockNumber))
+    );
+    clearBlock(blockNumber);
+
+    for (const tx of txData) {
+      if (!tx) continue;
+
+      systemCalls.push({
+        type: NetworkEvents.SystemCall,
+        tx,
+        updates: transactionHashToEvents[tx.hash],
+      });
+    }
+
+    return systemCalls;
+  };
+}
+
+function createFetchSystemCallData(fetchBlock: ReturnType<typeof createBlockCache>["fetchBlock"]) {
+  return async (txHash: string, blockNumber: number) => {
+    const block = await fetchBlock(blockNumber);
+    const tx = block.transactions.find((tx) => tx.hash === txHash);
+
+    if (!tx) return;
+
+    return {
+      to: tx.to,
+      data: tx.data,
+      value: tx.value,
+      hash: tx.hash,
+    } as SystemCallTransaction;
+  };
+}
+
+function createBlockCache(provider: JsonRpcProvider) {
+  const blocks: Record<number, Awaited<ReturnType<typeof provider.getBlockWithTransactions>>> = {};
+
+  return {
+    fetchBlock: async (blockNumber: number) => {
+      if (blocks[blockNumber]) return blocks[blockNumber];
+
+      const block = await provider.getBlockWithTransactions(blockNumber);
+      blocks[blockNumber] = block;
+
+      return block;
+    },
+    clearBlock: (blockNumber: number) => delete blocks[blockNumber],
   };
 }

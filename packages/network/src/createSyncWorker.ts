@@ -1,8 +1,7 @@
 import { Components } from "@latticexyz/recs";
 import { fromWorker } from "@latticexyz/utils";
 import { Subject } from "rxjs";
-import { NetworkComponentUpdate, SyncWorkerConfig } from "./types";
-import { Output } from "./workers/SyncWorker";
+import { NetworkEvent, SyncWorkerConfig } from "./types";
 
 /**
  * Create a new SyncWorker ({@link Sync.worker.ts}) to performn contract/client state sync.
@@ -14,13 +13,13 @@ import { Output } from "./workers/SyncWorker";
  * dispose: function to dispose of the sync worker
  * }
  */
-export function createSyncWorker<Cm extends Components>() {
+export function createSyncWorker<C extends Components = Components>() {
   const config$ = new Subject<SyncWorkerConfig>();
   const worker = new Worker(new URL("./workers/Sync.worker.ts", import.meta.url), { type: "module" });
-  const ecsEvent$ = new Subject<NetworkComponentUpdate<Cm>>();
+  const ecsEvent$ = new Subject<NetworkEvent<C>>();
 
   // Pass in a "config stream", receive a stream of ECS events
-  const subscription = fromWorker<SyncWorkerConfig, Output<Cm>>(worker, config$).subscribe(ecsEvent$);
+  const subscription = fromWorker<SyncWorkerConfig, NetworkEvent<C>>(worker, config$).subscribe(ecsEvent$);
   const dispose = () => {
     worker.terminate();
     subscription?.unsubscribe();
