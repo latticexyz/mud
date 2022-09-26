@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.3](https://github.com/latticexyz/mud/compare/v0.16.2...v0.16.3) (2022-09-26)
+
+### Bug Fixes
+
+- do gas estimation right before sending tx to avoid invalid gas estimations ([f251642](https://github.com/latticexyz/mud/commit/f25164268834390d35637b7aea84998cf88e16ae))
+
 ## [0.16.2](https://github.com/latticexyz/mud/compare/v0.16.1...v0.16.2) (2022-09-26)
 
 **Note:** Version bump only for package mud
