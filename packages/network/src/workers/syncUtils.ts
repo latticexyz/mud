@@ -380,7 +380,7 @@ export function createFetchWorldEventsInBlockRange<C extends Components>(
       } as NetworkComponentUpdate<C>;
 
       if (event.eventKey === "ComponentValueRemoved") {
-        ecsEvents.push({ ...ecsEvent });
+        ecsEvents.push(ecsEvent);
       }
 
       if (event.eventKey === "ComponentValueSet") {
@@ -494,7 +494,10 @@ function createBlockCache(provider: JsonRpcProvider) {
     fetchBlock: async (blockNumber: number) => {
       if (blocks[blockNumber]) return blocks[blockNumber];
 
-      return await provider.getBlockWithTransactions(blockNumber);
+      const block = await provider.getBlockWithTransactions(blockNumber);
+      blocks[blockNumber] = block;
+
+      return block;
     },
     clearBlock: (blockNumber: number) => delete blocks[blockNumber],
   };
