@@ -15,12 +15,12 @@ import { Output } from "./workers/SyncWorker";
  * }
  */
 export function createSyncWorker<Cm extends Components>() {
-  const config$ = new Subject<SyncWorkerConfig<Cm>>();
+  const config$ = new Subject<SyncWorkerConfig>();
   const worker = new Worker(new URL("./workers/Sync.worker.ts", import.meta.url), { type: "module" });
   const ecsEvent$ = new Subject<NetworkComponentUpdate<Cm>>();
 
   // Pass in a "config stream", receive a stream of ECS events
-  const subscription = fromWorker<SyncWorkerConfig<Cm>, Output<Cm>>(worker, config$).subscribe(ecsEvent$);
+  const subscription = fromWorker<SyncWorkerConfig, Output<Cm>>(worker, config$).subscribe(ecsEvent$);
   const dispose = () => {
     worker.terminate();
     subscription?.unsubscribe();

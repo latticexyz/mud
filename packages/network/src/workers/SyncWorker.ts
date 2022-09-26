@@ -29,8 +29,8 @@ import { createBlockNumberStream } from "../createBlockNumberStream";
 import { GodID, SyncState } from "./constants";
 export type Output<Cm extends Components> = NetworkComponentUpdate<Cm>;
 
-export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfig<Cm>, Output<Cm>> {
-  private input$ = new Subject<SyncWorkerConfig<Cm>>();
+export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfig, Output<Cm>> {
+  private input$ = new Subject<SyncWorkerConfig>();
   private output$ = new Subject<Output<Cm>>();
 
   constructor() {
@@ -188,7 +188,7 @@ export class SyncWorker<Cm extends Components> implements DoWork<SyncWorkerConfi
     passLiveEventsToOutput = true;
   }
 
-  public work(input$: Observable<SyncWorkerConfig<Cm>>): Observable<Output<Cm>> {
+  public work(input$: Observable<SyncWorkerConfig>): Observable<Output<Cm>> {
     input$.subscribe(this.input$);
     return this.output$.asObservable();
   }
