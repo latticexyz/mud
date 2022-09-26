@@ -2,7 +2,6 @@ import {
   Components,
   World,
   createEntity,
-  withValue,
   getComponentValue,
   OverridableComponent,
   Schema,
@@ -12,6 +11,7 @@ import {
   EntityIndex,
   Component,
   removeComponent,
+  setComponent,
 } from "@latticexyz/recs";
 import { mapObject, awaitStreamValue } from "@latticexyz/utils";
 import { ActionState } from "./constants";
@@ -21,9 +21,9 @@ import { merge, Observable } from "rxjs";
 
 export type ActionSystem = ReturnType<typeof createActionSystem>;
 
-export function createActionSystem(world: World, txReduced$: Observable<string>) {
+export function createActionSystem<M = undefined>(world: World, txReduced$: Observable<string>) {
   // Action component
-  const Action = defineActionComponent(world);
+  const Action = defineActionComponent<M>(world);
 
   // Components that scheduled actions depend on including pending updates
   const componentsWithOptimisticUpdates: { [id: string]: OverridableComponent<Schema> } = {};
@@ -63,25 +63,22 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
    * @param actionRequest Action to be scheduled
    * @returns index of the entity created for the action
    */
-  function add<C extends Components, T>(actionRequest: ActionRequest<C, T>): EntityIndex | void {
+  function add<C extends Components, T>(actionRequest: ActionRequest<C, T, M>): EntityIndex | void {
     // Prevent the same actions from being scheduled multiple times
     if (world.entityToIndex.get(actionRequest.id) != null) {
       return console.warn(`Action with id ${actionRequest.id} is already requested.`);
     }
 
     // Set the action component
-    const entityIndex = createEntity(
-      world,
-      [
-        withValue(Action, {
-          state: ActionState.Requested,
-          on: actionRequest.on ? world.entities[actionRequest.on] : undefined,
-        }),
-      ],
-      {
-        id: actionRequest.id,
-      }
-    );
+    const entityIndex = createEntity(world, undefined, {
+      id: actionRequest.id,
+    });
+
+    setComponent(Action, entityIndex, {
+      state: ActionState.Requested,
+      on: actionRequest.on ? world.entities[actionRequest.on] : undefined,
+      metadata: actionRequest.metadata,
+    });
 
     // Add components that are not tracked yet to internal overridable component map.
     // Pending updates will be applied to internal overridable components.

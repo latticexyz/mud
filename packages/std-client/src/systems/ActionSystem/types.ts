@@ -10,7 +10,7 @@ export type ComponentUpdate<C extends Components> = ValueOf<{
   };
 }>;
 
-export interface ActionRequest<C extends Components, T> {
+export type ActionRequest<C extends Components, T, M = undefined> = {
   // Identifier of this action. Will be used as entity id of the Action component.
   id: EntityID;
 
@@ -35,9 +35,12 @@ export interface ActionRequest<C extends Components, T> {
 
   // Flag to set if the queue should wait for the underlying transaction to be confirmed (in addition to being reduced)
   awaitConfirmation?: boolean;
-}
 
-export type ActionData = ActionRequest<Components, unknown> & {
+  // Metadata
+  metadata?: M;
+};
+
+export type ActionData<M = undefined> = ActionRequest<Components, unknown, M> & {
   componentsWithOptimisticUpdates: Components;
   entityIndex: EntityIndex;
 };
