@@ -9,6 +9,7 @@ import {
   createSystemExecutor,
   NetworkConfig,
   SyncWorkerConfig,
+  isNetworkComponentUpdateEvent,
 } from "@latticexyz/network";
 import { bufferTime, filter, Observable, Subject } from "rxjs";
 import {
@@ -105,7 +106,12 @@ export async function setupContracts<C extends ContractComponents, SystemTypes e
     });
   }
 
-  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$, mappings);
+  const { txReduced$ } = applyNetworkUpdates(
+    world,
+    components,
+    ecsEvent$.pipe(filter(isNetworkComponentUpdateEvent)),
+    mappings
+  );
 
   const encoders = createEncoders(world, ComponentsRegistry, signerOrProvider);
 
