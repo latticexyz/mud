@@ -138,6 +138,8 @@ export enum ContractSchemaValue {
   UINT256,
   BYTES,
   STRING,
+  ADDRESS,
+  BYTES4,
   BOOL_ARRAY,
   INT8_ARRAY,
   INT16_ARRAY,
@@ -173,6 +175,8 @@ export const ContractSchemaValueId: { [key in ContractSchemaValue]: string } = {
   [ContractSchemaValue.UINT256]: "uint256",
   [ContractSchemaValue.BYTES]: "bytes",
   [ContractSchemaValue.STRING]: "string",
+  [ContractSchemaValue.ADDRESS]: "address",
+  [ContractSchemaValue.BYTES4]: "bytes4",
   [ContractSchemaValue.BOOL_ARRAY]: "bool[]",
   [ContractSchemaValue.INT8_ARRAY]: "int8[]",
   [ContractSchemaValue.INT16_ARRAY]: "int16[]",
@@ -227,6 +231,8 @@ export type ContractSchemaValueTypes = {
   [ContractSchemaValue.UINT256]: string;
   [ContractSchemaValue.BYTES]: string;
   [ContractSchemaValue.STRING]: string;
+  [ContractSchemaValue.ADDRESS]: string;
+  [ContractSchemaValue.BYTES4]: string;
   [ContractSchemaValue.BOOL_ARRAY]: boolean[];
   [ContractSchemaValue.INT8_ARRAY]: number[];
   [ContractSchemaValue.INT16_ARRAY]: number[];
