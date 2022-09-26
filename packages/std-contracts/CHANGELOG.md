@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0](https://github.com/latticexyz/mud/compare/v0.15.1...v0.16.0) (2022-09-26)
+
+### Features
+
+- **std-contracts:** add FunctionComponent ([#161](https://github.com/latticexyz/mud/issues/161)) ([d720277](https://github.com/latticexyz/mud/commit/d7202774a5a068a99b88a63cb18100482dc18cb8))
+
 ## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
 
 **Note:** Version bump only for package @latticexyz/std-contracts

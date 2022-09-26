@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [0.16.0](https://github.com/latticexyz/mud/compare/v0.15.1...v0.16.0) (2022-09-26)
+
+### Bug Fixes
+
+- **std-client:** add generic type to waitForComponentValueIn ([f1641d4](https://github.com/latticexyz/mud/commit/f1641d4a69a5479252a5cc01186a2fdc202eb45e))
+
+### Features
+
+- **network:** add system call stream ([#162](https://github.com/latticexyz/mud/issues/162)) ([5caef57](https://github.com/latticexyz/mud/commit/5caef57165ed1a927dc8631a361189abfd54ea7a))
+- **recs:** add support for custom type in component ([#158](https://github.com/latticexyz/mud/issues/158)) ([fdc781d](https://github.com/latticexyz/mud/commit/fdc781d851147f2a98cbe95e89789a3c0ee226ca))
+- **std-contracts:** add FunctionComponent ([#161](https://github.com/latticexyz/mud/issues/161)) ([d720277](https://github.com/latticexyz/mud/commit/d7202774a5a068a99b88a63cb18100482dc18cb8))
+- **utils:** add keccak256Coord ([#160](https://github.com/latticexyz/mud/issues/160)) ([1734cdb](https://github.com/latticexyz/mud/commit/1734cdb02743d209a8f9c245bf42a1b750403a60))
+
 ## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
 
 **Note:** Version bump only for package mud
