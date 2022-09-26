@@ -1,6 +1,6 @@
 import { BigNumber } from "ethers";
-import { keccak256 as keccak256Bytes, toUtf8Bytes, soliditySha256 } from "ethers/lib/utils";
-import { Coord, VoxelCoord } from "./types";
+import { keccak256 as keccak256Bytes, toUtf8Bytes } from "ethers/lib/utils";
+import { Coord } from "./types";
 
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
 
@@ -17,8 +17,4 @@ export function keccak256Coord(coord: Coord): string {
   // TODO: make faster by implementing in wasm
   const bytes = abi.encode(["int32", "int32"], [coord.x, coord.y]);
   return keccak256Bytes(bytes);
-}
-
-export function keccak256VoxelCoord(coord: VoxelCoord): string {
-  return soliditySha256(["int32", "int32", "int32"], [coord.x, coord.y, coord.z]) as string;
 }
