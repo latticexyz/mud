@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseContract, BigNumberish, CallOverrides, Overrides } from "ethers";
-import { autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
+import { action, autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
 import { mapObject, deferred, uuid, awaitValue, cacheUntilReady, extractEncodedArguments } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
 import { TransactionResponse } from "@ethersproject/providers";
@@ -143,11 +143,19 @@ export function createTxQueue<C extends Contracts>(
       let error: any;
       const stateMutability = txRequest.stateMutability;
 
+      // Await gas estimation to avoid increasing nonce before tx is actually sent
+      let gasLimit: BigNumberish;
       try {
-        // Wait if nonce is not ready
-        const { nonce } = await awaitValue(readyState);
-        // Await gas estimation to avoid increasing nonce before tx is actually sent
-        const gasLimit = await txRequest.estimateGas();
+        gasLimit = await txRequest.estimateGas();
+      } catch (e) {
+        console.error("GAS ESTIMATION ERROR", e);
+        return txRequest.cancel();
+      }
+
+      // Wait if nonce is not ready
+      const { nonce } = await awaitValue(readyState);
+
+      try {
         return await txRequest.execute(nonce, gasLimit);
       } catch (e: any) {
         console.warn("TXQUEUE EXECUTION FAILED", e);
