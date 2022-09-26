@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/solecs",
   "license": "MIT",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "description": "Solidity Entity Component System",
   "types": "./types/ethers-contracts/",
   "repository": {
