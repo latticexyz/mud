@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/ecs-browser",
-  "version": "0.16.3",
+  "version": "0.16.4",
   "description": "Component Browser for RECS",
   "license": "MIT",
   "main": "src/index.ts",
@@ -20,10 +20,10 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "@latticexyz/phaserx": "^0.16.3",
-    "@latticexyz/recs": "^0.16.3",
-    "@latticexyz/std-client": "^0.16.3",
-    "@latticexyz/utils": "^0.16.3",
+    "@latticexyz/phaserx": "^0.16.4",
+    "@latticexyz/recs": "^0.16.4",
+    "@latticexyz/std-client": "^0.16.4",
+    "@latticexyz/utils": "^0.16.4",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/jest": "^27.4.1",

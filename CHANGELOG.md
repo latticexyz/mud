@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.16.4](https://github.com/latticexyz/mud/compare/v0.16.3...v0.16.4) (2022-09-26)
+
+### Bug Fixes
+
+- **network:** cancel tx request if gas estimation failed ([565b37f](https://github.com/latticexyz/mud/commit/565b37f5a7408c06e2fd5fdab2f42d69f8db6610))
+
 ## [0.16.3](https://github.com/latticexyz/mud/compare/v0.16.2...v0.16.3) (2022-09-26)
 
 ### Bug Fixes
