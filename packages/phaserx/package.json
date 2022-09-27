@@ -39,7 +39,7 @@
     "typescript": "^4.6.2"
   },
   "peerDependencies": {
-    "@latticexyz/utils": "^0.7.0",
+    "@latticexyz/utils": "^1",
     "mobx": "^6.5.0",
     "phaser": "3.60.0-beta.4",
     "rxjs": "^7.5.5"
