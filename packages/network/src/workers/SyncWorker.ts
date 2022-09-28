@@ -148,7 +148,9 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     const cacheBlockNumber = await getIndexDBCacheStoreBlockNumber(indexDbCache);
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
     console.log(
-      `[SyncWorker] cache block: ${cacheBlockNumber}, snapshot block: ${snapshotBlockNumber}, start sync at ${initialBlockNumber}`
+      `[SyncWorker] cache block: ${cacheBlockNumber}, snapshot block: ${
+        snapshotBlockNumber > 0 ? snapshotBlockNumber : "Unavailable"
+      }, start sync at ${initialBlockNumber}`
     );
     let initialState = createCacheStore();
     if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber)) {
@@ -184,7 +186,7 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     );
 
     console.log(
-      `[SyncWorker] got ${gapStateEvents.length} items from block range ${initialState.blockNumber} -> ${streamStartBlockNumber}`
+      `[SyncWorker || via JSON-RPC] got ${gapStateEvents.length} items from block range ${initialState.blockNumber} -> ${streamStartBlockNumber}`
     );
 
     // Merge initial state, gap state and live events since initial sync started

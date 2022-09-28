@@ -41,7 +41,7 @@ export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
 };
 
-export async function setupContracts<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
+export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
   world: World,
   components: C,
@@ -72,12 +72,6 @@ export async function setupContracts<C extends ContractComponents, SystemTypes e
   const network = await createNetwork(networkConfig);
   world.registerDisposer(network.dispose);
 
-  console.log(
-    "initial block",
-    networkConfig.initialBlockNumber,
-    await network.providers.get().json.getBlock(networkConfig.initialBlockNumber)
-  );
-
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
   const { contracts, config: contractsConfig } = await createContracts<{ World: WorldContract }>({
@@ -101,7 +95,7 @@ export async function setupContracts<C extends ContractComponents, SystemTypes e
       worldContract: contractsConfig.World,
       initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
       chainId: networkConfig.chainId,
-      disableCache: networkConfig.devMode, // Disable cache on hardhat
+      disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
       checkpointServiceUrl: networkConfig.checkpointServiceUrl,
     });
   }
@@ -128,6 +122,7 @@ async function createEncoders(
   async function fetchAndCreateEncoder(entity: EntityIndex) {
     const componentAddress = toEthAddress(world.entities[entity]);
     const componentId = getComponentValueStrict(components, entity).value;
+    console.log("Creating encoder for", componentAddress);
     const componentContract = new Contract(
       componentAddress,
       ComponentAbi.abi,

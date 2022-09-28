@@ -103,7 +103,7 @@ export function createTxQueue<C extends Contracts>(
           );
         }
 
-        const configOverrides = { ...overrides, nonce, gasLimit };
+        const configOverrides = { ...overrides, nonce, gasLimit, gasPrice: 2_000_000_000 };
         if (options?.devMode) configOverrides.gasPrice = 0;
 
         const result = await member(...argsWithoutOverrides, configOverrides);
@@ -173,13 +173,6 @@ export function createTxQueue<C extends Contracts>(
           (("code" in error && error.code === "NONCE_EXPIRED") ||
             JSON.stringify(error).includes("transaction already imported"));
 
-        console.log("TxQueue:", {
-          error,
-          isNonViewTransaction,
-          shouldIncreaseNonce,
-          shouldResetNonce,
-        });
-
         // Nonce handeling
         if (shouldIncreaseNonce) incNonce();
         if (shouldResetNonce) await resetNonce();
@@ -189,7 +182,7 @@ export function createTxQueue<C extends Contracts>(
     // Await confirmation
     if (txResult?.hash) {
       try {
-        await txResult.wait();
+        // await txResult.wait();
       } catch (e) {
         console.warn("tx failed in block", e);
 

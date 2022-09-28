@@ -50,7 +50,7 @@ export async function createNetwork(initialConfig: NetworkConfig) {
   // Sync the local time to the chain time in regular intervals
   const syncBlockSub = combineLatest([blockNumber$, computedToStream(providers)])
     .pipe(
-      throttleTime(config.clock.syncInterval, undefined, { leading: true, trailing: true }), // Update time max once per 5s
+      throttleTime(config.clock.syncInterval, undefined, { leading: true, trailing: true }),
       concatMap(([blockNumber, currentProviders]) =>
         currentProviders ? fetchBlock(currentProviders.json, blockNumber) : EMPTY
       ), // Fetch the latest block if a provider is available

@@ -23,7 +23,7 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
   network: Network,
   systems: Component<{ value: Type.String }>,
   interfaces: { [key in keyof T]: ContractInterface },
-  options?: { devMode?: boolean }
+  options?: { devMode?: boolean; concurrency?: number }
 ) {
   const systemContracts = observable.box({} as T);
   const systemIdPreimages: { [key: string]: string } = Object.keys(interfaces).reduce((acc, curr) => {
