@@ -3,6 +3,15 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/latticexyz/mud/compare/v1.0.0...v1.1.0) (2022-09-28)
+
+### Features
+
+- add createRelayService, add utils to work with Uint8Arrays ([#164](https://github.com/latticexyz/mud/issues/164)) ([b02992b](https://github.com/latticexyz/mud/commit/b02992b73393740d7510b1f9d3d9e6ea0030f462))
+- basic faucet service implementation ([#163](https://github.com/latticexyz/mud/issues/163)) ([3217176](https://github.com/latticexyz/mud/commit/3217176e65a66be581c1ab705eb9123cb2a812f9))
+- **ecs-browser:** make nameComponent and spawnPrototypeAt optional ([7822d53](https://github.com/latticexyz/mud/commit/7822d53f03862a146b2a58aac3a024b2b274d614))
+- initial implementation of ecs relay service ([#157](https://github.com/latticexyz/mud/issues/157)) ([140aec3](https://github.com/latticexyz/mud/commit/140aec3e92269f8c79fe0ef5e6639ca0ff056282))
+
 # [1.0.0](https://github.com/latticexyz/mud/compare/v0.16.4...v1.0.0) (2022-09-27)
 
 **Note:** Version bump only for package mud

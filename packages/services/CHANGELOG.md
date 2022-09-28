@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/latticexyz/mud/compare/v1.0.0...v1.1.0) (2022-09-28)
+
+### Features
+
+- basic faucet service implementation ([#163](https://github.com/latticexyz/mud/issues/163)) ([3217176](https://github.com/latticexyz/mud/commit/3217176e65a66be581c1ab705eb9123cb2a812f9))
+- initial implementation of ecs relay service ([#157](https://github.com/latticexyz/mud/issues/157)) ([140aec3](https://github.com/latticexyz/mud/commit/140aec3e92269f8c79fe0ef5e6639ca0ff056282))
+
 # [1.0.0](https://github.com/latticexyz/mud/compare/v0.16.4...v1.0.0) (2022-09-27)
 
 **Note:** Version bump only for package @latticexyz/services

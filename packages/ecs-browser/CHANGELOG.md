@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/latticexyz/mud/compare/v1.0.0...v1.1.0) (2022-09-28)
+
+### Features
+
+- **ecs-browser:** make nameComponent and spawnPrototypeAt optional ([7822d53](https://github.com/latticexyz/mud/commit/7822d53f03862a146b2a58aac3a024b2b274d614))
+
 # [1.0.0](https://github.com/latticexyz/mud/compare/v0.16.4...v1.0.0) (2022-09-27)
 
 **Note:** Version bump only for package @latticexyz/ecs-browser
