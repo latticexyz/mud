@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseContract, BigNumberish, CallOverrides, Overrides } from "ethers";
 import { action, autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
@@ -69,7 +70,7 @@ export function createTxQueue<C extends Contracts>(
 
   function queueCall(
     target: C[keyof C],
-    prop: keyof C[keyof C],
+    prop: keyof C[keyof C]["populateTransaction"],
     args: unknown[]
   ): Promise<ReturnTypeStrict<typeof target[typeof prop]>> {
     const [resolve, reject, promise] = deferred<ReturnTypeStrict<typeof target[typeof prop]>>();
@@ -90,7 +91,7 @@ export function createTxQueue<C extends Contracts>(
     // Create a function that executes the tx when called
     const execute = async (nonce: number, gasLimit: BigNumberish) => {
       try {
-        const member = target[prop];
+        const member = target.populateTransaction[prop as string];
         if (member == undefined) {
           throw new Error("Member does not exist.");
         }
@@ -106,9 +107,11 @@ export function createTxQueue<C extends Contracts>(
         const configOverrides = { ...overrides, nonce, gasLimit, gasPrice: 2_000_000_000 };
         if (options?.devMode) configOverrides.gasPrice = 0;
 
-        const result = await member(...argsWithoutOverrides, configOverrides);
-        resolve(result);
-        return result;
+        const populatedTx = await member(...argsWithoutOverrides, configOverrides);
+        populatedTx.nonce = nonce;
+        const signedTx = await target.signer.signTransaction(populatedTx);
+        const hash = await target.provider.perform("sendTransaction", { signedTransaction: signedTx });
+        resolve({ hash });
       } catch (e) {
         reject(e as Error);
         throw e; // Rethrow error to catch when processing the queue

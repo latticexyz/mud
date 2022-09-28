@@ -150,10 +150,8 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
       if (tx) {
         // Wait for all tx events to be reduced
         updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents });
-        const txConfirmed = tx.wait().catch(() => handleError(action)); // Also catch the error if not awaiting
         await awaitStreamValue(txReduced$, (v) => v === tx.hash);
         updateComponent(Action, action.entityIndex, { state: ActionState.TxReduced });
-        if (action.awaitConfirmation) await txConfirmed;
       }
 
       updateComponent(Action, action.entityIndex, { state: ActionState.Complete });
