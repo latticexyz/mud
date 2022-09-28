@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { BaseContract, BigNumberish, CallOverrides, Overrides } from "ethers";
-import { autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
+import { action, autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
 import { mapObject, deferred, uuid, awaitValue, cacheUntilReady, extractEncodedArguments } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
 import { TransactionResponse } from "@ethersproject/providers";
@@ -138,26 +138,24 @@ export function createTxQueue<C extends Contracts>(
     utilization++;
 
     // Run exclusive to avoid two tx requests awaiting the nonce in parallel and submitting with the same nonce.
-    let gasLimit: BigNumberish | undefined;
-    try {
-      gasLimit = await txRequest.estimateGas();
-    } catch (e: any) {
-      console.warn("TXQUEUE: gas estimation failed, tx not sent.", e);
-      console.warn(e.reason);
-    }
-
     const txResult = await submissionMutex.runExclusive(async () => {
-      // Don't attempt to send the tx if gas estimation failed
-      if (gasLimit == null) return txRequest.cancel();
-
       // Define variables in scope visible to finally block
       let error: any;
       const stateMutability = txRequest.stateMutability;
 
+      // Await gas estimation to avoid increasing nonce before tx is actually sent
+      let gasLimit: BigNumberish;
       try {
-        // Wait if nonce is not ready
-        const { nonce } = await awaitValue(readyState);
-        // Await gas estimation to avoid increasing nonce before tx is actually sent
+        gasLimit = await txRequest.estimateGas();
+      } catch (e) {
+        console.error("GAS ESTIMATION ERROR", e);
+        return txRequest.cancel();
+      }
+
+      // Wait if nonce is not ready
+      const { nonce } = await awaitValue(readyState);
+
+      try {
         return await txRequest.execute(nonce, gasLimit);
       } catch (e: any) {
         console.warn("TXQUEUE EXECUTION FAILED", e);
@@ -299,5 +297,9 @@ function createPriorityQueue<T>() {
     return value.element;
   }
 
-  return { add, remove, setPriority, next };
+  function size(): number {
+    return queue.size;
+  }
+
+  return { add, remove, setPriority, next, size };
 }

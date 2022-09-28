@@ -5,6 +5,7 @@ import {
   fromEvent,
   map,
   merge,
+  Observable,
   pairwise,
   scan,
   Subject,
@@ -39,31 +40,36 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   const pointermove$ = fromEvent(document, "mousemove").pipe(
     filter(() => enabled.current),
     map(() => {
-      return inputPlugin.manager?.activePointer;
+      return { pointer: inputPlugin.manager?.activePointer };
     }),
     filterNullish()
   );
 
-  const pointerdown$ = fromEvent(document, "mousedown").pipe(
+  const pointerdown$: Observable<{ pointer: Phaser.Input.Pointer; event: MouseEvent }> = fromEvent(
+    document,
+    "mousedown"
+  ).pipe(
     filter(() => enabled.current),
-    map(() => {
-      return inputPlugin.manager?.activePointer;
-    }),
+    map((event) => ({ pointer: inputPlugin.manager?.activePointer, event: event as MouseEvent })),
     filterNullish()
   );
 
-  const pointerup$ = fromEvent(document, "mouseup").pipe(
+  const pointerup$: Observable<{ pointer: Phaser.Input.Pointer; event: MouseEvent }> = fromEvent(
+    document,
+    "mouseup"
+  ).pipe(
     filter(() => enabled.current),
-    map(() => {
-      return inputPlugin.manager?.activePointer;
-    }),
+    map((event) => ({ pointer: inputPlugin.manager?.activePointer, event: event as MouseEvent })),
     filterNullish()
   );
 
   // Click stream
   const click$ = merge(pointerdown$, pointerup$).pipe(
     filter(() => enabled.current),
-    map<Phaser.Input.Pointer, [boolean, number]>((pointer) => [pointer.leftButtonDown(), Date.now()]), // Map events to whether the left button is down and the current timestamp
+    map<{ pointer: Phaser.Input.Pointer; event: MouseEvent }, [boolean, number]>(({ event }) => [
+      event.type === "mousedown" && event.button === 0,
+      Date.now(),
+    ]), // Map events to whether the left button is down and the current timestamp
     bufferCount(2, 1), // Store the last two timestamps
     filter(([prev, now]) => prev[0] && !now[0] && now[1] - prev[1] < 250), // Only care if button was pressed before and is not anymore and it happened within 500ms
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer
@@ -83,7 +89,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
 
   // Right click stream
   const rightClick$ = merge(pointerdown$, pointerup$).pipe(
-    filter((pointer) => enabled.current && pointer.rightButtonDown()),
+    filter(({ pointer }) => enabled.current && pointer.rightButtonDown()),
     map(() => inputPlugin.manager?.activePointer), // Return the current pointer
     filterNullish()
   );
@@ -93,8 +99,8 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
     pointerdown$.pipe(map(() => undefined)), // Reset the drag on left click
     merge(pointerup$, pointermove$).pipe(
       pairwise(), // Take the last two move or pointerup events
-      scan<[Phaser.Input.Pointer, Phaser.Input.Pointer], Area | undefined>(
-        (acc, [prev, curr]) =>
+      scan<[{ pointer: Phaser.Input.Pointer }, { pointer: Phaser.Input.Pointer }], Area | undefined>(
+        (acc, [{ pointer: prev }, { pointer: curr }]) =>
           curr.leftButtonDown() // If the left butten is pressed...
             ? prev.leftButtonDown() && acc // If the previous event wasn't mouseup and if the drag already started...
               ? { ...acc, width: curr.worldX - acc.x, height: curr.worldY - acc.y } // Update the width/height
@@ -118,7 +124,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   for (const key of Object.keys(Phaser.Input.Keyboard.KeyCodes)) addKey(key);
 
   // Subscriptions
-  const keySub = keyboard$.subscribe((key) => {
+  const keySub = keyboard$.pipe(filter(() => enabled.current)).subscribe((key) => {
     const keyName = codeToKey.get(key.keyCode);
     if (!keyName) return;
     runInAction(() => {
@@ -128,7 +134,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   });
   disposers.add(() => keySub?.unsubscribe());
 
-  const pointerSub = merge(pointerdown$, pointerup$).subscribe((pointer) => {
+  const pointerSub = merge(pointerdown$, pointerup$).subscribe(({ pointer }) => {
     runInAction(() => {
       if (pointer.leftButtonDown()) pressedKeys.add("POINTER_LEFT");
       else pressedKeys.delete("POINTER_LEFT");

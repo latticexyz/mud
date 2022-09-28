@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.0.0](https://github.com/latticexyz/mud/compare/v0.16.4...v1.0.0) (2022-09-27)
+
+**Note:** Version bump only for package @latticexyz/network
+
+## [0.16.4](https://github.com/latticexyz/mud/compare/v0.16.3...v0.16.4) (2022-09-26)
+
+### Bug Fixes
+
+- **network:** cancel tx request if gas estimation failed ([565b37f](https://github.com/latticexyz/mud/commit/565b37f5a7408c06e2fd5fdab2f42d69f8db6610))
+
+## [0.16.3](https://github.com/latticexyz/mud/compare/v0.16.2...v0.16.3) (2022-09-26)
+
+### Bug Fixes
+
+- do gas estimation right before sending tx to avoid invalid gas estimations ([f251642](https://github.com/latticexyz/mud/commit/f25164268834390d35637b7aea84998cf88e16ae))
+
+## [0.16.2](https://github.com/latticexyz/mud/compare/v0.16.1...v0.16.2) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/network
+
+## [0.16.1](https://github.com/latticexyz/mud/compare/v0.16.0...v0.16.1) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/network
+
+# [0.16.0](https://github.com/latticexyz/mud/compare/v0.15.1...v0.16.0) (2022-09-26)
+
+### Features
+
+- **network:** add system call stream ([#162](https://github.com/latticexyz/mud/issues/162)) ([5caef57](https://github.com/latticexyz/mud/commit/5caef57165ed1a927dc8631a361189abfd54ea7a))
+- **std-contracts:** add FunctionComponent ([#161](https://github.com/latticexyz/mud/issues/161)) ([d720277](https://github.com/latticexyz/mud/commit/d7202774a5a068a99b88a63cb18100482dc18cb8))
+
+## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
+
+**Note:** Version bump only for package @latticexyz/network
+
+# [0.15.0](https://github.com/latticexyz/mud/compare/v0.14.2...v0.15.0) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/network
+
+## [0.14.2](https://github.com/latticexyz/mud/compare/v0.14.1...v0.14.2) (2022-09-21)
+
+**Note:** Version bump only for package @latticexyz/network
+
+## [0.14.1](https://github.com/latticexyz/mud/compare/v0.14.0...v0.14.1) (2022-09-21)
+
+### Bug Fixes
+
+- **network:** initial sync ([#156](https://github.com/latticexyz/mud/issues/156)) ([6116585](https://github.com/latticexyz/mud/commit/611658584ffd52c63f837f239d888aa55959320e))
+
+# [0.14.0](https://github.com/latticexyz/mud/compare/v0.13.0...v0.14.0) (2022-09-20)
+
+**Note:** Version bump only for package @latticexyz/network
+
+# [0.13.0](https://github.com/latticexyz/mud/compare/v0.12.0...v0.13.0) (2022-09-19)
+
+**Note:** Version bump only for package @latticexyz/network
+
 # [0.12.0](https://github.com/latticexyz/mud/compare/v0.11.1...v0.12.0) (2022-09-16)
 
 ### Features

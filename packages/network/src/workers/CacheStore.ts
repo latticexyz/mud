@@ -2,7 +2,7 @@ import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs
 import { packTuple, transformIterator, unpackTuple } from "@latticexyz/utils";
 import { initCache } from "../initCache";
 import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
-import { NetworkComponentUpdate } from "../types";
+import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { BigNumber } from "ethers";
 
 export type State = Map<number, ComponentValue>;
@@ -58,6 +58,15 @@ export function storeEvent<Cm extends Components>(
   cacheStore.blockNumber = blockNumber - 1;
 }
 
+export function storeEvents<Cm extends Components>(
+  cacheStore: CacheStore,
+  events: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">[]
+) {
+  for (const event of events) {
+    storeEvent(cacheStore, event);
+  }
+}
+
 export function getCacheStoreEntries<Cm extends Components>({
   blockNumber,
   state,
@@ -74,6 +83,7 @@ export function getCacheStoreEntries<Cm extends Components>({
     }
 
     const ecsEvent: NetworkComponentUpdate<Cm> = {
+      type: NetworkEvents.NetworkComponentUpdate,
       component,
       entity: entity as EntityID,
       value: value as ComponentValue<SchemaOf<Cm[keyof Cm]>>,

@@ -16,6 +16,8 @@ export enum Type {
   OptionalEntity,
   EntityArray,
   OptionalEntityArray,
+  T,
+  OptionalT,
 }
 
 /**
@@ -42,4 +44,5 @@ export const OptionalTypes = [
   Type.OptionalNumberArray,
   Type.OptionalString,
   Type.OptionalStringArray,
+  Type.OptionalT,
 ];

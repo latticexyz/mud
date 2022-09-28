@@ -55,7 +55,15 @@ export const EntityEditor = observer(
         onMouseLeave={() => clearDevHighlights()}
       >
         <div onClick={() => setOpened(!opened)} style={{ cursor: "pointer" }}>
-          <h3 style={{ color: "white" }}>{world.entities[entity]}</h3>
+          <div style={{ display: "flex", flexDirection: "row", justifyContent: 'space-between' }}>
+            <h3 style={{ color: "white" }}>Entity {entity}</h3>
+            <ComponentBrowserButton onClick={(e) => {
+              e.stopPropagation();
+              navigator.clipboard.writeText(world.entities[entity]);
+            }}>
+              Click to copy Entity ID
+            </ComponentBrowserButton>
+          </div>
           <ComponentBrowserButton onClick={() => setOpened(!opened)}>
             {opened ? <>&#9660;</> : <>&#9654;</>}
           </ComponentBrowserButton>

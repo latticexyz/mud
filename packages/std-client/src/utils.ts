@@ -14,6 +14,7 @@ import {
   Schema,
   ComponentValue,
   componentValueEquals,
+  Metadata,
 } from "@latticexyz/recs";
 import { Coord, keccak256 } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
@@ -167,12 +168,12 @@ export function randomColor(id: string): number {
   return Phaser.Display.Color.HSLToColor(h, s, l).color;
 }
 
-export function getAddressColor(address: string) {
+export function getStringColor(address: string) {
   return randomColor(keccak256(address).substring(2));
 }
 
-export function waitForComponentValueIn<S extends Schema>(
-  component: Component<S>,
+export function waitForComponentValueIn<S extends Schema, T>(
+  component: Component<S, Metadata, T>,
   entity: EntityIndex,
   values: Partial<ComponentValue<S>>[]
 ): Promise<void> {

@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { EntityID, ComponentValue } from "@latticexyz/recs";
-import { to256BitString, awaitPromise, range, sleep } from "@latticexyz/utils";
+import { EntityID, ComponentValue, Components } from "@latticexyz/recs";
+import { to256BitString, awaitPromise, range } from "@latticexyz/utils";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { BytesLike, Contract, BigNumber } from "ethers";
 import { Observable, map, concatMap, of, from } from "rxjs";
@@ -10,8 +10,15 @@ import { fetchEventsInBlockRange } from "../networkUtils";
 import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import { ECSStateSnapshotServiceClient } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot.client";
 import { ECSStreamServiceClient } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream.client";
-import { NetworkComponentUpdate, ContractConfig } from "../types";
-import { CacheStore, createCacheStore, storeEvent } from "./CacheStore";
+import {
+  NetworkComponentUpdate,
+  ContractConfig,
+  SystemCallTransaction,
+  NetworkEvents,
+  SystemCall,
+  NetworkEvent,
+} from "../types";
+import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
@@ -131,7 +138,7 @@ export async function reduceFetchedState(
     const component = to256BitString(stateComponents[componentIdIdx]);
     const entity = stateEntities[entityIdIdx] as EntityID;
     const value = await decode(component, rawValue);
-    storeEvent(cacheStore, { component, entity, value, blockNumber });
+    storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
   }
 }
 
@@ -184,8 +191,9 @@ export function createLatestEventStreamService(
  */
 export function createLatestEventStreamRPC(
   blockNumber$: Observable<number>,
-  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>
-): Observable<NetworkComponentUpdate> {
+  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  fetchSystemCallsFromEvents?: ReturnType<typeof createFetchSystemCallsFromEvents>
+): Observable<NetworkEvent> {
   let lastSyncedBlockNumber: number | undefined;
 
   return blockNumber$.pipe(
@@ -196,11 +204,59 @@ export function createLatestEventStreamRPC(
       lastSyncedBlockNumber = to;
       const events = await fetchWorldEvents(from, to);
       console.log(`[SyncWorker] fetched ${events.length} events from block range ${from} -> ${to}`);
+
+      if (fetchSystemCallsFromEvents && events.length > 0) {
+        const systemCalls = await fetchSystemCallsFromEvents(events, blockNumber);
+        return [...events, ...systemCalls];
+      }
+
       return events;
     }),
     awaitPromise(),
     concatMap((v) => of(...v))
   );
+}
+
+/**
+ * Fetch ECS events from contracts in the given block range.
+ *
+ * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
+ * @param fromBlockNumber Start of block range (inclusive).
+ * @param toBlockNumber End of block range (inclusive).
+ * @param interval Chunk fetching the blocks in intervals to avoid overwhelming the client.
+ * @returns Promise resolving with array containing the contract ECS events in the given block range.
+ */
+export async function fetchEventsInBlockRangeChunked(
+  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  fromBlockNumber: number,
+  toBlockNumber: number,
+  interval = 50,
+  setLoadingState?: (state: SyncState, msg: string, percentage: number) => void
+): Promise<NetworkComponentUpdate<Components>[]> {
+  const events: NetworkComponentUpdate<Components>[] = [];
+  const delta = toBlockNumber - fromBlockNumber;
+  const numSteps = Math.ceil(delta / interval);
+  const steps = [...range(numSteps, interval, fromBlockNumber)];
+
+  for (let i = 0; i < steps.length; i++) {
+    const from = steps[i];
+    const to = i === steps.length - 1 ? toBlockNumber : steps[i + 1] - 1;
+    const chunkEvents = await fetchWorldEvents(from, to);
+
+    if (setLoadingState) {
+      setLoadingState(
+        SyncState.INITIAL,
+        `Fetching state from block ${fromBlockNumber} to ${toBlockNumber} (${i * interval}/${delta})`,
+        80
+      );
+    }
+
+    console.log(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
+
+    events.push(...chunkEvents);
+  }
+
+  return events;
 }
 
 /**
@@ -220,29 +276,16 @@ export async function fetchStateInBlockRange(
   setLoadingState?: (state: SyncState, msg: string, percentage: number) => void
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
-  const delta = toBlockNumber - fromBlockNumber;
-  const numSteps = Math.ceil(delta / interval);
-  const steps = [...range(numSteps, interval, fromBlockNumber)];
 
-  for (let i = 0; i < steps.length; i++) {
-    const from = steps[i];
-    const to = i === steps.length - 1 ? toBlockNumber : steps[i + 1] - 1;
-    const events = await fetchWorldEvents(from, to);
+  const events = await fetchEventsInBlockRangeChunked(
+    fetchWorldEvents,
+    fromBlockNumber,
+    toBlockNumber,
+    interval,
+    setLoadingState
+  );
 
-    if (setLoadingState) {
-      setLoadingState(
-        SyncState.INITIAL,
-        `Fetching state from block ${fromBlockNumber} to ${toBlockNumber} (${i * interval}/${delta})`,
-        80
-      );
-    }
-
-    console.log(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
-
-    for (const event of events) {
-      storeEvent(cacheStore, event);
-    }
-  }
+  storeEvents(cacheStore, events);
 
   return cacheStore;
 }
@@ -295,7 +338,7 @@ export function createWorldTopics() {
  * @param decode Function to decode raw component values ({@link createDecode})
  * @returns Function to fetch World contract events in a given block range.
  */
-export function createFetchWorldEventsInBlockRange(
+export function createFetchWorldEventsInBlockRange<C extends Components>(
   provider: JsonRpcProvider,
   worldConfig: ContractConfig,
   batch: boolean | undefined,
@@ -306,7 +349,7 @@ export function createFetchWorldEventsInBlockRange(
   // Fetches World events in the provided block range (including from and to)
   return async (from: number, to: number) => {
     const contractsEvents = await fetchEventsInBlockRange(provider, topics, from, to, { World: worldConfig }, batch);
-    const ecsEvents: NetworkComponentUpdate[] = [];
+    const ecsEvents: NetworkComponentUpdate<C>[] = [];
 
     for (const event of contractsEvents) {
       const { lastEventInTx, txHash, args } = event;
@@ -327,13 +370,14 @@ export function createFetchWorldEventsInBlockRange(
       const blockNumber = to;
 
       const ecsEvent = {
+        type: NetworkEvents.NetworkComponentUpdate,
         component,
         entity,
         value: undefined,
         blockNumber,
         lastEventInTx,
         txHash,
-      };
+      } as NetworkComponentUpdate<C>;
 
       if (event.eventKey === "ComponentValueRemoved") {
         ecsEvents.push(ecsEvent);
@@ -378,6 +422,7 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
       const lastEventInTx = ecsEvents[i + 1]?.tx !== ecsEvent.tx;
 
       convertedEcsEvents.push({
+        type: NetworkEvents.NetworkComponentUpdate,
         component,
         entity,
         value,
@@ -388,5 +433,72 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
     }
 
     return convertedEcsEvents;
+  };
+}
+
+export function createFetchSystemCallsFromEvents(provider: JsonRpcProvider) {
+  const { fetchBlock, clearBlock } = createBlockCache(provider);
+  const fetchSystemCallData = createFetchSystemCallData(fetchBlock);
+
+  return async (events: NetworkComponentUpdate[], blockNumber: number) => {
+    const systemCalls: SystemCall[] = [];
+    const transactionHashToEvents = events.reduce((acc, event) => {
+      if (["worker", "cache"].includes(event.txHash)) return acc;
+
+      if (!acc[event.txHash]) acc[event.txHash] = [];
+
+      acc[event.txHash].push(event);
+
+      return acc;
+    }, {} as { [key: string]: NetworkComponentUpdate[] });
+
+    const txData = await Promise.all(
+      Object.keys(transactionHashToEvents).map((hash) => fetchSystemCallData(hash, blockNumber))
+    );
+    clearBlock(blockNumber);
+
+    for (const tx of txData) {
+      if (!tx) continue;
+
+      systemCalls.push({
+        type: NetworkEvents.SystemCall,
+        tx,
+        updates: transactionHashToEvents[tx.hash],
+      });
+    }
+
+    return systemCalls;
+  };
+}
+
+function createFetchSystemCallData(fetchBlock: ReturnType<typeof createBlockCache>["fetchBlock"]) {
+  return async (txHash: string, blockNumber: number) => {
+    const block = await fetchBlock(blockNumber);
+    const tx = block.transactions.find((tx) => tx.hash === txHash);
+
+    if (!tx) return;
+
+    return {
+      to: tx.to,
+      data: tx.data,
+      value: tx.value,
+      hash: tx.hash,
+    } as SystemCallTransaction;
+  };
+}
+
+function createBlockCache(provider: JsonRpcProvider) {
+  const blocks: Record<number, Awaited<ReturnType<typeof provider.getBlockWithTransactions>>> = {};
+
+  return {
+    fetchBlock: async (blockNumber: number) => {
+      if (blocks[blockNumber]) return blocks[blockNumber];
+
+      const block = await provider.getBlockWithTransactions(blockNumber);
+      blocks[blockNumber] = block;
+
+      return block;
+    },
+    clearBlock: (blockNumber: number) => delete blocks[blockNumber],
   };
 }

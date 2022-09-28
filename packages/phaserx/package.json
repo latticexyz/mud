@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/phaserx",
   "license": "MIT",
-  "version": "0.12.0",
+  "version": "1.0.0",
   "source": "src/index.ts",
   "main": "src/index.ts",
   "repository": {
@@ -10,6 +10,7 @@
     "directory": "packages/phaserx"
   },
   "scripts": {
+    "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
     "test": "jest --passWithNoTests",
     "link": "yarn link",
@@ -20,7 +21,7 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "@latticexyz/utils": "^0.12.0",
+    "@latticexyz/utils": "^1.0.0",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
@@ -38,7 +39,7 @@
     "typescript": "^4.6.2"
   },
   "peerDependencies": {
-    "@latticexyz/utils": "^0.7.0",
+    "@latticexyz/utils": "^1",
     "mobx": "^6.5.0",
     "phaser": "3.60.0-beta.4",
     "rxjs": "^7.5.5"

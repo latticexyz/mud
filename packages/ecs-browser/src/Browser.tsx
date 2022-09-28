@@ -20,6 +20,7 @@ export const Browser = observer(
     devHighlightComponent,
     hoverHighlightComponent,
     prototypeComponent,
+    nameComponent,
     spawnPrototypeAt,
     world,
   }: {
@@ -29,6 +30,7 @@ export const Browser = observer(
     devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
     hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
     prototypeComponent?: Component<{ value: Type.StringArray }>;
+    nameComponent?: Component<{ value: Type.String }>;
     spawnPrototypeAt?: (prototypeId: EntityID, position: Coord) => void;
     world: World;
   }) => {
@@ -48,11 +50,12 @@ export const Browser = observer(
           clearDevHighlights={clearDevHighlights}
           setOverflow={setOverflow}
         />
-        {hoverHighlightComponent && prototypeComponent && spawnPrototypeAt && (
+        {hoverHighlightComponent && prototypeComponent && spawnPrototypeAt && nameComponent && (
           <PrototypeCreator
             layers={layers}
             hoverHighlightComponent={hoverHighlightComponent}
             prototypeComponent={prototypeComponent}
+            nameComponent={nameComponent}
             spawnPrototypeAt={spawnPrototypeAt}
           />
         )}

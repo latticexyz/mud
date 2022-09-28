@@ -16,7 +16,10 @@ export type Camera = {
   zoom$: Observable<number>;
   ignore: (objectPool: ObjectPool, ignore: boolean) => void;
   dispose: () => void;
-  centerCameraOnCoord: (tileCoord: Coord, tileWidth: number, tileHeight: number) => void;
+  centerOnCoord: (tileCoord: Coord, tileWidth: number, tileHeight: number) => void;
+  centerOn: (x: number, y: number) => void;
+  setScroll: (x: number, y: number) => void;
+  setZoom: (zoom: number) => void;
 };
 
 export type GameObjectTypes = typeof GameObjectClasses;
@@ -64,6 +67,7 @@ export type Input = ReturnType<typeof createInput>;
 
 export type EmbodiedEntity<Type extends keyof GameObjectTypes> = {
   setComponent: (component: GameObjectComponent<Type>) => void;
+  hasComponent: (id: string) => boolean;
   removeComponent: (id: string, stop?: boolean) => void;
   spawn: () => void;
   despawn: () => void;
