@@ -72,11 +72,15 @@ export interface Subscription {
  */
 export interface PushRequest {
   /**
-   * @generated from protobuf field: string label = 1;
+   * @generated from protobuf field: ecsrelay.Identity identity = 1;
+   */
+  identity?: Identity;
+  /**
+   * @generated from protobuf field: string label = 2;
    */
   label: string;
   /**
-   * @generated from protobuf field: repeated ecsrelay.Message messages = 2;
+   * @generated from protobuf field: repeated ecsrelay.Message messages = 3;
    */
   messages: Message[];
 }
@@ -318,8 +322,9 @@ export const Subscription = new Subscription$Type();
 class PushRequest$Type extends MessageType<PushRequest> {
   constructor() {
     super("ecsrelay.PushRequest", [
-      { no: 1, name: "label", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-      { no: 2, name: "messages", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Message },
+      { no: 1, name: "identity", kind: "message", T: () => Identity },
+      { no: 2, name: "label", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 3, name: "messages", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Message },
     ]);
   }
   create(value?: PartialMessage<PushRequest>): PushRequest {
@@ -339,10 +344,13 @@ class PushRequest$Type extends MessageType<PushRequest> {
     while (reader.pos < end) {
       let [fieldNo, wireType] = reader.tag();
       switch (fieldNo) {
-        case /* string label */ 1:
+        case /* ecsrelay.Identity identity */ 1:
+          message.identity = Identity.internalBinaryRead(reader, reader.uint32(), options, message.identity);
+          break;
+        case /* string label */ 2:
           message.label = reader.string();
           break;
-        case /* repeated ecsrelay.Message messages */ 2:
+        case /* repeated ecsrelay.Message messages */ 3:
           message.messages.push(Message.internalBinaryRead(reader, reader.uint32(), options));
           break;
         default:
@@ -356,11 +364,14 @@ class PushRequest$Type extends MessageType<PushRequest> {
     return message;
   }
   internalBinaryWrite(message: PushRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-    /* string label = 1; */
-    if (message.label !== "") writer.tag(1, WireType.LengthDelimited).string(message.label);
-    /* repeated ecsrelay.Message messages = 2; */
+    /* ecsrelay.Identity identity = 1; */
+    if (message.identity)
+      Identity.internalBinaryWrite(message.identity, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
+    /* string label = 2; */
+    if (message.label !== "") writer.tag(2, WireType.LengthDelimited).string(message.label);
+    /* repeated ecsrelay.Message messages = 3; */
     for (let i = 0; i < message.messages.length; i++)
-      Message.internalBinaryWrite(message.messages[i], writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+      Message.internalBinaryWrite(message.messages[i], writer.tag(3, WireType.LengthDelimited).fork(), options).join();
     let u = options.writeUnknownFields;
     if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
     return writer;

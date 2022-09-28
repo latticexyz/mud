@@ -41,8 +41,9 @@ message Subscription {
 }
 
 message PushRequest {
-  string label = 1;
-  repeated Message messages = 2;
+  Identity identity = 1;
+  string label = 2;
+  repeated Message messages = 3;
 }
 
 message PushResponse {}

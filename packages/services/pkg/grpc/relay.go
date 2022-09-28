@@ -137,15 +137,17 @@ func (server *ecsRelayServer) Subscribe(ctx context.Context, request *pb.Subscri
 	}
 
 	label := server.GetLabel(request.Subscription.Label)
-	if label.IsSubscribed(client) {
-		server.logger.Error("client already subscribed to label", zap.String("label", request.Subscription.Label))
-		return nil, fmt.Errorf("client already subscribed to label %s", request.Subscription.Label)
+	if !label.IsSubscribed(client) {
+		label.Subscribe(client)
+
+		server.logger.Info("subscribed client to label",
+			zap.String("client", request.Identity.Name),
+			zap.String("label", request.Subscription.Label),
+		)
+	} else {
+		server.logger.Info("client already subscribed to label", zap.String("label", request.Subscription.Label))
 	}
-	label.Subscribe(client)
-	server.logger.Info("subscribed client to label",
-		zap.String("client", request.Identity.Name),
-		zap.String("label", request.Subscription.Label),
-	)
+
 	return request.Subscription, nil
 }
 
@@ -156,19 +158,20 @@ func (server *ecsRelayServer) Unsubscribe(ctx context.Context, request *pb.Subsc
 	}
 
 	label := server.GetLabel(request.Subscription.Label)
-	if !label.IsSubscribed(client) {
-		server.logger.Error("client not currently subscribed to label", zap.String("label", request.Subscription.Label))
-		return nil, fmt.Errorf("client not currently subscribed to label %s", request.Subscription.Label)
-	}
-	err = label.Unsubscribe(client)
-	if err != nil {
-		return nil, err
+	if label.IsSubscribed(client) {
+		err = label.Unsubscribe(client)
+		if err != nil {
+			return nil, err
+		}
+
+		server.logger.Info("unsubscribed client from label",
+			zap.String("client", request.Identity.Name),
+			zap.String("label", request.Subscription.Label),
+		)
+	} else {
+		server.logger.Info("client not currently subscribed to label", zap.String("label", request.Subscription.Label))
 	}
 
-	server.logger.Info("unsubscribed client from label",
-		zap.String("client", request.Identity.Name),
-		zap.String("label", request.Subscription.Label),
-	)
 	return request.Subscription, nil
 }
 
@@ -188,26 +191,31 @@ func (server *ecsRelayServer) OpenStream(identity *pb.Identity, stream pb.ECSRel
 
 	for msg := range client.GetChannel() {
 		if err := stream.Send(msg); err != nil {
+			server.logger.Info("closing stream due to error", zap.String("client", identity.Name), zap.Error(err))
+			client.Disconnect()
 			return err
 		}
 	}
 
-	// Disconnect and close the stream only if client is still connected. It's possible for the
-	// client to time out and be disconnected due to inactivity, in which case we don't need to
-	// do anything here.
-	if client.IsConnected() {
-		server.logger.Info("closing stream", zap.String("client", identity.Name))
-		client.Disconnect()
-	}
+	server.logger.Info("closing stream", zap.String("client", identity.Name))
+	client.Disconnect()
 
 	return nil
 }
 
 func (server *ecsRelayServer) Push(ctx context.Context, request *pb.PushRequest) (*pb.PushResponse, error) {
+	if request.Identity == nil {
+		return nil, fmt.Errorf("identity required when pushing a message")
+	}
+	_, err := server.GetClient(request.Identity)
+	if err != nil {
+		return nil, fmt.Errorf("client not authenticated")
+	}
+
 	label := server.GetLabel(request.Label)
 
 	for _, message := range request.Messages {
-		label.Propagate(message)
+		label.Propagate(message, request.Identity)
 	}
 	return &pb.PushResponse{}, nil
 }

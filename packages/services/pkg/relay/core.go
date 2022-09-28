@@ -31,6 +31,10 @@ func (client *Client) Connect() {
 }
 
 func (client *Client) Disconnect() {
+	// Disconnect and close the channel only if client is still connected.
+	if !client.IsConnected() {
+		return
+	}
 	client.mutex.Lock()
 	close(client.channel)
 	client.connected = false
@@ -174,11 +178,13 @@ type MessageLabel struct {
 	mutex         sync.Mutex
 }
 
-func (label *MessageLabel) Propagate(message *pb.Message) {
+func (label *MessageLabel) Propagate(message *pb.Message, origin *pb.Identity) {
 	label.mutex.Lock()
 	for _, client := range label.subscriptions {
+		// Only pipe to clients that are connected and not the client which is the origin of
+		// the message.
 		client.mutex.Lock()
-		if client.connected {
+		if client.identity.Name != origin.Name && client.connected {
 			client.channel <- message
 		}
 		client.mutex.Unlock()
