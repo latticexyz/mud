@@ -3,6 +3,7 @@ package grpc
 import (
 	"fmt"
 	multiplexer "latticexyz/mud/packages/services/pkg/multiplexer"
+	"latticexyz/mud/packages/services/pkg/relay"
 	pb_relay "latticexyz/mud/packages/services/protobuf/go/ecs-relay"
 	pb_snapshot "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 	pb_stream "latticexyz/mud/packages/services/protobuf/go/ecs-stream"
@@ -98,12 +99,11 @@ func StartSnapshotServer(port int, logger *zap.Logger) {
 	logger.Info("started listening", zap.String("category", "http server"), zap.String("address", httpServer.Addr))
 }
 
-func StartRelayServer(port int, logger *zap.Logger) {
+func StartRelayServer(port int, config *relay.RelayServerConfig, logger *zap.Logger) {
 	var options []grpc.ServerOption
 	grpcServer := grpc.NewServer(options...)
-	relayerServer := createRelayServer(logger)
 
-	pb_relay.RegisterECSRelayServiceServer(grpcServer, relayerServer)
+	pb_relay.RegisterECSRelayServiceServer(grpcServer, createRelayServer(logger, config))
 
 	// Register reflection service on gRPC server.
 	reflection.Register(grpcServer)
@@ -143,9 +143,10 @@ func createSnapshotServer() *ecsSnapshotServer {
 	return &ecsSnapshotServer{}
 }
 
-func createRelayServer(logger *zap.Logger) *ecsRelayServer {
+func createRelayServer(logger *zap.Logger, config *relay.RelayServerConfig) *ecsRelayServer {
 	server := &ecsRelayServer{
 		logger: logger,
+		config: config,
 	}
 	server.Init()
 	return server

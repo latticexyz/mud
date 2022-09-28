@@ -19,7 +19,10 @@ message Message {
 service ECSRelayService {
   rpc Authenticate(Identity) returns (Identity) {}
   rpc Revoke(Identity) returns (Identity) {}
-  rpc CountIdentities(CountIdentitiesRequest) returns (CountIdentitiesResponse) {}
+  rpc Ping(Identity) returns (Identity) {}
+
+  rpc CountAuthenticated(CountIdentitiesRequest) returns (CountIdentitiesResponse) {}
+  rpc CountConnected(CountIdentitiesRequest) returns (CountIdentitiesResponse) {}
   
   rpc Subscribe(SubscriptionRequest) returns (Subscription) {}
   rpc Unsubscribe(SubscriptionRequest) returns (Subscription) {}

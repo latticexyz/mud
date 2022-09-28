@@ -32,9 +32,20 @@ export interface IECSRelayServiceClient {
    */
   revoke(input: Identity, options?: RpcOptions): UnaryCall<Identity, Identity>;
   /**
-   * @generated from protobuf rpc: CountIdentities(ecsrelay.CountIdentitiesRequest) returns (ecsrelay.CountIdentitiesResponse);
+   * @generated from protobuf rpc: Ping(ecsrelay.Identity) returns (ecsrelay.Identity);
    */
-  countIdentities(
+  ping(input: Identity, options?: RpcOptions): UnaryCall<Identity, Identity>;
+  /**
+   * @generated from protobuf rpc: CountAuthenticated(ecsrelay.CountIdentitiesRequest) returns (ecsrelay.CountIdentitiesResponse);
+   */
+  countAuthenticated(
+    input: CountIdentitiesRequest,
+    options?: RpcOptions
+  ): UnaryCall<CountIdentitiesRequest, CountIdentitiesResponse>;
+  /**
+   * @generated from protobuf rpc: CountConnected(ecsrelay.CountIdentitiesRequest) returns (ecsrelay.CountIdentitiesResponse);
+   */
+  countConnected(
     input: CountIdentitiesRequest,
     options?: RpcOptions
   ): UnaryCall<CountIdentitiesRequest, CountIdentitiesResponse>;
@@ -82,13 +93,38 @@ export class ECSRelayServiceClient implements IECSRelayServiceClient, ServiceInf
     return stackIntercept<Identity, Identity>("unary", this._transport, method, opt, input);
   }
   /**
-   * @generated from protobuf rpc: CountIdentities(ecsrelay.CountIdentitiesRequest) returns (ecsrelay.CountIdentitiesResponse);
+   * @generated from protobuf rpc: Ping(ecsrelay.Identity) returns (ecsrelay.Identity);
    */
-  countIdentities(
+  ping(input: Identity, options?: RpcOptions): UnaryCall<Identity, Identity> {
+    const method = this.methods[2],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<Identity, Identity>("unary", this._transport, method, opt, input);
+  }
+  /**
+   * @generated from protobuf rpc: CountAuthenticated(ecsrelay.CountIdentitiesRequest) returns (ecsrelay.CountIdentitiesResponse);
+   */
+  countAuthenticated(
     input: CountIdentitiesRequest,
     options?: RpcOptions
   ): UnaryCall<CountIdentitiesRequest, CountIdentitiesResponse> {
-    const method = this.methods[2],
+    const method = this.methods[3],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<CountIdentitiesRequest, CountIdentitiesResponse>(
+      "unary",
+      this._transport,
+      method,
+      opt,
+      input
+    );
+  }
+  /**
+   * @generated from protobuf rpc: CountConnected(ecsrelay.CountIdentitiesRequest) returns (ecsrelay.CountIdentitiesResponse);
+   */
+  countConnected(
+    input: CountIdentitiesRequest,
+    options?: RpcOptions
+  ): UnaryCall<CountIdentitiesRequest, CountIdentitiesResponse> {
+    const method = this.methods[4],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<CountIdentitiesRequest, CountIdentitiesResponse>(
       "unary",
@@ -102,7 +138,7 @@ export class ECSRelayServiceClient implements IECSRelayServiceClient, ServiceInf
    * @generated from protobuf rpc: Subscribe(ecsrelay.SubscriptionRequest) returns (ecsrelay.Subscription);
    */
   subscribe(input: SubscriptionRequest, options?: RpcOptions): UnaryCall<SubscriptionRequest, Subscription> {
-    const method = this.methods[3],
+    const method = this.methods[5],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<SubscriptionRequest, Subscription>("unary", this._transport, method, opt, input);
   }
@@ -110,7 +146,7 @@ export class ECSRelayServiceClient implements IECSRelayServiceClient, ServiceInf
    * @generated from protobuf rpc: Unsubscribe(ecsrelay.SubscriptionRequest) returns (ecsrelay.Subscription);
    */
   unsubscribe(input: SubscriptionRequest, options?: RpcOptions): UnaryCall<SubscriptionRequest, Subscription> {
-    const method = this.methods[4],
+    const method = this.methods[6],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<SubscriptionRequest, Subscription>("unary", this._transport, method, opt, input);
   }
@@ -118,7 +154,7 @@ export class ECSRelayServiceClient implements IECSRelayServiceClient, ServiceInf
    * @generated from protobuf rpc: OpenStream(ecsrelay.Identity) returns (stream ecsrelay.Message);
    */
   openStream(input: Identity, options?: RpcOptions): ServerStreamingCall<Identity, Message> {
-    const method = this.methods[5],
+    const method = this.methods[7],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<Identity, Message>("serverStreaming", this._transport, method, opt, input);
   }
@@ -126,7 +162,7 @@ export class ECSRelayServiceClient implements IECSRelayServiceClient, ServiceInf
    * @generated from protobuf rpc: Push(ecsrelay.PushRequest) returns (ecsrelay.PushResponse);
    */
   push(input: PushRequest, options?: RpcOptions): UnaryCall<PushRequest, PushResponse> {
-    const method = this.methods[6],
+    const method = this.methods[8],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<PushRequest, PushResponse>("unary", this._transport, method, opt, input);
   }

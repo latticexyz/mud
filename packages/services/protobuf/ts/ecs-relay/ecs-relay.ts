@@ -489,7 +489,9 @@ export const CountIdentitiesResponse = new CountIdentitiesResponse$Type();
 export const ECSRelayService = new ServiceType("ecsrelay.ECSRelayService", [
   { name: "Authenticate", options: {}, I: Identity, O: Identity },
   { name: "Revoke", options: {}, I: Identity, O: Identity },
-  { name: "CountIdentities", options: {}, I: CountIdentitiesRequest, O: CountIdentitiesResponse },
+  { name: "Ping", options: {}, I: Identity, O: Identity },
+  { name: "CountAuthenticated", options: {}, I: CountIdentitiesRequest, O: CountIdentitiesResponse },
+  { name: "CountConnected", options: {}, I: CountIdentitiesRequest, O: CountIdentitiesResponse },
   { name: "Subscribe", options: {}, I: SubscriptionRequest, O: Subscription },
   { name: "Unsubscribe", options: {}, I: SubscriptionRequest, O: Subscription },
   { name: "OpenStream", serverStreaming: true, options: {}, I: Identity, O: Message },

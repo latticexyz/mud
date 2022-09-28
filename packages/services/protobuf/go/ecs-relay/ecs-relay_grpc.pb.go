@@ -24,7 +24,9 @@ const _ = grpc.SupportPackageIsVersion7
 type ECSRelayServiceClient interface {
 	Authenticate(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error)
 	Revoke(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error)
-	CountIdentities(ctx context.Context, in *CountIdentitiesRequest, opts ...grpc.CallOption) (*CountIdentitiesResponse, error)
+	Ping(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error)
+	CountAuthenticated(ctx context.Context, in *CountIdentitiesRequest, opts ...grpc.CallOption) (*CountIdentitiesResponse, error)
+	CountConnected(ctx context.Context, in *CountIdentitiesRequest, opts ...grpc.CallOption) (*CountIdentitiesResponse, error)
 	Subscribe(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	Unsubscribe(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	OpenStream(ctx context.Context, in *Identity, opts ...grpc.CallOption) (ECSRelayService_OpenStreamClient, error)
@@ -57,9 +59,27 @@ func (c *eCSRelayServiceClient) Revoke(ctx context.Context, in *Identity, opts .
 	return out, nil
 }
 
-func (c *eCSRelayServiceClient) CountIdentities(ctx context.Context, in *CountIdentitiesRequest, opts ...grpc.CallOption) (*CountIdentitiesResponse, error) {
+func (c *eCSRelayServiceClient) Ping(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error) {
+	out := new(Identity)
+	err := c.cc.Invoke(ctx, "/ecsrelay.ECSRelayService/Ping", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eCSRelayServiceClient) CountAuthenticated(ctx context.Context, in *CountIdentitiesRequest, opts ...grpc.CallOption) (*CountIdentitiesResponse, error) {
 	out := new(CountIdentitiesResponse)
-	err := c.cc.Invoke(ctx, "/ecsrelay.ECSRelayService/CountIdentities", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/ecsrelay.ECSRelayService/CountAuthenticated", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *eCSRelayServiceClient) CountConnected(ctx context.Context, in *CountIdentitiesRequest, opts ...grpc.CallOption) (*CountIdentitiesResponse, error) {
+	out := new(CountIdentitiesResponse)
+	err := c.cc.Invoke(ctx, "/ecsrelay.ECSRelayService/CountConnected", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -131,7 +151,9 @@ func (c *eCSRelayServiceClient) Push(ctx context.Context, in *PushRequest, opts 
 type ECSRelayServiceServer interface {
 	Authenticate(context.Context, *Identity) (*Identity, error)
 	Revoke(context.Context, *Identity) (*Identity, error)
-	CountIdentities(context.Context, *CountIdentitiesRequest) (*CountIdentitiesResponse, error)
+	Ping(context.Context, *Identity) (*Identity, error)
+	CountAuthenticated(context.Context, *CountIdentitiesRequest) (*CountIdentitiesResponse, error)
+	CountConnected(context.Context, *CountIdentitiesRequest) (*CountIdentitiesResponse, error)
 	Subscribe(context.Context, *SubscriptionRequest) (*Subscription, error)
 	Unsubscribe(context.Context, *SubscriptionRequest) (*Subscription, error)
 	OpenStream(*Identity, ECSRelayService_OpenStreamServer) error
@@ -149,8 +171,14 @@ func (UnimplementedECSRelayServiceServer) Authenticate(context.Context, *Identit
 func (UnimplementedECSRelayServiceServer) Revoke(context.Context, *Identity) (*Identity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Revoke not implemented")
 }
-func (UnimplementedECSRelayServiceServer) CountIdentities(context.Context, *CountIdentitiesRequest) (*CountIdentitiesResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method CountIdentities not implemented")
+func (UnimplementedECSRelayServiceServer) Ping(context.Context, *Identity) (*Identity, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
+}
+func (UnimplementedECSRelayServiceServer) CountAuthenticated(context.Context, *CountIdentitiesRequest) (*CountIdentitiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountAuthenticated not implemented")
+}
+func (UnimplementedECSRelayServiceServer) CountConnected(context.Context, *CountIdentitiesRequest) (*CountIdentitiesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CountConnected not implemented")
 }
 func (UnimplementedECSRelayServiceServer) Subscribe(context.Context, *SubscriptionRequest) (*Subscription, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
@@ -213,20 +241,56 @@ func _ECSRelayService_Revoke_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _ECSRelayService_CountIdentities_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _ECSRelayService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Identity)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ECSRelayServiceServer).Ping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ecsrelay.ECSRelayService/Ping",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ECSRelayServiceServer).Ping(ctx, req.(*Identity))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ECSRelayService_CountAuthenticated_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CountIdentitiesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ECSRelayServiceServer).CountIdentities(ctx, in)
+		return srv.(ECSRelayServiceServer).CountAuthenticated(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/ecsrelay.ECSRelayService/CountIdentities",
+		FullMethod: "/ecsrelay.ECSRelayService/CountAuthenticated",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ECSRelayServiceServer).CountIdentities(ctx, req.(*CountIdentitiesRequest))
+		return srv.(ECSRelayServiceServer).CountAuthenticated(ctx, req.(*CountIdentitiesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ECSRelayService_CountConnected_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CountIdentitiesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ECSRelayServiceServer).CountConnected(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ecsrelay.ECSRelayService/CountConnected",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ECSRelayServiceServer).CountConnected(ctx, req.(*CountIdentitiesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -322,8 +386,16 @@ var ECSRelayService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ECSRelayService_Revoke_Handler,
 		},
 		{
-			MethodName: "CountIdentities",
-			Handler:    _ECSRelayService_CountIdentities_Handler,
+			MethodName: "Ping",
+			Handler:    _ECSRelayService_Ping_Handler,
+		},
+		{
+			MethodName: "CountAuthenticated",
+			Handler:    _ECSRelayService_CountAuthenticated_Handler,
+		},
+		{
+			MethodName: "CountConnected",
+			Handler:    _ECSRelayService_CountConnected_Handler,
 		},
 		{
 			MethodName: "Subscribe",

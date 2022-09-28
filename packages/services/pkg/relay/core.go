@@ -10,27 +10,53 @@ import (
 	"github.com/ethereum/go-ethereum/crypto"
 )
 
+type RelayServerConfig struct {
+	IdleTimeoutTime       int
+	IdleDisconnectIterval int
+}
+
 type Client struct {
-	identity  *pb.Identity
-	channel   chan *pb.Message
-	connected bool
-	mutex     sync.Mutex
+	identity            *pb.Identity
+	channel             chan *pb.Message
+	connected           bool
+	latestPingTimestamp int64
+	mutex               sync.Mutex
 }
 
 func (client *Client) Connect() {
 	client.mutex.Lock()
+	client.channel = make(chan *pb.Message)
 	client.connected = true
 	client.mutex.Unlock()
 }
 
 func (client *Client) Disconnect() {
 	client.mutex.Lock()
+	close(client.channel)
 	client.connected = false
 	client.mutex.Unlock()
 }
 
+func (client *Client) Ping() {
+	client.mutex.Lock()
+	client.latestPingTimestamp = time.Now().Unix()
+	client.mutex.Unlock()
+}
+
+func (client *Client) IsConnected() bool {
+	return client.connected
+}
+
+func (client *Client) IsIdle(idleTimeoutTime int) bool {
+	return time.Since(time.Unix(client.latestPingTimestamp, 0)).Seconds() >= float64(idleTimeoutTime)
+}
+
 func (client *Client) GetChannel() chan *pb.Message {
 	return client.channel
+}
+
+func (client *Client) GetIdentity() *pb.Identity {
+	return client.identity
 }
 
 type ClientRegistry struct {
@@ -38,17 +64,30 @@ type ClientRegistry struct {
 	mutex   sync.Mutex
 }
 
-func (registry *ClientRegistry) Stop() {
+func (registry *ClientRegistry) DisconnectAll() {
 	for _, client := range registry.clients {
-		client.mutex.Lock()
-		close(client.channel)
-		client.connected = false
-		client.mutex.Unlock()
+		client.Disconnect()
 	}
 }
 
 func (registry *ClientRegistry) Count() int {
 	return len(registry.clients)
+}
+
+func (registry *ClientRegistry) CountConnected() int {
+	count := 0
+	registry.mutex.Lock()
+	for _, client := range registry.clients {
+		if client.connected {
+			count += 1
+		}
+	}
+	registry.mutex.Unlock()
+	return count
+}
+
+func (registry *ClientRegistry) GetClients() []*Client {
+	return registry.clients
 }
 
 func GenerateRandomIdentifier() (string, error) {

@@ -10,6 +10,7 @@ import { fetchEventsInBlockRange } from "../networkUtils";
 import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import { ECSStateSnapshotServiceClient } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot.client";
 import { ECSStreamServiceClient } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream.client";
+import { ECSRelayServiceClient } from "@latticexyz/services/protobuf/ts/ecs-relay/ecs-relay.client";
 import {
   NetworkComponentUpdate,
   ContractConfig,
@@ -43,6 +44,16 @@ export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient
 export function createStreamClient(url: string): ECSStreamServiceClient {
   const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
   return new ECSStreamServiceClient(transport);
+}
+
+/**
+ * Create a ECSRelayServiceClient
+ * @param url ECSRelayService URL
+ * @returns ECSRelayServiceClient
+ */
+export function createRelayClient(url: string): ECSRelayServiceClient {
+  const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
+  return new ECSRelayServiceClient(transport);
 }
 
 /**
