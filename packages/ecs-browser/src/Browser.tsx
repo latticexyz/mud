@@ -30,8 +30,8 @@ export const Browser = observer(
     devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
     hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
     prototypeComponent?: Component<{ value: Type.StringArray }>;
-    nameComponent: Component<{ value: Type.String }>;
-    spawnPrototypeAt: (prototypeId: EntityID, position: Coord) => void;
+    nameComponent?: Component<{ value: Type.String }>;
+    spawnPrototypeAt?: (prototypeId: EntityID, position: Coord) => void;
     world: World;
   }) => {
     const [filteredEntities, setFilteredEntities] = useState<EntityID[]>([]);
