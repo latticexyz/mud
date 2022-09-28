@@ -1,8 +1,8 @@
-import { JsonRpcProvider, Networkish, WebSocketProvider } from "@ethersproject/providers";
+import { Networkish, WebSocketProvider } from "@ethersproject/providers";
 import { callWithRetry, observableToComputed, timeoutAfter } from "@latticexyz/utils";
 import { IComputedValue, IObservableValue, observable, reaction, runInAction } from "mobx";
 import { ensureNetworkIsUp } from "./networkUtils";
-import { MUDBatchProvider, MUDProvider } from "./providers/provider";
+import { MUDBatchProvider, MUDProvider } from "./provider";
 import { ProviderConfig } from "./types";
 
 export type Providers = ReturnType<typeof createProvider>;
@@ -22,9 +22,7 @@ export function createProvider({ chainId, jsonRpcUrl, wsRpcUrl, options }: Provi
     name: "mudChain",
   };
   const providers = {
-    json: options?.batch
-      ? (new MUDBatchProvider(jsonRpcUrl, network) as JsonRpcProvider)
-      : (new MUDProvider(jsonRpcUrl, network) as JsonRpcProvider),
+    json: options?.batch ? new MUDBatchProvider(jsonRpcUrl, network) : new MUDProvider(jsonRpcUrl, network),
     ws: wsRpcUrl ? new WebSocketProvider(wsRpcUrl, network) : undefined,
   };
 
