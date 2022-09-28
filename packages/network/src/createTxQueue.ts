@@ -131,10 +131,13 @@ export function createTxQueue<C extends Contracts>(
           signedTransaction: signedTx,
         });
         const response = target.provider.getTransaction(hash) as Promise<ReturnTypeStrict<typeof target[typeof prop]>>;
-        // This promise is asynchronously in the tx queue and the action queue to catch errors
+        // This promise is awaited asynchronously in the tx queue and the action queue to catch errors
         const wait = async () => (await response).wait();
 
+        // Resolved value goes to the initiator of the transaction
         resolve({ hash, wait, response });
+
+        // Returned value gets processed inside the tx queue
         return { hash, wait };
       } catch (e) {
         reject(e as Error);
