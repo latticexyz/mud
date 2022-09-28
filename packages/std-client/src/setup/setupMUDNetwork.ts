@@ -122,7 +122,7 @@ async function createEncoders(
   async function fetchAndCreateEncoder(entity: EntityIndex) {
     const componentAddress = toEthAddress(world.entities[entity]);
     const componentId = getComponentValueStrict(components, entity).value;
-    console.log("Creating encoder for", componentAddress);
+    console.info("Creating encoder for", componentAddress);
     const componentContract = new Contract(
       componentAddress,
       ComponentAbi.abi,

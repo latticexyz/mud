@@ -32,7 +32,7 @@ export const callWithRetry = <T>(
         break;
       } catch (e) {
         if (i < maxRetries - 1) {
-          console.log("[CallWithRetry Failed] attempt number=" + i, fn);
+          console.info("[CallWithRetry Failed] attempt number=" + i, fn);
           console.error(e);
           await sleep(Math.min(retryInterval * 2 ** i + Math.random() * 100, 15000));
         } else {
