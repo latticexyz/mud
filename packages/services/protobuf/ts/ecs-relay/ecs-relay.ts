@@ -37,9 +37,9 @@ export interface Message {
    */
   data: Uint8Array;
   /**
-   * @generated from protobuf field: uint32 timestamp = 3;
+   * @generated from protobuf field: int64 timestamp = 3;
    */
-  timestamp: number;
+  timestamp: bigint;
   /**
    * @generated from protobuf field: string id = 4;
    */
@@ -145,12 +145,12 @@ class Message$Type extends MessageType<Message> {
     super("ecsrelay.Message", [
       { no: 1, name: "version", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
       { no: 2, name: "data", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
-      { no: 3, name: "timestamp", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
+      { no: 3, name: "timestamp", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
       { no: 4, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
     ]);
   }
   create(value?: PartialMessage<Message>): Message {
-    const message = { version: 0, data: new Uint8Array(0), timestamp: 0, id: "" };
+    const message = { version: 0, data: new Uint8Array(0), timestamp: 0n, id: "" };
     globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
     if (value !== undefined) reflectionMergePartial<Message>(this, message, value);
     return message;
@@ -167,8 +167,8 @@ class Message$Type extends MessageType<Message> {
         case /* bytes data */ 2:
           message.data = reader.bytes();
           break;
-        case /* uint32 timestamp */ 3:
-          message.timestamp = reader.uint32();
+        case /* int64 timestamp */ 3:
+          message.timestamp = reader.int64().toBigInt();
           break;
         case /* string id */ 4:
           message.id = reader.string();
@@ -188,8 +188,8 @@ class Message$Type extends MessageType<Message> {
     if (message.version !== 0) writer.tag(1, WireType.Varint).uint32(message.version);
     /* bytes data = 2; */
     if (message.data.length) writer.tag(2, WireType.LengthDelimited).bytes(message.data);
-    /* uint32 timestamp = 3; */
-    if (message.timestamp !== 0) writer.tag(3, WireType.Varint).uint32(message.timestamp);
+    /* int64 timestamp = 3; */
+    if (message.timestamp !== 0n) writer.tag(3, WireType.Varint).int64(message.timestamp);
     /* string id = 4; */
     if (message.id !== "") writer.tag(4, WireType.LengthDelimited).string(message.id);
     let u = options.writeUnknownFields;

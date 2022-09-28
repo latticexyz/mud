@@ -11,7 +11,7 @@ message Identity {
 message Message {
   uint32 version = 1;
   bytes data = 2;
-  uint32 timestamp = 3;
+  int64 timestamp = 3;
   string id = 4;
 }
 

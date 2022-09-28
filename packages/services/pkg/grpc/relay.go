@@ -178,8 +178,12 @@ func (server *ecsRelayServer) OpenStream(identity *pb.Identity, stream pb.ECSRel
 		return fmt.Errorf("client not authenticated")
 	}
 
-	server.logger.Info("opening stream", zap.String("client", identity.Name))
-	client.Connect()
+	if !client.IsConnected() {
+		server.logger.Info("opening stream", zap.String("client", identity.Name))
+		client.Connect()
+	} else {
+		server.logger.Info("reusing already opened stream", zap.String("client", identity.Name))
+	}
 	client.Ping()
 
 	for msg := range client.GetChannel() {
