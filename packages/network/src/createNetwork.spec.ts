@@ -16,6 +16,7 @@ const config = {
       pollingInterval: 1000,
       skipNetworkCheck: true,
     },
+    chainId: 4242,
   },
   chainId: 100,
 };
