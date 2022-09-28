@@ -1,0 +1,55 @@
+syntax = "proto3";
+package ecsrelay;
+
+option go_package = "protobuf/go/ecs-relay";
+
+// Identifies a client connecting to Relay Service.
+message Identity {
+  string name = 1;
+}
+
+message Message {
+  uint32 version = 1;
+  bytes data = 2;
+  int64 timestamp = 3;
+  string id = 4;
+}
+
+// The Relay Service definition.
+service ECSRelayService {
+  rpc Authenticate(Identity) returns (Identity) {}
+  rpc Revoke(Identity) returns (Identity) {}
+  rpc Ping(Identity) returns (Identity) {}
+
+  rpc CountAuthenticated(CountIdentitiesRequest) returns (CountIdentitiesResponse) {}
+  rpc CountConnected(CountIdentitiesRequest) returns (CountIdentitiesResponse) {}
+  
+  rpc Subscribe(SubscriptionRequest) returns (Subscription) {}
+  rpc Unsubscribe(SubscriptionRequest) returns (Subscription) {}
+
+  rpc OpenStream(Identity) returns (stream Message) {}
+  rpc Push(PushRequest) returns (PushResponse) {}
+}
+
+message SubscriptionRequest {
+  Identity identity = 1;
+  Subscription subscription = 2;
+}
+
+message Subscription {
+  string label = 1;
+}
+
+message PushRequest {
+  Identity identity = 1;
+  string label = 2;
+  repeated Message messages = 3;
+}
+
+message PushResponse {}
+
+message CountIdentitiesRequest {}
+
+message CountIdentitiesResponse {
+  uint32 count = 1;
+}
