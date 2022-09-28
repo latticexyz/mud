@@ -25,7 +25,7 @@ protoc-ts:
 	mkdir -p ./protobuf/ts/faucet
 	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/ecs-stream --proto_path proto proto/ecs-stream.proto
 	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/ecs-snapshot --proto_path proto proto/ecs-snapshot.proto
-  npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/ecs-relay --proto_path proto proto/ecs-relay.proto
+	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/ecs-relay --proto_path proto proto/ecs-relay.proto
 	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/faucet --proto_path proto proto/faucet.proto
 .PHONY: protoc-ts
 
