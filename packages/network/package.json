@@ -61,5 +61,6 @@
     "observable-webworker": "^4.0.1",
     "rxjs": "^7.5.5"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
+  "dependencies": {}
 }
