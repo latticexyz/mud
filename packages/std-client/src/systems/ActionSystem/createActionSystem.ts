@@ -144,15 +144,20 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
 
     try {
       // Execute the action
+      console.log("txqueue Actionqueue awaiting execution");
       const tx = await action.execute(requirementResult);
 
       // If the result includes a hash key (single tx) or hashes (multiple tx) key, wait for the transactions to complete before removing the pending actions
+      //
+      console.log("txqueue Actionqueue awaiting events");
       if (tx) {
         // Wait for all tx events to be reduced
         updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents });
         await awaitStreamValue(txReduced$, (v) => v === tx.hash);
         updateComponent(Action, action.entityIndex, { state: ActionState.TxReduced });
       }
+
+      console.log("txqueue Actionqueue done");
 
       updateComponent(Action, action.entityIndex, { state: ActionState.Complete });
     } catch (e) {

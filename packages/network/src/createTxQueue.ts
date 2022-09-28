@@ -109,6 +109,7 @@ export function createTxQueue<C extends Contracts>(
 
         const populatedTx = await member(...argsWithoutOverrides, configOverrides);
         populatedTx.nonce = nonce;
+        populatedTx.chainId = await (await target.provider.getNetwork()).chainId;
         const signedTx = await target.signer.signTransaction(populatedTx);
         const hash = await target.provider.perform("sendTransaction", { signedTransaction: signedTx });
         resolve({ hash });
@@ -140,8 +141,15 @@ export function createTxQueue<C extends Contracts>(
     // Increase utilization to prevent executing more tx than allowed by capacity
     utilization++;
 
+    // Start processing another request from the queue
+    // Note: we start processing again after increasing the utilization to process up to `concurrency` tx request in parallel.
+    // Then we call process queue again after decreasing the utilization to trigger waiting tx requests.
+    processQueue();
+
     // Run exclusive to avoid two tx requests awaiting the nonce in parallel and submitting with the same nonce.
+    console.log("txqueue waiting to submit", txRequest);
     const txResult = await submissionMutex.runExclusive(async () => {
+      console.log("inside mutex", txRequest);
       // Define variables in scope visible to finally block
       let error: any;
       const stateMutability = txRequest.stateMutability;
@@ -149,6 +157,7 @@ export function createTxQueue<C extends Contracts>(
       // Await gas estimation to avoid increasing nonce before tx is actually sent
       let gasLimit: BigNumberish;
       try {
+        console.log("txqueue estimate gas", txRequest);
         gasLimit = await txRequest.estimateGas();
       } catch (e) {
         console.error("GAS ESTIMATION ERROR", e);
@@ -156,9 +165,11 @@ export function createTxQueue<C extends Contracts>(
       }
 
       // Wait if nonce is not ready
+      console.log("txqueue waiting ready state", txRequest);
       const { nonce } = await awaitValue(readyState);
 
       try {
+        console.log("txqueue awaiting execute", txRequest);
         return await txRequest.execute(nonce, gasLimit);
       } catch (e: any) {
         console.warn("TXQUEUE EXECUTION FAILED", e);
@@ -181,11 +192,12 @@ export function createTxQueue<C extends Contracts>(
         if (shouldResetNonce) await resetNonce();
       }
     });
+    console.log("txqueue await confirmation", txRequest);
 
     // Await confirmation
     if (txResult?.hash) {
       try {
-        // await txResult.wait();
+        await txResult.wait();
       } catch (e) {
         console.warn("tx failed in block", e);
 
@@ -212,6 +224,8 @@ export function createTxQueue<C extends Contracts>(
         console.log("---------------------------------------------------------");
       }
     }
+
+    console.log("txqueue done", txRequest);
 
     utilization--;
 
