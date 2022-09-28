@@ -46,8 +46,9 @@ export async function createRelayerStream(url: string, id: string) {
   // Push data to subscribers
   function push(label: string, data: Uint8Array) {
     relayerClient.push({
+      identity,
       label,
-      messages: [{ version: 1, data, timestamp: 1, id: id + Date.now() }],
+      messages: [{ version: 1, data, timestamp: BigInt(Date.now()), id: id + Date.now() }],
     });
   }
 
