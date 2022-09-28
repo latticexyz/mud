@@ -1,0 +1,60 @@
+syntax = "proto3";
+package faucet;
+
+option go_package = "protobuf/go/faucet";
+
+message LinkedTwitterPair {
+  string username = 1;
+  string address = 2;
+}
+
+message FaucetStore {
+  map<string, string> addressToUsername = 1;
+  map<string, string> usernameToAddress = 2;
+
+  // Username to timestamp of latest drip.
+  map<string, int64> latestDrip = 3;
+
+  // Global drip counter.
+  uint64 totalDripCount = 4;
+}
+
+// The Faucet Service definition.
+service FaucetService {
+  rpc VerifyTweet (VerifyTweetRequest) returns (VerifyTweetResponse) {}
+
+  rpc GetLinkedTwitters (GetLinkedTwittersRequest) returns (GetLinkedTwittersResponse) {}
+  rpc GetLinkedTwitterForAddress (LinkedTwitterForAddressRequest) returns (LinkedTwitterForAddressResponse) {}
+  rpc GetLinkedAddressForTwitter (LinkedAddressForTwitterRequest) returns (LinkedAddressForTwitterResponse) {}
+}
+
+message VerifyTweetRequest {
+  string username = 1;
+  string address = 2;
+}
+
+message VerifyTweetResponse {
+  string txHash = 1;
+}
+
+message GetLinkedTwittersRequest {}
+
+message GetLinkedTwittersResponse {
+  repeated LinkedTwitterPair linkedTwitters = 1;
+}
+
+message LinkedTwitterForAddressRequest {
+  string address = 1;
+}
+
+message LinkedTwitterForAddressResponse {
+  string username = 1;
+}
+
+message LinkedAddressForTwitterRequest {
+  string username = 1;
+}
+
+message LinkedAddressForTwitterResponse {
+  string address = 1;
+}

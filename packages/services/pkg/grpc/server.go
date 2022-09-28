@@ -1,15 +1,19 @@
 package grpc
 
 import (
+	"crypto/ecdsa"
 	"fmt"
+	"latticexyz/mud/packages/services/pkg/faucet"
 	multiplexer "latticexyz/mud/packages/services/pkg/multiplexer"
 	"latticexyz/mud/packages/services/pkg/relay"
 	pb_relay "latticexyz/mud/packages/services/protobuf/go/ecs-relay"
 	pb_snapshot "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 	pb_stream "latticexyz/mud/packages/services/protobuf/go/ecs-stream"
+	pb_faucet "latticexyz/mud/packages/services/protobuf/go/faucet"
 	"net"
 	"net/http"
 
+	"github.com/dghubble/go-twitter/twitter"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"go.uber.org/zap"
@@ -131,6 +135,48 @@ func StartRelayServer(port int, config *relay.RelayServerConfig, logger *zap.Log
 	startHTTPServer(httpServer, logger)
 }
 
+func StartFaucetServer(
+	port int,
+	twitterClient *twitter.Client,
+	ethClient *ethclient.Client,
+	privateKey *ecdsa.PrivateKey,
+	publicKey *ecdsa.PublicKey,
+	dripConfig *faucet.DripConfig,
+	logger *zap.Logger,
+) {
+	var options []grpc.ServerOption
+	grpcServer := grpc.NewServer(options...)
+
+	pb_faucet.RegisterFaucetServiceServer(grpcServer, createFaucetServer(twitterClient, ethClient, privateKey, publicKey, dripConfig, logger))
+
+	// Register reflection service on gRPC server.
+	reflection.Register(grpcServer)
+
+	// Start the RPC server at PORT.
+	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
+	if err != nil {
+		logger.Fatal("failed to listen", zap.String("category", "gRPC server"), zap.Error(err))
+	}
+	go startRPCServer(grpcServer, listener, logger)
+	logger.Info("started listening", zap.String("category", "gRPC server"), zap.String("address", listener.Addr().String()))
+
+	// Wrap gRPC server into a gRPC-web HTTP server.
+	grpcWebServer := grpcweb.WrapServer(
+		grpcServer,
+		// Enable CORS.
+		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
+		grpcweb.WithOriginFunc(func(origin string) bool { return true }),
+	)
+	// Create and start the HTTP server at PORT+1.
+	httpServer := &http.Server{
+		Handler: grpcWebServer,
+		Addr:    fmt.Sprintf("0.0.0.0:%d", port+1),
+	}
+
+	logger.Info("started listening", zap.String("category", "http server"), zap.String("address", httpServer.Addr))
+	startHTTPServer(httpServer, logger)
+}
+
 func createStreamServer(ethclient *ethclient.Client, multiplexer *multiplexer.Multiplexer, logger *zap.Logger) *ecsStreamServer {
 	return &ecsStreamServer{
 		ethclient:   ethclient,
@@ -150,4 +196,22 @@ func createRelayServer(logger *zap.Logger, config *relay.RelayServerConfig) *ecs
 	}
 	server.Init()
 	return server
+}
+
+func createFaucetServer(
+	twitterClient *twitter.Client,
+	ethClient *ethclient.Client,
+	privateKey *ecdsa.PrivateKey,
+	publicKey *ecdsa.PublicKey,
+	dripConfig *faucet.DripConfig,
+	logger *zap.Logger,
+) *faucetServer {
+	return &faucetServer{
+		twitterClient: twitterClient,
+		ethClient:     ethClient,
+		privateKey:    privateKey,
+		publicKey:     publicKey,
+		dripConfig:    dripConfig,
+		logger:        logger,
+	}
 }
