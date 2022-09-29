@@ -8,6 +8,11 @@ message Identity {
   string name = 1;
 }
 
+// Signature that a client must provide to prove ownership of identity.
+message Signature {
+  string signature = 1;
+}
+
 message Message {
   uint32 version = 1;
   bytes data = 2;
@@ -17,9 +22,9 @@ message Message {
 
 // The Relay Service definition.
 service ECSRelayService {
-  rpc Authenticate(Identity) returns (Identity) {}
-  rpc Revoke(Identity) returns (Identity) {}
-  rpc Ping(Identity) returns (Identity) {}
+  rpc Authenticate(Signature) returns (Identity) {}
+  rpc Revoke(Signature) returns (Identity) {}
+  rpc Ping(Signature) returns (Identity) {}
 
   rpc CountAuthenticated(CountIdentitiesRequest) returns (CountIdentitiesResponse) {}
   rpc CountConnected(CountIdentitiesRequest) returns (CountIdentitiesResponse) {}
@@ -27,12 +32,12 @@ service ECSRelayService {
   rpc Subscribe(SubscriptionRequest) returns (Subscription) {}
   rpc Unsubscribe(SubscriptionRequest) returns (Subscription) {}
 
-  rpc OpenStream(Identity) returns (stream Message) {}
+  rpc OpenStream(Signature) returns (stream Message) {}
   rpc Push(PushRequest) returns (PushResponse) {}
 }
 
 message SubscriptionRequest {
-  Identity identity = 1;
+  Signature signature = 1;
   Subscription subscription = 2;
 }
 
@@ -41,7 +46,7 @@ message Subscription {
 }
 
 message PushRequest {
-  Identity identity = 1;
+  Signature signature = 1;
   string label = 2;
   repeated Message messages = 3;
 }

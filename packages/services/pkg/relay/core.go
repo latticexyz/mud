@@ -103,16 +103,22 @@ func GenerateRandomIdentifier() (string, error) {
 	return crypto.Keccak256Hash(timestamp).Hex(), nil
 }
 
-func (registry *ClientRegistry) GetClient(identity *pb.Identity) (*Client, error) {
+func (registry *ClientRegistry) GetClient(signature *pb.Signature) (*Client, *pb.Identity, error) {
+	// First recover the identity from the signature.
+	identity, err := RecoverIdentity(signature)
+	if err != nil {
+		return nil, nil, err
+	}
+	// Now find the client corresponding to the identity.
 	registry.mutex.Lock()
 	for _, client := range registry.clients {
 		if client.identity.Name == identity.Name {
 			registry.mutex.Unlock()
-			return client, nil
+			return client, identity, nil
 		}
 	}
 	registry.mutex.Unlock()
-	return nil, fmt.Errorf("client not registered")
+	return nil, identity, fmt.Errorf("client not registered: %s", identity.Name)
 }
 
 func (registry *ClientRegistry) IsRegistered(identity *pb.Identity) bool {

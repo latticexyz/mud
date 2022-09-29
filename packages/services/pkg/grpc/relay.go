@@ -60,16 +60,16 @@ func (server *ecsRelayServer) Stop() {
 	server.ClientRegistry.DisconnectAll()
 }
 
-func (server *ecsRelayServer) Authenticate(ctx context.Context, identity *pb.Identity) (*pb.Identity, error) {
-	if len(identity.Name) == 0 {
-		name, err := relay.GenerateRandomIdentifier()
-		if err != nil {
-			return nil, err
-		} else {
-			identity.Name = name
-		}
+func (server *ecsRelayServer) Authenticate(ctx context.Context, signature *pb.Signature) (*pb.Identity, error) {
+	if len(signature.Signature) == 0 {
+		return nil, fmt.Errorf("signature required to authenticate")
 	}
-	server.logger.Info("authenticating client", zap.String("name", identity.Name))
+
+	identity, err := relay.RecoverIdentity(signature)
+	if err != nil {
+		return nil, err
+	}
+	server.logger.Info("successfully authenticated client", zap.String("name", identity.Name))
 
 	if !server.IsRegistered(identity) {
 		server.Register(identity)
@@ -81,11 +81,16 @@ func (server *ecsRelayServer) Authenticate(ctx context.Context, identity *pb.Ide
 	return identity, nil
 }
 
-func (server *ecsRelayServer) Revoke(ctx context.Context, identity *pb.Identity) (*pb.Identity, error) {
-	if len(identity.Name) == 0 {
-		return nil, fmt.Errorf("required to provide an identity when revoking")
+func (server *ecsRelayServer) Revoke(ctx context.Context, signature *pb.Signature) (*pb.Identity, error) {
+	if len(signature.Signature) == 0 {
+		return nil, fmt.Errorf("signature required to revoke")
 	}
-	server.logger.Info("authenticating client", zap.String("name", identity.Name))
+
+	identity, err := relay.RecoverIdentity(signature)
+	if err != nil {
+		return nil, err
+	}
+	server.logger.Info("successfully authenticated client", zap.String("name", identity.Name))
 
 	if server.IsRegistered(identity) {
 		err := server.Unregister(identity)
@@ -100,10 +105,14 @@ func (server *ecsRelayServer) Revoke(ctx context.Context, identity *pb.Identity)
 	return identity, nil
 }
 
-func (server *ecsRelayServer) Ping(ctx context.Context, identity *pb.Identity) (*pb.Identity, error) {
-	client, err := server.GetClient(identity)
+func (server *ecsRelayServer) Ping(ctx context.Context, signature *pb.Signature) (*pb.Identity, error) {
+	if len(signature.Signature) == 0 {
+		return nil, fmt.Errorf("signature required")
+	}
+
+	client, identity, err := server.GetClient(signature)
 	if err != nil {
-		return nil, fmt.Errorf("client not authenticated")
+		return nil, err
 	}
 
 	server.logger.Info("received ping from client", zap.String("client", identity.Name))
@@ -131,9 +140,13 @@ func (server *ecsRelayServer) CountConnected(ctx context.Context, request *pb.Co
 }
 
 func (server *ecsRelayServer) Subscribe(ctx context.Context, request *pb.SubscriptionRequest) (*pb.Subscription, error) {
-	client, err := server.GetClient(request.Identity)
+	if request.Signature == nil {
+		return nil, fmt.Errorf("signature required")
+	}
+
+	client, identity, err := server.GetClient(request.Signature)
 	if err != nil {
-		return nil, fmt.Errorf("client not authenticated")
+		return nil, err
 	}
 
 	label := server.GetLabel(request.Subscription.Label)
@@ -141,7 +154,7 @@ func (server *ecsRelayServer) Subscribe(ctx context.Context, request *pb.Subscri
 		label.Subscribe(client)
 
 		server.logger.Info("subscribed client to label",
-			zap.String("client", request.Identity.Name),
+			zap.String("client", identity.Name),
 			zap.String("label", request.Subscription.Label),
 		)
 	} else {
@@ -152,9 +165,13 @@ func (server *ecsRelayServer) Subscribe(ctx context.Context, request *pb.Subscri
 }
 
 func (server *ecsRelayServer) Unsubscribe(ctx context.Context, request *pb.SubscriptionRequest) (*pb.Subscription, error) {
-	client, err := server.GetClient(request.Identity)
+	if request.Signature == nil {
+		return nil, fmt.Errorf("signature required")
+	}
+
+	client, identity, err := server.GetClient(request.Signature)
 	if err != nil {
-		return nil, fmt.Errorf("client not authenticated")
+		return nil, err
 	}
 
 	label := server.GetLabel(request.Subscription.Label)
@@ -165,7 +182,7 @@ func (server *ecsRelayServer) Unsubscribe(ctx context.Context, request *pb.Subsc
 		}
 
 		server.logger.Info("unsubscribed client from label",
-			zap.String("client", request.Identity.Name),
+			zap.String("client", identity.Name),
 			zap.String("label", request.Subscription.Label),
 		)
 	} else {
@@ -175,10 +192,14 @@ func (server *ecsRelayServer) Unsubscribe(ctx context.Context, request *pb.Subsc
 	return request.Subscription, nil
 }
 
-func (server *ecsRelayServer) OpenStream(identity *pb.Identity, stream pb.ECSRelayService_OpenStreamServer) error {
-	client, err := server.GetClient(identity)
+func (server *ecsRelayServer) OpenStream(signature *pb.Signature, stream pb.ECSRelayService_OpenStreamServer) error {
+	if len(signature.Signature) == 0 {
+		return fmt.Errorf("signature required")
+	}
+
+	client, identity, err := server.GetClient(signature)
 	if err != nil {
-		return fmt.Errorf("client not authenticated")
+		return err
 	}
 
 	if !client.IsConnected() {
@@ -204,18 +225,18 @@ func (server *ecsRelayServer) OpenStream(identity *pb.Identity, stream pb.ECSRel
 }
 
 func (server *ecsRelayServer) Push(ctx context.Context, request *pb.PushRequest) (*pb.PushResponse, error) {
-	if request.Identity == nil {
-		return nil, fmt.Errorf("identity required when pushing a message")
+	if request.Signature == nil {
+		return nil, fmt.Errorf("signature required when pushing a message")
 	}
-	_, err := server.GetClient(request.Identity)
+	_, identity, err := server.GetClient(request.Signature)
 	if err != nil {
-		return nil, fmt.Errorf("client not authenticated")
+		return nil, err
 	}
 
 	label := server.GetLabel(request.Label)
 
 	for _, message := range request.Messages {
-		label.Propagate(message, request.Identity)
+		label.Propagate(message, identity)
 	}
 	return &pb.PushResponse{}, nil
 }

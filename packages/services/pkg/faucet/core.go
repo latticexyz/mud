@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"io/ioutil"
 	"latticexyz/mud/packages/services/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/utils"
 	"os"
 	"strings"
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
-	"github.com/ethereum/go-ethereum/accounts"
-	"github.com/ethereum/go-ethereum/common/hexutil"
-	"github.com/ethereum/go-ethereum/crypto"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 
@@ -28,24 +26,6 @@ func TwitterUsernameQuery(username string) string {
 	return fmt.Sprintf("from:%s AND %s", username, MatchingHashtag)
 }
 
-func VerifySig(from, sigHex string, msg []byte) (bool, string) {
-	sig := hexutil.MustDecode(sigHex)
-
-	msg = accounts.TextHash(msg)
-	if sig[crypto.RecoveryIDOffset] == 27 || sig[crypto.RecoveryIDOffset] == 28 {
-		sig[crypto.RecoveryIDOffset] -= 27 // Transform yellow paper V from 27/28 to 0/1
-	}
-
-	recovered, err := crypto.SigToPub(msg, sig)
-	if err != nil {
-		return false, ""
-	}
-
-	recoveredAddr := crypto.PubkeyToAddress(*recovered)
-
-	return from == recoveredAddr.Hex(), recoveredAddr.Hex()
-}
-
 func ExtractSignatureFromTweet(tweet twitter.Tweet) string {
 	tokens := strings.Split(tweet.FullText, "faucet")
 	return strings.TrimSpace(tokens[1])[:132]
@@ -54,11 +34,14 @@ func ExtractSignatureFromTweet(tweet twitter.Tweet) string {
 func VerifyDripRequestTweet(tweet twitter.Tweet, username string, address string) error {
 	tweetSignature := ExtractSignatureFromTweet(tweet)
 
-	isVerified, recoveredAddress := VerifySig(
+	isVerified, recoveredAddress, err := utils.VerifySig(
 		address,
 		tweetSignature,
 		[]byte(fmt.Sprintf("%s tweetooor requesting drip to %s address", username, address)),
 	)
+	if err != nil {
+		return fmt.Errorf("error verifying signature: %s", err.Error())
+	}
 	if !isVerified {
 		return fmt.Errorf("recovered address %s != provided address %s", recoveredAddress, address)
 	}
