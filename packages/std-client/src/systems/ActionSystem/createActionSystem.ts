@@ -168,6 +168,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
   // Set the action's state to ActionState.Failed
   function handleError(action: ActionData) {
     updateComponent(Action, action.entityIndex, { state: ActionState.Failed });
+    remove(action.id);
   }
 
   /**
