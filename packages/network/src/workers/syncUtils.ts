@@ -416,7 +416,7 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
       const component = to256BitString(BigNumber.from(rawComponentId).toHexString());
       const entity = to256BitString(BigNumber.from(entityId).toHexString()) as EntityID;
 
-      const value = ecsEvent.value ? await decode(component, ecsEvent.value) : undefined;
+      const value = ecsEvent.eventType === "ComponentValueSet" ? await decode(component, ecsEvent.value) : undefined;
 
       // Since ECS events are coming in ordered over the wire, we check if the following event has a
       // different transaction then the current, which would mean an event associated with another
