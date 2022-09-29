@@ -1,6 +1,6 @@
 import { filterNullish } from "@latticexyz/utils";
 import { observable, ObservableSet } from "mobx";
-import { concat, concatMap, filter, from, map, merge, Observable, of } from "rxjs";
+import { concat, concatMap, filter, from, map, merge, Observable, of, Subject } from "rxjs";
 import {
   componentValueEquals,
   getComponentEntities,
@@ -431,7 +431,8 @@ export function defineQuery(
   const containsProxy =
     fragments.findIndex((v) => [QueryFragmentType.ProxyExpand, QueryFragmentType.ProxyRead].includes(v.type)) !== -1;
 
-  const update$ = concat(
+  const update$ = new Subject<ComponentUpdate & { type: UpdateType }>();
+  const subscription = concat(
     initial$,
     merge(...fragments.map((f) => f.component.update$)) // Combine all component update streams accessed accessed in this query
       .pipe(
@@ -510,11 +511,14 @@ export function defineQuery(
             }),
         filterNullish()
       )
-  );
+  ).subscribe(update$);
+
+  const world = fragments[0].component.world;
+  world.registerDisposer(() => subscription?.unsubscribe());
 
   return {
     matching,
-    update$,
+    update$: update$.asObservable(),
   };
 }
 
