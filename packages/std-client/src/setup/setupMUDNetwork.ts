@@ -11,7 +11,7 @@ import {
   SyncWorkerConfig,
   isNetworkComponentUpdateEvent,
 } from "@latticexyz/network";
-import { bufferTime, filter, Observable, Subject } from "rxjs";
+import { BehaviorSubject, bufferTime, filter, Observable, Subject } from "rxjs";
 import {
   Component,
   Components,
@@ -45,7 +45,8 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   networkConfig: SetupContractConfig,
   world: World,
   components: C,
-  SystemAbis: { [key in keyof SystemTypes]: ContractInterface }
+  SystemAbis: { [key in keyof SystemTypes]: ContractInterface },
+  options?: { initialGasPrice?: number }
 ) {
   const SystemsRegistry = defineStringComponent(world, {
     id: "SystemsRegistry",
@@ -79,10 +80,17 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     signerOrProvider,
   });
 
-  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, { devMode: networkConfig.devMode });
+  const gasPriceInput$ = new BehaviorSubject<number>(
+    // If no initial gas price is provided, check the gas price once and add a 30% buffer
+    options?.initialGasPrice || (await signerOrProvider.get().getGasPrice()).toNumber() * 1.3
+  );
+
+  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, gasPriceInput$, {
+    devMode: networkConfig.devMode,
+  });
   world.registerDisposer(disposeTxQueue);
 
-  const systems = createSystemExecutor<SystemTypes>(world, network, SystemsRegistry, SystemAbis, {
+  const systems = createSystemExecutor<SystemTypes>(world, network, SystemsRegistry, SystemAbis, gasPriceInput$, {
     devMode: networkConfig.devMode,
   });
 
@@ -109,7 +117,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
 
   const encoders = createEncoders(world, ComponentsRegistry, signerOrProvider);
 
-  return { txQueue, txReduced$, encoders, network, startSync, systems };
+  return { txQueue, txReduced$, encoders, network, startSync, systems, gasPriceInput$ };
 }
 
 async function createEncoders(

@@ -5,6 +5,7 @@ import { Contract, ContractInterface, Signer } from "ethers";
 import { observable, runInAction } from "mobx";
 import { createTxQueue } from "./createTxQueue";
 import { Network } from "./createNetwork";
+import { BehaviorSubject } from "rxjs";
 
 /**
  * Create a system executor object.
@@ -23,6 +24,7 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
   network: Network,
   systems: Component<{ value: Type.String }>,
   interfaces: { [key in keyof T]: ContractInterface },
+  gasPrice$: BehaviorSubject<number>,
   options?: { devMode?: boolean; concurrency?: number }
 ) {
   const systemContracts = observable.box({} as T);
@@ -47,7 +49,7 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
     runInAction(() => systemContracts.set({ ...systemContracts.get(), [system.id]: system.contract }));
   });
 
-  const { txQueue, dispose } = createTxQueue<T>(systemContracts, network, options);
+  const { txQueue, dispose } = createTxQueue<T>(systemContracts, network, gasPrice$, options);
   world.registerDisposer(dispose);
 
   return txQueue;

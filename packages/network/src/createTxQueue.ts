@@ -8,6 +8,7 @@ import { Contracts, TxQueue } from "./types";
 import { ConnectionState } from "./createProvider";
 import { Network } from "./createNetwork";
 import { getRevertReason } from "./networkUtils";
+import { BehaviorSubject } from "rxjs";
 
 type ReturnTypeStrict<T> = T extends (...args: any) => any ? ReturnType<T> : never;
 
@@ -23,10 +24,10 @@ type ReturnTypeStrict<T> = T extends (...args: any) => any ? ReturnType<T> : nev
 export function createTxQueue<C extends Contracts>(
   computedContracts: IComputedValue<C> | IObservableValue<C>,
   network: Network,
-  options?: { concurrency?: number; devMode?: boolean; defaultGasPrice?: number }
+  gasPrice$: BehaviorSubject<number>,
+  options?: { concurrency?: number; devMode?: boolean }
 ): { txQueue: TxQueue<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {
   const { concurrency } = options || {};
-  const defaultGasPrice = options?.defaultGasPrice ?? 2_000_000_000;
 
   const queue = createPriorityQueue<{
     execute: (
@@ -117,7 +118,12 @@ export function createTxQueue<C extends Contracts>(
         }
 
         // Populate config
-        const configOverrides = { gasPrice: defaultGasPrice, ...overrides, nonce, gasLimit };
+        const configOverrides = {
+          gasPrice: gasPrice$.getValue(),
+          ...overrides,
+          nonce,
+          gasLimit,
+        };
         if (options?.devMode) configOverrides.gasPrice = 0;
 
         // Populate tx
