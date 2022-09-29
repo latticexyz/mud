@@ -31,7 +31,14 @@ export type ActionRequest<C extends Components, T, M = undefined> = {
   // Logic to be executed when the action is executed.
   // If txHashes are returned from the txQueue, the action will only be completed (and pending updates removed)
   // once all events from the given txHashes have been received and reduced.
-  execute: (data: T) => Promise<ContractTransaction> | Promise<void> | void | undefined;
+  execute: (
+    data: T
+  ) =>
+    | Promise<ContractTransaction>
+    | Promise<void>
+    | Promise<{ hash: string; wait(): Promise<unknown> }>
+    | void
+    | undefined;
 
   // Flag to set if the queue should wait for the underlying transaction to be confirmed (in addition to being reduced)
   awaitConfirmation?: boolean;

@@ -170,7 +170,9 @@ export function createLatestEventStreamService(
   return from(stream.responses).pipe(
     map(async (responseChunk) => {
       const events = await transformWorldEvents(responseChunk);
-      console.log(`[SyncWorker] got ${events.length} events from block ${responseChunk.blockNumber}`);
+      console.info(
+        `[SyncWorker || via Stream Service] got ${events.length} events from block ${responseChunk.blockNumber}`
+      );
       return events;
     }),
     awaitPromise(),
@@ -183,7 +185,7 @@ export function createLatestEventStreamService(
  * blocks from the blockNumber$ stream and fetching the corresponding block
  * from the connected RPC.
  *
- * @dev Only use if {@link createLatestEventStreamRPC} is not available.
+ * @dev Only use if {@link createLatestEventStreamService} is not available.
  *
  * @param blockNumber$ Block number stream
  * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
@@ -203,7 +205,7 @@ export function createLatestEventStreamRPC(
       const to = blockNumber;
       lastSyncedBlockNumber = to;
       const events = await fetchWorldEvents(from, to);
-      console.log(`[SyncWorker] fetched ${events.length} events from block range ${from} -> ${to}`);
+      console.info(`[SyncWorker || via JSON-RPC] fetched ${events.length} events from block range ${from} -> ${to}`);
 
       if (fetchSystemCallsFromEvents && events.length > 0) {
         const systemCalls = await fetchSystemCallsFromEvents(events, blockNumber);
@@ -251,7 +253,7 @@ export async function fetchEventsInBlockRangeChunked(
       );
     }
 
-    console.log(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
+    console.info(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
 
     events.push(...chunkEvents);
   }
@@ -307,7 +309,7 @@ export function createDecode(worldConfig: ContractConfig, provider: JsonRpcProvi
     // Create the decoder if it doesn't exist yet
     if (!decoders[componentId]) {
       const address = componentAddress || (await world.getComponent(componentId));
-      console.log("Creating decoder for", address);
+      console.info("Creating decoder for", address);
       const component = new Contract(address, ComponentAbi, provider) as Component;
       const [keys, values] = await component.getSchema();
       decoders[componentId] = createDecoder(keys, values);

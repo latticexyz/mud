@@ -29,6 +29,7 @@ export type Clock = {
 };
 
 export interface ProviderConfig {
+  chainId: number;
   jsonRpcUrl: string;
   wsRpcUrl?: string;
   options?: { batch?: boolean; pollingInterval?: number; skipNetworkCheck?: boolean };

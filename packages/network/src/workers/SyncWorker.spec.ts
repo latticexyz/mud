@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { keccak256, sleep } from "@latticexyz/utils";
 import { computed } from "mobx";
@@ -143,7 +144,11 @@ describe("Sync.worker", () => {
       checkpointServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
-      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      provider: {
+        jsonRpcUrl: "",
+        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        chainId: 4242,
+      },
       initialBlockNumber: 0,
     });
 
@@ -171,7 +176,11 @@ describe("Sync.worker", () => {
       streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
-      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      provider: {
+        jsonRpcUrl: "",
+        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        chainId: 4242,
+      },
       initialBlockNumber: 0,
     });
 
@@ -201,7 +210,11 @@ describe("Sync.worker", () => {
       streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
-      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      provider: {
+        chainId: 4242,
+        jsonRpcUrl: "",
+        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+      },
       initialBlockNumber: 0,
     });
     await sleep(0);
@@ -215,7 +228,11 @@ describe("Sync.worker", () => {
       streamServiceUrl: "http://localhost:50052",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
-      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      provider: {
+        chainId: 4242,
+        jsonRpcUrl: "",
+        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+      },
       initialBlockNumber: 0,
     });
     await sleep(0);
@@ -229,7 +246,11 @@ describe("Sync.worker", () => {
       streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
-      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      provider: {
+        chainId: 4242,
+        jsonRpcUrl: "",
+        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+      },
       initialBlockNumber: 0,
     });
 
@@ -253,7 +274,11 @@ describe("Sync.worker", () => {
       streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
-      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      provider: {
+        chainId: 4242,
+        jsonRpcUrl: "",
+        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+      },
       initialBlockNumber: 0,
     });
 
@@ -277,7 +302,11 @@ describe("Sync.worker", () => {
       streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
-      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      provider: {
+        chainId: 4242,
+        jsonRpcUrl: "",
+        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+      },
       initialBlockNumber: 0,
     });
 
@@ -311,7 +340,11 @@ describe("Sync.worker", () => {
       streamServiceUrl: "",
       chainId: 4242,
       worldContract: { address: "0x00", abi: [] },
-      provider: { jsonRpcUrl: "", options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true } },
+      provider: {
+        chainId: 4242,
+        jsonRpcUrl: "",
+        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+      },
       initialBlockNumber: 0,
     });
 
