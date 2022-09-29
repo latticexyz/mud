@@ -30,7 +30,10 @@ type ECSRelayServiceClient interface {
 	Subscribe(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	Unsubscribe(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	OpenStream(ctx context.Context, in *Signature, opts ...grpc.CallOption) (ECSRelayService_OpenStreamClient, error)
+	// Push a single message to be relayed.
 	Push(ctx context.Context, in *PushRequest, opts ...grpc.CallOption) (*PushResponse, error)
+	// Push a series of messages to be relayed.
+	PushMany(ctx context.Context, in *PushManyRequest, opts ...grpc.CallOption) (*PushResponse, error)
 }
 
 type eCSRelayServiceClient struct {
@@ -145,6 +148,15 @@ func (c *eCSRelayServiceClient) Push(ctx context.Context, in *PushRequest, opts 
 	return out, nil
 }
 
+func (c *eCSRelayServiceClient) PushMany(ctx context.Context, in *PushManyRequest, opts ...grpc.CallOption) (*PushResponse, error) {
+	out := new(PushResponse)
+	err := c.cc.Invoke(ctx, "/ecsrelay.ECSRelayService/PushMany", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ECSRelayServiceServer is the server API for ECSRelayService service.
 // All implementations must embed UnimplementedECSRelayServiceServer
 // for forward compatibility
@@ -157,7 +169,10 @@ type ECSRelayServiceServer interface {
 	Subscribe(context.Context, *SubscriptionRequest) (*Subscription, error)
 	Unsubscribe(context.Context, *SubscriptionRequest) (*Subscription, error)
 	OpenStream(*Signature, ECSRelayService_OpenStreamServer) error
+	// Push a single message to be relayed.
 	Push(context.Context, *PushRequest) (*PushResponse, error)
+	// Push a series of messages to be relayed.
+	PushMany(context.Context, *PushManyRequest) (*PushResponse, error)
 	mustEmbedUnimplementedECSRelayServiceServer()
 }
 
@@ -191,6 +206,9 @@ func (UnimplementedECSRelayServiceServer) OpenStream(*Signature, ECSRelayService
 }
 func (UnimplementedECSRelayServiceServer) Push(context.Context, *PushRequest) (*PushResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Push not implemented")
+}
+func (UnimplementedECSRelayServiceServer) PushMany(context.Context, *PushManyRequest) (*PushResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PushMany not implemented")
 }
 func (UnimplementedECSRelayServiceServer) mustEmbedUnimplementedECSRelayServiceServer() {}
 
@@ -370,6 +388,24 @@ func _ECSRelayService_Push_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ECSRelayService_PushMany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PushManyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ECSRelayServiceServer).PushMany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ecsrelay.ECSRelayService/PushMany",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ECSRelayServiceServer).PushMany(ctx, req.(*PushManyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ECSRelayService_ServiceDesc is the grpc.ServiceDesc for ECSRelayService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -408,6 +444,10 @@ var ECSRelayService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Push",
 			Handler:    _ECSRelayService_Push_Handler,
+		},
+		{
+			MethodName: "PushMany",
+			Handler:    _ECSRelayService_PushMany_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

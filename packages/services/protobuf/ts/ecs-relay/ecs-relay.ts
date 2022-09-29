@@ -44,17 +44,21 @@ export interface Message {
    */
   version: number;
   /**
-   * @generated from protobuf field: bytes data = 2;
+   * @generated from protobuf field: string id = 2;
+   */
+  id: string;
+  /**
+   * @generated from protobuf field: bytes data = 3;
    */
   data: Uint8Array;
   /**
-   * @generated from protobuf field: int64 timestamp = 3;
+   * @generated from protobuf field: int64 timestamp = 4;
    */
   timestamp: bigint;
   /**
-   * @generated from protobuf field: string id = 4;
+   * @generated from protobuf field: string signature = 5;
    */
-  id: string;
+  signature: string;
 }
 /**
  * @generated from protobuf message ecsrelay.SubscriptionRequest
@@ -82,6 +86,19 @@ export interface Subscription {
  * @generated from protobuf message ecsrelay.PushRequest
  */
 export interface PushRequest {
+  /**
+   * @generated from protobuf field: string label = 1;
+   */
+  label: string;
+  /**
+   * @generated from protobuf field: ecsrelay.Message message = 2;
+   */
+  message?: Message;
+}
+/**
+ * @generated from protobuf message ecsrelay.PushManyRequest
+ */
+export interface PushManyRequest {
   /**
    * @generated from protobuf field: ecsrelay.Signature signature = 1;
    */
@@ -201,13 +218,14 @@ class Message$Type extends MessageType<Message> {
   constructor() {
     super("ecsrelay.Message", [
       { no: 1, name: "version", kind: "scalar", T: 13 /*ScalarType.UINT32*/ },
-      { no: 2, name: "data", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
-      { no: 3, name: "timestamp", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
-      { no: 4, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 2, name: "id", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 3, name: "data", kind: "scalar", T: 12 /*ScalarType.BYTES*/ },
+      { no: 4, name: "timestamp", kind: "scalar", T: 3 /*ScalarType.INT64*/, L: 0 /*LongType.BIGINT*/ },
+      { no: 5, name: "signature", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
     ]);
   }
   create(value?: PartialMessage<Message>): Message {
-    const message = { version: 0, data: new Uint8Array(0), timestamp: 0n, id: "" };
+    const message = { version: 0, id: "", data: new Uint8Array(0), timestamp: 0n, signature: "" };
     globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
     if (value !== undefined) reflectionMergePartial<Message>(this, message, value);
     return message;
@@ -221,14 +239,17 @@ class Message$Type extends MessageType<Message> {
         case /* uint32 version */ 1:
           message.version = reader.uint32();
           break;
-        case /* bytes data */ 2:
+        case /* string id */ 2:
+          message.id = reader.string();
+          break;
+        case /* bytes data */ 3:
           message.data = reader.bytes();
           break;
-        case /* int64 timestamp */ 3:
+        case /* int64 timestamp */ 4:
           message.timestamp = reader.int64().toBigInt();
           break;
-        case /* string id */ 4:
-          message.id = reader.string();
+        case /* string signature */ 5:
+          message.signature = reader.string();
           break;
         default:
           let u = options.readUnknownField;
@@ -243,12 +264,14 @@ class Message$Type extends MessageType<Message> {
   internalBinaryWrite(message: Message, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
     /* uint32 version = 1; */
     if (message.version !== 0) writer.tag(1, WireType.Varint).uint32(message.version);
-    /* bytes data = 2; */
-    if (message.data.length) writer.tag(2, WireType.LengthDelimited).bytes(message.data);
-    /* int64 timestamp = 3; */
-    if (message.timestamp !== 0n) writer.tag(3, WireType.Varint).int64(message.timestamp);
-    /* string id = 4; */
-    if (message.id !== "") writer.tag(4, WireType.LengthDelimited).string(message.id);
+    /* string id = 2; */
+    if (message.id !== "") writer.tag(2, WireType.LengthDelimited).string(message.id);
+    /* bytes data = 3; */
+    if (message.data.length) writer.tag(3, WireType.LengthDelimited).bytes(message.data);
+    /* int64 timestamp = 4; */
+    if (message.timestamp !== 0n) writer.tag(4, WireType.Varint).int64(message.timestamp);
+    /* string signature = 5; */
+    if (message.signature !== "") writer.tag(5, WireType.LengthDelimited).string(message.signature);
     let u = options.writeUnknownFields;
     if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
     return writer;
@@ -375,13 +398,12 @@ export const Subscription = new Subscription$Type();
 class PushRequest$Type extends MessageType<PushRequest> {
   constructor() {
     super("ecsrelay.PushRequest", [
-      { no: 1, name: "signature", kind: "message", T: () => Signature },
-      { no: 2, name: "label", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-      { no: 3, name: "messages", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Message },
+      { no: 1, name: "label", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 2, name: "message", kind: "message", T: () => Message },
     ]);
   }
   create(value?: PartialMessage<PushRequest>): PushRequest {
-    const message = { label: "", messages: [] };
+    const message = { label: "" };
     globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
     if (value !== undefined) reflectionMergePartial<PushRequest>(this, message, value);
     return message;
@@ -392,6 +414,63 @@ class PushRequest$Type extends MessageType<PushRequest> {
     options: BinaryReadOptions,
     target?: PushRequest
   ): PushRequest {
+    let message = target ?? this.create(),
+      end = reader.pos + length;
+    while (reader.pos < end) {
+      let [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* string label */ 1:
+          message.label = reader.string();
+          break;
+        case /* ecsrelay.Message message */ 2:
+          message.message = Message.internalBinaryRead(reader, reader.uint32(), options, message.message);
+          break;
+        default:
+          let u = options.readUnknownField;
+          if (u === "throw")
+            throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+          let d = reader.skip(wireType);
+          if (u !== false) (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: PushRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* string label = 1; */
+    if (message.label !== "") writer.tag(1, WireType.LengthDelimited).string(message.label);
+    /* ecsrelay.Message message = 2; */
+    if (message.message)
+      Message.internalBinaryWrite(message.message, writer.tag(2, WireType.LengthDelimited).fork(), options).join();
+    let u = options.writeUnknownFields;
+    if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+    return writer;
+  }
+}
+/**
+ * @generated MessageType for protobuf message ecsrelay.PushRequest
+ */
+export const PushRequest = new PushRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class PushManyRequest$Type extends MessageType<PushManyRequest> {
+  constructor() {
+    super("ecsrelay.PushManyRequest", [
+      { no: 1, name: "signature", kind: "message", T: () => Signature },
+      { no: 2, name: "label", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 3, name: "messages", kind: "message", repeat: 1 /*RepeatType.PACKED*/, T: () => Message },
+    ]);
+  }
+  create(value?: PartialMessage<PushManyRequest>): PushManyRequest {
+    const message = { label: "", messages: [] };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) reflectionMergePartial<PushManyRequest>(this, message, value);
+    return message;
+  }
+  internalBinaryRead(
+    reader: IBinaryReader,
+    length: number,
+    options: BinaryReadOptions,
+    target?: PushManyRequest
+  ): PushManyRequest {
     let message = target ?? this.create(),
       end = reader.pos + length;
     while (reader.pos < end) {
@@ -416,7 +495,7 @@ class PushRequest$Type extends MessageType<PushRequest> {
     }
     return message;
   }
-  internalBinaryWrite(message: PushRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+  internalBinaryWrite(message: PushManyRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
     /* ecsrelay.Signature signature = 1; */
     if (message.signature)
       Signature.internalBinaryWrite(message.signature, writer.tag(1, WireType.LengthDelimited).fork(), options).join();
@@ -431,9 +510,9 @@ class PushRequest$Type extends MessageType<PushRequest> {
   }
 }
 /**
- * @generated MessageType for protobuf message ecsrelay.PushRequest
+ * @generated MessageType for protobuf message ecsrelay.PushManyRequest
  */
-export const PushRequest = new PushRequest$Type();
+export const PushManyRequest = new PushManyRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class PushResponse$Type extends MessageType<PushResponse> {
   constructor() {
@@ -560,4 +639,5 @@ export const ECSRelayService = new ServiceType("ecsrelay.ECSRelayService", [
   { name: "Unsubscribe", options: {}, I: SubscriptionRequest, O: Subscription },
   { name: "OpenStream", serverStreaming: true, options: {}, I: Signature, O: Message },
   { name: "Push", options: {}, I: PushRequest, O: PushResponse },
+  { name: "PushMany", options: {}, I: PushManyRequest, O: PushResponse },
 ]);

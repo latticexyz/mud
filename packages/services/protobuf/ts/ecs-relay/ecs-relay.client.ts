@@ -5,6 +5,7 @@
 import type { RpcTransport } from "@protobuf-ts/runtime-rpc";
 import type { ServiceInfo } from "@protobuf-ts/runtime-rpc";
 import { ECSRelayService } from "./ecs-relay";
+import type { PushManyRequest } from "./ecs-relay";
 import type { PushResponse } from "./ecs-relay";
 import type { PushRequest } from "./ecs-relay";
 import type { Message } from "./ecs-relay";
@@ -63,9 +64,17 @@ export interface IECSRelayServiceClient {
    */
   openStream(input: Signature, options?: RpcOptions): ServerStreamingCall<Signature, Message>;
   /**
+   * Push a single message to be relayed.
+   *
    * @generated from protobuf rpc: Push(ecsrelay.PushRequest) returns (ecsrelay.PushResponse);
    */
   push(input: PushRequest, options?: RpcOptions): UnaryCall<PushRequest, PushResponse>;
+  /**
+   * Push a series of messages to be relayed.
+   *
+   * @generated from protobuf rpc: PushMany(ecsrelay.PushManyRequest) returns (ecsrelay.PushResponse);
+   */
+  pushMany(input: PushManyRequest, options?: RpcOptions): UnaryCall<PushManyRequest, PushResponse>;
 }
 /**
  * The Relay Service definition.
@@ -160,11 +169,23 @@ export class ECSRelayServiceClient implements IECSRelayServiceClient, ServiceInf
     return stackIntercept<Signature, Message>("serverStreaming", this._transport, method, opt, input);
   }
   /**
+   * Push a single message to be relayed.
+   *
    * @generated from protobuf rpc: Push(ecsrelay.PushRequest) returns (ecsrelay.PushResponse);
    */
   push(input: PushRequest, options?: RpcOptions): UnaryCall<PushRequest, PushResponse> {
     const method = this.methods[8],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<PushRequest, PushResponse>("unary", this._transport, method, opt, input);
+  }
+  /**
+   * Push a series of messages to be relayed.
+   *
+   * @generated from protobuf rpc: PushMany(ecsrelay.PushManyRequest) returns (ecsrelay.PushResponse);
+   */
+  pushMany(input: PushManyRequest, options?: RpcOptions): UnaryCall<PushManyRequest, PushResponse> {
+    const method = this.methods[9],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<PushManyRequest, PushResponse>("unary", this._transport, method, opt, input);
   }
 }

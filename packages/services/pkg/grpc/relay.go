@@ -4,9 +4,11 @@ import (
 	"context"
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/relay"
+	"latticexyz/mud/packages/services/pkg/utils"
 	pb "latticexyz/mud/packages/services/protobuf/go/ecs-relay"
 	"time"
 
+	"github.com/ethereum/go-ethereum/crypto"
 	"go.uber.org/zap"
 )
 
@@ -110,7 +112,7 @@ func (server *ecsRelayServer) Ping(ctx context.Context, signature *pb.Signature)
 		return nil, fmt.Errorf("signature required")
 	}
 
-	client, identity, err := server.GetClient(signature)
+	client, identity, err := server.GetClientFromSignature(signature)
 	if err != nil {
 		return nil, err
 	}
@@ -144,7 +146,7 @@ func (server *ecsRelayServer) Subscribe(ctx context.Context, request *pb.Subscri
 		return nil, fmt.Errorf("signature required")
 	}
 
-	client, identity, err := server.GetClient(request.Signature)
+	client, identity, err := server.GetClientFromSignature(request.Signature)
 	if err != nil {
 		return nil, err
 	}
@@ -169,7 +171,7 @@ func (server *ecsRelayServer) Unsubscribe(ctx context.Context, request *pb.Subsc
 		return nil, fmt.Errorf("signature required")
 	}
 
-	client, identity, err := server.GetClient(request.Signature)
+	client, identity, err := server.GetClientFromSignature(request.Signature)
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +199,7 @@ func (server *ecsRelayServer) OpenStream(signature *pb.Signature, stream pb.ECSR
 		return fmt.Errorf("signature required")
 	}
 
-	client, identity, err := server.GetClient(signature)
+	client, identity, err := server.GetClientFromSignature(signature)
 	if err != nil {
 		return err
 	}
@@ -224,11 +226,97 @@ func (server *ecsRelayServer) OpenStream(signature *pb.Signature, stream pb.ECSR
 	return nil
 }
 
-func (server *ecsRelayServer) Push(ctx context.Context, request *pb.PushRequest) (*pb.PushResponse, error) {
-	if request.Signature == nil {
-		return nil, fmt.Errorf("signature required when pushing a message")
+func (server *ecsRelayServer) VerifyMessageSignature(message *pb.Message, identity *pb.Identity) (bool, string, error) {
+	// First encode the message.
+	messagePacked := fmt.Sprintf("(%d,%s,%s,%d)", message.Version, message.Id, crypto.Keccak256Hash(message.Data).Hex(), message.Timestamp)
+
+	// Get the 'from' address, or if not specified, make an empty string placeholder, since the
+	// verification will fail anyways but the caller may want to use the recovered address.
+	var from string
+	if identity == nil {
+		from = ""
+	} else {
+		from = identity.Name
 	}
-	_, identity, err := server.GetClient(request.Signature)
+	isVerified, recoveredAddress, err := utils.VerifySig(
+		from,
+		message.Signature,
+		[]byte(messagePacked),
+	)
+	return isVerified, recoveredAddress, err
+}
+
+func (server *ecsRelayServer) VerifyMessage(message *pb.Message, identity *pb.Identity) error {
+	if message == nil {
+		return fmt.Errorf("message is not defined")
+	}
+	if identity == nil {
+		return fmt.Errorf("identity is not defined")
+	}
+	if len(message.Signature) == 0 {
+		return fmt.Errorf("signature is not defined")
+	}
+
+	// Recover the signer to verify that it is the same identity as the one making the RPC call.
+	isVerified, recoveredAddress, err := server.VerifyMessageSignature(message, identity)
+	if err != nil {
+		return fmt.Errorf("error while verifying message: %s", err.Error())
+	}
+	if !isVerified {
+		return fmt.Errorf("recovered signer %s != identity %s", recoveredAddress, identity.Name)
+	}
+
+	// For every message verify that the timestamp is within an acceptable drift time.
+	messageAge := time.Since(time.Unix(message.Timestamp, 0)).Seconds()
+	if messageAge > float64(server.config.MessageDriftTime) {
+		return fmt.Errorf("message is older than acceptable drift: %.2f seconds old", messageAge)
+	}
+
+	return nil
+}
+
+func (server *ecsRelayServer) Push(ctx context.Context, request *pb.PushRequest) (*pb.PushResponse, error) {
+	if len(request.Message.Signature) == 0 {
+		return nil, fmt.Errorf("signature required")
+	}
+
+	// When pushing a single message, we recover the sender from the message signature, which has
+	// different format then identity signature.
+	_, recoveredAddress, err := server.VerifyMessageSignature(request.Message, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create an identity object from the address that signed the message.
+	identity := &pb.Identity{
+		Name: recoveredAddress,
+	}
+
+	_, err = server.GetClientFromIdentity(identity)
+	if err != nil {
+		return nil, err
+	}
+
+	// Verify that the message is OK to relay.
+	message := request.Message
+	err = server.VerifyMessage(message, identity)
+	if err != nil {
+		server.logger.Info("not relaying message", zap.Error(err))
+		return nil, err
+	}
+
+	// Relay the message.
+	label := server.GetLabel(request.Label)
+	label.Propagate(message, identity)
+
+	return &pb.PushResponse{}, nil
+}
+
+func (server *ecsRelayServer) PushMany(ctx context.Context, request *pb.PushManyRequest) (*pb.PushResponse, error) {
+	if request.Signature == nil {
+		return nil, fmt.Errorf("signature required")
+	}
+	_, identity, err := server.GetClientFromSignature(request.Signature)
 	if err != nil {
 		return nil, err
 	}
@@ -236,6 +324,13 @@ func (server *ecsRelayServer) Push(ctx context.Context, request *pb.PushRequest)
 	label := server.GetLabel(request.Label)
 
 	for _, message := range request.Messages {
+		// Verify that the message is OK to relay.
+		err := server.VerifyMessage(message, identity)
+		if err != nil {
+			server.logger.Info("not relaying message", zap.Error(err))
+			continue
+		}
+		// Relay the message.
 		label.Propagate(message, identity)
 	}
 	return &pb.PushResponse{}, nil

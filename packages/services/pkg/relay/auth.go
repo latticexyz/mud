@@ -11,7 +11,7 @@ import (
 func RecoverIdentity(signature *pb.Signature) (*pb.Identity, error) {
 	recoveredAddress, err := utils.RecoverSigAddress(
 		signature.Signature,
-		[]byte("ecs relay service"),
+		[]byte("ecs-relay-service"),
 	)
 	if err != nil {
 		logger.GetLogger().Info("error while recovering identity", zap.Error(err))
