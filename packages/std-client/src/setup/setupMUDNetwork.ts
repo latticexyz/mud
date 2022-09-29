@@ -105,6 +105,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
       chainId: networkConfig.chainId,
       disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
       checkpointServiceUrl: networkConfig.checkpointServiceUrl,
+      streamServiceUrl: networkConfig.streamServiceUrl,
     });
   }
 
