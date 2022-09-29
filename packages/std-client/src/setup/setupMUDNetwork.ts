@@ -82,7 +82,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
 
   const gasPriceInput$ = new BehaviorSubject<number>(
     // If no initial gas price is provided, check the gas price once and add a 30% buffer
-    options?.initialGasPrice || (await signerOrProvider.get().getGasPrice()).toNumber() * 1.3
+    options?.initialGasPrice || Math.ceil((await signerOrProvider.get().getGasPrice()).toNumber() * 1.3)
   );
 
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, gasPriceInput$, {
