@@ -48,9 +48,28 @@ func VerifySig(from, sigHex string, msg []byte) (bool, string) {
 	return from == recoveredAddr.Hex(), recoveredAddr.Hex()
 }
 
+func FindEmojiPosition(tweetText string) (int, error) {
+	runes := []rune(tweetText)
+
+	for i := 0; i < len(runes); i++ {
+		r := runes[i]
+		if r > 128 {
+			return i, nil
+		}
+	}
+	return -1, fmt.Errorf("no emoji signature found in tweet")
+}
+
 func ExtractSignatureFromTweet(tweet twitter.Tweet) (string, error) {
-	// TODO: decide on format of tweet to recover sig.
-	in := strings.NewReader(tweet.FullText)
+	// Find where the signature begins. We do this by finding the first emoji.
+	tweetText := tweet.FullText
+	signatureStart, err := FindEmojiPosition(tweetText)
+	if err != nil {
+		return "", err
+	}
+	signature := tweetText[signatureStart:]
+
+	in := strings.NewReader(signature)
 	out := new(strings.Builder)
 
 	if err := ecoji.Decode(in, out); err != nil {
