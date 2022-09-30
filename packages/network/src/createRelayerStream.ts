@@ -1,9 +1,11 @@
 import { Message } from "@latticexyz/services/protobuf/ts/ecs-relay/ecs-relay";
 import { ECSRelayServiceClient } from "@latticexyz/services/protobuf/ts/ecs-relay/ecs-relay.client";
+import { awaitPromise } from "@latticexyz/utils";
 import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
-import { ethers, Signer } from "ethers";
-import { keccak256 } from "ethers/lib/utils";
+import { Signer } from "ethers";
 import { from, map } from "rxjs";
+import { spawn } from "threads";
+import { messagePayload } from "./utils";
 
 /**
  * Create a ECSRelayServiceClient
@@ -23,14 +25,13 @@ export function createRelayerClient(url: string): ECSRelayServiceClient {
  */
 export async function createRelayerStream(signer: Signer, url: string, id: string) {
   const relayerClient = createRelayerClient(url);
+  const recoverWorker = await spawn(
+    new Worker(new URL("./workers/Recover.worker.ts", import.meta.url), { type: "module" })
+  );
 
   // Signature that should be used to prove identity
   const signature = {
     signature: await signer.signMessage("ecs-relay-service"),
-  };
-  // Message payload to sign and use to recover signer
-  const messagePayload = (msg: Message): string => {
-    return `(${msg.version},${msg.id},${keccak256(msg.data)},${msg.timestamp})`;
   };
 
   await relayerClient.authenticate(signature);
@@ -38,13 +39,11 @@ export async function createRelayerStream(signer: Signer, url: string, id: strin
   // Subscribe to the stream of relayed events
   const stream = relayerClient.openStream(signature);
   const event$ = from(stream.responses).pipe(
-    map((msg) => {
-      const recoveredAddress = ethers.utils.verifyMessage(messagePayload(msg), msg.signature);
-      return {
-        message: msg,
-        address: recoveredAddress,
-      };
-    })
+    map(async (message) => ({
+      message,
+      address: await recoverWorker.recoverAddress(message),
+    })),
+    awaitPromise()
   );
 
   // Ping every 15s to stay alive
@@ -65,24 +64,12 @@ export async function createRelayerStream(signer: Signer, url: string, id: strin
 
   // Push data to subscribers
   async function push(label: string, data: Uint8Array) {
-    // Message payload
-    const msgVersion = 1;
-    const msgId = id + Date.now();
-    const msgTimestamp = BigInt(Date.now());
-    const msgDataHash = keccak256(data);
-
-    // Signature of the above message payload
-    const msgSignature = await signer.signMessage(`(${msgVersion},${msgId},${msgDataHash},${msgTimestamp})`);
+    const message: Message = { version: 1, id: Date.now() + id, timestamp: BigInt(Date.now()), data, signature: "" };
+    message.signature = await signer.signMessage(messagePayload(message));
 
     relayerClient.push({
       label,
-      message: {
-        version: msgVersion,
-        id: msgId,
-        data: data,
-        timestamp: msgTimestamp,
-        signature: msgSignature,
-      },
+      message,
     });
   }
 
