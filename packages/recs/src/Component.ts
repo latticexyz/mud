@@ -6,6 +6,7 @@ import { createIndexer } from "./Indexer";
 import {
   Component,
   ComponentValue,
+  EntityID,
   EntityIndex,
   Indexer,
   Metadata,
@@ -392,4 +393,61 @@ export function overridableComponent<S extends Schema, T = undefined>(
   }
 
   return overriddenComponent;
+}
+
+// Note: Only proof of concept for now - use this only for component that do not update frequently
+export function createLocalCache<S extends Schema, M extends Metadata, T = undefined>(
+  component: Component<S, M, T>,
+  uniqueWorldIdentifier?: string
+): Component<S, M, T> {
+  const { world, update$, values } = component;
+  const cacheId = `localcache-${uniqueWorldIdentifier}-${component.id}`;
+  let numUpdates = 0;
+  const creation = Date.now();
+
+  // On creation, check if this component has locally cached values
+  const encodedCache = localStorage.getItem(cacheId);
+  if (encodedCache) {
+    const cache = JSON.parse(encodedCache) as [string, [EntityIndex, unknown][]][];
+    const state: { [entity: number]: { [key: string]: unknown } } = {};
+
+    for (const [key, values] of cache) {
+      for (const [entity, value] of values) {
+        state[entity] = state[entity] || {};
+        state[entity][key] = value;
+      }
+    }
+
+    for (const [entityId, value] of Object.entries(state)) {
+      const entityIndex = world.registerEntity({ id: entityId as EntityID });
+      setComponent(component, entityIndex, value as ComponentValue<S, T>);
+    }
+
+    console.info("Loading component", component.id, "from local cache.");
+  }
+
+  // Flush the entire component to the local cache every time it updates.
+  // Note: this is highly unperformant and should only be used for components that
+  // don't update often and don't have many values
+  const updateSub = update$.subscribe(() => {
+    numUpdates++;
+    const encoded = JSON.stringify(
+      Object.entries(mapObject(values, (m) => [...m.entries()].map((e) => [world.entities[e[0]], e[1]])))
+    );
+    localStorage.setItem(cacheId, encoded);
+    if (numUpdates > 200) {
+      console.warn(
+        "Component with id",
+        component.id,
+        "was locally cached",
+        numUpdates,
+        "times since",
+        new Date(creation).toLocaleTimeString(),
+        "- the local cache is in an alpha state and should not be used with components that update frequently yet"
+      );
+    }
+  });
+  component.world.registerDisposer(() => updateSub?.unsubscribe());
+
+  return component;
 }
