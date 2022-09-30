@@ -12,6 +12,7 @@ import (
 	"github.com/ethereum/go-ethereum/accounts"
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/keith-turner/ecoji"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 
@@ -26,7 +27,7 @@ type DripConfig struct {
 }
 
 func TwitterUsernameQuery(username string) string {
-	return fmt.Sprintf("from:%s AND %s", username, MatchingHashtag)
+	return fmt.Sprintf("from:%s", username)
 }
 
 func VerifySig(from, sigHex string, msg []byte) (bool, string) {
@@ -47,13 +48,23 @@ func VerifySig(from, sigHex string, msg []byte) (bool, string) {
 	return from == recoveredAddr.Hex(), recoveredAddr.Hex()
 }
 
-func ExtractSignatureFromTweet(tweet twitter.Tweet) string {
-	tokens := strings.Split(tweet.FullText, "faucet")
-	return strings.TrimSpace(tokens[1])[:132]
+func ExtractSignatureFromTweet(tweet twitter.Tweet) (string, error) {
+	// TODO: decide on format of tweet to recover sig.
+	in := strings.NewReader(tweet.FullText)
+	out := new(strings.Builder)
+
+	if err := ecoji.Decode(in, out); err != nil {
+		return "", fmt.Errorf("error while decoding emoji: %s", err.Error())
+	}
+
+	return out.String(), nil
 }
 
 func VerifyDripRequestTweet(tweet twitter.Tweet, username string, address string) error {
-	tweetSignature := ExtractSignatureFromTweet(tweet)
+	tweetSignature, err := ExtractSignatureFromTweet(tweet)
+	if err != nil {
+		return err
+	}
 
 	isVerified, recoveredAddress := VerifySig(
 		address,
