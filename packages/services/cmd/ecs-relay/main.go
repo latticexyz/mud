@@ -12,6 +12,7 @@ var (
 	port                  = flag.Int("port", 50071, "gRPC Server Port")
 	idleTimeoutTime       = flag.Int("idle-timeout-time", 30, "Time in seconds after which a client connection times out. Defaults to 30s")
 	idleDisconnectIterval = flag.Int("idle-disconnect-interval", 60, "Time in seconds for how oftern to disconnect idle clients. Defaults to 60s")
+	messsageDriftTime     = flag.Int("message-drift-time", 5, "Time in seconds that is acceptable as drift before message is not relayed. Defaults to 5s")
 )
 
 func main() {
@@ -27,6 +28,7 @@ func main() {
 	config := &relay.RelayServerConfig{
 		IdleTimeoutTime:       *idleTimeoutTime,
 		IdleDisconnectIterval: *idleDisconnectIterval,
+		MessageDriftTime:      *messsageDriftTime,
 	}
 
 	// Start gRPC server and the relayer.

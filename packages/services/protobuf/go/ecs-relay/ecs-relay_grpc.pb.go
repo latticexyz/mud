@@ -22,15 +22,18 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ECSRelayServiceClient interface {
-	Authenticate(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error)
-	Revoke(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error)
-	Ping(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error)
+	Authenticate(ctx context.Context, in *Signature, opts ...grpc.CallOption) (*Identity, error)
+	Revoke(ctx context.Context, in *Signature, opts ...grpc.CallOption) (*Identity, error)
+	Ping(ctx context.Context, in *Signature, opts ...grpc.CallOption) (*Identity, error)
 	CountAuthenticated(ctx context.Context, in *CountIdentitiesRequest, opts ...grpc.CallOption) (*CountIdentitiesResponse, error)
 	CountConnected(ctx context.Context, in *CountIdentitiesRequest, opts ...grpc.CallOption) (*CountIdentitiesResponse, error)
 	Subscribe(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
 	Unsubscribe(ctx context.Context, in *SubscriptionRequest, opts ...grpc.CallOption) (*Subscription, error)
-	OpenStream(ctx context.Context, in *Identity, opts ...grpc.CallOption) (ECSRelayService_OpenStreamClient, error)
+	OpenStream(ctx context.Context, in *Signature, opts ...grpc.CallOption) (ECSRelayService_OpenStreamClient, error)
+	// Push a single message to be relayed.
 	Push(ctx context.Context, in *PushRequest, opts ...grpc.CallOption) (*PushResponse, error)
+	// Push a series of messages to be relayed.
+	PushMany(ctx context.Context, in *PushManyRequest, opts ...grpc.CallOption) (*PushResponse, error)
 }
 
 type eCSRelayServiceClient struct {
@@ -41,7 +44,7 @@ func NewECSRelayServiceClient(cc grpc.ClientConnInterface) ECSRelayServiceClient
 	return &eCSRelayServiceClient{cc}
 }
 
-func (c *eCSRelayServiceClient) Authenticate(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error) {
+func (c *eCSRelayServiceClient) Authenticate(ctx context.Context, in *Signature, opts ...grpc.CallOption) (*Identity, error) {
 	out := new(Identity)
 	err := c.cc.Invoke(ctx, "/ecsrelay.ECSRelayService/Authenticate", in, out, opts...)
 	if err != nil {
@@ -50,7 +53,7 @@ func (c *eCSRelayServiceClient) Authenticate(ctx context.Context, in *Identity, 
 	return out, nil
 }
 
-func (c *eCSRelayServiceClient) Revoke(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error) {
+func (c *eCSRelayServiceClient) Revoke(ctx context.Context, in *Signature, opts ...grpc.CallOption) (*Identity, error) {
 	out := new(Identity)
 	err := c.cc.Invoke(ctx, "/ecsrelay.ECSRelayService/Revoke", in, out, opts...)
 	if err != nil {
@@ -59,7 +62,7 @@ func (c *eCSRelayServiceClient) Revoke(ctx context.Context, in *Identity, opts .
 	return out, nil
 }
 
-func (c *eCSRelayServiceClient) Ping(ctx context.Context, in *Identity, opts ...grpc.CallOption) (*Identity, error) {
+func (c *eCSRelayServiceClient) Ping(ctx context.Context, in *Signature, opts ...grpc.CallOption) (*Identity, error) {
 	out := new(Identity)
 	err := c.cc.Invoke(ctx, "/ecsrelay.ECSRelayService/Ping", in, out, opts...)
 	if err != nil {
@@ -104,7 +107,7 @@ func (c *eCSRelayServiceClient) Unsubscribe(ctx context.Context, in *Subscriptio
 	return out, nil
 }
 
-func (c *eCSRelayServiceClient) OpenStream(ctx context.Context, in *Identity, opts ...grpc.CallOption) (ECSRelayService_OpenStreamClient, error) {
+func (c *eCSRelayServiceClient) OpenStream(ctx context.Context, in *Signature, opts ...grpc.CallOption) (ECSRelayService_OpenStreamClient, error) {
 	stream, err := c.cc.NewStream(ctx, &ECSRelayService_ServiceDesc.Streams[0], "/ecsrelay.ECSRelayService/OpenStream", opts...)
 	if err != nil {
 		return nil, err
@@ -145,19 +148,31 @@ func (c *eCSRelayServiceClient) Push(ctx context.Context, in *PushRequest, opts 
 	return out, nil
 }
 
+func (c *eCSRelayServiceClient) PushMany(ctx context.Context, in *PushManyRequest, opts ...grpc.CallOption) (*PushResponse, error) {
+	out := new(PushResponse)
+	err := c.cc.Invoke(ctx, "/ecsrelay.ECSRelayService/PushMany", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ECSRelayServiceServer is the server API for ECSRelayService service.
 // All implementations must embed UnimplementedECSRelayServiceServer
 // for forward compatibility
 type ECSRelayServiceServer interface {
-	Authenticate(context.Context, *Identity) (*Identity, error)
-	Revoke(context.Context, *Identity) (*Identity, error)
-	Ping(context.Context, *Identity) (*Identity, error)
+	Authenticate(context.Context, *Signature) (*Identity, error)
+	Revoke(context.Context, *Signature) (*Identity, error)
+	Ping(context.Context, *Signature) (*Identity, error)
 	CountAuthenticated(context.Context, *CountIdentitiesRequest) (*CountIdentitiesResponse, error)
 	CountConnected(context.Context, *CountIdentitiesRequest) (*CountIdentitiesResponse, error)
 	Subscribe(context.Context, *SubscriptionRequest) (*Subscription, error)
 	Unsubscribe(context.Context, *SubscriptionRequest) (*Subscription, error)
-	OpenStream(*Identity, ECSRelayService_OpenStreamServer) error
+	OpenStream(*Signature, ECSRelayService_OpenStreamServer) error
+	// Push a single message to be relayed.
 	Push(context.Context, *PushRequest) (*PushResponse, error)
+	// Push a series of messages to be relayed.
+	PushMany(context.Context, *PushManyRequest) (*PushResponse, error)
 	mustEmbedUnimplementedECSRelayServiceServer()
 }
 
@@ -165,13 +180,13 @@ type ECSRelayServiceServer interface {
 type UnimplementedECSRelayServiceServer struct {
 }
 
-func (UnimplementedECSRelayServiceServer) Authenticate(context.Context, *Identity) (*Identity, error) {
+func (UnimplementedECSRelayServiceServer) Authenticate(context.Context, *Signature) (*Identity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Authenticate not implemented")
 }
-func (UnimplementedECSRelayServiceServer) Revoke(context.Context, *Identity) (*Identity, error) {
+func (UnimplementedECSRelayServiceServer) Revoke(context.Context, *Signature) (*Identity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Revoke not implemented")
 }
-func (UnimplementedECSRelayServiceServer) Ping(context.Context, *Identity) (*Identity, error) {
+func (UnimplementedECSRelayServiceServer) Ping(context.Context, *Signature) (*Identity, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedECSRelayServiceServer) CountAuthenticated(context.Context, *CountIdentitiesRequest) (*CountIdentitiesResponse, error) {
@@ -186,11 +201,14 @@ func (UnimplementedECSRelayServiceServer) Subscribe(context.Context, *Subscripti
 func (UnimplementedECSRelayServiceServer) Unsubscribe(context.Context, *SubscriptionRequest) (*Subscription, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Unsubscribe not implemented")
 }
-func (UnimplementedECSRelayServiceServer) OpenStream(*Identity, ECSRelayService_OpenStreamServer) error {
+func (UnimplementedECSRelayServiceServer) OpenStream(*Signature, ECSRelayService_OpenStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method OpenStream not implemented")
 }
 func (UnimplementedECSRelayServiceServer) Push(context.Context, *PushRequest) (*PushResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Push not implemented")
+}
+func (UnimplementedECSRelayServiceServer) PushMany(context.Context, *PushManyRequest) (*PushResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PushMany not implemented")
 }
 func (UnimplementedECSRelayServiceServer) mustEmbedUnimplementedECSRelayServiceServer() {}
 
@@ -206,7 +224,7 @@ func RegisterECSRelayServiceServer(s grpc.ServiceRegistrar, srv ECSRelayServiceS
 }
 
 func _ECSRelayService_Authenticate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Identity)
+	in := new(Signature)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -218,13 +236,13 @@ func _ECSRelayService_Authenticate_Handler(srv interface{}, ctx context.Context,
 		FullMethod: "/ecsrelay.ECSRelayService/Authenticate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ECSRelayServiceServer).Authenticate(ctx, req.(*Identity))
+		return srv.(ECSRelayServiceServer).Authenticate(ctx, req.(*Signature))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ECSRelayService_Revoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Identity)
+	in := new(Signature)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -236,13 +254,13 @@ func _ECSRelayService_Revoke_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: "/ecsrelay.ECSRelayService/Revoke",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ECSRelayServiceServer).Revoke(ctx, req.(*Identity))
+		return srv.(ECSRelayServiceServer).Revoke(ctx, req.(*Signature))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _ECSRelayService_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(Identity)
+	in := new(Signature)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -254,7 +272,7 @@ func _ECSRelayService_Ping_Handler(srv interface{}, ctx context.Context, dec fun
 		FullMethod: "/ecsrelay.ECSRelayService/Ping",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ECSRelayServiceServer).Ping(ctx, req.(*Identity))
+		return srv.(ECSRelayServiceServer).Ping(ctx, req.(*Signature))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -332,7 +350,7 @@ func _ECSRelayService_Unsubscribe_Handler(srv interface{}, ctx context.Context, 
 }
 
 func _ECSRelayService_OpenStream_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(Identity)
+	m := new(Signature)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
@@ -366,6 +384,24 @@ func _ECSRelayService_Push_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ECSRelayServiceServer).Push(ctx, req.(*PushRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ECSRelayService_PushMany_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PushManyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ECSRelayServiceServer).PushMany(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ecsrelay.ECSRelayService/PushMany",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ECSRelayServiceServer).PushMany(ctx, req.(*PushManyRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -408,6 +444,10 @@ var ECSRelayService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Push",
 			Handler:    _ECSRelayService_Push_Handler,
+		},
+		{
+			MethodName: "PushMany",
+			Handler:    _ECSRelayService_PushMany_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
