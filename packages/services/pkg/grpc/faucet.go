@@ -32,21 +32,11 @@ type faucetServer struct {
 ///
 
 func (server *faucetServer) DripDev(ctx context.Context, request *pb.DripDevRequest) (*pb.DripResponse, error) {
+	if !server.dripConfig.DevMode {
+		return nil, fmt.Errorf("dev mode is not on")
+	}
 	if request.Address == "" {
 		return nil, fmt.Errorf("address required")
-	}
-	if request.Signature == "" {
-		return nil, fmt.Errorf("signature required")
-	}
-
-	// Verify that the caller provided a valid signature proving ownership of dev account.
-	isVerified, recoveredAddress := faucet.VerifySig(
-		server.dripConfig.DevModeAddress,
-		request.Signature,
-		[]byte("ecs-faucet-service"),
-	)
-	if !isVerified {
-		return nil, fmt.Errorf("recovered address %s != dev address %s", recoveredAddress, server.dripConfig.DevModeAddress)
 	}
 
 	// Send a tx dripping the funds.

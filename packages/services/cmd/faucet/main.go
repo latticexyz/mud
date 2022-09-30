@@ -25,7 +25,7 @@ var (
 	dripAmount       = flag.Int64("drip-amount", 10000000000000000, "Drip amount in wei. Default to 0.01 ETH")
 	dripFrequency    = flag.Float64("drip-frequency", 60, "Drip frequency per account in minutes. Default to 60 minutes")
 	dripLimit        = flag.Uint64("drip-limit", 1000000000000000000, "Drip limit in wei per drip frequency interval. Default to 1 ETH")
-	devModeAddress   = flag.String("dev", "", "Provide an address to run the faucet in dev mode, where verification is not required. Default to empty string")
+	devMode          = flag.Bool("dev", false, "Flag to run the faucet in dev mode, where verification is not required. Default to false")
 )
 
 func main() {
@@ -39,16 +39,16 @@ func main() {
 
 	// Create a drip config.
 	dripConfig := &faucet.DripConfig{
-		DripAmount:     *dripAmount,
-		DripFrequency:  *dripFrequency,
-		DripLimit:      *dripLimit,
-		DevModeAddress: *devModeAddress,
+		DripAmount:    *dripAmount,
+		DripFrequency: *dripFrequency,
+		DripLimit:     *dripLimit,
+		DevMode:       *devMode,
 	}
 	logger.Info("using a drip configuration",
 		zap.Int64("amount", dripConfig.DripAmount),
 		zap.Float64("frequency", dripConfig.DripFrequency),
 		zap.Uint64("limit", dripConfig.DripLimit),
-		zap.String("dev", dripConfig.DevModeAddress),
+		zap.Bool("dev", dripConfig.DevMode),
 	)
 
 	// Ensure that a twitter <-> address store is setup.

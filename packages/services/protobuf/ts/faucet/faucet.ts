@@ -75,11 +75,7 @@ export interface DripVerifyTweetRequest {
  */
 export interface DripDevRequest {
   /**
-   * @generated from protobuf field: string signature = 1;
-   */
-  signature: string;
-  /**
-   * @generated from protobuf field: string address = 2;
+   * @generated from protobuf field: string address = 1;
    */
   address: string;
 }
@@ -435,13 +431,10 @@ export const DripVerifyTweetRequest = new DripVerifyTweetRequest$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class DripDevRequest$Type extends MessageType<DripDevRequest> {
   constructor() {
-    super("faucet.DripDevRequest", [
-      { no: 1, name: "signature", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-      { no: 2, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
-    ]);
+    super("faucet.DripDevRequest", [{ no: 1, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ }]);
   }
   create(value?: PartialMessage<DripDevRequest>): DripDevRequest {
-    const message = { signature: "", address: "" };
+    const message = { address: "" };
     globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
     if (value !== undefined) reflectionMergePartial<DripDevRequest>(this, message, value);
     return message;
@@ -457,10 +450,7 @@ class DripDevRequest$Type extends MessageType<DripDevRequest> {
     while (reader.pos < end) {
       let [fieldNo, wireType] = reader.tag();
       switch (fieldNo) {
-        case /* string signature */ 1:
-          message.signature = reader.string();
-          break;
-        case /* string address */ 2:
+        case /* string address */ 1:
           message.address = reader.string();
           break;
         default:
@@ -474,10 +464,8 @@ class DripDevRequest$Type extends MessageType<DripDevRequest> {
     return message;
   }
   internalBinaryWrite(message: DripDevRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
-    /* string signature = 1; */
-    if (message.signature !== "") writer.tag(1, WireType.LengthDelimited).string(message.signature);
-    /* string address = 2; */
-    if (message.address !== "") writer.tag(2, WireType.LengthDelimited).string(message.address);
+    /* string address = 1; */
+    if (message.address !== "") writer.tag(1, WireType.LengthDelimited).string(message.address);
     let u = options.writeUnknownFields;
     if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
     return writer;

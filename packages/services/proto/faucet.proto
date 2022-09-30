@@ -35,8 +35,7 @@ message DripVerifyTweetRequest {
 }
 
 message DripDevRequest {
-  string signature = 1;
-  string address = 2;
+  string address = 1;
 }
 
 message DripResponse {

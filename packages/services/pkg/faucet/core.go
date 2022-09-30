@@ -20,10 +20,10 @@ import (
 )
 
 type DripConfig struct {
-	DripAmount     int64
-	DripFrequency  float64
-	DripLimit      uint64
-	DevModeAddress string
+	DripAmount    int64
+	DripFrequency float64
+	DripLimit     uint64
+	DevMode       bool
 }
 
 func TwitterUsernameQuery(username string) string {
