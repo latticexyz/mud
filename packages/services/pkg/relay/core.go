@@ -13,6 +13,7 @@ import (
 type RelayServerConfig struct {
 	IdleTimeoutTime       int
 	IdleDisconnectIterval int
+	MessageDriftTime      int
 }
 
 type Client struct {
@@ -103,7 +104,7 @@ func GenerateRandomIdentifier() (string, error) {
 	return crypto.Keccak256Hash(timestamp).Hex(), nil
 }
 
-func (registry *ClientRegistry) GetClient(identity *pb.Identity) (*Client, error) {
+func (registry *ClientRegistry) GetClientFromIdentity(identity *pb.Identity) (*Client, error) {
 	registry.mutex.Lock()
 	for _, client := range registry.clients {
 		if client.identity.Name == identity.Name {
@@ -112,7 +113,18 @@ func (registry *ClientRegistry) GetClient(identity *pb.Identity) (*Client, error
 		}
 	}
 	registry.mutex.Unlock()
-	return nil, fmt.Errorf("client not registered")
+	return nil, fmt.Errorf("client not registered: %s", identity.Name)
+}
+
+func (registry *ClientRegistry) GetClientFromSignature(signature *pb.Signature) (*Client, *pb.Identity, error) {
+	// First recover the identity from the signature.
+	identity, err := RecoverIdentity(signature)
+	if err != nil {
+		return nil, nil, err
+	}
+	// Now find the client corresponding to the identity.
+	client, err := registry.GetClientFromIdentity(identity)
+	return client, identity, err
 }
 
 func (registry *ClientRegistry) IsRegistered(identity *pb.Identity) bool {
