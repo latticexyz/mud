@@ -118,7 +118,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
 
   const encoders = createEncoders(world, ComponentsRegistry, signerOrProvider);
 
-  return { txQueue, txReduced$, encoders, network, startSync, systems, gasPriceInput$ };
+  return { txQueue, txReduced$, encoders, network, startSync, systems, gasPriceInput$, ecsEvent$, mappings };
 }
 
 async function createEncoders(
