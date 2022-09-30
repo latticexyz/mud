@@ -61,5 +61,5 @@ run-ecs-relay:
 .PHONY: run-ecs-relay
 
 run-faucet:
-	./bin/faucet --faucet-private-key ${FAUCET_PK}
+	./bin/faucet --faucet-private-key ${FAUCET_PK} --dev ${DEV_MODE_ADDRESS}
 .PHONY: run-faucet
