@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"fmt"
+	"io"
 	"latticexyz/mud/packages/services/pkg/relay"
 	"latticexyz/mud/packages/services/pkg/utils"
 	pb "latticexyz/mud/packages/services/protobuf/go/ecs-relay"
@@ -275,16 +276,12 @@ func (server *ecsRelayServer) VerifyMessage(message *pb.Message, identity *pb.Id
 	return nil
 }
 
-func (server *ecsRelayServer) Push(ctx context.Context, request *pb.PushRequest) (*pb.PushResponse, error) {
-	if len(request.Message.Signature) == 0 {
-		return nil, fmt.Errorf("signature required")
-	}
-
+func (server *ecsRelayServer) HandlePushRequest(request *pb.PushRequest) error {
 	// When pushing a single message, we recover the sender from the message signature, which has
 	// different format then identity signature.
 	_, recoveredAddress, err := server.VerifyMessageSignature(request.Message, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Create an identity object from the address that signed the message.
@@ -292,22 +289,38 @@ func (server *ecsRelayServer) Push(ctx context.Context, request *pb.PushRequest)
 		Name: recoveredAddress,
 	}
 
-	_, err = server.GetClientFromIdentity(identity)
+	client, err := server.GetClientFromIdentity(identity)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	// Verify that the message is OK to relay.
 	message := request.Message
 	err = server.VerifyMessage(message, identity)
 	if err != nil {
-		server.logger.Info("not relaying message", zap.Error(err))
-		return nil, err
+		return err
 	}
 
 	// Relay the message.
 	label := server.GetLabel(request.Label)
 	label.Propagate(message, identity)
+
+	// Update the ping timer on the client since the client has just pushed a valid message.
+	client.Ping()
+
+	return nil
+}
+
+func (server *ecsRelayServer) Push(ctx context.Context, request *pb.PushRequest) (*pb.PushResponse, error) {
+	if len(request.Message.Signature) == 0 {
+		return nil, fmt.Errorf("signature required")
+	}
+
+	err := server.HandlePushRequest(request)
+	if err != nil {
+		server.logger.Info("error handling push request", zap.Error(err))
+		return nil, err
+	}
 
 	return &pb.PushResponse{}, nil
 }
@@ -334,4 +347,30 @@ func (server *ecsRelayServer) PushMany(ctx context.Context, request *pb.PushMany
 		label.Propagate(message, identity)
 	}
 	return &pb.PushResponse{}, nil
+}
+
+func (server *ecsRelayServer) PushStream(stream pb.ECSRelayService_PushStreamServer) error {
+	// Continuously receive message relay requests, handle to relay, and respond with confirmations.
+	for {
+		// Receive request message from input stream.
+		request, err := stream.Recv()
+
+		// Check if the client has closed the input stream.
+		if err == io.EOF {
+			return nil
+		}
+		if err != nil {
+			return err
+		}
+
+		// Handle the request.
+		err = server.HandlePushRequest(request)
+		if err != nil {
+			server.logger.Info("error handling push request", zap.Error(err))
+			return err
+		}
+
+		// Send a response to client signaling that the request was processed.
+		stream.Send(&pb.PushResponse{})
+	}
 }

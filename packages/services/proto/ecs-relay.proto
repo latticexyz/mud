@@ -35,6 +35,9 @@ service ECSRelayService {
 
   rpc OpenStream(Signature) returns (stream Message) {}
 
+  // Push a stream of messages to be relayed.
+  rpc PushStream(stream PushRequest) returns (stream PushResponse) {}
+
   // Push a single message to be relayed.
   rpc Push(PushRequest) returns (PushResponse) {}
 

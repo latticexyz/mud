@@ -638,6 +638,7 @@ export const ECSRelayService = new ServiceType("ecsrelay.ECSRelayService", [
   { name: "Subscribe", options: {}, I: SubscriptionRequest, O: Subscription },
   { name: "Unsubscribe", options: {}, I: SubscriptionRequest, O: Subscription },
   { name: "OpenStream", serverStreaming: true, options: {}, I: Signature, O: Message },
+  { name: "PushStream", serverStreaming: true, clientStreaming: true, options: {}, I: PushRequest, O: PushResponse },
   { name: "Push", options: {}, I: PushRequest, O: PushResponse },
   { name: "PushMany", options: {}, I: PushManyRequest, O: PushResponse },
 ]);
