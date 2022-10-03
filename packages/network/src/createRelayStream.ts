@@ -14,8 +14,7 @@ import { ECSRelayServiceDefinition, Message, PushRequest } from "@latticexyz/ser
  * @returns RelayService connection
  */
 export async function createRelayStream(signer: Signer, url: string, id: string) {
-  const httpClient = createClient(ECSRelayServiceDefinition, createChannel(url));
-  const wsClient = createClient(ECSRelayServiceDefinition, createChannel(url, grpc.WebsocketTransport()));
+  const client = createClient(ECSRelayServiceDefinition, createChannel(url, grpc.WebsocketTransport()));
 
   // const pushClient = grpc.client(ECSRelayService.PushStream, { host: url });
   const recoverWorker = await spawn(
@@ -24,10 +23,10 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
 
   // Signature that should be used to prove identity
   const signature = { signature: await signer.signMessage("ecs-relay-service") };
-  await wsClient.authenticate(signature);
+  await client.authenticate(signature);
 
   // Subscribe to the stream of relayed events
-  const event$ = from(httpClient.openStream(signature)).pipe(
+  const event$ = from(client.openStream(signature)).pipe(
     map(async (message) => ({
       message,
       address: await recoverWorker.recoverAddress(message),
@@ -37,12 +36,12 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
 
   // Subscribe to new labels
   function subscribe(label: string) {
-    httpClient.subscribe({ signature, subscription: { label } });
+    client.subscribe({ signature, subscription: { label } });
   }
 
   // Unsubscribe from labels
   function unsubscribe(label: string) {
-    httpClient.unsubscribe({ signature, subscription: { label } });
+    client.unsubscribe({ signature, subscription: { label } });
   }
 
   // Set up stream to push messages to the relay service
@@ -56,7 +55,7 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
   }
 
   // Open push stream
-  const responseSubscription = from(wsClient.pushStream(pushGenerator())).subscribe();
+  const responseSubscription = from(client.pushStream(pushGenerator())).subscribe();
 
   function dispose() {
     generatorLoop.done = true;
