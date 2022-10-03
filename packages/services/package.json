@@ -4,7 +4,6 @@
   "version": "1.4.1",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "main": "protobuf/ts",
-  "type": "commonjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",

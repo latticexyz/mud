@@ -152,10 +152,10 @@ export function getIndexDbECSCache(chainId: number, worldAddress: string, versio
     ComponentValues: State;
     BlockNumber: number;
     Mappings: string[];
-    snapshot: ECSStateReply;
+    Snapshot: ECSStateReply;
   }>(
     getCacheId("ECSCache", chainId, worldAddress), // Store a separate cache for each World contract address
-    ["ComponentValues", "BlockNumber", "Mappings", "snapshot"],
+    ["ComponentValues", "BlockNumber", "Mappings", "Snapshot"],
     version,
     idb
   );

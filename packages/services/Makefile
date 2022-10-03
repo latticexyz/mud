@@ -8,8 +8,6 @@ LDFLAGSSTRING +=-X main.GitCommit=$(GITCOMMIT)
 LDFLAGSSTRING +=-X main.GitDate=$(GITDATE)
 LDFLAGS := -ldflags "$(LDFLAGSSTRING)"
 
-PROTOC_GEN_TS_PATH=../../node_modules/.bin/protoc-gen-ts
-
 protoc: protoc-go protoc-ts
 .PHONY: protoc
 
@@ -46,7 +44,6 @@ protoc-ts:
 	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable \
 	--proto_path proto proto/faucet.proto 
 .PHONY: protoc-ts
-
 
 build: ecs-stream ecs-snapshot ecs-relay faucet
 .PHONY: build
