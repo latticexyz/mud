@@ -58,6 +58,23 @@ export interface FaucetStore {
   totalDripCount: bigint;
 }
 /**
+ * Request for drip after a successful DripVerifyTweet RPC.
+ *
+ * @generated from protobuf message faucet.DripRequest
+ */
+export interface DripRequest {
+  /**
+   * @generated from protobuf field: string username = 1;
+   */
+  username: string;
+  /**
+   * @generated from protobuf field: string address = 2;
+   */
+  address: string;
+}
+/**
+ * Request for initial drip via DripVerifyTweet RPC that requires verifying a tweet
+ *
  * @generated from protobuf message faucet.DripVerifyTweetRequest
  */
 export interface DripVerifyTweetRequest {
@@ -71,6 +88,8 @@ export interface DripVerifyTweetRequest {
   address: string;
 }
 /**
+ * Request for drip to any address when running in dev mode.
+ *
  * @generated from protobuf message faucet.DripDevRequest
  */
 export interface DripDevRequest {
@@ -80,6 +99,8 @@ export interface DripDevRequest {
   address: string;
 }
 /**
+ * Response for drip request that contains the transaction hash of the drip tx.
+ *
  * @generated from protobuf message faucet.DripResponse
  */
 export interface DripResponse {
@@ -87,6 +108,21 @@ export interface DripResponse {
    * @generated from protobuf field: string txHash = 1;
    */
   txHash: string;
+}
+/**
+ * Response for the time until next drip request.
+ *
+ * @generated from protobuf message faucet.TimeUntilDripResponse
+ */
+export interface TimeUntilDripResponse {
+  /**
+   * @generated from protobuf field: double timeUntilDripMinutes = 1;
+   */
+  timeUntilDripMinutes: number;
+  /**
+   * @generated from protobuf field: double timeUntilDripSeconds = 2;
+   */
+  timeUntilDripSeconds: number;
 }
 /**
  * @generated from protobuf message faucet.GetLinkedTwittersRequest
@@ -370,6 +406,61 @@ class FaucetStore$Type extends MessageType<FaucetStore> {
  */
 export const FaucetStore = new FaucetStore$Type();
 // @generated message type with reflection information, may provide speed optimized methods
+class DripRequest$Type extends MessageType<DripRequest> {
+  constructor() {
+    super("faucet.DripRequest", [
+      { no: 1, name: "username", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+      { no: 2, name: "address", kind: "scalar", T: 9 /*ScalarType.STRING*/ },
+    ]);
+  }
+  create(value?: PartialMessage<DripRequest>): DripRequest {
+    const message = { username: "", address: "" };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) reflectionMergePartial<DripRequest>(this, message, value);
+    return message;
+  }
+  internalBinaryRead(
+    reader: IBinaryReader,
+    length: number,
+    options: BinaryReadOptions,
+    target?: DripRequest
+  ): DripRequest {
+    let message = target ?? this.create(),
+      end = reader.pos + length;
+    while (reader.pos < end) {
+      let [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* string username */ 1:
+          message.username = reader.string();
+          break;
+        case /* string address */ 2:
+          message.address = reader.string();
+          break;
+        default:
+          let u = options.readUnknownField;
+          if (u === "throw")
+            throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+          let d = reader.skip(wireType);
+          if (u !== false) (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(message: DripRequest, writer: IBinaryWriter, options: BinaryWriteOptions): IBinaryWriter {
+    /* string username = 1; */
+    if (message.username !== "") writer.tag(1, WireType.LengthDelimited).string(message.username);
+    /* string address = 2; */
+    if (message.address !== "") writer.tag(2, WireType.LengthDelimited).string(message.address);
+    let u = options.writeUnknownFields;
+    if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+    return writer;
+  }
+}
+/**
+ * @generated MessageType for protobuf message faucet.DripRequest
+ */
+export const DripRequest = new DripRequest$Type();
+// @generated message type with reflection information, may provide speed optimized methods
 class DripVerifyTweetRequest$Type extends MessageType<DripVerifyTweetRequest> {
   constructor() {
     super("faucet.DripVerifyTweetRequest", [
@@ -522,6 +613,65 @@ class DripResponse$Type extends MessageType<DripResponse> {
  * @generated MessageType for protobuf message faucet.DripResponse
  */
 export const DripResponse = new DripResponse$Type();
+// @generated message type with reflection information, may provide speed optimized methods
+class TimeUntilDripResponse$Type extends MessageType<TimeUntilDripResponse> {
+  constructor() {
+    super("faucet.TimeUntilDripResponse", [
+      { no: 1, name: "timeUntilDripMinutes", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
+      { no: 2, name: "timeUntilDripSeconds", kind: "scalar", T: 1 /*ScalarType.DOUBLE*/ },
+    ]);
+  }
+  create(value?: PartialMessage<TimeUntilDripResponse>): TimeUntilDripResponse {
+    const message = { timeUntilDripMinutes: 0, timeUntilDripSeconds: 0 };
+    globalThis.Object.defineProperty(message, MESSAGE_TYPE, { enumerable: false, value: this });
+    if (value !== undefined) reflectionMergePartial<TimeUntilDripResponse>(this, message, value);
+    return message;
+  }
+  internalBinaryRead(
+    reader: IBinaryReader,
+    length: number,
+    options: BinaryReadOptions,
+    target?: TimeUntilDripResponse
+  ): TimeUntilDripResponse {
+    let message = target ?? this.create(),
+      end = reader.pos + length;
+    while (reader.pos < end) {
+      let [fieldNo, wireType] = reader.tag();
+      switch (fieldNo) {
+        case /* double timeUntilDripMinutes */ 1:
+          message.timeUntilDripMinutes = reader.double();
+          break;
+        case /* double timeUntilDripSeconds */ 2:
+          message.timeUntilDripSeconds = reader.double();
+          break;
+        default:
+          let u = options.readUnknownField;
+          if (u === "throw")
+            throw new globalThis.Error(`Unknown field ${fieldNo} (wire type ${wireType}) for ${this.typeName}`);
+          let d = reader.skip(wireType);
+          if (u !== false) (u === true ? UnknownFieldHandler.onRead : u)(this.typeName, message, fieldNo, wireType, d);
+      }
+    }
+    return message;
+  }
+  internalBinaryWrite(
+    message: TimeUntilDripResponse,
+    writer: IBinaryWriter,
+    options: BinaryWriteOptions
+  ): IBinaryWriter {
+    /* double timeUntilDripMinutes = 1; */
+    if (message.timeUntilDripMinutes !== 0) writer.tag(1, WireType.Bit64).double(message.timeUntilDripMinutes);
+    /* double timeUntilDripSeconds = 2; */
+    if (message.timeUntilDripSeconds !== 0) writer.tag(2, WireType.Bit64).double(message.timeUntilDripSeconds);
+    let u = options.writeUnknownFields;
+    if (u !== false) (u == true ? UnknownFieldHandler.onWrite : u)(this.typeName, message, writer);
+    return writer;
+  }
+}
+/**
+ * @generated MessageType for protobuf message faucet.TimeUntilDripResponse
+ */
+export const TimeUntilDripResponse = new TimeUntilDripResponse$Type();
 // @generated message type with reflection information, may provide speed optimized methods
 class GetLinkedTwittersRequest$Type extends MessageType<GetLinkedTwittersRequest> {
   constructor() {
@@ -829,8 +979,10 @@ export const LinkedAddressForTwitterResponse = new LinkedAddressForTwitterRespon
  * @generated ServiceType for protobuf service faucet.FaucetService
  */
 export const FaucetService = new ServiceType("faucet.FaucetService", [
+  { name: "Drip", options: {}, I: DripRequest, O: DripResponse },
   { name: "DripDev", options: {}, I: DripDevRequest, O: DripResponse },
   { name: "DripVerifyTweet", options: {}, I: DripVerifyTweetRequest, O: DripResponse },
+  { name: "TimeUntilDrip", options: {}, I: DripRequest, O: TimeUntilDripResponse },
   { name: "GetLinkedTwitters", options: {}, I: GetLinkedTwittersRequest, O: GetLinkedTwittersResponse },
   {
     name: "GetLinkedTwitterForAddress",
