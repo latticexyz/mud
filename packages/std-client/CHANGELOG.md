@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/latticexyz/mud/compare/v1.3.0...v1.4.0) (2022-10-03)
+
+### Features
+
+- **network:** expose mappings and ecsEvent$ from setupMUDNetwork ([44a8676](https://github.com/latticexyz/mud/commit/44a8676a8d22e73276fd02a459d35270b1b4da9e))
+
 # [1.3.0](https://github.com/latticexyz/mud/compare/v1.2.0...v1.3.0) (2022-09-30)
 
 ### Bug Fixes

@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.4.0](https://github.com/latticexyz/mud/compare/v1.3.0...v1.4.0) (2022-10-03)
+
+### Features
+
+- add signature verification for all client actions via relay service ([#167](https://github.com/latticexyz/mud/issues/167)) ([7920d6e](https://github.com/latticexyz/mud/commit/7920d6eec20f3a669cb3a1a9e39cd822e421961a))
+- **network:** add util for creating faucet service ([#171](https://github.com/latticexyz/mud/issues/171)) ([9f50d9c](https://github.com/latticexyz/mud/commit/9f50d9c3ae31132507c19bce7d3d5c8df7684cad))
+
 # [1.3.0](https://github.com/latticexyz/mud/compare/v1.2.0...v1.3.0) (2022-09-30)
 
 **Note:** Version bump only for package @latticexyz/network
