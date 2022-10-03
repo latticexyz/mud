@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/services",
   "license": "MIT",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "main": "protobuf/ts",
   "repository": {
@@ -17,10 +17,8 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "typedoc": "^0.23.10",
-    "ts-proto": "^1.126.1"
+    "ts-proto": "^1.126.1",
+    "typedoc": "^0.23.10"
   },
-  "peerDependencies": {},
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
-  "dependencies": {}
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }
