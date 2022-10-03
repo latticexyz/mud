@@ -1,15 +1,16 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { EntityID, ComponentValue, Components } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range } from "@latticexyz/utils";
-import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { BytesLike, Contract, BigNumber } from "ethers";
 import { Observable, map, concatMap, of, from } from "rxjs";
 import { createDecoder } from "../createDecoder";
 import { createTopics } from "../createTopics";
 import { fetchEventsInBlockRange } from "../networkUtils";
-import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
-import { ECSStateSnapshotServiceClient } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot.client";
-import { ECSStreamServiceClient } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream.client";
+import {
+  ECSStateReply,
+  ECSStateSnapshotServiceClient,
+  ECSStateSnapshotServiceDefinition,
+} from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import {
   NetworkComponentUpdate,
   ContractConfig,
@@ -23,7 +24,12 @@ import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
 import { SyncState } from "./constants";
-import { ECSStreamBlockBundleReply } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
+import {
+  ECSStreamBlockBundleReply,
+  ECSStreamServiceClient,
+  ECSStreamServiceDefinition,
+} from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
+import { createChannel, createClient } from "nice-grpc-web";
 
 /**
  * Create a ECSStateSnapshotServiceClient
@@ -31,8 +37,7 @@ import { ECSStreamBlockBundleReply } from "@latticexyz/services/protobuf/ts/ecs-
  * @returns ECSStateSnapshotServiceClient
  */
 export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient {
-  const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
-  return new ECSStateSnapshotServiceClient(transport);
+  return createClient(ECSStateSnapshotServiceDefinition, createChannel(url));
 }
 
 /**
@@ -41,8 +46,7 @@ export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient
  * @returns ECSStreamServiceClient
  */
 export function createStreamClient(url: string): ECSStreamServiceClient {
-  const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
-  return new ECSStreamServiceClient(transport);
+  return createClient(ECSStreamServiceDefinition, createChannel(url));
 }
 
 /**
@@ -59,7 +63,7 @@ export async function getSnapshotBlockNumber(
   let blockNumber = -1;
   if (!snapshotClient) return blockNumber;
   try {
-    const { response } = await snapshotClient.getStateBlockLatest({ worldAddress });
+    const response = await snapshotClient.getStateBlockLatest({ worldAddress });
     blockNumber = response.blockNumber;
   } catch (e) {
     console.error(e);
@@ -83,7 +87,7 @@ export async function fetchSnapshot(
   const cacheStore = createCacheStore();
 
   try {
-    const { response } = await snapshotClient.getStateLatest({ worldAddress });
+    const response = await snapshotClient.getStateLatest({ worldAddress });
     await reduceFetchedState(response, cacheStore, decode);
   } catch (e) {
     console.error(e);
@@ -108,8 +112,8 @@ export async function fetchSnapshotChunked(
   const cacheStore = createCacheStore();
 
   try {
-    const stream = snapshotClient.getStateLatestStream({ worldAddress });
-    for await (const responseChunk of stream.responses) {
+    const response = snapshotClient.getStateLatestStream({ worldAddress });
+    for await (const responseChunk of response) {
       await reduceFetchedState(responseChunk, cacheStore, decode);
     }
   } catch (e) {
@@ -157,7 +161,7 @@ export function createLatestEventStreamService(
   transformWorldEvents: ReturnType<typeof createTransformWorldEventsFromStream>
 ) {
   const streamServiceClient = createStreamClient(streamServiceUrl);
-  const stream = streamServiceClient.subscribeToStreamLatest({
+  const response = streamServiceClient.subscribeToStreamLatest({
     worldAddress,
     blockNumber: true,
     blockHash: true,
@@ -167,7 +171,7 @@ export function createLatestEventStreamService(
   });
 
   // Turn stream responses into rxjs NetworkComponentUpdate
-  return from(stream.responses).pipe(
+  return from(response).pipe(
     map(async (responseChunk) => {
       const events = await transformWorldEvents(responseChunk);
       console.info(

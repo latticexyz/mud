@@ -18,11 +18,10 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "typedoc": "^0.23.10"
+    "typedoc": "^0.23.10",
+    "ts-proto": "^1.126.1"
   },
   "peerDependencies": {},
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
-  "dependencies": {
-    "ts-proto": "^1.126.1"
-  }
+  "dependencies": {}
 }

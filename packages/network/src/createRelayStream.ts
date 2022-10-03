@@ -3,9 +3,9 @@ import { from, map, Subject } from "rxjs";
 import { spawn } from "threads";
 import { messagePayload } from "./utils";
 import { createChannel, createClient } from "nice-grpc-web";
-import { ECSRelayServiceDefinition, Message, PushRequest } from "@latticexyz/services";
 import { awaitPromise, awaitStreamValue } from "@latticexyz/utils";
 import { grpc } from "@improbable-eng/grpc-web";
+import { ECSRelayServiceDefinition, Message, PushRequest } from "@latticexyz/services/protobuf/ts/ecs-relay/ecs-relay";
 
 /**
  * Create a RelayService connection, including event$ and utils
