@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/faucet"
 	pb "latticexyz/mud/packages/services/protobuf/go/faucet"
+	"math"
 	"math/big"
 	"time"
 
@@ -27,9 +28,106 @@ type faucetServer struct {
 	logger        *zap.Logger
 }
 
+/// Utility functions for faucet logic.
+
+func (server *faucetServer) VerifyUsernameAddressLinked(username string, address string) error {
+	linkedUsername := faucet.GetUsernameForAddress(address)
+	if linkedUsername != username {
+		return fmt.Errorf("linked username doesn't match requested username @%s != @%s", linkedUsername, username)
+	}
+	linkedAddress := faucet.GetAddressForUsername(username)
+	if linkedAddress != address {
+		return fmt.Errorf("linked address doesn't match requested address %s != %s", linkedAddress, address)
+	}
+	return nil
+}
+
+func (server *faucetServer) VerifyTimeForDrip(address string) error {
+	latestDrip := faucet.GetTimestampForDrip(address)
+	timeDiffSinceDrip := faucet.TimeDiff(time.Unix(latestDrip, 0), time.Now())
+	if latestDrip != 0 && timeDiffSinceDrip.Minutes() < server.dripConfig.DripFrequency {
+		return fmt.Errorf("address %s received drip recently, come back in %.2f minutes", address, (server.dripConfig.DripFrequency - timeDiffSinceDrip.Minutes()))
+	}
+	return nil
+}
+
 ///
 /// gRPC ENDPOINTS
 ///
+
+func (server *faucetServer) TimeUntilDrip(ctx context.Context, request *pb.DripRequest) (*pb.TimeUntilDripResponse, error) {
+	if request.Username == "" {
+		return nil, fmt.Errorf("username required")
+	}
+	if request.Address == "" {
+		return nil, fmt.Errorf("address required")
+	}
+
+	err := server.VerifyUsernameAddressLinked(request.Username, request.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	// Get the timestamp of last drip and return the diff to current time.
+	latestDrip := faucet.GetTimestampForDrip(request.Address)
+	timeDiffSinceDrip := faucet.TimeDiff(time.Unix(latestDrip, 0), time.Now())
+
+	minutesUntilDrip := math.Max((server.dripConfig.DripFrequency - timeDiffSinceDrip.Minutes()), 0)
+
+	return &pb.TimeUntilDripResponse{
+		TimeUntilDripMinutes: minutesUntilDrip,
+		TimeUntilDripSeconds: minutesUntilDrip * 60,
+	}, nil
+}
+
+func (server *faucetServer) Drip(ctx context.Context, request *pb.DripRequest) (*pb.DripResponse, error) {
+	// Check if there are any funds left to drip per the current period (before they refresh).
+	totalDripCount := faucet.GetTotalDripCount()
+	if totalDripCount >= server.dripConfig.DripLimit {
+		return nil, fmt.Errorf("faucet limit exhausted, come back soon")
+	}
+
+	if request.Username == "" {
+		return nil, fmt.Errorf("username required")
+	}
+	if request.Address == "" {
+		return nil, fmt.Errorf("address required")
+	}
+
+	// Verify that the username and address in the request match and are connected. The only way to
+	// connect a username and address is by verifying the tweet via the initial drip request, so we
+	// use this to verify that the address is authorized for a follow-up drip.
+	err := server.VerifyUsernameAddressLinked(request.Username, request.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	// Verify that the address / username pairing has not requested drip recently.
+	err = server.VerifyTimeForDrip(request.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	server.logger.Info("follow-up drip request verified successfully",
+		zap.String("username", request.Username),
+		zap.String("address", request.Address),
+	)
+
+	// Send a tx dripping the funds.
+	txHash, err := server.SendDripTransaction(request.Address)
+	if err != nil {
+		return nil, err
+	}
+	// Update the current total drip amount.
+	faucet.IncrementTotalDripCount(server.dripConfig)
+
+	// Update the timestamp of the latest drip.
+	faucet.UpdateDripRequestTimestamp(request.Address)
+
+	return &pb.DripResponse{
+		TxHash: txHash,
+	}, nil
+}
 
 func (server *faucetServer) DripDev(ctx context.Context, request *pb.DripDevRequest) (*pb.DripResponse, error) {
 	if !server.dripConfig.DevMode {
@@ -77,10 +175,9 @@ func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.Dri
 	}
 
 	// Verify that the address / username pairing has not requested drip recently.
-	latestDrip := faucet.GetTimestampForDrip(request.Address)
-	timeDiffSinceDrip := faucet.TimeDiff(time.Unix(latestDrip, 0), time.Now())
-	if latestDrip != 0 && timeDiffSinceDrip.Minutes() < server.dripConfig.DripFrequency {
-		return nil, fmt.Errorf("address %s received drip recently, come back in %.2f minutes", request.Address, (server.dripConfig.DripFrequency - timeDiffSinceDrip.Minutes()))
+	err := server.VerifyTimeForDrip(request.Address)
+	if err != nil {
+		return nil, err
 	}
 
 	query := faucet.TwitterUsernameQuery(request.Username)

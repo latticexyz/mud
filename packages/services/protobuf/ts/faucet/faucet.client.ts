@@ -11,10 +11,12 @@ import type { LinkedTwitterForAddressResponse } from "./faucet";
 import type { LinkedTwitterForAddressRequest } from "./faucet";
 import type { GetLinkedTwittersResponse } from "./faucet";
 import type { GetLinkedTwittersRequest } from "./faucet";
+import type { TimeUntilDripResponse } from "./faucet";
 import type { DripVerifyTweetRequest } from "./faucet";
+import type { DripDevRequest } from "./faucet";
 import { stackIntercept } from "@protobuf-ts/runtime-rpc";
 import type { DripResponse } from "./faucet";
-import type { DripDevRequest } from "./faucet";
+import type { DripRequest } from "./faucet";
 import type { UnaryCall } from "@protobuf-ts/runtime-rpc";
 import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
 /**
@@ -24,6 +26,10 @@ import type { RpcOptions } from "@protobuf-ts/runtime-rpc";
  */
 export interface IFaucetServiceClient {
   /**
+   * @generated from protobuf rpc: Drip(faucet.DripRequest) returns (faucet.DripResponse);
+   */
+  drip(input: DripRequest, options?: RpcOptions): UnaryCall<DripRequest, DripResponse>;
+  /**
    * @generated from protobuf rpc: DripDev(faucet.DripDevRequest) returns (faucet.DripResponse);
    */
   dripDev(input: DripDevRequest, options?: RpcOptions): UnaryCall<DripDevRequest, DripResponse>;
@@ -31,6 +37,10 @@ export interface IFaucetServiceClient {
    * @generated from protobuf rpc: DripVerifyTweet(faucet.DripVerifyTweetRequest) returns (faucet.DripResponse);
    */
   dripVerifyTweet(input: DripVerifyTweetRequest, options?: RpcOptions): UnaryCall<DripVerifyTweetRequest, DripResponse>;
+  /**
+   * @generated from protobuf rpc: TimeUntilDrip(faucet.DripRequest) returns (faucet.TimeUntilDripResponse);
+   */
+  timeUntilDrip(input: DripRequest, options?: RpcOptions): UnaryCall<DripRequest, TimeUntilDripResponse>;
   /**
    * @generated from protobuf rpc: GetLinkedTwitters(faucet.GetLinkedTwittersRequest) returns (faucet.GetLinkedTwittersResponse);
    */
@@ -64,10 +74,18 @@ export class FaucetServiceClient implements IFaucetServiceClient, ServiceInfo {
   options = FaucetService.options;
   constructor(private readonly _transport: RpcTransport) {}
   /**
+   * @generated from protobuf rpc: Drip(faucet.DripRequest) returns (faucet.DripResponse);
+   */
+  drip(input: DripRequest, options?: RpcOptions): UnaryCall<DripRequest, DripResponse> {
+    const method = this.methods[0],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<DripRequest, DripResponse>("unary", this._transport, method, opt, input);
+  }
+  /**
    * @generated from protobuf rpc: DripDev(faucet.DripDevRequest) returns (faucet.DripResponse);
    */
   dripDev(input: DripDevRequest, options?: RpcOptions): UnaryCall<DripDevRequest, DripResponse> {
-    const method = this.methods[0],
+    const method = this.methods[1],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<DripDevRequest, DripResponse>("unary", this._transport, method, opt, input);
   }
@@ -78,9 +96,17 @@ export class FaucetServiceClient implements IFaucetServiceClient, ServiceInfo {
     input: DripVerifyTweetRequest,
     options?: RpcOptions
   ): UnaryCall<DripVerifyTweetRequest, DripResponse> {
-    const method = this.methods[1],
+    const method = this.methods[2],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<DripVerifyTweetRequest, DripResponse>("unary", this._transport, method, opt, input);
+  }
+  /**
+   * @generated from protobuf rpc: TimeUntilDrip(faucet.DripRequest) returns (faucet.TimeUntilDripResponse);
+   */
+  timeUntilDrip(input: DripRequest, options?: RpcOptions): UnaryCall<DripRequest, TimeUntilDripResponse> {
+    const method = this.methods[3],
+      opt = this._transport.mergeOptions(options);
+    return stackIntercept<DripRequest, TimeUntilDripResponse>("unary", this._transport, method, opt, input);
   }
   /**
    * @generated from protobuf rpc: GetLinkedTwitters(faucet.GetLinkedTwittersRequest) returns (faucet.GetLinkedTwittersResponse);
@@ -89,7 +115,7 @@ export class FaucetServiceClient implements IFaucetServiceClient, ServiceInfo {
     input: GetLinkedTwittersRequest,
     options?: RpcOptions
   ): UnaryCall<GetLinkedTwittersRequest, GetLinkedTwittersResponse> {
-    const method = this.methods[2],
+    const method = this.methods[4],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<GetLinkedTwittersRequest, GetLinkedTwittersResponse>(
       "unary",
@@ -106,7 +132,7 @@ export class FaucetServiceClient implements IFaucetServiceClient, ServiceInfo {
     input: LinkedTwitterForAddressRequest,
     options?: RpcOptions
   ): UnaryCall<LinkedTwitterForAddressRequest, LinkedTwitterForAddressResponse> {
-    const method = this.methods[3],
+    const method = this.methods[5],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<LinkedTwitterForAddressRequest, LinkedTwitterForAddressResponse>(
       "unary",
@@ -123,7 +149,7 @@ export class FaucetServiceClient implements IFaucetServiceClient, ServiceInfo {
     input: LinkedAddressForTwitterRequest,
     options?: RpcOptions
   ): UnaryCall<LinkedAddressForTwitterRequest, LinkedAddressForTwitterResponse> {
-    const method = this.methods[4],
+    const method = this.methods[6],
       opt = this._transport.mergeOptions(options);
     return stackIntercept<LinkedAddressForTwitterRequest, LinkedAddressForTwitterResponse>(
       "unary",
