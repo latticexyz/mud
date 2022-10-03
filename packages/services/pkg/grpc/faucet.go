@@ -31,7 +31,26 @@ type faucetServer struct {
 /// gRPC ENDPOINTS
 ///
 
-func (server *faucetServer) VerifyTweet(ctx context.Context, request *pb.VerifyTweetRequest) (*pb.VerifyTweetResponse, error) {
+func (server *faucetServer) DripDev(ctx context.Context, request *pb.DripDevRequest) (*pb.DripResponse, error) {
+	if !server.dripConfig.DevMode {
+		return nil, fmt.Errorf("dev mode is not on")
+	}
+	if request.Address == "" {
+		return nil, fmt.Errorf("address required")
+	}
+
+	// Send a tx dripping the funds.
+	txHash, err := server.SendDripTransaction(request.Address)
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.DripResponse{
+		TxHash: txHash,
+	}, nil
+}
+
+func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.DripVerifyTweetRequest) (*pb.DripResponse, error) {
 	// Check if there are any funds left to drip per the current period (before they refresh).
 	totalDripCount := faucet.GetTotalDripCount()
 	if totalDripCount >= server.dripConfig.DripLimit {
@@ -112,7 +131,7 @@ func (server *faucetServer) VerifyTweet(ctx context.Context, request *pb.VerifyT
 		faucet.LinkAddressAndUsername(request.Address, request.Username)
 	}
 
-	return &pb.VerifyTweetResponse{
+	return &pb.DripResponse{
 		TxHash: txHash,
 	}, nil
 }

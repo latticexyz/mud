@@ -21,19 +21,24 @@ message FaucetStore {
 
 // The Faucet Service definition.
 service FaucetService {
-  rpc VerifyTweet (VerifyTweetRequest) returns (VerifyTweetResponse) {}
+  rpc DripDev (DripDevRequest) returns (DripResponse) {}
+  rpc DripVerifyTweet (DripVerifyTweetRequest) returns (DripResponse) {}
 
   rpc GetLinkedTwitters (GetLinkedTwittersRequest) returns (GetLinkedTwittersResponse) {}
   rpc GetLinkedTwitterForAddress (LinkedTwitterForAddressRequest) returns (LinkedTwitterForAddressResponse) {}
   rpc GetLinkedAddressForTwitter (LinkedAddressForTwitterRequest) returns (LinkedAddressForTwitterResponse) {}
 }
 
-message VerifyTweetRequest {
+message DripVerifyTweetRequest {
   string username = 1;
   string address = 2;
 }
 
-message VerifyTweetResponse {
+message DripDevRequest {
+  string address = 1;
+}
+
+message DripResponse {
   string txHash = 1;
 }
 

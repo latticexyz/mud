@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/dghubble/go-twitter/twitter"
+	"github.com/keith-turner/ecoji"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
 
@@ -20,19 +21,49 @@ type DripConfig struct {
 	DripAmount    int64
 	DripFrequency float64
 	DripLimit     uint64
+	DevMode       bool
 }
 
 func TwitterUsernameQuery(username string) string {
-	return fmt.Sprintf("from:%s AND %s", username, MatchingHashtag)
+	return fmt.Sprintf("from:%s", username)
 }
 
-func ExtractSignatureFromTweet(tweet twitter.Tweet) string {
-	tokens := strings.Split(tweet.FullText, "faucet")
-	return strings.TrimSpace(tokens[1])[:132]
+func FindEmojiPosition(tweetText string) (int, error) {
+	runes := []rune(tweetText)
+
+	for i := 0; i < len(runes); i++ {
+		r := runes[i]
+		if r > 128 {
+			return i, nil
+		}
+	}
+	return -1, fmt.Errorf("no emoji signature found in tweet")
+}
+
+func ExtractSignatureFromTweet(tweet twitter.Tweet) (string, error) {
+	// Find where the signature begins. We do this by finding the first emoji.
+	tweetText := tweet.FullText
+	signatureStart, err := FindEmojiPosition(tweetText)
+	if err != nil {
+		return "", err
+	}
+	signature := tweetText[signatureStart:]
+
+	in := strings.NewReader(signature)
+	out := new(strings.Builder)
+
+	if err := ecoji.Decode(in, out); err != nil {
+		return "", fmt.Errorf("error while decoding emoji: %s", err.Error())
+	}
+
+	return out.String(), nil
 }
 
 func VerifyDripRequestTweet(tweet twitter.Tweet, username string, address string) error {
-	tweetSignature := ExtractSignatureFromTweet(tweet)
+	tweetSignature, err := ExtractSignatureFromTweet(tweet)
+	if err != nil {
+		return err
+	}
 
 	isVerified, recoveredAddress, err := utils.VerifySig(
 		address,
