@@ -125,7 +125,11 @@ func StartRelayServer(port int, config *relay.RelayServerConfig, logger *zap.Log
 		// Enable CORS.
 		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
 		grpcweb.WithOriginFunc(func(origin string) bool { return true }),
-	)
+		grpcweb.WithWebsockets(true),
+		grpcweb.WithWebsocketOriginFunc(func(req *http.Request) bool {
+				return true
+		}),
+)
 	// Create and start the HTTP server at PORT+1.
 	httpServer := &http.Server{
 		Handler: grpcWebServer,

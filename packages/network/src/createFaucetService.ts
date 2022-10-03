@@ -6,7 +6,7 @@ import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
  * @param url FaucetService URL
  * @returns FaucetServiceClient
  */
-export function createFaucetService(url: string): FaucetServiceClient {
+export function createFaucetService(url: string) {
   const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
   return new FaucetServiceClient(transport);
 }

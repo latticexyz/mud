@@ -3,6 +3,8 @@
   "license": "MIT",
   "version": "1.4.1",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
+  "main": "protobuf/ts",
+  "type": "commonjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -16,15 +18,11 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "@protobuf-ts/grpcweb-transport": "^2.7.0",
-    "@protobuf-ts/plugin": "^2.7.0",
-    "@protobuf-ts/runtime-rpc": "^2.7.0",
     "typedoc": "^0.23.10"
   },
-  "peerDependencies": {
-    "@protobuf-ts/grpcweb-transport": "^2.7.0",
-    "@protobuf-ts/plugin": "^2.7.0",
-    "@protobuf-ts/runtime-rpc": "^2.7.0"
-  },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "peerDependencies": {},
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
+  "dependencies": {
+    "ts-proto": "^1.126.1"
+  }
 }
