@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { CallContext, CallOptions } from "nice-grpc-common";
-import * as _m0 from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "ecsstream";
 

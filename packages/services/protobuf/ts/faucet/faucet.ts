@@ -1,7 +1,7 @@
 /* eslint-disable */
-import * as Long from "long";
+import Long from "long";
 import { CallContext, CallOptions } from "nice-grpc-common";
-import * as _m0 from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "faucet";
 
@@ -34,16 +34,34 @@ export interface FaucetStore_LatestDripEntry {
   value: number;
 }
 
+/** Request for drip after a successful DripVerifyTweet RPC. */
+export interface DripRequest {
+  username: string;
+  address: string;
+}
+
+/** Request for initial drip via DripVerifyTweet RPC that requires verifying a tweet */
 export interface DripVerifyTweetRequest {
   username: string;
   address: string;
 }
+
+/** Request for drip to any address when running in dev mode. */
 export interface DripDevRequest {
   address: string;
 }
+
+/** Response for drip request that contains the transaction hash of the drip tx. */
 export interface DripResponse {
   txHash: string;
 }
+
+/** Response for the time until next drip request. */
+export interface TimeUntilDripResponse {
+  timeUntilDripMinutes: number;
+  timeUntilDripSeconds: number;
+}
+
 export interface GetLinkedTwittersRequest {}
 
 export interface GetLinkedTwittersResponse {
@@ -333,6 +351,50 @@ export const FaucetStore_LatestDripEntry = {
   },
 };
 
+function createBaseDripRequest(): DripRequest {
+  return { username: "", address: "" };
+}
+
+export const DripRequest = {
+  encode(message: DripRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.username !== "") {
+      writer.uint32(10).string(message.username);
+    }
+    if (message.address !== "") {
+      writer.uint32(18).string(message.address);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DripRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDripRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.username = reader.string();
+          break;
+        case 2:
+          message.address = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<DripRequest>): DripRequest {
+    const message = createBaseDripRequest();
+    message.username = object.username ?? "";
+    message.address = object.address ?? "";
+    return message;
+  },
+};
+
 function createBaseDripVerifyTweetRequest(): DripVerifyTweetRequest {
   return { username: "", address: "" };
 }
@@ -447,6 +509,50 @@ export const DripResponse = {
   fromPartial(object: DeepPartial<DripResponse>): DripResponse {
     const message = createBaseDripResponse();
     message.txHash = object.txHash ?? "";
+    return message;
+  },
+};
+
+function createBaseTimeUntilDripResponse(): TimeUntilDripResponse {
+  return { timeUntilDripMinutes: 0, timeUntilDripSeconds: 0 };
+}
+
+export const TimeUntilDripResponse = {
+  encode(message: TimeUntilDripResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.timeUntilDripMinutes !== 0) {
+      writer.uint32(9).double(message.timeUntilDripMinutes);
+    }
+    if (message.timeUntilDripSeconds !== 0) {
+      writer.uint32(17).double(message.timeUntilDripSeconds);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TimeUntilDripResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTimeUntilDripResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.timeUntilDripMinutes = reader.double();
+          break;
+        case 2:
+          message.timeUntilDripSeconds = reader.double();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<TimeUntilDripResponse>): TimeUntilDripResponse {
+    const message = createBaseTimeUntilDripResponse();
+    message.timeUntilDripMinutes = object.timeUntilDripMinutes ?? 0;
+    message.timeUntilDripSeconds = object.timeUntilDripSeconds ?? 0;
     return message;
   },
 };
@@ -672,6 +778,14 @@ export const FaucetServiceDefinition = {
   name: "FaucetService",
   fullName: "faucet.FaucetService",
   methods: {
+    drip: {
+      name: "Drip",
+      requestType: DripRequest,
+      requestStream: false,
+      responseType: DripResponse,
+      responseStream: false,
+      options: {},
+    },
     dripDev: {
       name: "DripDev",
       requestType: DripDevRequest,
@@ -685,6 +799,14 @@ export const FaucetServiceDefinition = {
       requestType: DripVerifyTweetRequest,
       requestStream: false,
       responseType: DripResponse,
+      responseStream: false,
+      options: {},
+    },
+    timeUntilDrip: {
+      name: "TimeUntilDrip",
+      requestType: DripRequest,
+      requestStream: false,
+      responseType: TimeUntilDripResponse,
       responseStream: false,
       options: {},
     },
@@ -716,11 +838,16 @@ export const FaucetServiceDefinition = {
 } as const;
 
 export interface FaucetServiceServiceImplementation<CallContextExt = {}> {
+  drip(request: DripRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DripResponse>>;
   dripDev(request: DripDevRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DripResponse>>;
   dripVerifyTweet(
     request: DripVerifyTweetRequest,
     context: CallContext & CallContextExt
   ): Promise<DeepPartial<DripResponse>>;
+  timeUntilDrip(
+    request: DripRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<TimeUntilDripResponse>>;
   getLinkedTwitters(
     request: GetLinkedTwittersRequest,
     context: CallContext & CallContextExt
@@ -736,11 +863,16 @@ export interface FaucetServiceServiceImplementation<CallContextExt = {}> {
 }
 
 export interface FaucetServiceClient<CallOptionsExt = {}> {
+  drip(request: DeepPartial<DripRequest>, options?: CallOptions & CallOptionsExt): Promise<DripResponse>;
   dripDev(request: DeepPartial<DripDevRequest>, options?: CallOptions & CallOptionsExt): Promise<DripResponse>;
   dripVerifyTweet(
     request: DeepPartial<DripVerifyTweetRequest>,
     options?: CallOptions & CallOptionsExt
   ): Promise<DripResponse>;
+  timeUntilDrip(
+    request: DeepPartial<DripRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<TimeUntilDripResponse>;
   getLinkedTwitters(
     request: DeepPartial<GetLinkedTwittersRequest>,
     options?: CallOptions & CallOptionsExt
@@ -793,8 +925,6 @@ function longToNumber(long: Long): number {
   return long.toNumber();
 }
 
-// If you get a compile-error about 'Constructor<Long> and ... have no overlap',
-// add '--ts_proto_opt=esModuleInterop=true' as a flag when calling 'protoc'.
 if (_m0.util.Long !== Long) {
   _m0.util.Long = Long as any;
   _m0.configure();
