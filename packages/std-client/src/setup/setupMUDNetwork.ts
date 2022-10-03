@@ -104,7 +104,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
       initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
       chainId: networkConfig.chainId,
       disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
-      checkpointServiceUrl: networkConfig.checkpointServiceUrl,
+      snapshotServiceUrl: networkConfig.snapshotServiceUrl,
       streamServiceUrl: networkConfig.streamServiceUrl,
     });
   }
@@ -166,7 +166,7 @@ function applyNetworkUpdates<C extends Components>(
     .pipe(
       // We throttle the client side event processing to 1000 events every 16ms, so 62.500 events per second.
       // This means if the chain were to emit more than 62.500 events per second, the client would not keep up.
-      // The only time we get close to this number is when initializing from a checkpoint/cache.
+      // The only time we get close to this number is when initializing from a snapshot/cache.
       bufferTime(16, null, 1000),
       filter((updates) => updates.length > 0),
       stretch(16)

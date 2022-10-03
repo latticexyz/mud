@@ -9,7 +9,7 @@ export interface NetworkConfig {
   privateKey?: string;
   clock: ClockConfig;
   provider: ProviderConfig;
-  checkpointServiceUrl?: string;
+  snapshotServiceUrl?: string;
   streamServiceUrl?: string;
   initialBlockNumber?: number;
 }
@@ -117,7 +117,7 @@ export type SyncWorkerConfig = {
   worldContract: ContractConfig;
   disableCache?: boolean;
   chainId: number;
-  checkpointServiceUrl?: string;
+  snapshotServiceUrl?: string;
   streamServiceUrl?: string;
   fetchSystemCalls?: boolean;
 };

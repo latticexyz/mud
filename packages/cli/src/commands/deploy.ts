@@ -451,7 +451,7 @@ export const deploy = async (options: Options) => {
                     options.rpc = getCodespaceUrl(8545);
                   }
 
-                  launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${options.rpc}&wsRpc=${options.wsRpc}&checkpoint=&initialBlockNumber=${ctx.initialBlockNumber}&dev=true`;
+                  launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${options.rpc}&wsRpc=${options.wsRpc}&initialBlockNumber=${ctx.initialBlockNumber}&dev=true&snapshot=&stream=&relay=&faucet=`;
 
                   // Launcher version:
                   // `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&client=${

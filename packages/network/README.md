@@ -106,7 +106,7 @@ export async function setupContracts<C extends ContractComponents>(world: World,
       initialBlockNumber: config.initialBlockNumber ?? 0,
       chainId: config.chainId,
       disableCache: false,
-      checkpointServiceUrl: networkConfig.checkpointServiceUrl,
+      snapshotServiceUrl: networkConfig.snapshotServiceUrl,
       streamServiceUrl: networkConfig.streamServiceUrl,
     });
   }

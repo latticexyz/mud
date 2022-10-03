@@ -84,7 +84,7 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     // Turn config into variable accessible outside the stream
     const computedConfig = await streamToDefinedComputed(this.input$);
     const {
-      checkpointServiceUrl,
+      snapshotServiceUrl,
       streamServiceUrl,
       chainId,
       worldContract,
@@ -96,7 +96,7 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     // Set up
     const { providers } = await createReconnectingProvider(computed(() => computedConfig.get().provider));
     const provider = providers.get().json;
-    const snapshotClient = checkpointServiceUrl ? createSnapshotClient(checkpointServiceUrl) : undefined;
+    const snapshotClient = snapshotServiceUrl ? createSnapshotClient(snapshotServiceUrl) : undefined;
     const indexDbCache = await getIndexDbECSCache(chainId, worldContract.address);
     const decode = createDecode(worldContract, provider);
     const fetchWorldEvents = createFetchWorldEventsInBlockRange(

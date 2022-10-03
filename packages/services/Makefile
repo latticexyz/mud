@@ -23,10 +23,26 @@ protoc-ts:
 	mkdir -p ./protobuf/ts/ecs-snapshot
 	mkdir -p ./protobuf/ts/ecs-relay
 	mkdir -p ./protobuf/ts/faucet
-	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/ecs-stream --proto_path proto proto/ecs-stream.proto
-	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/ecs-snapshot --proto_path proto proto/ecs-snapshot.proto
-	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/ecs-relay --proto_path proto proto/ecs-relay.proto
-	npx protoc --ts_opt eslint_disable --ts_out ./protobuf/ts/faucet --proto_path proto proto/faucet.proto
+	protoc \
+	--plugin protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+	--ts_proto_out ./protobuf/ts/ecs-stream \
+	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true \
+	--proto_path proto proto/ecs-stream.proto 
+	protoc \
+	--plugin protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+	--ts_proto_out ./protobuf/ts/ecs-snapshot \
+	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true \
+	--proto_path proto proto/ecs-snapshot.proto 
+	protoc \
+	--plugin protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+	--ts_proto_out ./protobuf/ts/ecs-relay \
+	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true \
+	--proto_path proto proto/ecs-relay.proto 
+	protoc \
+	--plugin protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto \
+	--ts_proto_out ./protobuf/ts/faucet \
+	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true \
+	--proto_path proto proto/faucet.proto 
 .PHONY: protoc-ts
 
 build: ecs-stream ecs-snapshot ecs-relay faucet
