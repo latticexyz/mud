@@ -12,7 +12,7 @@ import { messagePayload } from "./utils";
  * @param url ECSRelayService URL
  * @returns ECSRelayServiceClient
  */
-export function createRelayerClient(url: string): ECSRelayServiceClient {
+export function createRelayClient(url: string): ECSRelayServiceClient {
   const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
   return new ECSRelayServiceClient(transport);
 }
@@ -23,8 +23,8 @@ export function createRelayerClient(url: string): ECSRelayServiceClient {
  * @param id User id (eg address)
  * @returns RelayService connection
  */
-export async function createRelayerStream(signer: Signer, url: string, id: string) {
-  const relayerClient = createRelayerClient(url);
+export async function createRelayStream(signer: Signer, url: string, id: string) {
+  const relayerClient = createRelayClient(url);
   const recoverWorker = await spawn(
     new Worker(new URL("./workers/Recover.worker.ts", import.meta.url), { type: "module" })
   );
