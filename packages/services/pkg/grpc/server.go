@@ -103,11 +103,11 @@ func StartSnapshotServer(port int, logger *zap.Logger) {
 	logger.Info("started listening", zap.String("category", "http server"), zap.String("address", httpServer.Addr))
 }
 
-func StartRelayServer(port int, config *relay.RelayServerConfig, logger *zap.Logger) {
+func StartRelayServer(port int, ethClient *ethclient.Client, config *relay.RelayServerConfig, logger *zap.Logger) {
 	var options []grpc.ServerOption
 	grpcServer := grpc.NewServer(options...)
 
-	pb_relay.RegisterECSRelayServiceServer(grpcServer, createRelayServer(logger, config))
+	pb_relay.RegisterECSRelayServiceServer(grpcServer, createRelayServer(logger, ethClient, config))
 
 	// Register reflection service on gRPC server.
 	reflection.Register(grpcServer)
@@ -129,7 +129,7 @@ func StartRelayServer(port int, config *relay.RelayServerConfig, logger *zap.Log
 		grpcweb.WithWebsocketOriginFunc(func(req *http.Request) bool {
 			return true
 		}),
-)
+	)
 	// Create and start the HTTP server at PORT+1.
 	httpServer := &http.Server{
 		Handler: grpcWebServer,
@@ -193,10 +193,11 @@ func createSnapshotServer() *ecsSnapshotServer {
 	return &ecsSnapshotServer{}
 }
 
-func createRelayServer(logger *zap.Logger, config *relay.RelayServerConfig) *ecsRelayServer {
+func createRelayServer(logger *zap.Logger, ethClient *ethclient.Client, config *relay.RelayServerConfig) *ecsRelayServer {
 	server := &ecsRelayServer{
-		logger: logger,
-		config: config,
+		logger:    logger,
+		ethClient: ethClient,
+		config:    config,
 	}
 	server.Init()
 	return server

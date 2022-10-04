@@ -9,8 +9,10 @@ require (
 	github.com/dghubble/go-twitter v0.0.0-20220816163853-8a0df96f1e6d
 	github.com/ethereum/go-ethereum v1.10.21
 	github.com/improbable-eng/grpc-web v0.15.0
+	github.com/keith-turner/ecoji v1.0.0
 	go.uber.org/zap v1.22.0
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
+	golang.org/x/time v0.0.0-20210220033141-f8bda1e9f3ba
 	google.golang.org/grpc v1.48.0
 	google.golang.org/protobuf v1.28.1
 )
@@ -30,7 +32,6 @@ require (
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/uuid v1.2.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
-	github.com/keith-turner/ecoji v1.0.0 // indirect
 	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/rjeczalik/notify v0.9.1 // indirect
 	github.com/rs/cors v1.7.0 // indirect
