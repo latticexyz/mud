@@ -282,6 +282,28 @@ func (server *ecsRelayServer) VerifyMessage(message *pb.Message, identity *pb.Id
 	return nil
 }
 
+func (server *ecsRelayServer) VerifySufficientBalance(client *relay.Client, address string) error {
+	if client.ShouldCheckBalance() {
+		balance, err := eth.GetCurrentBalance(server.ethClient, address)
+		if err != nil {
+			return err
+		}
+		server.logger.Info("fetched up-to-date balance for account", zap.String("address", address), zap.Uint64("balance", balance))
+
+		// Update the "cached" balance on the client, which helps us know whether to keep checking or not.
+		client.SetHasBalance(balance > 0)
+
+		if balance == 0 {
+			return fmt.Errorf("client with address %s has insufficient balance to push messages via relay", address)
+		}
+	} else {
+		if !client.HasBalance() {
+			return fmt.Errorf("client with address %s has insufficient balance as of last check", address)
+		}
+	}
+	return nil
+}
+
 func (server *ecsRelayServer) HandlePushRequest(request *pb.PushRequest) error {
 	// When pushing a single message, we recover the sender from the message signature, which has
 	// different format then identity signature.
@@ -302,13 +324,11 @@ func (server *ecsRelayServer) HandlePushRequest(request *pb.PushRequest) error {
 	}
 
 	// Check if the authenticated client has a balance. We permit pushes of messages only for
-	// clients which have a non-zero balance.
-	balance, err := eth.GetCurrentBalance(server.ethClient, recoveredAddress)
+	// clients which have a non-zero balance. The checks to Ethereum client are rate limited such
+	// that we don't check balance on every request.
+	err = server.VerifySufficientBalance(client, recoveredAddress)
 	if err != nil {
 		return err
-	}
-	if balance == 0 {
-		return fmt.Errorf("client with address %s has insufficient balance to push messages via relay", recoveredAddress)
 	}
 
 	// Rate limit the client, if necessary.
