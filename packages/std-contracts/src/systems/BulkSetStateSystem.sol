@@ -20,7 +20,7 @@ contract BulkSetStateSystem is System {
   constructor(IWorld _world, address _components) System(_world, _components) {}
 
   function requirement(bytes memory) public view returns (bytes memory) {
-    // NOTE: Make sure to not include this system in a production deployment, as anyone can cahnge all component values
+    // NOTE: Make sure to not include this system in a production deployment, as anyone can change all component values
   }
 
   function execute(bytes memory arguments) public returns (bytes memory) {
