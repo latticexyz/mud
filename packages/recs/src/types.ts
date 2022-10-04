@@ -186,7 +186,11 @@ export type Override<S extends Schema, T = undefined> = {
 /**
  * Type of overridable component returned by {@link overridableComponent}.
  */
-export type OverridableComponent<S extends Schema = Schema, T = undefined> = Component<S, Metadata, T> & {
+export type OverridableComponent<S extends Schema = Schema, M extends Metadata = Metadata, T = undefined> = Component<
+  S,
+  M,
+  T
+> & {
   addOverride: (actionEntityId: EntityID, update: Override<S, T>) => void;
   removeOverride: (actionEntityId: EntityID) => void;
 };

@@ -12,6 +12,7 @@ import {
   Component,
   removeComponent,
   setComponent,
+  Metadata,
 } from "@latticexyz/recs";
 import { mapObject, awaitStreamValue } from "@latticexyz/utils";
 import { ActionState } from "./constants";
@@ -44,7 +45,9 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
    * @param component Component to be mapped to components including pending updates
    * @returns Components including pending updates
    */
-  function withOptimisticUpdates<C extends Component>(component: C): C {
+  function withOptimisticUpdates<S extends Schema, M extends Metadata, T>(
+    component: Component<S, M, T>
+  ): OverridableComponent<S, M, T> {
     const optimisticComponent = componentsWithOptimisticUpdates[component.id] || overridableComponent(component);
 
     // If the component is not tracked yet, add it to the map of overridable components
@@ -53,7 +56,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
     }
 
     // Typescript can't know that the optimistic component with this id has the same type as C
-    return optimisticComponent as unknown as C;
+    return optimisticComponent as OverridableComponent<S, M, T>;
   }
 
   /**
@@ -63,10 +66,12 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
    * @param actionRequest Action to be scheduled
    * @returns index of the entity created for the action
    */
-  function add<C extends Components, T>(actionRequest: ActionRequest<C, T, M>): EntityIndex | void {
+  function add<C extends Components, T>(actionRequest: ActionRequest<C, T, M>): EntityIndex {
     // Prevent the same actions from being scheduled multiple times
-    if (world.entityToIndex.get(actionRequest.id) != null) {
-      return console.warn(`Action with id ${actionRequest.id} is already requested.`);
+    const existingAction = world.entityToIndex.get(actionRequest.id);
+    if (existingAction != null) {
+      console.warn(`Action with id ${actionRequest.id} is already requested.`);
+      return existingAction;
     }
 
     // Set the action component
