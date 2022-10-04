@@ -8,12 +8,16 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	"golang.org/x/time/rate"
 )
 
 type RelayServerConfig struct {
 	IdleTimeoutTime       int
 	IdleDisconnectIterval int
 	MessageDriftTime      int
+
+	VerifyMessageSignature bool
+	MessageRateLimit       float64
 }
 
 type Client struct {
@@ -21,7 +25,13 @@ type Client struct {
 	channel             chan *pb.Message
 	connected           bool
 	latestPingTimestamp int64
-	mutex               sync.Mutex
+
+	balancePresent           bool
+	balancePresentLimiter    *rate.Limiter
+	balanceNotPresentLimiter *rate.Limiter
+	messageRateLimiter       *rate.Limiter
+
+	mutex sync.Mutex
 }
 
 func (client *Client) Connect() {
@@ -62,6 +72,26 @@ func (client *Client) GetChannel() chan *pb.Message {
 
 func (client *Client) GetIdentity() *pb.Identity {
 	return client.identity
+}
+
+func (client *Client) GetLimiter() *rate.Limiter {
+	return client.messageRateLimiter
+}
+
+func (client *Client) HasBalance() bool {
+	return client.balancePresent
+}
+
+func (client *Client) SetHasBalance(hasBalance bool) {
+	client.balancePresent = hasBalance
+}
+
+func (client *Client) ShouldCheckBalance() bool {
+	if client.balancePresent {
+		return client.balancePresentLimiter.Allow()
+	} else {
+		return client.balanceNotPresentLimiter.Allow()
+	}
 }
 
 type ClientRegistry struct {
@@ -139,13 +169,21 @@ func (registry *ClientRegistry) IsRegistered(identity *pb.Identity) bool {
 	return false
 }
 
-func (registry *ClientRegistry) Register(identity *pb.Identity) {
+func (registry *ClientRegistry) Register(identity *pb.Identity, config *RelayServerConfig) {
 	registry.mutex.Lock()
 
 	newClient := new(Client)
 	newClient.identity = identity
 	newClient.channel = make(chan *pb.Message)
 	newClient.connected = false
+	newClient.messageRateLimiter = rate.NewLimiter(rate.Limit(config.MessageRateLimit), 1)
+
+	// At most allow a check for balance every 60s if client has funds and every 10s if not.
+	newClient.balancePresentLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(60)), 1)
+	newClient.balanceNotPresentLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(10)), 1)
+
+	newClient.balancePresent = false
+
 	registry.clients = append(registry.clients, newClient)
 
 	registry.mutex.Unlock()
