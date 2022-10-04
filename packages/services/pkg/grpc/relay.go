@@ -4,12 +4,14 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/relay"
 	"latticexyz/mud/packages/services/pkg/utils"
 	pb "latticexyz/mud/packages/services/protobuf/go/ecs-relay"
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	"github.com/ethereum/go-ethereum/ethclient"
 	"go.uber.org/zap"
 )
 
@@ -18,8 +20,9 @@ type ecsRelayServer struct {
 	relay.ClientRegistry
 	relay.SubscriptionRegistry
 
-	config *relay.RelayServerConfig
-	logger *zap.Logger
+	ethClient *ethclient.Client
+	config    *relay.RelayServerConfig
+	logger    *zap.Logger
 }
 
 func (server *ecsRelayServer) Init() {
@@ -75,7 +78,7 @@ func (server *ecsRelayServer) Authenticate(ctx context.Context, signature *pb.Si
 	server.logger.Info("successfully authenticated client", zap.String("name", identity.Name))
 
 	if !server.IsRegistered(identity) {
-		server.Register(identity)
+		server.Register(identity, server.config)
 		server.logger.Info("registered new client identity", zap.String("name", identity.Name))
 	} else {
 		server.logger.Warn("client identity already registered", zap.String("name", identity.Name))
@@ -258,13 +261,16 @@ func (server *ecsRelayServer) VerifyMessage(message *pb.Message, identity *pb.Id
 		return fmt.Errorf("signature is not defined")
 	}
 
-	// Recover the signer to verify that it is the same identity as the one making the RPC call.
-	isVerified, recoveredAddress, err := server.VerifyMessageSignature(message, identity)
-	if err != nil {
-		return fmt.Errorf("error while verifying message: %s", err.Error())
-	}
-	if !isVerified {
-		return fmt.Errorf("recovered signer %s != identity %s", recoveredAddress, identity.Name)
+	// Verify that the message is OK to relay if config flag is on.
+	if server.config.VerifyMessageSignature {
+		// Recover the signer to verify that it is the same identity as the one making the RPC call.
+		isVerified, recoveredAddress, err := server.VerifyMessageSignature(message, identity)
+		if err != nil {
+			return fmt.Errorf("error while verifying message: %s", err.Error())
+		}
+		if !isVerified {
+			return fmt.Errorf("recovered signer %s != identity %s", recoveredAddress, identity.Name)
+		}
 	}
 
 	// For every message verify that the timestamp is within an acceptable drift time.
@@ -289,13 +295,31 @@ func (server *ecsRelayServer) HandlePushRequest(request *pb.PushRequest) error {
 		Name: recoveredAddress,
 	}
 
+	// Get the client object for this identity to make sure it's authenticated.
 	client, err := server.GetClientFromIdentity(identity)
 	if err != nil {
 		return err
 	}
 
-	// Verify that the message is OK to relay.
+	// Check if the authenticated client has a balance. We permit pushes of messages only for
+	// clients which have a non-zero balance.
+	balance, err := eth.GetCurrentBalance(server.ethClient, recoveredAddress)
+	if err != nil {
+		return err
+	}
+	if balance == 0 {
+		return fmt.Errorf("client with address %s has insufficient balance to push messages via relay", recoveredAddress)
+	}
+
+	// Rate limit the client, if necessary.
+	if !client.GetLimiter().Allow() {
+		return fmt.Errorf("client rate limited, max %.2f msg push / second allowed", server.config.MessageRateLimit)
+	}
+
+	// Get the message.
 	message := request.Message
+
+	// Verify that the message is OK to relay.
 	err = server.VerifyMessage(message, identity)
 	if err != nil {
 		return err

@@ -8,12 +8,16 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	"golang.org/x/time/rate"
 )
 
 type RelayServerConfig struct {
 	IdleTimeoutTime       int
 	IdleDisconnectIterval int
 	MessageDriftTime      int
+
+	VerifyMessageSignature bool
+	MessageRateLimit       float64
 }
 
 type Client struct {
@@ -21,6 +25,7 @@ type Client struct {
 	channel             chan *pb.Message
 	connected           bool
 	latestPingTimestamp int64
+	rateLimiter         *rate.Limiter
 	mutex               sync.Mutex
 }
 
@@ -62,6 +67,10 @@ func (client *Client) GetChannel() chan *pb.Message {
 
 func (client *Client) GetIdentity() *pb.Identity {
 	return client.identity
+}
+
+func (client *Client) GetLimiter() *rate.Limiter {
+	return client.rateLimiter
 }
 
 type ClientRegistry struct {
@@ -139,13 +148,14 @@ func (registry *ClientRegistry) IsRegistered(identity *pb.Identity) bool {
 	return false
 }
 
-func (registry *ClientRegistry) Register(identity *pb.Identity) {
+func (registry *ClientRegistry) Register(identity *pb.Identity, config *RelayServerConfig) {
 	registry.mutex.Lock()
 
 	newClient := new(Client)
 	newClient.identity = identity
 	newClient.channel = make(chan *pb.Message)
 	newClient.connected = false
+	newClient.rateLimiter = rate.NewLimiter(rate.Limit(config.MessageRateLimit), 1)
 	registry.clients = append(registry.clients, newClient)
 
 	registry.mutex.Unlock()
