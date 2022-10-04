@@ -279,9 +279,9 @@ export function getComponentEntities<S extends Schema, T = undefined>(
  * @param component {@link defineComponent Component} to use as underlying source for the overridable component
  * @returns overridable component
  */
-export function overridableComponent<S extends Schema, T = undefined>(
-  component: Component<S, Metadata, T>
-): OverridableComponent<S, T> {
+export function overridableComponent<S extends Schema, M extends Metadata, T = undefined>(
+  component: Component<S, M, T>
+): OverridableComponent<S, M, T> {
   let nonce = 0;
 
   // Map from OverrideId to Override (to be able to add multiple overrides to the same Entity)
