@@ -362,11 +362,11 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
     },
   });
 
-  const partialValues: Partial<Component<S, Metadata, T>["values"]> = {};
+  const partialValues: Partial<Component<S, M, T>["values"]> = {};
   for (const key of Object.keys(component.values) as (keyof S)[]) {
     partialValues[key] = new Proxy(component.values[key], valueProxyHandler(key));
   }
-  const valuesProxy = partialValues as Component<S, Metadata, T>["values"];
+  const valuesProxy = partialValues as Component<S, M, T>["values"];
 
   const overriddenComponent = new Proxy(component, {
     get(target, prop) {
@@ -381,7 +381,7 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       if (prop === "addOverride" || prop === "removeOverride") return true;
       return prop in target;
     },
-  }) as OverridableComponent<S, T>;
+  }) as OverridableComponent<S, M, T>;
 
   // Internal function to set the current overridden component value and emit the update event
   function setOverriddenComponentValue(entity: EntityIndex, value?: Partial<ComponentValue<S, T>> | null) {
