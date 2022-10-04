@@ -27,18 +27,27 @@ func Sync(client *ethclient.Client, fromBlock *big.Int, toBlock *big.Int, worldA
 		zap.Uint64("upToBlock", toBlock.Uint64()),
 	)
 
-	state, loadedFromBlockNumber := getInitialStateChain()
-	if loadedFromBlockNumber < math.MaxUint64 {
-		logger.Info("loaded initial state from snapshot",
-			zap.String("category", "Initial sync"),
-			zap.Uint64("loadedFromBlockNumber (min from all worlds)", loadedFromBlockNumber),
-		)
-	}
+	// Get state, if any, from snapshot, including the block number that it is associated for. Since
+	// the state is indexing all worlds, this will be the minimum block of all ECS world states.
+	state, availableSnapshotBlockNumber := getInitialStateChain()
 
-	// Default to sync from whatever the start block is, then update if we were able to sync from an existing snapshot.
+	// Default to sync from whatever the start block is, then update if we were able to sync from an existing snapshot,
+	// only if that snapshot is from a block number that's more recent then the requested fromBlock number.
 	blockToStartSyncFrom := fromBlock.Int64()
-	if loadedFromBlockNumber < math.MaxUint64 {
-		blockToStartSyncFrom = int64(loadedFromBlockNumber)
+	if availableSnapshotBlockNumber < math.MaxUint64 && int64(availableSnapshotBlockNumber) > blockToStartSyncFrom {
+		blockToStartSyncFrom = int64(availableSnapshotBlockNumber)
+
+		logger.Info("loading initial state from snapshot",
+			zap.String("category", "Initial sync"),
+			zap.Uint64("availableSnapshotBlockNumber (min from all worlds)", availableSnapshotBlockNumber),
+			zap.Uint64("fromBlock", fromBlock.Uint64()),
+		)
+	} else {
+		logger.Info("not loading state from snapshot",
+			zap.String("category", "Initial sync"),
+			zap.Uint64("availableSnapshotBlockNumber (min from all worlds)", availableSnapshotBlockNumber),
+			zap.Uint64("fromBlock", fromBlock.Uint64()),
+		)
 	}
 
 	for block := blockToStartSyncFrom; block < toBlock.Int64(); block += InitialSyncBlockBatchSize {

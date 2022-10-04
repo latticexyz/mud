@@ -44,6 +44,7 @@ var (
 	wsUrl          = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
 	port           = flag.Int("port", 50061, "gRPC Server Port")
 	worldAddresses = flag.String("worldAddresses", "", "List of world addresses to index ECS state for. Defaults to empty string which will listen for all world events from all addresses")
+	block          = flag.Int64("block", 0, "Block to start taking snapshots from. Defaults to 0")
 )
 
 func main() {
@@ -73,7 +74,7 @@ func main() {
 	utils.EnsureDir(snapshot.SnapshotDir)
 
 	// 2. Kick off the service to catch up on state up to the current block number.
-	fromBlock := big.NewInt(0)
+	fromBlock := big.NewInt(*block)
 	toBlock := eth.GetCurrentBlockHead(ethclient)
 
 	initialState := snapshot.Sync(ethclient, fromBlock, toBlock, worlds)
