@@ -109,24 +109,7 @@ abstract contract Component is IComponent {
    * @param value Value to set for the given entity.
    */
   function set(uint256 entity, bytes memory value) public onlyWriter {
-    // Store the entity
-    entities.add(entity);
-
-    // Remove the entitiy from the previous reverse mapping if there is one
-    valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
-
-    // Store the entity's value;
-    entityToValue[entity] = value;
-
-    // Add the entity to the new reverse mapping
-    valueToEntities.add(uint256(keccak256(value)), entity);
-
-    for (uint256 i = 0; i < indexers.length; i++) {
-      indexers[i].update(entity, value);
-    }
-
-    // Emit global event
-    IWorld(world).registerComponentValueSet(address(this), entity, value);
+    _set(entity, value);
   }
 
   /**
@@ -136,24 +119,7 @@ abstract contract Component is IComponent {
    * @param entity Entity to remove from this component.
    */
   function remove(uint256 entity) public onlyWriter {
-    // If there is no entity with this value, return
-    if (valueToEntities.size(uint256(keccak256(entityToValue[entity]))) == 0) return;
-
-    // Remove the entity from the reverse mapping
-    valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
-
-    // Remove the entity from the entity list
-    entities.remove(entity);
-
-    // Remove the entity from the mapping
-    delete entityToValue[entity];
-
-    for (uint256 i = 0; i < indexers.length; i++) {
-      indexers[i].remove(entity);
-    }
-
-    // Emit global event
-    IWorld(world).registerComponentValueRemoved(address(this), entity);
+    _remove(entity);
   }
 
   /**
@@ -195,5 +161,60 @@ abstract contract Component is IComponent {
    */
   function registerIndexer(address indexer) external onlyWriter {
     indexers.push(IEntityIndexer(indexer));
+  }
+
+  /**
+   * Set the given component value for the given entity.
+   * Registers the update in the World contract.
+   * Can only be called by addresses with write access to this component.
+   * @param entity Entity to set the value for.
+   * @param value Value to set for the given entity.
+   */
+  function _set(uint256 entity, bytes memory value) internal {
+    // Store the entity
+    entities.add(entity);
+
+    // Remove the entitiy from the previous reverse mapping if there is one
+    valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
+
+    // Store the entity's value;
+    entityToValue[entity] = value;
+
+    // Add the entity to the new reverse mapping
+    valueToEntities.add(uint256(keccak256(value)), entity);
+
+    for (uint256 i = 0; i < indexers.length; i++) {
+      indexers[i].update(entity, value);
+    }
+
+    // Emit global event
+    IWorld(world).registerComponentValueSet(address(this), entity, value);
+  }
+
+  /**
+   * Remove the given entity from this component.
+   * Registers the update in the World contract.
+   * Can only be called by addresses with write access to this component.
+   * @param entity Entity to remove from this component.
+   */
+  function _remove(uint256 entity) internal {
+    // If there is no entity with this value, return
+    if (valueToEntities.size(uint256(keccak256(entityToValue[entity]))) == 0) return;
+
+    // Remove the entity from the reverse mapping
+    valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
+
+    // Remove the entity from the entity list
+    entities.remove(entity);
+
+    // Remove the entity from the mapping
+    delete entityToValue[entity];
+
+    for (uint256 i = 0; i < indexers.length; i++) {
+      indexers[i].remove(entity);
+    }
+
+    // Emit global event
+    IWorld(world).registerComponentValueRemoved(address(this), entity);
   }
 }
