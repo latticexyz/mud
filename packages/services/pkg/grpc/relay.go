@@ -54,7 +54,9 @@ func (server *ecsRelayServer) DisconnectIdleClientsWorker(ticker *time.Ticker, q
 		select {
 		case <-ticker.C:
 			countDisconnected := server.DisconnectIdleClients(server.config.IdleTimeoutTime)
-			server.logger.Info("done disconnecting idle clients", zap.Int("count", countDisconnected))
+			if countDisconnected > 0 {
+				server.logger.Info("done disconnecting idle clients", zap.Int("count", countDisconnected))
+			}
 		case <-quit:
 			ticker.Stop()
 			return
