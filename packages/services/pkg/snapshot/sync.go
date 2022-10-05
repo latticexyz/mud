@@ -20,7 +20,7 @@ import (
 // while reducing the state.
 //
 // Returns the entire ECS state once the sync is complete.
-func Sync(client *ethclient.Client, fromBlock *big.Int, toBlock *big.Int, worldAddresses []common.Address) ChainECSState {
+func Sync(client *ethclient.Client, fromBlock *big.Int, toBlock *big.Int, worldAddresses []common.Address, config *SnapshotServerConfig) ChainECSState {
 	logger := logger.GetLogger()
 	logger.Info("starting initial sync",
 		zap.String("category", "Initial sync"),
@@ -50,14 +50,14 @@ func Sync(client *ethclient.Client, fromBlock *big.Int, toBlock *big.Int, worldA
 		)
 	}
 
-	for block := blockToStartSyncFrom; block < toBlock.Int64(); block += InitialSyncBlockBatchSize {
-		state = processEventBatch(client, state, big.NewInt(block), big.NewInt(block+InitialSyncBlockBatchSize), worldAddresses)
+	for block := blockToStartSyncFrom; block < toBlock.Int64(); block += config.InitialSyncBlockBatchSize {
+		state = processEventBatch(client, state, big.NewInt(block), big.NewInt(block+config.InitialSyncBlockBatchSize), worldAddresses)
 		// Wait some time in-between batch requests. Note that with large enough numbers of events being batch processed,
 		// this wait time becomes negligable compared to the log load / parse.
-		time.Sleep(InitialSyncBlockBatchSyncTimeout)
+		time.Sleep(config.InitialSyncBlockBatchSyncTimeout)
 		// Take an in-progress snapshot up to the block number that has so far been loaded.
-		if block%InitialSyncSnapshotInterval == 0 {
-			go takeStateSnapshotChain(state, uint64(block), uint64(block+InitialSyncBlockBatchSize), Latest)
+		if block%config.InitialSyncSnapshotInterval == 0 {
+			go takeStateSnapshotChain(state, uint64(block), uint64(block+config.InitialSyncBlockBatchSize), Latest)
 		}
 	}
 

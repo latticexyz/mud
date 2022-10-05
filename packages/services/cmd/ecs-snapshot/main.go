@@ -30,6 +30,7 @@ package main
 import (
 	"flag"
 	"math/big"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -41,10 +42,14 @@ import (
 )
 
 var (
-	wsUrl          = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
-	port           = flag.Int("port", 50061, "gRPC Server Port")
-	worldAddresses = flag.String("worldAddresses", "", "List of world addresses to index ECS state for. Defaults to empty string which will listen for all world events from all addresses")
-	block          = flag.Int64("block", 0, "Block to start taking snapshots from. Defaults to 0")
+	wsUrl                            = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
+	port                             = flag.Int("port", 50061, "gRPC Server Port")
+	worldAddresses                   = flag.String("worldAddresses", "", "List of world addresses to index ECS state for. Defaults to empty string which will listen for all world events from all addresses")
+	block                            = flag.Int64("block", 0, "Block to start taking snapshots from. Defaults to 0")
+	snapshotBlockInterval            = flag.Int64("snapshot-block-interval", 100, "Block number interval for how often to take regular snapshots")
+	initialSyncBlockBatchSize        = flag.Int64("initial-sync-block-batch-size", 10, "Number of blocks to fetch data for when performing an initial sync")
+	initialSyncBlockBatchSyncTimeout = flag.Int64("initial-sync-block-batch-sync-timeout", 100, "Time in milliseconds to wait between calls to fetch batched log data when performing an initial sync")
+	initialSyncSnapshotInterval      = flag.Int64("initial-sync-snapshot-interval", 5000, "Block number interval for how often to take intermediary snapshots when performing an initial sync")
 )
 
 func main() {
@@ -55,6 +60,14 @@ func main() {
 	logger.InitLogger()
 	logger := logger.GetLogger()
 	defer logger.Sync()
+
+	// Build a config.
+	config := &snapshot.SnapshotServerConfig{
+		SnapshotBlockInterval:            *snapshotBlockInterval,
+		InitialSyncBlockBatchSize:        *initialSyncBlockBatchSize,
+		InitialSyncBlockBatchSyncTimeout: time.Duration(*initialSyncBlockBatchSyncTimeout) * time.Millisecond,
+		InitialSyncSnapshotInterval:      *initialSyncSnapshotInterval,
+	}
 
 	// Parse world addresses to listen to.
 	worlds := utils.SplitAddressList(*worldAddresses, ",")
@@ -68,7 +81,7 @@ func main() {
 	ethclient := eth.GetEthereumClient(*wsUrl, logger)
 
 	// Start gRPC server.
-	go grpc.StartSnapshotServer(*port, logger)
+	go grpc.StartSnapshotServer(*port, config, logger)
 
 	// 1. Prepare for service to run.
 	utils.EnsureDir(snapshot.SnapshotDir)
@@ -77,8 +90,8 @@ func main() {
 	fromBlock := big.NewInt(*block)
 	toBlock := eth.GetCurrentBlockHead(ethclient)
 
-	initialState := snapshot.Sync(ethclient, fromBlock, toBlock, worlds)
+	initialState := snapshot.Sync(ethclient, fromBlock, toBlock, worlds, config)
 
 	// 3. Kick off the service to start syncing with new block heads from the current one.
-	snapshot.Start(initialState, ethclient, fromBlock, worlds, logger)
+	snapshot.Start(initialState, ethclient, fromBlock, worlds, config, logger)
 }

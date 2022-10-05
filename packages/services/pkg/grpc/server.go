@@ -6,6 +6,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/faucet"
 	multiplexer "latticexyz/mud/packages/services/pkg/multiplexer"
 	"latticexyz/mud/packages/services/pkg/relay"
+	"latticexyz/mud/packages/services/pkg/snapshot"
 	pb_relay "latticexyz/mud/packages/services/protobuf/go/ecs-relay"
 	pb_snapshot "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 	pb_stream "latticexyz/mud/packages/services/protobuf/go/ecs-stream"
@@ -70,11 +71,11 @@ func StartStreamServer(port int, ethclient *ethclient.Client, multiplexer *multi
 
 // StartStreamServer starts a gRPC server and a HTTP web-gRPC server wrapper for an ECS snapshot
 // service. The gRPC server is started at port and HTTP server at port + 1.
-func StartSnapshotServer(port int, logger *zap.Logger) {
+func StartSnapshotServer(port int, config *snapshot.SnapshotServerConfig, logger *zap.Logger) {
 	var options []grpc.ServerOption
 	grpcServer := grpc.NewServer(options...)
 
-	pb_snapshot.RegisterECSStateSnapshotServiceServer(grpcServer, createSnapshotServer())
+	pb_snapshot.RegisterECSStateSnapshotServiceServer(grpcServer, createSnapshotServer(config))
 
 	// Register reflection service on gRPC server.
 	reflection.Register(grpcServer)
@@ -189,8 +190,10 @@ func createStreamServer(ethclient *ethclient.Client, multiplexer *multiplexer.Mu
 	}
 }
 
-func createSnapshotServer() *ecsSnapshotServer {
-	return &ecsSnapshotServer{}
+func createSnapshotServer(config *snapshot.SnapshotServerConfig) *ecsSnapshotServer {
+	return &ecsSnapshotServer{
+		config: config,
+	}
 }
 
 func createRelayServer(logger *zap.Logger, ethClient *ethclient.Client, config *relay.RelayServerConfig) *ecsRelayServer {
