@@ -10,6 +10,8 @@ import (
 // A ecsSnapshotServer is the server on which gRPC methods for getting the snapshot data exist.
 type ecsSnapshotServer struct {
 	pb.UnimplementedECSStateSnapshotServiceServer
+
+	config *snapshot.SnapshotServerConfig
 }
 
 ///

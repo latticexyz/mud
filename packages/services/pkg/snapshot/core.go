@@ -5,6 +5,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/utils"
 	"math/big"
+	"time"
 
 	"github.com/avast/retry-go"
 	"github.com/ethereum/go-ethereum/common"
@@ -13,9 +14,31 @@ import (
 	"go.uber.org/zap"
 )
 
+type SnapshotServerConfig struct {
+	// The block number interval for how often to take regular snapshots.
+	SnapshotBlockInterval int64
+	// The number of blocks to fetch data for when performing an initial
+	// sync. This is limited by the bandwidth limit of Geth for fetching logs, which is a hardcoded
+	// constant.
+	InitialSyncBlockBatchSize int64
+	// The time to wait between calls to fetch batched log data when performing an initial sync.
+	InitialSyncBlockBatchSyncTimeout time.Duration
+	// The block number interval for how often to take intermediary
+	// snapshots when performing an initial sync. This is useful in case the snapshot service
+	// disconnects or fails while perfoming a lengthy initial sync.
+	InitialSyncSnapshotInterval int64
+}
+
 // Start starts the process of processing data from an Ethereum client, reducing the ECS state, and
 // taking intermittent snapshots.
-func Start(state ChainECSState, client *ethclient.Client, startBlock *big.Int, worldAddresses []common.Address, logger *zap.Logger) {
+func Start(
+	state ChainECSState,
+	client *ethclient.Client,
+	startBlock *big.Int,
+	worldAddresses []common.Address,
+	config *SnapshotServerConfig,
+	logger *zap.Logger,
+) {
 	// Get an instance of a websocket subscription to the client.
 	headers := make(chan *types.Header)
 	sub, err := eth.GetEthereumSubscription(client, headers)
@@ -73,9 +96,9 @@ func Start(state ChainECSState, client *ethclient.Client, startBlock *big.Int, w
 			// Reduce the logs into the state.
 			state = reduceLogsIntoState(state, filteredLogs)
 
-			// Take a snapshot every 'n' blocks.
+			// Take a snapshot every 'SnapshotBlockInterval' blocks.
 			t := new(big.Int)
-			if t.Mod(blockNumber, big.NewInt(SnapshotBlockInterval)).Cmp(big.NewInt(0)) == 0 {
+			if t.Mod(blockNumber, big.NewInt(config.SnapshotBlockInterval)).Cmp(big.NewInt(0)) == 0 {
 				go takeStateSnapshotChain(state, startBlock.Uint64(), blockNumber.Uint64(), Latest)
 			}
 		}

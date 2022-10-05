@@ -69,7 +69,7 @@ run-ecs-stream:
 .PHONY: run-ecs-stream
 
 run-ecs-snapshot:
-	./bin/ecs-snapshot -ws-url $(WS_URL)
+	./bin/ecs-snapshot -ws-url $(WS_URL) --block ${SNAPSHOT_START_BLOCK}
 .PHONY: run-ecs-snapshot
 
 run-ecs-relay:

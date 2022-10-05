@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"latticexyz/mud/packages/services/pkg/logger"
+	"latticexyz/mud/packages/services/pkg/utils"
 	pb "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 
 	"math"
@@ -52,7 +53,9 @@ func getSnapshotFilenameAtBlock(endBlockNumber uint64) string {
 }
 
 func getSnapshotFilenameLatest(worldAddress string) string {
-	return fmt.Sprintf("%s-latest-%s", SerializedStateFilename, worldAddress)
+	// Always lookup a snapshot with a checksummed address, since that is how they are written to
+	// disk.
+	return fmt.Sprintf("%s-latest-%s", SerializedStateFilename, utils.ChecksumAddressString(worldAddress))
 }
 
 func encodeState(state ECSState, startBlockNumber uint64, endBlockNumber uint64) []byte {
@@ -266,7 +269,7 @@ func readStateSnapshotLatest(worldAddress string) ECSState {
 
 // RawReadStateSnapshotLatest returns the latest ECS state snapshot in protobuf format.
 func RawReadStateSnapshotLatest(worldAddress string) *pb.ECSStateSnapshot {
-	logger.GetLogger().Info("reading latest raw snapshot", zap.String("category", "Snapshot"))
+	logger.GetLogger().Info("reading latest raw snapshot", zap.String("category", "Snapshot"), zap.String("worldAddress", worldAddress))
 	return decodeSnapshot(readStateLatest(worldAddress))
 }
 
