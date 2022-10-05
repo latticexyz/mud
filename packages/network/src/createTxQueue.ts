@@ -189,7 +189,7 @@ export function createTxQueue<C extends Contracts>(
       try {
         gasLimit = await txRequest.estimateGas();
       } catch (e) {
-        console.error("GAS ESTIMATION ERROR", e);
+        console.error("[TXQueue] GAS ESTIMATION ERROR", e);
         return txRequest.cancel();
       }
 
@@ -199,7 +199,7 @@ export function createTxQueue<C extends Contracts>(
       try {
         return await txRequest.execute(nonce, gasLimit);
       } catch (e: any) {
-        console.warn("TXQUEUE EXECUTION FAILED", e);
+        console.warn("[TXQueue] TXQUEUE EXECUTION FAILED", e);
         // Nonce is handled centrally in finally block (for both failing and successful tx)
         error = e;
       } finally {
@@ -213,14 +213,9 @@ export function createTxQueue<C extends Contracts>(
           error &&
           (("code" in error && error.code === "NONCE_EXPIRED") ||
             JSON.stringify(error).includes("transaction already imported"));
-
-        console.info("TxQueue:", {
-          error,
-          isNonViewTransaction,
-          shouldIncreaseNonce,
-          shouldResetNonce,
-        });
-
+        console.log(
+          `[TXQueue] TX Sent (error=${!!error}, isMutationError=${!!isNonViewTransaction} incNonce=${!!shouldIncreaseNonce} resetNonce=${!!shouldResetNonce})`
+        );
         // Nonce handeling
         if (shouldIncreaseNonce) incNonce();
         if (shouldResetNonce) await resetNonce();
@@ -232,12 +227,12 @@ export function createTxQueue<C extends Contracts>(
       try {
         await txResult.wait();
       } catch (e) {
-        console.warn("tx failed in block", e);
+        console.warn("[TXQueue] tx failed in block", e);
 
         // Decode and log the revert reason.
         // Use `then` instead of `await` to avoid letting consumers wait.
         getRevertReason(txResult.hash, network.providers.get().json).then((reason) =>
-          console.warn("Revert reason:", reason)
+          console.warn("[TXQueue] Revert reason:", reason)
         );
 
         const params = new URLSearchParams(window.location.search);
