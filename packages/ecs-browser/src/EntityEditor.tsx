@@ -34,7 +34,7 @@ export const EntityEditor = observer(
   }) => {
     const [opened, setOpened] = useState(false);
     const entity = world.entityToIndex.get(entityId);
-    if (!entity) return null;
+    if (entity == null) return null;
 
     const [entityComponents, setEntityComponents] = useState<AnyComponent[]>([]);
     useEffect(() => {
@@ -55,12 +55,14 @@ export const EntityEditor = observer(
         onMouseLeave={() => clearDevHighlights()}
       >
         <div onClick={() => setOpened(!opened)} style={{ cursor: "pointer" }}>
-          <div style={{ display: "flex", flexDirection: "row", justifyContent: 'space-between' }}>
+          <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
             <h3 style={{ color: "white" }}>Entity {entity}</h3>
-            <ComponentBrowserButton onClick={(e) => {
-              e.stopPropagation();
-              navigator.clipboard.writeText(world.entities[entity]);
-            }}>
+            <ComponentBrowserButton
+              onClick={(e) => {
+                e.stopPropagation();
+                navigator.clipboard.writeText(world.entities[entity]);
+              }}
+            >
               Click to copy Entity ID
             </ComponentBrowserButton>
           </div>
