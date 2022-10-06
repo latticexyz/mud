@@ -27,7 +27,7 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
   await httpClient.authenticate(signature);
 
   // Subscribe to the stream of relayed events
-  const event$ = from(httpClient.openStream(signature)).pipe(
+  const event$ = from(wsClient.openStream(signature)).pipe(
     map(async (message) => ({
       message,
       address: await recoverWorker.recoverAddress(message),
@@ -37,12 +37,12 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
 
   // Subscribe to new labels
   function subscribe(label: string) {
-    wsClient.subscribe({ signature, subscription: { label } });
+    httpClient.subscribe({ signature, subscription: { label } });
   }
 
   // Unsubscribe from labels
   function unsubscribe(label: string) {
-    wsClient.unsubscribe({ signature, subscription: { label } });
+    httpClient.unsubscribe({ signature, subscription: { label } });
   }
 
   // Set up stream to push messages to the relay service
