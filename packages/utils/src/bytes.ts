@@ -55,3 +55,32 @@ export function Uint8ArrayToInt32Array(input: Uint8Array): number[] {
 export function ethAddressToUint8Array(address: string): Uint8Array {
   return hexStringToUint8Array(toEthAddress(address));
 }
+
+// https://stackoverflow.com/a/55330424
+export function createToInt(size: number) {
+  if (size < 2) {
+    throw new Error("Minimum size is 2");
+  } else if (size > 64) {
+    throw new Error("Maximum size is 64");
+  }
+
+  // Determine value range
+  const maxValue = 2 ** (size - 1) - 1;
+  const minValue = -maxValue - 1;
+
+  return (value: number) => {
+    value = value << 0;
+    if (value > maxValue || value < minValue) {
+      console.log("value", value, maxValue, minValue, value > maxValue, value < minValue);
+      throw new Error(`Int${size} overflow`);
+    }
+
+    if (value < 0) {
+      return 2 ** size + value;
+    } else {
+      return value;
+    }
+  };
+}
+
+export const toInt32 = createToInt(32);
