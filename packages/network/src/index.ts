@@ -13,3 +13,4 @@ export * from "./networkUtils";
 export * from "./workers";
 export * from "./createRelayStream";
 export * from "./createFaucetService";
+export * from "./utils";
