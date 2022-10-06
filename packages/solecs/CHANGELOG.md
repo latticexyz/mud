@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/latticexyz/mud/compare/v1.6.0...v1.7.0) (2022-10-06)
+
+### Features
+
+- **soleces:** expose component functions set and remove internally without onlyWriter permissions ([#182](https://github.com/latticexyz/mud/issues/182)) ([662936b](https://github.com/latticexyz/mud/commit/662936bdeee38ac0da735c987413816b14b0218d))
+
 # [1.6.0](https://github.com/latticexyz/mud/compare/v1.5.1...v1.6.0) (2022-10-04)
 
 **Note:** Version bump only for package @latticexyz/solecs

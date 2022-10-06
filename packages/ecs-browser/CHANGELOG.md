@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.7.0](https://github.com/latticexyz/mud/compare/v1.6.0...v1.7.0) (2022-10-06)
+
+### Bug Fixes
+
+- **ecs-browser:** do not early return for entity 0 ([bf36cc0](https://github.com/latticexyz/mud/commit/bf36cc0288449f0f7dce72e35a49b6c6f6a8fa2b))
+
 # [1.6.0](https://github.com/latticexyz/mud/compare/v1.5.1...v1.6.0) (2022-10-04)
 
 **Note:** Version bump only for package @latticexyz/ecs-browser
