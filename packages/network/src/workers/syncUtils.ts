@@ -1,22 +1,35 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { EntityID, ComponentValue, Components } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range } from "@latticexyz/utils";
-import { GrpcWebFetchTransport } from "@protobuf-ts/grpcweb-transport";
 import { BytesLike, Contract, BigNumber } from "ethers";
 import { Observable, map, concatMap, of, from } from "rxjs";
 import { createDecoder } from "../createDecoder";
 import { createTopics } from "../createTopics";
 import { fetchEventsInBlockRange } from "../networkUtils";
-import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
-import { ECSStateSnapshotServiceClient } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot.client";
-import { ECSStreamServiceClient } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream.client";
-import { NetworkComponentUpdate, ContractConfig } from "../types";
+import {
+  ECSStateReply,
+  ECSStateSnapshotServiceClient,
+  ECSStateSnapshotServiceDefinition,
+} from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
+import {
+  NetworkComponentUpdate,
+  ContractConfig,
+  SystemCallTransaction,
+  NetworkEvents,
+  SystemCall,
+  NetworkEvent,
+} from "../types";
 import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
 import { SyncState } from "./constants";
-import { ECSStreamBlockBundleReply } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
+import {
+  ECSStreamBlockBundleReply,
+  ECSStreamServiceClient,
+  ECSStreamServiceDefinition,
+} from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
+import { createChannel, createClient } from "nice-grpc-web";
 
 /**
  * Create a ECSStateSnapshotServiceClient
@@ -24,8 +37,7 @@ import { ECSStreamBlockBundleReply } from "@latticexyz/services/protobuf/ts/ecs-
  * @returns ECSStateSnapshotServiceClient
  */
 export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient {
-  const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
-  return new ECSStateSnapshotServiceClient(transport);
+  return createClient(ECSStateSnapshotServiceDefinition, createChannel(url));
 }
 
 /**
@@ -34,8 +46,7 @@ export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient
  * @returns ECSStreamServiceClient
  */
 export function createStreamClient(url: string): ECSStreamServiceClient {
-  const transport = new GrpcWebFetchTransport({ baseUrl: url, format: "binary" });
-  return new ECSStreamServiceClient(transport);
+  return createClient(ECSStreamServiceDefinition, createChannel(url));
 }
 
 /**
@@ -52,7 +63,7 @@ export async function getSnapshotBlockNumber(
   let blockNumber = -1;
   if (!snapshotClient) return blockNumber;
   try {
-    const { response } = await snapshotClient.getStateBlockLatest({ worldAddress });
+    const response = await snapshotClient.getStateBlockLatest({ worldAddress });
     blockNumber = response.blockNumber;
   } catch (e) {
     console.error(e);
@@ -76,7 +87,7 @@ export async function fetchSnapshot(
   const cacheStore = createCacheStore();
 
   try {
-    const { response } = await snapshotClient.getStateLatest({ worldAddress });
+    const response = await snapshotClient.getStateLatest({ worldAddress });
     await reduceFetchedState(response, cacheStore, decode);
   } catch (e) {
     console.error(e);
@@ -101,8 +112,8 @@ export async function fetchSnapshotChunked(
   const cacheStore = createCacheStore();
 
   try {
-    const stream = snapshotClient.getStateLatestStream({ worldAddress });
-    for await (const responseChunk of stream.responses) {
+    const response = snapshotClient.getStateLatestStream({ worldAddress });
+    for await (const responseChunk of response) {
       await reduceFetchedState(responseChunk, cacheStore, decode);
     }
   } catch (e) {
@@ -131,7 +142,7 @@ export async function reduceFetchedState(
     const component = to256BitString(stateComponents[componentIdIdx]);
     const entity = stateEntities[entityIdIdx] as EntityID;
     const value = await decode(component, rawValue);
-    storeEvent(cacheStore, { component, entity, value, blockNumber });
+    storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
   }
 }
 
@@ -150,7 +161,7 @@ export function createLatestEventStreamService(
   transformWorldEvents: ReturnType<typeof createTransformWorldEventsFromStream>
 ) {
   const streamServiceClient = createStreamClient(streamServiceUrl);
-  const stream = streamServiceClient.subscribeToStreamLatest({
+  const response = streamServiceClient.subscribeToStreamLatest({
     worldAddress,
     blockNumber: true,
     blockHash: true,
@@ -160,10 +171,12 @@ export function createLatestEventStreamService(
   });
 
   // Turn stream responses into rxjs NetworkComponentUpdate
-  return from(stream.responses).pipe(
+  return from(response).pipe(
     map(async (responseChunk) => {
       const events = await transformWorldEvents(responseChunk);
-      console.log(`[SyncWorker] got ${events.length} events from block ${responseChunk.blockNumber}`);
+      console.info(
+        `[SyncWorker || via Stream Service] got ${events.length} events from block ${responseChunk.blockNumber}`
+      );
       return events;
     }),
     awaitPromise(),
@@ -176,7 +189,7 @@ export function createLatestEventStreamService(
  * blocks from the blockNumber$ stream and fetching the corresponding block
  * from the connected RPC.
  *
- * @dev Only use if {@link createLatestEventStreamRPC} is not available.
+ * @dev Only use if {@link createLatestEventStreamService} is not available.
  *
  * @param blockNumber$ Block number stream
  * @param fetchWorldEvents Function to fetch World events in a block range ({@link createFetchWorldEventsInBlockRange}).
@@ -184,8 +197,9 @@ export function createLatestEventStreamService(
  */
 export function createLatestEventStreamRPC(
   blockNumber$: Observable<number>,
-  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>
-): Observable<NetworkComponentUpdate> {
+  fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  fetchSystemCallsFromEvents?: ReturnType<typeof createFetchSystemCallsFromEvents>
+): Observable<NetworkEvent> {
   let lastSyncedBlockNumber: number | undefined;
 
   return blockNumber$.pipe(
@@ -195,7 +209,13 @@ export function createLatestEventStreamRPC(
       const to = blockNumber;
       lastSyncedBlockNumber = to;
       const events = await fetchWorldEvents(from, to);
-      console.log(`[SyncWorker] fetched ${events.length} events from block range ${from} -> ${to}`);
+      console.info(`[SyncWorker || via JSON-RPC] fetched ${events.length} events from block range ${from} -> ${to}`);
+
+      if (fetchSystemCallsFromEvents && events.length > 0) {
+        const systemCalls = await fetchSystemCallsFromEvents(events, blockNumber);
+        return [...events, ...systemCalls];
+      }
+
       return events;
     }),
     awaitPromise(),
@@ -237,7 +257,7 @@ export async function fetchEventsInBlockRangeChunked(
       );
     }
 
-    console.log(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
+    console.info(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
 
     events.push(...chunkEvents);
   }
@@ -293,7 +313,7 @@ export function createDecode(worldConfig: ContractConfig, provider: JsonRpcProvi
     // Create the decoder if it doesn't exist yet
     if (!decoders[componentId]) {
       const address = componentAddress || (await world.getComponent(componentId));
-      console.log("Creating decoder for", address);
+      console.info("[SyncUtils] Creating decoder for", address);
       const component = new Contract(address, ComponentAbi, provider) as Component;
       const [keys, values] = await component.getSchema();
       decoders[componentId] = createDecoder(keys, values);
@@ -324,7 +344,7 @@ export function createWorldTopics() {
  * @param decode Function to decode raw component values ({@link createDecode})
  * @returns Function to fetch World contract events in a given block range.
  */
-export function createFetchWorldEventsInBlockRange(
+export function createFetchWorldEventsInBlockRange<C extends Components>(
   provider: JsonRpcProvider,
   worldConfig: ContractConfig,
   batch: boolean | undefined,
@@ -335,7 +355,7 @@ export function createFetchWorldEventsInBlockRange(
   // Fetches World events in the provided block range (including from and to)
   return async (from: number, to: number) => {
     const contractsEvents = await fetchEventsInBlockRange(provider, topics, from, to, { World: worldConfig }, batch);
-    const ecsEvents: NetworkComponentUpdate[] = [];
+    const ecsEvents: NetworkComponentUpdate<C>[] = [];
 
     for (const event of contractsEvents) {
       const { lastEventInTx, txHash, args } = event;
@@ -356,13 +376,14 @@ export function createFetchWorldEventsInBlockRange(
       const blockNumber = to;
 
       const ecsEvent = {
+        type: NetworkEvents.NetworkComponentUpdate,
         component,
         entity,
         value: undefined,
         blockNumber,
         lastEventInTx,
         txHash,
-      };
+      } as NetworkComponentUpdate<C>;
 
       if (event.eventKey === "ComponentValueRemoved") {
         ecsEvents.push(ecsEvent);
@@ -399,7 +420,7 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
       const component = to256BitString(BigNumber.from(rawComponentId).toHexString());
       const entity = to256BitString(BigNumber.from(entityId).toHexString()) as EntityID;
 
-      const value = ecsEvent.value ? await decode(component, ecsEvent.value) : undefined;
+      const value = ecsEvent.eventType === "ComponentValueSet" ? await decode(component, ecsEvent.value) : undefined;
 
       // Since ECS events are coming in ordered over the wire, we check if the following event has a
       // different transaction then the current, which would mean an event associated with another
@@ -407,6 +428,7 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
       const lastEventInTx = ecsEvents[i + 1]?.tx !== ecsEvent.tx;
 
       convertedEcsEvents.push({
+        type: NetworkEvents.NetworkComponentUpdate,
         component,
         entity,
         value,
@@ -417,5 +439,72 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
     }
 
     return convertedEcsEvents;
+  };
+}
+
+export function createFetchSystemCallsFromEvents(provider: JsonRpcProvider) {
+  const { fetchBlock, clearBlock } = createBlockCache(provider);
+  const fetchSystemCallData = createFetchSystemCallData(fetchBlock);
+
+  return async (events: NetworkComponentUpdate[], blockNumber: number) => {
+    const systemCalls: SystemCall[] = [];
+    const transactionHashToEvents = events.reduce((acc, event) => {
+      if (["worker", "cache"].includes(event.txHash)) return acc;
+
+      if (!acc[event.txHash]) acc[event.txHash] = [];
+
+      acc[event.txHash].push(event);
+
+      return acc;
+    }, {} as { [key: string]: NetworkComponentUpdate[] });
+
+    const txData = await Promise.all(
+      Object.keys(transactionHashToEvents).map((hash) => fetchSystemCallData(hash, blockNumber))
+    );
+    clearBlock(blockNumber);
+
+    for (const tx of txData) {
+      if (!tx) continue;
+
+      systemCalls.push({
+        type: NetworkEvents.SystemCall,
+        tx,
+        updates: transactionHashToEvents[tx.hash],
+      });
+    }
+
+    return systemCalls;
+  };
+}
+
+function createFetchSystemCallData(fetchBlock: ReturnType<typeof createBlockCache>["fetchBlock"]) {
+  return async (txHash: string, blockNumber: number) => {
+    const block = await fetchBlock(blockNumber);
+    const tx = block.transactions.find((tx) => tx.hash === txHash);
+
+    if (!tx) return;
+
+    return {
+      to: tx.to,
+      data: tx.data,
+      value: tx.value,
+      hash: tx.hash,
+    } as SystemCallTransaction;
+  };
+}
+
+function createBlockCache(provider: JsonRpcProvider) {
+  const blocks: Record<number, Awaited<ReturnType<typeof provider.getBlockWithTransactions>>> = {};
+
+  return {
+    fetchBlock: async (blockNumber: number) => {
+      if (blocks[blockNumber]) return blocks[blockNumber];
+
+      const block = await provider.getBlockWithTransactions(blockNumber);
+      blocks[blockNumber] = block;
+
+      return block;
+    },
+    clearBlock: (blockNumber: number) => delete blocks[blockNumber],
   };
 }

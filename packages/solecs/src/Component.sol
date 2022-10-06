@@ -175,7 +175,7 @@ abstract contract Component is IComponent {
     // Store the entity
     entities.add(entity);
 
-    // Remove the entitiy from the previous reverse mapping if there is one
+    // Remove the entity from the previous reverse mapping if there is one
     valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
 
     // Store the entity's value;

@@ -1,0 +1,74 @@
+syntax = "proto3";
+package ecsrelay;
+
+option go_package = "protobuf/go/ecs-relay";
+
+// Identifies a client connecting to Relay Service.
+message Identity {
+  string name = 1;
+}
+
+// Signature that a client must provide to prove ownership of identity.
+message Signature {
+  string signature = 1;
+}
+
+message Message {
+  uint32 version = 1;
+  string id = 2;
+  bytes data = 3;
+  int64 timestamp = 4;
+  string signature = 5;
+}
+
+// The Relay Service definition.
+service ECSRelayService {
+  rpc Authenticate(Signature) returns (Identity) {}
+  rpc Revoke(Signature) returns (Identity) {}
+  rpc Ping(Signature) returns (Identity) {}
+
+  rpc CountAuthenticated(CountIdentitiesRequest) returns (CountIdentitiesResponse) {}
+  rpc CountConnected(CountIdentitiesRequest) returns (CountIdentitiesResponse) {}
+  
+  rpc Subscribe(SubscriptionRequest) returns (Subscription) {}
+  rpc Unsubscribe(SubscriptionRequest) returns (Subscription) {}
+
+  rpc OpenStream(Signature) returns (stream Message) {}
+
+  // Push a stream of messages to be relayed.
+  rpc PushStream(stream PushRequest) returns (stream PushResponse) {}
+
+  // Push a single message to be relayed.
+  rpc Push(PushRequest) returns (PushResponse) {}
+
+  // Push a series of messages to be relayed.
+  rpc PushMany(PushManyRequest) returns (PushResponse) {}
+}
+
+message SubscriptionRequest {
+  Signature signature = 1;
+  Subscription subscription = 2;
+}
+
+message Subscription {
+  string label = 1;
+}
+
+message PushRequest {
+  string label = 1;
+  Message message = 2;
+}
+
+message PushManyRequest {
+  Signature signature = 1;
+  string label = 2;
+  repeated Message messages = 3;
+}
+
+message PushResponse {}
+
+message CountIdentitiesRequest {}
+
+message CountIdentitiesResponse {
+  uint32 count = 1;
+}

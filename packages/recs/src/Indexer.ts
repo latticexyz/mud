@@ -15,19 +15,21 @@ import { Component, ComponentValue, EntityIndex, Indexer, Metadata, Schema } fro
  * @param component {@link defineComponent Component} to index.
  * @returns Indexed version of the component.
  */
-export function createIndexer<S extends Schema, M extends Metadata>(component: Component<S, M>): Indexer<S, M> {
+export function createIndexer<S extends Schema, M extends Metadata, T = undefined>(
+  component: Component<S, M, T>
+): Indexer<S, M, T> {
   const valueToEntities = new Map<string, Set<EntityIndex>>();
 
-  function getEntitiesWithValue(value: ComponentValue<S>) {
+  function getEntitiesWithValue(value: ComponentValue<S, T>) {
     const entities = valueToEntities.get(getValueKey(value));
     return entities ? new Set([...entities]) : new Set<EntityIndex>();
   }
 
-  function getValueKey(value: ComponentValue<S>): string {
+  function getValueKey(value: ComponentValue<S, T>): string {
     return Object.values(value).join("/");
   }
 
-  function add(entity: EntityIndex, value: ComponentValue<S> | undefined) {
+  function add(entity: EntityIndex, value: ComponentValue<S, T> | undefined) {
     if (!value) return;
     const valueKey = getValueKey(value);
     let entitiesWithValue = valueToEntities.get(valueKey);
@@ -38,7 +40,7 @@ export function createIndexer<S extends Schema, M extends Metadata>(component: C
     entitiesWithValue.add(entity);
   }
 
-  function remove(entity: EntityIndex, value: ComponentValue<S> | undefined) {
+  function remove(entity: EntityIndex, value: ComponentValue<S, T> | undefined) {
     if (!value) return;
     const valueKey = getValueKey(value);
     const entitiesWithValue = valueToEntities.get(valueKey);

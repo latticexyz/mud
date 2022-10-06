@@ -8,6 +8,7 @@ import (
 
 	"github.com/avast/retry-go"
 	"github.com/ethereum/go-ethereum"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethclient"
 	"go.uber.org/zap"
@@ -51,4 +52,14 @@ func GetCurrentBlockHead(client *ethclient.Client) *big.Int {
 		)
 	}
 	return currentHead.Number
+}
+
+// GetCurrentBalance returns the current balance of account with given address.
+func GetCurrentBalance(client *ethclient.Client, address string) (uint64, error) {
+	balance, err := client.BalanceAt(context.Background(), common.HexToAddress(address), nil)
+	if err != nil {
+		logger.GetLogger().Error("couldn't get current balance for account", zap.String("address", address), zap.Error(err))
+		return 0, err
+	}
+	return balance.Uint64(), nil
 }

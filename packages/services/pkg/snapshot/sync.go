@@ -20,35 +20,44 @@ import (
 // while reducing the state.
 //
 // Returns the entire ECS state once the sync is complete.
-func Sync(client *ethclient.Client, fromBlock *big.Int, toBlock *big.Int, worldAddresses []common.Address) ChainECSState {
+func Sync(client *ethclient.Client, fromBlock *big.Int, toBlock *big.Int, worldAddresses []common.Address, config *SnapshotServerConfig) ChainECSState {
 	logger := logger.GetLogger()
 	logger.Info("starting initial sync",
 		zap.String("category", "Initial sync"),
 		zap.Uint64("upToBlock", toBlock.Uint64()),
 	)
 
-	state, loadedFromBlockNumber := getInitialStateChain()
-	if loadedFromBlockNumber < math.MaxUint64 {
-		logger.Info("loaded initial state from snapshot",
+	// Get state, if any, from snapshot, including the block number that it is associated for. Since
+	// the state is indexing all worlds, this will be the minimum block of all ECS world states.
+	state, availableSnapshotBlockNumber := getInitialStateChain()
+
+	// Default to sync from whatever the start block is, then update if we were able to sync from an existing snapshot,
+	// only if that snapshot is from a block number that's more recent then the requested fromBlock number.
+	blockToStartSyncFrom := fromBlock.Int64()
+	if availableSnapshotBlockNumber < math.MaxUint64 && int64(availableSnapshotBlockNumber) > blockToStartSyncFrom {
+		blockToStartSyncFrom = int64(availableSnapshotBlockNumber)
+
+		logger.Info("loading initial state from snapshot",
 			zap.String("category", "Initial sync"),
-			zap.Uint64("loadedFromBlockNumber (min from all worlds)", loadedFromBlockNumber),
+			zap.Uint64("availableSnapshotBlockNumber (min from all worlds)", availableSnapshotBlockNumber),
+			zap.Uint64("fromBlock", fromBlock.Uint64()),
+		)
+	} else {
+		logger.Info("not loading state from snapshot",
+			zap.String("category", "Initial sync"),
+			zap.Uint64("availableSnapshotBlockNumber (min from all worlds)", availableSnapshotBlockNumber),
+			zap.Uint64("fromBlock", fromBlock.Uint64()),
 		)
 	}
 
-	// Default to sync from whatever the start block is, then update if we were able to sync from an existing snapshot.
-	blockToStartSyncFrom := fromBlock.Int64()
-	if loadedFromBlockNumber < math.MaxUint64 {
-		blockToStartSyncFrom = int64(loadedFromBlockNumber)
-	}
-
-	for block := blockToStartSyncFrom; block < toBlock.Int64(); block += InitialSyncBlockBatchSize {
-		state = processEventBatch(client, state, big.NewInt(block), big.NewInt(block+InitialSyncBlockBatchSize), worldAddresses)
+	for block := blockToStartSyncFrom; block < toBlock.Int64(); block += config.InitialSyncBlockBatchSize {
+		state = processEventBatch(client, state, big.NewInt(block), big.NewInt(block+config.InitialSyncBlockBatchSize), worldAddresses)
 		// Wait some time in-between batch requests. Note that with large enough numbers of events being batch processed,
 		// this wait time becomes negligable compared to the log load / parse.
-		time.Sleep(InitialSyncBlockBatchSyncTimeout)
+		time.Sleep(config.InitialSyncBlockBatchSyncTimeout)
 		// Take an in-progress snapshot up to the block number that has so far been loaded.
-		if block%InitialSyncSnapshotInterval == 0 {
-			go takeStateSnapshotChain(state, uint64(block), uint64(block+InitialSyncBlockBatchSize), Latest)
+		if block%config.InitialSyncSnapshotInterval == 0 {
+			go takeStateSnapshotChain(state, uint64(block), uint64(block+config.InitialSyncBlockBatchSize), Latest)
 		}
 	}
 

@@ -2,7 +2,6 @@ import {
   Components,
   World,
   createEntity,
-  withValue,
   getComponentValue,
   OverridableComponent,
   Schema,
@@ -12,6 +11,8 @@ import {
   EntityIndex,
   Component,
   removeComponent,
+  setComponent,
+  Metadata,
 } from "@latticexyz/recs";
 import { mapObject, awaitStreamValue } from "@latticexyz/utils";
 import { ActionState } from "./constants";
@@ -21,9 +22,9 @@ import { merge, Observable } from "rxjs";
 
 export type ActionSystem = ReturnType<typeof createActionSystem>;
 
-export function createActionSystem(world: World, txReduced$: Observable<string>) {
+export function createActionSystem<M = undefined>(world: World, txReduced$: Observable<string>) {
   // Action component
-  const Action = defineActionComponent(world);
+  const Action = defineActionComponent<M>(world);
 
   // Components that scheduled actions depend on including pending updates
   const componentsWithOptimisticUpdates: { [id: string]: OverridableComponent<Schema> } = {};
@@ -44,7 +45,9 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
    * @param component Component to be mapped to components including pending updates
    * @returns Components including pending updates
    */
-  function withOptimisticUpdates<C extends Component>(component: C): C {
+  function withOptimisticUpdates<S extends Schema, M extends Metadata, T>(
+    component: Component<S, M, T>
+  ): OverridableComponent<S, M, T> {
     const optimisticComponent = componentsWithOptimisticUpdates[component.id] || overridableComponent(component);
 
     // If the component is not tracked yet, add it to the map of overridable components
@@ -53,7 +56,7 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
     }
 
     // Typescript can't know that the optimistic component with this id has the same type as C
-    return optimisticComponent as unknown as C;
+    return optimisticComponent as OverridableComponent<S, M, T>;
   }
 
   /**
@@ -63,25 +66,24 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
    * @param actionRequest Action to be scheduled
    * @returns index of the entity created for the action
    */
-  function add<C extends Components, T>(actionRequest: ActionRequest<C, T>): EntityIndex | void {
+  function add<C extends Components, T>(actionRequest: ActionRequest<C, T, M>): EntityIndex {
     // Prevent the same actions from being scheduled multiple times
-    if (world.entityToIndex.get(actionRequest.id) != null) {
-      return console.warn(`Action with id ${actionRequest.id} is already requested.`);
+    const existingAction = world.entityToIndex.get(actionRequest.id);
+    if (existingAction != null) {
+      console.warn(`Action with id ${actionRequest.id} is already requested.`);
+      return existingAction;
     }
 
     // Set the action component
-    const entityIndex = createEntity(
-      world,
-      [
-        withValue(Action, {
-          state: ActionState.Requested,
-          on: actionRequest.on ? world.entities[actionRequest.on] : undefined,
-        }),
-      ],
-      {
-        id: actionRequest.id,
-      }
-    );
+    const entityIndex = createEntity(world, undefined, {
+      id: actionRequest.id,
+    });
+
+    setComponent(Action, entityIndex, {
+      state: ActionState.Requested,
+      on: actionRequest.on ? world.entities[actionRequest.on] : undefined,
+      metadata: actionRequest.metadata,
+    });
 
     // Add components that are not tracked yet to internal overridable component map.
     // Pending updates will be applied to internal overridable components.
@@ -171,6 +173,7 @@ export function createActionSystem(world: World, txReduced$: Observable<string>)
   // Set the action's state to ActionState.Failed
   function handleError(action: ActionData) {
     updateComponent(Action, action.entityIndex, { state: ActionState.Failed });
+    remove(action.id);
   }
 
   /**

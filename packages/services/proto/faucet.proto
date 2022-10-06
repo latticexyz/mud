@@ -1,0 +1,83 @@
+syntax = "proto3";
+package faucet;
+
+option go_package = "protobuf/go/faucet";
+
+message LinkedTwitterPair {
+  string username = 1;
+  string address = 2;
+}
+
+message FaucetStore {
+  map<string, string> addressToUsername = 1;
+  map<string, string> usernameToAddress = 2;
+
+  // Username to timestamp of latest drip.
+  map<string, int64> latestDrip = 3;
+
+  // Global drip counter.
+  uint64 totalDripCount = 4;
+}
+
+// The Faucet Service definition.
+service FaucetService {
+  rpc Drip (DripRequest) returns (DripResponse) {}
+  rpc DripDev (DripDevRequest) returns (DripResponse) {}
+  rpc DripVerifyTweet (DripVerifyTweetRequest) returns (DripResponse) {}
+
+  rpc TimeUntilDrip (DripRequest) returns (TimeUntilDripResponse) {}
+
+  rpc GetLinkedTwitters (GetLinkedTwittersRequest) returns (GetLinkedTwittersResponse) {}
+  rpc GetLinkedTwitterForAddress (LinkedTwitterForAddressRequest) returns (LinkedTwitterForAddressResponse) {}
+  rpc GetLinkedAddressForTwitter (LinkedAddressForTwitterRequest) returns (LinkedAddressForTwitterResponse) {}
+}
+
+// Request for drip after a successful DripVerifyTweet RPC.
+message DripRequest {
+  string username = 1;
+  string address = 2;
+}
+
+// Request for initial drip via DripVerifyTweet RPC that requires verifying a tweet
+message DripVerifyTweetRequest {
+  string username = 1;
+  string address = 2;
+}
+
+// Request for drip to any address when running in dev mode.
+message DripDevRequest {
+  string address = 1;
+}
+
+// Response for drip request that contains the transaction hash of the drip tx.
+message DripResponse {
+  string txHash = 1;
+}
+
+// Response for the time until next drip request.
+message TimeUntilDripResponse {
+  double timeUntilDripMinutes = 1;
+  double timeUntilDripSeconds = 2;
+}
+
+message GetLinkedTwittersRequest {}
+
+message GetLinkedTwittersResponse {
+  repeated LinkedTwitterPair linkedTwitters = 1;
+}
+
+message LinkedTwitterForAddressRequest {
+  string address = 1;
+}
+
+message LinkedTwitterForAddressResponse {
+  string username = 1;
+}
+
+message LinkedAddressForTwitterRequest {
+  string username = 1;
+}
+
+message LinkedAddressForTwitterResponse {
+  string address = 1;
+}

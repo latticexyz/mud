@@ -9,8 +9,9 @@ import {
   createSystemExecutor,
   NetworkConfig,
   SyncWorkerConfig,
+  isNetworkComponentUpdateEvent,
 } from "@latticexyz/network";
-import { bufferTime, filter, Observable, Subject } from "rxjs";
+import { BehaviorSubject, bufferTime, filter, Observable, Subject } from "rxjs";
 import {
   Component,
   Components,
@@ -40,11 +41,12 @@ export type ContractComponents = {
   [key: string]: Component<Schema, { contractId: string }>;
 };
 
-export async function setupContracts<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
+export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
   world: World,
   components: C,
-  SystemAbis: { [key in keyof SystemTypes]: ContractInterface }
+  SystemAbis: { [key in keyof SystemTypes]: ContractInterface },
+  options?: { initialGasPrice?: number }
 ) {
   const SystemsRegistry = defineStringComponent(world, {
     id: "SystemsRegistry",
@@ -71,12 +73,6 @@ export async function setupContracts<C extends ContractComponents, SystemTypes e
   const network = await createNetwork(networkConfig);
   world.registerDisposer(network.dispose);
 
-  console.log(
-    "initial block",
-    networkConfig.initialBlockNumber,
-    await network.providers.get().json.getBlock(networkConfig.initialBlockNumber)
-  );
-
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
   const { contracts, config: contractsConfig } = await createContracts<{ World: WorldContract }>({
@@ -84,10 +80,17 @@ export async function setupContracts<C extends ContractComponents, SystemTypes e
     signerOrProvider,
   });
 
-  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, { devMode: networkConfig.devMode });
+  const gasPriceInput$ = new BehaviorSubject<number>(
+    // If no initial gas price is provided, check the gas price once and add a 30% buffer
+    options?.initialGasPrice || Math.ceil((await signerOrProvider.get().getGasPrice()).toNumber() * 1.3)
+  );
+
+  const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, gasPriceInput$, {
+    devMode: networkConfig.devMode,
+  });
   world.registerDisposer(disposeTxQueue);
 
-  const systems = createSystemExecutor<SystemTypes>(world, network, SystemsRegistry, SystemAbis, {
+  const systems = createSystemExecutor<SystemTypes>(world, network, SystemsRegistry, SystemAbis, gasPriceInput$, {
     devMode: networkConfig.devMode,
   });
 
@@ -100,16 +103,22 @@ export async function setupContracts<C extends ContractComponents, SystemTypes e
       worldContract: contractsConfig.World,
       initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
       chainId: networkConfig.chainId,
-      disableCache: networkConfig.devMode, // Disable cache on hardhat
-      checkpointServiceUrl: networkConfig.checkpointServiceUrl,
+      disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
+      snapshotServiceUrl: networkConfig.snapshotServiceUrl,
+      streamServiceUrl: networkConfig.streamServiceUrl,
     });
   }
 
-  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvent$, mappings);
+  const { txReduced$ } = applyNetworkUpdates(
+    world,
+    components,
+    ecsEvent$.pipe(filter(isNetworkComponentUpdateEvent)),
+    mappings
+  );
 
   const encoders = createEncoders(world, ComponentsRegistry, signerOrProvider);
 
-  return { txQueue, txReduced$, encoders, network, startSync, systems };
+  return { txQueue, txReduced$, encoders, network, startSync, systems, gasPriceInput$, ecsEvent$, mappings };
 }
 
 async function createEncoders(
@@ -122,6 +131,7 @@ async function createEncoders(
   async function fetchAndCreateEncoder(entity: EntityIndex) {
     const componentAddress = toEthAddress(world.entities[entity]);
     const componentId = getComponentValueStrict(components, entity).value;
+    console.info("[SyncUtils] Creating encoder for " + componentAddress);
     const componentContract = new Contract(
       componentAddress,
       ComponentAbi.abi,
@@ -156,7 +166,7 @@ function applyNetworkUpdates<C extends Components>(
     .pipe(
       // We throttle the client side event processing to 1000 events every 16ms, so 62.500 events per second.
       // This means if the chain were to emit more than 62.500 events per second, the client would not keep up.
-      // The only time we get close to this number is when initializing from a checkpoint/cache.
+      // The only time we get close to this number is when initializing from a snapshot/cache.
       bufferTime(16, null, 1000),
       filter((updates) => updates.length > 0),
       stretch(16)

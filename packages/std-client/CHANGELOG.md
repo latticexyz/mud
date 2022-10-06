@@ -3,6 +3,86 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/latticexyz/mud/compare/v1.5.1...v1.6.0) (2022-10-04)
+
+### Bug Fixes
+
+- make OverridableComponent conform with Component type ([#180](https://github.com/latticexyz/mud/issues/180)) ([c9d2c31](https://github.com/latticexyz/mud/commit/c9d2c311aa1c86d9bcabdf67eee598c264618ad0))
+
+## [1.5.1](https://github.com/latticexyz/mud/compare/v1.5.0...v1.5.1) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [1.5.0](https://github.com/latticexyz/mud/compare/v1.4.1...v1.5.0) (2022-10-03)
+
+### Features
+
+- add a stream rpc for message push ([#174](https://github.com/latticexyz/mud/issues/174)) ([e0aa956](https://github.com/latticexyz/mud/commit/e0aa956ac871064ecde87a07394525ca69e7f17d))
+
+## [1.4.1](https://github.com/latticexyz/mud/compare/v1.4.0...v1.4.1) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [1.4.0](https://github.com/latticexyz/mud/compare/v1.3.0...v1.4.0) (2022-10-03)
+
+### Features
+
+- **network:** expose mappings and ecsEvent$ from setupMUDNetwork ([44a8676](https://github.com/latticexyz/mud/commit/44a8676a8d22e73276fd02a459d35270b1b4da9e))
+
+# [1.3.0](https://github.com/latticexyz/mud/compare/v1.2.0...v1.3.0) (2022-09-30)
+
+### Bug Fixes
+
+- **network:** remove failed actions from the queue ([b27b958](https://github.com/latticexyz/mud/commit/b27b958aefc72eb8e35f72fc5108578dfb0f3b74))
+- **std-client:** add stream service config to createMUDNetwork ([98b0861](https://github.com/latticexyz/mud/commit/98b0861cf059cfd291ea42d3a969a9e72be3d034))
+
+# [1.2.0](https://github.com/latticexyz/mud/compare/v1.1.0...v1.2.0) (2022-09-29)
+
+### Features
+
+- **network:** increase network performance by reducing unnecessary rpc calls ([#165](https://github.com/latticexyz/mud/issues/165)) ([195b710](https://github.com/latticexyz/mud/commit/195b71019b2be623d99f7a90c93a661cdb743a87))
+
+# [1.1.0](https://github.com/latticexyz/mud/compare/v1.0.0...v1.1.0) (2022-09-28)
+
+### Features
+
+- add createRelayService, add utils to work with Uint8Arrays ([#164](https://github.com/latticexyz/mud/issues/164)) ([b02992b](https://github.com/latticexyz/mud/commit/b02992b73393740d7510b1f9d3d9e6ea0030f462))
+
+# [1.0.0](https://github.com/latticexyz/mud/compare/v0.16.4...v1.0.0) (2022-09-27)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+## [0.16.4](https://github.com/latticexyz/mud/compare/v0.16.3...v0.16.4) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+## [0.16.3](https://github.com/latticexyz/mud/compare/v0.16.2...v0.16.3) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+## [0.16.2](https://github.com/latticexyz/mud/compare/v0.16.1...v0.16.2) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+## [0.16.1](https://github.com/latticexyz/mud/compare/v0.16.0...v0.16.1) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [0.16.0](https://github.com/latticexyz/mud/compare/v0.15.1...v0.16.0) (2022-09-26)
+
+### Bug Fixes
+
+- **std-client:** add generic type to waitForComponentValueIn ([f1641d4](https://github.com/latticexyz/mud/commit/f1641d4a69a5479252a5cc01186a2fdc202eb45e))
+
+### Features
+
+- **network:** add system call stream ([#162](https://github.com/latticexyz/mud/issues/162)) ([5caef57](https://github.com/latticexyz/mud/commit/5caef57165ed1a927dc8631a361189abfd54ea7a))
+- **recs:** add support for custom type in component ([#158](https://github.com/latticexyz/mud/issues/158)) ([fdc781d](https://github.com/latticexyz/mud/commit/fdc781d851147f2a98cbe95e89789a3c0ee226ca))
+
+## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
 # [0.15.0](https://github.com/latticexyz/mud/compare/v0.14.2...v0.15.0) (2022-09-21)
 
 **Note:** Version bump only for package @latticexyz/std-client

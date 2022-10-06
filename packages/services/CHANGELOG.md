@@ -3,6 +3,77 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/latticexyz/mud/compare/v1.5.1...v1.6.0) (2022-10-04)
+
+### Features
+
+- flag for sig verification, rate limiting of push, and check for balance when relaying ([#175](https://github.com/latticexyz/mud/issues/175)) ([0271ac9](https://github.com/latticexyz/mud/commit/0271ac9eb17fc1353e58ed11f6f6064e50956762))
+
+## [1.5.1](https://github.com/latticexyz/mud/compare/v1.5.0...v1.5.1) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/services
+
+# [1.5.0](https://github.com/latticexyz/mud/compare/v1.4.1...v1.5.0) (2022-10-03)
+
+### Features
+
+- add a stream rpc for message push ([#174](https://github.com/latticexyz/mud/issues/174)) ([e0aa956](https://github.com/latticexyz/mud/commit/e0aa956ac871064ecde87a07394525ca69e7f17d))
+- faucet re-drip after tweet, rpc to get time until next drip ([#173](https://github.com/latticexyz/mud/issues/173)) ([27b08fc](https://github.com/latticexyz/mud/commit/27b08fc99f278cd01e4c91f6f63387271bae3ced))
+
+## [1.4.1](https://github.com/latticexyz/mud/compare/v1.4.0...v1.4.1) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/services
+
+# [1.4.0](https://github.com/latticexyz/mud/compare/v1.3.0...v1.4.0) (2022-10-03)
+
+### Features
+
+- add signature verification for all client actions via relay service ([#167](https://github.com/latticexyz/mud/issues/167)) ([7920d6e](https://github.com/latticexyz/mud/commit/7920d6eec20f3a669cb3a1a9e39cd822e421961a))
+- faucet improvements ([#168](https://github.com/latticexyz/mud/issues/168)) ([29d0b91](https://github.com/latticexyz/mud/commit/29d0b91bca63324cc56854c710f1e7f779b4e553))
+
+# [1.3.0](https://github.com/latticexyz/mud/compare/v1.2.0...v1.3.0) (2022-09-30)
+
+**Note:** Version bump only for package @latticexyz/services
+
+# [1.2.0](https://github.com/latticexyz/mud/compare/v1.1.0...v1.2.0) (2022-09-29)
+
+**Note:** Version bump only for package @latticexyz/services
+
+# [1.1.0](https://github.com/latticexyz/mud/compare/v1.0.0...v1.1.0) (2022-09-28)
+
+### Features
+
+- basic faucet service implementation ([#163](https://github.com/latticexyz/mud/issues/163)) ([3217176](https://github.com/latticexyz/mud/commit/3217176e65a66be581c1ab705eb9123cb2a812f9))
+- initial implementation of ecs relay service ([#157](https://github.com/latticexyz/mud/issues/157)) ([140aec3](https://github.com/latticexyz/mud/commit/140aec3e92269f8c79fe0ef5e6639ca0ff056282))
+
+# [1.0.0](https://github.com/latticexyz/mud/compare/v0.16.4...v1.0.0) (2022-09-27)
+
+**Note:** Version bump only for package @latticexyz/services
+
+## [0.16.4](https://github.com/latticexyz/mud/compare/v0.16.3...v0.16.4) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/services
+
+## [0.16.3](https://github.com/latticexyz/mud/compare/v0.16.2...v0.16.3) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/services
+
+## [0.16.2](https://github.com/latticexyz/mud/compare/v0.16.1...v0.16.2) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/services
+
+## [0.16.1](https://github.com/latticexyz/mud/compare/v0.16.0...v0.16.1) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/services
+
+# [0.16.0](https://github.com/latticexyz/mud/compare/v0.15.1...v0.16.0) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/services
+
+## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
+
+**Note:** Version bump only for package @latticexyz/services
+
 # [0.15.0](https://github.com/latticexyz/mud/compare/v0.14.2...v0.15.0) (2022-09-21)
 
 **Note:** Version bump only for package @latticexyz/services

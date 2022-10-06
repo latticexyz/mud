@@ -3,6 +3,66 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/latticexyz/mud/compare/v1.5.1...v1.6.0) (2022-10-04)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [1.5.1](https://github.com/latticexyz/mud/compare/v1.5.0...v1.5.1) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [1.5.0](https://github.com/latticexyz/mud/compare/v1.4.1...v1.5.0) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [1.4.1](https://github.com/latticexyz/mud/compare/v1.4.0...v1.4.1) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [1.4.0](https://github.com/latticexyz/mud/compare/v1.3.0...v1.4.0) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [1.3.0](https://github.com/latticexyz/mud/compare/v1.2.0...v1.3.0) (2022-09-30)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [1.2.0](https://github.com/latticexyz/mud/compare/v1.1.0...v1.2.0) (2022-09-29)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [1.1.0](https://github.com/latticexyz/mud/compare/v1.0.0...v1.1.0) (2022-09-28)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [1.0.0](https://github.com/latticexyz/mud/compare/v0.16.4...v1.0.0) (2022-09-27)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [0.16.4](https://github.com/latticexyz/mud/compare/v0.16.3...v0.16.4) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [0.16.3](https://github.com/latticexyz/mud/compare/v0.16.2...v0.16.3) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [0.16.2](https://github.com/latticexyz/mud/compare/v0.16.1...v0.16.2) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [0.16.1](https://github.com/latticexyz/mud/compare/v0.16.0...v0.16.1) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [0.16.0](https://github.com/latticexyz/mud/compare/v0.15.1...v0.16.0) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
 # [0.15.0](https://github.com/latticexyz/mud/compare/v0.14.2...v0.15.0) (2022-09-21)
 
 **Note:** Version bump only for package @latticexyz/phaserx

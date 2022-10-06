@@ -1,7 +1,7 @@
 import { Result } from "@ethersproject/abi";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { Cached } from "@latticexyz/utils";
-import { BaseContract, ContractInterface } from "ethers";
+import { BaseContract, BigNumber, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
 
 export interface NetworkConfig {
@@ -9,7 +9,7 @@ export interface NetworkConfig {
   privateKey?: string;
   clock: ClockConfig;
   provider: ProviderConfig;
-  checkpointServiceUrl?: string;
+  snapshotServiceUrl?: string;
   streamServiceUrl?: string;
   initialBlockNumber?: number;
 }
@@ -29,6 +29,7 @@ export type Clock = {
 };
 
 export interface ProviderConfig {
+  chainId: number;
   jsonRpcUrl: string;
   wsRpcUrl?: string;
   options?: { batch?: boolean; pollingInterval?: number; skipNetworkCheck?: boolean };
@@ -69,6 +70,7 @@ export type Mappings<C extends Components> = {
 
 export type NetworkComponentUpdate<C extends Components = Components> = {
   [key in keyof C]: {
+    type: NetworkEvents.NetworkComponentUpdate;
     component: key & string;
     value: ComponentValue<SchemaOf<C[key]>> | undefined;
   };
@@ -79,14 +81,45 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
   blockNumber: number;
 };
 
-export type SyncWorkerConfig<Cm extends Components = Components> = {
+export type SystemCallTransaction = {
+  hash: string;
+  to: string;
+  data: string;
+  value: BigNumber;
+};
+
+export type SystemCall<C extends Components = Components> = {
+  type: NetworkEvents.SystemCall;
+  tx: SystemCallTransaction;
+  updates: NetworkComponentUpdate<C>[];
+};
+
+export enum NetworkEvents {
+  SystemCall = "SystemCall",
+  NetworkComponentUpdate = "NetworkComponentUpdate",
+}
+
+export type NetworkEvent<C extends Components = Components> = NetworkComponentUpdate<C> | SystemCall<C>;
+
+export function isSystemCallEvent<C extends Components>(e: NetworkEvent<C>): e is SystemCall<C> {
+  return e.type === NetworkEvents.SystemCall;
+}
+
+export function isNetworkComponentUpdateEvent<C extends Components>(
+  e: NetworkEvent<C>
+): e is NetworkComponentUpdate<C> {
+  return e.type === NetworkEvents.NetworkComponentUpdate;
+}
+
+export type SyncWorkerConfig = {
   provider: ProviderConfig;
   initialBlockNumber: number;
   worldContract: ContractConfig;
   disableCache?: boolean;
   chainId: number;
-  checkpointServiceUrl?: string;
+  snapshotServiceUrl?: string;
   streamServiceUrl?: string;
+  fetchSystemCalls?: boolean;
 };
 
 export enum ContractSchemaValue {
@@ -106,6 +139,8 @@ export enum ContractSchemaValue {
   UINT256,
   BYTES,
   STRING,
+  ADDRESS,
+  BYTES4,
   BOOL_ARRAY,
   INT8_ARRAY,
   INT16_ARRAY,
@@ -141,6 +176,8 @@ export const ContractSchemaValueId: { [key in ContractSchemaValue]: string } = {
   [ContractSchemaValue.UINT256]: "uint256",
   [ContractSchemaValue.BYTES]: "bytes",
   [ContractSchemaValue.STRING]: "string",
+  [ContractSchemaValue.ADDRESS]: "address",
+  [ContractSchemaValue.BYTES4]: "bytes4",
   [ContractSchemaValue.BOOL_ARRAY]: "bool[]",
   [ContractSchemaValue.INT8_ARRAY]: "int8[]",
   [ContractSchemaValue.INT16_ARRAY]: "int16[]",
@@ -195,6 +232,8 @@ export type ContractSchemaValueTypes = {
   [ContractSchemaValue.UINT256]: string;
   [ContractSchemaValue.BYTES]: string;
   [ContractSchemaValue.STRING]: string;
+  [ContractSchemaValue.ADDRESS]: string;
+  [ContractSchemaValue.BYTES4]: string;
   [ContractSchemaValue.BOOL_ARRAY]: boolean[];
   [ContractSchemaValue.INT8_ARRAY]: number[];
   [ContractSchemaValue.INT16_ARRAY]: number[];

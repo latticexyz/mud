@@ -3,6 +3,113 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/latticexyz/mud/compare/v1.5.1...v1.6.0) (2022-10-04)
+
+### Bug Fixes
+
+- make OverridableComponent conform with Component type ([#180](https://github.com/latticexyz/mud/issues/180)) ([c9d2c31](https://github.com/latticexyz/mud/commit/c9d2c311aa1c86d9bcabdf67eee598c264618ad0))
+
+### Features
+
+- flag for sig verification, rate limiting of push, and check for balance when relaying ([#175](https://github.com/latticexyz/mud/issues/175)) ([0271ac9](https://github.com/latticexyz/mud/commit/0271ac9eb17fc1353e58ed11f6f6064e50956762))
+
+## [1.5.1](https://github.com/latticexyz/mud/compare/v1.5.0...v1.5.1) (2022-10-03)
+
+**Note:** Version bump only for package mud
+
+# [1.5.0](https://github.com/latticexyz/mud/compare/v1.4.1...v1.5.0) (2022-10-03)
+
+### Features
+
+- add a stream rpc for message push ([#174](https://github.com/latticexyz/mud/issues/174)) ([e0aa956](https://github.com/latticexyz/mud/commit/e0aa956ac871064ecde87a07394525ca69e7f17d))
+- faucet re-drip after tweet, rpc to get time until next drip ([#173](https://github.com/latticexyz/mud/issues/173)) ([27b08fc](https://github.com/latticexyz/mud/commit/27b08fc99f278cd01e4c91f6f63387271bae3ced))
+
+## [1.4.1](https://github.com/latticexyz/mud/compare/v1.4.0...v1.4.1) (2022-10-03)
+
+**Note:** Version bump only for package mud
+
+# [1.4.0](https://github.com/latticexyz/mud/compare/v1.3.0...v1.4.0) (2022-10-03)
+
+### Features
+
+- add signature verification for all client actions via relay service ([#167](https://github.com/latticexyz/mud/issues/167)) ([7920d6e](https://github.com/latticexyz/mud/commit/7920d6eec20f3a669cb3a1a9e39cd822e421961a))
+- faucet improvements ([#168](https://github.com/latticexyz/mud/issues/168)) ([29d0b91](https://github.com/latticexyz/mud/commit/29d0b91bca63324cc56854c710f1e7f779b4e553))
+- **network:** add util for creating faucet service ([#171](https://github.com/latticexyz/mud/issues/171)) ([9f50d9c](https://github.com/latticexyz/mud/commit/9f50d9c3ae31132507c19bce7d3d5c8df7684cad))
+- **network:** expose mappings and ecsEvent$ from setupMUDNetwork ([44a8676](https://github.com/latticexyz/mud/commit/44a8676a8d22e73276fd02a459d35270b1b4da9e))
+
+# [1.3.0](https://github.com/latticexyz/mud/compare/v1.2.0...v1.3.0) (2022-09-30)
+
+### Bug Fixes
+
+- **network:** remove failed actions from the queue ([b27b958](https://github.com/latticexyz/mud/commit/b27b958aefc72eb8e35f72fc5108578dfb0f3b74))
+- **recs:** change internal query behavior to match previous version ([47b8834](https://github.com/latticexyz/mud/commit/47b8834ce8d88f4b79febbfe94dbfb79def6d2b8))
+- **std-client:** add stream service config to createMUDNetwork ([98b0861](https://github.com/latticexyz/mud/commit/98b0861cf059cfd291ea42d3a969a9e72be3d034))
+
+### Features
+
+- **recs:** add local cache component ([#169](https://github.com/latticexyz/mud/issues/169)) ([09058f6](https://github.com/latticexyz/mud/commit/09058f69a7d6d743afefc80da2c06020ff3d1a56))
+- **recs:** allow multiple subscribers per query update$ ([6d13531](https://github.com/latticexyz/mud/commit/6d135314225f211814272e325fa8ab89952241ab))
+
+# [1.2.0](https://github.com/latticexyz/mud/compare/v1.1.0...v1.2.0) (2022-09-29)
+
+### Bug Fixes
+
+- **network:** check event type instead of just value before decoding ([#166](https://github.com/latticexyz/mud/issues/166)) ([f4dedd9](https://github.com/latticexyz/mud/commit/f4dedd9005a110b2548f5b372f5a53abe06aacbf))
+
+### Features
+
+- **network:** increase network performance by reducing unnecessary rpc calls ([#165](https://github.com/latticexyz/mud/issues/165)) ([195b710](https://github.com/latticexyz/mud/commit/195b71019b2be623d99f7a90c93a661cdb743a87))
+
+# [1.1.0](https://github.com/latticexyz/mud/compare/v1.0.0...v1.1.0) (2022-09-28)
+
+### Features
+
+- add createRelayService, add utils to work with Uint8Arrays ([#164](https://github.com/latticexyz/mud/issues/164)) ([b02992b](https://github.com/latticexyz/mud/commit/b02992b73393740d7510b1f9d3d9e6ea0030f462))
+- basic faucet service implementation ([#163](https://github.com/latticexyz/mud/issues/163)) ([3217176](https://github.com/latticexyz/mud/commit/3217176e65a66be581c1ab705eb9123cb2a812f9))
+- **ecs-browser:** make nameComponent and spawnPrototypeAt optional ([7822d53](https://github.com/latticexyz/mud/commit/7822d53f03862a146b2a58aac3a024b2b274d614))
+- initial implementation of ecs relay service ([#157](https://github.com/latticexyz/mud/issues/157)) ([140aec3](https://github.com/latticexyz/mud/commit/140aec3e92269f8c79fe0ef5e6639ca0ff056282))
+
+# [1.0.0](https://github.com/latticexyz/mud/compare/v0.16.4...v1.0.0) (2022-09-27)
+
+**Note:** Version bump only for package mud
+
+## [0.16.4](https://github.com/latticexyz/mud/compare/v0.16.3...v0.16.4) (2022-09-26)
+
+### Bug Fixes
+
+- **network:** cancel tx request if gas estimation failed ([565b37f](https://github.com/latticexyz/mud/commit/565b37f5a7408c06e2fd5fdab2f42d69f8db6610))
+
+## [0.16.3](https://github.com/latticexyz/mud/compare/v0.16.2...v0.16.3) (2022-09-26)
+
+### Bug Fixes
+
+- do gas estimation right before sending tx to avoid invalid gas estimations ([f251642](https://github.com/latticexyz/mud/commit/f25164268834390d35637b7aea84998cf88e16ae))
+
+## [0.16.2](https://github.com/latticexyz/mud/compare/v0.16.1...v0.16.2) (2022-09-26)
+
+**Note:** Version bump only for package mud
+
+## [0.16.1](https://github.com/latticexyz/mud/compare/v0.16.0...v0.16.1) (2022-09-26)
+
+**Note:** Version bump only for package mud
+
+# [0.16.0](https://github.com/latticexyz/mud/compare/v0.15.1...v0.16.0) (2022-09-26)
+
+### Bug Fixes
+
+- **std-client:** add generic type to waitForComponentValueIn ([f1641d4](https://github.com/latticexyz/mud/commit/f1641d4a69a5479252a5cc01186a2fdc202eb45e))
+
+### Features
+
+- **network:** add system call stream ([#162](https://github.com/latticexyz/mud/issues/162)) ([5caef57](https://github.com/latticexyz/mud/commit/5caef57165ed1a927dc8631a361189abfd54ea7a))
+- **recs:** add support for custom type in component ([#158](https://github.com/latticexyz/mud/issues/158)) ([fdc781d](https://github.com/latticexyz/mud/commit/fdc781d851147f2a98cbe95e89789a3c0ee226ca))
+- **std-contracts:** add FunctionComponent ([#161](https://github.com/latticexyz/mud/issues/161)) ([d720277](https://github.com/latticexyz/mud/commit/d7202774a5a068a99b88a63cb18100482dc18cb8))
+- **utils:** add keccak256Coord ([#160](https://github.com/latticexyz/mud/issues/160)) ([1734cdb](https://github.com/latticexyz/mud/commit/1734cdb02743d209a8f9c245bf42a1b750403a60))
+
+## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
+
+**Note:** Version bump only for package mud
+
 # [0.15.0](https://github.com/latticexyz/mud/compare/v0.14.2...v0.15.0) (2022-09-21)
 
 ### Features
@@ -209,7 +316,7 @@ Co-authored-by: andrii dobroshynski <24281657+andriidski@users.noreply.github.co
 - component browser 📈 ([#16](https://github.com/latticexyz/mud/issues/16)) ([37af75e](https://github.com/latticexyz/mud/commit/37af75ecb11266e5877d04cb3224698605b87646))
 - **contracts:** add function to set contract ecs state in bulk ([#23](https://github.com/latticexyz/mud/issues/23)) ([5bc8d2b](https://github.com/latticexyz/mud/commit/5bc8d2b6895afeec8680b820ed373c75c89e61f7))
 - **contracts:** replace hardhat with foundry toolkit ([#51](https://github.com/latticexyz/mud/issues/51)) ([2c0e4a9](https://github.com/latticexyz/mud/commit/2c0e4a903e6d761941ec2f86f2dda9005520f020))
-- **network:** integrate checkpoint service ([#24](https://github.com/latticexyz/mud/issues/24)) ([a146164](https://github.com/latticexyz/mud/commit/a146164e1ccab77b88499c213b21f60270ed714b))
+- **network:** integrate snapshot service ([#24](https://github.com/latticexyz/mud/issues/24)) ([a146164](https://github.com/latticexyz/mud/commit/a146164e1ccab77b88499c213b21f60270ed714b))
 - on-chain maps (nyc sprint 1) ([#38](https://github.com/latticexyz/mud/issues/38)) ([089c46d](https://github.com/latticexyz/mud/commit/089c46d7c0e112d1670e3bcd01a35f08ee21d593)), closes [#17](https://github.com/latticexyz/mud/issues/17) [#20](https://github.com/latticexyz/mud/issues/20) [#18](https://github.com/latticexyz/mud/issues/18) [#25](https://github.com/latticexyz/mud/issues/25) [#26](https://github.com/latticexyz/mud/issues/26) [#27](https://github.com/latticexyz/mud/issues/27) [#28](https://github.com/latticexyz/mud/issues/28) [#29](https://github.com/latticexyz/mud/issues/29) [#30](https://github.com/latticexyz/mud/issues/30) [#31](https://github.com/latticexyz/mud/issues/31) [#33](https://github.com/latticexyz/mud/issues/33) [#32](https://github.com/latticexyz/mud/issues/32) [#34](https://github.com/latticexyz/mud/issues/34) [#35](https://github.com/latticexyz/mud/issues/35) [#36](https://github.com/latticexyz/mud/issues/36) [#37](https://github.com/latticexyz/mud/issues/37) [#39](https://github.com/latticexyz/mud/issues/39) [#40](https://github.com/latticexyz/mud/issues/40) [#41](https://github.com/latticexyz/mud/issues/41) [#42](https://github.com/latticexyz/mud/issues/42) [#43](https://github.com/latticexyz/mud/issues/43) [#44](https://github.com/latticexyz/mud/issues/44) [#45](https://github.com/latticexyz/mud/issues/45) [#46](https://github.com/latticexyz/mud/issues/46) [#48](https://github.com/latticexyz/mud/issues/48) [#49](https://github.com/latticexyz/mud/issues/49) [#50](https://github.com/latticexyz/mud/issues/50)
 - **recs:** add more granular type assertion function for introspecting Component schema types ([#8](https://github.com/latticexyz/mud/issues/8)) ([48331f9](https://github.com/latticexyz/mud/commit/48331f911eb9f6e39eb774a1aecf759f69729aa4))
 - **recs:** add optional parameters to reaction and autorun systems ([451209f](https://github.com/latticexyz/mud/commit/451209f98c17e4b228d7a828662e4b72077fe55f))

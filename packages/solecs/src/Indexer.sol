@@ -95,7 +95,7 @@ contract Indexer is IEntityIndexer, IERC165 {
 
     require(foundSenderComponent, "Message Sender is not indexed!");
 
-    // if there is no entity with this value, return
+    // If there is no entity with this value, return
     if (!has(entity)) return;
 
     // Remove the entity from the reverse mapping

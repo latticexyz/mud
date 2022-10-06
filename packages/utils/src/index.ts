@@ -16,11 +16,13 @@ export * from "./hash";
 export * from "./worker";
 export * from "./pack";
 export * from "./CoordMap";
+export * from "./VoxelCoordMap";
 export * from "./eth";
 export * from "./cubic";
 export * from "./console";
 export * from "./distance";
 export * from "./math";
+export * from "./bytes";
 
 export type {
   Cached,

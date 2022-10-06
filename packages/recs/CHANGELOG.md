@@ -3,6 +3,77 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.6.0](https://github.com/latticexyz/mud/compare/v1.5.1...v1.6.0) (2022-10-04)
+
+### Bug Fixes
+
+- make OverridableComponent conform with Component type ([#180](https://github.com/latticexyz/mud/issues/180)) ([c9d2c31](https://github.com/latticexyz/mud/commit/c9d2c311aa1c86d9bcabdf67eee598c264618ad0))
+
+## [1.5.1](https://github.com/latticexyz/mud/compare/v1.5.0...v1.5.1) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+# [1.5.0](https://github.com/latticexyz/mud/compare/v1.4.1...v1.5.0) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+## [1.4.1](https://github.com/latticexyz/mud/compare/v1.4.0...v1.4.1) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+# [1.4.0](https://github.com/latticexyz/mud/compare/v1.3.0...v1.4.0) (2022-10-03)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+# [1.3.0](https://github.com/latticexyz/mud/compare/v1.2.0...v1.3.0) (2022-09-30)
+
+### Bug Fixes
+
+- **recs:** change internal query behavior to match previous version ([47b8834](https://github.com/latticexyz/mud/commit/47b8834ce8d88f4b79febbfe94dbfb79def6d2b8))
+
+### Features
+
+- **recs:** add local cache component ([#169](https://github.com/latticexyz/mud/issues/169)) ([09058f6](https://github.com/latticexyz/mud/commit/09058f69a7d6d743afefc80da2c06020ff3d1a56))
+- **recs:** allow multiple subscribers per query update$ ([6d13531](https://github.com/latticexyz/mud/commit/6d135314225f211814272e325fa8ab89952241ab))
+
+# [1.2.0](https://github.com/latticexyz/mud/compare/v1.1.0...v1.2.0) (2022-09-29)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+# [1.1.0](https://github.com/latticexyz/mud/compare/v1.0.0...v1.1.0) (2022-09-28)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+# [1.0.0](https://github.com/latticexyz/mud/compare/v0.16.4...v1.0.0) (2022-09-27)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+## [0.16.4](https://github.com/latticexyz/mud/compare/v0.16.3...v0.16.4) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+## [0.16.3](https://github.com/latticexyz/mud/compare/v0.16.2...v0.16.3) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+## [0.16.2](https://github.com/latticexyz/mud/compare/v0.16.1...v0.16.2) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+## [0.16.1](https://github.com/latticexyz/mud/compare/v0.16.0...v0.16.1) (2022-09-26)
+
+**Note:** Version bump only for package @latticexyz/recs
+
+# [0.16.0](https://github.com/latticexyz/mud/compare/v0.15.1...v0.16.0) (2022-09-26)
+
+### Features
+
+- **recs:** add support for custom type in component ([#158](https://github.com/latticexyz/mud/issues/158)) ([fdc781d](https://github.com/latticexyz/mud/commit/fdc781d851147f2a98cbe95e89789a3c0ee226ca))
+
+## [0.15.1](https://github.com/latticexyz/mud/compare/v0.15.0...v0.15.1) (2022-09-23)
+
+**Note:** Version bump only for package @latticexyz/recs
+
 # [0.15.0](https://github.com/latticexyz/mud/compare/v0.14.2...v0.15.0) (2022-09-21)
 
 **Note:** Version bump only for package @latticexyz/recs

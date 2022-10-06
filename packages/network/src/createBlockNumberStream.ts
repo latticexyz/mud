@@ -6,6 +6,7 @@ import { Providers } from "./createProvider";
 
 /**
  * Creates a stream of block numbers based on the `block` event of the currently connected provider.
+ * In case `initialSync` is provided, this stream will also output a stream of past block numbers to drive replaying events.
  *
  * @param providers Mobx computed providers object (created by {@link createReconnectingProvider}).
  * @param options

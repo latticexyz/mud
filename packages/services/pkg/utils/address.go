@@ -20,3 +20,7 @@ func SplitAddressList(addressList string, separator string) []common.Address {
 	}
 	return addresses
 }
+
+func ChecksumAddressString(address string) string {
+	return common.HexToAddress(address).Hex()
+}
