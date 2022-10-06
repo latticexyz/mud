@@ -166,7 +166,8 @@ abstract contract Component is IComponent {
   /**
    * Set the given component value for the given entity.
    * Registers the update in the World contract.
-   * Can only be called by addresses with write access to this component.
+   * Can only be called internally (by the component or contracts deriving from it),
+   * without requiring explicit write access.
    * @param entity Entity to set the value for.
    * @param value Value to set for the given entity.
    */
