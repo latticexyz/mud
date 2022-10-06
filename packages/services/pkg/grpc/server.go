@@ -107,7 +107,7 @@ func StartStreamServer(grpcPort int, ethclient *ethclient.Client, multiplexer *m
 	go startRPCServer(grpcServer, grpcPort, logger)
 
 	// Start the HTTP server at PORT+1.
-	go startHTTPServer(createWebGrpcServer(grpcServer), grpcPort+1, logger)
+	go startHTTPServer(createWebGrpcServerWithWebsockets(grpcServer), grpcPort+1, logger)
 }
 
 // StartStreamServer starts a gRPC server and a HTTP web-gRPC server wrapper for an ECS snapshot
