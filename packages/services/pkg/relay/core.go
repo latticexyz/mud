@@ -17,7 +17,8 @@ type RelayServerConfig struct {
 	MessageDriftTime      int
 
 	VerifyMessageSignature bool
-	MessageRateLimit       float64
+	VerifyAccountBalance   bool
+	MessageRateLimit       int
 }
 
 type Client struct {
@@ -176,7 +177,7 @@ func (registry *ClientRegistry) Register(identity *pb.Identity, config *RelaySer
 	newClient.identity = identity
 	newClient.channel = make(chan *pb.Message)
 	newClient.connected = false
-	newClient.messageRateLimiter = rate.NewLimiter(rate.Limit(config.MessageRateLimit), 1)
+	newClient.messageRateLimiter = rate.NewLimiter(rate.Every(1*time.Second/time.Duration(config.MessageRateLimit)), config.MessageRateLimit)
 
 	// At most allow a check for balance every 60s if client has funds and every 10s if not.
 	newClient.balancePresentLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(60)), 1)
