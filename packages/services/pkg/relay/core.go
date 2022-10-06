@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ethereum/go-ethereum/crypto"
+	"go.uber.org/zap"
 	"golang.org/x/time/rate"
 )
 
@@ -40,17 +41,15 @@ func (client *Client) Connect() {
 	client.channel = make(chan *pb.Message)
 	client.connected = true
 	client.mutex.Unlock()
+	logger.GetLogger().Info("connected client", zap.String("client", client.identity.Name))
 }
 
 func (client *Client) Disconnect() {
-	// Disconnect and close the channel only if client is still connected.
-	if !client.IsConnected() {
-		return
-	}
 	client.mutex.Lock()
 	close(client.channel)
 	client.connected = false
 	client.mutex.Unlock()
+	logger.GetLogger().Info("disconnected client", zap.String("client", client.identity.Name))
 }
 
 func (client *Client) Ping() {

@@ -210,26 +210,27 @@ func (server *ecsRelayServer) OpenStream(signature *pb.Signature, stream pb.ECSR
 		return err
 	}
 
-	if !client.IsConnected() {
-		server.logger.Info("opening stream", zap.String("client", identity.Name))
-		client.Connect()
-	} else {
-		server.logger.Info("reusing already opened stream", zap.String("client", identity.Name))
+	if client.IsConnected() {
+		server.logger.Info("closing opened channel, since already connected", zap.String("client", identity.Name))
+		client.Disconnect()
 	}
+
+	client.Connect()
 	client.Ping()
 
-	for msg := range client.GetChannel() {
-		if err := stream.Send(msg); err != nil {
-			server.logger.Info("closing stream due to error", zap.String("client", identity.Name), zap.Error(err))
-			client.Disconnect()
-			return err
+	relayedMessagesChannel := client.GetChannel()
+	for {
+		select {
+		case <-stream.Context().Done():
+			server.logger.Info("client closed stream")
+			if client.IsConnected() {
+				client.Disconnect()
+			}
+			return nil
+		case relayedMessage := <-relayedMessagesChannel:
+			stream.Send(relayedMessage)
 		}
 	}
-
-	server.logger.Info("closing stream", zap.String("client", identity.Name))
-	client.Disconnect()
-
-	return nil
 }
 
 func (server *ecsRelayServer) VerifyMessageSignature(message *pb.Message, identity *pb.Identity) (bool, string, error) {
