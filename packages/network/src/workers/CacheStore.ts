@@ -3,7 +3,7 @@ import { packTuple, transformIterator, unpackTuple } from "@latticexyz/utils";
 import { initCache } from "../initCache";
 import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
-import { BigNumber } from "ethers";
+import { formatEntityID } from "../utils";
 
 export type State = Map<number, ComponentValue>;
 export type CacheStore = ReturnType<typeof createCacheStore>;
@@ -29,7 +29,7 @@ export function storeEvent<Cm extends Components>(
   { component, entity, value, blockNumber }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
   // Remove the 0 padding from all entityes
-  const normalizedEntity = entity[0] === "0" && entity[1] === "x" ? BigNumber.from(entity).toHexString() : entity;
+  const normalizedEntity = formatEntityID(entity);
 
   const { components, entities, componentToIndex, entityToIndex, state } = cacheStore;
 

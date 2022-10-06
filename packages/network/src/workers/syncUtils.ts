@@ -30,6 +30,7 @@ import {
   ECSStreamServiceDefinition,
 } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
 import { createChannel, createClient } from "nice-grpc-web";
+import { formatComponentID, formatEntityID } from "../utils";
 
 /**
  * Create a ECSStateSnapshotServiceClient
@@ -371,8 +372,8 @@ export function createFetchWorldEventsInBlockRange<C extends Components>(
         componentId: BigNumber;
       };
 
-      const component = to256BitString(BigNumber.from(rawComponentId).toHexString());
-      const entity = BigNumber.from(entityId).toHexString() as EntityID;
+      const component = formatComponentID(rawComponentId);
+      const entity = formatEntityID(entityId);
       const blockNumber = to;
 
       const ecsEvent = {
@@ -417,8 +418,8 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
       const entityId = ecsEvent.entityId;
       const txHash = ecsEvent.tx;
 
-      const component = to256BitString(BigNumber.from(rawComponentId).toHexString());
-      const entity = to256BitString(BigNumber.from(entityId).toHexString()) as EntityID;
+      const component = formatComponentID(rawComponentId);
+      const entity = formatEntityID(entityId);
 
       const value = ecsEvent.eventType === "ComponentValueSet" ? await decode(component, ecsEvent.value) : undefined;
 
