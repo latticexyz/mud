@@ -17,7 +17,6 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
   const httpClient = createClient(ECSRelayServiceDefinition, createChannel(url));
   const wsClient = createClient(ECSRelayServiceDefinition, createChannel(url, grpc.WebsocketTransport()));
 
-  // const pushClient = grpc.client(ECSRelayService.PushStream, { host: url });
   const recoverWorker = await spawn(
     new Worker(new URL("./workers/Recover.worker.ts", import.meta.url), { type: "module" })
   );
@@ -45,6 +44,12 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
     httpClient.unsubscribe({ signature, subscription: { label } });
   }
 
+  // Fetch amount of connected clients
+  async function countConnected(): Promise<number> {
+    const { count } = await httpClient.countConnected({});
+    return count;
+  }
+
   // Set up stream to push messages to the relay service
   const push$ = new Subject<PushRequest>();
   const generatorLoop = { done: false };
@@ -70,5 +75,5 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
     push$.next({ label, message });
   }
 
-  return { event$, dispose, subscribe, unsubscribe, push };
+  return { event$, dispose, subscribe, unsubscribe, push, countConnected };
 }
