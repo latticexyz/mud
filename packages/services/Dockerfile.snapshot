@@ -14,10 +14,17 @@ RUN go mod download
 
 COPY . .
 
+# Build the binary
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 make ecs-snapshot
+
+# Add the grpc_health_probe
+RUN GRPC_HEALTH_PROBE_VERSION=v0.4.13 && \
+    wget -qO/service/grpc_health_probe https://github.com/grpc-ecosystem/grpc-health-probe/releases/download/${GRPC_HEALTH_PROBE_VERSION}/grpc_health_probe-linux-amd64 && \
+    chmod +x /service/grpc_health_probe
 
 # Serve stage.
 FROM alpine:latest  
 RUN apk --no-cache add ca-certificates
 COPY --from=builder /service/bin/ecs-snapshot /service/
+COPY --from=builder /service/grpc_health_probe /service/grpc_health_probe
 EXPOSE 50061
