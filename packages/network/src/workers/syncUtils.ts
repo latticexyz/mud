@@ -31,6 +31,7 @@ import {
 } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
 import { createChannel, createClient } from "nice-grpc-web";
 import { formatComponentID, formatEntityID } from "../utils";
+import { grpc } from "@improbable-eng/grpc-web";
 
 /**
  * Create a ECSStateSnapshotServiceClient
@@ -47,7 +48,7 @@ export function createSnapshotClient(url: string): ECSStateSnapshotServiceClient
  * @returns ECSStreamServiceClient
  */
 export function createStreamClient(url: string): ECSStreamServiceClient {
-  return createClient(ECSStreamServiceDefinition, createChannel(url));
+  return createClient(ECSStreamServiceDefinition, createChannel(url, grpc.WebsocketTransport()));
 }
 
 /**
