@@ -38,6 +38,9 @@ export async function createNetwork(initialConfig: NetworkConfig) {
   const connectedAddress = computed(() =>
     config.privateKey ? new Wallet(config.privateKey).address.toLowerCase() : undefined
   );
+  const connectedAddressChecksummed = computed(() =>
+    config.privateKey ? new Wallet(config.privateKey).address : undefined
+  );
 
   // Listen to new block numbers
   const { blockNumber$, dispose: disposeBlockNumberStream } = createBlockNumberStream(providers);
@@ -72,5 +75,6 @@ export async function createNetwork(initialConfig: NetworkConfig) {
     clock,
     config,
     connectedAddress,
+    connectedAddressChecksummed,
   };
 }
