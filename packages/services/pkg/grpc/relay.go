@@ -54,7 +54,9 @@ func (server *ecsRelayServer) DisconnectIdleClientsWorker(ticker *time.Ticker, q
 		select {
 		case <-ticker.C:
 			countDisconnected := server.DisconnectIdleClients(server.config.IdleTimeoutTime)
-			server.logger.Info("done disconnecting idle clients", zap.Int("count", countDisconnected))
+			if countDisconnected > 0 {
+				server.logger.Info("done disconnecting idle clients", zap.Int("count", countDisconnected))
+			}
 		case <-quit:
 			ticker.Stop()
 			return
@@ -283,6 +285,11 @@ func (server *ecsRelayServer) VerifyMessage(message *pb.Message, identity *pb.Id
 }
 
 func (server *ecsRelayServer) VerifySufficientBalance(client *relay.Client, address string) error {
+	// If the flag to verify account balance is turned off, do nothing.
+	if !server.config.VerifyAccountBalance {
+		return nil
+	}
+
 	if client.ShouldCheckBalance() {
 		balance, err := eth.GetCurrentBalance(server.ethClient, address)
 		if err != nil {
@@ -333,7 +340,7 @@ func (server *ecsRelayServer) HandlePushRequest(request *pb.PushRequest) error {
 
 	// Rate limit the client, if necessary.
 	if !client.GetLimiter().Allow() {
-		return fmt.Errorf("client rate limited, max %.2f msg push / second allowed", server.config.MessageRateLimit)
+		return fmt.Errorf("client rate limited, max %d msg push / second allowed", server.config.MessageRateLimit)
 	}
 
 	// Get the message.
