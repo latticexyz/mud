@@ -19,6 +19,8 @@ import (
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	"google.golang.org/grpc/health/grpc_health_v1"
 	"google.golang.org/grpc/reflection"
 )
 
@@ -58,6 +60,9 @@ func startHTTPServer(grpcWebServer *grpcweb.WrappedGrpcServer, port int, logger 
 func createGrpcServer() *grpc.Server {
 	var options []grpc.ServerOption
 	grpcServer := grpc.NewServer(options...)
+
+	// Create and register health service server.
+	grpc_health_v1.RegisterHealthServer(grpcServer, health.NewServer())
 
 	// Register reflection service on gRPC server.
 	reflection.Register(grpcServer)
