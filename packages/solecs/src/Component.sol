@@ -195,7 +195,8 @@ abstract contract Component is IComponent {
   /**
    * Remove the given entity from this component.
    * Registers the update in the World contract.
-   * Can only be called by addresses with write access to this component.
+   * Can only be called internally (by the component or contracts deriving from it),
+   * without requiring explicit write access.
    * @param entity Entity to remove from this component.
    */
   function _remove(uint256 entity) internal {
