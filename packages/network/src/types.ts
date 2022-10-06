@@ -1,8 +1,11 @@
 import { Result } from "@ethersproject/abi";
+import { ExternalProvider } from "@ethersproject/providers";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { Cached } from "@latticexyz/utils";
 import { BaseContract, BigNumber, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
+
+export type WindowWithEthereum = typeof window & { ethereum?: ExternalProvider };
 
 export interface NetworkConfig {
   chainId: number;
@@ -32,7 +35,7 @@ export interface ProviderConfig {
   chainId: number;
   jsonRpcUrl: string;
   wsRpcUrl?: string;
-  options?: { batch?: boolean; pollingInterval?: number; skipNetworkCheck?: boolean };
+  options?: { batch?: boolean; pollingInterval?: number; skipNetworkCheck?: boolean; external?: boolean };
 }
 
 export type Contracts = {

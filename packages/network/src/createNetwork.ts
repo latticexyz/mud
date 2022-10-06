@@ -29,14 +29,16 @@ export async function createNetwork(initialConfig: NetworkConfig) {
 
   // Create signer
   const signer = computed<Signer | undefined>(() => {
-    const privateKey = config.privateKey;
     const currentProviders = providers.get();
+    if (config.provider.options?.external) return currentProviders.json.getSigner();
+    const privateKey = config.privateKey;
     if (privateKey && currentProviders) return createSigner(privateKey, currentProviders);
   });
 
   // Get address
+  const initialConnectedAddress = config.provider.options?.external ? await signer.get()?.getAddress() : undefined;
   const connectedAddress = computed(() =>
-    config.privateKey ? new Wallet(config.privateKey).address.toLowerCase() : undefined
+    config.privateKey ? new Wallet(config.privateKey).address.toLowerCase() : initialConnectedAddress
   );
 
   // Listen to new block numbers

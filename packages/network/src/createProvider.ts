@@ -1,9 +1,9 @@
-import { Networkish, WebSocketProvider } from "@ethersproject/providers";
+import { Networkish, Web3Provider, WebSocketProvider } from "@ethersproject/providers";
 import { callWithRetry, observableToComputed, timeoutAfter } from "@latticexyz/utils";
 import { IComputedValue, IObservableValue, observable, reaction, runInAction } from "mobx";
 import { ensureNetworkIsUp } from "./networkUtils";
 import { MUDJsonRpcBatchProvider, MUDJsonRpcProvider } from "./provider";
-import { ProviderConfig } from "./types";
+import { ProviderConfig, WindowWithEthereum } from "./types";
 
 export type Providers = ReturnType<typeof createProvider>;
 
@@ -21,18 +21,43 @@ export function createProvider({ chainId, jsonRpcUrl, wsRpcUrl, options }: Provi
     chainId,
     name: "mudChain",
   };
-  const providers = {
-    json: options?.batch
-      ? new MUDJsonRpcBatchProvider(jsonRpcUrl, network)
-      : new MUDJsonRpcProvider(jsonRpcUrl, network),
-    ws: wsRpcUrl ? new WebSocketProvider(wsRpcUrl, network) : undefined,
-  };
+
+  const externalProvider = typeof window === "object" && options?.external && (window as WindowWithEthereum)?.ethereum;
+  const providers = externalProvider
+    ? { json: new Web3Provider(externalProvider, network), ws: undefined }
+    : {
+        json: options?.batch
+          ? new MUDJsonRpcBatchProvider(jsonRpcUrl, network)
+          : new MUDJsonRpcProvider(jsonRpcUrl, network),
+        ws: wsRpcUrl ? new WebSocketProvider(wsRpcUrl, network) : undefined,
+      };
+
+  async function connect() {
+    if (externalProvider && externalProvider.request) {
+      await externalProvider.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: "0x" + chainId.toString(16),
+            chainName: "MUD",
+            rpcUrls: [jsonRpcUrl],
+            nativeCurrency: {
+              name: "ETH",
+              symbol: "ETH",
+              decimals: 18,
+            },
+          },
+        ],
+      });
+      await externalProvider.request({ method: "eth_requestAccounts" });
+    }
+  }
 
   if (options?.pollingInterval) {
     providers.json.pollingInterval = options.pollingInterval;
   }
 
-  return providers;
+  return { ...providers, connect };
 }
 
 export enum ConnectionState {
@@ -76,6 +101,7 @@ export async function createReconnectingProvider(config: IComputedValue<Provider
     // Create new providers
     await callWithRetry(async () => {
       const newProviders = createProvider(conf);
+      await newProviders.connect();
       // If the connection is not successful, this will throw an error, triggering a retry
       !conf?.options?.skipNetworkCheck && (await ensureNetworkIsUp(newProviders.json, newProviders.ws));
       runInAction(() => {
