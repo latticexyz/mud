@@ -13,6 +13,7 @@ export interface Identity {
 /** Signature that a client must provide to prove ownership of identity. */
 export interface Signature {
   signature: string;
+  timestamp?: number | undefined;
 }
 
 export interface Message {
@@ -89,13 +90,16 @@ export const Identity = {
 };
 
 function createBaseSignature(): Signature {
-  return { signature: "" };
+  return { signature: "", timestamp: undefined };
 }
 
 export const Signature = {
   encode(message: Signature, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.signature !== "") {
       writer.uint32(10).string(message.signature);
+    }
+    if (message.timestamp !== undefined) {
+      writer.uint32(16).int64(message.timestamp);
     }
     return writer;
   },
@@ -110,6 +114,9 @@ export const Signature = {
         case 1:
           message.signature = reader.string();
           break;
+        case 2:
+          message.timestamp = longToNumber(reader.int64() as Long);
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -121,6 +128,7 @@ export const Signature = {
   fromPartial(object: DeepPartial<Signature>): Signature {
     const message = createBaseSignature();
     message.signature = object.signature ?? "";
+    message.timestamp = object.timestamp ?? undefined;
     return message;
   },
 };
