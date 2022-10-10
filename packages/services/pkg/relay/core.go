@@ -16,6 +16,7 @@ type RelayServerConfig struct {
 	IdleTimeoutTime       int
 	IdleDisconnectIterval int
 	MessageDriftTime      int
+	MinAccountBalance     int
 
 	VerifyMessageSignature bool
 	VerifyAccountBalance   bool
@@ -28,10 +29,10 @@ type Client struct {
 	connected           bool
 	latestPingTimestamp int64
 
-	balancePresent           bool
-	balancePresentLimiter    *rate.Limiter
-	balanceNotPresentLimiter *rate.Limiter
-	messageRateLimiter       *rate.Limiter
+	sufficientBalance          bool
+	sufficientBalanceLimiter   *rate.Limiter
+	insufficientBalanceLimiter *rate.Limiter
+	messageRateLimiter         *rate.Limiter
 
 	mutex sync.Mutex
 }
@@ -78,19 +79,19 @@ func (client *Client) GetLimiter() *rate.Limiter {
 	return client.messageRateLimiter
 }
 
-func (client *Client) HasBalance() bool {
-	return client.balancePresent
+func (client *Client) HasSufficientBalance() bool {
+	return client.sufficientBalance
 }
 
-func (client *Client) SetHasBalance(hasBalance bool) {
-	client.balancePresent = hasBalance
+func (client *Client) SetHasSufficientBalance(hasSufficientBalance bool) {
+	client.sufficientBalance = hasSufficientBalance
 }
 
 func (client *Client) ShouldCheckBalance() bool {
-	if client.balancePresent {
-		return client.balancePresentLimiter.Allow()
+	if client.sufficientBalance {
+		return client.sufficientBalanceLimiter.Allow()
 	} else {
-		return client.balanceNotPresentLimiter.Allow()
+		return client.insufficientBalanceLimiter.Allow()
 	}
 }
 
@@ -179,10 +180,10 @@ func (registry *ClientRegistry) Register(identity *pb.Identity, config *RelaySer
 	newClient.messageRateLimiter = rate.NewLimiter(rate.Every(1*time.Second/time.Duration(config.MessageRateLimit)), config.MessageRateLimit)
 
 	// At most allow a check for balance every 60s if client has funds and every 10s if not.
-	newClient.balancePresentLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(60)), 1)
-	newClient.balanceNotPresentLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(10)), 1)
+	newClient.sufficientBalanceLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(60)), 1)
+	newClient.insufficientBalanceLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(10)), 1)
 
-	newClient.balancePresent = false
+	newClient.sufficientBalance = false
 
 	registry.clients = append(registry.clients, newClient)
 
