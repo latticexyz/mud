@@ -16,6 +16,7 @@ type RelayServerConfig struct {
 	IdleTimeoutTime       int
 	IdleDisconnectIterval int
 	MessageDriftTime      int
+	MaxDataSize           int
 
 	VerifyMessageSignature bool
 	VerifyAccountBalance   bool

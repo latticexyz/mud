@@ -263,6 +263,9 @@ func (server *ecsRelayServer) VerifyMessage(message *pb.Message, identity *pb.Id
 	if len(message.Signature) == 0 {
 		return fmt.Errorf("signature is not defined")
 	}
+	if len(message.Data) > server.config.MaxDataSize {
+		return fmt.Errorf("data exceeds size limit")
+	}
 
 	// Verify that the message is OK to relay if config flag is on.
 	if server.config.VerifyMessageSignature {
