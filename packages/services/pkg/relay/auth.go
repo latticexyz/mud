@@ -12,22 +12,21 @@ import (
 
 func RecoverIdentity(signature *pb.Signature) (*pb.Identity, error) {
 
-	timestamp := signature.GetTimestamp()
+	expirationTime := signature.GetExpirationTime()
 	var signedMessage string
 
-	if timestamp == 0 {
-		// Timestamp is not provided, do things the old way.
+	if expirationTime == 0 {
+		// ExpirationTime is not provided, do things the old way.
 		// Vulnerable to replay-attacks.
 		signedMessage = "ecs-relay-service"
 	} else {
-		// Timestamp is included and part of the signed message.
+		// ExpirationTime is included and part of the signed message.
 		currentTime := time.Now().Unix()
-		// TODO: rename timestamp => expirationTime
-		// The timestamp must in the future.
-		if currentTime > timestamp {
+		// The expiration time must in the future.
+		if currentTime > expirationTime {
 			return nil, fmt.Errorf("signature is expired")
 		}
-		signedMessage = fmt.Sprintf("ecs-relay-service: %d", timestamp)
+		signedMessage = fmt.Sprintf("ecs-relay-service: %d", expirationTime)
 	}
 
 	recoveredAddress, err := utils.RecoverSigAddress(
