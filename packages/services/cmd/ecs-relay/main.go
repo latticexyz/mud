@@ -13,7 +13,7 @@ var (
 	wsUrl                  = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
 	port                   = flag.Int("port", 50071, "gRPC Server Port")
 	idleTimeoutTime        = flag.Int("idle-timeout-time", 30, "Time in seconds after which a client connection times out. Defaults to 30s")
-	idleDisconnectIterval  = flag.Int("idle-disconnect-interval", 60, "Time in seconds for how oftern to disconnect idle clients. Defaults to 60s")
+	idleDisconnectInterval = flag.Int("idle-disconnect-interval", 60, "Time in seconds for how oftern to disconnect idle clients. Defaults to 60s")
 	messsageDriftTime      = flag.Int("message-drift-time", 5, "Time in seconds that is acceptable as drift before message is not relayed. Defaults to 5s")
 	verifyMessageSignature = flag.Bool("verify-msg-sig", false, "Whether to service-side verify the signature on each relayed message. Defaults to false.")
 	verifyAccountBalance   = flag.Bool("verify-account-balance", false, "Whether to service-side verify that the account has balance when relaying message. Defaults to false.")
@@ -32,7 +32,7 @@ func main() {
 	// Build a config.
 	config := &relay.RelayServerConfig{
 		IdleTimeoutTime:        *idleTimeoutTime,
-		IdleDisconnectIterval:  *idleDisconnectIterval,
+		IdleDisconnectInterval: *idleDisconnectInterval,
 		MessageDriftTime:       *messsageDriftTime,
 		VerifyMessageSignature: *verifyMessageSignature,
 		VerifyAccountBalance:   *verifyAccountBalance,
