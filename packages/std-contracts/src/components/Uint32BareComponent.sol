@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import "solecs/Component.sol";
+import "solecs/BareComponent.sol";
 
-contract Uint32Component is Component {
-  constructor(address world, uint256 id) Component(world, id) {}
+contract Uint32BareComponent is BareComponent {
+  constructor(address world, uint256 id) BareComponent(world, id) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     keys = new string[](1);
@@ -20,9 +20,5 @@ contract Uint32Component is Component {
   function getValue(uint256 entity) public view returns (uint32) {
     uint32 value = abi.decode(getRawValue(entity), (uint32));
     return value;
-  }
-
-  function getEntitiesWithValue(uint32 value) public view returns (uint256[] memory) {
-    return getEntitiesWithValue(abi.encode(value));
   }
 }
