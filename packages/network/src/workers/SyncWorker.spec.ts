@@ -236,7 +236,6 @@ describe("Sync.worker", () => {
       initialBlockNumber: 0,
     });
     await sleep(0);
-    expect(createLatestEventStreamRPC).not.toHaveBeenCalled();
     expect(createLatestEventStreamService).toHaveBeenCalled();
   });
 
