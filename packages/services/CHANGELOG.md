@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.11.0](https://github.com/latticexyz/mud/compare/v1.10.0...v1.11.0) (2022-10-11)
+
+### Features
+
+- **relay:** check account balance is greater than a configured amount ([#194](https://github.com/latticexyz/mud/issues/194)) ([1cbbd5b](https://github.com/latticexyz/mud/commit/1cbbd5b3a000dff7998a970d93b2b80af44eba80))
+
 # [1.10.0](https://github.com/latticexyz/mud/compare/v1.9.0...v1.10.0) (2022-10-11)
 
 **Note:** Version bump only for package @latticexyz/services
