@@ -17,4 +17,8 @@ interface IComponent is IOwned {
   function getEntities() external view returns (uint256[] memory);
 
   function getEntitiesWithValue(bytes memory value) external view returns (uint256[] memory);
+
+  function authorizeWriter(address writer) external;
+
+  function unauthorizeWriter(address writer) external;
 }

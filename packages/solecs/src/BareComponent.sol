@@ -16,7 +16,7 @@ import { LibTypes } from "./LibTypes.sol";
  * (Systems that want to write to a component need to be given write access first.)
  * Everyone has read access.
  */
-abstract contract Component is IComponent {
+abstract contract BareComponent is IComponent {
   /** Reference to the World contract this component is registered in */
   address public world;
 
@@ -26,24 +26,13 @@ abstract contract Component is IComponent {
   /** Addresses with write access to this component */
   mapping(address => bool) public writeAccess;
 
-  /** Set of entities with values in this component */
-  Set private entities;
-
   /** Mapping from entity id to value in this component */
   mapping(uint256 => bytes) private entityToValue;
-
-  /** Reverse mapping from value to set of entities */
-  MapSet private valueToEntities;
-
-  /** List of indexers to be updated when a component value changes */
-  IEntityIndexer[] internal indexers;
 
   /** Public identifier of this component */
   uint256 public id;
 
   constructor(address _world, uint256 _id) {
-    entities = new Set();
-    valueToEntities = new MapSet();
     _owner = msg.sender;
     writeAccess[msg.sender] = true;
     id = _id;
@@ -136,7 +125,7 @@ abstract contract Component is IComponent {
    * @param entity Entity to check whether it has a value in this component for.
    */
   function has(uint256 entity) public view returns (bool) {
-    return entities.has(entity);
+    return entityToValue[entity].length != 0;
   }
 
   /**
@@ -148,28 +137,16 @@ abstract contract Component is IComponent {
     return entityToValue[entity];
   }
 
-  /**
-   * Get a list of all entities that have a value in this component.
-   */
-  function getEntities() public view returns (uint256[] memory) {
-    return entities.getItems();
+  function getEntities() public pure returns (uint256[] memory) {
+    revert("getEntities not implemented in BareComponent");
   }
 
-  /**
-   * Get a list of all entities that have the specified value in this component.
-   * @param value Abi-encoded value to get the list of entities with this value for.
-   */
-  function getEntitiesWithValue(bytes memory value) public view returns (uint256[] memory) {
-    // Return all entities with this component value
-    return valueToEntities.getItems(uint256(keccak256(value)));
+  function getEntitiesWithValue(bytes memory) public pure returns (uint256[] memory) {
+    revert("getEntitiesWithValue not implemented in BareComponent");
   }
 
-  /**
-   * Register a new indexer that gets notified when a component value is set.
-   * @param indexer Address of the indexer to notify when a component value is set.
-   */
-  function registerIndexer(address indexer) external onlyWriter {
-    indexers.push(IEntityIndexer(indexer));
+  function registerIndexer(address) external pure {
+    revert("registerIndexer not implemented in BareComponent");
   }
 
   /**
@@ -181,21 +158,8 @@ abstract contract Component is IComponent {
    * @param value Value to set for the given entity.
    */
   function _set(uint256 entity, bytes memory value) internal {
-    // Store the entity
-    entities.add(entity);
-
-    // Remove the entity from the previous reverse mapping if there is one
-    valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
-
     // Store the entity's value;
     entityToValue[entity] = value;
-
-    // Add the entity to the new reverse mapping
-    valueToEntities.add(uint256(keccak256(value)), entity);
-
-    for (uint256 i = 0; i < indexers.length; i++) {
-      indexers[i].update(entity, value);
-    }
 
     // Emit global event
     IWorld(world).registerComponentValueSet(entity, value);
@@ -209,21 +173,8 @@ abstract contract Component is IComponent {
    * @param entity Entity to remove from this component.
    */
   function _remove(uint256 entity) internal {
-    // If there is no entity with this value, return
-    if (valueToEntities.size(uint256(keccak256(entityToValue[entity]))) == 0) return;
-
-    // Remove the entity from the reverse mapping
-    valueToEntities.remove(uint256(keccak256(entityToValue[entity])), entity);
-
-    // Remove the entity from the entity list
-    entities.remove(entity);
-
     // Remove the entity from the mapping
     delete entityToValue[entity];
-
-    for (uint256 i = 0; i < indexers.length; i++) {
-      indexers[i].remove(entity);
-    }
 
     // Emit global event
     IWorld(world).registerComponentValueRemoved(entity);
