@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/latticexyz/mud/compare/v1.9.0...v1.10.0) (2022-10-11)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [1.9.0](https://github.com/latticexyz/mud/compare/v1.8.0...v1.9.0) (2022-10-11)
+
+### Bug Fixes
+
+- **solecs): only allow components to register their own updates, feat(std-client:** add support for multiple overrides per component per action ([#199](https://github.com/latticexyz/mud/issues/199)) ([d8dd63e](https://github.com/latticexyz/mud/commit/d8dd63e8055c603d5df41ad47765a286d800c529))
+
 # [1.8.0](https://github.com/latticexyz/mud/compare/v1.7.1...v1.8.0) (2022-10-07)
 
 **Note:** Version bump only for package @latticexyz/std-client

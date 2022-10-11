@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.10.0](https://github.com/latticexyz/mud/compare/v1.9.0...v1.10.0) (2022-10-11)
+
+### Features
+
+- **ecs-browser:** add support for modifying boolean values ([1dba52e](https://github.com/latticexyz/mud/commit/1dba52e6f50947786328ff37bb4a2b9c9b3fb877))
+
+# [1.9.0](https://github.com/latticexyz/mud/compare/v1.8.0...v1.9.0) (2022-10-11)
+
+### Bug Fixes
+
+- **solecs): only allow components to register their own updates, feat(std-client:** add support for multiple overrides per component per action ([#199](https://github.com/latticexyz/mud/issues/199)) ([d8dd63e](https://github.com/latticexyz/mud/commit/d8dd63e8055c603d5df41ad47765a286d800c529))
+
+### Features
+
+- **network:** fall back to rpc if stream service errors ([#190](https://github.com/latticexyz/mud/issues/190)) ([414e777](https://github.com/latticexyz/mud/commit/414e77799259cdb28bf92c1ef603608d0bdb05fd))
+- **services:** grpc prometheus metrics ([#196](https://github.com/latticexyz/mud/issues/196)) ([33e8959](https://github.com/latticexyz/mud/commit/33e895988d1d17658709a9bf8c748a50283e0252))
+
 # [1.8.0](https://github.com/latticexyz/mud/compare/v1.7.1...v1.8.0) (2022-10-07)
 
 ### Bug Fixes

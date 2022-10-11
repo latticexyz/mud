@@ -1,5 +1,5 @@
 import { awaitStreamValue, DoWork, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
-import { Observable, Subject } from "rxjs";
+import { catchError, Observable, Subject } from "rxjs";
 import {
   isNetworkComponentUpdateEvent,
   NetworkComponentUpdate,
@@ -114,13 +114,21 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
+    // The RPC is only queried if this stream is subscribed to
+    const latestEventRPC$ = createLatestEventStreamRPC(
+      blockNumber$,
+      fetchWorldEvents,
+      fetchSystemCalls ? createFetchSystemCallsFromEvents(provider) : undefined
+    );
     const latestEvent$ = streamServiceUrl
-      ? createLatestEventStreamService(streamServiceUrl, worldContract.address, transformWorldEvents)
-      : createLatestEventStreamRPC(
-          blockNumber$,
-          fetchWorldEvents,
-          fetchSystemCalls ? createFetchSystemCallsFromEvents(provider) : undefined
-        );
+      ? createLatestEventStreamService(streamServiceUrl, worldContract.address, transformWorldEvents).pipe(
+          catchError((err) => {
+            console.warn("[SyncWorker || via Stream Service]", err);
+            console.info("[SyncWorker || falling back to RPC]", err);
+            return latestEventRPC$;
+          })
+        )
+      : latestEventRPC$;
 
     const initialLiveEvents: NetworkComponentUpdate<Components>[] = [];
     latestEvent$.subscribe((event) => {

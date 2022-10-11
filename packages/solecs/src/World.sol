@@ -93,6 +93,7 @@ contract World is IWorld {
   }
 
   /**
+   * Deprecated - use registerComponentValueSet(entity, data) instead
    * Register a component value update.
    * Emits the `ComponentValueSet` event for clients to reconstruct the state.
    */
@@ -101,11 +102,25 @@ contract World is IWorld {
     uint256 entity,
     bytes calldata data
   ) public requireComponentRegistered(component) {
+    require(msg.sender == component);
     Set(entities).add(entity);
     emit ComponentValueSet(getIdByAddress(_components, component), component, entity, data);
   }
 
   /**
+   * Register a component value update.
+   * Emits the `ComponentValueSet` event for clients to reconstruct the state.
+   */
+  function registerComponentValueSet(uint256 entity, bytes calldata data)
+    public
+    requireComponentRegistered(msg.sender)
+  {
+    Set(entities).add(entity);
+    emit ComponentValueSet(getIdByAddress(_components, msg.sender), msg.sender, entity, data);
+  }
+
+  /**
+   * Deprecated - use registerComponentValueRemoved(entity) instead
    * Register a component value removal.
    * Emits the `ComponentValueRemoved` event for clients to reconstruct the state.
    */
@@ -113,7 +128,16 @@ contract World is IWorld {
     public
     requireComponentRegistered(component)
   {
+    require(msg.sender == component);
     emit ComponentValueRemoved(getIdByAddress(_components, component), component, entity);
+  }
+
+  /**
+   * Register a component value removal.
+   * Emits the `ComponentValueRemoved` event for clients to reconstruct the state.
+   */
+  function registerComponentValueRemoved(uint256 entity) public requireComponentRegistered(msg.sender) {
+    emit ComponentValueRemoved(getIdByAddress(_components, msg.sender), msg.sender, entity);
   }
 
   /** Deprecated, but left here for backward compatibility. TODO: refactor all consumers. */
