@@ -20,6 +20,7 @@ type RelayServerConfig struct {
 
 	VerifyMessageSignature bool
 	VerifyAccountBalance   bool
+	VerifyDataSize         bool
 	MessageRateLimit       int
 }
 

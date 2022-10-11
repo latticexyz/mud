@@ -18,6 +18,7 @@ var (
 	maxDataSize            = flag.Int("max-data-size", 1024, "Size limit for message data. Defaults to 1024 bytes")
 	verifyMessageSignature = flag.Bool("verify-msg-sig", false, "Whether to service-side verify the signature on each relayed message. Defaults to false.")
 	verifyAccountBalance   = flag.Bool("verify-account-balance", false, "Whether to service-side verify that the account has balance when relaying message. Defaults to false.")
+	verifyDataSize         = flag.Bool("verify-data-size", false, "Whether to service-side verify that size of the data of messages doesn't surpass max-data-size. Defaults to false.")
 	messageRateLimit       = flag.Int("msg-rate-limit", 10, "Rate limit for messages per second that a single client can push to be relayed. Defaults to 10")
 )
 
@@ -38,6 +39,7 @@ func main() {
 		MaxDataSize:            *maxDataSize,
 		VerifyMessageSignature: *verifyMessageSignature,
 		VerifyAccountBalance:   *verifyAccountBalance,
+		VerifyDataSize:         *verifyDataSize,
 		MessageRateLimit:       *messageRateLimit,
 	}
 
