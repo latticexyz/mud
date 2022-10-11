@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.9.0](https://github.com/latticexyz/mud/compare/v1.8.0...v1.9.0) (2022-10-11)
+
+### Features
+
+- **services:** grpc prometheus metrics ([#196](https://github.com/latticexyz/mud/issues/196)) ([33e8959](https://github.com/latticexyz/mud/commit/33e895988d1d17658709a9bf8c748a50283e0252))
+
 # [1.8.0](https://github.com/latticexyz/mud/compare/v1.7.1...v1.8.0) (2022-10-07)
 
 ### Bug Fixes
