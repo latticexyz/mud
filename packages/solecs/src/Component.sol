@@ -189,7 +189,7 @@ abstract contract Component is IComponent {
     }
 
     // Emit global event
-    IWorld(world).registerComponentValueSet(address(this), entity, value);
+    IWorld(world).registerComponentValueSet(entity, value);
   }
 
   /**
@@ -217,6 +217,6 @@ abstract contract Component is IComponent {
     }
 
     // Emit global event
-    IWorld(world).registerComponentValueRemoved(address(this), entity);
+    IWorld(world).registerComponentValueRemoved(entity);
   }
 }
