@@ -18,6 +18,7 @@ var (
 	verifyMessageSignature = flag.Bool("verify-msg-sig", false, "Whether to service-side verify the signature on each relayed message. Defaults to false.")
 	verifyAccountBalance   = flag.Bool("verify-account-balance", false, "Whether to service-side verify that the account has balance when relaying message. Defaults to false.")
 	messageRateLimit       = flag.Int("msg-rate-limit", 10, "Rate limit for messages per second that a single client can push to be relayed. Defaults to 10")
+	metricsPort            = flag.Int("metrics-port", 6060, "Prometheus metrics http handler port. Defaults to port 6060")
 )
 
 func main() {
@@ -43,5 +44,5 @@ func main() {
 	ethClient := eth.GetEthereumClient(*wsUrl, logger)
 
 	// Start gRPC server and the relayer.
-	grpc.StartRelayServer(*port, ethClient, config, logger)
+	grpc.StartRelayServer(*port, *metricsPort, ethClient, config, logger)
 }

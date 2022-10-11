@@ -26,6 +26,7 @@ var (
 	dripFrequency    = flag.Float64("drip-frequency", 60, "Drip frequency per account in minutes. Default to 60 minutes")
 	dripLimit        = flag.Uint64("drip-limit", 1000000000000000000, "Drip limit in wei per drip frequency interval. Default to 1 ETH")
 	devMode          = flag.Bool("dev", false, "Flag to run the faucet in dev mode, where verification is not required. Default to false")
+	metricsPort      = flag.Int("metrics-port", 6060, "Prometheus metrics http handler port. Defaults to port 6060")
 )
 
 func main() {
@@ -83,5 +84,5 @@ func main() {
 	go faucet.ReplenishFaucetWorker(time.NewTicker(time.Duration(*dripFrequency)*time.Minute), make(chan struct{}))
 
 	// Start the faucet gRPC server.
-	grpc.StartFaucetServer(*port, twitterClient, ethClient, privateKey, publicKey, dripConfig, logger)
+	grpc.StartFaucetServer(*port, *metricsPort, twitterClient, ethClient, privateKey, publicKey, dripConfig, logger)
 }

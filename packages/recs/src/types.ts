@@ -191,8 +191,8 @@ export type OverridableComponent<S extends Schema = Schema, M extends Metadata =
   M,
   T
 > & {
-  addOverride: (actionEntityId: EntityID, update: Override<S, T>) => void;
-  removeOverride: (actionEntityId: EntityID) => void;
+  addOverride: (overrideId: string, update: Override<S, T>) => void;
+  removeOverride: (overrideId: string) => void;
 };
 
 export type OptionalType =

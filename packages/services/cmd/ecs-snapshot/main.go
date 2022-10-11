@@ -50,6 +50,7 @@ var (
 	initialSyncBlockBatchSize        = flag.Int64("initial-sync-block-batch-size", 10, "Number of blocks to fetch data for when performing an initial sync")
 	initialSyncBlockBatchSyncTimeout = flag.Int64("initial-sync-block-batch-sync-timeout", 100, "Time in milliseconds to wait between calls to fetch batched log data when performing an initial sync")
 	initialSyncSnapshotInterval      = flag.Int64("initial-sync-snapshot-interval", 5000, "Block number interval for how often to take intermediary snapshots when performing an initial sync")
+	metricsPort                      = flag.Int("metrics-port", 6060, "Prometheus metrics http handler port. Defaults to port 6060")
 )
 
 func main() {
@@ -81,7 +82,7 @@ func main() {
 	ethclient := eth.GetEthereumClient(*wsUrl, logger)
 
 	// Start gRPC server.
-	go grpc.StartSnapshotServer(*port, config, logger)
+	go grpc.StartSnapshotServer(*port, *metricsPort, config, logger)
 
 	// 1. Prepare for service to run.
 	utils.EnsureDir(snapshot.SnapshotDir)

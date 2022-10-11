@@ -36,8 +36,9 @@ import (
 )
 
 var (
-	wsUrl = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
-	port  = flag.Int("port", 50051, "gRPC Server Port")
+	wsUrl       = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
+	port        = flag.Int("port", 50051, "gRPC Server Port")
+	metricsPort = flag.Int("metrics-port", 6060, "Prometheus metrics http handler port. Defaults to port 6060")
 )
 
 func main() {
@@ -57,7 +58,7 @@ func main() {
 	go multiplexer.Start()
 
 	// Start the gRPC server and pass in the channel that the server can receive piped data from.
-	go grpc.StartStreamServer(*port, ethclient, multiplexer, logger)
+	go grpc.StartStreamServer(*port, *metricsPort, ethclient, multiplexer, logger)
 
 	// Start the service (which will subscribe to the ethereum client data). Pass in the channel
 	// that the service will use to pipe the data.
