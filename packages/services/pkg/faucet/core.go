@@ -242,6 +242,8 @@ func ResetTotalDripCount() {
 }
 
 func SetupStore() {
+	utils.EnsureDir(FaucetStoreDir)
+
 	_, err := os.Stat(FaucetStoreFilename)
 	if err != nil {
 		// Write an empty store.
