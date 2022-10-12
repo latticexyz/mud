@@ -41,8 +41,8 @@ service ECSRelayService {
   // Push a single message to be relayed.
   rpc Push(PushRequest) returns (PushResponse) {}
 
-  // Push a series of messages to be relayed.
-  rpc PushMany(PushManyRequest) returns (PushResponse) {}
+  // Minimum balance an account must have to be able to push.
+  rpc MinBalanceForPush(BalanceRequest) returns (BalanceResponse) {}
 }
 
 message SubscriptionRequest {
@@ -71,4 +71,10 @@ message CountIdentitiesRequest {}
 
 message CountIdentitiesResponse {
   uint32 count = 1;
+}
+
+message BalanceRequest {}
+
+message BalanceResponse {
+  uint64 balance = 1;
 }
