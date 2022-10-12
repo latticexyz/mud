@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.12.0](https://github.com/latticexyz/mud/compare/v1.11.0...v1.12.0) (2022-10-12)
+
+### Features
+
+- fail without error on certain checks and other improvements ([#202](https://github.com/latticexyz/mud/issues/202)) ([f5d565e](https://github.com/latticexyz/mud/commit/f5d565e8c3b1dbd7a1c80a63b4365ce09354c6cf))
+
 # [1.11.0](https://github.com/latticexyz/mud/compare/v1.10.0...v1.11.0) (2022-10-11)
 
 ### Features
