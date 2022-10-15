@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.13.0](https://github.com/latticexyz/mud/compare/v1.12.0...v1.13.0) (2022-10-15)
+
+### Features
+
+- **network:** expose SystemsRegistry and ComponentsRegistry from setupMUDNetwork ([373d62b](https://github.com/latticexyz/mud/commit/373d62bb5e17083e9c348e74c5bc84dd6149ce69))
+
 # [1.12.0](https://github.com/latticexyz/mud/compare/v1.11.0...v1.12.0) (2022-10-12)
 
 ### Bug Fixes
