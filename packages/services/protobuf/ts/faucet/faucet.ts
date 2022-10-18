@@ -51,9 +51,10 @@ export interface DripDevRequest {
   address: string;
 }
 
-/** Response for drip request that contains the transaction hash of the drip tx. */
+/** Response for drip request that contains the transaction hash of the drip tx and the ECS component set hash (if any). */
 export interface DripResponse {
-  txHash: string;
+  dripTxHash: string;
+  ecsTxHash: string;
 }
 
 /** Response for the time until next drip request. */
@@ -477,13 +478,16 @@ export const DripDevRequest = {
 };
 
 function createBaseDripResponse(): DripResponse {
-  return { txHash: "" };
+  return { dripTxHash: "", ecsTxHash: "" };
 }
 
 export const DripResponse = {
   encode(message: DripResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.txHash !== "") {
-      writer.uint32(10).string(message.txHash);
+    if (message.dripTxHash !== "") {
+      writer.uint32(10).string(message.dripTxHash);
+    }
+    if (message.ecsTxHash !== "") {
+      writer.uint32(18).string(message.ecsTxHash);
     }
     return writer;
   },
@@ -496,7 +500,10 @@ export const DripResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.txHash = reader.string();
+          message.dripTxHash = reader.string();
+          break;
+        case 2:
+          message.ecsTxHash = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -508,7 +515,8 @@ export const DripResponse = {
 
   fromPartial(object: DeepPartial<DripResponse>): DripResponse {
     const message = createBaseDripResponse();
-    message.txHash = object.txHash ?? "";
+    message.dripTxHash = object.dripTxHash ?? "";
+    message.ecsTxHash = object.ecsTxHash ?? "";
     return message;
   },
 };

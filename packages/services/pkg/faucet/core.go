@@ -22,6 +22,10 @@ type DripConfig struct {
 	DripFrequency float64
 	DripLimit     uint64
 	DevMode       bool
+
+	// Miscellaneous.
+	NumLatestTweetsForVerify int
+	NameSystemAddress        string
 }
 
 func TwitterUsernameQuery(username string) string {
@@ -57,6 +61,16 @@ func ExtractSignatureFromTweet(tweet twitter.Tweet) (string, error) {
 	}
 
 	return out.String(), nil
+}
+
+func VerifyDripRequest(tweets []twitter.Tweet, username string, address string, numLatestTweets int) error {
+	for idx := 0; idx < numLatestTweets; idx++ {
+		err := VerifyDripRequestTweet(tweets[idx], username, address)
+		if err == nil {
+			return nil
+		}
+	}
+	return fmt.Errorf("did not find drip tweet in latest %d tweets from user @%s", numLatestTweets, username)
 }
 
 func VerifyDripRequestTweet(tweet twitter.Tweet, username string, address string) error {

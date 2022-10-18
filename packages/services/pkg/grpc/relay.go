@@ -228,11 +228,7 @@ func (server *ecsRelayServer) OpenStream(signature *pb.Signature, stream pb.ECSR
 			}
 			return nil
 		case relayedMessage := <-relayedMessagesChannel:
-			if relayedMessage == nil {
-				server.logger.Warn("relayed message is nil")
-			} else {
-				stream.Send(relayedMessage)
-			}
+			stream.Send(relayedMessage)
 		}
 	}
 }

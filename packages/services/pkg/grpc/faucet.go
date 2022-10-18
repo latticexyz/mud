@@ -3,8 +3,11 @@ package grpc
 import (
 	"context"
 	"crypto/ecdsa"
+	"encoding/hex"
 	"fmt"
+	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/faucet"
+	"latticexyz/mud/packages/services/pkg/systems"
 	pb "latticexyz/mud/packages/services/protobuf/go/faucet"
 	"math"
 	"math/big"
@@ -125,7 +128,7 @@ func (server *faucetServer) Drip(ctx context.Context, request *pb.DripRequest) (
 	faucet.UpdateDripRequestTimestamp(request.Address)
 
 	return &pb.DripResponse{
-		TxHash: txHash,
+		DripTxHash: txHash,
 	}, nil
 }
 
@@ -144,7 +147,7 @@ func (server *faucetServer) DripDev(ctx context.Context, request *pb.DripDevRequ
 	}
 
 	return &pb.DripResponse{
-		TxHash: txHash,
+		DripTxHash: txHash,
 	}, nil
 }
 
@@ -199,10 +202,9 @@ func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.Dri
 		server.logger.Error("twitter search did not return any tweets matching query", zap.String("query", query))
 		return nil, fmt.Errorf("did not find the tweet")
 	}
-	latestTweet := search.Statuses[0]
 
 	// Verify the signature inside of the tweet.
-	err = faucet.VerifyDripRequestTweet(latestTweet, request.Username, request.Address)
+	err = faucet.VerifyDripRequest(search.Statuses, request.Username, request.Address, server.dripConfig.NumLatestTweetsForVerify)
 	if err != nil {
 		server.logger.Error("tweet drip request verification failed", zap.Error(err))
 		return nil, err
@@ -211,6 +213,15 @@ func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.Dri
 		zap.String("username", request.Username),
 		zap.String("address", request.Address),
 	)
+
+	// Send a tx to link on ECS NameSystem if a system address is specified.
+	ecsTxHash := ""
+	if len(server.dripConfig.NameSystemAddress) > 0 {
+		ecsTxHash, err = server.SendNameSystemTransaction(request.Address, request.Username)
+		if err != nil {
+			return nil, err
+		}
+	}
 
 	// Send a tx dripping the funds.
 	txHash, err := server.SendDripTransaction(request.Address)
@@ -229,13 +240,66 @@ func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.Dri
 	}
 
 	return &pb.DripResponse{
-		TxHash: txHash,
+		DripTxHash: txHash,
+		EcsTxHash:  ecsTxHash,
 	}, nil
 }
 
+func (server *faucetServer) GetFaucetAddress() common.Address {
+	return crypto.PubkeyToAddress(*server.publicKey)
+}
+
+func (server *faucetServer) SendNameSystemTransaction(recipientAddress string, recipientUsername string) (string, error) {
+	nonce, err := eth.GetCurrentNonce(server.ethClient, server.GetFaucetAddress())
+	if err != nil {
+		return "", err
+	}
+
+	value := big.NewInt(0)
+	gasLimit := uint64(1000000)
+
+	gasPrice, err := server.ethClient.SuggestGasPrice(context.Background())
+	if err != nil {
+		return "", err
+	}
+
+	toNameSystemAddress := common.HexToAddress(server.dripConfig.NameSystemAddress)
+	input, err := systems.GetSystemsABI().Pack("executeTyped", common.HexToAddress(recipientAddress).Hash().Big(), recipientUsername)
+	if err != nil {
+		return "", err
+	}
+
+	println("DATA:")
+	println(hex.EncodeToString(input))
+
+	tx := types.NewTransaction(nonce, toNameSystemAddress, value, gasLimit, gasPrice, input)
+
+	// Get the chain ID.
+	chainID, err := server.ethClient.NetworkID(context.Background())
+	if err != nil {
+		return "", err
+	}
+
+	// Sign the transaction.
+	signedTx, err := types.SignTx(tx, types.NewEIP155Signer(chainID), server.privateKey)
+	if err != nil {
+		return "", err
+	}
+
+	// Send the transaction.
+	err = server.ethClient.SendTransaction(context.Background(), signedTx)
+	if err != nil {
+		return "", err
+	}
+
+	txHash := signedTx.Hash().Hex()
+	server.logger.Info("name system tx sent", zap.String("tx", txHash))
+
+	return txHash, nil
+}
+
 func (server *faucetServer) SendDripTransaction(recipientAddress string) (string, error) {
-	fromAddress := crypto.PubkeyToAddress(*server.publicKey)
-	nonce, err := server.ethClient.PendingNonceAt(context.Background(), fromAddress)
+	nonce, err := eth.GetCurrentNonce(server.ethClient, server.GetFaucetAddress())
 	if err != nil {
 		return "", err
 	}
@@ -281,7 +345,7 @@ func (server *faucetServer) GetLinkedTwitterForAddress(ctx context.Context, requ
 
 	server.logger.Info("getting linked username for address",
 		zap.String("address", request.Address),
-		zap.String("username", linkedUsername),
+		zap.String("linkedUsername", linkedUsername),
 	)
 
 	return &pb.LinkedTwitterForAddressResponse{
@@ -294,7 +358,7 @@ func (server *faucetServer) GetLinkedAddressForTwitter(ctx context.Context, requ
 
 	server.logger.Info("getting linked address for username",
 		zap.String("username", request.Username),
-		zap.String("address", linkedAddress),
+		zap.String("linkedAddress", linkedAddress),
 	)
 	return &pb.LinkedAddressForTwitterResponse{
 		Address: linkedAddress,
