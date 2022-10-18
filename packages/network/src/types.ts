@@ -12,6 +12,7 @@ export interface NetworkConfig {
   snapshotServiceUrl?: string;
   streamServiceUrl?: string;
   initialBlockNumber?: number;
+  blockExplorer?: string;
 }
 
 export interface ClockConfig {
