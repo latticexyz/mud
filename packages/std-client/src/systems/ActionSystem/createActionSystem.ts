@@ -84,6 +84,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
       on: actionRequest.on ? world.entities[actionRequest.on] : undefined,
       metadata: actionRequest.metadata,
       overrides: undefined,
+      txHash: undefined,
     });
 
     // Add components that are not tracked yet to internal overridable component map.
@@ -160,7 +161,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
       // If the result includes a hash key (single tx) or hashes (multiple tx) key, wait for the transactions to complete before removing the pending actions
       if (tx) {
         // Wait for all tx events to be reduced
-        updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents });
+        updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents, txHash: tx.hash });
         const txConfirmed = tx.wait().catch(() => handleError(action)); // Also catch the error if not awaiting
         await awaitStreamValue(txReduced$, (v) => v === tx.hash);
         updateComponent(Action, action.entityIndex, { state: ActionState.TxReduced });
