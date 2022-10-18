@@ -37,8 +37,15 @@ import { defineStringComponent } from "../components";
 export type SetupContractConfig = NetworkConfig &
   Omit<SyncWorkerConfig, "worldContract" | "mappings"> & { worldAddress: string; devMode?: boolean };
 
+export type ContractComponent = Component<Schema, { contractId: string }>;
+
 export type ContractComponents = {
-  [key: string]: Component<Schema, { contractId: string }>;
+  [key: string]: ContractComponent;
+};
+
+export type NetworkComponents<C extends ContractComponents> = C & {
+  SystemsRegistry: Component<{ value: Type.String }>;
+  ComponentsRegistry: Component<{ value: Type.String }>;
 };
 
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
@@ -58,16 +65,21 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     metadata: { contractId: "world.component.components" },
   });
 
-  components = {
-    ...components,
-    SystemsRegistry,
-    ComponentsRegistry,
-  };
+  (components as NetworkComponents<C>).SystemsRegistry = SystemsRegistry;
+  (components as NetworkComponents<C>).ComponentsRegistry = ComponentsRegistry;
 
+  // Mapping from component contract id to key in components object
   const mappings: Mappings<C> = {};
-  for (const key of Object.keys(components)) {
-    const { contractId } = components[key].metadata;
+
+  // Function to register new components in mappings object
+  function registerComponent(key: string, component: ContractComponent) {
+    const { contractId } = component.metadata;
     mappings[keccak256(contractId)] = key;
+  }
+
+  // Register initial components in mappings object
+  for (const key of Object.keys(components)) {
+    registerComponent(key, components[key]);
   }
 
   const network = await createNetwork(networkConfig);
@@ -128,8 +140,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     gasPriceInput$,
     ecsEvent$,
     mappings,
-    SystemsRegistry,
-    ComponentsRegistry,
+    registerComponent,
   };
 }
 
@@ -184,8 +195,6 @@ function applyNetworkUpdates<C extends Components>(
       stretch(16)
     )
     .subscribe((updates) => {
-      // Running this in a mobx action would result in only one system update per frame (should increase performance)
-      // but it currently breaks defineUpdateAction (https://linear.app/latticexyz/issue/LAT-594/defineupdatequery-does-not-work-when-running-multiple-component)
       for (const update of updates) {
         const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
         const componentKey = mappings[update.component];
