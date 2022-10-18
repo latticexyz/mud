@@ -3,7 +3,7 @@
     "packages/*",
     "packages/ri/*"
   ],
-  "version": "1.14.1",
+  "version": "1.14.2",
   "npmClient": "yarn",
   "useWorkspaces": true,
   "command": {
