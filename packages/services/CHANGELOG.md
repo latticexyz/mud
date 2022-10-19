@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.17.0](https://github.com/latticexyz/mud/compare/v1.16.0...v1.17.0) (2022-10-19)
+
+### Features
+
+- allow specific snapshot chunk ratio ([#212](https://github.com/latticexyz/mud/issues/212)) ([827d972](https://github.com/latticexyz/mud/commit/827d972ac9ca11918520b5f040045dfb4cca1552))
+
 # [1.16.0](https://github.com/latticexyz/mud/compare/v1.15.0...v1.16.0) (2022-10-19)
 
 **Note:** Version bump only for package @latticexyz/services
