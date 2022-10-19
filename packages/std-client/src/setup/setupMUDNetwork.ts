@@ -124,6 +124,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
       streamServiceUrl: networkConfig.streamServiceUrl,
       cacheAgeThreshold: networkConfig.cacheAgeThreshold,
       cacheInterval: networkConfig.cacheInterval,
+      snapshotNumChunks: networkConfig.snapshotNumChunks,
     });
   }
 

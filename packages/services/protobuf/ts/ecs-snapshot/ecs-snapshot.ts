@@ -30,6 +30,12 @@ export interface ECSStateRequestLatest {
   worldAddress: string;
 }
 
+/** The request message for the latest chunked ECS state. */
+export interface ECSStateRequestLatestStream {
+  worldAddress: string;
+  chunkPercentage?: number | undefined;
+}
+
 /** The request message for the latest block based on latest ECS state. */
 export interface ECSStateBlockRequestLatest {
   worldAddress: string;
@@ -268,6 +274,50 @@ export const ECSStateRequestLatest = {
   },
 };
 
+function createBaseECSStateRequestLatestStream(): ECSStateRequestLatestStream {
+  return { worldAddress: "", chunkPercentage: undefined };
+}
+
+export const ECSStateRequestLatestStream = {
+  encode(message: ECSStateRequestLatestStream, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.worldAddress !== "") {
+      writer.uint32(10).string(message.worldAddress);
+    }
+    if (message.chunkPercentage !== undefined) {
+      writer.uint32(16).uint32(message.chunkPercentage);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateRequestLatestStream {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseECSStateRequestLatestStream();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.worldAddress = reader.string();
+          break;
+        case 2:
+          message.chunkPercentage = reader.uint32();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<ECSStateRequestLatestStream>): ECSStateRequestLatestStream {
+    const message = createBaseECSStateRequestLatestStream();
+    message.worldAddress = object.worldAddress ?? "";
+    message.chunkPercentage = object.chunkPercentage ?? undefined;
+    return message;
+  },
+};
+
 function createBaseECSStateBlockRequestLatest(): ECSStateBlockRequestLatest {
   return { worldAddress: "" };
 }
@@ -492,7 +542,7 @@ export const ECSStateSnapshotServiceDefinition = {
     /** Requests the latest ECS state in stream format, which will chunk the state. */
     getStateLatestStream: {
       name: "GetStateLatestStream",
-      requestType: ECSStateRequestLatest,
+      requestType: ECSStateRequestLatestStream,
       requestStream: false,
       responseType: ECSStateReply,
       responseStream: true,
@@ -536,7 +586,7 @@ export interface ECSStateSnapshotServiceServiceImplementation<CallContextExt = {
   ): Promise<DeepPartial<ECSStateReply>>;
   /** Requests the latest ECS state in stream format, which will chunk the state. */
   getStateLatestStream(
-    request: ECSStateRequestLatest,
+    request: ECSStateRequestLatestStream,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<ECSStateReply>>;
   /** Requests the latest block number based on the latest ECS state. */
@@ -561,7 +611,7 @@ export interface ECSStateSnapshotServiceClient<CallOptionsExt = {}> {
   ): Promise<ECSStateReply>;
   /** Requests the latest ECS state in stream format, which will chunk the state. */
   getStateLatestStream(
-    request: DeepPartial<ECSStateRequestLatest>,
+    request: DeepPartial<ECSStateRequestLatestStream>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<ECSStateReply>;
   /** Requests the latest block number based on the latest ECS state. */
