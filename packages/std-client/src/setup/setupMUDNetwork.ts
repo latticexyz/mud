@@ -35,7 +35,11 @@ import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { defineStringComponent } from "../components";
 
 export type SetupContractConfig = NetworkConfig &
-  Omit<SyncWorkerConfig, "worldContract" | "mappings"> & { worldAddress: string; devMode?: boolean };
+  Omit<SyncWorkerConfig, "worldContract" | "mappings"> & {
+    worldAddress: string;
+    devMode?: boolean;
+    limitEventsPerSecond?: number;
+  };
 
 export type ContractComponent = Component<Schema, { contractId: string }>;
 
@@ -118,6 +122,8 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
       disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
       snapshotServiceUrl: networkConfig.snapshotServiceUrl,
       streamServiceUrl: networkConfig.streamServiceUrl,
+      cacheAgeThreshold: networkConfig.cacheAgeThreshold,
+      cacheInterval: networkConfig.cacheInterval,
     });
   }
 
@@ -125,7 +131,8 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     world,
     components,
     ecsEvent$.pipe(filter(isNetworkComponentUpdateEvent)),
-    mappings
+    mappings,
+    networkConfig.limitEventsPerSecond
   );
 
   const encoders = createEncoders(world, ComponentsRegistry, signerOrProvider);
@@ -181,16 +188,18 @@ function applyNetworkUpdates<C extends Components>(
   world: World,
   components: C,
   ecsEvent$: Observable<NetworkComponentUpdate<C>>,
-  mappings: Mappings<C>
+  mappings: Mappings<C>,
+  limitEventsPerSecond = 62500
 ) {
   const txReduced$ = new Subject<string>();
+  const limitEventsPer16ms = Math.floor(limitEventsPerSecond / 62.5);
 
   const ecsEventSub = ecsEvent$
     .pipe(
-      // We throttle the client side event processing to 1000 events every 16ms, so 62.500 events per second.
+      // We throttle the client side event processing to 1000 events every 16ms by default, so 62.500 events per second.
       // This means if the chain were to emit more than 62.500 events per second, the client would not keep up.
       // The only time we get close to this number is when initializing from a snapshot/cache.
-      bufferTime(16, null, 1000),
+      bufferTime(16, null, limitEventsPer16ms),
       filter((updates) => updates.length > 0),
       stretch(16)
     )
