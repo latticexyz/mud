@@ -27,6 +27,8 @@ type SnapshotServerConfig struct {
 	// snapshots when performing an initial sync. This is useful in case the snapshot service
 	// disconnects or fails while perfoming a lengthy initial sync.
 	InitialSyncSnapshotInterval int64
+	// Default to use when chunking snapshot to send snapshot in chunks over the wire.
+	DefaultSnapshotChunkPercentage int
 }
 
 // Start starts the process of processing data from an Ethereum client, reducing the ECS state, and
