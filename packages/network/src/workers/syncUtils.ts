@@ -109,14 +109,17 @@ export async function fetchSnapshot(
 export async function fetchSnapshotChunked(
   snapshotClient: ECSStateSnapshotServiceClient,
   worldAddress: string,
-  decode: ReturnType<typeof createDecode>
+  decode: ReturnType<typeof createDecode>,
+  setPercentage: (percentage: number) => void
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
 
   try {
     const response = snapshotClient.getStateLatestStream({ worldAddress });
+    let i = 0;
     for await (const responseChunk of response) {
       await reduceFetchedState(responseChunk, cacheStore, decode);
+      setPercentage((i++ / 10) * 100);
     }
   } catch (e) {
     console.error(e);
@@ -239,7 +242,7 @@ export async function fetchEventsInBlockRangeChunked(
   fromBlockNumber: number,
   toBlockNumber: number,
   interval = 50,
-  setLoadingState?: (state: SyncState, msg: string, percentage: number) => void
+  setPercentage?: (percentage: number) => void
 ): Promise<NetworkComponentUpdate<Components>[]> {
   const events: NetworkComponentUpdate<Components>[] = [];
   const delta = toBlockNumber - fromBlockNumber;
@@ -251,14 +254,7 @@ export async function fetchEventsInBlockRangeChunked(
     const to = i === steps.length - 1 ? toBlockNumber : steps[i + 1] - 1;
     const chunkEvents = await fetchWorldEvents(from, to);
 
-    if (setLoadingState) {
-      setLoadingState(
-        SyncState.INITIAL,
-        `Fetching state from block ${fromBlockNumber} to ${toBlockNumber} (${i * interval}/${delta})`,
-        80
-      );
-    }
-
+    if (setPercentage) setPercentage(((i * interval) / delta) * 100);
     console.info(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
 
     events.push(...chunkEvents);
@@ -281,7 +277,7 @@ export async function fetchStateInBlockRange(
   fromBlockNumber: number,
   toBlockNumber: number,
   interval = 50,
-  setLoadingState?: (state: SyncState, msg: string, percentage: number) => void
+  setPercentage?: (percentage: number) => void
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
 
@@ -290,7 +286,7 @@ export async function fetchStateInBlockRange(
     fromBlockNumber,
     toBlockNumber,
     interval,
-    setLoadingState
+    setPercentage
   );
 
   storeEvents(cacheStore, events);
