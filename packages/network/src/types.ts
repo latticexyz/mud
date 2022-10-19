@@ -126,6 +126,7 @@ export type SyncWorkerConfig = {
   fetchSystemCalls?: boolean;
   cacheInterval?: number;
   cacheAgeThreshold?: number;
+  snapshotNumChunks?: number;
 };
 
 export enum ContractSchemaValue {

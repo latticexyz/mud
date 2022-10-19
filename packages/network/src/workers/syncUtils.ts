@@ -110,16 +110,18 @@ export async function fetchSnapshotChunked(
   snapshotClient: ECSStateSnapshotServiceClient,
   worldAddress: string,
   decode: ReturnType<typeof createDecode>,
-  setPercentage: (percentage: number) => void
+  numChunks = 10,
+  setPercentage?: (percentage: number) => void
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
+  const chunkPercentage = 100 / numChunks;
 
   try {
-    const response = snapshotClient.getStateLatestStream({ worldAddress });
+    const response = snapshotClient.getStateLatestStream({ worldAddress, chunkPercentage });
     let i = 0;
     for await (const responseChunk of response) {
       await reduceFetchedState(responseChunk, cacheStore, decode);
-      setPercentage((i++ / 10) * 100);
+      setPercentage && setPercentage((i++ / numChunks) * 100);
     }
   } catch (e) {
     console.error(e);

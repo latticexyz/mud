@@ -184,8 +184,12 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
 
       if (syncFromSnapshot) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from snapshot", percentage: 0 });
-        initialState = await fetchSnapshotChunked(snapshotClient, worldContract.address, decode, (percentage: number) =>
-          this.setLoadingState({ percentage })
+        initialState = await fetchSnapshotChunked(
+          snapshotClient,
+          worldContract.address,
+          decode,
+          config.snapshotNumChunks,
+          (percentage: number) => this.setLoadingState({ percentage })
         );
       } else {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from cache", percentage: 0 });
