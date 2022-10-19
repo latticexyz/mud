@@ -100,11 +100,10 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
       initialBlockNumber,
       fetchSystemCalls,
     } = config;
-    let { cacheAgeThreshold, cacheInterval } = config;
 
     // Set default values for cacheAgeThreshold and cacheInterval
-    cacheAgeThreshold = cacheAgeThreshold || 100;
-    cacheInterval = cacheInterval || 1;
+    const cacheAgeThreshold = config.cacheAgeThreshold || 100;
+    const cacheInterval = config.cacheInterval || 1;
 
     // Set up
     const { providers } = await createReconnectingProvider(computed(() => computedConfig.get().provider));
@@ -154,7 +153,7 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
 
       if (isNetworkComponentUpdateEvent(event)) {
         // Store cache to indexdb every block
-        if (event.blockNumber > cacheStore.current.blockNumber + 1 && event.blockNumber % (cacheInterval ?? 1) === 0)
+        if (event.blockNumber > cacheStore.current.blockNumber + 1 && event.blockNumber % cacheInterval === 0)
           saveCacheStoreToIndexDb(indexDbCache, cacheStore.current);
 
         storeEvent(cacheStore.current, event);
@@ -180,8 +179,8 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber)) {
       initialState.blockNumber = initialBlockNumber;
     } else {
-      // Load from cache if the snapshot is less than 100 blocks newer than the cache
-      const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + (cacheAgeThreshold ?? 100);
+      // Load from cache if the snapshot is less than <cacheAgeThreshold> blocks newer than the cache
+      const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
 
       if (syncFromSnapshot) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from snapshot", percentage: 0 });
