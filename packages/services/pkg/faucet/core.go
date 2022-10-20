@@ -63,15 +63,8 @@ func ExtractSignatureFromTweet(tweet twitter.Tweet) (string, error) {
 	return out.String(), nil
 }
 
-func Min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
-}
-
 func VerifyDripRequest(tweets []twitter.Tweet, username string, address string, numLatestTweets int) error {
-	for idx := 0; idx < Min(len(tweets), numLatestTweets); idx++ {
+	for idx := 0; idx < utils.Min(len(tweets), numLatestTweets); idx++ {
 		err := VerifyDripRequestTweet(tweets[idx], username, address)
 		if err == nil {
 			return nil
