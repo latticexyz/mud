@@ -30,15 +30,7 @@ export interface ECSStateRequestLatest {
   worldAddress: string;
 }
 
-/** The request message for the latest ECS statem, pruned for specific address. */
-export interface ECSStateRequestLatestStreamPruned {
-  worldAddress: string;
-  pruneAddress: string;
-  pruneComponentId?: string | undefined;
-  chunkPercentage?: number | undefined;
-}
-
-/** The request message for the latest ECS state. */
+/** The request message for the latest chunked ECS state. */
 export interface ECSStateRequestLatestStream {
   worldAddress: string;
   chunkPercentage?: number | undefined;
@@ -278,64 +270,6 @@ export const ECSStateRequestLatest = {
   fromPartial(object: DeepPartial<ECSStateRequestLatest>): ECSStateRequestLatest {
     const message = createBaseECSStateRequestLatest();
     message.worldAddress = object.worldAddress ?? "";
-    return message;
-  },
-};
-
-function createBaseECSStateRequestLatestStreamPruned(): ECSStateRequestLatestStreamPruned {
-  return { worldAddress: "", pruneAddress: "", pruneComponentId: undefined, chunkPercentage: undefined };
-}
-
-export const ECSStateRequestLatestStreamPruned = {
-  encode(message: ECSStateRequestLatestStreamPruned, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.worldAddress !== "") {
-      writer.uint32(10).string(message.worldAddress);
-    }
-    if (message.pruneAddress !== "") {
-      writer.uint32(18).string(message.pruneAddress);
-    }
-    if (message.pruneComponentId !== undefined) {
-      writer.uint32(26).string(message.pruneComponentId);
-    }
-    if (message.chunkPercentage !== undefined) {
-      writer.uint32(32).uint32(message.chunkPercentage);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateRequestLatestStreamPruned {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseECSStateRequestLatestStreamPruned();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.worldAddress = reader.string();
-          break;
-        case 2:
-          message.pruneAddress = reader.string();
-          break;
-        case 3:
-          message.pruneComponentId = reader.string();
-          break;
-        case 4:
-          message.chunkPercentage = reader.uint32();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromPartial(object: DeepPartial<ECSStateRequestLatestStreamPruned>): ECSStateRequestLatestStreamPruned {
-    const message = createBaseECSStateRequestLatestStreamPruned();
-    message.worldAddress = object.worldAddress ?? "";
-    message.pruneAddress = object.pruneAddress ?? "";
-    message.pruneComponentId = object.pruneComponentId ?? undefined;
-    message.chunkPercentage = object.chunkPercentage ?? undefined;
     return message;
   },
 };
@@ -614,15 +548,6 @@ export const ECSStateSnapshotServiceDefinition = {
       responseStream: true,
       options: {},
     },
-    /** Requests the latest ECS state, with aditional pruning. */
-    getStateLatestStreamPruned: {
-      name: "GetStateLatestStreamPruned",
-      requestType: ECSStateRequestLatestStreamPruned,
-      requestStream: false,
-      responseType: ECSStateReply,
-      responseStream: true,
-      options: {},
-    },
     /** Requests the latest block number based on the latest ECS state. */
     getStateBlockLatest: {
       name: "GetStateBlockLatest",
@@ -664,11 +589,6 @@ export interface ECSStateSnapshotServiceServiceImplementation<CallContextExt = {
     request: ECSStateRequestLatestStream,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<ECSStateReply>>;
-  /** Requests the latest ECS state, with aditional pruning. */
-  getStateLatestStreamPruned(
-    request: ECSStateRequestLatestStreamPruned,
-    context: CallContext & CallContextExt
-  ): ServerStreamingMethodResult<DeepPartial<ECSStateReply>>;
   /** Requests the latest block number based on the latest ECS state. */
   getStateBlockLatest(
     request: ECSStateBlockRequestLatest,
@@ -692,11 +612,6 @@ export interface ECSStateSnapshotServiceClient<CallOptionsExt = {}> {
   /** Requests the latest ECS state in stream format, which will chunk the state. */
   getStateLatestStream(
     request: DeepPartial<ECSStateRequestLatestStream>,
-    options?: CallOptions & CallOptionsExt
-  ): AsyncIterable<ECSStateReply>;
-  /** Requests the latest ECS state, with aditional pruning. */
-  getStateLatestStreamPruned(
-    request: DeepPartial<ECSStateRequestLatestStreamPruned>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<ECSStateReply>;
   /** Requests the latest block number based on the latest ECS state. */
