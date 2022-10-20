@@ -218,6 +218,8 @@ func (server *ecsRelayServer) OpenStream(signature *pb.Signature, stream pb.ECSR
 	client.Connect()
 	client.Ping()
 
+	server.logger.Info("opened stream", zap.String("client", identity.Name))
+
 	relayedMessagesChannel := client.GetChannel()
 	for {
 		select {

@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"crypto/ecdsa"
-	"encoding/hex"
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/faucet"
@@ -165,6 +164,8 @@ func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.Dri
 		return nil, fmt.Errorf("address required")
 	}
 
+	server.logger.Info("requesting verification via twitter", zap.String("username", request.Username), zap.String("address", request.Address))
+
 	// Verify that this request has a valid address / username pairing.
 	// First verify that no other username is linked to address.
 	linkedUsername := faucet.GetUsernameForAddress(request.Address)
@@ -183,10 +184,10 @@ func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.Dri
 		return nil, err
 	}
 
-	query := faucet.TwitterUsernameQuery(request.Username)
-	search, resp, err := server.twitterClient.Search.Tweets(&twitter.SearchTweetParams{
-		Query:     query,
-		TweetMode: "extended",
+	tweets, resp, err := server.twitterClient.Timelines.UserTimeline(&twitter.UserTimelineParams{
+		ScreenName: request.Username,
+		TweetMode:  "extended",
+		Count:      server.dripConfig.NumLatestTweetsForVerify,
 	})
 
 	if err != nil {
@@ -198,13 +199,13 @@ func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.Dri
 		return nil, fmt.Errorf("response not 200-OK from Twitter API")
 	}
 
-	if len(search.Statuses) == 0 {
-		server.logger.Error("twitter search did not return any tweets matching query", zap.String("query", query))
+	if len(tweets) == 0 {
+		server.logger.Error("twitter search did not return any tweets from timeline")
 		return nil, fmt.Errorf("did not find the tweet")
 	}
 
 	// Verify the signature inside of the tweet.
-	err = faucet.VerifyDripRequest(search.Statuses, request.Username, request.Address, server.dripConfig.NumLatestTweetsForVerify)
+	err = faucet.VerifyDripRequest(tweets, request.Username, request.Address, server.dripConfig.NumLatestTweetsForVerify)
 	if err != nil {
 		server.logger.Error("tweet drip request verification failed", zap.Error(err))
 		return nil, err
@@ -268,9 +269,6 @@ func (server *faucetServer) SendNameSystemTransaction(recipientAddress string, r
 	if err != nil {
 		return "", err
 	}
-
-	println("DATA:")
-	println(hex.EncodeToString(input))
 
 	tx := types.NewTransaction(nonce, toNameSystemAddress, value, gasLimit, gasPrice, input)
 
