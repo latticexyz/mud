@@ -132,7 +132,8 @@ func stateToSnapshot(state ECSState, startBlockNumber uint64, endBlockNumber uin
 		for _, entityId := range entityKeys {
 			value, ok := _state.Load(entityId)
 			if !ok {
-				logger.GetLogger().Fatal("did not find value in map for key", zap.String("key", entityId))
+				logger.GetLogger().Error("did not find value in map for key", zap.String("key", entityId))
+				continue
 			}
 			valueBytes, ok := value.([]byte)
 			if !ok {

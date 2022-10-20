@@ -3,12 +3,8 @@ package grpc
 import (
 	"context"
 	"fmt"
-	"latticexyz/mud/packages/services/pkg/logger"
 	"latticexyz/mud/packages/services/pkg/snapshot"
 	pb "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
-
-	"go.uber.org/zap"
-	"google.golang.org/protobuf/proto"
 )
 
 // A ecsSnapshotServer is the server on which gRPC methods for getting the snapshot data exist.
@@ -43,8 +39,6 @@ func (server *ecsSnapshotServer) GetStateLatest(ctx context.Context, in *pb.ECSS
 		return nil, fmt.Errorf("no snapshot")
 	}
 	latestSnapshot := snapshot.RawReadStateSnapshotLatest(in.WorldAddress)
-
-	logger.GetLogger().Info("size of snapshot", zap.Int("size", proto.Size(latestSnapshot)))
 
 	return &pb.ECSStateReply{
 		State:           latestSnapshot.State,
@@ -93,9 +87,6 @@ func (server *ecsSnapshotServer) GetStateLatestStreamPruned(request *pb.ECSState
 	}
 	latestSnapshot := snapshot.RawReadStateSnapshotLatest(request.WorldAddress)
 	latestSnapshotPruned := snapshot.PruneSnapshotOwnedByComponent(latestSnapshot, request.PruneAddress)
-
-	logger.GetLogger().Info("size of snapshot original", zap.Int("size", proto.Size(latestSnapshot)))
-	logger.GetLogger().Info("size of snapshot pruned", zap.Int("size", proto.Size(latestSnapshotPruned)))
 
 	// Respond in fraction chunks. If request has specified a chunk percentage, use that value.
 	chunkPercentage := server.config.DefaultSnapshotChunkPercentage
