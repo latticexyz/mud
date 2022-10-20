@@ -119,7 +119,7 @@ func stateToSnapshot(state ECSState, startBlockNumber uint64, endBlockNumber uin
 		}
 
 		entityKeys := []string{}
-		_state.Range(func(key, value any) bool {
+		_state.Range(func(key, value interface{}) bool {
 			keyString, ok := key.(string)
 			if ok {
 				entityKeys = append(entityKeys, keyString)
