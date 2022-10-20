@@ -127,6 +127,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       provider: { options: providerOptions },
       initialBlockNumber,
       fetchSystemCalls,
+      disableCache,
     } = config;
 
     // Set default values for cacheAgeThreshold and cacheInterval
@@ -193,7 +194,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
 
     // Load initial state from cache or snapshot service
     this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching cache block number", percentage: 0 });
-    const cacheBlockNumber = await getIndexDBCacheStoreBlockNumber(indexDbCache);
+    const cacheBlockNumber = !disableCache ? await getIndexDBCacheStoreBlockNumber(indexDbCache) : 0;
     this.setLoadingState({ percentage: 50 });
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
     this.setLoadingState({ percentage: 100 });
