@@ -35,10 +35,21 @@ import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { defineStringComponent } from "../components";
 
 export type SetupContractConfig = NetworkConfig &
-  Omit<SyncWorkerConfig, "worldContract" | "mappings"> & { worldAddress: string; devMode?: boolean };
+  Omit<SyncWorkerConfig, "worldContract" | "mappings"> & {
+    worldAddress: string;
+    devMode?: boolean;
+    limitEventsPerSecond?: number;
+  };
+
+export type ContractComponent = Component<Schema, { contractId: string }>;
 
 export type ContractComponents = {
-  [key: string]: Component<Schema, { contractId: string }>;
+  [key: string]: ContractComponent;
+};
+
+export type NetworkComponents<C extends ContractComponents> = C & {
+  SystemsRegistry: Component<{ value: Type.String }>;
+  ComponentsRegistry: Component<{ value: Type.String }>;
 };
 
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
@@ -58,16 +69,21 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     metadata: { contractId: "world.component.components" },
   });
 
-  components = {
-    ...components,
-    SystemsRegistry,
-    ComponentsRegistry,
-  };
+  (components as NetworkComponents<C>).SystemsRegistry = SystemsRegistry;
+  (components as NetworkComponents<C>).ComponentsRegistry = ComponentsRegistry;
 
+  // Mapping from component contract id to key in components object
   const mappings: Mappings<C> = {};
-  for (const key of Object.keys(components)) {
-    const { contractId } = components[key].metadata;
+
+  // Function to register new components in mappings object
+  function registerComponent(key: string, component: ContractComponent) {
+    const { contractId } = component.metadata;
     mappings[keccak256(contractId)] = key;
+  }
+
+  // Register initial components in mappings object
+  for (const key of Object.keys(components)) {
+    registerComponent(key, components[key]);
   }
 
   const network = await createNetwork(networkConfig);
@@ -106,6 +122,9 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
       disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
       snapshotServiceUrl: networkConfig.snapshotServiceUrl,
       streamServiceUrl: networkConfig.streamServiceUrl,
+      cacheAgeThreshold: networkConfig.cacheAgeThreshold,
+      cacheInterval: networkConfig.cacheInterval,
+      snapshotNumChunks: networkConfig.snapshotNumChunks,
     });
   }
 
@@ -113,12 +132,24 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     world,
     components,
     ecsEvent$.pipe(filter(isNetworkComponentUpdateEvent)),
-    mappings
+    mappings,
+    networkConfig.limitEventsPerSecond
   );
 
   const encoders = createEncoders(world, ComponentsRegistry, signerOrProvider);
 
-  return { txQueue, txReduced$, encoders, network, startSync, systems, gasPriceInput$, ecsEvent$, mappings };
+  return {
+    txQueue,
+    txReduced$,
+    encoders,
+    network,
+    startSync,
+    systems,
+    gasPriceInput$,
+    ecsEvent$,
+    mappings,
+    registerComponent,
+  };
 }
 
 async function createEncoders(
@@ -158,22 +189,22 @@ function applyNetworkUpdates<C extends Components>(
   world: World,
   components: C,
   ecsEvent$: Observable<NetworkComponentUpdate<C>>,
-  mappings: Mappings<C>
+  mappings: Mappings<C>,
+  limitEventsPerSecond = 62500
 ) {
   const txReduced$ = new Subject<string>();
+  const limitEventsPer16ms = Math.floor(limitEventsPerSecond / 62.5);
 
   const ecsEventSub = ecsEvent$
     .pipe(
-      // We throttle the client side event processing to 1000 events every 16ms, so 62.500 events per second.
+      // We throttle the client side event processing to 1000 events every 16ms by default, so 62.500 events per second.
       // This means if the chain were to emit more than 62.500 events per second, the client would not keep up.
       // The only time we get close to this number is when initializing from a snapshot/cache.
-      bufferTime(16, null, 1000),
+      bufferTime(16, null, limitEventsPer16ms),
       filter((updates) => updates.length > 0),
       stretch(16)
     )
     .subscribe((updates) => {
-      // Running this in a mobx action would result in only one system update per frame (should increase performance)
-      // but it currently breaks defineUpdateAction (https://linear.app/latticexyz/issue/LAT-594/defineupdatequery-does-not-work-when-running-multiple-component)
       for (const update of updates) {
         const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
         const componentKey = mappings[update.component];

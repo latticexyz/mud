@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.17.0](https://github.com/latticexyz/mud/compare/v1.16.0...v1.17.0) (2022-10-19)
+
+### Features
+
+- allow specific snapshot chunk ratio ([#212](https://github.com/latticexyz/mud/issues/212)) ([827d972](https://github.com/latticexyz/mud/commit/827d972ac9ca11918520b5f040045dfb4cca1552))
+
+# [1.16.0](https://github.com/latticexyz/mud/compare/v1.15.0...v1.16.0) (2022-10-19)
+
+### Features
+
+- **network:** expose more sync settings ([#211](https://github.com/latticexyz/mud/issues/211)) ([48987f1](https://github.com/latticexyz/mud/commit/48987f1c37af9a82a7f92da6f3c8247ece4a750f))
+
+# [1.15.0](https://github.com/latticexyz/mud/compare/v1.14.2...v1.15.0) (2022-10-18)
+
+### Features
+
+- **network): expose relay ping method, feat(std-client:** add tx hash to action component ([#209](https://github.com/latticexyz/mud/issues/209)) ([3e0b4a7](https://github.com/latticexyz/mud/commit/3e0b4a75ec93605f8dc6f561b140ccc9d9722566))
+
+## [1.14.2](https://github.com/latticexyz/mud/compare/v1.14.1...v1.14.2) (2022-10-18)
+
+**Note:** Version bump only for package mud
+
+## [1.14.1](https://github.com/latticexyz/mud/compare/v1.14.0...v1.14.1) (2022-10-18)
+
+**Note:** Version bump only for package mud
+
+# [1.14.0](https://github.com/latticexyz/mud/compare/v1.13.0...v1.14.0) (2022-10-18)
+
+### Features
+
+- expose registerComponent method from setupMUDNetwork ([#207](https://github.com/latticexyz/mud/issues/207)) ([4b078bd](https://github.com/latticexyz/mud/commit/4b078bd93c14dfbb1b06c5ca8bc92dee2e8dcfea))
+- **mud.dev:** add video content ([ffca85e](https://github.com/latticexyz/mud/commit/ffca85e732cd8d607ad8e2869c64e52e43073186))
+
+# [1.13.0](https://github.com/latticexyz/mud/compare/v1.12.0...v1.13.0) (2022-10-15)
+
+### Features
+
+- **network:** expose SystemsRegistry and ComponentsRegistry from setupMUDNetwork ([373d62b](https://github.com/latticexyz/mud/commit/373d62bb5e17083e9c348e74c5bc84dd6149ce69))
+
 # [1.12.0](https://github.com/latticexyz/mud/compare/v1.11.0...v1.12.0) (2022-10-12)
 
 ### Bug Fixes

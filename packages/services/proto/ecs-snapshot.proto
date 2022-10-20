@@ -57,7 +57,7 @@ message ECSStateRequestLatestStreamPruned {
   optional uint32 chunkPercentage = 4;
 }
 
-// The request message for the latest ECS state.
+// The request message for the latest chunked ECS state.
 message ECSStateRequestLatestStream {
   string worldAddress = 1;
   optional uint32 chunkPercentage = 2;
