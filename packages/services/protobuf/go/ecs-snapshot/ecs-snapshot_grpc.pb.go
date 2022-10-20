@@ -26,6 +26,8 @@ type ECSStateSnapshotServiceClient interface {
 	GetStateLatest(ctx context.Context, in *ECSStateRequestLatest, opts ...grpc.CallOption) (*ECSStateReply, error)
 	// Requests the latest ECS state in stream format, which will chunk the state.
 	GetStateLatestStream(ctx context.Context, in *ECSStateRequestLatestStream, opts ...grpc.CallOption) (ECSStateSnapshotService_GetStateLatestStreamClient, error)
+	// Requests the latest ECS state, with aditional pruning.
+	GetStateLatestStreamPruned(ctx context.Context, in *ECSStateRequestLatestStreamPruned, opts ...grpc.CallOption) (ECSStateSnapshotService_GetStateLatestStreamPrunedClient, error)
 	// Requests the latest block number based on the latest ECS state.
 	GetStateBlockLatest(ctx context.Context, in *ECSStateBlockRequestLatest, opts ...grpc.CallOption) (*ECSStateBlockReply, error)
 	// Requests the ECS state at specific block.
@@ -83,6 +85,38 @@ func (x *eCSStateSnapshotServiceGetStateLatestStreamClient) Recv() (*ECSStateRep
 	return m, nil
 }
 
+func (c *eCSStateSnapshotServiceClient) GetStateLatestStreamPruned(ctx context.Context, in *ECSStateRequestLatestStreamPruned, opts ...grpc.CallOption) (ECSStateSnapshotService_GetStateLatestStreamPrunedClient, error) {
+	stream, err := c.cc.NewStream(ctx, &ECSStateSnapshotService_ServiceDesc.Streams[1], "/ecssnapshot.ECSStateSnapshotService/GetStateLatestStreamPruned", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &eCSStateSnapshotServiceGetStateLatestStreamPrunedClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type ECSStateSnapshotService_GetStateLatestStreamPrunedClient interface {
+	Recv() (*ECSStateReply, error)
+	grpc.ClientStream
+}
+
+type eCSStateSnapshotServiceGetStateLatestStreamPrunedClient struct {
+	grpc.ClientStream
+}
+
+func (x *eCSStateSnapshotServiceGetStateLatestStreamPrunedClient) Recv() (*ECSStateReply, error) {
+	m := new(ECSStateReply)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *eCSStateSnapshotServiceClient) GetStateBlockLatest(ctx context.Context, in *ECSStateBlockRequestLatest, opts ...grpc.CallOption) (*ECSStateBlockReply, error) {
 	out := new(ECSStateBlockReply)
 	err := c.cc.Invoke(ctx, "/ecssnapshot.ECSStateSnapshotService/GetStateBlockLatest", in, out, opts...)
@@ -118,6 +152,8 @@ type ECSStateSnapshotServiceServer interface {
 	GetStateLatest(context.Context, *ECSStateRequestLatest) (*ECSStateReply, error)
 	// Requests the latest ECS state in stream format, which will chunk the state.
 	GetStateLatestStream(*ECSStateRequestLatestStream, ECSStateSnapshotService_GetStateLatestStreamServer) error
+	// Requests the latest ECS state, with aditional pruning.
+	GetStateLatestStreamPruned(*ECSStateRequestLatestStreamPruned, ECSStateSnapshotService_GetStateLatestStreamPrunedServer) error
 	// Requests the latest block number based on the latest ECS state.
 	GetStateBlockLatest(context.Context, *ECSStateBlockRequestLatest) (*ECSStateBlockReply, error)
 	// Requests the ECS state at specific block.
@@ -136,6 +172,9 @@ func (UnimplementedECSStateSnapshotServiceServer) GetStateLatest(context.Context
 }
 func (UnimplementedECSStateSnapshotServiceServer) GetStateLatestStream(*ECSStateRequestLatestStream, ECSStateSnapshotService_GetStateLatestStreamServer) error {
 	return status.Errorf(codes.Unimplemented, "method GetStateLatestStream not implemented")
+}
+func (UnimplementedECSStateSnapshotServiceServer) GetStateLatestStreamPruned(*ECSStateRequestLatestStreamPruned, ECSStateSnapshotService_GetStateLatestStreamPrunedServer) error {
+	return status.Errorf(codes.Unimplemented, "method GetStateLatestStreamPruned not implemented")
 }
 func (UnimplementedECSStateSnapshotServiceServer) GetStateBlockLatest(context.Context, *ECSStateBlockRequestLatest) (*ECSStateBlockReply, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStateBlockLatest not implemented")
@@ -196,6 +235,27 @@ type eCSStateSnapshotServiceGetStateLatestStreamServer struct {
 }
 
 func (x *eCSStateSnapshotServiceGetStateLatestStreamServer) Send(m *ECSStateReply) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _ECSStateSnapshotService_GetStateLatestStreamPruned_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(ECSStateRequestLatestStreamPruned)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(ECSStateSnapshotServiceServer).GetStateLatestStreamPruned(m, &eCSStateSnapshotServiceGetStateLatestStreamPrunedServer{stream})
+}
+
+type ECSStateSnapshotService_GetStateLatestStreamPrunedServer interface {
+	Send(*ECSStateReply) error
+	grpc.ServerStream
+}
+
+type eCSStateSnapshotServiceGetStateLatestStreamPrunedServer struct {
+	grpc.ServerStream
+}
+
+func (x *eCSStateSnapshotServiceGetStateLatestStreamPrunedServer) Send(m *ECSStateReply) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -281,6 +341,11 @@ var ECSStateSnapshotService_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "GetStateLatestStream",
 			Handler:       _ECSStateSnapshotService_GetStateLatestStream_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "GetStateLatestStreamPruned",
+			Handler:       _ECSStateSnapshotService_GetStateLatestStreamPruned_Handler,
 			ServerStreams: true,
 		},
 	},
