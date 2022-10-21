@@ -21,7 +21,7 @@ func RecoverIdentity(signature *pb.Signature) (*pb.Identity, error) {
 		signedMessage = "ecs-relay-service"
 	} else {
 		// ExpirationTime is included and part of the signed message.
-		currentTime := time.Now().Unix()
+		currentTime := time.Now().UnixMilli()
 		// The expiration time must in the future.
 		if currentTime > expirationTime {
 			return nil, fmt.Errorf("signature is expired")
