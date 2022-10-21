@@ -5,6 +5,7 @@
  * @param b
  * @returns Euclidian distance between a and b
  */
-export function euclidean(a: [number, number], b: [number, number]): number {
-  return Math.sqrt(Math.pow(a[0] - b[0], 2) + Math.pow(a[1] - b[1], 2));
+export function euclidean(a: number[], b: number[]): number {
+  if (a.length !== b.length) throw new Error("points must have same dimension");
+  return Math.sqrt(a.reduce((acc, _, i) => acc + Math.pow(a[i] - b[i], 2), 0));
 }
