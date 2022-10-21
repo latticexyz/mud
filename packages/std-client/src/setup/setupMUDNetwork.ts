@@ -115,16 +115,10 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   world.registerDisposer(dispose);
   function startSync() {
     config$.next({
-      provider: networkConfig.provider,
+      ...networkConfig,
       worldContract: contractsConfig.World,
       initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
-      chainId: networkConfig.chainId,
       disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
-      snapshotServiceUrl: networkConfig.snapshotServiceUrl,
-      streamServiceUrl: networkConfig.streamServiceUrl,
-      cacheAgeThreshold: networkConfig.cacheAgeThreshold,
-      cacheInterval: networkConfig.cacheInterval,
-      snapshotNumChunks: networkConfig.snapshotNumChunks,
     });
   }
 

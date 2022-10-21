@@ -111,13 +111,21 @@ export async function fetchSnapshotChunked(
   worldAddress: string,
   decode: ReturnType<typeof createDecode>,
   numChunks = 10,
-  setPercentage?: (percentage: number) => void
+  setPercentage?: (percentage: number) => void,
+  pruneOptions?: { playerAddress: string; hashedComponentId: string }
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
   const chunkPercentage = 100 / numChunks;
 
   try {
-    const response = snapshotClient.getStateLatestStream({ worldAddress, chunkPercentage });
+    const response = pruneOptions
+      ? snapshotClient.getStateLatestStreamPruned({
+          worldAddress,
+          chunkPercentage,
+          pruneAddress: pruneOptions.playerAddress,
+          pruneComponentId: pruneOptions.hashedComponentId,
+        })
+      : snapshotClient.getStateLatestStream({ worldAddress, chunkPercentage });
     let i = 0;
     for await (const responseChunk of response) {
       await reduceFetchedState(responseChunk, cacheStore, decode);
