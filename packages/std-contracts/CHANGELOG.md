@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/latticexyz/mud/compare/v1.17.0...v1.18.0) (2022-10-21)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+# [1.17.0](https://github.com/latticexyz/mud/compare/v1.16.0...v1.17.0) (2022-10-19)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+# [1.16.0](https://github.com/latticexyz/mud/compare/v1.15.0...v1.16.0) (2022-10-19)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+# [1.15.0](https://github.com/latticexyz/mud/compare/v1.14.2...v1.15.0) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+## [1.14.2](https://github.com/latticexyz/mud/compare/v1.14.1...v1.14.2) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+## [1.14.1](https://github.com/latticexyz/mud/compare/v1.14.0...v1.14.1) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+# [1.14.0](https://github.com/latticexyz/mud/compare/v1.13.0...v1.14.0) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+# [1.13.0](https://github.com/latticexyz/mud/compare/v1.12.0...v1.13.0) (2022-10-15)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+# [1.12.0](https://github.com/latticexyz/mud/compare/v1.11.0...v1.12.0) (2022-10-12)
+
+### Bug Fixes
+
+- **std-contracts:** fix name of Uint32Component ([#201](https://github.com/latticexyz/mud/issues/201)) ([82600e2](https://github.com/latticexyz/mud/commit/82600e24a71d48baa4956294b09de567eae33e48))
+
+# [1.11.0](https://github.com/latticexyz/mud/compare/v1.10.0...v1.11.0) (2022-10-11)
+
+### Features
+
+- add BareComponent ([#200](https://github.com/latticexyz/mud/issues/200)) ([780d62c](https://github.com/latticexyz/mud/commit/780d62c716fdda67373f031dc1e0b3155e77b562))
+
+# [1.10.0](https://github.com/latticexyz/mud/compare/v1.9.0...v1.10.0) (2022-10-11)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
 # [1.9.0](https://github.com/latticexyz/mud/compare/v1.8.0...v1.9.0) (2022-10-11)
 
 **Note:** Version bump only for package @latticexyz/std-contracts

@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/latticexyz/mud/compare/v1.17.0...v1.18.0) (2022-10-21)
+
+### Features
+
+- service stabilizations, send ecs tx on drip, new pruned snapshot endpoint ([#204](https://github.com/latticexyz/mud/issues/204)) ([d0de185](https://github.com/latticexyz/mud/commit/d0de185ca7fa2418064706928853e5cd691bdde9))
+
+# [1.17.0](https://github.com/latticexyz/mud/compare/v1.16.0...v1.17.0) (2022-10-19)
+
+### Features
+
+- allow specific snapshot chunk ratio ([#212](https://github.com/latticexyz/mud/issues/212)) ([827d972](https://github.com/latticexyz/mud/commit/827d972ac9ca11918520b5f040045dfb4cca1552))
+
+# [1.16.0](https://github.com/latticexyz/mud/compare/v1.15.0...v1.16.0) (2022-10-19)
+
+**Note:** Version bump only for package @latticexyz/services
+
+# [1.15.0](https://github.com/latticexyz/mud/compare/v1.14.2...v1.15.0) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/services
+
+## [1.14.2](https://github.com/latticexyz/mud/compare/v1.14.1...v1.14.2) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/services
+
+## [1.14.1](https://github.com/latticexyz/mud/compare/v1.14.0...v1.14.1) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/services
+
+# [1.14.0](https://github.com/latticexyz/mud/compare/v1.13.0...v1.14.0) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/services
+
+# [1.13.0](https://github.com/latticexyz/mud/compare/v1.12.0...v1.13.0) (2022-10-15)
+
+**Note:** Version bump only for package @latticexyz/services
+
+# [1.12.0](https://github.com/latticexyz/mud/compare/v1.11.0...v1.12.0) (2022-10-12)
+
+### Features
+
+- fail without error on certain checks and other improvements ([#202](https://github.com/latticexyz/mud/issues/202)) ([f5d565e](https://github.com/latticexyz/mud/commit/f5d565e8c3b1dbd7a1c80a63b4365ce09354c6cf))
+
+# [1.11.0](https://github.com/latticexyz/mud/compare/v1.10.0...v1.11.0) (2022-10-11)
+
+### Features
+
+- **relay:** check account balance is greater than a configured amount ([#194](https://github.com/latticexyz/mud/issues/194)) ([1cbbd5b](https://github.com/latticexyz/mud/commit/1cbbd5b3a000dff7998a970d93b2b80af44eba80))
+
+# [1.10.0](https://github.com/latticexyz/mud/compare/v1.9.0...v1.10.0) (2022-10-11)
+
+**Note:** Version bump only for package @latticexyz/services
+
 # [1.9.0](https://github.com/latticexyz/mud/compare/v1.8.0...v1.9.0) (2022-10-11)
 
 ### Features

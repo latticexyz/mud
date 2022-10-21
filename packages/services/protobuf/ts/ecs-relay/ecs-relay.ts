@@ -51,6 +51,12 @@ export interface CountIdentitiesResponse {
   count: number;
 }
 
+export interface BalanceRequest {}
+
+export interface BalanceResponse {
+  balance: number;
+}
+
 function createBaseIdentity(): Identity {
   return { name: "" };
 }
@@ -469,6 +475,73 @@ export const CountIdentitiesResponse = {
   },
 };
 
+function createBaseBalanceRequest(): BalanceRequest {
+  return {};
+}
+
+export const BalanceRequest = {
+  encode(_: BalanceRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): BalanceRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBalanceRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(_: DeepPartial<BalanceRequest>): BalanceRequest {
+    const message = createBaseBalanceRequest();
+    return message;
+  },
+};
+
+function createBaseBalanceResponse(): BalanceResponse {
+  return { balance: 0 };
+}
+
+export const BalanceResponse = {
+  encode(message: BalanceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.balance !== 0) {
+      writer.uint32(8).uint64(message.balance);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): BalanceResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBalanceResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.balance = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<BalanceResponse>): BalanceResponse {
+    const message = createBaseBalanceResponse();
+    message.balance = object.balance ?? 0;
+    return message;
+  },
+};
+
 /** The Relay Service definition. */
 export type ECSRelayServiceDefinition = typeof ECSRelayServiceDefinition;
 export const ECSRelayServiceDefinition = {
@@ -557,12 +630,12 @@ export const ECSRelayServiceDefinition = {
       responseStream: false,
       options: {},
     },
-    /** Push a series of messages to be relayed. */
-    pushMany: {
-      name: "PushMany",
-      requestType: PushManyRequest,
+    /** Minimum balance an account must have to be able to push. */
+    minBalanceForPush: {
+      name: "MinBalanceForPush",
+      requestType: BalanceRequest,
       requestStream: false,
-      responseType: PushResponse,
+      responseType: BalanceResponse,
       responseStream: false,
       options: {},
     },
@@ -594,8 +667,11 @@ export interface ECSRelayServiceServiceImplementation<CallContextExt = {}> {
   ): ServerStreamingMethodResult<DeepPartial<PushResponse>>;
   /** Push a single message to be relayed. */
   push(request: PushRequest, context: CallContext & CallContextExt): Promise<DeepPartial<PushResponse>>;
-  /** Push a series of messages to be relayed. */
-  pushMany(request: PushManyRequest, context: CallContext & CallContextExt): Promise<DeepPartial<PushResponse>>;
+  /** Minimum balance an account must have to be able to push. */
+  minBalanceForPush(
+    request: BalanceRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<BalanceResponse>>;
 }
 
 export interface ECSRelayServiceClient<CallOptionsExt = {}> {
@@ -620,8 +696,11 @@ export interface ECSRelayServiceClient<CallOptionsExt = {}> {
   ): AsyncIterable<PushResponse>;
   /** Push a single message to be relayed. */
   push(request: DeepPartial<PushRequest>, options?: CallOptions & CallOptionsExt): Promise<PushResponse>;
-  /** Push a series of messages to be relayed. */
-  pushMany(request: DeepPartial<PushManyRequest>, options?: CallOptions & CallOptionsExt): Promise<PushResponse>;
+  /** Minimum balance an account must have to be able to push. */
+  minBalanceForPush(
+    request: DeepPartial<BalanceRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<BalanceResponse>;
 }
 
 declare var self: any | undefined;

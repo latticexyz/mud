@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { getComponentValueStrict, Layers, updateComponent } from "@latticexyz/recs";
+import { getComponentValueStrict, Layers, Type, updateComponent } from "@latticexyz/recs";
 import {
   AnyComponent,
   ComponentValue,
@@ -69,6 +69,8 @@ export const ValueEditor = ({
         parsedValue = parseInt(value);
       } else if (isArrayType(valueType)) {
         parsedValue = value.split(",");
+      } else if (valueType === Type.Boolean) {
+        parsedValue = value === "true";
       } else {
         parsedValue = value;
       }

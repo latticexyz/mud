@@ -3,6 +3,80 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/latticexyz/mud/compare/v1.17.0...v1.18.0) (2022-10-21)
+
+### Bug Fixes
+
+- **ecs-browser:** remove component on contract from ecs-browser ([#205](https://github.com/latticexyz/mud/issues/205)) ([f08c6d1](https://github.com/latticexyz/mud/commit/f08c6d17af7201c81dff40d0a007a201f2b3bd00))
+
+### Features
+
+- service stabilizations, send ecs tx on drip, new pruned snapshot endpoint ([#204](https://github.com/latticexyz/mud/issues/204)) ([d0de185](https://github.com/latticexyz/mud/commit/d0de185ca7fa2418064706928853e5cd691bdde9))
+- **solecs:** add payable system interface ([#206](https://github.com/latticexyz/mud/issues/206)) ([a436d9e](https://github.com/latticexyz/mud/commit/a436d9e7795b42f81192fc12e11362006a074d24))
+- **utils:** add more general euclidiean distance util ([687f840](https://github.com/latticexyz/mud/commit/687f8405bb8cfe8312d0527dc2985d27e11632a6))
+
+# [1.17.0](https://github.com/latticexyz/mud/compare/v1.16.0...v1.17.0) (2022-10-19)
+
+### Features
+
+- allow specific snapshot chunk ratio ([#212](https://github.com/latticexyz/mud/issues/212)) ([827d972](https://github.com/latticexyz/mud/commit/827d972ac9ca11918520b5f040045dfb4cca1552))
+
+# [1.16.0](https://github.com/latticexyz/mud/compare/v1.15.0...v1.16.0) (2022-10-19)
+
+### Features
+
+- **network:** expose more sync settings ([#211](https://github.com/latticexyz/mud/issues/211)) ([48987f1](https://github.com/latticexyz/mud/commit/48987f1c37af9a82a7f92da6f3c8247ece4a750f))
+
+# [1.15.0](https://github.com/latticexyz/mud/compare/v1.14.2...v1.15.0) (2022-10-18)
+
+### Features
+
+- **network): expose relay ping method, feat(std-client:** add tx hash to action component ([#209](https://github.com/latticexyz/mud/issues/209)) ([3e0b4a7](https://github.com/latticexyz/mud/commit/3e0b4a75ec93605f8dc6f561b140ccc9d9722566))
+
+## [1.14.2](https://github.com/latticexyz/mud/compare/v1.14.1...v1.14.2) (2022-10-18)
+
+**Note:** Version bump only for package mud
+
+## [1.14.1](https://github.com/latticexyz/mud/compare/v1.14.0...v1.14.1) (2022-10-18)
+
+**Note:** Version bump only for package mud
+
+# [1.14.0](https://github.com/latticexyz/mud/compare/v1.13.0...v1.14.0) (2022-10-18)
+
+### Features
+
+- expose registerComponent method from setupMUDNetwork ([#207](https://github.com/latticexyz/mud/issues/207)) ([4b078bd](https://github.com/latticexyz/mud/commit/4b078bd93c14dfbb1b06c5ca8bc92dee2e8dcfea))
+- **mud.dev:** add video content ([ffca85e](https://github.com/latticexyz/mud/commit/ffca85e732cd8d607ad8e2869c64e52e43073186))
+
+# [1.13.0](https://github.com/latticexyz/mud/compare/v1.12.0...v1.13.0) (2022-10-15)
+
+### Features
+
+- **network:** expose SystemsRegistry and ComponentsRegistry from setupMUDNetwork ([373d62b](https://github.com/latticexyz/mud/commit/373d62bb5e17083e9c348e74c5bc84dd6149ce69))
+
+# [1.12.0](https://github.com/latticexyz/mud/compare/v1.11.0...v1.12.0) (2022-10-12)
+
+### Bug Fixes
+
+- **std-contracts:** fix name of Uint32Component ([#201](https://github.com/latticexyz/mud/issues/201)) ([82600e2](https://github.com/latticexyz/mud/commit/82600e24a71d48baa4956294b09de567eae33e48))
+
+### Features
+
+- fail without error on certain checks and other improvements ([#202](https://github.com/latticexyz/mud/issues/202)) ([f5d565e](https://github.com/latticexyz/mud/commit/f5d565e8c3b1dbd7a1c80a63b4365ce09354c6cf))
+
+# [1.11.0](https://github.com/latticexyz/mud/compare/v1.10.0...v1.11.0) (2022-10-11)
+
+### Features
+
+- add BareComponent ([#200](https://github.com/latticexyz/mud/issues/200)) ([780d62c](https://github.com/latticexyz/mud/commit/780d62c716fdda67373f031dc1e0b3155e77b562))
+- **relay:** check account balance is greater than a configured amount ([#194](https://github.com/latticexyz/mud/issues/194)) ([1cbbd5b](https://github.com/latticexyz/mud/commit/1cbbd5b3a000dff7998a970d93b2b80af44eba80))
+
+# [1.10.0](https://github.com/latticexyz/mud/compare/v1.9.0...v1.10.0) (2022-10-11)
+
+### Features
+
+- **ecs-browser:** add support for modifying boolean values ([1dba52e](https://github.com/latticexyz/mud/commit/1dba52e6f50947786328ff37bb4a2b9c9b3fb877))
+
 # [1.9.0](https://github.com/latticexyz/mud/compare/v1.8.0...v1.9.0) (2022-10-11)
 
 ### Bug Fixes

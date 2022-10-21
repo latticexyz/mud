@@ -3,6 +3,54 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.18.0](https://github.com/latticexyz/mud/compare/v1.17.0...v1.18.0) (2022-10-21)
+
+### Bug Fixes
+
+- **ecs-browser:** remove component on contract from ecs-browser ([#205](https://github.com/latticexyz/mud/issues/205)) ([f08c6d1](https://github.com/latticexyz/mud/commit/f08c6d17af7201c81dff40d0a007a201f2b3bd00))
+
+# [1.17.0](https://github.com/latticexyz/mud/compare/v1.16.0...v1.17.0) (2022-10-19)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+# [1.16.0](https://github.com/latticexyz/mud/compare/v1.15.0...v1.16.0) (2022-10-19)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+# [1.15.0](https://github.com/latticexyz/mud/compare/v1.14.2...v1.15.0) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+## [1.14.2](https://github.com/latticexyz/mud/compare/v1.14.1...v1.14.2) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+## [1.14.1](https://github.com/latticexyz/mud/compare/v1.14.0...v1.14.1) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+# [1.14.0](https://github.com/latticexyz/mud/compare/v1.13.0...v1.14.0) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+# [1.13.0](https://github.com/latticexyz/mud/compare/v1.12.0...v1.13.0) (2022-10-15)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+# [1.12.0](https://github.com/latticexyz/mud/compare/v1.11.0...v1.12.0) (2022-10-12)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+# [1.11.0](https://github.com/latticexyz/mud/compare/v1.10.0...v1.11.0) (2022-10-11)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+# [1.10.0](https://github.com/latticexyz/mud/compare/v1.9.0...v1.10.0) (2022-10-11)
+
+### Features
+
+- **ecs-browser:** add support for modifying boolean values ([1dba52e](https://github.com/latticexyz/mud/commit/1dba52e6f50947786328ff37bb4a2b9c9b3fb877))
+
 # [1.9.0](https://github.com/latticexyz/mud/compare/v1.8.0...v1.9.0) (2022-10-11)
 
 **Note:** Version bump only for package @latticexyz/ecs-browser

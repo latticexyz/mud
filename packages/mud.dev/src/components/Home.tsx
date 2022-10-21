@@ -4,23 +4,24 @@ import { Package } from "./Package";
 import { Description, Headline } from "./styled";
 
 const packages = [
-  { name: "solecs", description: "solidity entity component system", href: "/docs/solecs" },
-  { name: "recs", description: "reactive entity component system in typescript", href: "/docs/recs" },
+  { name: "solecs", description: "solidity entity component system", href: "/docs/solecs", primary: true },
+  { name: "recs", description: "reactive entity component system in typescript", href: "/docs/recs", primary: true },
   {
     name: "network",
     description: "typescript library for synchronizing contract and client state",
     href: "/docs/network",
+    primary: true,
   },
-  { name: "services", description: "go chain indexing and streaming services", href: "/docs/services" },
+  { name: "services", description: "indexing services", href: "/docs/services" },
   {
     name: "cli",
-    description: "mud command line interface",
+    description: "command line interface",
     href: "https://github.com/latticexyz/mud/tree/main/packages/cli",
   },
-  { name: "phaserx", description: "mud wrapper around phaser 2D game engine", href: "/docs/phaserx" },
+  { name: "phaserx", description: "phaser wrapper", href: "/docs/phaserx" },
   { name: "utils", description: "various utilities", href: "/docs/utils" },
-  { name: "std-contracts", description: "mud contract standard library", href: "/docs/std-contracts" },
-  { name: "std-client", description: "mud client standard library", href: "/docs/std-client" },
+  { name: "std-contracts", description: "contract std lib", href: "/docs/std-contracts" },
+  { name: "std-client", description: "client std lib", href: "/docs/std-client" },
 ];
 
 export function Home() {
@@ -38,14 +39,37 @@ export function Home() {
       </MainDescription>
       <PackageGrid>
         {packages.map((p) => (
-          <PackageWrapper key={p.name}>
+          <PackageWrapper key={p.name} primary={p.primary}>
             <Package {...p} />
           </PackageWrapper>
         ))}
+        <IFrame
+          src="https://www.youtube.com/embed/j-_Zf8o5Wlo"
+          title="MUD in theory"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></IFrame>
+        <IFrame
+          src="https://www.youtube.com/embed/mv3jA4USZtg"
+          title="MUD in practice"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></IFrame>
       </PackageGrid>
     </Main>
   );
 }
+
+const IFrame = styled.iframe`
+  max-width: 790px;
+  width: 100%;
+  border: 3px solid #fff;
+  margin-top: 20px;
+  height: 400px;
+  grid-column: 1 / -1;
+`;
 
 const Main = styled.div`
   padding: 20px 100px;
@@ -90,10 +114,26 @@ const MainDescription = styled(Description)`
 
 const PackageGrid = styled.div`
   margin-top: 60px;
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  grid-template-rows: repeat(6, auto);
+  justify-content: start;
+  align-content: start;
+  grid-gap: 20px;
+
+  @media (max-width: 1020px) {
+    grid-template-columns: repeat(4, auto);
+  }
+
+  @media (max-width: 770px) {
+    grid-template-columns: repeat(2, auto);
+    width: 250px;
+  }
 `;
 
-const PackageWrapper = styled.div`
+const PackageWrapper = styled.div<{ primary?: boolean }>`
   display: inline-block;
-  margin: 20px 20px 0 0;
   vertical-align: bottom;
+  grid-column: span ${(p) => (p.primary ? 2 : 1)};
+  grid-row: span ${(p) => (p.primary ? 2 : 1)};
 `;

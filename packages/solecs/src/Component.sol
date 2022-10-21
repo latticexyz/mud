@@ -97,6 +97,15 @@ abstract contract Component is IComponent {
   }
 
   /**
+   * Revoke write access to this component to the given address.
+   * Can only be called by the owner of this component.
+   * @param writer Address to revoke write access .
+   */
+  function unauthorizeWriter(address writer) public onlyOwner {
+    delete writeAccess[writer];
+  }
+
+  /**
    * Return the keys and value types of the schema of this component.
    */
   function getSchema() public pure virtual returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
