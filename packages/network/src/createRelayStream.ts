@@ -22,7 +22,12 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
   );
 
   // Signature that should be used to prove identity
-  const signature = { signature: await signer.signMessage("ecs-relay-service") };
+  // Set the signature to expire in 5000 ms
+  const signatureExpirationTime: number = Date.now() + 5000;
+  const signature = {
+    signature: await signer.signMessage(`ecs-relay-service: ${signatureExpirationTime}`),
+    expirationTime: signatureExpirationTime,
+  };
   await httpClient.authenticate(signature);
 
   // Subscribe to the stream of relayed events
