@@ -474,9 +474,12 @@ func PruneSnapshotOwnedByComponent(snapshot *pb.ECSStateSnapshot, pruneForAddres
 	logger.GetLogger().Info("pruned snapshot", zap.String("pruneForAddress", pruneForAddress), zap.Float64("percentSizeAfterPrune", percentSizeAfterPrune))
 
 	return &pb.ECSStateSnapshot{
-		State:           prunedState,
-		StateComponents: snapshot.StateComponents,
-		StateEntities:   snapshot.StateEntities,
-		StateHash:       snapshot.StateHash,
+		State:            prunedState,
+		StateComponents:  snapshot.StateComponents,
+		StateEntities:    snapshot.StateEntities,
+		StateHash:        snapshot.StateHash,
+		StartBlockNumber: snapshot.StartBlockNumber,
+		EndBlockNumber:   snapshot.EndBlockNumber,
+		WorldAddress:     snapshot.WorldAddress,
 	}
 }
