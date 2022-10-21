@@ -16,6 +16,7 @@ export interface NetworkConfig {
   blockExplorer?: string;
   cacheAgeThreshold?: number;
   cacheInterval?: number;
+  encoders?: boolean;
   pruneOptions?: { playerAddress: string; hashedComponentId: string };
 }
 

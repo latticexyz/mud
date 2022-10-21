@@ -130,7 +130,9 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     networkConfig.limitEventsPerSecond
   );
 
-  const encoders = createEncoders(world, ComponentsRegistry, signerOrProvider);
+  const encoders = networkConfig.encoders
+    ? createEncoders(world, ComponentsRegistry, signerOrProvider)
+    : new Promise((resolve) => resolve({}));
 
   return {
     txQueue,
