@@ -63,3 +63,7 @@ func GetCurrentBalance(client *ethclient.Client, address string) (uint64, error)
 	}
 	return balance.Uint64(), nil
 }
+
+func GetCurrentNonce(client *ethclient.Client, address common.Address) (uint64, error) {
+	return client.PendingNonceAt(context.Background(), address)
+}

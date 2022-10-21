@@ -78,6 +78,36 @@ func (server *ecsSnapshotServer) GetStateLatestStream(in *pb.ECSStateRequestLate
 	return nil
 }
 
+func (server *ecsSnapshotServer) GetStateLatestStreamPruned(request *pb.ECSStateRequestLatestStreamPruned, stream pb.ECSStateSnapshotService_GetStateLatestStreamPrunedServer) error {
+	if !snapshot.IsSnaphotAvailableLatest(request.WorldAddress) {
+		return fmt.Errorf("no snapshot")
+	}
+	if len(request.PruneAddress) == 0 {
+		return fmt.Errorf("address for which to prune for required")
+	}
+	latestSnapshot := snapshot.RawReadStateSnapshotLatest(request.WorldAddress)
+	latestSnapshotPruned := snapshot.PruneSnapshotOwnedByComponent(latestSnapshot, request.PruneAddress)
+
+	// Respond in fraction chunks. If request has specified a chunk percentage, use that value.
+	chunkPercentage := server.config.DefaultSnapshotChunkPercentage
+	if request.ChunkPercentage != nil {
+		chunkPercentage = int(*request.ChunkPercentage)
+	}
+
+	latestSnapshotChunked := snapshot.ChunkRawStateSnapshot(latestSnapshotPruned, chunkPercentage)
+
+	for _, snapshotChunk := range latestSnapshotChunked {
+		stream.Send(&pb.ECSStateReply{
+			State:           snapshotChunk.State,
+			StateComponents: snapshotChunk.StateComponents,
+			StateEntities:   snapshotChunk.StateEntities,
+			StateHash:       snapshotChunk.StateHash,
+			BlockNumber:     snapshotChunk.EndBlockNumber,
+		})
+	}
+	return nil
+}
+
 // GetStateLatestStream is a gRPC endpoint that returns the block number for the latest available
 // snapshot, if any, for a given WorldAddress provided via ECSStateBlockRequestLatest.
 func (server *ecsSnapshotServer) GetStateBlockLatest(ctx context.Context, in *pb.ECSStateBlockRequestLatest) (*pb.ECSStateBlockReply, error) {

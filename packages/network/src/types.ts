@@ -16,6 +16,7 @@ export interface NetworkConfig {
   blockExplorer?: string;
   cacheAgeThreshold?: number;
   cacheInterval?: number;
+  pruneOptions?: { playerAddress: string; hashedComponentId: string };
 }
 
 export interface ClockConfig {
@@ -127,6 +128,7 @@ export type SyncWorkerConfig = {
   cacheInterval?: number;
   cacheAgeThreshold?: number;
   snapshotNumChunks?: number;
+  pruneOptions?: { playerAddress: string; hashedComponentId: string };
 };
 
 export enum ContractSchemaValue {

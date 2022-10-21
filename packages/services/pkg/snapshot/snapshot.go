@@ -7,12 +7,14 @@ import (
 	"latticexyz/mud/packages/services/pkg/logger"
 	"latticexyz/mud/packages/services/pkg/utils"
 	pb "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
+	"sync"
 
 	"math"
 	"os"
 	"sort"
 	"time"
 
+	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/ethereum/go-ethereum/crypto"
 	"go.uber.org/zap"
 	"google.golang.org/protobuf/proto"
@@ -117,13 +119,26 @@ func stateToSnapshot(state ECSState, startBlockNumber uint64, endBlockNumber uin
 		}
 
 		entityKeys := []string{}
-		for k := range _state {
-			entityKeys = append(entityKeys, k)
-		}
+		_state.Range(func(key, value interface{}) bool {
+			keyString, ok := key.(string)
+			if ok {
+				entityKeys = append(entityKeys, keyString)
+			}
+			return true
+		})
+
 		sort.Strings(entityKeys)
 
 		for _, entityId := range entityKeys {
-			value := _state[entityId]
+			value, ok := _state.Load(entityId)
+			if !ok {
+				logger.GetLogger().Error("did not find value in map for key", zap.String("key", entityId))
+				continue
+			}
+			valueBytes, ok := value.([]byte)
+			if !ok {
+				logger.GetLogger().Fatal("value data type expected to be []byte", zap.Any("value", value))
+			}
 
 			if _, ok := entitiyToIdx[entityId]; !ok {
 				entities = append(entities, entityId)
@@ -134,13 +149,13 @@ func stateToSnapshot(state ECSState, startBlockNumber uint64, endBlockNumber uin
 			stateSlice := &pb.ECSState{
 				ComponentIdIdx: componentToIdx[componentId],
 				EntityIdIdx:    entitiyToIdx[entityId],
-				Value:          value,
+				Value:          valueBytes,
 			}
 			stateSnapshot.State = append(stateSnapshot.State, stateSlice)
 
 			rawStateBuffer.WriteString(componentId)
 			rawStateBuffer.WriteString(entityId)
-			rawStateBuffer.Write(value)
+			rawStateBuffer.Write(valueBytes)
 		}
 	}
 
@@ -174,9 +189,9 @@ func snapshotToState(stateSnapshot *pb.ECSStateSnapshot) ECSState {
 		entityId := entities[entityIdIdx]
 
 		if _, ok := state[componentId]; !ok {
-			state[componentId] = map[string][]byte{}
+			state[componentId] = &sync.Map{}
 		}
-		state[componentId][entityId] = value
+		state[componentId].Store(entityId, value)
 	}
 	return state
 }
@@ -428,4 +443,43 @@ func RawReadWorldAddressesSnapshot() *pb.Worlds {
 func IsWorldAddressSnapshotAvailable() bool {
 	_, err := os.Stat(SerializedWorldsFilename)
 	return err == nil
+}
+
+// PruneSnapshotOwnedByComponent prunes a given ECSStateSnapshot, given an address.
+// This helps get rid of unnecessary state that a given address does not depend on in order
+// to perform actions.
+func PruneSnapshotOwnedByComponent(snapshot *pb.ECSStateSnapshot, pruneForAddress string) *pb.ECSStateSnapshot {
+	// Default to 'OwnedBy' componentId, since that's the component that stores information
+	// about entities owned by specific addresses, and we can discard those that are not
+	// the ones for the given address.
+	pruneComponentId := "0xaf90be6cd7aa92d6569a9ae629178b74e1b0fbdd1097c27ec1dfffd2dc4c7540"
+	prunedState := []*pb.ECSState{}
+
+	// Iterate all state and lookup the component for each.
+	for _, stateEntry := range snapshot.State {
+		componentId := snapshot.StateComponents[stateEntry.ComponentIdIdx]
+		if componentId == pruneComponentId {
+			// Extract the address that is the 'value' of OwnedBy.
+			ownedByValue := hexutil.Encode(stateEntry.Value[12:])
+			// Discard this state entry if the value is not for the specified address.
+			if ownedByValue != pruneForAddress {
+				continue
+			}
+		} else {
+			prunedState = append(prunedState, stateEntry)
+		}
+	}
+
+	percentSizeAfterPrune := float64(len(prunedState)) / float64(len(snapshot.State))
+	logger.GetLogger().Info("pruned snapshot", zap.String("pruneForAddress", pruneForAddress), zap.Float64("percentSizeAfterPrune", percentSizeAfterPrune))
+
+	return &pb.ECSStateSnapshot{
+		State:            prunedState,
+		StateComponents:  snapshot.StateComponents,
+		StateEntities:    snapshot.StateEntities,
+		StateHash:        snapshot.StateHash,
+		StartBlockNumber: snapshot.StartBlockNumber,
+		EndBlockNumber:   snapshot.EndBlockNumber,
+		WorldAddress:     snapshot.WorldAddress,
+	}
 }

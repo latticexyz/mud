@@ -31,6 +31,9 @@ service ECSStateSnapshotService {
   // Requests the latest ECS state in stream format, which will chunk the state.
   rpc GetStateLatestStream (ECSStateRequestLatestStream) returns (stream ECSStateReply) {}
 
+  // Requests the latest ECS state, with aditional pruning.
+  rpc GetStateLatestStreamPruned (ECSStateRequestLatestStreamPruned) returns (stream ECSStateReply) {}
+
   // Requests the latest block number based on the latest ECS state.
   rpc GetStateBlockLatest (ECSStateBlockRequestLatest) returns (ECSStateBlockReply) {}
 
@@ -44,6 +47,14 @@ service ECSStateSnapshotService {
 // The request message for the latest ECS state.
 message ECSStateRequestLatest {
   string worldAddress = 1;
+}
+
+// The request message for the latest ECS statem, pruned for specific address.
+message ECSStateRequestLatestStreamPruned {
+  string worldAddress = 1;
+  string pruneAddress = 2;
+  optional string pruneComponentId = 3;
+  optional uint32 chunkPercentage = 4;
 }
 
 // The request message for the latest chunked ECS state.

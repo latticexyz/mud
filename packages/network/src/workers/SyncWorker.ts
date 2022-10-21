@@ -48,9 +48,11 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
   /**
    * Pass a loading state component update to the main thread.
    * Can be used to indicate the initial loading state on a loading screen.
-   * @param state {@link SyncState}
-   * @param msg Message to describe the current loading step.
-   * @param percentage Number between 0 and 100 to describe the loading progress.
+   * @param loadingState {
+   *  state: {@link SyncState},
+   *  msg: Message to describe the current loading step.
+   *  percentage: Number between 0 and 100 to describe the loading progress.
+   * }
    * @param blockNumber Optional: block number to pass in the component update.
    */
   private setLoadingState(
@@ -189,7 +191,8 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
           worldContract.address,
           decode,
           config.snapshotNumChunks,
-          (percentage: number) => this.setLoadingState({ percentage })
+          (percentage: number) => this.setLoadingState({ percentage }),
+          config.pruneOptions
         );
       } else {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from cache", percentage: 0 });
