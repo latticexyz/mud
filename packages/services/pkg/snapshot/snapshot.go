@@ -462,12 +462,11 @@ func PruneSnapshotOwnedByComponent(snapshot *pb.ECSStateSnapshot, pruneForAddres
 			// Extract the address that is the 'value' of OwnedBy.
 			ownedByValue := hexutil.Encode(stateEntry.Value[12:])
 			// Discard this state entry if the value is not for the specified address.
-			if ownedByValue != pruneForAddress {
+			if utils.ChecksumAddressString(ownedByValue) != utils.ChecksumAddressString(pruneForAddress) {
 				continue
 			}
-		} else {
-			prunedState = append(prunedState, stateEntry)
 		}
+		prunedState = append(prunedState, stateEntry)
 	}
 
 	percentSizeAfterPrune := float64(len(prunedState)) / float64(len(snapshot.State))
