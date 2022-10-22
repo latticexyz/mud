@@ -1,6 +1,6 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { EntityID, ComponentValue, Components } from "@latticexyz/recs";
-import { to256BitString, awaitPromise, range } from "@latticexyz/utils";
+import { to256BitString, awaitPromise, range, Uint8ArrayToHexString } from "@latticexyz/utils";
 import { BytesLike, Contract, BigNumber } from "ethers";
 import { Observable, map, concatMap, of, from } from "rxjs";
 import { createDecoder } from "../createDecoder";
@@ -8,6 +8,7 @@ import { createTopics } from "../createTopics";
 import { fetchEventsInBlockRange } from "../networkUtils";
 import {
   ECSStateReply,
+  ECSStateReplyV2,
   ECSStateSnapshotServiceClient,
   ECSStateSnapshotServiceDefinition,
 } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
@@ -23,7 +24,6 @@ import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheSt
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
-import { SyncState } from "./constants";
 import {
   ECSStreamBlockBundleReply,
   ECSStreamServiceClient,
@@ -80,6 +80,7 @@ export async function getSnapshotBlockNumber(
  * @param worldAddress Address of the World contract to get the snapshot for.
  * @param decode Function to decode raw component values ({@link createDecode}).
  * @returns Promise resolving with {@link CacheStore} containing the snapshot state.
+ * @deprecated this util will be removed in a future version, use fetchSnapshotChunked instead
  */
 export async function fetchSnapshot(
   snapshotClient: ECSStateSnapshotServiceClient,
@@ -115,20 +116,19 @@ export async function fetchSnapshotChunked(
   pruneOptions?: { playerAddress: string; hashedComponentId: string }
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
-  const chunkPercentage = 100 / numChunks;
+  const chunkPercentage = Math.ceil(100 / numChunks);
 
   try {
-    const response = pruneOptions
-      ? snapshotClient.getStateLatestStreamPruned({
-          worldAddress,
-          chunkPercentage,
-          pruneAddress: pruneOptions.playerAddress,
-          pruneComponentId: pruneOptions.hashedComponentId,
-        })
-      : snapshotClient.getStateLatestStream({ worldAddress, chunkPercentage });
+    const response = snapshotClient.getStateLatestStreamPrunedV2({
+      worldAddress,
+      chunkPercentage,
+      pruneAddress: pruneOptions?.playerAddress,
+      pruneComponentId: pruneOptions?.hashedComponentId,
+    });
+
     let i = 0;
     for await (const responseChunk of response) {
-      await reduceFetchedState(responseChunk, cacheStore, decode);
+      await reduceFetchedStateV2(responseChunk, cacheStore, decode);
       setPercentage && setPercentage((i++ / numChunks) * 100);
     }
   } catch (e) {
@@ -145,6 +145,7 @@ export async function fetchSnapshotChunked(
  * @param cacheStore {@link CacheStore} to store snapshot state into.
  * @param decode Function to decode raw component values ({@link createDecode}).
  * @returns Promise resolving once state is reduced into {@link CacheStore}.
+ * @deprecated this util will be removed in a future version, use reduceFetchedStateV2 instead
  */
 export async function reduceFetchedState(
   response: ECSStateReply,
@@ -156,6 +157,29 @@ export async function reduceFetchedState(
   for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
     const component = to256BitString(stateComponents[componentIdIdx]);
     const entity = stateEntities[entityIdIdx] as EntityID;
+    const value = await decode(component, rawValue);
+    storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
+  }
+}
+
+/**
+ * Reduces a snapshot response by storing corresponding ECS events into the cache store.
+ *
+ * @param response ECSStateReplyV2
+ * @param cacheStore {@link CacheStore} to store snapshot state into.
+ * @param decode Function to decode raw component values ({@link createDecode}).
+ * @returns Promise resolving once state is reduced into {@link CacheStore}.
+ */
+export async function reduceFetchedStateV2(
+  response: ECSStateReplyV2,
+  cacheStore: CacheStore,
+  decode: ReturnType<typeof createDecode>
+): Promise<void> {
+  const { state, blockNumber, stateComponents, stateEntities } = response;
+
+  for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
+    const component = to256BitString(stateComponents[componentIdIdx]);
+    const entity = Uint8ArrayToHexString(stateEntities[entityIdIdx]) as EntityID;
     const value = await decode(component, rawValue);
     storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
   }
