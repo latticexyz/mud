@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.19.0](https://github.com/latticexyz/mud/compare/v1.18.0...v1.19.0) (2022-10-21)
+
+### Bug Fixes
+
+- checksum address / value when pruning snapshot ([#214](https://github.com/latticexyz/mud/issues/214)) ([64fd178](https://github.com/latticexyz/mud/commit/64fd178358ac05bb032cfd8cc1a1b87effa769ad))
+
+### Features
+
+- **network:** only create encoders if asked for it ([c5af08c](https://github.com/latticexyz/mud/commit/c5af08c7a0aa26ccc6e7085b1539ad4f271d4a41))
+
 # [1.18.0](https://github.com/latticexyz/mud/compare/v1.17.0...v1.18.0) (2022-10-21)
 
 ### Bug Fixes
