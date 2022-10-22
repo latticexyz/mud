@@ -66,6 +66,14 @@ export interface ECSStateReply {
   blockNumber: number;
 }
 
+export interface ECSStateReplyV2 {
+  state: ECSState[];
+  stateComponents: string[];
+  stateEntities: Uint8Array[];
+  stateHash: string;
+  blockNumber: number;
+}
+
 export interface ECSStateBlockReply {
   blockNumber: number;
 }
@@ -553,6 +561,71 @@ export const ECSStateReply = {
   },
 };
 
+function createBaseECSStateReplyV2(): ECSStateReplyV2 {
+  return { state: [], stateComponents: [], stateEntities: [], stateHash: "", blockNumber: 0 };
+}
+
+export const ECSStateReplyV2 = {
+  encode(message: ECSStateReplyV2, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    for (const v of message.state) {
+      ECSState.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    for (const v of message.stateComponents) {
+      writer.uint32(18).string(v!);
+    }
+    for (const v of message.stateEntities) {
+      writer.uint32(26).bytes(v!);
+    }
+    if (message.stateHash !== "") {
+      writer.uint32(34).string(message.stateHash);
+    }
+    if (message.blockNumber !== 0) {
+      writer.uint32(40).uint32(message.blockNumber);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateReplyV2 {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseECSStateReplyV2();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.state.push(ECSState.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.stateComponents.push(reader.string());
+          break;
+        case 3:
+          message.stateEntities.push(reader.bytes());
+          break;
+        case 4:
+          message.stateHash = reader.string();
+          break;
+        case 5:
+          message.blockNumber = reader.uint32();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<ECSStateReplyV2>): ECSStateReplyV2 {
+    const message = createBaseECSStateReplyV2();
+    message.state = object.state?.map((e) => ECSState.fromPartial(e)) || [];
+    message.stateComponents = object.stateComponents?.map((e) => e) || [];
+    message.stateEntities = object.stateEntities?.map((e) => e) || [];
+    message.stateHash = object.stateHash ?? "";
+    message.blockNumber = object.blockNumber ?? 0;
+    return message;
+  },
+};
+
 function createBaseECSStateBlockReply(): ECSStateBlockReply {
   return { blockNumber: 0 };
 }
@@ -623,6 +696,15 @@ export const ECSStateSnapshotServiceDefinition = {
       responseStream: true,
       options: {},
     },
+    /** Requests the latest ECS state, with aditional pruning and optimized to return entities as raw bytes. */
+    getStateLatestStreamPrunedV2: {
+      name: "GetStateLatestStreamPrunedV2",
+      requestType: ECSStateRequestLatestStreamPruned,
+      requestStream: false,
+      responseType: ECSStateReplyV2,
+      responseStream: true,
+      options: {},
+    },
     /** Requests the latest block number based on the latest ECS state. */
     getStateBlockLatest: {
       name: "GetStateBlockLatest",
@@ -669,6 +751,11 @@ export interface ECSStateSnapshotServiceServiceImplementation<CallContextExt = {
     request: ECSStateRequestLatestStreamPruned,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<ECSStateReply>>;
+  /** Requests the latest ECS state, with aditional pruning and optimized to return entities as raw bytes. */
+  getStateLatestStreamPrunedV2(
+    request: ECSStateRequestLatestStreamPruned,
+    context: CallContext & CallContextExt
+  ): ServerStreamingMethodResult<DeepPartial<ECSStateReplyV2>>;
   /** Requests the latest block number based on the latest ECS state. */
   getStateBlockLatest(
     request: ECSStateBlockRequestLatest,
@@ -699,6 +786,11 @@ export interface ECSStateSnapshotServiceClient<CallOptionsExt = {}> {
     request: DeepPartial<ECSStateRequestLatestStreamPruned>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<ECSStateReply>;
+  /** Requests the latest ECS state, with aditional pruning and optimized to return entities as raw bytes. */
+  getStateLatestStreamPrunedV2(
+    request: DeepPartial<ECSStateRequestLatestStreamPruned>,
+    options?: CallOptions & CallOptionsExt
+  ): AsyncIterable<ECSStateReplyV2>;
   /** Requests the latest block number based on the latest ECS state. */
   getStateBlockLatest(
     request: DeepPartial<ECSStateBlockRequestLatest>,

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/snapshot"
+	"latticexyz/mud/packages/services/pkg/utils"
 	pb "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 )
 
@@ -101,6 +102,36 @@ func (server *ecsSnapshotServer) GetStateLatestStreamPruned(request *pb.ECSState
 			State:           snapshotChunk.State,
 			StateComponents: snapshotChunk.StateComponents,
 			StateEntities:   snapshotChunk.StateEntities,
+			StateHash:       snapshotChunk.StateHash,
+			BlockNumber:     snapshotChunk.EndBlockNumber,
+		})
+	}
+	return nil
+}
+
+func (server *ecsSnapshotServer) GetStateLatestStreamPrunedV2(request *pb.ECSStateRequestLatestStreamPruned, stream pb.ECSStateSnapshotService_GetStateLatestStreamPrunedV2Server) error {
+	if !snapshot.IsSnaphotAvailableLatest(request.WorldAddress) {
+		return fmt.Errorf("no snapshot")
+	}
+	if len(request.PruneAddress) == 0 {
+		return fmt.Errorf("address for which to prune for required")
+	}
+	latestSnapshot := snapshot.RawReadStateSnapshotLatest(request.WorldAddress)
+	latestSnapshotPruned := snapshot.PruneSnapshotOwnedByComponent(latestSnapshot, request.PruneAddress)
+
+	// Respond in fraction chunks. If request has specified a chunk percentage, use that value.
+	chunkPercentage := server.config.DefaultSnapshotChunkPercentage
+	if request.ChunkPercentage != nil {
+		chunkPercentage = int(*request.ChunkPercentage)
+	}
+
+	latestSnapshotChunked := snapshot.ChunkRawStateSnapshot(latestSnapshotPruned, chunkPercentage)
+
+	for _, snapshotChunk := range latestSnapshotChunked {
+		stream.Send(&pb.ECSStateReplyV2{
+			State:           snapshotChunk.State,
+			StateComponents: snapshotChunk.StateComponents,
+			StateEntities:   utils.HexStringArrayToBytesArray(snapshotChunk.StateEntities),
 			StateHash:       snapshotChunk.StateHash,
 			BlockNumber:     snapshotChunk.EndBlockNumber,
 		})
