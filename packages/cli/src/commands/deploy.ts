@@ -386,7 +386,7 @@ export const deploy = async (options: Options) => {
                         task: async (_, task) => {
                           const time = Date.now();
                           task.output = "Building local client...";
-                          const child = execa("yarn", ["workspace", "ri-client", "build"]);
+                          const child = execa("yarn", ["workspace", "client", "build"]);
                           await child;
                           const duration = Date.now() - time;
                           task.output = "Client built in " + Math.round(duration / 1000) + "s";
@@ -417,7 +417,7 @@ export const deploy = async (options: Options) => {
                         task: async (ctx, task) => {
                           const child = execa(
                             "yarn",
-                            ["workspace", "ri-client", "run", "netlify", "deploy", "--prod", "--dir", "dist"],
+                            ["workspace", "client", "run", "netlify", "deploy", "--prod", "--dir", "dist"],
                             {
                               env: {
                                 NETLIFY_AUTH_TOKEN: options.netlifyPersonalToken,
