@@ -5,13 +5,13 @@ import {
   createTxQueue,
   createSyncWorker,
   createEncoder,
-  NetworkComponentUpdate,
   createSystemExecutor,
   NetworkConfig,
   SyncWorkerConfig,
   isNetworkComponentUpdateEvent,
+  NetworkEvent,
 } from "@latticexyz/network";
-import { BehaviorSubject, bufferTime, filter, Observable, Subject } from "rxjs";
+import { BehaviorSubject, concatMap, filter, from, map, Observable, Subject, timer } from "rxjs";
 import {
   Component,
   Components,
@@ -25,7 +25,7 @@ import {
   World,
 } from "@latticexyz/recs";
 import { computed, IComputedValue } from "mobx";
-import { keccak256, stretch, toEthAddress } from "@latticexyz/utils";
+import { keccak256, toEthAddress } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract, ContractInterface, Signer } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
@@ -111,24 +111,22 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   });
 
   // Create sync worker
-  const { ecsEvent$, config$, dispose } = createSyncWorker<C>();
+  const ack$ = new Subject<{ type: "ack" }>();
+  const { ecsEvents$, input$, dispose } = createSyncWorker<C>(ack$);
   world.registerDisposer(dispose);
   function startSync() {
-    config$.next({
-      ...networkConfig,
-      worldContract: contractsConfig.World,
-      initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
-      disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
+    input$.next({
+      type: "config",
+      data: {
+        ...networkConfig,
+        worldContract: contractsConfig.World,
+        initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
+        disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
+      },
     });
   }
 
-  const { txReduced$ } = applyNetworkUpdates(
-    world,
-    components,
-    ecsEvent$.pipe(filter(isNetworkComponentUpdateEvent)),
-    mappings,
-    networkConfig.limitEventsPerSecond
-  );
+  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$);
 
   const encoders = networkConfig.encoders
     ? createEncoders(world, ComponentsRegistry, signerOrProvider)
@@ -142,7 +140,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     startSync,
     systems,
     gasPriceInput$,
-    ecsEvent$,
+    ecsEvent$: ecsEvents$.pipe(concatMap((updates) => from(updates))),
     mappings,
     registerComponent,
   };
@@ -184,39 +182,45 @@ async function createEncoders(
 function applyNetworkUpdates<C extends Components>(
   world: World,
   components: C,
-  ecsEvent$: Observable<NetworkComponentUpdate<C>>,
+  ecsEvents$: Observable<NetworkEvent<C>[]>,
   mappings: Mappings<C>,
-  limitEventsPerSecond = 62500
+  ack$: Subject<{ type: "ack" }>
 ) {
   const txReduced$ = new Subject<string>();
-  const limitEventsPer16ms = Math.floor(limitEventsPerSecond / 62.5);
 
-  const ecsEventSub = ecsEvent$
+  let processing = false;
+  const ackSub = timer(0, 100)
     .pipe(
-      // We throttle the client side event processing to 1000 events every 16ms by default, so 62.500 events per second.
-      // This means if the chain were to emit more than 62.500 events per second, the client would not keep up.
-      // The only time we get close to this number is when initializing from a snapshot/cache.
-      bufferTime(16, null, limitEventsPer16ms),
-      filter((updates) => updates.length > 0),
-      stretch(16)
+      filter(() => !processing),
+      map(() => ({ type: "ack" as const }))
     )
-    .subscribe((updates) => {
-      for (const update of updates) {
-        const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
-        const componentKey = mappings[update.component];
-        if (!componentKey) return console.warn("Unknown component:", update);
+    .subscribe(ack$);
 
-        if (update.value === undefined) {
-          // undefined value means component removed
-          removeComponent(components[componentKey] as Component<Schema>, entityIndex);
-        } else {
-          setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
-        }
+  const delayQueueSub = ecsEvents$.subscribe((updates) => {
+    processing = true;
+    for (const update of updates) {
+      if (!isNetworkComponentUpdateEvent<C>(update)) return;
 
-        if (update.lastEventInTx) txReduced$.next(update.txHash);
+      const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
+      const componentKey = mappings[update.component];
+      if (update.component === keccak256("component.Stake"))
+        console.log("Got stake update", componentKey, update.value, update.entity);
+      if (!componentKey) return console.warn("Unknown component:", update);
+
+      if (update.value === undefined) {
+        // undefined value means component removed
+        removeComponent(components[componentKey] as Component<Schema>, entityIndex);
+      } else {
+        setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
       }
-    });
 
-  world.registerDisposer(() => ecsEventSub?.unsubscribe());
+      if (update.lastEventInTx) txReduced$.next(update.txHash);
+    }
+    ack$.next({ type: "ack" });
+    processing = false;
+  });
+
+  world.registerDisposer(() => delayQueueSub?.unsubscribe());
+  world.registerDisposer(() => ackSub?.unsubscribe());
   return { txReduced$: txReduced$.asObservable() };
 }
