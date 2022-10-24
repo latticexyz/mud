@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/common/hexutil"
 )
 
 func Min(a, b int) int {
@@ -14,8 +14,10 @@ func Min(a, b int) int {
 func HexStringArrayToBytesArray(strArray []string) [][]byte {
 	bytesArray := [][]byte{}
 	for _, str := range strArray {
-		_bytes := common.Hex2Bytes(str)
-		bytesArray = append(bytesArray, _bytes)
+		_bytes, err := hexutil.Decode(str)
+		if err == nil {
+			bytesArray = append(bytesArray, _bytes)
+		}
 	}
 	return bytesArray
 }
