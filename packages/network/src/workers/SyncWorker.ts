@@ -5,7 +5,6 @@ import {
   concat,
   concatMap,
   filter,
-  first,
   ignoreElements,
   map,
   Observable,
@@ -34,7 +33,6 @@ import {
 } from "./CacheStore";
 import { createReconnectingProvider } from "../createProvider";
 import { computed } from "mobx";
-import { DelayQueue } from "rx-queue";
 import {
   createSnapshotClient,
   createDecode,
