@@ -1,4 +1,4 @@
-import { awaitStreamValue, DoWork, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
+import { awaitStreamValue, DoWork, filterNullish, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
 import {
   bufferTime,
   catchError,
@@ -48,8 +48,13 @@ import {
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { GodID, SyncState } from "./constants";
 
-export type Config = { type: "config"; data: SyncWorkerConfig };
-export type Ack = { type: "ack" };
+export enum InputType {
+  Ack,
+  Config,
+}
+export type Config = { type: InputType.Config; data: SyncWorkerConfig };
+export type Ack = { type: InputType.Ack };
+export const ack = { type: InputType.Ack as const };
 export type Input = Config | Ack;
 
 export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEvent<C>[]> {
@@ -109,8 +114,8 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     // Turn config into variable accessible outside the stream
     const computedConfig = await streamToDefinedComputed(
       this.input$.pipe(
-        filter((e) => e.type === "config"),
-        map((e) => (e as Config).data)
+        map((e) => (e.type === InputType.Config ? e.data : undefined)),
+        filterNullish()
       )
     );
     const config = computedConfig.get();
@@ -289,7 +294,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
           concat(
             of(updates),
             input$.pipe(
-              filter((e) => e.type === "ack"),
+              filter((e) => e.type === InputType.Ack),
               take(1),
               ignoreElements()
             )

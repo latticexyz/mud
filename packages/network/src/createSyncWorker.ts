@@ -1,8 +1,8 @@
 import { Components } from "@latticexyz/recs";
 import { fromWorker } from "@latticexyz/utils";
 import { map, Observable, Subject, timer } from "rxjs";
-import { NetworkEvent, SyncWorkerConfig } from "./types";
-import { Input, Ack } from "./workers/SyncWorker";
+import { NetworkEvent } from "./types";
+import { Input, Ack, ack } from "./workers/SyncWorker";
 
 /**
  * Create a new SyncWorker ({@link Sync.worker.ts}) to performn contract/client state sync.
@@ -20,14 +20,11 @@ export function createSyncWorker<C extends Components = Components>(ack$?: Obser
   const ecsEvents$ = new Subject<NetworkEvent<C>[]>();
 
   // Send ack every 16ms if no external ack$ is provided
-  ack$ = ack$ || timer(0, 16).pipe(map(() => ({ type: "ack" as const })));
+  ack$ = ack$ || timer(0, 16).pipe(map(() => ack));
   const ackSub = ack$.subscribe(input$);
 
   // Pass in a "config stream", receive a stream of ECS events
-  const subscription = fromWorker<{ type: "config"; data: SyncWorkerConfig } | { type: "ack" }, NetworkEvent<C>[]>(
-    worker,
-    input$
-  ).subscribe(ecsEvents$);
+  const subscription = fromWorker<Input, NetworkEvent<C>[]>(worker, input$).subscribe(ecsEvents$);
   const dispose = () => {
     worker.terminate();
     subscription?.unsubscribe();
