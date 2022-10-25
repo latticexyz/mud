@@ -10,6 +10,9 @@ import {
   SyncWorkerConfig,
   isNetworkComponentUpdateEvent,
   NetworkEvent,
+  ack,
+  Ack,
+  InputType,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, filter, from, map, Observable, Subject, timer } from "rxjs";
 import {
@@ -38,7 +41,6 @@ export type SetupContractConfig = NetworkConfig &
   Omit<SyncWorkerConfig, "worldContract" | "mappings"> & {
     worldAddress: string;
     devMode?: boolean;
-    limitEventsPerSecond?: number;
   };
 
 export type ContractComponent = Component<Schema, { contractId: string }>;
@@ -111,12 +113,12 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   });
 
   // Create sync worker
-  const ack$ = new Subject<{ type: "ack" }>();
+  const ack$ = new Subject<Ack>();
   const { ecsEvents$, input$, dispose } = createSyncWorker<C>(ack$);
   world.registerDisposer(dispose);
   function startSync() {
     input$.next({
-      type: "config",
+      type: InputType.Config,
       data: {
         ...networkConfig,
         worldContract: contractsConfig.World,
@@ -184,15 +186,16 @@ function applyNetworkUpdates<C extends Components>(
   components: C,
   ecsEvents$: Observable<NetworkEvent<C>[]>,
   mappings: Mappings<C>,
-  ack$: Subject<{ type: "ack" }>
+  ack$: Subject<Ack>
 ) {
   const txReduced$ = new Subject<string>();
 
+  // Send "ack" to tell the sync worker we're ready to receive events while not processing
   let processing = false;
   const ackSub = timer(0, 100)
     .pipe(
       filter(() => !processing),
-      map(() => ({ type: "ack" as const }))
+      map(() => ack)
     )
     .subscribe(ack$);
 
@@ -203,8 +206,6 @@ function applyNetworkUpdates<C extends Components>(
 
       const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
       const componentKey = mappings[update.component];
-      if (update.component === keccak256("component.Stake"))
-        console.log("Got stake update", componentKey, update.value, update.entity);
       if (!componentKey) return console.warn("Unknown component:", update);
 
       if (update.value === undefined) {
@@ -216,11 +217,14 @@ function applyNetworkUpdates<C extends Components>(
 
       if (update.lastEventInTx) txReduced$.next(update.txHash);
     }
-    ack$.next({ type: "ack" });
+    // Send "ack" after every processed batch of events to process faster than ever 100ms
+    ack$.next(ack);
     processing = false;
   });
 
-  world.registerDisposer(() => delayQueueSub?.unsubscribe());
-  world.registerDisposer(() => ackSub?.unsubscribe());
+  world.registerDisposer(() => {
+    delayQueueSub?.unsubscribe();
+    ackSub?.unsubscribe();
+  });
   return { txReduced$: txReduced$.asObservable() };
 }

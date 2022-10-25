@@ -67,7 +67,5 @@
     "rxjs": "^7.5.5"
   },
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
-  "dependencies": {
-    "rx-queue": "^1.0.5"
-  }
+  "dependencies": {}
 }
