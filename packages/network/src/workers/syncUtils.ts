@@ -182,6 +182,7 @@ export async function reduceFetchedStateV2(
   for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
     const component = stateComponentsHex[componentIdIdx];
     const entity = stateEntitiesHex[entityIdIdx];
+    if (entity == undefined) console.log("invalid entity index", stateEntities.length, entityIdIdx);
     const value = await decode(component, rawValue);
     storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
   }
