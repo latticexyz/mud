@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.21.0](https://github.com/latticexyz/mud/compare/v1.20.0...v1.21.0) (2022-10-26)
+
+### Features
+
+- **network:** send ack between main thread and sync worker ([#220](https://github.com/latticexyz/mud/issues/220)) ([e06978a](https://github.com/latticexyz/mud/commit/e06978aafc37a0992ca0d7cb58a97da0a5295781))
+
 # [1.20.0](https://github.com/latticexyz/mud/compare/v1.19.0...v1.20.0) (2022-10-22)
 
 **Note:** Version bump only for package @latticexyz/network
