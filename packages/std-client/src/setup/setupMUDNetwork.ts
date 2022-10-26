@@ -108,7 +108,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   });
   world.registerDisposer(disposeTxQueue);
 
-  const { systems, untypedSystems } = createSystemExecutor<SystemTypes>(
+  const { systems, registerSystem } = createSystemExecutor<SystemTypes>(
     world,
     network,
     SystemsRegistry,
@@ -148,11 +148,11 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     network,
     startSync,
     systems,
-    untypedSystems,
     gasPriceInput$,
     ecsEvent$: ecsEvents$.pipe(concatMap((updates) => from(updates))),
     mappings,
     registerComponent,
+    registerSystem,
   };
 }
 
