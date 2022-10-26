@@ -176,10 +176,12 @@ export async function reduceFetchedStateV2(
   decode: ReturnType<typeof createDecode>
 ): Promise<void> {
   const { state, blockNumber, stateComponents, stateEntities } = response;
+  const stateEntitiesHex = stateEntities.map((e) => Uint8ArrayToHexString(e) as EntityID);
+  const stateComponentsHex = stateComponents.map((e) => to256BitString(e));
 
   for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
-    const component = to256BitString(stateComponents[componentIdIdx]);
-    const entity = Uint8ArrayToHexString(stateEntities[entityIdIdx]) as EntityID;
+    const component = stateComponentsHex[componentIdIdx];
+    const entity = stateEntitiesHex[entityIdIdx];
     const value = await decode(component, rawValue);
     storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
   }
