@@ -119,12 +119,17 @@ export async function fetchSnapshotChunked(
   const chunkPercentage = Math.ceil(100 / numChunks);
 
   try {
-    const response = snapshotClient.getStateLatestStreamPrunedV2({
-      worldAddress,
-      chunkPercentage,
-      pruneAddress: pruneOptions?.playerAddress,
-      pruneComponentId: pruneOptions?.hashedComponentId,
-    });
+    const response = pruneOptions
+      ? snapshotClient.getStateLatestStreamPrunedV2({
+          worldAddress,
+          chunkPercentage,
+          pruneAddress: pruneOptions?.playerAddress,
+          pruneComponentId: pruneOptions?.hashedComponentId,
+        })
+      : snapshotClient.getStateLatestStreamV2({
+          worldAddress,
+          chunkPercentage,
+        });
 
     let i = 0;
     for await (const responseChunk of response) {
