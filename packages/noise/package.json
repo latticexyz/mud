@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/noise",
-  "version": "1.23.1",
+  "version": "1.24.0",
   "source": "ts/index.ts",
   "main": "dist/index.js",
   "types": "dist/types.d.ts",
