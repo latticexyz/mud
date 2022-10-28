@@ -31,10 +31,17 @@ service ECSStateSnapshotService {
   // Requests the latest ECS state in stream format, which will chunk the state.
   rpc GetStateLatestStream (ECSStateRequestLatestStream) returns (stream ECSStateReply) {}
 
+  // Requests the latest ECS state in stream format, which will chunk the state.
+  // 
+  // V2 version optimized to return entities as raw bytes.
+  rpc GetStateLatestStreamV2 (ECSStateRequestLatestStream) returns (stream ECSStateReplyV2) {}
+
   // Requests the latest ECS state, with aditional pruning.
   rpc GetStateLatestStreamPruned (ECSStateRequestLatestStreamPruned) returns (stream ECSStateReply) {}
 
-  // Requests the latest ECS state, with aditional pruning and optimized to return entities as raw bytes.
+  // Requests the latest ECS state, with aditional pruning.
+  // 
+  // V2 version optimized to return entities as raw bytes.
   rpc GetStateLatestStreamPrunedV2 (ECSStateRequestLatestStreamPruned) returns (stream ECSStateReplyV2) {}
 
   // Requests the latest block number based on the latest ECS state.

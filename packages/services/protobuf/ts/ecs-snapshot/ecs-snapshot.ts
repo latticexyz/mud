@@ -687,6 +687,19 @@ export const ECSStateSnapshotServiceDefinition = {
       responseStream: true,
       options: {},
     },
+    /**
+     * Requests the latest ECS state in stream format, which will chunk the state.
+     *
+     * V2 version optimized to return entities as raw bytes.
+     */
+    getStateLatestStreamV2: {
+      name: "GetStateLatestStreamV2",
+      requestType: ECSStateRequestLatestStream,
+      requestStream: false,
+      responseType: ECSStateReplyV2,
+      responseStream: true,
+      options: {},
+    },
     /** Requests the latest ECS state, with aditional pruning. */
     getStateLatestStreamPruned: {
       name: "GetStateLatestStreamPruned",
@@ -696,7 +709,11 @@ export const ECSStateSnapshotServiceDefinition = {
       responseStream: true,
       options: {},
     },
-    /** Requests the latest ECS state, with aditional pruning and optimized to return entities as raw bytes. */
+    /**
+     * Requests the latest ECS state, with aditional pruning.
+     *
+     * V2 version optimized to return entities as raw bytes.
+     */
     getStateLatestStreamPrunedV2: {
       name: "GetStateLatestStreamPrunedV2",
       requestType: ECSStateRequestLatestStreamPruned,
@@ -746,12 +763,25 @@ export interface ECSStateSnapshotServiceServiceImplementation<CallContextExt = {
     request: ECSStateRequestLatestStream,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<ECSStateReply>>;
+  /**
+   * Requests the latest ECS state in stream format, which will chunk the state.
+   *
+   * V2 version optimized to return entities as raw bytes.
+   */
+  getStateLatestStreamV2(
+    request: ECSStateRequestLatestStream,
+    context: CallContext & CallContextExt
+  ): ServerStreamingMethodResult<DeepPartial<ECSStateReplyV2>>;
   /** Requests the latest ECS state, with aditional pruning. */
   getStateLatestStreamPruned(
     request: ECSStateRequestLatestStreamPruned,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<ECSStateReply>>;
-  /** Requests the latest ECS state, with aditional pruning and optimized to return entities as raw bytes. */
+  /**
+   * Requests the latest ECS state, with aditional pruning.
+   *
+   * V2 version optimized to return entities as raw bytes.
+   */
   getStateLatestStreamPrunedV2(
     request: ECSStateRequestLatestStreamPruned,
     context: CallContext & CallContextExt
@@ -781,12 +811,25 @@ export interface ECSStateSnapshotServiceClient<CallOptionsExt = {}> {
     request: DeepPartial<ECSStateRequestLatestStream>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<ECSStateReply>;
+  /**
+   * Requests the latest ECS state in stream format, which will chunk the state.
+   *
+   * V2 version optimized to return entities as raw bytes.
+   */
+  getStateLatestStreamV2(
+    request: DeepPartial<ECSStateRequestLatestStream>,
+    options?: CallOptions & CallOptionsExt
+  ): AsyncIterable<ECSStateReplyV2>;
   /** Requests the latest ECS state, with aditional pruning. */
   getStateLatestStreamPruned(
     request: DeepPartial<ECSStateRequestLatestStreamPruned>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<ECSStateReply>;
-  /** Requests the latest ECS state, with aditional pruning and optimized to return entities as raw bytes. */
+  /**
+   * Requests the latest ECS state, with aditional pruning.
+   *
+   * V2 version optimized to return entities as raw bytes.
+   */
   getStateLatestStreamPrunedV2(
     request: DeepPartial<ECSStateRequestLatestStreamPruned>,
     options?: CallOptions & CallOptionsExt
