@@ -210,11 +210,15 @@ function applyNetworkUpdates<C extends Components>(
   const delayQueueSub = ecsEvents$.subscribe((updates) => {
     processing = true;
     for (const update of updates) {
-      if (!isNetworkComponentUpdateEvent<C>(update)) return;
+      if (!isNetworkComponentUpdateEvent<C>(update)) continue;
+      if (update.lastEventInTx) txReduced$.next(update.txHash);
 
       const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
       const componentKey = mappings[update.component];
-      if (!componentKey) return console.warn("Unknown component:", update);
+      if (!componentKey) {
+        console.warn("Unknown component:", update);
+        continue;
+      }
 
       if (update.value === undefined) {
         // undefined value means component removed
@@ -222,8 +226,6 @@ function applyNetworkUpdates<C extends Components>(
       } else {
         setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
       }
-
-      if (update.lastEventInTx) txReduced$.next(update.txHash);
     }
     // Send "ack" after every processed batch of events to process faster than ever 100ms
     ack$.next(ack);
