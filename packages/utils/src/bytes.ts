@@ -14,6 +14,7 @@ export function hexStringToUint8Array(hexString: string): Uint8Array {
 }
 
 export function Uint8ArrayToHexString(data: Uint8Array): string {
+  if (data.length === 0) return "0x00";
   return formatHex(data.reduce((str, byte) => str + byte.toString(16).padStart(2, "0"), ""));
 }
 
