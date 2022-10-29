@@ -267,7 +267,7 @@ QueryFragment[] memory fragments = new QueryFragment[](3);
 
 fragments[0] = QueryFragment(QueryType.Has, position, new bytes(0)));
 fragments[1] = QueryFragment(QueryType.ProxyRead, ownedBy, abi.encode(0xff)); // Max depth 255
-fragments[2] = QueryFragment(QueryType.HasValue, name, abi.encode("Alice));
+fragments[2] = QueryFragment(QueryType.HasValue, name, abi.encode("Alice"));
 
 uint256[] memory entities = LibQuery.query(fragments);
 ```
