@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import { IEntityIndexer } from "./interfaces/IEntityIndexer.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 import { IComponent } from "./interfaces/IComponent.sol";
 
@@ -17,17 +16,19 @@ import { LibTypes } from "./LibTypes.sol";
  * Everyone has read access.
  */
 abstract contract BareComponent is IComponent {
+  error BareComponent__NotImplemented();
+
   /** Reference to the World contract this component is registered in */
   address public world;
 
   /** Owner of the component has write access and can given write access to other addresses */
-  address _owner;
+  address internal _owner;
 
   /** Addresses with write access to this component */
   mapping(address => bool) public writeAccess;
 
   /** Mapping from entity id to value in this component */
-  mapping(uint256 => bytes) private entityToValue;
+  mapping(uint256 => bytes) internal entityToValue;
 
   /** Public identifier of this component */
   uint256 public id;
@@ -52,7 +53,7 @@ abstract contract BareComponent is IComponent {
   }
 
   /** Get the owner of this component */
-  function owner() public view returns (address) {
+  function owner() public view override returns (address) {
     return _owner;
   }
 
@@ -61,7 +62,7 @@ abstract contract BareComponent is IComponent {
    * Can only be called by the current owner.
    * @param newOwner Address of the new owner.
    */
-  function transferOwnership(address newOwner) public onlyOwner {
+  function transferOwnership(address newOwner) public override onlyOwner {
     writeAccess[msg.sender] = false;
     _owner = newOwner;
     writeAccess[newOwner] = true;
@@ -81,7 +82,7 @@ abstract contract BareComponent is IComponent {
    * Can only be called by the owner of this component.
    * @param writer Address to grant write access to.
    */
-  function authorizeWriter(address writer) public onlyOwner {
+  function authorizeWriter(address writer) public override onlyOwner {
     writeAccess[writer] = true;
   }
 
@@ -90,7 +91,7 @@ abstract contract BareComponent is IComponent {
    * Can only be called by the owner of this component.
    * @param writer Address to revoke write access .
    */
-  function unauthorizeWriter(address writer) public onlyOwner {
+  function unauthorizeWriter(address writer) public override onlyOwner {
     delete writeAccess[writer];
   }
 
@@ -106,7 +107,7 @@ abstract contract BareComponent is IComponent {
    * @param entity Entity to set the value for.
    * @param value Value to set for the given entity.
    */
-  function set(uint256 entity, bytes memory value) public onlyWriter {
+  function set(uint256 entity, bytes memory value) public override onlyWriter {
     _set(entity, value);
   }
 
@@ -116,7 +117,7 @@ abstract contract BareComponent is IComponent {
    * Can only be called by addresses with write access to this component.
    * @param entity Entity to remove from this component.
    */
-  function remove(uint256 entity) public onlyWriter {
+  function remove(uint256 entity) public override onlyWriter {
     _remove(entity);
   }
 
@@ -124,7 +125,7 @@ abstract contract BareComponent is IComponent {
    * Check whether the given entity has a value in this component.
    * @param entity Entity to check whether it has a value in this component for.
    */
-  function has(uint256 entity) public view returns (bool) {
+  function has(uint256 entity) public view virtual override returns (bool) {
     return entityToValue[entity].length != 0;
   }
 
@@ -132,21 +133,21 @@ abstract contract BareComponent is IComponent {
    * Get the raw (abi-encoded) value of the given entity in this component.
    * @param entity Entity to get the raw value in this component for.
    */
-  function getRawValue(uint256 entity) public view returns (bytes memory) {
+  function getRawValue(uint256 entity) public view virtual override returns (bytes memory) {
     // Return the entity's component value
     return entityToValue[entity];
   }
 
-  function getEntities() public pure returns (uint256[] memory) {
-    revert("getEntities not implemented in BareComponent");
+  function getEntities() public view virtual override returns (uint256[] memory) {
+    revert BareComponent__NotImplemented();
   }
 
-  function getEntitiesWithValue(bytes memory) public pure returns (uint256[] memory) {
-    revert("getEntitiesWithValue not implemented in BareComponent");
+  function getEntitiesWithValue(bytes memory) public view virtual override returns (uint256[] memory) {
+    revert BareComponent__NotImplemented();
   }
 
-  function registerIndexer(address) external pure {
-    revert("registerIndexer not implemented in BareComponent");
+  function registerIndexer(address) external virtual {
+    revert BareComponent__NotImplemented();
   }
 
   /**
@@ -157,7 +158,7 @@ abstract contract BareComponent is IComponent {
    * @param entity Entity to set the value for.
    * @param value Value to set for the given entity.
    */
-  function _set(uint256 entity, bytes memory value) internal {
+  function _set(uint256 entity, bytes memory value) internal virtual {
     // Store the entity's value;
     entityToValue[entity] = value;
 
@@ -172,7 +173,7 @@ abstract contract BareComponent is IComponent {
    * without requiring explicit write access.
    * @param entity Entity to remove from this component.
    */
-  function _remove(uint256 entity) internal {
+  function _remove(uint256 entity) internal virtual {
     // Remove the entity from the mapping
     delete entityToValue[entity];
 
