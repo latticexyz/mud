@@ -13,13 +13,18 @@ import {
   ack,
   Ack,
   InputType,
+  NetworkComponentUpdate,
+  SystemCall,
+  isSystemCallEvent,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, filter, from, map, Observable, Subject, timer } from "rxjs";
 import {
   Component,
   Components,
+  EntityID,
   EntityIndex,
   getComponentEntities,
+  getComponentValue,
   getComponentValueStrict,
   removeComponent,
   Schema,
@@ -30,18 +35,33 @@ import {
 import { computed, IComputedValue } from "mobx";
 import { keccak256, toEthAddress } from "@latticexyz/utils";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
-import { Contract, ContractInterface, Signer } from "ethers";
+import { BigNumber, Contract, ContractInterface, Signer } from "ethers";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { defineStringComponent } from "../components";
+import { compact, keys, toLower } from "lodash";
 
 export type SetupContractConfig = NetworkConfig &
   Omit<SyncWorkerConfig, "worldContract" | "mappings"> & {
     worldAddress: string;
     devMode?: boolean;
   };
+
+export type DecodedNetworkComponentUpdate = Omit<Omit<NetworkComponentUpdate, "entity">, "component"> & {
+  entity: EntityIndex;
+  component: Component<Schema>;
+};
+
+export type DecodedSystemCall<
+  T extends { [key: string]: Contract } = { [key: string]: Contract },
+  C extends Components = Components
+> = Omit<SystemCall<C>, "updates"> & {
+  systemId: keyof T;
+  args: Record<string, unknown>;
+  updates: DecodedNetworkComponentUpdate[];
+};
 
 export type ContractComponent = Component<Schema, { contractId: string }>;
 
@@ -59,7 +79,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   world: World,
   components: C,
   SystemAbis: { [key in keyof SystemTypes]: ContractInterface },
-  options?: { initialGasPrice?: number }
+  options?: { initialGasPrice?: number; fetchSystemCalls?: boolean }
 ) {
   const SystemsRegistry = defineStringComponent(world, {
     id: "SystemsRegistry",
@@ -108,7 +128,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   });
   world.registerDisposer(disposeTxQueue);
 
-  const { systems, registerSystem } = createSystemExecutor<SystemTypes>(
+  const { systems, registerSystem, getSystemContract } = createSystemExecutor<SystemTypes>(
     world,
     network,
     SystemsRegistry,
@@ -117,6 +137,15 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     {
       devMode: networkConfig.devMode,
     }
+  );
+
+  const decodeNetworkComponentUpdate = createDecodeNetworkComponentUpdate(world, components, mappings);
+  const { systemCallStreams, decodeAndEmitSystemCall } = createSystemCallStreams(
+    world,
+    keys(SystemAbis),
+    SystemsRegistry,
+    getSystemContract,
+    decodeNetworkComponentUpdate
   );
 
   // Create sync worker
@@ -131,11 +160,12 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
         worldContract: contractsConfig.World,
         initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
         disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
+        fetchSystemCalls: options?.fetchSystemCalls,
       },
     });
   }
 
-  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$);
+  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$, decodeAndEmitSystemCall);
 
   const encoders = networkConfig.encoders
     ? createEncoders(world, ComponentsRegistry, signerOrProvider)
@@ -148,6 +178,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     network,
     startSync,
     systems,
+    systemCallStreams,
     gasPriceInput$,
     ecsEvent$: ecsEvents$.pipe(concatMap((updates) => from(updates))),
     mappings,
@@ -194,7 +225,8 @@ function applyNetworkUpdates<C extends Components>(
   components: C,
   ecsEvents$: Observable<NetworkEvent<C>[]>,
   mappings: Mappings<C>,
-  ack$: Subject<Ack>
+  ack$: Subject<Ack>,
+  decodeAndEmitSystemCall: (event: SystemCall<C>) => void
 ) {
   const txReduced$ = new Subject<string>();
 
@@ -210,21 +242,24 @@ function applyNetworkUpdates<C extends Components>(
   const delayQueueSub = ecsEvents$.subscribe((updates) => {
     processing = true;
     for (const update of updates) {
-      if (!isNetworkComponentUpdateEvent<C>(update)) continue;
-      if (update.lastEventInTx) txReduced$.next(update.txHash);
+      if (isNetworkComponentUpdateEvent<C>(update)) {
+        if (update.lastEventInTx) txReduced$.next(update.txHash);
 
-      const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
-      const componentKey = mappings[update.component];
-      if (!componentKey) {
-        console.warn("Unknown component:", update);
-        continue;
-      }
+        const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
+        const componentKey = mappings[update.component];
+        if (!componentKey) {
+          console.warn("Unknown component:", update);
+          continue;
+        }
 
-      if (update.value === undefined) {
-        // undefined value means component removed
-        removeComponent(components[componentKey] as Component<Schema>, entityIndex);
-      } else {
-        setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
+        if (update.value === undefined) {
+          // undefined value means component removed
+          removeComponent(components[componentKey] as Component<Schema>, entityIndex);
+        } else {
+          setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
+        }
+      } else if (isSystemCallEvent(update)) {
+        decodeAndEmitSystemCall(update);
       }
     }
     // Send "ack" after every processed batch of events to process faster than ever 100ms
@@ -237,4 +272,69 @@ function applyNetworkUpdates<C extends Components>(
     ackSub?.unsubscribe();
   });
   return { txReduced$: txReduced$.asObservable() };
+}
+
+function createSystemCallStreams<C extends Components, SystemTypes extends { [key: string]: Contract }>(
+  world: World,
+  systemNames: string[],
+  systemsRegistry: Component<{ value: Type.String }>,
+  getSystemContract: (systemId: string) => { name: string; contract: Contract },
+  decodeNetworkComponentUpdate: ReturnType<typeof createDecodeNetworkComponentUpdate>
+) {
+  const systemCallStreams = systemNames.reduce(
+    (streams, systemId) => ({ ...streams, [systemId]: new Subject<DecodedSystemCall<SystemTypes>>() }),
+    {} as Record<string, Subject<DecodedSystemCall<SystemTypes, C>>>
+  );
+
+  return {
+    systemCallStreams,
+    decodeAndEmitSystemCall: (systemCall: SystemCall<C>) => {
+      const { tx } = systemCall;
+
+      const systemEntityIndex = world.entityToIndex.get(toLower(BigNumber.from(tx.to).toHexString()) as EntityID);
+      if (!systemEntityIndex) return;
+
+      const hashedSystemId = getComponentValue(systemsRegistry, systemEntityIndex)?.value;
+      if (!hashedSystemId) return;
+
+      const { name, contract } = getSystemContract(hashedSystemId);
+
+      const decodedTx = contract.interface.parseTransaction({ data: tx.data, value: tx.value });
+
+      // If this is a newly registered System make a new Subject
+      if (!systemCallStreams[name]) {
+        systemCallStreams[name] = new Subject<DecodedSystemCall<SystemTypes>>();
+      }
+
+      systemCallStreams[name].next({
+        ...systemCall,
+        updates: compact(systemCall.updates.map(decodeNetworkComponentUpdate)),
+        systemId: name,
+        args: decodedTx.args,
+      });
+    },
+  };
+}
+
+function createDecodeNetworkComponentUpdate<C extends Components>(
+  world: World,
+  components: C,
+  mappings: Mappings<C>
+): (update: NetworkComponentUpdate) => DecodedNetworkComponentUpdate | undefined {
+  return (update: NetworkComponentUpdate) => {
+    const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
+    const componentKey = mappings[update.component];
+    const component = components[componentKey] as Component<Schema>;
+
+    if (!componentKey) {
+      console.error(`Component mapping not found for component ID ${update.component} ${JSON.stringify(update.value)}`);
+      return undefined;
+    }
+
+    return {
+      ...update,
+      entity: entityIndex,
+      component,
+    };
+  };
 }
