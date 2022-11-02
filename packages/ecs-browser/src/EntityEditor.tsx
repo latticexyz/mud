@@ -26,7 +26,7 @@ export const EntityEditor = observer(
   }: {
     entityId: EntityID;
     layers: Layers;
-    setContractComponentValue: SetContractComponentFunction<Schema>;
+    setContractComponentValue?: SetContractComponentFunction<Schema>;
     devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
     world: World;
     clearDevHighlights: () => void;

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layers, Type, Component, Schema, World, EntityID } from "@latticexyz/recs";
+import { Layers, Type, Component, Schema, World, EntityID, defineComponent } from "@latticexyz/recs";
 import { BrowserContainer, SmallHeadline } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
 import { EntityEditor } from "./EntityEditor";
@@ -14,26 +14,29 @@ import { Coord } from "./shared";
  */
 export const Browser = observer(
   ({
-    entities,
     layers,
     setContractComponentValue,
-    devHighlightComponent,
-    hoverHighlightComponent,
     prototypeComponent,
     nameComponent,
     spawnPrototypeAt,
     world,
   }: {
-    entities: EntityID[];
     layers: Layers;
-    setContractComponentValue: SetContractComponentFunction<Schema>;
-    devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
-    hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
+    setContractComponentValue?: SetContractComponentFunction<Schema>;
     prototypeComponent?: Component<{ value: Type.StringArray }>;
     nameComponent?: Component<{ value: Type.String }>;
     spawnPrototypeAt?: (prototypeId: EntityID, position: Coord) => void;
     world: World;
   }) => {
+    const devHighlightComponent = defineComponent(world, {
+      value: Type.OptionalNumber,
+    });
+
+    const hoverHighlightComponent = defineComponent(world, {
+      x: Type.OptionalNumber,
+      y: Type.OptionalNumber,
+    });
+
     const [filteredEntities, setFilteredEntities] = useState<EntityID[]>([]);
     const [overflow, setOverflow] = useState(0);
     const clearDevHighlights = useClearDevHighlights(devHighlightComponent);
@@ -43,7 +46,7 @@ export const Browser = observer(
         <QueryBuilder
           devHighlightComponent={devHighlightComponent}
           hoverHighlightComponent={hoverHighlightComponent}
-          allEntities={entities}
+          allEntities={world.entities}
           setFilteredEntities={setFilteredEntities}
           layers={layers}
           world={world}
