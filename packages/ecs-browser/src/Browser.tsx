@@ -7,7 +7,7 @@ import { QueryBuilder } from "./QueryBuilder";
 import { useClearDevHighlights } from "./hooks";
 import { observer } from "mobx-react-lite";
 import { PrototypeCreator } from "./PrototypeCreator";
-import { Coord } from "@latticexyz/phaserx";
+import { Coord } from "./shared";
 
 /**
  * An Entity Browser for viewing/editiing Component values.

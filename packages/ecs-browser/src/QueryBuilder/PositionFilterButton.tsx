@@ -1,7 +1,7 @@
 import { Component, Type } from "@latticexyz/recs";
 import React, { useEffect, useState } from "react";
 import { ComponentBrowserButton } from "../StyledComponents";
-import { pixelCoordToTileCoord } from "@latticexyz/phaserx";
+import { pixelCoordToTileCoord } from "../shared";
 
 export const PositionFilterButton: React.FC<{
   editQuery: (queryText: string) => void;
