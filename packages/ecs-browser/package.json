@@ -20,7 +20,6 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "@latticexyz/phaserx": "^1.24.1",
     "@latticexyz/recs": "^1.24.1",
     "@latticexyz/std-client": "^1.24.1",
     "@latticexyz/utils": "^1.24.1",
