@@ -10,8 +10,7 @@ import {
   EntityID,
   getEntityComponents,
 } from "@latticexyz/recs";
-import { Collapse } from "react-collapse";
-import { ComponentBrowserButton, EntityEditorContainer } from "./StyledComponents";
+import { Collapse, ComponentBrowserButton, EntityEditorContainer } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
 import { ComponentEditor } from "./ComponentEditor";
 import { observer } from "mobx-react-lite";
@@ -70,7 +69,7 @@ export const EntityEditor = observer(
             {opened ? <>&#9660;</> : <>&#9654;</>}
           </ComponentBrowserButton>
         </div>
-        <Collapse isOpened={opened}>
+        <Collapse aria-hidden={opened ? "false" : "true"} opened={opened}>
           {[...entityComponents.values()]
             .filter((c) => c.id !== devHighlightComponent.id)
             .map((c) => (
