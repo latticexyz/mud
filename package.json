@@ -49,7 +49,7 @@
     }
   },
   "scripts": {
-    "prepare": "husky install && (forge --version || yarn foundryup) && yarn lerna run prepare && cd packages/cli && npm link && cd ..",
+    "prepare": "husky install && (forge --version || yarn foundryup) && yarn lerna run prepare",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
