@@ -7,6 +7,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/faucet"
 	"latticexyz/mud/packages/services/pkg/systems"
+	"latticexyz/mud/packages/services/pkg/utils"
 	pb "latticexyz/mud/packages/services/protobuf/go/faucet"
 	"math"
 	"math/big"
@@ -56,6 +57,39 @@ func (server *faucetServer) VerifyTimeForDrip(address string) error {
 ///
 /// gRPC ENDPOINTS
 ///
+
+///
+/// ADMIN ENDPOINTS
+///
+
+func (server *faucetServer) SetLinkedTwitter(ctx context.Context, request *pb.SetLinkedTwitterRequest) (*pb.SetLinkedTwitterResponse, error) {
+	if request.Username == "" {
+		return nil, fmt.Errorf("username required")
+	}
+	if request.Address == "" {
+		return nil, fmt.Errorf("address required")
+	}
+
+	// Verify that the signature is valid and an admin is sending this request.
+	verified, recoveredAddress, err := utils.VerifySig(
+		crypto.PubkeyToAddress(*server.publicKey).Hex(),
+		request.Signature,
+		[]byte("faucet-admin"),
+	)
+	if err != nil {
+		server.logger.Info("error while recovering faucet admin signature", zap.Error(err))
+		return nil, fmt.Errorf("error while recovering faucet admin signature: %s", err.Error())
+	}
+	if !verified {
+		server.logger.Info("faucet admin signature not verified", zap.String("recoveredAddress", recoveredAddress))
+		return nil, fmt.Errorf("faucet admin signature not verified; recovered address: %s", recoveredAddress)
+	}
+
+	// Directly set the mapping of address <> username.
+	faucet.LinkAddressAndUsername(request.Address, request.Username)
+
+	return &pb.SetLinkedTwitterResponse{}, nil
+}
 
 func (server *faucetServer) TimeUntilDrip(ctx context.Context, request *pb.DripRequest) (*pb.TimeUntilDripResponse, error) {
 	if request.Username == "" {
