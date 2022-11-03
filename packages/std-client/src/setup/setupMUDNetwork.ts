@@ -226,7 +226,7 @@ function applyNetworkUpdates<C extends Components>(
   ecsEvents$: Observable<NetworkEvent<C>[]>,
   mappings: Mappings<C>,
   ack$: Subject<Ack>,
-  decodeAndEmitSystemCall: (event: SystemCall<C>) => void
+  decodeAndEmitSystemCall?: (event: SystemCall<C>) => void
 ) {
   const txReduced$ = new Subject<string>();
 
@@ -258,7 +258,7 @@ function applyNetworkUpdates<C extends Components>(
         } else {
           setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
         }
-      } else if (isSystemCallEvent(update)) {
+      } else if (decodeAndEmitSystemCall && isSystemCallEvent(update)) {
         decodeAndEmitSystemCall(update);
       }
     }
