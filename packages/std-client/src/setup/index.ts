@@ -1,2 +1,3 @@
-export { setupMUDNetwork } from "./setupMUDNetwork";
-export type { SetupContractConfig } from "./types";
+export * from "./setupMUDNetwork";
+export * from "./utils";
+export * from "./types";
