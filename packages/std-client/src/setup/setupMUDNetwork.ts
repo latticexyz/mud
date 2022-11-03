@@ -4,62 +4,33 @@ import {
   Mappings,
   createTxQueue,
   createSyncWorker,
-  createEncoder,
   createSystemExecutor,
-  NetworkConfig,
-  SyncWorkerConfig,
-  isNetworkComponentUpdateEvent,
-  NetworkEvent,
-  ack,
   Ack,
   InputType,
 } from "@latticexyz/network";
-import { BehaviorSubject, concatMap, filter, from, map, Observable, Subject, timer } from "rxjs";
-import {
-  Component,
-  Components,
-  EntityIndex,
-  getComponentEntities,
-  getComponentValueStrict,
-  removeComponent,
-  Schema,
-  setComponent,
-  Type,
-  World,
-} from "@latticexyz/recs";
-import { computed, IComputedValue } from "mobx";
-import { keccak256, toEthAddress } from "@latticexyz/utils";
-import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
-import { Contract, ContractInterface, Signer } from "ethers";
-import { Component as SolecsComponent } from "@latticexyz/solecs";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
+import { World } from "@latticexyz/recs";
+import { computed } from "mobx";
+import { keccak256 } from "@latticexyz/utils";
+import { Contract, ContractInterface } from "ethers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { defineStringComponent } from "../components";
-
-export type SetupContractConfig = NetworkConfig &
-  Omit<SyncWorkerConfig, "worldContract" | "mappings"> & {
-    worldAddress: string;
-    devMode?: boolean;
-  };
-
-export type ContractComponent = Component<Schema, { contractId: string }>;
-
-export type ContractComponents = {
-  [key: string]: ContractComponent;
-};
-
-export type NetworkComponents<C extends ContractComponents> = C & {
-  SystemsRegistry: Component<{ value: Type.String }>;
-  ComponentsRegistry: Component<{ value: Type.String }>;
-};
+import { keys } from "lodash";
+import { ContractComponent, ContractComponents, NetworkComponents, SetupContractConfig } from "./types";
+import {
+  applyNetworkUpdates,
+  createDecodeNetworkComponentUpdate,
+  createEncoders,
+  createSystemCallStreams,
+} from "./utils";
 
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
   world: World,
   components: C,
   SystemAbis: { [key in keyof SystemTypes]: ContractInterface },
-  options?: { initialGasPrice?: number }
+  options?: { initialGasPrice?: number; fetchSystemCalls?: boolean }
 ) {
   const SystemsRegistry = defineStringComponent(world, {
     id: "SystemsRegistry",
@@ -108,7 +79,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   });
   world.registerDisposer(disposeTxQueue);
 
-  const { systems, registerSystem } = createSystemExecutor<SystemTypes>(
+  const { systems, registerSystem, getSystemContract } = createSystemExecutor<SystemTypes>(
     world,
     network,
     SystemsRegistry,
@@ -117,6 +88,15 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     {
       devMode: networkConfig.devMode,
     }
+  );
+
+  const decodeNetworkComponentUpdate = createDecodeNetworkComponentUpdate(world, components, mappings);
+  const { systemCallStreams, decodeAndEmitSystemCall } = createSystemCallStreams(
+    world,
+    keys(SystemAbis),
+    SystemsRegistry,
+    getSystemContract,
+    decodeNetworkComponentUpdate
   );
 
   // Create sync worker
@@ -131,11 +111,12 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
         worldContract: contractsConfig.World,
         initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
         disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
+        fetchSystemCalls: options?.fetchSystemCalls,
       },
     });
   }
 
-  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$);
+  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$, decodeAndEmitSystemCall);
 
   const encoders = networkConfig.encoders
     ? createEncoders(world, ComponentsRegistry, signerOrProvider)
@@ -148,93 +129,11 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     network,
     startSync,
     systems,
+    systemCallStreams,
     gasPriceInput$,
     ecsEvent$: ecsEvents$.pipe(concatMap((updates) => from(updates))),
     mappings,
     registerComponent,
     registerSystem,
   };
-}
-
-async function createEncoders(
-  world: World,
-  components: Component<{ value: Type.String }>,
-  signerOrProvider: IComputedValue<JsonRpcProvider | Signer>
-) {
-  const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
-
-  async function fetchAndCreateEncoder(entity: EntityIndex) {
-    const componentAddress = toEthAddress(world.entities[entity]);
-    const componentId = getComponentValueStrict(components, entity).value;
-    console.info("[SyncUtils] Creating encoder for " + componentAddress);
-    const componentContract = new Contract(
-      componentAddress,
-      ComponentAbi.abi,
-      signerOrProvider.get()
-    ) as SolecsComponent;
-    const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
-    encoders[componentId] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
-  }
-
-  // Initial setup
-  for (const entity of getComponentEntities(components)) fetchAndCreateEncoder(entity);
-
-  // Keep up to date
-  const subscription = components.update$.subscribe((update) => fetchAndCreateEncoder(update.entity));
-  world.registerDisposer(() => subscription?.unsubscribe());
-
-  return encoders;
-}
-
-/**
- * Sets up synchronization between contract components and client components
- */
-function applyNetworkUpdates<C extends Components>(
-  world: World,
-  components: C,
-  ecsEvents$: Observable<NetworkEvent<C>[]>,
-  mappings: Mappings<C>,
-  ack$: Subject<Ack>
-) {
-  const txReduced$ = new Subject<string>();
-
-  // Send "ack" to tell the sync worker we're ready to receive events while not processing
-  let processing = false;
-  const ackSub = timer(0, 100)
-    .pipe(
-      filter(() => !processing),
-      map(() => ack)
-    )
-    .subscribe(ack$);
-
-  const delayQueueSub = ecsEvents$.subscribe((updates) => {
-    processing = true;
-    for (const update of updates) {
-      if (!isNetworkComponentUpdateEvent<C>(update)) continue;
-      if (update.lastEventInTx) txReduced$.next(update.txHash);
-
-      const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
-      const componentKey = mappings[update.component];
-      if (!componentKey) {
-        console.warn("Unknown component:", update);
-        continue;
-      }
-
-      if (update.value === undefined) {
-        // undefined value means component removed
-        removeComponent(components[componentKey] as Component<Schema>, entityIndex);
-      } else {
-        setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
-      }
-    }
-    // Send "ack" after every processed batch of events to process faster than ever 100ms
-    ack$.next(ack);
-    processing = false;
-  });
-
-  world.registerDisposer(() => {
-    delayQueueSub?.unsubscribe();
-    ackSub?.unsubscribe();
-  });
-  return { txReduced$: txReduced$.asObservable() };
 }

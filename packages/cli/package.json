@@ -14,7 +14,6 @@
   },
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
-    "globalinstall": "yarn prepare && npm link",
     "build": "rimraf dist && tsc -p . && chmod u+x dist/index.js",
     "link": "yarn link",
     "test": "echo 'todo: add tests'",
