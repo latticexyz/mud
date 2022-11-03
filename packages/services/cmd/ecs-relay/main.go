@@ -16,8 +16,10 @@ var (
 	idleDisconnectInterval = flag.Int("idle-disconnect-interval", 60, "Time in seconds for how often to disconnect idle clients. Defaults to 60s")
 	messageDriftTime       = flag.Int("message-drift-time", 5, "Time in seconds that is acceptable as drift before message is not relayed. Defaults to 5s")
 	minAccountBalance      = flag.Uint64("min-account-balance", 1000000000000000, "Minimum balance in wei for an account to get its messages relayed. Defaults to 0.001 ETH")
+	maxDataSize            = flag.Int("max-data-size", 1024, "Size limit for message data. Defaults to 1024 bytes")
 	verifyMessageSignature = flag.Bool("verify-msg-sig", false, "Whether to service-side verify the signature on each relayed message. Defaults to false.")
 	verifyAccountBalance   = flag.Bool("verify-account-balance", false, "Whether to service-side verify that the account has sufficient balance when relaying message. Defaults to false.")
+	verifyDataSize         = flag.Bool("verify-data-size", false, "Whether to service-side verify that size of the data of messages doesn't surpass max-data-size. Defaults to false.")
 	messageRateLimit       = flag.Int("msg-rate-limit", 10, "Rate limit for messages per second that a single client can push to be relayed. Defaults to 10")
 	metricsPort            = flag.Int("metrics-port", 6060, "Prometheus metrics http handler port. Defaults to port 6060")
 )
@@ -37,8 +39,10 @@ func main() {
 		IdleDisconnectInterval: *idleDisconnectInterval,
 		MessageDriftTime:       *messageDriftTime,
 		MinAccountBalance:      *minAccountBalance,
+		MaxDataSize:            *maxDataSize,
 		VerifyMessageSignature: *verifyMessageSignature,
 		VerifyAccountBalance:   *verifyAccountBalance,
+		VerifyDataSize:         *verifyDataSize,
 		MessageRateLimit:       *messageRateLimit,
 	}
 
