@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "1.20.0",
+  "version": "1.24.1",
   "description": "Command line interface for mud",
   "main": "dist/index.js",
   "license": "MIT",
@@ -14,7 +14,6 @@
   },
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
-    "globalinstall": "yarn prepare && npm link",
     "build": "rimraf dist && tsc -p . && chmod u+x dist/index.js",
     "link": "yarn link",
     "test": "echo 'todo: add tests'",
@@ -36,9 +35,9 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "@latticexyz/solecs": "^1.20.0",
-    "@latticexyz/std-contracts": "^1.20.0",
-    "@latticexyz/utils": "^1.20.0",
+    "@latticexyz/solecs": "^1.24.1",
+    "@latticexyz/std-contracts": "^1.24.1",
+    "@latticexyz/utils": "^1.24.1",
     "chalk": "^5.0.1",
     "clear": "^0.1.0",
     "commander": "^9.2.0",

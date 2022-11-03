@@ -2,8 +2,8 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { keccak256, sleep } from "@latticexyz/utils";
 import { computed } from "mobx";
-import { SyncWorker } from "./SyncWorker";
-import { Subject, Subscription } from "rxjs";
+import { ack, Input, InputType, SyncWorker } from "./SyncWorker";
+import { concatMap, from, map, Subject, Subscription, timer } from "rxjs";
 import { isNetworkComponentUpdateEvent, NetworkComponentUpdate, NetworkEvents, SyncWorkerConfig } from "../types";
 import { Components, EntityID } from "@latticexyz/recs";
 import { createCacheStore, storeEvent } from "./CacheStore";
@@ -110,46 +110,58 @@ jest.mock("./syncUtils", () => ({
 
 // Tests
 describe("Sync.worker", () => {
-  let input$: Subject<SyncWorkerConfig>;
+  let input$: Subject<Input>;
   let output: jest.Mock;
   let subscription: Subscription;
+  let ackSubscription: Subscription;
   let worker: SyncWorker<Components>;
 
   beforeEach(async () => {
-    input$ = new Subject<SyncWorkerConfig>();
+    input$ = new Subject<Input>();
     worker = new SyncWorker();
 
+    // "ack" stream
+    ackSubscription = timer(0, 1)
+      .pipe(map(() => ack))
+      .subscribe(input$);
+
     output = jest.fn();
-    subscription = worker.work(input$).subscribe((e) => {
-      if (isNetworkComponentUpdateEvent(e) && e.component !== keccak256("component.LoadingState")) {
-        console.log("Called with", e);
-        output(e);
-      }
-    });
+    subscription = worker
+      .work(input$)
+      .pipe(concatMap((updates) => from(updates)))
+      .subscribe((e) => {
+        if (isNetworkComponentUpdateEvent(e) && e.component !== keccak256("component.LoadingState")) {
+          output(e);
+        }
+      });
   });
 
   afterEach(() => {
     subscription?.unsubscribe();
+    ackSubscription?.unsubscribe();
     jest.clearAllMocks();
   });
 
   it("should report the current loading state via the `component.LoadingState` component", async () => {
     const freshOutput = jest.fn();
     const freshWorker = new SyncWorker();
-    const freshInput$ = new Subject<SyncWorkerConfig>();
+    const freshInput$ = new Subject<Input>();
 
     const sub = (subscription = freshWorker.work(freshInput$).subscribe(freshOutput));
 
     freshInput$.next({
-      snapshotServiceUrl: "",
-      chainId: 4242,
-      worldContract: { address: "0x00", abi: [] },
-      provider: {
-        jsonRpcUrl: "",
-        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+      type: InputType.Config,
+      data: {
+        snapshotServiceUrl: "",
         chainId: 4242,
+        worldContract: { address: "0x00", abi: [] },
+        provider: {
+          jsonRpcUrl: "",
+          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+          chainId: 4242,
+        },
+        initialBlockNumber: 0,
       },
-      initialBlockNumber: 0,
     });
 
     const finalUpdate: NetworkComponentUpdate = {
@@ -164,24 +176,27 @@ describe("Sync.worker", () => {
 
     await sleep(0);
     blockNumber$.next(101);
-    await sleep(0);
-    expect(freshOutput).toHaveBeenCalledWith(finalUpdate);
+    await sleep(50);
+    expect(freshOutput).toHaveBeenCalledWith(expect.arrayContaining([finalUpdate]));
 
     sub?.unsubscribe();
   });
 
   it("should pass live events to the output", async () => {
     input$.next({
-      snapshotServiceUrl: "",
-      streamServiceUrl: "",
-      chainId: 4242,
-      worldContract: { address: "0x00", abi: [] },
-      provider: {
-        jsonRpcUrl: "",
-        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+      type: InputType.Config,
+      data: {
+        snapshotServiceUrl: "",
+        streamServiceUrl: "",
         chainId: 4242,
+        worldContract: { address: "0x00", abi: [] },
+        provider: {
+          jsonRpcUrl: "",
+          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+          chainId: 4242,
+        },
+        initialBlockNumber: 0,
       },
-      initialBlockNumber: 0,
     });
 
     await sleep(0);
@@ -199,6 +214,7 @@ describe("Sync.worker", () => {
     };
 
     latestEvent$.next(event);
+    await sleep(50);
 
     // Expect output to contain live event
     expect(output).toHaveBeenCalledWith(event);
@@ -206,16 +222,19 @@ describe("Sync.worker", () => {
 
   it("should sync live events from rpc if streaming service is not available", async () => {
     input$.next({
-      snapshotServiceUrl: "",
-      streamServiceUrl: "",
-      chainId: 4242,
-      worldContract: { address: "0x00", abi: [] },
-      provider: {
+      type: InputType.Config,
+      data: {
+        snapshotServiceUrl: "",
+        streamServiceUrl: "",
         chainId: 4242,
-        jsonRpcUrl: "",
-        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        worldContract: { address: "0x00", abi: [] },
+        provider: {
+          chainId: 4242,
+          jsonRpcUrl: "",
+          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        },
+        initialBlockNumber: 0,
       },
-      initialBlockNumber: 0,
     });
     await sleep(0);
     expect(createLatestEventStreamRPC).toHaveBeenCalled();
@@ -224,16 +243,19 @@ describe("Sync.worker", () => {
 
   it("should sync live events from streaming service if streaming service is available", async () => {
     input$.next({
-      snapshotServiceUrl: "",
-      streamServiceUrl: "http://localhost:50052",
-      chainId: 4242,
-      worldContract: { address: "0x00", abi: [] },
-      provider: {
+      type: InputType.Config,
+      data: {
+        snapshotServiceUrl: "",
+        streamServiceUrl: "http://localhost:50052",
         chainId: 4242,
-        jsonRpcUrl: "",
-        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        worldContract: { address: "0x00", abi: [] },
+        provider: {
+          chainId: 4242,
+          jsonRpcUrl: "",
+          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        },
+        initialBlockNumber: 0,
       },
-      initialBlockNumber: 0,
     });
     await sleep(0);
     expect(createLatestEventStreamService).toHaveBeenCalled();
@@ -241,21 +263,24 @@ describe("Sync.worker", () => {
 
   it("should sync from the snapshot if the snapshot block number is more than 100 blocks newer than then cache", async () => {
     input$.next({
-      snapshotServiceUrl: "http://localhost:50062",
-      streamServiceUrl: "",
-      chainId: 4242,
-      worldContract: { address: "0x00", abi: [] },
-      provider: {
+      type: InputType.Config,
+      data: {
+        snapshotServiceUrl: "http://localhost:50062",
+        streamServiceUrl: "",
         chainId: 4242,
-        jsonRpcUrl: "",
-        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        worldContract: { address: "0x00", abi: [] },
+        provider: {
+          chainId: 4242,
+          jsonRpcUrl: "",
+          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        },
+        initialBlockNumber: 0,
       },
-      initialBlockNumber: 0,
     });
 
     await sleep(0);
     blockNumber$.next(101);
-    await sleep(0);
+    await sleep(50);
 
     // Expect output to contain the events from the cache
     expect(output).toHaveBeenCalledTimes(1);
@@ -269,21 +294,24 @@ describe("Sync.worker", () => {
 
   it("should sync from the cache if the snapshot service is not available", async () => {
     input$.next({
-      snapshotServiceUrl: "",
-      streamServiceUrl: "",
-      chainId: 4242,
-      worldContract: { address: "0x00", abi: [] },
-      provider: {
+      type: InputType.Config,
+      data: {
+        snapshotServiceUrl: "",
+        streamServiceUrl: "",
         chainId: 4242,
-        jsonRpcUrl: "",
-        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        worldContract: { address: "0x00", abi: [] },
+        provider: {
+          chainId: 4242,
+          jsonRpcUrl: "",
+          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        },
+        initialBlockNumber: 0,
       },
-      initialBlockNumber: 0,
     });
 
     await sleep(0);
     blockNumber$.next(101);
-    await sleep(0);
+    await sleep(50);
 
     // Expect output to contain the events from the cache
     expect(output).toHaveBeenCalledTimes(1);
@@ -297,23 +325,26 @@ describe("Sync.worker", () => {
 
   it("should fetch the state diff between cache/snapshot and current block number", async () => {
     input$.next({
-      snapshotServiceUrl: "",
-      streamServiceUrl: "",
-      chainId: 4242,
-      worldContract: { address: "0x00", abi: [] },
-      provider: {
+      type: InputType.Config,
+      data: {
+        snapshotServiceUrl: "",
+        streamServiceUrl: "",
         chainId: 4242,
-        jsonRpcUrl: "",
-        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        worldContract: { address: "0x00", abi: [] },
+        provider: {
+          chainId: 4242,
+          jsonRpcUrl: "",
+          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        },
+        initialBlockNumber: 0,
       },
-      initialBlockNumber: 0,
     });
 
     const currentBlockNumber = 1001;
 
     await sleep(0);
     blockNumber$.next(currentBlockNumber);
-    await sleep(0);
+    await sleep(50);
 
     // Expect state between cache block number and current block number to have been fetched
     expect(syncUtils.fetchEventsInBlockRangeChunked).toHaveBeenLastCalledWith(
@@ -335,17 +366,21 @@ describe("Sync.worker", () => {
 
   it("should first load from cache, then fetch the state gap, then pass live events", async () => {
     input$.next({
-      snapshotServiceUrl: "",
-      streamServiceUrl: "",
-      chainId: 4242,
-      worldContract: { address: "0x00", abi: [] },
-      provider: {
+      type: InputType.Config,
+      data: {
+        snapshotServiceUrl: "",
+        streamServiceUrl: "",
         chainId: 4242,
-        jsonRpcUrl: "",
-        options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        worldContract: { address: "0x00", abi: [] },
+        provider: {
+          chainId: 4242,
+          jsonRpcUrl: "",
+          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
+        },
+        initialBlockNumber: 0,
       },
-      initialBlockNumber: 0,
     });
+    input$.next(ack);
 
     const firstLiveBlockNumber = 1001;
     const secondLiveBlockNumber = 1002;
@@ -390,6 +425,7 @@ describe("Sync.worker", () => {
 
     // Event 3 arrives after the initial sync
     latestEvent$.next(event3);
+    await sleep(50);
 
     // Expect output to contain all events (cache, gap state, live events)
     expect(output).toHaveBeenCalledTimes(5);

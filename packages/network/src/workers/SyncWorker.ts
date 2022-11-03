@@ -1,5 +1,17 @@
-import { awaitStreamValue, DoWork, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
-import { catchError, Observable, Subject } from "rxjs";
+import { awaitStreamValue, DoWork, filterNullish, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
+import {
+  bufferTime,
+  catchError,
+  concat,
+  concatMap,
+  filter,
+  ignoreElements,
+  map,
+  Observable,
+  of,
+  Subject,
+  take,
+} from "rxjs";
 import {
   isNetworkComponentUpdateEvent,
   NetworkComponentUpdate,
@@ -36,8 +48,17 @@ import {
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { GodID, SyncState } from "./constants";
 
-export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig, NetworkEvent<C>> {
-  private input$ = new Subject<SyncWorkerConfig>();
+export enum InputType {
+  Ack,
+  Config,
+}
+export type Config = { type: InputType.Config; data: SyncWorkerConfig };
+export type Ack = { type: InputType.Ack };
+export const ack = { type: InputType.Ack as const };
+export type Input = Config | Ack;
+
+export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEvent<C>[]> {
+  private input$ = new Subject<Input>();
   private output$ = new Subject<NetworkEvent<C>>();
   private syncState: SyncStateStruct = { state: SyncState.CONNECTING, msg: "", percentage: 0 };
 
@@ -91,7 +112,12 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     this.setLoadingState({ state: SyncState.CONNECTING, msg: "Connecting...", percentage: 0 });
 
     // Turn config into variable accessible outside the stream
-    const computedConfig = await streamToDefinedComputed(this.input$);
+    const computedConfig = await streamToDefinedComputed(
+      this.input$.pipe(
+        map((e) => (e.type === InputType.Config ? e.data : undefined)),
+        filterNullish()
+      )
+    );
     const config = computedConfig.get();
     const {
       snapshotServiceUrl,
@@ -256,8 +282,27 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     passLiveEventsToOutput = true;
   }
 
-  public work(input$: Observable<SyncWorkerConfig>): Observable<NetworkEvent<C>> {
+  public work(input$: Observable<Input>): Observable<NetworkEvent<C>[]> {
     input$.subscribe(this.input$);
-    return this.output$.asObservable();
+    const throttledOutput$ = new Subject<NetworkEvent<C>[]>();
+
+    this.output$
+      .pipe(
+        bufferTime(16, null, 50),
+        filter((updates) => updates.length > 0),
+        concatMap((updates) =>
+          concat(
+            of(updates),
+            input$.pipe(
+              filter((e) => e.type === InputType.Ack),
+              take(1),
+              ignoreElements()
+            )
+          )
+        )
+      )
+      .subscribe(throttledOutput$);
+
+    return throttledOutput$;
   }
 }

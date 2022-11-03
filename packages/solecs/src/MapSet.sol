@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
-import { console } from "forge-std/console.sol";
 
 /**
  * Key value store with uint256 key and uint256 Set value
