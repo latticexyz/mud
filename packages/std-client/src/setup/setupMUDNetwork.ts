@@ -4,75 +4,26 @@ import {
   Mappings,
   createTxQueue,
   createSyncWorker,
-  createEncoder,
   createSystemExecutor,
-  NetworkConfig,
-  SyncWorkerConfig,
-  isNetworkComponentUpdateEvent,
-  NetworkEvent,
-  ack,
   Ack,
   InputType,
-  NetworkComponentUpdate,
-  SystemCall,
-  isSystemCallEvent,
 } from "@latticexyz/network";
-import { BehaviorSubject, concatMap, filter, from, map, Observable, Subject, timer } from "rxjs";
-import {
-  Component,
-  Components,
-  EntityID,
-  EntityIndex,
-  getComponentEntities,
-  getComponentValue,
-  getComponentValueStrict,
-  removeComponent,
-  Schema,
-  setComponent,
-  Type,
-  World,
-} from "@latticexyz/recs";
-import { computed, IComputedValue } from "mobx";
-import { keccak256, toEthAddress } from "@latticexyz/utils";
-import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
-import { BigNumber, Contract, ContractInterface, Signer } from "ethers";
-import { Component as SolecsComponent } from "@latticexyz/solecs";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
+import { World } from "@latticexyz/recs";
+import { computed } from "mobx";
+import { keccak256 } from "@latticexyz/utils";
+import { Contract, ContractInterface } from "ethers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { defineStringComponent } from "../components";
-import { compact, keys, toLower } from "lodash";
-
-export type SetupContractConfig = NetworkConfig &
-  Omit<SyncWorkerConfig, "worldContract" | "mappings"> & {
-    worldAddress: string;
-    devMode?: boolean;
-  };
-
-export type DecodedNetworkComponentUpdate = Omit<Omit<NetworkComponentUpdate, "entity">, "component"> & {
-  entity: EntityIndex;
-  component: Component<Schema>;
-};
-
-export type DecodedSystemCall<
-  T extends { [key: string]: Contract } = { [key: string]: Contract },
-  C extends Components = Components
-> = Omit<SystemCall<C>, "updates"> & {
-  systemId: keyof T;
-  args: Record<string, unknown>;
-  updates: DecodedNetworkComponentUpdate[];
-};
-
-export type ContractComponent = Component<Schema, { contractId: string }>;
-
-export type ContractComponents = {
-  [key: string]: ContractComponent;
-};
-
-export type NetworkComponents<C extends ContractComponents> = C & {
-  SystemsRegistry: Component<{ value: Type.String }>;
-  ComponentsRegistry: Component<{ value: Type.String }>;
-};
+import { keys } from "lodash";
+import { ContractComponent, ContractComponents, NetworkComponents, SetupContractConfig } from "./types";
+import {
+  applyNetworkUpdates,
+  createDecodeNetworkComponentUpdate,
+  createEncoders,
+  createSystemCallStreams,
+} from "./utils";
 
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
@@ -184,157 +135,5 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     mappings,
     registerComponent,
     registerSystem,
-  };
-}
-
-async function createEncoders(
-  world: World,
-  components: Component<{ value: Type.String }>,
-  signerOrProvider: IComputedValue<JsonRpcProvider | Signer>
-) {
-  const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
-
-  async function fetchAndCreateEncoder(entity: EntityIndex) {
-    const componentAddress = toEthAddress(world.entities[entity]);
-    const componentId = getComponentValueStrict(components, entity).value;
-    console.info("[SyncUtils] Creating encoder for " + componentAddress);
-    const componentContract = new Contract(
-      componentAddress,
-      ComponentAbi.abi,
-      signerOrProvider.get()
-    ) as SolecsComponent;
-    const [componentSchemaPropNames, componentSchemaTypes] = await componentContract.getSchema();
-    encoders[componentId] = createEncoder(componentSchemaPropNames, componentSchemaTypes);
-  }
-
-  // Initial setup
-  for (const entity of getComponentEntities(components)) fetchAndCreateEncoder(entity);
-
-  // Keep up to date
-  const subscription = components.update$.subscribe((update) => fetchAndCreateEncoder(update.entity));
-  world.registerDisposer(() => subscription?.unsubscribe());
-
-  return encoders;
-}
-
-/**
- * Sets up synchronization between contract components and client components
- */
-function applyNetworkUpdates<C extends Components>(
-  world: World,
-  components: C,
-  ecsEvents$: Observable<NetworkEvent<C>[]>,
-  mappings: Mappings<C>,
-  ack$: Subject<Ack>,
-  decodeAndEmitSystemCall?: (event: SystemCall<C>) => void
-) {
-  const txReduced$ = new Subject<string>();
-
-  // Send "ack" to tell the sync worker we're ready to receive events while not processing
-  let processing = false;
-  const ackSub = timer(0, 100)
-    .pipe(
-      filter(() => !processing),
-      map(() => ack)
-    )
-    .subscribe(ack$);
-
-  const delayQueueSub = ecsEvents$.subscribe((updates) => {
-    processing = true;
-    for (const update of updates) {
-      if (isNetworkComponentUpdateEvent<C>(update)) {
-        if (update.lastEventInTx) txReduced$.next(update.txHash);
-
-        const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
-        const componentKey = mappings[update.component];
-        if (!componentKey) {
-          console.warn("Unknown component:", update);
-          continue;
-        }
-
-        if (update.value === undefined) {
-          // undefined value means component removed
-          removeComponent(components[componentKey] as Component<Schema>, entityIndex);
-        } else {
-          setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
-        }
-      } else if (decodeAndEmitSystemCall && isSystemCallEvent(update)) {
-        decodeAndEmitSystemCall(update);
-      }
-    }
-    // Send "ack" after every processed batch of events to process faster than ever 100ms
-    ack$.next(ack);
-    processing = false;
-  });
-
-  world.registerDisposer(() => {
-    delayQueueSub?.unsubscribe();
-    ackSub?.unsubscribe();
-  });
-  return { txReduced$: txReduced$.asObservable() };
-}
-
-function createSystemCallStreams<C extends Components, SystemTypes extends { [key: string]: Contract }>(
-  world: World,
-  systemNames: string[],
-  systemsRegistry: Component<{ value: Type.String }>,
-  getSystemContract: (systemId: string) => { name: string; contract: Contract },
-  decodeNetworkComponentUpdate: ReturnType<typeof createDecodeNetworkComponentUpdate>
-) {
-  const systemCallStreams = systemNames.reduce(
-    (streams, systemId) => ({ ...streams, [systemId]: new Subject<DecodedSystemCall<SystemTypes>>() }),
-    {} as Record<string, Subject<DecodedSystemCall<SystemTypes, C>>>
-  );
-
-  return {
-    systemCallStreams,
-    decodeAndEmitSystemCall: (systemCall: SystemCall<C>) => {
-      const { tx } = systemCall;
-
-      const systemEntityIndex = world.entityToIndex.get(toLower(BigNumber.from(tx.to).toHexString()) as EntityID);
-      if (!systemEntityIndex) return;
-
-      const hashedSystemId = getComponentValue(systemsRegistry, systemEntityIndex)?.value;
-      if (!hashedSystemId) return;
-
-      const { name, contract } = getSystemContract(hashedSystemId);
-
-      const decodedTx = contract.interface.parseTransaction({ data: tx.data, value: tx.value });
-
-      // If this is a newly registered System make a new Subject
-      if (!systemCallStreams[name]) {
-        systemCallStreams[name] = new Subject<DecodedSystemCall<SystemTypes>>();
-      }
-
-      systemCallStreams[name].next({
-        ...systemCall,
-        updates: compact(systemCall.updates.map(decodeNetworkComponentUpdate)),
-        systemId: name,
-        args: decodedTx.args,
-      });
-    },
-  };
-}
-
-function createDecodeNetworkComponentUpdate<C extends Components>(
-  world: World,
-  components: C,
-  mappings: Mappings<C>
-): (update: NetworkComponentUpdate) => DecodedNetworkComponentUpdate | undefined {
-  return (update: NetworkComponentUpdate) => {
-    const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
-    const componentKey = mappings[update.component];
-    const component = components[componentKey] as Component<Schema>;
-
-    if (!componentKey) {
-      console.error(`Component mapping not found for component ID ${update.component} ${JSON.stringify(update.value)}`);
-      return undefined;
-    }
-
-    return {
-      ...update,
-      entity: entityIndex,
-      component,
-    };
   };
 }
