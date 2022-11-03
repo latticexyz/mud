@@ -3,6 +3,70 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.1](https://github.com/latticexyz/mud/compare/v1.24.0...v1.24.1) (2022-10-29)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.24.0](https://github.com/latticexyz/mud/compare/v1.23.1...v1.24.0) (2022-10-28)
+
+### Features
+
+- v2 endpoint for pruned snapshot that returns entities as raw bytes ([#215](https://github.com/latticexyz/mud/issues/215)) ([28cce1e](https://github.com/latticexyz/mud/commit/28cce1e8a1240d72363fe786704e7fe976f7c995))
+
+## [1.23.1](https://github.com/latticexyz/mud/compare/v1.23.0...v1.23.1) (2022-10-28)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.23.0](https://github.com/latticexyz/mud/compare/v1.22.0...v1.23.0) (2022-10-26)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.22.0](https://github.com/latticexyz/mud/compare/v1.21.0...v1.22.0) (2022-10-26)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.21.0](https://github.com/latticexyz/mud/compare/v1.20.0...v1.21.0) (2022-10-26)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.20.0](https://github.com/latticexyz/mud/compare/v1.19.0...v1.20.0) (2022-10-22)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.19.0](https://github.com/latticexyz/mud/compare/v1.18.0...v1.19.0) (2022-10-21)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.18.0](https://github.com/latticexyz/mud/compare/v1.17.0...v1.18.0) (2022-10-21)
+
+### Features
+
+- **utils:** add more general euclidiean distance util ([687f840](https://github.com/latticexyz/mud/commit/687f8405bb8cfe8312d0527dc2985d27e11632a6))
+
+# [1.17.0](https://github.com/latticexyz/mud/compare/v1.16.0...v1.17.0) (2022-10-19)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.16.0](https://github.com/latticexyz/mud/compare/v1.15.0...v1.16.0) (2022-10-19)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.15.0](https://github.com/latticexyz/mud/compare/v1.14.2...v1.15.0) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+## [1.14.2](https://github.com/latticexyz/mud/compare/v1.14.1...v1.14.2) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+## [1.14.1](https://github.com/latticexyz/mud/compare/v1.14.0...v1.14.1) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/utils
+
+# [1.14.0](https://github.com/latticexyz/mud/compare/v1.13.0...v1.14.0) (2022-10-18)
+
+**Note:** Version bump only for package @latticexyz/utils
+
 # [1.13.0](https://github.com/latticexyz/mud/compare/v1.12.0...v1.13.0) (2022-10-15)
 
 **Note:** Version bump only for package @latticexyz/utils

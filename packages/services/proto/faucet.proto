@@ -49,9 +49,10 @@ message DripDevRequest {
   string address = 1;
 }
 
-// Response for drip request that contains the transaction hash of the drip tx.
+// Response for drip request that contains the transaction hash of the drip tx and the ECS component set hash (if any).
 message DripResponse {
-  string txHash = 1;
+  string dripTxHash = 1;
+  string ecsTxHash = 2;
 }
 
 // Response for the time until next drip request.

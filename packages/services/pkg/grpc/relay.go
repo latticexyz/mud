@@ -218,6 +218,8 @@ func (server *ecsRelayServer) OpenStream(signature *pb.Signature, stream pb.ECSR
 	client.Connect()
 	client.Ping()
 
+	server.logger.Info("opened stream", zap.String("client", identity.Name))
+
 	relayedMessagesChannel := client.GetChannel()
 	for {
 		select {
@@ -228,11 +230,7 @@ func (server *ecsRelayServer) OpenStream(signature *pb.Signature, stream pb.ECSR
 			}
 			return nil
 		case relayedMessage := <-relayedMessagesChannel:
-			if relayedMessage == nil {
-				server.logger.Warn("relayed message is nil")
-			} else {
-				stream.Send(relayedMessage)
-			}
+			stream.Send(relayedMessage)
 		}
 	}
 }

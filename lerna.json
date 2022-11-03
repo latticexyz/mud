@@ -3,14 +3,13 @@
     "packages/*",
     "packages/ri/*"
   ],
-  "version": "1.13.0",
+  "version": "1.24.1",
   "npmClient": "yarn",
   "useWorkspaces": true,
   "command": {
     "publish": {
       "conventionalCommits": true,
       "message": "chore(release): publish",
-      "registry": "https://npm.pkg.github.com",
       "allowBranch": "main"
     }
   }

@@ -1,10 +1,23 @@
-import { awaitStreamValue, DoWork, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
-import { catchError, Observable, Subject } from "rxjs";
+import { awaitStreamValue, DoWork, filterNullish, keccak256, streamToDefinedComputed } from "@latticexyz/utils";
+import {
+  bufferTime,
+  catchError,
+  concat,
+  concatMap,
+  filter,
+  ignoreElements,
+  map,
+  Observable,
+  of,
+  Subject,
+  take,
+} from "rxjs";
 import {
   isNetworkComponentUpdateEvent,
   NetworkComponentUpdate,
   NetworkEvent,
   NetworkEvents,
+  SyncStateStruct,
   SyncWorkerConfig,
 } from "../types";
 import { Components, ComponentValue, SchemaOf } from "@latticexyz/recs";
@@ -35,9 +48,19 @@ import {
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { GodID, SyncState } from "./constants";
 
-export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig, NetworkEvent<C>> {
-  private input$ = new Subject<SyncWorkerConfig>();
+export enum InputType {
+  Ack,
+  Config,
+}
+export type Config = { type: InputType.Config; data: SyncWorkerConfig };
+export type Ack = { type: InputType.Ack };
+export const ack = { type: InputType.Ack as const };
+export type Input = Config | Ack;
+
+export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEvent<C>[]> {
+  private input$ = new Subject<Input>();
   private output$ = new Subject<NetworkEvent<C>>();
+  private syncState: SyncStateStruct = { state: SyncState.CONNECTING, msg: "", percentage: 0 };
 
   constructor() {
     this.init();
@@ -46,16 +69,23 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
   /**
    * Pass a loading state component update to the main thread.
    * Can be used to indicate the initial loading state on a loading screen.
-   * @param state {@link SyncState}
-   * @param msg Message to describe the current loading step.
-   * @param percentage Number between 0 and 100 to describe the loading progress.
+   * @param loadingState {
+   *  state: {@link SyncState},
+   *  msg: Message to describe the current loading step.
+   *  percentage: Number between 0 and 100 to describe the loading progress.
+   * }
    * @param blockNumber Optional: block number to pass in the component update.
    */
-  private setLoadingState(state: SyncState, msg: string, percentage: number, blockNumber = 0) {
+  private setLoadingState(
+    loadingState: Partial<{ state: SyncState; msg: string; percentage: number }>,
+    blockNumber = 0
+  ) {
+    const newLoadingState = { ...this.syncState, ...loadingState };
+    this.syncState = newLoadingState;
     const update: NetworkComponentUpdate<C> = {
       type: NetworkEvents.NetworkComponentUpdate,
       component: keccak256("component.LoadingState"),
-      value: { state, msg, percentage } as unknown as ComponentValue<SchemaOf<C[keyof C]>>,
+      value: newLoadingState as unknown as ComponentValue<SchemaOf<C[keyof C]>>,
       entity: GodID,
       txHash: "worker",
       lastEventInTx: false,
@@ -79,10 +109,16 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
    *  4.2 Else keep in sync with RPC
    */
   private async init() {
-    this.setLoadingState(SyncState.CONNECTING, "Connecting...", 0);
+    this.setLoadingState({ state: SyncState.CONNECTING, msg: "Connecting...", percentage: 0 });
 
     // Turn config into variable accessible outside the stream
-    const computedConfig = await streamToDefinedComputed(this.input$);
+    const computedConfig = await streamToDefinedComputed(
+      this.input$.pipe(
+        map((e) => (e.type === InputType.Config ? e.data : undefined)),
+        filterNullish()
+      )
+    );
+    const config = computedConfig.get();
     const {
       snapshotServiceUrl,
       streamServiceUrl,
@@ -91,7 +127,11 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
       provider: { options: providerOptions },
       initialBlockNumber,
       fetchSystemCalls,
-    } = computedConfig.get();
+    } = config;
+
+    // Set default values for cacheAgeThreshold and cacheInterval
+    const cacheAgeThreshold = config.cacheAgeThreshold || 100;
+    const cacheInterval = config.cacheInterval || 1;
 
     // Set up
     const { providers } = await createReconnectingProvider(computed(() => computedConfig.get().provider));
@@ -110,7 +150,7 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     // Start syncing current events, but only start streaming to output once gap between initial state and current block is closed
 
     console.log("[SyncWorker] start initial sync");
-    this.setLoadingState(SyncState.INITIAL, "Starting initial sync", 0);
+    this.setLoadingState({ state: SyncState.INITIAL, msg: "Starting initial sync", percentage: 0 });
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
@@ -141,7 +181,7 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
 
       if (isNetworkComponentUpdateEvent(event)) {
         // Store cache to indexdb every block
-        if (event.blockNumber > cacheStore.current.blockNumber + 1)
+        if (event.blockNumber > cacheStore.current.blockNumber + 1 && event.blockNumber % cacheInterval === 0)
           saveCacheStoreToIndexDb(indexDbCache, cacheStore.current);
 
         storeEvent(cacheStore.current, event);
@@ -152,26 +192,38 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     const streamStartBlockNumberPromise = awaitStreamValue(blockNumber$);
 
     // Load initial state from cache or snapshot service
-    this.setLoadingState(SyncState.INITIAL, "Fetching cache block number", 20);
+    this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching cache block number", percentage: 0 });
     const cacheBlockNumber = await getIndexDBCacheStoreBlockNumber(indexDbCache);
+    this.setLoadingState({ percentage: 50 });
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
+    this.setLoadingState({ percentage: 100 });
     console.log(
       `[SyncWorker] cache block: ${cacheBlockNumber}, snapshot block: ${
         snapshotBlockNumber > 0 ? snapshotBlockNumber : "Unavailable"
       }, start sync at ${initialBlockNumber}`
     );
+
     let initialState = createCacheStore();
     if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber)) {
       initialState.blockNumber = initialBlockNumber;
     } else {
-      const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + 100; // Load from cache if the snapshot is less than 100 blocks newer than the cache
+      // Load from cache if the snapshot is less than <cacheAgeThreshold> blocks newer than the cache
+      const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
 
       if (syncFromSnapshot) {
-        this.setLoadingState(SyncState.INITIAL, "Fetching initial state from snapshot", 50);
-        initialState = await fetchSnapshotChunked(snapshotClient, worldContract.address, decode);
+        this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from snapshot", percentage: 0 });
+        initialState = await fetchSnapshotChunked(
+          snapshotClient,
+          worldContract.address,
+          decode,
+          config.snapshotNumChunks,
+          (percentage: number) => this.setLoadingState({ percentage }),
+          config.pruneOptions
+        );
       } else {
-        this.setLoadingState(SyncState.INITIAL, "Fetching initial state from cache", 50);
+        this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from cache", percentage: 0 });
         initialState = await loadIndexDbCacheStore(indexDbCache);
+        this.setLoadingState({ percentage: 100 });
       }
 
       console.log(`[SyncWorker] got ${initialState.state.size} items from ${syncFromSnapshot ? "snapshot" : "cache"}`);
@@ -179,18 +231,18 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
 
     // Load events from gap between initial state and current block number from RPC
     const streamStartBlockNumber = await streamStartBlockNumberPromise;
-    this.setLoadingState(
-      SyncState.INITIAL,
-      `Fetching state from block ${initialState.blockNumber} to ${streamStartBlockNumber}`,
-      80
-    );
+    this.setLoadingState({
+      state: SyncState.INITIAL,
+      msg: `Fetching state from block ${initialState.blockNumber} to ${streamStartBlockNumber}`,
+      percentage: 0,
+    });
 
     const gapStateEvents = await fetchEventsInBlockRangeChunked(
       fetchWorldEvents,
       initialState.blockNumber,
       streamStartBlockNumber,
       50,
-      this.setLoadingState.bind(this)
+      (percentage: number) => this.setLoadingState({ percentage })
     );
 
     console.log(
@@ -202,23 +254,55 @@ export class SyncWorker<C extends Components> implements DoWork<SyncWorkerConfig
     cacheStore.current = initialState;
     console.log(`[SyncWorker] initial sync state size: ${cacheStore.current.state.size}`);
 
-    this.setLoadingState(SyncState.INITIAL, `Initializing with ${cacheStore.current.state.size} state entries`, 90);
+    this.setLoadingState({
+      state: SyncState.INITIAL,
+      msg: `Initializing with ${cacheStore.current.state.size} state entries`,
+      percentage: 0,
+    });
 
     // Pass current cacheStore to output and start passing live events
+    let i = 0;
     for (const update of getCacheStoreEntries(cacheStore.current)) {
+      i++;
       this.output$.next(update as NetworkEvent<C>);
+      if (i % 5000 === 0) {
+        const percentage = Math.floor((i / cacheStore.current.state.size) * 100);
+        this.setLoadingState({ percentage });
+      }
     }
 
     // Save initial state to cache
     saveCacheStoreToIndexDb(indexDbCache, cacheStore.current);
 
     // Let the client know loading is complete
-    this.setLoadingState(SyncState.LIVE, `Streaming live events`, 100, cacheStore.current.blockNumber);
+    this.setLoadingState(
+      { state: SyncState.LIVE, msg: `Streaming live events`, percentage: 100 },
+      cacheStore.current.blockNumber
+    );
     passLiveEventsToOutput = true;
   }
 
-  public work(input$: Observable<SyncWorkerConfig>): Observable<NetworkEvent<C>> {
+  public work(input$: Observable<Input>): Observable<NetworkEvent<C>[]> {
     input$.subscribe(this.input$);
-    return this.output$.asObservable();
+    const throttledOutput$ = new Subject<NetworkEvent<C>[]>();
+
+    this.output$
+      .pipe(
+        bufferTime(16, null, 50),
+        filter((updates) => updates.length > 0),
+        concatMap((updates) =>
+          concat(
+            of(updates),
+            input$.pipe(
+              filter((e) => e.type === InputType.Ack),
+              take(1),
+              ignoreElements()
+            )
+          )
+        )
+      )
+      .subscribe(throttledOutput$);
+
+    return throttledOutput$;
   }
 }

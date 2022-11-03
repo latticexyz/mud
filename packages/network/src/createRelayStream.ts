@@ -75,5 +75,10 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
     push$.next({ label, message });
   }
 
-  return { event$, dispose, subscribe, unsubscribe, push, countConnected };
+  // Expose method for consumers to ping the stream to keep receiving messages without pushing
+  function ping() {
+    return httpClient.ping(signature);
+  }
+
+  return { event$, dispose, subscribe, unsubscribe, push, countConnected, ping };
 }

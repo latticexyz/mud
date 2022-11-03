@@ -358,7 +358,7 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       if (prop === "keys") {
         return () => new Set([...target.keys(), ...overriddenEntityValues.keys()]).values();
       }
-      return Reflect.get(target, prop);
+      return Reflect.get(target, prop).bind(target);
     },
   });
 
@@ -395,13 +395,21 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
   return overriddenComponent;
 }
 
+function getLocalCacheId(component: Component, uniqueWorldIdentifier?: string): string {
+  return `localcache-${uniqueWorldIdentifier}-${component.id}`;
+}
+
+export function clearLocalCache(component: Component, uniqueWorldIdentifier?: string): void {
+  localStorage.removeItem(getLocalCacheId(component, uniqueWorldIdentifier));
+}
+
 // Note: Only proof of concept for now - use this only for component that do not update frequently
 export function createLocalCache<S extends Schema, M extends Metadata, T = undefined>(
   component: Component<S, M, T>,
   uniqueWorldIdentifier?: string
 ): Component<S, M, T> {
   const { world, update$, values } = component;
-  const cacheId = `localcache-${uniqueWorldIdentifier}-${component.id}`;
+  const cacheId = getLocalCacheId(component as Component, uniqueWorldIdentifier);
   let numUpdates = 0;
   const creation = Date.now();
 

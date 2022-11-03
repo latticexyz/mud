@@ -56,9 +56,9 @@ func Sync(client *ethclient.Client, fromBlock *big.Int, toBlock *big.Int, worldA
 		// this wait time becomes negligable compared to the log load / parse.
 		time.Sleep(config.InitialSyncBlockBatchSyncTimeout)
 		// Take an in-progress snapshot up to the block number that has so far been loaded.
-		if block%config.InitialSyncSnapshotInterval == 0 {
-			go takeStateSnapshotChain(state, uint64(block), uint64(block+config.InitialSyncBlockBatchSize), Latest)
-		}
+		// if block%config.InitialSyncSnapshotInterval == 0 {
+		// 	go takeStateSnapshotChain(state, uint64(block), uint64(block+config.InitialSyncBlockBatchSize), InitialSync)
+		// }
 	}
 
 	logger.Info("finished sync",
