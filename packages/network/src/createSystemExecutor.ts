@@ -37,8 +37,10 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
     const [resolve, , promise] = deferred<void>();
     runInAction(() => {
       systemContracts.set({ ...systemContracts.get(), [system.id]: system.contract });
+      systemIdPreimages[keccak256(system.id)] = system.id;
       resolve();
     });
+
     return promise;
   }
 
@@ -62,7 +64,16 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
   const { txQueue, dispose } = createTxQueue<T>(systemContracts, network, gasPrice$, options);
   world.registerDisposer(dispose);
 
-  return { systems: txQueue, registerSystem };
+  return { systems: txQueue, registerSystem, getSystemContract };
+
+  function getSystemContract(systemId: string) {
+    const name = systemIdPreimages[systemId];
+
+    return {
+      name,
+      contract: systemContracts.get()[name],
+    };
+  }
 
   function createSystemContract<C extends Contract>(
     entity: EntityIndex,

@@ -62,7 +62,7 @@ While any `uint256` is a valid id, `uint256`s from 0 to 2<sup>160</sup> are rese
 This allows every contract and EOA to be a valid entity.
 
 A simple use-case of this convention is being able to represent components and systems (both of which are contracts) as entities (with their entity id being their contract address).
-This allows them to be stored in "registry components" in the World, which means every component and system is automatically known to the client via the standartized contract/client sync described in the [World section](#World). Pretty meta.
+This allows them to be stored in "registry components" in the World, which means every component and system is automatically known to the client via the standardized contract/client sync described in the [World section](#World). Pretty meta.
 
 ## Components
 
@@ -227,7 +227,7 @@ Available query fragments are:
 - `Has`: filter for entities that have the specified component. The `value` field in the query fragment is ignored.
 - `HasValue`: filter for entities that have the specified component with the specified value.
 - `Not`: filter for entities that do not have the specified component. The `value` field in th query fragment is ignored.
-- `NotValue`: filter for entities that to not have the specified component with the specified value
+- `NotValue`: filter for entities that do not have the specified component with the specified value.
 - `ProxyRead`: enable the proxy read mode for the rest of the query (more details below).
 - `ProxyExpand`: enable the proxy expand mode for the rest of the query (more details below).
 
@@ -267,7 +267,7 @@ QueryFragment[] memory fragments = new QueryFragment[](3);
 
 fragments[0] = QueryFragment(QueryType.Has, position, new bytes(0)));
 fragments[1] = QueryFragment(QueryType.ProxyRead, ownedBy, abi.encode(0xff)); // Max depth 255
-fragments[2] = QueryFragment(QueryType.HasValue, name, abi.encode("Alice));
+fragments[2] = QueryFragment(QueryType.HasValue, name, abi.encode("Alice"));
 
 uint256[] memory entities = LibQuery.query(fragments);
 ```

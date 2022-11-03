@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.1](https://github.com/latticexyz/mud/compare/v1.24.0...v1.24.1) (2022-10-29)
+
+### Bug Fixes
+
+- **std-contracts:** use assembly for delegation in UpgradableSystem ([#228](https://github.com/latticexyz/mud/issues/228)) ([1fa46fd](https://github.com/latticexyz/mud/commit/1fa46fd37da706e4c559a7b7d02ffa1b1bacc1bc))
+
 # [1.24.0](https://github.com/latticexyz/mud/compare/v1.23.1...v1.24.0) (2022-10-28)
 
 ### Features
