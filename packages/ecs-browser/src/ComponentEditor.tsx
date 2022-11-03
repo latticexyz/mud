@@ -24,7 +24,6 @@ export const ComponentEditor = ({
     <ComponentEditorContainer>
       <ComponentTitle>
         {component.id}
-        {setContractComponentValue && (
           <ComponentBrowserButton
             onClick={() => {
               removeComponent(component, entity);
