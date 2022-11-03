@@ -31,7 +31,7 @@ func (server *ecsRelayServer) Init() {
 	// Kick off a worker that will periodically cycle through the connected clients and disconnect
 	// idle ones (the ones which have not received a /Ping RPC).
 	go server.DisconnectIdleClientsWorker(
-		time.NewTicker(time.Duration(server.config.IdleDisconnectIterval)*time.Second),
+		time.NewTicker(time.Duration(server.config.IdleDisconnectInterval)*time.Second),
 		make(chan struct{}),
 	)
 }
