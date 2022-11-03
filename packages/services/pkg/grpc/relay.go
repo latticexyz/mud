@@ -266,6 +266,13 @@ func (server *ecsRelayServer) VerifyMessage(message *pb.Message, identity *pb.Id
 		return fmt.Errorf("signature is not defined")
 	}
 
+	// Verify that the message data size is OK to relay if config flag is on.
+	if server.config.VerifyDataSize {
+		if len(message.Data) > server.config.MaxDataSize {
+			return fmt.Errorf("data exceeds size limit")
+		}
+	}
+
 	// Verify that the message is OK to relay if config flag is on.
 	if server.config.VerifyMessageSignature {
 		// Recover the signer to verify that it is the same identity as the one making the RPC call.
