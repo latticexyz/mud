@@ -22,6 +22,10 @@ type DripConfig struct {
 	DripFrequency float64
 	DripLimit     uint64
 	DevMode       bool
+
+	// Miscellaneous.
+	NumLatestTweetsForVerify int
+	NameSystemAddress        string
 }
 
 func TwitterUsernameQuery(username string) string {
@@ -37,7 +41,7 @@ func FindEmojiPosition(tweetText string) (int, error) {
 			return i, nil
 		}
 	}
-	return -1, fmt.Errorf("no emoji signature found in tweet")
+	return -1, fmt.Errorf("no emoji signature found in tweet: %s", tweetText)
 }
 
 func ExtractSignatureFromTweet(tweet twitter.Tweet) (string, error) {
@@ -57,6 +61,17 @@ func ExtractSignatureFromTweet(tweet twitter.Tweet) (string, error) {
 	}
 
 	return out.String(), nil
+}
+
+func VerifyDripRequest(tweets []twitter.Tweet, username string, address string, numLatestTweets int) error {
+	for idx := 0; idx < utils.Min(len(tweets), numLatestTweets); idx++ {
+		err := VerifyDripRequestTweet(tweets[idx], username, address)
+		if err == nil {
+			return nil
+		}
+		logger.GetLogger().Info("error while verifying tweet", zap.String("username", username), zap.Int("tweet", idx), zap.Error(err))
+	}
+	return fmt.Errorf("did not find drip tweet in latest %d tweets from user @%s", numLatestTweets, username)
 }
 
 func VerifyDripRequestTweet(tweet twitter.Tweet, username string, address string) error {
@@ -242,6 +257,8 @@ func ResetTotalDripCount() {
 }
 
 func SetupStore() {
+	utils.EnsureDir(FaucetStoreDir)
+
 	_, err := os.Stat(FaucetStoreFilename)
 	if err != nil {
 		// Write an empty store.

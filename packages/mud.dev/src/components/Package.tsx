@@ -2,12 +2,13 @@ import { Link as RouterLink } from "react-router-dom";
 import styled from "styled-components";
 import { Description, Headline } from "./styled";
 
-export const Package: React.FC<{ name: string; description: string; link?: string; href?: string }> = ({
-  name,
-  description,
-  link,
-  href,
-}) => {
+export const Package: React.FC<{
+  name: string;
+  description: string;
+  link?: string;
+  href?: string;
+  primary?: boolean;
+}> = ({ name, description, link, href, primary }) => {
   function setRandomPrimaryColor() {
     const color = `hsl(${Math.floor(Math.random() * 360)} 100% 80%)`;
     document.documentElement.style.setProperty("--primary-color", color);
@@ -26,9 +27,14 @@ export const Package: React.FC<{ name: string; description: string; link?: strin
         if (href) window.location.href = href;
       }}
     >
-      <Container onMouseEnter={setRandomPrimaryColor} onClick={resetPrimaryColor} onMouseLeave={resetPrimaryColor}>
-        <Name>{name}</Name>
-        <Desc>{description}</Desc>
+      <Container
+        onMouseEnter={setRandomPrimaryColor}
+        onClick={resetPrimaryColor}
+        onMouseLeave={resetPrimaryColor}
+        primary={primary}
+      >
+        <Name primary={primary}>{name}</Name>
+        <Desc primary={primary}>{description}</Desc>
       </Container>
     </Link>
   );
@@ -38,11 +44,11 @@ const Link = styled(RouterLink)`
   text-decoration: none;
 `;
 
-const Container = styled.div`
+const Container = styled.div<{ primary?: boolean }>`
   border: 3px solid #fff;
-  width: 250px;
-  height: 250px;
-  padding: 30px;
+  width: ${(p) => (p.primary ? 250 : 115)}px;
+  height: ${(p) => (p.primary ? 250 : 115)}px;
+  padding: ${(p) => (p.primary ? 30 : 15)}px;
 
   :hover {
     border-color: var(--primary-color);
@@ -52,11 +58,11 @@ const Container = styled.div`
   }
 `;
 
-const Desc = styled(Description)`
-  font-size: 20px;
+const Desc = styled(Description)<{ primary?: boolean }>`
+  font-size: ${(p) => (p.primary ? 20 : 12)}px;
 `;
 
-const Name = styled(Headline)`
-  font-size: 30px;
+const Name = styled(Headline)<{ primary?: boolean }>`
+  font-size: ${(p) => (p.primary ? 30 : 15)}px;
   color: var(--secondary-color);
 `;

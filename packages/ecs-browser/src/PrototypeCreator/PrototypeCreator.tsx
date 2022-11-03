@@ -1,7 +1,7 @@
 import { Component, EntityID, getComponentValue, Has, Layers, Type } from "@latticexyz/recs";
 import React, { useEffect, useState } from "react";
 import { ComponentBrowserButton, ComponentBrowserSelect } from "../StyledComponents";
-import { Coord } from "@latticexyz/phaserx";
+import { Coord } from "../shared";
 import { useComponentValueStream, useQuery } from "@latticexyz/std-client";
 
 export const PrototypeCreator: React.FC<{

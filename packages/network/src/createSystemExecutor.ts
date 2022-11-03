@@ -1,6 +1,6 @@
 import { Provider } from "@ethersproject/providers";
 import { Component, EntityIndex, getComponentEntities, getComponentValue, Type, World } from "@latticexyz/recs";
-import { keccak256, toEthAddress } from "@latticexyz/utils";
+import { deferred, keccak256, toEthAddress } from "@latticexyz/utils";
 import { Contract, ContractInterface, Signer } from "ethers";
 import { observable, runInAction } from "mobx";
 import { createTxQueue } from "./createTxQueue";
@@ -32,6 +32,18 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
     return { ...acc, [keccak256(curr)]: curr };
   }, {});
 
+  // Util to add new systems to the systems tx queue
+  function registerSystem(system: { id: string; contract: Contract }) {
+    const [resolve, , promise] = deferred<void>();
+    runInAction(() => {
+      systemContracts.set({ ...systemContracts.get(), [system.id]: system.contract });
+      systemIdPreimages[keccak256(system.id)] = system.id;
+      resolve();
+    });
+
+    return promise;
+  }
+
   // Initialize systems
   const initialContracts = {} as T;
   for (const systemEntity of getComponentEntities(systems)) {
@@ -46,13 +58,22 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
     if (!update.value[0]) return;
     const system = createSystemContract(update.entity, network.signer.get());
     if (!system) return;
-    runInAction(() => systemContracts.set({ ...systemContracts.get(), [system.id]: system.contract }));
+    registerSystem(system);
   });
 
   const { txQueue, dispose } = createTxQueue<T>(systemContracts, network, gasPrice$, options);
   world.registerDisposer(dispose);
 
-  return txQueue;
+  return { systems: txQueue, registerSystem, getSystemContract };
+
+  function getSystemContract(systemId: string) {
+    const name = systemIdPreimages[systemId];
+
+    return {
+      name,
+      contract: systemContracts.get()[name],
+    };
+  }
 
   function createSystemContract<C extends Contract>(
     entity: EntityIndex,

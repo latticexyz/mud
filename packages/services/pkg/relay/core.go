@@ -17,6 +17,7 @@ type RelayServerConfig struct {
 	IdleDisconnectIterval int
 	MessageDriftTime      int
 	MaxDataSize           int
+	MinAccountBalance     uint64
 
 	VerifyMessageSignature bool
 	VerifyAccountBalance   bool
@@ -30,27 +31,23 @@ type Client struct {
 	connected           bool
 	latestPingTimestamp int64
 
-	balancePresent           bool
-	balancePresentLimiter    *rate.Limiter
-	balanceNotPresentLimiter *rate.Limiter
-	messageRateLimiter       *rate.Limiter
+	sufficientBalance          bool
+	sufficientBalanceLimiter   *rate.Limiter
+	insufficientBalanceLimiter *rate.Limiter
+	messageRateLimiter         *rate.Limiter
 
 	mutex sync.Mutex
 }
 
 func (client *Client) Connect() {
-	client.mutex.Lock()
 	client.channel = make(chan *pb.Message)
 	client.connected = true
-	client.mutex.Unlock()
 	logger.GetLogger().Info("connected client", zap.String("client", client.identity.Name))
 }
 
 func (client *Client) Disconnect() {
-	client.mutex.Lock()
 	close(client.channel)
 	client.connected = false
-	client.mutex.Unlock()
 	logger.GetLogger().Info("disconnected client", zap.String("client", client.identity.Name))
 }
 
@@ -80,19 +77,19 @@ func (client *Client) GetLimiter() *rate.Limiter {
 	return client.messageRateLimiter
 }
 
-func (client *Client) HasBalance() bool {
-	return client.balancePresent
+func (client *Client) HasSufficientBalance() bool {
+	return client.sufficientBalance
 }
 
-func (client *Client) SetHasBalance(hasBalance bool) {
-	client.balancePresent = hasBalance
+func (client *Client) SetHasSufficientBalance(hasSufficientBalance bool) {
+	client.sufficientBalance = hasSufficientBalance
 }
 
 func (client *Client) ShouldCheckBalance() bool {
-	if client.balancePresent {
-		return client.balancePresentLimiter.Allow()
+	if client.sufficientBalance {
+		return client.sufficientBalanceLimiter.Allow()
 	} else {
-		return client.balanceNotPresentLimiter.Allow()
+		return client.insufficientBalanceLimiter.Allow()
 	}
 }
 
@@ -181,10 +178,10 @@ func (registry *ClientRegistry) Register(identity *pb.Identity, config *RelaySer
 	newClient.messageRateLimiter = rate.NewLimiter(rate.Every(1*time.Second/time.Duration(config.MessageRateLimit)), config.MessageRateLimit)
 
 	// At most allow a check for balance every 60s if client has funds and every 10s if not.
-	newClient.balancePresentLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(60)), 1)
-	newClient.balanceNotPresentLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(10)), 1)
+	newClient.sufficientBalanceLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(60)), 1)
+	newClient.insufficientBalanceLimiter = rate.NewLimiter(rate.Limit(float64(1)/float64(10)), 1)
 
-	newClient.balancePresent = false
+	newClient.sufficientBalance = false
 
 	registry.clients = append(registry.clients, newClient)
 
@@ -205,24 +202,21 @@ func (registry *ClientRegistry) Unregister(identity *pb.Identity) error {
 }
 
 type SubscriptionRegistry struct {
-	labels map[string]*MessageLabel
-	mutex  sync.Mutex
+	labels *sync.Map
 }
 
 func (registry *SubscriptionRegistry) Init() {
-	registry.labels = make(map[string]*MessageLabel)
+	registry.labels = &sync.Map{}
 }
 
-func (registry *SubscriptionRegistry) GetLabel(key string) (label *MessageLabel) {
-	registry.mutex.Lock()
-	if value, exist := registry.labels[key]; exist {
-		label = value
-	} else {
-		label = new(MessageLabel)
-		registry.labels[key] = label
+func (registry *SubscriptionRegistry) GetLabel(key string) *MessageLabel {
+	loadedLabel, _ := registry.labels.LoadOrStore(key, new(MessageLabel))
+
+	label, ok := loadedLabel.(*MessageLabel)
+	if !ok {
+		logger.GetLogger().Fatal("label data type expected to be *MessageLabel", zap.Any("loadedLabel", loadedLabel))
 	}
-	registry.mutex.Unlock()
-	return
+	return label
 }
 
 type MessageLabel struct {
@@ -231,15 +225,21 @@ type MessageLabel struct {
 }
 
 func (label *MessageLabel) Propagate(message *pb.Message, origin *pb.Identity) {
+	defer func() {
+		// Recover from panic if one occured. Set err to nil otherwise.
+		if recover() != nil {
+			label.mutex.Unlock()
+			logger.GetLogger().Info("recovered while erroring on Propagate()")
+		}
+	}()
+
 	label.mutex.Lock()
 	for _, client := range label.subscriptions {
 		// Only pipe to clients that are connected and not the client which is the origin of
 		// the message.
-		client.mutex.Lock()
 		if client.identity.Name != origin.Name && client.connected {
 			client.channel <- message
 		}
-		client.mutex.Unlock()
 	}
 	label.mutex.Unlock()
 }

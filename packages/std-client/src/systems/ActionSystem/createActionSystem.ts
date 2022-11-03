@@ -14,7 +14,7 @@ import {
   setComponent,
   Metadata,
 } from "@latticexyz/recs";
-import { mapObject, awaitStreamValue } from "@latticexyz/utils";
+import { mapObject, awaitStreamValue, uuid } from "@latticexyz/utils";
 import { ActionState } from "./constants";
 import { ActionData, ActionRequest } from "./types";
 import { defineActionComponent } from "../../components";
@@ -83,6 +83,8 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
       state: ActionState.Requested,
       on: actionRequest.on ? world.entities[actionRequest.on] : undefined,
       metadata: actionRequest.metadata,
+      overrides: undefined,
+      txHash: undefined,
     });
 
     // Add components that are not tracked yet to internal overridable component map.
@@ -139,12 +141,17 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
     // Update the action state
     updateComponent(Action, action.entityIndex, { state: ActionState.Executing });
 
+    // Compute overrides
+    const overrides = action
+      .updates(action.componentsWithOptimisticUpdates, requirementResult)
+      .map((o) => ({ ...o, id: uuid() }));
+
+    // Store overrides on Action component to be able to remove when action is done
+    updateComponent(Action, action.entityIndex, { overrides: overrides.map((o) => `${o.id}/${o.component}`) });
+
     // Set all pending updates of this action
-    for (const { component, value, entity } of action.updates(
-      action.componentsWithOptimisticUpdates,
-      requirementResult
-    )) {
-      componentsWithOptimisticUpdates[component as string].addOverride(action.id, { entity, value });
+    for (const { component, value, entity, id } of overrides) {
+      componentsWithOptimisticUpdates[component as string].addOverride(id, { entity, value });
     }
 
     try {
@@ -154,7 +161,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
       // If the result includes a hash key (single tx) or hashes (multiple tx) key, wait for the transactions to complete before removing the pending actions
       if (tx) {
         // Wait for all tx events to be reduced
-        updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents });
+        updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents, txHash: tx.hash });
         const txConfirmed = tx.wait().catch(() => handleError(action)); // Also catch the error if not awaiting
         await awaitStreamValue(txReduced$, (v) => v === tx.hash);
         updateComponent(Action, action.entityIndex, { state: ActionState.TxReduced });
@@ -201,8 +208,12 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
     if (!action) throw new Error("Trying to remove an action that does not exist.");
 
     // Remove this action's pending updates
-    for (const component of Object.values(componentsWithOptimisticUpdates)) {
-      component.removeOverride(actionId);
+    const actionEntityIndex = world.entityToIndex.get(actionId);
+    const overrides = (actionEntityIndex != null && getComponentValue(Action, actionEntityIndex)?.overrides) || [];
+    for (const override of overrides) {
+      const [id, componentKey] = override.split("/");
+      const component = componentsWithOptimisticUpdates[componentKey];
+      component.removeOverride(id);
     }
 
     // Remove this action's autorun and corresponding disposer

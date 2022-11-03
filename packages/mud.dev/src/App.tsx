@@ -8,6 +8,10 @@ function App() {
   return (
     <BrowserRouter>
       <Layout>
+        <div></div>
+        <Announcement href="https://discord.gg/XhZp6HbqNp" target="_blank">
+          Join the discord!
+        </Announcement>
         <Sidebar>
           <Logo src={logo} alt={"MUD logo"} />
           <Menu>
@@ -18,6 +22,9 @@ function App() {
             </MenuAnchor>
             <MenuAnchor href="https://twitter.com/latticexyz" target="_blank">
               twitter
+            </MenuAnchor>
+            <MenuAnchor href="https://discord.gg/XhZp6HbqNp" target="_blank">
+              discord
             </MenuAnchor>
           </Menu>
         </Sidebar>
@@ -39,6 +46,24 @@ const Layout = styled.div`
   display: grid;
   width: 100%;
   grid-template-columns: 50px 1fr;
+`;
+
+const Announcement = styled.a`
+  display: block;
+  background-color: var(--primary-color);
+  width: 100%;
+  height: 20px;
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #fff;
+  :hover {
+    background-color: #fff;
+    color: var(--primary-color);
+  }
 `;
 
 const Sidebar = styled.div`

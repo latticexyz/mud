@@ -19,13 +19,16 @@ import (
 )
 
 var (
-	wsUrl            = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
-	port             = flag.Int("port", 50081, "gRPC Server Port")
-	faucetPrivateKey = flag.String("faucet-private-key", "0x", "Private key to use for faucet")
-	dripAmount       = flag.Int64("drip-amount", 10000000000000000, "Drip amount in wei. Default to 0.01 ETH")
-	dripFrequency    = flag.Float64("drip-frequency", 60, "Drip frequency per account in minutes. Default to 60 minutes")
-	dripLimit        = flag.Uint64("drip-limit", 1000000000000000000, "Drip limit in wei per drip frequency interval. Default to 1 ETH")
-	devMode          = flag.Bool("dev", false, "Flag to run the faucet in dev mode, where verification is not required. Default to false")
+	wsUrl             = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
+	port              = flag.Int("port", 50081, "gRPC Server Port")
+	faucetPrivateKey  = flag.String("faucet-private-key", "0x", "Private key to use for faucet")
+	dripAmount        = flag.Int64("drip-amount", 10000000000000000, "Drip amount in wei. Default to 0.01 ETH")
+	dripFrequency     = flag.Float64("drip-frequency", 1, "Drip frequency per account in minutes. Default to 60 minutes")
+	dripLimit         = flag.Uint64("drip-limit", 1000000000000000000, "Drip limit in wei per drip frequency interval. Default to 1 ETH")
+	numLatestTweets   = flag.Int("num-latest-tweets", 5, "Number of latest tweets to check per user when verifying drip tweet. Default to 5")
+	nameSystemAddress = flag.String("name-system-address", "", "Address of NameSystem to set an address/username mapping when verifying drip tweet. Not specified by default")
+	devMode           = flag.Bool("dev", false, "Flag to run the faucet in dev mode, where verification is not required. Default to false")
+	metricsPort       = flag.Int("metrics-port", 6060, "Prometheus metrics http handler port. Defaults to port 6060")
 )
 
 func main() {
@@ -39,10 +42,12 @@ func main() {
 
 	// Create a drip config.
 	dripConfig := &faucet.DripConfig{
-		DripAmount:    *dripAmount,
-		DripFrequency: *dripFrequency,
-		DripLimit:     *dripLimit,
-		DevMode:       *devMode,
+		DripAmount:               *dripAmount,
+		DripFrequency:            *dripFrequency,
+		DripLimit:                *dripLimit,
+		DevMode:                  *devMode,
+		NumLatestTweetsForVerify: *numLatestTweets,
+		NameSystemAddress:        *nameSystemAddress,
 	}
 	logger.Info("using a drip configuration",
 		zap.Int64("amount", dripConfig.DripAmount),
@@ -83,5 +88,5 @@ func main() {
 	go faucet.ReplenishFaucetWorker(time.NewTicker(time.Duration(*dripFrequency)*time.Minute), make(chan struct{}))
 
 	// Start the faucet gRPC server.
-	grpc.StartFaucetServer(*port, twitterClient, ethClient, privateKey, publicKey, dripConfig, logger)
+	grpc.StartFaucetServer(*port, *metricsPort, twitterClient, ethClient, privateKey, publicKey, dripConfig, logger)
 }

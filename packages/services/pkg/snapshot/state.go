@@ -5,6 +5,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/logger"
 	"latticexyz/mud/packages/services/pkg/world"
 	"math"
+	"sync"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -14,7 +15,7 @@ import (
 
 // ECSState mimics a simple state machine, hence every transformation must return the updated
 // state and there are no objects. This type represents an ECS state on the world.
-type ECSState = map[string]map[string][]byte
+type ECSState = map[string]*sync.Map
 
 // ChainECSState is the full state of a chain, which is a mapping from all worlds to their ECSState.
 type ChainECSState = map[string]ECSState
@@ -67,7 +68,7 @@ func getInitialState(worldAddress string) (ECSState, uint64) {
 }
 
 func createStateValue(state ECSState, componentId string) ECSState {
-	state[componentId] = map[string][]byte{}
+	state[componentId] = &sync.Map{}
 	return state
 }
 
@@ -75,14 +76,14 @@ func setStateValue(state ECSState, componentId string, entityId string, value []
 	// TODO: this step can be optimized away since the 'ComponentRegistered' event is responsible
 	// for this to be populated.
 	if _, ok := state[componentId]; !ok {
-		state[componentId] = map[string][]byte{}
+		state[componentId] = &sync.Map{}
 	}
-	state[componentId][entityId] = value
+	state[componentId].Store(entityId, value)
 	return state
 }
 
 func deleteStateValue(state ECSState, componentId string, entityId string) ECSState {
-	delete(state[componentId], entityId)
+	state[componentId].Delete(entityId)
 	return state
 }
 

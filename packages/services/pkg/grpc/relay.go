@@ -31,7 +31,7 @@ func (server *ecsRelayServer) Init() {
 	// Kick off a worker that will periodically cycle through the connected clients and disconnect
 	// idle ones (the ones which have not received a /Ping RPC).
 	go server.DisconnectIdleClientsWorker(
-		time.NewTicker(time.Duration(server.config.IdleDisconnectIterval)*time.Second),
+		time.NewTicker(time.Duration(server.config.IdleDisconnectInterval)*time.Second),
 		make(chan struct{}),
 	)
 }
@@ -218,6 +218,8 @@ func (server *ecsRelayServer) OpenStream(signature *pb.Signature, stream pb.ECSR
 	client.Connect()
 	client.Ping()
 
+	server.logger.Info("opened stream", zap.String("client", identity.Name))
+
 	relayedMessagesChannel := client.GetChannel()
 	for {
 		select {
@@ -306,13 +308,13 @@ func (server *ecsRelayServer) VerifySufficientBalance(client *relay.Client, addr
 		server.logger.Info("fetched up-to-date balance for account", zap.String("address", address), zap.Uint64("balance", balance))
 
 		// Update the "cached" balance on the client, which helps us know whether to keep checking or not.
-		client.SetHasBalance(balance > 0)
+		client.SetHasSufficientBalance(balance > server.config.MinAccountBalance)
 
-		if balance == 0 {
-			return fmt.Errorf("client with address %s has insufficient balance to push messages via relay", address)
+		if !client.HasSufficientBalance() {
+			return fmt.Errorf("client with address %s has insufficient balance (%d wei) to push messages via relay", address, balance)
 		}
 	} else {
-		if !client.HasBalance() {
+		if !client.HasSufficientBalance() {
 			return fmt.Errorf("client with address %s has insufficient balance as of last check", address)
 		}
 	}
@@ -343,12 +345,14 @@ func (server *ecsRelayServer) HandlePushRequest(request *pb.PushRequest) error {
 	// that we don't check balance on every request.
 	err = server.VerifySufficientBalance(client, recoveredAddress)
 	if err != nil {
-		return err
+		server.logger.Warn("client balance verification failed", zap.Error(err))
+		return nil
 	}
 
 	// Rate limit the client, if necessary.
 	if !client.GetLimiter().Allow() {
-		return fmt.Errorf("client rate limited, max %d msg push / second allowed", server.config.MessageRateLimit)
+		server.logger.Warn("client rate limited", zap.String("client", recoveredAddress), zap.Int("max pushed msg/s allowed", server.config.MessageRateLimit))
+		return nil
 	}
 
 	// Get the message.
@@ -384,30 +388,6 @@ func (server *ecsRelayServer) Push(ctx context.Context, request *pb.PushRequest)
 	return &pb.PushResponse{}, nil
 }
 
-func (server *ecsRelayServer) PushMany(ctx context.Context, request *pb.PushManyRequest) (*pb.PushResponse, error) {
-	if request.Signature == nil {
-		return nil, fmt.Errorf("signature required")
-	}
-	_, identity, err := server.GetClientFromSignature(request.Signature)
-	if err != nil {
-		return nil, err
-	}
-
-	label := server.GetLabel(request.Label)
-
-	for _, message := range request.Messages {
-		// Verify that the message is OK to relay.
-		err := server.VerifyMessage(message, identity)
-		if err != nil {
-			server.logger.Info("not relaying message", zap.Error(err))
-			continue
-		}
-		// Relay the message.
-		label.Propagate(message, identity)
-	}
-	return &pb.PushResponse{}, nil
-}
-
 func (server *ecsRelayServer) PushStream(stream pb.ECSRelayService_PushStreamServer) error {
 	// Continuously receive message relay requests, handle to relay, and respond with confirmations.
 	for {
@@ -432,4 +412,10 @@ func (server *ecsRelayServer) PushStream(stream pb.ECSRelayService_PushStreamSer
 		// Send a response to client signaling that the request was processed.
 		stream.Send(&pb.PushResponse{})
 	}
+}
+
+func (server *ecsRelayServer) MinBalanceForPush(ctx context.Context, request *pb.BalanceRequest) (*pb.BalanceResponse, error) {
+	return &pb.BalanceResponse{
+		Balance: server.config.MinAccountBalance,
+	}, nil
 }
