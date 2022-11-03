@@ -29,12 +29,11 @@ export const ComponentEditor = ({
             onClick={() => {
               removeComponent(component, entity);
 
-              if (hasContract(component)) setContractComponentValue(entity, component, {});
+              if (setContractComponentValue && hasContract(component)) setContractComponentValue(entity, component, {});
             }}
           >
             Remove
           </ComponentBrowserButton>
-        )}
       </ComponentTitle>
       <ComponentValueEditor
         entity={entity}
