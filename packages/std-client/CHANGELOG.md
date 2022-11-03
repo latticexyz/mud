@@ -3,6 +3,41 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.1](https://github.com/latticexyz/mud/compare/v1.24.0...v1.24.1) (2022-10-29)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [1.24.0](https://github.com/latticexyz/mud/compare/v1.23.1...v1.24.0) (2022-10-28)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+## [1.23.1](https://github.com/latticexyz/mud/compare/v1.23.0...v1.23.1) (2022-10-28)
+
+### Bug Fixes
+
+- avoid early return for unknown components ([#226](https://github.com/latticexyz/mud/issues/226)) ([bb8684f](https://github.com/latticexyz/mud/commit/bb8684f6390591c2e6e4d07e364cab204c04805c))
+
+# [1.23.0](https://github.com/latticexyz/mud/compare/v1.22.0...v1.23.0) (2022-10-26)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [1.22.0](https://github.com/latticexyz/mud/compare/v1.21.0...v1.22.0) (2022-10-26)
+
+### Features
+
+- **network:** expose method to register new system contracts on the client ([#224](https://github.com/latticexyz/mud/issues/224)) ([4583767](https://github.com/latticexyz/mud/commit/45837676ebe776f1e752affb7ea1dadf44e451f2))
+- **network:** simplify calling untyped systems ([#223](https://github.com/latticexyz/mud/issues/223)) ([94e4788](https://github.com/latticexyz/mud/commit/94e4788174b019d3f57df98f3a291d0498d1f17c))
+
+# [1.21.0](https://github.com/latticexyz/mud/compare/v1.20.0...v1.21.0) (2022-10-26)
+
+### Features
+
+- **network:** send ack between main thread and sync worker ([#220](https://github.com/latticexyz/mud/issues/220)) ([e06978a](https://github.com/latticexyz/mud/commit/e06978aafc37a0992ca0d7cb58a97da0a5295781))
+
+# [1.20.0](https://github.com/latticexyz/mud/compare/v1.19.0...v1.20.0) (2022-10-22)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
 # [1.19.0](https://github.com/latticexyz/mud/compare/v1.18.0...v1.19.0) (2022-10-21)
 
 ### Features

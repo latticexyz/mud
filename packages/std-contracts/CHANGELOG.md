@@ -3,6 +3,38 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.1](https://github.com/latticexyz/mud/compare/v1.24.0...v1.24.1) (2022-10-29)
+
+### Bug Fixes
+
+- **std-contracts:** use assembly for delegation in UpgradableSystem ([#228](https://github.com/latticexyz/mud/issues/228)) ([1fa46fd](https://github.com/latticexyz/mud/commit/1fa46fd37da706e4c559a7b7d02ffa1b1bacc1bc))
+
+# [1.24.0](https://github.com/latticexyz/mud/compare/v1.23.1...v1.24.0) (2022-10-28)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+## [1.23.1](https://github.com/latticexyz/mud/compare/v1.23.0...v1.23.1) (2022-10-28)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+# [1.23.0](https://github.com/latticexyz/mud/compare/v1.22.0...v1.23.0) (2022-10-26)
+
+### Features
+
+- add UpgradableSystem ([#225](https://github.com/latticexyz/mud/issues/225)) ([8229633](https://github.com/latticexyz/mud/commit/822963305af2af0a7409282f815fc6a1dd3ca2b2))
+
+# [1.22.0](https://github.com/latticexyz/mud/compare/v1.21.0...v1.22.0) (2022-10-26)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+# [1.21.0](https://github.com/latticexyz/mud/compare/v1.20.0...v1.21.0) (2022-10-26)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
+# [1.20.0](https://github.com/latticexyz/mud/compare/v1.19.0...v1.20.0) (2022-10-22)
+
+**Note:** Version bump only for package @latticexyz/std-contracts
+
 # [1.19.0](https://github.com/latticexyz/mud/compare/v1.18.0...v1.19.0) (2022-10-21)
 
 **Note:** Version bump only for package @latticexyz/std-contracts

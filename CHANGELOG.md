@@ -3,6 +3,53 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.24.1](https://github.com/latticexyz/mud/compare/v1.24.0...v1.24.1) (2022-10-29)
+
+### Bug Fixes
+
+- **std-contracts:** use assembly for delegation in UpgradableSystem ([#228](https://github.com/latticexyz/mud/issues/228)) ([1fa46fd](https://github.com/latticexyz/mud/commit/1fa46fd37da706e4c559a7b7d02ffa1b1bacc1bc))
+
+# [1.24.0](https://github.com/latticexyz/mud/compare/v1.23.1...v1.24.0) (2022-10-28)
+
+### Features
+
+- v2 endpoint for pruned snapshot that returns entities as raw bytes ([#215](https://github.com/latticexyz/mud/issues/215)) ([28cce1e](https://github.com/latticexyz/mud/commit/28cce1e8a1240d72363fe786704e7fe976f7c995))
+
+## [1.23.1](https://github.com/latticexyz/mud/compare/v1.23.0...v1.23.1) (2022-10-28)
+
+### Bug Fixes
+
+- avoid early return for unknown components ([#226](https://github.com/latticexyz/mud/issues/226)) ([bb8684f](https://github.com/latticexyz/mud/commit/bb8684f6390591c2e6e4d07e364cab204c04805c))
+
+# [1.23.0](https://github.com/latticexyz/mud/compare/v1.22.0...v1.23.0) (2022-10-26)
+
+### Features
+
+- add UpgradableSystem ([#225](https://github.com/latticexyz/mud/issues/225)) ([8229633](https://github.com/latticexyz/mud/commit/822963305af2af0a7409282f815fc6a1dd3ca2b2))
+
+# [1.22.0](https://github.com/latticexyz/mud/compare/v1.21.0...v1.22.0) (2022-10-26)
+
+### Features
+
+- **network:** expose method to register new system contracts on the client ([#224](https://github.com/latticexyz/mud/issues/224)) ([4583767](https://github.com/latticexyz/mud/commit/45837676ebe776f1e752affb7ea1dadf44e451f2))
+- **network:** simplify calling untyped systems ([#223](https://github.com/latticexyz/mud/issues/223)) ([94e4788](https://github.com/latticexyz/mud/commit/94e4788174b019d3f57df98f3a291d0498d1f17c))
+
+# [1.21.0](https://github.com/latticexyz/mud/compare/v1.20.0...v1.21.0) (2022-10-26)
+
+### Bug Fixes
+
+- **solecs:** remove console import from MapSet ([#216](https://github.com/latticexyz/mud/issues/216)) ([b3116b3](https://github.com/latticexyz/mud/commit/b3116b39912638f980eaccd2e2d25227d0917874))
+
+### Features
+
+- **network:** send ack between main thread and sync worker ([#220](https://github.com/latticexyz/mud/issues/220)) ([e06978a](https://github.com/latticexyz/mud/commit/e06978aafc37a0992ca0d7cb58a97da0a5295781))
+
+# [1.20.0](https://github.com/latticexyz/mud/compare/v1.19.0...v1.20.0) (2022-10-22)
+
+### Features
+
+- **recs:** add util to clear cache of local cache component ([#217](https://github.com/latticexyz/mud/issues/217)) ([30a5868](https://github.com/latticexyz/mud/commit/30a5868f86a0d9e7a8de92f79c286841125f8ca7))
+
 # [1.19.0](https://github.com/latticexyz/mud/compare/v1.18.0...v1.19.0) (2022-10-21)
 
 ### Bug Fixes

@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/services",
   "license": "MIT",
-  "version": "1.19.0",
+  "version": "1.24.1",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "main": "protobuf/ts",
   "repository": {
