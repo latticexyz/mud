@@ -13,10 +13,10 @@ import (
 )
 
 type RelayServerConfig struct {
-	IdleTimeoutTime       int
-	IdleDisconnectIterval int
-	MessageDriftTime      int
-	MinAccountBalance     uint64
+	IdleTimeoutTime        int
+	IdleDisconnectInterval int
+	MessageDriftTime       int
+	MinAccountBalance      uint64
 
 	VerifyMessageSignature bool
 	VerifyAccountBalance   bool
