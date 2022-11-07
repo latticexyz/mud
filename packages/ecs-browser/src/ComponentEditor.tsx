@@ -15,7 +15,7 @@ export const ComponentEditor = ({
   entity: EntityIndex;
   component: AnyComponent;
   layers: Layers;
-  setContractComponentValue: SetContractComponentFunction<Schema>;
+  setContractComponentValue?: SetContractComponentFunction<Schema>;
 }) => {
   const value = useComponentValueStream(component, entity);
   if (!value) return null;
@@ -24,11 +24,15 @@ export const ComponentEditor = ({
     <ComponentEditorContainer>
       <ComponentTitle>
         {component.id}
-        <ComponentBrowserButton onClick={() => {
-          removeComponent(component, entity);
+        <ComponentBrowserButton
+          onClick={() => {
+            removeComponent(component, entity);
 
-          if(hasContract(component)) setContractComponentValue(entity, component, {});
-        }}>Remove</ComponentBrowserButton>
+            if (setContractComponentValue && hasContract(component)) setContractComponentValue(entity, component, {});
+          }}
+        >
+          Remove
+        </ComponentBrowserButton>
       </ComponentTitle>
       <ComponentValueEditor
         entity={entity}

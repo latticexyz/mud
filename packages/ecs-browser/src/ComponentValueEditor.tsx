@@ -14,7 +14,7 @@ export const ComponentValueEditor = ({
   component: AnyComponent;
   componentValue: ComponentValue<Schema>;
   layers: Layers;
-  setContractComponentValue: SetContractComponentFunction<Schema>;
+  setContractComponentValue?: SetContractComponentFunction<Schema>;
 }) => {
   return (
     <div>

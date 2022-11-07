@@ -8,31 +8,30 @@ import { useClearDevHighlights } from "./hooks";
 import { observer } from "mobx-react-lite";
 import { PrototypeCreator } from "./PrototypeCreator";
 import { Coord } from "./shared";
+import { createBrowserDevComponents } from "./createBrowserDevComponents";
 
 /**
  * An Entity Browser for viewing/editiing Component values.
  */
 export const Browser = observer(
   ({
-    entities,
     layers,
     setContractComponentValue,
-    devHighlightComponent,
-    hoverHighlightComponent,
     prototypeComponent,
     nameComponent,
     spawnPrototypeAt,
     world,
+    devHighlightComponent,
+    hoverHighlightComponent,
   }: {
-    entities: EntityID[];
     layers: Layers;
-    setContractComponentValue: SetContractComponentFunction<Schema>;
-    devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
-    hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
+    setContractComponentValue?: SetContractComponentFunction<Schema>;
     prototypeComponent?: Component<{ value: Type.StringArray }>;
     nameComponent?: Component<{ value: Type.String }>;
     spawnPrototypeAt?: (prototypeId: EntityID, position: Coord) => void;
     world: World;
+    devHighlightComponent: ReturnType<typeof createBrowserDevComponents>["devHighlightComponent"];
+    hoverHighlightComponent: ReturnType<typeof createBrowserDevComponents>["hoverHighlightComponent"];
   }) => {
     const [filteredEntities, setFilteredEntities] = useState<EntityID[]>([]);
     const [overflow, setOverflow] = useState(0);
@@ -43,7 +42,7 @@ export const Browser = observer(
         <QueryBuilder
           devHighlightComponent={devHighlightComponent}
           hoverHighlightComponent={hoverHighlightComponent}
-          allEntities={entities}
+          allEntities={world.entities}
           setFilteredEntities={setFilteredEntities}
           layers={layers}
           world={world}

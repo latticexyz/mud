@@ -28,7 +28,7 @@ export const ValueEditor = ({
   componentValue: ComponentValue<Schema>;
   valueProp: string;
   layers: Layers;
-  setContractComponentValue: SetContractComponentFunction<Schema>;
+  setContractComponentValue?: SetContractComponentFunction<Schema>;
 }) => {
   const [value, setValue] = useState<string | null>(componentValue[valueProp]?.toString() as string | null);
 
@@ -51,6 +51,7 @@ export const ValueEditor = ({
   const persistValue = useCallback(
     (e: Event | React.SyntheticEvent, value: string | null) => {
       e.preventDefault();
+
       const valueType = component.schema[valueProp];
 
       if (value == null || value === "") {
@@ -75,7 +76,7 @@ export const ValueEditor = ({
         parsedValue = value;
       }
 
-      if (hasContract(component)) {
+      if (hasContract(component) && setContractComponentValue) {
         const currentValue = getComponentValueStrict(component, entity);
         setContractComponentValue(entity, component, {
           ...currentValue,
