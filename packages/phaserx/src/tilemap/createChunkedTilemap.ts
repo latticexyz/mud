@@ -123,7 +123,7 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
   }
 
   function destroyChunk(chunkCoord: WorldCoord, force?: boolean) {
-    if (!visible.current && !force) return;
+    if ((!visible.current && !force) || !maps.has(chunkCoord)) return;
     const map = getMapAtChunkCoord(chunkCoord);
     map.destroy();
     maps.delete(chunkCoord);
