@@ -85,6 +85,14 @@ export interface LinkedAddressForTwitterResponse {
   address: string;
 }
 
+export interface SetLinkedTwitterRequest {
+  address: string;
+  username: string;
+  signature: string;
+}
+
+export interface SetLinkedTwitterResponse {}
+
 function createBaseLinkedTwitterPair(): LinkedTwitterPair {
   return { username: "", address: "" };
 }
@@ -780,6 +788,87 @@ export const LinkedAddressForTwitterResponse = {
   },
 };
 
+function createBaseSetLinkedTwitterRequest(): SetLinkedTwitterRequest {
+  return { address: "", username: "", signature: "" };
+}
+
+export const SetLinkedTwitterRequest = {
+  encode(message: SetLinkedTwitterRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.address !== "") {
+      writer.uint32(10).string(message.address);
+    }
+    if (message.username !== "") {
+      writer.uint32(18).string(message.username);
+    }
+    if (message.signature !== "") {
+      writer.uint32(26).string(message.signature);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SetLinkedTwitterRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSetLinkedTwitterRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.address = reader.string();
+          break;
+        case 2:
+          message.username = reader.string();
+          break;
+        case 3:
+          message.signature = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<SetLinkedTwitterRequest>): SetLinkedTwitterRequest {
+    const message = createBaseSetLinkedTwitterRequest();
+    message.address = object.address ?? "";
+    message.username = object.username ?? "";
+    message.signature = object.signature ?? "";
+    return message;
+  },
+};
+
+function createBaseSetLinkedTwitterResponse(): SetLinkedTwitterResponse {
+  return {};
+}
+
+export const SetLinkedTwitterResponse = {
+  encode(_: SetLinkedTwitterResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SetLinkedTwitterResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSetLinkedTwitterResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(_: DeepPartial<SetLinkedTwitterResponse>): SetLinkedTwitterResponse {
+    const message = createBaseSetLinkedTwitterResponse();
+    return message;
+  },
+};
+
 /** The Faucet Service definition. */
 export type FaucetServiceDefinition = typeof FaucetServiceDefinition;
 export const FaucetServiceDefinition = {
@@ -842,6 +931,15 @@ export const FaucetServiceDefinition = {
       responseStream: false,
       options: {},
     },
+    /** Admin utility endpoints for modifying state. Requires a signature with faucet private key. */
+    setLinkedTwitter: {
+      name: "SetLinkedTwitter",
+      requestType: SetLinkedTwitterRequest,
+      requestStream: false,
+      responseType: SetLinkedTwitterResponse,
+      responseStream: false,
+      options: {},
+    },
   },
 } as const;
 
@@ -868,6 +966,11 @@ export interface FaucetServiceServiceImplementation<CallContextExt = {}> {
     request: LinkedAddressForTwitterRequest,
     context: CallContext & CallContextExt
   ): Promise<DeepPartial<LinkedAddressForTwitterResponse>>;
+  /** Admin utility endpoints for modifying state. Requires a signature with faucet private key. */
+  setLinkedTwitter(
+    request: SetLinkedTwitterRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<SetLinkedTwitterResponse>>;
 }
 
 export interface FaucetServiceClient<CallOptionsExt = {}> {
@@ -893,6 +996,11 @@ export interface FaucetServiceClient<CallOptionsExt = {}> {
     request: DeepPartial<LinkedAddressForTwitterRequest>,
     options?: CallOptions & CallOptionsExt
   ): Promise<LinkedAddressForTwitterResponse>;
+  /** Admin utility endpoints for modifying state. Requires a signature with faucet private key. */
+  setLinkedTwitter(
+    request: DeepPartial<SetLinkedTwitterRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<SetLinkedTwitterResponse>;
 }
 
 declare var self: any | undefined;
