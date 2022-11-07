@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.26.0](https://github.com/latticexyz/mud/compare/v1.25.1...v1.26.0) (2022-11-07)
+
+### Bug Fixes
+
+- **phaserx:** avoid creating tilemap chunks if tilemap is not visible ([#241](https://github.com/latticexyz/mud/issues/241)) ([641e2c4](https://github.com/latticexyz/mud/commit/641e2c498967af1ece9ce8c1213d39725c489a11))
+
 ## [1.25.1](https://github.com/latticexyz/mud/compare/v1.25.0...v1.25.1) (2022-11-03)
 
 **Note:** Version bump only for package @latticexyz/phaserx
