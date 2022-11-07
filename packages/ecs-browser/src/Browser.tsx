@@ -8,6 +8,7 @@ import { useClearDevHighlights } from "./hooks";
 import { observer } from "mobx-react-lite";
 import { PrototypeCreator } from "./PrototypeCreator";
 import { Coord } from "./shared";
+import { createBrowserDevComponents } from "./createBrowserDevComponents";
 
 /**
  * An Entity Browser for viewing/editiing Component values.
@@ -20,6 +21,8 @@ export const Browser = observer(
     nameComponent,
     spawnPrototypeAt,
     world,
+    devHighlightComponent,
+    hoverHighlightComponent,
   }: {
     layers: Layers;
     setContractComponentValue?: SetContractComponentFunction<Schema>;
@@ -27,16 +30,9 @@ export const Browser = observer(
     nameComponent?: Component<{ value: Type.String }>;
     spawnPrototypeAt?: (prototypeId: EntityID, position: Coord) => void;
     world: World;
+    devHighlightComponent: ReturnType<typeof createBrowserDevComponents>["devHighlightComponent"];
+    hoverHighlightComponent: ReturnType<typeof createBrowserDevComponents>["hoverHighlightComponent"];
   }) => {
-    const devHighlightComponent = defineComponent(world, {
-      value: Type.OptionalNumber,
-    });
-
-    const hoverHighlightComponent = defineComponent(world, {
-      x: Type.OptionalNumber,
-      y: Type.OptionalNumber,
-    });
-
     const [filteredEntities, setFilteredEntities] = useState<EntityID[]>([]);
     const [overflow, setOverflow] = useState(0);
     const clearDevHighlights = useClearDevHighlights(devHighlightComponent);
