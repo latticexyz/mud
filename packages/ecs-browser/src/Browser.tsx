@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Layers, Type, Component, Schema, World, EntityID, defineComponent } from "@latticexyz/recs";
+import { Layers, Type, Component, Schema, World, EntityID } from "@latticexyz/recs";
 import { BrowserContainer, SmallHeadline } from "./StyledComponents";
 import { SetContractComponentFunction } from "./types";
 import { EntityEditor } from "./EntityEditor";
