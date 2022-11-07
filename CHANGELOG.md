@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.25.1](https://github.com/latticexyz/mud/compare/v1.25.0...v1.25.1) (2022-11-03)
+
+**Note:** Version bump only for package mud
+
+# [1.25.0](https://github.com/latticexyz/mud/compare/v1.24.1...v1.25.0) (2022-11-03)
+
+### Bug Fixes
+
+- add license ([af8eaa3](https://github.com/latticexyz/mud/commit/af8eaa3571b6ebb88f65016673483c8585d646f4))
+- remove global install of cli ([653281e](https://github.com/latticexyz/mud/commit/653281e3e502b59f5ecdc752c83b3fb5e3449855))
+
+### Features
+
+- **network,std-client:** add support for SystemCall events in default MUD network setup ([#232](https://github.com/latticexyz/mud/issues/232)) ([93d947b](https://github.com/latticexyz/mud/commit/93d947b24bd641d8b6105f0d5ac308944903c26b))
+- **network:** export createBlockNumberStream ([#230](https://github.com/latticexyz/mud/issues/230)) ([c227e5d](https://github.com/latticexyz/mud/commit/c227e5df39dd9ca81652af142f2b07f1b64b3629))
+- **solecs:** allow overriding Component logic, better inheritance ([#229](https://github.com/latticexyz/mud/issues/229)) ([d4f5a4b](https://github.com/latticexyz/mud/commit/d4f5a4be482d249e1a417cbc1c91a4eb27233952))
+- **std-client:** export missing types ([aefba08](https://github.com/latticexyz/mud/commit/aefba0864f75ff4378b614796a03a87b2803b431))
+- working deploy script from mud basics ([#218](https://github.com/latticexyz/mud/issues/218)) ([fd1c61b](https://github.com/latticexyz/mud/commit/fd1c61bd3525bbeedc70dd0dc384936b583a7340))
+
 ## [1.24.1](https://github.com/latticexyz/mud/compare/v1.24.0...v1.24.1) (2022-10-29)
 
 ### Bug Fixes

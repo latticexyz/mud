@@ -29,6 +29,8 @@ type FaucetServiceClient interface {
 	GetLinkedTwitters(ctx context.Context, in *GetLinkedTwittersRequest, opts ...grpc.CallOption) (*GetLinkedTwittersResponse, error)
 	GetLinkedTwitterForAddress(ctx context.Context, in *LinkedTwitterForAddressRequest, opts ...grpc.CallOption) (*LinkedTwitterForAddressResponse, error)
 	GetLinkedAddressForTwitter(ctx context.Context, in *LinkedAddressForTwitterRequest, opts ...grpc.CallOption) (*LinkedAddressForTwitterResponse, error)
+	// Admin utility endpoints for modifying state. Requires a signature with faucet private key.
+	SetLinkedTwitter(ctx context.Context, in *SetLinkedTwitterRequest, opts ...grpc.CallOption) (*SetLinkedTwitterResponse, error)
 }
 
 type faucetServiceClient struct {
@@ -102,6 +104,15 @@ func (c *faucetServiceClient) GetLinkedAddressForTwitter(ctx context.Context, in
 	return out, nil
 }
 
+func (c *faucetServiceClient) SetLinkedTwitter(ctx context.Context, in *SetLinkedTwitterRequest, opts ...grpc.CallOption) (*SetLinkedTwitterResponse, error) {
+	out := new(SetLinkedTwitterResponse)
+	err := c.cc.Invoke(ctx, "/faucet.FaucetService/SetLinkedTwitter", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // FaucetServiceServer is the server API for FaucetService service.
 // All implementations must embed UnimplementedFaucetServiceServer
 // for forward compatibility
@@ -113,6 +124,8 @@ type FaucetServiceServer interface {
 	GetLinkedTwitters(context.Context, *GetLinkedTwittersRequest) (*GetLinkedTwittersResponse, error)
 	GetLinkedTwitterForAddress(context.Context, *LinkedTwitterForAddressRequest) (*LinkedTwitterForAddressResponse, error)
 	GetLinkedAddressForTwitter(context.Context, *LinkedAddressForTwitterRequest) (*LinkedAddressForTwitterResponse, error)
+	// Admin utility endpoints for modifying state. Requires a signature with faucet private key.
+	SetLinkedTwitter(context.Context, *SetLinkedTwitterRequest) (*SetLinkedTwitterResponse, error)
 	mustEmbedUnimplementedFaucetServiceServer()
 }
 
@@ -140,6 +153,9 @@ func (UnimplementedFaucetServiceServer) GetLinkedTwitterForAddress(context.Conte
 }
 func (UnimplementedFaucetServiceServer) GetLinkedAddressForTwitter(context.Context, *LinkedAddressForTwitterRequest) (*LinkedAddressForTwitterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLinkedAddressForTwitter not implemented")
+}
+func (UnimplementedFaucetServiceServer) SetLinkedTwitter(context.Context, *SetLinkedTwitterRequest) (*SetLinkedTwitterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetLinkedTwitter not implemented")
 }
 func (UnimplementedFaucetServiceServer) mustEmbedUnimplementedFaucetServiceServer() {}
 
@@ -280,6 +296,24 @@ func _FaucetService_GetLinkedAddressForTwitter_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _FaucetService_SetLinkedTwitter_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SetLinkedTwitterRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FaucetServiceServer).SetLinkedTwitter(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/faucet.FaucetService/SetLinkedTwitter",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FaucetServiceServer).SetLinkedTwitter(ctx, req.(*SetLinkedTwitterRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // FaucetService_ServiceDesc is the grpc.ServiceDesc for FaucetService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -314,6 +348,10 @@ var FaucetService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetLinkedAddressForTwitter",
 			Handler:    _FaucetService_GetLinkedAddressForTwitter_Handler,
+		},
+		{
+			MethodName: "SetLinkedTwitter",
+			Handler:    _FaucetService_SetLinkedTwitter_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
