@@ -122,7 +122,8 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
     return getMapAtChunkCoord(chunkCoord);
   }
 
-  function destroyChunk(chunkCoord: WorldCoord) {
+  function destroyChunk(chunkCoord: WorldCoord, force?: boolean) {
+    if (!visible.current && !force) return;
     const map = getMapAtChunkCoord(chunkCoord);
     map.destroy();
     maps.delete(chunkCoord);
@@ -185,7 +186,7 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
     if (v === visible.current) return;
     visible.current = v;
     for (const chunk of chunks.visibleChunks.current.coords()) {
-      visible.current ? renderChunk(chunk) : destroyChunk(chunk);
+      visible.current ? renderChunk(chunk) : destroyChunk(chunk, true);
     }
   }
 
