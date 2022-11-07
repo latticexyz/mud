@@ -52,10 +52,6 @@ export const ValueEditor = ({
     (e: Event | React.SyntheticEvent, value: string | null) => {
       e.preventDefault();
 
-      if (!setContractComponentValue) {
-        return;
-      }
-
       const valueType = component.schema[valueProp];
 
       if (value == null || value === "") {
@@ -80,7 +76,7 @@ export const ValueEditor = ({
         parsedValue = value;
       }
 
-      if (hasContract(component)) {
+      if (hasContract(component) && setContractComponentValue) {
         const currentValue = getComponentValueStrict(component, entity);
         setContractComponentValue(entity, component, {
           ...currentValue,
@@ -95,7 +91,7 @@ export const ValueEditor = ({
 
   return (
     <ValueForm onSubmit={(e) => persistValue(e, value)}>
-      {isNumberType(component.schema[valueProp]) && setContractComponentValue ? (
+      {isNumberType(component.schema[valueProp]) ? (
         <DraggableNumberLabel
           value={value}
           setValue={setValue}
@@ -114,7 +110,6 @@ export const ValueEditor = ({
             setValue(e.target.value);
             persistValue(e, e.target.value);
           }}
-          disabled={!setContractComponentValue}
         >
           <option value="">None</option>
           {Object.values(layers)[0].world.entities.map((entityId) => (
@@ -134,7 +129,6 @@ export const ValueEditor = ({
             setValue(e.target.value);
           }}
           onBlur={(e) => persistValue(e, value)}
-          disabled={!setContractComponentValue}
         />
       )}
     </ValueForm>

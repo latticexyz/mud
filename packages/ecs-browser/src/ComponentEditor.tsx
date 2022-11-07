@@ -24,15 +24,15 @@ export const ComponentEditor = ({
     <ComponentEditorContainer>
       <ComponentTitle>
         {component.id}
-          <ComponentBrowserButton
-            onClick={() => {
-              removeComponent(component, entity);
+        <ComponentBrowserButton
+          onClick={() => {
+            removeComponent(component, entity);
 
-              if (setContractComponentValue && hasContract(component)) setContractComponentValue(entity, component, {});
-            }}
-          >
-            Remove
-          </ComponentBrowserButton>
+            if (setContractComponentValue && hasContract(component)) setContractComponentValue(entity, component, {});
+          }}
+        >
+          Remove
+        </ComponentBrowserButton>
       </ComponentTitle>
       <ComponentValueEditor
         entity={entity}
