@@ -3,7 +3,6 @@ import { Gesture } from "@use-gesture/vanilla";
 import { BehaviorSubject, filter, map, sampleTime, scan, Subject, throttleTime } from "rxjs";
 import { tileCoordToPixelCoord } from "./utils";
 import { Camera, CameraConfig, Coord, GestureState, ObjectPool } from "./types";
-import { createAutoResettingValue } from "@latticexyz/utils";
 
 export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, options: CameraConfig): Camera {
   const phaserGame = document.getElementById(options.phaserSelector);
@@ -38,8 +37,6 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
     zoom$.next(zoom);
   }
 
-  const isPinching = createAutoResettingValue(false, 100);
-
   const pinchSub = pinchStream$
     .pipe(
       throttleTime(10),
@@ -54,8 +51,6 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
       scan((acc, curr) => [acc[1], curr], [1, 1]) // keep track of the last value to offset the map position (not implemented yet)
     )
     .subscribe(([, zoom]) => {
-      // Set pinching to true to prevent moving the map while pinching (value will reset to false after 100ms)
-      isPinching.setValue(true);
       // Set the gesture zoom state to the current zoom value to avoid zooming beyond the max values
       if (gesture._ctrl.state.pinch) gesture._ctrl.state.pinch.offset[0] = zoom;
       setZoom(zoom);
@@ -64,7 +59,7 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
   const wheelSub = wheelStream$
     .pipe(
       sampleTime(10),
-      filter(() => !isPinching.value),
+      filter((state) => !state.pinching),
       map((state) => state.delta.map((x) => x * options.wheelSpeed)), // Compute wheel speed
       map((movement) => movement.map((m) => m / phaserCamera.zoom)), // Adjust for current zoom value
       map((movement) => [phaserCamera.scrollX + movement[0], phaserCamera.scrollY + movement[1]]) // Compute new pinch
