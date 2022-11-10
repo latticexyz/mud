@@ -58,8 +58,8 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
 
   const wheelSub = wheelStream$
     .pipe(
-      sampleTime(10),
       filter((state) => !state.pinching),
+      sampleTime(10),
       map((state) => state.delta.map((x) => x * options.wheelSpeed)), // Compute wheel speed
       map((movement) => movement.map((m) => m / phaserCamera.zoom)), // Adjust for current zoom value
       map((movement) => [phaserCamera.scrollX + movement[0], phaserCamera.scrollY + movement[1]]) // Compute new pinch
