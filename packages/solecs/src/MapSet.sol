@@ -5,17 +5,27 @@ pragma solidity >=0.8.0;
  * Key value store with uint256 key and uint256 Set value
  */
 contract MapSet {
+  address private owner;
   mapping(uint256 => uint256[]) private items;
   mapping(uint256 => mapping(uint256 => uint256)) private itemToIndex;
 
-  function add(uint256 setKey, uint256 item) public {
+  constructor() {
+    owner = msg.sender;
+  }
+
+  modifier onlyOwner() {
+    require(msg.sender == owner, "ONLY_OWNER");
+    _;
+  }
+
+  function add(uint256 setKey, uint256 item) public onlyOwner {
     if (has(setKey, item)) return;
 
     itemToIndex[setKey][item] = items[setKey].length;
     items[setKey].push(item);
   }
 
-  function remove(uint256 setKey, uint256 item) public {
+  function remove(uint256 setKey, uint256 item) public onlyOwner {
     if (!has(setKey, item)) return;
 
     // Copy the last item to the given item's index
