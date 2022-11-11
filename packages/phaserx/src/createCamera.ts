@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Gesture } from "@use-gesture/vanilla";
-import { BehaviorSubject, map, sampleTime, scan, Subject, throttleTime } from "rxjs";
+import { BehaviorSubject, filter, map, sampleTime, scan, Subject, throttleTime } from "rxjs";
 import { tileCoordToPixelCoord } from "./utils";
 import { Camera, CameraConfig, Coord, GestureState, ObjectPool } from "./types";
 
@@ -40,7 +40,13 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
   const pinchSub = pinchStream$
     .pipe(
       throttleTime(10),
-      map((state) => state.offset[0]), // Compute pinch speed
+      map((state) => {
+        // Because this event stream is throttled, we're dropping events which contain delta data, so we need to calculate the delta ourselves.
+        const zoom = zoom$.getValue();
+        const delta = state.offset[0] - zoom;
+        const scaledDelta = delta * options.pinchSpeed;
+        return zoom + scaledDelta;
+      }), // Compute pinch speed
       map((zoom) => Math.min(Math.max(zoom, options.minZoom), options.maxZoom)), // Limit zoom values
       scan((acc, curr) => [acc[1], curr], [1, 1]) // keep track of the last value to offset the map position (not implemented yet)
     )
@@ -52,6 +58,7 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
 
   const wheelSub = wheelStream$
     .pipe(
+      filter((state) => !state.pinching),
       sampleTime(10),
       map((state) => state.delta.map((x) => x * options.wheelSpeed)), // Compute wheel speed
       map((movement) => movement.map((m) => m / phaserCamera.zoom)), // Adjust for current zoom value
