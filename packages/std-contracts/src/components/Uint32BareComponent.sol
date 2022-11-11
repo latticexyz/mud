@@ -13,11 +13,11 @@ contract Uint32BareComponent is BareComponent {
     values[0] = LibTypes.SchemaValue.UINT32;
   }
 
-  function set(uint256 entity, uint32 value) public {
+  function set(uint256 entity, uint32 value) public virtual {
     set(entity, abi.encode(value));
   }
 
-  function getValue(uint256 entity) public view returns (uint32) {
+  function getValue(uint256 entity) public view virtual returns (uint32) {
     uint32 value = abi.decode(getRawValue(entity), (uint32));
     return value;
   }
