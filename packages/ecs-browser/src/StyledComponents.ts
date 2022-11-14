@@ -85,3 +85,8 @@ export const SmallHeadline = styled.p`
   padding: 8px;
   font-size: 14px;
 `;
+
+export const Collapse = styled.div<{ opened: boolean }>`
+  height: ${({ opened }) => (opened ? "auto" : "0px")};
+  overflow: ${({ opened }) => (opened ? "initial" : "hidden")};
+`;

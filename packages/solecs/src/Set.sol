@@ -5,17 +5,27 @@ pragma solidity >=0.8.0;
  * Set of unique uint256
  */
 contract Set {
+  address private owner;
   uint256[] private items;
   mapping(uint256 => uint256) private itemToIndex;
 
-  function add(uint256 item) public {
+  constructor() {
+    owner = msg.sender;
+  }
+
+  modifier onlyOwner() {
+    require(msg.sender == owner, "ONLY_OWNER");
+    _;
+  }
+
+  function add(uint256 item) public onlyOwner {
     if (has(item)) return;
 
     itemToIndex[item] = items.length;
     items.push(item);
   }
 
-  function remove(uint256 item) public {
+  function remove(uint256 item) public onlyOwner {
     if (!has(item)) return;
 
     // Copy the last item to the given item's index
