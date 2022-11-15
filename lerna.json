@@ -3,12 +3,11 @@
     "packages/*",
     "packages/ri/*"
   ],
-  "version": "1.26.0",
+  "version": "1.27.1",
   "npmClient": "yarn",
   "useWorkspaces": true,
   "command": {
     "publish": {
-      "conventionalCommits": true,
       "message": "chore(release): publish",
       "allowBranch": "main"
     }

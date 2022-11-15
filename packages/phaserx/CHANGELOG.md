@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.27.0](https://github.com/latticexyz/mud/compare/v1.26.0...v1.27.0) (2022-11-15)
+
+### Bug Fixes
+
+- **phaserx:** scale zoom delta with pinch speed ([#242](https://github.com/latticexyz/mud/issues/242)) ([e939ed2](https://github.com/latticexyz/mud/commit/e939ed20d69145111aed1544be7f7cac3989ef12))
+
 # [1.26.0](https://github.com/latticexyz/mud/compare/v1.25.1...v1.26.0) (2022-11-07)
 
 ### Bug Fixes
