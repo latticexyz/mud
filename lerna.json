@@ -8,7 +8,6 @@
   "useWorkspaces": true,
   "command": {
     "publish": {
-      "conventionalCommits": true,
       "message": "chore(release): publish",
       "allowBranch": "main"
     }
