@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/std-client",
-  "version": "1.26.0",
+  "version": "1.27.0",
   "description": "Standard library for MUD client.",
   "license": "MIT",
   "source": "src/index.ts",
@@ -21,9 +21,9 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "@latticexyz/network": "^1.26.0",
+    "@latticexyz/network": "^1.27.0",
     "@latticexyz/recs": "^1.26.0",
-    "@latticexyz/solecs": "^1.26.0",
+    "@latticexyz/solecs": "^1.27.0",
     "@latticexyz/utils": "^1.26.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.1.3",

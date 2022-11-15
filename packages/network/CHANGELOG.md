@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.27.0](https://github.com/latticexyz/mud/compare/v1.26.0...v1.27.0) (2022-11-15)
+
+### Bug Fixes
+
+- **network:** disable browser cache in dev mode ([#213](https://github.com/latticexyz/mud/issues/213)) ([ba9e6bc](https://github.com/latticexyz/mud/commit/ba9e6bcaa869d48ce4e63c85e4f8c3b0c1d986b0))
+
 # [1.26.0](https://github.com/latticexyz/mud/compare/v1.25.1...v1.26.0) (2022-11-07)
 
 **Note:** Version bump only for package @latticexyz/network

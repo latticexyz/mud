@@ -3,6 +3,42 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.27.0](https://github.com/latticexyz/mud/compare/v1.26.0...v1.27.0) (2022-11-15)
+
+### Bug Fixes
+
+- **network:** disable browser cache in dev mode ([#213](https://github.com/latticexyz/mud/issues/213)) ([ba9e6bc](https://github.com/latticexyz/mud/commit/ba9e6bcaa869d48ce4e63c85e4f8c3b0c1d986b0))
+- **phaserx:** scale zoom delta with pinch speed ([#242](https://github.com/latticexyz/mud/issues/242)) ([e939ed2](https://github.com/latticexyz/mud/commit/e939ed20d69145111aed1544be7f7cac3989ef12))
+- **solecs:** restrict write access to Set and MapSet to owner ([#244](https://github.com/latticexyz/mud/issues/244)) ([f17a6d7](https://github.com/latticexyz/mud/commit/f17a6d7d3f533c385f7033835f0af4e13577776b))
+
+### Code Refactoring
+
+- **ecs-browser:** make dev components optional, remove unnecessary dependencies ([#235](https://github.com/latticexyz/mud/issues/235)) ([868ae02](https://github.com/latticexyz/mud/commit/868ae02d3707238403156d4457aef683da43f5bf)), closes [#231](https://github.com/latticexyz/mud/issues/231)
+
+### BREAKING CHANGES
+
+- **ecs-browser:** changes how props are handled, no longer are entities or other devComponent props
+  required, these are inferred or set as optional and the handling is conditonal now
+
+- Update packages/ecs-browser/src/ComponentEditor.tsx
+
+Co-authored-by: alvarius <89248902+alvrs@users.noreply.github.com>
+
+- Update packages/ecs-browser/src/ComponentEditor.tsx
+
+Co-authored-by: alvarius <89248902+alvrs@users.noreply.github.com>
+
+- feat(ecs-browser): migrate browser dev components to own function
+
+Move creation of the dev components needed for the Browser to be created outside of the Browser for
+easier hooking into
+
+- fix(ecs-browser): remove unused import
+
+- fix(ecs-browser): fix from Kooshaba
+
+Co-authored-by: alvarius <89248902+alvrs@users.noreply.github.com>
+
 # [1.26.0](https://github.com/latticexyz/mud/compare/v1.25.1...v1.26.0) (2022-11-07)
 
 ### Bug Fixes
