@@ -2,9 +2,6 @@
 pragma solidity >=0.8.0;
 
 import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
-import { Vm } from "forge-std/Vm.sol";
-import { console } from "forge-std/console.sol";
-
 import { split } from "../utils.sol";
 
 contract UtilsTest is DSTestPlus {
