@@ -50,3 +50,17 @@ function getSystemAddressById(IUint256Component components, uint256 id) view ret
 function getSystemById(IUint256Component components, uint256 id) view returns (ISystem) {
   return ISystem(getSystemAddressById(components, id));
 }
+
+/** Split a single bytes blob into an array of bytes of the given length */
+function split(bytes memory data, uint8[] memory lengths) pure returns (bytes[] memory) {
+  bytes[] memory unpacked = new bytes[](lengths.length);
+  uint256 sum = 0;
+  for (uint256 i = 0; i < lengths.length; i++) {
+    unpacked[i] = new bytes(lengths[i]);
+    for (uint256 j = 0; j < lengths[i]; j++) {
+      unpacked[i][j] = data[sum + j];
+    }
+    sum += lengths[i];
+  }
+  return unpacked;
+}
