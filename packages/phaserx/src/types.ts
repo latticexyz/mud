@@ -198,7 +198,6 @@ export type Asset =
     };
 
 export type CameraConfig = {
-  phaserSelector: string;
   pinchSpeed: number;
   wheelSpeed: number;
   minZoom: number;
