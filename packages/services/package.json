@@ -12,7 +12,7 @@
   "scripts": {
     "prepare": "make build",
     "docs": "typedoc . --readme README.md",
-    "test": "echo 'todo: add tests'",
+    "test": "tsc && echo 'todo: add tests'",
     "link": "yarn link",
     "release": "npm publish || echo 'version already published'"
   },

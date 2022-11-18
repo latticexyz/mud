@@ -12,7 +12,7 @@
     "test:forge": "forge test",
     "test:hardhat": "NODE_OPTIONS='--loader ts-node/esm --experimental-specifier-resolution=node' yarn hardhat test",
     "// Hardhat skipped in GH action until hardhat officially supports TS/ESM": "https://github.com/NomicFoundation/hardhat/pull/3156",
-    "test": "yarn test:forge",
+    "test": "tsc && yarn test:forge",
     "asbuild:debug": "asc assembly/index.ts --target debug",
     "asbuild:release": "asc assembly/index.ts --target release",
     "asbuild": "yarn asbuild:debug && yarn asbuild:release",

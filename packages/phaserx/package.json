@@ -12,7 +12,7 @@
   "scripts": {
     "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
-    "test": "jest --passWithNoTests",
+    "test": "tsc && jest --passWithNoTests",
     "link": "yarn link",
     "docs": "typedoc src",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",

@@ -16,7 +16,7 @@
     "prepare": "yarn build && chmod u+x git-install.sh",
     "build": "rimraf dist && tsc -p . && chmod u+x dist/index.js",
     "link": "yarn link",
-    "test": "echo 'todo: add tests'",
+    "test": "tsc && echo 'todo: add tests'",
     "git:install": "bash git-install.sh",
     "release": "npm publish || echo 'version already published'"
   },
