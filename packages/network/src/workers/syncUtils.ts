@@ -1,4 +1,4 @@
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { JsonRpcProvider, Network } from "@ethersproject/providers";
 import { EntityID, ComponentValue, Components } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range, Uint8ArrayToHexString } from "@latticexyz/utils";
 import { BytesLike, Contract, BigNumber } from "ethers";
@@ -206,8 +206,8 @@ export function createLatestEventStreamService(
   streamServiceUrl: string,
   worldAddress: string,
   transformWorldEvents: ReturnType<typeof createTransformWorldEventsFromStream>,
-  includeTxMetadata: boolean
-) {
+  includeSystemCalls: boolean
+): Observable<NetworkEvent> {
   const streamServiceClient = createStreamClient(streamServiceUrl);
   const response = streamServiceClient.subscribeToStreamLatest({
     worldAddress,
@@ -216,16 +216,22 @@ export function createLatestEventStreamService(
     blockTimestamp: true,
     transactionsConfirmed: false, // do not need txs since each ECSEvent contains the hash
     ecsEvents: true,
-    ecsEventsIncludeTxMetadata: includeTxMetadata,
+    ecsEventsIncludeTxMetadata: includeSystemCalls,
   });
 
-  // Turn stream responses into rxjs NetworkComponentUpdate
+  // Turn stream responses into rxjs NetworkEvent
   return from(response).pipe(
     map(async (responseChunk) => {
       const events = await transformWorldEvents(responseChunk);
       console.info(
         `[SyncWorker || via Stream Service] got ${events.length} events from block ${responseChunk.blockNumber}`
       );
+
+      if (includeSystemCalls && events.length > 0) {
+        const systemCalls = parseSystemCallsFromStreamEvents(events);
+        return [...events, ...systemCalls];
+      }
+
       return events;
     }),
     awaitPromise(),
@@ -485,21 +491,58 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
   };
 }
 
+function mapTransactionHashesToNetworkComponentUpdates(events: NetworkComponentUpdate[]) {
+  return events.reduce((acc, event) => {
+    if (["worker", "cache"].includes(event.txHash)) return acc;
+
+    if (!acc[event.txHash]) acc[event.txHash] = [];
+
+    acc[event.txHash].push(event);
+
+    return acc;
+  }, {} as { [key: string]: NetworkComponentUpdate[] });
+}
+
+function parseSystemCallTransactionFromStreamNetworkComponentUpdate(event: NetworkComponentUpdate) {
+  if (!event.txMetadata) return null;
+
+  const { to, data, value } = event.txMetadata;
+
+  return {
+    to,
+    data: BigNumber.from(data).toHexString(),
+    value: BigNumber.from(value),
+    hash: event.txHash,
+  } as SystemCallTransaction;
+}
+
+export function parseSystemCallsFromStreamEvents(events: NetworkComponentUpdate[]) {
+  const systemCalls: SystemCall[] = [];
+  const transactionHashToEvents = mapTransactionHashesToNetworkComponentUpdates(events);
+
+  for (const txHash of Object.keys(transactionHashToEvents)) {
+    // All ECS events include the information needed to parse the SysytemCallTransasction out, so it doesn't
+    // matter which one we take here.
+    const tx = parseSystemCallTransactionFromStreamNetworkComponentUpdate(transactionHashToEvents[txHash][0]);
+    if (!tx) continue;
+
+    systemCalls.push({
+      type: NetworkEvents.SystemCall,
+      tx,
+      updates: transactionHashToEvents[tx.hash],
+    });
+  }
+
+  return systemCalls;
+}
+
 export function createFetchSystemCallsFromEvents(provider: JsonRpcProvider) {
   const { fetchBlock, clearBlock } = createBlockCache(provider);
   const fetchSystemCallData = createFetchSystemCallData(fetchBlock);
 
   return async (events: NetworkComponentUpdate[], blockNumber: number) => {
     const systemCalls: SystemCall[] = [];
-    const transactionHashToEvents = events.reduce((acc, event) => {
-      if (["worker", "cache"].includes(event.txHash)) return acc;
-
-      if (!acc[event.txHash]) acc[event.txHash] = [];
-
-      acc[event.txHash].push(event);
-
-      return acc;
-    }, {} as { [key: string]: NetworkComponentUpdate[] });
+    const transactionHashToEvents = mapTransactionHashesToNetworkComponentUpdates(events);
 
     const txData = await Promise.all(
       Object.keys(transactionHashToEvents).map((hash) => fetchSystemCallData(hash, blockNumber))
