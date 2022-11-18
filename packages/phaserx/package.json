@@ -28,7 +28,7 @@
     "@types/jest": "^27.4.1",
     "jest": "^27.5.1",
     "mobx": "^6.4.2",
-    "phaser": "3.60.0-beta.4",
+    "phaser": "3.60.0-beta.14",
     "rimraf": "^3.0.2",
     "rollup": "^2.70.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
@@ -41,7 +41,7 @@
   "peerDependencies": {
     "@latticexyz/utils": "^1",
     "mobx": "^6.5.0",
-    "phaser": "3.60.0-beta.4",
+    "phaser": "3.60.0-beta.14",
     "rxjs": "^7.5.5"
   },
   "dependencies": {
