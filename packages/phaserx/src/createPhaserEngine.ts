@@ -13,6 +13,7 @@ import { createInput } from "./createInput";
 import { deferred } from "@latticexyz/utils";
 
 export async function createPhaserEngine<S extends ScenesConfig>(options: PhaserEngineConfig<S>) {
+  console.log("createPhaserEngine called");
   const { scale, sceneConfig, cameraConfig, cullingChunkSize } = options;
 
   // Set up Phaser scenes
@@ -37,13 +38,13 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
   await promise;
 
   // Bind the game's size to the window size
-  function resize() {
-    const width = window.innerWidth / game.scale.zoom;
-    const height = window.innerHeight / game.scale.zoom;
-    game.scale.resize(width, height);
-  }
-  resize();
-  window.addEventListener("resize", resize);
+  // function resize() {
+  //   const width = window.innerWidth / game.scale.zoom;
+  //   const height = window.innerHeight / game.scale.zoom;
+  //   game.scale.resize(width, height);
+  // }
+  // resize();
+  // window.addEventListener("resize", resize);
 
   // Create scenes object
   const partialScenes: Partial<Scenes<S>> = {};
@@ -147,7 +148,7 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
         }
       }
 
-      window.removeEventListener("resize", resize);
+      // window.removeEventListener("resize", resize);
     },
   };
 }
