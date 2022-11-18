@@ -205,7 +205,8 @@ export async function reduceFetchedStateV2(
 export function createLatestEventStreamService(
   streamServiceUrl: string,
   worldAddress: string,
-  transformWorldEvents: ReturnType<typeof createTransformWorldEventsFromStream>
+  transformWorldEvents: ReturnType<typeof createTransformWorldEventsFromStream>,
+  includeTxMetadata: boolean
 ) {
   const streamServiceClient = createStreamClient(streamServiceUrl);
   const response = streamServiceClient.subscribeToStreamLatest({
@@ -215,6 +216,7 @@ export function createLatestEventStreamService(
     blockTimestamp: true,
     transactionsConfirmed: false, // do not need txs since each ECSEvent contains the hash
     ecsEvents: true,
+    ecsEventsIncludeTxMetadata: includeTxMetadata,
   });
 
   // Turn stream responses into rxjs NetworkComponentUpdate
@@ -455,7 +457,7 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
 
       const rawComponentId = ecsEvent.componentId;
       const entityId = ecsEvent.entityId;
-      const txHash = ecsEvent.tx;
+      const txHash = ecsEvent.txHash;
 
       const component = formatComponentID(rawComponentId);
       const entity = formatEntityID(entityId);
@@ -465,7 +467,7 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
       // Since ECS events are coming in ordered over the wire, we check if the following event has a
       // different transaction then the current, which would mean an event associated with another
       // tx
-      const lastEventInTx = ecsEvents[i + 1]?.tx !== ecsEvent.tx;
+      const lastEventInTx = ecsEvents[i + 1]?.txHash !== ecsEvent.txHash;
 
       convertedEcsEvents.push({
         type: NetworkEvents.NetworkComponentUpdate,
@@ -475,6 +477,7 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
         blockNumber,
         lastEventInTx,
         txHash,
+        txMetadata: ecsEvent.txMetadata,
       });
     }
 

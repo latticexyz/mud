@@ -3,12 +3,19 @@ package ecsstream;
 
 option go_package = "protobuf/go/ecs-stream";
 
+message TxMetadata {
+  string to = 2;
+  bytes data = 3;
+  uint64 value = 4;
+}
+
 message ECSEvent {
   string eventType = 1;
   string componentId = 2;
   string entityId = 3;
   bytes value = 4;
-  string tx = 5;
+  string txHash = 5;
+  TxMetadata txMetadata = 6;
 }
 
 // The Stream Service definition.
@@ -25,7 +32,8 @@ message ECSStreamBlockBundleRequest {
   bool blockHash = 3;
   bool blockTimestamp = 4;
   bool transactionsConfirmed = 5;
-  bool ecsEvents = 6; 
+  bool ecsEvents = 6;
+  bool ecsEventsIncludeTxMetadata = 7;
 }
 
 // ECSStream response. The fields are populated based on the request which must have been sent when
