@@ -77,7 +77,7 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
 
     for (const key of Object.keys(layerConfig.layers)) {
       const layer = layerConfig.layers[key as LayerKeys];
-      layers[key] = map.createBlankLayer(
+      const tilemapLayer = map.createBlankLayer(
         key,
         layer.tilesets.map((id) => tilesets[id]),
         x,
@@ -85,6 +85,9 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
         width,
         height
       );
+      // TODO: error if no tilemapLayer?
+      if (!tilemapLayer) continue;
+      layers[key] = tilemapLayer;
       const renderer = scene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
       if (layer.hasHueTintShader && renderer?.pipelines) {
         layers[key].pipeline = renderer.pipelines.get(MultiHueTintPipeline.KEY);
@@ -133,15 +136,15 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
     if (!visible.current) return;
     const map = getMapAtTileCoord(coord);
     const putTile = map.putTileAt(tile, mod(coord.x, chunkTileSize.x), mod(coord.y, chunkTileSize.y), undefined, layer);
+    if (putTile == null) {
+      throw new Error("putTileAt failed");
+    }
+
     putTile.width = map.tileWidth;
     putTile.height = map.tileHeight;
 
     if (tint) {
       putTile.tint = tint;
-    }
-
-    if (putTile == null) {
-      throw new Error("Put tile at failed");
     }
   }
 
