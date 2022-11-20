@@ -101,13 +101,19 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
 
   // Create sync worker
   const ack$ = new Subject<Ack>();
+  // Avoid passing externalProvider to sync worker (too complex to copy)
+  const {
+    provider: { externalProvider: _, ...providerConfig },
+    ...syncWorkerConfig
+  } = networkConfig;
   const { ecsEvents$, input$, dispose } = createSyncWorker<C>(ack$);
   world.registerDisposer(dispose);
   function startSync() {
     input$.next({
       type: InputType.Config,
       data: {
-        ...networkConfig,
+        ...syncWorkerConfig,
+        provider: providerConfig,
         worldContract: contractsConfig.World,
         initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
         disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
