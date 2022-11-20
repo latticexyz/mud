@@ -491,7 +491,7 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
   };
 }
 
-function mapTransactionHashesToNetworkComponentUpdates(events: NetworkComponentUpdate[]) {
+function groupByTxHash(events: NetworkComponentUpdate[]) {
   return events.reduce((acc, event) => {
     if (["worker", "cache"].includes(event.txHash)) return acc;
 
@@ -518,7 +518,7 @@ function parseSystemCallTransactionFromStreamNetworkComponentUpdate(event: Netwo
 
 export function parseSystemCallsFromStreamEvents(events: NetworkComponentUpdate[]) {
   const systemCalls: SystemCall[] = [];
-  const transactionHashToEvents = mapTransactionHashesToNetworkComponentUpdates(events);
+  const transactionHashToEvents = groupByTxHash(events);
 
   for (const txHash of Object.keys(transactionHashToEvents)) {
     // All ECS events include the information needed to parse the SysytemCallTransasction out, so it doesn't
@@ -542,7 +542,7 @@ export function createFetchSystemCallsFromEvents(provider: JsonRpcProvider) {
 
   return async (events: NetworkComponentUpdate[], blockNumber: number) => {
     const systemCalls: SystemCall[] = [];
-    const transactionHashToEvents = mapTransactionHashesToNetworkComponentUpdates(events);
+    const transactionHashToEvents = groupByTxHash(events);
 
     const txData = await Promise.all(
       Object.keys(transactionHashToEvents).map((hash) => fetchSystemCallData(hash, blockNumber))
