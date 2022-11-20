@@ -166,7 +166,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
           streamServiceUrl,
           worldContract.address,
           transformWorldEvents,
-          true /* request tx data per ecs event */
+          Boolean(fetchSystemCalls)
         ).pipe(
           catchError((err) => {
             console.warn("[SyncWorker || via Stream Service]", err);
