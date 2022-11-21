@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.28.0](https://github.com/latticexyz/mud/compare/v1.27.1...v1.28.0) (2022-11-20)
+
+### Features
+
+- **network:** system call stream available in streaming service ([0244eb8](https://github.com/latticexyz/mud/commit/0244eb8d3ec1a7798136cf4ddefbd766cb830b8c)), closes [#254](https://github.com/latticexyz/mud/issues/254)
+
 # [1.27.0](https://github.com/latticexyz/mud/compare/v1.26.0...v1.27.0) (2022-11-15)
 
 ### Bug Fixes
