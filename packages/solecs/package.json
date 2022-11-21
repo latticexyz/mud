@@ -13,10 +13,10 @@
     "prepare": "yarn build && chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
     "test": "forge test",
-    "build": "rimraf out && forge build && yarn dist && yarn types",
+    "build": "rimraf out && forge build && yarn dist && yarn removebytecode && yarn types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh && rimraf abi/*.metadata.json",
-    "removebytecode": "for i in abi/*; do jq 'del(.bytecode) | del(.deployedBytecode) | del(.ast)' \"$i\" > \"$i\".tmp && mv \"$i\".tmp \"$i\"; done",
-    "types": "rimraf types && yarn removebytecode && typechain --target=ethers-v5 abi/*.json",
+    "removebytecode": "ts-node -e \"import { removeBytecode } from '@latticexyz/utils'; removeBytecode('abi/');\"",
+    "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "lint": "yarn prettier && yarn solhint",
@@ -25,6 +25,7 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
+    "@latticexyz/utils": "^1.28.0",
     "@rari-capital/solmate": "https://github.com/Rari-Capital/solmate.git#b6ae78e6ff490f8fec7695c7b65d06e5614f1b65",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/mocha": "^9.1.1",

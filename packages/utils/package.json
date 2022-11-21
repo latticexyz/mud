@@ -2,7 +2,6 @@
   "name": "@latticexyz/utils",
   "license": "MIT",
   "version": "1.28.0",
-  "type": "module",
   "source": "src/index.ts",
   "main": "src/index.ts",
   "repository": {
