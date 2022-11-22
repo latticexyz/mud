@@ -21,7 +21,7 @@
     "docs": "typedoc src",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
-    "build": "rimraf dist && rimraf ./.parcel-cache && yarn prepack && parcel build && tsc --emitDeclarationOnly; yarn postpack",
+    "build": "(rimraf dist && rimraf ./.parcel-cache && yarn prepack && parcel build && tsc --emitDeclarationOnly || true) && yarn postpack",
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
