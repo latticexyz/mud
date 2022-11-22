@@ -85,8 +85,10 @@ export function createChunkedTilemap<TileKeys extends number, LayerKeys extends 
         width,
         height
       );
-      // TODO: error if no tilemapLayer?
-      if (!tilemapLayer) continue;
+      if (!tilemapLayer) {
+        console.error(`Adding tilemap layer ${key} failed.`);
+        continue;
+      }
       layers[key] = tilemapLayer;
       const renderer = scene.game.renderer as Phaser.Renderer.WebGL.WebGLRenderer;
       if (layer.hasHueTintShader && renderer?.pipelines) {

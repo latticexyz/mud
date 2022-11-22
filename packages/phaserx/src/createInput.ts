@@ -148,8 +148,10 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
 
   // Adds a key to include in the state
   function addKey(key: string) {
-    // TODO: error?
-    if (!phaserKeyboard) return;
+    if (!phaserKeyboard) {
+      console.warn(`Adding key ${key} failed. No phaser keyboard detected.`);
+      return;
+    }
 
     // Add the key to the phaser keyboard input plugin
     const keyObj = phaserKeyboard.addKey(key, false);
