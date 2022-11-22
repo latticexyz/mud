@@ -1,9 +1,13 @@
 import { readdirSync, realpathSync, readFileSync, writeFileSync } from "fs";
 
-export function removeBytecode(abiDir: string) {
-  for (const abiFile of readdirSync(abiDir)) {
+export interface IRemoveBytecodeArguments {
+  dir: string;
+}
+
+export function removeBytecode({ dir }: IRemoveBytecodeArguments) {
+  for (const abiFile of readdirSync(dir)) {
     if (!abiFile.match(/.*\.json$/)) continue;
-    const realpath = realpathSync(`${abiDir}/${abiFile}`);
+    const realpath = realpathSync(`${dir}/${abiFile}`);
 
     const abi = JSON.parse(readFileSync(realpath).toString("utf8"));
     delete abi["bytecode"];
