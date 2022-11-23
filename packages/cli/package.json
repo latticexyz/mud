@@ -38,6 +38,7 @@
     "@latticexyz/solecs": "^1.28.0",
     "@latticexyz/std-contracts": "^1.28.0",
     "@latticexyz/utils": "^1.28.0",
+    "@typechain/ethers-v5": "^10.1.1",
     "chalk": "^5.0.1",
     "clear": "^0.1.0",
     "commander": "^9.2.0",
@@ -56,7 +57,7 @@
     "openurl": "^1.1.1",
     "path": "^0.12.7",
     "solmate": "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
-    "typechain": "^8.1.0",
+    "typechain": "^8.1.1",
     "uuid": "^8.3.2",
     "yargs": "^17.5.1"
   },

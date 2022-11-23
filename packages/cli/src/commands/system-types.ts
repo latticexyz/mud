@@ -9,12 +9,7 @@ export const command = "system-types";
 export const desc =
   "Generates system type file. Note: assumes ABIs of all systems in ./abi and typechain generated types in ./types/ethers-contracts";
 
-export const builder: CommandBuilder<Options, Options> = (yargs) =>
-  yargs.options({
-    include: { type: "array" },
-    exclude: { type: "array" },
-    out: { type: "string" },
-  });
+export const builder: CommandBuilder<Options, Options> = (yargs) => yargs.options({});
 
 export const handler = async (): Promise<void> => {
   const wd = process.cwd();
