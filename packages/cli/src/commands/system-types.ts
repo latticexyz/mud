@@ -17,13 +17,14 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
   });
 
 export const handler = async (): Promise<void> => {
-  const wd = process.cwd();
   let abis: string[] = [];
   let systems: string[] = [];
   let ids: string[] = [];
   let typePaths: string[] = [];
 
-  const systemsPath = `${wd}/src/systems/*.sol`;
+  // Glob treats all paths as relative to the CWD by default; no need to get the CWD ourselves
+  // TODO: handle the case of the script not being run from inside the ./contracts workspace
+  const systemsPath = `./src/systems/*.sol`;
 
   const [resolve, , promise] = deferred<void>();
   glob(systemsPath, {}, (_, matches) => {
