@@ -92,7 +92,12 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
     const emptyMap = new Phaser.Tilemaps.Tilemap(phaserScene, new Phaser.Tilemaps.MapData());
     const partialTilesets: Tilesets<string> = {};
     for (const [tilesetKey, { assetKey, tileWidth, tileHeight }] of Object.entries(sceneConfig[key]["tilesets"])) {
-      partialTilesets[tilesetKey] = emptyMap.addTilesetImage(tilesetKey, assetKey, tileWidth, tileHeight);
+      const tileset = emptyMap.addTilesetImage(tilesetKey, assetKey, tileWidth, tileHeight);
+      if (!tileset) {
+        console.error(`Adding tileset ${tilesetKey} failed.`);
+        continue;
+      };
+      partialTilesets[tilesetKey] = tileset;
     }
     const tilesets = partialTilesets as Tilesets<keyof S[typeof key]["tilesets"]>;
 
