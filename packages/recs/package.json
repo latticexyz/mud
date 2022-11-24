@@ -47,7 +47,5 @@
     "type-fest": "^2.14.0"
   },
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
-  "dependencies": {
-    "react-syntax-highlighter": "^15.5.0"
-  }
+  "dependencies": {}
 }
