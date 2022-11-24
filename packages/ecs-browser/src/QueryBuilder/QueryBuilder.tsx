@@ -10,15 +10,28 @@ import {
   defineQuery,
   EntityQueryFragment,
 } from "@latticexyz/recs";
-import { ComponentBrowserButton, ComponentBrowserInput } from "../StyledComponents";
+import { ComponentBrowserButton, ComponentBrowserInput, SyntaxHighlighterWrapper } from "../StyledComponents";
 import { QueryBuilderForm, QueryShortcutContainer } from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { flatten, orderBy, throttle } from "lodash";
 import { PositionFilterButton } from "./PositionFilterButton";
 import { MAX_ENTITIES } from "../constants";
 import { observe } from "mobx";
+import { useShiki } from "../hooks";
+
+const SyntaxHighlighter = ({ code }: { code: string }) => {
+  const { html } = useShiki(code, "js");
+
+  if (!html) {
+    return (
+      <SyntaxHighlighterWrapper>
+        <pre className="shiki" />
+      </SyntaxHighlighterWrapper>
+    );
+  }
+
+  return <SyntaxHighlighterWrapper dangerouslySetInnerHTML={{ __html: html }} />;
+};
 
 export const QueryBuilder = ({
   allEntities,
@@ -164,14 +177,8 @@ export const QueryBuilder = ({
   return (
     <>
       <QueryBuilderForm onSubmit={executeFilter}>
-        <SyntaxHighlighter wrapLongLines language="javascript" style={dracula}>
-          {entityQueryText}
-        </SyntaxHighlighter>
-        {errorMessage && (
-          <SyntaxHighlighter wrapLongLines language="javascript" style={dracula}>
-            {`Error: ${errorMessage}`}
-          </SyntaxHighlighter>
-        )}
+        <SyntaxHighlighter code={entityQueryText} />
+        {errorMessage && <SyntaxHighlighter code={`Error: ${errorMessage}`} />}
         <label style={{ cursor: "pointer" }} htmlFor={`query-input`}>
           <h3>Filter Entities</h3>
         </label>
