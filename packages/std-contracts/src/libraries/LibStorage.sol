@@ -9,7 +9,7 @@ uint256 constant worldID = uint256(keccak256("mud.world"));
 uint256 constant componentsID = uint256(keccak256("mud.components"));
 
 /**
- * This library will only work if you use `StdSystem.sol` for every system in your contracts
+ * This library will only work if you use `std-contracts/StdSystem.sol` for every system in your contracts
  */
 
 library LibStorage {
