@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Gesture } from "@use-gesture/vanilla";
 import { BehaviorSubject, filter, map, sampleTime, scan, Subject, throttleTime } from "rxjs";
 import { tileCoordToPixelCoord } from "./utils";
@@ -18,8 +17,8 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
   const gesture = new Gesture(
     phaserCamera.scene.game.canvas,
     {
-      onPinch: (state: any) => pinchStream$.next(state),
-      onWheel: (state: any) => wheelStream$.next(state),
+      onPinch: (state) => pinchStream$.next(state),
+      onWheel: (state) => wheelStream$.next(state),
     },
     {}
   );
@@ -27,6 +26,11 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
   // function getNearestLevel(currentZoom: number): number {
   //   return Math.pow(2, Math.floor(Math.log(currentZoom * 2) / Math.log(2))) / 2;
   // }
+
+  const onResize = () => {
+    requestAnimationFrame(() => worldView$.next(phaserCamera.worldView));
+  };
+  phaserCamera.scene.scale.addListener("resize", onResize);
 
   function setZoom(zoom: number) {
     phaserCamera.setZoom(zoom);
@@ -94,6 +98,7 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
       pinchSub.unsubscribe();
       wheelSub.unsubscribe();
       gesture.destroy();
+      phaserCamera.scene.scale.removeListener("resize", onResize);
     },
     centerOnCoord,
     centerOn,

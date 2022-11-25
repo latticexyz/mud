@@ -6,8 +6,8 @@ pragma solidity >=0.8.0;
  */
 contract Set {
   address private owner;
-  uint256[] private items;
-  mapping(uint256 => uint256) private itemToIndex;
+  uint256[] internal items;
+  mapping(uint256 => uint256) internal itemToIndex;
 
   constructor() {
     owner = msg.sender;

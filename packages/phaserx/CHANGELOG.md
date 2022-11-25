@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.28.1](https://github.com/latticexyz/mud/compare/v1.28.0...v1.28.1) (2022-11-24)
+
+### Bug Fixes
+
+- recalculate world view on phaser resize ([#263](https://github.com/latticexyz/mud/issues/263)) ([7a01b91](https://github.com/latticexyz/mud/commit/7a01b914cdba4691a697b08873abcc64936b991c))
+- typescript errors ([#253](https://github.com/latticexyz/mud/issues/253)) ([83e0c7a](https://github.com/latticexyz/mud/commit/83e0c7a1eda900d254a73115446c4ce38b531645))
+
 # [1.28.0](https://github.com/latticexyz/mud/compare/v1.27.1...v1.28.0) (2022-11-20)
 
 **Note:** Version bump only for package @latticexyz/phaserx
