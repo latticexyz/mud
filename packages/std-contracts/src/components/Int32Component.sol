@@ -13,16 +13,16 @@ contract Int32Component is Component {
     values[0] = LibTypes.SchemaValue.INT32;
   }
 
-  function set(uint256 entity, int32 value) public {
+  function set(uint256 entity, int32 value) public virtual {
     set(entity, abi.encode(value));
   }
 
-  function getValue(uint256 entity) public view returns (int32) {
+  function getValue(uint256 entity) public view virtual returns (int32) {
     int32 value = abi.decode(getRawValue(entity), (int32));
     return value;
   }
 
-  function getEntitiesWithValue(int32 value) public view returns (uint256[] memory) {
+  function getEntitiesWithValue(int32 value) public view virtual returns (uint256[] memory) {
     return getEntitiesWithValue(abi.encode(value));
   }
 }

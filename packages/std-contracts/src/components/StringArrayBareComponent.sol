@@ -13,11 +13,11 @@ contract StringArrayBareComponent is BareComponent {
     values[0] = LibTypes.SchemaValue.STRING_ARRAY;
   }
 
-  function set(uint256 entity, string[] memory value) public {
+  function set(uint256 entity, string[] memory value) public virtual {
     set(entity, abi.encode(value));
   }
 
-  function getValue(uint256 entity) public view returns (string[] memory) {
+  function getValue(uint256 entity) public view virtual returns (string[] memory) {
     return abi.decode(getRawValue(entity), (string[]));
   }
 }

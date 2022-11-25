@@ -21,11 +21,11 @@ contract FunctionBareComponent is BareComponent {
     values[1] = LibTypes.SchemaValue.BYTES4;
   }
 
-  function set(uint256 entity, FunctionSelector memory value) public {
+  function set(uint256 entity, FunctionSelector memory value) public virtual {
     set(entity, abi.encode(value));
   }
 
-  function getValue(uint256 entity) public view returns (FunctionSelector memory) {
+  function getValue(uint256 entity) public view virtual returns (FunctionSelector memory) {
     return abi.decode(getRawValue(entity), (FunctionSelector));
   }
 }
