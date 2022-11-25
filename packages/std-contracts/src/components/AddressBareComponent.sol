@@ -13,11 +13,11 @@ contract AddressBareComponent is BareComponent {
     values[0] = LibTypes.SchemaValue.UINT256;
   }
 
-  function set(uint256 entity, address value) public {
+  function set(uint256 entity, address value) public virtual {
     set(entity, abi.encode(value));
   }
 
-  function getValue(uint256 entity) public view returns (address) {
+  function getValue(uint256 entity) public view virtual returns (address) {
     address value = abi.decode(getRawValue(entity), (address));
     return value;
   }

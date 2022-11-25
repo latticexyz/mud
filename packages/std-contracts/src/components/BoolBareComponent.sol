@@ -13,11 +13,11 @@ contract BoolBareComponent is BareComponent {
     values[0] = LibTypes.SchemaValue.BOOL;
   }
 
-  function set(uint256 entity) public {
+  function set(uint256 entity) public virtual {
     set(entity, abi.encode(true));
   }
 
-  function getValue(uint256 entity) public view returns (bool) {
+  function getValue(uint256 entity) public view virtual returns (bool) {
     bool value = abi.decode(getRawValue(entity), (bool));
     return value;
   }

@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.0;
 
-import "./IOwned.sol";
+import { IERC173 } from "./IERC173.sol";
+import { LibTypes } from "../LibTypes.sol";
 
-interface IComponent is IOwned {
-  function transferOwnership(address newOwner) external;
+interface IComponent is IERC173 {
+  /** Return the keys and value types of the schema of this component. */
+  function getSchema() external pure returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
   function set(uint256 entity, bytes memory value) external;
 
@@ -17,6 +19,8 @@ interface IComponent is IOwned {
   function getEntities() external view returns (uint256[] memory);
 
   function getEntitiesWithValue(bytes memory value) external view returns (uint256[] memory);
+
+  function registerIndexer(address indexer) external;
 
   function authorizeWriter(address writer) external;
 
