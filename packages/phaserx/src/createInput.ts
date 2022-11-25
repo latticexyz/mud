@@ -21,7 +21,7 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
   const disposers = new Set<() => void>();
   const enabled = { current: true };
 
-  inputPlugin.mouse.disableContextMenu();
+  inputPlugin.mouse?.disableContextMenu();
 
   function disableInput() {
     enabled.current = false;
@@ -148,6 +148,11 @@ export function createInput(inputPlugin: Phaser.Input.InputPlugin) {
 
   // Adds a key to include in the state
   function addKey(key: string) {
+    if (!phaserKeyboard) {
+      console.warn(`Adding key ${key} failed. No phaser keyboard detected.`);
+      return;
+    }
+
     // Add the key to the phaser keyboard input plugin
     const keyObj = phaserKeyboard.addKey(key, false);
     // Store the cleartext key map

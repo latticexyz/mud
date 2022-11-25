@@ -1,15 +1,11 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Gesture } from "@use-gesture/vanilla";
 import { BehaviorSubject, filter, map, sampleTime, scan, Subject, throttleTime } from "rxjs";
 import { tileCoordToPixelCoord } from "./utils";
 import { Camera, CameraConfig, Coord, GestureState, ObjectPool } from "./types";
 
 export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, options: CameraConfig): Camera {
-  const phaserGame = document.getElementById(options.phaserSelector);
-  if (!phaserGame) {
-    throw new Error("Could not connect camera input. No element with id " + options.phaserSelector);
-  }
-
+  // Stop default gesture events to not collide with use-gesture
+  // https://github.com/pmndrs/use-gesture/blob/404e2b2ac145a45aff179c1faf5097b97414731c/documentation/pages/docs/gestures.mdx#about-the-pinch-gesture
   document.addEventListener("gesturestart", (e) => e.preventDefault());
   document.addEventListener("gesturechange", (e) => e.preventDefault());
 
@@ -19,10 +15,10 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
   const pinchStream$ = new Subject<GestureState<"onPinch">>();
 
   const gesture = new Gesture(
-    phaserGame,
+    phaserCamera.scene.game.canvas,
     {
-      onPinch: (state: any) => pinchStream$.next(state),
-      onWheel: (state: any) => wheelStream$.next(state),
+      onPinch: (state) => pinchStream$.next(state),
+      onWheel: (state) => wheelStream$.next(state),
     },
     {}
   );
@@ -30,6 +26,11 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
   // function getNearestLevel(currentZoom: number): number {
   //   return Math.pow(2, Math.floor(Math.log(currentZoom * 2) / Math.log(2))) / 2;
   // }
+
+  const onResize = () => {
+    requestAnimationFrame(() => worldView$.next(phaserCamera.worldView));
+  };
+  phaserCamera.scene.scale.addListener("resize", onResize);
 
   function setZoom(zoom: number) {
     phaserCamera.setZoom(zoom);
@@ -97,6 +98,7 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
       pinchSub.unsubscribe();
       wheelSub.unsubscribe();
       gesture.destroy();
+      phaserCamera.scene.scale.removeListener("resize", onResize);
     },
     centerOnCoord,
     centerOn,

@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.28.1](https://github.com/latticexyz/mud/compare/v1.28.0...v1.28.1) (2022-11-24)
+
+**Note:** Version bump only for package @latticexyz/solecs
+
+# [1.28.0](https://github.com/latticexyz/mud/compare/v1.27.1...v1.28.0) (2022-11-20)
+
+**Note:** Version bump only for package @latticexyz/solecs
+
+# [1.27.0](https://github.com/latticexyz/mud/compare/v1.26.0...v1.27.0) (2022-11-15)
+
+### Bug Fixes
+
+- **solecs:** restrict write access to Set and MapSet to owner ([#244](https://github.com/latticexyz/mud/issues/244)) ([f17a6d7](https://github.com/latticexyz/mud/commit/f17a6d7d3f533c385f7033835f0af4e13577776b))
+
 # [1.26.0](https://github.com/latticexyz/mud/compare/v1.25.1...v1.26.0) (2022-11-07)
 
 **Note:** Version bump only for package @latticexyz/solecs

@@ -3,6 +3,46 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.28.1](https://github.com/latticexyz/mud/compare/v1.28.0...v1.28.1) (2022-11-24)
+
+### Bug Fixes
+
+- typescript errors ([#253](https://github.com/latticexyz/mud/issues/253)) ([83e0c7a](https://github.com/latticexyz/mud/commit/83e0c7a1eda900d254a73115446c4ce38b531645))
+
+# [1.28.0](https://github.com/latticexyz/mud/compare/v1.27.1...v1.28.0) (2022-11-20)
+
+**Note:** Version bump only for package @latticexyz/ecs-browser
+
+# [1.27.0](https://github.com/latticexyz/mud/compare/v1.26.0...v1.27.0) (2022-11-15)
+
+### Code Refactoring
+
+- **ecs-browser:** make dev components optional, remove unnecessary dependencies ([#235](https://github.com/latticexyz/mud/issues/235)) ([868ae02](https://github.com/latticexyz/mud/commit/868ae02d3707238403156d4457aef683da43f5bf)), closes [#231](https://github.com/latticexyz/mud/issues/231)
+
+### BREAKING CHANGES
+
+- **ecs-browser:** changes how props are handled, no longer are entities or other devComponent props
+  required, these are inferred or set as optional and the handling is conditonal now
+
+- Update packages/ecs-browser/src/ComponentEditor.tsx
+
+Co-authored-by: alvarius <89248902+alvrs@users.noreply.github.com>
+
+- Update packages/ecs-browser/src/ComponentEditor.tsx
+
+Co-authored-by: alvarius <89248902+alvrs@users.noreply.github.com>
+
+- feat(ecs-browser): migrate browser dev components to own function
+
+Move creation of the dev components needed for the Browser to be created outside of the Browser for
+easier hooking into
+
+- fix(ecs-browser): remove unused import
+
+- fix(ecs-browser): fix from Kooshaba
+
+Co-authored-by: alvarius <89248902+alvrs@users.noreply.github.com>
+
 # [1.26.0](https://github.com/latticexyz/mud/compare/v1.25.1...v1.26.0) (2022-11-07)
 
 **Note:** Version bump only for package @latticexyz/ecs-browser

@@ -55,6 +55,19 @@ func buildStreamResponse(block *types.Block, client *ethclient.Client, request *
 	worldAddresses := []common.Address{common.HexToAddress(request.WorldAddress)}
 
 	// Conditionally build a response to the request based on which fields were requested.
+
+	// Build a mapping of transaction hash to transaction object. In case the stream request
+	// includes request for tx data per ecs event (tx which the event orginated from), then we
+	// look up the tx via the tx hash from the event from this mapping.
+	txHashToTx := map[string]*types.Transaction{}
+	txHashes := []string{}
+
+	for _, tx := range block.Transactions() {
+		txHash := tx.Hash().Hex()
+		txHashToTx[txHash] = tx
+		txHashes = append(txHashes, txHash)
+	}
+
 	response := &pb.ECSStreamBlockBundleReply{}
 
 	blockNumber := block.Number()
@@ -68,10 +81,6 @@ func buildStreamResponse(block *types.Block, client *ethclient.Client, request *
 		response.BlockTimestamp = uint32(block.Time())
 	}
 	if request.TransactionsConfirmed {
-		txHashes := []string{}
-		for _, tx := range block.Transactions() {
-			txHashes = append(txHashes, tx.Hash().Hex())
-		}
 		response.TransactionsConfirmed = txHashes
 	}
 	if request.EcsEvents {
@@ -82,7 +91,7 @@ func buildStreamResponse(block *types.Block, client *ethclient.Client, request *
 		filteredLogs := eth.FilterLogs(logs)
 
 		// Extract the ECS events from the logs.
-		ecsEvents := ecs.LogsToEcsEvents(filteredLogs)
+		ecsEvents := ecs.LogsToEcsEvents(filteredLogs, txHashToTx, request.EcsEventsIncludeTxMetadata)
 		response.EcsEvents = ecsEvents
 	}
 
