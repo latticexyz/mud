@@ -7,11 +7,13 @@ import { World } from "solecs/World.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { console } from "forge-std/console.sol";
 import { LibStorage as s, worldID, componentsID } from "../libraries/LibStorage.sol";
+import { SampleSystem, ID as SampleSystemID } from "../systems/SampleSystem.sol";
 
-contract MudTest is DSTest {
-  IUint256Component public systems; // Not storage slot 0
-  World internal world; // Storage slot 1
-  IUint256Component public components; // Storage slot 2
+contract SampleTest is DSTest {
+  IUint256Component public systems;
+  World internal world;
+  IUint256Component public components;
+  SampleSystem system;
 
   function setUp() public {
     world = new World();
@@ -19,10 +21,16 @@ contract MudTest is DSTest {
     systems = world.systems();
     s.storeAddress(worldID, address(world));
     s.storeAddress(componentsID, address(components));
+
+    system = new SampleSystem(world, address(components));
   }
 
-  function testStorage() public {
+  function testLibStorageTest() public {
     assertEq(address(world), address(s.w()));
     assertEq(address(components), address(s.c()));
+  }
+
+  function testLibStorageSample() public {
+    system.executeTyped();
   }
 }

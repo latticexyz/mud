@@ -8,6 +8,10 @@ import { getSystemAddressById, getAddressById } from "solecs/utils.sol";
 uint256 constant worldID = uint256(keccak256("mud.world"));
 uint256 constant componentsID = uint256(keccak256("mud.components"));
 
+/**
+ * This library will only work if you use `StdSystem.sol` for every system in your contracts
+ */
+
 library LibStorage {
   function c() internal view returns (IUint256Component components) {
     bytes32 position = bytes32(componentsID);
