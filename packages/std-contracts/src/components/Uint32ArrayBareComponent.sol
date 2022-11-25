@@ -13,11 +13,11 @@ contract Uint32ArrayBareComponent is BareComponent {
     values[0] = LibTypes.SchemaValue.UINT32_ARRAY;
   }
 
-  function set(uint256 entity, uint32[] memory value) public {
+  function set(uint256 entity, uint32[] memory value) public virtual {
     set(entity, abi.encode(value));
   }
 
-  function getValue(uint256 entity) public view returns (uint32[] memory) {
+  function getValue(uint256 entity) public view virtual returns (uint32[] memory) {
     return abi.decode(getRawValue(entity), (uint32[]));
   }
 }

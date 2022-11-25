@@ -17,12 +17,12 @@ contract BoolComponent is Component {
     set(entity, abi.encode(true));
   }
 
-  function getValue(uint256 entity) public view returns (bool) {
+  function getValue(uint256 entity) public view virtual returns (bool) {
     bool value = abi.decode(getRawValue(entity), (bool));
     return value;
   }
 
-  function getEntitiesWithValue(bool value) public view returns (uint256[] memory) {
+  function getEntitiesWithValue(bool value) public view virtual returns (uint256[] memory) {
     return getEntitiesWithValue(abi.encode(value));
   }
 }

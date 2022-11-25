@@ -1,5 +1,6 @@
 import { Result } from "@ethersproject/abi";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
+import { TxMetadata } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
 import { Cached } from "@latticexyz/utils";
 import { BaseContract, BigNumber, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
@@ -84,6 +85,7 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
   entity: EntityID;
   lastEventInTx: boolean;
   txHash: string;
+  txMetadata?: TxMetadata;
   blockNumber: number;
 };
 

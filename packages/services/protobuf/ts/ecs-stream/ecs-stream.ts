@@ -1,15 +1,23 @@
 /* eslint-disable */
+import Long from "long";
 import { CallContext, CallOptions } from "nice-grpc-common";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "ecsstream";
+
+export interface TxMetadata {
+  to: string;
+  data: Uint8Array;
+  value: number;
+}
 
 export interface ECSEvent {
   eventType: string;
   componentId: string;
   entityId: string;
   value: Uint8Array;
-  tx: string;
+  txHash: string;
+  txMetadata: TxMetadata | undefined;
 }
 
 /**
@@ -23,6 +31,7 @@ export interface ECSStreamBlockBundleRequest {
   blockTimestamp: boolean;
   transactionsConfirmed: boolean;
   ecsEvents: boolean;
+  ecsEventsIncludeTxMetadata: boolean;
 }
 
 /**
@@ -37,8 +46,59 @@ export interface ECSStreamBlockBundleReply {
   ecsEvents: ECSEvent[];
 }
 
+function createBaseTxMetadata(): TxMetadata {
+  return { to: "", data: new Uint8Array(), value: 0 };
+}
+
+export const TxMetadata = {
+  encode(message: TxMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.to !== "") {
+      writer.uint32(18).string(message.to);
+    }
+    if (message.data.length !== 0) {
+      writer.uint32(26).bytes(message.data);
+    }
+    if (message.value !== 0) {
+      writer.uint32(32).uint64(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): TxMetadata {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseTxMetadata();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 2:
+          message.to = reader.string();
+          break;
+        case 3:
+          message.data = reader.bytes();
+          break;
+        case 4:
+          message.value = longToNumber(reader.uint64() as Long);
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<TxMetadata>): TxMetadata {
+    const message = createBaseTxMetadata();
+    message.to = object.to ?? "";
+    message.data = object.data ?? new Uint8Array();
+    message.value = object.value ?? 0;
+    return message;
+  },
+};
+
 function createBaseECSEvent(): ECSEvent {
-  return { eventType: "", componentId: "", entityId: "", value: new Uint8Array(), tx: "" };
+  return { eventType: "", componentId: "", entityId: "", value: new Uint8Array(), txHash: "", txMetadata: undefined };
 }
 
 export const ECSEvent = {
@@ -55,8 +115,11 @@ export const ECSEvent = {
     if (message.value.length !== 0) {
       writer.uint32(34).bytes(message.value);
     }
-    if (message.tx !== "") {
-      writer.uint32(42).string(message.tx);
+    if (message.txHash !== "") {
+      writer.uint32(42).string(message.txHash);
+    }
+    if (message.txMetadata !== undefined) {
+      TxMetadata.encode(message.txMetadata, writer.uint32(50).fork()).ldelim();
     }
     return writer;
   },
@@ -81,7 +144,10 @@ export const ECSEvent = {
           message.value = reader.bytes();
           break;
         case 5:
-          message.tx = reader.string();
+          message.txHash = reader.string();
+          break;
+        case 6:
+          message.txMetadata = TxMetadata.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -97,7 +163,11 @@ export const ECSEvent = {
     message.componentId = object.componentId ?? "";
     message.entityId = object.entityId ?? "";
     message.value = object.value ?? new Uint8Array();
-    message.tx = object.tx ?? "";
+    message.txHash = object.txHash ?? "";
+    message.txMetadata =
+      object.txMetadata !== undefined && object.txMetadata !== null
+        ? TxMetadata.fromPartial(object.txMetadata)
+        : undefined;
     return message;
   },
 };
@@ -110,6 +180,7 @@ function createBaseECSStreamBlockBundleRequest(): ECSStreamBlockBundleRequest {
     blockTimestamp: false,
     transactionsConfirmed: false,
     ecsEvents: false,
+    ecsEventsIncludeTxMetadata: false,
   };
 }
 
@@ -132,6 +203,9 @@ export const ECSStreamBlockBundleRequest = {
     }
     if (message.ecsEvents === true) {
       writer.uint32(48).bool(message.ecsEvents);
+    }
+    if (message.ecsEventsIncludeTxMetadata === true) {
+      writer.uint32(56).bool(message.ecsEventsIncludeTxMetadata);
     }
     return writer;
   },
@@ -161,6 +235,9 @@ export const ECSStreamBlockBundleRequest = {
         case 6:
           message.ecsEvents = reader.bool();
           break;
+        case 7:
+          message.ecsEventsIncludeTxMetadata = reader.bool();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -177,6 +254,7 @@ export const ECSStreamBlockBundleRequest = {
     message.blockTimestamp = object.blockTimestamp ?? false;
     message.transactionsConfirmed = object.transactionsConfirmed ?? false;
     message.ecsEvents = object.ecsEvents ?? false;
+    message.ecsEventsIncludeTxMetadata = object.ecsEventsIncludeTxMetadata ?? false;
     return message;
   },
 };
@@ -280,6 +358,25 @@ export interface ECSStreamServiceClient<CallOptionsExt = {}> {
   ): AsyncIterable<ECSStreamBlockBundleReply>;
 }
 
+declare var self: any | undefined;
+declare var window: any | undefined;
+declare var global: any | undefined;
+var globalThis: any = (() => {
+  if (typeof globalThis !== "undefined") {
+    return globalThis;
+  }
+  if (typeof self !== "undefined") {
+    return self;
+  }
+  if (typeof window !== "undefined") {
+    return window;
+  }
+  if (typeof global !== "undefined") {
+    return global;
+  }
+  throw "Unable to locate global object";
+})();
+
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
 export type DeepPartial<T> = T extends Builtin
@@ -291,5 +388,17 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+function longToNumber(long: Long): number {
+  if (long.gt(Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+  }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
+}
 
 export type ServerStreamingMethodResult<Response> = { [Symbol.asyncIterator](): AsyncIterator<Response, void> };

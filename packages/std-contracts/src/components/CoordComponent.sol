@@ -21,16 +21,16 @@ contract CoordComponent is Component {
     values[1] = LibTypes.SchemaValue.INT32;
   }
 
-  function set(uint256 entity, Coord calldata value) public {
+  function set(uint256 entity, Coord calldata value) public virtual {
     set(entity, abi.encode(value));
   }
 
-  function getValue(uint256 entity) public view returns (Coord memory) {
+  function getValue(uint256 entity) public view virtual returns (Coord memory) {
     (int32 x, int32 y) = abi.decode(getRawValue(entity), (int32, int32));
     return Coord(x, y);
   }
 
-  function getEntitiesWithValue(Coord calldata coord) public view returns (uint256[] memory) {
+  function getEntitiesWithValue(Coord calldata coord) public view virtual returns (uint256[] memory) {
     return getEntitiesWithValue(abi.encode(coord));
   }
 }
