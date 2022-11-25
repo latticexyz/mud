@@ -23,9 +23,9 @@ contract BulkSetStateSystem is System {
     // NOTE: Make sure to not include this system in a production deployment, as anyone can change all component values
   }
 
-  function execute(bytes memory arguments) public returns (bytes memory) {
+  function execute(bytes memory args) public returns (bytes memory) {
     (uint256[] memory componentIds, uint256[] memory entities, ECSEvent[] memory state) = abi.decode(
-      arguments,
+      args,
       (uint256[], uint256[], ECSEvent[])
     );
 
