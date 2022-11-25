@@ -1,0 +1,39 @@
+// SPDX-License-Identifier: Unlicense
+pragma solidity >=0.8.0;
+
+import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import { IWorld } from "solecs/interfaces/IWorld.sol";
+import { getSystemAddressById, getAddressById } from "solecs/utils.sol";
+
+uint256 constant MUD_WORLD = uint256(keccak256("mud.world"));
+uint256 constant MUD_COMPONENTS = uint256(keccak256("mud.components"));
+
+library LibStorage {
+  function c() internal view returns (IUint256Component components) {
+    bytes32 position = bytes32(MUD_COMPONENTS);
+    assembly {
+      components := sload(position)
+    }
+  }
+
+  function w() internal view returns (IWorld world) {
+    bytes32 position = bytes32(MUD_WORLD);
+    assembly {
+      world := sload(position)
+    }
+  }
+
+  function set(uint256 position, bytes32 data) internal {
+    assembly {
+      sstore(position, data)
+    }
+  }
+
+  function sys(uint256 systemID) internal view returns (address) {
+    return getSystemAddressById(c(), systemID);
+  }
+
+  function comp(uint256 componentID) internal view returns (address) {
+    return getAddressById(c(), componentID);
+  }
+}
