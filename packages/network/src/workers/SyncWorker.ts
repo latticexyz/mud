@@ -162,7 +162,12 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       fetchSystemCalls ? createFetchSystemCallsFromEvents(provider) : undefined
     );
     const latestEvent$ = streamServiceUrl
-      ? createLatestEventStreamService(streamServiceUrl, worldContract.address, transformWorldEvents).pipe(
+      ? createLatestEventStreamService(
+          streamServiceUrl,
+          worldContract.address,
+          transformWorldEvents,
+          Boolean(fetchSystemCalls)
+        ).pipe(
           catchError((err) => {
             console.warn("[SyncWorker || via Stream Service]", err);
             console.info("[SyncWorker || falling back to RPC]", err);

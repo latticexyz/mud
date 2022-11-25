@@ -63,6 +63,7 @@ abstract contract BareComponent is IComponent {
    * @param newOwner Address of the new owner.
    */
   function transferOwnership(address newOwner) public override onlyOwner {
+    emit OwnershipTransferred(_owner, newOwner);
     writeAccess[msg.sender] = false;
     _owner = newOwner;
     writeAccess[newOwner] = true;
@@ -76,29 +77,6 @@ abstract contract BareComponent is IComponent {
     world = _world;
     IWorld(world).registerComponent(address(this), id);
   }
-
-  /**
-   * Grant write access to this component to the given address.
-   * Can only be called by the owner of this component.
-   * @param writer Address to grant write access to.
-   */
-  function authorizeWriter(address writer) public override onlyOwner {
-    writeAccess[writer] = true;
-  }
-
-  /**
-   * Revoke write access to this component to the given address.
-   * Can only be called by the owner of this component.
-   * @param writer Address to revoke write access .
-   */
-  function unauthorizeWriter(address writer) public override onlyOwner {
-    delete writeAccess[writer];
-  }
-
-  /**
-   * Return the keys and value types of the schema of this component.
-   */
-  function getSchema() public pure virtual returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
   /**
    * Set the given component value for the given entity.
@@ -138,16 +116,37 @@ abstract contract BareComponent is IComponent {
     return entityToValue[entity];
   }
 
+  /** Not implemented in BareComponent */
   function getEntities() public view virtual override returns (uint256[] memory) {
     revert BareComponent__NotImplemented();
   }
 
+  /** Not implemented in BareComponent */
   function getEntitiesWithValue(bytes memory) public view virtual override returns (uint256[] memory) {
     revert BareComponent__NotImplemented();
   }
 
-  function registerIndexer(address) external virtual {
+  /** Not implemented in BareComponent */
+  function registerIndexer(address) external virtual override {
     revert BareComponent__NotImplemented();
+  }
+
+  /**
+   * Grant write access to this component to the given address.
+   * Can only be called by the owner of this component.
+   * @param writer Address to grant write access to.
+   */
+  function authorizeWriter(address writer) public override onlyOwner {
+    writeAccess[writer] = true;
+  }
+
+  /**
+   * Revoke write access to this component to the given address.
+   * Can only be called by the owner of this component.
+   * @param writer Address to revoke write access .
+   */
+  function unauthorizeWriter(address writer) public override onlyOwner {
+    delete writeAccess[writer];
   }
 
   /**

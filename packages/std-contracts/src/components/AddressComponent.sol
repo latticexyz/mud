@@ -13,16 +13,16 @@ contract AddressComponent is Component {
     values[0] = LibTypes.SchemaValue.UINT256;
   }
 
-  function set(uint256 entity, address value) public {
+  function set(uint256 entity, address value) public virtual {
     set(entity, abi.encode(value));
   }
 
-  function getValue(uint256 entity) public view returns (address) {
+  function getValue(uint256 entity) public view virtual returns (address) {
     address value = abi.decode(getRawValue(entity), (address));
     return value;
   }
 
-  function getEntitiesWithValue(address value) public view returns (uint256[] memory) {
+  function getEntitiesWithValue(address value) public view virtual returns (uint256[] memory) {
     return getEntitiesWithValue(abi.encode(value));
   }
 }

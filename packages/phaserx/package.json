@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/phaserx",
   "license": "MIT",
-  "version": "1.27.1",
+  "version": "1.28.1",
   "source": "src/index.ts",
   "main": "src/index.ts",
   "repository": {
@@ -12,7 +12,7 @@
   "scripts": {
     "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
-    "test": "jest --passWithNoTests",
+    "test": "tsc && jest --passWithNoTests",
     "link": "yarn link",
     "docs": "typedoc src",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
@@ -21,14 +21,14 @@
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "@latticexyz/utils": "^1.27.1",
+    "@latticexyz/utils": "^1.28.1",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.1",
     "@types/jest": "^27.4.1",
     "jest": "^27.5.1",
     "mobx": "^6.4.2",
-    "phaser": "3.60.0-beta.4",
+    "phaser": "3.60.0-beta.14",
     "rimraf": "^3.0.2",
     "rollup": "^2.70.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
@@ -41,7 +41,7 @@
   "peerDependencies": {
     "@latticexyz/utils": "^1",
     "mobx": "^6.5.0",
-    "phaser": "3.60.0-beta.4",
+    "phaser": "3.60.0-beta.14",
     "rxjs": "^7.5.5"
   },
   "dependencies": {

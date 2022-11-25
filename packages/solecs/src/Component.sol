@@ -39,14 +39,15 @@ abstract contract Component is BareComponent {
   }
 
   /**
-   * @inheritdoc BareComponent
+   * Get a list of all entities that have a value in this component.
    */
   function getEntities() public view virtual override returns (uint256[] memory) {
     return entities.getItems();
   }
 
   /**
-   * @inheritdoc BareComponent
+   * Get a list of all entities that have the specified value in this component.
+   * @param value Abi-encoded value to get the list of entities with this value for.
    */
   function getEntitiesWithValue(bytes memory value) public view virtual override returns (uint256[] memory) {
     // Return all entities with this component value
@@ -54,7 +55,8 @@ abstract contract Component is BareComponent {
   }
 
   /**
-   * @inheritdoc BareComponent
+   * Register a new indexer that gets notified when a component value is set.
+   * @param indexer Address of the indexer to notify when a component value is set.
    */
   function registerIndexer(address indexer) external virtual override onlyWriter {
     indexers.push(IEntityIndexer(indexer));

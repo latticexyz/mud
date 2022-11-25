@@ -13,11 +13,9 @@ function isGameObjectType(t: string): t is keyof GameObjectTypes {
 }
 
 export function createObjectPool(scene: Phaser.Scene) {
-  const groups = mapObject(GameObjectClasses, (classType) => {
-    const group = scene.add.group();
-    group.classType = classType;
-    return group;
-  }) as { [key in keyof typeof GameObjectClasses]: Phaser.GameObjects.Group };
+  const groups = mapObject(GameObjectClasses, (classType) => scene.add.group({ classType })) as {
+    [key in keyof typeof GameObjectClasses]: Phaser.GameObjects.Group;
+  };
 
   const objects = observable(new Map<string, EmbodiedEntity<keyof GameObjectTypes>>());
   const cameraFilter = { current: 0 };

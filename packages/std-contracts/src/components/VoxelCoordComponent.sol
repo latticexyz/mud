@@ -25,16 +25,16 @@ contract VoxelCoordComponent is Component {
     values[2] = LibTypes.SchemaValue.INT32;
   }
 
-  function set(uint256 entity, VoxelCoord calldata value) public {
+  function set(uint256 entity, VoxelCoord calldata value) public virtual {
     set(entity, abi.encode(value));
   }
 
-  function getValue(uint256 entity) public view returns (VoxelCoord memory) {
+  function getValue(uint256 entity) public view virtual returns (VoxelCoord memory) {
     (int32 x, int32 y, int32 z) = abi.decode(getRawValue(entity), (int32, int32, int32));
     return VoxelCoord(x, y, z);
   }
 
-  function getEntitiesWithValue(VoxelCoord calldata coord) public view returns (uint256[] memory) {
+  function getEntitiesWithValue(VoxelCoord calldata coord) public view virtual returns (uint256[] memory) {
     return getEntitiesWithValue(abi.encode(coord));
   }
 }
