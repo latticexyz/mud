@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import "../Component.sol";
-import "../interfaces/IUint256Component.sol";
+
+import { Component } from "../Component.sol";
+import { LibTypes } from "../LibTypes.sol";
+import { IUint256Component } from "../interfaces/IUint256Component.sol";
 
 /**
  * Reference implementation of a component storing a uint256 value for each entity.

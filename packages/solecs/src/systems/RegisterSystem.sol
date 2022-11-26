@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
 import { ISystem } from "../interfaces/ISystem.sol";
 import { IWorld } from "../interfaces/IWorld.sol";
 import { IERC173 } from "../interfaces/IERC173.sol";

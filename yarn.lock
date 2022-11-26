@@ -3274,6 +3274,11 @@
   dependencies:
     antlr4ts "^0.5.0-alpha.4"
 
+"@solidstate/contracts@^0.0.48":
+  version "0.0.48"
+  resolved "https://registry.yarnpkg.com/@solidstate/contracts/-/contracts-0.0.48.tgz#c97eb44cec623a388c67e2b36b404df3d46cf6ed"
+  integrity sha512-egof846MhC1lo+C8MJPmvte2xOjGEIbHcEB4G2H1ysC51F3xd81WZOTB/w+irylBSBK+HQE2uxhVW8QlUTBcEQ==
+
 "@swc/helpers@^0.4.2":
   version "0.4.11"
   resolved "https://registry.yarnpkg.com/@swc/helpers/-/helpers-0.4.11.tgz#db23a376761b3d31c26502122f349a21b592c8de"

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
 import { QueryType } from "./Query.sol";
 import { IUint256Component } from "./IUint256Component.sol";
 
