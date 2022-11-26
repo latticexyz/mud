@@ -1,22 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { Ownable } from "./Ownable.sol";
+
 /**
  * Set of unique uint256
  */
-contract Set {
-  address private owner;
+contract Set is Ownable {
   uint256[] internal items;
   mapping(uint256 => uint256) internal itemToIndex;
-
-  constructor() {
-    owner = msg.sender;
-  }
-
-  modifier onlyOwner() {
-    require(msg.sender == owner, "ONLY_OWNER");
-    _;
-  }
 
   function add(uint256 item) public onlyOwner {
     if (has(item)) return;
