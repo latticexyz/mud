@@ -11,6 +11,8 @@ import ips from "inquirer-prompt-suggest";
 import { Arguments, CommandBuilder } from "yargs";
 inquirer.registerPrompt("suggest", ips);
 
+// @dev Note: this deployment command is deprecated and will be removed in a future version. Use `mud deploy-contracts` instead.
+
 // Workaround to prevent tsc to transpile dynamic imports with require, which causes an error upstream
 // https://github.com/microsoft/TypeScript/issues/43329#issuecomment-922544562
 const importNetlify = eval('import("netlify")') as Promise<typeof import("netlify")>;

@@ -1,0 +1,90 @@
+// SPDX-License-Identifier: MIT 
+pragma solidity >=0.8.0;
+
+// Foundry
+import { DSTest } from "ds-test/test.sol";
+import { console } from "forge-std/console.sol";
+
+// Solecs 
+import { World } from "solecs/World.sol";
+import { Component } from "solecs/Component.sol";
+import { getAddressById } from "solecs/utils.sol";
+import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
+import { ISystem } from "solecs/interfaces/ISystem.sol";
+
+// Components (requires 'components=...' remapping in project's remappings.txt)
+<% components.forEach(component => { -%>
+import { <%= component %>, ID as <%= component %>ID } from "components/<%- component %>.sol";
+<% }); -%>
+
+// Systems (requires 'systems=...' remapping in project's remappings.txt)
+<% systems.forEach(system => { -%>
+import { <%= system.name %>, ID as <%= system.name %>ID } from "systems/<%- system.name %>.sol";
+<% }); -%>
+
+struct DeployResult {
+  World world;
+  address deployer;
+}
+
+library LibDeploy {
+
+  function deploy(
+    address _deployer,
+    address _world,
+    bool _reuseComponents
+  ) internal returns (DeployResult memory result) {
+    result.deployer = _deployer;
+
+    // ------------------------
+    // Deploy 
+    // ------------------------
+
+    // Deploy world
+    result.world = _world == address(0) ? new World() : World(_world);
+    if(_world == address(0)) result.world.init(); // Init if it's a fresh world
+
+      // Deploy components
+    if(!_reuseComponents) {
+      Component comp;
+<% components.forEach(component => { %>
+      console.log("Deploying <%= component %>");
+      comp = new <%= component %>(address(result.world));
+      console.log(address(comp));
+<% });%>
+    } 
+    
+    // Deploy components
+    deploySystems(address(result.world), true);
+  }
+    
+  
+  function authorizeWriter(IUint256Component components, uint256 componentId, address writer) internal {
+    Component(getAddressById(components, componentId)).authorizeWriter(writer);
+  }
+  
+  function deploySystems(address _world, bool init) internal {
+    World world = World(_world);
+    // Deploy systems
+    ISystem system; 
+    IUint256Component components = world.components();
+<% systems.forEach(system => { %>
+    console.log("Deploying <%= system.name %>");
+    system = new <%= system.name %>(world, address(components));
+    world.registerSystem(address(system), <%= system.name %>ID);
+<% system.writeAccess?.forEach(component => { -%>
+<% if(component === "*") { -%>
+<% components.forEach(comp=> { -%>
+    authorizeWriter(components, <%= comp %>ID, address(system));
+<% });-%>
+<% } else { -%>
+    authorizeWriter(components, <%= component %>ID, address(system));
+<% } -%>
+<% });-%>
+<% if(system.initialize) { -%>
+    if(init) system.execute(<%= system.initialize -%>);
+<% } -%>
+    console.log(address(system));
+<% });%>
+  }
+}
