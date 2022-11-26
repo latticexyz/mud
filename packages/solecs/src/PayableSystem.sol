@@ -5,12 +5,14 @@ import { IPayableSystem } from "./interfaces/IPayableSystem.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 
+import { SystemStorage } from "./SystemStorage.sol";
+
 /**
  * System base contract
  */
 abstract contract PayableSystem is IPayableSystem {
-  IUint256Component components;
-  IWorld world;
+  using SystemStorage for SystemStorage.Layout;
+
   address _owner;
 
   modifier onlyOwner() {
@@ -20,8 +22,18 @@ abstract contract PayableSystem is IPayableSystem {
 
   constructor(IWorld _world, address _components) {
     _owner = msg.sender;
-    components = _components == address(0) ? _world.components() : IUint256Component(_components);
-    world = _world;
+    SystemStorage.layout().initSystem(
+      _components == address(0) ? _world.components() : IUint256Component(_components),
+      _world
+    );
+  }
+
+  function components() public view returns (IUint256Component) {
+    return SystemStorage.layout().components;
+  }
+
+  function world() public view returns (IWorld) {
+    return SystemStorage.layout().world;
   }
 
   function owner() public view override returns (address) {
