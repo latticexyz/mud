@@ -1,7 +1,6 @@
 import type { Arguments, CommandBuilder } from "yargs";
 import { execLog } from "../utils";
-import ejs from "ejs";
-import { readFileSync, writeFileSync, rmSync } from "fs";
+import { rmSync } from "fs";
 import { constants, Wallet } from "ethers";
 
 // Workaround to prevent tsc to transpile dynamic imports with require, which causes an error upstream
@@ -28,18 +27,12 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
-  const { config: configPath } = args;
+  const { config } = args;
   const { default: chalk } = await importChalk;
 
   try {
-    // Parse config
-    const config = JSON.parse(readFileSync(configPath, { encoding: "utf8" }));
-    console.log("Deploy config: \n", JSON.stringify(config, null, 2));
-
     // Generate LibDeploy
-    console.log("Generating deployment script");
-    const LibDeploy = await ejs.renderFile(contractsDir + "/LibDeploy.ejs", config, { async: true });
-    writeFileSync(contractsDir + "/LibDeploy.sol", LibDeploy);
+    await execLog("yarn", ["mud", "codegen-libdeploy", "--config", config, "--out", contractsDir]);
 
     // Call deploy script
     console.log("Call deployment script");
