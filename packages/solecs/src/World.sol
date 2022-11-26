@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
 import { Set } from "./Set.sol";
 import { LibQuery } from "./LibQuery.sol";
 import { IWorld, WorldQueryFragment } from "./interfaces/IWorld.sol";
