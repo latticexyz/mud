@@ -89,5 +89,6 @@ ${systems.map((system, index) => `  "${ids[index]}": ${system}.abi,`).join("\n")
 
   fs.writeFileSync("./types/SystemTypes.ts", SystemTypes);
   fs.writeFileSync("./types/SystemAbis.mts", SystemAbis);
+  fs.writeFileSync("./types/SystemAbis.mjs", SystemAbis);
   fs.writeFileSync("./types/SystemMappings.ts", SystemMappings);
 };

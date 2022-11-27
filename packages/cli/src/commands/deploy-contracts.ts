@@ -12,6 +12,7 @@ type Options = {
   deployerPrivateKey?: string;
   worldAddress?: string;
   rpc: string;
+  upgradeSystem?: string;
 };
 
 export const command = "deploy-contracts";
@@ -24,15 +25,33 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     deployerPrivateKey: { type: "string", desc: "Deployer private key. If omitted, deployment is not broadcasted." },
     worldAddress: { type: "string", desc: "World address to deploy to. If omitted, a new World is deployed." },
     rpc: { type: "string", default: "http://localhost:8545", desc: "RPC URL of the network to deploy to." },
+    upgradeSystem: { type: "string", desc: "Only upgrade the given system. Requires World address." },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
-  const { config } = args;
   const { default: chalk } = await importChalk;
+
+  if (args.upgradeSystem != null && !args.worldAddress) {
+    console.error("Error: Upgrading systems requires a World address.");
+    process.exit(1);
+  }
+
+  if (args.upgradeSystem) {
+    console.log("Upgrading ", args.upgradeSystem);
+    console.log("World address", args.worldAddress);
+  }
 
   try {
     // Generate LibDeploy
-    await execLog("yarn", ["mud", "codegen-libdeploy", "--config", config, "--out", contractsDir]);
+    await execLog("yarn", [
+      "mud",
+      "codegen-libdeploy",
+      "--config",
+      args.config,
+      "--out",
+      contractsDir,
+      ...(args.upgradeSystem ? ["--onlySystem", args.upgradeSystem] : []),
+    ]);
 
     // Call deploy script
     console.log("Call deployment script");
@@ -50,7 +69,7 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
       "broadcastDeploy(address,address,bool)",
       address, // Deployer
       args.worldAddress || constants.AddressZero, // World address (0 = deploy a new world)
-      "false", // Reuse components?
+      args.upgradeSystem ? "true" : "false", // Reuse components?
       "--fork-url",
       args.rpc,
     ]);
