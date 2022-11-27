@@ -9,6 +9,7 @@ import fs from "fs";
 import openurl from "openurl";
 import ips from "inquirer-prompt-suggest";
 import { Arguments, CommandBuilder } from "yargs";
+import { findLog } from "../utils";
 inquirer.registerPrompt("suggest", ips);
 
 // @dev Note: this deployment command is deprecated and will be removed in a future version. Use `mud deploy-contracts` instead.
@@ -75,15 +76,6 @@ function isValidHttpUrl(s: string): boolean {
   }
 
   return url.protocol === "http:" || url.protocol === "https:";
-}
-
-function findLog(deployLogLines: string[], log: string): string {
-  for (const logLine of deployLogLines) {
-    if (logLine.includes(log)) {
-      return logLine.split(log)[1].trim();
-    }
-  }
-  throw new Error("Can not find log");
 }
 
 const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (args) => {

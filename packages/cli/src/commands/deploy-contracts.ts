@@ -1,18 +1,14 @@
 import type { Arguments, CommandBuilder } from "yargs";
-import { execLog } from "../utils";
+import { deploy, findLog, generateLibDeploy, hsr } from "../utils";
 import { rmSync } from "fs";
-import { constants, Wallet } from "ethers";
-
-// Workaround to prevent tsc to transpile dynamic imports with require, which causes an error upstream
-// https://github.com/microsoft/TypeScript/issues/43329#issuecomment-922544562
-const importChalk = eval('import("chalk")') as Promise<typeof import("chalk")>;
 
 type Options = {
   config: string;
   deployerPrivateKey?: string;
   worldAddress?: string;
   rpc: string;
-  upgradeSystem?: string;
+  systems?: string | string[];
+  watchSystems?: boolean;
 };
 
 export const command = "deploy-contracts";
@@ -25,61 +21,58 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     deployerPrivateKey: { type: "string", desc: "Deployer private key. If omitted, deployment is not broadcasted." },
     worldAddress: { type: "string", desc: "World address to deploy to. If omitted, a new World is deployed." },
     rpc: { type: "string", default: "http://localhost:8545", desc: "RPC URL of the network to deploy to." },
-    upgradeSystem: { type: "string", desc: "Only upgrade the given system. Requires World address." },
+    systems: { type: "string", desc: "Only upgrade the given systems. Requires World address." },
+    watchSystems: { type: "boolean", desc: "Automatically redeploy changed systems" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
-  const { default: chalk } = await importChalk;
-
-  if (args.upgradeSystem != null && !args.worldAddress) {
+  if (args.system != null && !args.worldAddress) {
     console.error("Error: Upgrading systems requires a World address.");
     process.exit(1);
   }
 
-  if (args.upgradeSystem) {
-    console.log("Upgrading ", args.upgradeSystem);
-    console.log("World address", args.worldAddress);
+  // Deploy world, components and systems
+  const worldAddress = await generateAndDeploy(args);
+  console.log("World deployed at", worldAddress);
+
+  // Set up watcher for system files to redeploy on change
+  if (args.watchSystems) {
+    const { config, deployerPrivateKey, rpc } = args;
+    hsr("./src", (systems: string[]) => {
+      return generateAndDeploy({
+        config,
+        deployerPrivateKey,
+        worldAddress,
+        rpc,
+        systems,
+      });
+    });
+  } else {
+    process.exit(0);
   }
+};
+
+async function generateAndDeploy(args: Options) {
+  let libDeployPath: string | undefined;
+  let deployedWorldAddress: string | undefined;
 
   try {
     // Generate LibDeploy
-    await execLog("yarn", [
-      "mud",
-      "codegen-libdeploy",
-      "--config",
-      args.config,
-      "--out",
-      contractsDir,
-      ...(args.upgradeSystem ? ["--onlySystem", args.upgradeSystem] : []),
-    ]);
+    libDeployPath = await generateLibDeploy(args.config, contractsDir, args.systems);
 
     // Call deploy script
-    console.log("Call deployment script");
-    const address = args.deployerPrivateKey ? new Wallet(args.deployerPrivateKey).address : constants.AddressZero;
-    console.log(chalk.red(`>> Deployer address: ${chalk.bgYellow.black.bold(" " + address + " ")} <<`));
+    const child = await deploy(args.deployerPrivateKey, args.rpc, args.worldAddress, Boolean(args.systems));
 
-    await execLog("forge", [
-      "script",
-      contractsDir + "/Deploy.sol",
-      "--target-contract",
-      "Deploy",
-      "-vvv",
-      ...(!args.deployerPrivateKey ? [] : ["--broadcast", "--private-keys", args.deployerPrivateKey]),
-      "--sig",
-      "broadcastDeploy(address,address,bool)",
-      address, // Deployer
-      args.worldAddress || constants.AddressZero, // World address (0 = deploy a new world)
-      args.upgradeSystem ? "true" : "false", // Reuse components?
-      "--fork-url",
-      args.rpc,
-    ]);
+    // Extract world address from deploy script
+    const lines = child.stdout.split("\n");
+    deployedWorldAddress = findLog(lines, "world: address");
   } catch (e) {
     console.error(e);
   } finally {
     // Remove generated LibDeploy
     console.log("Cleaning up deployment script");
-    rmSync(contractsDir + "/LibDeploy.sol");
+    if (libDeployPath) rmSync(libDeployPath);
   }
 
-  process.exit(0);
-};
+  return deployedWorldAddress;
+}

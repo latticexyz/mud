@@ -43,6 +43,7 @@
     "@latticexyz/utils": "^1.29.0",
     "@typechain/ethers-v5": "^10.1.1",
     "chalk": "^5.0.1",
+    "chokidar": "^3.5.3",
     "clear": "^0.1.0",
     "commander": "^9.2.0",
     "ds-test": "https://github.com/dapphub/ds-test.git#9310e879db8ba3ea6d5c6489a579118fd264a3f5",
