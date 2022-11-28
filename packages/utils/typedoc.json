@@ -2,8 +2,6 @@
   "cleanOutputDir": true,
   "hideGenerator": true,
   "plugin": ["typedoc-plugin-markdown"],
-  "darkHighlightTheme": "nord",
-  "lightHighlightTheme": "nord",
   "out": "docs",
   "hideBreadcrumbs": true,
   "hideInPageTOC": true
