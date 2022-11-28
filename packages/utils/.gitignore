@@ -1,3 +1,7 @@
 node_modules
 dist
 docs
+classes
+interfaces
+modules.md
+modules.yml
