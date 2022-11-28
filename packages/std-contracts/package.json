@@ -37,7 +37,7 @@
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
     "typechain": "^8.0.0",
-    "typedoc": "^0.23.10"
+    "typedoc": "^0.23.21"
   },
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }
