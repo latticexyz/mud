@@ -1,9 +1,10 @@
 {
   "cleanOutputDir": true,
   "hideGenerator": true,
-  "customCss": "../mud.dev/src/typedoc/typedoc.css",
-  "plugin": ["../mud.dev/src/typedoc/typedoc.js"],
+  "plugin": ["typedoc-plugin-markdown"],
   "darkHighlightTheme": "nord",
   "lightHighlightTheme": "nord",
-  "out": "docs"
+  "out": "docs",
+  "hideBreadcrumbs": true,
+  "hideInPageTOC": true
 }
