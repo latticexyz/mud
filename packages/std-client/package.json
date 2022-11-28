@@ -13,7 +13,7 @@
   "scripts": {
     "prepare": "yarn build",
     "link": "yarn link",
-    "docs": "typedoc src",
+    "docs": "typedoc src && find docs -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && mv docs/* . && echo 'label: Modules\norder: 1' > modules.yml",
     "test": "tsc && echo 'todo: add tests'",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
@@ -48,6 +48,7 @@
     "rxjs": "^7.5.5",
     "tslib": "^2.3.1",
     "typedoc": "^0.23.21",
+    "typedoc-plugin-markdown": "^3.13.6",
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
