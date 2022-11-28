@@ -18,7 +18,6 @@
       "packages/std-contracts",
       "packages/std-client",
       "packages/ecs-browser",
-      "packages/mud.dev",
       "packages/services",
       "packages/noise"
     ]
