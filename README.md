@@ -14,3 +14,8 @@ To get started, have a look at the [documentation](https://mud.dev) and [referen
 - Install go (to build packages/services): `https://go.dev/doc/install`
 - Install jq (for various yarn commands): `https://stedolan.github.io/jq/download/`
 - Install dependencies: `yarn` (in mud root)
+
+## Library
+
+[!embed](https://www.youtube.com/embed/j-_Zf8o5Wlo)
+[!embed](https://www.youtube.com/embed/mv3jA4USZtg)
