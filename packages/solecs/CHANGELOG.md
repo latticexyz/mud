@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.29.0](https://github.com/latticexyz/mud/compare/v1.28.1...v1.29.0) (2022-11-29)
+
+### Bug Fixes
+
+- allow overriding preset components, replace Owned interface with IERC173, fix IComponent interface ([#239](https://github.com/latticexyz/mud/issues/239)) ([ae3983b](https://github.com/latticexyz/mud/commit/ae3983b047271ebcf96506f8a6cb0458deb602e7))
+
+### Features
+
+- **solecs:** add util to split up bitpacked data ([#247](https://github.com/latticexyz/mud/issues/247)) ([a7f73b0](https://github.com/latticexyz/mud/commit/a7f73b01e2f0387927e30a4e7b0846a69b3c0ce0))
+
+## [1.28.1](https://github.com/latticexyz/mud/compare/v1.28.0...v1.28.1) (2022-11-24)
+
+**Note:** Version bump only for package @latticexyz/solecs
+
 # [1.28.0](https://github.com/latticexyz/mud/compare/v1.27.1...v1.28.0) (2022-11-20)
 
 **Note:** Version bump only for package @latticexyz/solecs

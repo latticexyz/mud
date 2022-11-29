@@ -3,6 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.29.0](https://github.com/latticexyz/mud/compare/v1.28.1...v1.29.0) (2022-11-29)
+
+### Bug Fixes
+
+- allow overriding preset components, replace Owned interface with IERC173, fix IComponent interface ([#239](https://github.com/latticexyz/mud/issues/239)) ([ae3983b](https://github.com/latticexyz/mud/commit/ae3983b047271ebcf96506f8a6cb0458deb602e7))
+
+### Features
+
+- **cli:** add faucet cli ([#271](https://github.com/latticexyz/mud/issues/271)) ([a33f1ce](https://github.com/latticexyz/mud/commit/a33f1ce97a13039407c5b786725b1b8efd3faeb6))
+- **cli:** add mud types command for TypeChain type generation ([#259](https://github.com/latticexyz/mud/issues/259)) ([4303b40](https://github.com/latticexyz/mud/commit/4303b40b887961cbece6a004c55e0ce6edb65a18))
+- **solecs:** add util to split up bitpacked data ([#247](https://github.com/latticexyz/mud/issues/247)) ([a7f73b0](https://github.com/latticexyz/mud/commit/a7f73b01e2f0387927e30a4e7b0846a69b3c0ce0))
+- **std-contracts:** basic gas metrics for mud components ([#255](https://github.com/latticexyz/mud/issues/255)) ([2aeb4a6](https://github.com/latticexyz/mud/commit/2aeb4a65343de8bd026afcfa4b3b043c90662683))
+
+## [1.28.1](https://github.com/latticexyz/mud/compare/v1.28.0...v1.28.1) (2022-11-24)
+
+### Bug Fixes
+
+- recalculate world view on phaser resize ([#263](https://github.com/latticexyz/mud/issues/263)) ([7a01b91](https://github.com/latticexyz/mud/commit/7a01b914cdba4691a697b08873abcc64936b991c))
+- typescript errors ([#253](https://github.com/latticexyz/mud/issues/253)) ([83e0c7a](https://github.com/latticexyz/mud/commit/83e0c7a1eda900d254a73115446c4ce38b531645))
+
 # [1.28.0](https://github.com/latticexyz/mud/compare/v1.27.1...v1.28.0) (2022-11-20)
 
 ### Features

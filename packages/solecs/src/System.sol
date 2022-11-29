@@ -24,7 +24,12 @@ abstract contract System is ISystem {
     world = _world;
   }
 
-  function owner() public view returns (address) {
+  function owner() public view override returns (address) {
     return _owner;
+  }
+
+  function transferOwnership(address newOwner) public override onlyOwner {
+    emit OwnershipTransferred(_owner, newOwner);
+    _owner = newOwner;
   }
 }

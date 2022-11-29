@@ -77,8 +77,9 @@ Everyone has read access.
 For convenience the component implementation in `solecs` also includes a reverse mapping from `keccak256(value)` to set of entities with this value, but this is not strictly required and might change in a future release.
 
 ```solidity
-interface IComponent is IOwned {
-  function transferOwnership(address newOwner) external;
+interface IComponent is IERC173 {
+  /** Return the keys and value types of the schema of this component. */
+  function getSchema() external pure returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
   function set(uint256 entity, bytes memory value) external;
 
@@ -91,6 +92,12 @@ interface IComponent is IOwned {
   function getEntities() external view returns (uint256[] memory);
 
   function getEntitiesWithValue(bytes memory value) external view returns (uint256[] memory);
+
+  function registerIndexer(address indexer) external;
+
+  function authorizeWriter(address writer) external;
+
+  function unauthorizeWriter(address writer) external;
 }
 
 ```
@@ -159,9 +166,9 @@ System are contracts with a single `execute` function.
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "./IOwned.sol";
+import "./IERC173.sol";
 
-interface ISystem is IOwned {
+interface ISystem is IERC173 {
   function execute(bytes memory arguments) external returns (bytes memory);
 }
 

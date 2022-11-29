@@ -15,8 +15,8 @@ contract ComponentDevSystem is System {
     // NOTE: Make sure to not include this system in a production deployment, as anyone can change all component values
   }
 
-  function execute(bytes memory arguments) public returns (bytes memory) {
-    (uint256 componentId, uint256 entity, bytes memory value) = abi.decode(arguments, (uint256, uint256, bytes));
+  function execute(bytes memory args) public returns (bytes memory) {
+    (uint256 componentId, uint256 entity, bytes memory value) = abi.decode(args, (uint256, uint256, bytes));
     IComponent c = IComponent(getAddressById(components, componentId));
     if (value.length == 0) {
       c.remove(entity);
