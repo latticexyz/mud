@@ -16,7 +16,7 @@
     "test": "tsc && jest",
     "link": "yarn link",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
-    "prepack": "mv package.json package.json.bak && yarn jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
+    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "release": "npm publish || echo 'version already published'"
