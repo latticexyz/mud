@@ -1,0 +1,50 @@
+# .github/workflows/docs.yml
+name: Generate and deploy docs
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    name: Run tests
+    steps:
+      - name: Setup Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: 1.19
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: git-checkout
+        uses: actions/checkout@v2
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: yarn install --network-concurrency 1
+
+      - name: Generate docs
+        run: yarn docs
+
+      - name: Publish to Cloudflare Pages
+        id: cloudflare_publish
+        uses: cloudflare/pages-action@13c6a2f35417aaf1906cdbb1f6faf6c72c697b08
+        with:
+          apiToken:  ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: mud-dev
+          directory: .retype
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Comment deploy URL 
+        uses: thollander/actions-comment-pull-request@v1
+          with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} 
+            message: 'Docs deployed to: ${{ steps.cloudflare_publish.outputs.url }} 🚀'
