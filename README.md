@@ -1,5 +1,5 @@
 ---
-icon: public/logo512.png
+icon: public/logo512_dark.png
 ---
 
 # MUD
