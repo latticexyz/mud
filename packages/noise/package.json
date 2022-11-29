@@ -18,8 +18,8 @@
     "asbuild": "yarn asbuild:debug && yarn asbuild:release",
     "start": "npx serve .",
     "link": "yarn link",
-    "prepack:cjs": "mv package.json package.json.bak && jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp && jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && jq \"del(\".type\")\" package.json.tmp2 > package.json",
-    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
+    "prepack:cjs": "mv package.json package.json.bak && ../../node_modules/.bin/jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp && ../../node_modules/.bin/jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && ../../node_modules/.bin/jq \"del(\".type\")\" package.json.tmp2 > package.json",
+    "prepack": "mv package.json package.json.bak && ../../node_modules/.bin/jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
     "postpack": "(mv package.json.bak package.json || true) && (rm package.json.tmp || true) && (rm package.json.tmp2 || true)",
     "build": "rm -rf && yarn asbuild:release && yarn prepack:cjs && yarn parcel build && yarn postpack",
     "release": "npm publish || echo 'version already published'"
