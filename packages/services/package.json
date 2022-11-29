@@ -18,7 +18,7 @@
   },
   "devDependencies": {
     "ts-proto": "^1.126.1",
-    "typedoc": "^0.23.21"
+    "typedoc": "0.23.21"
   },
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }
