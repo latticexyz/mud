@@ -119,16 +119,17 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
 
   const { default: fetch } = await importFetch;
 
+  // DISABLED UNTIL NEW REGISTRY IS READY
   // Fetch deployed lattice chains
-  const latticeChains = args.i
-    ? ((await (await fetch("https://registry.lattice.xyz/api?update=true")).json()) as
-        | { specUrl: string }[]
-        | undefined)
-    : [];
+  // const latticeChains = args.i
+  //   ? ((await (await fetch("https://registry.lattice.xyz/api?update=true")).json()) as
+  //       | { specUrl: string }[]
+  //       | undefined)
+  //   : [];
 
-  const chainSpecs = latticeChains?.map((e) => e.specUrl) || [];
-  console.log("Available Lattice chains");
-  console.log(JSON.stringify(latticeChains, null, 2));
+  // const chainSpecs = latticeChains?.map((e) => e.specUrl) || [];
+  // console.log("Available Lattice chains");
+  // console.log(JSON.stringify(latticeChains, null, 2));
 
   const answers: Options =
     args.upgradeSystems && !args.world
@@ -150,7 +151,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
             type: "suggest",
             name: "chainSpec",
             message: "Provide a chainSpec.json location (local or remote)",
-            suggestions: chainSpecs,
+            suggestions: ["https://spec.testnet-chain.linfra.xyz/chainSpec.json"],
             when: () => args.chainSpec == null && config.chainSpec == null,
           },
           {
