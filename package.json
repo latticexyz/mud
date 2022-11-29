@@ -38,6 +38,7 @@
     "lerna": "^4.0.0",
     "lint-staged": ">=10",
     "prettier": "^2.6.2",
+    "retypeapp": "^2.4.0",
     "rimraf": "^3.0.2",
     "run-pty": "^3.0.0",
     "typescript": ">=3.0.0"
@@ -57,7 +58,7 @@
     "release:force": "yarn lerna run release",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "yarn lerna run link",
-    "docs": "yarn lerna run docs",
+    "docs": "yarn lerna run docs && yarn retype build",
     "test": "yarn workspaces run test",
     "yalc:release": "yarn entry:dist && yarn lerna exec yalc push",
     "yalc:reset": "yarn entry:src",

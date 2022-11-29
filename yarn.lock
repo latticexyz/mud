@@ -11081,6 +11081,11 @@ retry@^0.12.0:
   resolved "https://registry.yarnpkg.com/retry/-/retry-0.12.0.tgz#1b42a6266a21f07421d1b0b54b7dc167b01c013b"
   integrity sha512-9LkiTwjUh6rT555DtE9rTX+BKByPfrMzEAtnlEtdEwr3Nkffwiihqe2bWADg+OQRjt9gl6ICdmB/ZFDCGAtSow==
 
+retypeapp@^2.4.0:
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/retypeapp/-/retypeapp-2.4.0.tgz#a794e3185f2ea04d22b8948df1a3d9a971d78b78"
+  integrity sha512-vEND+JC0EtK1nws958J108Z14Enfvt84bYeycaLa6eCZjsVzqV4Xe6hl7amYILycp7ld0x2uhx4Wh7iVlcdoCg==
+
 reusify@^1.0.4:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/reusify/-/reusify-1.0.4.tgz#90da382b1e126efc02146e90845a88db12925d76"
