@@ -11,14 +11,14 @@
   },
   "scripts": {
     "prepare": "make build",
-    "docs": "typedoc . --readme README.md",
+    "docs": "rimraf API && mkdir -p _docs/pkg && find pkg -type f -name '*.go' -exec bash -c 'gomarkdoc {} > \"$(dirname _docs/{})\".md' \\; && mv _docs/pkg API && rimraf _docs",
     "test": "echo 'todo: add tests'",
     "link": "yarn link",
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
-    "ts-proto": "^1.126.1",
-    "typedoc": "0.23.21"
+    "rimraf": "^3.0.2",
+    "ts-proto": "^1.126.1"
   },
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }
