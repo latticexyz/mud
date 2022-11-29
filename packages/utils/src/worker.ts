@@ -1,7 +1,7 @@
 import { fromEvent, map, Observable } from "rxjs";
 
-export interface DoWork<I, O> {
-  work(input$: Observable<I>): Observable<O>;
+export interface DoWork<In, Out> {
+  work(input$: Observable<In>): Observable<Out>;
 }
 
 export function fromWorker<I, O>(worker: Worker, input$: Observable<I>): Observable<O> {

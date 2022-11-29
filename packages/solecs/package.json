@@ -21,7 +21,7 @@
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "lint": "yarn prettier && yarn solhint",
     "link": "yarn link",
-    "docs": "hardhat docgen && cat README.md _docs/index.md > DOCS.md && typedoc . --readme DOCS.md",
+    "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
@@ -32,15 +32,13 @@
     "forge-std": "https://github.com/foundry-rs/forge-std.git#37a3fe48c3a4d8239cda93445f0b5e76b1507436",
     "hardhat": "^2.10.1",
     "memmove": "https://github.com/brockelmore/memmove.git#d577ecd1bc43656f4032edf4daa9797f756a8ad2",
-    "openzeppelin-solidity": "https://github.com/OpenZeppelin/openzeppelin-contracts.git#cd2da98d4d21f070f56476b40042279f5500fc59",
     "prettier": "^2.6.2",
     "prettier-plugin-solidity": "^1.0.0-beta.19",
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
     "ts-node": "10.7",
-    "typechain": "^8.1.0",
-    "typedoc": "^0.23.10"
+    "typechain": "^8.1.0"
   },
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }

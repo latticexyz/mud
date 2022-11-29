@@ -1,0 +1,44 @@
+<style>
+  .dark .dark\:text-blue-400, .dark, .dark .docs-markdown a:not(.no-link), .dark .dark\:hover\:text-blue-400:hover  {
+    color: #eb4926;
+  }
+
+  .dark .dark\:hover\:text-blue-200:hover {
+    color: #f9ccc2;
+  }
+
+  .dark .dark\:bg-blue-400 {
+    background-color: #eb4926;
+  }
+
+  .dark .dark\:bg-dark-550 {
+    background-color: rgb(255 255 255 / 10%);
+  }
+
+  .dark .dark\:border-dark-600 {
+    border-color: rgb(255 255 255 / 5%);  
+  }
+
+  .dark .dark\:bg-dark-650 {
+    background-color: #270e09;
+  }
+
+  .dark .dark\:bg-dark-850 {
+    background-color: #000000;
+  }
+
+  .dark .dark\:bg-dark-800 {
+    background-color: #000000; 
+  }
+
+  .rounded, .rounded-r-lg, .rounded-l {
+    border-radius: 0;
+  }
+</style>
+<script>
+  const themeColor = localStorage.getItem("doc_theme");
+  if(!themeColor) {
+    localStorage.setItem("doc_theme", "dark")
+    document.documentElement.classList.add("dark");
+  }
+</script>

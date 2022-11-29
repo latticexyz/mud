@@ -6,19 +6,20 @@ import { subtask } from "hardhat/config";
 subtask(TASK_COMPILE_SOLIDITY).setAction(async (_: { force: boolean; quiet: boolean }, { config }, runSuper) => {
   console.log("Symlinking forge-style libraries");
   const symlinks: string[] = [];
-  const libraries = [
-    ["solmate", "@rari-capital/solmate/src"],
-    ["ds-test", "ds-test/src"],
-    ["forge-std", "forge-std/src"],
-    ["memmove", "memmove/src"],
-  ];
-  for (const [library, libraryPath] of libraries) {
-    const symlinkPath = path.join(process.cwd(), library);
+  const remappings = fs
+    .readFileSync("remappings.txt")
+    .toString()
+    .split("\n")
+    .map((r) => r.split("="));
+
+  console.log("remappings", remappings);
+  for (const [library, libraryPath] of remappings) {
+    const symlinkPath = path.join(process.cwd(), library.replace("/", ""));
     console.log("Adding symlink at path: " + symlinkPath);
     if (fs.existsSync(symlinkPath)) {
       console.warn("symlink already exists!");
     } else {
-      const libPath = path.join(config.paths.sources, "..", "..", "..", "node_modules", libraryPath);
+      const libPath = path.join(config.paths.sources, "..", libraryPath);
       fs.symlinkSync(libPath, symlinkPath, "dir");
     }
     symlinks.push(symlinkPath);

@@ -1,4 +1,4 @@
-# MUD services
+# Services
 
 This package contains the source code for MUD services for enhanced interactions with on-chain ECS state -- ECS Snapshot Service and ECS Stream Service.
 
