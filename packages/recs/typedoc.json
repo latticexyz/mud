@@ -3,6 +3,7 @@
   "hideGenerator": true,
   "darkHighlightTheme": "nord",
   "lightHighlightTheme": "nord",
+  "plugin": ["typedoc-plugin-markdown"],
   "out": "API",
   "readme": "none"
 }
