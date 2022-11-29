@@ -21,7 +21,7 @@
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "lint": "yarn prettier && yarn solhint",
     "link": "yarn link",
-    "docs": "hardhat docgen && cat README.md _docs/index.md > DOCS.md && typedoc . --readme DOCS.md",
+    "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish || echo 'version already published'"
   },
   "devDependencies": {
@@ -39,8 +39,7 @@
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
     "ts-node": "10.7",
-    "typechain": "^8.1.0",
-    "typedoc": "0.23.21"
+    "typechain": "^8.1.0"
   },
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }
