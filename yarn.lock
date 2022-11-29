@@ -11020,10 +11020,6 @@ openurl@^1.1.1:
   resolved "https://registry.yarnpkg.com/openurl/-/openurl-1.1.1.tgz#3875b4b0ef7a52c156f0db41d4609dbb0f94b387"
   integrity sha512-d/gTkTb1i1GKz5k3XE3XFV/PxQ1k45zDqGP2OA7YhgsaLoqm6qRvARAZOFer1fcXritWlGBRCu/UgeS4HAnXAA==
 
-"openzeppelin-solidity@https://github.com/OpenZeppelin/openzeppelin-contracts.git#cd2da98d4d21f070f56476b40042279f5500fc59":
-  version "4.6.0"
-  resolved "https://github.com/OpenZeppelin/openzeppelin-contracts.git#cd2da98d4d21f070f56476b40042279f5500fc59"
-
 optionator@^0.8.1, optionator@^0.8.2:
   version "0.8.3"
   resolved "https://registry.yarnpkg.com/optionator/-/optionator-0.8.3.tgz#84fa1d036fe9d3c7e21d99884b601167ec8fb495"
