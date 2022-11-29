@@ -3,6 +3,8 @@ name: Generate and deploy docs
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 jobs:
