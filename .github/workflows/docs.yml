@@ -6,9 +6,9 @@ on:
   pull_request:
 
 jobs:
-  test:
+  docs:
     runs-on: ubuntu-latest
-    name: Run tests
+    name: Generate docs
     steps:
       - name: Setup Go
         uses: actions/setup-go@v3
