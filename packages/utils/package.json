@@ -15,8 +15,8 @@
     "lint": "eslint . --ext .ts",
     "test": "tsc && jest",
     "link": "yarn link",
-    "docs": "typedoc src && find docs -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && mv docs/* . && echo 'label: Modules\norder: 1' > modules.yml",
-    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
+    "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
+    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "build": "rimraf dist && rollup -c rollup.config.js",
     "release": "npm publish || echo 'version already published'"
@@ -37,8 +37,7 @@
     "rxjs": "^7.5.5",
     "ts-jest": "^27.1.3",
     "tslib": "^2.3.1",
-    "typedoc": "^0.23.21",
-    "typedoc-plugin-markdown": "^3.13.6",
+    "typedoc": "0.23.21",
     "typescript": "^4.5.5",
     "web3-utils": "^1.8.0"
   },
@@ -49,5 +48,8 @@
     "rxjs": "^7.5.5",
     "web3-utils": "^1.8.0"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
+  "dependencies": {
+    "typedoc-plugin-markdown": "^3.13.6"
+  }
 }

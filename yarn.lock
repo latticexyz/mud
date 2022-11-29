@@ -12455,7 +12455,7 @@ typedoc-plugin-markdown@^3.13.6:
   dependencies:
     handlebars "^4.7.7"
 
-typedoc@^0.23.21:
+typedoc@0.23.21:
   version "0.23.21"
   resolved "https://registry.yarnpkg.com/typedoc/-/typedoc-0.23.21.tgz#2a6b0e155f91ffa9689086706ad7e3e4bc11d241"
   integrity sha512-VNE9Jv7BgclvyH9moi2mluneSviD43dCE9pY8RWkO88/DrEgJZk9KpUk7WO468c9WWs/+aG6dOnoH7ccjnErhg==
