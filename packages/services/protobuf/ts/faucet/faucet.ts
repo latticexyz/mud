@@ -13,7 +13,7 @@ export interface LinkedTwitterPair {
 export interface FaucetStore {
   addressToUsername: { [key: string]: string };
   usernameToAddress: { [key: string]: string };
-  /** Username to timestamp of latest drip. */
+  /** User id/name/address to timestamp of latest drip. */
   latestDrip: { [key: string]: number };
   /** Global drip counter. */
   totalDripCount: number;
@@ -34,14 +34,8 @@ export interface FaucetStore_LatestDripEntry {
   value: number;
 }
 
-/** Request for drip after a successful DripVerifyTweet RPC. */
+/** Request for drip. */
 export interface DripRequest {
-  username: string;
-  address: string;
-}
-
-/** Request for initial drip via DripVerifyTweet RPC that requires verifying a tweet */
-export interface DripVerifyTweetRequest {
   username: string;
   address: string;
 }
@@ -398,50 +392,6 @@ export const DripRequest = {
 
   fromPartial(object: DeepPartial<DripRequest>): DripRequest {
     const message = createBaseDripRequest();
-    message.username = object.username ?? "";
-    message.address = object.address ?? "";
-    return message;
-  },
-};
-
-function createBaseDripVerifyTweetRequest(): DripVerifyTweetRequest {
-  return { username: "", address: "" };
-}
-
-export const DripVerifyTweetRequest = {
-  encode(message: DripVerifyTweetRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.username !== "") {
-      writer.uint32(10).string(message.username);
-    }
-    if (message.address !== "") {
-      writer.uint32(18).string(message.address);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): DripVerifyTweetRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseDripVerifyTweetRequest();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.username = reader.string();
-          break;
-        case 2:
-          message.address = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromPartial(object: DeepPartial<DripVerifyTweetRequest>): DripVerifyTweetRequest {
-    const message = createBaseDripVerifyTweetRequest();
     message.username = object.username ?? "";
     message.address = object.address ?? "";
     return message;
@@ -893,7 +843,7 @@ export const FaucetServiceDefinition = {
     },
     dripVerifyTweet: {
       name: "DripVerifyTweet",
-      requestType: DripVerifyTweetRequest,
+      requestType: DripRequest,
       requestStream: false,
       responseType: DripResponse,
       responseStream: false,
@@ -946,10 +896,7 @@ export const FaucetServiceDefinition = {
 export interface FaucetServiceServiceImplementation<CallContextExt = {}> {
   drip(request: DripRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DripResponse>>;
   dripDev(request: DripDevRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DripResponse>>;
-  dripVerifyTweet(
-    request: DripVerifyTweetRequest,
-    context: CallContext & CallContextExt
-  ): Promise<DeepPartial<DripResponse>>;
+  dripVerifyTweet(request: DripRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DripResponse>>;
   timeUntilDrip(
     request: DripRequest,
     context: CallContext & CallContextExt
@@ -976,10 +923,7 @@ export interface FaucetServiceServiceImplementation<CallContextExt = {}> {
 export interface FaucetServiceClient<CallOptionsExt = {}> {
   drip(request: DeepPartial<DripRequest>, options?: CallOptions & CallOptionsExt): Promise<DripResponse>;
   dripDev(request: DeepPartial<DripDevRequest>, options?: CallOptions & CallOptionsExt): Promise<DripResponse>;
-  dripVerifyTweet(
-    request: DeepPartial<DripVerifyTweetRequest>,
-    options?: CallOptions & CallOptionsExt
-  ): Promise<DripResponse>;
+  dripVerifyTweet(request: DeepPartial<DripRequest>, options?: CallOptions & CallOptionsExt): Promise<DripResponse>;
   timeUntilDrip(
     request: DeepPartial<DripRequest>,
     options?: CallOptions & CallOptionsExt
