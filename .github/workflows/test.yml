@@ -3,13 +3,19 @@ name: Run tests
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     name: Run tests
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
       - name: git-checkout
         uses: actions/checkout@v2
 

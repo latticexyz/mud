@@ -4,3 +4,4 @@ node_modules
 .parcel-cache
 .docs
 lerna-debug.log
+.retype

@@ -1,4 +1,4 @@
-# MUD Networking
+# Network
 
 This package includes general low level utilities to interact with Ethereum contracts, as well as specialized MUD contract/client sync utilities.
 

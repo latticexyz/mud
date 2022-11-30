@@ -16,7 +16,7 @@ const config: HardhatUserConfig = {
     },
   },
   docgen: {
-    outputDir: "_docs",
+    outputDir: "API",
   },
 };
 
