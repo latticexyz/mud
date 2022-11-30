@@ -1,9 +1,11 @@
 import type { Arguments, CommandBuilder } from "yargs";
 import { DeployOptions, generateAndDeploy, hsr } from "../utils";
+import openurl from "openurl";
 
 type Options = DeployOptions & {
   watch?: boolean;
   dev?: boolean;
+  openUrl?: string;
 };
 
 export const command = "deploy-contracts";
@@ -18,6 +20,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     systems: { type: "string", desc: "Only upgrade the given systems. Requires World address." },
     watch: { type: "boolean", desc: "Automatically redeploy changed systems" },
     dev: { type: "boolean", desc: "Automatically use funded dev private key for local development" },
+    openUrl: { type: "string", desc: "Opens a browser at the provided url with the worldAddress url param prefilled" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -38,6 +41,12 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
     clear: true,
   });
   console.log("World deployed at", worldAddress, "at block", initialBlockNumber);
+
+  if (worldAddress && args.openUrl) {
+    const url = new URL(args.openUrl);
+    url.searchParams.set("worldAddress", worldAddress);
+    openurl.open(url.toString());
+  }
 
   // Set up watcher for system files to redeploy on change
   if (args.watch) {
