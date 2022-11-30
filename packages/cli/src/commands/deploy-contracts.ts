@@ -1,19 +1,13 @@
 import type { Arguments, CommandBuilder } from "yargs";
-import { deploy, findLog, generateLibDeploy, generateTypes, hsr } from "../utils";
-import { rmSync } from "fs";
+import { DeployOptions, generateAndDeploy, hsr } from "../utils";
 
-type Options = {
-  config: string;
-  deployerPrivateKey?: string;
-  worldAddress?: string;
-  rpc: string;
-  systems?: string | string[];
-  watchSystems?: boolean;
+type Options = DeployOptions & {
+  watch?: boolean;
+  dev?: boolean;
 };
 
 export const command = "deploy-contracts";
 export const desc = "Deploy mud contracts";
-const contractsDir = __dirname + "/../../src/contracts";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) =>
   yargs.options({
@@ -22,7 +16,8 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     worldAddress: { type: "string", desc: "World address to deploy to. If omitted, a new World is deployed." },
     rpc: { type: "string", default: "http://localhost:8545", desc: "RPC URL of the network to deploy to." },
     systems: { type: "string", desc: "Only upgrade the given systems. Requires World address." },
-    watchSystems: { type: "boolean", desc: "Automatically redeploy changed systems" },
+    watch: { type: "boolean", desc: "Automatically redeploy changed systems" },
+    dev: { type: "boolean", desc: "Automatically use funded dev private key for local development" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -31,13 +26,23 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
     process.exit(1);
   }
 
+  const deployerPrivateKey =
+    args.deployerPrivateKey ?? args.dev
+      ? "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" // Default anvil private key
+      : undefined;
+
   // Deploy world, components and systems
-  const worldAddress = await generateAndDeploy({ ...args, clear: true });
-  console.log("World deployed at", worldAddress);
+  const { deployedWorldAddress: worldAddress, initialBlockNumber } = await generateAndDeploy({
+    ...args,
+    deployerPrivateKey,
+    clear: true,
+  });
+  console.log("World deployed at", worldAddress, "at block", initialBlockNumber);
 
   // Set up watcher for system files to redeploy on change
-  if (args.watchSystems) {
-    const { config, deployerPrivateKey, rpc } = args;
+  if (args.watch) {
+    const { config, rpc } = args;
+
     hsr("./src", (systems: string[]) => {
       return generateAndDeploy({
         config,
@@ -51,31 +56,3 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
     process.exit(0);
   }
 };
-
-async function generateAndDeploy(args: Options & { clear?: boolean }) {
-  let libDeployPath: string | undefined;
-  let deployedWorldAddress: string | undefined;
-
-  try {
-    // Generate LibDeploy
-    libDeployPath = await generateLibDeploy(args.config, contractsDir, args.systems);
-
-    // Build and generate fresh types
-    await generateTypes(undefined, "./types", { clear: args.clear });
-
-    // Call deploy script
-    const child = await deploy(args.deployerPrivateKey, args.rpc, args.worldAddress, Boolean(args.systems));
-
-    // Extract world address from deploy script
-    const lines = child.stdout.split("\n");
-    deployedWorldAddress = findLog(lines, "world: address");
-  } catch (e) {
-    console.error(e);
-  } finally {
-    // Remove generated LibDeploy
-    console.log("Cleaning up deployment script");
-    if (libDeployPath) rmSync(libDeployPath);
-  }
-
-  return deployedWorldAddress;
-}

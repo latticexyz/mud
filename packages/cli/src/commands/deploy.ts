@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import { constants, ethers } from "ethers";
+import { ethers } from "ethers";
 import inquirer from "inquirer";
 import { v4 } from "uuid";
 import { Listr, Logger } from "listr2";
@@ -9,7 +9,7 @@ import fs from "fs";
 import openurl from "openurl";
 import ips from "inquirer-prompt-suggest";
 import { Arguments, CommandBuilder } from "yargs";
-import { findLog } from "../utils";
+import { generateAndDeploy } from "../utils";
 inquirer.registerPrompt("suggest", ips);
 
 // @dev Note: this deployment command is deprecated and will be removed in a future version. Use `mud deploy-contracts` instead.
@@ -34,7 +34,6 @@ interface Options {
   clientUrl?: string;
   netlifySlug?: string;
   netlifyPersonalToken?: string;
-  upgradeSystems?: boolean;
   codespace?: boolean;
   dry?: boolean;
 }
@@ -56,7 +55,6 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     clientUrl: { type: "string" },
     netlifySlug: { type: "string" },
     netlifyPersonalToken: { type: "string" },
-    upgradeSystems: { type: "boolean" },
     codespace: { type: "boolean" },
     dry: { type: "boolean" },
   });
@@ -108,7 +106,6 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     reuseComponents: false,
     deployClient: false,
     clientUrl: "http://localhost:3000",
-    upgradeSystems: false,
   };
 
   const { default: fetch } = await importFetch;
@@ -186,20 +183,6 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
           },
           {
             type: "list",
-            name: "upgradeSystems",
-            message: "Only upgrade systems?",
-            choices: [
-              { name: "Yes", value: true },
-              { name: "No", value: false },
-            ],
-            default: defaultOptions.upgradeSystems,
-            when: (answers) =>
-              (args.world || config.world || answers.world) &&
-              args.upgradeSystems == null &&
-              config.upgradeSystems == null,
-          },
-          {
-            type: "list",
             name: "reuseComponents",
             message: "Reuse existing components?",
             choices: [
@@ -210,7 +193,6 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
             when: (answers) =>
               !answers.upgradeSystems &&
               !args.upgradeSystems &&
-              !config.upgradeSystems &&
               args.reuseComponents == null &&
               config.reuseComponents == null,
           },
@@ -287,7 +269,6 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     rpc: args.rpc ?? chainSpec?.rpc ?? config.rpc ?? answers.rpc ?? defaultOptions.rpc,
     wsRpc: args.wsRpc ?? chainSpec?.wsRpc ?? config.wsRpc ?? answers.wsRpc ?? defaultOptions.wsRpc,
     world: args.world ?? chainSpec?.world ?? config.world ?? answers.world,
-    upgradeSystems: args.upgradeSystems ?? config.upgradeSystems ?? answers.upgradeSystems,
     reuseComponents:
       args.reuseComponents ?? config.reuseComponents ?? answers.reuseComponents ?? defaultOptions.reuseComponents,
     deployerPrivateKey: args.deployerPrivateKey ?? config.deployerPrivateKey ?? answers.deployerPrivateKey,
@@ -323,33 +304,6 @@ export const deploy = async (options: Options) => {
   let launcherUrl;
   let worldAddress;
 
-  const cmdArgs = options.upgradeSystems
-    ? [
-        "workspace",
-        "contracts",
-        "forge:deploy",
-        ...(options.dry ? [] : ["--broadcast", "--private-keys", wallet.privateKey]),
-        "--sig",
-        "upgradeSystems(address,address)",
-        wallet.address,
-        options.world || constants.AddressZero,
-        "--fork-url",
-        options.rpc!,
-      ]
-    : [
-        "workspace",
-        "contracts",
-        "forge:deploy",
-        ...(options.dry ? [] : ["--broadcast", "--private-keys", wallet.privateKey]),
-        "--sig",
-        "deploy(address,address,bool)",
-        wallet.address,
-        options.world || constants.AddressZero,
-        options.reuseComponents ? "true" : "false",
-        "--fork-url",
-        options.rpc!,
-      ];
-
   try {
     const tasks = new Listr([
       {
@@ -360,13 +314,16 @@ export const deploy = async (options: Options) => {
               {
                 title: "Contracts",
                 task: async (ctx, task) => {
-                  const child = execa("yarn", cmdArgs);
-                  child.stdout?.pipe(task.stdout());
-                  const { stdout } = await child;
-                  const lines = stdout.split("\n");
+                  const result = await generateAndDeploy({
+                    config: "./deploy.json",
+                    rpc: options.rpc!,
+                    worldAddress: options.world,
+                    deployerPrivateKey: wallet.privateKey,
+                  });
 
-                  ctx.worldAddress = worldAddress = findLog(lines, "world: address");
-                  ctx.initialBlockNumber = findLog(lines, "initialBlockNumber: uint256");
+                  ctx.worldAddress = worldAddress = result.deployedWorldAddress;
+                  ctx.initialBlockNumber = result.initialBlockNumber;
+
                   task.output = chalk.yellow(`World deployed at: ${chalk.bgYellow.black(ctx.worldAddress)}`);
                 },
                 options: { bottomBar: 3 },
@@ -448,14 +405,7 @@ export const deploy = async (options: Options) => {
 
                   launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${options.rpc}&wsRpc=${options.wsRpc}&initialBlockNumber=${ctx.initialBlockNumber}&dev=true&snapshot=&stream=&relay=&faucet=`;
 
-                  // Launcher version:
-                  // `https://play.lattice.xyz?worldAddress=${ctx.worldAddress || ""}&client=${
-                  //   clientUrl || ""
-                  // }&rpc=${options.rpc || ""}&wsRpc=${options.wsRpc || ""}&chainId=${options.chainId || ""}&dev=${
-                  //   options.chainId === 31337 || ""
-                  // }&initialBlockNumber=${ctx.initialBlockNumber}`;
-
-                  if (!options.upgradeSystems) openurl.open(launcherUrl);
+                  openurl.open(launcherUrl);
                 },
                 options: { bottomBar: 3 },
               },
