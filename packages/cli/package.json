@@ -14,7 +14,7 @@
   },
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
-    "build": "rimraf dist && esbuild ./src/index.ts ./src/commands/* --bundle --platform=node --outdir=dist && chmod u+x dist/index.js",
+    "build": "rimraf dist && esbuild ./src/index.ts ./src/commands/* --bundle --platform=node --outdir=dist --external:fsevents && chmod u+x dist/index.js",
     "link": "yarn link",
     "test": "tsc && echo 'todo: add tests'",
     "git:install": "bash git-install.sh",

@@ -1,5 +1,5 @@
 import type { Arguments, CommandBuilder } from "yargs";
-import { deploy, findLog, generateLibDeploy, hsr } from "../utils";
+import { deploy, findLog, generateLibDeploy, generateTypes, hsr } from "../utils";
 import { rmSync } from "fs";
 
 type Options = {
@@ -32,7 +32,7 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
   }
 
   // Deploy world, components and systems
-  const worldAddress = await generateAndDeploy(args);
+  const worldAddress = await generateAndDeploy({ ...args, clear: true });
   console.log("World deployed at", worldAddress);
 
   // Set up watcher for system files to redeploy on change
@@ -52,13 +52,16 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
   }
 };
 
-async function generateAndDeploy(args: Options) {
+async function generateAndDeploy(args: Options & { clear?: boolean }) {
   let libDeployPath: string | undefined;
   let deployedWorldAddress: string | undefined;
 
   try {
     // Generate LibDeploy
     libDeployPath = await generateLibDeploy(args.config, contractsDir, args.systems);
+
+    // Build and generate fresh types
+    await generateTypes(undefined, "./types", { clear: args.clear });
 
     // Call deploy script
     const child = await deploy(args.deployerPrivateKey, args.rpc, args.worldAddress, Boolean(args.systems));
