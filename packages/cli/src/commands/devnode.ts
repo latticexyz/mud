@@ -16,14 +16,14 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     blocktime: { type: "number", default: 1, decs: "Interval in which new blocks are produced" },
   });
 
-export const handler = async (argv: Arguments<Options>): void => {
+export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const { blocktime } = argv;
   console.log("Clearing devnode history");
   const userHomeDir = homedir();
   rmSync(path.join(userHomeDir, ".foundry", "anvil", "tmp"), { recursive: true, force: true });
   const { child } = await execLog("anvil", ["-b", String(blocktime), "--block-base-fee-per-gas", "0"]);
 
-  process.on("SIGINT", function () {
+  process.on("SIGINT", () => {
     console.log("\ngracefully shutting down from SIGINT (Crtl-C)");
     child.kill();
     process.exit();

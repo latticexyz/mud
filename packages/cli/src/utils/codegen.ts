@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from "fs";
 import ejs from "ejs";
+import path from "path";
 
-const contractsDir = __dirname + "/../../src/contracts";
+const contractsDir = path.join(__dirname, "../../src/contracts");
 
 export async function generateLibDeploy(configPath: string, out: string, systems?: string | string[]) {
   // Parse config
@@ -17,9 +18,13 @@ export async function generateLibDeploy(configPath: string, out: string, systems
 
   // Generate LibDeploy
   console.log("Generating deployment script");
-  const LibDeploy = await ejs.renderFile(contractsDir + "/LibDeploy.ejs", config, { async: true });
-  const path = out + "/LibDeploy.sol";
-  writeFileSync(path, LibDeploy);
+  const LibDeploy = await ejs.renderFile(path.join(contractsDir, "LibDeploy.ejs"), config, { async: true });
+  const libDeployPath = path.join(out, "LibDeploy.sol");
+  writeFileSync(libDeployPath, LibDeploy);
 
-  return path;
+  return libDeployPath;
+}
+
+export async function resetLibDeploy(out: string) {
+  writeFileSync(path.join(out, "LibDeploy.sol"), readFileSync(path.join(contractsDir, "LibDeployStub.sol")));
 }
