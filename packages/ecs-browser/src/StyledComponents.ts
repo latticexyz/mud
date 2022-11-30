@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import { styled } from "goober";
 
 export const ComponentBrowserInput = styled.input`
   background-color: #383c4a;

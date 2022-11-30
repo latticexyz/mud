@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import { styled } from "goober";
 
 export const QueryBuilderForm = styled.form`
   padding: 8px;
