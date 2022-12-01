@@ -3,10 +3,7 @@ import { rmSync } from "fs";
 import { generateLibDeploy } from "./codegen";
 import { findLog } from "./findLog";
 import { generateTypes } from "./types";
-
-// Workaround to prevent tsc to transpile dynamic imports with require, which causes an error upstream
-// https://github.com/microsoft/TypeScript/issues/43329#issuecomment-922544562
-const importExeca = eval('import("execa")') as Promise<typeof import("execa")>;
+import { execa } from "execa";
 
 const contractsDir = __dirname + "/../../src/contracts";
 
@@ -16,8 +13,6 @@ export async function deploy(
   worldAddress?: string,
   reuseComponents?: boolean
 ) {
-  const { execa } = await importExeca;
-
   const address = deployerPrivateKey ? new Wallet(deployerPrivateKey).address : constants.AddressZero;
 
   const child = execa(

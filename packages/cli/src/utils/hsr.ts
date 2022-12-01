@@ -1,9 +1,7 @@
 import chokidar from "chokidar";
 import { readFileSync } from "fs";
-import { generateLibDeploy } from "./codegen";
-import { deploy } from "./deploy";
 
-const ImportsRexex = new RegExp(/(?<=import ").*(?=";)|(?<=from ").*(?=";)/g);
+const ImportsRegex = new RegExp(/(?<=import ").*(?=";)|(?<=from ").*(?=";)/g);
 
 /**
  * Extract file imports from a given file
@@ -12,7 +10,7 @@ const ImportsRexex = new RegExp(/(?<=import ").*(?=";)|(?<=from ").*(?=";)/g);
  */
 function extractImports(path: string): string[] {
   const content = readFileSync(path).toString();
-  const regexResult = [...content.matchAll(ImportsRexex)]
+  const regexResult = [...content.matchAll(ImportsRegex)]
     .map((match) => match[0])
     .map((path) => path.split("/").at(-1)!);
   return regexResult;

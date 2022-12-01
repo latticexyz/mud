@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
 // Foundry
@@ -23,16 +23,5 @@ contract Deploy is DSTest {
     DeployResult memory result = LibDeploy.deploy(_deployer, _world, _reuseComponents);
     vm.stopBroadcast();
     world = address(result.world);
-  }
-
-  function upgradeSystems(address _deployer, address _world)
-    public
-    returns (address world, uint256 initialBlockNumber)
-  {
-    vm.startBroadcast(_deployer);
-    initialBlockNumber = block.number;
-    world = _world;
-    LibDeploy.deploySystems(_world, true);
-    vm.stopBroadcast();
   }
 }

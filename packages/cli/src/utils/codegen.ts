@@ -26,5 +26,5 @@ export async function generateLibDeploy(configPath: string, out: string, systems
 }
 
 export async function resetLibDeploy(out: string) {
-  writeFileSync(path.join(out, "LibDeploy.sol"), readFileSync(path.join(contractsDir, "LibDeployStub.sol")));
+  writeFileSync(path.join(out, "LibDeploy.sol"), readFileSync(path.join(contractsDir, "LibDeploy.sol")));
 }
