@@ -31,7 +31,8 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const deployData = config && JSON.parse(readFileSync(config, { encoding: "utf8" }));
   const labels = [];
 
-  const provider = new JsonRpcProvider(rpc || "http://localhost:8545");
+  const rpcUrl = rpc || "http://localhost:8545";
+  const provider = new JsonRpcProvider(rpcUrl);
   const World = new Contract(world, WorldAbi, provider);
 
   if (deployData) {
@@ -57,11 +58,12 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
 
     labels.push(...components, ...systems);
   }
-
   await execLog("cast", [
     "run",
     ...labels.map((label) => ["--label", `${label[1]}:${label[0]}`]).flat(),
     ...(debug ? ["--debug"] : []),
+    `--rpc-url`,
+    `${rpcUrl}`,
     `${tx}`,
   ]);
 
