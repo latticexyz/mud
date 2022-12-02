@@ -1,5 +1,5 @@
 # .github/workflows/docs.yml
-name: Generate and deploy docs
+name: Build docs
 
 on:
   push:

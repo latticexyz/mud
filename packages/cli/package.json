@@ -14,7 +14,7 @@
   },
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
-    "build": "rimraf dist && esbuild ./src/index.ts ./src/commands/* --bundle --platform=node --outdir=dist && chmod u+x dist/index.js",
+    "build": "rimraf dist && esbuild ./src/index.ts ./src/commands/* --bundle --platform=node --outdir=dist --external:fsevents && chmod u+x dist/index.js",
     "link": "yarn link",
     "test": "tsc && echo 'todo: add tests'",
     "git:install": "bash git-install.sh",
@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@types/clear": "^0.1.2",
+    "@types/ejs": "^3.1.1",
     "@types/figlet": "^1.5.4",
     "@types/glob": "^7.2.0",
     "@types/inquirer": "^8.2.1",
@@ -42,9 +43,11 @@
     "@latticexyz/utils": "^1.29.0",
     "@typechain/ethers-v5": "^10.1.1",
     "chalk": "^5.0.1",
+    "chokidar": "^3.5.3",
     "clear": "^0.1.0",
     "commander": "^9.2.0",
     "ds-test": "https://github.com/dapphub/ds-test.git#9310e879db8ba3ea6d5c6489a579118fd264a3f5",
+    "ejs": "^3.1.8",
     "esm": "^3.2.25",
     "ethers": "^5.7.2",
     "execa": "^6.1.0",
