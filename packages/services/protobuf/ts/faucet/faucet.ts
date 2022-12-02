@@ -147,7 +147,7 @@ export const FaucetStore = {
       FaucetStore_LatestDripEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).ldelim();
     });
     if (message.totalDripCount !== 0) {
-      writer.uint32(32).uint64(message.totalDripCount);
+      writer.uint32(33).double(message.totalDripCount);
     }
     return writer;
   },
@@ -178,7 +178,7 @@ export const FaucetStore = {
           }
           break;
         case 4:
-          message.totalDripCount = longToNumber(reader.uint64() as Long);
+          message.totalDripCount = reader.double();
           break;
         default:
           reader.skipType(tag & 7);

@@ -16,7 +16,7 @@ message FaucetStore {
   map<string, int64> latestDrip = 3;
 
   // Global drip counter.
-  uint64 totalDripCount = 4;
+  double totalDripCount = 4;
 }
 
 // The Faucet Service definition.
