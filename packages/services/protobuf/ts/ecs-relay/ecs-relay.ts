@@ -54,7 +54,8 @@ export interface CountIdentitiesResponse {
 export interface BalanceRequest {}
 
 export interface BalanceResponse {
-  balance: number;
+  wei: number;
+  ether: number;
 }
 
 function createBaseIdentity(): Identity {
@@ -506,13 +507,16 @@ export const BalanceRequest = {
 };
 
 function createBaseBalanceResponse(): BalanceResponse {
-  return { balance: 0 };
+  return { wei: 0, ether: 0 };
 }
 
 export const BalanceResponse = {
   encode(message: BalanceResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.balance !== 0) {
-      writer.uint32(8).uint64(message.balance);
+    if (message.wei !== 0) {
+      writer.uint32(8).uint64(message.wei);
+    }
+    if (message.ether !== 0) {
+      writer.uint32(17).double(message.ether);
     }
     return writer;
   },
@@ -525,7 +529,10 @@ export const BalanceResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.balance = longToNumber(reader.uint64() as Long);
+          message.wei = longToNumber(reader.uint64() as Long);
+          break;
+        case 2:
+          message.ether = reader.double();
           break;
         default:
           reader.skipType(tag & 7);
@@ -537,7 +544,8 @@ export const BalanceResponse = {
 
   fromPartial(object: DeepPartial<BalanceResponse>): BalanceResponse {
     const message = createBaseBalanceResponse();
-    message.balance = object.balance ?? 0;
+    message.wei = object.wei ?? 0;
+    message.ether = object.ether ?? 0;
     return message;
   },
 };

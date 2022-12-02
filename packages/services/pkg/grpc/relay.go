@@ -308,7 +308,7 @@ func (server *ecsRelayServer) VerifySufficientBalance(client *relay.Client, addr
 		server.logger.Info("fetched up-to-date balance for account", zap.String("address", address), zap.Uint64("balance", balance))
 
 		// Update the "cached" balance on the client, which helps us know whether to keep checking or not.
-		client.SetHasSufficientBalance(balance > server.config.MinAccountBalance)
+		client.SetHasSufficientBalance(balance > utils.EtherToWeiFloatToUint64(server.config.MinAccountBalance))
 
 		if !client.HasSufficientBalance() {
 			return fmt.Errorf("client with address %s has insufficient balance (%d wei) to push messages via relay", address, balance)
@@ -416,6 +416,7 @@ func (server *ecsRelayServer) PushStream(stream pb.ECSRelayService_PushStreamSer
 
 func (server *ecsRelayServer) MinBalanceForPush(ctx context.Context, request *pb.BalanceRequest) (*pb.BalanceResponse, error) {
 	return &pb.BalanceResponse{
-		Balance: server.config.MinAccountBalance,
+		Wei:   utils.EtherToWeiFloatToUint64(server.config.MinAccountBalance),
+		Ether: server.config.MinAccountBalance,
 	}, nil
 }

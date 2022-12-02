@@ -346,7 +346,7 @@ func (server *faucetServer) SendDripTransaction(recipientAddress string) (string
 		return "", err
 	}
 
-	value := faucet.EtherToWei(big.NewFloat(server.dripConfig.DripAmount))
+	value := utils.EtherToWei(big.NewFloat(server.dripConfig.DripAmount))
 	gasLimit := uint64(21000)
 
 	gasPrice, err := server.ethClient.SuggestGasPrice(context.Background())
