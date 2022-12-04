@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { DSTest } from "ds-test/test.sol";
-import { World } from "solecs/World.sol";
+import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { Vm } from "forge-std/Vm.sol";
 import { getAddressById } from "solecs/utils.sol";
@@ -10,7 +10,7 @@ import { console } from "forge-std/console.sol";
 import { Utilities } from "./Utilities.sol";
 
 interface IDeploy {
-  function deploy(address deployer) external returns (World world);
+  function deploy(address deployer) external returns (IWorld world);
 }
 
 contract MudTest is DSTest {
@@ -22,7 +22,7 @@ contract MudTest is DSTest {
   address payable internal eve;
   address internal deployer;
 
-  World internal world;
+  IWorld internal world;
   IUint256Component components;
   IUint256Component systems;
 
