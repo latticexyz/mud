@@ -22,7 +22,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: a09511b
+          version: nightly-36276aac0408fde8b00c19e2cfc3b7bec3fc429d
 
       - name: Install dependencies
         run: yarn install --network-concurrency 1
