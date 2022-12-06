@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Run tests
     steps:
       - uses: actions/setup-node@v3
@@ -22,7 +22,7 @@ jobs:
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
-          version: nightly-5206d4e9c8bbabe7b004a6ddc44e35b2f1bc72ee
+          version: nightly
 
       - name: Install dependencies
         run: yarn install --network-concurrency 1
