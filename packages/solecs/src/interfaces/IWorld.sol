@@ -44,4 +44,6 @@ interface IWorld {
   function getUniqueEntityId() external view returns (uint256);
 
   function query(WorldQueryFragment[] calldata worldQueryFragments) external view returns (uint256[] memory);
+
+  function init() external;
 }
