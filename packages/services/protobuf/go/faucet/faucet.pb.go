@@ -82,10 +82,10 @@ type FaucetStore struct {
 
 	AddressToUsername map[string]string `protobuf:"bytes,1,rep,name=addressToUsername,proto3" json:"addressToUsername,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	UsernameToAddress map[string]string `protobuf:"bytes,2,rep,name=usernameToAddress,proto3" json:"usernameToAddress,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Username to timestamp of latest drip.
+	// User id/name/address to timestamp of latest drip.
 	LatestDrip map[string]int64 `protobuf:"bytes,3,rep,name=latestDrip,proto3" json:"latestDrip,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"varint,2,opt,name=value,proto3"`
 	// Global drip counter.
-	TotalDripCount uint64 `protobuf:"varint,4,opt,name=totalDripCount,proto3" json:"totalDripCount,omitempty"`
+	TotalDripCount float64 `protobuf:"fixed64,4,opt,name=totalDripCount,proto3" json:"totalDripCount,omitempty"`
 }
 
 func (x *FaucetStore) Reset() {
@@ -141,14 +141,14 @@ func (x *FaucetStore) GetLatestDrip() map[string]int64 {
 	return nil
 }
 
-func (x *FaucetStore) GetTotalDripCount() uint64 {
+func (x *FaucetStore) GetTotalDripCount() float64 {
 	if x != nil {
 		return x.TotalDripCount
 	}
 	return 0
 }
 
-// Request for drip after a successful DripVerifyTweet RPC.
+// Request for drip.
 type DripRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -204,62 +204,6 @@ func (x *DripRequest) GetAddress() string {
 	return ""
 }
 
-// Request for initial drip via DripVerifyTweet RPC that requires verifying a tweet
-type DripVerifyTweetRequest struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Username string `protobuf:"bytes,1,opt,name=username,proto3" json:"username,omitempty"`
-	Address  string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-}
-
-func (x *DripVerifyTweetRequest) Reset() {
-	*x = DripVerifyTweetRequest{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *DripVerifyTweetRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DripVerifyTweetRequest) ProtoMessage() {}
-
-func (x *DripVerifyTweetRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DripVerifyTweetRequest.ProtoReflect.Descriptor instead.
-func (*DripVerifyTweetRequest) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *DripVerifyTweetRequest) GetUsername() string {
-	if x != nil {
-		return x.Username
-	}
-	return ""
-}
-
-func (x *DripVerifyTweetRequest) GetAddress() string {
-	if x != nil {
-		return x.Address
-	}
-	return ""
-}
-
 // Request for drip to any address when running in dev mode.
 type DripDevRequest struct {
 	state         protoimpl.MessageState
@@ -272,7 +216,7 @@ type DripDevRequest struct {
 func (x *DripDevRequest) Reset() {
 	*x = DripDevRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[4]
+		mi := &file_proto_faucet_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -285,7 +229,7 @@ func (x *DripDevRequest) String() string {
 func (*DripDevRequest) ProtoMessage() {}
 
 func (x *DripDevRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[4]
+	mi := &file_proto_faucet_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -298,7 +242,7 @@ func (x *DripDevRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DripDevRequest.ProtoReflect.Descriptor instead.
 func (*DripDevRequest) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{4}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *DripDevRequest) GetAddress() string {
@@ -321,7 +265,7 @@ type DripResponse struct {
 func (x *DripResponse) Reset() {
 	*x = DripResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[5]
+		mi := &file_proto_faucet_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -334,7 +278,7 @@ func (x *DripResponse) String() string {
 func (*DripResponse) ProtoMessage() {}
 
 func (x *DripResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[5]
+	mi := &file_proto_faucet_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -347,7 +291,7 @@ func (x *DripResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DripResponse.ProtoReflect.Descriptor instead.
 func (*DripResponse) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{5}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *DripResponse) GetDripTxHash() string {
@@ -377,7 +321,7 @@ type TimeUntilDripResponse struct {
 func (x *TimeUntilDripResponse) Reset() {
 	*x = TimeUntilDripResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[6]
+		mi := &file_proto_faucet_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -390,7 +334,7 @@ func (x *TimeUntilDripResponse) String() string {
 func (*TimeUntilDripResponse) ProtoMessage() {}
 
 func (x *TimeUntilDripResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[6]
+	mi := &file_proto_faucet_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -403,7 +347,7 @@ func (x *TimeUntilDripResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TimeUntilDripResponse.ProtoReflect.Descriptor instead.
 func (*TimeUntilDripResponse) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{6}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *TimeUntilDripResponse) GetTimeUntilDripMinutes() float64 {
@@ -429,7 +373,7 @@ type GetLinkedTwittersRequest struct {
 func (x *GetLinkedTwittersRequest) Reset() {
 	*x = GetLinkedTwittersRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[7]
+		mi := &file_proto_faucet_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -442,7 +386,7 @@ func (x *GetLinkedTwittersRequest) String() string {
 func (*GetLinkedTwittersRequest) ProtoMessage() {}
 
 func (x *GetLinkedTwittersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[7]
+	mi := &file_proto_faucet_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -455,7 +399,7 @@ func (x *GetLinkedTwittersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLinkedTwittersRequest.ProtoReflect.Descriptor instead.
 func (*GetLinkedTwittersRequest) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{7}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{6}
 }
 
 type GetLinkedTwittersResponse struct {
@@ -469,7 +413,7 @@ type GetLinkedTwittersResponse struct {
 func (x *GetLinkedTwittersResponse) Reset() {
 	*x = GetLinkedTwittersResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[8]
+		mi := &file_proto_faucet_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -482,7 +426,7 @@ func (x *GetLinkedTwittersResponse) String() string {
 func (*GetLinkedTwittersResponse) ProtoMessage() {}
 
 func (x *GetLinkedTwittersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[8]
+	mi := &file_proto_faucet_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -495,7 +439,7 @@ func (x *GetLinkedTwittersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetLinkedTwittersResponse.ProtoReflect.Descriptor instead.
 func (*GetLinkedTwittersResponse) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{8}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GetLinkedTwittersResponse) GetLinkedTwitters() []*LinkedTwitterPair {
@@ -516,7 +460,7 @@ type LinkedTwitterForAddressRequest struct {
 func (x *LinkedTwitterForAddressRequest) Reset() {
 	*x = LinkedTwitterForAddressRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[9]
+		mi := &file_proto_faucet_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -529,7 +473,7 @@ func (x *LinkedTwitterForAddressRequest) String() string {
 func (*LinkedTwitterForAddressRequest) ProtoMessage() {}
 
 func (x *LinkedTwitterForAddressRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[9]
+	mi := &file_proto_faucet_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -542,7 +486,7 @@ func (x *LinkedTwitterForAddressRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkedTwitterForAddressRequest.ProtoReflect.Descriptor instead.
 func (*LinkedTwitterForAddressRequest) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{9}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *LinkedTwitterForAddressRequest) GetAddress() string {
@@ -563,7 +507,7 @@ type LinkedTwitterForAddressResponse struct {
 func (x *LinkedTwitterForAddressResponse) Reset() {
 	*x = LinkedTwitterForAddressResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[10]
+		mi := &file_proto_faucet_proto_msgTypes[9]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -576,7 +520,7 @@ func (x *LinkedTwitterForAddressResponse) String() string {
 func (*LinkedTwitterForAddressResponse) ProtoMessage() {}
 
 func (x *LinkedTwitterForAddressResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[10]
+	mi := &file_proto_faucet_proto_msgTypes[9]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -589,7 +533,7 @@ func (x *LinkedTwitterForAddressResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkedTwitterForAddressResponse.ProtoReflect.Descriptor instead.
 func (*LinkedTwitterForAddressResponse) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{10}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *LinkedTwitterForAddressResponse) GetUsername() string {
@@ -610,7 +554,7 @@ type LinkedAddressForTwitterRequest struct {
 func (x *LinkedAddressForTwitterRequest) Reset() {
 	*x = LinkedAddressForTwitterRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[11]
+		mi := &file_proto_faucet_proto_msgTypes[10]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -623,7 +567,7 @@ func (x *LinkedAddressForTwitterRequest) String() string {
 func (*LinkedAddressForTwitterRequest) ProtoMessage() {}
 
 func (x *LinkedAddressForTwitterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[11]
+	mi := &file_proto_faucet_proto_msgTypes[10]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -636,7 +580,7 @@ func (x *LinkedAddressForTwitterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkedAddressForTwitterRequest.ProtoReflect.Descriptor instead.
 func (*LinkedAddressForTwitterRequest) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{11}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *LinkedAddressForTwitterRequest) GetUsername() string {
@@ -657,7 +601,7 @@ type LinkedAddressForTwitterResponse struct {
 func (x *LinkedAddressForTwitterResponse) Reset() {
 	*x = LinkedAddressForTwitterResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[12]
+		mi := &file_proto_faucet_proto_msgTypes[11]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -670,7 +614,7 @@ func (x *LinkedAddressForTwitterResponse) String() string {
 func (*LinkedAddressForTwitterResponse) ProtoMessage() {}
 
 func (x *LinkedAddressForTwitterResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[12]
+	mi := &file_proto_faucet_proto_msgTypes[11]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -683,7 +627,7 @@ func (x *LinkedAddressForTwitterResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LinkedAddressForTwitterResponse.ProtoReflect.Descriptor instead.
 func (*LinkedAddressForTwitterResponse) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{12}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *LinkedAddressForTwitterResponse) GetAddress() string {
@@ -706,7 +650,7 @@ type SetLinkedTwitterRequest struct {
 func (x *SetLinkedTwitterRequest) Reset() {
 	*x = SetLinkedTwitterRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[13]
+		mi := &file_proto_faucet_proto_msgTypes[12]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -719,7 +663,7 @@ func (x *SetLinkedTwitterRequest) String() string {
 func (*SetLinkedTwitterRequest) ProtoMessage() {}
 
 func (x *SetLinkedTwitterRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[13]
+	mi := &file_proto_faucet_proto_msgTypes[12]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -732,7 +676,7 @@ func (x *SetLinkedTwitterRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetLinkedTwitterRequest.ProtoReflect.Descriptor instead.
 func (*SetLinkedTwitterRequest) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{13}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *SetLinkedTwitterRequest) GetAddress() string {
@@ -765,7 +709,7 @@ type SetLinkedTwitterResponse struct {
 func (x *SetLinkedTwitterResponse) Reset() {
 	*x = SetLinkedTwitterResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_proto_faucet_proto_msgTypes[14]
+		mi := &file_proto_faucet_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -778,7 +722,7 @@ func (x *SetLinkedTwitterResponse) String() string {
 func (*SetLinkedTwitterResponse) ProtoMessage() {}
 
 func (x *SetLinkedTwitterResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_faucet_proto_msgTypes[14]
+	mi := &file_proto_faucet_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -791,7 +735,7 @@ func (x *SetLinkedTwitterResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetLinkedTwitterResponse.ProtoReflect.Descriptor instead.
 func (*SetLinkedTwitterResponse) Descriptor() ([]byte, []int) {
-	return file_proto_faucet_proto_rawDescGZIP(), []int{14}
+	return file_proto_faucet_proto_rawDescGZIP(), []int{13}
 }
 
 var File_proto_faucet_proto protoreflect.FileDescriptor
@@ -821,7 +765,7 @@ var file_proto_faucet_proto_rawDesc = []byte{
 	0x74, 0x6f, 0x72, 0x65, 0x2e, 0x4c, 0x61, 0x74, 0x65, 0x73, 0x74, 0x44, 0x72, 0x69, 0x70, 0x45,
 	0x6e, 0x74, 0x72, 0x79, 0x52, 0x0a, 0x6c, 0x61, 0x74, 0x65, 0x73, 0x74, 0x44, 0x72, 0x69, 0x70,
 	0x12, 0x26, 0x0a, 0x0e, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x44, 0x72, 0x69, 0x70, 0x43, 0x6f, 0x75,
-	0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x44,
+	0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x01, 0x52, 0x0e, 0x74, 0x6f, 0x74, 0x61, 0x6c, 0x44,
 	0x72, 0x69, 0x70, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x1a, 0x44, 0x0a, 0x16, 0x41, 0x64, 0x64, 0x72,
 	0x65, 0x73, 0x73, 0x54, 0x6f, 0x55, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x45, 0x6e, 0x74,
 	0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
@@ -836,11 +780,6 @@ var file_proto_faucet_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c,
 	0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x03, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x3a,
 	0x02, 0x38, 0x01, 0x22, 0x43, 0x0a, 0x0b, 0x44, 0x72, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18,
-	0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x4e, 0x0a, 0x16, 0x44, 0x72, 0x69, 0x70,
-	0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x54, 0x77, 0x65, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
 	0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x01,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x75, 0x73, 0x65, 0x72, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x18,
 	0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
@@ -892,7 +831,7 @@ var file_proto_faucet_proto_rawDesc = []byte{
 	0x75, 0x72, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x09, 0x73, 0x69, 0x67, 0x6e, 0x61,
 	0x74, 0x75, 0x72, 0x65, 0x22, 0x1a, 0x0a, 0x18, 0x53, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65,
 	0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x32, 0xa8, 0x05, 0x0a, 0x0d, 0x46, 0x61, 0x75, 0x63, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69,
+	0x32, 0x9d, 0x05, 0x0a, 0x0d, 0x46, 0x61, 0x75, 0x63, 0x65, 0x74, 0x53, 0x65, 0x72, 0x76, 0x69,
 	0x63, 0x65, 0x12, 0x33, 0x0a, 0x04, 0x44, 0x72, 0x69, 0x70, 0x12, 0x13, 0x2e, 0x66, 0x61, 0x75,
 	0x63, 0x65, 0x74, 0x2e, 0x44, 0x72, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
 	0x14, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x44, 0x72, 0x69, 0x70, 0x52, 0x65, 0x73,
@@ -900,43 +839,42 @@ var file_proto_faucet_proto_rawDesc = []byte{
 	0x65, 0x76, 0x12, 0x16, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x44, 0x72, 0x69, 0x70,
 	0x44, 0x65, 0x76, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x66, 0x61, 0x75,
 	0x63, 0x65, 0x74, 0x2e, 0x44, 0x72, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x00, 0x12, 0x49, 0x0a, 0x0f, 0x44, 0x72, 0x69, 0x70, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79,
-	0x54, 0x77, 0x65, 0x65, 0x74, 0x12, 0x1e, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x44,
-	0x72, 0x69, 0x70, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79, 0x54, 0x77, 0x65, 0x65, 0x74, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x44,
-	0x72, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x45, 0x0a,
-	0x0d, 0x54, 0x69, 0x6d, 0x65, 0x55, 0x6e, 0x74, 0x69, 0x6c, 0x44, 0x72, 0x69, 0x70, 0x12, 0x13,
-	0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x44, 0x72, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x54, 0x69, 0x6d,
-	0x65, 0x55, 0x6e, 0x74, 0x69, 0x6c, 0x44, 0x72, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x00, 0x12, 0x5a, 0x0a, 0x11, 0x47, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65,
-	0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x73, 0x12, 0x20, 0x2e, 0x66, 0x61, 0x75, 0x63,
-	0x65, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77, 0x69, 0x74,
-	0x74, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x66, 0x61,
-	0x75, 0x63, 0x65, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77,
-	0x69, 0x74, 0x74, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
-	0x12, 0x6f, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77, 0x69,
-	0x74, 0x74, 0x65, 0x72, 0x46, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x26,
-	0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77,
-	0x69, 0x74, 0x74, 0x65, 0x72, 0x46, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e,
-	0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x46, 0x6f, 0x72,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
-	0x00, 0x12, 0x6f, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x46, 0x6f, 0x72, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x12,
-	0x26, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x46, 0x6f, 0x72, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74,
-	0x2e, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x46, 0x6f,
-	0x72, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x00, 0x12, 0x57, 0x0a, 0x10, 0x53, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54,
-	0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x12, 0x1f, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e,
-	0x53, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74,
-	0x2e, 0x53, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65,
-	0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x42, 0x14, 0x5a, 0x12, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x67, 0x6f, 0x2f, 0x66, 0x61, 0x75, 0x63, 0x65,
-	0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x22, 0x00, 0x12, 0x3e, 0x0a, 0x0f, 0x44, 0x72, 0x69, 0x70, 0x56, 0x65, 0x72, 0x69, 0x66, 0x79,
+	0x54, 0x77, 0x65, 0x65, 0x74, 0x12, 0x13, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x44,
+	0x72, 0x69, 0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x14, 0x2e, 0x66, 0x61, 0x75,
+	0x63, 0x65, 0x74, 0x2e, 0x44, 0x72, 0x69, 0x70, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x00, 0x12, 0x45, 0x0a, 0x0d, 0x54, 0x69, 0x6d, 0x65, 0x55, 0x6e, 0x74, 0x69, 0x6c, 0x44,
+	0x72, 0x69, 0x70, 0x12, 0x13, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x44, 0x72, 0x69,
+	0x70, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65,
+	0x74, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x55, 0x6e, 0x74, 0x69, 0x6c, 0x44, 0x72, 0x69, 0x70, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x5a, 0x0a, 0x11, 0x47, 0x65, 0x74,
+	0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x73, 0x12, 0x20,
+	0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65,
+	0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x21, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x47, 0x65, 0x74, 0x4c, 0x69, 0x6e,
+	0x6b, 0x65, 0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x6f, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b,
+	0x65, 0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x46, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x12, 0x26, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x4c, 0x69, 0x6e,
+	0x6b, 0x65, 0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x46, 0x6f, 0x72, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x66, 0x61,
+	0x75, 0x63, 0x65, 0x74, 0x2e, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77, 0x69, 0x74, 0x74,
+	0x65, 0x72, 0x46, 0x6f, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x6f, 0x0a, 0x1a, 0x47, 0x65, 0x74, 0x4c, 0x69, 0x6e,
+	0x6b, 0x65, 0x64, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x46, 0x6f, 0x72, 0x54, 0x77, 0x69,
+	0x74, 0x74, 0x65, 0x72, 0x12, 0x26, 0x2e, 0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x4c, 0x69,
+	0x6e, 0x6b, 0x65, 0x64, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x46, 0x6f, 0x72, 0x54, 0x77,
+	0x69, 0x74, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x66,
+	0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x46, 0x6f, 0x72, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00, 0x12, 0x57, 0x0a, 0x10, 0x53, 0x65, 0x74, 0x4c, 0x69,
+	0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x12, 0x1f, 0x2e, 0x66, 0x61,
+	0x75, 0x63, 0x65, 0x74, 0x2e, 0x53, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54, 0x77,
+	0x69, 0x74, 0x74, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x66,
+	0x61, 0x75, 0x63, 0x65, 0x74, 0x2e, 0x53, 0x65, 0x74, 0x4c, 0x69, 0x6e, 0x6b, 0x65, 0x64, 0x54,
+	0x77, 0x69, 0x74, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x00,
+	0x42, 0x14, 0x5a, 0x12, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x67, 0x6f, 0x2f,
+	0x66, 0x61, 0x75, 0x63, 0x65, 0x74, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -951,48 +889,47 @@ func file_proto_faucet_proto_rawDescGZIP() []byte {
 	return file_proto_faucet_proto_rawDescData
 }
 
-var file_proto_faucet_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_proto_faucet_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
 var file_proto_faucet_proto_goTypes = []interface{}{
 	(*LinkedTwitterPair)(nil),               // 0: faucet.LinkedTwitterPair
 	(*FaucetStore)(nil),                     // 1: faucet.FaucetStore
 	(*DripRequest)(nil),                     // 2: faucet.DripRequest
-	(*DripVerifyTweetRequest)(nil),          // 3: faucet.DripVerifyTweetRequest
-	(*DripDevRequest)(nil),                  // 4: faucet.DripDevRequest
-	(*DripResponse)(nil),                    // 5: faucet.DripResponse
-	(*TimeUntilDripResponse)(nil),           // 6: faucet.TimeUntilDripResponse
-	(*GetLinkedTwittersRequest)(nil),        // 7: faucet.GetLinkedTwittersRequest
-	(*GetLinkedTwittersResponse)(nil),       // 8: faucet.GetLinkedTwittersResponse
-	(*LinkedTwitterForAddressRequest)(nil),  // 9: faucet.LinkedTwitterForAddressRequest
-	(*LinkedTwitterForAddressResponse)(nil), // 10: faucet.LinkedTwitterForAddressResponse
-	(*LinkedAddressForTwitterRequest)(nil),  // 11: faucet.LinkedAddressForTwitterRequest
-	(*LinkedAddressForTwitterResponse)(nil), // 12: faucet.LinkedAddressForTwitterResponse
-	(*SetLinkedTwitterRequest)(nil),         // 13: faucet.SetLinkedTwitterRequest
-	(*SetLinkedTwitterResponse)(nil),        // 14: faucet.SetLinkedTwitterResponse
-	nil,                                     // 15: faucet.FaucetStore.AddressToUsernameEntry
-	nil,                                     // 16: faucet.FaucetStore.UsernameToAddressEntry
-	nil,                                     // 17: faucet.FaucetStore.LatestDripEntry
+	(*DripDevRequest)(nil),                  // 3: faucet.DripDevRequest
+	(*DripResponse)(nil),                    // 4: faucet.DripResponse
+	(*TimeUntilDripResponse)(nil),           // 5: faucet.TimeUntilDripResponse
+	(*GetLinkedTwittersRequest)(nil),        // 6: faucet.GetLinkedTwittersRequest
+	(*GetLinkedTwittersResponse)(nil),       // 7: faucet.GetLinkedTwittersResponse
+	(*LinkedTwitterForAddressRequest)(nil),  // 8: faucet.LinkedTwitterForAddressRequest
+	(*LinkedTwitterForAddressResponse)(nil), // 9: faucet.LinkedTwitterForAddressResponse
+	(*LinkedAddressForTwitterRequest)(nil),  // 10: faucet.LinkedAddressForTwitterRequest
+	(*LinkedAddressForTwitterResponse)(nil), // 11: faucet.LinkedAddressForTwitterResponse
+	(*SetLinkedTwitterRequest)(nil),         // 12: faucet.SetLinkedTwitterRequest
+	(*SetLinkedTwitterResponse)(nil),        // 13: faucet.SetLinkedTwitterResponse
+	nil,                                     // 14: faucet.FaucetStore.AddressToUsernameEntry
+	nil,                                     // 15: faucet.FaucetStore.UsernameToAddressEntry
+	nil,                                     // 16: faucet.FaucetStore.LatestDripEntry
 }
 var file_proto_faucet_proto_depIdxs = []int32{
-	15, // 0: faucet.FaucetStore.addressToUsername:type_name -> faucet.FaucetStore.AddressToUsernameEntry
-	16, // 1: faucet.FaucetStore.usernameToAddress:type_name -> faucet.FaucetStore.UsernameToAddressEntry
-	17, // 2: faucet.FaucetStore.latestDrip:type_name -> faucet.FaucetStore.LatestDripEntry
+	14, // 0: faucet.FaucetStore.addressToUsername:type_name -> faucet.FaucetStore.AddressToUsernameEntry
+	15, // 1: faucet.FaucetStore.usernameToAddress:type_name -> faucet.FaucetStore.UsernameToAddressEntry
+	16, // 2: faucet.FaucetStore.latestDrip:type_name -> faucet.FaucetStore.LatestDripEntry
 	0,  // 3: faucet.GetLinkedTwittersResponse.linkedTwitters:type_name -> faucet.LinkedTwitterPair
 	2,  // 4: faucet.FaucetService.Drip:input_type -> faucet.DripRequest
-	4,  // 5: faucet.FaucetService.DripDev:input_type -> faucet.DripDevRequest
-	3,  // 6: faucet.FaucetService.DripVerifyTweet:input_type -> faucet.DripVerifyTweetRequest
+	3,  // 5: faucet.FaucetService.DripDev:input_type -> faucet.DripDevRequest
+	2,  // 6: faucet.FaucetService.DripVerifyTweet:input_type -> faucet.DripRequest
 	2,  // 7: faucet.FaucetService.TimeUntilDrip:input_type -> faucet.DripRequest
-	7,  // 8: faucet.FaucetService.GetLinkedTwitters:input_type -> faucet.GetLinkedTwittersRequest
-	9,  // 9: faucet.FaucetService.GetLinkedTwitterForAddress:input_type -> faucet.LinkedTwitterForAddressRequest
-	11, // 10: faucet.FaucetService.GetLinkedAddressForTwitter:input_type -> faucet.LinkedAddressForTwitterRequest
-	13, // 11: faucet.FaucetService.SetLinkedTwitter:input_type -> faucet.SetLinkedTwitterRequest
-	5,  // 12: faucet.FaucetService.Drip:output_type -> faucet.DripResponse
-	5,  // 13: faucet.FaucetService.DripDev:output_type -> faucet.DripResponse
-	5,  // 14: faucet.FaucetService.DripVerifyTweet:output_type -> faucet.DripResponse
-	6,  // 15: faucet.FaucetService.TimeUntilDrip:output_type -> faucet.TimeUntilDripResponse
-	8,  // 16: faucet.FaucetService.GetLinkedTwitters:output_type -> faucet.GetLinkedTwittersResponse
-	10, // 17: faucet.FaucetService.GetLinkedTwitterForAddress:output_type -> faucet.LinkedTwitterForAddressResponse
-	12, // 18: faucet.FaucetService.GetLinkedAddressForTwitter:output_type -> faucet.LinkedAddressForTwitterResponse
-	14, // 19: faucet.FaucetService.SetLinkedTwitter:output_type -> faucet.SetLinkedTwitterResponse
+	6,  // 8: faucet.FaucetService.GetLinkedTwitters:input_type -> faucet.GetLinkedTwittersRequest
+	8,  // 9: faucet.FaucetService.GetLinkedTwitterForAddress:input_type -> faucet.LinkedTwitterForAddressRequest
+	10, // 10: faucet.FaucetService.GetLinkedAddressForTwitter:input_type -> faucet.LinkedAddressForTwitterRequest
+	12, // 11: faucet.FaucetService.SetLinkedTwitter:input_type -> faucet.SetLinkedTwitterRequest
+	4,  // 12: faucet.FaucetService.Drip:output_type -> faucet.DripResponse
+	4,  // 13: faucet.FaucetService.DripDev:output_type -> faucet.DripResponse
+	4,  // 14: faucet.FaucetService.DripVerifyTweet:output_type -> faucet.DripResponse
+	5,  // 15: faucet.FaucetService.TimeUntilDrip:output_type -> faucet.TimeUntilDripResponse
+	7,  // 16: faucet.FaucetService.GetLinkedTwitters:output_type -> faucet.GetLinkedTwittersResponse
+	9,  // 17: faucet.FaucetService.GetLinkedTwitterForAddress:output_type -> faucet.LinkedTwitterForAddressResponse
+	11, // 18: faucet.FaucetService.GetLinkedAddressForTwitter:output_type -> faucet.LinkedAddressForTwitterResponse
+	13, // 19: faucet.FaucetService.SetLinkedTwitter:output_type -> faucet.SetLinkedTwitterResponse
 	12, // [12:20] is the sub-list for method output_type
 	4,  // [4:12] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
@@ -1043,18 +980,6 @@ func file_proto_faucet_proto_init() {
 			}
 		}
 		file_proto_faucet_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*DripVerifyTweetRequest); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_proto_faucet_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DripDevRequest); i {
 			case 0:
 				return &v.state
@@ -1066,7 +991,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*DripResponse); i {
 			case 0:
 				return &v.state
@@ -1078,7 +1003,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*TimeUntilDripResponse); i {
 			case 0:
 				return &v.state
@@ -1090,7 +1015,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetLinkedTwittersRequest); i {
 			case 0:
 				return &v.state
@@ -1102,7 +1027,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GetLinkedTwittersResponse); i {
 			case 0:
 				return &v.state
@@ -1114,7 +1039,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LinkedTwitterForAddressRequest); i {
 			case 0:
 				return &v.state
@@ -1126,7 +1051,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LinkedTwitterForAddressResponse); i {
 			case 0:
 				return &v.state
@@ -1138,7 +1063,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LinkedAddressForTwitterRequest); i {
 			case 0:
 				return &v.state
@@ -1150,7 +1075,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[11].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*LinkedAddressForTwitterResponse); i {
 			case 0:
 				return &v.state
@@ -1162,7 +1087,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SetLinkedTwitterRequest); i {
 			case 0:
 				return &v.state
@@ -1174,7 +1099,7 @@ func file_proto_faucet_proto_init() {
 				return nil
 			}
 		}
-		file_proto_faucet_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+		file_proto_faucet_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*SetLinkedTwitterResponse); i {
 			case 0:
 				return &v.state
@@ -1193,7 +1118,7 @@ func file_proto_faucet_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_faucet_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   18,
+			NumMessages:   17,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

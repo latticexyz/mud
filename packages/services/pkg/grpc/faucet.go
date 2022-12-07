@@ -92,16 +92,20 @@ func (server *faucetServer) SetLinkedTwitter(ctx context.Context, request *pb.Se
 }
 
 func (server *faucetServer) TimeUntilDrip(ctx context.Context, request *pb.DripRequest) (*pb.TimeUntilDripResponse, error) {
-	if request.Username == "" {
-		return nil, fmt.Errorf("username required")
-	}
 	if request.Address == "" {
 		return nil, fmt.Errorf("address required")
 	}
 
-	err := server.VerifyUsernameAddressLinked(request.Username, request.Address)
-	if err != nil {
-		return nil, err
+	if server.dripConfig.TwitterMode {
+		// 1. Check that username is provided.
+		// 2. Check that the username and address are linked.
+		if request.Username == "" {
+			return nil, fmt.Errorf("username required")
+		}
+		err := server.VerifyUsernameAddressLinked(request.Username, request.Address)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	// Get the timestamp of last drip and return the diff to current time.
@@ -123,31 +127,37 @@ func (server *faucetServer) Drip(ctx context.Context, request *pb.DripRequest) (
 		return nil, fmt.Errorf("faucet limit exhausted, come back soon")
 	}
 
-	if request.Username == "" {
-		return nil, fmt.Errorf("username required")
-	}
 	if request.Address == "" {
 		return nil, fmt.Errorf("address required")
 	}
 
-	// Verify that the username and address in the request match and are connected. The only way to
-	// connect a username and address is by verifying the tweet via the initial drip request, so we
-	// use this to verify that the address is authorized for a follow-up drip.
-	err := server.VerifyUsernameAddressLinked(request.Username, request.Address)
-	if err != nil {
-		return nil, err
+	if server.dripConfig.TwitterMode {
+		// 1. Check that username is provided.
+		// 2. Check that the username and address are linked.
+		if request.Username == "" {
+			return nil, fmt.Errorf("username required")
+		}
+		// Verify that the username and address in the request match and are connected. The only way to
+		// connect a username and address is by verifying the tweet via the initial drip request, so we
+		// use this to verify that the address is authorized for a follow-up drip.
+		err := server.VerifyUsernameAddressLinked(request.Username, request.Address)
+		if err != nil {
+			return nil, err
+		}
+
+		server.logger.Info("linked username <> address verified",
+			zap.String("username", request.Username),
+			zap.String("address", request.Address),
+		)
 	}
 
 	// Verify that the address / username pairing has not requested drip recently.
-	err = server.VerifyTimeForDrip(request.Address)
+	err := server.VerifyTimeForDrip(request.Address)
 	if err != nil {
 		return nil, err
 	}
 
-	server.logger.Info("follow-up drip request verified successfully",
-		zap.String("username", request.Username),
-		zap.String("address", request.Address),
-	)
+	server.logger.Info("drip request verified successfully")
 
 	// Send a tx dripping the funds.
 	txHash, err := server.SendDripTransaction(request.Address)
@@ -184,7 +194,7 @@ func (server *faucetServer) DripDev(ctx context.Context, request *pb.DripDevRequ
 	}, nil
 }
 
-func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.DripVerifyTweetRequest) (*pb.DripResponse, error) {
+func (server *faucetServer) DripVerifyTweet(ctx context.Context, request *pb.DripRequest) (*pb.DripResponse, error) {
 	// Check if there are any funds left to drip per the current period (before they refresh).
 	totalDripCount := faucet.GetTotalDripCount()
 	if totalDripCount >= server.dripConfig.DripLimit {
@@ -336,7 +346,7 @@ func (server *faucetServer) SendDripTransaction(recipientAddress string) (string
 		return "", err
 	}
 
-	value := big.NewInt(server.dripConfig.DripAmount)
+	value := utils.EtherToWei(big.NewFloat(server.dripConfig.DripAmount))
 	gasLimit := uint64(21000)
 
 	gasPrice, err := server.ethClient.SuggestGasPrice(context.Background())

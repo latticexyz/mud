@@ -1,6 +1,8 @@
 package faucet
 
-import "time"
+import (
+	"time"
+)
 
 func IsLinked(linked string, requested string) bool {
 	return linked != "" && linked != requested

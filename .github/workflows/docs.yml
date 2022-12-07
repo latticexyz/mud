@@ -1,5 +1,5 @@
 # .github/workflows/docs.yml
-name: Generate and deploy docs
+name: Build docs
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
 
 jobs:
   docs:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     name: Generate docs
     steps:
       - name: Setup Go

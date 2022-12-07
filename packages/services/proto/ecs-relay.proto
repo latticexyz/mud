@@ -76,5 +76,6 @@ message CountIdentitiesResponse {
 message BalanceRequest {}
 
 message BalanceResponse {
-  uint64 balance = 1;
+  uint64 wei = 1;
+  double ether = 2;
 }
