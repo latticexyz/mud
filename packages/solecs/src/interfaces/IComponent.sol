@@ -25,4 +25,6 @@ interface IComponent is IERC173 {
   function authorizeWriter(address writer) external;
 
   function unauthorizeWriter(address writer) external;
+
+  function world() external view returns (address);
 }
