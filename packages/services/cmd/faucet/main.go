@@ -1,3 +1,36 @@
+/*
+faucet acts as a configurable faucet with in-service integrations for MUD transactions. Optionally, requests for drip can be gated behind Twitter signature verification.
+
+By default, faucet attempts to connect to a local development chain.
+
+Usage:
+
+    faucet [flags]
+
+The flags are:
+
+    -ws-url
+        Websocket URL for sending optional integrated MUD transactions to set Component values on, for example, successful drip.
+    -port
+        Port to expose the gRPC server.
+	-faucet-private-key
+		Private key to use for faucet.
+	-drip-amount
+		Drip amount in wei. Default to 0.01 ETH.
+	-drip-frequency
+		Drip frequency per account in minutes. Default to 60 minutes.
+	-drip-limit
+		Drip limit in wei per drip frequency interval. Default to 1 ETH.
+	-num-latest-tweets
+		Number of latest tweets to check per user when verifying drip tweet. Default to 5.
+	-name-system-address
+		Address of NameSystem to set an address/username mapping when verifying drip tweet. Not specified by default.
+	-dev
+		Flag to run the faucet in dev mode, where verification is not required. Default to false.
+	-metrics-port
+		Prometheus metrics http handler port. Defaults to port 6060.
+*/
+
 package main
 
 import (
