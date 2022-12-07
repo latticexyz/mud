@@ -36,7 +36,7 @@ MUD is MIT-licensed, open source and free to use.
 
 ![MUD features](/public/features.png)
 
-### Included today
+### Today
 
 - State synchronization between contracts and clients without custom networking code
 - General purpose indexers (without custom indexing code)
