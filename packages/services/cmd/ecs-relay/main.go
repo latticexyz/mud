@@ -23,7 +23,7 @@ The flags are:
 	-message-drift-time
 		Time in seconds that is acceptable as drift before message is not relayed. Defaults to 5s.
 	-min-account-balance
-		Minimum balance in wei for an account to get its messages relayed. Defaults to 0.001 ETH.
+		Minimum balance in ETH for an account to get its messages relayed. Defaults to 0.001 ETH.
 	-max-data-size
 		Size limit for message data. Defaults to 1024 bytes.
 	-verify-msg-sig

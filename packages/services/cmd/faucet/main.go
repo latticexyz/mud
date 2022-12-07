@@ -13,20 +13,22 @@ The flags are:
         Websocket URL for sending optional integrated MUD transactions to set Component values on, for example, successful drip.
     -port
         Port to expose the gRPC server.
+	-dev
+		Flag to run the faucet in dev mode, where verification is not required. Default to false.
 	-faucet-private-key
 		Private key to use for faucet.
 	-drip-amount
-		Drip amount in wei. Default to 0.01 ETH.
+		Drip amount in ETH. Default to 0.01 ETH
 	-drip-frequency
 		Drip frequency per account in minutes. Default to 60 minutes.
 	-drip-limit
-		Drip limit in wei per drip frequency interval. Default to 1 ETH.
+		Drip limit in ETH per drip frequency interval. Default to 1 ETH
+	-twitter
+		Flag to run the faucet in Twitter mode, where to receive a drip you have to tweet a signature. Default to false.
 	-num-latest-tweets
 		Number of latest tweets to check per user when verifying drip tweet. Default to 5.
 	-name-system-address
 		Address of NameSystem to set an address/username mapping when verifying drip tweet. Not specified by default.
-	-dev
-		Flag to run the faucet in dev mode, where verification is not required. Default to false.
 	-metrics-port
 		Prometheus metrics http handler port. Defaults to port 6060.
 */
