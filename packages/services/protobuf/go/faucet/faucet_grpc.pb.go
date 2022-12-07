@@ -24,7 +24,7 @@ const _ = grpc.SupportPackageIsVersion7
 type FaucetServiceClient interface {
 	Drip(ctx context.Context, in *DripRequest, opts ...grpc.CallOption) (*DripResponse, error)
 	DripDev(ctx context.Context, in *DripDevRequest, opts ...grpc.CallOption) (*DripResponse, error)
-	DripVerifyTweet(ctx context.Context, in *DripVerifyTweetRequest, opts ...grpc.CallOption) (*DripResponse, error)
+	DripVerifyTweet(ctx context.Context, in *DripRequest, opts ...grpc.CallOption) (*DripResponse, error)
 	TimeUntilDrip(ctx context.Context, in *DripRequest, opts ...grpc.CallOption) (*TimeUntilDripResponse, error)
 	GetLinkedTwitters(ctx context.Context, in *GetLinkedTwittersRequest, opts ...grpc.CallOption) (*GetLinkedTwittersResponse, error)
 	GetLinkedTwitterForAddress(ctx context.Context, in *LinkedTwitterForAddressRequest, opts ...grpc.CallOption) (*LinkedTwitterForAddressResponse, error)
@@ -59,7 +59,7 @@ func (c *faucetServiceClient) DripDev(ctx context.Context, in *DripDevRequest, o
 	return out, nil
 }
 
-func (c *faucetServiceClient) DripVerifyTweet(ctx context.Context, in *DripVerifyTweetRequest, opts ...grpc.CallOption) (*DripResponse, error) {
+func (c *faucetServiceClient) DripVerifyTweet(ctx context.Context, in *DripRequest, opts ...grpc.CallOption) (*DripResponse, error) {
 	out := new(DripResponse)
 	err := c.cc.Invoke(ctx, "/faucet.FaucetService/DripVerifyTweet", in, out, opts...)
 	if err != nil {
@@ -119,7 +119,7 @@ func (c *faucetServiceClient) SetLinkedTwitter(ctx context.Context, in *SetLinke
 type FaucetServiceServer interface {
 	Drip(context.Context, *DripRequest) (*DripResponse, error)
 	DripDev(context.Context, *DripDevRequest) (*DripResponse, error)
-	DripVerifyTweet(context.Context, *DripVerifyTweetRequest) (*DripResponse, error)
+	DripVerifyTweet(context.Context, *DripRequest) (*DripResponse, error)
 	TimeUntilDrip(context.Context, *DripRequest) (*TimeUntilDripResponse, error)
 	GetLinkedTwitters(context.Context, *GetLinkedTwittersRequest) (*GetLinkedTwittersResponse, error)
 	GetLinkedTwitterForAddress(context.Context, *LinkedTwitterForAddressRequest) (*LinkedTwitterForAddressResponse, error)
@@ -139,7 +139,7 @@ func (UnimplementedFaucetServiceServer) Drip(context.Context, *DripRequest) (*Dr
 func (UnimplementedFaucetServiceServer) DripDev(context.Context, *DripDevRequest) (*DripResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DripDev not implemented")
 }
-func (UnimplementedFaucetServiceServer) DripVerifyTweet(context.Context, *DripVerifyTweetRequest) (*DripResponse, error) {
+func (UnimplementedFaucetServiceServer) DripVerifyTweet(context.Context, *DripRequest) (*DripResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DripVerifyTweet not implemented")
 }
 func (UnimplementedFaucetServiceServer) TimeUntilDrip(context.Context, *DripRequest) (*TimeUntilDripResponse, error) {
@@ -207,7 +207,7 @@ func _FaucetService_DripDev_Handler(srv interface{}, ctx context.Context, dec fu
 }
 
 func _FaucetService_DripVerifyTweet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DripVerifyTweetRequest)
+	in := new(DripRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -219,7 +219,7 @@ func _FaucetService_DripVerifyTweet_Handler(srv interface{}, ctx context.Context
 		FullMethod: "/faucet.FaucetService/DripVerifyTweet",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(FaucetServiceServer).DripVerifyTweet(ctx, req.(*DripVerifyTweetRequest))
+		return srv.(FaucetServiceServer).DripVerifyTweet(ctx, req.(*DripRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

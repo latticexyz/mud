@@ -12,18 +12,18 @@ message FaucetStore {
   map<string, string> addressToUsername = 1;
   map<string, string> usernameToAddress = 2;
 
-  // Username to timestamp of latest drip.
+  // User id/name/address to timestamp of latest drip.
   map<string, int64> latestDrip = 3;
 
   // Global drip counter.
-  uint64 totalDripCount = 4;
+  double totalDripCount = 4;
 }
 
 // The Faucet Service definition.
 service FaucetService {
   rpc Drip (DripRequest) returns (DripResponse) {}
   rpc DripDev (DripDevRequest) returns (DripResponse) {}
-  rpc DripVerifyTweet (DripVerifyTweetRequest) returns (DripResponse) {}
+  rpc DripVerifyTweet (DripRequest) returns (DripResponse) {}
 
   rpc TimeUntilDrip (DripRequest) returns (TimeUntilDripResponse) {}
 
@@ -35,14 +35,8 @@ service FaucetService {
   rpc SetLinkedTwitter(SetLinkedTwitterRequest) returns (SetLinkedTwitterResponse) {}
 }
 
-// Request for drip after a successful DripVerifyTweet RPC.
+// Request for drip.
 message DripRequest {
-  string username = 1;
-  string address = 2;
-}
-
-// Request for initial drip via DripVerifyTweet RPC that requires verifying a tweet
-message DripVerifyTweetRequest {
   string username = 1;
   string address = 2;
 }

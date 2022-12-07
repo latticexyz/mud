@@ -19,15 +19,21 @@ import (
 )
 
 var (
-	wsUrl             = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
-	port              = flag.Int("port", 50081, "gRPC Server Port")
-	faucetPrivateKey  = flag.String("faucet-private-key", "0x", "Private key to use for faucet")
-	dripAmount        = flag.Int64("drip-amount", 10000000000000000, "Drip amount in wei. Default to 0.01 ETH")
-	dripFrequency     = flag.Float64("drip-frequency", 1, "Drip frequency per account in minutes. Default to 60 minutes")
-	dripLimit         = flag.Uint64("drip-limit", 1000000000000000000, "Drip limit in wei per drip frequency interval. Default to 1 ETH")
+	// General flags.
+	wsUrl = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
+	port  = flag.Int("port", 50081, "gRPC Server Port")
+	// Dev mode.
+	devMode = flag.Bool("dev", false, "Flag to run the faucet in dev mode, where verification is not required. Default to false")
+	// Faucet configuration flags.
+	faucetPrivateKey = flag.String("faucet-private-key", "0x", "Private key to use for faucet")
+	// Drip configuration flags.
+	dripAmount    = flag.Float64("drip-amount", 0.01, "Drip amount in ETH. Default to 0.01 ETH")
+	dripFrequency = flag.Float64("drip-frequency", 60, "Drip frequency per account in minutes. Default to 60 minutes")
+	dripLimit     = flag.Float64("drip-limit", 1, "Drip limit in ETH per drip frequency interval. Default to 1 ETH")
+	// Flags for using twitter to verify drip requests.
+	twitterMode       = flag.Bool("twitter", false, "Flag to run the faucet in Twitter mode, where to receive a drip you have to tweet a signature. Default to false")
 	numLatestTweets   = flag.Int("num-latest-tweets", 5, "Number of latest tweets to check per user when verifying drip tweet. Default to 5")
 	nameSystemAddress = flag.String("name-system-address", "", "Address of NameSystem to set an address/username mapping when verifying drip tweet. Not specified by default")
-	devMode           = flag.Bool("dev", false, "Flag to run the faucet in dev mode, where verification is not required. Default to false")
 	metricsPort       = flag.Int("metrics-port", 6060, "Prometheus metrics http handler port. Defaults to port 6060")
 )
 
@@ -46,14 +52,16 @@ func main() {
 		DripFrequency:            *dripFrequency,
 		DripLimit:                *dripLimit,
 		DevMode:                  *devMode,
+		TwitterMode:              *twitterMode,
 		NumLatestTweetsForVerify: *numLatestTweets,
 		NameSystemAddress:        *nameSystemAddress,
 	}
 	logger.Info("using a drip configuration",
-		zap.Int64("amount", dripConfig.DripAmount),
+		zap.Float64("amount", dripConfig.DripAmount),
 		zap.Float64("frequency", dripConfig.DripFrequency),
-		zap.Uint64("limit", dripConfig.DripLimit),
+		zap.Float64("limit", dripConfig.DripLimit),
 		zap.Bool("dev", dripConfig.DevMode),
+		zap.Bool("twitter", dripConfig.TwitterMode),
 	)
 
 	// Ensure that a twitter <-> address store is setup.
