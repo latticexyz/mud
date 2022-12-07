@@ -14,6 +14,7 @@ import {
   ComponentValue,
   componentValueEquals,
   Metadata,
+  AnyComponent,
 } from "@latticexyz/recs";
 import { Coord, keccak256 } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
@@ -73,24 +74,6 @@ export function isUntraversable(
   return untraversableEntitiesAtPosition.size > 0;
 }
 
-export function isOwnedByCaller(
-  ownedByComponent: Component<{ value: Type.Entity }, { contractId: string }>,
-  entity: EntityIndex,
-  playerEntity: EntityIndex,
-  entityToIndex: Map<EntityID, EntityIndex>
-): boolean {
-  let tempId = getComponentValue(ownedByComponent, entity)?.value;
-  let tempIndex: EntityIndex | undefined;
-  while (tempId) {
-    tempIndex = entityToIndex.get(tempId);
-    if (!tempIndex) break;
-    entity = tempIndex;
-    tempId = getComponentValue(ownedByComponent, entity)?.value;
-  }
-
-  return entity === playerEntity;
-}
-
 export function getPlayerEntity(
   address: string | undefined,
   world: World,
@@ -117,16 +100,61 @@ export function resolveRelationshipChain(
   return entity;
 }
 
+export function findComponentInRelationshipChain(
+  entity: EntityIndex,
+  searchComponent: AnyComponent,
+  world: World,
+  relationshipComponent: Component<{ value: Type.Entity }, { contractId: string }>
+): EntityIndex | undefined {
+  if (hasComponent(searchComponent, entity)) return entity;
+
+  while (hasComponent(relationshipComponent, entity)) {
+    const entityValue = world.entityToIndex.get(getComponentValueStrict(relationshipComponent, entity).value);
+    if (!entityValue) return;
+    entity = entityValue;
+
+    if (hasComponent(searchComponent, entity)) return entity;
+  }
+
+  return;
+}
+
+export function findInRelationshipChain(
+  entity: EntityIndex,
+  searchEntity: EntityIndex,
+  world: World,
+  relationshipComponent: Component<{ value: Type.Entity }, { contractId: string }>
+): EntityIndex | undefined {
+  if (entity === searchEntity) return entity;
+
+  while (hasComponent(relationshipComponent, entity)) {
+    const entityValue = world.entityToIndex.get(getComponentValueStrict(relationshipComponent, entity).value);
+    if (!entityValue) return;
+    entity = entityValue;
+
+    if (entity === searchEntity) return entity;
+  }
+
+  return;
+}
+
+export function isOwnedByCaller(
+  world: World,
+  ownedByComponent: Component<{ value: Type.Entity }, { contractId: string }>,
+  entity: EntityIndex,
+  playerEntity: EntityIndex
+): boolean {
+  const foundPlayer = findInRelationshipChain(entity, playerEntity, world, ownedByComponent);
+  return foundPlayer === playerEntity;
+}
+
 export function getOwningPlayer(
   entity: EntityIndex,
   world: World,
   Player: Component<{ value: Type.Boolean }, { contractId: string }>,
   OwnedBy: Component<{ value: Type.Entity }, { contractId: string }>
 ): EntityIndex | undefined {
-  const playerEntity = resolveRelationshipChain(entity, world, OwnedBy);
-  if (playerEntity == null || !hasComponent(Player, playerEntity)) return;
-
-  return playerEntity;
+  return findComponentInRelationshipChain(entity, Player, world, OwnedBy);
 }
 
 export function randomColor(id: string): number {
