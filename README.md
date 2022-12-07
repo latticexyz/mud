@@ -107,9 +107,14 @@ cd mud && yarn
 
 MUD follows the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles. Please keep the scope of your PR small (rather open multiple small PRs than one huge PR) and follow the conventional commit spec.
 
-## Support
+## Library
 
-[Join our Discord](https://discord.com/invite/XhZp6HbqNp) to get support with MUD and connect with the community!
+[!embed](https://www.youtube.com/embed/j-_Zf8o5Wlo)
+[!embed](https://www.youtube.com/embed/mv3jA4USZtg)
+
+## Community support
+
+[Join our Discord](https://discord.com/invite/XhZp6HbqNp) to get support and connect with the community!
 
 ## License
 
