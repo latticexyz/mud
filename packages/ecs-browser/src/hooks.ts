@@ -1,9 +1,7 @@
 import { Component, Has, removeComponent } from "@latticexyz/recs";
 import { useQuery } from "@latticexyz/std-client";
 import { useCallback, useEffect, useState } from "react";
-import * as shiki from "shiki";
-
-shiki.setCDN("https://unpkg.com/shiki/");
+import type { Lang, IThemedToken } from "shiki";
 
 export function useClearDevHighlights(devHighlightComponent: Component) {
   const highlightedEntities = useQuery([Has(devHighlightComponent)]);
@@ -16,13 +14,17 @@ export function useClearDevHighlights(devHighlightComponent: Component) {
   }, [highlightedEntities]);
 }
 
-export function useShiki(code: string, lang: shiki.Lang) {
+export function useShiki(code: string, lang: Lang) {
   const [html, htmlSet] = useState<string>();
-  const [tokens, tokenSet] = useState<shiki.IThemedToken[][]>();
+  const [tokens, tokenSet] = useState<IThemedToken[][]>();
 
   useEffect(() => {
     async function handler() {
       try {
+        const shiki = await import("shiki");
+
+        shiki.setCDN("https://unpkg.com/shiki/");
+
         const highlighter = await shiki.getHighlighter({ theme: "dracula-soft", langs: [lang] });
 
         htmlSet(highlighter.codeToHtml(code, { lang }));

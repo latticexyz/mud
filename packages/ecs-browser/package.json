@@ -16,8 +16,23 @@
     "test": "tsc && echo 'todo: add tests'",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
-    "build": "rimraf dist && tsup",
+    "build": "tsup",
     "release": "npm publish || echo 'version already published'"
+  },
+  "tsup": {
+    "entry": [
+      "src/index.ts"
+    ],
+    "format": [
+      "esm"
+    ],
+    "sourcemap": true,
+    "clean": true,
+    "dts": true,
+    "noExternal": [
+      "goober",
+      "shiki"
+    ]
   },
   "devDependencies": {
     "@latticexyz/recs": "^1.30.1",
@@ -59,17 +74,5 @@
   "dependencies": {
     "goober": "^2.1.11",
     "shiki": "^0.11.1"
-  },
-  "tsup": {
-    "entry": [
-      "src/index.ts"
-    ],
-    "format": [
-      "esm"
-    ],
-    "splitting": false,
-    "sourcemap": true,
-    "clean": true,
-    "dts": true
   }
 }
