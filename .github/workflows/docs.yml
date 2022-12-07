@@ -39,6 +39,7 @@ jobs:
         run: yarn docs
 
       - name: Publish to Cloudflare Pages
+        if: github.event.pull_request.head.repo.full_name == github.repository
         id: cloudflare_publish
         uses: cloudflare/pages-action@13c6a2f35417aaf1906cdbb1f6faf6c72c697b08
         with:
