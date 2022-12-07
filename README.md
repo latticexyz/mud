@@ -79,9 +79,9 @@ MUD consists of several libraries. They can be used independently, but are best 
 
 ## Contribute
 
-We'd love your support in improving MUD! This monorepo includes all of MUD's source code, and pull requests are always welcome.
+We'd love your support in improving MUD! This monorepo includes all of MUD's source code, and pull requests are always welcome. To discuss new features or changes [join our Discord](https://discord.com/invite/XhZp6HbqNp).
 
-**Local development setup**
+### Local development setup
 
 !!!
 The following steps are only necessary if you want to contribute to MUD. To use MUD in your project, install the [packages](#packages) from npm or [set up a new project with the MUD cli](#quickstart).
@@ -102,6 +102,14 @@ git clone https://github.com/latticexyz/mud
 ```
 cd mud && yarn
 ```
+
+### Pull requests
+
+MUD follows the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles. Please keep the scope of your PR small (rather open multiple small PRs than one huge PR) and follow the conventional commit spec.
+
+## Support
+
+[Join our Discord](https://discord.com/invite/XhZp6HbqNp) to get support with MUD and connect with the community!
 
 ## License
 
