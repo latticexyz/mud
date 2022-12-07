@@ -13,15 +13,16 @@ By default, ecs-stream attempts to connect to a local development chain.
 
 Usage:
 
-    ecs-stream [flags]
+	ecs-stream [flags]
 
 The flags are:
 
-    -ws-url
-        Websocket URL for getting block data from chain.
-    -port
-        Port to expose the gRPC server.
-
+	-ws-url
+	    Websocket URL for getting block data from chain.
+	-port
+	    Port to expose the gRPC server.
+	-metrics-port
+		Prometheus metrics http handler port. Defaults to port 6060.
 */
 package main
 
