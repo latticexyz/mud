@@ -1,6 +1,5 @@
 import { constants, Wallet } from "ethers";
-import { rmSync } from "fs";
-import { generateLibDeploy } from "./codegen";
+import { generateLibDeploy, resetLibDeploy } from "./codegen";
 import { findLog } from "./findLog";
 import { generateTypes } from "./types";
 import { execa } from "execa";
@@ -77,7 +76,7 @@ export async function generateAndDeploy(args: DeployOptions) {
   } finally {
     // Remove generated LibDeploy
     console.log("Cleaning up deployment script");
-    if (libDeployPath) rmSync(libDeployPath);
+    if (libDeployPath) resetLibDeploy(contractsDir);
   }
 
   return { deployedWorldAddress, initialBlockNumber };
