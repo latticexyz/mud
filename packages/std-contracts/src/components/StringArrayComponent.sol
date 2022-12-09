@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 import "solecs/Component.sol";
 
 contract StringArrayComponent is Component {
-  constructor(address world, uint256 id) Component(world, id) {}
+  constructor(IWorld world) Component(world) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     keys = new string[](1);

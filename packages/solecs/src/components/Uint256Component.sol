@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
+import { IWorld } from "../interfaces/IWorld.sol";
 import "../Component.sol";
 import "../interfaces/IUint256Component.sol";
 
@@ -7,7 +9,7 @@ import "../interfaces/IUint256Component.sol";
  * Reference implementation of a component storing a uint256 value for each entity.
  */
 contract Uint256Component is Component, IUint256Component {
-  constructor(address world, uint256 id) Component(world, id) {}
+  constructor(IWorld world) Component(world) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     keys = new string[](1);

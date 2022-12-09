@@ -1,12 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
+import { IWorld } from "../../interfaces/IWorld.sol";
 import { Component } from "../../Component.sol";
 import { LibTypes } from "../../LibTypes.sol";
 
-contract OwnedByEntityComponent is Component {
-  uint256 public constant ID = uint256(keccak256("lib.ownedByEntity"));
+uint256 constant ID = uint256(keccak256("lib.ownedByEntity"));
 
-  constructor(address world) Component(world, ID) {}
+contract OwnedByEntityComponent is Component {
+  constructor(IWorld world) Component(world) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     values[0] = LibTypes.SchemaValue.UINT256;

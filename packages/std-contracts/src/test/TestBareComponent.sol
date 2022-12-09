@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
+import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { BareComponent } from "solecs/BareComponent.sol";
 import { LibTypes } from "solecs/LibTypes.sol";
 
@@ -13,7 +15,7 @@ struct TestStructBare {
 }
 
 contract TestBareComponent is BareComponent {
-  constructor(address world) BareComponent(world, ID) {}
+  constructor(IWorld world) BareComponent(world) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     keys = new string[](4);

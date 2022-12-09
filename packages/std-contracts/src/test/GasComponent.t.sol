@@ -12,8 +12,8 @@ import { Uint256BareComponent } from "../components/Uint256BareComponent.sol";
 import { CoordComponent, Coord } from "../components/CoordComponent.sol";
 import { CoordBareComponent, Coord as BareCoord } from "../components/CoordBareComponent.sol";
 
-import { TestComponent, TestStruct } from "./TestComponent.sol";
-import { TestBareComponent, TestStructBare } from "./TestBareComponent.sol";
+import { TestComponent, TestStruct, ID as TestComponentID } from "./TestComponent.sol";
+import { TestBareComponent, TestStructBare, ID as TestBareComponentID } from "./TestBareComponent.sol";
 
 contract ComponentTest is DSTestPlus {
   Vm internal immutable vm = Vm(HEVM_ADDRESS);
@@ -44,14 +44,24 @@ contract ComponentTest is DSTestPlus {
   function setUp() public {
     World world = new World();
     world.init();
-    boolComponent = new BoolComponent(address(world), BoolID);
-    boolBareComponent = new BoolBareComponent(address(world), BoolBareID);
-    uint256Component = new Uint256Component(address(world), Uint256ID);
-    uint256BareComponent = new Uint256BareComponent(address(world), Uint256BareID);
-    coordComponent = new CoordComponent(address(world), CoordID);
-    coordBareComponent = new CoordBareComponent(address(world), CoordBareID);
-    testComponent = new TestComponent(address(world));
-    testBareComponent = new TestBareComponent(address(world));
+
+    boolComponent = new BoolComponent(world);
+    boolBareComponent = new BoolBareComponent(world);
+    uint256Component = new Uint256Component(world);
+    uint256BareComponent = new Uint256BareComponent(world);
+    coordComponent = new CoordComponent(world);
+    coordBareComponent = new CoordBareComponent(world);
+    testComponent = new TestComponent(world);
+    testBareComponent = new TestBareComponent(world);
+
+    world.registerComponent(address(boolComponent), BoolID);
+    world.registerComponent(address(boolBareComponent), BoolBareID);
+    world.registerComponent(address(uint256Component), Uint256ID);
+    world.registerComponent(address(uint256BareComponent), Uint256BareID);
+    world.registerComponent(address(coordComponent), CoordID);
+    world.registerComponent(address(coordBareComponent), CoordBareID);
+    world.registerComponent(address(testComponent), TestComponentID);
+    world.registerComponent(address(testBareComponent), TestBareComponentID);
   }
 
   function testBaseComponentGas() public {

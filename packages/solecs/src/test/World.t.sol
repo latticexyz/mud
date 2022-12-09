@@ -8,10 +8,10 @@ import { console } from "forge-std/console.sol";
 import { World, WorldQueryFragment } from "../World.sol";
 import { LibQuery } from "../LibQuery.sol";
 import { QueryFragment, QueryType } from "../interfaces/Query.sol";
-import { TestComponent1, TestComponent2, TestComponent3 } from "./components/TestComponent.sol";
-import { PrototypeTagComponent } from "./components/PrototypeTagComponent.sol";
-import { FromPrototypeComponent } from "./components/FromPrototypeComponent.sol";
-import { OwnedByEntityComponent } from "./components/OwnedByEntityComponent.sol";
+import { TestComponent1, TestComponent1ID, TestComponent2, TestComponent2ID, TestComponent3, TestComponent3ID } from "./components/TestComponent.sol";
+import { PrototypeTagComponent, ID as PrototypeTagComponentID } from "./components/PrototypeTagComponent.sol";
+import { FromPrototypeComponent, ID as FromPrototypeComponentID } from "./components/FromPrototypeComponent.sol";
+import { OwnedByEntityComponent, ID as OwnedByEntityComponentID } from "./components/OwnedByEntityComponent.sol";
 
 contract WorldTest is DSTest {
   Vm internal immutable vm = Vm(HEVM_ADDRESS);
@@ -31,13 +31,20 @@ contract WorldTest is DSTest {
   function setUp() public {
     world = new World();
     world.init();
-    address worldAddress = address(world);
-    component1 = new TestComponent1(worldAddress);
-    component2 = new TestComponent2(worldAddress);
-    component3 = new TestComponent3(worldAddress);
-    prototypeTag = new PrototypeTagComponent(worldAddress);
-    fromPrototype = new FromPrototypeComponent(worldAddress);
-    ownedByEntity = new OwnedByEntityComponent(worldAddress);
+
+    component1 = new TestComponent1(world);
+    component2 = new TestComponent2(world);
+    component3 = new TestComponent3(world);
+    prototypeTag = new PrototypeTagComponent(world);
+    fromPrototype = new FromPrototypeComponent(world);
+    ownedByEntity = new OwnedByEntityComponent(world);
+
+    world.registerComponent(address(component1), TestComponent1ID);
+    world.registerComponent(address(component2), TestComponent2ID);
+    world.registerComponent(address(component3), TestComponent3ID);
+    world.registerComponent(address(prototypeTag), PrototypeTagComponentID);
+    world.registerComponent(address(fromPrototype), FromPrototypeComponentID);
+    world.registerComponent(address(ownedByEntity), OwnedByEntityComponentID);
   }
 
   function testQuery() public {
@@ -67,22 +74,22 @@ contract WorldTest is DSTest {
 
     // Gimme all entities with component3 and component1
     WorldQueryFragment[] memory fragments = new WorldQueryFragment[](3);
-    fragments[0] = WorldQueryFragment(QueryType.ProxyRead, fromPrototype.id(), abi.encode(1));
-    fragments[1] = WorldQueryFragment(QueryType.Has, component3.id(), new bytes(0)); // interim result 4,5,6
-    fragments[2] = WorldQueryFragment(QueryType.Has, component1.id(), new bytes(0));
+    fragments[0] = WorldQueryFragment(QueryType.ProxyRead, FromPrototypeComponentID, abi.encode(1));
+    fragments[1] = WorldQueryFragment(QueryType.Has, TestComponent3ID, new bytes(0)); // interim result 4,5,6
+    fragments[2] = WorldQueryFragment(QueryType.Has, TestComponent1ID, new bytes(0));
     uint256[] memory entities = world.query(fragments);
     assertTrue(entities.length == 2);
     assertTrue(entities[0] == 4);
     assertTrue(entities[1] == 5);
 
     // Gimme all entities with component3 and component2
-    fragments[2] = WorldQueryFragment(QueryType.Has, component2.id(), new bytes(0));
+    fragments[2] = WorldQueryFragment(QueryType.Has, TestComponent2ID, new bytes(0));
     entities = world.query(fragments);
     assertTrue(entities.length == 1);
     assertTrue(entities[0] == 6);
 
     // Gimme all entities with component3 and component1 value 1
-    fragments[2] = WorldQueryFragment(QueryType.HasValue, component1.id(), abi.encode(1));
+    fragments[2] = WorldQueryFragment(QueryType.HasValue, TestComponent1ID, abi.encode(1));
     entities = world.query(fragments);
     assertTrue(entities.length == 1);
     assertTrue(entities[0] == 4);

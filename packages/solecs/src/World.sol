@@ -35,8 +35,8 @@ contract World is IWorld {
   event ComponentValueRemoved(uint256 indexed componentId, address indexed component, uint256 indexed entity);
 
   constructor() {
-    _components = new Uint256Component(address(0), componentsComponentId);
-    _systems = new Uint256Component(address(0), systemsComponentId);
+    _components = new Uint256Component(this);
+    _systems = new Uint256Component(this);
     register = new RegisterSystem(this, address(_components));
     _systems.authorizeWriter(address(register));
     _components.authorizeWriter(address(register));
@@ -47,9 +47,9 @@ contract World is IWorld {
    * Separated from the constructor to prevent circular dependencies.
    */
   function init() public {
-    _components.registerWorld(address(this));
-    _systems.registerWorld(address(this));
-    register.execute(abi.encode(msg.sender, RegisterType.System, address(register), registerSystemId));
+    registerComponent(address(_components), componentsComponentId);
+    registerComponent(address(_systems), systemsComponentId);
+    registerSystem(address(register), registerSystemId);
   }
 
   /**

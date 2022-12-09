@@ -6,7 +6,7 @@ import "solecs/BareComponent.sol";
  * Reference implementation of a component storing a uint256 value for each entity.
  */
 contract Uint256BareComponent is BareComponent {
-  constructor(address world, uint256 id) BareComponent(world, id) {}
+  constructor(IWorld world) BareComponent(world) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     keys = new string[](1);

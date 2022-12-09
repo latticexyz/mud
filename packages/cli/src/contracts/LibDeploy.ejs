@@ -52,7 +52,8 @@ library LibDeploy {
 <% components.forEach(component => { -%>
 
       console.log("Deploying <%= component %>");
-      comp = new <%= component %>(address(result.world));
+      comp = new <%= component %>(result.world);
+      world.registerComponent(address(comp), <%= component %>ID);
       console.log(address(comp));
 <% });-%>
     } 

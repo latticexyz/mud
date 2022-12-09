@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 import "solecs/BareComponent.sol";
 
 contract AddressBareComponent is BareComponent {
-  constructor(address world, uint256 id) BareComponent(world, id) {}
+  constructor(IWorld world) BareComponent(world) {}
 
   function getSchema() public pure override returns (string[] memory keys, LibTypes.SchemaValue[] memory values) {
     keys = new string[](1);

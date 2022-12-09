@@ -8,10 +8,10 @@ import { console } from "forge-std/console.sol";
 import { World } from "../World.sol";
 import { LibQuery } from "../LibQuery.sol";
 import { QueryFragment, QueryType } from "../interfaces/Query.sol";
-import { TestComponent1, TestComponent2, TestComponent3 } from "./components/TestComponent.sol";
-import { PrototypeTagComponent } from "./components/PrototypeTagComponent.sol";
-import { FromPrototypeComponent } from "./components/FromPrototypeComponent.sol";
-import { OwnedByEntityComponent } from "./components/OwnedByEntityComponent.sol";
+import { TestComponent1, TestComponent1ID, TestComponent2, TestComponent2ID, TestComponent3, TestComponent3ID } from "./components/TestComponent.sol";
+import { PrototypeTagComponent, ID as PrototypeTagComponentID } from "./components/PrototypeTagComponent.sol";
+import { FromPrototypeComponent, ID as FromPrototypeComponentID } from "./components/FromPrototypeComponent.sol";
+import { OwnedByEntityComponent, ID as OwnedByEntityComponentID } from "./components/OwnedByEntityComponent.sol";
 
 contract LibQueryTest is DSTest {
   Vm internal immutable vm = Vm(HEVM_ADDRESS);
@@ -29,12 +29,20 @@ contract LibQueryTest is DSTest {
   function setUp() public {
     World world = new World();
     world.init();
-    component1 = new TestComponent1(address(world));
-    component2 = new TestComponent2(address(world));
-    component3 = new TestComponent3(address(world));
-    prototypeTag = new PrototypeTagComponent(address(world));
-    fromPrototype = new FromPrototypeComponent(address(world));
-    ownedByEntity = new OwnedByEntityComponent(address(world));
+
+    component1 = new TestComponent1(world);
+    component2 = new TestComponent2(world);
+    component3 = new TestComponent3(world);
+    prototypeTag = new PrototypeTagComponent(world);
+    fromPrototype = new FromPrototypeComponent(world);
+    ownedByEntity = new OwnedByEntityComponent(world);
+
+    world.registerComponent(address(component1), TestComponent1ID);
+    world.registerComponent(address(component2), TestComponent2ID);
+    world.registerComponent(address(component3), TestComponent3ID);
+    world.registerComponent(address(prototypeTag), PrototypeTagComponentID);
+    world.registerComponent(address(fromPrototype), FromPrototypeComponentID);
+    world.registerComponent(address(ownedByEntity), OwnedByEntityComponentID);
   }
 
   function testHasQuery() public {

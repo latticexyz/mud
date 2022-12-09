@@ -19,7 +19,7 @@ abstract contract BareComponent is IComponent {
   error BareComponent__NotImplemented();
 
   /** Reference to the World contract this component is registered in */
-  address public world;
+  IWorld public world;
 
   /** Owner of the component has write access and can given write access to other addresses */
   address internal _owner;
@@ -30,14 +30,10 @@ abstract contract BareComponent is IComponent {
   /** Mapping from entity id to value in this component */
   mapping(uint256 => bytes) internal entityToValue;
 
-  /** Public identifier of this component */
-  uint256 public id;
-
-  constructor(address _world, uint256 _id) {
+  constructor(IWorld _world) {
     _owner = msg.sender;
     writeAccess[msg.sender] = true;
-    id = _id;
-    if (_world != address(0)) registerWorld(_world);
+    world = _world;
   }
 
   /** Revert if caller is not the owner of this component */
@@ -67,15 +63,6 @@ abstract contract BareComponent is IComponent {
     writeAccess[msg.sender] = false;
     _owner = newOwner;
     writeAccess[newOwner] = true;
-  }
-
-  /**
-   * Register this component in the given world.
-   * @param _world Address of the World contract.
-   */
-  function registerWorld(address _world) public onlyOwner {
-    world = _world;
-    IWorld(world).registerComponent(address(this), id);
   }
 
   /**
@@ -162,7 +149,7 @@ abstract contract BareComponent is IComponent {
     entityToValue[entity] = value;
 
     // Emit global event
-    IWorld(world).registerComponentValueSet(entity, value);
+    world.registerComponentValueSet(entity, value);
   }
 
   /**
@@ -177,6 +164,6 @@ abstract contract BareComponent is IComponent {
     delete entityToValue[entity];
 
     // Emit global event
-    IWorld(world).registerComponentValueRemoved(entity);
+    world.registerComponentValueRemoved(entity);
   }
 }

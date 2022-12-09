@@ -4,7 +4,7 @@ import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
 import { Vm } from "forge-std/Vm.sol";
 import { console } from "forge-std/console.sol";
 
-import { TestComponent } from "./components/TestComponent.sol";
+import { TestComponent, TestComponentID } from "./components/TestComponent.sol";
 import { World } from "../World.sol";
 
 contract ComponentTest is DSTestPlus {
@@ -17,7 +17,8 @@ contract ComponentTest is DSTestPlus {
   function setUp() public {
     World world = new World();
     world.init();
-    component = new TestComponent(address(world));
+    component = new TestComponent(world);
+    world.registerComponent(address(component), TestComponentID);
   }
 
   function testSetAndGetValue() public {

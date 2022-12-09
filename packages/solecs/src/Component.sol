@@ -26,7 +26,7 @@ abstract contract Component is BareComponent {
   /** List of indexers to be updated when a component value changes */
   IEntityIndexer[] internal indexers;
 
-  constructor(address _world, uint256 _id) BareComponent(_world, _id) {
+  constructor(IWorld _world) BareComponent(_world) {
     entities = new Set();
     valueToEntities = new MapSet();
   }

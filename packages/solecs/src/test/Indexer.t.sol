@@ -4,8 +4,8 @@ pragma solidity >=0.8.0;
 import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
 import { Vm } from "forge-std/Vm.sol";
 
-import { DamageComponent } from "./components/DamageComponent.sol";
-import { PositionComponent, Position } from "./components/PositionComponent.sol";
+import { DamageComponent, ID as DamageComponentID } from "./components/DamageComponent.sol";
+import { PositionComponent, Position, ID as PositionComponentID } from "./components/PositionComponent.sol";
 import { Indexer } from "../Indexer.sol";
 import { World } from "../World.sol";
 import { Component } from "../Component.sol";
@@ -21,8 +21,12 @@ contract IndexerTest is DSTestPlus {
     World world = new World();
     world.init();
 
-    position = new PositionComponent(address(world));
-    damage = new DamageComponent(address(world));
+    position = new PositionComponent(world);
+    world.registerComponent(address(position), PositionComponentID);
+
+    damage = new DamageComponent(world);
+    world.registerComponent(address(damage), DamageComponentID);
+
     Component[] memory components = new Component[](2);
     components[0] = position;
     components[1] = damage;
