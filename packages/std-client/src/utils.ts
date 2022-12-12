@@ -73,28 +73,10 @@ export function isUntraversable(
   return untraversableEntitiesAtPosition.size > 0;
 }
 
-export function isOwnedByCaller(
-  ownedByComponent: Component<{ value: Type.Entity }, { contractId: string }>,
-  entity: EntityIndex,
-  playerEntity: EntityIndex,
-  entityToIndex: Map<EntityID, EntityIndex>
-): boolean {
-  let tempId = getComponentValue(ownedByComponent, entity)?.value;
-  let tempIndex: EntityIndex | undefined;
-  while (tempId) {
-    tempIndex = entityToIndex.get(tempId);
-    if (!tempIndex) break;
-    entity = tempIndex;
-    tempId = getComponentValue(ownedByComponent, entity)?.value;
-  }
-
-  return entity === playerEntity;
-}
-
 export function getPlayerEntity(
   address: string | undefined,
   world: World,
-  Player: Component<{ value: Type.Boolean }, { contractId: string }>
+  Player: Component<{ value: Type.Boolean }>
 ): EntityIndex | undefined {
   if (!address) return;
 
@@ -104,11 +86,18 @@ export function getPlayerEntity(
   return playerEntity;
 }
 
+/**
+ * Starting with the given entity, traverse the relationship chain until the end is reached.
+ * @param relationshipComponent The component that will be used to traverse the relationship chain.
+ * @param entity Starting entity
+ * @returns The last entity in the relationship chain or undefined if the relationship chain is broken.
+ */
 export function resolveRelationshipChain(
-  entity: EntityIndex,
-  world: World,
-  relationshipComponent: Component<{ value: Type.Entity }, { contractId: string }>
+  relationshipComponent: Component<{ value: Type.Entity }>,
+  entity: EntityIndex
 ): EntityIndex | undefined {
+  const { world } = relationshipComponent;
+
   while (hasComponent(relationshipComponent, entity)) {
     const entityValue = world.entityToIndex.get(getComponentValueStrict(relationshipComponent, entity).value);
     if (!entityValue) return;
@@ -117,18 +106,65 @@ export function resolveRelationshipChain(
   return entity;
 }
 
-export function getOwningPlayer(
+/**
+ * Starting with the given entity, traverse the relationship chain until you find an entity that has the given component.
+ * @param relationshipComponent The component that will be used to traverse the relationship chain.
+ * @param entity Starting entity
+ * @param searchComponent The component to search for.
+ * @returns The first entity in the relationship chain that has the given component or undefined if the relationship chain is broken.
+ */
+export function findEntityWithComponentInRelationshipChain(
+  relationshipComponent: Component<{ value: Type.Entity }>,
   entity: EntityIndex,
-  world: World,
-  Player: Component<{ value: Type.Boolean }, { contractId: string }>,
-  OwnedBy: Component<{ value: Type.Entity }, { contractId: string }>
+  searchComponent: Component
 ): EntityIndex | undefined {
-  const playerEntity = resolveRelationshipChain(entity, world, OwnedBy);
-  if (playerEntity == null || !hasComponent(Player, playerEntity)) return;
+  if (hasComponent(searchComponent, entity)) return entity;
 
-  return playerEntity;
+  const { world } = relationshipComponent;
+
+  while (hasComponent(relationshipComponent, entity)) {
+    const entityValue = world.entityToIndex.get(getComponentValueStrict(relationshipComponent, entity).value);
+    if (entityValue == null) return;
+    entity = entityValue;
+
+    if (hasComponent(searchComponent, entity)) return entity;
+  }
+
+  return;
 }
 
+/**
+ * Find a specific entity in a relationship chain.
+ * @param entity Starting entity
+ * @param searchEntity Entity to search for
+ * @param relationshipComponent The component that will be used to traverse the relationship chain.
+ * @returns True if the entity is found in the relationship chain, false otherwise.
+ */
+export function findInRelationshipChain(
+  relationshipComponent: Component<{ value: Type.Entity }>,
+  entity: EntityIndex,
+  searchEntity: EntityIndex
+): boolean {
+  if (entity === searchEntity) return true;
+
+  const { world } = relationshipComponent;
+
+  while (hasComponent(relationshipComponent, entity)) {
+    const entityValue = world.entityToIndex.get(getComponentValueStrict(relationshipComponent, entity).value);
+    if (entityValue == null) return false;
+    entity = entityValue;
+
+    if (entity === searchEntity) return true;
+  }
+
+  return false;
+}
+
+/**
+ * Generate a random color based on the given id.
+ * @param id Any string
+ * @returns A color in the range 0x000000 - 0xFFFFFF
+ */
 export function randomColor(id: string): number {
   const randSeed = new Array(4); // Xorshift: [x, y, z, w] 32 bit values
   function seedRand(seed: string) {
