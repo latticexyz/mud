@@ -1,4 +1,7 @@
-import { styled } from "goober";
+import { setup, styled } from "goober";
+import { createElement } from "react";
+
+setup(createElement);
 
 export const ComponentBrowserInput = styled("input")`
   background-color: #383c4a;
