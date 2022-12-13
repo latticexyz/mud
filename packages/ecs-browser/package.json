@@ -5,6 +5,7 @@
   "license": "MIT",
   "main": "src/index.ts",
   "type": "module",
+  "types": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -18,21 +19,6 @@
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "build": "tsup",
     "release": "npm publish || echo 'version already published'"
-  },
-  "tsup": {
-    "entry": [
-      "src/index.ts"
-    ],
-    "format": [
-      "esm"
-    ],
-    "sourcemap": true,
-    "clean": true,
-    "dts": true,
-    "noExternal": [
-      "goober",
-      "shiki"
-    ]
   },
   "devDependencies": {
     "@latticexyz/recs": "^1.30.1",
