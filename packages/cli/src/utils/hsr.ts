@@ -16,9 +16,19 @@ function extractImports(path: string): string[] {
   return regexResult;
 }
 
-function findDependencies(file: string, dependencyGraph: { [file: string]: string[] }): string[] {
+function findDependencies(
+  file: string,
+  dependencyGraph: { [file: string]: string[] },
+  visited: string[] = []
+): string[] {
   const dependencies = dependencyGraph[file] ?? [];
-  const subDependencies = dependencies.flatMap((d) => findDependencies(d, dependencyGraph));
+  const subDependencies = dependencies.flatMap((d) => {
+    if (visited.includes(d)) {
+      console.warn("Circular dependency detected: ", d, dependencyGraph[d]);
+      return [];
+    }
+    return findDependencies(d, dependencyGraph, [...visited, d]);
+  });
   return [...new Set([...dependencies, ...subDependencies])];
 }
 
@@ -50,9 +60,9 @@ export function hsr(root: string, replaceSystems: (systems: string[]) => Promise
     if (event === "change") {
       // Find all files depending on the changed file
       const dependencies = findDependencies(changedFile, dependencyGraph);
-      const changedSystems = [changedFile, ...dependencies]
-        .filter((f) => systems.has(f))
-        .map((f) => f.replace(".sol", ""));
+      const changedSystems = [
+        ...new Set([changedFile, ...dependencies].filter((f) => systems.has(f)).map((f) => f.replace(".sol", ""))),
+      ];
       console.log("Systems to replace", changedSystems);
       if (changedSystems.length > 0) await replaceSystems(changedSystems);
       console.log("Watching system file changes...");
