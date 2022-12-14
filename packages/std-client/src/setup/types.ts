@@ -31,4 +31,9 @@ export type ContractComponents = {
 export type NetworkComponents<C extends ContractComponents> = C & {
   SystemsRegistry: Component<{ value: Type.String }>;
   ComponentsRegistry: Component<{ value: Type.String }>;
+  LoadingState: Component<{
+    state: Type.Number;
+    msg: Type.String;
+    percentage: Type.Number;
+  }>;
 };
