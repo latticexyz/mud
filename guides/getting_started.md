@@ -1,62 +1,187 @@
+---
+order: 10
+---
+
 # Getting started
 
 ## Quickstart
 
 Let's create our first MUD project!
-Run the following command in the console of your choice to create a new MUD project in `my-project` using the minimal template.
 
-```
+Run the following command in the console of your choice to create a new MUD project in `my-project` using the `minimal` template.
+
+```shell
 npx mud create my-project --template minimal
 ```
 
-Next, run `yarn dev` in the root directory of your new project to start the development server (client and local Ethereum node).
+Next, run `yarn dev` in the root directory of your new project to start the development server (web client and local Ethereum node).
 
-```
+```shell
 yarn dev
 ```
 
-## What is happening here
+![Starting a new MUD project with the MUD cli](/public/mud-create.gif)
 
 The minimal MUD project template is organized as a yarn monorepo.
-You can find the contract code in `packages/contracts` and the client code in `packages/client`.
+You can find the contract code in `packages/contracts` and then minimal client setup in `packages/client`.
 
-### Contracts
+```
+$ tree . -d -L 4
+.
+└── packages
+    ├── client
+    │   └── src
+    └── contracts
+        └── src
+            ├── components
+            ├── libraries
+            ├── systems
+            └── test
 
-#### Setup
+9 directories
+```
 
-- organized as forge compatible solidity project
-- component definitions in `src/components`
-  - ID is part of the file
-- systems in `src/systems`
-  - ID is part of the file
-- libraries in `src/components`
-- test files in `src/test`
+## Contracts
 
-- `deploy.json` contains the deployment configuration (which components to deploy, which systems to deploy, which systems to give write access to which components)
+Contracts are structured in a [forge](https://getfoundry.sh/) compatible Solidity project.
+Naming and code organization follows conventions, which allows MUD tools to automate much of the deployment process and improve the development experience.
 
-  - In the background creates a deploy script based on `deploy.json` when calling `deploy-contracts` (as part of `yarn dev` and `yarn deploy`)
+### Components
 
-- `yarn devnode` starts a development node
-- `yarn dev` deploys the contracts to the local node and sets up a watcher to redeploy relevant systems when you change the source files
-- `yarn deploy` deploys the contracts to any EVM compatible chain (requires some params)
+Component definitions are placed in `src/components`.
+As a convention, each component must be kept in its own file, with the file name corresponding to the name of the component contract inside the file.
+Additionally, the file and contract name must follow the schema `<NAME>Component`.
+Besides the component contract, the file must include the component's `ID` as a constant.
 
-#### Example
+**Example**: `CounterComponent.sol`
 
-- CounterComponent, IncrementSystem, LibMath as examples
-- Call IncrementSystem to increment counter
-- Modify IncrementSystem or LibMath to redeploy contracts
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import "std-contracts/components/Uint32Component.sol";
 
-### Client
+uint256 constant ID = uint256(keccak256("component.Counter"));
 
-- Minimal setup, mostly for demonstration purposes (for a more useful client setup, checkout mud-template-react)
-- Have a look at index.ts
-- When contracts are deployed, MUD automatically generates System types -> imported from `components/types`
-- A world is set up on the client
-- A component is set up on the client -> linked to the contract component by giving it the same ID
-- Setting up network code `setupMUDNetwork`: passing config, world, components, types - that;s all
+contract CounterComponent is Uint32Component {
+  constructor(address world) Uint32Component(world, ID) {}
+}
 
-### Demo
+```
 
-When pressing the button, the system is called, the on-chain component is modified, the component state is synchronized to the client.
+### Systems
 
-When modifying the library imported in the system, or the system itself, the contracts are redeployed (and the state is kept)
+Systems are placed in `src/systems`.
+Similar to components, each system must be kept in its own file, with the file name corresponding to the name of the system contract inside the file.
+File and contract names must follow the schema `<NAME>System`, and the file must include the system's `ID` as constant.
+
+When using the `mud deploy-contracts --dev --watch` cli command, the MUD cli watches for changes in system files (and imported libraries) and automatically upgrades the relevant systems if necessary.
+
+**Example**: `IncrementSystem.sol`
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System, IWorld } from "solecs/System.sol";
+import { getAddressById } from "solecs/utils.sol";
+import { CounterComponent, ID as CounterComponentID } from "components/CounterComponent.sol";
+import { LibMath } from "libraries/LibMath.sol";
+
+uint256 constant ID = uint256(keccak256("system.Increment"));
+
+contract IncrementSystem is System {
+  constructor(IWorld _world, address _components) System(_world, _components) {}
+
+  function execute(bytes memory arguments) public returns (bytes memory) {
+    uint256 entity = abi.decode(arguments, (uint256));
+    CounterComponent c = CounterComponent(getAddressById(components, CounterComponentID));
+    LibMath.increment(c, entity);
+  }
+}
+
+```
+
+### Libraries
+
+[Libraries](https://docs.soliditylang.org/en/v0.8.17/introduction-to-smart-contracts.html?highlight=libraries#delegatecall-and-libraries) can be used to split up code into reusable packets.
+They are placed in `src/libraries`.
+
+All code in libraries is executed in the context of the calling contract (because they are inlined or delegate called), so component write access control needs to happen at the level of systems.
+
+**Example**: `LibMath.sol`:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { Uint32Component } from "std-contracts/components/Uint32Component.sol";
+
+library LibMath {
+  function increment(Uint32Component component, uint256 entity) internal {
+    uint32 current = component.has(entity) ? component.getValue(entity) : 0;
+    component.set(entity, current + 10);
+  }
+}
+
+```
+
+### Deployment
+
+Deployment configuration lives in `deploy.json`.
+It contains the list of components and systems to deploy, and which systems needs write access to which systems.
+
+This file is the source of truth for MUD's deployment tools.
+If a component or system is not included, it is not deployed, even if it is placed in the `components` or `systems` directory.
+
+**Example**: `deploy.json`
+
+```json
+{
+  "components": ["CounterComponent"],
+  "systems": [
+    {
+      "name": "IncrementSystem",
+      "writeAccess": ["CounterComponent"]
+    }
+  ]
+}
+```
+
+### Tests
+
+MUD uses `forge` for Solidity testing.
+Test files are placed in `src/tests`.
+
+To take full advantage of MUD's deployment setup in tests, they must extend `MudTest` (imported from `@latticexyz/std-contracts/test/MudTest.t.sol`).
+
+Head over to the forge documentation for more details on [how to write tests with forge](https://book.getfoundry.sh/forge/writing-tests).
+
+**Example**: `Deploy.t.sol`
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+import { Deploy } from "./Deploy.sol";
+import "std-contracts/test/MudTest.t.sol";
+
+contract DeployTest is MudTest {
+  constructor() MudTest(new Deploy()) {}
+
+  function testDeploy() public view {
+    console.log(deployer);
+  }
+}
+
+```
+
+### Development
+
+To start a local Ethereum node, run `yarn devnode` at the root of the contracts directory.
+This starts a local `anvil` instance with 1 second blocktime.
+For more information about anvil, head over to the [anvil documentation](https://book.getfoundry.sh/anvil/).
+
+To deploy the contracts to the local node, run `yarn dev` from the root of the contracts directory (which calls `mud deploy-contracts --dev --watch` under the hood).
+After deploying, it will set up a watcher to detect file changes in system files or libraries and automatically redeploy impacted systems.
+
+## Client
+
+## Demo
