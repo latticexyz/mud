@@ -1,6 +1,6 @@
 # Introduction
 
-MUD is a framework for Ethereum applications. At its core are a set of contract interfaces and conventions for how to use them. These core interfaces and libraries enable a broad set of peripheral tools, integrations, and libraries, to make the development of on-chain applications more streamlined.
+MUD is a framework for Ethereum applications. At its core are a set of contract interfaces and conventions for using them. These core interfaces and libraries enable a broad set of peripheral tools, integrations, and libraries, to make the development of on-chain applications more streamlined.
 
 ## Why MUD was built
 
@@ -31,7 +31,7 @@ What we were missing was an engine. So we took our learnings and created MUD.
 
 ## Entity Component System
 
-MUD is inspired by a software development pattern called "Entity Component System". In this pattern, state is strictly separated from logic - state lives in _Components_, while logic lives in _Systems_.
+MUD is inspired by a software development pattern called "Entity Component System". In this pattern, state is strictly separated from logic: state lives in _Components_, while logic lives in _Systems_.
 
 You can think of components as tables: columns represent the component's schema, while rows represent pieces of data stored in the table.
 Each row has an ID, which we call _Entity_.
@@ -40,19 +40,19 @@ Systems contain the application's logic and read and modify state stored in comp
 
 <!-- TODO: visualization of component as table -->
 
-If you're familiar with Solidity, you might have used a variant of this pattern already without noticing.
+If you're familiar with Solidity, you might have already used a variant of this pattern without noticing.
 Let's take ERC-20 contracts as an example:
 ERC-20 contracts store the token balance of each address in a mapping (from `address` to `uint256` balance).
 You can think of each ERC-20 contract as a table with two columns: "Address" and "Balance".
 This corresponds to a component with a single schema value ("Balance").
 Each row in the table associates an entity ("Address") with a component value ("Balance").
-An address can hold balances in many independent ERC-20 contracts - corresponding to an entity being associated with many independent component values.
+An address can hold balances in many independent ERC-20 contracts, corresponding to an entity being associated with many independent component values.
 In current ERC-20 reference implementations, state and logic are coupled in the same contract.
 In ECS we'd have a general "Transfer system" handling the logic of transferring tokens from one address to another by modifying the state stored in the token's components.
 
 Another example could be a simple video game where available components are "Position" and "Health".
 Entities with a position have an entry in the Position component, and entities with Health have an entry in the Health component.
-A "Move system" could implement the rules of moving entities from one position to another, and a "Combat system" could implement combat logic based on rules involving the entity's position and modify the entities' health values.
+A "Move system" could implement the rules of moving entities from one position to another. A "Combat system" could implement combat logic based on rules involving the entity's position and modify the entities' health values.
 
 ## SOLECS
 
@@ -60,7 +60,7 @@ SOLECS is MUD's core Solidity library with interfaces and reference implementati
 
 In SOLECS all state is stored in components.
 Components are contracts implementing the [`IComponent`](https://github.com/latticexyz/mud/blob/main/packages/solecs/src/interfaces/IComponent.sol) interface.
-In the base component contract all state is stored as raw bytes (to allow for a common schema for all types of components).
+In the base component contract all state is stored as raw bytes (to allow for a standard schema for all types of components).
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -127,8 +127,8 @@ The World contract is permissionless - anyone can register additional components
 This is the most notable difference between this architecture and existing ones like the [Diamond pattern](https://eips.ethereum.org/EIPS/eip-2535).
 It is possible because state is encapsulated in separate components contracts with individual write access.
 
-When a component value is changed, the update is registered on the World contract (via `registerComponentValueSet`).
-This causes the World contract to emit an event (`ComponentValueSet`), which can be used by clients and indexers to mirror the entire World state.
+When a component value changes, the update is registered on the World contract (via `registerComponentValueSet`).
+This causes the World contract to emit an event (`ComponentValueSet`), which clients and indexers can use to mirror the entire World state.
 
 ## Network
 
@@ -203,4 +203,4 @@ MUD contains a few other packages besides the ones mentioned in this overview (S
 - `ecs-browser`: A data explorer to visualize and edit on-chain and local component values - made possible by storing state in a standardized and introspectable way.
 - `std-contracts`/`std-client`: MUD standard libraries for contract and client development.
 
-Now that you have a basic understanding of the core of MUD and the principles behind it, let's dive into a MUD project.
+Now that you have a basic understanding of the core of MUD and its principles, let's dive into a MUD project.
