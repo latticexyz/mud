@@ -2,7 +2,34 @@
 
 MUD is a framework for Ethereum applications. At its core are a set of contract interfaces and conventions for how to use them. These core interfaces and libraries enable a broad set of peripheral tools, integrations, and libraries, to make the development of on-chain applications more streamlined.
 
-### Entity Component System
+## Why MUD was built
+
+MUD was built to facilitate [Autonomous Worlds](https://0xparc.org/blog/autonomous-worlds).
+
+But let's start from the beginning - let's start with _Reality_.
+Reality is that which when you stop believing in it doesn’t go away.
+A _World_ is a Reality that generates enough drama for people to be interested in it and to interact with it.
+When people interact with a World and believe in it, it becomes alive.
+An _Autonomous World_ is a World with no owner.
+It is the best kind of World, because there is no one to shut it down and no single person or entity responsible for keeping it alive.
+It stays alive as long as people believe in it and interact with it.
+
+You interact with a World through a _Container_.
+Anything can be a Container, from verbally transmitted stories, to books and movies, to games.
+Compared to books, games allow for a much larger action space to interact with the World.
+And it turns out that the properties of blockchains are very well suited to turn games into Autonomous Worlds.
+
+So we started building [fully on-chain games](https://gubsheep.substack.com/p/the-strongest-crypto-gaming-thesis) as first forays into creating an Autonomous World.
+There was no engine and no framework when we started, so we built our games the "traditional way" - custom structs to represent entities on-chain, custom getter functions to load the state on the client, custom event handling and networking logic to keep the client state up to date with the on-chain state.
+
+When it was time to test our creations with players, we had to realize that the current iteration wasn't as fun as we thought.
+So we went back to the drawing board to change some core mechanics and add more content.
+This was when we realized our custom architecture and network stack wasn't well suited to being modified - it was highly coupled to the current game mechanics and implementation.
+But more importantly, if even we as core developers had trouble extending the game, how should it ever turn into an Autonomous World with a thriving community of builders extending functionality?
+
+What we were missing was an engine. So we took our learnings and created MUD.
+
+## Entity Component System
 
 MUD is inspired by a software development pattern called "Entity Component System". In this pattern, state is strictly separated from logic - state lives in _Components_, while logic lives in _Systems_.
 
@@ -91,6 +118,8 @@ All systems can read from all components, but need write access to write to comp
 (Write access is managed by a component's owner via the component's `authorizeWriter` and `unauthorizeWriter` functions.)
 
 Note how multiple systems can share the same state and how there is no requirement for the systems and components to be deployed by the same developer.
+
+Unlike "traditional ECS systems" that are called in a game loop or react to state changes, systems in SOLECS serve as entry points to the application and need to be triggered with a function call.
 
 At the center of every MUD application is the World contract.
 The World is a global namespace, in which components and systems are registered with a fixed id.
