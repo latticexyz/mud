@@ -9,7 +9,7 @@ import {
   InputType,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { World } from "@latticexyz/recs";
+import { defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256 } from "@latticexyz/utils";
 import { Contract, ContractInterface } from "ethers";
@@ -28,7 +28,7 @@ import {
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
   world: World,
-  components: C,
+  contractComponents: C,
   SystemAbis: { [key in keyof SystemTypes]: ContractInterface },
   options?: { initialGasPrice?: number; fetchSystemCalls?: boolean }
 ) {
@@ -42,8 +42,26 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     metadata: { contractId: "world.component.components" },
   });
 
-  (components as NetworkComponents<C>).SystemsRegistry = SystemsRegistry;
-  (components as NetworkComponents<C>).ComponentsRegistry = ComponentsRegistry;
+  // used by SyncWorker to notify client of sync progress
+  const LoadingState = defineComponent(
+    world,
+    {
+      state: Type.Number,
+      msg: Type.String,
+      percentage: Type.Number,
+    },
+    {
+      id: "LoadingState",
+      metadata: { contractId: "component.LoadingState" },
+    }
+  );
+
+  const components: NetworkComponents<C> = {
+    ...contractComponents,
+    SystemsRegistry,
+    ComponentsRegistry,
+    LoadingState,
+  };
 
   // Mapping from component contract id to key in components object
   const mappings: Mappings<C> = {};
@@ -135,5 +153,6 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     mappings,
     registerComponent,
     registerSystem,
+    components,
   };
 }
