@@ -4,6 +4,9 @@ import { initCache } from "../initCache";
 import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { formatEntityID } from "../utils";
+import { debug as parentDebug } from "./debug";
+
+const debug = parentDebug.extend("CacheStore");
 
 export type State = Map<number, ComponentValue>;
 export type CacheStore = ReturnType<typeof createCacheStore>;
@@ -115,7 +118,7 @@ export function mergeCacheStores(stores: CacheStore[]): CacheStore {
 }
 
 export async function saveCacheStoreToIndexDb(cache: ECSCache, store: CacheStore) {
-  console.log("[Cache] store cache with size", store.state.size, "at block", store.blockNumber);
+  debug("store cache with size", store.state.size, "at block", store.blockNumber);
   await cache.set("ComponentValues", "current", store.state);
   await cache.set("Mappings", "components", store.components);
   await cache.set("Mappings", "entities", store.entities);
