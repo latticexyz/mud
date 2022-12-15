@@ -32,6 +32,9 @@ import {
 import { createChannel, createClient } from "nice-grpc-web";
 import { formatComponentID, formatEntityID } from "../utils";
 import { grpc } from "@improbable-eng/grpc-web";
+import { debug as parentDebug } from "./debug";
+
+const debug = parentDebug.extend("syncUtils");
 
 /**
  * Create a ECSStateSnapshotServiceClient
@@ -187,7 +190,7 @@ export async function reduceFetchedStateV2(
   for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
     const component = stateComponentsHex[componentIdIdx];
     const entity = stateEntitiesHex[entityIdIdx];
-    if (entity == undefined) console.log("invalid entity index", stateEntities.length, entityIdIdx);
+    if (entity == undefined) debug("invalid entity index", stateEntities.length, entityIdIdx);
     const value = await decode(component, rawValue);
     storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
   }
@@ -223,9 +226,7 @@ export function createLatestEventStreamService(
   return from(response).pipe(
     map(async (responseChunk) => {
       const events = await transformWorldEvents(responseChunk);
-      console.info(
-        `[SyncWorker || via Stream Service] got ${events.length} events from block ${responseChunk.blockNumber}`
-      );
+      debug(`got ${events.length} events from block ${responseChunk.blockNumber}`);
 
       if (includeSystemCalls && events.length > 0) {
         const systemCalls = parseSystemCallsFromStreamEvents(events);
@@ -264,7 +265,7 @@ export function createLatestEventStreamRPC(
       const to = blockNumber;
       lastSyncedBlockNumber = to;
       const events = await fetchWorldEvents(from, to);
-      console.info(`[SyncWorker || via JSON-RPC] fetched ${events.length} events from block range ${from} -> ${to}`);
+      debug(`fetched ${events.length} events from block range ${from} -> ${to}`);
 
       if (fetchSystemCallsFromEvents && events.length > 0) {
         const systemCalls = await fetchSystemCallsFromEvents(events, blockNumber);
@@ -305,7 +306,7 @@ export async function fetchEventsInBlockRangeChunked(
     const chunkEvents = await fetchWorldEvents(from, to);
 
     if (setPercentage) setPercentage(((i * interval) / delta) * 100);
-    console.info(`[SyncWorker] initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
+    debug(`initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
 
     events.push(...chunkEvents);
   }
@@ -361,7 +362,7 @@ export function createDecode(worldConfig: ContractConfig, provider: JsonRpcProvi
     // Create the decoder if it doesn't exist yet
     if (!decoders[componentId]) {
       const address = componentAddress || (await world.getComponent(componentId));
-      console.info("[SyncUtils] Creating decoder for", address);
+      debug("Creating decoder for", address);
       const component = new Contract(address, ComponentAbi, provider) as Component;
       const [keys, values] = await component.getSchema();
       decoders[componentId] = createDecoder(keys, values);
