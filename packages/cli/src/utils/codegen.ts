@@ -4,7 +4,7 @@ import path from "path";
 
 const contractsDir = path.join(__dirname, "../../src/contracts");
 
-const originalLibDeploy = readFile(path.join(contractsDir, "LibDeploy.sol"));
+const stubLibDeploy = readFile(path.join(contractsDir, "LibDeploy.sol"));
 
 export async function generateLibDeploy(configPath: string, out: string, systems?: string | string[]) {
   // Parse config
@@ -28,5 +28,5 @@ export async function generateLibDeploy(configPath: string, out: string, systems
 }
 
 export async function resetLibDeploy(out: string) {
-  await writeFile(path.join(out, "LibDeploy.sol"), await originalLibDeploy);
+  await writeFile(path.join(out, "LibDeploy.sol"), await stubLibDeploy);
 }
