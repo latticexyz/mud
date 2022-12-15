@@ -31,10 +31,10 @@ export async function tween(config: TweenBuilderConfig, options?: { keepExisting
 }
 
 export function removeAllTweens(gameObject: Phaser.GameObjects.GameObject) {
-  // Access some hidden tween manager properties because tweenManager.getTweensOf does not return tweens in _add
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tweenManager = gameObject.scene.tweens as any;
-  if (!tweenManager) return;
-  const allTweens = [...tweenManager._add, ...tweenManager._pending, ...tweenManager._active] as Phaser.Tweens.Tween[];
-  for (const tween of allTweens) if (tween.hasTarget(gameObject)) tween.stop();
+  const tweenManager = gameObject.scene.tweens;
+  for (const tween of tweenManager.tweens) {
+    if (tween.hasTarget(gameObject)) {
+      tween.stop();
+    }
+  }
 }
