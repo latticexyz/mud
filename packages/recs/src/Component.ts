@@ -374,7 +374,7 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       if (prop === "removeOverride") return removeOverride;
       if (prop === "values") return valuesProxy;
       if (prop === "update$") return update$;
-      if (prop === "entities") return () => [...overriddenEntityValues.keys(), ...target.entities()];
+      if (prop === "entities") return () => new Set([...overriddenEntityValues.keys(), ...target.entities()]).values();
 
       return Reflect.get(target, prop);
     },
