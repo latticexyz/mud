@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.2](https://github.com/latticexyz/mud/compare/v1.31.1...v1.31.2) (2022-12-15)
+
+### Bug Fixes
+
+- **std-client:** allow default components to be passed in to setupMUDNetwork ([#299](https://github.com/latticexyz/mud/issues/299)) ([5d043ee](https://github.com/latticexyz/mud/commit/5d043eeb80936ef716ed92972111a9273b63511c))
+
 ## [1.31.1](https://github.com/latticexyz/mud/compare/v1.31.0...v1.31.1) (2022-12-15)
 
 **Note:** Version bump only for package @latticexyz/std-client
