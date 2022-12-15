@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.1](https://github.com/latticexyz/mud/compare/v1.31.0...v1.31.1) (2022-12-15)
+
+### Bug Fixes
+
+- cli issue with circular dependencies ([#291](https://github.com/latticexyz/mud/issues/291)) ([bbc182f](https://github.com/latticexyz/mud/commit/bbc182fd36b20f69737fd0d337ad0d46332c7543))
+- **cli:** catch error when attempting to invalid file ([#282](https://github.com/latticexyz/mud/issues/282)) ([add01a8](https://github.com/latticexyz/mud/commit/add01a8123495feaa194cf4624c2a02c4f24f1e2))
+- **cli:** reset LibDeploy.sol using original/cached contents ([#292](https://github.com/latticexyz/mud/issues/292)) ([6e7a8b9](https://github.com/latticexyz/mud/commit/6e7a8b93cf89018444c58c69c785a658d59a49d4))
+- new entities should be included in overrides ([#290](https://github.com/latticexyz/mud/issues/290)) ([878ee2a](https://github.com/latticexyz/mud/commit/878ee2a5718d73221686dfe7de1c31a0f16347d7))
+- **std-contracts:** add virtual to MudTest setUp ([#298](https://github.com/latticexyz/mud/issues/298)) ([942cfcd](https://github.com/latticexyz/mud/commit/942cfcdd41ea961c32478764e7c4f33a1b6ca16e))
+
 # [1.31.0](https://github.com/latticexyz/mud/compare/v1.30.1...v1.31.0) (2022-12-14)
 
 ### Bug Fixes

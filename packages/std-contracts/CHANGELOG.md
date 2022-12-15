@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.1](https://github.com/latticexyz/mud/compare/v1.31.0...v1.31.1) (2022-12-15)
+
+### Bug Fixes
+
+- **std-contracts:** add virtual to MudTest setUp ([#298](https://github.com/latticexyz/mud/issues/298)) ([942cfcd](https://github.com/latticexyz/mud/commit/942cfcdd41ea961c32478764e7c4f33a1b6ca16e))
+
 # [1.31.0](https://github.com/latticexyz/mud/compare/v1.30.1...v1.31.0) (2022-12-14)
 
 ### Bug Fixes

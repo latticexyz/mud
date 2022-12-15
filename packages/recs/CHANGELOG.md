@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.1](https://github.com/latticexyz/mud/compare/v1.31.0...v1.31.1) (2022-12-15)
+
+### Bug Fixes
+
+- new entities should be included in overrides ([#290](https://github.com/latticexyz/mud/issues/290)) ([878ee2a](https://github.com/latticexyz/mud/commit/878ee2a5718d73221686dfe7de1c31a0f16347d7))
+
 # [1.31.0](https://github.com/latticexyz/mud/compare/v1.30.1...v1.31.0) (2022-12-14)
 
 **Note:** Version bump only for package @latticexyz/recs
