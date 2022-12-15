@@ -176,7 +176,17 @@ function findOrDefineComponent<Cs extends ContractComponents, C extends Contract
   components: Cs,
   component: C
 ): C {
-  return (
-    (Object.values(components).find((c) => c.metadata.contractId === component.metadata.contractId) as C) ?? component
-  );
+  const existingComponent = Object.values(components).find(
+    (c) => c.metadata.contractId === component.metadata.contractId
+  ) as C;
+
+  if (existingComponent) {
+    console.warn(
+      "Component with contract id",
+      component.metadata.contractId,
+      "is defined by default in setupMUDNetwork"
+    );
+  }
+
+  return existingComponent || component;
 }
