@@ -32,28 +32,37 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   SystemAbis: { [key in keyof SystemTypes]: ContractInterface },
   options?: { initialGasPrice?: number; fetchSystemCalls?: boolean }
 ) {
-  const SystemsRegistry = defineStringComponent(world, {
-    id: "SystemsRegistry",
-    metadata: { contractId: "world.component.systems" },
-  });
+  const SystemsRegistry = findOrDefineComponent(
+    contractComponents,
+    defineStringComponent(world, {
+      id: "SystemsRegistry",
+      metadata: { contractId: "world.component.systems" },
+    })
+  );
 
-  const ComponentsRegistry = defineStringComponent(world, {
-    id: "ComponentsRegistry",
-    metadata: { contractId: "world.component.components" },
-  });
+  const ComponentsRegistry = findOrDefineComponent(
+    contractComponents,
+    defineStringComponent(world, {
+      id: "ComponentsRegistry",
+      metadata: { contractId: "world.component.components" },
+    })
+  );
 
   // used by SyncWorker to notify client of sync progress
-  const LoadingState = defineComponent(
-    world,
-    {
-      state: Type.Number,
-      msg: Type.String,
-      percentage: Type.Number,
-    },
-    {
-      id: "LoadingState",
-      metadata: { contractId: "component.LoadingState" },
-    }
+  const LoadingState = findOrDefineComponent(
+    contractComponents,
+    defineComponent(
+      world,
+      {
+        state: Type.Number,
+        msg: Type.String,
+        percentage: Type.Number,
+      },
+      {
+        id: "LoadingState",
+        metadata: { contractId: "component.LoadingState" },
+      }
+    )
   );
 
   const components: NetworkComponents<C> = {
@@ -155,4 +164,29 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     registerSystem,
     components,
   };
+}
+
+/**
+ * Find a component in the components object by contract id, or return the component if it doesn't exist
+ * @param components object of components
+ * @param component component to find
+ * @returns component if it exists in components object, otherwise the component passed in
+ */
+function findOrDefineComponent<Cs extends ContractComponents, C extends ContractComponent>(
+  components: Cs,
+  component: C
+): C {
+  const existingComponent = Object.values(components).find(
+    (c) => c.metadata.contractId === component.metadata.contractId
+  ) as C;
+
+  if (existingComponent) {
+    console.warn(
+      "Component with contract id",
+      component.metadata.contractId,
+      "is defined by default in setupMUDNetwork"
+    );
+  }
+
+  return existingComponent || component;
 }
