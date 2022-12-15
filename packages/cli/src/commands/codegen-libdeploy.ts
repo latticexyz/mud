@@ -1,6 +1,4 @@
 import type { Arguments, CommandBuilder } from "yargs";
-import ejs from "ejs";
-import { readFileSync, writeFileSync } from "fs";
 import { generateLibDeploy } from "../utils";
 
 type Options = {

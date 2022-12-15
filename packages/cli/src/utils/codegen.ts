@@ -1,12 +1,14 @@
-import { readFileSync, writeFileSync } from "fs";
+import { readFile, writeFile } from "fs/promises";
 import ejs from "ejs";
 import path from "path";
 
 const contractsDir = path.join(__dirname, "../../src/contracts");
 
+const stubLibDeploy = readFile(path.join(contractsDir, "LibDeploy.sol"));
+
 export async function generateLibDeploy(configPath: string, out: string, systems?: string | string[]) {
   // Parse config
-  const config = JSON.parse(readFileSync(configPath, { encoding: "utf8" }));
+  const config = JSON.parse(await readFile(configPath, { encoding: "utf8" }));
 
   // Filter systems
   if (systems) {
@@ -20,11 +22,11 @@ export async function generateLibDeploy(configPath: string, out: string, systems
   console.log("Generating deployment script");
   const LibDeploy = await ejs.renderFile(path.join(contractsDir, "LibDeploy.ejs"), config, { async: true });
   const libDeployPath = path.join(out, "LibDeploy.sol");
-  writeFileSync(libDeployPath, LibDeploy);
+  await writeFile(libDeployPath, LibDeploy);
 
   return libDeployPath;
 }
 
 export async function resetLibDeploy(out: string) {
-  writeFileSync(path.join(out, "LibDeploy.sol"), readFileSync(path.join(contractsDir, "LibDeploy.sol")));
+  await writeFile(path.join(out, "LibDeploy.sol"), await stubLibDeploy);
 }
