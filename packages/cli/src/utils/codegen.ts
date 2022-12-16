@@ -4,8 +4,15 @@ import path from "path";
 
 const contractsDir = path.join(__dirname, "../../src/contracts");
 
-const stubLibDeploy = readFile(path.join(contractsDir, "LibDeploy.sol"));
+const stubLibDeploy = readFile(path.join(contractsDir, "LibDeployStub.sol"));
 
+/**
+ * Generate LibDeploy.sol from deploy.json
+ * @param configPath path to deploy.json
+ * @param out output directory for LibDeploy.sol
+ * @param systems optional, only generate deploy code for the given systems
+ * @returns path to generated LibDeploy.sol
+ */
 export async function generateLibDeploy(configPath: string, out: string, systems?: string | string[]) {
   // Parse config
   const config = JSON.parse(await readFile(configPath, { encoding: "utf8" }));

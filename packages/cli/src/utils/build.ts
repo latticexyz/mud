@@ -21,7 +21,7 @@ function copyAbi(inDir: string, outDir: string, contract: string) {
   try {
     return copyFileSync(path.join(inDir, contract + ".sol", contract + ".json"), path.join(outDir, contract + ".json"));
   } catch (e) {
-    console.warn(e);
+    console.log("Skipping", contract);
   }
 }
 
