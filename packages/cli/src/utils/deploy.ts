@@ -1,19 +1,39 @@
 import { constants, Wallet } from "ethers";
-import { rmSync } from "fs";
-import { generateLibDeploy } from "./codegen";
+import { generateLibDeploy, resetLibDeploy } from "./codegen";
 import { findLog } from "./findLog";
 import { generateTypes } from "./types";
 import { execa } from "execa";
+import { StaticJsonRpcProvider } from "@ethersproject/providers";
 
 const contractsDir = __dirname + "/../../src/contracts";
 
+/**
+ * Deploy world, components and systems from deploy.json
+ * @param deployerPrivateKey private key of deployer
+ * @param rpc rpc url
+ * @param worldAddress optional, address of existing world
+ * @param reuseComponents optional, reuse existing components
+ * @returns address of deployed world
+ */
 export async function deploy(
   deployerPrivateKey?: string,
   rpc = "http://localhost:8545",
   worldAddress?: string,
-  reuseComponents?: boolean
+  reuseComponents?: boolean,
+  gasPrice?: number
 ) {
   const address = deployerPrivateKey ? new Wallet(deployerPrivateKey).address : constants.AddressZero;
+
+  if (gasPrice == null) {
+    try {
+      console.log("Fetching gas price...");
+      const provider = new StaticJsonRpcProvider(rpc, { name: "AnyNetwork", chainId: 1234 });
+      gasPrice = (await provider.getGasPrice()).toNumber() * 1.3; // 30% multiplier for faster inclusion
+      console.log("Gas price:", gasPrice);
+    } catch (e) {
+      console.log("Could not fetch gas price");
+    }
+  }
 
   const child = execa(
     "forge",
@@ -31,10 +51,12 @@ export async function deploy(
       reuseComponents ? "true" : "false", // Reuse components?
       "--fork-url",
       rpc,
+      ...(gasPrice != null ? ["--with-gas-price", String(gasPrice)] : []),
     ],
-    { stdio: ["inherit", "pipe", "inherit"] }
+    { stdio: ["inherit", "pipe", "pipe"] }
   );
 
+  child.stderr?.on("data", (data) => console.log("stderr:", data.toString()));
   child.stdout?.on("data", (data) => console.log(data.toString()));
 
   // Extract world address from deploy script
@@ -52,6 +74,7 @@ export type DeployOptions = {
   rpc: string;
   systems?: string | string[];
   clear?: boolean;
+  gasPrice?: number;
 };
 
 export async function generateAndDeploy(args: DeployOptions) {
@@ -67,7 +90,13 @@ export async function generateAndDeploy(args: DeployOptions) {
     await generateTypes(undefined, "./types", { clear: args.clear });
 
     // Call deploy script
-    const result = await deploy(args.deployerPrivateKey, args.rpc, args.worldAddress, Boolean(args.systems));
+    const result = await deploy(
+      args.deployerPrivateKey,
+      args.rpc,
+      args.worldAddress,
+      Boolean(args.systems),
+      args.gasPrice
+    );
     deployedWorldAddress = result.deployedWorldAddress;
     initialBlockNumber = result.initialBlockNumber;
 
@@ -77,7 +106,7 @@ export async function generateAndDeploy(args: DeployOptions) {
   } finally {
     // Remove generated LibDeploy
     console.log("Cleaning up deployment script");
-    if (libDeployPath) rmSync(libDeployPath);
+    if (libDeployPath) await resetLibDeploy(contractsDir);
   }
 
   return { deployedWorldAddress, initialBlockNumber };

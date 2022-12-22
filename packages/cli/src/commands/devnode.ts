@@ -21,7 +21,14 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   console.log("Clearing devnode history");
   const userHomeDir = homedir();
   rmSync(path.join(userHomeDir, ".foundry", "anvil", "tmp"), { recursive: true, force: true });
-  const { child } = await execLog("anvil", ["-b", String(blocktime), "--block-base-fee-per-gas", "0"]);
+  const { child } = await execLog("anvil", [
+    "-b",
+    String(blocktime),
+    "--block-base-fee-per-gas",
+    "0",
+    "--gas-limit",
+    "100000000",
+  ]);
 
   process.on("SIGINT", () => {
     console.log("\ngracefully shutting down from SIGINT (Crtl-C)");

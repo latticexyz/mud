@@ -21,6 +21,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     watch: { type: "boolean", desc: "Automatically redeploy changed systems" },
     dev: { type: "boolean", desc: "Automatically use funded dev private key for local development" },
     openUrl: { type: "string", desc: "Opens a browser at the provided url with the worldAddress url param prefilled" },
+    gasPrice: { type: "number", desc: "Gas price to set for deploy transactions" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -30,9 +31,10 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
   }
 
   const deployerPrivateKey =
-    args.deployerPrivateKey ?? args.dev
+    args.deployerPrivateKey ??
+    (args.dev
       ? "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" // Default anvil private key
-      : undefined;
+      : undefined);
 
   // Deploy world, components and systems
   const { deployedWorldAddress: worldAddress, initialBlockNumber } = await generateAndDeploy({
@@ -50,7 +52,7 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
 
   // Set up watcher for system files to redeploy on change
   if (args.watch) {
-    const { config, rpc } = args;
+    const { config, rpc, gasPrice } = args;
 
     hsr("./src", (systems: string[]) => {
       return generateAndDeploy({
@@ -59,6 +61,7 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
         worldAddress,
         rpc,
         systems,
+        gasPrice,
       });
     });
   } else {
