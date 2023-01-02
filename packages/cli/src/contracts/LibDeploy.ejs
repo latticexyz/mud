@@ -7,13 +7,14 @@ pragma solidity >=0.8.0;
 import { DSTest } from "ds-test/test.sol";
 import { console } from "forge-std/console.sol";
 
-// Solecs 
+// Solecs
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { World } from "solecs/World.sol";
 import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { ISystem } from "solecs/interfaces/ISystem.sol";
+import { IOwnableWritable } from "solecs/interfaces/IOwnableWritable.sol";
 
 // Components (requires 'components=...' remapping in project's remappings.txt)
 <% components.forEach(component => { -%>
@@ -21,8 +22,14 @@ import { <%= component %>, ID as <%= component %>ID } from "components/<%- compo
 <% }); -%>
 
 // Systems (requires 'systems=...' remapping in project's remappings.txt)
-<% systems.forEach(system => { -%>
-import { <%= system.name %>, ID as <%= system.name %>ID } from "systems/<%- system.name %>.sol";
+<% // (subsystems may be used for writeAccess only, so `allWritables` must be checked for missing system names)
+const allSystemNames = [...new Set([
+  ...systems.map(({name}) => name),
+  ...allWritables.filter(({registry}) => registry === 'systems').map(({name}) => name)
+])];
+-%>
+<% allSystemNames.forEach(name => { -%>
+import { <%= name %>, ID as <%= name %>ID } from "systems/<%- name %>.sol";
 <% }); -%>
 
 struct DeployResult {
@@ -54,19 +61,24 @@ library LibDeploy {
       console.log("Deploying <%= component %>");
       comp = new <%= component %>(address(result.world));
       console.log(address(comp));
-<% });-%>
+<% }); -%>
     } 
     
     // Deploy systems 
     deploySystems(address(result.world), true);
   }
   
+  /**
+   * `registry` and `writableId` may stand for either components or subsystems.
+   * `writer` is always a system.
+   * (subsystems may be both writables and writers, since they are just systems that inherit `IOwnableWritable`)
+   */
   function authorizeWriter(
-    IUint256Component components,
-    uint256 componentId,
+    IUint256Component registry,
+    uint256 writableId,
     address writer
   ) internal {
-    IComponent(getAddressById(components, componentId)).authorizeWriter(writer);
+    IOwnableWritable(getAddressById(registry, writableId)).authorizeWriter(writer);
   }
   
   /**
@@ -78,27 +90,32 @@ library LibDeploy {
     bool init
   ) internal {
     IWorld world = IWorld(_world);
-    // Deploy systems
-    ISystem system; 
     IUint256Component components = world.components();
+    IUint256Component systems = world.systems();
+
+    // Deploy systems
+    ISystem system;
 <% systems.forEach(system => { -%>
 
     console.log("Deploying <%= system.name %>");
     system = new <%= system.name %>(world, address(components));
     world.registerSystem(address(system), <%= system.name %>ID);
-<% system.writeAccess?.forEach(component => { -%>
-<% if (component === "*") { -%>
-<% components.forEach(comp=> { -%>
-    authorizeWriter(components, <%= comp %>ID, address(system));
-<% });-%>
-<% } else { -%>
-    authorizeWriter(components, <%= component %>ID, address(system));
-<% } -%>
-<% });-%>
-<% if (system.initialize) { -%>
-      if(init) system.execute(<%= system.initialize -%>);
-<% } -%>
     console.log(address(system));
-<% });-%>
+<% }); -%>
+
+    // Initialize systems
+<% systems.forEach(system => { -%>
+    system = ISystem(getAddressById(systems, <%= system.name %>ID));
+<% system.writeAccess?.forEach(namePattern => { -%>
+<% const writables = allWritables.filter(({name}) => namePattern === "*" || namePattern === name); -%>
+<% writables.forEach((writable) => { -%>
+    authorizeWriter(<%= writable.registry %>, <%= writable.name %>ID, address(system));
+<% }); -%>
+<% }); -%>
+<% if (system.initialize) { -%>
+    if(init) system.execute(<%= system.initialize -%>);
+<% } -%>
+
+<% }); -%>
   }
 }
