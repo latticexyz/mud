@@ -31,8 +31,8 @@ export function filterAbi(abiIn = "./out", abiOut = "./abi", exclude: string[] =
   rmSync(abiOut, { recursive: true, force: true });
   mkdirSync(abiOut);
 
-  // Only include World, LibQuery, *Component, *System
-  const include = ["Component", "System", "World", "LibQuery"];
+  // Only include World, LibQuery, *Component, *System, *Subsystem
+  const include = ["Component", "System", "Subsystem", "World", "LibQuery"];
   const contracts = getContractsInDir(abiIn, exclude).filter((item) => include.find((i) => item.includes(i)));
 
   console.log("Selected ABIs: ", contracts);
