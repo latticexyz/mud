@@ -36,6 +36,7 @@ interface Options {
   netlifyPersonalToken?: string;
   codespace?: boolean;
   dry?: boolean;
+  dev?: boolean;
 }
 
 export const command = "deploy";
@@ -57,6 +58,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     netlifyPersonalToken: { type: "string" },
     codespace: { type: "boolean" },
     dry: { type: "boolean" },
+    dev: { type: "boolean", default: true },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -403,7 +405,11 @@ export const deploy = async (options: Options) => {
                     options.rpc = getCodespaceUrl(8545);
                   }
 
-                  launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${options.rpc}&wsRpc=${options.wsRpc}&initialBlockNumber=${ctx.initialBlockNumber}&dev=true&snapshot=&stream=&relay=&faucet=`;
+                  launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${
+                    options.rpc
+                  }&wsRpc=${options.wsRpc}&initialBlockNumber=${
+                    ctx.initialBlockNumber
+                  }&snapshot=&stream=&relay=&faucet=${options.dev ? "&dev=true" : ""}`;
 
                   openurl.open(launcherUrl);
                 },
