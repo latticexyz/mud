@@ -1,13 +1,15 @@
 import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs";
 import path from "path";
+import { getForgeConfig } from "./config";
 import { execLog } from "./exec";
 
-export function forgeBuild(out = "out", options?: { clear?: boolean }) {
+export async function forgeBuild(options?: { clear?: boolean }) {
   if (options?.clear) {
-    console.log("Clearing forge build output directory", out);
-    rmSync(out, { recursive: true, force: true });
+    const forgeConfig = await getForgeConfig();
+    console.log("Clearing forge build output directory", forgeConfig.out);
+    rmSync(forgeConfig.out, { recursive: true, force: true });
   }
-  return execLog("forge", ["build", "-o", out]);
+  return execLog("forge", ["build"]);
 }
 
 function getContractsInDir(dir: string, exclude?: string[]) {
@@ -25,9 +27,13 @@ function copyAbi(inDir: string, outDir: string, contract: string) {
   }
 }
 
-export function filterAbi(abiIn = "./out", abiOut = "./abi", exclude: string[] = ["Component", "IComponent"]) {
-  // Clean our dir
-  console.log(`Cleaning output directory (${abiOut}})`);
+export async function filterAbi(abiOut = "./abi", exclude: string[] = ["Component", "IComponent"]) {
+  // Get forge output dir
+  const forgeConfig = await getForgeConfig();
+  const abiIn = forgeConfig.out;
+
+  // Clean abi dir
+  console.log(`Cleaning ABI output directory (${abiOut})`);
   rmSync(abiOut, { recursive: true, force: true });
   mkdirSync(abiOut);
 

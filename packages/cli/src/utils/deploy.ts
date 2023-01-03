@@ -4,8 +4,12 @@ import { findLog } from "./findLog";
 import { generateTypes } from "./types";
 import { execa } from "execa";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
+import { getForgeConfig } from "./config";
+import { readFile, writeFile } from "fs/promises";
+import path from "path";
 
 const contractsDir = __dirname + "/../../src/contracts";
+const deployScript = "Deploy.sol";
 
 /**
  * Deploy world, components and systems from deploy.json
@@ -24,6 +28,12 @@ export async function deploy(
 ) {
   const address = deployerPrivateKey ? new Wallet(deployerPrivateKey).address : constants.AddressZero;
 
+  // Get testDir from forge config
+  const forgeConfig = await getForgeConfig();
+  const testDir = forgeConfig.test;
+  // Copy deploy script to testDir, where LibDeploy should also be
+  await writeFile(path.join(testDir, deployScript), await readFile(path.join(contractsDir, deployScript)));
+
   if (gasPrice == null) {
     try {
       console.log("Fetching gas price...");
@@ -39,7 +49,7 @@ export async function deploy(
     "forge",
     [
       "script",
-      contractsDir + "/Deploy.sol",
+      path.join(testDir, deployScript),
       "--target-contract",
       "Deploy",
       "-vvv",
@@ -83,12 +93,16 @@ export async function generateAndDeploy(args: DeployOptions) {
   let deployedWorldAddress: string | undefined;
   let initialBlockNumber: string | undefined;
 
+  // Get testDir from forge config
+  const forgeConfig = await getForgeConfig();
+  const testDir = forgeConfig.test;
+
   try {
     // Generate LibDeploy
-    libDeployPath = await generateLibDeploy(args.config, contractsDir, args.systems);
+    libDeployPath = await generateLibDeploy(args.config, testDir, args.systems);
 
     // Build and generate fresh types
-    await generateTypes(undefined, "./types", { clear: args.clear });
+    await generateTypes(args.config, undefined, "./types", { clear: args.clear });
 
     // Call deploy script
     const result = await deploy(
@@ -100,14 +114,12 @@ export async function generateAndDeploy(args: DeployOptions) {
     );
     deployedWorldAddress = result.deployedWorldAddress;
     initialBlockNumber = result.initialBlockNumber;
-
-    // Extract world address from deploy script
   } catch (e) {
     console.error(e);
   } finally {
     // Remove generated LibDeploy
     console.log("Cleaning up deployment script");
-    if (libDeployPath) await resetLibDeploy(contractsDir);
+    if (libDeployPath) await resetLibDeploy(testDir);
   }
 
   return { deployedWorldAddress, initialBlockNumber };

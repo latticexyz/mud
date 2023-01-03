@@ -1,10 +1,10 @@
-import path from "path";
 import { Arguments, CommandBuilder } from "yargs";
-import { filterAbi, forgeBuild, generateAbiTypes, generateSystemTypes, generateTypes } from "../utils";
+import { generateTypes } from "../utils";
 
 type Options = {
   abiDir?: string;
   outputDir: string;
+  config: string;
 };
 
 export const command = "types";
@@ -21,9 +21,10 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
       description: "Output directory for generated types. Defaults to ./types",
       default: "./types",
     },
+    config: { type: "string", default: "./deploy.json", desc: "Component and system deployment configuration" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
-  const { abiDir, outputDir } = args;
-  await generateTypes(abiDir, outputDir, { clear: true });
+  const { abiDir, outputDir, config } = args;
+  await generateTypes(config, abiDir, outputDir, { clear: true });
 };

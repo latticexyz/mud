@@ -2,8 +2,8 @@ import type { Arguments, CommandBuilder } from "yargs";
 import { generateSystemTypes } from "../utils";
 
 type Options = {
-  inputDir: string;
   outputDir: string;
+  config: string;
 };
 
 export const command = "system-types";
@@ -12,19 +12,15 @@ export const desc =
 
 export const builder: CommandBuilder<Options, Options> = (yargs) =>
   yargs.options({
-    inputDir: {
-      type: "string",
-      description: "source systems directory, defaults to ./src/systems",
-      default: "./src/systems",
-    },
     outputDir: {
       type: "string",
       description: "generated types directory, defaults to ./types",
       default: "./types",
     },
+    config: { type: "string", default: "./deploy.json", desc: "Component and system deployment configuration" },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
-  const { inputDir, outputDir } = args;
-  await generateSystemTypes(inputDir, outputDir);
+  const { outputDir, config } = args;
+  await generateSystemTypes(outputDir, config);
 };

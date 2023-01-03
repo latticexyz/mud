@@ -5,13 +5,12 @@ pragma solidity >=0.8.0;
 import {DSTest} from "ds-test/test.sol";
 import {Vm} from "forge-std/Vm.sol";
 import {console} from "forge-std/console.sol";
-import {Cheats} from "./Cheats.sol";
 
 // Libraries
 import {LibDeploy, DeployResult} from "./LibDeploy.sol";
 
 contract Deploy is DSTest {
-  Cheats internal immutable vm = Cheats(HEVM_ADDRESS);
+  Vm internal immutable vm = Vm(HEVM_ADDRESS);
 
   function broadcastDeploy(
     address _deployer,
