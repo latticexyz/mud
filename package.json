@@ -18,7 +18,6 @@
       "packages/std-contracts",
       "packages/std-client",
       "packages/ecs-browser",
-      "packages/mud.dev",
       "packages/services",
       "packages/noise"
     ]
@@ -36,9 +35,11 @@
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.15.0",
     "husky": ">=6",
+    "jq-cli-wrapper": "^1.6.1",
     "lerna": "^4.0.0",
     "lint-staged": ">=10",
     "prettier": "^2.6.2",
+    "retypeapp": "^2.4.0",
     "rimraf": "^3.0.2",
     "run-pty": "^3.0.0",
     "typescript": ">=3.0.0"
@@ -49,16 +50,17 @@
     }
   },
   "scripts": {
-    "prepare": "husky install && (forge --version || yarn foundryup) && yarn lerna run prepare",
+    "prepare": "husky install && (forge --version || yarn foundryup) && yarn workspaces run prepare",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
-    "release": "yarn && lerna publish --no-private --force-publish",
+    "release": "yarn && lerna publish --no-private --force-publish && yarn retype:updateversion",
     "release:force": "yarn lerna run release",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "yarn lerna run link",
-    "docs": "yarn lerna run docs && rimraf .docs && mkdir .docs && for i in network phaserx recs solecs std-client std-contracts utils services; do mkdir .docs/$i && cp -r packages/$i/docs/* .docs/$i; done && rimraf packages/mud.dev/public/docs && mv .docs packages/mud.dev/public/docs",
+    "docs": "yarn lerna run docs && yarn retype:updateversion && yarn retype build",
+    "retype:updateversion":"sed \"s/label: .*/label: $(yarn list --pattern @latticexyz/solecs | grep -e @latticexyz | sed \"s/.*@//\")/\" retype.yml > retype.yml.tmp && mv retype.yml.tmp retype.yml",
     "test": "yarn workspaces run test",
     "yalc:release": "yarn entry:dist && yarn lerna exec yalc push",
     "yalc:reset": "yarn entry:src",

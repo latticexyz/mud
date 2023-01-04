@@ -12,18 +12,31 @@ restricted by specifying contract addresses.
 
 Usage:
 
-    ecs-snapshot [flags]
+	ecs-snapshot [flags]
 
 The flags are:
 
-    -ws-url
-        Websocket URL for chain to index and snapshot.
-    -port
-        Port to expose the gRPC server.
-	-worldAddresses
-		Comma-separated list of contract addresses to limit the indexing to. If left blank, index
-		everything, otherwise, use this list as a filter.
-
+	    -ws-url
+	        Websocket URL for chain to index and snapshot.
+	    -port
+	        Port to expose the gRPC server.
+		-worldAddresses
+			Comma-separated list of contract addresses to limit the indexing to. If left blank, index
+			everything, otherwise, use this list as a filter.
+		-block
+			Block to start taking snapshots from. Defaults to 0.
+		-snapshot-block-interval
+			Block number interval for how often to take regular snapshots.
+		-initial-sync-block-batch-size
+			Number of blocks to fetch data for when performing an initial sync.
+		-initial-sync-block-batch-sync-timeout
+			Time in milliseconds to wait between calls to fetch batched log data when performing an initial sync.
+		-initial-sync-snapshot-interval
+			Block number interval for how often to take intermediary snapshots when performing an initial sync.
+		-default-snapshot-chunk-percentage
+			Default percentage for RPCs that request a snapshot in chunks. Default to 10, i.e. 10 percent chunks.
+		-metrics-port
+			Prometheus metrics http handler port. Defaults to port 6060.
 */
 package main
 

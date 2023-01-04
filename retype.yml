@@ -1,0 +1,27 @@
+input: .
+output: .retype
+url: mud.dev
+branding:
+  title: MUD
+  label: 1.28.1
+  logo: public/logo512_dark.png
+  logoDark: public/logo512.png
+  colors:
+    label:
+      text: "#eb4926"
+      background: "#eb492630"
+favicon: public/favicon.ico
+links:
+  - text: Blog
+    link: /blog
+  - text: GitHub
+    link: https://github.com/latticexyz/mud
+  - text: Discord
+    link: https://discord.gg/XhZp6HbqNp
+  - text: Twitter
+    link: https://twitter.com/latticexyz
+edit:
+  repo: "https://github.com/latticexyz/mud"
+  label: Edit on Github
+footer:
+  copyright: "&copy; Copyright {{ year }}. All rights reserved."

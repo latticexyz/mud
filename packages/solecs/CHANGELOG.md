@@ -3,6 +3,48 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.3](https://github.com/latticexyz/mud/compare/v1.31.2...v1.31.3) (2022-12-16)
+
+**Note:** Version bump only for package @latticexyz/solecs
+
+## [1.31.2](https://github.com/latticexyz/mud/compare/v1.31.1...v1.31.2) (2022-12-15)
+
+**Note:** Version bump only for package @latticexyz/solecs
+
+## [1.31.1](https://github.com/latticexyz/mud/compare/v1.31.0...v1.31.1) (2022-12-15)
+
+**Note:** Version bump only for package @latticexyz/solecs
+
+# [1.31.0](https://github.com/latticexyz/mud/compare/v1.30.1...v1.31.0) (2022-12-14)
+
+### Bug Fixes
+
+- use interfaces in LibDeploy ([#278](https://github.com/latticexyz/mud/issues/278)) ([6d01082](https://github.com/latticexyz/mud/commit/6d01082f8119c67fcfdb2351aa98a3d7efa0989f))
+
+### Features
+
+- **solecs:** add world to IComponent definition ([#284](https://github.com/latticexyz/mud/issues/284)) ([881e4ea](https://github.com/latticexyz/mud/commit/881e4ea9e2e6aaa08abea3743c1449e02b9e12ae))
+
+## [1.30.1](https://github.com/latticexyz/mud/compare/v1.30.0...v1.30.1) (2022-12-02)
+
+**Note:** Version bump only for package @latticexyz/solecs
+
+# [1.30.0](https://github.com/latticexyz/mud/compare/v1.29.0...v1.30.0) (2022-12-02)
+
+### Features
+
+- **cli:** hot system replacement, new commands (deploy-contracts, codegen-libdeploy, devnode, types, test, create) ([#277](https://github.com/latticexyz/mud/issues/277)) ([8e32f98](https://github.com/latticexyz/mud/commit/8e32f983208c37839bc3e347058dbc7e49b6247e))
+
+# [1.29.0](https://github.com/latticexyz/mud/compare/v1.28.1...v1.29.0) (2022-11-29)
+
+### Bug Fixes
+
+- allow overriding preset components, replace Owned interface with IERC173, fix IComponent interface ([#239](https://github.com/latticexyz/mud/issues/239)) ([ae3983b](https://github.com/latticexyz/mud/commit/ae3983b047271ebcf96506f8a6cb0458deb602e7))
+
+### Features
+
+- **solecs:** add util to split up bitpacked data ([#247](https://github.com/latticexyz/mud/issues/247)) ([a7f73b0](https://github.com/latticexyz/mud/commit/a7f73b01e2f0387927e30a4e7b0846a69b3c0ce0))
+
 ## [1.28.1](https://github.com/latticexyz/mud/compare/v1.28.0...v1.28.1) (2022-11-24)
 
 **Note:** Version bump only for package @latticexyz/solecs

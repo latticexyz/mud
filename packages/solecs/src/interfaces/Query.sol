@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.13;
 import { IComponent } from "./IComponent.sol";
 import { LinkedList } from "memmove/LinkedList.sol";

@@ -1,15 +1,21 @@
 # .github/workflows/test.yml
-name: Run tests
+name: Tests
 
 on:
   push:
+    branches:
+      - main
   pull_request:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  test:
+    runs-on: ubuntu-22.04
     name: Run tests
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
       - name: git-checkout
         uses: actions/checkout@v2
 

@@ -1,54 +1,32 @@
 import { Arguments, CommandBuilder } from "yargs";
-import { exec } from "../utils";
+import { execLog } from "../utils";
+import chalk from "chalk";
 
 type Options = {
   name: string;
+  template: string;
 };
 
 export const command = "create <name>";
-export const desc = "Sets up a fresh mud project into <name>. Requires yarn.";
+export const desc = "Sets up a mud project into <name>. Requires yarn.";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) =>
-  yargs.positional("name", { type: "string", demandOption: true });
+  yargs
+    .options({
+      template: { type: "string", desc: "Template to be used (available: [minimal])", default: "minimal" },
+    })
+    .positional("name", { type: "string", default: "mud-app" });
 
 export const handler = async (argv: Arguments<Options>): Promise<void> => {
-  const { name } = argv;
-  console.log("Creating new mud project in", name);
+  const { name, template } = argv;
+  console.log(chalk.yellow.bold("Creating new mud project in", name));
+  let result = await execLog("git", ["clone", `https://github.com/latticexyz/mud-template-${template}`, name]);
+  if (result.exitCode != 0) process.exit(result.exitCode);
 
-  console.log("Cloning...");
-  await exec(`git clone https://github.com/latticexyz/mud _mudtemp`);
+  console.log(chalk.yellow.bold("Installing dependencies..."));
+  result = await execLog("yarn", ["--cwd", `./${name}`]);
+  if (result.exitCode != 0) process.exit(result.exitCode);
 
-  console.log("Moving...");
-  await exec(`cp -r _mudtemp/packages/ri ${name}`);
-
-  console.log("Setting up vscode solidity settings...");
-  await exec(`cp -r _mudtemp/.vscode ${name}/.vscode`);
-
-  console.log("Cleaning up...");
-  await exec(`rm -rf _mudtemp`);
-
-  console.log("Setting up package.json...");
-  await exec(`mv ${name}/packagejson.template ${name}/package.json`);
-
-  console.log("Installing dependencies using yarn...");
-  await exec(`cd ${name} && yarn install`);
-
-  console.log("Setting up foundry.toml...");
-  await exec(`rm ${name}/contracts/foundry.toml`);
-  await exec(`mv ${name}/contracts/foundrytoml.template ${name}/contracts/foundry.toml`);
-
-  console.log("Setting up remappings...");
-  await exec(`rm ${name}/contracts/remappings.txt`);
-  await exec(`mv ${name}/contracts/remappingstxt.template ${name}/contracts/remappings.txt`);
-
-  console.log("Setting up compile task...");
-  await exec(`rm ${name}/contracts/tasks/compile.ts`);
-  await exec(`mv ${name}/contracts/tasks/compilets.template ${name}/contracts/tasks/compile.ts`);
-
-  console.log("Building contracts...");
-  await exec(`cd ${name}/contracts && yarn build`);
-
-  console.log("Done setting up! Run `yarn start` to start client and chain, then head to localhost:3000 to explore.");
-
+  console.log(chalk.yellow.bold(`Done! Run \`yarn dev\` in ${name} to get started.`));
   process.exit(0);
 };

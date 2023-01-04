@@ -18,10 +18,11 @@ import (
 )
 
 type DripConfig struct {
-	DripAmount    int64
+	DripAmount    float64
 	DripFrequency float64
-	DripLimit     uint64
+	DripLimit     float64
 	DevMode       bool
+	TwitterMode   bool
 
 	// Miscellaneous.
 	NumLatestTweetsForVerify int
@@ -152,7 +153,7 @@ func GetTimestampForDrip(address string) int64 {
 	return 0
 }
 
-func GetTotalDripCount() uint64 {
+func GetTotalDripCount() float64 {
 	store := GetStore()
 	return store.TotalDripCount
 }
@@ -178,7 +179,7 @@ func SetTimestampForDrip(address string, timestamp int64, store *pb.FaucetStore)
 	store.LatestDrip[address] = timestamp
 }
 
-func SetTotalDripCount(dripCount uint64, store *pb.FaucetStore) {
+func SetTotalDripCount(dripCount float64, store *pb.FaucetStore) {
 	store.TotalDripCount = dripCount
 }
 
@@ -227,7 +228,7 @@ func IncrementTotalDripCount(dripConfig *DripConfig) {
 	store := GetStore()
 
 	// Update the total drip count to current count + drip amount.
-	SetTotalDripCount(store.TotalDripCount+uint64(dripConfig.DripAmount), store)
+	SetTotalDripCount(store.TotalDripCount+dripConfig.DripAmount, store)
 
 	// Write the updated store to file.
 	writeStore(
@@ -236,7 +237,7 @@ func IncrementTotalDripCount(dripConfig *DripConfig) {
 	)
 
 	logger.GetLogger().Info("incremented total drip amount by one drip increment",
-		zap.Uint64("current", store.TotalDripCount),
+		zap.Float64("current (ETH)", store.TotalDripCount),
 	)
 }
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
 import { IERC173 } from "./IERC173.sol";
@@ -25,4 +25,6 @@ interface IComponent is IERC173 {
   function authorizeWriter(address writer) external;
 
   function unauthorizeWriter(address writer) external;
+
+  function world() external view returns (address);
 }
