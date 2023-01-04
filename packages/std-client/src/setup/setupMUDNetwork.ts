@@ -9,7 +9,7 @@ import {
   InputType,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { World } from "@latticexyz/recs";
+import { defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256 } from "@latticexyz/utils";
 import { Contract, ContractInterface } from "ethers";
@@ -28,22 +28,49 @@ import {
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
   world: World,
-  components: C,
+  contractComponents: C,
   SystemAbis: { [key in keyof SystemTypes]: ContractInterface },
   options?: { initialGasPrice?: number; fetchSystemCalls?: boolean }
 ) {
-  const SystemsRegistry = defineStringComponent(world, {
-    id: "SystemsRegistry",
-    metadata: { contractId: "world.component.systems" },
-  });
+  const SystemsRegistry = findOrDefineComponent(
+    contractComponents,
+    defineStringComponent(world, {
+      id: "SystemsRegistry",
+      metadata: { contractId: "world.component.systems" },
+    })
+  );
 
-  const ComponentsRegistry = defineStringComponent(world, {
-    id: "ComponentsRegistry",
-    metadata: { contractId: "world.component.components" },
-  });
+  const ComponentsRegistry = findOrDefineComponent(
+    contractComponents,
+    defineStringComponent(world, {
+      id: "ComponentsRegistry",
+      metadata: { contractId: "world.component.components" },
+    })
+  );
 
-  (components as NetworkComponents<C>).SystemsRegistry = SystemsRegistry;
-  (components as NetworkComponents<C>).ComponentsRegistry = ComponentsRegistry;
+  // used by SyncWorker to notify client of sync progress
+  const LoadingState = findOrDefineComponent(
+    contractComponents,
+    defineComponent(
+      world,
+      {
+        state: Type.Number,
+        msg: Type.String,
+        percentage: Type.Number,
+      },
+      {
+        id: "LoadingState",
+        metadata: { contractId: "component.LoadingState" },
+      }
+    )
+  );
+
+  const components: NetworkComponents<C> = {
+    ...contractComponents,
+    SystemsRegistry,
+    ComponentsRegistry,
+    LoadingState,
+  };
 
   // Mapping from component contract id to key in components object
   const mappings: Mappings<C> = {};
@@ -135,5 +162,31 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     mappings,
     registerComponent,
     registerSystem,
+    components,
   };
+}
+
+/**
+ * Find a component in the components object by contract id, or return the component if it doesn't exist
+ * @param components object of components
+ * @param component component to find
+ * @returns component if it exists in components object, otherwise the component passed in
+ */
+function findOrDefineComponent<Cs extends ContractComponents, C extends ContractComponent>(
+  components: Cs,
+  component: C
+): C {
+  const existingComponent = Object.values(components).find(
+    (c) => c.metadata.contractId === component.metadata.contractId
+  ) as C;
+
+  if (existingComponent) {
+    console.warn(
+      "Component with contract id",
+      component.metadata.contractId,
+      "is defined by default in setupMUDNetwork"
+    );
+  }
+
+  return existingComponent || component;
 }

@@ -3,6 +3,30 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.31.3](https://github.com/latticexyz/mud/compare/v1.31.2...v1.31.3) (2022-12-16)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+## [1.31.2](https://github.com/latticexyz/mud/compare/v1.31.1...v1.31.2) (2022-12-15)
+
+### Bug Fixes
+
+- **std-client:** allow default components to be passed in to setupMUDNetwork ([#299](https://github.com/latticexyz/mud/issues/299)) ([5d043ee](https://github.com/latticexyz/mud/commit/5d043eeb80936ef716ed92972111a9273b63511c))
+
+## [1.31.1](https://github.com/latticexyz/mud/compare/v1.31.0...v1.31.1) (2022-12-15)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [1.31.0](https://github.com/latticexyz/mud/compare/v1.30.1...v1.31.0) (2022-12-14)
+
+### Bug Fixes
+
+- add LoadingState component from SyncWorker ([#288](https://github.com/latticexyz/mud/issues/288)) ([2026abc](https://github.com/latticexyz/mud/commit/2026abc43b6104ca231b3bb6c0be3c19c87a7624))
+
+### Features
+
+- **std-client:** add more granular relationship utilities ⏳ ([#283](https://github.com/latticexyz/mud/issues/283)) ([f094624](https://github.com/latticexyz/mud/commit/f094624cc1a6a5b2642917fab37f7f1410b4210d))
+
 ## [1.30.1](https://github.com/latticexyz/mud/compare/v1.30.0...v1.30.1) (2022-12-02)
 
 **Note:** Version bump only for package @latticexyz/std-client

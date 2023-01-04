@@ -47,6 +47,9 @@ import {
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { GodID, SyncState } from "./constants";
+import { debug as parentDebug } from "./debug";
+
+const debug = parentDebug.extend("SyncWorker");
 
 export enum InputType {
   Ack,
@@ -63,6 +66,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
   private syncState: SyncStateStruct = { state: SyncState.CONNECTING, msg: "", percentage: 0 };
 
   constructor() {
+    debug("creating SyncWorker");
     this.init();
   }
 
@@ -150,7 +154,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
 
     // Start syncing current events, but only start streaming to output once gap between initial state and current block is closed
 
-    console.log("[SyncWorker] start initial sync");
+    debug("start initial sync");
     this.setLoadingState({ state: SyncState.INITIAL, msg: "Starting initial sync", percentage: 0 });
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
@@ -169,8 +173,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
           Boolean(fetchSystemCalls)
         ).pipe(
           catchError((err) => {
-            console.warn("[SyncWorker || via Stream Service]", err);
-            console.info("[SyncWorker || falling back to RPC]", err);
+            console.error("SyncWorker stream service error, falling back to RPC", err);
             return latestEventRPC$;
           })
         )
@@ -203,8 +206,8 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     this.setLoadingState({ percentage: 50 });
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
     this.setLoadingState({ percentage: 100 });
-    console.log(
-      `[SyncWorker] cache block: ${cacheBlockNumber}, snapshot block: ${
+    debug(
+      `cache block: ${cacheBlockNumber}, snapshot block: ${
         snapshotBlockNumber > 0 ? snapshotBlockNumber : "Unavailable"
       }, start sync at ${initialBlockNumber}`
     );
@@ -232,7 +235,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
         this.setLoadingState({ percentage: 100 });
       }
 
-      console.log(`[SyncWorker] got ${initialState.state.size} items from ${syncFromSnapshot ? "snapshot" : "cache"}`);
+      debug(`got ${initialState.state.size} items from ${syncFromSnapshot ? "snapshot" : "cache"}`);
     }
 
     // Load events from gap between initial state and current block number from RPC
@@ -251,14 +254,14 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       (percentage: number) => this.setLoadingState({ percentage })
     );
 
-    console.log(
-      `[SyncWorker || via JSON-RPC] got ${gapStateEvents.length} items from block range ${initialState.blockNumber} -> ${streamStartBlockNumber}`
+    debug(
+      `got ${gapStateEvents.length} items from block range ${initialState.blockNumber} -> ${streamStartBlockNumber}`
     );
 
     // Merge initial state, gap state and live events since initial sync started
     storeEvents(initialState, [...gapStateEvents, ...initialLiveEvents]);
     cacheStore.current = initialState;
-    console.log(`[SyncWorker] initial sync state size: ${cacheStore.current.state.size}`);
+    debug(`initial sync state size: ${cacheStore.current.state.size}`);
 
     this.setLoadingState({
       state: SyncState.INITIAL,

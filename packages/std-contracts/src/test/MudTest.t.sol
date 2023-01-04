@@ -40,7 +40,7 @@ contract MudTest is DSTest {
     return getAddressById(systems, id);
   }
 
-  function setUp() public {
+  function setUp() public virtual {
     deployer = utils.getNextUserAddress();
     world = deploy.deploy(deployer);
 
