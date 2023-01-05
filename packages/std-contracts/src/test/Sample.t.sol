@@ -10,8 +10,6 @@ import { LibStorage as s } from "../libraries/LibStorage.sol";
 import { SampleSystem, ID as SampleSystemID } from "./SampleSystem.sol";
 
 contract SampleTest is DSTest {
-  using s for s.Layout;
-
   IUint256Component public systems;
   World internal world;
   IUint256Component public components;
@@ -23,13 +21,13 @@ contract SampleTest is DSTest {
     systems = world.systems();
 
     // Place storage values in SampleTest's storage
-    s.layout().initSystem(world, components);
+    s.initSystem(world, components);
     system = new SampleSystem(world, address(components));
   }
 
   function testLibStorageTest() public {
-    assertEq(address(world), address(s.w()));
-    assertEq(address(components), address(s.c()));
+    assertEq(address(world), address(s.world()));
+    assertEq(address(components), address(s.comp()));
   }
 
   function testLibStorageSample() public {

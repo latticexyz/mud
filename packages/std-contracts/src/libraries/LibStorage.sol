@@ -27,28 +27,17 @@ library LibStorage {
     }
   }
 
-  function initSystem(
-    Layout storage l,
-    IWorld world,
-    IUint256Component components
-  ) internal {
-    l.world = world;
-    l.components = components;
+  function initSystem(IWorld _world, IUint256Component _components) internal {
+    Layout storage l = layout();
+    l.world = _world;
+    l.components = _components;
   }
 
-  function c() public view returns (IUint256Component) {
+  function comp() public view returns (IUint256Component) {
     return layout().components;
   }
 
-  function w() public view returns (IWorld) {
+  function world() public view returns (IWorld) {
     return layout().world;
-  }
-
-  function sys(uint256 systemID) internal view returns (address) {
-    return getSystemAddressById(c(), systemID);
-  }
-
-  function comp(uint256 componentID) internal view returns (address) {
-    return getAddressById(c(), componentID);
   }
 }

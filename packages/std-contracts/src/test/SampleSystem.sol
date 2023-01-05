@@ -11,10 +11,10 @@ contract SampleSystem is StdSystem {
   constructor(IWorld _world, address _components) StdSystem(_world, _components) {}
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    if (address(s.w()) == address(world)) {
+    if (address(s.world()) == address(world)) {
       console.log("World is correct");
     }
-    if (address(s.c()) == address(components)) {
+    if (address(s.comp()) == address(components)) {
       console.log("Components are correct");
     }
   }

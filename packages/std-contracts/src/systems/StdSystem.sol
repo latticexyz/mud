@@ -7,9 +7,7 @@ import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { LibStorage } from "../libraries/LibStorage.sol";
 
 abstract contract StdSystem is System {
-  using LibStorage for LibStorage.Layout;
-
   constructor(IWorld _world, address _components) System(_world, _components) {
-    LibStorage.layout().initSystem(_world, IUint256Component(_components));
+    LibStorage.initSystem(_world, IUint256Component(_components));
   }
 }
