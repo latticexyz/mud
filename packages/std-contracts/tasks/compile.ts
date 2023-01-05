@@ -10,6 +10,7 @@ subtask(TASK_COMPILE_SOLIDITY).setAction(async (_: { force: boolean; quiet: bool
     .readFileSync("remappings.txt")
     .toString()
     .split("\n")
+    .filter((r) => r.length > 0)
     .map((r) => r.split("="));
 
   console.log("remappings", remappings);
