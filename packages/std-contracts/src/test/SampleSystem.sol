@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import "./StdSystem.sol";
+import "../systems/StdSystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { LibStorage as s } from "../libraries/LibStorage.sol";
 import { console } from "forge-std/console.sol";

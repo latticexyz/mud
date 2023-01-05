@@ -7,7 +7,7 @@ import { World } from "solecs/World.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { console } from "forge-std/console.sol";
 import { LibStorage as s, worldID, componentsID } from "../libraries/LibStorage.sol";
-import { SampleSystem, ID as SampleSystemID } from "../systems/SampleSystem.sol";
+import { SampleSystem, ID as SampleSystemID } from "./SampleSystem.sol";
 
 contract SampleTest is DSTest {
   IUint256Component public systems;
