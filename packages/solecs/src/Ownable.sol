@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: Unlicense
+// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
 import { Ownable as SolidStateOwnable } from "@solidstate/contracts/access/ownable/Ownable.sol";
