@@ -12,6 +12,6 @@ contract Ownable is SolidStateOwnable {
 
   constructor() {
     // Initialize owner (SolidState has no constructors)
-    OwnableStorage.layout().setOwner(msg.sender);
+    OwnableStorage.layout().owner = msg.sender;
   }
 }
