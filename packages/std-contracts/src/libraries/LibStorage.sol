@@ -13,25 +13,35 @@ uint256 constant componentsID = uint256(keccak256("mud.components"));
  */
 
 library LibStorage {
-  function c() internal view returns (IUint256Component components) {
-    bytes32 position = bytes32(componentsID);
+  struct Layout {
+    IUint256Component components;
+    IWorld world;
+  }
+
+  bytes32 internal constant STORAGE_SLOT = keccak256("solecs.contracts.storage.System");
+
+  function layout() internal pure returns (Layout storage l) {
+    bytes32 slot = STORAGE_SLOT;
     assembly {
-      components := sload(position)
+      l.slot := slot
     }
   }
 
-  function w() internal view returns (IWorld world) {
-    bytes32 position = bytes32(worldID);
-    assembly {
-      world := sload(position)
-    }
+  function initSystem(
+    Layout storage l,
+    IWorld world,
+    IUint256Component components
+  ) internal {
+    l.world = world;
+    l.components = components;
   }
 
-  function storeAddress(uint256 position, address a) internal {
-    bytes32 data = bytes32(uint256(uint160(a)));
-    assembly {
-      sstore(position, data)
-    }
+  function c() public view returns (IUint256Component) {
+    return layout().components;
+  }
+
+  function w() public view returns (IWorld) {
+    return layout().world;
   }
 
   function sys(uint256 systemID) internal view returns (address) {
