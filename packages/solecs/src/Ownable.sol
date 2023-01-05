@@ -8,8 +8,6 @@ import { OwnableStorage } from "@solidstate/contracts/access/ownable/OwnableStor
  * IERC173 implementation
  */
 contract Ownable is SolidStateOwnable {
-  using OwnableStorage for OwnableStorage.Layout;
-
   constructor() {
     // Initialize owner (SolidState has no constructors)
     OwnableStorage.layout().owner = msg.sender;
