@@ -5,14 +5,11 @@ import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { getSystemAddressById, getAddressById } from "solecs/utils.sol";
 
-uint256 constant worldID = uint256(keccak256("mud.world"));
-uint256 constant componentsID = uint256(keccak256("mud.components"));
-
 /**
  * This library will only work if you use `std-contracts/StdSystem.sol` for every system in your contracts
  */
 
-library LibStorage {
+library SystemStorage {
   struct Layout {
     IUint256Component components;
     IWorld world;
@@ -27,13 +24,13 @@ library LibStorage {
     }
   }
 
-  function initSystem(IWorld _world, IUint256Component _components) internal {
+  function init(IWorld _world, IUint256Component _components) internal {
     Layout storage l = layout();
     l.world = _world;
     l.components = _components;
   }
 
-  function comp() public view returns (IUint256Component) {
+  function components() public view returns (IUint256Component) {
     return layout().components;
   }
 

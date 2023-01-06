@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 import "../systems/StdSystem.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
-import { LibStorage as s } from "../libraries/LibStorage.sol";
+import { SystemStorage as s } from "../libraries/SystemStorage.sol";
 import { console } from "forge-std/console.sol";
 
 uint256 constant ID = uint256(keccak256("system.sample"));
@@ -11,12 +11,8 @@ contract SampleSystem is StdSystem {
   constructor(IWorld _world, address _components) StdSystem(_world, _components) {}
 
   function execute(bytes memory arguments) public returns (bytes memory) {
-    if (address(s.world()) == address(world)) {
-      console.log("World is correct");
-    }
-    if (address(s.comp()) == address(components)) {
-      console.log("Components are correct");
-    }
+    require(address(s.world()) == address(world), "World address is incorrect");
+    require(address(s.components()) == address(components), "Components address is incorrect");
   }
 
   function executeTyped() external returns (bytes memory) {

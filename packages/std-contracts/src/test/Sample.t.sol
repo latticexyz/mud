@@ -1,12 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-// External
 import { DSTest } from "ds-test/test.sol";
 import { World } from "solecs/World.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
-import { console } from "forge-std/console.sol";
-import { LibStorage as s } from "../libraries/LibStorage.sol";
+import { SystemStorage as s } from "../libraries/SystemStorage.sol";
 import { SampleSystem, ID as SampleSystemID } from "./SampleSystem.sol";
 
 contract SampleTest is DSTest {
@@ -21,13 +19,13 @@ contract SampleTest is DSTest {
     systems = world.systems();
 
     // Place storage values in SampleTest's storage
-    s.initSystem(world, components);
+    s.init(world, components);
     system = new SampleSystem(world, address(components));
   }
 
   function testLibStorageTest() public {
     assertEq(address(world), address(s.world()));
-    assertEq(address(components), address(s.comp()));
+    assertEq(address(components), address(s.components()));
   }
 
   function testLibStorageSample() public {
