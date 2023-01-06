@@ -37,4 +37,12 @@ library SystemStorage {
   function world() public view returns (IWorld) {
     return layout().world;
   }
+
+  function system(uint256 systemID) internal view returns (address) {
+    return getSystemAddressById(layout().components, systemID);
+  }
+
+  function component(uint256 componentID) internal view returns (address) {
+    return getAddressById(layout().components, componentID);
+  }
 }
