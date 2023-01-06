@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { ISystem } from "./interfaces/ISystem.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
+import { SystemStorage } from "./libraries/SystemStorage.sol";
 
 /**
  * System base contract
@@ -22,6 +23,7 @@ abstract contract System is ISystem {
     _owner = msg.sender;
     components = _components == address(0) ? _world.components() : IUint256Component(_components);
     world = _world;
+    SystemStorage.init(world, components);
   }
 
   function owner() public view override returns (address) {
