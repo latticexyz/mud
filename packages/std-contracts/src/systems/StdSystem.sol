@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-// External
 import "solecs/System.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { SystemStorage } from "../libraries/SystemStorage.sol";
