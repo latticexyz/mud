@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.32.0](https://github.com/latticexyz/mud/compare/v1.31.3...v1.32.0) (2023-01-06)
+
+### Features
+
+- **ecs-browser:** replace react syntax highlighter with shiki and bundler with tsup ([#262](https://github.com/latticexyz/mud/issues/262)) ([915506d](https://github.com/latticexyz/mud/commit/915506d7e7ca0b5a68afb646388bb9d4bb689879))
+
 ## [1.31.3](https://github.com/latticexyz/mud/compare/v1.31.2...v1.31.3) (2022-12-16)
 
 **Note:** Version bump only for package @latticexyz/std-client
