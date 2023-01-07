@@ -25,4 +25,8 @@ contract StringComponent is Component {
   function getEntitiesWithValue(string memory value) public view virtual returns (uint256[] memory) {
     return getEntitiesWithValue(abi.encode(value));
   }
+
+  function hasValue(uint256 id, string memory value) public view returns (bool) {
+    return keccak256(getRawValue(id)) == keccak256(abi.encode(value));
+  }
 }

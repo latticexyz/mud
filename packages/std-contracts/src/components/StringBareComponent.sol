@@ -21,4 +21,8 @@ contract StringBareComponent is BareComponent {
     string memory value = abi.decode(getRawValue(entity), (string));
     return value;
   }
+
+  function hasValue(uint256 id, string memory value) public view returns (bool) {
+    return keccak256(getRawValue(id)) == keccak256(abi.encode(value));
+  }
 }
