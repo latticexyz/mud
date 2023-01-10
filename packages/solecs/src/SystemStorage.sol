@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IUint256Component } from "../interfaces/IUint256Component.sol";
-import { IWorld } from "../interfaces/IWorld.sol";
-import { getSystemAddressById, getAddressById } from "../utils.sol";
+import { IUint256Component } from "./interfaces/IUint256Component.sol";
+import { IWorld } from "./interfaces/IWorld.sol";
+import { getSystemAddressById, getAddressById } from "./utils.sol";
 
 library SystemStorage {
   struct Layout {

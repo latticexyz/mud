@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { ISystem } from "./interfaces/ISystem.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
-import { SystemStorage } from "./libraries/SystemStorage.sol";
+import { SystemStorage } from "./SystemStorage.sol";
 
 /**
  * System base contract
