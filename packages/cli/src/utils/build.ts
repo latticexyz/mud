@@ -38,7 +38,10 @@ export function filterAbi(abiIn = "./out", abiOut = "./abi", exclude: string[] =
   console.log("Selected ABIs: ", contracts);
 
   // Move selected ABIs to ./abi
-  for (const contract of contracts) copyAbi(abiIn, abiOut, contract);
+  for (const contract of contracts) {
+    if (contract.includes(".t")) continue;
+    copyAbi(abiIn, abiOut, contract);
+  }
 
   console.log("Successfully moved selected ABIs to ./abi");
 }
