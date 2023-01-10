@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "author": "Lattice <mud@lattice.xyz>",
   "scripts": {
+    "postinstall": "cd node_modules/create-create-app && npm run build",
     "build": "tsup src/cli.ts --minify",
     "clean": "shx rm -rf lib",
     "dev": "tsup src/cli.ts --watch",
@@ -21,6 +22,6 @@
   },
   "license": "MIT",
   "dependencies": {
-    "create-create-app": "^7.3.0"
+    "create-create-app": "git+https://github.com/holic/create-create-app#41d44df2f1b2be760eaf53281a1d6a8102a76a3d"
   }
 }

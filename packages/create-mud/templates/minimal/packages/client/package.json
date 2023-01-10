@@ -1,0 +1,34 @@
+{
+  "name": "client",
+  "license": "MIT",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "@typescript-eslint/parser": "^5.46.1",
+    "eslint": "^8.29.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.2.3"
+  },
+  "dependencies": {
+    "@improbable-eng/grpc-web": "^0.15.0",
+    "@latticexyz/network": "^1.32.0",
+    "@latticexyz/recs": "^1.32.0",
+    "@latticexyz/services": "^1.32.0",
+    "@latticexyz/std-client": "^1.32.0",
+    "async-mutex": "^0.4.0",
+    "ethers": "^5.7.2",
+    "mobx": "^6.7.0",
+    "nice-grpc": "^2.0.1",
+    "nice-grpc-web": "^2.0.1",
+    "proxy-deep": "^3.1.1",
+    "react": "^18.2.0",
+    "threads": "^1.7.0"
+  }
+}

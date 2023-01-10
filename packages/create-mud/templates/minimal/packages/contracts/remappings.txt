@@ -1,0 +1,9 @@
+components/=./src/components
+systems/=./src/systems
+libraries/=./src/libraries
+std-contracts/=../../node_modules/@latticexyz/std-contracts/src/
+solecs/=../../node_modules/@latticexyz/solecs/src/
+memmove/=../../node_modules/memmove/src/
+ds-test/=../../node_modules/ds-test/src/
+solmate/=../../node_modules/@rari-capital/solmate/src/
+forge-std/=../../node_modules/forge-std/src/
