@@ -1,22 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { Ownable } from "./Ownable.sol";
+
 /**
  * Key value store with uint256 key and uint256 Set value
  */
-contract MapSet {
-  address private owner;
+contract MapSet is Ownable {
   mapping(uint256 => uint256[]) internal items;
   mapping(uint256 => mapping(uint256 => uint256)) internal itemToIndex;
-
-  constructor() {
-    owner = msg.sender;
-  }
-
-  modifier onlyOwner() {
-    require(msg.sender == owner, "ONLY_OWNER");
-    _;
-  }
 
   function add(uint256 setKey, uint256 item) public onlyOwner {
     if (has(setKey, item)) return;
