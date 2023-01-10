@@ -10,6 +10,6 @@ import { OwnableStorage } from "@solidstate/contracts/access/ownable/OwnableStor
 contract Ownable is SolidStateOwnable {
   constructor() {
     // Initialize owner (SolidState has no constructors)
-    OwnableStorage.layout().owner = msg.sender;
+    _setOwner(msg.sender);
   }
 }
