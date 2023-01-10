@@ -3,6 +3,8 @@ import { ObservableSet } from "mobx";
 import { useEffect, useMemo, useState } from "react";
 import { filter, Observable } from "rxjs";
 
+// Deprecated! Use hooks exported from @latticexyz/react package instead.
+
 export function useStream<T>(stream: Observable<T>, defaultValue?: T) {
   const [state, setState] = useState<T | undefined>(defaultValue);
 
