@@ -18,14 +18,14 @@ function getContractsInDir(dir: string, exclude?: string[]) {
 }
 
 function copyAbi(inDir: string, outDir: string, contract: string) {
-  return copyFileSync(path.join(inDir, contract + ".sol", contract + ".json"), path.join(outDir, contract + ".json"));
+  try {
+    return copyFileSync(path.join(inDir, contract + ".sol", contract + ".json"), path.join(outDir, contract + ".json"));
+  } catch (e) {
+    console.log("Skipping", contract);
+  }
 }
 
-export function filterAbi(
-  abiIn = "./out",
-  abiOut = "./abi",
-  exclude: string[] = ["Component", "IComponent"]
-) {
+export function filterAbi(abiIn = "./out", abiOut = "./abi", exclude: string[] = ["Component", "IComponent"]) {
   // Clean our dir
   console.log(`Cleaning output directory (${abiOut}})`);
   rmSync(abiOut, { recursive: true, force: true });
@@ -38,7 +38,10 @@ export function filterAbi(
   console.log("Selected ABIs: ", contracts);
 
   // Move selected ABIs to ./abi
-  for (const contract of contracts) copyAbi(abiIn, abiOut, contract);
+  for (const contract of contracts) {
+    if (contract.includes(".t")) continue;
+    copyAbi(abiIn, abiOut, contract);
+  }
 
   console.log("Successfully moved selected ABIs to ./abi");
 }

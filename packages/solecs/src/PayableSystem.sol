@@ -5,31 +5,17 @@ import { IPayableSystem } from "./interfaces/IPayableSystem.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 
+import { Ownable } from "./Ownable.sol";
+
 /**
  * System base contract
  */
-abstract contract PayableSystem is IPayableSystem {
+abstract contract PayableSystem is IPayableSystem, Ownable {
   IUint256Component components;
   IWorld world;
-  address _owner;
-
-  modifier onlyOwner() {
-    require(msg.sender == _owner, "ONLY_OWNER");
-    _;
-  }
 
   constructor(IWorld _world, address _components) {
-    _owner = msg.sender;
     components = _components == address(0) ? _world.components() : IUint256Component(_components);
     world = _world;
-  }
-
-  function owner() public view override returns (address) {
-    return _owner;
-  }
-
-  function transferOwnership(address newOwner) public override onlyOwner {
-    emit OwnershipTransferred(_owner, newOwner);
-    _owner = newOwner;
   }
 }

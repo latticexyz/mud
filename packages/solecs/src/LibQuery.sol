@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.13;
+
 import { IComponent } from "./interfaces/IComponent.sol";
 import { QueryFragment, QueryType } from "./interfaces/Query.sol";
-import "memmove/LinkedList.sol";
+import { LinkedList, LinkedListLib } from "memmove/LinkedList.sol";
 
 struct Uint256Node {
   uint256 value;

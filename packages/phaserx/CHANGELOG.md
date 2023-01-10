@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.32.0](https://github.com/latticexyz/mud/compare/v1.31.3...v1.32.0) (2023-01-06)
+
+### Bug Fixes
+
+- update tween references after phaser bump ([#297](https://github.com/latticexyz/mud/issues/297)) ([9d6ed01](https://github.com/latticexyz/mud/commit/9d6ed0115d977a1a9678c23d42c4daaf3a9b8947))
+
+## [1.31.3](https://github.com/latticexyz/mud/compare/v1.31.2...v1.31.3) (2022-12-16)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [1.31.2](https://github.com/latticexyz/mud/compare/v1.31.1...v1.31.2) (2022-12-15)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+## [1.31.1](https://github.com/latticexyz/mud/compare/v1.31.0...v1.31.1) (2022-12-15)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
+# [1.31.0](https://github.com/latticexyz/mud/compare/v1.30.1...v1.31.0) (2022-12-14)
+
+**Note:** Version bump only for package @latticexyz/phaserx
+
 ## [1.30.1](https://github.com/latticexyz/mud/compare/v1.30.0...v1.30.1) (2022-12-02)
 
 **Note:** Version bump only for package @latticexyz/phaserx

@@ -77,7 +77,7 @@ Everyone has read access.
 For convenience the component implementation in `solecs` also includes a reverse mapping from `keccak256(value)` to set of entities with this value, but this is not strictly required and might change in a future release.
 
 ```solidity
-interface IComponent is IERC173 {
+interface IComponent is IOwnableWritable {
   /** Return the keys and value types of the schema of this component. */
   function getSchema() external pure returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
@@ -94,10 +94,6 @@ interface IComponent is IERC173 {
   function getEntitiesWithValue(bytes memory value) external view returns (uint256[] memory);
 
   function registerIndexer(address indexer) external;
-
-  function authorizeWriter(address writer) external;
-
-  function unauthorizeWriter(address writer) external;
 }
 
 ```
