@@ -10,6 +10,7 @@ import openurl from "openurl";
 import ips from "inquirer-prompt-suggest";
 import { Arguments, CommandBuilder } from "yargs";
 import { generateAndDeploy } from "../utils";
+import { triggerAsyncId } from "async_hooks";
 inquirer.registerPrompt("suggest", ips);
 
 // @dev Note: this deployment command is deprecated and will be removed in a future version. Use `mud deploy-contracts` instead.
@@ -108,6 +109,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     reuseComponents: false,
     deployClient: false,
     clientUrl: "http://localhost:3000",
+    dev: true,
   };
 
   const { default: fetch } = await importFetch;
@@ -280,6 +282,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     netlifyPersonalToken: args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken,
     codespace: args.codespace,
     dry: args.dry,
+    dev: args.dev,
   };
 };
 
