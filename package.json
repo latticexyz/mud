@@ -12,6 +12,7 @@
       "packages/utils",
       "packages/solecs",
       "packages/cli",
+      "packages/react",
       "packages/recs",
       "packages/phaserx",
       "packages/network",
@@ -19,8 +20,7 @@
       "packages/std-client",
       "packages/ecs-browser",
       "packages/services",
-      "packages/noise",
-      "packages/mud-react"
+      "packages/noise"
     ]
   },
   "devDependencies": {

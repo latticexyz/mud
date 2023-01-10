@@ -1,5 +1,5 @@
 {
-  "name": "@latticexyz/mud-react",
+  "name": "@latticexyz/react",
   "version": "1.30.1",
   "description": "React tools for MUD client.",
   "license": "MIT",
@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/mud-react"
+    "directory": "packages/react"
   },
   "scripts": {
     "prepare": "yarn build",
