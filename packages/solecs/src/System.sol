@@ -21,7 +21,9 @@ abstract contract System is ISystem {
 
   constructor(IWorld _world, address _components) {
     _owner = msg.sender;
+    // @deprecated use SystemStorage.components() instead of components
     components = _components == address(0) ? _world.components() : IUint256Component(_components);
+    // @deprecated use SystemStorage.world() instead of world
     world = _world;
     SystemStorage.init(world, components);
   }
