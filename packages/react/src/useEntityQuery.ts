@@ -8,6 +8,7 @@ export function useEntityQuery(...args: Parameters<typeof defineQuery>) {
   const [value, setValue] = useState([...queryResult.matching]);
 
   useEffect(() => {
+    // If query changes, we need to update state (initialState is only set once)
     if (options.runOnInit) {
       setValue([...queryResult.matching]);
     }
