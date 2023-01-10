@@ -10,7 +10,7 @@ import openurl from "openurl";
 import ips from "inquirer-prompt-suggest";
 import { Arguments, CommandBuilder } from "yargs";
 import { generateAndDeploy } from "../utils";
-import { triggerAsyncId } from "async_hooks";
+
 inquirer.registerPrompt("suggest", ips);
 
 // @dev Note: this deployment command is deprecated and will be removed in a future version. Use `mud deploy-contracts` instead.
