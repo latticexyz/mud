@@ -1,8 +1,7 @@
 import { IComputedValue } from "mobx";
 import { useEffect, useState } from "react";
 
-// TODO: migrate the rest of the mobx stuff to rxjs
-
+/** @deprecated See https://github.com/latticexyz/mud/issues/339 */
 export const useDeprecatedComputedValue = <T>(computedValue: IComputedValue<T>) => {
   const [value, setValue] = useState<T>(computedValue.get());
 

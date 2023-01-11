@@ -3,7 +3,7 @@ import { ObservableSet } from "mobx";
 import { useEffect, useMemo, useState } from "react";
 import { filter, Observable } from "rxjs";
 
-// @deprecated Use hooks exported from @latticexyz/react package instead.
+/** @deprecated Use hooks exported from @latticexyz/react package instead. */
 export function useStream<T>(stream: Observable<T>, defaultValue?: T) {
   const [state, setState] = useState<T | undefined>(defaultValue);
 
@@ -15,6 +15,7 @@ export function useStream<T>(stream: Observable<T>, defaultValue?: T) {
   return state;
 }
 
+/** @deprecated Use hooks exported from @latticexyz/react package instead. */
 export function useComponentValueStream<T extends Schema>(component: Component<T>, entity?: EntityIndex) {
   const stream = useMemo(() => {
     if (entity != null) return component.update$.pipe(filter((update) => update.entity === entity));
@@ -30,6 +31,7 @@ export function useComponentValueStream<T extends Schema>(component: Component<T
  * Handles subscribing and unsubscribing to a queries update stream to keep the matching set up to date
  * @param queryFragments Query fragments
  * @returns Mobx ObservablesSet with entities currently matching the query
+ * @deprecated Use hooks exported from @latticexyz/react package instead.
  */
 export function useQuery(queryFragments: EntityQueryFragment[]) {
   const [matching, setMatching] = useState<ObservableSet<EntityIndex>>();
