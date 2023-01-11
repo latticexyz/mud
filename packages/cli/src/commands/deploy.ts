@@ -10,6 +10,7 @@ import openurl from "openurl";
 import ips from "inquirer-prompt-suggest";
 import { Arguments, CommandBuilder } from "yargs";
 import { generateAndDeploy } from "../utils";
+
 inquirer.registerPrompt("suggest", ips);
 
 // @dev Note: this deployment command is deprecated and will be removed in a future version. Use `mud deploy-contracts` instead.
@@ -36,6 +37,7 @@ interface Options {
   netlifyPersonalToken?: string;
   codespace?: boolean;
   dry?: boolean;
+  dev?: boolean;
 }
 
 export const command = "deploy";
@@ -57,6 +59,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
     netlifyPersonalToken: { type: "string" },
     codespace: { type: "boolean" },
     dry: { type: "boolean" },
+    dev: { type: "boolean", default: true },
   });
 
 export const handler = async (args: Arguments<Options>): Promise<void> => {
@@ -106,6 +109,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     reuseComponents: false,
     deployClient: false,
     clientUrl: "http://localhost:3000",
+    dev: true,
   };
 
   const { default: fetch } = await importFetch;
@@ -278,6 +282,7 @@ const getDeployInfo: (args: Arguments<Options>) => Promise<Options> = async (arg
     netlifyPersonalToken: args.netlifyPersonalToken ?? config.netlifyPersonalToken ?? answers.netlifyPersonalToken,
     codespace: args.codespace,
     dry: args.dry,
+    dev: args.dev,
   };
 };
 
@@ -403,7 +408,11 @@ export const deploy = async (options: Options) => {
                     options.rpc = getCodespaceUrl(8545);
                   }
 
-                  launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${options.rpc}&wsRpc=${options.wsRpc}&initialBlockNumber=${ctx.initialBlockNumber}&dev=true&snapshot=&stream=&relay=&faucet=`;
+                  launcherUrl = `${clientUrl}?chainId=${options.chainId}&worldAddress=${ctx.worldAddress}&rpc=${
+                    options.rpc
+                  }&wsRpc=${options.wsRpc}&initialBlockNumber=${
+                    ctx.initialBlockNumber
+                  }&snapshot=&stream=&relay=&faucet=${options.dev ? "&dev=true" : ""}`;
 
                   openurl.open(launcherUrl);
                 },
