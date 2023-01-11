@@ -5,7 +5,7 @@ import { DSTest } from "ds-test/test.sol";
 import { World } from "../World.sol";
 import { IUint256Component } from "../interfaces/IUint256Component.sol";
 import { IWorld } from "../interfaces/IWorld.sol";
-import { SystemStorage as s } from "../SystemStorage.sol";
+import { SystemStorage } from "../SystemStorage.sol";
 import { System } from "../System.sol";
 
 contract SampleSystem is System {
@@ -39,19 +39,19 @@ contract SystemTest is DSTest {
     systems = world.systems();
 
     // Place world and component addresses in SystemTest's storage
-    s.init(world, components);
+    SystemStorage.init(world, components);
     system = new SampleSystem(world, address(components));
   }
 
   // System has correct storage
   function testSystemStorage() public {
-    assertEq(address(system.getWorld()), address(s.world()));
-    assertEq(address(system.getComponents()), address(s.components()));
+    assertEq(address(system.getWorld()), address(SystemStorage.world()));
+    assertEq(address(system.getComponents()), address(SystemStorage.components()));
   }
 
   // SystemTest has correct storage
   function testSystemStorageTest() public {
-    assertEq(address(world), address(s.world()));
-    assertEq(address(components), address(s.components()));
+    assertEq(address(world), address(SystemStorage.world()));
+    assertEq(address(components), address(SystemStorage.components()));
   }
 }
