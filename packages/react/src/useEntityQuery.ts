@@ -1,10 +1,13 @@
 import { defineQuery } from "@latticexyz/recs";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
-export function useEntityQuery(...args: Parameters<typeof defineQuery>) {
-  const [fragments, options = { runOnInit: true }] = args;
+type Args = Parameters<typeof defineQuery>;
+const defaultOptions: NonNullable<Args[1]> = { runOnInit: true };
 
-  const queryResult = defineQuery(fragments, options);
+export function useEntityQuery(...args: Args) {
+  const [fragments, options = defaultOptions] = args;
+
+  const queryResult = useMemo(() => defineQuery(fragments, options), [fragments, options]);
   const [value, setValue] = useState([...queryResult.matching]);
 
   useEffect(() => {
@@ -14,7 +17,7 @@ export function useEntityQuery(...args: Parameters<typeof defineQuery>) {
     }
     const subscription = queryResult.update$.subscribe(() => setValue([...queryResult.matching]));
     return () => subscription.unsubscribe();
-  }, [queryResult.update$, queryResult.matching, options.runOnInit]);
+  }, [queryResult, options.runOnInit]);
 
   return value;
 }
