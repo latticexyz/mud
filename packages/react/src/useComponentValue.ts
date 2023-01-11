@@ -1,4 +1,5 @@
 import { Component, ComponentValue, EntityIndex, getComponentValue, Has, Metadata, Schema } from "@latticexyz/recs";
+import { useMemo } from "react";
 import { useEntityQuery } from "./useEntityQuery";
 
 export function useComponentValue<S extends Schema>(
@@ -17,7 +18,7 @@ export function useComponentValue<S extends Schema>(
   component: Component<S, Metadata, undefined>,
   defaultValue?: ComponentValue<S>
 ) {
-  const entities = useEntityQuery([Has(component)]);
+  const entities = useEntityQuery(useMemo(() => [Has(component)], [component]));
   if (entityIndex == null) {
     return defaultValue;
   }
