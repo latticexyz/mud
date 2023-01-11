@@ -2,13 +2,13 @@
   "packages": [
     "packages/*"
   ],
-  "version": "1.31.3",
+  "version": "1.32.0",
   "npmClient": "yarn",
   "useWorkspaces": true,
   "conventionalCommits": true,
   "command": {
     "publish": {
-      "message": "chore(release): publish",
+      "message": "chore(release): publish %s",
       "allowBranch": "main"
     }
   }

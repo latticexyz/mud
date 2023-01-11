@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IERC173 } from "./IERC173.sol";
+import { IOwnableWritable } from "./IOwnableWritable.sol";
 import { LibTypes } from "../LibTypes.sol";
 
-interface IComponent is IERC173 {
+interface IComponent is IOwnableWritable {
   /** Return the keys and value types of the schema of this component. */
   function getSchema() external pure returns (string[] memory keys, LibTypes.SchemaValue[] memory values);
 
@@ -21,10 +21,6 @@ interface IComponent is IERC173 {
   function getEntitiesWithValue(bytes memory value) external view returns (uint256[] memory);
 
   function registerIndexer(address indexer) external;
-
-  function authorizeWriter(address writer) external;
-
-  function unauthorizeWriter(address writer) external;
 
   function world() external view returns (address);
 }
