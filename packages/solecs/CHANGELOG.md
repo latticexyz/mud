@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.33.0](https://github.com/latticexyz/mud/compare/v1.32.0...v1.33.0) (2023-01-12)
+
+### Bug Fixes
+
+- **solecs:** use \_setOwner in Ownable constructor ([#338](https://github.com/latticexyz/mud/issues/338)) ([851a3e6](https://github.com/latticexyz/mud/commit/851a3e60d226f1dec856f1f89e2d55bfe9c1ac8c))
+
 # [1.32.0](https://github.com/latticexyz/mud/compare/v1.31.3...v1.32.0) (2023-01-06)
 
 **Note:** Version bump only for package @latticexyz/solecs

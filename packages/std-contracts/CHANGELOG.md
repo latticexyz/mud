@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.33.0](https://github.com/latticexyz/mud/compare/v1.32.0...v1.33.0) (2023-01-12)
+
+### Features
+
+- **std-contracts:** add SystemCallbackComponent ([#303](https://github.com/latticexyz/mud/issues/303)) ([7b3a859](https://github.com/latticexyz/mud/commit/7b3a859b8a776e66183baef900fad6f40b1529cb))
+
 # [1.32.0](https://github.com/latticexyz/mud/compare/v1.31.3...v1.32.0) (2023-01-06)
 
 **Note:** Version bump only for package @latticexyz/std-contracts
