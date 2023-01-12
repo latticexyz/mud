@@ -5,6 +5,7 @@ import {
   EntityIndex,
   getComponentValue,
   Has,
+  isComponentUpdate,
   Metadata,
   Schema,
 } from "@latticexyz/recs";
@@ -35,10 +36,9 @@ export function useComponentValue<S extends Schema>(
 
     const queryResult = defineQuery([Has(component)], { runOnInit: false });
     const subscription = queryResult.update$.subscribe((update) => {
-      if (update.component === component && update.entity === entityIndex) {
-        const [nextValue, prevValue] = update.value;
-        // TODO: fix types in `defineQuery` so we don't have to cast this
-        setValue(nextValue as ComponentValue<S>);
+      if (isComponentUpdate(update, component) && update.entity === entityIndex) {
+        const [nextValue] = update.value;
+        setValue(nextValue);
       }
     });
     return () => subscription.unsubscribe();
