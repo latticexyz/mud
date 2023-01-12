@@ -12,19 +12,19 @@ import {
 import { useEffect, useState } from "react";
 
 export function useComponentValue<S extends Schema>(
-  entityIndex: EntityIndex | undefined,
   component: Component<S, Metadata, undefined>,
+  entityIndex: EntityIndex | undefined,
   defaultValue: ComponentValue<S>
 ): ComponentValue<S>;
 
 export function useComponentValue<S extends Schema>(
-  entityIndex: EntityIndex | undefined,
-  component: Component<S, Metadata, undefined>
+  component: Component<S, Metadata, undefined>,
+  entityIndex: EntityIndex | undefined
 ): ComponentValue<S> | undefined;
 
 export function useComponentValue<S extends Schema>(
-  entityIndex: EntityIndex | undefined,
   component: Component<S, Metadata, undefined>,
+  entityIndex: EntityIndex | undefined,
   defaultValue?: ComponentValue<S>
 ) {
   const [value, setValue] = useState(entityIndex != null ? getComponentValue(component, entityIndex) : undefined);
