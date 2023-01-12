@@ -7,7 +7,7 @@ React hooks (and more) for building MUD clients.
 Returns the value of the component for the entity, and triggers a re-render as the component is added/removed/updated.
 
 ```
-const position = useComponentValue(entity, Position);
+const position = useComponentValue(Position, entity);
 ```
 
 ### useEntityQuery
