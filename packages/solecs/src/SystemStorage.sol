@@ -22,7 +22,8 @@ library SystemStorage {
   /** Location in memory where the Layout struct will be stored */
   bytes32 internal constant STORAGE_SLOT = keccak256("solecs.contracts.storage.System");
 
-  /** Utility for accessing the STORAGE_SLOT location in the contract's storage
+  /**
+   * Utility for accessing the STORAGE_SLOT location in the contract's storage
    * @return Layout struct at storage position l
    */
   function layout() internal pure returns (Layout storage l) {
