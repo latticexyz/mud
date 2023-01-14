@@ -4,12 +4,14 @@ pragma solidity >=0.8.0;
 import { Set } from "./Set.sol";
 import { LibQuery } from "./LibQuery.sol";
 import { IWorld, WorldQueryFragment } from "./interfaces/IWorld.sol";
+import { IApprovalSystem } from "./interfaces/IApprovalSystem.sol";
 import { QueryFragment } from "./interfaces/Query.sol";
 import { IUint256Component } from "./interfaces/IUint256Component.sol";
 import { Uint256Component } from "./components/Uint256Component.sol";
 import { addressToEntity, entityToAddress, getIdByAddress, getAddressById, getComponentById } from "./utils.sol";
 import { componentsComponentId, systemsComponentId } from "./constants.sol";
 import { RegisterSystem, ID as registerSystemId, RegisterType } from "./systems/RegisterSystem.sol";
+import { ApprovalSystem, ID as approvalSystemId } from "./systems/ApprovalSystem.sol";
 
 /**
  * The `World` contract is at the core of every on-chain world.
@@ -31,6 +33,7 @@ contract World is IWorld {
   Uint256Component private _components;
   Uint256Component private _systems;
   RegisterSystem public register;
+  ApprovalSystem internal _approval;
 
   event ComponentValueSet(uint256 indexed componentId, address indexed component, uint256 indexed entity, bytes data);
   event ComponentValueRemoved(uint256 indexed componentId, address indexed component, uint256 indexed entity);
@@ -41,6 +44,7 @@ contract World is IWorld {
     register = new RegisterSystem(this, address(_components));
     _systems.authorizeWriter(address(register));
     _components.authorizeWriter(address(register));
+    _approval = new ApprovalSystem(this, address(_components));
   }
 
   /**
@@ -67,6 +71,10 @@ contract World is IWorld {
    */
   function systems() public view returns (IUint256Component) {
     return _systems;
+  }
+
+  function approval() public view returns (IApprovalSystem) {
+    return _approval;
   }
 
   /**

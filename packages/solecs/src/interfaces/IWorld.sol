@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { QueryType } from "./Query.sol";
 import { IUint256Component } from "./IUint256Component.sol";
+import { IApprovalSystem } from "./IApprovalSystem.sol";
 
 // For ProxyRead and ProxyExpand QueryFragments:
 // - component must be a component whose raw value decodes to a single uint256
@@ -17,6 +18,8 @@ interface IWorld {
   function components() external view returns (IUint256Component);
 
   function systems() external view returns (IUint256Component);
+
+  function approval() external view returns (IApprovalSystem);
 
   function registerComponent(address componentAddr, uint256 id) external;
 
