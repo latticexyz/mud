@@ -6,6 +6,7 @@ import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { Vm } from "forge-std/Vm.sol";
 import { getAddressById } from "solecs/utils.sol";
+import { SystemStorage } from "solecs/SystemStorage.sol";
 import { console } from "forge-std/console.sol";
 import { Utilities } from "./Utilities.sol";
 
@@ -49,5 +50,6 @@ contract MudTest is DSTest {
     alice = utils.getNextUserAddress();
     bob = utils.getNextUserAddress();
     eve = utils.getNextUserAddress();
+    SystemStorage.init(world, components);
   }
 }
