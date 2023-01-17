@@ -24,7 +24,7 @@ library SystemStorage {
 
   /**
    * Utility for accessing the STORAGE_SLOT location in the contract's storage
-   * @return Layout struct at storage position l
+   * @return l Layout struct at storage position l
    */
   function layout() internal pure returns (Layout storage l) {
     bytes32 slot = STORAGE_SLOT;
