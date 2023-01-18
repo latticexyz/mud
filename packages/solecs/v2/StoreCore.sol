@@ -32,7 +32,9 @@ library StoreCore {
   function registerSchema(bytes32 table, SchemaType[] memory schema) internal {
     // TODO: verify the table doesn't already exist
     if (schema.length > 32) revert StoreCore_SchemaTooLong();
-    bytes32 location = _getLocation(_schemaTable, table);
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = table;
+    bytes32 location = _getLocation(_schemaTable, key);
     _setDataRaw(location, Bytes.from(schema));
   }
 
@@ -40,7 +42,9 @@ library StoreCore {
    * Get the schema for the given table
    */
   function getSchema(bytes32 table) internal view returns (SchemaType[] memory schema) {
-    bytes32 location = _getLocation(_schemaTable, table);
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = table;
+    bytes32 location = _getLocation(_schemaTable, key);
     bytes memory blob = _getDataRaw(location, 32);
 
     // Find the first `None` value in the schema to determine the length
@@ -79,19 +83,6 @@ library StoreCore {
     emit StoreUpdate(table, key, 0, data);
   }
 
-  /**
-   * Set data for the given table and single key
-   */
-  function setData(
-    bytes32 table,
-    bytes32 key,
-    bytes memory data
-  ) internal {
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
-    setData(table, keyTuple, data);
-  }
-
   /************************************************************************
    *
    *    GET DATA
@@ -124,12 +115,6 @@ library StoreCore {
     return _getDataRaw(location, length);
   }
 
-  function getData(bytes32 table, bytes32 key) internal view returns (bytes memory) {
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
-    return getData(table, keyTuple);
-  }
-
   /************************************************************************
    *
    *    INTERNAL HELPER FUNCTIONS
@@ -142,12 +127,6 @@ library StoreCore {
    */
   function _getLocation(bytes32 table, bytes32[] memory key) internal pure returns (bytes32) {
     return keccak256(abi.encode(_slot, table, key));
-  }
-
-  function _getLocation(bytes32 table, bytes32 key) internal pure returns (bytes32) {
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
-    return _getLocation(table, keyTuple);
   }
 
   /**
@@ -225,5 +204,53 @@ library StoreCore {
       }
     }
     return Bytes.split(blob, lengths);
+  }
+}
+
+// Overloads for single key and some fixed length array keys for better devex
+library StoreCoreExt {
+  /************************************************************************
+   *
+   *    SET DATA
+   *
+   ************************************************************************/
+
+  function setData(
+    bytes32 table,
+    bytes32 _key,
+    bytes memory data
+  ) internal {
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = _key;
+    StoreCore.setData(table, key, data);
+  }
+
+  function setData(
+    bytes32 table,
+    bytes32[2] memory _key,
+    bytes memory data
+  ) internal {
+    bytes32[] memory key = new bytes32[](2);
+    key[0] = _key[0];
+    key[1] = _key[1];
+    StoreCore.setData(table, key, data);
+  }
+
+  /************************************************************************
+   *
+   *    GET DATA
+   *
+   ************************************************************************/
+  function getData(bytes32 table, bytes32 _key) external view returns (bytes memory) {
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = _key;
+    return StoreCore.getData(table, key);
+  }
+
+  function getData(bytes32 table, bytes32[2] memory _key) external view returns (bytes memory) {
+    bytes32[] memory key = new bytes32[](2);
+    key[0] = _key[0];
+    key[1] = _key[1];
+    return StoreCore.getData(table, key);
   }
 }
