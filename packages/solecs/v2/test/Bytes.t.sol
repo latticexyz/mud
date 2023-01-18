@@ -90,7 +90,7 @@ contract BytesTest is DSTestPlus {
     assertEq(uint256(output[2]), 0x0500000000000000000000000000000000000000000000000000000000000000);
   }
 
-  function testToAndFromUint32() public {
+  function testFromAndToUint32() public {
     uint32 input = 0x01000002;
 
     uint256 gas = gasleft();
@@ -104,6 +104,60 @@ contract BytesTest is DSTestPlus {
     uint32 output2 = Bytes.toUint32(output);
     gas = gas - gasleft();
     console.log("gas used (bytes -> uint32): %s", gas);
+
+    assertEq(output2, input);
+  }
+
+  function testFromAndToAddress() public {
+    address input = address(0x0100000000000000000000000000000000000002);
+
+    uint256 gas = gasleft();
+    bytes memory output = Bytes.from(input);
+    gas = gas - gasleft();
+    console.log("gas used (address -> bytes): %s", gas);
+
+    assertEq(output.length, 20);
+
+    gas = gasleft();
+    address output2 = Bytes.toAddress(output);
+    gas = gas - gasleft();
+    console.log("gas used (bytes -> address): %s", gas);
+
+    assertEq(output2, input);
+  }
+
+  function testFromAndToUint8() public {
+    uint8 input = 0x02;
+
+    uint256 gas = gasleft();
+    bytes memory output = Bytes.fromUint8(input);
+    gas = gas - gasleft();
+    console.log("gas used (uint8 -> bytes): %s", gas);
+
+    assertEq(output.length, 1);
+
+    gas = gasleft();
+    uint8 output2 = Bytes.toUint8(output);
+    gas = gas - gasleft();
+    console.log("gas used (bytes -> uint8): %s", gas);
+
+    assertEq(output2, input);
+  }
+
+  function testFromAndToBytes4() public {
+    bytes4 input = bytes4(0x01000002);
+
+    uint256 gas = gasleft();
+    bytes memory output = Bytes.from(input);
+    gas = gas - gasleft();
+    console.log("gas used (bytes4 -> bytes): %s", gas);
+
+    assertEq(output.length, 4);
+
+    gas = gasleft();
+    bytes4 output2 = Bytes.toBytes4(output);
+    gas = gas - gasleft();
+    console.log("gas used (bytes -> bytes4): %s", gas);
 
     assertEq(output2, input);
   }

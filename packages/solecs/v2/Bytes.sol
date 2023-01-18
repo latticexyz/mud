@@ -38,8 +38,21 @@ library Bytes {
     }
   }
 
+  // Needs unique name to avoid conflict with `from(uint32)`
+  function fromUint8(uint8 input) internal pure returns (bytes memory output) {
+    return bytes.concat(bytes1(input));
+  }
+
   function from(uint32 input) internal pure returns (bytes memory output) {
     return bytes.concat(bytes4(input));
+  }
+
+  function from(address input) internal pure returns (bytes memory output) {
+    return bytes.concat(bytes20(input));
+  }
+
+  function from(bytes4 input) internal pure returns (bytes memory output) {
+    return bytes.concat(input);
   }
 
   /************************************************************************
@@ -59,6 +72,72 @@ library Bytes {
       // then we add the start offset to get to the start of the desired word
       output := mload(add(input, add(0x20, offset)))
     }
+  }
+
+  function toBytes32(bytes memory input) internal pure returns (bytes32 output) {
+    return bytes32(input);
+  }
+
+  function toUint256(bytes memory input) internal pure returns (uint256 output) {
+    return uint256(bytes32(input));
+  }
+
+  function toUint32(bytes memory input) internal pure returns (uint32 output) {
+    return uint32(bytes4(input));
+  }
+
+  function toAddress(bytes memory input) internal pure returns (address output) {
+    return address(bytes20(input));
+  }
+
+  function toBytes4(bytes memory input) internal pure returns (bytes4 output) {
+    return bytes4(input);
+  }
+
+  function toUint8(bytes memory input) internal pure returns (uint8 output) {
+    return uint8(input[0]);
+  }
+
+  /**
+   * Converts a `bytes` memory blob to a `bytes32` memory array.
+   */
+  function toBytes32Array(bytes memory input) internal pure returns (bytes32[] memory output) {
+    output = new bytes32[](Utils.divCeil(input.length, 32));
+    for (uint256 i = 0; i < output.length; i++) {
+      output[i] = toBytes32(input, i * 32);
+    }
+    return output;
+  }
+
+  /**
+   * Converts a `bytes` memory blob to a `SchemaType` memory array.
+   */
+  function toSchemaTypeArray(bytes memory input) internal pure returns (SchemaType[] memory output) {
+    output = new SchemaType[](input.length);
+    for (uint256 i = 0; i < output.length; i++) {
+      output[i] = SchemaType(uint8(input[i]));
+    }
+    return output;
+  }
+
+  /************************************************************************
+   *
+   *    BYTES UTILS
+   *
+   ************************************************************************/
+
+  function equals(bytes memory a, bytes memory b) internal pure returns (bool) {
+    if (a.length != b.length) {
+      return false;
+    }
+    return keccak256(a) == keccak256(b);
+  }
+
+  function setLengthInPlace(bytes memory input, uint256 length) internal pure returns (bytes memory) {
+    assembly {
+      mstore(input, length)
+    }
+    return input;
   }
 
   // From https://github.com/GNSPS/solidity-bytes-utils/blob/master/contracts/BytesLib.sol
@@ -125,66 +204,6 @@ library Bytes {
     }
 
     return tempBytes;
-  }
-
-  /**
-   * Converts a `bytes` memory blob to a single `bytes32` memory value.
-   */
-  function toBytes32(bytes memory input) internal pure returns (bytes32 output) {
-    return bytes32(input);
-  }
-
-  /**
-   * Converts a `bytes` memory blob to a single `uint256` memory value.
-   */
-  function toUint256(bytes memory input) internal pure returns (uint256 output) {
-    return uint256(bytes32(input));
-  }
-
-  function toUint32(bytes memory input) internal pure returns (uint32 output) {
-    return uint32(bytes4(input));
-  }
-
-  /**
-   * Converts a `bytes` memory blob to a `bytes32` memory array.
-   */
-  function toBytes32Array(bytes memory input) internal pure returns (bytes32[] memory output) {
-    output = new bytes32[](Utils.divCeil(input.length, 32));
-    for (uint256 i = 0; i < output.length; i++) {
-      output[i] = toBytes32(input, i * 32);
-    }
-    return output;
-  }
-
-  /**
-   * Converts a `bytes` memory blob to a `SchemaType` memory array.
-   */
-  function toSchemaTypeArray(bytes memory input) internal pure returns (SchemaType[] memory output) {
-    output = new SchemaType[](input.length);
-    for (uint256 i = 0; i < output.length; i++) {
-      output[i] = SchemaType(uint8(input[i]));
-    }
-    return output;
-  }
-
-  /************************************************************************
-   *
-   *    BYTES UTILS
-   *
-   ************************************************************************/
-
-  function equals(bytes memory a, bytes memory b) internal pure returns (bool) {
-    if (a.length != b.length) {
-      return false;
-    }
-    return keccak256(a) == keccak256(b);
-  }
-
-  function setLengthInPlace(bytes memory input, uint256 length) internal pure returns (bytes memory) {
-    assembly {
-      mstore(input, length)
-    }
-    return input;
   }
 
   /**
