@@ -38,10 +38,10 @@ export async function createNetwork(initialConfig: NetworkConfig) {
   // Get address
   const initialConnectedAddress = config.provider.externalProvider ? await signer.get()?.getAddress() : undefined;
   const connectedAddress = computed(() =>
-    config.privateKey ? new Wallet(config.privateKey).address.toLowerCase() : initialConnectedAddress
+    config.privateKey ? new Wallet(config.privateKey).address.toLowerCase() : initialConnectedAddress?.toLowerCase()
   );
   const connectedAddressChecksummed = computed(() =>
-    config.privateKey ? new Wallet(config.privateKey).address : undefined
+    config.privateKey ? new Wallet(config.privateKey).address : initialConnectedAddress
   );
 
   // Listen to new block numbers
