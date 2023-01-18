@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 import { Utils } from "./Utils.sol";
 import { Bytes } from "./Bytes.sol";
-import { SchemaType } from "./Types.sol";
+import { SchemaType, getByteLength } from "./Types.sol";
 import { console } from "forge-std/console.sol";
 
 library StoreCore {
@@ -65,7 +65,7 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Set data for the given table and key tuple
+   * Set full data for the given table and key tuple
    */
   function setData(
     bytes32 table,
@@ -81,6 +81,19 @@ library StoreCore {
 
     // Emit event to notify indexers
     emit StoreUpdate(table, key, 0, data);
+  }
+
+  /**
+   * Set partial data for the given table and key tuple, at the given schema index
+   * TODO: implement
+   */
+  function setData(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data
+  ) internal {
+    revert("not implemented");
   }
 
   /************************************************************************
@@ -103,6 +116,18 @@ library StoreCore {
   }
 
   /**
+   * Get partial data for the given table and key tuple, at the given schema index
+   * TODO: implement
+   */
+  function getPartialData(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex
+  ) internal view returns (bytes memory) {
+    revert("not implemented");
+  }
+
+  /**
    * Get full data for the given table and key tuple, with the given length
    */
   function getData(
@@ -113,6 +138,26 @@ library StoreCore {
     // Load the data from storage
     bytes32 location = _getLocation(table, key);
     return _getDataRaw(location, length);
+  }
+
+  /************************************************************************
+   *
+   *    HELPER FUNCTIONS
+   *
+   ************************************************************************/
+
+  /**
+   * Split the given bytes blob into an array of bytes based on the given schema
+   */
+  function split(bytes memory blob, SchemaType[] memory schema) internal pure returns (bytes[] memory) {
+    uint256[] memory lengths = new uint256[](schema.length);
+    for (uint256 i = 0; i < schema.length; ) {
+      lengths[i] = getByteLength(schema[i]);
+      unchecked {
+        i++;
+      }
+    }
+    return Bytes.split(blob, lengths);
   }
 
   /************************************************************************
@@ -164,46 +209,17 @@ library StoreCore {
   }
 
   /**
-   * Get the length of the data for the given schema type
-   * (Because Solidity doesn't support constant arrays, we need to use a function)
-   * TODO: add more types
-   */
-  function _getByteLength(SchemaType schemaType) internal pure returns (uint256) {
-    if (schemaType == SchemaType.Uint8) {
-      return 1;
-    } else if (schemaType == SchemaType.Uint16) {
-      return 2;
-    } else {
-      revert("Unsupported schema type");
-    }
-  }
-
-  /**
    * Get the length of the data for the given schema
    */
   function _getByteLength(SchemaType[] memory schema) internal pure returns (uint256) {
     uint256 length = 0;
     for (uint256 i = 0; i < schema.length; ) {
-      length += _getByteLength(schema[i]);
+      length += getByteLength(schema[i]);
       unchecked {
         i++;
       }
     }
     return length;
-  }
-
-  /**
-   * Split the given bytes blob into an array of bytes based on the given schema
-   */
-  function _split(bytes memory blob, SchemaType[] memory schema) internal pure returns (bytes[] memory) {
-    uint256[] memory lengths = new uint256[](schema.length);
-    for (uint256 i = 0; i < schema.length; ) {
-      lengths[i] = _getByteLength(schema[i]);
-      unchecked {
-        i++;
-      }
-    }
-    return Bytes.split(blob, lengths);
   }
 }
 

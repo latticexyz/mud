@@ -38,6 +38,10 @@ library Bytes {
     }
   }
 
+  function from(uint32 input) internal pure returns (bytes memory output) {
+    return bytes.concat(bytes4(input));
+  }
+
   /************************************************************************
    *
    *    BYTES -> ANYTHING
@@ -61,14 +65,18 @@ library Bytes {
    * Converts a `bytes` memory blob to a single `bytes32` memory value.
    */
   function toBytes32(bytes memory input) internal pure returns (bytes32 output) {
-    return toBytes32(input, 0);
+    return bytes32(input);
   }
 
   /**
    * Converts a `bytes` memory blob to a single `uint256` memory value.
    */
   function toUint256(bytes memory input) internal pure returns (uint256 output) {
-    return uint256(toBytes32(input));
+    return uint256(bytes32(input));
+  }
+
+  function toUint32(bytes memory input) internal pure returns (uint32 output) {
+    return uint32(bytes4(input));
   }
 
   /**
@@ -115,6 +123,7 @@ library Bytes {
 
   /**
    * Splits a `bytes` memory array into a `bytes` memory array of the given lengths.
+   * TODO: optimize gas cost
    */
   function split(bytes memory data, uint256[] memory lengths) internal pure returns (bytes[] memory) {
     bytes[] memory chunks = new bytes[](lengths.length);

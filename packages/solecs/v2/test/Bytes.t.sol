@@ -90,6 +90,24 @@ contract BytesTest is DSTestPlus {
     assertEq(uint256(output[2]), 0x0500000000000000000000000000000000000000000000000000000000000000);
   }
 
+  function testToAndFromUint32() public {
+    uint32 input = 0x01000002;
+
+    uint256 gas = gasleft();
+    bytes memory output = Bytes.from(input);
+    gas = gas - gasleft();
+    console.log("gas used (uint32 -> bytes): %s", gas);
+
+    assertEq(output.length, 4);
+
+    gas = gasleft();
+    uint32 output2 = Bytes.toUint32(output);
+    gas = gas - gasleft();
+    console.log("gas used (bytes -> uint32): %s", gas);
+
+    assertEq(output2, input);
+  }
+
   function testEquals() public {
     bytes memory a = bytes("a");
     bytes memory b = bytes("a");

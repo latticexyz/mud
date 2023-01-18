@@ -8,21 +8,9 @@ import { StoreCore } from "../StoreCore.sol";
 import { StoreView } from "../StoreView.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 
-// Mock contract implementing IStore without access control
+// Mock Store to call MockSystem
 contract Store is StoreView {
   System mockSystem = new System();
-
-  function registerSchema(bytes32 table, SchemaType[] memory schema) public {
-    StoreCore.registerSchema(table, schema);
-  }
-
-  function setData(
-    bytes32 table,
-    bytes32[] memory key,
-    bytes memory data
-  ) public {
-    StoreCore.setData(table, key, data);
-  }
 
   function callViaDelegateCall() public returns (bool isDelegate) {
     (bool success, bytes memory data) = address(mockSystem).delegatecall(abi.encodeWithSignature("isDelegateCall()"));

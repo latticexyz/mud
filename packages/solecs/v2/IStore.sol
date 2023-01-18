@@ -11,13 +11,36 @@ interface IStore {
 
   function getSchema(bytes32 table) external view returns (SchemaType[] memory schema);
 
+  // Set full data
   function setData(
     bytes32 table,
     bytes32[] memory key,
     bytes memory data
   ) external;
 
+  // Set partial data
+  function setData(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data
+  ) external;
+
+  // Get full data
   function getData(bytes32 table, bytes32[] memory key) external view returns (bytes memory);
+
+  function getData(
+    bytes32 table,
+    bytes32[] memory key,
+    uint256 length
+  ) external view returns (bytes memory);
+
+  // Get partial data
+  function getPartialData(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex
+  ) external view returns (bytes memory);
 
   // If this function exists on the contract, it is a store
   // TODO: benchmark this vs. using a known storage slot to determine whether a contract is a Store

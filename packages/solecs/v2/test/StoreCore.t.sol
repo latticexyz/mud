@@ -79,7 +79,7 @@ contract StoreCoreTest is DSTestPlus {
     bytes memory data = bytes.concat(bytes1(0x01), bytes2(0x0203));
 
     uint256 gas = gasleft();
-    bytes[] memory splitData = StoreCore._split(data, schema);
+    bytes[] memory splitData = StoreCore.split(data, schema);
     gas = gas - gasleft();
     console.log("gas used: %s", gas);
 
@@ -122,7 +122,7 @@ contract StoreCoreTest is DSTestPlus {
 
     // Split data
     gas = gasleft();
-    bytes[] memory splitData = StoreCore._split(data, schema);
+    bytes[] memory splitData = StoreCore.split(data, schema);
     gas = gas - gasleft();
     console.log("gas used (split): %s", gas);
 
