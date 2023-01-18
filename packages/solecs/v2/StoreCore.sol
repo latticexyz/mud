@@ -7,25 +7,17 @@ import { console } from "forge-std/console.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreUpdate(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes[] data);
+  event StoreUpdate(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
   bytes32 constant _slot = keccak256("mud.store");
   bytes32 constant _schemaTable = keccak256("mud.store.table.schema");
 
   error StoreCore_SchemaTooLong();
 
-  /**
-   * Compute the storage location based on table id and index tuple
-   * TODO: provide different overloads for single key and some fixed length array keys for better devex
-   */
-  function _getLocation(bytes32 table, bytes32[] memory key) internal pure returns (bytes32) {
-    return keccak256(abi.encode(_slot, table, key));
-  }
-
-  function _getLocation(bytes32 table, bytes32 key) internal pure returns (bytes32) {
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
-    return _getLocation(table, keyTuple);
-  }
+  /************************************************************************
+   *
+   *    SCHEMA
+   *
+   ************************************************************************/
 
   /**
    * Check if the given table exists
@@ -62,21 +54,26 @@ library StoreCore {
     schema = Bytes.toSchemaTypeArray(blob);
   }
 
+  /************************************************************************
+   *
+   *    SET DATA
+   *
+   ************************************************************************/
+
   /**
    * Set data for the given table and key tuple
    */
   function setData(
     bytes32 table,
     bytes32[] memory key,
-    bytes[] memory data
+    bytes memory data
   ) internal {
     // TODO: verify the value has the correct length for the table (based on the table's schema)
     // (Tradeoff, slightly higher cost due to additional sload, but higher security - library could also provide both options)
 
     // Store the provided value in storage
     bytes32 location = _getLocation(table, key);
-    bytes memory blob = Bytes.from(data);
-    _setDataRaw(location, blob);
+    _setDataRaw(location, data);
 
     // Emit event to notify indexers
     emit StoreUpdate(table, key, 0, data);
@@ -88,11 +85,69 @@ library StoreCore {
   function setData(
     bytes32 table,
     bytes32 key,
-    bytes[] memory data
+    bytes memory data
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     setData(table, keyTuple, data);
+  }
+
+  /************************************************************************
+   *
+   *    GET DATA
+   *
+   ************************************************************************/
+
+  /**
+   * Get full data for the given table and key tuple (compute length from schema)
+   */
+  function getData(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
+    // Get schema for this table
+    SchemaType[] memory schema = getSchema(table);
+
+    // Compute length of the full schema
+    uint256 length = _getByteLength(schema);
+
+    return getData(table, key, length);
+  }
+
+  /**
+   * Get full data for the given table and key tuple, with the given length
+   */
+  function getData(
+    bytes32 table,
+    bytes32[] memory key,
+    uint256 length
+  ) internal view returns (bytes memory) {
+    // Load the data from storage
+    bytes32 location = _getLocation(table, key);
+    return _getDataRaw(location, length);
+  }
+
+  function getData(bytes32 table, bytes32 key) internal view returns (bytes memory) {
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+    return getData(table, keyTuple);
+  }
+
+  /************************************************************************
+   *
+   *    INTERNAL HELPER FUNCTIONS
+   *
+   ************************************************************************/
+
+  /**
+   * Compute the storage location based on table id and index tuple
+   * TODO: provide different overloads for single key and some fixed length array keys for better devex
+   */
+  function _getLocation(bytes32 table, bytes32[] memory key) internal pure returns (bytes32) {
+    return keccak256(abi.encode(_slot, table, key));
+  }
+
+  function _getLocation(bytes32 table, bytes32 key) internal pure returns (bytes32) {
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+    return _getLocation(table, keyTuple);
   }
 
   /**
@@ -110,23 +165,6 @@ library StoreCore {
         sstore(add(location, i), mload(add(data, add(0x20, i))))
       }
     }
-  }
-
-  /**
-   * Get full data for the given table and key tuple
-   */
-  function getData(bytes32 table, bytes32[] memory key) internal view returns (bytes[] memory data) {
-    // Get schema for this table
-    SchemaType[] memory schema = getSchema(table);
-
-    // Compute length of the full schema
-    uint256 length = _getByteLength(schema);
-
-    // Load the data from storage
-    bytes32 location = _getLocation(table, key);
-    bytes memory blob = _getDataRaw(location, length);
-
-    // Split up data into bytes[] based on schema
   }
 
   /**
@@ -149,6 +187,7 @@ library StoreCore {
   /**
    * Get the length of the data for the given schema type
    * (Because Solidity doesn't support constant arrays, we need to use a function)
+   * TODO: add more types
    */
   function _getByteLength(SchemaType schemaType) internal pure returns (uint256) {
     if (schemaType == SchemaType.Uint8) {
@@ -165,27 +204,26 @@ library StoreCore {
    */
   function _getByteLength(SchemaType[] memory schema) internal pure returns (uint256) {
     uint256 length = 0;
-    for (uint256 i = 0; i < schema.length; i++) {
+    for (uint256 i = 0; i < schema.length; ) {
       length += _getByteLength(schema[i]);
+      unchecked {
+        i++;
+      }
     }
     return length;
   }
 
   /**
-   * Split the given blob into bytes[] based on the given schema
-   * TODO: change implementation work on bits instead of bytes
-   * TODO: gas golf
+   * Split the given bytes blob into an array of bytes based on the given schema
    */
-  function _split(bytes memory blob, SchemaType[] memory schema) internal pure returns (bytes[] memory output) {
-    output = new bytes[](schema.length);
-    uint256 offset;
-    for (uint256 i = 0; i < schema.length; i++) {
-      uint256 length = _getByteLength(schema[i]);
-      output[i] = new bytes(length);
-      for (uint256 j = 0; j < length; j++) {
-        output[i][j] = blob[offset + j];
+  function _split(bytes memory blob, SchemaType[] memory schema) internal pure returns (bytes[] memory) {
+    uint256[] memory lengths = new uint256[](schema.length);
+    for (uint256 i = 0; i < schema.length; ) {
+      lengths[i] = _getByteLength(schema[i]);
+      unchecked {
+        i++;
       }
-      offset += length;
     }
+    return Bytes.split(blob, lengths);
   }
 }

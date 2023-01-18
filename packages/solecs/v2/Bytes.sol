@@ -7,6 +7,12 @@ import { SchemaType } from "./Types.sol";
 library Bytes {
   error Bytes_InputTooShort();
 
+  /************************************************************************
+   *
+   *    ANYTHING -> BYTES
+   *
+   ************************************************************************/
+
   /**
    * Converts a `bytes` memory array to a single `bytes` memory value.
    * TODO: optimize gas cost
@@ -31,6 +37,12 @@ library Bytes {
       output[i] = bytes1(uint8(input[i]));
     }
   }
+
+  /************************************************************************
+   *
+   *    BYTES -> ANYTHING
+   *
+   ************************************************************************/
 
   /**
    * Converts a `bytes` memory blob to a single `bytes32` memory value, starting at the given byte offset.
@@ -81,6 +93,12 @@ library Bytes {
     return output;
   }
 
+  /************************************************************************
+   *
+   *    BYTES UTILS
+   *
+   ************************************************************************/
+
   function equals(bytes memory a, bytes memory b) internal pure returns (bool) {
     if (a.length != b.length) {
       return false;
@@ -93,5 +111,27 @@ library Bytes {
       mstore(input, length)
     }
     return input;
+  }
+
+  /**
+   * Splits a `bytes` memory array into a `bytes` memory array of the given lengths.
+   */
+  function split(bytes memory data, uint256[] memory lengths) internal pure returns (bytes[] memory) {
+    bytes[] memory chunks = new bytes[](lengths.length);
+    uint256 sum = 0;
+    for (uint256 i = 0; i < lengths.length; ) {
+      chunks[i] = new bytes(lengths[i]);
+      for (uint256 j = 0; j < lengths[i]; ) {
+        unchecked {
+          chunks[i][j] = data[sum + j];
+          j += 1;
+        }
+      }
+      unchecked {
+        sum += lengths[i];
+        i += 1;
+      }
+    }
+    return chunks;
   }
 }
