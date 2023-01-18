@@ -65,7 +65,10 @@ library Vec2Table {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getData(id, keyTuple, 8);
-    bytes[] memory data = StoreCore.split(blob, getSchema());
-    return Schema({ x: Bytes.toUint32(data[0]), y: Bytes.toUint32(data[1]) });
+    return Schema({ x: Bytes.toUint32(Bytes.slice(blob, 0, 4)), y: Bytes.toUint32(Bytes.slice(blob, 4, 4)) });
+
+    // Alternative approach, but more expensive:
+    // bytes[] memory data = StoreCore.split(blob, getSchema());
+    // return Schema({ x: Bytes.toUint32(data[0]), y: Bytes.toUint32(data[1]) });
   }
 }

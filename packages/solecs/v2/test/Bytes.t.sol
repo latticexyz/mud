@@ -146,4 +146,23 @@ contract BytesTest is DSTestPlus {
 
     assertEq(a.length, 2);
   }
+
+  function testSlice() public {
+    bytes memory a = new bytes(5);
+    a[0] = 0x01;
+    a[1] = 0x02;
+    a[2] = 0x03;
+    a[3] = 0x04;
+    a[4] = 0x05;
+
+    uint256 gas = gasleft();
+    bytes memory b = Bytes.slice(a, 1, 3);
+    gas = gas - gasleft();
+    console.log("gas used: %s", gas);
+
+    assertEq(b.length, 3);
+    assertEq(uint256(uint8(b[0])), 0x02);
+    assertEq(uint256(uint8(b[1])), 0x03);
+    assertEq(uint256(uint8(b[2])), 0x04);
+  }
 }

@@ -72,11 +72,13 @@ contract StoreCoreTest is DSTestPlus {
   }
 
   function testSplit() public {
-    SchemaType[] memory schema = new SchemaType[](2);
+    SchemaType[] memory schema = new SchemaType[](4);
     schema[0] = SchemaType.Uint8;
     schema[1] = SchemaType.Uint16;
+    schema[2] = SchemaType.Uint16;
+    schema[3] = SchemaType.Uint32;
 
-    bytes memory data = bytes.concat(bytes1(0x01), bytes2(0x0203));
+    bytes memory data = bytes.concat(bytes1(0x01), bytes2(0x0203), bytes2(0x0405), bytes4(0x06070809));
 
     uint256 gas = gasleft();
     bytes[] memory splitData = StoreCore.split(data, schema);
@@ -86,6 +88,8 @@ contract StoreCoreTest is DSTestPlus {
     assertEq(splitData.length, schema.length);
     assertEq(uint8(bytes1(splitData[0])), 0x01);
     assertEq(uint16(bytes2(splitData[1])), 0x0203);
+    assertEq(uint16(bytes2(splitData[2])), 0x0405);
+    assertEq(uint32(bytes4(splitData[3])), 0x06070809);
   }
 
   function testSetAndGetAndSplitData() public {
