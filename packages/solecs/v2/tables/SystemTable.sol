@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
+import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
@@ -32,6 +33,10 @@ library SystemTable {
   /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(id, getSchema());
+  }
+
+  function registerSchema(IStore store) internal {
+    store.registerSchema(id, getSchema());
   }
 
   /** Set the table's data */
@@ -74,6 +79,17 @@ library SystemTable {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getData(id, keyTuple, 25);
+    return decode(blob);
+  }
+
+  function get(IStore store, bytes32 key) internal view returns (Schema memory data) {
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+    bytes memory blob = store.getData(id, keyTuple, 25);
+    return decode(blob);
+  }
+
+  function decode(bytes memory blob) internal pure returns (Schema memory data) {
     return
       Schema({
         addr: Bytes.toAddress(Bytes.slice(blob, 0, 20)),

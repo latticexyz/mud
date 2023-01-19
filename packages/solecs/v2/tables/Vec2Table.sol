@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
+import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
@@ -30,6 +31,10 @@ library Vec2Table {
   /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(id, getSchema());
+  }
+
+  function registerSchema(IStore store) internal {
+    store.registerSchema(id, getSchema());
   }
 
   /** Set the table's data */
@@ -65,6 +70,17 @@ library Vec2Table {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getData(id, keyTuple, 8);
+    return decode(blob);
+  }
+
+  function get(IStore store, bytes32 key) internal view returns (Schema memory vec2) {
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+    bytes memory blob = store.getData(id, keyTuple, 8);
+    return decode(blob);
+  }
+
+  function decode(bytes memory blob) internal pure returns (Schema memory vec2) {
     return Schema({ x: Bytes.toUint32(Bytes.slice(blob, 0, 4)), y: Bytes.toUint32(Bytes.slice(blob, 4, 4)) });
 
     // Alternative approach, but more expensive:

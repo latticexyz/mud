@@ -1,0 +1,117 @@
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+
+import { console } from "forge-std/console.sol";
+import { StoreCore } from "./StoreCore.sol";
+import { StoreView } from "./StoreView.sol";
+import { SchemaType, ExecutionMode } from "./Types.sol";
+import { SystemTable, Schema as SystemTableEntry } from "./tables/SystemTable.sol";
+import { Bytes } from "./Bytes.sol";
+
+/**
+ * TODO: add access control
+ */
+contract World is StoreView {
+  error World_InvalidSystem();
+
+  function registerSchema(bytes32 table, SchemaType[] memory schema) public override {
+    StoreCore.registerSchema(table, schema);
+  }
+
+  function setData(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes memory data
+  ) public override {
+    StoreCore.setData(table, key, data);
+  }
+
+  function setData(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data
+  ) public override {
+    StoreCore.setData(table, key, schemaIndex, data);
+  }
+
+  function registerSystem(
+    address contractAddress,
+    string memory contractName,
+    string memory functionSig,
+    ExecutionMode executionMode
+  ) public {
+    // TODO: checks
+    bytes4 worldSelector = bytes4(keccak256(abi.encodePacked(contractName, "_", functionSig)));
+    bytes4 funcSelector = bytes4(keccak256(abi.encodePacked(functionSig)));
+    SystemTable.set(bytes32(worldSelector), contractAddress, funcSelector, uint8(executionMode));
+  }
+
+  fallback() external payable {
+    // Find system by generated function selector
+    SystemTableEntry memory system = SystemTable.get(bytes32(msg.sig));
+
+    address systemAddress = system.addr;
+    bytes4 systemSelector = system.selector;
+
+    if (system.addr == address(0)) revert World_InvalidSystem();
+
+    // Call the system function via `call` if the system is autonomous
+    if (system.executionMode == uint8(ExecutionMode.Autonomous)) {
+      assembly {
+        // place system function selector at memory position 0
+        mstore(0, systemSelector)
+
+        // place existing calldata (exclusing selector) after system function selector
+        calldatacopy(4, 4, sub(calldatasize(), 4))
+
+        // place msg.sender after calldata
+        mstore(calldatasize(), caller())
+
+        // execute function call using the system and pass the constructed calldata
+        let result := call(gas(), systemAddress, callvalue(), 0, add(calldatasize(), 32), 0, 0)
+
+        // place any return value into memory at position 0
+        returndatacopy(0, 0, returndatasize())
+
+        // return any return value or error back to the caller
+        switch result
+        case 0 {
+          revert(0, returndatasize())
+        }
+        default {
+          return(0, returndatasize())
+        }
+      }
+    }
+
+    // Call the system function via `delegatecall` if the system is autonomous
+    if (system.executionMode == uint8(ExecutionMode.Delegate)) {
+      assembly {
+        // place system function selector at memory position 0
+        mstore(0, systemSelector)
+
+        // place existing calldata (exclusing selector) after system function selector
+        calldatacopy(4, 4, sub(calldatasize(), 4))
+
+        // place msg.sender after calldata
+        mstore(calldatasize(), caller())
+
+        // execute function call using the system and pass the constructed calldata
+        let result := delegatecall(gas(), systemAddress, 0, add(calldatasize(), 32), 0, 0)
+
+        // place any return value into memory at position 0
+        returndatacopy(0, 0, returndatasize())
+
+        // return any return value or error back to the caller
+        switch result
+        case 0 {
+          revert(0, returndatasize())
+        }
+        default {
+          return(0, returndatasize())
+        }
+      }
+    }
+  }
+}
