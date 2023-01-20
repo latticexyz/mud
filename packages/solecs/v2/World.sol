@@ -5,7 +5,7 @@ import { console } from "forge-std/console.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { StoreView } from "./StoreView.sol";
 import { SchemaType, ExecutionMode } from "./Types.sol";
-import { SystemTable, Schema as SystemTableEntry } from "./tables/SystemTable.sol";
+import { RouteTable, Route } from "./tables/RouteTable.sol";
 import { Bytes } from "./Bytes.sol";
 
 /**
@@ -44,23 +44,23 @@ contract World is StoreView {
     // TODO: checks
     bytes4 worldSelector = bytes4(keccak256(abi.encodePacked(contractName, "_", functionSig)));
     bytes4 funcSelector = bytes4(keccak256(abi.encodePacked(functionSig)));
-    SystemTable.set(bytes32(worldSelector), contractAddress, funcSelector, uint8(executionMode));
+    RouteTable.set(bytes32(worldSelector), contractAddress, funcSelector, uint8(executionMode));
   }
 
   fallback() external payable {
     // Find system by generated function selector
-    SystemTableEntry memory system = SystemTable.get(bytes32(msg.sig));
+    Route memory route = RouteTable.get(bytes32(msg.sig));
 
-    address systemAddress = system.addr;
-    bytes4 systemSelector = system.selector;
+    address addr = route.addr;
+    bytes4 selector = route.selector;
 
-    if (system.addr == address(0)) revert World_InvalidSystem();
+    if (addr == address(0)) revert World_InvalidSystem();
 
     // Call the system function via `call` if the system is autonomous
-    if (system.executionMode == uint8(ExecutionMode.Autonomous)) {
+    if (route.executionMode == uint8(ExecutionMode.Autonomous)) {
       assembly {
         // place system function selector at memory position 0
-        mstore(0, systemSelector)
+        mstore(0, selector)
 
         // place existing calldata (exclusing selector) after system function selector
         calldatacopy(4, 4, sub(calldatasize(), 4))
@@ -69,7 +69,7 @@ contract World is StoreView {
         mstore(calldatasize(), caller())
 
         // execute function call using the system and pass the constructed calldata
-        let result := call(gas(), systemAddress, callvalue(), 0, add(calldatasize(), 32), 0, 0)
+        let result := call(gas(), addr, callvalue(), 0, add(calldatasize(), 32), 0, 0)
 
         // place any return value into memory at position 0
         returndatacopy(0, 0, returndatasize())
@@ -86,10 +86,10 @@ contract World is StoreView {
     }
 
     // Call the system function via `delegatecall` if the system is autonomous
-    if (system.executionMode == uint8(ExecutionMode.Delegate)) {
+    if (route.executionMode == uint8(ExecutionMode.Delegate)) {
       assembly {
         // place system function selector at memory position 0
-        mstore(0, systemSelector)
+        mstore(0, selector)
 
         // place existing calldata (exclusing selector) after system function selector
         calldatacopy(4, 4, sub(calldatasize(), 4))
@@ -98,7 +98,7 @@ contract World is StoreView {
         mstore(calldatasize(), caller())
 
         // execute function call using the system and pass the constructed calldata
-        let result := delegatecall(gas(), systemAddress, 0, add(calldatasize(), 32), 0, 0)
+        let result := delegatecall(gas(), addr, 0, add(calldatasize(), 32), 0, 0)
 
         // place any return value into memory at position 0
         returndatacopy(0, 0, returndatasize())
