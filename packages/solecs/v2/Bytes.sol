@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { console } from "forge-std/console.sol";
 import { Utils } from "./Utils.sol";
 import { SchemaType } from "./Types.sol";
 
@@ -25,16 +26,62 @@ library Bytes {
   }
 
   function from(uint8[] memory input) internal pure returns (bytes memory output) {
-    output = new bytes(input.length);
-    for (uint256 i; i < input.length; i++) {
-      output[i] = bytes1(input[i]);
+    bytes32 ptr;
+    assembly {
+      ptr := input
     }
+
+    return _from(ptr, 1);
   }
 
   function from(SchemaType[] memory input) internal pure returns (bytes memory output) {
-    output = new bytes(input.length);
-    for (uint256 i; i < input.length; i++) {
-      output[i] = bytes1(uint8(input[i]));
+    bytes32 ptr;
+    assembly {
+      ptr := input
+    }
+
+    return _from(ptr, 1);
+  }
+
+  function from(uint16[] memory input) internal pure returns (bytes memory output) {
+    // This implementation costs 500 gas per entry:
+    // output = new bytes(0);
+    // for (uint256 i; i < input.length; i++) {
+    // output = bytes.concat(output, bytes2(input[i]));
+    // }
+
+    // This implementation costs around 100 gas per entry:
+    bytes32 ptr;
+    assembly {
+      ptr := input
+    }
+
+    return _from(ptr, 2);
+  }
+
+  function _from(bytes32 _ptr, uint256 _bytesPerElement) internal pure returns (bytes memory output) {
+    assembly {
+      let inputLength := mload(_ptr)
+      let outputBytes := mul(inputLength, _bytesPerElement)
+
+      // Allocate memory for the output and store its length
+      output := mload(0x40)
+      mstore(output, outputBytes)
+
+      // Update the free memory pointer
+      mstore(0x40, add(output, add(32, outputBytes)))
+
+      let outputPtr := add(output, 32)
+      let shiftBits := mul(sub(32, _bytesPerElement), 8)
+      for {
+        let inputPtr := add(_ptr, 32) // Start at first element
+        // Stop at last element
+      } lt(inputPtr, add(add(_ptr, 32), mul(mload(_ptr), 32))) {
+        inputPtr := add(inputPtr, 32) // Go to next input element
+        outputPtr := add(outputPtr, _bytesPerElement) // Go to next output slot
+      } {
+        mstore(outputPtr, shl(shiftBits, mload(inputPtr))) // Store the value in minimal bytes
+      }
     }
   }
 

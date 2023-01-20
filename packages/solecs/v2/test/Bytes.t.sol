@@ -36,6 +36,24 @@ contract BytesTest is DSTestPlus {
     assertEq(uint256(uint8(output[1])), 0x02);
   }
 
+  function testFromUint16Array() public {
+    uint16[] memory input = new uint16[](3);
+    input[0] = 0x0102;
+    input[1] = 0x0304;
+    input[2] = 0x0506;
+    uint256 gas = gasleft();
+    bytes memory output = Bytes.from(input);
+    gas = gas - gasleft();
+    console.log("gas used: %s", gas);
+    assertEq(output.length, 6);
+    assertEq(uint256(uint8(output[0])), 0x01);
+    assertEq(uint256(uint8(output[1])), 0x02);
+    assertEq(uint256(uint8(output[2])), 0x03);
+    assertEq(uint256(uint8(output[3])), 0x04);
+    assertEq(uint256(uint8(output[4])), 0x05);
+    assertEq(uint256(uint8(output[5])), 0x06);
+  }
+
   function testToBytes32() public {
     bytes memory input = new bytes(32);
     input[0] = 0x01;
@@ -250,5 +268,36 @@ contract BytesTest is DSTestPlus {
     console.log("gas used: %s", gas);
 
     assertEq(output, original);
+  }
+
+  function testAbiEncoding() public view {
+    bytes memory test = bytes.concat(bytes2(0x0102));
+    console.log("bytes2 raw length: %s", test.length);
+    console.log("bytes2 abi encoded length: %s", abi.encode(test).length);
+
+    string memory test2 = "max length of a string in a word";
+    console.log("string raw length: %s", bytes(test2).length);
+    console.log("string abi encoded length: %s", abi.encode(test2).length);
+
+    bytes[] memory test3 = new bytes[](2);
+    test3[0] = bytes.concat(bytes1(0x01));
+    test3[1] = bytes.concat(bytes2(0x0203));
+
+    console.log("bytes[] raw length: %s", Bytes.from(test3).length);
+    console.log("bytes[] abi encoded length: %s", abi.encode(test3).length);
+  }
+
+  function testEncodeDecode() public {
+    uint16[] memory input1 = new uint16[](2);
+    input1[0] = 0x0102;
+    input1[1] = 0x0304;
+    uint8[] memory input2 = new uint8[](2);
+    input2[0] = 0x05;
+    input2[1] = 0x06;
+
+    bytes32 lengths = bytes32(bytes.concat(bytes2(uint16(input1.length)), bytes2(uint16(input2.length))));
+    assertEq(lengths, bytes32(bytes4(0x00020002)));
+
+    bytes memory input = bytes.concat(lengths, Bytes.from(input1), Bytes.from(input2));
   }
 }
