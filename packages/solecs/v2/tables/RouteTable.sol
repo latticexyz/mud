@@ -92,9 +92,9 @@ library RouteTable {
   function decode(bytes memory blob) internal pure returns (Route memory data) {
     return
       Route({
-        addr: Bytes.toAddress(Bytes.slice(blob, 0, 20)),
-        selector: Bytes.toBytes4(Bytes.slice(blob, 20, 4)),
-        executionMode: Bytes.toUint8(Bytes.slice(blob, 24, 1))
+        addr: address(Bytes.slice20(blob, 0)),
+        selector: Bytes.slice4(blob, 20),
+        executionMode: uint8(Bytes.slice1(blob, 24))
       });
   }
 }

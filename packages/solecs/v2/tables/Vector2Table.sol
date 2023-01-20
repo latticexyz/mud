@@ -81,9 +81,12 @@ library Vector2Table {
   }
 
   function decode(bytes memory blob) internal pure returns (Vector2 memory vec2) {
-    return Vector2({ x: Bytes.toUint32(Bytes.slice(blob, 0, 4)), y: Bytes.toUint32(Bytes.slice(blob, 4, 4)) });
+    return Vector2({ x: uint32(Bytes.slice4(blob, 0)), y: uint32(Bytes.slice4(blob, 4)) });
 
     // Alternative approach, but more expensive:
+    // return Vector2({ x: Bytes.toUint32(Bytes.slice(blob, 0, 4)), y: Bytes.toUint32(Bytes.slice(blob, 4, 4)) });
+
+    // Alternative approach, but even more expensive:
     // bytes[] memory data = StoreCore.split(blob, getSchema());
     // return Schema({ x: Bytes.toUint32(data[0]), y: Bytes.toUint32(data[1]) });
   }

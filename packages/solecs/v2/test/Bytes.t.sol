@@ -219,4 +219,36 @@ contract BytesTest is DSTestPlus {
     assertEq(uint256(uint8(b[1])), 0x03);
     assertEq(uint256(uint8(b[2])), 0x04);
   }
+
+  // TODO: add tests for other sliceX functions
+  function testSlice3() public {
+    bytes memory a = new bytes(5);
+    a[0] = 0x01;
+    a[1] = 0x02;
+    a[2] = 0x03;
+    a[3] = 0x04;
+    a[4] = 0x05;
+
+    uint256 gas = gasleft();
+    bytes3 b = Bytes.slice3(a, 1);
+    gas = gas - gasleft();
+    console.log("gas used: %s", gas);
+
+    assertEq(b.length, 3);
+    assertEq(uint256(uint8(b[0])), 0x02);
+    assertEq(uint256(uint8(b[1])), 0x03);
+    assertEq(uint256(uint8(b[2])), 0x04);
+  }
+
+  function testSlice32() public {
+    bytes32 original = keccak256("some data");
+    bytes memory input = bytes.concat(bytes10(keccak256("irrelevant data")), original);
+
+    uint256 gas = gasleft();
+    bytes32 output = Bytes.slice32(input, 10);
+    gas = gas - gasleft();
+    console.log("gas used: %s", gas);
+
+    assertEq(output, original);
+  }
 }
