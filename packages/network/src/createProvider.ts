@@ -1,4 +1,4 @@
-import { Networkish, WebSocketProvider } from "@ethersproject/providers";
+import { Networkish, Web3Provider, WebSocketProvider } from "@ethersproject/providers";
 import { callWithRetry, observableToComputed, timeoutAfter } from "@latticexyz/utils";
 import { IComputedValue, IObservableValue, observable, reaction, runInAction } from "mobx";
 import { ensureNetworkIsUp } from "./networkUtils";
@@ -16,17 +16,19 @@ export type Providers = ReturnType<typeof createProvider>;
  *   ws: WebSocketProvider
  * }
  */
-export function createProvider({ chainId, jsonRpcUrl, wsRpcUrl, options }: ProviderConfig) {
+export function createProvider({ chainId, jsonRpcUrl, wsRpcUrl, externalProvider, options }: ProviderConfig) {
   const network: Networkish = {
     chainId,
     name: "mudChain",
   };
-  const providers = {
-    json: options?.batch
-      ? new MUDJsonRpcBatchProvider(jsonRpcUrl, network)
-      : new MUDJsonRpcProvider(jsonRpcUrl, network),
-    ws: wsRpcUrl ? new WebSocketProvider(wsRpcUrl, network) : undefined,
-  };
+  const providers = externalProvider
+    ? { json: new Web3Provider(externalProvider, network), ws: undefined }
+    : {
+        json: options?.batch
+          ? new MUDJsonRpcBatchProvider(jsonRpcUrl, network)
+          : new MUDJsonRpcProvider(jsonRpcUrl, network),
+        ws: wsRpcUrl ? new WebSocketProvider(wsRpcUrl, network) : undefined,
+      };
 
   if (options?.pollingInterval) {
     providers.json.pollingInterval = options.pollingInterval;

@@ -1,4 +1,5 @@
 import { Result } from "@ethersproject/abi";
+import { ExternalProvider } from "@ethersproject/providers";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { TxMetadata } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
 import { Cached } from "@latticexyz/utils";
@@ -39,6 +40,7 @@ export interface ProviderConfig {
   chainId: number;
   jsonRpcUrl: string;
   wsRpcUrl?: string;
+  externalProvider?: ExternalProvider;
   options?: { batch?: boolean; pollingInterval?: number; skipNetworkCheck?: boolean };
 }
 

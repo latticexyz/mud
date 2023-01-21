@@ -132,10 +132,19 @@ export function createTxQueue<C extends Contracts>(
         populatedTx.chainId = network.config.chainId;
 
         // Execute tx
-        const signedTx = await target.signer.signTransaction(populatedTx);
-        const hash = await (target.provider as JsonRpcProvider).perform("sendTransaction", {
-          signedTransaction: signedTx,
-        });
+        let hash: string;
+        try {
+          // Attempt to sign the transaction and send it raw for higher performance
+          const signedTx = await target.signer.signTransaction(populatedTx);
+          hash = await (target.provider as JsonRpcProvider).perform("sendTransaction", {
+            signedTransaction: signedTx,
+          });
+        } catch (e) {
+          // Some signers don't support signing without sending (looking at you MetaMask),
+          // so sign+send using the signer as a fallback
+          const tx = await target.signer.sendTransaction(populatedTx);
+          hash = tx.hash;
+        }
         const response = target.provider.getTransaction(hash) as Promise<ReturnTypeStrict<typeof target[typeof prop]>>;
         // This promise is awaited asynchronously in the tx queue and the action queue to catch errors
         const wait = async () => (await response).wait();
