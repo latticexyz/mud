@@ -26,7 +26,7 @@ There are Dockerfiles for each service available at the root of this repo -- `Do
 Each service can be built and used within a Kubernetes cluster (via a resource that can pull the container image) by pushing the images to a container registry. For example, to build the snapshot server via the Dockerfile, we can build the image
 
 ```
-docker build -f Dockerfile.snapshot --tag ghcr.io/latticexyz/mud-ecs-snapshot:<YOUR_TAG>
+docker build -f Dockerfile.snapshot . --tag ghcr.io/latticexyz/mud-ecs-snapshot:<YOUR_TAG>
 ```
 
 and then push to the container registry
