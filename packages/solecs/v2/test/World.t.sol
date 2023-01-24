@@ -44,8 +44,6 @@ contract WorldTest is DSTestPlus {
     system = new TestSystem();
   }
 
-  function _registerSystem(ExecutionMode executionMode) internal {}
-
   function testRegisterAndCallSystem() public {
     // Register autonomous system in the world
     world.registerSystem(address(system), "TestSystem", "msgSender()", ExecutionMode.Autonomous);

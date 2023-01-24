@@ -7,11 +7,13 @@ import { console } from "forge-std/console.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreUpdate(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreUpdate(bytes32 table, bytes32[] key, uint16 arrayIndex, uint8 fieldIndex, bytes data);
+
   bytes32 constant _slot = keccak256("mud.store");
   bytes32 constant _schemaTable = keccak256("mud.store.table.schema");
 
   error StoreCore_SchemaTooLong();
+  error StoreCore_NotImplemented();
 
   /************************************************************************
    *
@@ -29,33 +31,24 @@ library StoreCore {
   /**
    * Register a new table schema
    */
-  function registerSchema(bytes32 table, SchemaType[] memory schema) internal {
+  function registerSchema(bytes32 table, bytes32 schema) internal {
     // TODO: verify the table doesn't already exist
     if (schema.length > 32) revert StoreCore_SchemaTooLong();
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
     bytes32 location = _getLocation(_schemaTable, key);
-    _setDataRaw(location, Bytes.from(schema));
+    _setDataRaw(location, bytes.concat(schema));
   }
 
   /**
    * Get the schema for the given table
    */
-  function getSchema(bytes32 table) internal view returns (SchemaType[] memory schema) {
+  function getSchema(bytes32 table) internal view returns (bytes32 schema) {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
     bytes32 location = _getLocation(_schemaTable, key);
     bytes memory blob = _getDataRaw(location, 32);
-
-    // Find the first `None` value in the schema to determine the length
-    uint256 length = 0;
-    while (length < 32 && blob[length] != bytes1(uint8(SchemaType.None))) {
-      length++;
-    }
-
-    // Decrease the blob size to the actual length
-    Bytes.setLengthInPlace(blob, length);
-    schema = Bytes.toSchemaTypeArray(blob);
+    return bytes32(blob);
   }
 
   /************************************************************************
@@ -65,9 +58,10 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Set full data for the given table and key tuple
+   * Set full record for the given table and key tuple
+   * (Note: this will overwrite the entire record, including any array data)
    */
-  function setData(
+  function set(
     bytes32 table,
     bytes32[] memory key,
     bytes memory data
@@ -80,20 +74,35 @@ library StoreCore {
     _setDataRaw(location, data);
 
     // Emit event to notify indexers
-    emit StoreUpdate(table, key, 0, data);
+    emit StoreUpdate(table, key, 0, 0, data);
   }
 
-  /**
-   * Set partial data for the given table and key tuple, at the given schema index
-   * TODO: implement
-   */
-  function setData(
-    bytes32 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data
-  ) internal {
-    revert("not implemented");
+  function setField(
+    bytes32,
+    bytes32[] memory,
+    uint8,
+    bytes memory
+  ) internal pure {
+    revert StoreCore_NotImplemented();
+  }
+
+  function setArrayIndex(
+    bytes32,
+    bytes32[] memory,
+    uint16,
+    bytes memory
+  ) internal pure {
+    revert StoreCore_NotImplemented();
+  }
+
+  function setArrayIndexField(
+    bytes32,
+    bytes32[] memory,
+    uint16,
+    uint8,
+    bytes memory
+  ) internal pure {
+    revert StoreCore_NotImplemented();
   }
 
   /************************************************************************
@@ -103,28 +112,41 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Get full data for the given table and key tuple (compute length from schema)
+   * Get full record for the given table and key tuple (compute length from schema)
    */
-  function getData(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
+  function get(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     // Get schema for this table
-    SchemaType[] memory schema = getSchema(table);
+    bytes32 schema = getSchema(table);
 
     // Compute length of the full schema
-    uint256 length = _getByteLength(schema);
+    uint256 length = _getSchemaLength(schema);
 
     return getData(table, key, length);
   }
 
-  /**
-   * Get partial data for the given table and key tuple, at the given schema index
-   * TODO: implement
-   */
-  function getPartialData(
-    bytes32 table,
-    bytes32[] memory key,
-    uint8 schemaIndex
-  ) internal view returns (bytes memory) {
-    revert("not implemented");
+  function getField(
+    bytes32,
+    bytes32[] memory,
+    uint8
+  ) internal pure returns (bytes memory) {
+    revert StoreCore_NotImplemented();
+  }
+
+  function getArrayIndex(
+    bytes32,
+    bytes32[] memory,
+    uint16
+  ) internal pure returns (bytes memory) {
+    revert StoreCore_NotImplemented();
+  }
+
+  function getArrayIndexField(
+    bytes32,
+    bytes32[] memory,
+    uint16,
+    uint8
+  ) internal pure returns (bytes memory) {
+    revert StoreCore_NotImplemented();
   }
 
   /**
@@ -145,20 +167,6 @@ library StoreCore {
    *    HELPER FUNCTIONS
    *
    ************************************************************************/
-
-  /**
-   * Split the given bytes blob into an array of bytes based on the given schema
-   */
-  function split(bytes memory blob, SchemaType[] memory schema) internal pure returns (bytes[] memory) {
-    uint256[] memory lengths = new uint256[](schema.length);
-    for (uint256 i = 0; i < schema.length; ) {
-      lengths[i] = getByteLength(schema[i]);
-      unchecked {
-        i++;
-      }
-    }
-    return Bytes.split(blob, lengths);
-  }
 
   /************************************************************************
    *
@@ -211,15 +219,8 @@ library StoreCore {
   /**
    * Get the length of the data for the given schema
    */
-  function _getByteLength(SchemaType[] memory schema) internal pure returns (uint256) {
-    uint256 length = 0;
-    for (uint256 i = 0; i < schema.length; ) {
-      length += getByteLength(schema[i]);
-      unchecked {
-        i++;
-      }
-    }
-    return length;
+  function _getSchemaLength(bytes32 schema) internal pure returns (uint256) {
+    return uint256(uint16(bytes2(schema)));
   }
 }
 
@@ -231,17 +232,17 @@ library StoreCoreExt {
    *
    ************************************************************************/
 
-  function setData(
+  function set(
     bytes32 table,
     bytes32 _key,
     bytes memory data
   ) internal {
     bytes32[] memory key = new bytes32[](1);
     key[0] = _key;
-    StoreCore.setData(table, key, data);
+    StoreCore.set(table, key, data);
   }
 
-  function setData(
+  function set(
     bytes32 table,
     bytes32[2] memory _key,
     bytes memory data
@@ -249,7 +250,7 @@ library StoreCoreExt {
     bytes32[] memory key = new bytes32[](2);
     key[0] = _key[0];
     key[1] = _key[1];
-    StoreCore.setData(table, key, data);
+    StoreCore.set(table, key, data);
   }
 
   /************************************************************************
@@ -257,16 +258,16 @@ library StoreCoreExt {
    *    GET DATA
    *
    ************************************************************************/
-  function getData(bytes32 table, bytes32 _key) external view returns (bytes memory) {
+  function get(bytes32 table, bytes32 _key) external view returns (bytes memory) {
     bytes32[] memory key = new bytes32[](1);
     key[0] = _key;
-    return StoreCore.getData(table, key);
+    return StoreCore.get(table, key);
   }
 
   function getData(bytes32 table, bytes32[2] memory _key) external view returns (bytes memory) {
     bytes32[] memory key = new bytes32[](2);
     key[0] = _key[0];
     key[1] = _key[1];
-    return StoreCore.getData(table, key);
+    return StoreCore.get(table, key);
   }
 }

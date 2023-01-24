@@ -21,7 +21,7 @@ library StoreSwitch {
     }
   }
 
-  function registerSchema(bytes32 table, SchemaType[] memory schema) internal {
+  function registerSchema(bytes32 table, bytes32 schema) internal {
     if (isDelegateCall()) {
       StoreCore.registerSchema(table, schema);
     } else {
@@ -29,7 +29,7 @@ library StoreSwitch {
     }
   }
 
-  function getSchema(bytes32 table) internal view returns (SchemaType[] memory schema) {
+  function getSchema(bytes32 table) internal view returns (bytes32 schema) {
     if (isDelegateCall()) {
       schema = StoreCore.getSchema(table);
     } else {
@@ -37,60 +37,100 @@ library StoreSwitch {
     }
   }
 
-  function setData(
+  function set(
     bytes32 table,
     bytes32[] memory key,
     bytes memory data
   ) internal {
     if (isDelegateCall()) {
-      StoreCore.setData(table, key, data);
+      StoreCore.set(table, key, data);
     } else {
-      IStore(msg.sender).setData(table, key, data);
+      IStore(msg.sender).set(table, key, data);
     }
   }
 
-  function setData(
+  function setField(
     bytes32 table,
     bytes32[] memory key,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes memory data
   ) internal {
     if (isDelegateCall()) {
-      StoreCore.setData(table, key, schemaIndex, data);
+      StoreCore.setField(table, key, fieldIndex, data);
     } else {
-      IStore(msg.sender).setData(table, key, schemaIndex, data);
+      IStore(msg.sender).setField(table, key, fieldIndex, data);
     }
   }
 
-  function getData(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
-    if (isDelegateCall()) {
-      return StoreCore.getData(table, key);
-    } else {
-      return IStore(msg.sender).getData(table, key);
-    }
-  }
-
-  function getData(
+  function setArrayIndex(
     bytes32 table,
     bytes32[] memory key,
-    uint256 length
-  ) internal view returns (bytes memory) {
+    uint16 arrayIndex,
+    bytes memory data
+  ) internal {
     if (isDelegateCall()) {
-      return StoreCore.getData(table, key, length);
+      StoreCore.setArrayIndex(table, key, arrayIndex, data);
     } else {
-      return IStore(msg.sender).getData(table, key, length);
+      IStore(msg.sender).setArrayIndex(table, key, arrayIndex, data);
     }
   }
 
-  function getPartialData(
+  function setArrayIndexField(
     bytes32 table,
     bytes32[] memory key,
-    uint8 schemaIndex
+    uint16 arrayIndex,
+    uint8 fieldIndex,
+    bytes memory data
+  ) internal {
+    if (isDelegateCall()) {
+      StoreCore.setArrayIndexField(table, key, arrayIndex, fieldIndex, data);
+    } else {
+      IStore(msg.sender).setArrayIndexField(table, key, arrayIndex, fieldIndex, data);
+    }
+  }
+
+  function get(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
+    if (isDelegateCall()) {
+      return StoreCore.get(table, key);
+    } else {
+      return IStore(msg.sender).get(table, key);
+    }
+  }
+
+  function getField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex
   ) internal view returns (bytes memory) {
     if (isDelegateCall()) {
-      return StoreCore.getPartialData(table, key, schemaIndex);
+      return StoreCore.getField(table, key, fieldIndex);
     } else {
-      return IStore(msg.sender).getPartialData(table, key, schemaIndex);
+      return IStore(msg.sender).getField(table, key, fieldIndex);
+    }
+  }
+
+  function getArrayIndex(
+    bytes32 table,
+    bytes32[] memory key,
+    uint16 arrayIndex
+  ) internal view returns (bytes memory) {
+    if (isDelegateCall()) {
+      return StoreCore.getArrayIndex(table, key, arrayIndex);
+    } else {
+      return IStore(msg.sender).getArrayIndex(table, key, arrayIndex);
+    }
+  }
+
+  function getArrayIndexField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint16 arrayIndex,
+    uint8 fieldIndex
+  ) internal view returns (bytes memory) {
+    if (isDelegateCall()) {
+      return StoreCore.getArrayIndexField(table, key, arrayIndex, fieldIndex);
+    } else {
+      return IStore(msg.sender).getArrayIndexField(table, key, arrayIndex, fieldIndex);
     }
   }
 }

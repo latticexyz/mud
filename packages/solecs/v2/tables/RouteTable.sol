@@ -23,11 +23,16 @@ struct Route {
 
 library RouteTable {
   /** Get the table's schema */
-  function getSchema() internal pure returns (SchemaType[] memory schema) {
-    schema = new SchemaType[](3);
-    schema[0] = SchemaType.Address;
-    schema[1] = SchemaType.Bytes4;
-    schema[2] = SchemaType.Uint8;
+  function getSchema() internal pure returns (bytes32 schema) {
+    schema = bytes32(
+      // <length><address><bytes4><uint8>
+      bytes.concat(
+        bytes2(uint16(25)),
+        bytes1(uint8(SchemaType.Address)),
+        bytes1(uint8(SchemaType.Bytes4)),
+        bytes1(uint8(SchemaType.Uint8))
+      )
+    );
   }
 
   /** Register the table's schema */
@@ -49,7 +54,7 @@ library RouteTable {
     bytes memory data = bytes.concat(bytes20(addr), bytes4(selector), bytes1(executionMode));
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setData(id, keyTuple, data);
+    StoreSwitch.set(id, keyTuple, data);
   }
 
   function set(bytes32 key, Route memory data) internal {
@@ -59,33 +64,33 @@ library RouteTable {
   function setAddress(bytes32 key, address addr) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setData(id, keyTuple, 0, bytes.concat(bytes20(addr)));
+    StoreSwitch.setField(id, keyTuple, 0, bytes.concat(bytes20(addr)));
   }
 
   function setSelector(bytes32 key, bytes4 selector) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setData(id, keyTuple, 1, bytes.concat(bytes4(selector)));
+    StoreSwitch.setField(id, keyTuple, 1, bytes.concat(bytes4(selector)));
   }
 
   function setExecutionMode(bytes32 key, uint8 executionMode) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setData(id, keyTuple, 2, bytes.concat(bytes1(executionMode)));
+    StoreSwitch.setField(id, keyTuple, 2, bytes.concat(bytes1(executionMode)));
   }
 
   /** Get the table's data */
   function get(bytes32 key) internal view returns (Route memory data) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    bytes memory blob = StoreSwitch.getData(id, keyTuple, 25);
+    bytes memory blob = StoreSwitch.get(id, keyTuple);
     return decode(blob);
   }
 
   function get(IStore store, bytes32 key) internal view returns (Route memory data) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    bytes memory blob = store.getData(id, keyTuple, 25);
+    bytes memory blob = store.get(id, keyTuple);
     return decode(blob);
   }
 

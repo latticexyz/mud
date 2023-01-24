@@ -9,49 +9,84 @@ import { StoreCore } from "./StoreCore.sol";
 contract StoreView is IStore {
   error Store_BaseContractNotImplemented();
 
-  function registerSchema(bytes32, SchemaType[] memory) public virtual {
-    revert Store_BaseContractNotImplemented();
-  }
-
-  function setData(
-    bytes32,
-    bytes32[] memory,
-    bytes memory
-  ) public virtual {
-    revert Store_BaseContractNotImplemented();
-  }
-
-  function setData(
-    bytes32,
-    bytes32[] memory,
-    uint8,
-    bytes memory
-  ) public virtual {
-    revert Store_BaseContractNotImplemented();
-  }
-
-  function getSchema(bytes32 table) public view virtual returns (SchemaType[] memory schema) {
+  function getSchema(bytes32 table) public view virtual returns (bytes32 schema) {
     schema = StoreCore.getSchema(table);
   }
 
-  function getData(bytes32 table, bytes32[] memory key) public view virtual returns (bytes memory) {
-    return StoreCore.getData(table, key);
+  function registerSchema(bytes32, bytes32) public virtual {
+    revert Store_BaseContractNotImplemented();
   }
 
-  function getData(
+  function set(
+    bytes32,
+    bytes32[] memory,
+    bytes memory
+  ) public virtual {
+    revert Store_BaseContractNotImplemented();
+  }
+
+  // Set partial data at schema index
+  function setField(
     bytes32 table,
     bytes32[] memory key,
-    uint256 length
-  ) public view virtual returns (bytes memory) {
-    return StoreCore.getData(table, key, length);
+    uint8 schemaIndex,
+    bytes memory data
+  ) public virtual {
+    revert Store_BaseContractNotImplemented();
   }
 
-  function getPartialData(
+  // Set full record of a single item at a given array index
+  function setArrayIndex(
+    bytes32 table,
+    bytes32[] memory key,
+    uint16 arrayIndex,
+    bytes memory data
+  ) public virtual {
+    revert Store_BaseContractNotImplemented();
+  }
+
+  // Set partial data of a single item at a given array index
+  function setArrayIndexField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint16 arrayIndex,
+    uint8 schemaIndex,
+    bytes memory data
+  ) public virtual {
+    revert Store_BaseContractNotImplemented();
+  }
+
+  // Get full record (including full array)
+  function get(bytes32 table, bytes32[] memory key) public view returns (bytes memory data) {
+    data = StoreCore.get(table, key);
+  }
+
+  // Get partial data at schema index
+  function getField(
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex
-  ) public view virtual returns (bytes memory) {
-    return StoreCore.getPartialData(table, key, schemaIndex);
+  ) public view returns (bytes memory data) {
+    revert Store_BaseContractNotImplemented();
+  }
+
+  // Get full record of a single item at a given array index
+  function getArrayIndex(
+    bytes32 table,
+    bytes32[] memory key,
+    uint16 arrayIndex
+  ) public view returns (bytes memory data) {
+    revert Store_BaseContractNotImplemented();
+  }
+
+  // Get partial data of a single item at a given array index
+  function getArrayIndexField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint16 arrayIndex,
+    uint8 schemaIndex
+  ) public view returns (bytes memory data) {
+    revert Store_BaseContractNotImplemented();
   }
 
   function isStore() public view {}

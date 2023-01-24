@@ -5,7 +5,7 @@ import { console } from "forge-std/console.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { StoreView } from "./StoreView.sol";
 import { SchemaType, ExecutionMode } from "./Types.sol";
-import { RouteTable, Route } from "./tables/RouteTable.sol";
+import { RouteTable, Route, id as RouteId } from "./tables/RouteTable.sol";
 import { Bytes } from "./Bytes.sol";
 
 /**
@@ -14,25 +14,29 @@ import { Bytes } from "./Bytes.sol";
 contract World is StoreView {
   error World_InvalidSystem();
 
-  function registerSchema(bytes32 table, SchemaType[] memory schema) public override {
+  constructor() {
+    registerSchema(RouteId, RouteTable.getSchema());
+  }
+
+  function registerSchema(bytes32 table, bytes32 schema) public override {
     StoreCore.registerSchema(table, schema);
   }
 
-  function setData(
+  function set(
     bytes32 table,
     bytes32[] memory key,
     bytes memory data
   ) public override {
-    StoreCore.setData(table, key, data);
+    StoreCore.set(table, key, data);
   }
 
-  function setData(
+  function setField(
     bytes32 table,
     bytes32[] memory key,
-    uint8 schemaIndex,
+    uint8 fieldIndex,
     bytes memory data
   ) public override {
-    StoreCore.setData(table, key, schemaIndex, data);
+    StoreCore.setField(table, key, fieldIndex, data);
   }
 
   function registerSystem(

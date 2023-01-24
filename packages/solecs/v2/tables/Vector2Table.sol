@@ -22,10 +22,11 @@ struct Vector2 {
 
 library Vector2Table {
   /** Get the table's schema */
-  function getSchema() internal pure returns (SchemaType[] memory schema) {
-    schema = new SchemaType[](2);
-    schema[0] = SchemaType.Uint32;
-    schema[1] = SchemaType.Uint32;
+  function getSchema() internal pure returns (bytes32 schema) {
+    schema = bytes32(
+      // <length><uint32><uint32>
+      bytes.concat(bytes2(uint16(8)), bytes1(uint8(SchemaType.Uint32)), bytes1(uint8(SchemaType.Uint32)))
+    );
   }
 
   /** Register the table's schema */
@@ -46,7 +47,7 @@ library Vector2Table {
     bytes memory data = bytes.concat(bytes4(x), bytes4(y));
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setData(id, keyTuple, data);
+    StoreSwitch.set(id, keyTuple, data);
   }
 
   function set(bytes32 key, Vector2 memory vec2) internal {
@@ -56,27 +57,27 @@ library Vector2Table {
   function setX(bytes32 key, uint32 x) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setData(id, keyTuple, 0, bytes.concat(bytes4(x)));
+    StoreSwitch.setField(id, keyTuple, 0, bytes.concat(bytes4(x)));
   }
 
   function setY(bytes32 key, uint32 y) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setData(id, keyTuple, 1, bytes.concat(bytes4(y)));
+    StoreSwitch.setField(id, keyTuple, 1, bytes.concat(bytes4(y)));
   }
 
   /** Get the table's data */
   function get(bytes32 key) internal view returns (Vector2 memory vec2) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    bytes memory blob = StoreSwitch.getData(id, keyTuple, 8);
+    bytes memory blob = StoreSwitch.get(id, keyTuple);
     return decode(blob);
   }
 
   function get(IStore store, bytes32 key) internal view returns (Vector2 memory vec2) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    bytes memory blob = store.getData(id, keyTuple, 8);
+    bytes memory blob = store.get(id, keyTuple);
     return decode(blob);
   }
 

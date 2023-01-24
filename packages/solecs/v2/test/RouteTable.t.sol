@@ -15,8 +15,8 @@ contract SystemTableTest is DSTestPlus, StoreView {
     gas = gas - gasleft();
     console.log("gas used: %s", gas);
 
-    SchemaType[] memory registeredSchema = StoreCore.getSchema(RouteTableId);
-    SchemaType[] memory declaredSchema = RouteTable.getSchema();
+    bytes32 registeredSchema = StoreCore.getSchema(RouteTableId);
+    bytes32 declaredSchema = RouteTable.getSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }

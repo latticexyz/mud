@@ -9,6 +9,19 @@ import { Bytes } from "../Bytes.sol";
 import { SchemaType } from "../Types.sol";
 
 contract StoreCoreTest is DSTestPlus {
+  function testGetSchemaLength() public {
+    bytes32 schema = bytes32(
+      bytes.concat(bytes2(uint16(3)), bytes1(uint8(SchemaType.Uint8)), bytes1(uint8(SchemaType.Uint16)))
+    );
+
+    uint256 gas = gasleft();
+    uint256 length = StoreCore._getSchemaLength(schema);
+    gas = gas - gasleft();
+    console.log("gas used (set): %s", gas);
+
+    assertEq(length, 3);
+  }
+
   function testSetAndGetDataRawOneSlot() public {
     bytes32 location = keccak256("some location");
     bytes memory data = new bytes(32);
@@ -47,11 +60,15 @@ contract StoreCoreTest is DSTestPlus {
   }
 
   function testRegisterAndGetSchema() public {
-    SchemaType[] memory schema = new SchemaType[](4);
-    schema[0] = SchemaType.Uint8;
-    schema[1] = SchemaType.Uint16;
-    schema[2] = SchemaType.Uint8;
-    schema[3] = SchemaType.Uint16;
+    bytes32 schema = bytes32(
+      bytes.concat(
+        bytes2(uint16(6)),
+        bytes1(uint8(SchemaType.Uint8)),
+        bytes1(uint8(SchemaType.Uint16)),
+        bytes1(uint8(SchemaType.Uint8)),
+        bytes1(uint8(SchemaType.Uint16))
+      )
+    );
 
     bytes32 table = keccak256("some.table");
     uint256 gas = gasleft();
@@ -60,45 +77,29 @@ contract StoreCoreTest is DSTestPlus {
     console.log("gas used (register): %s", gas);
 
     gas = gasleft();
-    SchemaType[] memory loadedSchema = StoreCore.getSchema(table);
+    bytes memory loadedSchema = bytes.concat(StoreCore.getSchema(table));
     gas = gas - gasleft();
     console.log("gas used (get schema, warm): %s", gas);
 
     assertEq(loadedSchema.length, schema.length);
-    assertEq(uint8(schema[0]), uint8(loadedSchema[0]));
-    assertEq(uint8(schema[1]), uint8(loadedSchema[1]));
-    assertEq(uint8(schema[2]), uint8(loadedSchema[2]));
-    assertEq(uint8(schema[3]), uint8(loadedSchema[3]));
+    assertEq(uint8(Bytes.slice1(loadedSchema, 2)), uint8(SchemaType.Uint8));
+    assertEq(uint8(Bytes.slice1(loadedSchema, 3)), uint8(SchemaType.Uint16));
+    assertEq(uint8(Bytes.slice1(loadedSchema, 4)), uint8(SchemaType.Uint8));
+    assertEq(uint8(Bytes.slice1(loadedSchema, 5)), uint8(SchemaType.Uint16));
   }
 
-  function testSplit() public {
-    SchemaType[] memory schema = new SchemaType[](4);
-    schema[0] = SchemaType.Uint8;
-    schema[1] = SchemaType.Uint16;
-    schema[2] = SchemaType.Uint16;
-    schema[3] = SchemaType.Uint32;
-
-    bytes memory data = bytes.concat(bytes1(0x01), bytes2(0x0203), bytes2(0x0405), bytes4(0x06070809));
-
-    uint256 gas = gasleft();
-    bytes[] memory splitData = StoreCore.split(data, schema);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
-
-    assertEq(splitData.length, schema.length);
-    assertEq(uint8(bytes1(splitData[0])), 0x01);
-    assertEq(uint16(bytes2(splitData[1])), 0x0203);
-    assertEq(uint16(bytes2(splitData[2])), 0x0405);
-    assertEq(uint32(bytes4(splitData[3])), 0x06070809);
-  }
-
-  function testSetAndGetAndSplitData() public {
+  function testSetAndGetData() public {
     // Register table's schema
-    SchemaType[] memory schema = new SchemaType[](4);
-    schema[0] = SchemaType.Uint8;
-    schema[1] = SchemaType.Uint16;
-    schema[2] = SchemaType.Uint8;
-    schema[3] = SchemaType.Uint16;
+    bytes32 schema = bytes32(
+      bytes.concat(
+        bytes2(uint16(6)),
+        bytes1(uint8(SchemaType.Uint8)),
+        bytes1(uint8(SchemaType.Uint16)),
+        bytes1(uint8(SchemaType.Uint8)),
+        bytes1(uint8(SchemaType.Uint16))
+      )
+    );
+
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
 
@@ -109,12 +110,12 @@ contract StoreCoreTest is DSTestPlus {
     key[0] = keccak256("some.key");
 
     uint256 gas = gasleft();
-    uint256 length = StoreCore._getByteLength(schema);
+    uint256 length = StoreCore._getSchemaLength(schema);
     gas = gas - gasleft();
     console.log("gas used (compute schema length): %s", gas);
 
     gas = gasleft();
-    StoreCore.setData(table, key, data);
+    StoreCore.set(table, key, data);
     gas = gas - gasleft();
     console.log("gas used (set): %s", gas);
 
@@ -124,16 +125,6 @@ contract StoreCoreTest is DSTestPlus {
     gas = gas - gasleft();
     console.log("gas used (get, warm): %s", gas);
 
-    // Split data
-    gas = gasleft();
-    bytes[] memory splitData = StoreCore.split(data, schema);
-    gas = gas - gasleft();
-    console.log("gas used (split): %s", gas);
-
-    assertEq(loadedData.length, data.length);
-    assertEq(uint8(bytes1(splitData[0])), 0x01);
-    assertEq(uint16(bytes2(splitData[1])), 0x0203);
-    assertEq(uint8(bytes1(splitData[2])), 0x04);
-    assertEq(uint16(bytes2(splitData[3])), 0x0506);
+    assertTrue(Bytes.equals(data, loadedData));
   }
 }

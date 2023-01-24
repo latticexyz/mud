@@ -15,8 +15,8 @@ contract Vector2TableTest is DSTestPlus, StoreView {
     gas = gas - gasleft();
     console.log("gas used: %s", gas);
 
-    SchemaType[] memory registeredSchema = StoreCore.getSchema(Vector2Id);
-    SchemaType[] memory declaredSchema = Vector2Table.getSchema();
+    bytes32 registeredSchema = StoreCore.getSchema(Vector2Id);
+    bytes32 declaredSchema = Vector2Table.getSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }
