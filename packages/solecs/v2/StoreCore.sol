@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 import { Utils } from "./Utils.sol";
 import { Bytes } from "./Bytes.sol";
 import { SchemaType, getByteLength } from "./Types.sol";
+import { Storage } from "./Storage.sol";
 import { console } from "forge-std/console.sol";
 
 library StoreCore {
@@ -37,7 +38,7 @@ library StoreCore {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
     bytes32 location = _getLocation(_schemaTable, key);
-    _setDataUnchecked(location, 0, bytes.concat(schema));
+    Storage.write(location, schema);
   }
 
   /**
@@ -47,8 +48,7 @@ library StoreCore {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
     bytes32 location = _getLocation(_schemaTable, key);
-    bytes memory blob = _getDataUnchecked(location, 32);
-    return bytes32(blob);
+    return Storage.read(location);
   }
 
   /************************************************************************
@@ -74,7 +74,7 @@ library StoreCore {
 
     // Store the provided value in storage
     bytes32 location = _getLocation(table, key);
-    _setDataUnchecked(location, 0, data);
+    Storage.write(location, data);
 
     // Emit event to notify indexers
     emit StoreUpdate(table, key, 0, 0, data);
@@ -95,7 +95,7 @@ library StoreCore {
     // Store the provided value in storage
     bytes32 location = _getLocation(table, key);
     uint256 offset = _getDataOffset(schema, fieldIndex);
-    _setDataUnchecked(location, offset, data);
+    Storage.write(location, offset, data);
 
     // Emit event to notify indexers
     emit StoreUpdate(table, key, 0, 0, data);
@@ -171,7 +171,7 @@ library StoreCore {
   ) internal view returns (bytes memory) {
     // Load the data from storage
     bytes32 location = _getLocation(table, key);
-    return _getDataUnchecked(location, _getSchemaLength(schema));
+    return Storage.read(location, _getSchemaLength(schema));
   }
 
   /************************************************************************
@@ -198,84 +198,6 @@ library StoreCore {
     assembly {
       sstore(location, data)
     }
-  }
-
-  function _setPartialWord(
-    bytes32 location,
-    uint256 offset, // in bytes
-    uint256 length, // in bytes
-    bytes32 data
-  ) internal {
-    bytes32 current;
-    assembly {
-      current := sload(location)
-    }
-    bytes32 mask = bytes32(((1 << (length * 8)) - 1) << (256 - length * 8 - offset * 8)); // create a mask for the bits we want to update
-    console.logBytes32(mask);
-    bytes32 updated = (current & ~mask) | ((data >> (offset * 8)) & mask); // apply mask to data
-    console.logBytes32(updated);
-    assembly {
-      sstore(location, updated)
-    }
-  }
-
-  /**
-   * Write raw bytes to storage at the given location
-   * TODO: this implementation is optimized for readability, but not very gas efficient. We should optimize this using assembly once we've settled on a spec.
-   */
-  function _setDataUnchecked(
-    bytes32 location,
-    uint256 offset,
-    bytes memory data
-  ) internal {
-    uint256 numWords = Utils.divCeil(data.length, 32);
-
-    for (uint256 i; i < numWords; i++) {
-      // If this is the first word, and there is an offset, apply a mask to beginning
-      if ((i == 0 && offset > 0)) {
-        _setPartialWord(
-          location, // the word to update
-          offset, // the offset in bytes to start writing
-          data.length > 32 ? 32 - offset : data.length, // the number of bytes to write
-          bytes32(data)
-        );
-
-        // If this is the last word, and there is a partial word, apply a mask to the end
-      } else if (i == numWords - 1 && data.length % 32 > 0) {
-        _setPartialWord(
-          bytes32(uint256(location) + i * 32), // the word to update
-          0, // the offset in bytes to start writing
-          data.length % 32, // the number of bytes to write
-          Bytes.slice32(data, i * 32) // the data to write
-        );
-
-        // Otherwise, just write the word
-      } else {
-        _setFullWord(bytes32(uint256(location) + i * 32), Bytes.slice32(data, i * 32));
-      }
-    }
-  }
-
-  /**
-   * Read raw bytes from storage at the given location and length in bytess
-   * TODO: implement offset
-   */
-  function _getDataUnchecked(bytes32 location, uint256 length) internal view returns (bytes memory data) {
-    data = new bytes(length);
-    // load data from storage into memory
-    assembly {
-      for {
-        let i := 0
-      } lt(i, length) {
-        i := add(i, 0x20) // increment by 32 since we are loading 32 bytes at a time
-      } {
-        mstore(add(data, add(0x20, i)), sload(add(location, i)))
-      }
-    }
-
-    // remove offset
-
-    // remove unused trailing data
   }
 
   /**

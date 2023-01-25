@@ -6,6 +6,30 @@ import { Bytes } from "./Bytes.sol";
 import "./Buffer.sol";
 
 library Storage {
+  function write(bytes32 storagePointer, bytes memory data) internal {
+    write(uint256(storagePointer), 0, data);
+  }
+
+  function write(uint256 storagePointer, bytes memory data) internal {
+    write(storagePointer, 0, data);
+  }
+
+  function write(bytes32 storagePointer, bytes32 data) internal {
+    _writeWord(uint256(storagePointer), data);
+  }
+
+  function write(uint256 storagePointer, bytes32 data) internal {
+    _writeWord(storagePointer, data);
+  }
+
+  function write(
+    bytes32 storagePointer,
+    uint256 offset,
+    bytes memory data
+  ) internal {
+    write(uint256(storagePointer), offset, data);
+  }
+
   /**
    * @dev Write raw bytes to storage at the given storagePointer and offset (keeping the rest of the word intact)
    * TODO: this implementation is optimized for readability, but not very gas efficient. We should optimize this using assembly once we've settled on a spec.
@@ -46,8 +70,28 @@ library Storage {
     }
   }
 
-  function write(uint256 storagePointer, bytes memory data) internal {
-    write(storagePointer, 0, data);
+  function read(bytes32 storagePointer) internal view returns (bytes32) {
+    return _loadWord(uint256(storagePointer));
+  }
+
+  function read(uint256 storagePointer) internal view returns (bytes32) {
+    return _loadWord(storagePointer);
+  }
+
+  function read(bytes32 storagePointer, uint256 length) internal view returns (bytes memory) {
+    return read(uint256(storagePointer), 0, length);
+  }
+
+  function read(uint256 storagePointer, uint256 length) internal view returns (bytes memory) {
+    return read(storagePointer, 0, length);
+  }
+
+  function read(
+    bytes32 storagePointer,
+    uint256 offset,
+    uint256 length
+  ) internal view returns (bytes memory) {
+    return read(uint256(storagePointer), offset, length);
   }
 
   /**
@@ -95,10 +139,6 @@ library Storage {
     }
 
     return buf.toBytes();
-  }
-
-  function read(uint256 storagePointer) internal view returns (bytes32) {
-    return _loadWord(storagePointer);
   }
 
   /**

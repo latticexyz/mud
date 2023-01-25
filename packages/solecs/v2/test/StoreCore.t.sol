@@ -53,63 +53,6 @@ contract StoreCoreTest is DSTestPlus {
     assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 4)), uint8(SchemaType.Uint256));
   }
 
-  function testSetAndGetDataUncheckedOneSlot() public {
-    bytes32 location = keccak256("some location");
-    bytes memory data = new bytes(32);
-
-    data[0] = 0x01;
-    data[31] = 0x02;
-
-    uint256 gas = gasleft();
-    StoreCore._setDataUnchecked(location, 0, data);
-    gas = gas - gasleft();
-    console.log("gas used (set): %s", gas);
-
-    gas = gasleft();
-    bytes memory loadedData = StoreCore._getDataUnchecked(location, data.length);
-    gas = gas - gasleft();
-    console.log("gas used (get, warm): %s", gas);
-
-    assertEq(bytes32(loadedData), bytes32(data));
-  }
-
-  function testSetAndGetDataUncheckedMultipleSlots() public {
-    bytes32 location = keccak256("some location");
-    bytes memory data = abi.encode("this is some data spanning multiple words");
-
-    uint256 gas = gasleft();
-    StoreCore._setDataUnchecked(location, 0, data);
-    gas = gas - gasleft();
-    console.log("gas used (set, %s slots): %s", Utils.divCeil(data.length, 32), gas);
-
-    gas = gasleft();
-    bytes memory loadedData = StoreCore._getDataUnchecked(location, data.length);
-    gas = gas - gasleft();
-    console.log("gas used (get, warm, %s slots): %s", Utils.divCeil(data.length, 32), gas);
-
-    assertTrue(Bytes.equals(data, loadedData));
-  }
-
-  function testSetAndGetDataUncheckedOffset() public {
-    bytes32 location = keccak256("some location");
-    bytes memory data = new bytes(16);
-
-    data[0] = 0x01;
-    data[15] = 0x02;
-
-    uint256 gas = gasleft();
-    StoreCore._setDataUnchecked(location, 8, data);
-    gas = gas - gasleft();
-    console.log("gas used (set): %s", gas);
-
-    gas = gasleft();
-    bytes memory loadedData = StoreCore._getDataUnchecked(location, data.length);
-    gas = gas - gasleft();
-    console.log("gas used (get, warm): %s", gas);
-
-    assertEq(bytes32(loadedData), bytes32(bytes.concat(bytes8(0), data)));
-  }
-
   function testRegisterAndGetSchema() public {
     bytes32 schema = bytes32(
       bytes.concat(
