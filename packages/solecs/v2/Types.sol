@@ -7,6 +7,8 @@ enum SchemaType {
   Uint8,
   Uint16,
   Uint32,
+  Uint128,
+  Uint256,
   Bytes4,
   Address
 }
@@ -23,6 +25,10 @@ function getByteLength(SchemaType schemaType) pure returns (uint256) {
     return 2;
   } else if (schemaType == SchemaType.Uint32 || schemaType == SchemaType.Bytes4) {
     return 4;
+  } else if (schemaType == SchemaType.Uint128) {
+    return 16;
+  } else if (schemaType == SchemaType.Uint256) {
+    return 32;
   } else if (schemaType == SchemaType.Address) {
     return 20;
   } else {

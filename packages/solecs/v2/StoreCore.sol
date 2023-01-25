@@ -14,6 +14,7 @@ library StoreCore {
 
   error StoreCore_SchemaTooLong();
   error StoreCore_NotImplemented();
+  error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
 
   /************************************************************************
    *
@@ -33,11 +34,10 @@ library StoreCore {
    */
   function registerSchema(bytes32 table, bytes32 schema) internal {
     // TODO: verify the table doesn't already exist
-    if (schema.length > 32) revert StoreCore_SchemaTooLong();
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
     bytes32 location = _getLocation(_schemaTable, key);
-    _setDataRaw(location, bytes.concat(schema));
+    _setDataUnchecked(location, 0, bytes.concat(schema));
   }
 
   /**
@@ -47,7 +47,7 @@ library StoreCore {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
     bytes32 location = _getLocation(_schemaTable, key);
-    bytes memory blob = _getDataRaw(location, 32);
+    bytes memory blob = _getDataUnchecked(location, 32);
     return bytes32(blob);
   }
 
@@ -66,24 +66,39 @@ library StoreCore {
     bytes32[] memory key,
     bytes memory data
   ) internal {
-    // TODO: verify the value has the correct length for the table (based on the table's schema)
-    // (Tradeoff, slightly higher cost due to additional sload, but higher security - library could also provide both options)
+    // verify the value has the correct length for the table (based on the table's schema)
+    // to prevent invalid data from being stored
+    bytes32 schema = getSchema(table);
+    if (_getSchemaLength(schema) != data.length)
+      revert StoreCore_InvalidDataLength(_getSchemaLength(schema), data.length);
 
     // Store the provided value in storage
     bytes32 location = _getLocation(table, key);
-    _setDataRaw(location, data);
+    _setDataUnchecked(location, 0, data);
 
     // Emit event to notify indexers
     emit StoreUpdate(table, key, 0, 0, data);
   }
 
   function setField(
-    bytes32,
-    bytes32[] memory,
-    uint8,
-    bytes memory
-  ) internal pure {
-    revert StoreCore_NotImplemented();
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    bytes memory data
+  ) internal {
+    // verify the value has the correct length for the field
+    bytes32 schema = getSchema(table);
+    SchemaType schemaType = _getSchemaTypeAtIndex(schema, fieldIndex);
+    if (getByteLength(schemaType) != data.length)
+      revert StoreCore_InvalidDataLength(getByteLength(schemaType), data.length);
+
+    // Store the provided value in storage
+    bytes32 location = _getLocation(table, key);
+    uint256 offset = _getDataOffset(schema, fieldIndex);
+    _setDataUnchecked(location, offset, data);
+
+    // Emit event to notify indexers
+    emit StoreUpdate(table, key, 0, 0, data);
   }
 
   function setArrayIndex(
@@ -118,10 +133,7 @@ library StoreCore {
     // Get schema for this table
     bytes32 schema = getSchema(table);
 
-    // Compute length of the full schema
-    uint256 length = _getSchemaLength(schema);
-
-    return getData(table, key, length);
+    return get(table, key, schema);
   }
 
   function getField(
@@ -152,14 +164,14 @@ library StoreCore {
   /**
    * Get full data for the given table and key tuple, with the given length
    */
-  function getData(
+  function get(
     bytes32 table,
     bytes32[] memory key,
-    uint256 length
+    bytes32 schema
   ) internal view returns (bytes memory) {
     // Load the data from storage
     bytes32 location = _getLocation(table, key);
-    return _getDataRaw(location, length);
+    return _getDataUnchecked(location, _getSchemaLength(schema));
   }
 
   /************************************************************************
@@ -182,27 +194,73 @@ library StoreCore {
     return keccak256(abi.encode(_slot, table, key));
   }
 
+  function _setFullWord(bytes32 location, bytes32 data) internal {
+    assembly {
+      sstore(location, data)
+    }
+  }
+
+  function _setPartialWord(
+    bytes32 location,
+    uint256 offset,
+    uint256 length,
+    bytes32 data
+  ) internal {
+    bytes32 current;
+    assembly {
+      current := sload(location)
+    }
+    bytes32 mask = bytes32(((1 << (length * 8)) - 1) << (256 - length * 8 - offset * 8)); // create a mask for the bits we want to update
+    console.logBytes32(mask);
+    bytes32 updated = (current & ~mask) | ((data >> (offset * 8)) & mask); // apply mask to data
+    console.logBytes32(updated);
+    assembly {
+      sstore(location, updated)
+    }
+  }
+
   /**
    * Write raw bytes to storage at the given location
+   * TODO: this implementation is optimized for readability, but not very gas efficient. We should optimize this using assembly once we've settled on a spec.
    */
-  function _setDataRaw(bytes32 location, bytes memory data) internal {
-    assembly {
-      // loop over data and sstore it, starting at `location`
-      // (don't store length, since it is known from the schema)
-      for {
-        let i := 0
-      } lt(i, mload(data)) {
-        i := add(i, 0x20) // increment by 32 since we are storing 32 bytes at a time
-      } {
-        sstore(add(location, i), mload(add(data, add(0x20, i))))
+  function _setDataUnchecked(
+    bytes32 location,
+    uint256 offset,
+    bytes memory data
+  ) internal {
+    uint256 numWords = Utils.divCeil(data.length, 32);
+
+    for (uint256 i; i < numWords; i++) {
+      // If this is the first word, and there is an offset, apply a mask to beginning
+      if ((i == 0 && offset > 0)) {
+        _setPartialWord(
+          location, // the word to update
+          offset, // the offset in bytes to start writing
+          data.length > 32 ? 32 - offset : data.length, // the number of bytes to write
+          bytes32(data)
+        );
+
+        // If this is the last word, and there is a partial word, apply a mask to the end
+      } else if (i == numWords - 1 && data.length % 32 > 0) {
+        _setPartialWord(
+          bytes32(uint256(location) + i * 32), // the word to update
+          0, // the offset in bytes to start writing
+          data.length % 32, // the number of bytes to write
+          Bytes.slice32(data, i * 32) // the data to write
+        );
+
+        // Otherwise, just write the word
+      } else {
+        _setFullWord(bytes32(uint256(location) + i * 32), Bytes.slice32(data, i * 32));
       }
     }
   }
 
   /**
    * Read raw bytes from storage at the given location and length in bytess
+   * TODO: implement offset
    */
-  function _getDataRaw(bytes32 location, uint256 length) internal view returns (bytes memory data) {
+  function _getDataUnchecked(bytes32 location, uint256 length) internal view returns (bytes memory data) {
     data = new bytes(length);
     // load data from storage into memory
     assembly {
@@ -221,6 +279,42 @@ library StoreCore {
    */
   function _getSchemaLength(bytes32 schema) internal pure returns (uint256) {
     return uint256(uint16(bytes2(schema)));
+  }
+
+  /**
+   * Get the offset of the data for the given schema at the given index
+   * TODO: gas optimize
+   */
+  function _getDataOffset(bytes32 schema, uint8 fieldIndex) internal pure returns (uint256) {
+    uint256 offset = 2; // skip length
+    for (uint256 i = 0; i < fieldIndex; i++) {
+      offset += getByteLength(_getSchemaTypeAtIndex(schema, i));
+    }
+    return offset;
+  }
+
+  /**
+   * Get the type of the data for the given schema at the given index
+   */
+  function _getSchemaTypeAtIndex(bytes32 schema, uint256 index) internal pure returns (SchemaType) {
+    return SchemaType(uint8(Bytes.slice1(schema, index + 2)));
+  }
+
+  /**
+   * Encode the given schema into a single bytes32
+   * TODO: gas optimize, replace bytes.concat with Buffer
+   */
+  function _encodeSchema(SchemaType[] memory _schema) internal pure returns (bytes32) {
+    if (_schema.length > 30) revert StoreCore_SchemaTooLong();
+    uint16 length;
+    bytes memory schema;
+
+    for (uint256 i = 0; i < _schema.length; i++) {
+      length += uint16(getByteLength(_schema[i]));
+      schema = bytes.concat(schema, bytes1(uint8(_schema[i])));
+    }
+
+    return bytes32(bytes.concat(bytes2(length), schema));
   }
 }
 

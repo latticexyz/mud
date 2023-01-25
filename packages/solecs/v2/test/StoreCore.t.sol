@@ -17,12 +17,43 @@ contract StoreCoreTest is DSTestPlus {
     uint256 gas = gasleft();
     uint256 length = StoreCore._getSchemaLength(schema);
     gas = gas - gasleft();
-    console.log("gas used (set): %s", gas);
+    console.log("gas used: %s", gas);
 
     assertEq(length, 3);
   }
 
-  function testSetAndGetDataRawOneSlot() public {
+  function testEncodeDecodeSchema() public {
+    SchemaType[] memory schema = new SchemaType[](5);
+    schema[0] = SchemaType.Uint8; // 1 byte
+    schema[1] = SchemaType.Uint16; // 2 bytes
+    schema[2] = SchemaType.Uint32; // 4 bytes
+    schema[3] = SchemaType.Uint128; // 4 bytes
+    schema[4] = SchemaType.Uint256; // 4 bytes
+
+    uint256 gas = gasleft();
+    bytes32 encodedSchema = StoreCore._encodeSchema(schema);
+    gas = gas - gasleft();
+    console.log("gas used (encode): %s", gas);
+
+    gas = gasleft();
+    uint256 length = StoreCore._getSchemaLength(encodedSchema);
+    gas = gas - gasleft();
+    console.log("gas used (get length): %s", gas);
+
+    gas = gasleft();
+    SchemaType schemaType1 = StoreCore._getSchemaTypeAtIndex(encodedSchema, 0);
+    gas = gas - gasleft();
+    console.log("gas used (decode): %s", gas);
+
+    assertEq(length, 55);
+    assertEq(uint8(schemaType1), uint8(SchemaType.Uint8));
+    assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 1)), uint8(SchemaType.Uint16));
+    assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 2)), uint8(SchemaType.Uint32));
+    assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 3)), uint8(SchemaType.Uint128));
+    assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 4)), uint8(SchemaType.Uint256));
+  }
+
+  function testSetAndGetDataUncheckedOneSlot() public {
     bytes32 location = keccak256("some location");
     bytes memory data = new bytes(32);
 
@@ -30,33 +61,53 @@ contract StoreCoreTest is DSTestPlus {
     data[31] = 0x02;
 
     uint256 gas = gasleft();
-    StoreCore._setDataRaw(location, data);
+    StoreCore._setDataUnchecked(location, 0, data);
     gas = gas - gasleft();
     console.log("gas used (set): %s", gas);
 
     gas = gasleft();
-    bytes memory loadedData = StoreCore._getDataRaw(location, data.length);
+    bytes memory loadedData = StoreCore._getDataUnchecked(location, data.length);
     gas = gas - gasleft();
     console.log("gas used (get, warm): %s", gas);
 
     assertEq(bytes32(loadedData), bytes32(data));
   }
 
-  function testSetAndGetDataRawMultipleSlots() public {
+  function testSetAndGetDataUncheckedMultipleSlots() public {
     bytes32 location = keccak256("some location");
     bytes memory data = abi.encode("this is some data spanning multiple words");
 
     uint256 gas = gasleft();
-    StoreCore._setDataRaw(location, data);
+    StoreCore._setDataUnchecked(location, 0, data);
     gas = gas - gasleft();
     console.log("gas used (set, %s slots): %s", Utils.divCeil(data.length, 32), gas);
 
     gas = gasleft();
-    bytes memory loadedData = StoreCore._getDataRaw(location, data.length);
+    bytes memory loadedData = StoreCore._getDataUnchecked(location, data.length);
     gas = gas - gasleft();
     console.log("gas used (get, warm, %s slots): %s", Utils.divCeil(data.length, 32), gas);
 
     assertTrue(Bytes.equals(data, loadedData));
+  }
+
+  function testSetAndGetDataUncheckedOffset() public {
+    bytes32 location = keccak256("some location");
+    bytes memory data = new bytes(16);
+
+    data[0] = 0x01;
+    data[15] = 0x02;
+
+    uint256 gas = gasleft();
+    StoreCore._setDataUnchecked(location, 8, data);
+    gas = gas - gasleft();
+    console.log("gas used (set): %s", gas);
+
+    gas = gasleft();
+    bytes memory loadedData = StoreCore._getDataUnchecked(location, data.length);
+    gas = gas - gasleft();
+    console.log("gas used (get, warm): %s", gas);
+
+    assertEq(bytes32(loadedData), bytes32(bytes.concat(bytes8(0), data)));
   }
 
   function testRegisterAndGetSchema() public {
@@ -110,21 +161,83 @@ contract StoreCoreTest is DSTestPlus {
     key[0] = keccak256("some.key");
 
     uint256 gas = gasleft();
-    uint256 length = StoreCore._getSchemaLength(schema);
-    gas = gas - gasleft();
-    console.log("gas used (compute schema length): %s", gas);
-
-    gas = gasleft();
     StoreCore.set(table, key, data);
     gas = gas - gasleft();
     console.log("gas used (set): %s", gas);
 
     // Get data
     gas = gasleft();
-    bytes memory loadedData = StoreCore.getData(table, key, length);
+    bytes memory loadedData = StoreCore.get(table, key, schema);
     gas = gas - gasleft();
     console.log("gas used (get, warm): %s", gas);
 
     assertTrue(Bytes.equals(data, loadedData));
+  }
+
+  function testFailSetAndGetData() public {
+    // Register table's schema
+    bytes32 schema = bytes32(
+      bytes.concat(
+        bytes2(uint16(6)),
+        bytes1(uint8(SchemaType.Uint8)),
+        bytes1(uint8(SchemaType.Uint16)),
+        bytes1(uint8(SchemaType.Uint8)),
+        bytes1(uint8(SchemaType.Uint16))
+      )
+    );
+
+    bytes32 table = keccak256("some.table");
+    StoreCore.registerSchema(table, schema);
+
+    // Set data
+    bytes memory data = bytes.concat(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
+
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = keccak256("some.key");
+
+    uint256 gas = gasleft();
+    StoreCore.set(table, key, data);
+    gas = gas - gasleft();
+    console.log("gas used (set): %s", gas);
+  }
+
+  function testSetAndGetDataSpanningWords() public {
+    // Register table's schema
+    SchemaType[] memory schemaTypes = new SchemaType[](2);
+    schemaTypes[0] = SchemaType.Uint128;
+    schemaTypes[1] = SchemaType.Uint256;
+
+    bytes32 schema = StoreCore._encodeSchema(schemaTypes);
+
+    bytes32 table = keccak256("some.table");
+    StoreCore.registerSchema(table, schema);
+
+    // Set data
+    bytes memory data = bytes.concat(
+      bytes16(0x0102030405060708090a0b0c0d0e0f10),
+      bytes32(0x1112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f30)
+    );
+
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = keccak256("some.key");
+
+    uint256 gas = gasleft();
+    StoreCore.set(table, key, data);
+    gas = gas - gasleft();
+    console.log("gas used (set): %s", gas);
+
+    // Get data
+    gas = gasleft();
+    bytes memory loadedData = StoreCore.get(table, key, schema);
+    gas = gas - gasleft();
+    console.log("gas used (get, warm): %s", gas);
+
+    assertTrue(Bytes.equals(data, loadedData));
+  }
+
+  function testSetFieldWithOffset() public {
+    // Should not override the data before the offset
+    // Should not override the data after the field
+    // revert("todo");
   }
 }

@@ -268,6 +268,14 @@ library Bytes {
     return output;
   }
 
+  function slice1(bytes32 data, uint256 start) internal pure returns (bytes1) {
+    bytes1 output;
+    assembly {
+      output := shl(mul(8, start), data)
+    }
+    return output;
+  }
+
   /** Slice bytes to bytes2 without copying data */
   function slice2(bytes memory data, uint256 start) internal pure returns (bytes2) {
     bytes2 output;
