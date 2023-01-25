@@ -202,8 +202,8 @@ library StoreCore {
 
   function _setPartialWord(
     bytes32 location,
-    uint256 offset,
-    uint256 length,
+    uint256 offset, // in bytes
+    uint256 length, // in bytes
     bytes32 data
   ) internal {
     bytes32 current;
@@ -272,6 +272,10 @@ library StoreCore {
         mstore(add(data, add(0x20, i)), sload(add(location, i)))
       }
     }
+
+    // remove offset
+
+    // remove unused trailing data
   }
 
   /**
