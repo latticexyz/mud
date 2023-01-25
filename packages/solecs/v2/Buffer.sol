@@ -22,6 +22,7 @@ library Buffer_ {
     assembly {
       let buf := mload(0x40) // free memory pointer
       mstore(0x40, add(buf, add(32, capacity))) // 32 bytes for the buffer header, plus the length of the buffer
+      mstore(buf, 0) // initialize length to 0 (memory is not cleared by default)
       ptr := add(buf, 32) // ptr to first data byte
     }
 
@@ -47,7 +48,7 @@ library BufferUtils {
   uint256 constant MASK_CAPACITY = uint256(type(uint128).max);
   uint256 constant MASK_PTR = uint256(type(uint128).max) << 128;
 
-  error Buffer_Overflow();
+  error Buffer_Overflow(uint256 capacity, uint256 requestedLength);
 
   /**
    * @dev Returns the pointer to the start of an in-memory buffer.
@@ -104,14 +105,47 @@ library BufferUtils {
    */
   function append(Buffer self, bytes memory data) internal pure {
     uint128 _newLength = length(self) + uint128(data.length);
-    _checkCapacity(self, _newLength);
-    _appendUnchecked(self, data);
+    checkCapacity(self, _newLength);
+    appendUnchecked(self, data);
+  }
+
+  /**
+   * @dev Appends _dataLength of the given bytes32 to the buffer (checking for overflows)
+   */
+  function append(
+    Buffer self,
+    bytes32 data,
+    uint128 _dataLength
+  ) internal pure {
+    uint128 _newLength = length(self) + _dataLength;
+    checkCapacity(self, _newLength);
+    appendUnchecked(self, data, _dataLength);
+  }
+
+  /**
+   * @dev Appends _dataLength of the given bytes32 to the buffer (without checking for overflows)
+   */
+  function appendUnchecked(
+    Buffer self,
+    bytes32 data,
+    uint128 _dataLength
+  ) internal pure {
+    uint256 _ptr = ptr(self);
+    uint128 _length = length(self);
+
+    // Update the current buffer length
+    _setLengthUnchecked(self, _length + _dataLength);
+
+    // Copy over given data to the buffer
+    assembly {
+      mstore(add(_ptr, _length), data)
+    }
   }
 
   /**
    * @dev Appends the given bytes to the buffer (without checking for overflows)
    */
-  function _appendUnchecked(Buffer self, bytes memory data) internal pure {
+  function appendUnchecked(Buffer self, bytes memory data) internal pure {
     uint256 _ptr = ptr(self);
     uint128 _dataLength = uint128(data.length);
     uint128 _length = length(self);
@@ -188,7 +222,7 @@ library BufferUtils {
    * @dev Modify buffer length (checking capacity)
    */
   function _setLength(Buffer self, uint128 _length) internal pure {
-    _checkCapacity(self, _length);
+    checkCapacity(self, _length);
     _setLengthUnchecked(self, _length);
   }
 
@@ -205,9 +239,9 @@ library BufferUtils {
   /**
    * @dev Check if the buffer has enough capacity to store a given length.
    */
-  function _checkCapacity(Buffer self, uint128 _length) internal pure {
+  function checkCapacity(Buffer self, uint128 _length) internal pure {
     if (capacity(self) < _length) {
-      revert Buffer_Overflow();
+      revert Buffer_Overflow(capacity(self), _length);
     }
   }
 }

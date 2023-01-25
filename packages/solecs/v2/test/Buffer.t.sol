@@ -72,7 +72,7 @@ contract BufferTest is DSTestPlus {
     bytes memory data2 = bytes.concat(bytes8(0x090a0b0c0d0e0f10));
 
     uint256 gas = gasleft();
-    buf._appendUnchecked(data1);
+    buf.appendUnchecked(data1);
     gas = gas - gasleft();
     console.log("gas used (append unchecked): %s", gas);
 
@@ -82,6 +82,28 @@ contract BufferTest is DSTestPlus {
     console.log("gas used (append): %s", gas);
 
     assertEq(uint256(buf.length()), 16);
+    assertEq(buf.read8(0), bytes8(0x0102030405060708));
+    assertEq(buf.read8(8), bytes8(0x090a0b0c0d0e0f10));
+  }
+
+  function testAppendFixed() public {
+    Buffer buf = Buffer_.allocate(32);
+    bytes32 data1 = bytes32(bytes8(0x0102030405060708));
+    bytes32 data2 = bytes32(bytes8(0x090a0b0c0d0e0f10));
+
+    uint256 gas = gasleft();
+    buf.appendUnchecked(data1, 8);
+    gas = gas - gasleft();
+    console.log("gas used (append unchecked): %s", gas);
+
+    gas = gasleft();
+    buf.append(data2, 8);
+    gas = gas - gasleft();
+    console.log("gas used (append): %s", gas);
+
+    assertEq(uint256(buf.length()), 16);
+    assertEq(buf.read8(0), bytes8(0x0102030405060708));
+    assertEq(buf.read8(8), bytes8(0x090a0b0c0d0e0f10));
   }
 
   function testToBytes() public {
