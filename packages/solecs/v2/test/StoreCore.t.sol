@@ -9,13 +9,13 @@ import { Bytes } from "../Bytes.sol";
 import { SchemaType } from "../Types.sol";
 
 contract StoreCoreTest is DSTestPlus {
-  function testGetSchemaLength() public {
+  function testGetStaticDataLength() public {
     bytes32 schema = bytes32(
       bytes.concat(bytes2(uint16(3)), bytes1(uint8(SchemaType.Uint8)), bytes1(uint8(SchemaType.Uint16)))
     );
 
     uint256 gas = gasleft();
-    uint256 length = StoreCore._getSchemaLength(schema);
+    uint256 length = StoreCore._getStaticDataLength(schema);
     gas = gas - gasleft();
     console.log("gas used: %s", gas);
 
@@ -23,20 +23,21 @@ contract StoreCoreTest is DSTestPlus {
   }
 
   function testEncodeDecodeSchema() public {
-    SchemaType[] memory schema = new SchemaType[](5);
+    SchemaType[] memory schema = new SchemaType[](6);
     schema[0] = SchemaType.Uint8; // 1 byte
     schema[1] = SchemaType.Uint16; // 2 bytes
     schema[2] = SchemaType.Uint32; // 4 bytes
     schema[3] = SchemaType.Uint128; // 4 bytes
     schema[4] = SchemaType.Uint256; // 4 bytes
+    schema[5] = SchemaType.Uint32Array; // 0 bytes (because it's dynamic)
 
     uint256 gas = gasleft();
-    bytes32 encodedSchema = StoreCore._encodeSchema(schema);
+    bytes32 encodedSchema = StoreCore.encodeSchema(schema);
     gas = gas - gasleft();
     console.log("gas used (encode): %s", gas);
 
     gas = gasleft();
-    uint256 length = StoreCore._getSchemaLength(encodedSchema);
+    uint256 length = StoreCore._getStaticDataLength(encodedSchema);
     gas = gas - gasleft();
     console.log("gas used (get length): %s", gas);
 
@@ -51,6 +52,8 @@ contract StoreCoreTest is DSTestPlus {
     assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 2)), uint8(SchemaType.Uint32));
     assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 3)), uint8(SchemaType.Uint128));
     assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 4)), uint8(SchemaType.Uint256));
+    assertEq(StoreCore._getNumStaticFields(encodedSchema), 5);
+    assertEq(StoreCore._getNumDynamicFields(encodedSchema), 1);
   }
 
   function testRegisterAndGetSchema() public {
@@ -150,7 +153,7 @@ contract StoreCoreTest is DSTestPlus {
     schemaTypes[0] = SchemaType.Uint128;
     schemaTypes[1] = SchemaType.Uint256;
 
-    bytes32 schema = StoreCore._encodeSchema(schemaTypes);
+    bytes32 schema = StoreCore.encodeSchema(schemaTypes);
 
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);

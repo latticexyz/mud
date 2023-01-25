@@ -5,7 +5,7 @@ import { SchemaType } from "./Types.sol";
 
 interface IStore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreUpdate(bytes32 table, bytes32[] key, uint16 arrayIndex, uint8 fieldIndex, bytes data);
+  event StoreUpdate(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
 
   function registerSchema(bytes32 table, bytes32 schema) external;
 
@@ -22,7 +22,7 @@ interface IStore {
   function setField(
     bytes32 table,
     bytes32[] memory key,
-    uint8 fieldIndex,
+    uint8 schemaIndex,
     bytes memory data
   ) external;
 
@@ -39,7 +39,7 @@ interface IStore {
     bytes32 table,
     bytes32[] memory key,
     uint16 arrayIndex,
-    uint8 fieldIndex,
+    uint8 schemaIndex,
     bytes memory data
   ) external;
 
@@ -50,7 +50,7 @@ interface IStore {
   function getField(
     bytes32 table,
     bytes32[] memory key,
-    uint8 fieldIndex
+    uint8 schemaIndex
   ) external view returns (bytes memory data);
 
   // Get full record of a single item at a given array index
@@ -65,7 +65,7 @@ interface IStore {
     bytes32 table,
     bytes32[] memory key,
     uint16 arrayIndex,
-    uint8 fieldIndex
+    uint8 schemaIndex
   ) external view returns (bytes memory data);
 
   // If this function exists on the contract, it is a store

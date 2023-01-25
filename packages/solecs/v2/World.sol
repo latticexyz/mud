@@ -33,10 +33,10 @@ contract World is StoreView {
   function setField(
     bytes32 table,
     bytes32[] memory key,
-    uint8 fieldIndex,
+    uint8 schemaIndex,
     bytes memory data
   ) public override {
-    StoreCore.setField(table, key, fieldIndex, data);
+    StoreCore.setField(table, key, schemaIndex, data);
   }
 
   function registerSystem(

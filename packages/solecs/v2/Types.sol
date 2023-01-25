@@ -9,6 +9,7 @@ enum SchemaType {
   Uint32,
   Uint128,
   Uint256,
+  Uint32Array,
   Bytes4,
   Address
 }
@@ -18,7 +19,7 @@ enum SchemaType {
  * (Because Solidity doesn't support constant arrays, we need to use a function)
  * TODO: add more types and make it more efficient (avoid linear search)
  */
-function getByteLength(SchemaType schemaType) pure returns (uint256) {
+function getStaticByteLength(SchemaType schemaType) pure returns (uint256) {
   if (schemaType == SchemaType.Uint8) {
     return 1;
   } else if (schemaType == SchemaType.Uint16) {
@@ -32,7 +33,33 @@ function getByteLength(SchemaType schemaType) pure returns (uint256) {
   } else if (schemaType == SchemaType.Address) {
     return 20;
   } else {
-    revert("Unsupported schema type");
+    // Return 0 for all dynamic types
+    return 0;
+  }
+}
+
+/**
+ * Returns true if the schema type has a fixed length
+ * (Because Solidity doesn't support constant arrays, we need to use a function)
+ * TODO: add more types and make it more efficient (avoid linear search)
+ */
+function hasStaticLength(SchemaType schemaType) pure returns (bool) {
+  if (schemaType == SchemaType.Uint8) {
+    return true;
+  } else if (schemaType == SchemaType.Uint16) {
+    return true;
+  } else if (schemaType == SchemaType.Uint32) {
+    return true;
+  } else if (schemaType == SchemaType.Uint128) {
+    return true;
+  } else if (schemaType == SchemaType.Uint256) {
+    return true;
+  } else if (schemaType == SchemaType.Bytes4) {
+    return true;
+  } else if (schemaType == SchemaType.Address) {
+    return true;
+  } else {
+    return false;
   }
 }
 
