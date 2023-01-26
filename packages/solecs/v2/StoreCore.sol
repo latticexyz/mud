@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 import { Utils } from "./Utils.sol";
 import { Bytes } from "./Bytes.sol";
-import { SchemaType, getStaticByteLength } from "./Types.sol";
+import { SchemaType, getStaticByteLength, getElementByteLength } from "./Types.sol";
 import { Storage } from "./Storage.sol";
 import { console } from "forge-std/console.sol";
 import "./Buffer.sol";
@@ -11,8 +11,8 @@ library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event StoreUpdate(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
 
-  bytes32 constant _slot = keccak256("mud.store");
-  bytes32 constant _schemaTable = keccak256("mud.store.table.schema");
+  bytes32 internal constant SLOT = keccak256("mud.store");
+  bytes32 internal constant SCHEMA_TABLE = keccak256("mud.store.table.schema");
 
   error StoreCore_SchemaTooLong();
   error StoreCore_NotImplemented();
@@ -36,9 +36,10 @@ library StoreCore {
    */
   function registerSchema(bytes32 table, bytes32 schema) internal {
     // TODO: verify the table doesn't already exist
+    // TODO: verify the schema is valid (no dynamic elements in static section, etc)
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
-    bytes32 location = _getStaticDataLocation(_schemaTable, key);
+    bytes32 location = _getStaticDataLocation(SCHEMA_TABLE, key);
     Storage.write(location, schema);
   }
 
@@ -48,7 +49,7 @@ library StoreCore {
   function getSchema(bytes32 table) internal view returns (bytes32 schema) {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
-    bytes32 location = _getStaticDataLocation(_schemaTable, key);
+    bytes32 location = _getStaticDataLocation(SCHEMA_TABLE, key);
     return Storage.read(location);
   }
 
@@ -183,31 +184,36 @@ library StoreCore {
 
   /**
    * Encode the given schema into a single bytes32
-   * - The first two bytes are the static length of the schema
-   * - The third byte is the number of static size fields
-   * - The fourth byte is the number of dynamic size fields
-   * - The remaining bytes are the schema types
+   * - 2 bytes static length of the schema
+   * - 1 byte for number of static size fields
+   * - 1 byte for number of dynamic size fields
+   * - 28 bytes for 28 schema types
    */
   function encodeSchema(SchemaType[] memory _schema) internal pure returns (bytes32) {
     if (_schema.length > 28) revert StoreCore_SchemaTooLong();
     uint16 length;
     uint8 staticFields;
-    bytes memory schema = new bytes(32);
+    bytes32 schema = bytes32(0);
 
-    for (uint256 i = 0; i < _schema.length; i++) {
+    // Compute the length of the schema and the number of static fields
+    // and store the schema types in the encoded schema
+    for (uint256 i = 0; i < _schema.length; ) {
       uint16 staticByteLength = uint16(getStaticByteLength(_schema[i]));
       if (staticByteLength > 0) staticFields++;
       length += staticByteLength;
-
-      schema[i + 4] = bytes1(uint8(_schema[i]));
+      schema = Bytes.setBytes1(schema, i + 4, bytes1(uint8(_schema[i])));
+      unchecked {
+        i++;
+      }
     }
 
-    schema[0] = bytes1(bytes2(length)); // upper length byte
-    schema[1] = bytes1(uint8(length)); // lower length byte
-    schema[2] = bytes1(staticFields); // number of static fields
-    schema[3] = bytes1(uint8(_schema.length) - staticFields); // number of dynamic fields
+    // Store total static length, and number of static and dynamic fields
+    schema = Bytes.setBytes1(schema, 0, bytes1(bytes2(length))); // upper length byte
+    schema = Bytes.setBytes1(schema, 1, bytes1(uint8(length))); // lower length byte
+    schema = Bytes.setBytes1(schema, 2, bytes1(staticFields)); // number of static fields
+    schema = Bytes.setBytes1(schema, 3, bytes1(uint8(_schema.length) - staticFields)); // number of dynamic fields
 
-    return bytes32(schema);
+    return schema;
   }
 
   /************************************************************************
@@ -216,12 +222,16 @@ library StoreCore {
    *
    ************************************************************************/
 
+  /////////////////////////////////////////////////////////////////////////
+  //    STATIC DATA
+  /////////////////////////////////////////////////////////////////////////
+
   /**
    * Compute the storage location based on table id and index tuple
    * TODO: provide different overloads for single key and some fixed length array keys for better devex
    */
   function _getStaticDataLocation(bytes32 table, bytes32[] memory key) internal pure returns (bytes32) {
-    return keccak256(abi.encode(_slot, table, key));
+    return keccak256(abi.encode(SLOT, table, key));
   }
 
   /**
@@ -237,13 +247,6 @@ library StoreCore {
   }
 
   /**
-   * Get the length of the static data for the given schema
-   */
-  function _getStaticDataLength(bytes32 schema) internal pure returns (uint256) {
-    return uint256(uint16(bytes2(schema)));
-  }
-
-  /**
    * Get the number of static  fields for the given schema
    */
   function _getNumStaticFields(bytes32 schema) internal pure returns (uint8) {
@@ -251,10 +254,10 @@ library StoreCore {
   }
 
   /**
-   * Get the number of variable fields for the given schema
+   * Get the length of the static data for the given schema
    */
-  function _getNumDynamicFields(bytes32 schema) internal pure returns (uint8) {
-    return uint8(Bytes.slice1(schema, 3));
+  function _getStaticDataLength(bytes32 schema) internal pure returns (uint256) {
+    return uint256(uint16(bytes2(schema)));
   }
 
   /**
@@ -262,6 +265,134 @@ library StoreCore {
    */
   function _getSchemaTypeAtIndex(bytes32 schema, uint256 index) internal pure returns (SchemaType) {
     return SchemaType(uint8(Bytes.slice1(schema, index + 4)));
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  //    DYNAMIC DATA
+  /////////////////////////////////////////////////////////////////////////
+
+  /**
+   * Get the number of dynamic length fields for the given schema
+   */
+  function _getNumDynamicFields(bytes32 schema) internal pure returns (uint8) {
+    return uint8(Bytes.slice1(schema, 3));
+  }
+
+  /**
+   * Compute the storage location based on table id and index tuple
+   */
+  function _getDynamicDataLocation(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex
+  ) internal pure returns (bytes32) {
+    return keccak256(abi.encode(SLOT, table, key, schemaIndex));
+  }
+
+  /**
+   * Compute the storage location for the length of the dynamic data
+   */
+  function _getDynamicDataLengthLocation(bytes32 table, bytes32[] memory key) internal pure returns (bytes32) {
+    return keccak256(abi.encode(SLOT, table, key, "length"));
+  }
+
+  /**
+   * Get the length of the dynamic data for the given schema and index
+   * TODO: add tests
+   */
+  function _loadEncodedDynamicDataLength(bytes32 table, bytes32[] memory key) internal view returns (bytes32) {
+    // Load dynamic data length from storage
+    bytes32 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(table, key);
+    return Storage.read(dynamicSchemaLengthSlot);
+  }
+
+  /**
+   * Decode the full dynamic data length (in bytes) from the given encoded lengths
+   * (first four bytes of encoded lengths)
+   */
+  function _decodeDynamicDataTotalLength(bytes32 encodedLengths) internal pure returns (uint256) {
+    return uint256(uint32(bytes4(encodedLengths)));
+  }
+
+  /**
+   * Decode the dynamic data length (in bytes) for the given schema and index from the given encoded lengths
+   * (two bytes per dynamic schema after the first four bytes)
+   */
+  function _decodeDynamicDataLengthAtIndex(
+    bytes32 encodedLengths,
+    bytes32 schema,
+    uint8 schemaIndex
+  ) internal pure returns (uint256) {
+    // Compute dynamic schema index and offset into encoded lengths
+    uint8 dynamicSchemaIndex = schemaIndex - _getNumStaticFields(schema);
+    uint256 offset = 4 + dynamicSchemaIndex * 2; // (4 bytes total length, 2 bytes per dynamic schema)
+
+    // Return dynamic data length in bytes for the given index
+    return uint256(uint16(Bytes.slice2(encodedLengths, offset)));
+  }
+
+  /**
+   * Get the total length of the dynamic data (in bytes)
+   * (Note: if the length at a specific index is also required, it is recommended to use _loadEncodedDynamicDataLength explicitly)
+   */
+  function _getDynamicDataTotalLength(bytes32 table, bytes32[] memory key) internal view returns (uint256) {
+    // Load dynamic data length from storage
+    bytes32 encodedLengths = _loadEncodedDynamicDataLength(table, key);
+
+    // Return dynamic data length in bytes for the given index
+    return _decodeDynamicDataTotalLength(encodedLengths);
+  }
+
+  /**
+   * Get the length of the dynamic data (in bytes) for the given schema and index
+   * (Note: if the total length is also required, it is recommended to use _loadEncodedDynamicDataLength explicitly)
+   */
+  function _getDynamicDataLengthAtIndex(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes32 schema,
+    uint8 schemaIndex
+  ) internal view returns (uint256) {
+    // Load dynamic data length from storage
+    bytes32 encodedLengths = _loadEncodedDynamicDataLength(table, key);
+
+    // Return dynamic data length in bytes for the given index
+    return _decodeDynamicDataLengthAtIndex(encodedLengths, schema, schemaIndex);
+  }
+
+  /**
+   * Set the length of the dynamic data (in bytes) for the given schema and index
+   */
+  function _setDynamicDataLengthAtIndex(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes32 schema,
+    uint8 schemaIndex,
+    uint256 newLengthAtIndex
+  ) internal {
+    // Load dynamic data length from storage
+    bytes32 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(table, key);
+    bytes32 encodedLengths = Storage.read(dynamicSchemaLengthSlot);
+
+    // Get current lengths (total and at index)
+    uint256 totalLength = _decodeDynamicDataTotalLength(encodedLengths);
+    uint256 currentLengthAtIndex = _decodeDynamicDataLengthAtIndex(encodedLengths, schema, schemaIndex);
+
+    // Compute the difference and update the total length
+    int256 lengthDiff = int256(newLengthAtIndex) - int256(currentLengthAtIndex);
+    totalLength = uint256(int256(totalLength) + lengthDiff);
+
+    // Compute dynamic schema index and offset into encoded lengths
+    uint8 dynamicSchemaIndex = schemaIndex - _getNumStaticFields(schema);
+    uint256 offset = 4 + dynamicSchemaIndex * 2; // (4 bytes total length, 2 bytes per dynamic schema)
+
+    // Encode the new lengths
+    encodedLengths = Bytes.setBytes4(encodedLengths, 0, bytes4(uint32(totalLength)));
+
+    encodedLengths = Bytes.setBytes2(encodedLengths, offset, bytes2(uint16(newLengthAtIndex)));
+
+    // Set the new lengths
+    Storage.write(dynamicSchemaLengthSlot, encodedLengths);
   }
 }
 

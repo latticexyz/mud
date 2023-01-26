@@ -85,6 +85,61 @@ contract StoreCoreTest is DSTestPlus {
     assertEq(uint8(Bytes.slice1(loadedSchema, 5)), uint8(SchemaType.Uint16));
   }
 
+  function testSetAndGetDynamicDataLength() public {
+    bytes32 table = keccak256("some.table");
+
+    SchemaType[] memory _schema = new SchemaType[](6);
+    _schema[0] = SchemaType.Uint8; // 1 byte
+    _schema[1] = SchemaType.Uint16; // 2 bytes
+    _schema[2] = SchemaType.Uint32; // 4 bytes
+    _schema[3] = SchemaType.Uint32Array; // 0 bytes (because it's dynamic)
+    _schema[4] = SchemaType.Uint32Array; // 0 bytes (because it's dynamic)
+
+    bytes32 schema = StoreCore.encodeSchema(_schema);
+
+    // Register schema
+    StoreCore.registerSchema(table, schema);
+
+    // Create some key
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = bytes32("some key");
+
+    // Set dynamic data length of index 3
+    uint256 gas = gasleft();
+    StoreCore._setDynamicDataLengthAtIndex(table, key, schema, 3, 10);
+    gas = gas - gasleft();
+    console.log("gas used (set length): %s", gas);
+
+    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, schema, 3), 10);
+    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, schema, 4), 0);
+    assertEq(StoreCore._getDynamicDataTotalLength(table, key), 10);
+
+    // Set dynamic data length of index 4
+    gas = gasleft();
+    StoreCore._setDynamicDataLengthAtIndex(table, key, schema, 4, 99);
+    gas = gas - gasleft();
+    console.log("gas used (set length): %s", gas);
+
+    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, schema, 3), 10);
+    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, schema, 4), 99);
+    assertEq(StoreCore._getDynamicDataTotalLength(table, key), 109);
+
+    // Reduce dynamic data length of index 3 again
+    gas = gasleft();
+    StoreCore._setDynamicDataLengthAtIndex(table, key, schema, 3, 5);
+    gas = gas - gasleft();
+    console.log("gas used (set length): %s", gas);
+
+    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, schema, 3), 5);
+    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, schema, 4), 99);
+    assertEq(StoreCore._getDynamicDataTotalLength(table, key), 104);
+
+    gas = gasleft();
+    StoreCore._getDynamicDataLengthAtIndex(table, key, schema, 3);
+    gas = gas - gasleft();
+    console.log("gas used (get length at index): %s", gas);
+  }
+
   function testSetAndGetData() public {
     // Register table's schema
     bytes32 schema = bytes32(
@@ -179,11 +234,5 @@ contract StoreCoreTest is DSTestPlus {
     console.log("gas used (get, warm): %s", gas);
 
     assertTrue(Bytes.equals(data, loadedData));
-  }
-
-  function testSetFieldWithOffset() public {
-    // Should not override the data before the offset
-    // Should not override the data after the field
-    // revert("todo");
   }
 }

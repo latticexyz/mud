@@ -38,6 +38,14 @@ function getStaticByteLength(SchemaType schemaType) pure returns (uint256) {
   }
 }
 
+function getElementByteLength(SchemaType schemaType) pure returns (uint256) {
+  if (schemaType == SchemaType.Uint32Array) {
+    return 4;
+  } else {
+    return getStaticByteLength(schemaType);
+  }
+}
+
 /**
  * Returns true if the schema type has a fixed length
  * (Because Solidity doesn't support constant arrays, we need to use a function)

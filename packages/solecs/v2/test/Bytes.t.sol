@@ -300,4 +300,49 @@ contract BytesTest is DSTestPlus {
 
     bytes memory input = bytes.concat(lengths, Bytes.from(input1), Bytes.from(input2));
   }
+
+  function testSetBytes1() public {
+    bytes32 input = bytes32(0);
+
+    uint256 gas = gasleft();
+    Bytes.setBytes1(input, 8, 0xff);
+    gas = gas - gasleft();
+    console.log("gas used: %s", gas);
+
+    assertEq(Bytes.setBytes1(input, 0, 0x01), bytes32(bytes1(0x01)));
+    assertEq(Bytes.setBytes1(input, 31, 0x01), bytes32(uint256(0x01)));
+  }
+
+  function testSetBytes2() public {
+    bytes32 input = bytes32(0);
+
+    uint256 gas = gasleft();
+    Bytes.setBytes2(input, 8, 0xffff);
+    gas = gas - gasleft();
+    console.log("gas used: %s", gas);
+
+    assertEq(Bytes.setBytes2(input, 0, 0xffff), bytes32(bytes2(0xffff)));
+    assertEq(Bytes.setBytes2(input, 30, 0xffff), bytes32(uint256(0xffff)));
+  }
+
+  function testSetBytes4() public {
+    bytes32 input = bytes32(0);
+
+    uint256 gas = gasleft();
+    Bytes.setBytes4(input, 8, 0xffffffff);
+    gas = gas - gasleft();
+    console.log("gas used: %s", gas);
+
+    assertEq(Bytes.setBytes4(input, 0, 0xffffffff), bytes32(bytes4(0xffffffff)));
+    assertEq(Bytes.setBytes4(input, 30, 0xffffffff), bytes32(uint256(0xffff)));
+    assertEq(Bytes.setBytes4(input, 28, 0xffffffff), bytes32(uint256(0xffffffff)));
+
+    bytes32 input2 = bytes32(0x0000000a000a0000000000000000000000000000000000000000000000000000);
+    bytes4 overwrite = bytes4(0x0000006d);
+
+    assertEq(
+      Bytes.setBytes4(input2, 0, overwrite),
+      bytes32(0x0000006d000a0000000000000000000000000000000000000000000000000000)
+    );
+  }
 }

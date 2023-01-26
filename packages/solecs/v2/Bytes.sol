@@ -4,6 +4,7 @@ pragma solidity >=0.8.0;
 import { console } from "forge-std/console.sol";
 import { Utils } from "./Utils.sol";
 import { SchemaType } from "./Types.sol";
+import { console } from "forge-std/console.sol";
 
 library Bytes {
   error Bytes_InputTooShort();
@@ -189,6 +190,63 @@ library Bytes {
 
   /************************************************************************
    *
+   *    SET
+   *
+   ************************************************************************/
+
+  /**
+   * Overwrite a single byte of a `bytes32` value and return the new value.
+   */
+  function setBytes1(
+    bytes32 input,
+    uint256 index,
+    bytes1 overwrite
+  ) internal pure returns (bytes32 output) {
+    bytes1 mask = 0xff;
+    assembly {
+      mask := shr(mul(8, index), mask) // create a mask by shifting 0xff right by index bytes
+      output := and(input, not(mask)) // zero out the byte at index
+      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
+    }
+    return output;
+  }
+
+  /**
+   * Overwrite two bytes of a `bytes32` value and return the new value.
+   */
+  function setBytes2(
+    bytes32 input,
+    uint256 index,
+    bytes2 overwrite
+  ) internal pure returns (bytes32 output) {
+    bytes2 mask = 0xffff;
+    assembly {
+      mask := shr(mul(8, index), mask) // create a mask by shifting 0xffff right by index bytes
+      output := and(input, not(mask)) // zero out the byte at index
+      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
+    }
+    return output;
+  }
+
+  /**
+   * Overwrite four bytes of a `bytes32` value and return the new value.
+   */
+  function setBytes4(
+    bytes32 input,
+    uint256 index,
+    bytes4 overwrite
+  ) internal view returns (bytes32 output) {
+    bytes4 mask = 0xffffffff;
+    assembly {
+      mask := shr(mul(8, index), mask) // create a mask by shifting 0xffffffff right by index bytes
+      output := and(input, not(mask)) // zero out the byte at index
+      output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
+    }
+    return output;
+  }
+
+  /************************************************************************
+   *
    *    SLICE
    *
    ************************************************************************/
@@ -281,6 +339,14 @@ library Bytes {
     bytes2 output;
     assembly {
       output := mload(add(add(data, 0x20), start))
+    }
+    return output;
+  }
+
+  function slice2(bytes32 data, uint256 start) internal pure returns (bytes2) {
+    bytes2 output;
+    assembly {
+      output := shl(mul(8, start), data)
     }
     return output;
   }
