@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Utils } from "./Utils.sol";
 import { Bytes } from "./Bytes.sol";
+import { Memory } from "./Memory.sol";
 import "./Buffer.sol";
 
 library Storage {
@@ -30,6 +31,27 @@ library Storage {
     write(uint256(storagePointer), offset, data);
   }
 
+  function write(
+    uint256 storagePointer,
+    uint256 offset,
+    bytes memory data
+  ) internal {
+    uint256 memoryPointer;
+    assembly {
+      memoryPointer := add(data, 0x20)
+    }
+    write(storagePointer, offset, memoryPointer, data.length);
+  }
+
+  function write(
+    bytes32 storagePointer,
+    uint256 offset,
+    uint256 memoryPointer,
+    uint256 length
+  ) internal {
+    write(uint256(storagePointer), offset, memoryPointer, length);
+  }
+
   /**
    * @dev Write raw bytes to storage at the given storagePointer and offset (keeping the rest of the word intact)
    * TODO: this implementation is optimized for readability, but not very gas efficient. We should optimize this using assembly once we've settled on a spec.
@@ -37,34 +59,35 @@ library Storage {
   function write(
     uint256 storagePointer,
     uint256 offset,
-    bytes memory data
+    uint256 memoryPointer,
+    uint256 length
   ) internal {
-    uint256 numWords = Utils.divCeil(data.length + offset, 32);
+    uint256 numWords = Utils.divCeil(length + offset, 32);
     uint256 bytesWritten;
 
     for (uint256 i; i < numWords; i++) {
       // If this is the first word, and there is an offset, apply a mask to beginning
       if ((i == 0 && offset > 0)) {
-        uint256 _length = data.length > 32 ? 32 - offset : data.length; // // the number of bytes to write
+        uint256 _length = length > 32 ? 32 - offset : length; // // the number of bytes to write
         _writePartialWord(
           storagePointer, // the word to update
           offset, // the offset in bytes to start writing
           _length,
-          bytes32(data) // Pass the first 32 bytes of the data
+          Memory.read(memoryPointer) // Pass the first 32 bytes of the data
         );
         bytesWritten += _length;
         // If this is the last word, and there is a partial word, apply a mask to the end
-      } else if (i == numWords - 1 && (data.length + offset) % 32 > 0) {
+      } else if (i == numWords - 1 && (length + offset) % 32 > 0) {
         _writePartialWord(
           storagePointer + i, // the word to update
           0, // the offset in bytes to start writing
-          (data.length + offset) % 32, // the number of bytes to write
-          Bytes.slice32(data, bytesWritten) // the data to write
+          (length + offset) % 32, // the number of bytes to write
+          Memory.read(memoryPointer, bytesWritten) // the data to write
         );
 
         // Else, just write the word
       } else {
-        _writeWord(storagePointer + i, Bytes.slice32(data, bytesWritten));
+        _writeWord(storagePointer + i, Memory.read(memoryPointer, bytesWritten));
         bytesWritten += 32;
       }
     }
@@ -103,7 +126,19 @@ library Storage {
     uint256 length
   ) internal view returns (bytes memory) {
     Buffer buf = Buffer_.allocate(uint128(length));
+    read(storagePointer, offset, length, buf);
+    return buf.toBytes();
+  }
 
+  /**
+   * @dev Append raw bytes from storage at the given storagePointer, offset, and length to the given buffer
+   */
+  function read(
+    uint256 storagePointer,
+    uint256 offset,
+    uint256 length,
+    Buffer buf
+  ) internal view {
     uint256 numWords = Utils.divCeil(length + offset, 32);
     uint256 _length;
 
@@ -137,8 +172,6 @@ library Storage {
         buf.appendUnchecked(_loadWord(storagePointer + i), 32);
       }
     }
-
-    return buf.toBytes();
   }
 
   /**

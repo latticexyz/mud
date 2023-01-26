@@ -20,6 +20,15 @@ contract StoreView is IStore {
   function set(
     bytes32,
     bytes32[] memory,
+    bytes32,
+    bytes memory
+  ) public virtual {
+    revert Store_BaseContractNotImplemented();
+  }
+
+  function setStaticData(
+    bytes32,
+    bytes32[] memory,
     bytes memory
   ) public virtual {
     revert Store_BaseContractNotImplemented();
@@ -27,31 +36,31 @@ contract StoreView is IStore {
 
   // Set partial data at schema index
   function setField(
-    bytes32 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data
+    bytes32,
+    bytes32[] memory,
+    uint8,
+    bytes memory
   ) public virtual {
     revert Store_BaseContractNotImplemented();
   }
 
   // Set full record of a single item at a given array index
   function setArrayIndex(
-    bytes32 table,
-    bytes32[] memory key,
-    uint16 arrayIndex,
-    bytes memory data
+    bytes32,
+    bytes32[] memory,
+    uint16,
+    bytes memory
   ) public virtual {
     revert Store_BaseContractNotImplemented();
   }
 
   // Set partial data of a single item at a given array index
   function setArrayIndexField(
-    bytes32 table,
-    bytes32[] memory key,
-    uint16 arrayIndex,
-    uint8 schemaIndex,
-    bytes memory data
+    bytes32,
+    bytes32[] memory,
+    uint16,
+    uint8,
+    bytes memory
   ) public virtual {
     revert Store_BaseContractNotImplemented();
   }
@@ -66,27 +75,8 @@ contract StoreView is IStore {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex
-  ) public view returns (bytes memory data) {
-    revert Store_BaseContractNotImplemented();
-  }
-
-  // Get full record of a single item at a given array index
-  function getArrayIndex(
-    bytes32 table,
-    bytes32[] memory key,
-    uint16 arrayIndex
-  ) public view returns (bytes memory data) {
-    revert Store_BaseContractNotImplemented();
-  }
-
-  // Get partial data of a single item at a given array index
-  function getArrayIndexField(
-    bytes32 table,
-    bytes32[] memory key,
-    uint16 arrayIndex,
-    uint8 schemaIndex
-  ) public view returns (bytes memory data) {
-    revert Store_BaseContractNotImplemented();
+  ) public pure returns (bytes memory data) {
+    data = StoreCore.getField(table, key, schemaIndex);
   }
 
   function isStore() public view {}

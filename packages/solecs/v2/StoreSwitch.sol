@@ -40,12 +40,25 @@ library StoreSwitch {
   function set(
     bytes32 table,
     bytes32[] memory key,
+    bytes32 encodedDynamicLength,
     bytes memory data
   ) internal {
     if (isDelegateCall()) {
-      StoreCore.set(table, key, data);
+      StoreCore.set(table, key, encodedDynamicLength, data);
     } else {
-      IStore(msg.sender).set(table, key, data);
+      IStore(msg.sender).set(table, key, encodedDynamicLength, data);
+    }
+  }
+
+  function setStaticData(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes memory data
+  ) internal {
+    if (isDelegateCall()) {
+      StoreCore.setStaticData(table, key, data);
+    } else {
+      IStore(msg.sender).setStaticData(table, key, data);
     }
   }
 
@@ -59,33 +72,6 @@ library StoreSwitch {
       StoreCore.setField(table, key, fieldIndex, data);
     } else {
       IStore(msg.sender).setField(table, key, fieldIndex, data);
-    }
-  }
-
-  function setArrayIndex(
-    bytes32 table,
-    bytes32[] memory key,
-    uint16 arrayIndex,
-    bytes memory data
-  ) internal {
-    if (isDelegateCall()) {
-      StoreCore.setArrayIndex(table, key, arrayIndex, data);
-    } else {
-      IStore(msg.sender).setArrayIndex(table, key, arrayIndex, data);
-    }
-  }
-
-  function setArrayIndexField(
-    bytes32 table,
-    bytes32[] memory key,
-    uint16 arrayIndex,
-    uint8 fieldIndex,
-    bytes memory data
-  ) internal {
-    if (isDelegateCall()) {
-      StoreCore.setArrayIndexField(table, key, arrayIndex, fieldIndex, data);
-    } else {
-      IStore(msg.sender).setArrayIndexField(table, key, arrayIndex, fieldIndex, data);
     }
   }
 
@@ -106,31 +92,6 @@ library StoreSwitch {
       return StoreCore.getField(table, key, fieldIndex);
     } else {
       return IStore(msg.sender).getField(table, key, fieldIndex);
-    }
-  }
-
-  function getArrayIndex(
-    bytes32 table,
-    bytes32[] memory key,
-    uint16 arrayIndex
-  ) internal view returns (bytes memory) {
-    if (isDelegateCall()) {
-      return StoreCore.getArrayIndex(table, key, arrayIndex);
-    } else {
-      return IStore(msg.sender).getArrayIndex(table, key, arrayIndex);
-    }
-  }
-
-  function getArrayIndexField(
-    bytes32 table,
-    bytes32[] memory key,
-    uint16 arrayIndex,
-    uint8 fieldIndex
-  ) internal view returns (bytes memory) {
-    if (isDelegateCall()) {
-      return StoreCore.getArrayIndexField(table, key, arrayIndex, fieldIndex);
-    } else {
-      return IStore(msg.sender).getArrayIndexField(table, key, arrayIndex, fieldIndex);
     }
   }
 }

@@ -8,7 +8,7 @@ import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { StoreView } from "../StoreView.sol";
 
-contract SystemTableTest is DSTestPlus, StoreView {
+contract RouteTableTest is DSTestPlus, StoreView {
   function testRegisterAndGetSchema() public {
     uint256 gas = gasleft();
     RouteTable.registerSchema();

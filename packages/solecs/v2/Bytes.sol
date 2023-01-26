@@ -60,6 +60,15 @@ library Bytes {
     return _from(ptr, 2);
   }
 
+  function from(uint32[] memory input) internal pure returns (bytes memory output) {
+    bytes32 ptr;
+    assembly {
+      ptr := input
+    }
+
+    return _from(ptr, 4);
+  }
+
   function _from(bytes32 _ptr, uint256 _bytesPerElement) internal pure returns (bytes memory output) {
     assembly {
       let inputLength := mload(_ptr)
@@ -235,7 +244,7 @@ library Bytes {
     bytes32 input,
     uint256 index,
     bytes4 overwrite
-  ) internal view returns (bytes32 output) {
+  ) internal pure returns (bytes32 output) {
     bytes4 mask = 0xffffffff;
     assembly {
       mask := shr(mul(8, index), mask) // create a mask by shifting 0xffffffff right by index bytes

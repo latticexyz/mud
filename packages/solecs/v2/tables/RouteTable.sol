@@ -54,7 +54,7 @@ library RouteTable {
     bytes memory data = bytes.concat(bytes20(addr), bytes4(selector), bytes1(executionMode));
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.set(id, keyTuple, data);
+    StoreSwitch.setStaticData(id, keyTuple, data);
   }
 
   function set(bytes32 key, Route memory data) internal {

@@ -54,6 +54,25 @@ contract BytesTest is DSTestPlus {
     assertEq(uint256(uint8(output[5])), 0x06);
   }
 
+  function testFromUint32Array() public {
+    uint32[] memory input = new uint32[](2);
+    input[0] = 0x01020304;
+    input[1] = 0x05060708;
+    uint256 gas = gasleft();
+    bytes memory output = Bytes.from(input);
+    gas = gas - gasleft();
+    console.log("gas used: %s", gas);
+    assertEq(output.length, 8);
+    assertEq(uint256(uint8(output[0])), 0x01);
+    assertEq(uint256(uint8(output[1])), 0x02);
+    assertEq(uint256(uint8(output[2])), 0x03);
+    assertEq(uint256(uint8(output[3])), 0x04);
+    assertEq(uint256(uint8(output[4])), 0x05);
+    assertEq(uint256(uint8(output[5])), 0x06);
+    assertEq(uint256(uint8(output[6])), 0x07);
+    assertEq(uint256(uint8(output[7])), 0x08);
+  }
+
   function testToBytes32() public {
     bytes memory input = new bytes(32);
     input[0] = 0x01;

@@ -47,7 +47,7 @@ library Vector2Table {
     bytes memory data = bytes.concat(bytes4(x), bytes4(y));
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.set(id, keyTuple, data);
+    StoreSwitch.setStaticData(id, keyTuple, data);
   }
 
   function set(bytes32 key, Vector2 memory vec2) internal {
