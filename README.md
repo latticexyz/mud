@@ -57,7 +57,7 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-npx mud create my-project
+npx @latticexyz/cli create my-project
 ```
 
 ![Scaffolding a new project with the MUD CLI.](/public/mud-create.gif)
