@@ -51,7 +51,7 @@ export async function deploy(
       reuseComponents ? "true" : "false", // Reuse components?
       "--fork-url",
       rpc,
-      ...(gasPrice != null ? ["--with-gas-price", String(gasPrice)] : []),
+      ...(gasPrice != null ? ["--with-gas-price", String(Math.round(gasPrice))] : []),
     ],
     { stdio: ["inherit", "pipe", "pipe"] }
   );
