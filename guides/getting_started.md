@@ -11,7 +11,7 @@ Let's create our first MUD project!
 Run the following command in the console of your choice to create a new MUD project in `my-project` using the `minimal` template.
 
 ```shell
-npx mud create my-project --template minimal
+npx @latticexyz/cli create my-project --template minimal
 ```
 
 Next, run `yarn dev` in the root directory of your new project to start the development server (web client and local Ethereum node).
