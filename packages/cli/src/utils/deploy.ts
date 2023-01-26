@@ -73,6 +73,7 @@ export type DeployOptions = {
   worldAddress?: string;
   rpc: string;
   systems?: string | string[];
+  reuseComponents?: boolean;
   clear?: boolean;
   gasPrice?: number;
 };
@@ -94,7 +95,7 @@ export async function generateAndDeploy(args: DeployOptions) {
       args.deployerPrivateKey,
       args.rpc,
       args.worldAddress,
-      Boolean(args.systems),
+      Boolean(args.reuseComponents),
       args.gasPrice
     );
     deployedWorldAddress = result.deployedWorldAddress;

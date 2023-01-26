@@ -324,6 +324,7 @@ export const deploy = async (options: Options) => {
                     rpc: options.rpc!,
                     worldAddress: options.world,
                     deployerPrivateKey: wallet.privateKey,
+                    reuseComponents: options.reuseComponents,
                   });
 
                   ctx.worldAddress = worldAddress = result.deployedWorldAddress;
