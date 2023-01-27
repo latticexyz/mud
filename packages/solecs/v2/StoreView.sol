@@ -5,7 +5,7 @@ import { SchemaType } from "./Types.sol";
 import { IStore } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 
-// Not abstract, so that it can be used as a base contract for testing and if write access is not needed
+// Not abstract, so that it can be used as a base contract for testing and wherever write access is not needed
 contract StoreView is IStore {
   error Store_BaseContractNotImplemented();
 
@@ -66,7 +66,7 @@ contract StoreView is IStore {
   }
 
   // Get full record (including full array)
-  function get(bytes32 table, bytes32[] memory key) public view returns (bytes memory data) {
+  function get(bytes32 table, bytes32[] memory key) public view virtual returns (bytes memory data) {
     data = StoreCore.get(table, key);
   }
 
@@ -75,7 +75,7 @@ contract StoreView is IStore {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex
-  ) public pure returns (bytes memory data) {
+  ) public view virtual returns (bytes memory data) {
     data = StoreCore.getField(table, key, schemaIndex);
   }
 

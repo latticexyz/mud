@@ -8,6 +8,12 @@ import { Memory } from "./Memory.sol";
 import { console } from "forge-std/console.sol";
 import "./Buffer.sol";
 
+// TODO
+// - Make schema a custom data type we can execute methods on, move schema methods to schema library
+// - Turn all storage pointer to uint256 for consistency (uint256 is better than bytes32 because it's easier to do arithmetic on)
+// - Change Storage library functions to make it clearer which argument is offset and which is length
+// - Streamline naming in Storage and Memory libraries (probably just use load and store instead of read and write?)
+
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event StoreUpdate(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
@@ -82,7 +88,7 @@ library StoreCore {
 
     // Store the static data at the static data location
     bytes32 staticDataLocation = _getStaticDataLocation(table, key);
-    uint256 memoryPointer = Memory.ptr(data);
+    uint256 memoryPointer = Memory.dataPointer(data);
     Storage.write(staticDataLocation, 0, memoryPointer, staticLength);
     memoryPointer += staticLength; // move the memory pointer to the start of the dynamic data
 
@@ -244,9 +250,7 @@ library StoreCore {
    * Get full static record for the given table and key tuple (loading schema from storage)
    */
   function getStaticData(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
-    // Get schema for this table
     bytes32 schema = getSchema(table);
-
     return getStaticData(table, key, schema);
   }
 
@@ -263,13 +267,67 @@ library StoreCore {
     return Storage.read(location, _getStaticDataLength(schema));
   }
 
-  // TODO
+  /**
+   * Get a single field from the given table and key tuple (loading schema from storage)
+   */
   function getField(
-    bytes32,
-    bytes32[] memory,
-    uint8
-  ) internal pure returns (bytes memory) {
-    revert StoreCore_NotImplemented();
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex
+  ) internal view returns (bytes memory) {
+    bytes32 schema = getSchema(table);
+    return getField(table, key, schemaIndex, schema);
+  }
+
+  /**
+   * Get a single field from the given table and key tuple, with the given schema
+   */
+  function getField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes32 schema
+  ) internal view returns (bytes memory) {
+    if (schemaIndex < _getNumStaticFields(schema)) {
+      return _getStaticField(table, key, schemaIndex, schema);
+    } else {
+      return _getDynamicField(table, key, schemaIndex, schema);
+    }
+  }
+
+  /**
+   * Get a single static field from the given table and key tuple, with the given schema
+   */
+  function _getStaticField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes32 schema
+  ) internal view returns (bytes memory) {
+    // Get the length, storage location and offset of the static field
+    SchemaType schemaType = _getSchemaTypeAtIndex(schema, schemaIndex);
+    uint256 dataLength = getStaticByteLength(schemaType);
+    uint256 location = uint256(_getStaticDataLocation(table, key));
+    uint256 offset = _getStaticDataOffset(schema, schemaIndex);
+
+    // Load the data from storage
+    return Storage.read(location, offset, dataLength);
+  }
+
+  /**
+   * Get a single dynamic field from the given table and key tuple, with the given schema
+   */
+  function _getDynamicField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes32 schema
+  ) internal view returns (bytes memory) {
+    // Get the length and storage location of the dynamic field
+    uint8 dynamicSchemaIndex = schemaIndex - _getNumStaticFields(schema);
+    uint256 dataLength = _getDynamicDataLengthAtIndex(table, key, dynamicSchemaIndex);
+    bytes32 location = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
+    return Storage.read(location, dataLength);
   }
 
   /************************************************************************

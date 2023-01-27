@@ -25,9 +25,15 @@ library Memory {
     }
   }
 
-  function ptr(bytes memory data) internal pure returns (uint256 memoryPointer) {
+  function dataPointer(bytes memory data) internal pure returns (uint256 memoryPointer) {
     assembly {
       memoryPointer := add(data, 0x20)
+    }
+  }
+
+  function lengthPointer(bytes memory data) internal pure returns (uint256 memoryPointer) {
+    assembly {
+      memoryPointer := data
     }
   }
 }

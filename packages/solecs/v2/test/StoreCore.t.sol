@@ -7,9 +7,20 @@ import { StoreCore } from "../StoreCore.sol";
 import { Utils } from "../Utils.sol";
 import { Bytes } from "../Bytes.sol";
 import { SchemaType } from "../Types.sol";
+import { Storage } from "../Storage.sol";
+import { Memory } from "../Memory.sol";
+import { Cast } from "../Cast.sol";
+import "../Buffer.sol";
+
+struct TestStruct {
+  uint128 firstData;
+  uint32[] secondData;
+  uint32[] thirdData;
+}
 
 contract StoreCoreTest is DSTestPlus {
   TestStruct testStruct;
+  mapping(uint256 => bytes) testMapping;
 
   function testGetStaticDataLength() public {
     bytes32 schema = bytes32(
@@ -319,13 +330,13 @@ contract StoreCoreTest is DSTestPlus {
     uint256 gas = gasleft();
     StoreCore.set(table, key, encodedDynamicLength, data);
     gas = gas - gasleft();
-    console.log("gas used (set, %s bytes, 1 static field, 2 dynamic fields): %s", data.length, gas);
+    console.log("gas used (store complex struct / StoreCore): %s", gas);
 
     // Get data
     gas = gasleft();
     bytes memory loadedData = StoreCore.get(table, key);
     gas = gas - gasleft();
-    console.log("gas used (get, warm, %s bytes): %s", loadedData.length, gas);
+    // console.log("gas used (read using StoreCore): %s", gas);
 
     assertEq(loadedData.length, data.length);
     assertEq(keccak256(loadedData), keccak256(data));
@@ -342,12 +353,149 @@ contract StoreCoreTest is DSTestPlus {
     gas = gasleft();
     testStruct = _testStruct;
     gas = gas - gasleft();
-    console.log("gas used (store native struct): %s", gas);
-  }
-}
+    console.log("gas used (store complex struct / Native): %s", gas);
 
-struct TestStruct {
-  uint128 firstData;
-  uint32[] secondData;
-  uint32[] thirdData;
+    gas = gasleft();
+    testMapping[1234] = abi.encode(_testStruct);
+    gas = gas - gasleft();
+    console.log("gas used (store complex struct / abi.encode): %s", gas);
+  }
+
+  function testSetAndGetField() public {
+    bytes32 table = keccak256("some.table");
+
+    {
+      // Register table's schema
+      SchemaType[] memory schemaTypes = new SchemaType[](4);
+      schemaTypes[0] = SchemaType.Uint128;
+      schemaTypes[1] = SchemaType.Uint256;
+      schemaTypes[2] = SchemaType.Uint32Array;
+      schemaTypes[3] = SchemaType.Uint32Array;
+      bytes32 schema = StoreCore.encodeSchema(schemaTypes);
+      StoreCore.registerSchema(table, schema);
+    }
+
+    bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
+
+    // Create key
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = bytes32("some.key");
+
+    // Set first field
+    uint256 gas = gasleft();
+    StoreCore.setField(table, key, 0, bytes.concat(firstDataBytes));
+    gas = gas - gasleft();
+    console.log("gas used (set uint128, no offset): %s", gas);
+
+    ////////////////
+    // Static data
+    ////////////////
+
+    // Get first field
+    gas = gasleft();
+    bytes memory loadedData = StoreCore.getField(table, key, 0);
+    gas = gas - gasleft();
+    console.log("gas used (get uint128, no offset): %s", gas);
+
+    // Verify loaded data is correct
+    assertEq(loadedData.length, 16);
+    assertEq(bytes16(loadedData), bytes16(firstDataBytes));
+
+    // Verify the second index is not set yet
+    assertEq(uint256(bytes32(StoreCore.getField(table, key, 1))), 0);
+
+    // Set second field
+    bytes32 secondDataBytes = keccak256("some data");
+
+    gas = gasleft();
+    StoreCore.setField(table, key, 1, bytes.concat(secondDataBytes));
+    gas = gas - gasleft();
+    console.log("gas used (set uint256, 128 offset): %s", gas);
+
+    // Get second field
+    gas = gasleft();
+    loadedData = StoreCore.getField(table, key, 1);
+    gas = gas - gasleft();
+    console.log("gas used (get uint256, 128 offset): %s", gas);
+
+    // Verify loaded data is correct
+    assertEq(loadedData.length, 32);
+    assertEq(bytes32(loadedData), secondDataBytes);
+
+    // Verify the first field didn't change
+    assertEq(bytes16(StoreCore.getField(table, key, 0)), bytes16(firstDataBytes));
+
+    // Verify the full static data is correct
+    assertEq(StoreCore.getStaticData(table, key).length, 48);
+    assertEq(Bytes.slice16(StoreCore.getStaticData(table, key), 0), firstDataBytes);
+    assertEq(Bytes.slice32(StoreCore.getStaticData(table, key), 16), secondDataBytes);
+    assertEq(keccak256(StoreCore.getStaticData(table, key)), keccak256(bytes.concat(firstDataBytes, secondDataBytes)));
+
+    ////////////////
+    // Dynamic data
+    ////////////////
+
+    bytes memory thirdDataBytes;
+    {
+      uint32[] memory thirdData = new uint32[](2);
+      thirdData[0] = 0x11121314;
+      thirdData[1] = 0x15161718;
+      thirdDataBytes = Bytes.from(thirdData);
+    }
+
+    bytes memory fourthDataBytes;
+    {
+      uint32[] memory fourthData = new uint32[](3);
+      fourthData[0] = 0x191a1b1c;
+      fourthData[1] = 0x1d1e1f20;
+      fourthData[2] = 0x21222324;
+      fourthDataBytes = Bytes.from(fourthData);
+    }
+
+    // Set third field
+    gas = gasleft();
+    StoreCore.setField(table, key, 2, thirdDataBytes);
+    gas = gas - gasleft();
+    console.log("gas used (set uint32[2]): %s", gas);
+
+    // Get third field
+    gas = gasleft();
+    loadedData = StoreCore.getField(table, key, 2);
+    gas = gas - gasleft();
+    console.log("gas used (get uint32[2]): %s", gas);
+
+    // Verify loaded data is correct
+    assertEq(Cast.toUint32Array(Buffer_.fromBytes(loadedData).toArray(4)).length, 2);
+    assertEq(loadedData.length, thirdDataBytes.length);
+    assertEq(keccak256(loadedData), keccak256(thirdDataBytes));
+
+    // Verify the fourth field is not set yet
+    assertEq(StoreCore.getField(table, key, 3).length, 0);
+
+    // Verify none of the previous fields were impacted
+    assertEq(bytes16(StoreCore.getField(table, key, 0)), bytes16(firstDataBytes));
+    assertEq(bytes32(StoreCore.getField(table, key, 1)), bytes32(secondDataBytes));
+
+    // Set fourth field
+    gas = gasleft();
+    StoreCore.setField(table, key, 3, fourthDataBytes);
+    gas = gas - gasleft();
+    console.log("gas used (set uint32[3]): %s", gas);
+
+    // Get fourth field
+    gas = gasleft();
+    loadedData = StoreCore.getField(table, key, 3);
+    gas = gas - gasleft();
+    console.log("gas used (get uint32[3]): %s", gas);
+
+    // Verify loaded data is correct
+    assertEq(loadedData.length, fourthDataBytes.length);
+    assertEq(keccak256(loadedData), keccak256(fourthDataBytes));
+
+    // Verify all fields are correct
+    assertEq(
+      keccak256(StoreCore.get(table, key)),
+      keccak256(bytes.concat(firstDataBytes, secondDataBytes, thirdDataBytes, fourthDataBytes))
+    );
+  }
 }

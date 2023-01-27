@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { console } from "forge-std/console.sol";
 import { Utils } from "./Utils.sol";
 import { Bytes } from "./Bytes.sol";
 import { Memory } from "./Memory.sol";
@@ -68,14 +69,14 @@ library Storage {
     for (uint256 i; i < numWords; i++) {
       // If this is the first word, and there is an offset, apply a mask to beginning
       if ((i == 0 && offset > 0)) {
-        uint256 _length = length > 32 ? 32 - offset : length; // // the number of bytes to write
+        uint256 _lengthToWrite = length + offset > 32 ? 32 - offset : length; // // the number of bytes to write
         _writePartialWord(
           storagePointer, // the word to update
           offset, // the offset in bytes to start writing
-          _length,
+          _lengthToWrite,
           Memory.read(memoryPointer) // Pass the first 32 bytes of the data
         );
-        bytesWritten += _length;
+        bytesWritten += _lengthToWrite;
         // If this is the last word, and there is a partial word, apply a mask to the end
       } else if (i == numWords - 1 && (length + offset) % 32 > 0) {
         _writePartialWord(
@@ -125,9 +126,9 @@ library Storage {
     uint256 offset,
     uint256 length
   ) internal view returns (bytes memory) {
-    Buffer buf = Buffer_.allocate(uint128(length));
-    read(storagePointer, offset, length, buf);
-    return buf.toBytes();
+    Buffer buffer = Buffer_.allocate(uint128(length));
+    read(storagePointer, offset, length, buffer);
+    return buffer.toBytes();
   }
 
   /**
@@ -137,39 +138,39 @@ library Storage {
     uint256 storagePointer,
     uint256 offset,
     uint256 length,
-    Buffer buf
+    Buffer buffer
   ) internal view {
     uint256 numWords = Utils.divCeil(length + offset, 32);
-    uint256 _length;
+    uint256 _lengthToRead;
 
     for (uint256 i; i < numWords; i++) {
       // If this is the first word, and there is an offset, apply a mask to beginning (and possibly the end if length + offset is less than 32)
       if ((i == 0 && offset > 0)) {
-        _length = length > 32 ? 32 - offset : length; // the number of bytes to read
-        buf.appendUnchecked(
+        _lengthToRead = length + offset > 32 ? 32 - offset : length; // the number of bytes to read
+        buffer.appendUnchecked(
           _loadPartialWord(
             storagePointer, // the slot to start loading from
             offset, // the offset in bytes to start reading from
-            _length
+            _lengthToRead
           ),
-          uint128(_length)
+          uint128(_lengthToRead)
         );
 
         // If this is the last word, and there is a partial word, apply a mask to the end
       } else if (i == numWords - 1 && (length + offset) % 32 > 0) {
-        _length = (length + offset) % 32; //  the relevant length of the trailing word
-        buf.appendUnchecked(
+        _lengthToRead = (length + offset) % 32; //  the relevant length of the trailing word
+        buffer.appendUnchecked(
           _loadPartialWord(
             storagePointer + i, // the word to read from
             0, // the offset in bytes to start reading from
-            _length
+            _lengthToRead
           ),
-          uint128(_length)
+          uint128(_lengthToRead)
         );
 
         // Else, just read the word
       } else {
-        buf.appendUnchecked(_loadWord(storagePointer + i), 32);
+        buffer.appendUnchecked(_loadWord(storagePointer + i), 32);
       }
     }
   }
