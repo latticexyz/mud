@@ -44,6 +44,13 @@ contract BufferTest is DSTestPlus {
     assertEq(keccak256(buf.toBytes()), keccak256(data));
   }
 
+  function testFromBytesFuzzy(bytes memory data) public {
+    Buffer buf = Buffer_.fromBytes(data);
+    assertEq(uint256(buf.length()), data.length);
+    assertEq(uint256(buf.capacity()), data.length);
+    assertEq(keccak256(buf.toBytes()), keccak256(data));
+  }
+
   function testSetLength() public {
     Buffer buf = Buffer_.allocate(32);
 
@@ -59,6 +66,13 @@ contract BufferTest is DSTestPlus {
 
     assertEq(uint256(buf.length()), 16);
     assertEq(uint256(buf.capacity()), 32);
+  }
+
+  function testSetLengthFuzzy(bytes memory data, uint16 length) public {
+    Buffer buf = Buffer_.fromBytes(data);
+    assertEq(uint256(buf.capacity()), data.length);
+    buf._setLengthUnchecked(length);
+    assertEq(uint256(buf.length()), length);
   }
 
   function testFailSetLength() public pure {
@@ -84,6 +98,48 @@ contract BufferTest is DSTestPlus {
     assertEq(uint256(buf.length()), 16);
     assertEq(buf.read8(0), bytes8(0x0102030405060708));
     assertEq(buf.read8(8), bytes8(0x090a0b0c0d0e0f10));
+  }
+
+  function testAppendFuzzy(
+    bytes memory input,
+    bytes memory append1,
+    bytes memory append2
+  ) public {
+    Buffer buffer = Buffer_.allocate(uint128(input.length + append1.length + append2.length));
+    buffer.append(input);
+    buffer.append(append1);
+    buffer.append(append2);
+    assertEq(keccak256(buffer.toBytes()), keccak256(bytes.concat(input, append1, append2)));
+  }
+
+  function testCompareGasToConcat() public {
+    bytes memory data1 = bytes.concat(keccak256("data1"));
+    bytes memory data2 = bytes.concat(keccak256("data2"));
+    bytes memory data3 = bytes.concat(keccak256("data3"));
+
+    uint256 gas = gasleft();
+    Buffer buf = Buffer_.allocate(uint128(data1.length + data2.length + data3.length));
+    buf.append(data1);
+    buf.append(data2);
+    buf.append(data3);
+    gas = gas - gasleft();
+    console.log("gas used (buffer concat): %s", gas);
+
+    gas = gasleft();
+    bytes memory dataAllAtOnce = bytes.concat(data1, data2, data3);
+    gas = gas - gasleft();
+    console.log("gas used (concat all at once): %s", gas);
+
+    gas = gasleft();
+    bytes memory dataSeparately = new bytes(0);
+    dataSeparately = bytes.concat(dataSeparately, data1);
+    dataSeparately = bytes.concat(dataSeparately, data2);
+    dataSeparately = bytes.concat(dataSeparately, data3);
+    gas = gas - gasleft();
+    console.log("gas used (concat separately): %s", gas);
+
+    assertEq(keccak256(buf.toBytes()), keccak256(dataAllAtOnce));
+    assertEq(keccak256(buf.toBytes()), keccak256(dataSeparately));
   }
 
   function testAppendFixed() public {

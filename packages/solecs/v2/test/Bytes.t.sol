@@ -95,7 +95,7 @@ contract BytesTest is DSTestPlus {
     assertEq(uint256(output), 0x0100000000000000000000000000000000000000000000000000000000000002);
   }
 
-  function testToBytesArray() public {
+  function testToBytes32Array() public {
     bytes memory input = new bytes(64);
     input[0] = 0x01;
     input[31] = 0x02;
@@ -110,7 +110,7 @@ contract BytesTest is DSTestPlus {
     assertEq(uint256(output[1]), 0x0300000000000000000000000000000000000000000000000000000000000004);
   }
 
-  function testToBytesArrayUneven() public {
+  function testToBytes32ArrayUneven() public {
     bytes memory input = new bytes(65);
     input[0] = 0x01;
     input[31] = 0x02;
@@ -145,6 +145,10 @@ contract BytesTest is DSTestPlus {
     assertEq(output2, input);
   }
 
+  function testFromAndToUint32Fuzzy(uint32 input) public {
+    assertEq(Bytes.toUint32(Bytes.from(input)), input);
+  }
+
   function testFromAndToAddress() public {
     address input = address(0x0100000000000000000000000000000000000002);
 
@@ -161,6 +165,10 @@ contract BytesTest is DSTestPlus {
     console.log("gas used (bytes -> address): %s", gas);
 
     assertEq(output2, input);
+  }
+
+  function testFromAndToAddressFuzzy(address input) public {
+    assertEq(Bytes.toAddress(Bytes.from(input)), input);
   }
 
   function testFromAndToUint8() public {
@@ -181,6 +189,10 @@ contract BytesTest is DSTestPlus {
     assertEq(output2, input);
   }
 
+  function testFromAndToUint8Fuzzy(uint8 input) public {
+    assertEq(Bytes.toUint8(Bytes.fromUint8(input)), input);
+  }
+
   function testFromAndToBytes4() public {
     bytes4 input = bytes4(0x01000002);
 
@@ -197,6 +209,10 @@ contract BytesTest is DSTestPlus {
     console.log("gas used (bytes -> bytes4): %s", gas);
 
     assertEq(output2, input);
+  }
+
+  function testFromAndToBytes4Fuzzy(bytes4 input) public {
+    assertEq(Bytes.toBytes4(Bytes.from(input)), input);
   }
 
   function testEquals() public {
@@ -287,37 +303,6 @@ contract BytesTest is DSTestPlus {
     console.log("gas used: %s", gas);
 
     assertEq(output, original);
-  }
-
-  function testAbiEncoding() public view {
-    bytes memory test = bytes.concat(bytes2(0x0102));
-    console.log("bytes2 raw length: %s", test.length);
-    console.log("bytes2 abi encoded length: %s", abi.encode(test).length);
-
-    string memory test2 = "max length of a string in a word";
-    console.log("string raw length: %s", bytes(test2).length);
-    console.log("string abi encoded length: %s", abi.encode(test2).length);
-
-    bytes[] memory test3 = new bytes[](2);
-    test3[0] = bytes.concat(bytes1(0x01));
-    test3[1] = bytes.concat(bytes2(0x0203));
-
-    console.log("bytes[] raw length: %s", Bytes.from(test3).length);
-    console.log("bytes[] abi encoded length: %s", abi.encode(test3).length);
-  }
-
-  function testEncodeDecode() public {
-    uint16[] memory input1 = new uint16[](2);
-    input1[0] = 0x0102;
-    input1[1] = 0x0304;
-    uint8[] memory input2 = new uint8[](2);
-    input2[0] = 0x05;
-    input2[1] = 0x06;
-
-    bytes32 lengths = bytes32(bytes.concat(bytes2(uint16(input1.length)), bytes2(uint16(input2.length))));
-    assertEq(lengths, bytes32(bytes4(0x00020002)));
-
-    bytes memory input = bytes.concat(lengths, Bytes.from(input1), Bytes.from(input2));
   }
 
   function testSetBytes1() public {
