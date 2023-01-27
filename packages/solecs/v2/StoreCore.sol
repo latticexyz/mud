@@ -22,6 +22,8 @@ library StoreCore {
   bytes32 internal constant SCHEMA_TABLE = keccak256("mud.store.table.schema");
 
   error StoreCore_SchemaTooLong();
+  error StoreCore_StaticTypeAfterDynamicType();
+  error StoreCore_TableAlreadyExists(bytes32 table);
   error StoreCore_NotImplemented();
   error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
 
@@ -35,15 +37,57 @@ library StoreCore {
    * Check if the given table exists
    */
   function hasTable(bytes32 table) internal view returns (bool) {
-    // TODO
+    return getSchema(table) != bytes32(0);
+  }
+
+  /**
+   * Register a new table schema
+   */
+  function registerSchema(bytes32 table, SchemaType[] memory schema) internal {
+    // Verify the schema doesn't exist yet
+    if (hasTable(table)) {
+      revert StoreCore_TableAlreadyExists(table);
+    }
+
+    // Register the schema (validity checks are done in encodeSchema)
+    _registerSchemaUnchecked(table, encodeSchema(schema));
   }
 
   /**
    * Register a new table schema
    */
   function registerSchema(bytes32 table, bytes32 schema) internal {
-    // TODO: verify the table doesn't already exist
-    // TODO: verify the schema is valid (no dynamic elements in static section, etc)
+    // Verify the schema doesn't exist yet
+    if (hasTable(table)) {
+      revert StoreCore_TableAlreadyExists(table);
+    }
+
+    // Verify the schema is not too long
+    uint256 numFields = _getNumStaticFields(schema) + _getNumDynamicFields(schema);
+    if (numFields > 28) {
+      revert StoreCore_SchemaTooLong();
+    }
+
+    // Verify all static fields come before the dynamic fields
+    bool hasDynamicField;
+    for (uint256 i = 0; i < numFields; i++) {
+      if (getStaticByteLength(_getSchemaTypeAtIndex(schema, i)) == 0) {
+        // Flag that we've seen the first dynamic field
+        hasDynamicField = true;
+      } else if (hasDynamicField) {
+        // We've seen a dynamic field, but this field is static
+        revert StoreCore_StaticTypeAfterDynamicType();
+      }
+    }
+
+    // Verify all dynamic fields come after the static fields
+    _registerSchemaUnchecked(table, schema);
+  }
+
+  /**
+   * Register a new table schema without validity checks
+   */
+  function _registerSchemaUnchecked(bytes32 table, bytes32 schema) internal {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
     bytes32 location = _getStaticDataLocation(SCHEMA_TABLE, key);
@@ -341,7 +385,7 @@ library StoreCore {
    * - 2 bytes static length of the schema
    * - 1 byte for number of static size fields
    * - 1 byte for number of dynamic size fields
-   * - 28 bytes for 28 schema types
+   * - 28 bytes for 28 schema types (max 14 dynamic fields to we can pack their lengths into 1 word)
    */
   function encodeSchema(SchemaType[] memory _schema) internal pure returns (bytes32 schema) {
     if (_schema.length > 28) revert StoreCore_SchemaTooLong();
@@ -350,9 +394,20 @@ library StoreCore {
 
     // Compute the length of the schema and the number of static fields
     // and store the schema types in the encoded schema
+    bool hasDynamicFields;
     for (uint256 i = 0; i < _schema.length; ) {
       uint16 staticByteLength = uint16(getStaticByteLength(_schema[i]));
-      if (staticByteLength > 0) staticFields++;
+
+      // Increase the static field count if the field is static
+      if (staticByteLength > 0) {
+        // Revert if we have seen a dynamic field before, but now we see a static field
+        if (hasDynamicFields) revert StoreCore_StaticTypeAfterDynamicType();
+        staticFields++;
+      } else {
+        // Flag that we have seen a dynamic field
+        hasDynamicFields = true;
+      }
+
       length += staticByteLength;
       schema = Bytes.setBytes1(schema, i + 4, bytes1(uint8(_schema[i])));
       unchecked {
@@ -360,14 +415,24 @@ library StoreCore {
       }
     }
 
+    // Require max 14 dynamic fields
+    uint8 dynamicFields = uint8(_schema.length) - staticFields;
+    if (dynamicFields > 14) revert StoreCore_SchemaTooLong();
+
     // Store total static length, and number of static and dynamic fields
     schema = Bytes.setBytes1(schema, 0, bytes1(bytes2(length))); // upper length byte
     schema = Bytes.setBytes1(schema, 1, bytes1(uint8(length))); // lower length byte
     schema = Bytes.setBytes1(schema, 2, bytes1(staticFields)); // number of static fields
-    schema = Bytes.setBytes1(schema, 3, bytes1(uint8(_schema.length) - staticFields)); // number of dynamic fields
+    schema = Bytes.setBytes1(schema, 3, bytes1(dynamicFields)); // number of dynamic fields
   }
 
+  /**
+   * Encode the given dynamic data lengths into a single bytes32
+   * - 4 bytes for total length of the dynamic data
+   * - 2 bytes for each dynamic data length -> max 14 dynamic fields
+   */
   function encodeDynamicDataLength(uint16[] memory lengths) internal pure returns (bytes32 encodedLength) {
+    if (lengths.length > 14) revert StoreCore_SchemaTooLong();
     uint32 totalLength;
 
     // Compute the total length of the dynamic data
@@ -396,7 +461,6 @@ library StoreCore {
 
   /**
    * Compute the storage location based on table id and index tuple
-   * TODO: provide different overloads for single key and some fixed length array keys for better devex
    */
   function _getStaticDataLocation(bytes32 table, bytes32[] memory key) internal pure returns (bytes32) {
     return keccak256(abi.encode(SLOT, table, key));
@@ -404,7 +468,6 @@ library StoreCore {
 
   /**
    * Get storage offset for the given schema and (static length) index
-   * TODO: gas optimize
    */
   function _getStaticDataOffset(bytes32 schema, uint8 schemaIndex) internal pure returns (uint256) {
     uint256 offset = 0; // skip length
@@ -466,7 +529,6 @@ library StoreCore {
 
   /**
    * Get the length of the dynamic data for the given schema and index
-   * TODO: add tests
    */
   function _loadEncodedDynamicDataLength(bytes32 table, bytes32[] memory key) internal view returns (bytes32) {
     // Load dynamic data length from storage

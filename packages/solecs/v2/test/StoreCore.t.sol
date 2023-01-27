@@ -98,6 +98,85 @@ contract StoreCoreTest is DSTestPlus {
     assertEq(uint8(Bytes.slice1(loadedSchema, 5)), uint8(SchemaType.Uint16));
   }
 
+  function testFailInvalidSchemaStaticAfterDynamic() public {
+    bytes32 table = keccak256("table");
+    SchemaType[] memory schema = new SchemaType[](3);
+    schema[0] = SchemaType.Uint8;
+    schema[1] = SchemaType.Uint32Array;
+    schema[2] = SchemaType.Uint16;
+    StoreCore.registerSchema(table, schema);
+  }
+
+  function testRegisterSchemaMaxDynamic() public {
+    bytes32 table = keccak256("table");
+    SchemaType[] memory schema = new SchemaType[](14);
+    schema[0] = SchemaType.Uint32Array;
+    schema[1] = SchemaType.Uint32Array;
+    schema[2] = SchemaType.Uint32Array;
+    schema[3] = SchemaType.Uint32Array;
+    schema[4] = SchemaType.Uint32Array;
+    schema[5] = SchemaType.Uint32Array;
+    schema[6] = SchemaType.Uint32Array;
+    schema[7] = SchemaType.Uint32Array;
+    schema[8] = SchemaType.Uint32Array;
+    schema[9] = SchemaType.Uint32Array;
+    schema[10] = SchemaType.Uint32Array;
+    schema[11] = SchemaType.Uint32Array;
+    schema[12] = SchemaType.Uint32Array;
+    schema[13] = SchemaType.Uint32Array;
+    StoreCore.registerSchema(table, schema);
+  }
+
+  function testFailInvalidSchemaTooManyDynamic() public {
+    bytes32 table = keccak256("table");
+    SchemaType[] memory schema = new SchemaType[](15);
+    schema[0] = SchemaType.Uint32Array;
+    schema[1] = SchemaType.Uint32Array;
+    schema[2] = SchemaType.Uint32Array;
+    schema[3] = SchemaType.Uint32Array;
+    schema[4] = SchemaType.Uint32Array;
+    schema[5] = SchemaType.Uint32Array;
+    schema[6] = SchemaType.Uint32Array;
+    schema[7] = SchemaType.Uint32Array;
+    schema[8] = SchemaType.Uint32Array;
+    schema[9] = SchemaType.Uint32Array;
+    schema[10] = SchemaType.Uint32Array;
+    schema[11] = SchemaType.Uint32Array;
+    schema[12] = SchemaType.Uint32Array;
+    schema[13] = SchemaType.Uint32Array;
+    schema[14] = SchemaType.Uint32Array;
+    StoreCore.registerSchema(table, schema);
+  }
+
+  function testHasSchema() public {
+    bytes32 schema = bytes32(
+      bytes.concat(
+        bytes2(uint16(6)),
+        bytes1(uint8(SchemaType.Uint8)),
+        bytes1(uint8(SchemaType.Uint16)),
+        bytes1(uint8(SchemaType.Uint8)),
+        bytes1(uint8(SchemaType.Uint16))
+      )
+    );
+
+    bytes32 table = keccak256("some.table");
+    bytes32 table2 = keccak256("other.table");
+    StoreCore.registerSchema(table, schema);
+
+    uint256 gas = gasleft();
+    StoreCore.hasTable(table);
+    gas = gas - gasleft();
+    console.log("gas used (has): %s", gas);
+
+    gas = gasleft();
+    StoreCore.hasTable(table2);
+    gas = gas - gasleft();
+    console.log("gas used (has not): %s", gas);
+
+    assertTrue(StoreCore.hasTable(table));
+    assertFalse(StoreCore.hasTable(table2));
+  }
+
   function testEncodeAndDecodeDynamicLength() public {
     uint16[] memory lengths = new uint16[](4);
     lengths[0] = 1;
