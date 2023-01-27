@@ -68,4 +68,13 @@ contract StorageTest is DSTestPlus {
     assertEq(Bytes.slice1(data, 33), bytes1(0x04));
     assertEq(keccak256(data), keccak256(data1));
   }
+
+  function testWriteReadFuzzy(
+    bytes memory data,
+    bytes32 storagePointer,
+    uint8 offset
+  ) public {
+    Storage.write(storagePointer, offset, data);
+    assertEq(keccak256(Storage.read(storagePointer, offset, data.length)), keccak256(data));
+  }
 }

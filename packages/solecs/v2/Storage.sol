@@ -63,6 +63,10 @@ library Storage {
     uint256 memoryPointer,
     uint256 length
   ) internal {
+    // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
+    storagePointer += offset / 32;
+    offset %= 32;
+
     uint256 numWords = Utils.divCeil(length + offset, 32);
     uint256 bytesWritten;
 
@@ -140,6 +144,10 @@ library Storage {
     uint256 length,
     Buffer buffer
   ) internal view {
+    // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
+    storagePointer += offset / 32;
+    offset %= 32;
+
     uint256 numWords = Utils.divCeil(length + offset, 32);
     uint256 _lengthToRead;
 
