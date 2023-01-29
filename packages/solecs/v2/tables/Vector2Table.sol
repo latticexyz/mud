@@ -7,6 +7,7 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { Bytes } from "../Bytes.sol";
+import { Schema, Schema_ } from "../Schema.sol";
 
 // -- User defined schema and id --
 
@@ -22,11 +23,8 @@ struct Vector2 {
 
 library Vector2Table {
   /** Get the table's schema */
-  function getSchema() internal pure returns (bytes32 schema) {
-    schema = bytes32(
-      // <length><uint32><uint32>
-      bytes.concat(bytes2(uint16(8)), bytes1(uint8(SchemaType.Uint32)), bytes1(uint8(SchemaType.Uint32)))
-    );
+  function getSchema() internal pure returns (Schema schema) {
+    schema = Schema_.encode(SchemaType.Uint32, SchemaType.Uint32);
   }
 
   /** Register the table's schema */

@@ -10,7 +10,9 @@ import { SchemaType } from "../Types.sol";
 import { Storage } from "../Storage.sol";
 import { Memory } from "../Memory.sol";
 import { Cast } from "../Cast.sol";
-import "../Buffer.sol";
+import { Buffer, Buffer_ } from "../Buffer.sol";
+import { Schema, Schema_ } from "../Schema.sol";
+import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -19,66 +21,11 @@ struct TestStruct {
 }
 
 contract StoreCoreTest is DSTestPlus {
-  TestStruct testStruct;
-  mapping(uint256 => bytes) testMapping;
-
-  function testGetStaticDataLength() public {
-    bytes32 schema = bytes32(
-      bytes.concat(bytes2(uint16(3)), bytes1(uint8(SchemaType.Uint8)), bytes1(uint8(SchemaType.Uint16)))
-    );
-
-    uint256 gas = gasleft();
-    uint256 length = StoreCore._getStaticDataLength(schema);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
-
-    assertEq(length, 3);
-  }
-
-  function testEncodeDecodeSchema() public {
-    SchemaType[] memory schema = new SchemaType[](6);
-    schema[0] = SchemaType.Uint8; // 1 byte
-    schema[1] = SchemaType.Uint16; // 2 bytes
-    schema[2] = SchemaType.Uint32; // 4 bytes
-    schema[3] = SchemaType.Uint128; // 4 bytes
-    schema[4] = SchemaType.Uint256; // 4 bytes
-    schema[5] = SchemaType.Uint32Array; // 0 bytes (because it's dynamic)
-
-    uint256 gas = gasleft();
-    bytes32 encodedSchema = StoreCore.encodeSchema(schema);
-    gas = gas - gasleft();
-    console.log("gas used (encode): %s", gas);
-
-    gas = gasleft();
-    uint256 length = StoreCore._getStaticDataLength(encodedSchema);
-    gas = gas - gasleft();
-    console.log("gas used (get length): %s", gas);
-
-    gas = gasleft();
-    SchemaType schemaType1 = StoreCore._getSchemaTypeAtIndex(encodedSchema, 0);
-    gas = gas - gasleft();
-    console.log("gas used (decode): %s", gas);
-
-    assertEq(length, 55);
-    assertEq(uint8(schemaType1), uint8(SchemaType.Uint8));
-    assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 1)), uint8(SchemaType.Uint16));
-    assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 2)), uint8(SchemaType.Uint32));
-    assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 3)), uint8(SchemaType.Uint128));
-    assertEq(uint8(StoreCore._getSchemaTypeAtIndex(encodedSchema, 4)), uint8(SchemaType.Uint256));
-    assertEq(StoreCore._getNumStaticFields(encodedSchema), 5);
-    assertEq(StoreCore._getNumDynamicFields(encodedSchema), 1);
-  }
+  TestStruct private testStruct;
+  mapping(uint256 => bytes) private testMapping;
 
   function testRegisterAndGetSchema() public {
-    bytes32 schema = bytes32(
-      bytes.concat(
-        bytes2(uint16(6)),
-        bytes1(uint8(SchemaType.Uint8)),
-        bytes1(uint8(SchemaType.Uint16)),
-        bytes1(uint8(SchemaType.Uint8)),
-        bytes1(uint8(SchemaType.Uint16))
-      )
-    );
+    Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
 
     bytes32 table = keccak256("some.table");
     uint256 gas = gasleft();
@@ -87,78 +34,19 @@ contract StoreCoreTest is DSTestPlus {
     console.log("gas used (register): %s", gas);
 
     gas = gasleft();
-    bytes memory loadedSchema = bytes.concat(StoreCore.getSchema(table));
+    Schema loadedSchema = StoreCore.getSchema(table);
     gas = gas - gasleft();
     console.log("gas used (get schema, warm): %s", gas);
 
-    assertEq(loadedSchema.length, schema.length);
-    assertEq(uint8(Bytes.slice1(loadedSchema, 2)), uint8(SchemaType.Uint8));
-    assertEq(uint8(Bytes.slice1(loadedSchema, 3)), uint8(SchemaType.Uint16));
-    assertEq(uint8(Bytes.slice1(loadedSchema, 4)), uint8(SchemaType.Uint8));
-    assertEq(uint8(Bytes.slice1(loadedSchema, 5)), uint8(SchemaType.Uint16));
+    assertEq(schema.unwrap(), loadedSchema.unwrap());
   }
 
-  function testFailInvalidSchemaStaticAfterDynamic() public {
-    bytes32 table = keccak256("table");
-    SchemaType[] memory schema = new SchemaType[](3);
-    schema[0] = SchemaType.Uint8;
-    schema[1] = SchemaType.Uint32Array;
-    schema[2] = SchemaType.Uint16;
-    StoreCore.registerSchema(table, schema);
-  }
-
-  function testRegisterSchemaMaxDynamic() public {
-    bytes32 table = keccak256("table");
-    SchemaType[] memory schema = new SchemaType[](14);
-    schema[0] = SchemaType.Uint32Array;
-    schema[1] = SchemaType.Uint32Array;
-    schema[2] = SchemaType.Uint32Array;
-    schema[3] = SchemaType.Uint32Array;
-    schema[4] = SchemaType.Uint32Array;
-    schema[5] = SchemaType.Uint32Array;
-    schema[6] = SchemaType.Uint32Array;
-    schema[7] = SchemaType.Uint32Array;
-    schema[8] = SchemaType.Uint32Array;
-    schema[9] = SchemaType.Uint32Array;
-    schema[10] = SchemaType.Uint32Array;
-    schema[11] = SchemaType.Uint32Array;
-    schema[12] = SchemaType.Uint32Array;
-    schema[13] = SchemaType.Uint32Array;
-    StoreCore.registerSchema(table, schema);
-  }
-
-  function testFailInvalidSchemaTooManyDynamic() public {
-    bytes32 table = keccak256("table");
-    SchemaType[] memory schema = new SchemaType[](15);
-    schema[0] = SchemaType.Uint32Array;
-    schema[1] = SchemaType.Uint32Array;
-    schema[2] = SchemaType.Uint32Array;
-    schema[3] = SchemaType.Uint32Array;
-    schema[4] = SchemaType.Uint32Array;
-    schema[5] = SchemaType.Uint32Array;
-    schema[6] = SchemaType.Uint32Array;
-    schema[7] = SchemaType.Uint32Array;
-    schema[8] = SchemaType.Uint32Array;
-    schema[9] = SchemaType.Uint32Array;
-    schema[10] = SchemaType.Uint32Array;
-    schema[11] = SchemaType.Uint32Array;
-    schema[12] = SchemaType.Uint32Array;
-    schema[13] = SchemaType.Uint32Array;
-    schema[14] = SchemaType.Uint32Array;
-    StoreCore.registerSchema(table, schema);
+  function testFailRegisterInvalidSchema() public {
+    StoreCore.registerSchema(keccak256("table"), Schema.wrap(keccak256("random bytes as schema")));
   }
 
   function testHasSchema() public {
-    bytes32 schema = bytes32(
-      bytes.concat(
-        bytes2(uint16(6)),
-        bytes1(uint8(SchemaType.Uint8)),
-        bytes1(uint8(SchemaType.Uint16)),
-        bytes1(uint8(SchemaType.Uint8)),
-        bytes1(uint8(SchemaType.Uint16))
-      )
-    );
-
+    Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
     StoreCore.registerSchema(table, schema);
@@ -177,46 +65,16 @@ contract StoreCoreTest is DSTestPlus {
     assertFalse(StoreCore.hasTable(table2));
   }
 
-  function testEncodeAndDecodeDynamicLength() public {
-    uint16[] memory lengths = new uint16[](4);
-    lengths[0] = 1;
-    lengths[1] = 2;
-    lengths[2] = 3;
-    lengths[3] = 4;
-
-    uint256 gas = gasleft();
-    bytes32 encodedLengths = StoreCore.encodeDynamicDataLength(lengths);
-    gas = gas - gasleft();
-    console.log("gas used (encode): %s", gas);
-
-    gas = gasleft();
-    StoreCore._decodeDynamicDataLengthAtIndex(encodedLengths, 3);
-    gas = gas - gasleft();
-    console.log("gas used (decode index): %s", gas);
-
-    gas = gasleft();
-    StoreCore._decodeDynamicDataTotalLength(encodedLengths);
-    gas = gas - gasleft();
-    console.log("gas used (decode total): %s", gas);
-
-    assertEq(StoreCore._decodeDynamicDataLengthAtIndex(encodedLengths, 0), 1);
-    assertEq(StoreCore._decodeDynamicDataLengthAtIndex(encodedLengths, 1), 2);
-    assertEq(StoreCore._decodeDynamicDataLengthAtIndex(encodedLengths, 2), 3);
-    assertEq(StoreCore._decodeDynamicDataLengthAtIndex(encodedLengths, 3), 4);
-    assertEq(StoreCore._decodeDynamicDataTotalLength(encodedLengths), 10);
-  }
-
   function testSetAndGetDynamicDataLength() public {
     bytes32 table = keccak256("some.table");
 
-    SchemaType[] memory _schema = new SchemaType[](6);
-    _schema[0] = SchemaType.Uint8; // 1 byte
-    _schema[1] = SchemaType.Uint16; // 2 bytes
-    _schema[2] = SchemaType.Uint32; // 4 bytes
-    _schema[3] = SchemaType.Uint32Array; // 0 bytes (because it's dynamic)
-    _schema[4] = SchemaType.Uint32Array; // 0 bytes (because it's dynamic)
-
-    bytes32 schema = StoreCore.encodeSchema(_schema);
+    Schema schema = Schema_.encode(
+      SchemaType.Uint8,
+      SchemaType.Uint16,
+      SchemaType.Uint32,
+      SchemaType.Uint32Array,
+      SchemaType.Uint32Array
+    );
 
     // Register schema
     StoreCore.registerSchema(table, schema);
@@ -231,9 +89,10 @@ contract StoreCoreTest is DSTestPlus {
     gas = gas - gasleft();
     console.log("gas used (set length): %s", gas);
 
-    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, 0), 10);
-    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, 1), 0);
-    assertEq(StoreCore._getDynamicDataTotalLength(table, key), 10);
+    PackedCounter encodedLength = StoreCore._loadEncodedDynamicDataLength(table, key);
+    assertEq(encodedLength.atIndex(0), 10);
+    assertEq(encodedLength.atIndex(1), 0);
+    assertEq(encodedLength.total(), 10);
 
     // Set dynamic data length of dynamic index 1
     gas = gasleft();
@@ -241,9 +100,10 @@ contract StoreCoreTest is DSTestPlus {
     gas = gas - gasleft();
     console.log("gas used (set length): %s", gas);
 
-    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, 0), 10);
-    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, 1), 99);
-    assertEq(StoreCore._getDynamicDataTotalLength(table, key), 109);
+    encodedLength = StoreCore._loadEncodedDynamicDataLength(table, key);
+    assertEq(encodedLength.atIndex(0), 10);
+    assertEq(encodedLength.atIndex(1), 99);
+    assertEq(encodedLength.total(), 109);
 
     // Reduce dynamic data length of dynamic index 0 again
     gas = gasleft();
@@ -251,27 +111,15 @@ contract StoreCoreTest is DSTestPlus {
     gas = gas - gasleft();
     console.log("gas used (set length): %s", gas);
 
-    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, 0), 5);
-    assertEq(StoreCore._getDynamicDataLengthAtIndex(table, key, 1), 99);
-    assertEq(StoreCore._getDynamicDataTotalLength(table, key), 104);
-
-    gas = gasleft();
-    StoreCore._getDynamicDataLengthAtIndex(table, key, 0);
-    gas = gas - gasleft();
-    console.log("gas used (get length at index): %s", gas);
+    encodedLength = StoreCore._loadEncodedDynamicDataLength(table, key);
+    assertEq(encodedLength.atIndex(0), 5);
+    assertEq(encodedLength.atIndex(1), 99);
+    assertEq(encodedLength.total(), 104);
   }
 
   function testSetAndGetStaticData() public {
     // Register table's schema
-    bytes32 schema = bytes32(
-      bytes.concat(
-        bytes2(uint16(6)),
-        bytes1(uint8(SchemaType.Uint8)),
-        bytes1(uint8(SchemaType.Uint16)),
-        bytes1(uint8(SchemaType.Uint8)),
-        bytes1(uint8(SchemaType.Uint16))
-      )
-    );
+    Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
 
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
@@ -298,16 +146,7 @@ contract StoreCoreTest is DSTestPlus {
 
   function testFailSetAndGetStaticData() public {
     // Register table's schema
-    bytes32 schema = bytes32(
-      bytes.concat(
-        bytes2(uint16(6)),
-        bytes1(uint8(SchemaType.Uint8)),
-        bytes1(uint8(SchemaType.Uint16)),
-        bytes1(uint8(SchemaType.Uint8)),
-        bytes1(uint8(SchemaType.Uint16))
-      )
-    );
-
+    Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
 
@@ -326,12 +165,7 @@ contract StoreCoreTest is DSTestPlus {
 
   function testSetAndGetStaticDataSpanningWords() public {
     // Register table's schema
-    SchemaType[] memory schemaTypes = new SchemaType[](2);
-    schemaTypes[0] = SchemaType.Uint128;
-    schemaTypes[1] = SchemaType.Uint256;
-
-    bytes32 schema = StoreCore.encodeSchema(schemaTypes);
-
+    Schema schema = Schema_.encode(SchemaType.Uint128, SchemaType.Uint256);
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
 
@@ -363,11 +197,7 @@ contract StoreCoreTest is DSTestPlus {
 
     {
       // Register table's schema
-      SchemaType[] memory schemaTypes = new SchemaType[](3);
-      schemaTypes[0] = SchemaType.Uint128;
-      schemaTypes[1] = SchemaType.Uint32Array;
-      schemaTypes[2] = SchemaType.Uint32Array;
-      bytes32 schema = StoreCore.encodeSchema(schemaTypes);
+      Schema schema = Schema_.encode(SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.Uint32Array);
       StoreCore.registerSchema(table, schema);
     }
 
@@ -390,12 +220,12 @@ contract StoreCoreTest is DSTestPlus {
       thirdDataBytes = Bytes.from(thirdData);
     }
 
-    bytes32 encodedDynamicLength;
+    PackedCounter encodedDynamicLength;
     {
       uint16[] memory dynamicLengths = new uint16[](2);
       dynamicLengths[0] = uint16(secondDataBytes.length);
       dynamicLengths[1] = uint16(thirdDataBytes.length);
-      encodedDynamicLength = StoreCore.encodeDynamicDataLength(dynamicLengths);
+      encodedDynamicLength = PackedCounter_.pack(dynamicLengths);
     }
 
     // Concat data
@@ -445,12 +275,12 @@ contract StoreCoreTest is DSTestPlus {
 
     {
       // Register table's schema
-      SchemaType[] memory schemaTypes = new SchemaType[](4);
-      schemaTypes[0] = SchemaType.Uint128;
-      schemaTypes[1] = SchemaType.Uint256;
-      schemaTypes[2] = SchemaType.Uint32Array;
-      schemaTypes[3] = SchemaType.Uint32Array;
-      bytes32 schema = StoreCore.encodeSchema(schemaTypes);
+      Schema schema = Schema_.encode(
+        SchemaType.Uint128,
+        SchemaType.Uint256,
+        SchemaType.Uint32Array,
+        SchemaType.Uint32Array
+      );
       StoreCore.registerSchema(table, schema);
     }
 

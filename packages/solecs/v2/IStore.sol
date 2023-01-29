@@ -2,20 +2,22 @@
 pragma solidity >=0.8.0;
 
 import { SchemaType } from "./Types.sol";
+import { Schema } from "./Schema.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 
 interface IStore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event StoreUpdate(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
 
-  function registerSchema(bytes32 table, bytes32 schema) external;
+  function registerSchema(bytes32 table, Schema schema) external;
 
-  function getSchema(bytes32 table) external view returns (bytes32 schema);
+  function getSchema(bytes32 table) external view returns (Schema schema);
 
   // Set full record (including full dynamic data)
   function set(
     bytes32 table,
     bytes32[] memory key,
-    bytes32 encodedDynamicLength,
+    PackedCounter encodedDynamicLength,
     bytes memory data
   ) external;
 

@@ -7,6 +7,7 @@ import { RouteTable, id as RouteTableId, Route } from "../tables/RouteTable.sol"
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { StoreView } from "../StoreView.sol";
+import { Schema } from "../Schema.sol";
 
 contract RouteTableTest is DSTestPlus, StoreView {
   function testRegisterAndGetSchema() public {
@@ -15,8 +16,8 @@ contract RouteTableTest is DSTestPlus, StoreView {
     gas = gas - gasleft();
     console.log("gas used: %s", gas);
 
-    bytes32 registeredSchema = StoreCore.getSchema(RouteTableId);
-    bytes32 declaredSchema = RouteTable.getSchema();
+    Schema registeredSchema = StoreCore.getSchema(RouteTableId);
+    Schema declaredSchema = RouteTable.getSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }

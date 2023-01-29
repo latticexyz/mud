@@ -7,6 +7,8 @@ import { StoreView } from "./StoreView.sol";
 import { SchemaType, ExecutionMode } from "./Types.sol";
 import { RouteTable, Route, id as RouteId } from "./tables/RouteTable.sol";
 import { Bytes } from "./Bytes.sol";
+import { PackedCounter } from "./PackedCounter.sol";
+import { Schema } from "./Schema.sol";
 
 /**
  * TODO: add access control
@@ -18,14 +20,14 @@ contract World is StoreView {
     registerSchema(RouteId, RouteTable.getSchema());
   }
 
-  function registerSchema(bytes32 table, bytes32 schema) public override {
+  function registerSchema(bytes32 table, Schema schema) public override {
     StoreCore.registerSchema(table, schema);
   }
 
   function set(
     bytes32 table,
     bytes32[] memory key,
-    bytes32 encodedDynamicLength,
+    PackedCounter encodedDynamicLength,
     bytes memory data
   ) public override {
     StoreCore.set(table, key, encodedDynamicLength, data);

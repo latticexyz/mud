@@ -7,6 +7,7 @@ import { Vector2Table, id as Vector2Id, Vector2 } from "../tables/Vector2Table.s
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { StoreView } from "../StoreView.sol";
+import { Schema } from "../Schema.sol";
 
 contract Vector2TableTest is DSTestPlus, StoreView {
   function testRegisterAndGetSchema() public {
@@ -15,8 +16,8 @@ contract Vector2TableTest is DSTestPlus, StoreView {
     gas = gas - gasleft();
     console.log("gas used: %s", gas);
 
-    bytes32 registeredSchema = StoreCore.getSchema(Vector2Id);
-    bytes32 declaredSchema = Vector2Table.getSchema();
+    Schema registeredSchema = StoreCore.getSchema(Vector2Id);
+    Schema declaredSchema = Vector2Table.getSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
   }

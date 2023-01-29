@@ -10,45 +10,54 @@ pragma solidity >=0.8.0;
 // First 16 bytes are the pointer to the data, followed by 16 bytes of data length.
 type Buffer is uint256;
 
-using BufferUtils for Buffer global;
+using Buffer_ for Buffer global;
 
-// Static functions
 library Buffer_ {
+  uint256 constant MASK_CAPACITY = uint256(type(uint128).max);
+  uint256 constant MASK_PTR = uint256(type(uint128).max) << 128;
+
+  error Buffer_Overflow(uint256 capacity, uint256 requestedLength);
+
+  /************************************************************************
+   *
+   *    STATIC FUNCTIONS
+   *
+   ************************************************************************/
+
   /**
    * @dev Allocates a new buffer with the given capacity.
    */
-  function allocate(uint128 capacity) internal pure returns (Buffer) {
-    uint256 ptr;
+  function allocate(uint128 _capacity) internal pure returns (Buffer) {
+    uint256 _ptr;
     assembly {
       let buf := mload(0x40) // free memory pointer
-      mstore(0x40, add(buf, add(32, capacity))) // 32 bytes for the buffer header, plus the length of the buffer
+      mstore(0x40, add(buf, add(32, _capacity))) // 32 bytes for the buffer header, plus the length of the buffer
       mstore(buf, 0) // initialize length to 0 (memory is not cleared by default)
-      ptr := add(buf, 32) // ptr to first data byte
+      _ptr := add(buf, 32) // ptr to first data byte
     }
 
     // Pointer is stored in upper 128 bits, capacity is stored in lower 128 bits
-    return Buffer.wrap(((ptr << 128) | capacity));
+    return Buffer.wrap(((_ptr << 128) | _capacity));
   }
 
   /**
    * @dev Converts a bytes array to a buffer (without copying data)
    */
   function fromBytes(bytes memory data) internal pure returns (Buffer) {
-    uint256 ptr;
+    uint256 _ptr;
     assembly {
-      ptr := add(data, 32) // ptr to first data byte
+      _ptr := add(data, 32) // ptr to first data byte
     }
 
     // Pointer is stored in upper 128 bits, length is stored in lower 128 bits
-    return Buffer.wrap((ptr << 128) | uint128(data.length));
+    return Buffer.wrap((_ptr << 128) | uint128(data.length));
   }
-}
 
-library BufferUtils {
-  uint256 constant MASK_CAPACITY = uint256(type(uint128).max);
-  uint256 constant MASK_PTR = uint256(type(uint128).max) << 128;
-
-  error Buffer_Overflow(uint256 capacity, uint256 requestedLength);
+  /************************************************************************
+   *
+   *    INSTANCE FUNCTIONS
+   *
+   ************************************************************************/
 
   /**
    * @dev Returns the pointer to the start of an in-memory buffer.

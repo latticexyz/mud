@@ -7,6 +7,7 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { Bytes } from "../Bytes.sol";
+import { Schema, Schema_ } from "../Schema.sol";
 
 // -- User defined schema and id --
 
@@ -23,16 +24,8 @@ struct Route {
 
 library RouteTable {
   /** Get the table's schema */
-  function getSchema() internal pure returns (bytes32 schema) {
-    schema = bytes32(
-      // <length><address><bytes4><uint8>
-      bytes.concat(
-        bytes2(uint16(25)),
-        bytes1(uint8(SchemaType.Address)),
-        bytes1(uint8(SchemaType.Bytes4)),
-        bytes1(uint8(SchemaType.Uint8))
-      )
-    );
+  function getSchema() internal pure returns (Schema schema) {
+    schema = Schema_.encode(SchemaType.Address, SchemaType.Bytes4, SchemaType.Uint8);
   }
 
   /** Register the table's schema */

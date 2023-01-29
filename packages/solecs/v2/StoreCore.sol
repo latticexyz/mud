@@ -6,7 +6,9 @@ import { SchemaType, getStaticByteLength, getElementByteLength } from "./Types.s
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
 import { console } from "forge-std/console.sol";
-import "./Buffer.sol";
+import { Schema } from "./Schema.sol";
+import { PackedCounter } from "./PackedCounter.sol";
+import { Buffer, Buffer_ } from "./Buffer.sol";
 
 // TODO
 // - Make schema a custom data type we can execute methods on, move schema methods to schema library
@@ -21,8 +23,6 @@ library StoreCore {
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant SCHEMA_TABLE = keccak256("mud.store.table.schema");
 
-  error StoreCore_SchemaTooLong();
-  error StoreCore_StaticTypeAfterDynamicType();
   error StoreCore_TableAlreadyExists(bytes32 table);
   error StoreCore_NotImplemented();
   error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
@@ -37,71 +37,43 @@ library StoreCore {
    * Check if the given table exists
    */
   function hasTable(bytes32 table) internal view returns (bool) {
-    return getSchema(table) != bytes32(0);
+    return !getSchema(table).isEmpty();
   }
 
   /**
    * Register a new table schema
    */
-  function registerSchema(bytes32 table, SchemaType[] memory schema) internal {
+  function registerSchema(bytes32 table, Schema schema) internal {
+    // Verify the schema is valid
+    schema.validate();
+
     // Verify the schema doesn't exist yet
     if (hasTable(table)) {
       revert StoreCore_TableAlreadyExists(table);
     }
 
-    // Register the schema (validity checks are done in encodeSchema)
-    _registerSchemaUnchecked(table, encodeSchema(schema));
-  }
-
-  /**
-   * Register a new table schema
-   */
-  function registerSchema(bytes32 table, bytes32 schema) internal {
-    // Verify the schema doesn't exist yet
-    if (hasTable(table)) {
-      revert StoreCore_TableAlreadyExists(table);
-    }
-
-    // Verify the schema is not too long
-    uint256 numFields = _getNumStaticFields(schema) + _getNumDynamicFields(schema);
-    if (numFields > 28) {
-      revert StoreCore_SchemaTooLong();
-    }
-
-    // Verify all static fields come before the dynamic fields
-    bool hasDynamicField;
-    for (uint256 i = 0; i < numFields; i++) {
-      if (getStaticByteLength(_getSchemaTypeAtIndex(schema, i)) == 0) {
-        // Flag that we've seen the first dynamic field
-        hasDynamicField = true;
-      } else if (hasDynamicField) {
-        // We've seen a dynamic field, but this field is static
-        revert StoreCore_StaticTypeAfterDynamicType();
-      }
-    }
-
-    // Verify all dynamic fields come after the static fields
+    // Register the schema
     _registerSchemaUnchecked(table, schema);
   }
 
   /**
    * Register a new table schema without validity checks
    */
-  function _registerSchemaUnchecked(bytes32 table, bytes32 schema) internal {
+  function _registerSchemaUnchecked(bytes32 table, Schema schema) internal {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
     bytes32 location = _getStaticDataLocation(SCHEMA_TABLE, key);
-    Storage.write(location, schema);
+    Storage.write(location, schema.unwrap());
   }
 
   /**
    * Get the schema for the given table
    */
-  function getSchema(bytes32 table) internal view returns (bytes32 schema) {
+  function getSchema(bytes32 table) internal view returns (Schema schema) {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
     bytes32 location = _getStaticDataLocation(SCHEMA_TABLE, key);
-    return Storage.read(location);
+    return Schema.wrap(Storage.read(location));
   }
 
   /************************************************************************
@@ -116,16 +88,16 @@ library StoreCore {
   function set(
     bytes32 table,
     bytes32[] memory key,
-    bytes32 encodedDynamicLength,
+    PackedCounter dynamicLength,
     bytes memory data
   ) internal {
     // verify the value has the correct length for the table (based on the table's schema)
     // to prevent invalid data from being stored
-    bytes32 schema = getSchema(table);
+    Schema schema = getSchema(table);
 
     // Verify static data length + dynamic data length matches the given data
-    uint256 staticLength = _getStaticDataLength(schema);
-    uint256 expectedLength = staticLength + _decodeDynamicDataTotalLength(encodedDynamicLength);
+    uint256 staticLength = schema.staticDataLength();
+    uint256 expectedLength = staticLength + dynamicLength.total();
     if (expectedLength != data.length) {
       revert StoreCore_InvalidDataLength(expectedLength, data.length);
     }
@@ -138,14 +110,14 @@ library StoreCore {
 
     // Store the dynamic data length at the dynamic data length location
     bytes32 dynamicDataLengthLocation = _getDynamicDataLengthLocation(table, key);
-    Storage.write(dynamicDataLengthLocation, encodedDynamicLength);
+    Storage.write(dynamicDataLengthLocation, dynamicLength.unwrap());
 
     // For every dynamic element, slice off the dynamic data and store it at the dynamic location
     bytes32 dynamicDataLocation;
     uint256 dynamicDataLength;
-    for (uint8 i; i < _getNumDynamicFields(schema); ) {
+    for (uint8 i; i < schema.numDynamicFields(); ) {
       dynamicDataLocation = _getDynamicDataLocation(table, key, i);
-      dynamicDataLength = _decodeDynamicDataLengthAtIndex(encodedDynamicLength, i);
+      dynamicDataLength = dynamicLength.atIndex(i);
       Storage.write(dynamicDataLocation, 0, memoryPointer, dynamicDataLength);
       memoryPointer += dynamicDataLength; // move the memory pointer to the start of the next dynamic data
       unchecked {
@@ -167,11 +139,11 @@ library StoreCore {
   ) internal {
     // verify the value has the correct length for the table (based on the table's schema)
     // to prevent invalid data from being stored
-    bytes32 schema = getSchema(table);
+    Schema schema = getSchema(table);
 
     // Verify the static data length matches the table schema
-    if (_getStaticDataLength(schema) != data.length) {
-      revert StoreCore_InvalidDataLength(_getStaticDataLength(schema), data.length);
+    if (schema.staticDataLength() != data.length) {
+      revert StoreCore_InvalidDataLength(schema.staticDataLength(), data.length);
     }
 
     // Store the provided value in storage
@@ -188,8 +160,8 @@ library StoreCore {
     uint8 schemaIndex,
     bytes memory data
   ) internal {
-    bytes32 schema = getSchema(table);
-    if (schemaIndex < _getNumStaticFields(schema)) {
+    Schema schema = getSchema(table);
+    if (schemaIndex < schema.numStaticFields()) {
       _setStaticField(table, key, schema, schemaIndex, data);
     } else {
       _setDynamicField(table, key, schema, schemaIndex, data);
@@ -199,12 +171,12 @@ library StoreCore {
   function _setStaticField(
     bytes32 table,
     bytes32[] memory key,
-    bytes32 schema,
+    Schema schema,
     uint8 schemaIndex,
     bytes memory data
   ) internal {
     // verify the value has the correct length for the field
-    SchemaType schemaType = _getSchemaTypeAtIndex(schema, schemaIndex);
+    SchemaType schemaType = schema.atIndex(schemaIndex);
     if (getStaticByteLength(schemaType) != data.length)
       revert StoreCore_InvalidDataLength(getStaticByteLength(schemaType), data.length);
 
@@ -220,11 +192,11 @@ library StoreCore {
   function _setDynamicField(
     bytes32 table,
     bytes32[] memory key,
-    bytes32 schema,
+    Schema schema,
     uint8 schemaIndex,
     bytes memory data
   ) internal {
-    uint8 dynamicSchemaIndex = schemaIndex - _getNumStaticFields(schema);
+    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
 
     // Update the dynamic data length
     _setDynamicDataLengthAtIndex(table, key, dynamicSchemaIndex, data.length);
@@ -248,7 +220,7 @@ library StoreCore {
    */
   function get(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     // Get schema for this table
-    bytes32 schema = getSchema(table);
+    Schema schema = getSchema(table);
 
     return get(table, key, schema);
   }
@@ -259,22 +231,20 @@ library StoreCore {
   function get(
     bytes32 table,
     bytes32[] memory key,
-    bytes32 schema
+    Schema schema
   ) internal view returns (bytes memory) {
     // Get static data length
-    uint256 staticDataLength = _getStaticDataLength(schema);
+    uint256 staticDataLength = schema.staticDataLength();
 
     // Load the dynamic data length if there are dynamic fields
-    bytes32 encodedDynamicLength;
-    uint256 dynamicDataTotalLength;
-    uint256 numDynamicFields = _getNumDynamicFields(schema);
+    PackedCounter dynamicDataLength;
+    uint256 numDynamicFields = schema.numDynamicFields();
     if (numDynamicFields > 0) {
-      encodedDynamicLength = _loadEncodedDynamicDataLength(table, key);
-      dynamicDataTotalLength = _decodeDynamicDataTotalLength(encodedDynamicLength);
+      dynamicDataLength = _loadEncodedDynamicDataLength(table, key);
     }
 
     // Allocate a buffer for the full data (static and dynamic)
-    Buffer buffer = Buffer_.allocate(uint128(staticDataLength + dynamicDataTotalLength));
+    Buffer buffer = Buffer_.allocate(uint128(staticDataLength + dynamicDataLength.total()));
 
     // Load the static data from storage and append it to the buffer
     buffer.append(getStaticData(table, key, schema));
@@ -282,8 +252,7 @@ library StoreCore {
     // Append dynamic data to the buffer
     for (uint8 i; i < numDynamicFields; i++) {
       uint256 dynamicDataLocation = uint256(_getDynamicDataLocation(table, key, i));
-      uint256 dynamicDataLengthAtIndex = _decodeDynamicDataLengthAtIndex(encodedDynamicLength, i);
-      Storage.read(dynamicDataLocation, 0, dynamicDataLengthAtIndex, buffer);
+      Storage.read(dynamicDataLocation, 0, dynamicDataLength.atIndex(i), buffer);
     }
 
     // Return the buffer as bytes
@@ -294,7 +263,7 @@ library StoreCore {
    * Get full static record for the given table and key tuple (loading schema from storage)
    */
   function getStaticData(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
-    bytes32 schema = getSchema(table);
+    Schema schema = getSchema(table);
     return getStaticData(table, key, schema);
   }
 
@@ -304,11 +273,11 @@ library StoreCore {
   function getStaticData(
     bytes32 table,
     bytes32[] memory key,
-    bytes32 schema
+    Schema schema
   ) internal view returns (bytes memory) {
     // Load the data from storage
     bytes32 location = _getStaticDataLocation(table, key);
-    return Storage.read(location, _getStaticDataLength(schema));
+    return Storage.read(location, schema.staticDataLength());
   }
 
   /**
@@ -319,7 +288,7 @@ library StoreCore {
     bytes32[] memory key,
     uint8 schemaIndex
   ) internal view returns (bytes memory) {
-    bytes32 schema = getSchema(table);
+    Schema schema = getSchema(table);
     return getField(table, key, schemaIndex, schema);
   }
 
@@ -330,9 +299,9 @@ library StoreCore {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex,
-    bytes32 schema
+    Schema schema
   ) internal view returns (bytes memory) {
-    if (schemaIndex < _getNumStaticFields(schema)) {
+    if (schemaIndex < schema.numStaticFields()) {
       return _getStaticField(table, key, schemaIndex, schema);
     } else {
       return _getDynamicField(table, key, schemaIndex, schema);
@@ -346,10 +315,10 @@ library StoreCore {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex,
-    bytes32 schema
+    Schema schema
   ) internal view returns (bytes memory) {
     // Get the length, storage location and offset of the static field
-    SchemaType schemaType = _getSchemaTypeAtIndex(schema, schemaIndex);
+    SchemaType schemaType = schema.atIndex(schemaIndex);
     uint256 dataLength = getStaticByteLength(schemaType);
     uint256 location = uint256(_getStaticDataLocation(table, key));
     uint256 offset = _getStaticDataOffset(schema, schemaIndex);
@@ -365,88 +334,13 @@ library StoreCore {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex,
-    bytes32 schema
+    Schema schema
   ) internal view returns (bytes memory) {
     // Get the length and storage location of the dynamic field
-    uint8 dynamicSchemaIndex = schemaIndex - _getNumStaticFields(schema);
-    uint256 dataLength = _getDynamicDataLengthAtIndex(table, key, dynamicSchemaIndex);
+    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
     bytes32 location = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
+    uint256 dataLength = _loadEncodedDynamicDataLength(table, key).atIndex(dynamicSchemaIndex);
     return Storage.read(location, dataLength);
-  }
-
-  /************************************************************************
-   *
-   *    HELPER FUNCTIONS
-   *
-   ************************************************************************/
-
-  /**
-   * Encode the given schema into a single bytes32
-   * - 2 bytes static length of the schema
-   * - 1 byte for number of static size fields
-   * - 1 byte for number of dynamic size fields
-   * - 28 bytes for 28 schema types (max 14 dynamic fields to we can pack their lengths into 1 word)
-   */
-  function encodeSchema(SchemaType[] memory _schema) internal pure returns (bytes32 schema) {
-    if (_schema.length > 28) revert StoreCore_SchemaTooLong();
-    uint16 length;
-    uint8 staticFields;
-
-    // Compute the length of the schema and the number of static fields
-    // and store the schema types in the encoded schema
-    bool hasDynamicFields;
-    for (uint256 i = 0; i < _schema.length; ) {
-      uint16 staticByteLength = uint16(getStaticByteLength(_schema[i]));
-
-      // Increase the static field count if the field is static
-      if (staticByteLength > 0) {
-        // Revert if we have seen a dynamic field before, but now we see a static field
-        if (hasDynamicFields) revert StoreCore_StaticTypeAfterDynamicType();
-        staticFields++;
-      } else {
-        // Flag that we have seen a dynamic field
-        hasDynamicFields = true;
-      }
-
-      length += staticByteLength;
-      schema = Bytes.setBytes1(schema, i + 4, bytes1(uint8(_schema[i])));
-      unchecked {
-        i++;
-      }
-    }
-
-    // Require max 14 dynamic fields
-    uint8 dynamicFields = uint8(_schema.length) - staticFields;
-    if (dynamicFields > 14) revert StoreCore_SchemaTooLong();
-
-    // Store total static length, and number of static and dynamic fields
-    schema = Bytes.setBytes1(schema, 0, bytes1(bytes2(length))); // upper length byte
-    schema = Bytes.setBytes1(schema, 1, bytes1(uint8(length))); // lower length byte
-    schema = Bytes.setBytes1(schema, 2, bytes1(staticFields)); // number of static fields
-    schema = Bytes.setBytes1(schema, 3, bytes1(dynamicFields)); // number of dynamic fields
-  }
-
-  /**
-   * Encode the given dynamic data lengths into a single bytes32
-   * - 4 bytes for total length of the dynamic data
-   * - 2 bytes for each dynamic data length -> max 14 dynamic fields
-   */
-  function encodeDynamicDataLength(uint16[] memory lengths) internal pure returns (bytes32 encodedLength) {
-    if (lengths.length > 14) revert StoreCore_SchemaTooLong();
-    uint32 totalLength;
-
-    // Compute the total length of the dynamic data
-    // and store the encoded lengths of each item
-    for (uint256 i; i < lengths.length; ) {
-      encodedLength = Bytes.setBytes2(encodedLength, 4 + 2 * i, bytes2(lengths[i]));
-      totalLength += lengths[i];
-      unchecked {
-        i++;
-      }
-    }
-
-    // Store total length
-    encodedLength = Bytes.setBytes4(encodedLength, 0, bytes4(totalLength));
   }
 
   /************************************************************************
@@ -469,45 +363,17 @@ library StoreCore {
   /**
    * Get storage offset for the given schema and (static length) index
    */
-  function _getStaticDataOffset(bytes32 schema, uint8 schemaIndex) internal pure returns (uint256) {
+  function _getStaticDataOffset(Schema schema, uint8 schemaIndex) internal pure returns (uint256) {
     uint256 offset = 0; // skip length
     for (uint256 i = 0; i < schemaIndex; i++) {
-      offset += getStaticByteLength(_getSchemaTypeAtIndex(schema, i));
+      offset += getStaticByteLength(schema.atIndex(i));
     }
     return offset;
-  }
-
-  /**
-   * Get the number of static  fields for the given schema
-   */
-  function _getNumStaticFields(bytes32 schema) internal pure returns (uint8) {
-    return uint8(Bytes.slice1(schema, 2));
-  }
-
-  /**
-   * Get the length of the static data for the given schema
-   */
-  function _getStaticDataLength(bytes32 schema) internal pure returns (uint256) {
-    return uint256(uint16(bytes2(schema)));
-  }
-
-  /**
-   * Get the type of the data for the given schema at the given index
-   */
-  function _getSchemaTypeAtIndex(bytes32 schema, uint256 index) internal pure returns (SchemaType) {
-    return SchemaType(uint8(Bytes.slice1(schema, index + 4)));
   }
 
   /////////////////////////////////////////////////////////////////////////
   //    DYNAMIC DATA
   /////////////////////////////////////////////////////////////////////////
-
-  /**
-   * Get the number of dynamic length fields for the given schema
-   */
-  function _getNumDynamicFields(bytes32 schema) internal pure returns (uint8) {
-    return uint8(Bytes.slice1(schema, 3));
-  }
 
   /**
    * Compute the storage location based on table id and index tuple
@@ -530,61 +396,10 @@ library StoreCore {
   /**
    * Get the length of the dynamic data for the given schema and index
    */
-  function _loadEncodedDynamicDataLength(bytes32 table, bytes32[] memory key) internal view returns (bytes32) {
+  function _loadEncodedDynamicDataLength(bytes32 table, bytes32[] memory key) internal view returns (PackedCounter) {
     // Load dynamic data length from storage
     bytes32 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(table, key);
-    return Storage.read(dynamicSchemaLengthSlot);
-  }
-
-  /**
-   * Decode the full dynamic data length (in bytes) from the given encoded lengths
-   * (first four bytes of encoded lengths)
-   */
-  function _decodeDynamicDataTotalLength(bytes32 encodedLengths) internal pure returns (uint256) {
-    return uint256(uint32(bytes4(encodedLengths)));
-  }
-
-  /**
-   * Decode the dynamic data length (in bytes) for the given schema and index from the given encoded lengths
-   * (two bytes per dynamic schema after the first four bytes)
-   */
-  function _decodeDynamicDataLengthAtIndex(
-    bytes32 encodedLengths,
-    uint8 dynamicSchemaIndex // schemaIndex - numStaticFields
-  ) internal pure returns (uint256) {
-    // Compute dynamic schema index and offset into encoded lengths
-    uint256 offset = 4 + dynamicSchemaIndex * 2; // (4 bytes total length, 2 bytes per dynamic schema)
-
-    // Return dynamic data length in bytes for the given index
-    return uint256(uint16(Bytes.slice2(encodedLengths, offset)));
-  }
-
-  /**
-   * Get the total length of the dynamic data (in bytes)
-   * (Note: if the length at a specific index is also required, it is recommended to use _loadEncodedDynamicDataLength explicitly)
-   */
-  function _getDynamicDataTotalLength(bytes32 table, bytes32[] memory key) internal view returns (uint256) {
-    // Load dynamic data length from storage
-    bytes32 encodedLengths = _loadEncodedDynamicDataLength(table, key);
-
-    // Return dynamic data length in bytes for the given index
-    return _decodeDynamicDataTotalLength(encodedLengths);
-  }
-
-  /**
-   * Get the length of the dynamic data (in bytes) for the given schema and index
-   * (Note: if the total length is also required, it is recommended to use _loadEncodedDynamicDataLength explicitly)
-   */
-  function _getDynamicDataLengthAtIndex(
-    bytes32 table,
-    bytes32[] memory key,
-    uint8 dynamicSchemaIndex // schemaIndex - numStaticFields
-  ) internal view returns (uint256) {
-    // Load dynamic data length from storage
-    bytes32 encodedLengths = _loadEncodedDynamicDataLength(table, key);
-
-    // Return dynamic data length in bytes for the given index
-    return _decodeDynamicDataLengthAtIndex(encodedLengths, dynamicSchemaIndex);
+    return PackedCounter.wrap(Storage.read(dynamicSchemaLengthSlot));
   }
 
   /**
@@ -598,26 +413,13 @@ library StoreCore {
   ) internal {
     // Load dynamic data length from storage
     bytes32 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(table, key);
-    bytes32 encodedLengths = Storage.read(dynamicSchemaLengthSlot);
+    PackedCounter encodedLengths = PackedCounter.wrap(Storage.read(dynamicSchemaLengthSlot));
 
-    // Get current lengths (total and at index)
-    uint256 totalLength = _decodeDynamicDataTotalLength(encodedLengths);
-    uint256 currentLengthAtIndex = _decodeDynamicDataLengthAtIndex(encodedLengths, dynamicSchemaIndex);
-
-    // Compute the difference and update the total length
-    int256 lengthDiff = int256(newLengthAtIndex) - int256(currentLengthAtIndex);
-    totalLength = uint256(int256(totalLength) + lengthDiff);
-
-    // Compute dynamic schema index and offset into encoded lengths
-    uint256 offset = 4 + dynamicSchemaIndex * 2; // (4 bytes total length, 2 bytes per dynamic schema)
-
-    // Encode the new lengths
-    encodedLengths = Bytes.setBytes4(encodedLengths, 0, bytes4(uint32(totalLength)));
-
-    encodedLengths = Bytes.setBytes2(encodedLengths, offset, bytes2(uint16(newLengthAtIndex)));
+    // Update the encoded lengths
+    encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, newLengthAtIndex);
 
     // Set the new lengths
-    Storage.write(dynamicSchemaLengthSlot, encodedLengths);
+    Storage.write(dynamicSchemaLengthSlot, encodedLengths.unwrap());
   }
 }
 

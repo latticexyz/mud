@@ -4,6 +4,8 @@ pragma solidity >=0.8.0;
 import { SchemaType } from "./Types.sol";
 import { IStore } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
+import { Schema } from "./Schema.sol";
+import { PackedCounter } from "./PackedCounter.sol";
 
 /**
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
@@ -21,7 +23,7 @@ library StoreSwitch {
     }
   }
 
-  function registerSchema(bytes32 table, bytes32 schema) internal {
+  function registerSchema(bytes32 table, Schema schema) internal {
     if (isDelegateCall()) {
       StoreCore.registerSchema(table, schema);
     } else {
@@ -29,7 +31,7 @@ library StoreSwitch {
     }
   }
 
-  function getSchema(bytes32 table) internal view returns (bytes32 schema) {
+  function getSchema(bytes32 table) internal view returns (Schema schema) {
     if (isDelegateCall()) {
       schema = StoreCore.getSchema(table);
     } else {
@@ -40,7 +42,7 @@ library StoreSwitch {
   function set(
     bytes32 table,
     bytes32[] memory key,
-    bytes32 encodedDynamicLength,
+    PackedCounter encodedDynamicLength,
     bytes memory data
   ) internal {
     if (isDelegateCall()) {
