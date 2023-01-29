@@ -137,7 +137,7 @@ contract StoreCoreTest is DSTestPlus {
 
     // Get data
     gas = gasleft();
-    bytes memory loadedData = StoreCore.get(table, key, schema);
+    bytes memory loadedData = StoreCore.getRecord(table, key, schema);
     gas = gas - gasleft();
     console.log("gas used (get, warm): %s", gas);
 
@@ -185,7 +185,7 @@ contract StoreCoreTest is DSTestPlus {
 
     // Get data
     gas = gasleft();
-    bytes memory loadedData = StoreCore.get(table, key, schema);
+    bytes memory loadedData = StoreCore.getRecord(table, key, schema);
     gas = gas - gasleft();
     console.log("gas used (get, warm): %s", gas);
 
@@ -237,13 +237,13 @@ contract StoreCoreTest is DSTestPlus {
 
     // Set data
     uint256 gas = gasleft();
-    StoreCore.set(table, key, encodedDynamicLength, data);
+    StoreCore.setRecord(table, key, encodedDynamicLength, data);
     gas = gas - gasleft();
     console.log("gas used (store complex struct / StoreCore): %s", gas);
 
     // Get data
     gas = gasleft();
-    bytes memory loadedData = StoreCore.get(table, key);
+    bytes memory loadedData = StoreCore.getRecord(table, key);
     gas = gas - gasleft();
     // console.log("gas used (read using StoreCore): %s", gas);
 
@@ -403,8 +403,69 @@ contract StoreCoreTest is DSTestPlus {
 
     // Verify all fields are correct
     assertEq(
-      keccak256(StoreCore.get(table, key)),
+      keccak256(StoreCore.getRecord(table, key)),
       keccak256(bytes.concat(firstDataBytes, secondDataBytes, thirdDataBytes, fourthDataBytes))
     );
+  }
+
+  function testDeleteData() public {
+    bytes32 table = keccak256("some.table");
+
+    // Register table's schema
+    Schema schema = Schema_.encode(SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.Uint32Array);
+    StoreCore.registerSchema(table, schema);
+
+    bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
+
+    bytes memory secondDataBytes;
+    {
+      uint32[] memory secondData = new uint32[](2);
+      secondData[0] = 0x11121314;
+      secondData[1] = 0x15161718;
+      secondDataBytes = Bytes.from(secondData);
+    }
+
+    bytes memory thirdDataBytes;
+    {
+      uint32[] memory thirdData = new uint32[](3);
+      thirdData[0] = 0x191a1b1c;
+      thirdData[1] = 0x1d1e1f20;
+      thirdData[2] = 0x21222324;
+      thirdDataBytes = Bytes.from(thirdData);
+    }
+
+    PackedCounter encodedDynamicLength;
+    {
+      uint16[] memory dynamicLengths = new uint16[](2);
+      dynamicLengths[0] = uint16(secondDataBytes.length);
+      dynamicLengths[1] = uint16(thirdDataBytes.length);
+      encodedDynamicLength = PackedCounter_.pack(dynamicLengths);
+    }
+
+    // Concat data
+    bytes memory data = bytes.concat(firstDataBytes, secondDataBytes, thirdDataBytes);
+
+    // Create key
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = bytes32("some.key");
+
+    // Set data
+    StoreCore.setRecord(table, key, encodedDynamicLength, data);
+
+    // Get data
+    bytes memory loadedData = StoreCore.getRecord(table, key);
+
+    assertEq(loadedData.length, data.length);
+    assertEq(keccak256(loadedData), keccak256(data));
+
+    // Delete data
+    uint256 gas = gasleft();
+    StoreCore.deleteRecord(table, key);
+    gas = gas - gasleft();
+    console.log("gas used (delete): %s", gas);
+
+    // Verify data is deleted
+    loadedData = StoreCore.getRecord(table, key);
+    assertEq(keccak256(loadedData), keccak256(new bytes(schema.staticDataLength())));
   }
 }

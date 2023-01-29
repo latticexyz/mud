@@ -14,7 +14,7 @@ interface IStore {
   function getSchema(bytes32 table) external view returns (Schema schema);
 
   // Set full record (including full dynamic data)
-  function set(
+  function setRecord(
     bytes32 table,
     bytes32[] memory key,
     PackedCounter encodedDynamicLength,
@@ -37,7 +37,7 @@ interface IStore {
   ) external;
 
   // Get full record (including full array)
-  function get(bytes32 table, bytes32[] memory key) external view returns (bytes memory data);
+  function getRecord(bytes32 table, bytes32[] memory key) external view returns (bytes memory data);
 
   // Get partial data at schema index
   function getField(

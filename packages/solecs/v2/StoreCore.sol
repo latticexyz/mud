@@ -11,14 +11,17 @@ import { PackedCounter } from "./PackedCounter.sol";
 import { Buffer, Buffer_ } from "./Buffer.sol";
 
 // TODO
-// - Make schema a custom data type we can execute methods on, move schema methods to schema library
 // - Turn all storage pointer to uint256 for consistency (uint256 is better than bytes32 because it's easier to do arithmetic on)
 // - Change Storage library functions to make it clearer which argument is offset and which is length
 // - Streamline naming in Storage and Memory libraries (probably just use load and store instead of read and write?)
+// - Make packed counter part of the data packet (so it can be used by indexers, and can be returned by the get function)
+// - Add different events for updating entire record and updating individual fields (to make integration more explicit)
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreUpdate(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreDeleteRecord(bytes32 table, bytes32[] key);
 
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant SCHEMA_TABLE = keccak256("mud.store.table.schema");
@@ -85,7 +88,7 @@ library StoreCore {
   /**
    * Set full data record for the given table and key tuple (static and dynamic data)
    */
-  function set(
+  function setRecord(
     bytes32 table,
     bytes32[] memory key,
     PackedCounter dynamicLength,
@@ -126,7 +129,7 @@ library StoreCore {
     }
 
     // Emit event to notify indexers
-    emit StoreUpdate(table, key, 0, data);
+    emit StoreSetRecord(table, key, data);
   }
 
   /**
@@ -151,7 +154,7 @@ library StoreCore {
     Storage.write(location, data);
 
     // Emit event to notify indexers
-    emit StoreUpdate(table, key, 0, data);
+    emit StoreSetRecord(table, key, data);
   }
 
   function setField(
@@ -166,6 +169,9 @@ library StoreCore {
     } else {
       _setDynamicField(table, key, schema, schemaIndex, data);
     }
+
+    // Emit event to notify indexers
+    emit StoreSetField(table, key, schemaIndex, data);
   }
 
   function _setStaticField(
@@ -184,9 +190,6 @@ library StoreCore {
     bytes32 location = _getStaticDataLocation(table, key);
     uint256 offset = _getStaticDataOffset(schema, schemaIndex);
     Storage.write(location, offset, data);
-
-    // Emit event to notify indexers
-    emit StoreUpdate(table, key, schemaIndex, data);
   }
 
   function _setDynamicField(
@@ -204,9 +207,36 @@ library StoreCore {
     // Store the provided value in storage
     bytes32 dynamicDataLocation = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
     Storage.write(dynamicDataLocation, data);
+  }
+
+  function deleteRecord(bytes32 table, bytes32[] memory key) internal {
+    // Get schema for this table
+    Schema schema = getSchema(table);
+
+    // Delete static data
+    bytes32 staticDataLocation = _getStaticDataLocation(table, key);
+    Storage.write(staticDataLocation, 0, new bytes(schema.staticDataLength()));
+
+    // If there are no dynamic fields, we're done
+    if (schema.numDynamicFields() == 0) return;
+
+    // Delete dynamic data length
+    bytes32 dynamicDataLengthLocation = _getDynamicDataLengthLocation(table, key);
+    Storage.write(dynamicDataLengthLocation, bytes32(0));
+
+    // Delete dynamic data
+    bytes32 dynamicDataLocation;
+    PackedCounter encodedLengths = _loadEncodedDynamicDataLength(table, key);
+    for (uint8 i; i < schema.numDynamicFields(); ) {
+      dynamicDataLocation = _getDynamicDataLocation(table, key, i);
+      Storage.write(dynamicDataLocation, 0, new bytes(encodedLengths.atIndex(i)));
+      unchecked {
+        i++;
+      }
+    }
 
     // Emit event to notify indexers
-    emit StoreUpdate(table, key, schemaIndex, data);
+    emit StoreDeleteRecord(table, key);
   }
 
   /************************************************************************
@@ -218,17 +248,17 @@ library StoreCore {
   /**
    * Get full static record for the given table and key tuple (loading schema from storage)
    */
-  function get(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
+  function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     // Get schema for this table
     Schema schema = getSchema(table);
 
-    return get(table, key, schema);
+    return getRecord(table, key, schema);
   }
 
   /**
    * Get full data (static and dynamic) for the given table and key tuple, with the given schema
    */
-  function get(
+  function getRecord(
     bytes32 table,
     bytes32[] memory key,
     Schema schema
@@ -457,16 +487,16 @@ library StoreCoreExt {
    *    GET DATA
    *
    ************************************************************************/
-  function get(bytes32 table, bytes32 _key) external view returns (bytes memory) {
+  function getRecord(bytes32 table, bytes32 _key) external view returns (bytes memory) {
     bytes32[] memory key = new bytes32[](1);
     key[0] = _key;
-    return StoreCore.get(table, key);
+    return StoreCore.getRecord(table, key);
   }
 
   function getData(bytes32 table, bytes32[2] memory _key) external view returns (bytes memory) {
     bytes32[] memory key = new bytes32[](2);
     key[0] = _key[0];
     key[1] = _key[1];
-    return StoreCore.get(table, key);
+    return StoreCore.getRecord(table, key);
   }
 }

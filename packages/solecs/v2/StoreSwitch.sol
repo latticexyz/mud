@@ -39,16 +39,16 @@ library StoreSwitch {
     }
   }
 
-  function set(
+  function setRecord(
     bytes32 table,
     bytes32[] memory key,
     PackedCounter encodedDynamicLength,
     bytes memory data
   ) internal {
     if (isDelegateCall()) {
-      StoreCore.set(table, key, encodedDynamicLength, data);
+      StoreCore.setRecord(table, key, encodedDynamicLength, data);
     } else {
-      IStore(msg.sender).set(table, key, encodedDynamicLength, data);
+      IStore(msg.sender).setRecord(table, key, encodedDynamicLength, data);
     }
   }
 
@@ -77,11 +77,11 @@ library StoreSwitch {
     }
   }
 
-  function get(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
+  function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     if (isDelegateCall()) {
-      return StoreCore.get(table, key);
+      return StoreCore.getRecord(table, key);
     } else {
-      return IStore(msg.sender).get(table, key);
+      return IStore(msg.sender).getRecord(table, key);
     }
   }
 

@@ -19,7 +19,7 @@ contract StoreView is IStore {
     revert Store_BaseContractNotImplemented();
   }
 
-  function set(
+  function setRecord(
     bytes32,
     bytes32[] memory,
     PackedCounter,
@@ -68,8 +68,8 @@ contract StoreView is IStore {
   }
 
   // Get full record (including full array)
-  function get(bytes32 table, bytes32[] memory key) public view virtual returns (bytes memory data) {
-    data = StoreCore.get(table, key);
+  function getRecord(bytes32 table, bytes32[] memory key) public view virtual returns (bytes memory data) {
+    data = StoreCore.getRecord(table, key);
   }
 
   // Get partial data at schema index

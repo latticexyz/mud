@@ -76,14 +76,14 @@ library RouteTable {
   function get(bytes32 key) internal view returns (Route memory data) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    bytes memory blob = StoreSwitch.get(id, keyTuple);
+    bytes memory blob = StoreSwitch.getRecord(id, keyTuple);
     return decode(blob);
   }
 
   function get(IStore store, bytes32 key) internal view returns (Route memory data) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    bytes memory blob = store.get(id, keyTuple);
+    bytes memory blob = store.getRecord(id, keyTuple);
     return decode(blob);
   }
 

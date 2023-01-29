@@ -24,13 +24,13 @@ contract World is StoreView {
     StoreCore.registerSchema(table, schema);
   }
 
-  function set(
+  function setRecord(
     bytes32 table,
     bytes32[] memory key,
     PackedCounter encodedDynamicLength,
     bytes memory data
   ) public override {
-    StoreCore.set(table, key, encodedDynamicLength, data);
+    StoreCore.setRecord(table, key, encodedDynamicLength, data);
   }
 
   function setStaticData(
