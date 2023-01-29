@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.34.0](https://github.com/latticexyz/mud/compare/v1.33.1...v1.34.0) (2023-01-29)
+
+### Features
+
+- **network:** add support for external wallets (eg MetaMask) ([#256](https://github.com/latticexyz/mud/issues/256)) ([bf0b5cf](https://github.com/latticexyz/mud/commit/bf0b5cff5f70903ef8b43a46ad07b649946b21a9))
+
 ## [1.33.1](https://github.com/latticexyz/mud/compare/v1.33.0...v1.33.1) (2023-01-12)
 
 **Note:** Version bump only for package @latticexyz/std-client

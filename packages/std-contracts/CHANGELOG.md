@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.34.0](https://github.com/latticexyz/mud/compare/v1.33.1...v1.34.0) (2023-01-29)
+
+### Features
+
+- **solecs:** add deterministic storage location for systems, add storage access util ([#264](https://github.com/latticexyz/mud/issues/264)) ([f18c398](https://github.com/latticexyz/mud/commit/f18c39831f5d5ab0186529eb2cfaee4991570e6f))
+
 ## [1.33.1](https://github.com/latticexyz/mud/compare/v1.33.0...v1.33.1) (2023-01-12)
 
 **Note:** Version bump only for package @latticexyz/std-contracts

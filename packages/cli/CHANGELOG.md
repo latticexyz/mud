@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.34.0](https://github.com/latticexyz/mud/compare/v1.33.1...v1.34.0) (2023-01-29)
+
+### Bug Fixes
+
+- **cli:** round gas price to nearest integer ([#348](https://github.com/latticexyz/mud/issues/348)) ([ce07174](https://github.com/latticexyz/mud/commit/ce071747eb33ca9feceb0618af627ff845d2b1b8))
+
 ## [1.33.1](https://github.com/latticexyz/mud/compare/v1.33.0...v1.33.1) (2023-01-12)
 
 **Note:** Version bump only for package @latticexyz/cli

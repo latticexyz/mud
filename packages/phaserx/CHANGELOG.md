@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.34.0](https://github.com/latticexyz/mud/compare/v1.33.1...v1.34.0) (2023-01-29)
+
+### Bug Fixes
+
+- **phaserx:** reset game object masks when resetting embodied entity ([#349](https://github.com/latticexyz/mud/issues/349)) ([2153f69](https://github.com/latticexyz/mud/commit/2153f690a3df2277d5a23100715dacda66459684))
+
 ## [1.33.1](https://github.com/latticexyz/mud/compare/v1.33.0...v1.33.1) (2023-01-12)
 
 **Note:** Version bump only for package @latticexyz/phaserx

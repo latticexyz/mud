@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.34.0](https://github.com/latticexyz/mud/compare/v1.33.1...v1.34.0) (2023-01-29)
+
+### Bug Fixes
+
+- **cli:** round gas price to nearest integer ([#348](https://github.com/latticexyz/mud/issues/348)) ([ce07174](https://github.com/latticexyz/mud/commit/ce071747eb33ca9feceb0618af627ff845d2b1b8))
+- **network:** throw errors from txQueue calls ([#351](https://github.com/latticexyz/mud/issues/351)) ([a811ff7](https://github.com/latticexyz/mud/commit/a811ff76e500bbc3e983f32c13877bdee855113d)), closes [#315](https://github.com/latticexyz/mud/issues/315)
+- **phaserx:** reset game object masks when resetting embodied entity ([#349](https://github.com/latticexyz/mud/issues/349)) ([2153f69](https://github.com/latticexyz/mud/commit/2153f690a3df2277d5a23100715dacda66459684))
+
+### Features
+
+- **network:** add support for external wallets (eg MetaMask) ([#256](https://github.com/latticexyz/mud/issues/256)) ([bf0b5cf](https://github.com/latticexyz/mud/commit/bf0b5cff5f70903ef8b43a46ad07b649946b21a9))
+- **solecs:** add deterministic storage location for systems, add storage access util ([#264](https://github.com/latticexyz/mud/issues/264)) ([f18c398](https://github.com/latticexyz/mud/commit/f18c39831f5d5ab0186529eb2cfaee4991570e6f))
+
 ## [1.33.1](https://github.com/latticexyz/mud/compare/v1.33.0...v1.33.1) (2023-01-12)
 
 **Note:** Version bump only for package mud
