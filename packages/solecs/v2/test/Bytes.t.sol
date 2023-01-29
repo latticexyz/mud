@@ -110,6 +110,20 @@ contract BytesTest is DSTestPlus {
     assertEq(uint256(output[1]), 0x0300000000000000000000000000000000000000000000000000000000000004);
   }
 
+  function testFromAndToUint32Array() public {
+    uint32[] memory input = new uint32[](2);
+    input[0] = 0x01020304;
+    input[1] = 0x05060708;
+
+    bytes memory tight = Bytes.from(input);
+    assertEq(tight.length, 8);
+
+    uint32[] memory output = Bytes.toUint32Array(tight);
+    assertEq(output.length, 2);
+    assertEq(output[0], 0x01020304);
+    assertEq(output[1], 0x05060708);
+  }
+
   function testToBytes32ArrayUneven() public {
     bytes memory input = new bytes(65);
     input[0] = 0x01;

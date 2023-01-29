@@ -83,6 +83,18 @@ library StoreSwitch {
     }
   }
 
+  function getRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    Schema schema
+  ) internal view returns (bytes memory) {
+    if (isDelegateCall()) {
+      return StoreCore.getRecord(table, key, schema);
+    } else {
+      return IStore(msg.sender).getRecord(table, key, schema);
+    }
+  }
+
   function getField(
     bytes32 table,
     bytes32[] memory key,

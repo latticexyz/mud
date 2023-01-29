@@ -5,6 +5,8 @@ import { console } from "forge-std/console.sol";
 import { Utils } from "./Utils.sol";
 import { SchemaType } from "./Types.sol";
 import { console } from "forge-std/console.sol";
+import { Buffer, Buffer_ } from "./Buffer.sol";
+import { Cast } from "./Cast.sol";
 
 library Bytes {
   error Bytes_InputTooShort();
@@ -67,6 +69,12 @@ library Bytes {
     }
 
     return _from(ptr, 4);
+  }
+
+  function from(string memory input) internal pure returns (bytes memory output) {
+    assembly {
+      output := input
+    }
   }
 
   function _from(bytes32 _ptr, uint256 _bytesPerElement) internal pure returns (bytes memory output) {
@@ -175,6 +183,13 @@ library Bytes {
       output[i] = SchemaType(uint8(input[i]));
     }
     return output;
+  }
+
+  /**
+   * Converts a tightly packed uint32 array into a regular uint32 array.
+   */
+  function toUint32Array(bytes memory input) internal pure returns (uint32[] memory output) {
+    return Cast.toUint32Array(Buffer_.fromBytes(input).toArray(4));
   }
 
   /************************************************************************

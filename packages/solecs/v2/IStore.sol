@@ -34,8 +34,15 @@ interface IStore {
     bytes memory data
   ) external;
 
-  // Get full record (including full array)
+  // Get full record (including full array, load table schema from storage)
   function getRecord(bytes32 table, bytes32[] memory key) external view returns (bytes memory data);
+
+  // Get full record (including full array)
+  function getRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    Schema schema
+  ) external view returns (bytes memory data);
 
   // Get partial data at schema index
   function getField(

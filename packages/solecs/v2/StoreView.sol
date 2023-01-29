@@ -65,9 +65,18 @@ contract StoreView is IStore {
     revert Store_BaseContractNotImplemented();
   }
 
-  // Get full record (including full array)
+  // Get full record (including full array, load schema from storage)
   function getRecord(bytes32 table, bytes32[] memory key) public view virtual returns (bytes memory data) {
     data = StoreCore.getRecord(table, key);
+  }
+
+  // Get full record (including full array)
+  function getRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    Schema schema
+  ) public view virtual returns (bytes memory data) {
+    data = StoreCore.getRecord(table, key, schema);
   }
 
   // Get partial data at schema index
