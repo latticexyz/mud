@@ -5,7 +5,6 @@ import { SchemaType } from "./Types.sol";
 import { IStore } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
-import { PackedCounter } from "./PackedCounter.sol";
 
 // Not abstract, so that it can be used as a base contract for testing and wherever write access is not needed
 contract StoreView is IStore {
@@ -22,7 +21,6 @@ contract StoreView is IStore {
   function setRecord(
     bytes32,
     bytes32[] memory,
-    PackedCounter,
     bytes memory
   ) public virtual {
     revert Store_BaseContractNotImplemented();

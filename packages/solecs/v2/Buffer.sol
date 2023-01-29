@@ -119,6 +119,13 @@ library Buffer_ {
   }
 
   /**
+   * @dev Appends bytes32 to the buffer (checking for overflows)
+   */
+  function append(Buffer self, bytes32 data) internal pure {
+    append(self, data, 32);
+  }
+
+  /**
    * @dev Appends _dataLength of the given bytes32 to the buffer (checking for overflows)
    */
   function append(

@@ -15,7 +15,6 @@ import { Buffer, Buffer_ } from "./Buffer.sol";
 // - Change Storage library functions to make it clearer which argument is offset and which is length
 // - Streamline naming in Storage and Memory libraries (probably just use load and store instead of read and write?)
 // - Make packed counter part of the data packet (so it can be used by indexers, and can be returned by the get function)
-// - Add different events for updating entire record and updating individual fields (to make integration more explicit)
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
@@ -91,7 +90,6 @@ library StoreCore {
   function setRecord(
     bytes32 table,
     bytes32[] memory key,
-    PackedCounter dynamicLength,
     bytes memory data
   ) internal {
     // verify the value has the correct length for the table (based on the table's schema)
@@ -100,7 +98,14 @@ library StoreCore {
 
     // Verify static data length + dynamic data length matches the given data
     uint256 staticLength = schema.staticDataLength();
-    uint256 expectedLength = staticLength + dynamicLength.total();
+    uint256 expectedLength = staticLength;
+    PackedCounter dynamicLength;
+    if (schema.numDynamicFields() > 0) {
+      // Dynamic length is encoded at the start of the dynamic length blob
+      dynamicLength = PackedCounter.wrap(Bytes.slice32(data, staticLength));
+      expectedLength += 32 + dynamicLength.total(); // encoded length + data
+    }
+
     if (expectedLength != data.length) {
       revert StoreCore_InvalidDataLength(expectedLength, data.length);
     }
@@ -109,7 +114,10 @@ library StoreCore {
     bytes32 staticDataLocation = _getStaticDataLocation(table, key);
     uint256 memoryPointer = Memory.dataPointer(data);
     Storage.write(staticDataLocation, 0, memoryPointer, staticLength);
-    memoryPointer += staticLength; // move the memory pointer to the start of the dynamic data
+    memoryPointer += staticLength + 32; // move the memory pointer to the start of the dynamic data (skip the encoded dynamic length)
+
+    // If there is no dynamic data, we're done
+    if (schema.numDynamicFields() == 0) return;
 
     // Store the dynamic data length at the dynamic data length location
     bytes32 dynamicDataLengthLocation = _getDynamicDataLengthLocation(table, key);
@@ -220,10 +228,6 @@ library StoreCore {
     // If there are no dynamic fields, we're done
     if (schema.numDynamicFields() == 0) return;
 
-    // Delete dynamic data length
-    bytes32 dynamicDataLengthLocation = _getDynamicDataLengthLocation(table, key);
-    Storage.write(dynamicDataLengthLocation, bytes32(0));
-
     // Delete dynamic data
     bytes32 dynamicDataLocation;
     PackedCounter encodedLengths = _loadEncodedDynamicDataLength(table, key);
@@ -234,6 +238,10 @@ library StoreCore {
         i++;
       }
     }
+
+    // Delete dynamic data length
+    bytes32 dynamicDataLengthLocation = _getDynamicDataLengthLocation(table, key);
+    Storage.write(dynamicDataLengthLocation, bytes32(0));
 
     // Emit event to notify indexers
     emit StoreDeleteRecord(table, key);
@@ -263,21 +271,28 @@ library StoreCore {
     bytes32[] memory key,
     Schema schema
   ) internal view returns (bytes memory) {
-    // Get static data length
-    uint256 staticDataLength = schema.staticDataLength();
+    // Get the static data length
+    uint256 outputLength = schema.staticDataLength();
 
     // Load the dynamic data length if there are dynamic fields
     PackedCounter dynamicDataLength;
     uint256 numDynamicFields = schema.numDynamicFields();
     if (numDynamicFields > 0) {
       dynamicDataLength = _loadEncodedDynamicDataLength(table, key);
+      outputLength += 32 + dynamicDataLength.total(); // encoded length + data
     }
 
     // Allocate a buffer for the full data (static and dynamic)
-    Buffer buffer = Buffer_.allocate(uint128(staticDataLength + dynamicDataLength.total()));
+    Buffer buffer = Buffer_.allocate(uint128(outputLength));
 
     // Load the static data from storage and append it to the buffer
     buffer.append(getStaticData(table, key, schema));
+
+    // Early return if there are no dynamic fields
+    if (dynamicDataLength.total() == 0) return buffer.toBytes();
+
+    // Append the encoded dynamic length to the buffer after the static data
+    buffer.append(dynamicDataLength.unwrap());
 
     // Append dynamic data to the buffer
     for (uint8 i; i < numDynamicFields; i++) {

@@ -229,7 +229,7 @@ contract StoreCoreTest is DSTestPlus {
     }
 
     // Concat data
-    bytes memory data = bytes.concat(firstDataBytes, secondDataBytes, thirdDataBytes);
+    bytes memory data = bytes.concat(firstDataBytes, encodedDynamicLength.unwrap(), secondDataBytes, thirdDataBytes);
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -237,7 +237,7 @@ contract StoreCoreTest is DSTestPlus {
 
     // Set data
     uint256 gas = gasleft();
-    StoreCore.setRecord(table, key, encodedDynamicLength, data);
+    StoreCore.setRecord(table, key, data);
     gas = gas - gasleft();
     console.log("gas used (store complex struct / StoreCore): %s", gas);
 
@@ -402,9 +402,10 @@ contract StoreCoreTest is DSTestPlus {
     assertEq(keccak256(loadedData), keccak256(fourthDataBytes));
 
     // Verify all fields are correct
+    PackedCounter encodedLengths = PackedCounter_.pack(uint16(thirdDataBytes.length), uint16(fourthDataBytes.length));
     assertEq(
       keccak256(StoreCore.getRecord(table, key)),
-      keccak256(bytes.concat(firstDataBytes, secondDataBytes, thirdDataBytes, fourthDataBytes))
+      keccak256(bytes.concat(firstDataBytes, secondDataBytes, encodedLengths.unwrap(), thirdDataBytes, fourthDataBytes))
     );
   }
 
@@ -443,14 +444,14 @@ contract StoreCoreTest is DSTestPlus {
     }
 
     // Concat data
-    bytes memory data = bytes.concat(firstDataBytes, secondDataBytes, thirdDataBytes);
+    bytes memory data = bytes.concat(firstDataBytes, encodedDynamicLength.unwrap(), secondDataBytes, thirdDataBytes);
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32("some.key");
 
     // Set data
-    StoreCore.setRecord(table, key, encodedDynamicLength, data);
+    StoreCore.setRecord(table, key, data);
 
     // Get data
     bytes memory loadedData = StoreCore.getRecord(table, key);

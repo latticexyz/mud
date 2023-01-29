@@ -7,7 +7,6 @@ import { StoreView } from "./StoreView.sol";
 import { SchemaType, ExecutionMode } from "./Types.sol";
 import { RouteTable, Route, id as RouteId } from "./tables/RouteTable.sol";
 import { Bytes } from "./Bytes.sol";
-import { PackedCounter } from "./PackedCounter.sol";
 import { Schema } from "./Schema.sol";
 
 /**
@@ -27,10 +26,9 @@ contract World is StoreView {
   function setRecord(
     bytes32 table,
     bytes32[] memory key,
-    PackedCounter encodedDynamicLength,
     bytes memory data
   ) public override {
-    StoreCore.setRecord(table, key, encodedDynamicLength, data);
+    StoreCore.setRecord(table, key, data);
   }
 
   function setStaticData(

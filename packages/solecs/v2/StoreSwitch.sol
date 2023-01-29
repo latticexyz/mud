@@ -5,7 +5,6 @@ import { SchemaType } from "./Types.sol";
 import { IStore } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
-import { PackedCounter } from "./PackedCounter.sol";
 
 /**
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
@@ -42,13 +41,12 @@ library StoreSwitch {
   function setRecord(
     bytes32 table,
     bytes32[] memory key,
-    PackedCounter encodedDynamicLength,
     bytes memory data
   ) internal {
     if (isDelegateCall()) {
-      StoreCore.setRecord(table, key, encodedDynamicLength, data);
+      StoreCore.setRecord(table, key, data);
     } else {
-      IStore(msg.sender).setRecord(table, key, encodedDynamicLength, data);
+      IStore(msg.sender).setRecord(table, key, data);
     }
   }
 

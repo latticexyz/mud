@@ -42,6 +42,46 @@ library PackedCounter_ {
     return PackedCounter.wrap(packedCounter);
   }
 
+  // Overrides for pack function
+  function pack(uint16 a) internal pure returns (PackedCounter) {
+    uint16[] memory counters = new uint16[](1);
+    counters[0] = a;
+    return pack(counters);
+  }
+
+  function pack(uint16 a, uint16 b) internal pure returns (PackedCounter) {
+    uint16[] memory counters = new uint16[](2);
+    counters[0] = a;
+    counters[1] = b;
+    return pack(counters);
+  }
+
+  function pack(
+    uint16 a,
+    uint16 b,
+    uint16 c
+  ) internal pure returns (PackedCounter) {
+    uint16[] memory counters = new uint16[](3);
+    counters[0] = a;
+    counters[1] = b;
+    counters[2] = c;
+    return pack(counters);
+  }
+
+  function pack(
+    uint16 a,
+    uint16 b,
+    uint16 c,
+    uint16 d
+  ) internal pure returns (PackedCounter) {
+    uint16[] memory counters = new uint16[](4);
+    counters[0] = a;
+    counters[1] = b;
+    counters[2] = c;
+    counters[3] = d;
+    return pack(counters);
+  }
+
   /************************************************************************
    *
    *    INSTANCE FUNCTIONS

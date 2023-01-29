@@ -3,7 +3,6 @@ pragma solidity >=0.8.0;
 
 import { SchemaType } from "./Types.sol";
 import { Schema } from "./Schema.sol";
-import { PackedCounter } from "./PackedCounter.sol";
 
 interface IStore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
@@ -17,7 +16,6 @@ interface IStore {
   function setRecord(
     bytes32 table,
     bytes32[] memory key,
-    PackedCounter encodedDynamicLength,
     bytes memory data
   ) external;
 
