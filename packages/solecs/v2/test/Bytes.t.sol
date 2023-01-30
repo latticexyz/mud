@@ -14,10 +14,10 @@ contract BytesTest is DSTestPlus {
     input[1] = new bytes(32);
     input[1][0] = 0x03;
     input[1][31] = 0x04;
-    uint256 gas = gasleft();
+
+    // !gasreport create bytes from bytes array
     bytes memory output = Bytes.from(input);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
     assertEq(output.length, 64);
     assertEq(uint256(Bytes.toBytes32(output, 0)), 0x0100000000000000000000000000000000000000000000000000000000000002);
     assertEq(uint256(Bytes.toBytes32(output, 32)), 0x0300000000000000000000000000000000000000000000000000000000000004);
@@ -27,10 +27,10 @@ contract BytesTest is DSTestPlus {
     uint8[] memory input = new uint8[](2);
     input[0] = 0x01;
     input[1] = 0x02;
-    uint256 gas = gasleft();
+
+    // !gasreport create bytes from uint8 array
     bytes memory output = Bytes.from(input);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
     assertEq(output.length, 2);
     assertEq(uint256(uint8(output[0])), 0x01);
     assertEq(uint256(uint8(output[1])), 0x02);
@@ -41,10 +41,10 @@ contract BytesTest is DSTestPlus {
     input[0] = 0x0102;
     input[1] = 0x0304;
     input[2] = 0x0506;
-    uint256 gas = gasleft();
+
+    // !gasreport create bytes from uint16 array
     bytes memory output = Bytes.from(input);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
     assertEq(output.length, 6);
     assertEq(uint256(uint8(output[0])), 0x01);
     assertEq(uint256(uint8(output[1])), 0x02);
@@ -58,10 +58,10 @@ contract BytesTest is DSTestPlus {
     uint32[] memory input = new uint32[](2);
     input[0] = 0x01020304;
     input[1] = 0x05060708;
-    uint256 gas = gasleft();
+
+    // !gasreport create bytes from uint32 array
     bytes memory output = Bytes.from(input);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
     assertEq(output.length, 8);
     assertEq(uint256(uint8(output[0])), 0x01);
     assertEq(uint256(uint8(output[1])), 0x02);
@@ -77,10 +77,10 @@ contract BytesTest is DSTestPlus {
     bytes memory input = new bytes(32);
     input[0] = 0x01;
     input[31] = 0x02;
-    uint256 gas = gasleft();
+
+    // !gasreport create bytes32 from bytes memory with offset 0
     bytes32 output = Bytes.toBytes32(input, 0);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
     assertEq(uint256(output), 0x0100000000000000000000000000000000000000000000000000000000000002);
   }
 
@@ -88,10 +88,10 @@ contract BytesTest is DSTestPlus {
     bytes memory input = new bytes(64);
     input[0 + 16] = 0x01;
     input[31 + 16] = 0x02;
-    uint256 gas = gasleft();
+
+    // !gasreport create bytes32 from bytes memory with offset 16
     bytes32 output = Bytes.toBytes32(input, 16);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
     assertEq(uint256(output), 0x0100000000000000000000000000000000000000000000000000000000000002);
   }
 
@@ -101,10 +101,10 @@ contract BytesTest is DSTestPlus {
     input[31] = 0x02;
     input[32] = 0x03;
     input[63] = 0x04;
-    uint256 gas = gasleft();
+
+    // !gasreport create bytes32 array from bytes memory
     bytes32[] memory output = Bytes.toBytes32Array(input);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
     assertEq(output.length, 2);
     assertEq(uint256(output[0]), 0x0100000000000000000000000000000000000000000000000000000000000002);
     assertEq(uint256(output[1]), 0x0300000000000000000000000000000000000000000000000000000000000004);
@@ -118,7 +118,9 @@ contract BytesTest is DSTestPlus {
     bytes memory tight = Bytes.from(input);
     assertEq(tight.length, 8);
 
+    // !gasreport create uint32 array from bytes memory
     uint32[] memory output = Bytes.toUint32Array(tight);
+
     assertEq(output.length, 2);
     assertEq(output[0], 0x01020304);
     assertEq(output[1], 0x05060708);
@@ -131,10 +133,10 @@ contract BytesTest is DSTestPlus {
     input[32] = 0x03;
     input[63] = 0x04;
     input[64] = 0x05;
-    uint256 gas = gasleft();
+
+    // !gasreport create bytes32 array from bytes memory with uneven length
     bytes32[] memory output = Bytes.toBytes32Array(input);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
     assertEq(output.length, 3);
     assertEq(uint256(output[0]), 0x0100000000000000000000000000000000000000000000000000000000000002);
     assertEq(uint256(output[1]), 0x0300000000000000000000000000000000000000000000000000000000000004);
@@ -144,17 +146,13 @@ contract BytesTest is DSTestPlus {
   function testFromAndToUint32() public {
     uint32 input = 0x01000002;
 
-    uint256 gas = gasleft();
+    // !gasreport create bytes from uint32
     bytes memory output = Bytes.from(input);
-    gas = gas - gasleft();
-    console.log("gas used (uint32 -> bytes): %s", gas);
 
     assertEq(output.length, 4);
 
-    gas = gasleft();
+    // !gasreport create uint32 from bytes
     uint32 output2 = Bytes.toUint32(output);
-    gas = gas - gasleft();
-    console.log("gas used (bytes -> uint32): %s", gas);
 
     assertEq(output2, input);
   }
@@ -166,17 +164,13 @@ contract BytesTest is DSTestPlus {
   function testFromAndToAddress() public {
     address input = address(0x0100000000000000000000000000000000000002);
 
-    uint256 gas = gasleft();
+    // !gasreport create bytes from address
     bytes memory output = Bytes.from(input);
-    gas = gas - gasleft();
-    console.log("gas used (address -> bytes): %s", gas);
 
     assertEq(output.length, 20);
 
-    gas = gasleft();
+    // !gasreport create address from bytes
     address output2 = Bytes.toAddress(output);
-    gas = gas - gasleft();
-    console.log("gas used (bytes -> address): %s", gas);
 
     assertEq(output2, input);
   }
@@ -188,17 +182,13 @@ contract BytesTest is DSTestPlus {
   function testFromAndToUint8() public {
     uint8 input = 0x02;
 
-    uint256 gas = gasleft();
+    // !gasreport create bytes from uint8
     bytes memory output = Bytes.fromUint8(input);
-    gas = gas - gasleft();
-    console.log("gas used (uint8 -> bytes): %s", gas);
 
     assertEq(output.length, 1);
 
-    gas = gasleft();
+    // !gasreport create uint8 from bytes
     uint8 output2 = Bytes.toUint8(output);
-    gas = gas - gasleft();
-    console.log("gas used (bytes -> uint8): %s", gas);
 
     assertEq(output2, input);
   }
@@ -210,17 +200,13 @@ contract BytesTest is DSTestPlus {
   function testFromAndToBytes4() public {
     bytes4 input = bytes4(0x01000002);
 
-    uint256 gas = gasleft();
+    // !gasreport create bytes from bytes4
     bytes memory output = Bytes.from(input);
-    gas = gas - gasleft();
-    console.log("gas used (bytes4 -> bytes): %s", gas);
 
     assertEq(output.length, 4);
 
-    gas = gasleft();
+    // !gasreport create bytes4 from bytes
     bytes4 output2 = Bytes.toBytes4(output);
-    gas = gas - gasleft();
-    console.log("gas used (bytes -> bytes4): %s", gas);
 
     assertEq(output2, input);
   }
@@ -232,38 +218,35 @@ contract BytesTest is DSTestPlus {
   function testEquals() public {
     bytes memory a = bytes("a");
     bytes memory b = bytes("a");
-    uint256 gas = gasleft();
-    assertTrue(Bytes.equals(a, b));
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
+    // !gasreport compare equal bytes
+    bool equals = Bytes.equals(a, b);
+
+    assertTrue(equals);
   }
 
   function testEqualsFalse() public {
     bytes memory a = bytes("a");
     bytes memory b = bytes("b");
-    uint256 gas = gasleft();
-    assertFalse(Bytes.equals(a, b));
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
+
+    // !gasreport compare unequal bytes
+    bool equals = Bytes.equals(a, b);
+
+    assertFalse(equals);
   }
 
   function testEqualsFalseDiffLength() public {
     bytes memory a = bytes("a");
     bytes memory b = bytes("aa");
-    uint256 gas = gasleft();
     assertFalse(Bytes.equals(a, b));
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
   }
 
   function testSetLengthInPlace() public {
     bytes memory a = new bytes(5);
     assertEq(a.length, 5);
 
-    uint256 gas = gasleft();
+    // !gasreport set length of bytes in place
     Bytes.setLengthInPlace(a, 2);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(a.length, 2);
   }
@@ -276,10 +259,8 @@ contract BytesTest is DSTestPlus {
     a[3] = 0x04;
     a[4] = 0x05;
 
-    uint256 gas = gasleft();
+    // !gasreport slice bytes (with copying) with offset 1 and length 3
     bytes memory b = Bytes.slice(a, 1, 3);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(b.length, 3);
     assertEq(uint256(uint8(b[0])), 0x02);
@@ -296,10 +277,8 @@ contract BytesTest is DSTestPlus {
     a[3] = 0x04;
     a[4] = 0x05;
 
-    uint256 gas = gasleft();
+    // !gasreport slice bytes3 with offset 1
     bytes3 b = Bytes.slice3(a, 1);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(b.length, 3);
     assertEq(uint256(uint8(b[0])), 0x02);
@@ -311,10 +290,8 @@ contract BytesTest is DSTestPlus {
     bytes32 original = keccak256("some data");
     bytes memory input = bytes.concat(bytes10(keccak256("irrelevant data")), original);
 
-    uint256 gas = gasleft();
+    // !gasreport slice bytes32 with offset 10
     bytes32 output = Bytes.slice32(input, 10);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(output, original);
   }
@@ -322,10 +299,8 @@ contract BytesTest is DSTestPlus {
   function testSetBytes1() public {
     bytes32 input = bytes32(0);
 
-    uint256 gas = gasleft();
+    // !gasreport set bytes1 in bytes32
     Bytes.setBytes1(input, 8, 0xff);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(Bytes.setBytes1(input, 0, 0x01), bytes32(bytes1(0x01)));
     assertEq(Bytes.setBytes1(input, 31, 0x01), bytes32(uint256(0x01)));
@@ -334,10 +309,8 @@ contract BytesTest is DSTestPlus {
   function testSetBytes2() public {
     bytes32 input = bytes32(0);
 
-    uint256 gas = gasleft();
+    // !gasreport set bytes2 in bytes32
     Bytes.setBytes2(input, 8, 0xffff);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(Bytes.setBytes2(input, 0, 0xffff), bytes32(bytes2(0xffff)));
     assertEq(Bytes.setBytes2(input, 30, 0xffff), bytes32(uint256(0xffff)));
@@ -346,10 +319,8 @@ contract BytesTest is DSTestPlus {
   function testSetBytes4() public {
     bytes32 input = bytes32(0);
 
-    uint256 gas = gasleft();
+    // !gasreport set bytes4 in bytes32
     Bytes.setBytes4(input, 8, 0xffffffff);
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(Bytes.setBytes4(input, 0, 0xffffffff), bytes32(bytes4(0xffffffff)));
     assertEq(Bytes.setBytes4(input, 30, 0xffffffff), bytes32(uint256(0xffff)));

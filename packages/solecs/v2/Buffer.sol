@@ -53,6 +53,19 @@ library Buffer_ {
     return Buffer.wrap((_ptr << 128) | uint128(data.length));
   }
 
+  // TODO: add more overloads
+  function concat(
+    bytes memory data1,
+    bytes memory data2,
+    bytes memory data3
+  ) internal pure returns (Buffer) {
+    Buffer buffer = allocate(uint128(data1.length + data2.length + data3.length));
+    buffer.append(data1);
+    buffer.append(data2);
+    buffer.append(data3);
+    return buffer;
+  }
+
   /************************************************************************
    *
    *    INSTANCE FUNCTIONS

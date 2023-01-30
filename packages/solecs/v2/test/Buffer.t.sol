@@ -8,25 +8,17 @@ import "../Buffer.sol";
 
 contract BufferTest is DSTestPlus {
   function testAllocateBuffer() public {
-    uint256 gas = gasleft();
+    // !gasreport allocate a buffer
     Buffer buf = Buffer_.allocate(32);
-    gas = gas - gasleft();
-    console.log("gas used (Buffer_.allocate): %s", gas);
 
-    gas = gasleft();
+    // !gasreport get buffer length
     buf.length();
-    gas = gas - gasleft();
-    console.log("gas used (length): %s", gas);
 
-    gas = gasleft();
+    // !gasreport get buffer pointer
     buf.ptr();
-    gas = gas - gasleft();
-    console.log("gas used (ptr): %s", gas);
 
-    gas = gasleft();
+    // !gasreport get buffer capacity
     buf.capacity();
-    gas = gas - gasleft();
-    console.log("gas used (capacity): %s", gas);
 
     assertEq(uint256(buf.length()), 0);
     assertEq(uint256(buf.capacity()), 32);
@@ -34,10 +26,9 @@ contract BufferTest is DSTestPlus {
 
   function testFromBytes() public {
     bytes memory data = bytes.concat(bytes8(0x0102030405060708));
-    uint256 gas = gasleft();
+
+    // !gasreport create a buffer from 8 bytes
     Buffer buf = Buffer_.fromBytes(data);
-    gas = gas - gasleft();
-    console.log("gas used (fromBytes): %s", gas);
 
     assertEq(uint256(buf.length()), 8);
     assertEq(uint256(buf.capacity()), 8);
@@ -54,15 +45,11 @@ contract BufferTest is DSTestPlus {
   function testSetLength() public {
     Buffer buf = Buffer_.allocate(32);
 
-    uint256 gas = gasleft();
+    // !gasreport set buffer length unchecked
     buf._setLengthUnchecked(8);
-    gas = gas - gasleft();
-    console.log("gas used (setLengthUnchecked): %s", gas);
 
-    gas = gasleft();
+    // !gasreport set buffer length
     buf._setLength(16);
-    gas = gas - gasleft();
-    console.log("gas used (setLength): %s", gas);
 
     assertEq(uint256(buf.length()), 16);
     assertEq(uint256(buf.capacity()), 32);
@@ -85,15 +72,11 @@ contract BufferTest is DSTestPlus {
     bytes memory data1 = bytes.concat(bytes8(0x0102030405060708));
     bytes memory data2 = bytes.concat(bytes8(0x090a0b0c0d0e0f10));
 
-    uint256 gas = gasleft();
+    // !gasreport append unchecked bytes memory (8) to buffer
     buf.appendUnchecked(data1);
-    gas = gas - gasleft();
-    console.log("gas used (append unchecked): %s", gas);
 
-    gas = gasleft();
+    // !gasreport append bytes memory (8) to buffer
     buf.append(data2);
-    gas = gas - gasleft();
-    console.log("gas used (append): %s", gas);
 
     assertEq(uint256(buf.length()), 16);
     assertEq(buf.read8(0), bytes8(0x0102030405060708));
@@ -117,29 +100,13 @@ contract BufferTest is DSTestPlus {
     bytes memory data2 = bytes.concat(keccak256("data2"));
     bytes memory data3 = bytes.concat(keccak256("data3"));
 
-    uint256 gas = gasleft();
-    Buffer buf = Buffer_.allocate(uint128(data1.length + data2.length + data3.length));
-    buf.append(data1);
-    buf.append(data2);
-    buf.append(data3);
-    gas = gas - gasleft();
-    console.log("gas used (buffer concat): %s", gas);
+    // !gasreport concat 3 bytes memory (32) using buffer
+    Buffer buf = Buffer_.concat(data1, data2, data3);
 
-    gas = gasleft();
-    bytes memory dataAllAtOnce = bytes.concat(data1, data2, data3);
-    gas = gas - gasleft();
-    console.log("gas used (concat all at once): %s", gas);
+    // !gasreport concat 3 bytes memory (32) using bytes.concat
+    bytes memory concat = bytes.concat(data1, data2, data3);
 
-    gas = gasleft();
-    bytes memory dataSeparately = new bytes(0);
-    dataSeparately = bytes.concat(dataSeparately, data1);
-    dataSeparately = bytes.concat(dataSeparately, data2);
-    dataSeparately = bytes.concat(dataSeparately, data3);
-    gas = gas - gasleft();
-    console.log("gas used (concat separately): %s", gas);
-
-    assertEq(keccak256(buf.toBytes()), keccak256(dataAllAtOnce));
-    assertEq(keccak256(buf.toBytes()), keccak256(dataSeparately));
+    assertEq(keccak256(buf.toBytes()), keccak256(concat));
   }
 
   function testAppendFixed() public {
@@ -147,15 +114,11 @@ contract BufferTest is DSTestPlus {
     bytes32 data1 = bytes32(bytes8(0x0102030405060708));
     bytes32 data2 = bytes32(bytes8(0x090a0b0c0d0e0f10));
 
-    uint256 gas = gasleft();
+    // !gasreport append unchecked bytes8 of bytes32 to buffer
     buf.appendUnchecked(data1, 8);
-    gas = gas - gasleft();
-    console.log("gas used (append unchecked): %s", gas);
 
-    gas = gasleft();
+    // !gasreport append bytes8 of bytes32 to buffer
     buf.append(data2, 8);
-    gas = gas - gasleft();
-    console.log("gas used (append): %s", gas);
 
     assertEq(uint256(buf.length()), 16);
     assertEq(buf.read8(0), bytes8(0x0102030405060708));
@@ -171,10 +134,8 @@ contract BufferTest is DSTestPlus {
     buf.append(data1);
     buf.append(data2);
 
-    uint256 gas = gasleft();
+    // !gasreport buffer (32 bytes) to bytes memory
     bytes memory bufferData = buf.toBytes();
-    gas = gas - gasleft();
-    console.log("gas used (toBytes): %s", gas);
 
     assertEq(keccak256(bufferData), keccak256(data));
   }
@@ -184,24 +145,18 @@ contract BufferTest is DSTestPlus {
     bytes memory data = bytes.concat(bytes8(0x0102030405060708));
     buf.append(data);
 
-    uint256 gas = gasleft();
+    // !gasreport read bytes32 from buffer
     bytes32 value = buf.read32(4);
-    gas = gas - gasleft();
-    console.log("gas used (read32): %s", gas);
 
     assertEq(value, bytes32(bytes4(0x05060708)));
 
-    gas = gasleft();
+    // !gasreport read bytes8 with offset 3 from buffer
     bytes8 value2 = buf.read8(3);
-    gas = gas - gasleft();
-    console.log("gas used (read8): %s", gas);
 
     assertEq(value2, bytes8(bytes5(0x0405060708)));
 
-    gas = gasleft();
+    // !gasreport read bytes1 with offset 7 from buffer
     bytes1 value3 = buf.read1(7);
-    gas = gas - gasleft();
-    console.log("gas used (read1): %s", gas);
 
     assertEq(value3, bytes1(0x08));
   }
@@ -211,10 +166,10 @@ contract BufferTest is DSTestPlus {
     bytes memory data1 = bytes.concat(bytes8(0x0102030405060708));
     buf.append(data1);
 
-    uint256 gas = gasleft();
+    // !gasreport buffer toArray with element length 4
     uint256 arrayPtr = buf.toArray(4);
-    gas = gas - gasleft();
-    console.log("gas used (toArray uint32[]): %s", gas);
+
+    // !gasreport convert array pointer to uint32[]
     uint32[] memory arr = Cast.toUint32Array(arrayPtr);
 
     assertEq(arr.length, 2);
@@ -227,10 +182,9 @@ contract BufferTest is DSTestPlus {
     bytes memory data = bytes.concat(bytes8(0x0102030405060708));
     buf.append(data);
 
-    uint256 gas = gasleft();
     uint256 arrayPtr = buf.toArray(4);
-    gas = gas - gasleft();
-    console.log("gas used (toArray uint256[]): %s", gas);
+
+    // !gasreport convert array pointer to uint256[]
     uint256[] memory arr = Cast.toUint256Array(arrayPtr);
 
     assertEq(arr.length, 2);
@@ -256,10 +210,8 @@ contract BufferTest is DSTestPlus {
     bytes memory data = bytes.concat(bytes8(0x0102030405060708));
     buf.append(data);
 
-    uint256 gas = gasleft();
+    // !gasreport slice 4 bytes from buffer with offset 4
     bytes memory slice = buf.slice(4, 4);
-    gas = gas - gasleft();
-    console.log("gas used (slice): %s", gas);
 
     assertEq(uint256(slice.length), 4);
     assertEq(keccak256(slice), keccak256(bytes.concat(bytes4(0x05060708))));
