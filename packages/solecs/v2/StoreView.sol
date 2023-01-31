@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { SchemaType } from "./Types.sol";
-import { IStore } from "./IStore.sol";
+import { IStore, IOnUpdateHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
@@ -48,24 +48,7 @@ contract StoreView is IStore {
     revert Store_BaseContractNotImplemented();
   }
 
-  // Set full record of a single item at a given array index
-  function setArrayIndex(
-    bytes32,
-    bytes32[] memory,
-    uint16,
-    bytes memory
-  ) public virtual {
-    revert Store_BaseContractNotImplemented();
-  }
-
-  // Set partial data of a single item at a given array index
-  function setArrayIndexField(
-    bytes32,
-    bytes32[] memory,
-    uint16,
-    uint8,
-    bytes memory
-  ) public virtual {
+  function registerOnUpdateHook(bytes32, IOnUpdateHook) public virtual {
     revert Store_BaseContractNotImplemented();
   }
 

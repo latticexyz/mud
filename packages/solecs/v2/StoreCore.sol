@@ -16,6 +16,7 @@ import { IOnUpdateHook } from "./IStore.sol";
 // - Turn all storage pointer to uint256 for consistency (uint256 is better than bytes32 because it's easier to do arithmetic on)
 // - Change Storage library functions to make it clearer which argument is offset and which is length
 // - Streamline naming in Storage and Memory libraries (probably just use load and store instead of read and write?)
+// - Move all internal functions to a separate StoreCoreInternal library to discourage using it
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers

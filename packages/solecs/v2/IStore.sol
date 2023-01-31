@@ -35,6 +35,9 @@ interface IStore {
     bytes memory data
   ) external;
 
+  // Register a callback to be called when a record is updated
+  function registerOnUpdateHook(bytes32 table, IOnUpdateHook onUpdateHook) external;
+
   // Get full record (including full array, load table schema from storage)
   function getRecord(bytes32 table, bytes32[] memory key) external view returns (bytes memory data);
 
