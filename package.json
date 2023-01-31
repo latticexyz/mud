@@ -11,6 +11,7 @@
     "packages": [
       "packages/utils",
       "packages/solecs",
+      "packages/store",
       "packages/cli",
       "packages/recs",
       "packages/react",

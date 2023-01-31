@@ -1,0 +1,21 @@
+(v2/test/Buffer.t.sol) | allocate a buffer [Buffer buf = Buffer_.allocate(32)]: 73
+(v2/test/Buffer.t.sol) | get buffer length [buf.length()]: 87
+(v2/test/Buffer.t.sol) | get buffer pointer [buf.ptr()]: 33
+(v2/test/Buffer.t.sol) | get buffer capacity [buf.capacity()]: 7
+(v2/test/Buffer.t.sol) | append unchecked bytes memory (8) to buffer [buf.appendUnchecked(data1)]: 478
+(v2/test/Buffer.t.sol) | append bytes memory (8) to buffer [buf.append(data2)]: 773
+(v2/test/Buffer.t.sol) | append unchecked bytes8 of bytes32 to buffer [buf.appendUnchecked(data1, 8)]: 351
+(v2/test/Buffer.t.sol) | append bytes8 of bytes32 to buffer [buf.append(data2, 8)]: 645
+(v2/test/Buffer.t.sol) | concat 3 bytes memory (32) using buffer [Buffer buf = Buffer_.concat(data1, data2, data3)]: 2638
+(v2/test/Buffer.t.sol) | concat 3 bytes memory (32) using bytes.concat [bytes memory concat = bytes.concat(data1, data2, data3)]: 641
+(v2/test/Buffer.t.sol) | create a buffer from 8 bytes [Buffer buf = Buffer_.fromBytes(data)]: 40
+(v2/test/Buffer.t.sol) | read bytes32 from buffer [bytes32 value = buf.read32(4)]: 102
+(v2/test/Buffer.t.sol) | read bytes8 with offset 3 from buffer [bytes8 value2 = buf.read8(3)]: 151
+(v2/test/Buffer.t.sol) | read bytes1 with offset 7 from buffer [bytes1 value3 = buf.read1(7)]: 151
+(v2/test/Buffer.t.sol) | set buffer length unchecked [buf._setLengthUnchecked(8)]: 86
+(v2/test/Buffer.t.sol) | set buffer length [buf._setLength(16)]: 192
+(v2/test/Buffer.t.sol) | slice 4 bytes from buffer with offset 4 [bytes memory slice = buf.slice(4, 4)]: 635
+(v2/test/Buffer.t.sol) | convert array pointer to uint256[] [uint256[] memory arr = Cast.toUint256Array(arrayPtr)]: 10
+(v2/test/Buffer.t.sol) | buffer toArray with element length 4 [uint256 arrayPtr = buf.toArray(4)]: 663
+(v2/test/Buffer.t.sol) | convert array pointer to uint32[] [uint32[] memory arr = Cast.toUint32Array(arrayPtr)]: 10
+(v2/test/Buffer.t.sol) | buffer (32 bytes) to bytes memory [bytes memory bufferData = buf.toBytes()]: 90
