@@ -126,6 +126,24 @@ contract BytesTest is DSTestPlus {
     assertEq(output[1], 0x05060708);
   }
 
+  function testToAndFromBytes24Array() public {
+    bytes24[] memory input = new bytes24[](2);
+    input[0] = bytes24(0x0102030405060708090a0b0c0d0e0f101112131415161718);
+    input[1] = bytes24(0x19202122232425262728292a2b2c2d2e2f30313233343536);
+
+    // !gasreport tightly pack bytes24 array into bytes array
+    bytes memory tight = Bytes.from(input);
+
+    assertEq(tight.length, 48);
+
+    // !gasreport create uint32 array from bytes memory
+    bytes24[] memory output = Bytes.toBytes24Array(tight);
+
+    assertEq(output.length, 2);
+    assertEq(output[0], input[0]);
+    assertEq(output[1], input[1]);
+  }
+
   function testToBytes32ArrayUneven() public {
     bytes memory input = new bytes(65);
     input[0] = 0x01;

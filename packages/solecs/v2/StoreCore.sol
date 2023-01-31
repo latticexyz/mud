@@ -9,6 +9,8 @@ import { console } from "forge-std/console.sol";
 import { Schema } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Buffer, Buffer_ } from "./Buffer.sol";
+import { OnUpdateRecordHookTable, tableId as OnUpdateRecordHookTableId } from "./tables/OnUpdateRecordHookTable.sol";
+import { OnUpdateFieldHookTable, tableId as OnUpdateFieldHookTableId } from "./tables/OnUpdateFieldHookTable.sol";
 
 // TODO
 // - Turn all storage pointer to uint256 for consistency (uint256 is better than bytes32 because it's easier to do arithmetic on)
@@ -25,8 +27,20 @@ library StoreCore {
   bytes32 internal constant SCHEMA_TABLE = keccak256("mud.store.table.schema");
 
   error StoreCore_TableAlreadyExists(bytes32 table);
+  error StoreCore_TableNotFound(bytes32 table);
   error StoreCore_NotImplemented();
   error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
+  error StoreCore_NoDynamicField();
+
+  /**
+   * Initialize internal tables.
+   * Consumers must call this function in their constructor.
+   * TODO: should we turn the schema table into a "proper table" and register it here?
+   */
+  function initialize() internal {
+    registerSchema(OnUpdateRecordHookTableId, OnUpdateRecordHookTable.getSchema());
+    registerSchema(OnUpdateFieldHookTableId, OnUpdateFieldHookTable.getSchema());
+  }
 
   /************************************************************************
    *
@@ -76,6 +90,21 @@ library StoreCore {
     bytes32 location = _getStaticDataLocation(SCHEMA_TABLE, key);
     return Schema.wrap(Storage.read(location));
   }
+
+  /************************************************************************
+   *
+   *    REGISTER HOOKS
+   *
+   ************************************************************************/
+
+  /*
+   * Add a hook to be called when a record is set
+   */
+  function registerHook(
+    bytes32 table,
+    function(bytes32, bytes32[] memory, bytes memory) onUpdateRecord,
+    function(bytes32, bytes32[] memory, uint8, bytes memory) onUpdateField
+  ) internal {}
 
   /************************************************************************
    *
@@ -259,6 +288,7 @@ library StoreCore {
   function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     // Get schema for this table
     Schema schema = getSchema(table);
+    if (schema.isEmpty()) revert StoreCore_TableNotFound(table);
 
     return getRecord(table, key, schema);
   }

@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
 import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
-import { RouteTable, id as RouteTableId, Route } from "../tables/RouteTable.sol";
+import { RouteTable, tableId as RouteTableId, Route } from "../tables/RouteTable.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { StoreView } from "../StoreView.sol";

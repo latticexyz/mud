@@ -232,13 +232,25 @@ library Buffer_ {
    */
 
   /**
-   * @dev copies the buffer contents to a new memory location and lays it out like a memory array with the given size per element (in bytes)
+   * @dev copies the buffer contents to a new memory location and lays it out like a right aligned (eg uint) memory array with the given size per element (in bytes)
    * @return arrayPtr the pointer to the start of the array, needs to be casted to the expected type using assembly
    */
   function toArray(Buffer self, uint256 elementSize) internal pure returns (uint256 arrayPtr) {
+    return toArray(self, elementSize, false);
+  }
+
+  /**
+   * @dev copies the buffer contents to a new memory location and lays it out like a memory array with the given size per element (in bytes)
+   * @return arrayPtr the pointer to the start of the array, needs to be casted to the expected type using assembly
+   */
+  function toArray(
+    Buffer self,
+    uint256 elementSize,
+    bool leftAligned
+  ) internal pure returns (uint256 arrayPtr) {
     uint256 _ptr = ptr(self);
     uint128 _length = length(self);
-    uint256 elementShift = 256 - elementSize * 8;
+    uint256 padLeft = leftAligned ? 0 : 256 - elementSize * 8;
 
     assembly {
       arrayPtr := mload(0x40) // free memory pointer
@@ -256,7 +268,7 @@ library Buffer_ {
         dataCursor := add(dataCursor, elementSize) // increment buffer pointer by one element size
         arrayCursor := add(arrayCursor, 32) // increment array pointer by one slot
       } {
-        mstore(arrayCursor, shr(elementShift, mload(dataCursor))) // copy one element from buffer to array
+        mstore(arrayCursor, shr(padLeft, mload(dataCursor))) // copy one element from buffer to array
       }
     }
   }

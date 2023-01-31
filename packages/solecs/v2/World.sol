@@ -5,7 +5,7 @@ import { console } from "forge-std/console.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { StoreView } from "./StoreView.sol";
 import { SchemaType, ExecutionMode } from "./Types.sol";
-import { RouteTable, Route, id as RouteId } from "./tables/RouteTable.sol";
+import { RouteTable, Route, tableId as RouteId } from "./tables/RouteTable.sol";
 import { Bytes } from "./Bytes.sol";
 import { Schema } from "./Schema.sol";
 

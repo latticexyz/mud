@@ -13,4 +13,10 @@ library Cast {
       arr := ptr
     }
   }
+
+  function toBytes24Array(uint256 ptr) internal pure returns (bytes24[] memory arr) {
+    assembly {
+      arr := ptr
+    }
+  }
 }

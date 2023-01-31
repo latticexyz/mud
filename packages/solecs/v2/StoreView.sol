@@ -10,6 +10,10 @@ import { Schema } from "./Schema.sol";
 contract StoreView is IStore {
   error Store_BaseContractNotImplemented();
 
+  constructor() {
+    StoreCore.initialize();
+  }
+
   function getSchema(bytes32 table) public view virtual returns (Schema schema) {
     schema = StoreCore.getSchema(table);
   }

@@ -47,13 +47,6 @@ library Bytes {
   }
 
   function from(uint16[] memory input) internal pure returns (bytes memory output) {
-    // This implementation costs 500 gas per entry:
-    // output = new bytes(0);
-    // for (uint256 i; i < input.length; i++) {
-    // output = bytes.concat(output, bytes2(input[i]));
-    // }
-
-    // This implementation costs around 100 gas per entry:
     bytes32 ptr;
     assembly {
       ptr := input
@@ -71,6 +64,15 @@ library Bytes {
     return _from(ptr, 4);
   }
 
+  function from(bytes24[] memory input) internal pure returns (bytes memory output) {
+    bytes32 ptr;
+    assembly {
+      ptr := input
+    }
+
+    return _from(ptr, 24, true);
+  }
+
   function from(string memory input) internal pure returns (bytes memory output) {
     assembly {
       output := input
@@ -78,6 +80,16 @@ library Bytes {
   }
 
   function _from(bytes32 _ptr, uint256 _bytesPerElement) internal pure returns (bytes memory output) {
+    return _from(_ptr, _bytesPerElement, false);
+  }
+
+  function _from(
+    bytes32 _ptr,
+    uint256 _bytesPerElement,
+    bool leftAligned
+  ) internal pure returns (bytes memory output) {
+    uint256 shiftBits = leftAligned ? 0 : (32 - _bytesPerElement) * 8;
+
     assembly {
       let inputLength := mload(_ptr)
       let outputBytes := mul(inputLength, _bytesPerElement)
@@ -90,7 +102,6 @@ library Bytes {
       mstore(0x40, add(output, add(32, outputBytes)))
 
       let outputPtr := add(output, 32)
-      let shiftBits := mul(sub(32, _bytesPerElement), 8)
       for {
         let inputPtr := add(_ptr, 32) // Start at first element
         // Stop at last element
@@ -190,6 +201,13 @@ library Bytes {
    */
   function toUint32Array(bytes memory input) internal pure returns (uint32[] memory output) {
     return Cast.toUint32Array(Buffer_.fromBytes(input).toArray(4));
+  }
+
+  /**
+   * Converts a tightly packed bytes24 array into a regular bytes24 array.
+   */
+  function toBytes24Array(bytes memory input) internal pure returns (bytes24[] memory output) {
+    return Cast.toBytes24Array(Buffer_.fromBytes(input).toArray(24, true));
   }
 
   /************************************************************************
