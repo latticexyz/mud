@@ -5,8 +5,9 @@ import { SchemaType } from "./Types.sol";
 import { Schema } from "./Schema.sol";
 
 interface IStore {
-  // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreUpdate(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreDeleteRecord(bytes32 table, bytes32[] key);
 
   function registerSchema(bytes32 table, Schema schema) external;
 
@@ -19,7 +20,7 @@ interface IStore {
     bytes memory data
   ) external;
 
-  // Set full record (including full array)
+  // TODO: remove this function, use setRecord instead
   function setStaticData(
     bytes32 table,
     bytes32[] memory key,

@@ -66,6 +66,20 @@ library Buffer_ {
     return buffer;
   }
 
+  function concat(
+    bytes memory data1,
+    bytes memory data2,
+    bytes memory data3,
+    bytes memory data4
+  ) internal pure returns (Buffer) {
+    Buffer buffer = allocate(uint128(data1.length + data2.length + data3.length + data4.length));
+    buffer.append(data1);
+    buffer.append(data2);
+    buffer.append(data3);
+    buffer.append(data4);
+    return buffer;
+  }
+
   /************************************************************************
    *
    *    INSTANCE FUNCTIONS

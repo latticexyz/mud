@@ -141,6 +141,7 @@ library StoreCore {
 
   /**
    * Set full static data record for the given table and key tuple (without any dynamic data)
+   * TODO: remove this function and just use setRecord
    */
   function setStaticData(
     bytes32 table,
