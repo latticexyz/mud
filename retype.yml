@@ -1,6 +1,8 @@
 input: .
 output: .retype
 url: mud.dev
+server:
+  host: 127.0.0.1:5005
 branding:
   title: MUD
   label: 1.28.1

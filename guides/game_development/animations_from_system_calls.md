@@ -1,16 +1,12 @@
----
-order: 100
----
+# Animations from system calls
 
-# Animations in Response to System Calls
+As you develop your game you may hit the point when you want to add animations in response to specific events. This is difficult when the only information we receive from system execution is component updates. We know **what** happened, but not **why**.
 
-As you develop your game you may hit the point when you want to add animations in response to specific events. This is difficult when the only information we receive from system execution is Component updates. We know **what** happened, but not **why**.
+The solution to this is system call streams. System call streams chunk together all of the component updates that occur during a specific system call and allow you to react to them.
 
-The solution to this is System Call Streams. System Call Streams chunk together all of the Component updates that occur during a specific system call and allow you to react to them.
+In this guide we will go into why system call streams are needed, a small example where they are helpful, and some sample code to start you off.
 
-In this guide we will go into why System Call Streams are needed, a small example where they are helpful, and some sample code to start you off.
-
-## Example: Animating a Combat System
+## Example: Animating a combat system
 
 Let's say we are making a simple game where I control a character that attacks monsters with their sword. We have a `CombatSystem` that receives two arguments: `(uint256 playerEntity, uint256 targetEntity)`. We have a `HealthComponent` which stores a `uint32` representation of the entity's current health. We also have a `StrengthComponent` which stores a `uint32` representation of the entity's power in combat.
 
@@ -20,11 +16,11 @@ Now we want to add some animations to our game. We want to see our character swi
 
 **In this context `HealthComponent` updates alone do not provide the information we need.**
 
-## System Call Streams
+## System call streams
 
-The solution to this problem is System Call Streams. System Call Streams are a way to chunk together all of the Component updates that occur during a specific system call so that you can react to them in a context specific way. In our example we can use a System Call Stream to react to the changes that occur during the `CombatSystem` call.
+System call streams chunk together all of the component updates that occur during a specific system call so that you can react to them in a context-specific way. In our example we can use a system call stream to react to the changes that occur during the `CombatSystem` call.
 
-The first step to enable this feature is to enable System Call Streams when setting up the MUD network by passing `fetchSystemCalls: true` inside of the configuration object.
+The first step to enable this feature is to enable system call streams when setting up the MUD network by passing `fetchSystemCalls: true` inside of the configuration object.
 
 ```typescript
 const networkSetup = await setupMUDNetwork(networkConfig, world, components, SystemAbis, {
@@ -106,6 +102,6 @@ Now our health bars update in sync with the animations we've played! However, on
 
 ## Conclusion
 
-System Call Streams are a powerful tool that allow you to react to system calls in a context specific way. They are especially useful when you want to animate in response to system calls. In this guide we went over a small example of how they can be used to animate a combat system. We also went over some of the tradeoffs you need to consider when using System Call Streams.
+System call streams are a powerful tool that allow you to react to system calls in a context-specific way. They are especially useful when you want to animate in response to system calls. In this guide we went over a small example of how they can be used to animate a combat system. We also went over some of the tradeoffs you need to consider when using system call streams.
 
 That being said, there is a lot of work involved in using them effectively. We encourage new MUD developers to prototype their games without them and only start adding them when they start polishing their game.
