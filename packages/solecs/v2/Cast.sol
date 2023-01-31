@@ -19,4 +19,10 @@ library Cast {
       arr := ptr
     }
   }
+
+  function toAddressArray(uint256 ptr) internal pure returns (address[] memory arr) {
+    assembly {
+      arr := ptr
+    }
+  }
 }

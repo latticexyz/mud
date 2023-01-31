@@ -13,7 +13,8 @@ enum SchemaType {
   Uint32Array,
   Bytes24Array,
   String,
-  Address
+  Address,
+  AddressArray
 }
 
 /**

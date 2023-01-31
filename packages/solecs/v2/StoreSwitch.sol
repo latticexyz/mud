@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { console } from "forge-std/console.sol";
 import { SchemaType } from "./Types.sol";
 import { IStore } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
@@ -10,11 +11,21 @@ import { Schema } from "./Schema.sol";
  * Call IStore functions on self or msg.sender, depending on whether the call is a delegatecall or regular call.
  */
 library StoreSwitch {
+  error StoreSwitch_InvalidInsideConstructor();
+
   /**
    * Detect whether the current call is a delegatecall or regular call.
    * (The isStore method doesn't return a value to save gas, but it if exists, the call will succeed.)
    */
   function isDelegateCall() internal view returns (bool success) {
+    // Detect calls from within a constructor and revert to avoid unexpected behavior
+    uint256 codeSize;
+    assembly {
+      codeSize := extcodesize(address())
+    }
+    if (codeSize == 0) revert StoreSwitch_InvalidInsideConstructor();
+
+    // Check whether this contract implements the IStore interface
     try IStore(address(this)).isStore() {
       success = true;
     } catch {

@@ -13,6 +13,9 @@ import { Cast } from "../Cast.sol";
 import { Buffer, Buffer_ } from "../Buffer.sol";
 import { Schema, Schema_ } from "../Schema.sol";
 import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
+import { StoreView } from "../StoreView.sol";
+import { IStore, IOnUpdateHook } from "../IStore.sol";
+import { StoreSwitch } from "../StoreSwitch.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -20,9 +23,34 @@ struct TestStruct {
   uint32[] thirdData;
 }
 
-contract StoreCoreTest is DSTestPlus {
+contract StoreCoreTest is DSTestPlus, StoreView {
   TestStruct private testStruct;
+
   mapping(uint256 => bytes) private testMapping;
+
+  // Expose an external setRecord function for testing purposes of indexers (see testOnUpdateHook)
+  function setRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes memory data
+  ) public override {
+    StoreCore.setRecord(table, key, data);
+  }
+
+  // Expose an external setField function for testing purposes of indexers (see testOnUpdateHook)
+  function setField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data
+  ) public override {
+    StoreCore.setField(table, key, schemaIndex, data);
+  }
+
+  // Expose an external registerSchema function for testing purposes of indexers (see testOnUpdateHook)
+  function registerSchema(bytes32 table, Schema schema) public override {
+    StoreCore.registerSchema(table, schema);
+  }
 
   function testRegisterAndGetSchema() public {
     Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
@@ -238,6 +266,7 @@ contract StoreCoreTest is DSTestPlus {
     // Set data
     uint256 gas = gasleft();
     StoreCore.setRecord(table, key, data);
+
     gas = gas - gasleft();
     console.log("gas used (store complex struct / StoreCore): %s", gas);
 
@@ -468,5 +497,136 @@ contract StoreCoreTest is DSTestPlus {
     // Verify data is deleted
     loadedData = StoreCore.getRecord(table, key);
     assertEq(keccak256(loadedData), keccak256(new bytes(schema.staticDataLength())));
+  }
+
+  function testAccessEmptyData() public {
+    bytes32 table = keccak256("some.table");
+    Schema schema = Schema_.encode(SchemaType.Uint32, SchemaType.Uint32Array);
+
+    StoreCore.registerSchema(table, schema);
+
+    // Create key
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = bytes32("some.key");
+
+    // !gasreport access non-existing record
+    bytes memory data1 = StoreCore.getRecord(table, key);
+    assertEq(data1.length, schema.staticDataLength());
+
+    // !gasreport access static field of non-existing record
+    bytes memory data2 = StoreCore.getField(table, key, 0);
+    assertEq(data2.length, schema.staticDataLength());
+
+    // !gasreport access dynamic field of non-existing record
+    bytes memory data3 = StoreCore.getField(table, key, 1);
+    assertEq(data3.length, 0);
+  }
+
+  function testOnUpdateHook() public {
+    bytes32 table = keccak256("some.table");
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = keccak256("some key");
+
+    // Register table's schema
+    Schema schema = Schema_.encode(SchemaType.Uint128);
+    StoreCore.registerSchema(table, schema);
+
+    // Create subscriber
+    MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
+
+    // !gasreport register subscriber
+    StoreCore.registerOnUpdateHook(table, subscriber);
+
+    bytes memory data = bytes.concat(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+
+    // !gasreport set record on table with subscriber
+    StoreCore.setRecord(table, key, data);
+
+    // Get data from indexed table - the indexer should have mirrored the data there
+    bytes memory indexedData = StoreCore.getRecord(indexerTableId, key);
+    assertEq(keccak256(data), keccak256(indexedData));
+
+    data = bytes.concat(bytes16(0x1112131415161718191a1b1c1d1e1f20));
+
+    // !gasreport set field on table with subscriber
+    StoreCore.setField(table, key, 0, data);
+
+    // Get data from indexed table - the indexer should have mirrored the data there
+    indexedData = StoreCore.getRecord(indexerTableId, key);
+    assertEq(keccak256(data), keccak256(indexedData));
+  }
+
+  function testOnUpdateHookDynamicData() public {
+    bytes32 table = keccak256("some.table");
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = keccak256("some key");
+
+    // Register table's schema
+    Schema schema = Schema_.encode(SchemaType.Uint128, SchemaType.Uint32Array);
+    StoreCore.registerSchema(table, schema);
+
+    // Create subscriber
+    MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
+
+    // !gasreport register subscriber
+    StoreCore.registerOnUpdateHook(table, subscriber);
+
+    uint32[] memory arrayData = new uint32[](1);
+    arrayData[0] = 0x01020304;
+    bytes memory arrayDataBytes = Bytes.from(arrayData);
+    PackedCounter encodedArrayDataLength = PackedCounter_.pack(uint16(arrayDataBytes.length));
+    bytes memory dynamicData = bytes.concat(encodedArrayDataLength.unwrap(), arrayDataBytes);
+    bytes memory staticData = bytes.concat(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+    bytes memory data = bytes.concat(staticData, dynamicData);
+
+    // !gasreport set record on table with subscriber
+    StoreCore.setRecord(table, key, data);
+
+    // Get data from indexed table - the indexer should have mirrored the data there
+    bytes memory indexedData = StoreCore.getRecord(indexerTableId, key);
+    assertEq(keccak256(data), keccak256(indexedData));
+
+    // Update dynamic data
+    arrayData[0] = 0x11121314;
+    arrayDataBytes = Bytes.from(arrayData);
+    dynamicData = bytes.concat(encodedArrayDataLength.unwrap(), arrayDataBytes);
+    data = bytes.concat(staticData, dynamicData);
+
+    // !gasreport set field on table with subscriber
+    StoreCore.setField(table, key, 1, arrayDataBytes);
+
+    // Get data from indexed table - the indexer should have mirrored the data there
+    indexedData = StoreCore.getRecord(indexerTableId, key);
+    assertEq(keccak256(data), keccak256(indexedData));
+  }
+}
+
+bytes32 constant indexerTableId = keccak256("indexer.table");
+
+contract MirrorSubscriber is IOnUpdateHook {
+  bytes32 _table;
+
+  constructor(bytes32 table, Schema schema) {
+    IStore(msg.sender).registerSchema(indexerTableId, schema);
+    _table = table;
+  }
+
+  function onUpdateRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes memory data
+  ) public {
+    if (table != table) revert("invalid table");
+    StoreSwitch.setRecord(indexerTableId, key, data);
+  }
+
+  function onUpdateField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data
+  ) public {
+    if (table != table) revert("invalid table");
+    StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
   }
 }

@@ -79,6 +79,15 @@ library Bytes {
     }
   }
 
+  function from(address[] memory input) internal pure returns (bytes memory output) {
+    bytes32 ptr;
+    assembly {
+      ptr := input
+    }
+
+    return _from(ptr, 20);
+  }
+
   function _from(bytes32 _ptr, uint256 _bytesPerElement) internal pure returns (bytes memory output) {
     return _from(_ptr, _bytesPerElement, false);
   }
@@ -201,6 +210,13 @@ library Bytes {
    */
   function toUint32Array(bytes memory input) internal pure returns (uint32[] memory output) {
     return Cast.toUint32Array(Buffer_.fromBytes(input).toArray(4));
+  }
+
+  /**
+   * Converts a tightly packed address array into a regular address array.
+   */
+  function toAddressArray(bytes memory input) internal pure returns (address[] memory output) {
+    return Cast.toAddressArray(Buffer_.fromBytes(input).toArray(20));
   }
 
   /**
@@ -407,6 +423,14 @@ library Bytes {
     bytes4 output;
     assembly {
       output := mload(add(add(data, 0x20), start))
+    }
+    return output;
+  }
+
+  function slice4(bytes32 data, uint256 start) internal pure returns (bytes4) {
+    bytes2 output;
+    assembly {
+      output := shl(mul(8, start), data)
     }
     return output;
   }

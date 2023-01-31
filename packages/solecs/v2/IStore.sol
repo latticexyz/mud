@@ -56,3 +56,18 @@ interface IStore {
   // TODO: benchmark this vs. using a known storage slot to determine whether a contract is a Store
   function isStore() external view;
 }
+
+interface IOnUpdateHook {
+  function onUpdateRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes memory data
+  ) external;
+
+  function onUpdateField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data
+  ) external;
+}
