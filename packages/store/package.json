@@ -14,7 +14,7 @@
     "git:install": "bash git-install.sh",
     "test": "forge test",
     "build": "rimraf out && forge build --out out && yarn dist && yarn types",
-    "dist": "rimraf abi && mkdir abi && cp out/*.sol/*.json abi/ && yarn rimraf abi/*.metadata.json",
+    "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && yarn rimraf abi/*.metadata.json",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
