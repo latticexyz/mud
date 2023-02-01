@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { StoreCore } from "../StoreCore.sol";
+import { StoreCore, StoreCoreInternal } from "../StoreCore.sol";
 import { Utils } from "../Utils.sol";
 import { Bytes } from "../Bytes.sol";
 import { SchemaType } from "../Types.sol";
@@ -109,27 +109,27 @@ contract StoreCoreTest is Test, StoreView {
 
     // Set dynamic data length of dynamic index 0
     // !gasreport set dynamic length of dynamic index 0
-    StoreCore._setDynamicDataLengthAtIndex(table, key, 0, 10);
+    StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 0, 10);
 
-    PackedCounter encodedLength = StoreCore._loadEncodedDynamicDataLength(table, key);
+    PackedCounter encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(table, key);
     assertEq(encodedLength.atIndex(0), 10);
     assertEq(encodedLength.atIndex(1), 0);
     assertEq(encodedLength.total(), 10);
 
     // Set dynamic data length of dynamic index 1
     // !gasreport set dynamic length of dynamic index 1
-    StoreCore._setDynamicDataLengthAtIndex(table, key, 1, 99);
+    StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 1, 99);
 
-    encodedLength = StoreCore._loadEncodedDynamicDataLength(table, key);
+    encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(table, key);
     assertEq(encodedLength.atIndex(0), 10);
     assertEq(encodedLength.atIndex(1), 99);
     assertEq(encodedLength.total(), 109);
 
     // Reduce dynamic data length of dynamic index 0 again
     // !gasreport reduce dynamic length of dynamic index 0
-    StoreCore._setDynamicDataLengthAtIndex(table, key, 0, 5);
+    StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 0, 5);
 
-    encodedLength = StoreCore._loadEncodedDynamicDataLength(table, key);
+    encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(table, key);
     assertEq(encodedLength.atIndex(0), 5);
     assertEq(encodedLength.atIndex(1), 99);
     assertEq(encodedLength.total(), 104);
@@ -326,10 +326,13 @@ contract StoreCoreTest is Test, StoreView {
     assertEq(bytes16(StoreCore.getField(table, key, 0)), bytes16(firstDataBytes));
 
     // Verify the full static data is correct
-    assertEq(StoreCore.getStaticData(table, key).length, 48);
-    assertEq(Bytes.slice16(StoreCore.getStaticData(table, key), 0), firstDataBytes);
-    assertEq(Bytes.slice32(StoreCore.getStaticData(table, key), 16), secondDataBytes);
-    assertEq(keccak256(StoreCore.getStaticData(table, key)), keccak256(bytes.concat(firstDataBytes, secondDataBytes)));
+    assertEq(StoreCoreInternal._getStaticData(table, key).length, 48);
+    assertEq(Bytes.slice16(StoreCoreInternal._getStaticData(table, key), 0), firstDataBytes);
+    assertEq(Bytes.slice32(StoreCoreInternal._getStaticData(table, key), 16), secondDataBytes);
+    assertEq(
+      keccak256(StoreCoreInternal._getStaticData(table, key)),
+      keccak256(bytes.concat(firstDataBytes, secondDataBytes))
+    );
 
     ////////////////
     // Dynamic data
