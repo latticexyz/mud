@@ -42,7 +42,7 @@ export const setup = async () => {
 
 Then we can override the position value before we call the move system and then remove the override once the transaction completes (or fails). The override needs a unique ID that we can refer to it by, and MUD provides a `uuid` utility for that.
 
-```tsx !#3,10-23 packages/client/src/GameBoard.tsx
+```tsx !#3,10-21 packages/client/src/GameBoard.tsx
 import { useEffect } from "react";
 import { useComponentValueStream } from "@latticexyz/std-client";
 import { uuid } from "@latticexyz/utils";
@@ -52,8 +52,6 @@ export const GameBoard = () => {
   …
   useEffect(() => {
     const moveTo = async (x: number, y: number) => {
-      const tx = await systems["system.Move"].executeTyped({ x, y });
-      await tx.wait();
       const positionId = uuid();
       Position.addOverride(positionId, {
         entity: playerEntity,
