@@ -18,7 +18,7 @@ jobs:
       - name: git-checkout
         uses: actions/checkout@v2
         with:
-          ref: ${GITHUB_HEAD_REF}
+          ref: ${{ env.GITHUB_HEAD_REF }}
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
