@@ -7,8 +7,8 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { Bytes } from "../Bytes.sol";
-import { Schema, Schema_ } from "../Schema.sol";
-import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
+import { Schema, SchemaLib } from "../Schema.sol";
+import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
 // -- User defined schema --
 
@@ -25,7 +25,7 @@ struct Mixed {
 library Mixed_ {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = Schema_.encode(SchemaType.Uint32, SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.String);
+    schema = SchemaLib.encode(SchemaType.Uint32, SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.String);
   }
 
   /** Register the table's schema */
@@ -46,7 +46,7 @@ library Mixed_ {
     uint32[] memory a32,
     string memory s
   ) internal {
-    PackedCounter encodedLengths = PackedCounter_.pack(uint16(a32.length * 4), uint16(Bytes.from(s).length));
+    PackedCounter encodedLengths = PackedCounterLib.pack(uint16(a32.length * 4), uint16(Bytes.from(s).length));
 
     bytes memory data = bytes.concat(
       bytes4(u32),

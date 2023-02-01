@@ -2,13 +2,13 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { Schema, Schema_ } from "../Schema.sol";
+import { Schema, SchemaLib } from "../Schema.sol";
 import { SchemaType } from "../Types.sol";
 
 contract SchemaTest is Test {
   function testEncodeDecodeSchema() public {
     uint256 gas = gasleft();
-    Schema schema = Schema_.encode(
+    Schema schema = SchemaLib.encode(
       SchemaType.Uint8, // 1 byte
       SchemaType.Uint16, // 2 bytes
       SchemaType.Uint32, // 4 bytes
@@ -17,7 +17,7 @@ contract SchemaTest is Test {
       SchemaType.Uint32Array // 0 bytes (because it's dynamic)
     );
     gas = gas - gasleft();
-    console.log("GAS REPORT: encode schema with 6 entries [Schema_.encode]: %s", gas);
+    console.log("GAS REPORT: encode schema with 6 entries [SchemaLib.encode]: %s", gas);
 
     // !gasreport get schema type at index
     SchemaType schemaType1 = schema.atIndex(0);
@@ -31,7 +31,7 @@ contract SchemaTest is Test {
   }
 
   function testFailInvalidSchemaStaticAfterDynamic() public pure {
-    Schema_.encode(SchemaType.Uint8, SchemaType.Uint32Array, SchemaType.Uint16);
+    SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint32Array, SchemaType.Uint16);
   }
 
   function testEncodeMaxValidLength() public {
@@ -64,7 +64,7 @@ contract SchemaTest is Test {
     schema[25] = SchemaType.Uint32Array;
     schema[26] = SchemaType.Uint32Array;
     schema[27] = SchemaType.Uint32Array;
-    Schema encodedSchema = Schema_.encode(schema);
+    Schema encodedSchema = SchemaLib.encode(schema);
 
     assertEq(encodedSchema.numStaticFields() + encodedSchema.numDynamicFields(), 28);
   }
@@ -100,7 +100,7 @@ contract SchemaTest is Test {
     schema[26] = SchemaType.Uint32Array;
     schema[27] = SchemaType.Uint32Array;
     schema[28] = SchemaType.Uint32Array;
-    Schema_.encode(schema);
+    SchemaLib.encode(schema);
   }
 
   function testEncodeMaxValidDynamic() public {
@@ -119,7 +119,7 @@ contract SchemaTest is Test {
     schema[11] = SchemaType.Uint32Array;
     schema[12] = SchemaType.Uint32Array;
     schema[13] = SchemaType.Uint32Array;
-    Schema encodedSchema = Schema_.encode(schema);
+    Schema encodedSchema = SchemaLib.encode(schema);
 
     assertEq(encodedSchema.numDynamicFields(), 14);
   }
@@ -141,11 +141,11 @@ contract SchemaTest is Test {
     schema[12] = SchemaType.Uint32Array;
     schema[13] = SchemaType.Uint32Array;
     schema[14] = SchemaType.Uint32Array;
-    Schema_.encode(schema);
+    SchemaLib.encode(schema);
   }
 
   function testGetStaticSchemaLength() public {
-    Schema schema = Schema_.encode(
+    Schema schema = SchemaLib.encode(
       SchemaType.Uint8, // 1 byte
       SchemaType.Uint16, // 2 bytes
       SchemaType.Uint32, // 4 bytes
@@ -161,7 +161,7 @@ contract SchemaTest is Test {
   }
 
   function testGetNumStaticFields() public {
-    Schema schema = Schema_.encode(
+    Schema schema = SchemaLib.encode(
       SchemaType.Uint8, // 1 byte
       SchemaType.Uint16, // 2 bytes
       SchemaType.Uint32, // 4 bytes
@@ -177,7 +177,7 @@ contract SchemaTest is Test {
   }
 
   function testGetNumDynamicFields() public {
-    Schema schema = Schema_.encode(
+    Schema schema = SchemaLib.encode(
       SchemaType.Uint8, // 1 byte
       SchemaType.Uint16, // 2 bytes
       SchemaType.Uint32, // 4 bytes
@@ -222,7 +222,7 @@ contract SchemaTest is Test {
     schema[25] = SchemaType.Uint32Array;
     schema[26] = SchemaType.Uint32Array;
     schema[27] = SchemaType.Uint32Array;
-    Schema encodedSchema = Schema_.encode(schema);
+    Schema encodedSchema = SchemaLib.encode(schema);
 
     // !gasreport validate schema
     encodedSchema.validate();
@@ -234,7 +234,7 @@ contract SchemaTest is Test {
 
   function testIsEmptyTrue() public {
     SchemaType[] memory schema = new SchemaType[](0);
-    Schema encodedSchema = Schema_.encode(schema);
+    Schema encodedSchema = SchemaLib.encode(schema);
 
     // !gasreport check if schema is empty (empty schema)
     bool empty = encodedSchema.isEmpty();
@@ -243,7 +243,7 @@ contract SchemaTest is Test {
   }
 
   function testIsEmptyFalse() public {
-    Schema encodedSchema = Schema_.encode(SchemaType.Uint256);
+    Schema encodedSchema = SchemaLib.encode(SchemaType.Uint256);
 
     // !gasreport check if schema is empty (non-empty schema)
     bool empty = encodedSchema.isEmpty();

@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
+import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
 contract PackedCounterTest is Test {
   function testTotal() public {
@@ -13,7 +13,7 @@ contract PackedCounterTest is Test {
     counters[3] = 4;
 
     // !gasreport pack uint16 array into PackedCounter
-    PackedCounter packedCounter = PackedCounter_.pack(counters);
+    PackedCounter packedCounter = PackedCounterLib.pack(counters);
 
     // !gasreport get total of PackedCounter
     packedCounter.total();
@@ -28,7 +28,7 @@ contract PackedCounterTest is Test {
     counters[2] = 3;
     counters[3] = 4;
 
-    PackedCounter packedCounter = PackedCounter_.pack(counters);
+    PackedCounter packedCounter = PackedCounterLib.pack(counters);
 
     // !gasreport get value at index of PackedCounter
     packedCounter.atIndex(3);
@@ -46,7 +46,7 @@ contract PackedCounterTest is Test {
     counters[2] = 3;
     counters[3] = 4;
 
-    PackedCounter packedCounter = PackedCounter_.pack(counters);
+    PackedCounter packedCounter = PackedCounterLib.pack(counters);
 
     // !gasreport set value at index of PackedCounter
     packedCounter = packedCounter.setAtIndex(2, 5);

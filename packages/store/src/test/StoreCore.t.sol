@@ -10,8 +10,8 @@ import { Storage } from "../Storage.sol";
 import { Memory } from "../Memory.sol";
 import { Cast } from "../Cast.sol";
 import { Buffer, Buffer_ } from "../Buffer.sol";
-import { Schema, Schema_ } from "../Schema.sol";
-import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
+import { Schema, SchemaLib } from "../Schema.sol";
+import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 import { StoreView } from "../StoreView.sol";
 import { IStore, IStoreHook } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
@@ -57,7 +57,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testRegisterAndGetSchema() public {
-    Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
+    Schema schema = SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
 
     bytes32 table = keccak256("some.table");
     // !gasreport StoreCore: register schema
@@ -74,7 +74,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testHasSchema() public {
-    Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
+    Schema schema = SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
     StoreCore.registerSchema(table, schema);
@@ -92,7 +92,7 @@ contract StoreCoreTest is Test, StoreView {
   function testSetAndGetDynamicDataLength() public {
     bytes32 table = keccak256("some.table");
 
-    Schema schema = Schema_.encode(
+    Schema schema = SchemaLib.encode(
       SchemaType.Uint8,
       SchemaType.Uint16,
       SchemaType.Uint32,
@@ -137,7 +137,7 @@ contract StoreCoreTest is Test, StoreView {
 
   function testSetAndGetStaticData() public {
     // Register table's schema
-    Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
+    Schema schema = SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
 
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
@@ -160,7 +160,7 @@ contract StoreCoreTest is Test, StoreView {
 
   function testFailSetAndGetStaticData() public {
     // Register table's schema
-    Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
+    Schema schema = SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
 
@@ -176,7 +176,7 @@ contract StoreCoreTest is Test, StoreView {
 
   function testSetAndGetStaticDataSpanningWords() public {
     // Register table's schema
-    Schema schema = Schema_.encode(SchemaType.Uint128, SchemaType.Uint256);
+    Schema schema = SchemaLib.encode(SchemaType.Uint128, SchemaType.Uint256);
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
 
@@ -204,7 +204,7 @@ contract StoreCoreTest is Test, StoreView {
 
     {
       // Register table's schema
-      Schema schema = Schema_.encode(SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.Uint32Array);
+      Schema schema = SchemaLib.encode(SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.Uint32Array);
       StoreCore.registerSchema(table, schema);
     }
 
@@ -232,7 +232,7 @@ contract StoreCoreTest is Test, StoreView {
       uint16[] memory dynamicLengths = new uint16[](2);
       dynamicLengths[0] = uint16(secondDataBytes.length);
       dynamicLengths[1] = uint16(thirdDataBytes.length);
-      encodedDynamicLength = PackedCounter_.pack(dynamicLengths);
+      encodedDynamicLength = PackedCounterLib.pack(dynamicLengths);
     }
 
     // Concat data
@@ -274,7 +274,7 @@ contract StoreCoreTest is Test, StoreView {
 
     {
       // Register table's schema
-      Schema schema = Schema_.encode(
+      Schema schema = SchemaLib.encode(
         SchemaType.Uint128,
         SchemaType.Uint256,
         SchemaType.Uint32Array,
@@ -385,7 +385,7 @@ contract StoreCoreTest is Test, StoreView {
     assertEq(keccak256(loadedData), keccak256(fourthDataBytes));
 
     // Verify all fields are correct
-    PackedCounter encodedLengths = PackedCounter_.pack(uint16(thirdDataBytes.length), uint16(fourthDataBytes.length));
+    PackedCounter encodedLengths = PackedCounterLib.pack(uint16(thirdDataBytes.length), uint16(fourthDataBytes.length));
     assertEq(
       keccak256(StoreCore.getRecord(table, key)),
       keccak256(bytes.concat(firstDataBytes, secondDataBytes, encodedLengths.unwrap(), thirdDataBytes, fourthDataBytes))
@@ -396,7 +396,7 @@ contract StoreCoreTest is Test, StoreView {
     bytes32 table = keccak256("some.table");
 
     // Register table's schema
-    Schema schema = Schema_.encode(SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.Uint32Array);
+    Schema schema = SchemaLib.encode(SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.Uint32Array);
     StoreCore.registerSchema(table, schema);
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -423,7 +423,7 @@ contract StoreCoreTest is Test, StoreView {
       uint16[] memory dynamicLengths = new uint16[](2);
       dynamicLengths[0] = uint16(secondDataBytes.length);
       dynamicLengths[1] = uint16(thirdDataBytes.length);
-      encodedDynamicLength = PackedCounter_.pack(dynamicLengths);
+      encodedDynamicLength = PackedCounterLib.pack(dynamicLengths);
     }
 
     // Concat data
@@ -453,7 +453,7 @@ contract StoreCoreTest is Test, StoreView {
 
   function testAccessEmptyData() public {
     bytes32 table = keccak256("some.table");
-    Schema schema = Schema_.encode(SchemaType.Uint32, SchemaType.Uint32Array);
+    Schema schema = SchemaLib.encode(SchemaType.Uint32, SchemaType.Uint32Array);
 
     StoreCore.registerSchema(table, schema);
 
@@ -480,7 +480,7 @@ contract StoreCoreTest is Test, StoreView {
     key[0] = keccak256("some key");
 
     // Register table's schema
-    Schema schema = Schema_.encode(SchemaType.Uint128);
+    Schema schema = SchemaLib.encode(SchemaType.Uint128);
     StoreCore.registerSchema(table, schema);
 
     // Create subscriber
@@ -521,7 +521,7 @@ contract StoreCoreTest is Test, StoreView {
     key[0] = keccak256("some key");
 
     // Register table's schema
-    Schema schema = Schema_.encode(SchemaType.Uint128, SchemaType.Uint32Array);
+    Schema schema = SchemaLib.encode(SchemaType.Uint128, SchemaType.Uint32Array);
     StoreCore.registerSchema(table, schema);
 
     // Create subscriber
@@ -533,7 +533,7 @@ contract StoreCoreTest is Test, StoreView {
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;
     bytes memory arrayDataBytes = Bytes.from(arrayData);
-    PackedCounter encodedArrayDataLength = PackedCounter_.pack(uint16(arrayDataBytes.length));
+    PackedCounter encodedArrayDataLength = PackedCounterLib.pack(uint16(arrayDataBytes.length));
     bytes memory dynamicData = bytes.concat(encodedArrayDataLength.unwrap(), arrayDataBytes);
     bytes memory staticData = bytes.concat(bytes16(0x0102030405060708090a0b0c0d0e0f10));
     bytes memory data = bytes.concat(staticData, dynamicData);

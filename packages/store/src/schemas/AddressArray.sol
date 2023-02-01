@@ -7,8 +7,8 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { Bytes } from "../Bytes.sol";
-import { Schema, Schema_ } from "../Schema.sol";
-import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
+import { Schema, SchemaLib } from "../Schema.sol";
+import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
 // -- User defined schema and tableId --
 struct AddressArray {
@@ -21,7 +21,7 @@ struct AddressArray {
 library AddressArray_ {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = Schema_.encode(SchemaType.AddressArray);
+    schema = SchemaLib.encode(SchemaType.AddressArray);
   }
 
   /** Register the table's schema */

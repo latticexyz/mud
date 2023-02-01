@@ -59,12 +59,12 @@
 (src/test/MixedTable.t.sol) | get record from MixedTable [Mixed memory mixed = MixedTable.get(key)]: 20494
 (src/test/PackedCounter.t.sol) | get value at index of PackedCounter [packedCounter.atIndex(3)]: 272
 (src/test/PackedCounter.t.sol) | set value at index of PackedCounter [packedCounter = packedCounter.setAtIndex(2, 5)]: 884
-(src/test/PackedCounter.t.sol) | pack uint16 array into PackedCounter [PackedCounter packedCounter = PackedCounter_.pack(counters)]: 2148
+(src/test/PackedCounter.t.sol) | pack uint16 array into PackedCounter [PackedCounter packedCounter = PackedCounterLib.pack(counters)]: 2148
 (src/test/PackedCounter.t.sol) | get total of PackedCounter [packedCounter.total()]: 33
 (src/test/RouteTable.t.sol) | register RouteTable schema [RouteTable.registerSchema()]: 30440
 (src/test/RouteTable.t.sol) | set RouteTable record [RouteTable.set(key, addr, selector, executionMode)]: 29726
 (src/test/RouteTable.t.sol) | get RouteTable record [Route memory systemEntry = RouteTable.get(key)]: 6506
-(src/test/Schema.t.sol) | encode schema with 6 entries [Schema_.encode]: 6202
+(src/test/Schema.t.sol) | encode schema with 6 entries [SchemaLib.encode]: 6202
 (src/test/Schema.t.sol) | get schema type at index [SchemaType schemaType1 = schema.atIndex(0)]: 200
 (src/test/Schema.t.sol) | get number of dynamic fields from schema [uint256 num = schema.numDynamicFields()]: 80
 (src/test/Schema.t.sol) | get number of static fields from schema [uint256 num = schema.numStaticFields()]: 91

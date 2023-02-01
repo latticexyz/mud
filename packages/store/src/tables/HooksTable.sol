@@ -7,8 +7,8 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { Bytes } from "../Bytes.sol";
-import { Schema, Schema_ } from "../Schema.sol";
-import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
+import { Schema, SchemaLib } from "../Schema.sol";
+import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 import { AddressArray, AddressArray_ } from "../schemas/AddressArray.sol";
 
 // -- User defined schema and tableId --

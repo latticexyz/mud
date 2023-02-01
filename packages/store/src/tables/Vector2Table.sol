@@ -7,7 +7,7 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { Bytes } from "../Bytes.sol";
-import { Schema, Schema_ } from "../Schema.sol";
+import { Schema, SchemaLib } from "../Schema.sol";
 import { Vector2, Vector2_ } from "../schemas/Vector2.sol";
 
 // -- User defined tableId --

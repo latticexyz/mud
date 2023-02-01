@@ -7,7 +7,7 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { Bytes } from "../Bytes.sol";
-import { Schema, Schema_ } from "../Schema.sol";
+import { Schema, SchemaLib } from "../Schema.sol";
 
 // -- User defined schema --
 
@@ -23,7 +23,7 @@ struct Route {
 library Route_ {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = Schema_.encode(SchemaType.Address, SchemaType.Bytes4, SchemaType.Uint8);
+    schema = SchemaLib.encode(SchemaType.Address, SchemaType.Bytes4, SchemaType.Uint8);
   }
 
   /** Register the table's schema */

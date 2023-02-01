@@ -8,9 +8,9 @@ import { Bytes } from "./Bytes.sol";
 // - 2 bytes length per counter
 type PackedCounter is bytes32;
 
-using PackedCounter_ for PackedCounter global;
+using PackedCounterLib for PackedCounter global;
 
-library PackedCounter_ {
+library PackedCounterLib {
   /************************************************************************
    *
    *    STATIC FUNCTIONS
