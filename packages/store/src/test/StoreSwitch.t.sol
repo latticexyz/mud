@@ -10,7 +10,7 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 
 // Mock Store to call MockSystem
 contract Store is StoreView {
-  System mockSystem = new System();
+  MockSystem mockSystem = new MockSystem();
 
   function callViaDelegateCall() public returns (bool isDelegate) {
     (bool success, bytes memory data) = address(mockSystem).delegatecall(abi.encodeWithSignature("isDelegateCall()"));
@@ -26,7 +26,7 @@ contract Store is StoreView {
 }
 
 // Mock system to wrap StoreSwitch.isDelegateCall()
-contract System {
+contract MockSystem {
   function isDelegateCall() public view returns (bool isDelegate) {
     // !gasreport check if delegatecall
     isDelegate = StoreSwitch.isDelegateCall();

@@ -8,12 +8,12 @@ import { System } from "../System.sol";
 import { ExecutionMode } from "../Types.sol";
 import { Vector2Table, Vector2 } from "../tables/Vector2Table.sol";
 
-contract TestSystem is System {
+contract WorldTestSystem is System {
   function msgSender() public pure returns (address) {
     return _msgSender();
   }
 
-  // TestSystem's move function sets state on the Vector2Table of the caller
+  // WorldTestSystem's move function sets state on the Vector2Table of the caller
   // (independent of delegatecall or regular call)
   function move(
     bytes32 entity,
@@ -25,10 +25,10 @@ contract TestSystem is System {
 }
 
 // TODO: auto-generate this interface from registered systems
-interface WorldWithTestSystem {
-  function TestSystem_msgSender() external view returns (address);
+interface WorldWithWorldTestSystem {
+  function WorldTestSystem_msgSender() external view returns (address);
 
-  function TestSystem_move(
+  function WorldTestSystem_move(
     bytes32 entity,
     uint32 x,
     uint32 y
@@ -37,19 +37,19 @@ interface WorldWithTestSystem {
 
 contract WorldTest is DSTestPlus {
   World internal world;
-  TestSystem internal system;
+  WorldTestSystem internal system;
 
   function setUp() public {
     world = new World();
-    system = new TestSystem();
+    system = new WorldTestSystem();
   }
 
   function testRegisterAndCallSystem() public {
     // Register autonomous system in the world
-    world.registerSystem(address(system), "TestSystem", "msgSender()", ExecutionMode.Autonomous);
+    world.registerSystem(address(system), "WorldTestSystem", "msgSender()", ExecutionMode.Autonomous);
 
     // Call system via world contract
-    address msgSender = WorldWithTestSystem(address(world)).TestSystem_msgSender();
+    address msgSender = WorldWithWorldTestSystem(address(world)).WorldTestSystem_msgSender();
 
     // msg.sender (this) should have been passed to system
     assertEq(msgSender, address(this));
@@ -57,10 +57,10 @@ contract WorldTest is DSTestPlus {
 
   function testRegisterAndDelegatecallSystem() public {
     // Register delegate system in the world
-    world.registerSystem(address(system), "TestSystem", "msgSender()", ExecutionMode.Delegate);
+    world.registerSystem(address(system), "WorldTestSystem", "msgSender()", ExecutionMode.Delegate);
 
     // Call system via world contract
-    address msgSender = WorldWithTestSystem(address(world)).TestSystem_msgSender();
+    address msgSender = WorldWithWorldTestSystem(address(world)).WorldTestSystem_msgSender();
 
     // msg.sender (this) should have been passed to system
     assertEq(msgSender, address(this));
@@ -71,10 +71,10 @@ contract WorldTest is DSTestPlus {
     Vector2Table.registerSchema(world);
   }
 
-  // Register TestSystem as autonomous system and call its move function to set state on Vector2Table
-  function testSetVector2ViaTestSystemAutonomous() public {
+  // Register WorldTestSystem as autonomous system and call its move function to set state on Vector2Table
+  function testSetVector2ViaWorldTestSystemAutonomous() public {
     // Register autonomous system in the world
-    world.registerSystem(address(system), "TestSystem", "move(bytes32,uint32,uint32)", ExecutionMode.Autonomous);
+    world.registerSystem(address(system), "WorldTestSystem", "move(bytes32,uint32,uint32)", ExecutionMode.Autonomous);
 
     // Register table
     Vector2Table.registerSchema(world);
@@ -83,7 +83,7 @@ contract WorldTest is DSTestPlus {
     bytes32 entity = keccak256("entity");
 
     // !gasreport call autonomous system via World contract
-    WorldWithTestSystem(address(world)).TestSystem_move(entity, 1, 2);
+    WorldWithWorldTestSystem(address(world)).WorldTestSystem_move(entity, 1, 2);
 
     // Get state from the table (using out-of-system syntax)
     Vector2 memory vec2 = Vector2Table.get(world, entity);
@@ -93,10 +93,10 @@ contract WorldTest is DSTestPlus {
     assertEq(vec2.y, 2);
   }
 
-  // Register TestSystem as delegate system and call its move function to set state on Vector2Table
-  function testSetVector2ViaTestSystemDelegate() public {
+  // Register WorldTestSystem as delegate system and call its move function to set state on Vector2Table
+  function testSetVector2ViaWorldTestSystemDelegate() public {
     // Register delegate system in the world
-    world.registerSystem(address(system), "TestSystem", "move(bytes32,uint32,uint32)", ExecutionMode.Delegate);
+    world.registerSystem(address(system), "WorldTestSystem", "move(bytes32,uint32,uint32)", ExecutionMode.Delegate);
 
     // Register table
     Vector2Table.registerSchema(world);
@@ -105,7 +105,7 @@ contract WorldTest is DSTestPlus {
     bytes32 entity = keccak256("entity");
 
     // !gasreport call delegate system via World contract
-    WorldWithTestSystem(address(world)).TestSystem_move(entity, 1, 2);
+    WorldWithWorldTestSystem(address(world)).WorldTestSystem_move(entity, 1, 2);
 
     // Get state from the table (using out-of-system syntax)
     Vector2 memory vec2 = Vector2Table.get(world, entity);
