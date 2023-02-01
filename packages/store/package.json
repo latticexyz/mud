@@ -43,5 +43,8 @@
     "ds-test": "https://github.com/dapphub/ds-test.git#c7a36fb236f298e04edf28e2fee385b80f53945f",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#37a3fe48c3a4d8239cda93445f0b5e76b1507436"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
+  "dependencies": {
+    "@latticexyz/cli": "^1.34.0"
+  }
 }
