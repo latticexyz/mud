@@ -29,7 +29,7 @@ interface IStore {
   ) external;
 
   // Register hooks to be called when a record or field is set or deleted
-  function registerHooks(bytes32 table, IStoreHook hooks) external;
+  function registerHook(bytes32 table, IStoreHook hooks) external;
 
   // Set full record (including full dynamic data)
   function deleteRecord(bytes32 table, bytes32[] memory key) external;

@@ -487,7 +487,7 @@ contract StoreCoreTest is Test, StoreView {
     MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
 
     // !gasreport register subscriber
-    StoreCore.registerHooks(table, subscriber);
+    StoreCore.registerHook(table, subscriber);
 
     bytes memory data = bytes.concat(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
@@ -528,7 +528,7 @@ contract StoreCoreTest is Test, StoreView {
     MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
 
     // !gasreport register subscriber
-    StoreCore.registerHooks(table, subscriber);
+    StoreCore.registerHook(table, subscriber);
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;

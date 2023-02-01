@@ -8,7 +8,7 @@ import { Schema } from "./Schema.sol";
 
 // Not abstract, so that it can be used as a base contract for testing and wherever write access is not needed
 contract StoreView is IStore {
-  error Store_BaseContractNotImplemented();
+  error StoreView_NotImplemented();
 
   constructor() {
     StoreCore.initialize();
@@ -19,7 +19,7 @@ contract StoreView is IStore {
   }
 
   function registerSchema(bytes32, Schema) public virtual {
-    revert Store_BaseContractNotImplemented();
+    revert StoreView_NotImplemented();
   }
 
   function setRecord(
@@ -27,7 +27,7 @@ contract StoreView is IStore {
     bytes32[] memory,
     bytes memory
   ) public virtual {
-    revert Store_BaseContractNotImplemented();
+    revert StoreView_NotImplemented();
   }
 
   // Set partial data at schema index
@@ -37,15 +37,15 @@ contract StoreView is IStore {
     uint8,
     bytes memory
   ) public virtual {
-    revert Store_BaseContractNotImplemented();
+    revert StoreView_NotImplemented();
   }
 
-  function registerHooks(bytes32, IStoreHook) public virtual {
-    revert Store_BaseContractNotImplemented();
+  function registerHook(bytes32, IStoreHook) public virtual {
+    revert StoreView_NotImplemented();
   }
 
   function deleteRecord(bytes32, bytes32[] memory) public virtual {
-    revert Store_BaseContractNotImplemented();
+    revert StoreView_NotImplemented();
   }
 
   // Get full record (including full array, load schema from storage)
