@@ -1,0 +1,42 @@
+# .github/workflows/gasreport.yml
+name: Store gas report
+
+on:
+  pull_request:
+    paths:
+      - packages/store/**
+
+jobs:
+  test:
+    runs-on: ubuntu-22.04
+    name: Run tests
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: git-checkout
+        uses: actions/checkout@v2
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: yarn install --network-concurrency 1
+
+      - name: Run gas report
+        run: yarn workspace @latticexyz/store run gasreport
+
+      - name: Commit updated workflow
+        run: |
+          git config --local user.email "github-actions@github.com"
+          git config --local user.name "github-actions"
+          git commit -a -m "chore(store): update gas report"
+
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
