@@ -28,8 +28,11 @@ interface IStore {
     bytes memory data
   ) external;
 
-  // Register a callback to be called when a record is updated
-  function registerOnUpdateHook(bytes32 table, IOnUpdateHook onUpdateHook) external;
+  // Register hooks to be called when a record or field is set or deleted
+  function registerHooks(bytes32 table, IStoreHooks hooks) external;
+
+  // Set full record (including full dynamic data)
+  function deleteRecord(bytes32 table, bytes32[] memory key) external;
 
   // Get full record (including full array, load table schema from storage)
   function getRecord(bytes32 table, bytes32[] memory key) external view returns (bytes memory data);
@@ -53,17 +56,19 @@ interface IStore {
   function isStore() external view;
 }
 
-interface IOnUpdateHook {
-  function onUpdateRecord(
+interface IStoreHooks {
+  function onSetRecord(
     bytes32 table,
     bytes32[] memory key,
     bytes memory data
   ) external;
 
-  function onUpdateField(
+  function onSetField(
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data
   ) external;
+
+  function onDeleteRecord(bytes32 table, bytes32[] memory key) external;
 }

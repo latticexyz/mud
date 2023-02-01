@@ -9,8 +9,8 @@ import { console } from "forge-std/console.sol";
 import { Schema } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Buffer, Buffer_ } from "./Buffer.sol";
-import { OnUpdateHookTable, tableId as OnUpdateHookTableId } from "./tables/OnUpdateHookTable.sol";
-import { IOnUpdateHook } from "./IStore.sol";
+import { HooksTable, tableId as HooksTableId } from "./tables/HooksTable.sol";
+import { IStoreHooks } from "./IStore.sol";
 
 // TODO
 // - Turn all storage pointer to uint256 for consistency (uint256 is better than bytes32 because it's easier to do arithmetic on)
@@ -39,7 +39,7 @@ library StoreCore {
    * TODO: should we turn the schema table into a "proper table" and register it here?
    */
   function initialize() internal {
-    registerSchema(OnUpdateHookTableId, OnUpdateHookTable.getSchema());
+    registerSchema(HooksTableId, HooksTable.getSchema());
   }
 
   /************************************************************************
@@ -98,10 +98,10 @@ library StoreCore {
    ************************************************************************/
 
   /*
-   * Add a hook to be called when a record is set
+   * Register hooks to be called when a record or field is set or deleted
    */
-  function registerOnUpdateHook(bytes32 table, IOnUpdateHook onUpdateHook) internal {
-    OnUpdateHookTable.push(table, address(onUpdateHook));
+  function registerHooks(bytes32 table, IStoreHooks hooks) external {
+    HooksTable.push(table, address(hooks));
   }
 
   /************************************************************************
@@ -136,11 +136,11 @@ library StoreCore {
       revert StoreCore_InvalidDataLength(expectedLength, data.length);
     }
 
-    // Call update hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory onUpdateHooks = OnUpdateHookTable.get(table);
-    for (uint256 i = 0; i < onUpdateHooks.length; i++) {
-      IOnUpdateHook hook = IOnUpdateHook(onUpdateHooks[i]);
-      hook.onUpdateRecord(table, key, data);
+    // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    address[] memory hooks = HooksTable.get(table);
+    for (uint256 i = 0; i < hooks.length; i++) {
+      IStoreHooks hook = IStoreHooks(hooks[i]);
+      hook.onSetRecord(table, key, data);
     }
 
     // Store the static data at the static data location
@@ -181,11 +181,11 @@ library StoreCore {
   ) internal {
     Schema schema = getSchema(table);
 
-    // Call update hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory onUpdateHooks = OnUpdateHookTable.get(table);
-    for (uint256 i = 0; i < onUpdateHooks.length; i++) {
-      IOnUpdateHook hook = IOnUpdateHook(onUpdateHooks[i]);
-      hook.onUpdateField(table, key, schemaIndex, data);
+    // Call onSetField hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    address[] memory hooks = HooksTable.get(table);
+    for (uint256 i = 0; i < hooks.length; i++) {
+      IStoreHooks hook = IStoreHooks(hooks[i]);
+      hook.onSetField(table, key, schemaIndex, data);
     }
 
     if (schemaIndex < schema.numStaticFields()) {
@@ -236,6 +236,13 @@ library StoreCore {
   function deleteRecord(bytes32 table, bytes32[] memory key) internal {
     // Get schema for this table
     Schema schema = getSchema(table);
+
+    // Call onDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    address[] memory hooks = HooksTable.get(table);
+    for (uint256 i = 0; i < hooks.length; i++) {
+      IStoreHooks hook = IStoreHooks(hooks[i]);
+      hook.onDeleteRecord(table, key);
+    }
 
     // Delete static data
     bytes32 staticDataLocation = _getStaticDataLocation(table, key);

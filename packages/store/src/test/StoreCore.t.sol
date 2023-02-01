@@ -13,7 +13,7 @@ import { Buffer, Buffer_ } from "../Buffer.sol";
 import { Schema, Schema_ } from "../Schema.sol";
 import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
 import { StoreView } from "../StoreView.sol";
-import { IStore, IOnUpdateHook } from "../IStore.sol";
+import { IStore, IStoreHooks } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 
 struct TestStruct {
@@ -27,7 +27,7 @@ contract StoreCoreTest is Test, StoreView {
 
   mapping(uint256 => bytes) private testMapping;
 
-  // Expose an external setRecord function for testing purposes of indexers (see testOnUpdateHook)
+  // Expose an external setRecord function for testing purposes of indexers (see testHooks)
   function setRecord(
     bytes32 table,
     bytes32[] memory key,
@@ -36,7 +36,7 @@ contract StoreCoreTest is Test, StoreView {
     StoreCore.setRecord(table, key, data);
   }
 
-  // Expose an external setField function for testing purposes of indexers (see testOnUpdateHook)
+  // Expose an external setField function for testing purposes of indexers (see testHooks)
   function setField(
     bytes32 table,
     bytes32[] memory key,
@@ -46,7 +46,12 @@ contract StoreCoreTest is Test, StoreView {
     StoreCore.setField(table, key, schemaIndex, data);
   }
 
-  // Expose an external registerSchema function for testing purposes of indexers (see testOnUpdateHook)
+  // Expose an external deleteRecord function for testing purposes of indexers (see testHooks)
+  function deleteRecord(bytes32 table, bytes32[] memory key) public override {
+    StoreCore.deleteRecord(table, key);
+  }
+
+  // Expose an external registerSchema function for testing purposes of indexers (see testHooks)
   function registerSchema(bytes32 table, Schema schema) public override {
     StoreCore.registerSchema(table, schema);
   }
@@ -469,7 +474,7 @@ contract StoreCoreTest is Test, StoreView {
     assertEq(data3.length, 0);
   }
 
-  function testOnUpdateHook() public {
+  function testHooks() public {
     bytes32 table = keccak256("some.table");
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
@@ -482,7 +487,7 @@ contract StoreCoreTest is Test, StoreView {
     MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
 
     // !gasreport register subscriber
-    StoreCore.registerOnUpdateHook(table, subscriber);
+    StoreCore.registerHooks(table, subscriber);
 
     bytes memory data = bytes.concat(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
@@ -495,15 +500,22 @@ contract StoreCoreTest is Test, StoreView {
 
     data = bytes.concat(bytes16(0x1112131415161718191a1b1c1d1e1f20));
 
-    // !gasreport set field on table with subscriber
+    // !gasreport set static field on table with subscriber
     StoreCore.setField(table, key, 0, data);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     indexedData = StoreCore.getRecord(indexerTableId, key);
     assertEq(keccak256(data), keccak256(indexedData));
+
+    // !gasreport delete record on table with subscriber
+    StoreCore.deleteRecord(table, key);
+
+    // Get data from indexed table - the indexer should have mirrored the data there
+    indexedData = StoreCore.getRecord(indexerTableId, key);
+    assertEq(keccak256(indexedData), keccak256(bytes.concat(bytes16(0))));
   }
 
-  function testOnUpdateHookDynamicData() public {
+  function testHooksDynamicData() public {
     bytes32 table = keccak256("some.table");
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
@@ -516,7 +528,7 @@ contract StoreCoreTest is Test, StoreView {
     MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
 
     // !gasreport register subscriber
-    StoreCore.registerOnUpdateHook(table, subscriber);
+    StoreCore.registerHooks(table, subscriber);
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;
@@ -526,7 +538,7 @@ contract StoreCoreTest is Test, StoreView {
     bytes memory staticData = bytes.concat(bytes16(0x0102030405060708090a0b0c0d0e0f10));
     bytes memory data = bytes.concat(staticData, dynamicData);
 
-    // !gasreport set record on table with subscriber
+    // !gasreport set (dynamic) record on table with subscriber
     StoreCore.setRecord(table, key, data);
 
     // Get data from indexed table - the indexer should have mirrored the data there
@@ -539,18 +551,25 @@ contract StoreCoreTest is Test, StoreView {
     dynamicData = bytes.concat(encodedArrayDataLength.unwrap(), arrayDataBytes);
     data = bytes.concat(staticData, dynamicData);
 
-    // !gasreport set field on table with subscriber
+    // !gasreport set (dynamic) field on table with subscriber
     StoreCore.setField(table, key, 1, arrayDataBytes);
 
     // Get data from indexed table - the indexer should have mirrored the data there
     indexedData = StoreCore.getRecord(indexerTableId, key);
     assertEq(keccak256(data), keccak256(indexedData));
+
+    // !gasreport delete (dynamic) record on table with subscriber
+    StoreCore.deleteRecord(table, key);
+
+    // Get data from indexed table - the indexer should have mirrored the data there
+    indexedData = StoreCore.getRecord(indexerTableId, key);
+    assertEq(keccak256(indexedData), keccak256(bytes.concat(bytes16(0))));
   }
 }
 
 bytes32 constant indexerTableId = keccak256("indexer.table");
 
-contract MirrorSubscriber is IOnUpdateHook {
+contract MirrorSubscriber is IStoreHooks {
   bytes32 _table;
 
   constructor(bytes32 table, Schema schema) {
@@ -558,7 +577,7 @@ contract MirrorSubscriber is IOnUpdateHook {
     _table = table;
   }
 
-  function onUpdateRecord(
+  function onSetRecord(
     bytes32 table,
     bytes32[] memory key,
     bytes memory data
@@ -567,7 +586,7 @@ contract MirrorSubscriber is IOnUpdateHook {
     StoreSwitch.setRecord(indexerTableId, key, data);
   }
 
-  function onUpdateField(
+  function onSetField(
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex,
@@ -575,5 +594,10 @@ contract MirrorSubscriber is IOnUpdateHook {
   ) public {
     if (table != table) revert("invalid table");
     StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
+  }
+
+  function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
+    if (table != table) revert("invalid table");
+    StoreSwitch.deleteRecord(indexerTableId, key);
   }
 }

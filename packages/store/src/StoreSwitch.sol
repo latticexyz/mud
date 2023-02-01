@@ -74,6 +74,14 @@ library StoreSwitch {
     }
   }
 
+  function deleteRecord(bytes32 table, bytes32[] memory key) internal {
+    if (isDelegateCall()) {
+      StoreCore.deleteRecord(table, key);
+    } else {
+      IStore(msg.sender).deleteRecord(table, key);
+    }
+  }
+
   function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     if (isDelegateCall()) {
       return StoreCore.getRecord(table, key);
