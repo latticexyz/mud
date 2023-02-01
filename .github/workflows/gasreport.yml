@@ -17,6 +17,8 @@ jobs:
 
       - name: git-checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${GITHUB_HEAD_REF}
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
@@ -36,6 +38,5 @@ jobs:
         run: |
           git config --local user.email "github-actions@github.com"
           git config --local user.name "Gas report"
-          git checkout "${GITHUB_HEAD_REF}"
           git commit -a -m "chore(store): update gas report"
           git push
