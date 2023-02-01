@@ -36,5 +36,6 @@ jobs:
         run: |
           git config --local user.email "github-actions@github.com"
           git config --local user.name "Gas report"
+          git checkout "${GITHUB_HEAD_REF}"
           git commit -a -m "chore(store): update gas report"
           git push
