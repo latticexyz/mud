@@ -2,10 +2,10 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { World } from "../World.sol";
-import { System } from "../System.sol";
-import { ExecutionMode } from "../Types.sol";
-import { Vector2Table, Vector2 } from "../tables/Vector2Table.sol";
+import { World } from "../src/World.sol";
+import { System } from "../src/System.sol";
+import { ExecutionMode } from "../src/Types.sol";
+import { Vector2Table, Vector2 } from "../src/tables/Vector2Table.sol";
 
 contract WorldTestSystem is System {
   function msgSender() public pure returns (address) {

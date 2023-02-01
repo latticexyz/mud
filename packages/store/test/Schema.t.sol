@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { Schema, SchemaLib } from "../Schema.sol";
-import { SchemaType } from "../Types.sol";
+import { Schema, SchemaLib } from "../src/Schema.sol";
+import { SchemaType } from "../src/Types.sol";
 
 contract SchemaTest is Test {
   function testEncodeDecodeSchema() public {

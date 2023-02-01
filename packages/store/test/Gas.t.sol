@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { Bytes } from "../Bytes.sol";
-import { Buffer_ } from "../Buffer.sol";
+import { Bytes } from "../src/Bytes.sol";
+import { Buffer_ } from "../src/Buffer.sol";
 
 struct Mixed {
   uint32 u32;

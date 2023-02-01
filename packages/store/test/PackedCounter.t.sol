@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
+import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 
 contract PackedCounterTest is Test {
   function testTotal() public {

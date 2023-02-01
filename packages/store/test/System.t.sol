@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { World } from "../World.sol";
-import { System } from "../System.sol";
+import { World } from "../src/World.sol";
+import { System } from "../src/System.sol";
 
 contract TestSystem is System {
   function msgSender() public pure returns (address) {

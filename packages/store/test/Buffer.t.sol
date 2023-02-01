@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { Cast } from "../Cast.sol";
-import "../Buffer.sol";
+import { Cast } from "../src/Cast.sol";
+import "../src/Buffer.sol";
 
 contract BufferTest is Test {
   function testAllocateBuffer() public {

@@ -2,10 +2,10 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { SchemaType } from "../Types.sol";
-import { StoreCore } from "../StoreCore.sol";
-import { StoreView } from "../StoreView.sol";
-import { StoreSwitch } from "../StoreSwitch.sol";
+import { SchemaType } from "../src/Types.sol";
+import { StoreCore } from "../src/StoreCore.sol";
+import { StoreView } from "../src/StoreView.sol";
+import { StoreSwitch } from "../src/StoreSwitch.sol";
 
 // Mock Store to call MockSystem
 contract Store is StoreView {

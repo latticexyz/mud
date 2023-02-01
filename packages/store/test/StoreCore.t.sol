@@ -2,19 +2,19 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { StoreCore, StoreCoreInternal } from "../StoreCore.sol";
-import { Utils } from "../Utils.sol";
-import { Bytes } from "../Bytes.sol";
-import { SchemaType } from "../Types.sol";
-import { Storage } from "../Storage.sol";
-import { Memory } from "../Memory.sol";
-import { Cast } from "../Cast.sol";
-import { Buffer, Buffer_ } from "../Buffer.sol";
-import { Schema, SchemaLib } from "../Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
-import { StoreView } from "../StoreView.sol";
-import { IStore, IStoreHook } from "../IStore.sol";
-import { StoreSwitch } from "../StoreSwitch.sol";
+import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
+import { Utils } from "../src/Utils.sol";
+import { Bytes } from "../src/Bytes.sol";
+import { SchemaType } from "../src/Types.sol";
+import { Storage } from "../src/Storage.sol";
+import { Memory } from "../src/Memory.sol";
+import { Cast } from "../src/Cast.sol";
+import { Buffer, Buffer_ } from "../src/Buffer.sol";
+import { Schema, SchemaLib } from "../src/Schema.sol";
+import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
+import { StoreView } from "../src/StoreView.sol";
+import { IStore, IStoreHook } from "../src/IStore.sol";
+import { StoreSwitch } from "../src/StoreSwitch.sol";
 
 struct TestStruct {
   uint128 firstData;

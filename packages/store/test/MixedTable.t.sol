@@ -2,11 +2,11 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { MixedTable, tableId as MixedTableId, Mixed } from "../tables/MixedTable.sol";
-import { StoreCore } from "../StoreCore.sol";
-import { SchemaType } from "../Types.sol";
-import { StoreView } from "../StoreView.sol";
-import { Schema } from "../Schema.sol";
+import { MixedTable, tableId as MixedTableId, Mixed } from "../src/tables/MixedTable.sol";
+import { StoreCore } from "../src/StoreCore.sol";
+import { SchemaType } from "../src/Types.sol";
+import { StoreView } from "../src/StoreView.sol";
+import { Schema } from "../src/Schema.sol";
 
 contract MixedTableTest is Test, StoreView {
   Mixed private testMixed;

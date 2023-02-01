@@ -2,11 +2,11 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { Vector2Table, tableId as Vector2Id, Vector2 } from "../tables/Vector2Table.sol";
-import { StoreCore } from "../StoreCore.sol";
-import { SchemaType } from "../Types.sol";
-import { StoreView } from "../StoreView.sol";
-import { Schema } from "../Schema.sol";
+import { Vector2Table, tableId as Vector2Id, Vector2 } from "../src/tables/Vector2Table.sol";
+import { StoreCore } from "../src/StoreCore.sol";
+import { SchemaType } from "../src/Types.sol";
+import { StoreView } from "../src/StoreView.sol";
+import { Schema } from "../src/Schema.sol";
 
 contract Vector2TableTest is Test, StoreView {
   function testRegisterAndGetSchema() public {

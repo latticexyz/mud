@@ -2,10 +2,10 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { Cast } from "../Cast.sol";
-import { Storage } from "../Storage.sol";
-import { Utils } from "../Utils.sol";
-import { Bytes } from "../Bytes.sol";
+import { Cast } from "../src/Cast.sol";
+import { Storage } from "../src/Storage.sol";
+import { Utils } from "../src/Utils.sol";
+import { Bytes } from "../src/Bytes.sol";
 
 contract StorageTest is Test {
   function testStoreLoad() public {

@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { Bytes } from "../Bytes.sol";
+import { Bytes } from "../src/Bytes.sol";
 
 contract BytesTest is Test {
   function testFromBytesArray() public {
