@@ -9,7 +9,7 @@ on:
 jobs:
   gas-report:
     runs-on: ubuntu-22.04
-    name: Run tests
+    name: Generate gas report
     steps:
       - uses: actions/setup-node@v3
         with:
