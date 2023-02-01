@@ -61,18 +61,6 @@ library StoreSwitch {
     }
   }
 
-  function setStaticData(
-    bytes32 table,
-    bytes32[] memory key,
-    bytes memory data
-  ) internal {
-    if (isDelegateCall()) {
-      StoreCore.setStaticData(table, key, data);
-    } else {
-      IStore(msg.sender).setStaticData(table, key, data);
-    }
-  }
-
   function setField(
     bytes32 table,
     bytes32[] memory key,

@@ -173,32 +173,6 @@ library StoreCore {
     emit StoreSetRecord(table, key, data);
   }
 
-  /**
-   * Set full static data record for the given table and key tuple (without any dynamic data)
-   * TODO: remove this function and just use setRecord
-   */
-  function setStaticData(
-    bytes32 table,
-    bytes32[] memory key,
-    bytes memory data
-  ) internal {
-    // verify the value has the correct length for the table (based on the table's schema)
-    // to prevent invalid data from being stored
-    Schema schema = getSchema(table);
-
-    // Verify the static data length matches the table schema
-    if (schema.staticDataLength() != data.length) {
-      revert StoreCore_InvalidDataLength(schema.staticDataLength(), data.length);
-    }
-
-    // Store the provided value in storage
-    bytes32 location = _getStaticDataLocation(table, key);
-    Storage.write(location, data);
-
-    // Emit event to notify indexers
-    emit StoreSetRecord(table, key, data);
-  }
-
   function setField(
     bytes32 table,
     bytes32[] memory key,
@@ -522,27 +496,6 @@ library StoreCoreExt {
    *    SET DATA
    *
    ************************************************************************/
-
-  function setStaticData(
-    bytes32 table,
-    bytes32 _key,
-    bytes memory data
-  ) internal {
-    bytes32[] memory key = new bytes32[](1);
-    key[0] = _key;
-    StoreCore.setStaticData(table, key, data);
-  }
-
-  function setStaticData(
-    bytes32 table,
-    bytes32[2] memory _key,
-    bytes memory data
-  ) internal {
-    bytes32[] memory key = new bytes32[](2);
-    key[0] = _key[0];
-    key[1] = _key[1];
-    StoreCore.setStaticData(table, key, data);
-  }
 
   /************************************************************************
    *

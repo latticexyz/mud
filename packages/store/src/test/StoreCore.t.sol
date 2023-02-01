@@ -145,7 +145,7 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     key[0] = keccak256("some.key");
 
     // !gasreport set static record (1 slot)
-    StoreCore.setStaticData(table, key, data);
+    StoreCore.setRecord(table, key, data);
 
     // Get data
     // !gasreport get static record (1 slot)
@@ -167,7 +167,7 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     key[0] = keccak256("some.key");
 
     // This should fail because the data is not 6 bytes long
-    StoreCore.setStaticData(table, key, data);
+    StoreCore.setRecord(table, key, data);
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
@@ -186,7 +186,7 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     key[0] = keccak256("some.key");
 
     // !gasreport set static record (2 slots)
-    StoreCore.setStaticData(table, key, data);
+    StoreCore.setRecord(table, key, data);
 
     // Get data
     // !gasreport get static record (2 slots)

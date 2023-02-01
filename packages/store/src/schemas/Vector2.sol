@@ -44,7 +44,7 @@ library Vector2_ {
     bytes memory data = bytes.concat(bytes4(x), bytes4(y));
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setStaticData(tableId, keyTuple, data);
+    StoreSwitch.setRecord(tableId, keyTuple, data);
   }
 
   function set(

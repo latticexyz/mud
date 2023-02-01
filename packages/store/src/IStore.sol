@@ -20,13 +20,6 @@ interface IStore {
     bytes memory data
   ) external;
 
-  // TODO: remove this function, use setRecord instead
-  function setStaticData(
-    bytes32 table,
-    bytes32[] memory key,
-    bytes memory data
-  ) external;
-
   // Set partial data at schema index
   function setField(
     bytes32 table,

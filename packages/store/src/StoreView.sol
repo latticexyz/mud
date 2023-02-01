@@ -30,14 +30,6 @@ contract StoreView is IStore {
     revert Store_BaseContractNotImplemented();
   }
 
-  function setStaticData(
-    bytes32,
-    bytes32[] memory,
-    bytes memory
-  ) public virtual {
-    revert Store_BaseContractNotImplemented();
-  }
-
   // Set partial data at schema index
   function setField(
     bytes32,
