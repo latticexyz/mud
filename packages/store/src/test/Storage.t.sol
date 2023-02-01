@@ -8,7 +8,7 @@ import { Utils } from "../Utils.sol";
 import { Bytes } from "../Bytes.sol";
 
 contract StorageTest is Test {
-  function testWriteRead() public {
+  function testStoreLoad() public {
     bytes memory data1 = bytes.concat(
       bytes1(0x01),
       bytes32(0x0200000000000000000000000000000000000000000000000000000000000003),
@@ -25,37 +25,37 @@ contract StorageTest is Test {
     uint256 storagePointer = uint256(keccak256("some location"));
     uint256 storagePointerTwoSlotsAfter = storagePointer + 2;
 
-    // First write some data to storage at the target slot and two slots after the target slot
+    // First store some data to storage at the target slot and two slots after the target slot
 
-    // !gasreport write 1 storage slot
-    Storage.write(storagePointer, originalDataFirstSlot);
+    // !gasreport store 1 storage slot
+    Storage.store(storagePointer, originalDataFirstSlot);
 
-    Storage.write(storagePointerTwoSlotsAfter, originalDataLastSlot);
+    Storage.store(storagePointerTwoSlotsAfter, originalDataLastSlot);
 
     // Then set the target slot, partially overwriting the first and third slot, but using safeTrail and offset
 
-    // !gasreport write 34 bytes over 3 storage slots (with offset and safeTrail))
-    Storage.write(storagePointer, 31, data1);
+    // !gasreport store 34 bytes over 3 storage slots (with offset and safeTrail))
+    Storage.store(storagePointer, 31, data1);
 
     // Assert the first slot has the correct value
-    assertEq(Storage.read(storagePointer), bytes32(0x4200000000000000000000000000000000000000000000000000000000006901));
+    assertEq(Storage.load(storagePointer), bytes32(0x4200000000000000000000000000000000000000000000000000000000006901));
 
     // Assert the second slot has the correct value
     assertEq(
-      Storage.read(storagePointer + 1),
+      Storage.load(storagePointer + 1),
       bytes32(0x0200000000000000000000000000000000000000000000000000000000000003)
     );
 
     // Assert that the trailing slot has the correct value
     assertEq(
-      Storage.read(storagePointerTwoSlotsAfter),
+      Storage.load(storagePointerTwoSlotsAfter),
       bytes32(0x0442000000000000000000000000000000000000000000000000000000000069)
     );
 
-    // Assert we can read the correct partial value from storage
+    // Assert we can load the correct partial value from storage
 
-    // !gasreport read 34 bytes over 3 storage slots (with offset and safeTrail))
-    bytes memory data = Storage.read(storagePointer, 31, 34);
+    // !gasreport load 34 bytes over 3 storage slots (with offset and safeTrail))
+    bytes memory data = Storage.load(storagePointer, 31, 34);
 
     assertEq(Bytes.slice1(data, 0), bytes1(0x01));
     assertEq(Bytes.slice32(data, 1), bytes32(0x0200000000000000000000000000000000000000000000000000000000000003));
@@ -63,12 +63,12 @@ contract StorageTest is Test {
     assertEq(keccak256(data), keccak256(data1));
   }
 
-  function testWriteReadFuzzy(
+  function testStoreLoadFuzzy(
     bytes memory data,
     bytes32 storagePointer,
     uint8 offset
   ) public {
-    Storage.write(storagePointer, offset, data);
-    assertEq(keccak256(Storage.read(storagePointer, offset, data.length)), keccak256(data));
+    Storage.store(storagePointer, offset, data);
+    assertEq(keccak256(Storage.load(storagePointer, offset, data.length)), keccak256(data));
   }
 }

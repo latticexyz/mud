@@ -5,21 +5,21 @@ import { Utils } from "./Utils.sol";
 import { Bytes } from "./Bytes.sol";
 
 library Memory {
-  function read(uint256 memoryPointer) internal pure returns (bytes32 data) {
-    return read(bytes32(memoryPointer));
+  function load(uint256 memoryPointer) internal pure returns (bytes32 data) {
+    return load(bytes32(memoryPointer));
   }
 
-  function read(bytes32 memoryPointer) internal pure returns (bytes32 data) {
+  function load(bytes32 memoryPointer) internal pure returns (bytes32 data) {
     assembly {
       data := mload(memoryPointer)
     }
   }
 
-  function read(uint256 memoryPointer, uint256 offset) internal pure returns (bytes32 data) {
-    return read(bytes32(memoryPointer), offset);
+  function load(uint256 memoryPointer, uint256 offset) internal pure returns (bytes32 data) {
+    return load(bytes32(memoryPointer), offset);
   }
 
-  function read(bytes32 memoryPointer, uint256 offset) internal pure returns (bytes32 data) {
+  function load(bytes32 memoryPointer, uint256 offset) internal pure returns (bytes32 data) {
     assembly {
       data := mload(add(memoryPointer, offset))
     }
