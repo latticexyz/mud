@@ -20,9 +20,9 @@ import { IStoreHooks } from "./IStore.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
-  event StoreDeleteRecord(bytes32 table, bytes32[] key);
+  event MudStoreSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event MudStoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event MudStoreDeleteRecord(bytes32 table, bytes32[] key);
 
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant SCHEMA_TABLE = keccak256("mud.store.table.schema");
@@ -170,7 +170,7 @@ library StoreCore {
     }
 
     // Emit event to notify indexers
-    emit StoreSetRecord(table, key, data);
+    emit MudStoreSetRecord(table, key, data);
   }
 
   function setField(
@@ -195,7 +195,7 @@ library StoreCore {
     }
 
     // Emit event to notify indexers
-    emit StoreSetField(table, key, schemaIndex, data);
+    emit MudStoreSetField(table, key, schemaIndex, data);
   }
 
   function _setStaticField(
@@ -267,7 +267,7 @@ library StoreCore {
     Storage.write(dynamicDataLengthLocation, bytes32(0));
 
     // Emit event to notify indexers
-    emit StoreDeleteRecord(table, key);
+    emit MudStoreDeleteRecord(table, key);
   }
 
   /************************************************************************

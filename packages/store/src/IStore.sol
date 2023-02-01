@@ -5,9 +5,9 @@ import { SchemaType } from "./Types.sol";
 import { Schema } from "./Schema.sol";
 
 interface IStore {
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
-  event StoreDeleteRecord(bytes32 table, bytes32[] key);
+  event MudStoreSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event MudStoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event MudStoreDeleteRecord(bytes32 table, bytes32[] key);
 
   function registerSchema(bytes32 table, Schema schema) external;
 
