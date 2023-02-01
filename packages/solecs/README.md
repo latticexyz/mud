@@ -62,7 +62,7 @@ While any `uint256` is a valid id, `uint256`s from 0 to 2<sup>160</sup> are rese
 This allows every contract and EOA to be a valid entity.
 
 A simple use-case of this convention is being able to represent components and systems (both of which are contracts) as entities (with their entity id being their contract address).
-This allows them to be stored in "registry components" in the World, which means every component and system is automatically known to the client via the standardized contract/client sync described in the [World section](#World). Pretty meta.
+This allows them to be stored in "registry components" in the World, which means every component and system is automatically known to the client via the standardized contract/client sync described in the [World section](#world). Pretty meta.
 
 ## Components
 

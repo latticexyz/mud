@@ -34,7 +34,7 @@ MUD is MIT-licensed, open source and free to use.
 
 ## Features
 
-![MUD features](/public/features.png)
+![MUD features](./public/docs/features.png)
 
 ### Today
 
@@ -60,7 +60,7 @@ MUD is MIT-licensed, open source and free to use.
 npx @latticexyz/cli create my-project
 ```
 
-![Scaffolding a new project with the MUD CLI.](/public/mud-create.gif)
+![Scaffolding a new project with the MUD CLI.](./public/docs/mud-create.gif)
 
 ## Packages
 
