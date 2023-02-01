@@ -8,23 +8,17 @@ Before we can use the new `Position` component on the client, we need to define 
 
 (We can remove the `Counter` component for now, too.)
 
-```diff packages/clients/src/mud/components.ts
--import { defineNumberComponent } from "@latticexyz/std-client";
-+import { defineCoordComponent } from "@latticexyz/std-client";
- import { world } from "./world";
+```ts !#1,5-9 packages/clients/src/mud/components.ts
+import { defineCoordComponent } from "@latticexyz/std-client";
+import { world } from "./world";
 
- export const components = {
--  Counter: defineNumberComponent(world, {
--    metadata: {
--      contractId: "component.Counter",
--    }
--  }),
-+  Position: defineCoordComponent(world, {
-+    metadata: {
-+      contractId: "component.Position",
-+    },
-+  }),
- };
+export const components = {
+  Position: defineCoordComponent(world, {
+    metadata: {
+      contractId: "component.Position",
+    },
+  }),
+};
 ```
 
 ## Render the world
@@ -51,9 +45,7 @@ export const GameBoard = () => {
                 gridColumn: x + 1,
                 gridRow: y + 1,
               }}
-            >
-              {/* empty */}
-            </div>
+            ></div>
           );
         })
       )}
@@ -78,58 +70,59 @@ export const App = () => {
 
 And a small tweak to `index.html` to give the page a black background and make it feel more like a game console.
 
-```diff packages/client/index.html
-     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-     <title>a minimal MUD client</title>
-   </head>
--  <body>
-+  <body class="bg-black text-white">
-     <div id="react-root"></div>
-     <script type="module" src="/src/index.tsx"></script>
-   </body>
+```html !#4 packages/client/index.html
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>a minimal MUD client</title>
+  </head>
+  <body class="bg-black text-white">
+    <div id="react-root"></div>
+    <script type="module" src="/src/index.tsx"></script>
+  </body>
 ```
 
 ## Move the player
 
 There's no player on the game board because it doesn't have a position yet. Wire up a click handler on each tile to set the player position (using our `Move` system). Once a tile is clicked, the player appears and we can continue moving it around the map by clicking other tiles.
 
-```diff packages/client/src/GameBoard.tsx
-+import { useComponentValueStream } from "@latticexyz/std-client";
-+import { useMUD } from "./MUDContext";
-+
- export const GameBoard = () => {
-   const rows = new Array(10).fill(0).map((_, i) => i);
-   const columns = new Array(10).fill(0).map((_, i) => i);
+```tsx !#1-2,8-13,28-31,33 packages/client/src/GameBoard.tsx
+import { useComponentValueStream } from "@latticexyz/std-client";
+import { useMUD } from "./MUDContext";
 
-+  const { components, systems, playerEntity } = useMUD();
-+  const playerPosition = useComponentValueStream(components.Position, playerEntity);
-+
-   return (
-     <div className="inline-grid p-2 bg-lime-500">
-       {rows.map((y) =>
-         columns.map((x) => {
-           const key = `${x},${y}`;
-           return (
-             <div
-               key={key}
--              className="w-8 h-8"
-+              className="w-8 h-8 flex items-center justify-center cursor-pointer hover:ring"
-               style={{
-                 gridColumn: x + 1,
-                 gridRow: y + 1,
-               }}
-+              onClick={(event) => {
-+                event.preventDefault();
-+                systems["system.Move"].executeTyped({ x, y });
-+              }}
-             >
--              {/* empty */}
-+              {playerPosition?.x === x && playerPosition?.y === y ? <>🤠</> : null}
-             </div>
-           );
-         })
-       )}
-     </div>
-   );
- };
+export const GameBoard = () => {
+  const rows = new Array(10).fill(0).map((_, i) => i);
+  const columns = new Array(10).fill(0).map((_, i) => i);
+
+  const {
+    components: { Position },
+    systems,
+    playerEntity,
+  } = useMUD();
+  const playerPosition = useComponentValueStream(Position, playerEntity);
+
+  return (
+    <div className="inline-grid p-2 bg-lime-500">
+      {rows.map((y) =>
+        columns.map((x) => {
+          const key = `${x},${y}`;
+          return (
+            <div
+              key={key}
+              className="w-8 h-8 flex items-center justify-center cursor-pointer hover:ring"
+              style={{
+                gridColumn: x + 1,
+                gridRow: y + 1,
+              }}
+              onClick={(event) => {
+                event.preventDefault();
+                systems["system.Move"].executeTyped({ x, y });
+              }}
+            >
+              {playerPosition?.x === x && playerPosition?.y === y ? <>🤠</> : null}
+            </div>
+          );
+        })
+      )}
+    </div>
+  );
+};
 ```

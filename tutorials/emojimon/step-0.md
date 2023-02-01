@@ -51,14 +51,14 @@ But wait, there's more!
 
 Let’s change the behavior and see what happens. Open `LibMath.sol` and change the increment function to add `2` instead of just `1`.
 
-```diff LibMath.sol
- library LibMath {
-   function increment(Uint32Component component, uint256 entity) internal {
-     uint32 current = component.has(entity) ? component.getValue(entity) : 0;
--    component.set(entity, current + 1);
-+    component.set(entity, current + 2);
-   }
- }
+```sol !#4 packages/contracts/src/libraries/LibMath.sol
+library LibMath {
+  function increment(Uint32Component component, uint256 entity) internal {
+    uint32 current = component.has(entity) ? component.getValue(entity) : 0;
+    component.set(entity, current + 2);
+  }
+}
+
 ```
 
 After saving, the `dev:contracts` service will detect the contract change and redeploy all dependent contracts and update the client automatically. Once the client reloads, click the “increment” button and watch the counter value jump by 2 instead of 1. The live reloading of contracts will make it much quicker to iterate on our project.
