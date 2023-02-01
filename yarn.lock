@@ -13920,11 +13920,6 @@ solidity-docgen@^0.6.0-beta.22:
     handlebars "^4.7.7"
     solidity-ast "^0.4.31"
 
-"solmate@git+https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c":
-  version "6.5.0"
-  uid "9cf1428245074e39090dceacb0c28b1f684f584c"
-  resolved "git+https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c"
-
 "solmate@https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c":
   version "6.5.0"
   resolved "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c"
