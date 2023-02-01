@@ -18,6 +18,9 @@ jobs:
       - name: git-checkout
         uses: actions/checkout@v2
 
+      - name: Install local CLI
+        run: cd packages/cli && yarn build && npm link && cd ../..
+
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
         with:
