@@ -35,6 +35,6 @@ jobs:
       - name: Commit and push gas report
         run: |
           git config --local user.email "github-actions@github.com"
-          git config --local user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --local user.name "Gas report"
           git commit -a -m "chore(store): update gas report"
           git push
