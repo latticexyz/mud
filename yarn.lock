@@ -1703,63 +1703,6 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
-"@latticexyz/cli@^1.34.0":
-  version "1.34.0"
-  resolved "https://registry.yarnpkg.com/@latticexyz/cli/-/cli-1.34.0.tgz#df43fe98723117d4b0bcc13bfe9b8e2740e05dcc"
-  integrity sha512-lZt4nkUuAmR7Q2y5RvFR+vYGAJG+U4iKPrvhD/9pXNmsl+wbR06Pe3+aGcuMWjviV04gY6xdER95D3F95O5uiQ==
-  dependencies:
-    "@latticexyz/services" "^1.34.0"
-    "@latticexyz/solecs" "^1.34.0"
-    "@latticexyz/std-contracts" "^1.34.0"
-    "@latticexyz/utils" "^1.34.0"
-    "@typechain/ethers-v5" "^10.1.1"
-    chalk "^5.0.1"
-    chokidar "^3.5.3"
-    clear "^0.1.0"
-    commander "^9.2.0"
-    ds-test "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084"
-    ejs "^3.1.8"
-    esm "^3.2.25"
-    ethers "^5.7.2"
-    execa "^6.1.0"
-    figlet "^1.5.2"
-    forge-std "https://github.com/foundry-rs/forge-std.git#f36dab24d63d1c1945a05ed375ce341d3c1a49ed"
-    glob "^8.0.3"
-    inquirer "^8.2.4"
-    inquirer-prompt-suggest "^0.1.0"
-    listr2 "^4.0.5"
-    netlify "^11.0.1"
-    nice-grpc-web "^2.0.1"
-    node-fetch "^3.2.6"
-    openurl "^1.1.1"
-    path "^0.12.7"
-    solmate "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c"
-    typechain "^8.1.1"
-    uuid "^8.3.2"
-    yargs "^17.5.1"
-
-"@latticexyz/services@^1.34.0":
-  version "1.34.0"
-  resolved "https://registry.yarnpkg.com/@latticexyz/services/-/services-1.34.0.tgz#3085d391c54f845a7a17f78ba874592f5651d80d"
-  integrity sha512-0oqk9ys1JxnlKIbzp+zsdQ59p0CLWm4zRZsx83GjJKb/9XiiCo26/GDrV00ALHAEtRU4dCrP9mbmaY8zrCOc5w==
-
-"@latticexyz/solecs@^1.34.0":
-  version "1.34.0"
-  resolved "https://registry.yarnpkg.com/@latticexyz/solecs/-/solecs-1.34.0.tgz#bfbf6ca5b577f5c5f5912a35704d99c1ecc089e9"
-  integrity sha512-tgUyHJWjs03PeOiqxzc+P98NUv2GcH+Ml87puhb/7RFv8WLrus7QOjkiwUcHHRO6+UZCBwr34ySaCY3AzJ4nUg==
-
-"@latticexyz/std-contracts@^1.34.0":
-  version "1.34.0"
-  resolved "https://registry.yarnpkg.com/@latticexyz/std-contracts/-/std-contracts-1.34.0.tgz#3f2bdae721d7aaa641f94ca83592592ab60055f8"
-  integrity sha512-eLX6qLQV+wQoJpkcO9OFFYB/uJq1ih+hZ1Ufg1n5NzOGzf3kWqJTwQwtSaYWDwUe9bszw2FtreivyqmwfYwubw==
-
-"@latticexyz/utils@^1.34.0":
-  version "1.34.0"
-  resolved "https://registry.yarnpkg.com/@latticexyz/utils/-/utils-1.34.0.tgz#90d98ac11eb3da8e9aa81af686f0f41151119d74"
-  integrity sha512-tr/LV4QfhV0XYjtrY8DHLYEI2EPHzVQXmK1JtjupstLvK31WpE9xvgIqMYTawxupC9xw2c5q6zxEs/JZtiUmSQ==
-  dependencies:
-    typedoc-plugin-markdown "^3.13.6"
-
 "@lerna/add@4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@lerna/add/-/add-4.0.0.tgz#c36f57d132502a57b9e7058d1548b7a565ef183f"
