@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { SchemaType } from "../Types.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { StoreView } from "../StoreView.sol";
@@ -33,7 +32,7 @@ contract MockSystem {
   }
 }
 
-contract StoreSwitchTest is DSTestPlus {
+contract StoreSwitchTest is Test {
   Store store;
 
   function setUp() public {

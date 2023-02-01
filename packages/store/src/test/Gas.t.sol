@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { Bytes } from "../Bytes.sol";
 import { Buffer_ } from "../Buffer.sol";
 
@@ -17,7 +16,7 @@ contract SomeContract {
   function doSomethingWithBytes(bytes memory data) public {}
 }
 
-contract GasTest is DSTestPlus {
+contract GasTest is Test {
   SomeContract someContract = new SomeContract();
 
   function testCompareAbiEncodeVsCustom() public {

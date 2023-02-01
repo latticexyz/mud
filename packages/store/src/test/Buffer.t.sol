@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { Cast } from "../Cast.sol";
 import "../Buffer.sol";
 
-contract BufferTest is DSTestPlus {
+contract BufferTest is Test {
   function testAllocateBuffer() public {
     // !gasreport allocate a buffer
     Buffer buf = Buffer_.allocate(32);

@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { Utils } from "../Utils.sol";
 import { Bytes } from "../Bytes.sol";
@@ -23,7 +22,7 @@ struct TestStruct {
   uint32[] thirdData;
 }
 
-contract StoreCoreTest is DSTestPlus, StoreView {
+contract StoreCoreTest is Test, StoreView {
   TestStruct private testStruct;
 
   mapping(uint256 => bytes) private testMapping;

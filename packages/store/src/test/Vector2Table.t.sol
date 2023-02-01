@@ -1,15 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { Vector2Table, tableId as Vector2Id, Vector2 } from "../tables/Vector2Table.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { StoreView } from "../StoreView.sol";
 import { Schema } from "../Schema.sol";
 
-contract Vector2TableTest is DSTestPlus, StoreView {
+contract Vector2TableTest is Test, StoreView {
   function testRegisterAndGetSchema() public {
     // !gasreport register Vector2Table schema
     Vector2Table.registerSchema();

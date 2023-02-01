@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { World } from "../World.sol";
 import { System } from "../System.sol";
 import { ExecutionMode } from "../Types.sol";
@@ -35,7 +34,7 @@ interface WorldWithWorldTestSystem {
   ) external;
 }
 
-contract WorldTest is DSTestPlus {
+contract WorldTest is Test {
   World internal world;
   WorldTestSystem internal system;
 

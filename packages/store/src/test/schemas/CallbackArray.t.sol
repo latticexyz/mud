@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { StoreView } from "../../StoreView.sol";
 import { CallbackArray, CallbackArray_ } from "../../schemas/CallbackArray.sol";
 
 bytes32 constant tableId = keccak256("mud.store.table.callbackArray");
 
-contract CallbackArrayTest is DSTestPlus, StoreView {
+contract CallbackArrayTest is Test, StoreView {
   function testSetAndGet() public {
     CallbackArray_.registerSchema(tableId);
     bytes32 key = keccak256("somekey");

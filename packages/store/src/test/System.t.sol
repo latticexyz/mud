@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { World } from "../World.sol";
 import { System } from "../System.sol";
 
@@ -14,7 +13,7 @@ contract TestSystem is System {
   }
 }
 
-contract SystemTest is DSTestPlus {
+contract SystemTest is Test {
   function testMsgSender() public {
     TestSystem system = new TestSystem();
     address sender = address(0x123);

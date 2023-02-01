@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { Bytes } from "../Bytes.sol";
 
-contract BytesTest is DSTestPlus {
+contract BytesTest is Test {
   function testFromBytesArray() public {
     bytes[] memory input = new bytes[](2);
     input[0] = new bytes(32);

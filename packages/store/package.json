@@ -22,12 +22,11 @@
     "link": "yarn link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish || echo 'version already published'",
-    "gasreport": "yarn mud gas-report --path src/test/** --save gas-report.txt"
+    "gasreport": "yarn @latticexyz/cli gas-report --path src/test/** --save gas-report.txt"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^9.0.0",
     "@types/mocha": "^9.1.1",
-    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#f36dab24d63d1c1945a05ed375ce341d3c1a49ed",
     "hardhat": "^2.10.1",
     "prettier": "^2.6.2",
@@ -37,14 +36,11 @@
     "solidity-docgen": "^0.6.0-beta.22",
     "ts-node": "10.7",
     "typechain": "^8.1.1",
-    "typedoc": "^0.23.10"
+    "typedoc": "^0.23.10",
+    "@latticexyz/cli": "^1.34.0"
   },
   "peerDependencies": {
-    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#f36dab24d63d1c1945a05ed375ce341d3c1a49ed"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
-  "dependencies": {
-    "@latticexyz/cli": "^1.34.0"
-  }
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
 }

@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
 
-contract PackedCounterTest is DSTestPlus {
+contract PackedCounterTest is Test {
   function testTotal() public {
     uint16[] memory counters = new uint16[](4);
     counters[0] = 1;

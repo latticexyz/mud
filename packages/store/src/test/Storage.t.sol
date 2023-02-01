@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { Cast } from "../Cast.sol";
 import { Storage } from "../Storage.sol";
 import { Utils } from "../Utils.sol";
 import { Bytes } from "../Bytes.sol";
 
-contract StorageTest is DSTestPlus {
+contract StorageTest is Test {
   function testWriteRead() public {
     bytes memory data1 = bytes.concat(
       bytes1(0x01),

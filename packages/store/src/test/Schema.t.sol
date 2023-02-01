@@ -1,12 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-import { DSTestPlus } from "solmate/test/utils/DSTestPlus.sol";
+import "forge-std/Test.sol";
 import { Schema, Schema_ } from "../Schema.sol";
 import { SchemaType } from "../Types.sol";
 
-contract SchemaTest is DSTestPlus {
+contract SchemaTest is Test {
   function testEncodeDecodeSchema() public {
     uint256 gas = gasleft();
     Schema schema = Schema_.encode(
