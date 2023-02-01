@@ -13,7 +13,7 @@ import { Buffer, Buffer_ } from "../Buffer.sol";
 import { Schema, Schema_ } from "../Schema.sol";
 import { PackedCounter, PackedCounter_ } from "../PackedCounter.sol";
 import { StoreView } from "../StoreView.sol";
-import { IStore, IStoreHooks } from "../IStore.sol";
+import { IStore, IStoreHook } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 
 struct TestStruct {
@@ -569,7 +569,7 @@ contract StoreCoreTest is Test, StoreView {
 
 bytes32 constant indexerTableId = keccak256("indexer.table");
 
-contract MirrorSubscriber is IStoreHooks {
+contract MirrorSubscriber is IStoreHook {
   bytes32 _table;
 
   constructor(bytes32 table, Schema schema) {

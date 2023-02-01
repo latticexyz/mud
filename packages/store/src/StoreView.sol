@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { SchemaType } from "./Types.sol";
-import { IStore, IStoreHooks } from "./IStore.sol";
+import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
@@ -40,7 +40,7 @@ contract StoreView is IStore {
     revert Store_BaseContractNotImplemented();
   }
 
-  function registerHooks(bytes32, IStoreHooks) public virtual {
+  function registerHooks(bytes32, IStoreHook) public virtual {
     revert Store_BaseContractNotImplemented();
   }
 

@@ -10,7 +10,7 @@ import { Schema } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Buffer, Buffer_ } from "./Buffer.sol";
 import { HooksTable, tableId as HooksTableId } from "./tables/HooksTable.sol";
-import { IStoreHooks } from "./IStore.sol";
+import { IStoreHook } from "./IStore.sol";
 
 // TODO
 // - Turn all storage pointer to uint256 for consistency (uint256 is better than bytes32 because it's easier to do arithmetic on)
@@ -100,7 +100,7 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerHooks(bytes32 table, IStoreHooks hooks) external {
+  function registerHooks(bytes32 table, IStoreHook hooks) external {
     HooksTable.push(table, address(hooks));
   }
 
@@ -139,7 +139,7 @@ library StoreCore {
     // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = HooksTable.get(table);
     for (uint256 i = 0; i < hooks.length; i++) {
-      IStoreHooks hook = IStoreHooks(hooks[i]);
+      IStoreHook hook = IStoreHook(hooks[i]);
       hook.onSetRecord(table, key, data);
     }
 
@@ -184,7 +184,7 @@ library StoreCore {
     // Call onSetField hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = HooksTable.get(table);
     for (uint256 i = 0; i < hooks.length; i++) {
-      IStoreHooks hook = IStoreHooks(hooks[i]);
+      IStoreHook hook = IStoreHook(hooks[i]);
       hook.onSetField(table, key, schemaIndex, data);
     }
 
@@ -240,7 +240,7 @@ library StoreCore {
     // Call onDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = HooksTable.get(table);
     for (uint256 i = 0; i < hooks.length; i++) {
-      IStoreHooks hook = IStoreHooks(hooks[i]);
+      IStoreHook hook = IStoreHook(hooks[i]);
       hook.onDeleteRecord(table, key);
     }
 
