@@ -13,10 +13,8 @@ contract MixedTableTest is DSTestPlus, StoreView {
   Mixed private testMixed;
 
   function testRegisterAndGetSchema() public {
-    uint256 gas = gasleft();
+    // !gasreport register MixedTable schema
     MixedTable.registerSchema();
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     Schema registeredSchema = StoreCore.getSchema(MixedTableId);
     Schema declaredSchema = MixedTable.getSchema();
@@ -33,25 +31,25 @@ contract MixedTableTest is DSTestPlus, StoreView {
     a32[1] = 4;
     string memory s = "some string";
 
-    uint256 gas = gasleft();
+    // !gasreport set record in MixedTable
     MixedTable.set({ key: key, u32: 1, u128: 2, a32: a32, s: s });
-    gas = gas - gasleft();
-    console.log("gas used (set, StoreCore): %s", gas);
 
-    gas = gasleft();
+    // !gasreport get record from MixedTable
     Mixed memory mixed = MixedTable.get(key);
-    gas = gas - gasleft();
-    console.log("gas used (get, warm): %s", gas);
-
-    gas = gasleft();
-    testMixed = mixed;
-    gas = gas - gasleft();
-    console.log("gas used (set, native solidity): %s", gas);
 
     assertEq(mixed.u32, 1);
     assertEq(mixed.u128, 2);
     assertEq(mixed.a32[0], 3);
     assertEq(mixed.a32[1], 4);
     assertEq(mixed.s, s);
+  }
+
+  function testCompareSolidity() public {
+    Mixed memory mixed = Mixed({ u32: 1, u128: 2, a32: new uint32[](2), s: "some string" });
+    mixed.a32[0] = 3;
+    mixed.a32[1] = 4;
+
+    // !gasreport store Mixed struct in storage (native solidity)
+    testMixed = mixed;
   }
 }

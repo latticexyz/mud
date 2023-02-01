@@ -13,16 +13,11 @@ contract PackedCounterTest is DSTestPlus {
     counters[2] = 3;
     counters[3] = 4;
 
-    uint256 gas = gasleft();
+    // !gasreport pack uint16 array into PackedCounter
     PackedCounter packedCounter = PackedCounter_.pack(counters);
 
-    gas = gas - gasleft();
-    console.log("gas used (pack): %s", gas);
-
-    gas = gasleft();
+    // !gasreport get total of PackedCounter
     packedCounter.total();
-    gas = gas - gasleft();
-    console.log("gas used (total): %s", gas);
 
     assertEq(packedCounter.total(), 10);
   }
@@ -34,16 +29,10 @@ contract PackedCounterTest is DSTestPlus {
     counters[2] = 3;
     counters[3] = 4;
 
-    uint256 gas = gasleft();
     PackedCounter packedCounter = PackedCounter_.pack(counters);
 
-    gas = gas - gasleft();
-    console.log("gas used (pack): %s", gas);
-
-    gas = gasleft();
+    // !gasreport get value at index of PackedCounter
     packedCounter.atIndex(3);
-    gas = gas - gasleft();
-    console.log("gas used (at index): %s", gas);
 
     assertEq(packedCounter.atIndex(0), 1);
     assertEq(packedCounter.atIndex(1), 2);
@@ -60,10 +49,8 @@ contract PackedCounterTest is DSTestPlus {
 
     PackedCounter packedCounter = PackedCounter_.pack(counters);
 
-    uint256 gas = gasleft();
+    // !gasreport set value at index of PackedCounter
     packedCounter = packedCounter.setAtIndex(2, 5);
-    gas = gas - gasleft();
-    console.log("gas used (at index): %s", gas);
 
     assertEq(packedCounter.atIndex(0), 1);
     assertEq(packedCounter.atIndex(1), 2);

@@ -27,21 +27,16 @@ contract StorageTest is DSTestPlus {
     uint256 storagePointerTwoSlotsAfter = storagePointer + 2;
 
     // First write some data to storage at the target slot and two slots after the target slot
-    uint256 gas = gasleft();
-    Storage.write(storagePointer, originalDataFirstSlot);
-    gas = gas - gasleft();
-    console.log("gas used (write, %s slots): %s", Utils.divCeil(originalDataFirstSlot.length, 32), gas);
 
-    gas = gasleft();
+    // !gasreport write 1 storage slot
+    Storage.write(storagePointer, originalDataFirstSlot);
+
     Storage.write(storagePointerTwoSlotsAfter, originalDataLastSlot);
-    gas = gas - gasleft();
-    console.log("gas used (write, %s slots): %s", Utils.divCeil(originalDataLastSlot.length, 32), gas);
 
     // Then set the target slot, partially overwriting the first and third slot, but using safeTrail and offset
-    gas = gasleft();
+
+    // !gasreport write 34 bytes over 3 storage slots (with offset and safeTrail))
     Storage.write(storagePointer, 31, data1);
-    gas = gas - gasleft();
-    console.log("gas used (write, %s slots): %s", Utils.divCeil(data1.length + 31, 32), gas);
 
     // Assert the first slot has the correct value
     assertEq(Storage.read(storagePointer), bytes32(0x4200000000000000000000000000000000000000000000000000000000006901));
@@ -59,10 +54,10 @@ contract StorageTest is DSTestPlus {
     );
 
     // Assert we can read the correct partial value from storage
-    gas = gasleft();
+
+    // !gasreport read 34 bytes over 3 storage slots (with offset and safeTrail))
     bytes memory data = Storage.read(storagePointer, 31, 34);
-    gas = gas - gasleft();
-    console.log("gas used (read, %s slots (warm)): %s", Utils.divCeil(data.length + 31, 32), gas);
+
     assertEq(Bytes.slice1(data, 0), bytes1(0x01));
     assertEq(Bytes.slice32(data, 1), bytes32(0x0200000000000000000000000000000000000000000000000000000000000003));
     assertEq(Bytes.slice1(data, 33), bytes1(0x04));

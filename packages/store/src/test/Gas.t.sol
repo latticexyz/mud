@@ -32,21 +32,13 @@ contract GasTest is DSTestPlus {
     // !gasreport abi decode
     Mixed memory abiDecoded = abi.decode(abiEncoded, (Mixed));
 
-    // !gasreport abi encode packed
-    bytes memory abiEncodedPacked = abi.encodePacked(mixed.u32, mixed.u128, mixed.a32, mixed.s);
-
     // !gasreport custom encode
     bytes memory customEncoded = customEncode(mixed);
 
     // !gasreport custom decode
     Mixed memory customDecoded = customDecode(customEncoded);
 
-    console.log(
-      "Length comparison: abi encode %s, abi encode packed %s, custom %s",
-      abiEncoded.length,
-      abiEncodedPacked.length,
-      customEncoded.length
-    );
+    console.log("Length comparison: abi encode %s, custom %s", abiEncoded.length, customEncoded.length);
 
     // !gasreport pass abi encoded bytes to external contract
     someContract.doSomethingWithBytes(abiEncoded);

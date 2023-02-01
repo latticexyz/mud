@@ -11,10 +11,8 @@ import { Schema } from "../Schema.sol";
 
 contract Vector2TableTest is DSTestPlus, StoreView {
   function testRegisterAndGetSchema() public {
-    uint256 gas = gasleft();
+    // !gasreport register Vector2Table schema
     Vector2Table.registerSchema();
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     Schema registeredSchema = StoreCore.getSchema(Vector2Id);
     Schema declaredSchema = Vector2Table.getSchema();
@@ -26,15 +24,11 @@ contract Vector2TableTest is DSTestPlus, StoreView {
     Vector2Table.registerSchema();
     bytes32 key = keccak256("somekey");
 
-    uint256 gas = gasleft();
+    // !gasreport set Vector2Table record
     Vector2Table.set({ key: key, x: 1, y: 2 });
-    gas = gas - gasleft();
-    console.log("gas used (set): %s", gas);
 
-    gas = gasleft();
+    // !gasreport get Vector2Table record
     Vector2 memory vector = Vector2Table.get(key);
-    gas = gas - gasleft();
-    console.log("gas used (get, warm): %s", gas);
 
     assertEq(vector.x, 1);
     assertEq(vector.y, 2);

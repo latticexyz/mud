@@ -18,12 +18,10 @@ contract SchemaTest is DSTestPlus {
       SchemaType.Uint32Array // 0 bytes (because it's dynamic)
     );
     gas = gas - gasleft();
-    console.log("gas used (encode): %s", gas);
+    console.log("GAS REPORT: encode schema with 6 entries [Schema_.encode]: %s", gas);
 
-    gas = gasleft();
+    // !gasreport get schema type at index
     SchemaType schemaType1 = schema.atIndex(0);
-    gas = gas - gasleft();
-    console.log("gas used (decode): %s", gas);
 
     assertEq(uint8(schemaType1), uint8(SchemaType.Uint8));
     assertEq(uint8(schema.atIndex(1)), uint8(SchemaType.Uint16));
@@ -157,10 +155,8 @@ contract SchemaTest is DSTestPlus {
       SchemaType.Uint32Array // 0 bytes (because it's dynamic)
     );
 
-    uint256 gas = gasleft();
+    // !gasreport get static data length from schema
     uint256 length = schema.staticDataLength();
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(length, 55);
   }
@@ -175,10 +171,8 @@ contract SchemaTest is DSTestPlus {
       SchemaType.Uint32Array // 0 bytes (because it's dynamic)
     );
 
-    uint256 gas = gasleft();
+    // !gasreport get number of static fields from schema
     uint256 num = schema.numStaticFields();
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(num, 5);
   }
@@ -193,10 +187,8 @@ contract SchemaTest is DSTestPlus {
       SchemaType.Uint32Array // 0 bytes (because it's dynamic)
     );
 
-    uint256 gas = gasleft();
+    // !gasreport get number of dynamic fields from schema
     uint256 num = schema.numDynamicFields();
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     assertEq(num, 1);
   }
@@ -232,10 +224,31 @@ contract SchemaTest is DSTestPlus {
     schema[26] = SchemaType.Uint32Array;
     schema[27] = SchemaType.Uint32Array;
     Schema encodedSchema = Schema_.encode(schema);
+
+    // !gasreport validate schema
     encodedSchema.validate();
   }
 
   function testFailValidate() public view {
     Schema.wrap(keccak256("some invalid schema")).validate();
+  }
+
+  function testIsEmptyTrue() public {
+    SchemaType[] memory schema = new SchemaType[](0);
+    Schema encodedSchema = Schema_.encode(schema);
+
+    // !gasreport check if schema is empty (empty schema)
+    bool empty = encodedSchema.isEmpty();
+
+    assertTrue(empty);
+  }
+
+  function testIsEmptyFalse() public {
+    Schema encodedSchema = Schema_.encode(SchemaType.Uint256);
+
+    // !gasreport check if schema is empty (non-empty schema)
+    bool empty = encodedSchema.isEmpty();
+
+    assertFalse(empty);
   }
 }

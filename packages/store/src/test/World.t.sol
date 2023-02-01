@@ -81,10 +81,9 @@ contract WorldTest is DSTestPlus {
 
     // Call autonomous system's move function via world contract
     bytes32 entity = keccak256("entity");
-    uint256 gas = gasleft();
+
+    // !gasreport call autonomous system via World contract
     WorldWithTestSystem(address(world)).TestSystem_move(entity, 1, 2);
-    gas = gas - gasleft();
-    console.log("gas used (autonomous system): ", gas);
 
     // Get state from the table (using out-of-system syntax)
     Vector2 memory vec2 = Vector2Table.get(world, entity);
@@ -104,10 +103,9 @@ contract WorldTest is DSTestPlus {
 
     // Call delegate system's move function via world contract
     bytes32 entity = keccak256("entity");
-    uint256 gas = gasleft();
+
+    // !gasreport call delegate system via World contract
     WorldWithTestSystem(address(world)).TestSystem_move(entity, 1, 2);
-    gas = gas - gasleft();
-    console.log("gas used (delegate system): ", gas);
 
     // Get state from the table (using out-of-system syntax)
     Vector2 memory vec2 = Vector2Table.get(world, entity);

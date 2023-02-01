@@ -28,10 +28,8 @@ contract Store is StoreView {
 // Mock system to wrap StoreSwitch.isDelegateCall()
 contract System {
   function isDelegateCall() public view returns (bool isDelegate) {
-    uint256 gas = gasleft();
+    // !gasreport check if delegatecall
     isDelegate = StoreSwitch.isDelegateCall();
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
   }
 }
 

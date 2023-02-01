@@ -11,10 +11,8 @@ import { Schema } from "../Schema.sol";
 
 contract RouteTableTest is DSTestPlus, StoreView {
   function testRegisterAndGetSchema() public {
-    uint256 gas = gasleft();
+    // !gasreport register RouteTable schema
     RouteTable.registerSchema();
-    gas = gas - gasleft();
-    console.log("gas used: %s", gas);
 
     Schema registeredSchema = StoreCore.getSchema(RouteTableId);
     Schema declaredSchema = RouteTable.getSchema();
@@ -30,15 +28,11 @@ contract RouteTableTest is DSTestPlus, StoreView {
     bytes4 selector = bytes4(0x12345678);
     uint8 executionMode = 1;
 
-    uint256 gas = gasleft();
+    // !gasreport set RouteTable record
     RouteTable.set(key, addr, selector, executionMode);
-    gas = gas - gasleft();
-    console.log("gas used (set): %s", gas);
 
-    gas = gasleft();
+    // !gasreport get RouteTable record
     Route memory systemEntry = RouteTable.get(key);
-    gas = gas - gasleft();
-    console.log("gas used (get, warm): %s", gas);
 
     assertEq(systemEntry.addr, addr);
     assertEq(systemEntry.selector, selector);

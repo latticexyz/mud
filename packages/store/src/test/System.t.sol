@@ -8,7 +8,9 @@ import { System } from "../System.sol";
 
 contract TestSystem is System {
   function msgSender() public pure returns (address) {
-    return _msgSender();
+    // !gasreport extract msg.sender from calldata
+    address sender = _msgSender();
+    return sender;
   }
 }
 

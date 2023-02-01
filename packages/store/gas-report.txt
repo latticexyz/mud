@@ -1,21 +1,124 @@
-(v2/test/Buffer.t.sol) | allocate a buffer [Buffer buf = Buffer_.allocate(32)]: 73
-(v2/test/Buffer.t.sol) | get buffer length [buf.length()]: 87
-(v2/test/Buffer.t.sol) | get buffer pointer [buf.ptr()]: 33
-(v2/test/Buffer.t.sol) | get buffer capacity [buf.capacity()]: 7
-(v2/test/Buffer.t.sol) | append unchecked bytes memory (8) to buffer [buf.appendUnchecked(data1)]: 478
-(v2/test/Buffer.t.sol) | append bytes memory (8) to buffer [buf.append(data2)]: 773
-(v2/test/Buffer.t.sol) | append unchecked bytes8 of bytes32 to buffer [buf.appendUnchecked(data1, 8)]: 351
-(v2/test/Buffer.t.sol) | append bytes8 of bytes32 to buffer [buf.append(data2, 8)]: 645
-(v2/test/Buffer.t.sol) | concat 3 bytes memory (32) using buffer [Buffer buf = Buffer_.concat(data1, data2, data3)]: 2638
-(v2/test/Buffer.t.sol) | concat 3 bytes memory (32) using bytes.concat [bytes memory concat = bytes.concat(data1, data2, data3)]: 641
-(v2/test/Buffer.t.sol) | create a buffer from 8 bytes [Buffer buf = Buffer_.fromBytes(data)]: 40
-(v2/test/Buffer.t.sol) | read bytes32 from buffer [bytes32 value = buf.read32(4)]: 102
-(v2/test/Buffer.t.sol) | read bytes8 with offset 3 from buffer [bytes8 value2 = buf.read8(3)]: 151
-(v2/test/Buffer.t.sol) | read bytes1 with offset 7 from buffer [bytes1 value3 = buf.read1(7)]: 151
-(v2/test/Buffer.t.sol) | set buffer length unchecked [buf._setLengthUnchecked(8)]: 86
-(v2/test/Buffer.t.sol) | set buffer length [buf._setLength(16)]: 192
-(v2/test/Buffer.t.sol) | slice 4 bytes from buffer with offset 4 [bytes memory slice = buf.slice(4, 4)]: 635
-(v2/test/Buffer.t.sol) | convert array pointer to uint256[] [uint256[] memory arr = Cast.toUint256Array(arrayPtr)]: 10
-(v2/test/Buffer.t.sol) | buffer toArray with element length 4 [uint256 arrayPtr = buf.toArray(4)]: 663
-(v2/test/Buffer.t.sol) | convert array pointer to uint32[] [uint32[] memory arr = Cast.toUint32Array(arrayPtr)]: 10
-(v2/test/Buffer.t.sol) | buffer (32 bytes) to bytes memory [bytes memory bufferData = buf.toBytes()]: 90
+(src/test/Buffer.t.sol) | allocate a buffer [Buffer buf = Buffer_.allocate(32)]: 73
+(src/test/Buffer.t.sol) | get buffer length [buf.length()]: 87
+(src/test/Buffer.t.sol) | get buffer pointer [buf.ptr()]: 33
+(src/test/Buffer.t.sol) | get buffer capacity [buf.capacity()]: 7
+(src/test/Buffer.t.sol) | append unchecked bytes memory (8) to buffer [buf.appendUnchecked(data1)]: 478
+(src/test/Buffer.t.sol) | append bytes memory (8) to buffer [buf.append(data2)]: 773
+(src/test/Buffer.t.sol) | append unchecked bytes8 of bytes32 to buffer [buf.appendUnchecked(data1, 8)]: 351
+(src/test/Buffer.t.sol) | append bytes8 of bytes32 to buffer [buf.append(data2, 8)]: 645
+(src/test/Buffer.t.sol) | concat 3 bytes memory (32) using buffer [Buffer buf = Buffer_.concat(data1, data2, data3)]: 2638
+(src/test/Buffer.t.sol) | concat 3 bytes memory (32) using bytes.concat [bytes memory concat = bytes.concat(data1, data2, data3)]: 641
+(src/test/Buffer.t.sol) | create a buffer from 8 bytes [Buffer buf = Buffer_.fromBytes(data)]: 40
+(src/test/Buffer.t.sol) | read bytes32 from buffer [bytes32 value = buf.read32(4)]: 102
+(src/test/Buffer.t.sol) | read bytes8 with offset 3 from buffer [bytes8 value2 = buf.read8(3)]: 151
+(src/test/Buffer.t.sol) | read bytes1 with offset 7 from buffer [bytes1 value3 = buf.read1(7)]: 151
+(src/test/Buffer.t.sol) | set buffer length unchecked [buf._setLengthUnchecked(8)]: 86
+(src/test/Buffer.t.sol) | set buffer length [buf._setLength(16)]: 192
+(src/test/Buffer.t.sol) | slice 4 bytes from buffer with offset 4 [bytes memory slice = buf.slice(4, 4)]: 635
+(src/test/Buffer.t.sol) | convert array pointer to uint256[] [uint256[] memory arr = Cast.toUint256Array(arrayPtr)]: 10
+(src/test/Buffer.t.sol) | buffer toArray with element length 4 [uint256 arrayPtr = buf.toArray(4)]: 745
+(src/test/Buffer.t.sol) | convert array pointer to uint32[] [uint32[] memory arr = Cast.toUint32Array(arrayPtr)]: 10
+(src/test/Buffer.t.sol) | buffer (32 bytes) to bytes memory [bytes memory bufferData = buf.toBytes()]: 90
+(src/test/Bytes.t.sol) | compare equal bytes [bool equals = Bytes.equals(a, b)]: 202
+(src/test/Bytes.t.sol) | compare unequal bytes [bool equals = Bytes.equals(a, b)]: 202
+(src/test/Bytes.t.sol) | create bytes from address [bytes memory output = Bytes.from(input)]: 157
+(src/test/Bytes.t.sol) | create address from bytes [address output2 = Bytes.toAddress(output)]: 166
+(src/test/Bytes.t.sol) | create bytes from bytes4 [bytes memory output = Bytes.from(input)]: 151
+(src/test/Bytes.t.sol) | create bytes4 from bytes [bytes4 output2 = Bytes.toBytes4(output)]: 160
+(src/test/Bytes.t.sol) | create bytes from uint32 [bytes memory output = Bytes.from(input)]: 149
+(src/test/Bytes.t.sol) | create uint32 from bytes [uint32 output2 = Bytes.toUint32(output)]: 166
+(src/test/Bytes.t.sol) | create uint32 array from bytes memory [uint32[] memory output = Bytes.toUint32Array(tight)]: 835
+(src/test/Bytes.t.sol) | create bytes from uint8 [bytes memory output = Bytes.fromUint8(input)]: 160
+(src/test/Bytes.t.sol) | create uint8 from bytes [uint8 output2 = Bytes.toUint8(output)]: 105
+(src/test/Bytes.t.sol) | create bytes from bytes array [bytes memory output = Bytes.from(input)]: 1290
+(src/test/Bytes.t.sol) | create bytes from uint16 array [bytes memory output = Bytes.from(input)]: 791
+(src/test/Bytes.t.sol) | create bytes from uint32 array [bytes memory output = Bytes.from(input)]: 695
+(src/test/Bytes.t.sol) | create bytes from uint8 array [bytes memory output = Bytes.from(input)]: 695
+(src/test/Bytes.t.sol) | set bytes1 in bytes32 [Bytes.setBytes1(input, 8, 0xff)]: 7
+(src/test/Bytes.t.sol) | set bytes2 in bytes32 [Bytes.setBytes2(input, 8, 0xffff)]: 7
+(src/test/Bytes.t.sol) | set bytes4 in bytes32 [Bytes.setBytes4(input, 8, 0xffffffff)]: 7
+(src/test/Bytes.t.sol) | set length of bytes in place [Bytes.setLengthInPlace(a, 2)]: 16
+(src/test/Bytes.t.sol) | slice bytes (with copying) with offset 1 and length 3 [bytes memory b = Bytes.slice(a, 1, 3)]: 516
+(src/test/Bytes.t.sol) | slice bytes3 with offset 1 [bytes3 b = Bytes.slice3(a, 1)]: 77
+(src/test/Bytes.t.sol) | slice bytes32 with offset 10 [bytes32 output = Bytes.slice32(input, 10)]: 74
+(src/test/Bytes.t.sol) | tightly pack bytes24 array into bytes array [bytes memory tight = Bytes.from(input)]: 477
+(src/test/Bytes.t.sol) | create uint32 array from bytes memory [bytes24[] memory output = Bytes.toBytes24Array(tight)]: 614
+(src/test/Bytes.t.sol) | create bytes32 from bytes memory with offset 0 [bytes32 output = Bytes.toBytes32(input, 0)]: 22
+(src/test/Bytes.t.sol) | create bytes32 array from bytes memory [bytes32[] memory output = Bytes.toBytes32Array(input)]: 1110
+(src/test/Bytes.t.sol) | create bytes32 array from bytes memory with uneven length [bytes32[] memory output = Bytes.toBytes32Array(input)]: 1425
+(src/test/Bytes.t.sol) | create bytes32 from bytes memory with offset 16 [bytes32 output = Bytes.toBytes32(input, 16)]: 22
+(src/test/Gas.t.sol) | abi encode [bytes memory abiEncoded = abi.encode(mixed)]: 930
+(src/test/Gas.t.sol) | abi decode [Mixed memory abiDecoded = abi.decode(abiEncoded, (Mixed))]: 1713
+(src/test/Gas.t.sol) | custom encode [bytes memory customEncoded = customEncode(mixed)]: 1393
+(src/test/Gas.t.sol) | custom decode [Mixed memory customDecoded = customDecode(customEncoded)]: 2772
+(src/test/Gas.t.sol) | pass abi encoded bytes to external contract [someContract.doSomethingWithBytes(abiEncoded)]: 6537
+(src/test/Gas.t.sol) | pass custom encoded bytes to external contract [someContract.doSomethingWithBytes(customEncoded)]: 1342
+(src/test/MixedTable.t.sol) | store Mixed struct in storage (native solidity) [testMixed = mixed]: 92016
+(src/test/MixedTable.t.sol) | register MixedTable schema [MixedTable.registerSchema()]: 32485
+(src/test/MixedTable.t.sol) | set record in MixedTable [MixedTable.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })]: 114636
+(src/test/MixedTable.t.sol) | get record from MixedTable [Mixed memory mixed = MixedTable.get(key)]: 20494
+(src/test/PackedCounter.t.sol) | get value at index of PackedCounter [packedCounter.atIndex(3)]: 272
+(src/test/PackedCounter.t.sol) | set value at index of PackedCounter [packedCounter = packedCounter.setAtIndex(2, 5)]: 884
+(src/test/PackedCounter.t.sol) | pack uint16 array into PackedCounter [PackedCounter packedCounter = PackedCounter_.pack(counters)]: 2148
+(src/test/PackedCounter.t.sol) | get total of PackedCounter [packedCounter.total()]: 33
+(src/test/RouteTable.t.sol) | register RouteTable schema [RouteTable.registerSchema()]: 30440
+(src/test/RouteTable.t.sol) | set RouteTable record [RouteTable.set(key, addr, selector, executionMode)]: 29726
+(src/test/RouteTable.t.sol) | get RouteTable record [Route memory systemEntry = RouteTable.get(key)]: 6506
+(src/test/Schema.t.sol) | encode schema with 6 entries [Schema_.encode]: 6202
+(src/test/Schema.t.sol) | get schema type at index [SchemaType schemaType1 = schema.atIndex(0)]: 200
+(src/test/Schema.t.sol) | get number of dynamic fields from schema [uint256 num = schema.numDynamicFields()]: 80
+(src/test/Schema.t.sol) | get number of static fields from schema [uint256 num = schema.numStaticFields()]: 91
+(src/test/Schema.t.sol) | get static data length from schema [uint256 length = schema.staticDataLength()]: 39
+(src/test/Schema.t.sol) | check if schema is empty (non-empty schema) [bool empty = encodedSchema.isEmpty()]: 13
+(src/test/Schema.t.sol) | check if schema is empty (empty schema) [bool empty = encodedSchema.isEmpty()]: 13
+(src/test/Schema.t.sol) | validate schema [encodedSchema.validate()]: 22716
+(src/test/Storage.t.sol) | write 1 storage slot [Storage.write(storagePointer, originalDataFirstSlot)]: 23509
+(src/test/Storage.t.sol) | write 34 bytes over 3 storage slots (with offset and safeTrail)) [Storage.write(storagePointer, 31, data1)]: 25749
+(src/test/Storage.t.sol) | read 34 bytes over 3 storage slots (with offset and safeTrail)) [bytes memory data = Storage.read(storagePointer, 31, 34)]: 4131
+(src/test/StoreCore.t.sol) | access non-existing record [bytes memory data1 = StoreCore.getRecord(table, key)]: 10041
+(src/test/StoreCore.t.sol) | access static field of non-existing record [bytes memory data2 = StoreCore.getField(table, key, 0)]: 4459
+(src/test/StoreCore.t.sol) | access dynamic field of non-existing record [bytes memory data3 = StoreCore.getField(table, key, 1)]: 3891
+(src/test/StoreCore.t.sol) | delete record (complex data, 3 slots) [StoreCore.deleteRecord(table, key)]: 13802
+(src/test/StoreCore.t.sol) | Check for existence of table (existent) [StoreCore.hasTable(table)]: 949
+(src/test/StoreCore.t.sol) | check for existence of table (non-existent) [StoreCore.hasTable(table2)]: 2950
+(src/test/StoreCore.t.sol) | register subscriber [StoreCore.registerOnUpdateHook(table, subscriber)]: 67055
+(src/test/StoreCore.t.sol) | set record on table with subscriber [StoreCore.setRecord(table, key, data)]: 72149
+(src/test/StoreCore.t.sol) | set field on table with subscriber [StoreCore.setField(table, key, 0, data)]: 34267
+(src/test/StoreCore.t.sol) | register subscriber [StoreCore.registerOnUpdateHook(table, subscriber)]: 67055
+(src/test/StoreCore.t.sol) | set record on table with subscriber [StoreCore.setRecord(table, key, data)]: 175065
+(src/test/StoreCore.t.sol) | set field on table with subscriber [StoreCore.setField(table, key, 1, arrayDataBytes)]: 37164
+(src/test/StoreCore.t.sol) | StoreCore: register schema [StoreCore.registerSchema(table, schema)]: 26373
+(src/test/StoreCore.t.sol) | StoreCore: get schema (warm) [Schema loadedSchema = StoreCore.getSchema(table)]: 894
+(src/test/StoreCore.t.sol) | set complex record with dynamic data (4 slots) [StoreCore.setRecord(table, key, data)]: 110840
+(src/test/StoreCore.t.sol) | get complex record with dynamic data (4 slots) [bytes memory loadedData = StoreCore.getRecord(table, key)]: 12700
+(src/test/StoreCore.t.sol) | compare: Set complex record with dynamic data using native solidity [testStruct = _testStruct]: 116815
+(src/test/StoreCore.t.sol) | compare: Set complex record with dynamic data using abi.encode [testMapping[1234] = abi.encode(_testStruct)]: 267529
+(src/test/StoreCore.t.sol) | set dynamic length of dynamic index 0 [StoreCore._setDynamicDataLengthAtIndex(table, key, 0, 10)]: 23716
+(src/test/StoreCore.t.sol) | set dynamic length of dynamic index 1 [StoreCore._setDynamicDataLengthAtIndex(table, key, 1, 99)]: 1817
+(src/test/StoreCore.t.sol) | reduce dynamic length of dynamic index 0 [StoreCore._setDynamicDataLengthAtIndex(table, key, 0, 5)]: 1818
+(src/test/StoreCore.t.sol) | set static field (1 slot) [StoreCore.setField(table, key, 0, bytes.concat(firstDataBytes))]: 38119
+(src/test/StoreCore.t.sol) | get static field (1 slot) [bytes memory loadedData = StoreCore.getField(table, key, 0)]: 4549
+(src/test/StoreCore.t.sol) | set static field (overlap 2 slot) [StoreCore.setField(table, key, 1, bytes.concat(secondDataBytes))]: 33949
+(src/test/StoreCore.t.sol) | get static field (overlap 2 slot) [loadedData = StoreCore.getField(table, key, 1)]: 6333
+(src/test/StoreCore.t.sol) | set dynamic field (1 slot, first dynamic field) [StoreCore.setField(table, key, 2, thirdDataBytes)]: 57392
+(src/test/StoreCore.t.sol) | get dynamic field (1 slot, first dynamic field) [loadedData = StoreCore.getField(table, key, 2)]: 5308
+(src/test/StoreCore.t.sol) | set dynamic field (1 slot, second dynamic field) [StoreCore.setField(table, key, 3, fourthDataBytes)]: 35526
+(src/test/StoreCore.t.sol) | get dynamic field (1 slot, second dynamic field) [loadedData = StoreCore.getField(table, key, 3)]: 5323
+(src/test/StoreCore.t.sol) | set static record (1 slot) [StoreCore.setStaticData(table, key, data)]: 28620
+(src/test/StoreCore.t.sol) | get static record (1 slot) [bytes memory loadedData = StoreCore.getRecord(table, key, schema)]: 4098
+(src/test/StoreCore.t.sol) | set static record (2 slots) [StoreCore.setStaticData(table, key, data)]: 51561
+(src/test/StoreCore.t.sol) | get static record (2 slots) [bytes memory loadedData = StoreCore.getRecord(table, key, schema)]: 4987
+(src/test/StoreSwitch.t.sol) | check if delegatecall [isDelegate = StoreSwitch.isDelegateCall()]: 671
+(src/test/StoreSwitch.t.sol) | check if delegatecall [isDelegate = StoreSwitch.isDelegateCall()]: 627
+(src/test/System.t.sol) | extract msg.sender from calldata [address sender = _msgSender()]: 24
+(src/test/Vector2Table.t.sol) | register Vector2Table schema [Vector2Table.registerSchema()]: 28662
+(src/test/Vector2Table.t.sol) | set Vector2Table record [Vector2Table.set({ key: key, x: 1, y: 2 })]: 29689
+(src/test/Vector2Table.t.sol) | get Vector2Table record [Vector2 memory vector = Vector2Table.get(key)]: 6391
+(src/test/World.t.sol) | call autonomous system via World contract [WorldWithTestSystem(address(world)).TestSystem_move(entity, 1, 2)]: 41998
+(src/test/World.t.sol) | call delegate system via World contract [WorldWithTestSystem(address(world)).TestSystem_move(entity, 1, 2)]: 39940
+(src/test/schemas/AddressArray.t.sol) | set record in AddressArrayTable [AddressArray_.set(tableId, key, addresses)]: 63140
+(src/test/schemas/AddressArray.t.sol) | get record from AddressArrayTable (warm) [address[] memory returnedAddresses = AddressArray_.get(tableId, key)]: 9221
+(src/test/schemas/AddressArray.t.sol) | push record to AddressArrayTable [AddressArray_.push(tableId, key, addresses[0])]: 43794
+(src/test/schemas/CallbackArray.t.sol) | set record in CallbackArrayTable [CallbackArray_.set(tableId, key, callbacks)]: 62926
+(src/test/schemas/CallbackArray.t.sol) | get record from CallbackArrayTable (warm) [bytes24[] memory returnedCallbacks = CallbackArray_.get(tableId, key)]: 8975
+(src/test/schemas/CallbackArray.t.sol) | push record to CallbackArrayTable [CallbackArray_.push(tableId, key, callbacks[0])]: 43790

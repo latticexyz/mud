@@ -56,15 +56,11 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     Schema schema = Schema_.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
 
     bytes32 table = keccak256("some.table");
-    uint256 gas = gasleft();
+    // !gasreport StoreCore: register schema
     StoreCore.registerSchema(table, schema);
-    gas = gas - gasleft();
-    console.log("gas used (register): %s", gas);
 
-    gas = gasleft();
+    // !gasreport StoreCore: get schema (warm)
     Schema loadedSchema = StoreCore.getSchema(table);
-    gas = gas - gasleft();
-    console.log("gas used (get schema, warm): %s", gas);
 
     assertEq(schema.unwrap(), loadedSchema.unwrap());
   }
@@ -79,15 +75,11 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     bytes32 table2 = keccak256("other.table");
     StoreCore.registerSchema(table, schema);
 
-    uint256 gas = gasleft();
+    // !gasreport Check for existence of table (existent)
     StoreCore.hasTable(table);
-    gas = gas - gasleft();
-    console.log("gas used (has): %s", gas);
 
-    gas = gasleft();
+    // !gasreport check for existence of table (non-existent)
     StoreCore.hasTable(table2);
-    gas = gas - gasleft();
-    console.log("gas used (has not): %s", gas);
 
     assertTrue(StoreCore.hasTable(table));
     assertFalse(StoreCore.hasTable(table2));
@@ -112,10 +104,8 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     key[0] = bytes32("some key");
 
     // Set dynamic data length of dynamic index 0
-    uint256 gas = gasleft();
+    // !gasreport set dynamic length of dynamic index 0
     StoreCore._setDynamicDataLengthAtIndex(table, key, 0, 10);
-    gas = gas - gasleft();
-    console.log("gas used (set length): %s", gas);
 
     PackedCounter encodedLength = StoreCore._loadEncodedDynamicDataLength(table, key);
     assertEq(encodedLength.atIndex(0), 10);
@@ -123,10 +113,8 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     assertEq(encodedLength.total(), 10);
 
     // Set dynamic data length of dynamic index 1
-    gas = gasleft();
+    // !gasreport set dynamic length of dynamic index 1
     StoreCore._setDynamicDataLengthAtIndex(table, key, 1, 99);
-    gas = gas - gasleft();
-    console.log("gas used (set length): %s", gas);
 
     encodedLength = StoreCore._loadEncodedDynamicDataLength(table, key);
     assertEq(encodedLength.atIndex(0), 10);
@@ -134,10 +122,8 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     assertEq(encodedLength.total(), 109);
 
     // Reduce dynamic data length of dynamic index 0 again
-    gas = gasleft();
+    // !gasreport reduce dynamic length of dynamic index 0
     StoreCore._setDynamicDataLengthAtIndex(table, key, 0, 5);
-    gas = gas - gasleft();
-    console.log("gas used (set length): %s", gas);
 
     encodedLength = StoreCore._loadEncodedDynamicDataLength(table, key);
     assertEq(encodedLength.atIndex(0), 5);
@@ -158,16 +144,12 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
 
-    uint256 gas = gasleft();
+    // !gasreport set static record (1 slot)
     StoreCore.setStaticData(table, key, data);
-    gas = gas - gasleft();
-    console.log("gas used (set): %s", gas);
 
     // Get data
-    gas = gasleft();
+    // !gasreport get static record (1 slot)
     bytes memory loadedData = StoreCore.getRecord(table, key, schema);
-    gas = gas - gasleft();
-    console.log("gas used (get, warm): %s", gas);
 
     assertTrue(Bytes.equals(data, loadedData));
   }
@@ -184,11 +166,8 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
 
-    uint256 gas = gasleft();
     // This should fail because the data is not 6 bytes long
     StoreCore.setStaticData(table, key, data);
-    gas = gas - gasleft();
-    console.log("gas used (set): %s", gas);
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
@@ -206,16 +185,12 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
 
-    uint256 gas = gasleft();
+    // !gasreport set static record (2 slots)
     StoreCore.setStaticData(table, key, data);
-    gas = gas - gasleft();
-    console.log("gas used (set): %s", gas);
 
     // Get data
-    gas = gasleft();
+    // !gasreport get static record (2 slots)
     bytes memory loadedData = StoreCore.getRecord(table, key, schema);
-    gas = gas - gasleft();
-    console.log("gas used (get, warm): %s", gas);
 
     assertTrue(Bytes.equals(data, loadedData));
   }
@@ -264,17 +239,12 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     key[0] = bytes32("some.key");
 
     // Set data
-    uint256 gas = gasleft();
+    // !gasreport set complex record with dynamic data (4 slots)
     StoreCore.setRecord(table, key, data);
 
-    gas = gas - gasleft();
-    console.log("gas used (store complex struct / StoreCore): %s", gas);
-
     // Get data
-    gas = gasleft();
+    // !gasreport get complex record with dynamic data (4 slots)
     bytes memory loadedData = StoreCore.getRecord(table, key);
-    gas = gas - gasleft();
-    // console.log("gas used (read using StoreCore): %s", gas);
 
     assertEq(loadedData.length, data.length);
     assertEq(keccak256(loadedData), keccak256(data));
@@ -288,15 +258,11 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     _testStruct.thirdData[1] = 0x1d1e1f20;
     _testStruct.thirdData[2] = 0x21222324;
 
-    gas = gasleft();
+    // !gasreport compare: Set complex record with dynamic data using native solidity
     testStruct = _testStruct;
-    gas = gas - gasleft();
-    console.log("gas used (store complex struct / Native): %s", gas);
 
-    gas = gasleft();
+    // !gasreport compare: Set complex record with dynamic data using abi.encode
     testMapping[1234] = abi.encode(_testStruct);
-    gas = gas - gasleft();
-    console.log("gas used (store complex struct / abi.encode): %s", gas);
   }
 
   function testSetAndGetField() public {
@@ -320,20 +286,16 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     key[0] = bytes32("some.key");
 
     // Set first field
-    uint256 gas = gasleft();
+    // !gasreport set static field (1 slot)
     StoreCore.setField(table, key, 0, bytes.concat(firstDataBytes));
-    gas = gas - gasleft();
-    console.log("gas used (set uint128, no offset): %s", gas);
 
     ////////////////
     // Static data
     ////////////////
 
     // Get first field
-    gas = gasleft();
+    // !gasreport get static field (1 slot)
     bytes memory loadedData = StoreCore.getField(table, key, 0);
-    gas = gas - gasleft();
-    console.log("gas used (get uint128, no offset): %s", gas);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, 16);
@@ -345,16 +307,12 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     // Set second field
     bytes32 secondDataBytes = keccak256("some data");
 
-    gas = gasleft();
+    // !gasreport set static field (overlap 2 slot)
     StoreCore.setField(table, key, 1, bytes.concat(secondDataBytes));
-    gas = gas - gasleft();
-    console.log("gas used (set uint256, 128 offset): %s", gas);
 
     // Get second field
-    gas = gasleft();
+    // !gasreport get static field (overlap 2 slot)
     loadedData = StoreCore.getField(table, key, 1);
-    gas = gas - gasleft();
-    console.log("gas used (get uint256, 128 offset): %s", gas);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, 32);
@@ -391,16 +349,12 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     }
 
     // Set third field
-    gas = gasleft();
+    // !gasreport set dynamic field (1 slot, first dynamic field)
     StoreCore.setField(table, key, 2, thirdDataBytes);
-    gas = gas - gasleft();
-    console.log("gas used (set uint32[2]): %s", gas);
 
     // Get third field
-    gas = gasleft();
+    // !gasreport get dynamic field (1 slot, first dynamic field)
     loadedData = StoreCore.getField(table, key, 2);
-    gas = gas - gasleft();
-    console.log("gas used (get uint32[2]): %s", gas);
 
     // Verify loaded data is correct
     assertEq(Cast.toUint32Array(Buffer_.fromBytes(loadedData).toArray(4)).length, 2);
@@ -415,16 +369,12 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     assertEq(bytes32(StoreCore.getField(table, key, 1)), bytes32(secondDataBytes));
 
     // Set fourth field
-    gas = gasleft();
+    // !gasreport set dynamic field (1 slot, second dynamic field)
     StoreCore.setField(table, key, 3, fourthDataBytes);
-    gas = gas - gasleft();
-    console.log("gas used (set uint32[3]): %s", gas);
 
     // Get fourth field
-    gas = gasleft();
+    // !gasreport get dynamic field (1 slot, second dynamic field)
     loadedData = StoreCore.getField(table, key, 3);
-    gas = gas - gasleft();
-    console.log("gas used (get uint32[3]): %s", gas);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, fourthDataBytes.length);
@@ -489,10 +439,8 @@ contract StoreCoreTest is DSTestPlus, StoreView {
     assertEq(keccak256(loadedData), keccak256(data));
 
     // Delete data
-    uint256 gas = gasleft();
+    // !gasreport delete record (complex data, 3 slots)
     StoreCore.deleteRecord(table, key);
-    gas = gas - gasleft();
-    console.log("gas used (delete): %s", gas);
 
     // Verify data is deleted
     loadedData = StoreCore.getRecord(table, key);

@@ -98,6 +98,10 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
 };
 
 async function runGasReport(path: string): Promise<GasReport> {
+  if (!path.endsWith(".t.sol")) {
+    console.log("Skipping gas report for", chalk.bold(path), "(not a test file)");
+    return [];
+  }
   console.log("Running gas report for", chalk.bold(path));
   const gasReport: GasReport = [];
 
