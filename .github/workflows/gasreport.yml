@@ -17,8 +17,6 @@ jobs:
 
       - name: git-checkout
         uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
@@ -34,9 +32,6 @@ jobs:
       - name: Run gas report
         run: yarn workspace @latticexyz/store run gasreport
 
-      - name: Commit and push gas report
-        run: |
-          git config --local user.email "github-actions@github.com"
-          git config --local user.name "Gas report"
-          git commit -a -m "chore(store): update gas report"
-          git push
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "test: update gas report"
