@@ -1,5 +1,5 @@
 # .github/workflows/gasreport.yml
-name: Store gas report
+name: Gas report
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - packages/store/**
 
 jobs:
-  test:
+  gas-report:
     runs-on: ubuntu-22.04
     name: Run tests
     steps:
@@ -32,14 +32,9 @@ jobs:
       - name: Run gas report
         run: yarn workspace @latticexyz/store run gasreport
 
-      - name: Commit updated workflow
+      - name: Commit and push gas report
         run: |
           git config --local user.email "github-actions@github.com"
-          git config --local user.name "github-actions"
+          git config --local user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git commit -a -m "chore(store): update gas report"
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
+          git push
