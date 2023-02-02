@@ -1,3 +1,7 @@
+---
+order: -1
+---
+
 # 1. Create your first component and system
 
 Most things (entities) in our game are going to be placed on a 2D map, things like players, terrain, and interactive tiles. We’ll represent this by creating a `Position` component that we can add to each entity. And we’ll create a `Move` system that we can call to move entities to a different position.

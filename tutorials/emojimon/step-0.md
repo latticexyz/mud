@@ -1,3 +1,7 @@
+---
+order: 0
+---
+
 # 0. Set up MUD project
 
 ## Prerequisites

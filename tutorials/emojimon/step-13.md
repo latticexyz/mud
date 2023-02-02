@@ -1,3 +1,7 @@
+---
+order: -13
+---
+
 # 13. Make it your own
 
 You're probably thinking of a bunch of ways to continue expanding on the Emojimon world, but here are some ideas:

@@ -1,3 +1,7 @@
+---
+order: -5
+---
+
 # 5. Denoting behavior with components
 
 We're currently making too many assumptions about player entities and letting any entity move. That doesn't fit well with the ECS pattern, so let's refactor our code and move out some of these behaviors into their own components.
