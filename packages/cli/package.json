@@ -63,6 +63,7 @@
     "openurl": "^1.1.1",
     "path": "^0.12.7",
     "solmate": "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
+    "table": "^6.8.1",
     "typechain": "^8.1.1",
     "uuid": "^8.3.2",
     "yargs": "^17.5.1"
