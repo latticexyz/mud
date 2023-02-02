@@ -17,6 +17,9 @@ export async function generateLibDeploy(configPath: string, out: string, systems
   // Parse config
   const config = JSON.parse(await readFile(configPath, { encoding: "utf8" }));
 
+  // Init libs are optional
+  config.libs ??= [];
+
   // Filter systems
   if (systems) {
     const systemsArray = Array.isArray(systems) ? systems : [systems];

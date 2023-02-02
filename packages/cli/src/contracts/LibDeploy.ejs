@@ -25,6 +25,13 @@ import { <%= component %>, ID as <%= component %>ID } from "components/<%- compo
 import { <%= system.name %>, ID as <%= system.name %>ID } from "systems/<%- system.name %>.sol";
 <% }); -%>
 
+<% if (libs.length > 0) { -%>
+// Init Libraries (requires 'libraries=...' remapping in project's remappings.txt)
+<% libs.forEach(({name}) => { -%>
+import { <%= name %> } from "libraries/<%- name %>.sol";
+<% }); -%>
+<% } -%>
+
 struct DeployResult {
   IWorld world;
   address deployer;
@@ -100,5 +107,9 @@ library LibDeploy {
 <% } -%>
     console.log(address(system));
 <% });-%>
+
+<% libs.forEach(({name, func}) => { -%>
+    if(init) <%= name -%>.<%= func ?? 'init' -%>(world);
+<% }); -%>
   }
 }
