@@ -320,13 +320,13 @@ import { useMovement } from "./useMovement";
 import { useJoinGame } from "./useJoinGame";
 
 export const GameBoard = () => {
+  const rows = new Array(10).fill(0).map((_, i) => i);
+  const columns = new Array(10).fill(0).map((_, i) => i);
+
   const {
     components: { Position },
     playerEntity,
   } = useMUD();
-
-  const rows = new Array(10).fill(0).map((_, i) => i);
-  const columns = new Array(10).fill(0).map((_, i) => i);
 
   const playerPosition = useComponentValueStream(Position, playerEntity);
   const { moveTo } = useMovement();
