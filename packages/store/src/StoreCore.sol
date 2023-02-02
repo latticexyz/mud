@@ -78,8 +78,8 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerHook(bytes32 table, IStoreHook hooks) external {
-    HooksTable.push(table, address(hooks));
+  function registerHook(bytes32 table, IStoreHook hook) external {
+    HooksTable.push(table, address(hook));
   }
 
   /************************************************************************
