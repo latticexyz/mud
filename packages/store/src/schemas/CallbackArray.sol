@@ -39,7 +39,7 @@ library CallbackArray_ {
     bytes32 key,
     bytes24[] memory callbacks
   ) internal {
-    bytes memory data = bytes.concat(Bytes.from(callbacks));
+    bytes memory data = Bytes.from(callbacks);
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     StoreSwitch.setField(tableId, keyTuple, 0, data);
@@ -56,7 +56,7 @@ library CallbackArray_ {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    bytes memory callbacks = bytes.concat(StoreSwitch.getField(tableId, keyTuple, 0), callback);
+    bytes memory callbacks = abi.encodePacked(StoreSwitch.getField(tableId, keyTuple, 0), callback);
     StoreSwitch.setField(tableId, keyTuple, 0, callbacks);
   }
 

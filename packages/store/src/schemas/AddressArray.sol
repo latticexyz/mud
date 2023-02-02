@@ -39,7 +39,7 @@ library AddressArray_ {
     bytes32 key,
     address[] memory addresses
   ) internal {
-    bytes memory data = bytes.concat(Bytes.from(addresses));
+    bytes memory data = Bytes.from(addresses);
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     StoreSwitch.setField(tableId, keyTuple, 0, data);
@@ -56,7 +56,7 @@ library AddressArray_ {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    bytes memory addresses = bytes.concat(StoreSwitch.getField(tableId, keyTuple, 0), bytes20(addr));
+    bytes memory addresses = abi.encodePacked(StoreSwitch.getField(tableId, keyTuple, 0), addr);
     StoreSwitch.setField(tableId, keyTuple, 0, addresses);
   }
 

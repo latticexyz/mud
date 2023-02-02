@@ -305,7 +305,7 @@ contract BytesTest is Test {
 
   function testSlice32() public {
     bytes32 original = keccak256("some data");
-    bytes memory input = bytes.concat(bytes10(keccak256("irrelevant data")), original);
+    bytes memory input = abi.encodePacked(bytes10(keccak256("irrelevant data")), original);
 
     // !gasreport slice bytes32 with offset 10
     bytes32 output = Bytes.slice32(input, 10);

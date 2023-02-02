@@ -9,16 +9,16 @@ import { Bytes } from "../src/Bytes.sol";
 
 contract StorageTest is Test {
   function testStoreLoad() public {
-    bytes memory data1 = bytes.concat(
+    bytes memory data1 = abi.encodePacked(
       bytes1(0x01),
       bytes32(0x0200000000000000000000000000000000000000000000000000000000000003),
       bytes1(0x04)
     );
 
-    bytes memory originalDataFirstSlot = bytes.concat(
+    bytes memory originalDataFirstSlot = abi.encodePacked(
       bytes32(0x42000000000000000000000000000000000000000000000000000000000069FF)
     );
-    bytes memory originalDataLastSlot = bytes.concat(
+    bytes memory originalDataLastSlot = abi.encodePacked(
       bytes32(0xFF42000000000000000000000000000000000000000000000000000000000069)
     );
 

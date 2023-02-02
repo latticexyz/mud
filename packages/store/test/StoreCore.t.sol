@@ -143,7 +143,7 @@ contract StoreCoreTest is Test, StoreView {
     StoreCore.registerSchema(table, schema);
 
     // Set data
-    bytes memory data = bytes.concat(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
+    bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
 
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
@@ -165,7 +165,7 @@ contract StoreCoreTest is Test, StoreView {
     StoreCore.registerSchema(table, schema);
 
     // Set data
-    bytes memory data = bytes.concat(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
+    bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
 
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
@@ -181,7 +181,7 @@ contract StoreCoreTest is Test, StoreView {
     StoreCore.registerSchema(table, schema);
 
     // Set data
-    bytes memory data = bytes.concat(
+    bytes memory data = abi.encodePacked(
       bytes16(0x0102030405060708090a0b0c0d0e0f10),
       bytes32(0x1112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f30)
     );
@@ -236,7 +236,12 @@ contract StoreCoreTest is Test, StoreView {
     }
 
     // Concat data
-    bytes memory data = bytes.concat(firstDataBytes, encodedDynamicLength.unwrap(), secondDataBytes, thirdDataBytes);
+    bytes memory data = abi.encodePacked(
+      firstDataBytes,
+      encodedDynamicLength.unwrap(),
+      secondDataBytes,
+      thirdDataBytes
+    );
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -291,7 +296,7 @@ contract StoreCoreTest is Test, StoreView {
 
     // Set first field
     // !gasreport set static field (1 slot)
-    StoreCore.setField(table, key, 0, bytes.concat(firstDataBytes));
+    StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes));
 
     ////////////////
     // Static data
@@ -312,7 +317,7 @@ contract StoreCoreTest is Test, StoreView {
     bytes32 secondDataBytes = keccak256("some data");
 
     // !gasreport set static field (overlap 2 slot)
-    StoreCore.setField(table, key, 1, bytes.concat(secondDataBytes));
+    StoreCore.setField(table, key, 1, abi.encodePacked(secondDataBytes));
 
     // Get second field
     // !gasreport get static field (overlap 2 slot)
@@ -331,7 +336,7 @@ contract StoreCoreTest is Test, StoreView {
     assertEq(Bytes.slice32(StoreCoreInternal._getStaticData(table, key), 16), secondDataBytes);
     assertEq(
       keccak256(StoreCoreInternal._getStaticData(table, key)),
-      keccak256(bytes.concat(firstDataBytes, secondDataBytes))
+      keccak256(abi.encodePacked(firstDataBytes, secondDataBytes))
     );
 
     ////////////////
@@ -391,7 +396,9 @@ contract StoreCoreTest is Test, StoreView {
     PackedCounter encodedLengths = PackedCounterLib.pack(uint16(thirdDataBytes.length), uint16(fourthDataBytes.length));
     assertEq(
       keccak256(StoreCore.getRecord(table, key)),
-      keccak256(bytes.concat(firstDataBytes, secondDataBytes, encodedLengths.unwrap(), thirdDataBytes, fourthDataBytes))
+      keccak256(
+        abi.encodePacked(firstDataBytes, secondDataBytes, encodedLengths.unwrap(), thirdDataBytes, fourthDataBytes)
+      )
     );
   }
 
@@ -430,7 +437,12 @@ contract StoreCoreTest is Test, StoreView {
     }
 
     // Concat data
-    bytes memory data = bytes.concat(firstDataBytes, encodedDynamicLength.unwrap(), secondDataBytes, thirdDataBytes);
+    bytes memory data = abi.encodePacked(
+      firstDataBytes,
+      encodedDynamicLength.unwrap(),
+      secondDataBytes,
+      thirdDataBytes
+    );
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -492,7 +504,7 @@ contract StoreCoreTest is Test, StoreView {
     // !gasreport register subscriber
     StoreCore.registerHook(table, subscriber);
 
-    bytes memory data = bytes.concat(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+    bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
     // !gasreport set record on table with subscriber
     StoreCore.setRecord(table, key, data);
@@ -501,7 +513,7 @@ contract StoreCoreTest is Test, StoreView {
     bytes memory indexedData = StoreCore.getRecord(indexerTableId, key);
     assertEq(keccak256(data), keccak256(indexedData));
 
-    data = bytes.concat(bytes16(0x1112131415161718191a1b1c1d1e1f20));
+    data = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
 
     // !gasreport set static field on table with subscriber
     StoreCore.setField(table, key, 0, data);
@@ -515,7 +527,7 @@ contract StoreCoreTest is Test, StoreView {
 
     // Get data from indexed table - the indexer should have mirrored the data there
     indexedData = StoreCore.getRecord(indexerTableId, key);
-    assertEq(keccak256(indexedData), keccak256(bytes.concat(bytes16(0))));
+    assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 
   function testHooksDynamicData() public {
@@ -537,9 +549,9 @@ contract StoreCoreTest is Test, StoreView {
     arrayData[0] = 0x01020304;
     bytes memory arrayDataBytes = Bytes.from(arrayData);
     PackedCounter encodedArrayDataLength = PackedCounterLib.pack(uint16(arrayDataBytes.length));
-    bytes memory dynamicData = bytes.concat(encodedArrayDataLength.unwrap(), arrayDataBytes);
-    bytes memory staticData = bytes.concat(bytes16(0x0102030405060708090a0b0c0d0e0f10));
-    bytes memory data = bytes.concat(staticData, dynamicData);
+    bytes memory dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
+    bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
+    bytes memory data = abi.encodePacked(staticData, dynamicData);
 
     // !gasreport set (dynamic) record on table with subscriber
     StoreCore.setRecord(table, key, data);
@@ -551,8 +563,8 @@ contract StoreCoreTest is Test, StoreView {
     // Update dynamic data
     arrayData[0] = 0x11121314;
     arrayDataBytes = Bytes.from(arrayData);
-    dynamicData = bytes.concat(encodedArrayDataLength.unwrap(), arrayDataBytes);
-    data = bytes.concat(staticData, dynamicData);
+    dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
+    data = abi.encodePacked(staticData, dynamicData);
 
     // !gasreport set (dynamic) field on table with subscriber
     StoreCore.setField(table, key, 1, arrayDataBytes);
@@ -566,7 +578,7 @@ contract StoreCoreTest is Test, StoreView {
 
     // Get data from indexed table - the indexer should have mirrored the data there
     indexedData = StoreCore.getRecord(indexerTableId, key);
-    assertEq(keccak256(indexedData), keccak256(bytes.concat(bytes16(0))));
+    assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 }
 

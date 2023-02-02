@@ -41,7 +41,7 @@ library Vector2_ {
     uint32 x,
     uint32 y
   ) internal {
-    bytes memory data = bytes.concat(bytes4(x), bytes4(y));
+    bytes memory data = abi.encodePacked(x, y);
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     StoreSwitch.setRecord(tableId, keyTuple, data);
@@ -62,7 +62,7 @@ library Vector2_ {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setField(tableId, keyTuple, 0, bytes.concat(bytes4(x)));
+    StoreSwitch.setField(tableId, keyTuple, 0, abi.encodePacked(x));
   }
 
   function setY(
@@ -72,7 +72,7 @@ library Vector2_ {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setField(tableId, keyTuple, 1, bytes.concat(bytes4(y)));
+    StoreSwitch.setField(tableId, keyTuple, 1, abi.encodePacked(y));
   }
 
   /** Get the table's data */

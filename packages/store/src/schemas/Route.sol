@@ -43,7 +43,7 @@ library Route_ {
     bytes4 selector,
     uint8 executionMode
   ) internal {
-    bytes memory data = bytes.concat(bytes20(addr), bytes4(selector), bytes1(executionMode));
+    bytes memory data = abi.encodePacked(addr, selector, executionMode);
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     StoreSwitch.setRecord(tableId, keyTuple, data);
@@ -64,7 +64,7 @@ library Route_ {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setField(tableId, keyTuple, 0, bytes.concat(bytes20(addr)));
+    StoreSwitch.setField(tableId, keyTuple, 0, abi.encodePacked(addr));
   }
 
   function setSelector(
@@ -74,7 +74,7 @@ library Route_ {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setField(tableId, keyTuple, 1, bytes.concat(bytes4(selector)));
+    StoreSwitch.setField(tableId, keyTuple, 1, abi.encodePacked(selector));
   }
 
   function setExecutionMode(
@@ -84,7 +84,7 @@ library Route_ {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setField(tableId, keyTuple, 2, bytes.concat(bytes1(executionMode)));
+    StoreSwitch.setField(tableId, keyTuple, 2, abi.encodePacked(executionMode));
   }
 
   /** Get the table's data */

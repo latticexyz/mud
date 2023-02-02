@@ -125,19 +125,19 @@ library Bytes {
 
   // Needs unique name to avoid conflict with `from(uint32)`
   function fromUint8(uint8 input) internal pure returns (bytes memory output) {
-    return bytes.concat(bytes1(input));
+    return abi.encodePacked(input);
   }
 
   function from(uint32 input) internal pure returns (bytes memory output) {
-    return bytes.concat(bytes4(input));
+    return abi.encodePacked(input);
   }
 
   function from(address input) internal pure returns (bytes memory output) {
-    return bytes.concat(bytes20(input));
+    return abi.encodePacked(input);
   }
 
   function from(bytes4 input) internal pure returns (bytes memory output) {
-    return bytes.concat(input);
+    return abi.encodePacked(input);
   }
 
   /************************************************************************

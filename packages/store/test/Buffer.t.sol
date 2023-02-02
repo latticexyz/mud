@@ -24,7 +24,7 @@ contract BufferTest is Test {
   }
 
   function testFromBytes() public {
-    bytes memory data = bytes.concat(bytes8(0x0102030405060708));
+    bytes memory data = abi.encodePacked(bytes8(0x0102030405060708));
 
     // !gasreport create a buffer from 8 bytes
     Buffer buf = Buffer_.fromBytes(data);
@@ -68,8 +68,8 @@ contract BufferTest is Test {
 
   function testAppend() public {
     Buffer buf = Buffer_.allocate(32);
-    bytes memory data1 = bytes.concat(bytes8(0x0102030405060708));
-    bytes memory data2 = bytes.concat(bytes8(0x090a0b0c0d0e0f10));
+    bytes memory data1 = abi.encodePacked(bytes8(0x0102030405060708));
+    bytes memory data2 = abi.encodePacked(bytes8(0x090a0b0c0d0e0f10));
 
     // !gasreport append unchecked bytes memory (8) to buffer
     buf.appendUnchecked(data1);
@@ -95,9 +95,9 @@ contract BufferTest is Test {
   }
 
   function testCompareGasToConcat() public {
-    bytes memory data1 = bytes.concat(keccak256("data1"));
-    bytes memory data2 = bytes.concat(keccak256("data2"));
-    bytes memory data3 = bytes.concat(keccak256("data3"));
+    bytes memory data1 = abi.encodePacked(keccak256("data1"));
+    bytes memory data2 = abi.encodePacked(keccak256("data2"));
+    bytes memory data3 = abi.encodePacked(keccak256("data3"));
 
     // !gasreport concat 3 bytes memory (32) using buffer
     Buffer buf = Buffer_.concat(data1, data2, data3);
@@ -105,7 +105,11 @@ contract BufferTest is Test {
     // !gasreport concat 3 bytes memory (32) using bytes.concat
     bytes memory concat = bytes.concat(data1, data2, data3);
 
+    // !gasreport concat 3 bytes memory (32) using abi.encodePacked
+    bytes memory concat2 = abi.encodePacked(data1, data2, data3);
+
     assertEq(keccak256(buf.toBytes()), keccak256(concat));
+    assertEq(keccak256(buf.toBytes()), keccak256(concat2));
   }
 
   function testAppendFixed() public {
@@ -126,9 +130,9 @@ contract BufferTest is Test {
 
   function testToBytes() public {
     Buffer buf = Buffer_.allocate(32);
-    bytes memory data1 = bytes.concat(bytes8(0x0102030405060708));
-    bytes memory data2 = bytes.concat(bytes8(0x090a0b0c0d0e0f10));
-    bytes memory data = bytes.concat(data1, data2);
+    bytes memory data1 = abi.encodePacked(bytes8(0x0102030405060708));
+    bytes memory data2 = abi.encodePacked(bytes8(0x090a0b0c0d0e0f10));
+    bytes memory data = abi.encodePacked(data1, data2);
 
     buf.append(data1);
     buf.append(data2);
@@ -141,7 +145,7 @@ contract BufferTest is Test {
 
   function testRead() public {
     Buffer buf = Buffer_.allocate(32);
-    bytes memory data = bytes.concat(bytes8(0x0102030405060708));
+    bytes memory data = abi.encodePacked(bytes8(0x0102030405060708));
     buf.append(data);
 
     // !gasreport read bytes32 from buffer
@@ -162,7 +166,7 @@ contract BufferTest is Test {
 
   function testToArrayUint32() public {
     Buffer buf = Buffer_.allocate(32);
-    bytes memory data1 = bytes.concat(bytes8(0x0102030405060708));
+    bytes memory data1 = abi.encodePacked(bytes8(0x0102030405060708));
     buf.append(data1);
 
     // !gasreport buffer toArray with element length 4
@@ -178,7 +182,7 @@ contract BufferTest is Test {
 
   function testToArrayUint256() public {
     Buffer buf = Buffer_.allocate(8);
-    bytes memory data = bytes.concat(bytes8(0x0102030405060708));
+    bytes memory data = abi.encodePacked(bytes8(0x0102030405060708));
     buf.append(data);
 
     uint256 arrayPtr = buf.toArray(4);
@@ -193,7 +197,7 @@ contract BufferTest is Test {
 
   function testToArrayUint256TrailingData() public {
     Buffer buf = Buffer_.allocate(10);
-    bytes memory data = bytes.concat(bytes8(0x0102030405060708), bytes2(0x090a));
+    bytes memory data = abi.encodePacked(bytes8(0x0102030405060708), bytes2(0x090a));
     buf.append(data);
     uint256 arrayPtr = buf.toArray(4);
     uint256[] memory arr = Cast.toUint256Array(arrayPtr);
@@ -206,13 +210,13 @@ contract BufferTest is Test {
 
   function testSlice() public {
     Buffer buf = Buffer_.allocate(32);
-    bytes memory data = bytes.concat(bytes8(0x0102030405060708));
+    bytes memory data = abi.encodePacked(bytes8(0x0102030405060708));
     buf.append(data);
 
     // !gasreport slice 4 bytes from buffer with offset 4
     bytes memory slice = buf.slice(4, 4);
 
     assertEq(uint256(slice.length), 4);
-    assertEq(keccak256(slice), keccak256(bytes.concat(bytes4(0x05060708))));
+    assertEq(keccak256(slice), keccak256(abi.encodePacked(bytes4(0x05060708))));
   }
 }
