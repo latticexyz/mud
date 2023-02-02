@@ -62,6 +62,7 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
         rpc,
         systems,
         gasPrice,
+        reuseComponents: true,
       });
     });
   } else {
