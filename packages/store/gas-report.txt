@@ -8,6 +8,7 @@
 (test/Buffer.t.sol) | append bytes8 of bytes32 to buffer [buf.append(data2, 8)]: 645
 (test/Buffer.t.sol) | concat 3 bytes memory (32) using buffer [Buffer buf = Buffer_.concat(data1, data2, data3)]: 2638
 (test/Buffer.t.sol) | concat 3 bytes memory (32) using bytes.concat [bytes memory concat = bytes.concat(data1, data2, data3)]: 641
+(test/Buffer.t.sol) | concat 3 bytes memory (32) using abi.encodePacked [bytes memory concat2 = abi.encodePacked(data1, data2, data3)]: 641
 (test/Buffer.t.sol) | create a buffer from 8 bytes [Buffer buf = Buffer_.fromBytes(data)]: 40
 (test/Buffer.t.sol) | read bytes32 from buffer [bytes32 value = buf.read32(4)]: 102
 (test/Buffer.t.sol) | read bytes8 with offset 3 from buffer [bytes8 value2 = buf.read8(3)]: 151
@@ -55,7 +56,7 @@
 (test/Gas.t.sol) | pass custom encoded bytes to external contract [someContract.doSomethingWithBytes(customEncoded)]: 1342
 (test/MixedTable.t.sol) | store Mixed struct in storage (native solidity) [testMixed = mixed]: 92016
 (test/MixedTable.t.sol) | register MixedTable schema [MixedTable.registerSchema()]: 32531
-(test/MixedTable.t.sol) | set record in MixedTable [MixedTable.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })]: 114470
+(test/MixedTable.t.sol) | set record in MixedTable [MixedTable.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })]: 114455
 (test/MixedTable.t.sol) | get record from MixedTable [Mixed memory mixed = MixedTable.get(key)]: 20506
 (test/PackedCounter.t.sol) | get value at index of PackedCounter [packedCounter.atIndex(3)]: 272
 (test/PackedCounter.t.sol) | set value at index of PackedCounter [packedCounter = packedCounter.setAtIndex(2, 5)]: 884
@@ -98,10 +99,10 @@
 (test/StoreCore.t.sol) | set dynamic length of dynamic index 0 [StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 0, 10)]: 23719
 (test/StoreCore.t.sol) | set dynamic length of dynamic index 1 [StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 1, 99)]: 1820
 (test/StoreCore.t.sol) | reduce dynamic length of dynamic index 0 [StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 0, 5)]: 1821
-(test/StoreCore.t.sol) | set static field (1 slot) [StoreCore.setField(table, key, 0, bytes.concat(firstDataBytes))]: 38105
-(test/StoreCore.t.sol) | get static field (1 slot) [bytes memory loadedData = StoreCore.getField(table, key, 0)]: 4595
-(test/StoreCore.t.sol) | set static field (overlap 2 slot) [StoreCore.setField(table, key, 1, bytes.concat(secondDataBytes))]: 33895
-(test/StoreCore.t.sol) | get static field (overlap 2 slot) [loadedData = StoreCore.getField(table, key, 1)]: 6379
+(test/StoreCore.t.sol) | set static field (1 slot) [StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes))]: 38105
+(test/StoreCore.t.sol) | get static field (1 slot) [bytes memory loadedData = StoreCore.getField(table, key, 0)]: 4592
+(test/StoreCore.t.sol) | set static field (overlap 2 slot) [StoreCore.setField(table, key, 1, abi.encodePacked(secondDataBytes))]: 33895
+(test/StoreCore.t.sol) | get static field (overlap 2 slot) [loadedData = StoreCore.getField(table, key, 1)]: 6375
 (test/StoreCore.t.sol) | set dynamic field (1 slot, first dynamic field) [StoreCore.setField(table, key, 2, thirdDataBytes)]: 57420
 (test/StoreCore.t.sol) | get dynamic field (1 slot, first dynamic field) [loadedData = StoreCore.getField(table, key, 2)]: 5357
 (test/StoreCore.t.sol) | set dynamic field (1 slot, second dynamic field) [StoreCore.setField(table, key, 3, fourthDataBytes)]: 35554
