@@ -136,7 +136,7 @@ async function runGasReport(path: string): Promise<GasReport> {
 _gasreport = gasleft();
 ${functionCall}
 _gasreport = _gasreport - gasleft();
-console.log("GAS REPORT: ${name} [${functionCall}]:", _gasreport);`
+console.log("GAS REPORT: ${name} [${functionCall.replaceAll('"', '\\"')}]:", _gasreport);`
     );
 
     i++;
