@@ -131,6 +131,9 @@ It contains the list of components and systems to deploy, and which systems need
 This file is the source of truth for MUD's deployment tools.
 If a component or system is not included, it is not deployed, even if it is placed in the `components` or `systems` directory.
 
+`initializers` are optional libraries. After components and systems are deployed, `init` function of each initializer will be called with `IWorld` as the sole argument, e.g. `LibInitData.init(world)`.
+Initializers should be in the `libraries` directory.
+
 **Example**: `deploy.json`
 
 ```json
@@ -141,7 +144,8 @@ If a component or system is not included, it is not deployed, even if it is plac
       "name": "IncrementSystem",
       "writeAccess": ["CounterComponent"]
     }
-  ]
+  ],
+  "initializers": ["LibInitData"]
 }
 ```
 
