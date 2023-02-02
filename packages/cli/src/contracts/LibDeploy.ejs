@@ -66,6 +66,13 @@ library LibDeploy {
     
     // Deploy systems 
     deploySystems(address(result.world), true);
+
+    // Call initializer libraries
+    if (!_reuseComponents) {
+<% initializers.forEach((name) => { -%>
+      <%= name -%>.init(result.world);
+<% }); -%>
+    }
   }
   
   function authorizeWriter(
@@ -107,9 +114,5 @@ library LibDeploy {
 <% } -%>
     console.log(address(system));
 <% });-%>
-
-<% initializers.forEach((name) => { -%>
-    if(init) <%= name -%>.init(world);
-<% }); -%>
   }
 }
