@@ -25,10 +25,10 @@ import { <%= component %>, ID as <%= component %>ID } from "components/<%- compo
 import { <%= system.name %>, ID as <%= system.name %>ID } from "systems/<%- system.name %>.sol";
 <% }); -%>
 
-<% if (libs.length > 0) { -%>
-// Init Libraries (requires 'libraries=...' remapping in project's remappings.txt)
-<% libs.forEach(({name}) => { -%>
-import { <%= name %> } from "libraries/<%- name %>.sol";
+<% if (initializers.length > 0) { -%>
+// Initializer libraries (requires 'libraries=...' remapping in project's remappings.txt)
+<% initializers.forEach((initializer) => { -%>
+import { <%= initializer %> } from "libraries/<%- initializer %>.sol";
 <% }); -%>
 <% } -%>
 
@@ -108,8 +108,8 @@ library LibDeploy {
     console.log(address(system));
 <% });-%>
 
-<% libs.forEach(({name, func}) => { -%>
-    if(init) <%= name -%>.<%= func ?? 'init' -%>(world);
+<% initializers.forEach((name) => { -%>
+    if(init) <%= name -%>.init(world);
 <% }); -%>
   }
 }
