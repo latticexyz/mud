@@ -100,7 +100,7 @@ We can use the `initialize` key in our deploy config to do this. Its value is pa
 
 Again, because this is a custom component, we need to define its schema on the client as part of its component definition.
 
-```ts #1,9-19 packages/client/src/mud/components.ts
+```ts !#1,9-19 packages/client/src/mud/components.ts
 import { defineComponent, Type } from "@latticexyz/recs";
 import {
   defineBoolComponent,
@@ -149,7 +149,7 @@ export const useMapConfig = () => {
 
 And now we can replace the hardcoded map dimensions in the game board with the new map config.
 
-```tsx #5,8-10 packages/client/src/GameBoard.tsx
+```tsx !#5,8-10 packages/client/src/GameBoard.tsx
 import { useComponentValueStream } from "@latticexyz/std-client";
 import { useMUD } from "./MUDContext";
 import { useJoinGame } from "./useJoinGame";
@@ -157,9 +157,9 @@ import { useMovement } from "./useMovement";
 import { useMapConfig } from "./useMapConfig";
 
 export const GameBoard = () => {
-  const mapConfig = useMapConfig();
-  const rows = new Array(mapConfig.height).fill(0).map((_, i) => i);
-  const columns = new Array(mapConfig.width).fill(0).map((_, i) => i);
+  const { width, height } = useMapConfig();
+  const rows = new Array(height).fill(0).map((_, i) => i);
+  const columns = new Array(width).fill(0).map((_, i) => i);
 
   const {
     components: { Position },
