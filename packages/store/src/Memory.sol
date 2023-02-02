@@ -6,20 +6,12 @@ import { Bytes } from "./Bytes.sol";
 
 library Memory {
   function load(uint256 memoryPointer) internal pure returns (bytes32 data) {
-    return load(bytes32(memoryPointer));
-  }
-
-  function load(bytes32 memoryPointer) internal pure returns (bytes32 data) {
     assembly {
       data := mload(memoryPointer)
     }
   }
 
   function load(uint256 memoryPointer, uint256 offset) internal pure returns (bytes32 data) {
-    return load(bytes32(memoryPointer), offset);
-  }
-
-  function load(bytes32 memoryPointer, uint256 offset) internal pure returns (bytes32 data) {
     assembly {
       data := mload(add(memoryPointer, offset))
     }

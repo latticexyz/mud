@@ -12,11 +12,6 @@ import { Buffer, Buffer_ } from "./Buffer.sol";
 import { HooksTable, tableId as HooksTableId } from "./tables/HooksTable.sol";
 import { IStoreHook } from "./IStore.sol";
 
-// TODO
-// - Turn all storage pointer to uint256 for consistency (uint256 is better than bytes32 because it's easier to do arithmetic on)
-// - Change Storage library functions to make it clearer which argument is offset and which is length
-// - Streamline naming in Storage and Memory libraries (probably just use load and store instead of read and write?)
-
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
   event MudStoreSetRecord(bytes32 table, bytes32[] key, bytes data);
@@ -127,25 +122,35 @@ library StoreCore {
     }
 
     // Store the static data at the static data location
-    bytes32 staticDataLocation = StoreCoreInternal._getStaticDataLocation(table, key);
+    uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(table, key);
     uint256 memoryPointer = Memory.dataPointer(data);
-    Storage.store(staticDataLocation, 0, memoryPointer, staticLength);
+    Storage.store({
+      storagePointer: staticDataLocation,
+      offset: 0,
+      memoryPointer: memoryPointer,
+      length: staticLength
+    });
     memoryPointer += staticLength + 32; // move the memory pointer to the start of the dynamic data (skip the encoded dynamic length)
 
     // If there is no dynamic data, we're done
     if (schema.numDynamicFields() == 0) return;
 
     // Store the dynamic data length at the dynamic data length location
-    bytes32 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(table, key);
-    Storage.store(dynamicDataLengthLocation, dynamicLength.unwrap());
+    uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(table, key);
+    Storage.store({ storagePointer: dynamicDataLengthLocation, data: dynamicLength.unwrap() });
 
     // For every dynamic element, slice off the dynamic data and store it at the dynamic location
-    bytes32 dynamicDataLocation;
+    uint256 dynamicDataLocation;
     uint256 dynamicDataLength;
     for (uint8 i; i < schema.numDynamicFields(); ) {
       dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(table, key, i);
       dynamicDataLength = dynamicLength.atIndex(i);
-      Storage.store(dynamicDataLocation, 0, memoryPointer, dynamicDataLength);
+      Storage.store({
+        storagePointer: dynamicDataLocation,
+        offset: 0,
+        memoryPointer: memoryPointer,
+        length: dynamicDataLength
+      });
       memoryPointer += dynamicDataLength; // move the memory pointer to the start of the next dynamic data
       unchecked {
         i++;
@@ -193,26 +198,26 @@ library StoreCore {
     }
 
     // Delete static data
-    bytes32 staticDataLocation = StoreCoreInternal._getStaticDataLocation(table, key);
-    Storage.store(staticDataLocation, 0, new bytes(schema.staticDataLength()));
+    uint256 staticDataLocation = StoreCoreInternal._getStaticDataLocation(table, key);
+    Storage.store({ storagePointer: staticDataLocation, offset: 0, data: new bytes(schema.staticDataLength()) });
 
     // If there are no dynamic fields, we're done
     if (schema.numDynamicFields() == 0) return;
 
     // Delete dynamic data
-    bytes32 dynamicDataLocation;
+    uint256 dynamicDataLocation;
     PackedCounter encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(table, key);
     for (uint8 i; i < schema.numDynamicFields(); ) {
       dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(table, key, i);
-      Storage.store(dynamicDataLocation, 0, new bytes(encodedLengths.atIndex(i)));
+      Storage.store({ storagePointer: dynamicDataLocation, offset: 0, data: new bytes(encodedLengths.atIndex(i)) });
       unchecked {
         i++;
       }
     }
 
     // Delete dynamic data length
-    bytes32 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(table, key);
-    Storage.store(dynamicDataLengthLocation, bytes32(0));
+    uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(table, key);
+    Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
 
     // Emit event to notify indexers
     emit MudStoreDeleteRecord(table, key);
@@ -269,7 +274,12 @@ library StoreCore {
     // Append dynamic data to the buffer
     for (uint8 i; i < numDynamicFields; i++) {
       uint256 dynamicDataLocation = uint256(StoreCoreInternal._getDynamicDataLocation(table, key, i));
-      Storage.load(dynamicDataLocation, 0, dynamicDataLength.atIndex(i), buffer);
+      Storage.load({
+        storagePointer: dynamicDataLocation,
+        length: dynamicDataLength.atIndex(i),
+        offset: 0,
+        buffer: buffer
+      });
     }
 
     // Return the buffer as bytes
@@ -320,8 +330,8 @@ library StoreCoreInternal {
   function _getSchema(bytes32 table) internal view returns (Schema) {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
-    bytes32 location = StoreCoreInternal._getStaticDataLocation(SCHEMA_TABLE, key);
-    return Schema.wrap(Storage.load(location));
+    uint256 location = StoreCoreInternal._getStaticDataLocation(SCHEMA_TABLE, key);
+    return Schema.wrap(Storage.load({ storagePointer: location }));
   }
 
   /**
@@ -330,8 +340,8 @@ library StoreCoreInternal {
   function _registerSchemaUnchecked(bytes32 table, Schema schema) internal {
     bytes32[] memory key = new bytes32[](1);
     key[0] = table;
-    bytes32 location = _getStaticDataLocation(SCHEMA_TABLE, key);
-    Storage.store(location, schema.unwrap());
+    uint256 location = _getStaticDataLocation(SCHEMA_TABLE, key);
+    Storage.store({ storagePointer: location, data: schema.unwrap() });
   }
 
   /************************************************************************
@@ -353,9 +363,9 @@ library StoreCoreInternal {
       revert StoreCore_InvalidDataLength(getStaticByteLength(schemaType), data.length);
 
     // Store the provided value in storage
-    bytes32 location = _getStaticDataLocation(table, key);
+    uint256 location = _getStaticDataLocation(table, key);
     uint256 offset = _getStaticDataOffset(schema, schemaIndex);
-    Storage.store(location, offset, data);
+    Storage.store({ storagePointer: location, offset: offset, data: data });
   }
 
   function _setDynamicField(
@@ -371,8 +381,8 @@ library StoreCoreInternal {
     _setDynamicDataLengthAtIndex(table, key, dynamicSchemaIndex, data.length);
 
     // Store the provided value in storage
-    bytes32 dynamicDataLocation = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
-    Storage.store(dynamicDataLocation, data);
+    uint256 dynamicDataLocation = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
+    Storage.store({ storagePointer: dynamicDataLocation, data: data });
   }
 
   /**
@@ -400,8 +410,8 @@ library StoreCoreInternal {
     if (schema.staticDataLength() == 0) return new bytes(0);
 
     // Load the data from storage
-    bytes32 location = _getStaticDataLocation(table, key);
-    return Storage.load(location, schema.staticDataLength());
+    uint256 location = _getStaticDataLocation(table, key);
+    return Storage.load({ storagePointer: location, length: schema.staticDataLength() });
   }
 
   /**
@@ -421,7 +431,7 @@ library StoreCoreInternal {
 
     // Load the data from storage
 
-    return Storage.load(location, offset, dataLength);
+    return Storage.load({ storagePointer: location, length: dataLength, offset: offset });
   }
 
   /**
@@ -435,10 +445,10 @@ library StoreCoreInternal {
   ) internal view returns (bytes memory) {
     // Get the length and storage location of the dynamic field
     uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
-    bytes32 location = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
+    uint256 location = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
     uint256 dataLength = _loadEncodedDynamicDataLength(table, key).atIndex(dynamicSchemaIndex);
 
-    return Storage.load(location, dataLength);
+    return Storage.load({ storagePointer: location, length: dataLength });
   }
 
   /************************************************************************
@@ -454,8 +464,8 @@ library StoreCoreInternal {
   /**
    * Compute the storage location based on table id and index tuple
    */
-  function _getStaticDataLocation(bytes32 table, bytes32[] memory key) internal pure returns (bytes32) {
-    return keccak256(abi.encode(SLOT, table, key));
+  function _getStaticDataLocation(bytes32 table, bytes32[] memory key) internal pure returns (uint256) {
+    return uint256(keccak256(abi.encode(SLOT, table, key)));
   }
 
   /**
@@ -480,15 +490,15 @@ library StoreCoreInternal {
     bytes32 table,
     bytes32[] memory key,
     uint8 schemaIndex
-  ) internal pure returns (bytes32) {
-    return keccak256(abi.encode(SLOT, table, key, schemaIndex));
+  ) internal pure returns (uint256) {
+    return uint256(keccak256(abi.encode(SLOT, table, key, schemaIndex)));
   }
 
   /**
    * Compute the storage location for the length of the dynamic data
    */
-  function _getDynamicDataLengthLocation(bytes32 table, bytes32[] memory key) internal pure returns (bytes32) {
-    return keccak256(abi.encode(SLOT, table, key, "length"));
+  function _getDynamicDataLengthLocation(bytes32 table, bytes32[] memory key) internal pure returns (uint256) {
+    return uint256(keccak256(abi.encode(SLOT, table, key, "length")));
   }
 
   /**
@@ -496,8 +506,8 @@ library StoreCoreInternal {
    */
   function _loadEncodedDynamicDataLength(bytes32 table, bytes32[] memory key) internal view returns (PackedCounter) {
     // Load dynamic data length from storage
-    bytes32 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(table, key);
-    return PackedCounter.wrap(Storage.load(dynamicSchemaLengthSlot));
+    uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(table, key);
+    return PackedCounter.wrap(Storage.load({ storagePointer: dynamicSchemaLengthSlot }));
   }
 
   /**
@@ -510,14 +520,14 @@ library StoreCoreInternal {
     uint256 newLengthAtIndex
   ) internal {
     // Load dynamic data length from storage
-    bytes32 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(table, key);
-    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load(dynamicSchemaLengthSlot));
+    uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(table, key);
+    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicSchemaLengthSlot }));
 
     // Update the encoded lengths
     encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, newLengthAtIndex);
 
     // Set the new lengths
-    Storage.store(dynamicSchemaLengthSlot, encodedLengths.unwrap());
+    Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
   }
 }
 

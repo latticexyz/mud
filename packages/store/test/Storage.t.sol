@@ -28,34 +28,37 @@ contract StorageTest is Test {
     // First store some data to storage at the target slot and two slots after the target slot
 
     // !gasreport store 1 storage slot
-    Storage.store(storagePointer, originalDataFirstSlot);
+    Storage.store({ storagePointer: storagePointer, data: originalDataFirstSlot });
 
-    Storage.store(storagePointerTwoSlotsAfter, originalDataLastSlot);
+    Storage.store({ storagePointer: storagePointerTwoSlotsAfter, data: originalDataLastSlot });
 
     // Then set the target slot, partially overwriting the first and third slot, but using safeTrail and offset
 
     // !gasreport store 34 bytes over 3 storage slots (with offset and safeTrail))
-    Storage.store(storagePointer, 31, data1);
+    Storage.store({ storagePointer: storagePointer, offset: 31, data: data1 });
 
     // Assert the first slot has the correct value
-    assertEq(Storage.load(storagePointer), bytes32(0x4200000000000000000000000000000000000000000000000000000000006901));
+    assertEq(
+      Storage.load({ storagePointer: storagePointer }),
+      bytes32(0x4200000000000000000000000000000000000000000000000000000000006901)
+    );
 
     // Assert the second slot has the correct value
     assertEq(
-      Storage.load(storagePointer + 1),
+      Storage.load({ storagePointer: storagePointer + 1 }),
       bytes32(0x0200000000000000000000000000000000000000000000000000000000000003)
     );
 
     // Assert that the trailing slot has the correct value
     assertEq(
-      Storage.load(storagePointerTwoSlotsAfter),
+      Storage.load({ storagePointer: storagePointerTwoSlotsAfter }),
       bytes32(0x0442000000000000000000000000000000000000000000000000000000000069)
     );
 
     // Assert we can load the correct partial value from storage
 
     // !gasreport load 34 bytes over 3 storage slots (with offset and safeTrail))
-    bytes memory data = Storage.load(storagePointer, 31, 34);
+    bytes memory data = Storage.load({ storagePointer: storagePointer, length: 34, offset: 31 });
 
     assertEq(Bytes.slice1(data, 0), bytes1(0x01));
     assertEq(Bytes.slice32(data, 1), bytes32(0x0200000000000000000000000000000000000000000000000000000000000003));
@@ -68,7 +71,10 @@ contract StorageTest is Test {
     bytes32 storagePointer,
     uint8 offset
   ) public {
-    Storage.store(storagePointer, offset, data);
-    assertEq(keccak256(Storage.load(storagePointer, offset, data.length)), keccak256(data));
+    Storage.store({ storagePointer: uint256(storagePointer), offset: offset, data: data });
+    assertEq(
+      keccak256(Storage.load({ storagePointer: uint256(storagePointer), length: data.length, offset: offset })),
+      keccak256(data)
+    );
   }
 }

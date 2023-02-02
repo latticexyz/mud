@@ -8,28 +8,12 @@ import { Memory } from "./Memory.sol";
 import "./Buffer.sol";
 
 library Storage {
-  function store(bytes32 storagePointer, bytes memory data) internal {
-    store(uint256(storagePointer), 0, data);
-  }
-
   function store(uint256 storagePointer, bytes memory data) internal {
     store(storagePointer, 0, data);
   }
 
-  function store(bytes32 storagePointer, bytes32 data) internal {
-    _storeWord(uint256(storagePointer), data);
-  }
-
   function store(uint256 storagePointer, bytes32 data) internal {
     _storeWord(storagePointer, data);
-  }
-
-  function store(
-    bytes32 storagePointer,
-    uint256 offset,
-    bytes memory data
-  ) internal {
-    store(uint256(storagePointer), offset, data);
   }
 
   function store(
@@ -44,18 +28,9 @@ library Storage {
     store(storagePointer, offset, memoryPointer, data.length);
   }
 
-  function store(
-    bytes32 storagePointer,
-    uint256 offset,
-    uint256 memoryPointer,
-    uint256 length
-  ) internal {
-    store(uint256(storagePointer), offset, memoryPointer, length);
-  }
-
   /**
-   * @dev store raw bytes to storage at the given storagePointer and offset (keeping the rest of the word intact)
-   * TODO: this implementation is optimized for readability, but not very gas efficient. We should optimize this using assembly once we've settled on a spec.
+   * @notice Stores raw bytes to storage at the given storagePointer and offset (keeping the rest of the word intact)
+   * @dev This implementation is optimized for readability, but not very gas efficient. We should optimize this using assembly once we've settled on a spec.
    */
   function store(
     uint256 storagePointer,
@@ -76,72 +51,56 @@ library Storage {
         uint256 _lengthTostore = length + offset > 32 ? 32 - offset : length; // // the number of bytes to store
         _storePartialWord(
           storagePointer, // the word to update
-          offset, // the offset in bytes to start writing
           _lengthTostore,
-          Memory.load(memoryPointer) // Pass the first 32 bytes of the data
+          offset, // the offset in bytes to start writing
+          Memory.load({ memoryPointer: memoryPointer }) // Pass the first 32 bytes of the data
         );
         bytesWritten += _lengthTostore;
         // If this is the last word, and there is a partial word, apply a mask to the end
       } else if (i == numWords - 1 && (length + offset) % 32 > 0) {
         _storePartialWord(
           storagePointer + i, // the word to update
-          0, // the offset in bytes to start writing
           (length + offset) % 32, // the number of bytes to store
-          Memory.load(memoryPointer, bytesWritten) // the data to store
+          0, // the offset in bytes to start writing
+          Memory.load({ memoryPointer: memoryPointer, offset: bytesWritten }) // the data to store
         );
 
         // Else, just store the word
       } else {
-        _storeWord(storagePointer + i, Memory.load(memoryPointer, bytesWritten));
+        _storeWord(storagePointer + i, Memory.load({ memoryPointer: memoryPointer, offset: bytesWritten }));
         bytesWritten += 32;
       }
     }
-  }
-
-  function load(bytes32 storagePointer) internal view returns (bytes32) {
-    return _loadWord(uint256(storagePointer));
   }
 
   function load(uint256 storagePointer) internal view returns (bytes32) {
     return _loadWord(storagePointer);
   }
 
-  function load(bytes32 storagePointer, uint256 length) internal view returns (bytes memory) {
-    return load(uint256(storagePointer), 0, length);
-  }
-
   function load(uint256 storagePointer, uint256 length) internal view returns (bytes memory) {
-    return load(storagePointer, 0, length);
-  }
-
-  function load(
-    bytes32 storagePointer,
-    uint256 offset,
-    uint256 length
-  ) internal view returns (bytes memory) {
-    return load(uint256(storagePointer), offset, length);
+    return load(storagePointer, length, 0);
   }
 
   /**
-   * @dev load raw bytes from storage at the given storagePointer, offset, and length
+   * @notice Load raw bytes from storage at the given storagePointer, offset, and length
    */
   function load(
     uint256 storagePointer,
-    uint256 offset,
-    uint256 length
+    uint256 length,
+    uint256 offset
   ) internal view returns (bytes memory) {
     Buffer buffer = Buffer_.allocate(uint128(length));
-    load(storagePointer, offset, length, buffer);
+    load(storagePointer, length, offset, buffer);
     return buffer.toBytes();
   }
 
   /**
-   * @dev Append raw bytes from storage at the given storagePointer, offset, and length to the given buffer
+   * @notice Append raw bytes from storage at the given storagePointer, offset, and length to the given buffer
    */
   function load(
     uint256 storagePointer,
-    uint256 offset,
     uint256 length,
+    uint256 offset,
     Buffer buffer
   ) internal view {
     // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
@@ -158,8 +117,8 @@ library Storage {
         buffer.appendUnchecked(
           _loadPartialWord(
             storagePointer, // the slot to start loading from
-            offset, // the offset in bytes to start loading from
-            _lengthToload
+            _lengthToload,
+            offset // the offset in bytes to start loading from
           ),
           uint128(_lengthToload)
         );
@@ -170,8 +129,8 @@ library Storage {
         buffer.appendUnchecked(
           _loadPartialWord(
             storagePointer + i, // the word to load from
-            0, // the offset in bytes to start loading from
-            _lengthToload
+            _lengthToload,
+            0 // the offset in bytes to start loading from
           ),
           uint128(_lengthToload)
         );
@@ -184,7 +143,7 @@ library Storage {
   }
 
   /**
-   * @dev Load a full word from storage into memory
+   * @notice Load a full word from storage into memory
    */
   function _loadWord(uint256 storagePointer) internal view returns (bytes32 data) {
     assembly {
@@ -193,12 +152,12 @@ library Storage {
   }
 
   /**
-   * @dev Load a partial word from storage into memory
+   * @notice Load a partial word from storage into memory
    */
   function _loadPartialWord(
     uint256 storagePointer,
-    uint256 offset,
-    uint256 length
+    uint256 length,
+    uint256 offset
   ) internal view returns (bytes32) {
     // Load current value from storage
     bytes32 storageValue;
@@ -218,8 +177,8 @@ library Storage {
 
   function _storePartialWord(
     uint256 storagePointer,
-    uint256 offset, // in bytes
     uint256 length, // in bytes
+    uint256 offset, // in bytes
     bytes32 data
   ) internal {
     bytes32 current;
