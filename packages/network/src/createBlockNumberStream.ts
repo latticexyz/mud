@@ -43,7 +43,19 @@ export function createBlockNumberStream(
     () => providers.get(),
     (currProviders) => {
       const provider = currProviders?.ws || currProviders?.json;
-      provider?.on("block", (blockNumber: number) => blockNumberEvent$.next(blockNumber));
+
+      let streamEmpty = true;
+      // Get the current block number (skipped if a new block arrives faster)
+      provider?.getBlockNumber().then((blockNumber) => {
+        if (streamEmpty) {
+          blockNumberEvent$.next(blockNumber);
+        }
+      });
+      // Stream new block numbers
+      provider?.on("block", (blockNumber: number) => {
+        streamEmpty = false;
+        blockNumberEvent$.next(blockNumber);
+      });
     },
     { fireImmediately: true }
   );
