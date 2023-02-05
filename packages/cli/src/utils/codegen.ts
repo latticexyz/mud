@@ -6,6 +6,7 @@ import { glob } from "glob";
 
 const contractsDir = path.join(__dirname, "../../src/contracts");
 
+const deployScript = "Deploy.sol";
 const stubLibDeploy = readFile(path.join(contractsDir, "LibDeployStub.sol"));
 
 /**
@@ -73,4 +74,15 @@ async function getNameToPath(out: string, names: string[]) {
     }
   }
   return nameToPath;
+}
+
+/**
+ * Generate Deploy.sol
+ * @param out output directory for Deploy.sol
+ * @returns path to generated Deploy.sol
+ */
+export async function generateDeployScript(out: string) {
+  const deployScriptPath = path.join(out, deployScript);
+  await writeFile(deployScriptPath, await readFile(path.join(contractsDir, deployScript)));
+  return deployScriptPath;
 }

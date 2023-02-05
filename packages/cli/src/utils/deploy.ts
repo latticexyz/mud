@@ -1,18 +1,14 @@
 import { constants, Wallet } from "ethers";
-import { generateLibDeploy, resetLibDeploy } from "./codegen";
+import { generateDeployScript, generateLibDeploy, resetLibDeploy } from "./codegen";
 import { findLog } from "./findLog";
 import { generateTypes } from "./types";
 import { execa } from "execa";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import { getForgeConfig } from "./config";
-import { readFile, writeFile } from "fs/promises";
-import path from "path";
-
-const contractsDir = __dirname + "/../../src/contracts";
-const deployScript = "Deploy.sol";
 
 /**
  * Deploy world, components and systems from deploy.json
+ * @param scriptPath path to the deploy script
  * @param deployerPrivateKey private key of deployer
  * @param rpc rpc url
  * @param worldAddress optional, address of existing world
@@ -20,6 +16,7 @@ const deployScript = "Deploy.sol";
  * @returns address of deployed world
  */
 export async function deploy(
+  scriptPath: string,
   deployerPrivateKey?: string,
   rpc = "http://localhost:8545",
   worldAddress?: string,
@@ -27,12 +24,6 @@ export async function deploy(
   gasPrice?: number
 ) {
   const address = deployerPrivateKey ? new Wallet(deployerPrivateKey).address : constants.AddressZero;
-
-  // Get testDir from forge config
-  const forgeConfig = await getForgeConfig();
-  const testDir = forgeConfig.test;
-  // Copy deploy script to testDir, where LibDeploy should also be
-  await writeFile(path.join(testDir, deployScript), await readFile(path.join(contractsDir, deployScript)));
 
   if (gasPrice == null) {
     try {
@@ -49,7 +40,7 @@ export async function deploy(
     "forge",
     [
       "script",
-      path.join(testDir, deployScript),
+      scriptPath,
       "--target-contract",
       "Deploy",
       "-vvv",
@@ -98,6 +89,9 @@ export async function generateAndDeploy(args: DeployOptions) {
   const testDir = forgeConfig.test;
 
   try {
+    // Generate deploy script
+    const deployScriptPath = await generateDeployScript(testDir);
+
     // Generate LibDeploy
     libDeployPath = await generateLibDeploy(args.config, testDir, args.systems);
 
@@ -106,6 +100,7 @@ export async function generateAndDeploy(args: DeployOptions) {
 
     // Call deploy script
     const result = await deploy(
+      deployScriptPath,
       args.deployerPrivateKey,
       args.rpc,
       args.worldAddress,
