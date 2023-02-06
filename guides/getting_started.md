@@ -20,7 +20,7 @@ Next, run `yarn dev` in the root directory of your new project to start the deve
 yarn dev
 ```
 
-![Starting a new MUD project with the MUD cli](/public/mud-create.gif)
+![Starting a new MUD project with the MUD cli](../public/docs/mud-create.gif)
 
 The minimal MUD project template is organized as a yarn monorepo.
 You can find the contract code in `packages/contracts` and then minimal client setup in `packages/client`.
