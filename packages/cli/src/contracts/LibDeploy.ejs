@@ -14,6 +14,7 @@ import { IComponent } from "solecs/interfaces/IComponent.sol";
 import { getAddressById } from "solecs/utils.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
 import { ISystem } from "solecs/interfaces/ISystem.sol";
+import { SystemStorage } from "solecs/SystemStorage.sol";
 
 // Components (requires 'components=...' remapping in project's remappings.txt)
 <% components.forEach(component => { -%>
@@ -69,6 +70,9 @@ library LibDeploy {
 
     // Call initializer libraries
     if (!_reuseComponents) {
+      // Allow initializers to utilize SystemStorage
+      SystemStorage.init(result.world, result.world.components());
+
 <% initializers.forEach((name) => { -%>
       <%= name -%>.init(result.world);
 <% }); -%>
