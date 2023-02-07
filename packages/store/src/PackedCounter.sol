@@ -120,8 +120,11 @@ library PackedCounterLib {
     uint256 currentValueAtIndex = atIndex(packedCounter, uint8(index));
 
     // Compute the difference and update the total value
-    int256 lengthDiff = int256(newValueAtIndex) - int256(currentValueAtIndex);
-    accumulator = uint256(int256(accumulator) + lengthDiff);
+    if (newValueAtIndex >= currentValueAtIndex) {
+      accumulator += newValueAtIndex - currentValueAtIndex;
+    } else {
+      accumulator -= currentValueAtIndex - newValueAtIndex;
+    }
 
     // Set the new accumulated value and value at index
     uint256 offset = 4 + index * 2; // (4 bytes total length, 2 bytes per dynamic schema)
