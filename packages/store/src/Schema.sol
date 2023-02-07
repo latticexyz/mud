@@ -59,8 +59,7 @@ library SchemaLib {
     if (dynamicFields > 14) revert SchemaLib_InvalidLength(dynamicFields);
 
     // Store total static length, and number of static and dynamic fields
-    schema = Bytes.setBytes1(schema, 0, bytes1(bytes2(length))); // upper length byte
-    schema = Bytes.setBytes1(schema, 1, bytes1(uint8(length))); // lower length byte
+    schema = Bytes.setBytes2(schema, 0, (bytes2(length))); // 2 length bytes
     schema = Bytes.setBytes1(schema, 2, bytes1(staticFields)); // number of static fields
     schema = Bytes.setBytes1(schema, 3, bytes1(dynamicFields)); // number of dynamic fields
 
