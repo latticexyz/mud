@@ -374,6 +374,12 @@ library StoreCoreInternal {
     Storage.store({ storagePointer: dynamicDataLocation, data: data });
   }
 
+  /************************************************************************
+   *
+   *    GET DATA
+   *
+   ************************************************************************/
+
   /**
    * Get full static record for the given table and key tuple (loading schema from storage)
    */
@@ -381,12 +387,6 @@ library StoreCoreInternal {
     Schema schema = _getSchema(table);
     return _getStaticData(table, key, schema);
   }
-
-  /************************************************************************
-   *
-   *    GET DATA
-   *
-   ************************************************************************/
 
   /**
    * Get full static data for the given table and key tuple, with the given schema
