@@ -123,7 +123,7 @@ library LibMath {
 
 ```
 
-### Deployment
+### Deployment configuration
 
 Deployment configuration lives in `deploy.json`.
 It contains the list of components and systems to deploy, and which systems needs write access to which systems.
