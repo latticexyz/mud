@@ -100,10 +100,6 @@ export async function generateAndDeploy(args: DeployOptions) {
     );
     deployedWorldAddress = result.deployedWorldAddress;
     initialBlockNumber = result.initialBlockNumber;
-
-    // Extract world address from deploy script
-  } catch (e) {
-    console.error(e);
   } finally {
     // Remove generated LibDeploy
     console.log("Cleaning up deployment script");
