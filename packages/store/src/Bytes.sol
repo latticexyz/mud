@@ -216,13 +216,6 @@ library Bytes {
     return keccak256(a) == keccak256(b);
   }
 
-  function setLengthInPlace(bytes memory input, uint256 length) internal pure returns (bytes memory) {
-    assembly {
-      mstore(input, length)
-    }
-    return input;
-  }
-
   /************************************************************************
    *
    *    SET
@@ -662,21 +655,5 @@ library Bytes {
       output := mload(add(add(data, 0x20), start))
     }
     return output;
-  }
-
-  /**
-   * Splits a `bytes` memory array into a `bytes` memory array of the given lengths.
-   */
-  function split(bytes memory data, uint256[] memory lengths) internal pure returns (bytes[] memory chunks) {
-    chunks = new bytes[](lengths.length);
-    uint256 sum;
-    for (uint256 i = 0; i < lengths.length; ) {
-      chunks[i] = slice(data, sum, lengths[i]);
-      unchecked {
-        sum += lengths[i];
-        i += 1;
-      }
-    }
-    return chunks;
   }
 }

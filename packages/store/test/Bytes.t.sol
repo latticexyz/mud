@@ -186,16 +186,6 @@ contract BytesTest is Test {
     assertFalse(Bytes.equals(a, b));
   }
 
-  function testSetLengthInPlace() public {
-    bytes memory a = new bytes(5);
-    assertEq(a.length, 5);
-
-    // !gasreport set length of bytes in place
-    Bytes.setLengthInPlace(a, 2);
-
-    assertEq(a.length, 2);
-  }
-
   function testSlice() public {
     bytes memory a = new bytes(5);
     a[0] = 0x01;
