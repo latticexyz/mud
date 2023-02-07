@@ -69,7 +69,7 @@ contract JoinGameSystem is System {
 
 If you try to move off the edge of the map, you may see your player disappear for a second and then reappear on the other side of the map. This is because we're doing an optimistic update for movement, but it's not accounting for our new wrapping logic. Let's add that in.
 
-```ts #5,14,19-20,26-27,38 packages/client/src/useMovement.ts
+```ts !#5,14,19-20,26-27,38 packages/client/src/useMovement.ts
 import { useCallback, useEffect } from "react";
 import { useComponentValueStream } from "@latticexyz/std-client";
 import { uuid } from "@latticexyz/utils";
