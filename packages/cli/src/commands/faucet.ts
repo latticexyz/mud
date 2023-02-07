@@ -2,6 +2,7 @@ import type { Arguments, CommandBuilder } from "yargs";
 import { FaucetServiceDefinition } from "@latticexyz/services/protobuf/ts/faucet/faucet";
 import { createChannel, createClient } from "nice-grpc-web";
 import chalk from "chalk";
+import { NodeHttpTransport } from "@improbable-eng/grpc-web-node-http-transport";
 
 type Options = {
   dripDev?: boolean;
@@ -18,7 +19,7 @@ export const desc = "Interact with a MUD faucet";
  * @returns FaucetServiceClient
  */
 export function createFaucetService(url: string) {
-  return createClient(FaucetServiceDefinition, createChannel(url));
+  return createClient(FaucetServiceDefinition, createChannel(url, NodeHttpTransport()));
 }
 
 export const builder: CommandBuilder<Options, Options> = (yargs) =>
