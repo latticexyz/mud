@@ -1,0 +1,37 @@
+# .github/workflows/gasreport.yml
+name: Gas report
+
+on:
+  pull_request:
+    paths:
+      - packages/store/**
+
+jobs:
+  gas-report:
+    runs-on: ubuntu-22.04
+    name: Generate gas report
+    steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: git-checkout
+        uses: actions/checkout@v3
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: yarn install --network-concurrency 1
+
+      - name: Install local CLI
+        run: cd packages/cli && yarn build && npm link && cd ../..
+
+      - name: Run gas report
+        run: yarn workspace @latticexyz/store run gasreport
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "test: update gas report"
