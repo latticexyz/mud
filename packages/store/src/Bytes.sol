@@ -73,12 +73,6 @@ library Bytes {
     return _from(ptr, 24, true);
   }
 
-  function from(string memory input) internal pure returns (bytes memory output) {
-    assembly {
-      output := input
-    }
-  }
-
   function from(address[] memory input) internal pure returns (bytes memory output) {
     bytes32 ptr;
     assembly {
@@ -121,23 +115,6 @@ library Bytes {
         mstore(outputPtr, shl(shiftBits, mload(inputPtr))) // Store the value in minimal bytes
       }
     }
-  }
-
-  // Needs unique name to avoid conflict with `from(uint32)`
-  function fromUint8(uint8 input) internal pure returns (bytes memory output) {
-    return abi.encodePacked(input);
-  }
-
-  function from(uint32 input) internal pure returns (bytes memory output) {
-    return abi.encodePacked(input);
-  }
-
-  function from(address input) internal pure returns (bytes memory output) {
-    return abi.encodePacked(input);
-  }
-
-  function from(bytes4 input) internal pure returns (bytes memory output) {
-    return abi.encodePacked(input);
   }
 
   /************************************************************************

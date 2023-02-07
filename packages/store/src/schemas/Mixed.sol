@@ -46,9 +46,9 @@ library Mixed_ {
     uint32[] memory a32,
     string memory s
   ) internal {
-    PackedCounter encodedLengths = PackedCounterLib.pack(uint16(a32.length * 4), uint16(Bytes.from(s).length));
+    PackedCounter encodedLengths = PackedCounterLib.pack(uint16(a32.length * 4), uint16(bytes(s).length));
 
-    bytes memory data = abi.encodePacked(u32, u128, encodedLengths.unwrap(), Bytes.from(a32), Bytes.from(s));
+    bytes memory data = abi.encodePacked(u32, u128, encodedLengths.unwrap(), Bytes.from(a32), bytes(s));
 
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
@@ -101,7 +101,7 @@ library Mixed_ {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setField(tableId, keyTuple, 3, Bytes.from(s));
+    StoreSwitch.setField(tableId, keyTuple, 3, bytes(s));
   }
 
   /** Get the table's data */

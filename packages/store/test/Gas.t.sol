@@ -50,7 +50,7 @@ contract GasTest is Test {
 }
 
 function customEncode(Mixed memory mixed) pure returns (bytes memory) {
-  return abi.encodePacked(mixed.u32, mixed.u128, Bytes.from(mixed.a32), Bytes.from(mixed.s));
+  return abi.encodePacked(mixed.u32, mixed.u128, Bytes.from(mixed.a32), mixed.s);
 }
 
 function customDecode(bytes memory input) view returns (Mixed memory) {
