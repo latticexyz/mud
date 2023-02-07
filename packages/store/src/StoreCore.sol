@@ -204,17 +204,6 @@ library StoreCore {
     // If there are no dynamic fields, we're done
     if (schema.numDynamicFields() == 0) return;
 
-    // Delete dynamic data
-    uint256 dynamicDataLocation;
-    PackedCounter encodedLengths = StoreCoreInternal._loadEncodedDynamicDataLength(table, key);
-    for (uint8 i; i < schema.numDynamicFields(); ) {
-      dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(table, key, i);
-      Storage.store({ storagePointer: dynamicDataLocation, offset: 0, data: new bytes(encodedLengths.atIndex(i)) });
-      unchecked {
-        i++;
-      }
-    }
-
     // Delete dynamic data length
     uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(table, key);
     Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
