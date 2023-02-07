@@ -219,7 +219,7 @@ library StoreCore {
    ************************************************************************/
 
   /**
-   * Get full static record for the given table and key tuple (loading schema from storage)
+   * Get full record (all fields, static and dynamic data) for the given table and key tuple (loading schema from storage)
    */
   function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     // Get schema for this table
@@ -230,7 +230,7 @@ library StoreCore {
   }
 
   /**
-   * Get full data (static and dynamic) for the given table and key tuple, with the given schema
+   * Get full record (all fields, static and dynamic data) for the given table and key tuple, with the given schema
    */
   function getRecord(
     bytes32 table,
