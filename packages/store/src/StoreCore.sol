@@ -461,7 +461,7 @@ library StoreCoreInternal {
    * Get storage offset for the given schema and (static length) index
    */
   function _getStaticDataOffset(Schema schema, uint8 schemaIndex) internal pure returns (uint256) {
-    uint256 offset = 0; // skip length
+    uint256 offset = 0;
     for (uint256 i = 0; i < schemaIndex; i++) {
       offset += getStaticByteLength(schema.atIndex(i));
     }
