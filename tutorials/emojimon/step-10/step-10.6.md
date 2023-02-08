@@ -288,3 +288,9 @@ export const EncounterScreen = ({ encounterId }: Props) => {
   );
 };
 ```
+
+When you click the button, we create a toast and call the throw system. We use the transaction hash from the system call to find the same transaction in the system call stream. We subscribe to the call stream, wait for the correct transaction, then determine the outcome of the system call by looking at the different component updates.
+
+If the owned by component changes, we'll assume the monster was caught. If the encounter component changes (i.e. something was removed from the encounter), we'll assume the monster fled. Otherwise, we probably missed.
+
+This code feels a little messy, but we'll revisit this later with better MUD patterns.
