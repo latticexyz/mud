@@ -1,0 +1,2 @@
+# make sure our npm package includes the template's gitignore
+!.gitignore
