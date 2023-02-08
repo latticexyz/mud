@@ -60,6 +60,13 @@ contract StoreCoreTest is Test, StoreView {
     Schema schema = SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
 
     bytes32 table = keccak256("some.table");
+
+    // Expect a MudStoreSetRecord event to be emitted
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = table;
+    vm.expectEmit(true, true, true, true);
+    emit MudStoreSetRecord(StoreCoreInternal.SCHEMA_TABLE, key, abi.encodePacked(schema.unwrap()));
+
     // !gasreport StoreCore: register schema
     StoreCore.registerSchema(table, schema);
 

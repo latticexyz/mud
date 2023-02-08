@@ -308,6 +308,8 @@ library StoreCoreInternal {
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant SCHEMA_TABLE = keccak256("mud.store.table.schema");
 
+  event MudStoreSetRecord(bytes32 table, bytes32[] key, bytes data);
+
   error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
 
   /************************************************************************
@@ -331,6 +333,9 @@ library StoreCoreInternal {
     key[0] = table;
     uint256 location = _getStaticDataLocation(SCHEMA_TABLE, key);
     Storage.store({ storagePointer: location, data: schema.unwrap() });
+
+    // Emit an event to notify indexers
+    emit MudStoreSetRecord(SCHEMA_TABLE, key, abi.encodePacked(schema.unwrap()));
   }
 
   /************************************************************************
