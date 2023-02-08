@@ -51,7 +51,7 @@ contract EncounterFleeSystem is System {
 
 Since our flee system always allows you to run away, we don't need to listen for system call updates to determine the outcome. We can just call the system and wait for the transaction to complete before updating the toast.
 
-Because the encounter screen is shown only when you're an encounter, you'll see that it will automatically disappear when you run away. This is the nice thing about MUD and declarative, responsive UI!
+Because the encounter screen is shown only when you're in an encounter, you'll see that it will automatically disappear when you run away. This is the nice thing about MUD and declarative, responsive UI!
 
 ```tsx !#18-37 packages/client/src/EncounterScreen.tsx
 export const EncounterScreen = ({ encounterId }: Props) => {
