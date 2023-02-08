@@ -19,7 +19,7 @@ You’d usually start a new MUD project with the CLI using `npx create mud emoji
 Fork or clone the [Emojimon starter kit repo](https://github.com/latticexyz/emojimon):
 
 ```sh
-git clone https://github.com/latticexyz/emojimon.git
+git clone git@github.com:latticexyz/emojimon.git
 ```
 
 Then jump into the repo and install dependencies:
