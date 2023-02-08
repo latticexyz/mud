@@ -10,6 +10,7 @@ enum SchemaType {
   Uint128,
   Uint256,
   Bytes4,
+  Bytes32,
   Uint32Array,
   Bytes24Array,
   String,
@@ -31,7 +32,7 @@ function getStaticByteLength(SchemaType schemaType) pure returns (uint256) {
     return 4;
   } else if (schemaType == SchemaType.Uint128) {
     return 16;
-  } else if (schemaType == SchemaType.Uint256) {
+  } else if (schemaType == SchemaType.Uint256 || schemaType == SchemaType.Bytes32) {
     return 32;
   } else if (schemaType == SchemaType.Address) {
     return 20;
@@ -66,6 +67,8 @@ function hasStaticLength(SchemaType schemaType) pure returns (bool) {
   } else if (schemaType == SchemaType.Uint32) {
     return true;
   } else if (schemaType == SchemaType.Uint128) {
+    return true;
+  } else if (schemaType == SchemaType.Bytes32) {
     return true;
   } else if (schemaType == SchemaType.Uint256) {
     return true;

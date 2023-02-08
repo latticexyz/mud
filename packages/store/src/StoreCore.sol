@@ -6,7 +6,7 @@ import { SchemaType, getStaticByteLength, getElementByteLength } from "./Types.s
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
 import { console } from "forge-std/console.sol";
-import { Schema } from "./Schema.sol";
+import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Buffer, Buffer_ } from "./Buffer.sol";
 import { HooksTable, tableId as HooksTableId } from "./tables/HooksTable.sol";
@@ -30,6 +30,7 @@ library StoreCore {
    * TODO: should we turn the schema table into a "proper table" and register it here?
    */
   function initialize() internal {
+    registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.Bytes32));
     registerSchema(HooksTableId, HooksTable.getSchema());
   }
 
