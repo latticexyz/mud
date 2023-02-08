@@ -148,6 +148,10 @@ contract StoreCoreTest is Test, StoreView {
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
 
+    // Expect a MudStoreSetRecord event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit MudStoreSetRecord(table, key, data);
+
     // !gasreport set static record (1 slot)
     StoreCore.setRecord(table, key, data);
 
@@ -188,6 +192,10 @@ contract StoreCoreTest is Test, StoreView {
 
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some.key");
+
+    // Expect a MudStoreSetRecord event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit MudStoreSetRecord(table, key, data);
 
     // !gasreport set static record (2 slots)
     StoreCore.setRecord(table, key, data);
@@ -247,6 +255,10 @@ contract StoreCoreTest is Test, StoreView {
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32("some.key");
 
+    // Expect a MudStoreSetRecord event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit MudStoreSetRecord(table, key, data);
+
     // Set data
     // !gasreport set complex record with dynamic data (4 slots)
     StoreCore.setRecord(table, key, data);
@@ -294,6 +306,10 @@ contract StoreCoreTest is Test, StoreView {
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32("some.key");
 
+    // Expect a MudStoreSetField event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit MudStoreSetField(table, key, 0, abi.encodePacked(firstDataBytes));
+
     // Set first field
     // !gasreport set static field (1 slot)
     StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes));
@@ -315,6 +331,10 @@ contract StoreCoreTest is Test, StoreView {
 
     // Set second field
     bytes32 secondDataBytes = keccak256("some data");
+
+    // Expect a MudStoreSetField event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit MudStoreSetField(table, key, 1, abi.encodePacked(secondDataBytes));
 
     // !gasreport set static field (overlap 2 slot)
     StoreCore.setField(table, key, 1, abi.encodePacked(secondDataBytes));
@@ -360,6 +380,10 @@ contract StoreCoreTest is Test, StoreView {
       fourthDataBytes = Bytes.from(fourthData);
     }
 
+    // Expect a MudStoreSetField event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit MudStoreSetField(table, key, 2, thirdDataBytes);
+
     // Set third field
     // !gasreport set dynamic field (1 slot, first dynamic field)
     StoreCore.setField(table, key, 2, thirdDataBytes);
@@ -379,6 +403,10 @@ contract StoreCoreTest is Test, StoreView {
     // Verify none of the previous fields were impacted
     assertEq(bytes16(StoreCore.getField(table, key, 0)), bytes16(firstDataBytes));
     assertEq(bytes32(StoreCore.getField(table, key, 1)), bytes32(secondDataBytes));
+
+    // Expect a MudStoreSetField event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit MudStoreSetField(table, key, 3, fourthDataBytes);
 
     // Set fourth field
     // !gasreport set dynamic field (1 slot, second dynamic field)
@@ -456,6 +484,10 @@ contract StoreCoreTest is Test, StoreView {
 
     assertEq(loadedData.length, data.length);
     assertEq(keccak256(loadedData), keccak256(data));
+
+    // Expect a MudStoreDeleteRecord event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit MudStoreDeleteRecord(table, key);
 
     // Delete data
     // !gasreport delete record (complex data, 3 slots)
