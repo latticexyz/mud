@@ -12,7 +12,7 @@ Since MUD handles all the networking for us, and because we're using a common ba
 
 We're currently only rendering our own player. To make the game multiplayer, we just need to query for other players and render them too!
 
-```tsx #1-2,5,9,16-26,37-39,53-58 packages/client/src/GameBoard.tsx
+```tsx !#1-2,5,9,16-26,37-39,53-58 packages/client/src/GameBoard.tsx
 import { useEffect, useMemo, useState } from "react";
 import { EntityID, getComponentValueStrict, Has } from "@latticexyz/recs";
 …
