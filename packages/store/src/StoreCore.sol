@@ -114,6 +114,9 @@ library StoreCore {
       revert StoreCore_InvalidDataLength(expectedLength, data.length);
     }
 
+    // Emit event to notify indexers
+    emit MudStoreSetRecord(table, key, data);
+
     // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = HooksTable.get(table);
     for (uint256 i = 0; i < hooks.length; i++) {
@@ -156,9 +159,6 @@ library StoreCore {
         i++;
       }
     }
-
-    // Emit event to notify indexers
-    emit MudStoreSetRecord(table, key, data);
   }
 
   function setField(
@@ -168,6 +168,9 @@ library StoreCore {
     bytes memory data
   ) internal {
     Schema schema = getSchema(table);
+
+    // Emit event to notify indexers
+    emit MudStoreSetField(table, key, schemaIndex, data);
 
     // Call onSetField hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = HooksTable.get(table);
@@ -181,14 +184,14 @@ library StoreCore {
     } else {
       StoreCoreInternal._setDynamicField(table, key, schema, schemaIndex, data);
     }
-
-    // Emit event to notify indexers
-    emit MudStoreSetField(table, key, schemaIndex, data);
   }
 
   function deleteRecord(bytes32 table, bytes32[] memory key) internal {
     // Get schema for this table
     Schema schema = getSchema(table);
+
+    // Emit event to notify indexers
+    emit MudStoreDeleteRecord(table, key);
 
     // Call onDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = HooksTable.get(table);
@@ -207,9 +210,6 @@ library StoreCore {
     // Delete dynamic data length
     uint256 dynamicDataLengthLocation = StoreCoreInternal._getDynamicDataLengthLocation(table, key);
     Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
-
-    // Emit event to notify indexers
-    emit MudStoreDeleteRecord(table, key);
   }
 
   /************************************************************************
