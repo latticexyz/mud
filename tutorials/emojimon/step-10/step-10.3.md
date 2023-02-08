@@ -30,7 +30,7 @@ One important thing to note when building "chance" into smart contracts is that 
 
 To get something that is pseudorandom, we'll take a hash of a few sources of entropy: an incrementing nonce, the entity being moved, the position it's moving to, and the block difficulty (now mapped to the `PREVRANDAO` opcode post-merge, an on-chain and block-level source of entropy).
 
-```sol #3,10,16-22,25-35 packages/contracts/src/systems/MoveSystem.sol
+```sol !#3,10,16-22,25-35 packages/contracts/src/systems/MoveSystem.sol
 import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
 import { MovableComponent, ID as MovableComponentID } from "components/MovableComponent.sol";
 import { EncounterableComponent, ID as EncounterableComponentID } from "components/EncounterableComponent.sol";
@@ -184,7 +184,7 @@ export const components = {
 
 We use a string component here to represent the encounter ID to make it easier to work with in JS.
 
-```ts #3,10,21-24,27 packages/client/src/useMovement.ts
+```ts !#3,10,21-24,27 packages/client/src/useMovement.ts
 export const useMovement = () => {
   const {
     components: { Encounter, Obstruction, Position },

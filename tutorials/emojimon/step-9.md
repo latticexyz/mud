@@ -41,7 +41,7 @@ contract ObstructionComponent is BoolComponent {
 
 During the terrain drawing loop in our init system, we can create obstruction entities for the boulders. We also need to attach their position, so we can query for them later.
 
-```sol #2-3,14-15,29-33 packages/contracts/src/systems/InitSystem.sol
+```sol !#2-3,14-15,29-33 packages/contracts/src/systems/InitSystem.sol
 import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
 import { ObstructionComponent, ID as ObstructionComponentID } from "components/ObstructionComponent.sol";
@@ -165,7 +165,7 @@ Like before, we should update our optimistic rendering to reflect the new system
 
 Fortunately, MUD has similar tools for the client to query for entities with certain components and/or component values.
 
-```ts #2,7,17-24,27 packages/client/src/useMovement.ts
+```ts !#2,7,17-24,27 packages/client/src/useMovement.ts
 import { useCallback, useEffect } from "react";
 import { Has, HasValue, runQuery } from "@latticexyz/recs";
 import { useComponentValueStream } from "@latticexyz/std-client";
