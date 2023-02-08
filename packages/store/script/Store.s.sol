@@ -7,7 +7,7 @@ import { StoreCore } from "../src/StoreCore.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { SchemaType } from "../src/Types.sol";
 
-contract Store is StoreView {
+contract ScriptStore is StoreView {
   function registerSchema(bytes32 table, Schema schema) public override {
     StoreCore.registerSchema(table, schema);
   }
@@ -37,7 +37,7 @@ contract StoreScript is Script {
     uint256 blockNumber = block.number;
 
     // Deploy a new store
-    Store store = new Store();
+    ScriptStore store = new ScriptStore();
 
     // Register a table in the store
     Schema schema = SchemaLib.encode(SchemaType.Uint32, SchemaType.Uint128);
