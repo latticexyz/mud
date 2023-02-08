@@ -22,7 +22,8 @@
     "link": "yarn link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish || echo 'version already published'",
-    "gasreport": " ../cli/dist/index.js gas-report --path test/** --save gas-report.txt"
+    "gasreport": " ../cli/dist/index.js gas-report --path test/** --save gas-report.txt",
+    "script": "forge script script/Store.s.sol --broadcast --tc StoreScript --fork-url http://localhost:8545 --private-keys 0x733ad1797d0d71ceab7c17971f5635385716e55c46e06aa23fdb3d1426884957 --with-gas-price 0 -vvvv"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^9.0.0",
