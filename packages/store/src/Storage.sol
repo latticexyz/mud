@@ -8,9 +8,7 @@ import { Memory } from "./Memory.sol";
 import "./Buffer.sol";
 
 /**
- * @dev This implementation is very gas efficient.
- * TODO Probably not fully optimized.
- * Full assmebly may be a bit more efficient than unchecked blocks, but would be even less readable.
+ * TODO Probably not fully optimized
  */
 library Storage {
   function store(uint256 storagePointer, bytes memory data) internal {
@@ -166,7 +164,7 @@ library Storage {
   }
 
   /**
-   * @notice Append raw bytes from storage at the given storagePointer, offset, and length to the given buffer
+   * @notice Append raw bytes from storage at the given storagePointer, offset, and length to the given memoryPointer
    */
   function load(
     uint256 storagePointer,
