@@ -6,7 +6,7 @@ import { SchemaType, getStaticByteLength, getElementByteLength } from "./Types.s
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
 import { console } from "forge-std/console.sol";
-import { Schema } from "./Schema.sol";
+import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Buffer, Buffer_ } from "./Buffer.sol";
 import { HooksTable, tableId as HooksTableId } from "./tables/HooksTable.sol";
@@ -30,6 +30,7 @@ library StoreCore {
    * TODO: should we turn the schema table into a "proper table" and register it here?
    */
   function initialize() internal {
+    registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.Bytes32));
     registerSchema(HooksTableId, HooksTable.getSchema());
   }
 
@@ -308,8 +309,6 @@ library StoreCoreInternal {
   bytes32 internal constant SLOT = keccak256("mud.store");
   bytes32 internal constant SCHEMA_TABLE = keccak256("mud.store.table.schema");
 
-  error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
-
   /************************************************************************
    *
    *    SCHEMA
@@ -331,6 +330,9 @@ library StoreCoreInternal {
     key[0] = table;
     uint256 location = _getStaticDataLocation(SCHEMA_TABLE, key);
     Storage.store({ storagePointer: location, data: schema.unwrap() });
+
+    // Emit an event to notify indexers
+    emit StoreCore.MudStoreSetRecord(SCHEMA_TABLE, key, abi.encodePacked(schema.unwrap()));
   }
 
   /************************************************************************
@@ -349,7 +351,7 @@ library StoreCoreInternal {
     // verify the value has the correct length for the field
     SchemaType schemaType = schema.atIndex(schemaIndex);
     if (getStaticByteLength(schemaType) != data.length)
-      revert StoreCore_InvalidDataLength(getStaticByteLength(schemaType), data.length);
+      revert StoreCore.StoreCore_InvalidDataLength(getStaticByteLength(schemaType), data.length);
 
     // Store the provided value in storage
     uint256 location = _getStaticDataLocation(table, key);
