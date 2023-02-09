@@ -18,7 +18,11 @@ contract StringArrayComponent is Component {
   }
 
   function getValue(uint256 entity) public view virtual returns (string[] memory) {
-    return abi.decode(getRawValue(entity), (string[]));
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      return abi.decode(rawValue, (string[]));
+    }
   }
 
   function getEntitiesWithValue(string[] memory value) public view virtual returns (uint256[] memory) {

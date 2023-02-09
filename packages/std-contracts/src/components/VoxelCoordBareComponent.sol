@@ -30,7 +30,11 @@ contract VoxelCoordComponent is BareComponent {
   }
 
   function getValue(uint256 entity) public view virtual returns (VoxelCoord memory) {
-    (int32 x, int32 y, int32 z) = abi.decode(getRawValue(entity), (int32, int32, int32));
-    return VoxelCoord(x, y, z);
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      (int32 x, int32 y, int32 z) = abi.decode(rawValue, (int32, int32, int32));
+      return VoxelCoord(x, y, z);
+    }
   }
 }

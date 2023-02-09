@@ -18,7 +18,11 @@ contract Uint32ArrayComponent is Component {
   }
 
   function getValue(uint256 entity) public view virtual returns (uint32[] memory) {
-    return abi.decode(getRawValue(entity), (uint32[]));
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      return abi.decode(rawValue, (uint32[]));
+    }
   }
 
   function getEntitiesWithValue(uint32[] memory value) public view virtual returns (uint256[] memory) {

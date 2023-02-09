@@ -18,7 +18,11 @@ contract BoolBareComponent is BareComponent {
   }
 
   function getValue(uint256 entity) public view virtual returns (bool) {
-    bool value = abi.decode(getRawValue(entity), (bool));
-    return value;
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      bool value = abi.decode(rawValue, (bool));
+      return value;
+    }
   }
 }

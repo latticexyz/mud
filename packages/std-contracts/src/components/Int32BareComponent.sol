@@ -18,7 +18,11 @@ contract Int32BareComponent is BareComponent {
   }
 
   function getValue(uint256 entity) public view virtual returns (int32) {
-    int32 value = abi.decode(getRawValue(entity), (int32));
-    return value;
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      int32 value = abi.decode(rawValue, (int32));
+      return value;
+    }
   }
 }

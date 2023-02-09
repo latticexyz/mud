@@ -18,7 +18,11 @@ contract AddressBareComponent is BareComponent {
   }
 
   function getValue(uint256 entity) public view virtual returns (address) {
-    address value = abi.decode(getRawValue(entity), (address));
-    return value;
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      address value = abi.decode(rawValue, (address));
+      return value;
+    }
   }
 }

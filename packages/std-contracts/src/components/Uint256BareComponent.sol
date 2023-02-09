@@ -21,7 +21,11 @@ contract Uint256BareComponent is BareComponent {
   }
 
   function getValue(uint256 entity) public view virtual returns (uint256) {
-    uint256 value = abi.decode(getRawValue(entity), (uint256));
-    return value;
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      uint256 value = abi.decode(rawValue, (uint256));
+      return value;
+    }
   }
 }

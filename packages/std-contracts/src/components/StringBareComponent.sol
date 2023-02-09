@@ -18,7 +18,11 @@ contract StringBareComponent is BareComponent {
   }
 
   function getValue(uint256 entity) public view virtual returns (string memory) {
-    string memory value = abi.decode(getRawValue(entity), (string));
-    return value;
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      string memory value = abi.decode(rawValue, (string));
+      return value;
+    }
   }
 }

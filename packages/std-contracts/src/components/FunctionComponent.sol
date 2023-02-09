@@ -26,7 +26,11 @@ contract FunctionComponent is Component {
   }
 
   function getValue(uint256 entity) public view virtual returns (FunctionSelector memory) {
-    return abi.decode(getRawValue(entity), (FunctionSelector));
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      return abi.decode(rawValue, (FunctionSelector));
+    }
   }
 
   function getEntitiesWithValue(FunctionSelector memory value) public view virtual returns (uint256[] memory) {

@@ -26,7 +26,11 @@ contract CoordBareComponent is BareComponent {
   }
 
   function getValue(uint256 entity) public view virtual returns (Coord memory) {
-    (int32 x, int32 y) = abi.decode(getRawValue(entity), (int32, int32));
-    return Coord(x, y);
+    bytes memory rawValue = getRawValue(entity);
+
+    if (rawValue.length > 0) {
+      (int32 x, int32 y) = abi.decode(rawValue, (int32, int32));
+      return Coord(x, y);
+    }
   }
 }
