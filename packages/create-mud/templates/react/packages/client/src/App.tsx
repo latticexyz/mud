@@ -1,7 +1,7 @@
 import { GodID as SingletonID, TxQueue } from "@latticexyz/network";
 import { World } from "@latticexyz/recs";
 import { SystemTypes } from "contracts/types/SystemTypes";
-import { useComponentValueStream } from "@latticexyz/std-client";
+import { useComponentValue } from "@latticexyz/react";
 import { components, singletonIndex } from ".";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const App = ({ systems, components }: Props) => {
-  const counter = useComponentValueStream(components.Counter, singletonIndex);
+  const counter = useComponentValue(components.Counter, singletonIndex);
   return (
     <>
       <div>

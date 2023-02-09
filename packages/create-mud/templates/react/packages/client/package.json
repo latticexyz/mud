@@ -24,6 +24,7 @@
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/network": "1.34.0",
+    "@latticexyz/react": "1.34.0",
     "@latticexyz/recs": "1.34.0",
     "@latticexyz/services": "1.34.0",
     "@latticexyz/std-client": "1.34.0",
