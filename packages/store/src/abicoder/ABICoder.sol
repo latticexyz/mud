@@ -6,7 +6,7 @@ import { SchemaType } from "../Types.sol";
 
 library ABICoder {
   /**
-   * @dev Copies the array to a the location of `packedSlice`,
+   * @dev Copies the array to the location of `packedSlice`,
    * tightly packing it using the given size per element (in bytes)
    */
   function encodeTo(
