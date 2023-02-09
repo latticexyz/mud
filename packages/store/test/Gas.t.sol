@@ -3,7 +3,8 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { Bytes } from "../src/Bytes.sol";
-import { Buffer_ } from "../src/Buffer.sol";
+import { Slice_ } from "../src/Slice.sol";
+import { EncodeArray } from "../src/abicoder/EncodeArray.sol";
 
 struct Mixed {
   uint32 u32;
@@ -50,7 +51,7 @@ contract GasTest is Test {
 }
 
 function customEncode(Mixed memory mixed) pure returns (bytes memory) {
-  return abi.encodePacked(mixed.u32, mixed.u128, Bytes.from(mixed.a32), mixed.s);
+  return abi.encodePacked(mixed.u32, mixed.u128, EncodeArray.encode(mixed.a32), mixed.s);
 }
 
 function customDecode(bytes memory input) view returns (Mixed memory) {
@@ -60,7 +61,7 @@ function customDecode(bytes memory input) view returns (Mixed memory) {
     Mixed({
       u32: uint32(Bytes.slice4(input, 0)),
       u128: uint128(Bytes.slice16(input, 4)),
-      a32: Bytes.toUint32Array(Bytes.slice(input, 20, 3 * 4)),
-      s: string(Bytes.slice(input, 20 + 3 * 4, input.length - 20 - 3 * 4))
+      a32: Slice_.getSubslice(input, 20, 20 + 3 * 4).toUint32Array(),
+      s: string(Slice_.getSubslice(input, 20 + 3 * 4, input.length).toBytes())
     });
 }
