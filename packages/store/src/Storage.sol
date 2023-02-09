@@ -7,13 +7,18 @@ import { Bytes } from "./Bytes.sol";
 import { Memory } from "./Memory.sol";
 import "./Buffer.sol";
 
+/**
+ * TODO Probably not fully optimized
+ */
 library Storage {
   function store(uint256 storagePointer, bytes memory data) internal {
     store(storagePointer, 0, data);
   }
 
   function store(uint256 storagePointer, bytes32 data) internal {
-    _storeWord(storagePointer, data);
+    assembly {
+      sstore(storagePointer, data)
+    }
   }
 
   function store(
@@ -30,7 +35,6 @@ library Storage {
 
   /**
    * @notice Stores raw bytes to storage at the given storagePointer and offset (keeping the rest of the word intact)
-   * @dev This implementation is optimized for readability, but not very gas efficient. We should optimize this using assembly once we've settled on a spec.
    */
   function store(
     uint256 storagePointer,
@@ -39,42 +43,86 @@ library Storage {
     uint256 length
   ) internal {
     // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
-    storagePointer += offset / 32;
-    offset %= 32;
+    unchecked {
+      storagePointer += offset / 32;
+      offset %= 32;
+    }
 
-    uint256 numWords = Utils.divCeil(length + offset, 32);
-    uint256 bytesWritten;
+    // For the first word, if there is an offset, apply a mask to beginning
+    if (offset > 0) {
+      // Get the word's remaining length after the offset
+      uint256 wordRemainder;
+      // (safe because of `offset %= 32` at the start)
+      unchecked {
+        wordRemainder = 32 - offset;
+      }
 
-    for (uint256 i; i < numWords; i++) {
-      // If this is the first word, and there is an offset, apply a mask to beginning
-      if ((i == 0 && offset > 0)) {
-        uint256 _lengthTostore = length + offset > 32 ? 32 - offset : length; // // the number of bytes to store
-        _storePartialWord(
-          storagePointer, // the word to update
-          _lengthTostore,
-          offset, // the offset in bytes to start writing
-          Memory.load({ memoryPointer: memoryPointer }) // Pass the first 32 bytes of the data
-        );
-        bytesWritten += _lengthTostore;
-        // If this is the last word, and there is a partial word, apply a mask to the end
-      } else if (i == numWords - 1 && (length + offset) % 32 > 0) {
-        _storePartialWord(
-          storagePointer + i, // the word to update
-          (length + offset) % 32, // the number of bytes to store
-          0, // the offset in bytes to start writing
-          Memory.load({ memoryPointer: memoryPointer, offset: bytesWritten }) // the data to store
-        );
+      uint256 mask = Utils.leftMask(length);
+      /// @solidity memory-safe-assembly
+      assembly {
+        // Load data from memory and offset it to match storage
+        let bitOffset := mul(offset, 8)
+        mask := shr(bitOffset, mask)
+        let offsetData := shr(bitOffset, mload(memoryPointer))
 
-        // Else, just store the word
-      } else {
-        _storeWord(storagePointer + i, Memory.load({ memoryPointer: memoryPointer, offset: bytesWritten }));
-        bytesWritten += 32;
+        sstore(
+          storagePointer,
+          or(
+            // Store the middle part
+            and(offsetData, mask),
+            // Preserve the surrounding parts
+            and(sload(storagePointer), not(mask))
+          )
+        )
+      }
+      // Return if done
+      if (length <= wordRemainder) return;
+
+      // Advance pointers
+      storagePointer += 1;
+      // (safe because of `length <= prefixLength` earlier)
+      unchecked {
+        memoryPointer += wordRemainder;
+        length -= wordRemainder;
+      }
+    }
+
+    // Store full words
+    while (length >= 32) {
+      /// @solidity memory-safe-assembly
+      assembly {
+        sstore(storagePointer, mload(memoryPointer))
+      }
+      storagePointer += 1;
+      // (safe unless length is improbably large)
+      unchecked {
+        memoryPointer += 32;
+        length -= 32;
+      }
+    }
+
+    // For the last partial word, apply a mask to the end
+    if (length > 0) {
+      uint256 mask = Utils.leftMask(length);
+      /// @solidity memory-safe-assembly
+      assembly {
+        sstore(
+          storagePointer,
+          or(
+            // store the left part
+            and(mload(memoryPointer), mask),
+            // preserve the right part
+            and(sload(storagePointer), not(mask))
+          )
+        )
       }
     }
   }
 
-  function load(uint256 storagePointer) internal view returns (bytes32) {
-    return _loadWord(storagePointer);
+  function load(uint256 storagePointer) internal view returns (bytes32 word) {
+    assembly {
+      word := sload(storagePointer)
+    }
   }
 
   function load(uint256 storagePointer, uint256 length) internal view returns (bytes memory) {
@@ -88,14 +136,19 @@ library Storage {
     uint256 storagePointer,
     uint256 length,
     uint256 offset
-  ) internal view returns (bytes memory) {
-    Buffer buffer = Buffer_.allocate(uint128(length));
-    load(storagePointer, length, offset, buffer);
-    return buffer.toBytes();
+  ) internal view returns (bytes memory result) {
+    // TODO this will probably use less gas via manual memory allocation
+    result = new bytes(length);
+    uint256 memoryPointer;
+    assembly {
+      memoryPointer := add(result, 0x20)
+    }
+    load(storagePointer, length, offset, memoryPointer);
+    return result;
   }
 
   /**
-   * @notice Append raw bytes from storage at the given storagePointer, offset, and length to the given buffer
+   * @notice Load into the buffer from storage at the given storagePointer, offset, and length
    */
   function load(
     uint256 storagePointer,
@@ -103,92 +156,94 @@ library Storage {
     uint256 offset,
     Buffer buffer
   ) internal view {
-    // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
-    storagePointer += offset / 32;
-    offset %= 32;
+    uint256 bufferLength = buffer.length();
+    load(storagePointer, length, offset, buffer.ptr() + bufferLength);
 
-    uint256 numWords = Utils.divCeil(length + offset, 32);
-    uint256 _lengthToload;
-
-    for (uint256 i; i < numWords; i++) {
-      // If this is the first word, and there is an offset, apply a mask to beginning (and possibly the end if length + offset is less than 32)
-      if ((i == 0 && offset > 0)) {
-        _lengthToload = length + offset > 32 ? 32 - offset : length; // the number of bytes to load
-        buffer.appendUnchecked(
-          _loadPartialWord(
-            storagePointer, // the slot to start loading from
-            _lengthToload,
-            offset // the offset in bytes to start loading from
-          ),
-          uint128(_lengthToload)
-        );
-
-        // If this is the last word, and there is a partial word, apply a mask to the end
-      } else if (i == numWords - 1 && (length + offset) % 32 > 0) {
-        _lengthToload = (length + offset) % 32; //  the relevant length of the trailing word
-        buffer.appendUnchecked(
-          _loadPartialWord(
-            storagePointer + i, // the word to load from
-            _lengthToload,
-            0 // the offset in bytes to start loading from
-          ),
-          uint128(_lengthToload)
-        );
-
-        // Else, just load the word
-      } else {
-        buffer.appendUnchecked(_loadWord(storagePointer + i), 32);
-      }
-    }
+    // Update the current buffer length
+    buffer._setLengthUnchecked(uint128(bufferLength + length));
   }
 
   /**
-   * @notice Load a full word from storage into memory
+   * @notice Append raw bytes from storage at the given storagePointer, offset, and length to the given memoryPointer
    */
-  function _loadWord(uint256 storagePointer) internal view returns (bytes32 data) {
-    assembly {
-      data := sload(storagePointer)
-    }
-  }
-
-  /**
-   * @notice Load a partial word from storage into memory
-   */
-  function _loadPartialWord(
+  function load(
     uint256 storagePointer,
     uint256 length,
-    uint256 offset
-  ) internal view returns (bytes32) {
-    // Load current value from storage
-    bytes32 storageValue;
-    assembly {
-      storageValue := sload(storagePointer)
+    uint256 offset,
+    uint256 memoryPointer
+  ) internal view {
+    // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
+    unchecked {
+      storagePointer += offset / 32;
+      offset %= 32;
     }
 
-    // create a mask for the bits we want to update
-    return (storageValue << (offset * 8)) & bytes32(Utils.leftMask(length * 8));
-  }
+    // For the first word, if there is an offset, apply a mask to beginning
+    if (offset > 0) {
+      // Get the word's remaining length after the offset
+      uint256 wordRemainder;
+      // (safe because of `offset %= 32` at the start)
+      unchecked {
+        wordRemainder = 32 - offset;
+      }
 
-  function _storeWord(uint256 storagePointer, bytes32 data) internal {
-    assembly {
-      sstore(storagePointer, data)
-    }
-  }
+      uint256 mask = Utils.leftMask(wordRemainder);
+      /// @solidity memory-safe-assembly
+      assembly {
+        // Load data from storage and offset it to match memory
+        let offsetData := shl(mul(offset, 8), sload(storagePointer))
 
-  function _storePartialWord(
-    uint256 storagePointer,
-    uint256 length, // in bytes
-    uint256 offset, // in bytes
-    bytes32 data
-  ) internal {
-    bytes32 current;
-    assembly {
-      current := sload(storagePointer)
+        mstore(
+          memoryPointer,
+          or(
+            // store the middle part
+            and(offsetData, mask),
+            // preserve the surrounding parts
+            and(mload(memoryPointer), not(mask))
+          )
+        )
+      }
+      // Return if done
+      if (length <= wordRemainder) return;
+
+      // Advance pointers
+      storagePointer += 1;
+      // (safe because of `length <= prefixLength` earlier)
+      unchecked {
+        memoryPointer += wordRemainder;
+        length -= wordRemainder;
+      }
     }
-    bytes32 mask = bytes32(Utils.leftMask(length * 8) >> (offset * 8)); // create a mask for the bits we want to update
-    bytes32 updated = (current & ~mask) | ((data >> (offset * 8)) & mask); // apply mask to data
-    assembly {
-      sstore(storagePointer, updated)
+
+    // Load full words
+    while (length >= 32) {
+      /// @solidity memory-safe-assembly
+      assembly {
+        mstore(memoryPointer, sload(storagePointer))
+      }
+      storagePointer += 1;
+      // (safe unless length is improbably large)
+      unchecked {
+        memoryPointer += 32;
+        length -= 32;
+      }
+    }
+
+    // For the last partial word, apply a mask to the end
+    if (length > 0) {
+      uint256 mask = Utils.leftMask(length);
+      /// @solidity memory-safe-assembly
+      assembly {
+        mstore(
+          memoryPointer,
+          or(
+            // store the left part
+            and(sload(storagePointer), mask),
+            // preserve the right part
+            and(mload(memoryPointer), not(mask))
+          )
+        )
+      }
     }
   }
 }
