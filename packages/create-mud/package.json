@@ -8,7 +8,8 @@
     "build": "tsup src/cli.ts --minify",
     "clean": "shx rm -rf lib",
     "dev": "tsup src/cli.ts --watch",
-    "prepublishOnly": "npm run clean && npm run build"
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "echo \"TODO\""
   },
   "bin": "dist/cli.js",
   "files": [

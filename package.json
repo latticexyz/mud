@@ -20,7 +20,8 @@
       "packages/std-client",
       "packages/ecs-browser",
       "packages/services",
-      "packages/noise"
+      "packages/noise",
+      "packages/create-mud"
     ]
   },
   "devDependencies": {
@@ -61,7 +62,7 @@
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "yarn lerna run link",
     "docs": "yarn lerna run docs && yarn retype:updateversion && yarn retype build",
-    "docs:dev":"yarn retype watch .",
+    "docs:dev": "yarn retype watch .",
     "retype:updateversion": "sed \"s/label: .*/label: $(yarn list --pattern @latticexyz/solecs | grep -e @latticexyz | sed \"s/.*@//\")/\" retype.yml > retype.yml.tmp && mv retype.yml.tmp retype.yml",
     "test": "yarn workspaces run test",
     "yalc:release": "yarn entry:dist && yarn lerna exec yalc push",
