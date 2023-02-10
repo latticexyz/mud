@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { Slice, Slice_ } from "../Slice.sol";
 import { SchemaType } from "../Types.sol";
 
-library ABICoder {
+library StorageCoder {
   /**
    * @dev Copies the array to the location of `packedSlice`,
    * tightly packing it using the given size per element (in bytes)

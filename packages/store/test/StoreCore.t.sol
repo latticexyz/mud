@@ -7,7 +7,7 @@ import { Utils } from "../src/Utils.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SchemaType } from "../src/Types.sol";
 import { Slice_ } from "../src/Slice.sol";
-import { EncodeArray } from "../src/abicoder/EncodeArray.sol";
+import { EncodeArray } from "../src/storagecoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreView } from "../src/StoreView.sol";

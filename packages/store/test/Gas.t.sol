@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { Slice_ } from "../src/Slice.sol";
-import { EncodeArray } from "../src/abicoder/EncodeArray.sol";
+import { EncodeArray } from "../src/storagecoder/EncodeArray.sol";
 
 struct Mixed {
   uint32 u32;

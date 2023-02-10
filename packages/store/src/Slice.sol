@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { SchemaType } from "./Types.sol";
 import { Memory } from "./Memory.sol";
-import { DecodeSlice } from "./abicoder/DecodeSlice.sol";
+import { DecodeSlice } from "./storagecoder/DecodeSlice.sol";
 
 // Acknowledgements:
 // Based on @dk1a's Slice.sol library (https://github.com/dk1a/solidity-stringutils/blob/main/src/Slice.sol)

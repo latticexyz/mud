@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { ABICoder } from "./ABICoder.sol";
+import { StorageCoder } from "./StorageCoder.sol";
 import { Slice } from "../Slice.sol";
 import { SchemaType } from "../Types.sol";
 
@@ -53,14 +53,14 @@ library DecodeSlice {
    ************************************************************************/
 
   function toBytes24Array(Slice self) internal pure returns (bytes24[] memory output) {
-    bytes32[] memory genericArray = ABICoder.decode(self, 24, true);
+    bytes32[] memory genericArray = StorageCoder.decode(self, 24, true);
     assembly {
       output := genericArray
     }
   }
 
   function toBytes32Array(Slice self) internal pure returns (bytes32[] memory output) {
-    bytes32[] memory genericArray = ABICoder.decode(self, 32, true);
+    bytes32[] memory genericArray = StorageCoder.decode(self, 32, true);
     assembly {
       output := genericArray
     }
@@ -73,7 +73,7 @@ library DecodeSlice {
    ************************************************************************/
 
   function toUint32Array(Slice self) internal pure returns (uint32[] memory output) {
-    bytes32[] memory genericArray = ABICoder.decode(self, 4, false);
+    bytes32[] memory genericArray = StorageCoder.decode(self, 4, false);
     assembly {
       output := genericArray
     }
@@ -86,7 +86,7 @@ library DecodeSlice {
    ************************************************************************/
 
   function toSchemaTypeArray(Slice self) internal pure returns (SchemaType[] memory output) {
-    bytes32[] memory genericArray = ABICoder.decode(self, 1, false);
+    bytes32[] memory genericArray = StorageCoder.decode(self, 1, false);
     assembly {
       output := genericArray
     }
@@ -94,7 +94,7 @@ library DecodeSlice {
 
   function toAddressArray(Slice self) internal pure returns (address[] memory output) {
     // Note: internally address is right-aligned, like uint160
-    bytes32[] memory genericArray = ABICoder.decode(self, 20, false);
+    bytes32[] memory genericArray = StorageCoder.decode(self, 20, false);
     assembly {
       output := genericArray
     }

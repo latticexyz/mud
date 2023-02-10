@@ -3,9 +3,9 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { Slice_ } from "../../src/Slice.sol";
-import { EncodeArray } from "../../src/abicoder/EncodeArray.sol";
+import { EncodeArray } from "../../src/storagecoder/EncodeArray.sol";
 
-contract ABICoderTest is Test {
+contract StorageCoderTest is Test {
   function testFromAndToUint32Array() public {
     uint32[] memory input = new uint32[](2);
     input[0] = 0x01020304;
