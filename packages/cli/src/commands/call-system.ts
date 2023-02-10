@@ -1,6 +1,8 @@
 import { defaultAbiCoder as abi } from "ethers/lib/utils";
+import path from "path";
 import { Arguments, CommandBuilder } from "yargs";
 import { execLog } from "../utils";
+import { getTestDir } from "../utils/forgeConfig";
 
 type Options = {
   rpc?: string;
@@ -40,13 +42,15 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
 export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const { rpc, caller, world, systemId, argTypes, args, calldata, broadcast, callerPrivateKey, debug } = argv;
   const encodedArgs = calldata ?? (argTypes && args && abi.encode(argTypes, args)) ?? "";
+  const testDir = await getTestDir();
+
   await execLog("forge", [
     "script",
     "--fork-url",
     rpc ?? "http://localhost:8545", // default anvil rpc
     "--sig",
     "debug(address,address,string,bytes,bool)",
-    "src/test/utils/Debug.sol", // the cli expects the Debug.sol file at this path
+    path.join(testDir, "utils/Debug.sol"), // the cli expects the Debug.sol file at this path
     caller ?? "0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266", // default anvil deployer
     world,
     systemId || "",

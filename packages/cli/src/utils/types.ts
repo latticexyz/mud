@@ -5,6 +5,9 @@ import { extractIdFromFile } from "./ids";
 import { rmSync, writeFileSync } from "fs";
 import path from "path";
 import { filterAbi, forgeBuild } from "./build";
+import { getSrcDir } from "./forgeConfig";
+
+const systemsDir = "systems";
 
 export async function generateAbiTypes(
   inputDir: string,
@@ -31,7 +34,7 @@ export async function generateAbiTypes(
   console.log(`Successfully generated ${result.filesGenerated} files`);
 }
 
-export async function generateSystemTypes(inputDir: string, outputDir: string, options?: { clear?: boolean }) {
+export async function generateSystemTypes(outputDir: string, options?: { clear?: boolean }) {
   if (options?.clear) {
     console.log("Clearing system type output files", outputDir);
     rmSync(path.join(outputDir, "/SystemTypes.ts"), { force: true });
@@ -45,7 +48,8 @@ export async function generateSystemTypes(inputDir: string, outputDir: string, o
   let ids: string[] = [];
   let typePaths: string[] = [];
 
-  const systemsPath = `${inputDir}/*.sol`;
+  const srcDir = await getSrcDir();
+  const systemsPath = path.join(srcDir, systemsDir, "*.sol");
 
   const [resolve, , promise] = deferred<void>();
   glob(systemsPath, {}, (_, matches) => {
@@ -133,5 +137,5 @@ export async function generateTypes(abiDir?: string, outputDir = "./types", opti
   }
 
   await generateAbiTypes(abiDir, path.join(outputDir, "ethers-contracts"), options);
-  await generateSystemTypes("./src/systems", outputDir, options);
+  await generateSystemTypes(outputDir, options);
 }
