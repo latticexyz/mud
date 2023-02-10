@@ -1,15 +1,17 @@
 import { execa } from "execa";
 import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs";
 import path from "path";
+import { getOutDir } from "./forgeConfig";
 
-export async function forgeBuild(out = "out", options?: { clear?: boolean }) {
+export async function forgeBuild(options?: { clear?: boolean }) {
   if (options?.clear) {
+    const out = await getOutDir();
     console.log("Clearing forge build output directory", out);
     rmSync(out, { recursive: true, force: true });
   }
 
   console.log("Running forge build");
-  const child = execa("forge", ["build", "-o", out], {
+  const child = execa("forge", ["build"], {
     stdio: ["inherit", "pipe", "inherit"],
   });
 

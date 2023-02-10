@@ -35,3 +35,11 @@ export async function getSrcDir() {
 export async function getTestDir() {
   return (await getForgeConfig()).test;
 }
+
+/**
+ * Get the value of "out" from forge config.
+ * The path to put contract artifacts in, relative to the root of the project.
+ */
+export async function getOutDir() {
+  return (await getForgeConfig()).out;
+}
