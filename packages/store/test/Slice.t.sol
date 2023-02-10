@@ -49,6 +49,7 @@ contract SliceTest is Test {
     bytes memory data32 = hex"0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f20";
     bytes memory data34 = hex"0102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122";
     bytes memory data1024 = new bytes(1024);
+    bytes memory data1024x1024 = new bytes(1024 * 1024);
 
     slice = Slice_.fromBytes(data0);
     // !gasreport Slice (0 bytes) to bytes memory
@@ -70,11 +71,16 @@ contract SliceTest is Test {
     // !gasreport Slice (1024 bytes) to bytes memory
     bytes memory sliceData1024 = slice.toBytes();
 
+    slice = Slice_.fromBytes(data1024x1024);
+    // !gasreport Slice (1024x1024 bytes) to bytes memory
+    bytes memory sliceData1024x1024 = slice.toBytes();
+
     assertEq(sliceData0, data0);
     assertEq(sliceData2, data2);
     assertEq(sliceData32, data32);
     assertEq(sliceData34, data34);
     assertEq(sliceData1024, data1024);
+    assertEq(sliceData1024x1024, data1024x1024);
   }
 
   function testSubslice() public {
