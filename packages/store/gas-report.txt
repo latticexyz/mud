@@ -37,11 +37,12 @@
 (test/Slice.t.sol) | get Slice pointer [slice.ptr()]: 33
 (test/Slice.t.sol) | subslice bytes (no copy) [1:4] [Slice slice1 = Slice_.getSubslice(data, 1, 1 + 3)]: 317
 (test/Slice.t.sol) | subslice bytes (no copy) [4:37] [Slice slice2 = Slice_.getSubslice(data, 4, 4 + 33)]: 317
-(test/Slice.t.sol) | Slice (0 bytes) to bytes memory [bytes memory sliceData0 = slice.toBytes()]: 352
-(test/Slice.t.sol) | Slice (2 bytes) to bytes memory [bytes memory sliceData2 = slice.toBytes()]: 386
-(test/Slice.t.sol) | Slice (32 bytes) to bytes memory [bytes memory sliceData32 = slice.toBytes()]: 382
-(test/Slice.t.sol) | Slice (34 bytes) to bytes memory [bytes memory sliceData34 = slice.toBytes()]: 463
-(test/Slice.t.sol) | Slice (1024 bytes) to bytes memory [bytes memory sliceData1024 = slice.toBytes()]: 750
+(test/Slice.t.sol) | Slice (0 bytes) to bytes memory [bytes memory sliceData0 = slice.toBytes()]: 607
+(test/Slice.t.sol) | Slice (2 bytes) to bytes memory [bytes memory sliceData2 = slice.toBytes()]: 642
+(test/Slice.t.sol) | Slice (32 bytes) to bytes memory [bytes memory sliceData32 = slice.toBytes()]: 510
+(test/Slice.t.sol) | Slice (34 bytes) to bytes memory [bytes memory sliceData34 = slice.toBytes()]: 591
+(test/Slice.t.sol) | Slice (1024 bytes) to bytes memory [bytes memory sliceData1024 = slice.toBytes()]: 4847
+(test/Slice.t.sol) | Slice (1024x1024 bytes) to bytes memory [bytes memory sliceData1024x1024 = slice.toBytes()]: 6605248
 (test/Slice.t.sol) | Slice to bytes32 [bytes32 output = slice.toBytes32()]: 87
 (test/Storage.t.sol) | store 1 storage slot [Storage.store({ storagePointer: storagePointer, data: originalDataFirstSlot })]: 22506
 (test/Storage.t.sol) | store 34 bytes over 3 storage slots (with offset and safeTrail)) [Storage.store({ storagePointer: storagePointer, offset: 31, data: data1 })]: 23155
