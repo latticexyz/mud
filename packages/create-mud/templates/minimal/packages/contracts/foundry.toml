@@ -6,4 +6,5 @@ optimizer_runs = 1000000
 verbosity = 1
 libs = ["../../node_modules", "../../../mud"]
 src = "src"
+test = "src/test"
 out = "out"
