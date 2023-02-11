@@ -71,10 +71,10 @@ contract StorageTest is Test {
     bytes32 storagePointer,
     uint8 offset
   ) public {
+    // avoid clashes with DSTest, which uses a storage slot for `_failed` flag
+    vm.assume(storagePointer > 0);
+
     Storage.store({ storagePointer: uint256(storagePointer), offset: offset, data: data });
-    assertEq(
-      keccak256(Storage.load({ storagePointer: uint256(storagePointer), length: data.length, offset: offset })),
-      keccak256(data)
-    );
+    assertEq(Storage.load({ storagePointer: uint256(storagePointer), length: data.length, offset: offset }), data);
   }
 }
