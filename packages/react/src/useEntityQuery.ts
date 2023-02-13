@@ -1,23 +1,25 @@
-import { defineQuery } from "@latticexyz/recs";
+import { defineQuery, QueryFragment } from "@latticexyz/recs";
 import { useEffect, useMemo, useState } from "react";
+import { useDeepMemo } from "./utils/useDeepMemo";
+import isEqual from "fast-deep-equal";
+import { distinctUntilChanged, map } from "rxjs";
 
-type Args = Parameters<typeof defineQuery>;
-const defaultOptions: NonNullable<Args[1]> = { runOnInit: true };
+// This does a little more rendering than is necessary when arguments change,
+// but at least it's giving correct results now. Will optimize later!
 
-export function useEntityQuery(...args: Args) {
-  const [fragments, options = defaultOptions] = args;
-
-  const queryResult = useMemo(() => defineQuery(fragments, options), [fragments, options]);
-  const [value, setValue] = useState([...queryResult.matching]);
+export function useEntityQuery(fragments: QueryFragment[]) {
+  const stableFragments = useDeepMemo(fragments);
+  const query = useMemo(() => defineQuery(stableFragments, { runOnInit: true }), [stableFragments]);
+  const [entities, setEntities] = useState([...query.matching]);
 
   useEffect(() => {
-    // If query changes, we need to update state (initialState is only set once)
-    if (options.runOnInit) {
-      setValue([...queryResult.matching]);
-    }
-    const subscription = queryResult.update$.subscribe(() => setValue([...queryResult.matching]));
+    setEntities([...query.matching]);
+    const subscription = query.update$
+      .pipe(map(() => [...query.matching]))
+      .pipe(distinctUntilChanged((a, b) => isEqual(a, b)))
+      .subscribe((entities) => setEntities(entities));
     return () => subscription.unsubscribe();
-  }, [queryResult, options.runOnInit]);
+  }, [query]);
 
-  return value;
+  return entities;
 }

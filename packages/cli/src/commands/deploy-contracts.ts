@@ -1,6 +1,7 @@
 import type { Arguments, CommandBuilder } from "yargs";
 import { DeployOptions, generateAndDeploy, hsr } from "../utils";
 import openurl from "openurl";
+import chalk from "chalk";
 
 type Options = DeployOptions & {
   watch?: boolean;
@@ -37,11 +38,22 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
       : undefined);
 
   // Deploy world, components and systems
-  const { deployedWorldAddress: worldAddress, initialBlockNumber } = await generateAndDeploy({
-    ...args,
-    deployerPrivateKey,
-    clear: true,
-  });
+  let genDeployResult: Awaited<ReturnType<typeof generateAndDeploy>>;
+  try {
+    genDeployResult = await generateAndDeploy({
+      ...args,
+      deployerPrivateKey,
+      clear: true,
+    });
+  } catch (e: any) {
+    if (!e.stderr) {
+      // log error if it wasn't piped
+      console.log(e);
+    }
+    console.log(chalk.red("\n-----------\nError during generateAndDeploy (see above)"));
+    process.exit();
+  }
+  const { deployedWorldAddress: worldAddress, initialBlockNumber } = genDeployResult;
   console.log("World deployed at", worldAddress, "at block", initialBlockNumber);
 
   if (worldAddress && args.openUrl) {
@@ -54,16 +66,24 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
   if (args.watch) {
     const { config, rpc, gasPrice } = args;
 
-    hsr("./src", (systems: string[]) => {
-      return generateAndDeploy({
-        config,
-        deployerPrivateKey,
-        worldAddress,
-        rpc,
-        systems,
-        gasPrice,
-        reuseComponents: true,
-      });
+    hsr("./src", async (systems: string[]) => {
+      try {
+        return await generateAndDeploy({
+          config,
+          deployerPrivateKey,
+          worldAddress,
+          rpc,
+          systems,
+          gasPrice,
+          reuseComponents: true,
+        });
+      } catch (e: any) {
+        if (!e.stderr) {
+          // log error if it wasn't piped
+          console.log(e);
+        }
+        console.log(chalk.red("\n-----------\nError during generateAndDeploy in HSR (see above)"));
+      }
     });
   } else {
     process.exit(0);

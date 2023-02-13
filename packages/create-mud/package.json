@@ -1,0 +1,29 @@
+{
+  "name": "create-mud",
+  "description": "Create a new MUD project",
+  "version": "0.0.0",
+  "author": "Lattice <mud@lattice.xyz>",
+  "license": "MIT",
+  "bin": "dist/cli.js",
+  "files": [
+    "dist",
+    "templates"
+  ],
+  "scripts": {
+    "prepare": "cd ../../node_modules/create-create-app && npm run build",
+    "build": "tsup src/cli.ts --minify",
+    "clean": "shx rm -rf lib",
+    "dev": "tsup src/cli.ts --watch",
+    "prepublishOnly": "npm run clean && npm run build",
+    "test": "echo \"TODO\""
+  },
+  "dependencies": {
+    "create-create-app": "git+https://github.com/holic/create-create-app#41d44df2f1b2be760eaf53281a1d6a8102a76a3d"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.29",
+    "shx": "^0.3.4",
+    "tsup": "^5.12.1",
+    "typescript": "^4.6.3"
+  }
+}

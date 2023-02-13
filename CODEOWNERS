@@ -11,3 +11,4 @@
 
 /packages/services @authcall
 /packages/react @holic
+/packages/create-mud @holic

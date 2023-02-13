@@ -1,13 +1,19 @@
+import { execa } from "execa";
 import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs";
 import path from "path";
-import { execLog } from "./exec";
 
-export function forgeBuild(out = "out", options?: { clear?: boolean }) {
+export async function forgeBuild(out = "out", options?: { clear?: boolean }) {
   if (options?.clear) {
     console.log("Clearing forge build output directory", out);
     rmSync(out, { recursive: true, force: true });
   }
-  return execLog("forge", ["build", "-o", out]);
+
+  console.log("Running forge build");
+  const child = execa("forge", ["build", "-o", out], {
+    stdio: ["inherit", "pipe", "inherit"],
+  });
+
+  return (await child).stdout;
 }
 
 function getContractsInDir(dir: string, exclude?: string[]) {
