@@ -13,7 +13,7 @@ abstract contract OwnableWritable is IOwnableWritable, Ownable {
   error OwnableWritable__NotWriter();
 
   /** Whether given operator has write access */
-  function writeAccess(address operator) public view returns (bool) {
+  function writeAccess(address operator) public view virtual returns (bool) {
     return OwnableWritableStorage.layout().writeAccess[operator] || operator == owner();
   }
 
@@ -30,7 +30,7 @@ abstract contract OwnableWritable is IOwnableWritable, Ownable {
    * Can only be called by the owner.
    * @param writer Address to grant write access to.
    */
-  function authorizeWriter(address writer) public onlyOwner {
+  function authorizeWriter(address writer) public virtual override onlyOwner {
     OwnableWritableStorage.layout().writeAccess[writer] = true;
   }
 
@@ -39,7 +39,7 @@ abstract contract OwnableWritable is IOwnableWritable, Ownable {
    * Can only be called by the owner.
    * @param writer Address to revoke write access.
    */
-  function unauthorizeWriter(address writer) public onlyOwner {
+  function unauthorizeWriter(address writer) public virtual override onlyOwner {
     delete OwnableWritableStorage.layout().writeAccess[writer];
   }
 }
