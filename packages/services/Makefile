@@ -64,6 +64,10 @@ faucet:
 	go build $(LDFLAGS) -o ./bin/faucet ./cmd/faucet
 .PHONY: faucet
 
+migrator:
+	go build $(LDFLAGS) -o ./bin/migrator ./cmd/migrator
+.PHONY: migrator
+
 run-ecs-stream:
 	./bin/ecs-stream -ws-url $(WS_URL)
 .PHONY: run-ecs-stream
@@ -83,3 +87,7 @@ run-faucet:
 run-faucet-dev:
 	./bin/faucet --faucet-private-key ${FAUCET_PK} --dev
 .PHONY: run-faucet-dev
+
+run-migrator:
+	./bin/migrator
+.PHONY: run-migrator
