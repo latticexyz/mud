@@ -6,9 +6,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { getSrcDir } from "../utils/forgeConfig";
 import path from "path";
-
-const systemsDir = "systems";
-const componentsDir = "components";
+import { componentsDir, systemsDir } from "../utils/constants";
 
 type Options = {
   config?: string;

@@ -6,8 +6,7 @@ import { rmSync, writeFileSync } from "fs";
 import path from "path";
 import { filterAbi, forgeBuild } from "./build";
 import { getOutDir, getSrcDir } from "./forgeConfig";
-
-const systemsDir = "systems";
+import { systemsDir } from "./constants";
 
 export async function generateAbiTypes(
   inputDir: string,
