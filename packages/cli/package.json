@@ -54,7 +54,7 @@
     "ethers": "^5.7.2",
     "execa": "^6.1.0",
     "figlet": "^1.5.2",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#f36dab24d63d1c1945a05ed375ce341d3c1a49ed",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "glob": "^8.0.3",
     "inquirer": "^8.2.4",
     "inquirer-prompt-suggest": "^0.1.0",
