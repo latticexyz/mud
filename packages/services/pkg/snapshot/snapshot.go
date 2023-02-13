@@ -71,7 +71,7 @@ func encodeState(state ECSState, startBlockNumber uint64, endBlockNumber uint64)
 
 func decodeState(encoding []byte) ECSState {
 	stateSnapshot := decodeSnapshot(encoding)
-	state := snapshotToState(stateSnapshot)
+	state := SnapshotToState(stateSnapshot)
 	return state
 }
 
@@ -172,7 +172,7 @@ func stateToSnapshot(state ECSState, startBlockNumber uint64, endBlockNumber uin
 	return stateSnapshot
 }
 
-func snapshotToState(stateSnapshot *pb.ECSStateSnapshot) ECSState {
+func SnapshotToState(stateSnapshot *pb.ECSStateSnapshot) ECSState {
 	state := getEmptyState()
 
 	components := stateSnapshot.StateComponents
