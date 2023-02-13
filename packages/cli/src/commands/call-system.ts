@@ -2,7 +2,7 @@ import { defaultAbiCoder as abi } from "ethers/lib/utils";
 import path from "path";
 import { Arguments, CommandBuilder } from "yargs";
 import { execLog } from "../utils";
-import { getTestDir } from "../utils/forgeConfig";
+import { getTestDirectory } from "../utils/forgeConfig";
 
 type Options = {
   rpc?: string;
@@ -42,7 +42,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
 export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const { rpc, caller, world, systemId, argTypes, args, calldata, broadcast, callerPrivateKey, debug } = argv;
   const encodedArgs = calldata ?? (argTypes && args && abi.encode(argTypes, args)) ?? "";
-  const testDir = await getTestDir();
+  const testDir = await getTestDirectory();
 
   await execLog("forge", [
     "script",

@@ -5,7 +5,7 @@ import { extractIdFromFile } from "./ids";
 import { rmSync, writeFileSync } from "fs";
 import path from "path";
 import { filterAbi, forgeBuild } from "./build";
-import { getOutDir, getSrcDir } from "./forgeConfig";
+import { getOutDirectory, getSrcDirectory } from "./forgeConfig";
 import { systemsDir } from "./constants";
 
 export async function generateAbiTypes(
@@ -47,7 +47,7 @@ export async function generateSystemTypes(outputDir: string, options?: { clear?:
   let ids: string[] = [];
   let typePaths: string[] = [];
 
-  const srcDir = await getSrcDir();
+  const srcDir = await getSrcDirectory();
   const systemsPath = path.join(srcDir, systemsDir, "*.sol");
 
   const [resolve, , promise] = deferred<void>();
@@ -129,7 +129,7 @@ ${systems.map((system, index) => `  "${ids[index]}": ${system}.abi,`).join("\n")
 export async function generateTypes(abiDir?: string, outputDir = "./types", options?: { clear?: boolean }) {
   if (!abiDir) {
     console.log("Compiling contracts");
-    const buildOutput = await getOutDir();
+    const buildOutput = await getOutDirectory();
     abiDir = "./abi";
     await forgeBuild(options);
     filterAbi(buildOutput, abiDir);

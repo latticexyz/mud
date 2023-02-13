@@ -4,7 +4,7 @@ import { readFileSync } from "fs";
 import { Contract } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
-import { getSrcDir } from "../utils/forgeConfig";
+import { getSrcDirectory } from "../utils/forgeConfig";
 import path from "path";
 import { componentsDir, systemsDir } from "../utils/constants";
 
@@ -39,7 +39,7 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const World = new Contract(world, WorldAbi, provider);
 
   if (deployData) {
-    const srcDir = await getSrcDir();
+    const srcDir = await getSrcDirectory();
 
     // Create component labels
     const componentPromises = deployData.components.map(async (component: string) => {

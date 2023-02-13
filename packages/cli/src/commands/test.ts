@@ -1,6 +1,6 @@
 import type { Arguments, CommandBuilder } from "yargs";
 import { execLog, generateLibDeploy, resetLibDeploy } from "../utils";
-import { getTestDir } from "../utils/forgeConfig";
+import { getTestDirectory } from "../utils/forgeConfig";
 
 type Options = {
   forgeOpts?: string;
@@ -20,7 +20,7 @@ export const builder: CommandBuilder<Options, Options> = (yargs) =>
 
 export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const { forgeOpts, config, v } = argv;
-  const testDir = await getTestDir();
+  const testDir = await getTestDirectory();
 
   // Generate LibDeploy.sol
   console.log("Generate LibDeploy.sol");
