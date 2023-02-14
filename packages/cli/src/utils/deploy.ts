@@ -1,7 +1,7 @@
 import { constants, Wallet } from "ethers";
 import { generateLibDeploy, resetLibDeploy } from "./codegen";
 import { findLog } from "./findLog";
-import { generateTypes } from "./types";
+import { generateTypes } from "./typegen";
 import { execa } from "execa";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
 
