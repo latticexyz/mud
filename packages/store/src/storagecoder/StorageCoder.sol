@@ -61,7 +61,7 @@ library StorageCoder {
   /**
    * @dev Unpacks the slice to a new memory location
    * and lays it out like a memory array with the given size per element (in bytes)
-   * @return array a generic array, needs to be cast to the expected type using assembly
+   * @return array a generic array, needs to be casted to the expected type using assembly
    */
   function decode(
     Slice packedSlice,
