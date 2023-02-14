@@ -271,7 +271,7 @@ library StoreCore {
 
     // Append dynamic data
     for (uint8 i; i < numDynamicFields; i++) {
-      uint256 dynamicDataLocation = uint256(StoreCoreInternal._getDynamicDataLocation(table, key, i));
+      uint256 dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(table, key, i);
       uint256 length = dynamicDataLength.atIndex(i);
       Storage.load({ storagePointer: dynamicDataLocation, length: length, offset: 0, memoryPointer: memoryPointer });
       // Advance memoryPointer by the length of this dynamic field
@@ -428,7 +428,7 @@ library StoreCoreInternal {
     // Get the length, storage location and offset of the static field
     SchemaType schemaType = schema.atIndex(schemaIndex);
     uint256 dataLength = getStaticByteLength(schemaType);
-    uint256 location = uint256(_getStaticDataLocation(table, key));
+    uint256 location = _getStaticDataLocation(table, key);
     uint256 offset = _getStaticDataOffset(schema, schemaIndex);
 
     // Load the data from storage
