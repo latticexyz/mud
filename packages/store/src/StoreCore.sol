@@ -7,7 +7,7 @@ import { Memory } from "./Memory.sol";
 import { console } from "forge-std/console.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
-import { Slice, Slice_ } from "./Slice.sol";
+import { Slice } from "./Slice.sol";
 import { HooksTable, tableId as HooksTableId } from "./tables/HooksTable.sol";
 import { IStoreHook } from "./IStore.sol";
 

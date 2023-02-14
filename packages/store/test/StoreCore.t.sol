@@ -6,7 +6,7 @@ import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Utils } from "../src/Utils.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SchemaType } from "../src/Types.sol";
-import { Slice_ } from "../src/Slice.sol";
+import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/storagecoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
@@ -360,7 +360,7 @@ contract StoreCoreTest is Test, StoreView {
     assertEq(Bytes.slice16(StoreCore.getRecord(table, key), 0), firstDataBytes);
     assertEq(Bytes.slice32(StoreCore.getRecord(table, key), 16), secondDataBytes);
     assertEq(
-      keccak256(Slice_.getSubslice(StoreCore.getRecord(table, key), 0, 48).toBytes()),
+      keccak256(SliceLib.getSubslice(StoreCore.getRecord(table, key), 0, 48).toBytes()),
       keccak256(abi.encodePacked(firstDataBytes, secondDataBytes))
     );
 
@@ -398,7 +398,7 @@ contract StoreCoreTest is Test, StoreView {
     loadedData = StoreCore.getField(table, key, 2);
 
     // Verify loaded data is correct
-    assertEq(Slice_.fromBytes(loadedData).toUint32Array().length, 2);
+    assertEq(SliceLib.fromBytes(loadedData).toUint32Array().length, 2);
     assertEq(loadedData.length, thirdDataBytes.length);
     assertEq(keccak256(loadedData), keccak256(thirdDataBytes));
 

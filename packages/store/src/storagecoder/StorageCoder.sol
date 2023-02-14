@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Slice, Slice_ } from "../Slice.sol";
+import { Slice, SliceLib } from "../Slice.sol";
 import { SchemaType } from "../Types.sol";
 
 library StorageCoder {
@@ -53,7 +53,7 @@ library StorageCoder {
   ) internal pure returns (bytes memory data) {
     uint256 packedLength = array.length * elementSize;
     data = new bytes(packedLength);
-    encodeTo(array, Slice_.fromBytes(data), elementSize, leftAligned);
+    encodeTo(array, SliceLib.fromBytes(data), elementSize, leftAligned);
   }
 
   /**

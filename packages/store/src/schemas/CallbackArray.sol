@@ -6,7 +6,7 @@ import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
-import { Slice_ } from "../Slice.sol";
+import { SliceLib } from "../Slice.sol";
 import { EncodeArray } from "../storagecoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
@@ -81,6 +81,6 @@ library CallbackArray_ {
   }
 
   function decode(bytes memory blob) internal pure returns (bytes24[] memory callbacks) {
-    return Slice_.getSubslice(blob, 32, blob.length).toBytes24Array();
+    return SliceLib.getSubslice(blob, 32, blob.length).toBytes24Array();
   }
 }

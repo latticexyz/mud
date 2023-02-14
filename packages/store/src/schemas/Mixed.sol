@@ -7,7 +7,7 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { Bytes } from "../Bytes.sol";
-import { Slice_ } from "../Slice.sol";
+import { SliceLib } from "../Slice.sol";
 import { EncodeArray } from "../storagecoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
@@ -133,10 +133,10 @@ library Mixed_ {
 
     uint256 start = 52;
     uint256 end = start + encodedLengths.atIndex(0);
-    mixed.a32 = Slice_.getSubslice(blob, start, end).toUint32Array();
+    mixed.a32 = SliceLib.getSubslice(blob, start, end).toUint32Array();
 
     start = end;
     end += encodedLengths.atIndex(1);
-    mixed.s = string(Slice_.getSubslice(blob, start, end).toBytes());
+    mixed.s = string(SliceLib.getSubslice(blob, start, end).toBytes());
   }
 }

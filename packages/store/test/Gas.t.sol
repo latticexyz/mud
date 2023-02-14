@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { Bytes } from "../src/Bytes.sol";
-import { Slice_ } from "../src/Slice.sol";
+import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/storagecoder/EncodeArray.sol";
 
 struct Mixed {
@@ -61,7 +61,7 @@ function customDecode(bytes memory input) view returns (Mixed memory) {
     Mixed({
       u32: uint32(Bytes.slice4(input, 0)),
       u128: uint128(Bytes.slice16(input, 4)),
-      a32: Slice_.getSubslice(input, 20, 20 + 3 * 4).toUint32Array(),
-      s: string(Slice_.getSubslice(input, 20 + 3 * 4, input.length).toBytes())
+      a32: SliceLib.getSubslice(input, 20, 20 + 3 * 4).toUint32Array(),
+      s: string(SliceLib.getSubslice(input, 20 + 3 * 4, input.length).toBytes())
     });
 }

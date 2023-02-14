@@ -17,7 +17,7 @@ using DecodeSlice for Slice global;
 /**
  * @title Static functions for Slice
  */
-library Slice_ {
+library SliceLib {
   error Slice_OutOfBounds();
 
   uint256 constant MASK_LEN = uint256(type(uint128).max);
@@ -75,7 +75,7 @@ library SliceInstance {
    * @dev Returns the slice length in bytes
    */
   function length(Slice self) internal pure returns (uint256) {
-    return Slice.unwrap(self) & Slice_.MASK_LEN;
+    return Slice.unwrap(self) & SliceLib.MASK_LEN;
   }
 
   /**

@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { Slice_ } from "../../src/Slice.sol";
+import { SliceLib } from "../../src/Slice.sol";
 import { EncodeArray } from "../../src/storagecoder/EncodeArray.sol";
 
 contract StorageCoderTest is Test {
@@ -15,7 +15,7 @@ contract StorageCoderTest is Test {
     assertEq(packed.length, 8);
 
     // !gasreport decode packed uint32[]
-    uint32[] memory output = Slice_.fromBytes(packed).toUint32Array();
+    uint32[] memory output = SliceLib.fromBytes(packed).toUint32Array();
 
     assertEq(output.length, 2);
     assertEq(output[0], 0x01020304);
@@ -33,7 +33,7 @@ contract StorageCoderTest is Test {
     assertEq(packed.length, 48);
 
     // !gasreport decode packed uint32[]
-    bytes24[] memory output = Slice_.fromBytes(packed).toBytes24Array();
+    bytes24[] memory output = SliceLib.fromBytes(packed).toBytes24Array();
 
     assertEq(output.length, 2);
     assertEq(output[0], input[0]);
