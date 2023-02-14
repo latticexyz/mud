@@ -8,12 +8,14 @@ library StorageCoder {
   /**
    * @dev Copies the array to the location of `packedSlice`,
    * tightly packing it using the given size per element (in bytes)
+   *
+   * TODO this function is currently not used externally and will be changed in the future
    */
-  function encodeTo(
+  function _encodeToLocation(
     bytes32[] memory array,
     Slice packedSlice,
     uint256 elementSize,
-    bool leftAligned // TODO this function is currently not used externally
+    bool leftAligned
   ) private pure {
     uint256 arrayLength = array.length;
     uint256 packedPointer = packedSlice.pointer();
@@ -53,7 +55,7 @@ library StorageCoder {
   ) internal pure returns (bytes memory data) {
     uint256 packedLength = array.length * elementSize;
     data = new bytes(packedLength);
-    encodeTo(array, SliceLib.fromBytes(data), elementSize, leftAligned);
+    _encodeToLocation(array, SliceLib.fromBytes(data), elementSize, leftAligned);
   }
 
   /**
