@@ -34,7 +34,7 @@
 (test/Schema.t.sol) | validate schema [encodedSchema.validate()]: 23392
 (test/Slice.t.sol) | make Slice from bytes [Slice slice = SliceLib.fromBytes(data)]: 40
 (test/Slice.t.sol) | get Slice length [slice.length()]: 7
-(test/Slice.t.sol) | get Slice pointer [slice.ptr()]: 33
+(test/Slice.t.sol) | get Slice pointer [slice.pointer()]: 33
 (test/Slice.t.sol) | subslice bytes (no copy) [1:4] [Slice slice1 = SliceLib.getSubslice(data, 1, 1 + 3)]: 317
 (test/Slice.t.sol) | subslice bytes (no copy) [4:37] [Slice slice2 = SliceLib.getSubslice(data, 4, 4 + 33)]: 317
 (test/Slice.t.sol) | Slice (0 bytes) to bytes memory [bytes memory sliceData0 = slice.toBytes()]: 607
