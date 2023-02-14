@@ -27,13 +27,13 @@ library SliceLib {
    * @dev Converts a bytes array to a slice (without copying data)
    */
   function fromBytes(bytes memory data) internal pure returns (Slice) {
-    uint256 _ptr;
+    uint256 _pointer;
     assembly {
-      _ptr := add(data, 0x20) // ptr to first data byte
+      _pointer := add(data, 0x20) // pointer to first data byte
     }
 
     // Pointer is stored in upper 128 bits, length is stored in lower 128 bits
-    return Slice.wrap((_ptr << 128) | (data.length & MASK_LEN));
+    return Slice.wrap((_pointer << 128) | (data.length & MASK_LEN));
   }
 
   /**
@@ -47,16 +47,16 @@ library SliceLib {
     // TODO this check helps catch bugs and can eventually be removed
     if (!(start <= end && end <= data.length)) revert Slice_OutOfBounds();
 
-    uint256 _ptr;
+    uint256 _pointer;
     assembly {
-      _ptr := add(data, 0x20) // ptr to first data byte
+      _pointer := add(data, 0x20) // pointer to first data byte
     }
 
-    _ptr += start;
+    _pointer += start;
     uint256 _len = end - start;
 
     // Pointer is stored in upper 128 bits, length is stored in lower 128 bits
-    return Slice.wrap((_ptr << 128) | (_len & MASK_LEN));
+    return Slice.wrap((_pointer << 128) | (_len & MASK_LEN));
   }
 }
 
@@ -67,7 +67,7 @@ library SliceInstance {
   /**
    * @dev Returns the pointer to the start of a slice
    */
-  function ptr(Slice self) internal pure returns (uint256) {
+  function pointer(Slice self) internal pure returns (uint256) {
     return Slice.unwrap(self) >> 128;
   }
 
@@ -83,21 +83,21 @@ library SliceInstance {
    * The slice will NOT point to the new bytes array
    */
   function toBytes(Slice self) internal view returns (bytes memory data) {
-    uint256 ptrSrc = ptr(self);
+    uint256 fromPointer = pointer(self);
     uint256 _length = length(self);
 
     // Allocate a new bytes array and get the pointer to it
     data = new bytes(_length);
-    uint256 ptrDest;
+    uint256 toPointer;
     assembly {
-      ptrDest := add(data, 32)
+      toPointer := add(data, 32)
     }
     // Copy the slice contents to the array
-    Memory.copy(ptrDest, ptrSrc, _length);
+    Memory.copy(toPointer, fromPointer, _length);
   }
 
   function toBytes32(Slice self) internal pure returns (bytes32 result) {
-    uint256 memoryPointer = self.ptr();
+    uint256 memoryPointer = self.pointer();
     /// @solidity memory-safe-assembly
     assembly {
       result := mload(memoryPointer)

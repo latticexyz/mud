@@ -16,7 +16,7 @@ library StorageCoder {
     bool leftAligned // TODO this function is currently not used externally
   ) private pure {
     uint256 arrayLength = array.length;
-    uint256 packedPtr = packedSlice.ptr();
+    uint256 packedPointer = packedSlice.pointer();
     uint256 shiftLeft = leftAligned ? 0 : 256 - elementSize * 8;
 
     // TODO temporary check to catch bugs, either remove it or use a custom error
@@ -30,7 +30,7 @@ library StorageCoder {
       for {
         let i := 0
         let arrayCursor := add(array, 0x20) // skip array length
-        let packedCursor := packedPtr
+        let packedCursor := packedPointer
       } lt(i, arrayLength) {
         // Loop until we reach the end of the array
         i := add(i, 1)
@@ -66,7 +66,7 @@ library StorageCoder {
     uint256 elementSize,
     bool leftAligned
   ) internal pure returns (bytes32[] memory array) {
-    uint256 packedPtr = packedSlice.ptr();
+    uint256 packedPointer = packedSlice.pointer();
     uint256 packedLength = packedSlice.length();
     uint256 padLeft = leftAligned ? 0 : 256 - elementSize * 8;
     // Array length (number of elements)
@@ -94,7 +94,7 @@ library StorageCoder {
       for {
         let i := 0
         let arrayCursor := add(array, 0x20) // skip array length
-        let packedCursor := packedPtr
+        let packedCursor := packedPointer
       } lt(i, arrayLength) {
         // Loop until we reach the end of the array
         i := add(i, 1)

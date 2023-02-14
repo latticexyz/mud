@@ -35,8 +35,8 @@ library Memory {
   }
 
   function copy(
-    uint256 ptrDest,
-    uint256 ptrSrc,
+    uint256 toPointer,
+    uint256 fromPointer,
     uint256 length
   ) internal view {
     if (length > 32) {
@@ -45,9 +45,9 @@ library Memory {
           staticcall(
             gas(), // gas (unused is returned)
             0x04, // identity precompile address
-            ptrSrc, // argsOffset
+            fromPointer, // argsOffset
             length, // argsSize: byte size to copy
-            ptrDest, // retOffset
+            toPointer, // retOffset
             length // retSize: byte size to copy
           )
         )
@@ -56,12 +56,12 @@ library Memory {
       uint256 mask = Utils.leftMask(length);
       assembly {
         mstore(
-          ptrDest,
+          toPointer,
           or(
             // Store the left part
-            and(mload(ptrSrc), mask),
+            and(mload(fromPointer), mask),
             // Preserve the right part
-            and(mload(ptrDest), not(mask))
+            and(mload(toPointer), not(mask))
           )
         )
       }

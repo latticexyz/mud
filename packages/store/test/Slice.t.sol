@@ -16,17 +16,17 @@ contract SliceTest is Test {
     slice.length();
 
     // !gasreport get Slice pointer
-    slice.ptr();
+    slice.pointer();
 
     assertEq(slice.length(), 8);
-    assertEq(slice.ptr(), Memory.dataPointer(data));
+    assertEq(slice.pointer(), Memory.dataPointer(data));
     assertEq(slice.toBytes(), data);
   }
 
   function testFromBytesFuzzy(bytes memory data) public {
     Slice slice = SliceLib.fromBytes(data);
     assertEq(slice.length(), data.length);
-    assertEq(slice.ptr(), Memory.dataPointer(data));
+    assertEq(slice.pointer(), Memory.dataPointer(data));
     assertEq(slice.toBytes(), data);
   }
 
