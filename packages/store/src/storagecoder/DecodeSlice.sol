@@ -16,7 +16,7 @@ library DecodeSlice {
     return bytes4(self.toBytes32());
   }
 
-  // `toBytes32` is already defined in `Slice_`
+  // `toBytes32` is already defined in `SliceInternal`
 
   /************************************************************************
    *
