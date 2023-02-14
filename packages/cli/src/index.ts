@@ -14,3 +14,5 @@ yargs(hideBin(process.argv))
   .strict()
   // Useful aliases.
   .alias({ h: "help" }).argv;
+
+export * from "./schemaType";
