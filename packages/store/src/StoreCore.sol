@@ -14,9 +14,9 @@ import { IStoreHook } from "./IStore.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
-  event MudStoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event MudStoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
-  event MudStoreDeleteRecord(bytes32 table, bytes32[] key);
+  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreDeleteRecord(bytes32 table, bytes32[] key);
 
   error StoreCore_TableAlreadyExists(bytes32 table);
   error StoreCore_TableNotFound(bytes32 table);
@@ -116,7 +116,7 @@ library StoreCore {
     }
 
     // Emit event to notify indexers
-    emit MudStoreSetRecord(table, key, data);
+    emit StoreSetRecord(table, key, data);
 
     // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = HooksTable.get(table);
@@ -171,7 +171,7 @@ library StoreCore {
     Schema schema = getSchema(table);
 
     // Emit event to notify indexers
-    emit MudStoreSetField(table, key, schemaIndex, data);
+    emit StoreSetField(table, key, schemaIndex, data);
 
     // Call onSetField hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = HooksTable.get(table);
@@ -192,7 +192,7 @@ library StoreCore {
     Schema schema = getSchema(table);
 
     // Emit event to notify indexers
-    emit MudStoreDeleteRecord(table, key);
+    emit StoreDeleteRecord(table, key);
 
     // Call onDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = HooksTable.get(table);
@@ -332,7 +332,7 @@ library StoreCoreInternal {
     Storage.store({ storagePointer: location, data: schema.unwrap() });
 
     // Emit an event to notify indexers
-    emit StoreCore.MudStoreSetRecord(SCHEMA_TABLE, key, abi.encodePacked(schema.unwrap()));
+    emit StoreCore.StoreSetRecord(SCHEMA_TABLE, key, abi.encodePacked(schema.unwrap()));
   }
 
   /************************************************************************
