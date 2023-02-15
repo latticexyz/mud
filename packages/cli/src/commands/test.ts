@@ -1,9 +1,9 @@
 import type { Arguments, CommandBuilder } from "yargs";
 import { execLog, generateLibDeploy, resetLibDeploy } from "../utils";
+import { getTestDirectory } from "../utils/forgeConfig";
 
 type Options = {
   forgeOpts?: string;
-  testDir: string;
   config: string;
   v: number;
 };
@@ -14,13 +14,13 @@ export const desc = "Run contract tests";
 export const builder: CommandBuilder<Options, Options> = (yargs) =>
   yargs.options({
     forgeOpts: { type: "string", desc: "Options passed to `forge test` command" },
-    testDir: { type: "string", default: "./src/test", desc: "Test directory" },
     config: { type: "string", default: "./deploy.json", desc: "Component and system deployment configuration" },
     v: { type: "number", default: 2, desc: "Verbosity for forge test" },
   });
 
 export const handler = async (argv: Arguments<Options>): Promise<void> => {
-  const { forgeOpts, testDir, config, v } = argv;
+  const { forgeOpts, config, v } = argv;
+  const testDir = await getTestDirectory();
 
   // Generate LibDeploy.sol
   console.log("Generate LibDeploy.sol");

@@ -2,6 +2,7 @@ import type { Arguments, CommandBuilder } from "yargs";
 import { DeployOptions, generateAndDeploy, hsr } from "../utils";
 import openurl from "openurl";
 import chalk from "chalk";
+import { getSrcDirectory } from "../utils/forgeConfig";
 
 type Options = DeployOptions & {
   watch?: boolean;
@@ -65,8 +66,9 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
   // Set up watcher for system files to redeploy on change
   if (args.watch) {
     const { config, rpc, gasPrice } = args;
+    const srcDir = await getSrcDirectory();
 
-    hsr("./src", async (systems: string[]) => {
+    hsr(srcDir, async (systems: string[]) => {
       try {
         return await generateAndDeploy({
           config,

@@ -1,22 +1,24 @@
 import { execa } from "execa";
 import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs";
 import path from "path";
+import { getOutDirectory } from "./forgeConfig";
 
-export async function forgeBuild(out = "out", options?: { clear?: boolean }) {
+export async function forgeBuild(options?: { clear?: boolean }) {
   if (options?.clear) {
+    const out = await getOutDirectory();
     console.log("Clearing forge build output directory", out);
     rmSync(out, { recursive: true, force: true });
   }
 
   console.log("Running forge build");
-  const child = execa("forge", ["build", "-o", out], {
+  const child = execa("forge", ["build"], {
     stdio: ["inherit", "pipe", "inherit"],
   });
 
   return (await child).stdout;
 }
 
-function getContractsInDir(dir: string, exclude?: string[]) {
+function getContractsInDirectory(dir: string, exclude?: string[]) {
   return readdirSync(dir)
     .filter((item) => item.includes(".sol"))
     .map((item) => item.replace(".sol", ""))
@@ -39,7 +41,7 @@ export function filterAbi(abiIn = "./out", abiOut = "./abi", exclude: string[] =
 
   // Only include World, LibQuery, *Component, *System
   const include = ["Component", "System", "World", "LibQuery"];
-  const contracts = getContractsInDir(abiIn, exclude).filter((item) => include.find((i) => item.includes(i)));
+  const contracts = getContractsInDirectory(abiIn, exclude).filter((item) => include.find((i) => item.includes(i)));
 
   console.log("Selected ABIs: ", contracts);
 
