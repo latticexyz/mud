@@ -37,6 +37,13 @@ library SliceLib {
   }
 
   /**
+   * @dev Subslice a bytes array using the given start index until the end of the array (without copying data)
+   */
+  function getSubslice(bytes memory data, uint256 start) internal pure returns (Slice) {
+    return getSubslice(data, start, data.length - 1);
+  }
+
+  /**
    * @dev Subslice a bytes array using the given indexes (without copying data)
    */
   function getSubslice(
