@@ -70,6 +70,7 @@ export type ContractEvent<C extends Contracts> = {
   args: Result;
   txHash: string;
   lastEventInTx: boolean;
+  blockNumber: number;
 };
 
 // Mapping from hashed contract component id to client component key
@@ -89,6 +90,8 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
   txHash: string;
   txMetadata?: TxMetadata;
   blockNumber: number;
+  // TODO: make this required, so we can later sort by logIndex when concatenating event types
+  logIndex?: number;
 };
 
 export type SystemCallTransaction = {

@@ -48,6 +48,9 @@ import {
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { SingletonID, SyncState } from "./constants";
 import { debug as parentDebug } from "./debug";
+import { fetchStoreEvents } from "./v2/fetchStoreEvents";
+import { abi as IStoreAbi } from "@latticexyz/store/abi/IStore.json";
+import { Contract } from "ethers";
 
 const debug = parentDebug.extend("SyncWorker");
 
@@ -160,9 +163,42 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
     // The RPC is only queried if this stream is subscribed to
+
+    const storeContract = new Contract(worldContract.address, IStoreAbi, provider);
+    const boundFetchStoreEvents = (fromBlock: number, toBlock: number) =>
+      fetchStoreEvents(storeContract, fromBlock, toBlock);
+
+    // const topics = ["MudStoreSetRecord", "MudStoreSetField", "MudStoreDeleteRecord"]
+    //   .flatMap((eventName) => storeContract.filters[eventName]().topics ?? [])
+    //   .map((topic) => (Array.isArray(topic) ? topic : [topic]));
+    // console.log(storeContract.filters["MudStoreSetRecord"]());
+    // console.log("topics", topics);
+
+    // console.log(
+    //   "filter",
+    //   await provider._getFilter({
+    //     fromBlock: 0, // inclusive
+    //     toBlock: "latest", // inclusive
+    //     address: storeContract.address,
+    //     topics: topics,
+    //   })
+    // );
+
+    // const logs = await provider.getLogs({
+    //   address: storeContract.address,
+    //   // topics: ["MudStoreSetRecord", "MudStoreSetField", "MudStoreDeleteRecord"].flatMap(
+    //   //   (eventName) => storeContract.filters[eventName]().topics ?? []
+    //   // ),
+    //   topics: [],
+    //   fromBlock: 0,
+    //   toBlock: "latest",
+    // });
+    // console.log("got store logs", logs);
+
     const latestEventRPC$ = createLatestEventStreamRPC(
       blockNumber$,
       fetchWorldEvents,
+      boundFetchStoreEvents,
       fetchSystemCalls ? createFetchSystemCallsFromEvents(provider) : undefined
     );
     const latestEvent$ = streamServiceUrl
@@ -248,6 +284,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
 
     const gapStateEvents = await fetchEventsInBlockRangeChunked(
       fetchWorldEvents,
+      boundFetchStoreEvents,
       initialState.blockNumber,
       streamStartBlockNumber,
       50,
