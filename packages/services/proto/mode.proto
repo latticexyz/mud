@@ -1,0 +1,84 @@
+syntax = "proto3";
+package mode;
+
+option go_package = "protobuf/go/mode";
+
+message UncompressedRow {
+    string source = 1;
+    string entity_id = 2;
+    bytes value = 3;
+}
+
+message CompressedRow {
+    uint32 source_idx = 1;
+    uint32 entity_id_idx = 2;
+    bytes value = 3;
+}
+
+message QueryLayerResponse {
+    // For client to more easier detect the response type.
+    bool is_compressed = 1;
+
+    // One of these will be available.
+    optional QueryLayerResponseCompressed responseCompressed = 2; 
+    optional QueryLayerResponseUncompressed responseUncompressed = 3;
+}
+
+message QueryLayerResponseUncompressed {
+   repeated UncompressedRow rows = 1;
+}
+
+message QueryLayerResponseCompressed {
+    repeated CompressedRow rows = 1;
+    repeated string rowSources = 2;
+    repeated string rowEntities = 3;
+}
+
+message FindRequestOptions {
+   bool compressed = 1;  
+   bool group = 2;
+   bool negate = 3;
+}
+
+message FindRequest {
+    string from = 1;
+    repeated Filter filter = 2;
+    repeated ProjectedField project = 3;
+
+    // Options.
+    FindRequestOptions options = 4; 
+}
+
+message FindAllRequest {
+    repeated string tables = 1;
+
+    // Options.
+    FindRequestOptions options = 2;
+}
+
+message Filter {
+    Field field = 1;
+    string operator = 2;
+    string value = 3;
+}
+
+message Field {
+    string table_name = 1;
+    string table_field = 2;
+}
+
+message ProjectedField {
+    Field field = 1;
+    optional string rename = 2;
+}
+
+service QueryLayer {
+    // Find endpoint.
+    rpc Find(FindRequest) returns (QueryLayerResponse) {}
+
+    // FindAll endpoint.
+    rpc FindAll(FindAllRequest) returns (QueryLayerResponse) {}
+
+    // Count endpoint.
+    rpc Count(FindRequest) returns (QueryLayerResponse) {}
+}
