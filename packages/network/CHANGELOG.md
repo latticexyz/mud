@@ -3,6 +3,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.35.0](https://github.com/latticexyz/mud/compare/v1.34.0...v1.35.0) (2023-02-15)
+
+### Bug Fixes
+
+- **network:** add explicit return type to createFaucetService ([#399](https://github.com/latticexyz/mud/issues/399)) ([cae82e5](https://github.com/latticexyz/mud/commit/cae82e5781931f86d0bc53eb05306197fab3d7aa))
+- **network:** use current block number while waiting for new blocks ([#368](https://github.com/latticexyz/mud/issues/368)) ([09b77a7](https://github.com/latticexyz/mud/commit/09b77a7e27d2056a30f9b9c41046b7d6eec8dda7))
+
 # [1.34.0](https://github.com/latticexyz/mud/compare/v1.33.1...v1.34.0) (2023-01-29)
 
 ### Bug Fixes

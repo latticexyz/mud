@@ -3,6 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.35.0](https://github.com/latticexyz/mud/compare/v1.34.0...v1.35.0) (2023-02-15)
+
+### Bug Fixes
+
+- **solecs:** make OwnableWritable overridable ([#370](https://github.com/latticexyz/mud/issues/370)) ([49d520e](https://github.com/latticexyz/mud/commit/49d520e643aefe954a84fdff5d6b742afd0cf010))
+
+### Features
+
+- update forge-std, use some new features in cli ([#311](https://github.com/latticexyz/mud/issues/311)) ([43ad118](https://github.com/latticexyz/mud/commit/43ad11837ae280509be92737e8f86d749d4d48d8))
+
 # [1.34.0](https://github.com/latticexyz/mud/compare/v1.33.1...v1.34.0) (2023-01-29)
 
 ### Features
