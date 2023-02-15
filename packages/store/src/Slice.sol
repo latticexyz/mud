@@ -93,7 +93,7 @@ library SliceInstance {
       toPointer := add(data, 32)
     }
     // Copy the slice contents to the array
-    Memory.copy(toPointer, fromPointer, _length);
+    Memory.copy(fromPointer, toPointer, _length);
   }
 
   function toBytes32(Slice self) internal pure returns (bytes32 result) {
