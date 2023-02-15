@@ -6,7 +6,8 @@ import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
-import { Bytes } from "../Bytes.sol";
+import { SliceLib } from "../Slice.sol";
+import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
@@ -39,7 +40,7 @@ library AddressArray_ {
     bytes32 key,
     address[] memory addresses
   ) internal {
-    bytes memory data = Bytes.from(addresses);
+    bytes memory data = EncodeArray.encode(addresses);
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     StoreSwitch.setField(tableId, keyTuple, 0, data);
@@ -81,6 +82,6 @@ library AddressArray_ {
 
   function decode(bytes memory blob) internal pure returns (address[] memory addresses) {
     if (blob.length == 0) return new address[](0);
-    return Bytes.toAddressArray(Bytes.slice(blob, 32, blob.length - 32));
+    return SliceLib.getSubslice(blob, 32, blob.length).toAddressArray();
   }
 }

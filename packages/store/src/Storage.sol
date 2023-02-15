@@ -3,9 +3,6 @@ pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
 import { Utils } from "./Utils.sol";
-import { Bytes } from "./Bytes.sol";
-import { Memory } from "./Memory.sol";
-import "./Buffer.sol";
 
 /**
  * TODO Probably not fully optimized
@@ -145,22 +142,6 @@ library Storage {
     }
     load(storagePointer, length, offset, memoryPointer);
     return result;
-  }
-
-  /**
-   * @notice Load into the buffer from storage at the given storagePointer, offset, and length
-   */
-  function load(
-    uint256 storagePointer,
-    uint256 length,
-    uint256 offset,
-    Buffer buffer
-  ) internal view {
-    uint256 bufferLength = buffer.length();
-    load(storagePointer, length, offset, buffer.ptr() + bufferLength);
-
-    // Update the current buffer length
-    buffer._setLengthUnchecked(uint128(bufferLength + length));
   }
 
   /**

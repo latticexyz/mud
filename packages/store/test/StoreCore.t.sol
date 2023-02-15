@@ -6,10 +6,8 @@ import { StoreCore, StoreCoreInternal } from "../src/StoreCore.sol";
 import { Utils } from "../src/Utils.sol";
 import { Bytes } from "../src/Bytes.sol";
 import { SchemaType } from "../src/Types.sol";
-import { Storage } from "../src/Storage.sol";
-import { Memory } from "../src/Memory.sol";
-import { Cast } from "../src/Cast.sol";
-import { Buffer, Buffer_ } from "../src/Buffer.sol";
+import { SliceLib } from "../src/Slice.sol";
+import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreView } from "../src/StoreView.sol";
@@ -230,7 +228,7 @@ contract StoreCoreTest is Test, StoreView {
       uint32[] memory secondData = new uint32[](2);
       secondData[0] = 0x11121314;
       secondData[1] = 0x15161718;
-      secondDataBytes = Bytes.from(secondData);
+      secondDataBytes = EncodeArray.encode(secondData);
     }
 
     bytes memory thirdDataBytes;
@@ -239,7 +237,7 @@ contract StoreCoreTest is Test, StoreView {
       thirdData[0] = 0x191a1b1c;
       thirdData[1] = 0x1d1e1f20;
       thirdData[2] = 0x21222324;
-      thirdDataBytes = Bytes.from(thirdData);
+      thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
     PackedCounter encodedDynamicLength;
@@ -358,11 +356,11 @@ contract StoreCoreTest is Test, StoreView {
     assertEq(bytes16(StoreCore.getField(table, key, 0)), bytes16(firstDataBytes));
 
     // Verify the full static data is correct
-    assertEq(StoreCoreInternal._getStaticData(table, key).length, 48);
-    assertEq(Bytes.slice16(StoreCoreInternal._getStaticData(table, key), 0), firstDataBytes);
-    assertEq(Bytes.slice32(StoreCoreInternal._getStaticData(table, key), 16), secondDataBytes);
+    assertEq(StoreCore.getSchema(table).staticDataLength(), 48);
+    assertEq(Bytes.slice16(StoreCore.getRecord(table, key), 0), firstDataBytes);
+    assertEq(Bytes.slice32(StoreCore.getRecord(table, key), 16), secondDataBytes);
     assertEq(
-      keccak256(StoreCoreInternal._getStaticData(table, key)),
+      keccak256(SliceLib.getSubslice(StoreCore.getRecord(table, key), 0, 48).toBytes()),
       keccak256(abi.encodePacked(firstDataBytes, secondDataBytes))
     );
 
@@ -375,7 +373,7 @@ contract StoreCoreTest is Test, StoreView {
       uint32[] memory thirdData = new uint32[](2);
       thirdData[0] = 0x11121314;
       thirdData[1] = 0x15161718;
-      thirdDataBytes = Bytes.from(thirdData);
+      thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
     bytes memory fourthDataBytes;
@@ -384,7 +382,7 @@ contract StoreCoreTest is Test, StoreView {
       fourthData[0] = 0x191a1b1c;
       fourthData[1] = 0x1d1e1f20;
       fourthData[2] = 0x21222324;
-      fourthDataBytes = Bytes.from(fourthData);
+      fourthDataBytes = EncodeArray.encode(fourthData);
     }
 
     // Expect a StoreSetField event to be emitted
@@ -400,7 +398,7 @@ contract StoreCoreTest is Test, StoreView {
     loadedData = StoreCore.getField(table, key, 2);
 
     // Verify loaded data is correct
-    assertEq(Cast.toUint32Array(Buffer_.fromBytes(loadedData).toArray(4)).length, 2);
+    assertEq(SliceLib.fromBytes(loadedData).toUint32Array().length, 2);
     assertEq(loadedData.length, thirdDataBytes.length);
     assertEq(keccak256(loadedData), keccak256(thirdDataBytes));
 
@@ -451,7 +449,7 @@ contract StoreCoreTest is Test, StoreView {
       uint32[] memory secondData = new uint32[](2);
       secondData[0] = 0x11121314;
       secondData[1] = 0x15161718;
-      secondDataBytes = Bytes.from(secondData);
+      secondDataBytes = EncodeArray.encode(secondData);
     }
 
     bytes memory thirdDataBytes;
@@ -460,7 +458,7 @@ contract StoreCoreTest is Test, StoreView {
       thirdData[0] = 0x191a1b1c;
       thirdData[1] = 0x1d1e1f20;
       thirdData[2] = 0x21222324;
-      thirdDataBytes = Bytes.from(thirdData);
+      thirdDataBytes = EncodeArray.encode(thirdData);
     }
 
     PackedCounter encodedDynamicLength;
@@ -586,7 +584,7 @@ contract StoreCoreTest is Test, StoreView {
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;
-    bytes memory arrayDataBytes = Bytes.from(arrayData);
+    bytes memory arrayDataBytes = EncodeArray.encode(arrayData);
     PackedCounter encodedArrayDataLength = PackedCounterLib.pack(uint16(arrayDataBytes.length));
     bytes memory dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
@@ -601,7 +599,7 @@ contract StoreCoreTest is Test, StoreView {
 
     // Update dynamic data
     arrayData[0] = 0x11121314;
-    arrayDataBytes = Bytes.from(arrayData);
+    arrayDataBytes = EncodeArray.encode(arrayData);
     dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
     data = abi.encodePacked(staticData, dynamicData);
 

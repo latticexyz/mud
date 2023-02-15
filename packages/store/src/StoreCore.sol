@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { Utils } from "./Utils.sol";
 import { Bytes } from "./Bytes.sol";
 import { SchemaType, getStaticByteLength, getElementByteLength } from "./Types.sol";
 import { Storage } from "./Storage.sol";
@@ -8,7 +7,7 @@ import { Memory } from "./Memory.sol";
 import { console } from "forge-std/console.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
-import { Buffer, Buffer_ } from "./Buffer.sol";
+import { Slice } from "./Slice.sol";
 import { HooksTable, tableId as HooksTableId } from "./tables/HooksTable.sol";
 import { IStoreHook } from "./IStore.sol";
 
@@ -239,41 +238,48 @@ library StoreCore {
     Schema schema
   ) internal view returns (bytes memory) {
     // Get the static data length
-    uint256 outputLength = schema.staticDataLength();
+    uint256 staticLength = schema.staticDataLength();
+    uint256 outputLength = staticLength;
 
     // Load the dynamic data length if there are dynamic fields
     PackedCounter dynamicDataLength;
     uint256 numDynamicFields = schema.numDynamicFields();
     if (numDynamicFields > 0) {
       dynamicDataLength = StoreCoreInternal._loadEncodedDynamicDataLength(table, key);
-      outputLength += 32 + dynamicDataLength.total(); // encoded length + data
+      // TODO should total output include dynamic data length even if it's 0?
+      if (dynamicDataLength.total() > 0) {
+        outputLength += 32 + dynamicDataLength.total(); // encoded length + data
+      }
     }
 
-    // Allocate a buffer for the full data (static and dynamic)
-    Buffer buffer = Buffer_.allocate(uint128(outputLength));
+    // Allocate length for the full packed data (static and dynamic)
+    bytes memory data = new bytes(outputLength);
+    uint256 memoryPointer = Memory.dataPointer(data);
 
-    // Load the static data from storage and append it to the buffer
-    buffer.append(StoreCoreInternal._getStaticData(table, key, schema));
+    // Load the static data from storage
+    StoreCoreInternal._getStaticData(table, key, staticLength, memoryPointer);
 
     // Early return if there are no dynamic fields
-    if (dynamicDataLength.total() == 0) return buffer.toBytes();
+    if (dynamicDataLength.total() == 0) return data;
+    // Advance memoryPointer to the dynamic data section
+    memoryPointer += staticLength;
 
-    // Append the encoded dynamic length to the buffer after the static data
-    buffer.append(dynamicDataLength.unwrap());
+    // Append the encoded dynamic length
+    Memory.store(memoryPointer, dynamicDataLength.unwrap());
+    // Advance memoryPointer by the length of `dynamicDataLength` (1 word)
+    memoryPointer += 0x20;
 
-    // Append dynamic data to the buffer
+    // Append dynamic data
     for (uint8 i; i < numDynamicFields; i++) {
-      uint256 dynamicDataLocation = uint256(StoreCoreInternal._getDynamicDataLocation(table, key, i));
-      Storage.load({
-        storagePointer: dynamicDataLocation,
-        length: dynamicDataLength.atIndex(i),
-        offset: 0,
-        buffer: buffer
-      });
+      uint256 dynamicDataLocation = StoreCoreInternal._getDynamicDataLocation(table, key, i);
+      uint256 length = dynamicDataLength.atIndex(i);
+      Storage.load({ storagePointer: dynamicDataLocation, length: length, offset: 0, memoryPointer: memoryPointer });
+      // Advance memoryPointer by the length of this dynamic field
+      memoryPointer += length;
     }
 
-    // Return the buffer as bytes
-    return buffer.toBytes();
+    // Return the packed data
+    return data;
   }
 
   /**
@@ -383,26 +389,31 @@ library StoreCoreInternal {
    ************************************************************************/
 
   /**
-   * Get full static record for the given table and key tuple (loading schema from storage)
-   */
-  function _getStaticData(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
-    Schema schema = _getSchema(table);
-    return _getStaticData(table, key, schema);
-  }
-
-  /**
-   * Get full static data for the given table and key tuple, with the given schema
+   * Get full static record for the given table and key tuple (loading schema's static length from storage)
    */
   function _getStaticData(
     bytes32 table,
     bytes32[] memory key,
-    Schema schema
-  ) internal view returns (bytes memory) {
-    if (schema.staticDataLength() == 0) return new bytes(0);
+    uint256 memoryPointer
+  ) internal view {
+    Schema schema = _getSchema(table);
+    _getStaticData(table, key, schema.staticDataLength(), memoryPointer);
+  }
+
+  /**
+   * Get full static data for the given table and key tuple, with the given static length
+   */
+  function _getStaticData(
+    bytes32 table,
+    bytes32[] memory key,
+    uint256 length,
+    uint256 memoryPointer
+  ) internal view {
+    if (length == 0) return;
 
     // Load the data from storage
     uint256 location = _getStaticDataLocation(table, key);
-    return Storage.load({ storagePointer: location, length: schema.staticDataLength() });
+    Storage.load({ storagePointer: location, length: length, offset: 0, memoryPointer: memoryPointer });
   }
 
   /**
@@ -417,7 +428,7 @@ library StoreCoreInternal {
     // Get the length, storage location and offset of the static field
     SchemaType schemaType = schema.atIndex(schemaIndex);
     uint256 dataLength = getStaticByteLength(schemaType);
-    uint256 location = uint256(_getStaticDataLocation(table, key));
+    uint256 location = _getStaticDataLocation(table, key);
     uint256 offset = _getStaticDataOffset(schema, schemaIndex);
 
     // Load the data from storage

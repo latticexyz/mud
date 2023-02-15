@@ -7,6 +7,8 @@ import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { SchemaType } from "../Types.sol";
 import { Bytes } from "../Bytes.sol";
+import { SliceLib } from "../Slice.sol";
+import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
@@ -48,7 +50,7 @@ library Mixed_ {
   ) internal {
     PackedCounter encodedLengths = PackedCounterLib.pack(uint16(a32.length * 4), uint16(bytes(s).length));
 
-    bytes memory data = abi.encodePacked(u32, u128, encodedLengths.unwrap(), Bytes.from(a32), bytes(s));
+    bytes memory data = abi.encodePacked(u32, u128, encodedLengths.unwrap(), EncodeArray.encode(a32), bytes(s));
 
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
@@ -91,7 +93,7 @@ library Mixed_ {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setField(tableId, keyTuple, 2, Bytes.from(a32));
+    StoreSwitch.setField(tableId, keyTuple, 2, EncodeArray.encode(a32));
   }
 
   function setS(
@@ -123,15 +125,18 @@ library Mixed_ {
     return decode(blob);
   }
 
-  function decode(bytes memory blob) internal pure returns (Mixed memory mixed) {
+  function decode(bytes memory blob) internal view returns (Mixed memory mixed) {
     PackedCounter encodedLengths = PackedCounter.wrap((Bytes.slice32(blob, 20))); // 20 = 4 + 16 (static data length)
 
-    return
-      Mixed({
-        u32: uint32(Bytes.slice4(blob, 0)),
-        u128: uint128(Bytes.slice16(blob, 4)),
-        a32: Bytes.toUint32Array(Bytes.slice(blob, 52, encodedLengths.atIndex(0))),
-        s: string(Bytes.slice(blob, 52 + encodedLengths.atIndex(0), encodedLengths.atIndex(1)))
-      });
+    mixed.u32 = uint32(Bytes.slice4(blob, 0));
+    mixed.u128 = uint128(Bytes.slice16(blob, 4));
+
+    uint256 start = 52;
+    uint256 end = start + encodedLengths.atIndex(0);
+    mixed.a32 = SliceLib.getSubslice(blob, start, end).toUint32Array();
+
+    start = end;
+    end += encodedLengths.atIndex(1);
+    mixed.s = string(SliceLib.getSubslice(blob, start, end).toBytes());
   }
 }
