@@ -55,7 +55,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testRegisterAndGetSchema() public {
-    Schema schema = SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
+    Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
 
     bytes32 table = keccak256("some.table");
 
@@ -79,7 +79,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testHasSchema() public {
-    Schema schema = SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
+    Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
     StoreCore.registerSchema(table, schema);
@@ -98,11 +98,11 @@ contract StoreCoreTest is Test, StoreView {
     bytes32 table = keccak256("some.table");
 
     Schema schema = SchemaLib.encode(
-      SchemaType.Uint8,
-      SchemaType.Uint16,
-      SchemaType.Uint32,
-      SchemaType.Uint32Array,
-      SchemaType.Uint32Array
+      SchemaType.UINT8,
+      SchemaType.UINT16,
+      SchemaType.UINT32,
+      SchemaType.UINT32_ARRAY,
+      SchemaType.UINT32_ARRAY
     );
 
     // Register schema
@@ -142,7 +142,7 @@ contract StoreCoreTest is Test, StoreView {
 
   function testSetAndGetStaticData() public {
     // Register table's schema
-    Schema schema = SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
+    Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
 
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
@@ -169,7 +169,7 @@ contract StoreCoreTest is Test, StoreView {
 
   function testFailSetAndGetStaticData() public {
     // Register table's schema
-    Schema schema = SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint16, SchemaType.Uint8, SchemaType.Uint16);
+    Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
 
@@ -185,7 +185,7 @@ contract StoreCoreTest is Test, StoreView {
 
   function testSetAndGetStaticDataSpanningWords() public {
     // Register table's schema
-    Schema schema = SchemaLib.encode(SchemaType.Uint128, SchemaType.Uint256);
+    Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT256);
     bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema);
 
@@ -217,7 +217,7 @@ contract StoreCoreTest is Test, StoreView {
 
     {
       // Register table's schema
-      Schema schema = SchemaLib.encode(SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.Uint32Array);
+      Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
       StoreCore.registerSchema(table, schema);
     }
 
@@ -297,10 +297,10 @@ contract StoreCoreTest is Test, StoreView {
     {
       // Register table's schema
       Schema schema = SchemaLib.encode(
-        SchemaType.Uint128,
-        SchemaType.Uint256,
-        SchemaType.Uint32Array,
-        SchemaType.Uint32Array
+        SchemaType.UINT128,
+        SchemaType.UINT256,
+        SchemaType.UINT32_ARRAY,
+        SchemaType.UINT32_ARRAY
       );
       StoreCore.registerSchema(table, schema);
     }
@@ -439,7 +439,7 @@ contract StoreCoreTest is Test, StoreView {
     bytes32 table = keccak256("some.table");
 
     // Register table's schema
-    Schema schema = SchemaLib.encode(SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.Uint32Array);
+    Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
     StoreCore.registerSchema(table, schema);
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -505,7 +505,7 @@ contract StoreCoreTest is Test, StoreView {
 
   function testAccessEmptyData() public {
     bytes32 table = keccak256("some.table");
-    Schema schema = SchemaLib.encode(SchemaType.Uint32, SchemaType.Uint32Array);
+    Schema schema = SchemaLib.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
     StoreCore.registerSchema(table, schema);
 
@@ -532,7 +532,7 @@ contract StoreCoreTest is Test, StoreView {
     key[0] = keccak256("some key");
 
     // Register table's schema
-    Schema schema = SchemaLib.encode(SchemaType.Uint128);
+    Schema schema = SchemaLib.encode(SchemaType.UINT128);
     StoreCore.registerSchema(table, schema);
 
     // Create subscriber
@@ -573,7 +573,7 @@ contract StoreCoreTest is Test, StoreView {
     key[0] = keccak256("some key");
 
     // Register table's schema
-    Schema schema = SchemaLib.encode(SchemaType.Uint128, SchemaType.Uint32Array);
+    Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY);
     StoreCore.registerSchema(table, schema);
 
     // Create subscriber

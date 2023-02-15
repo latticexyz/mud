@@ -23,7 +23,7 @@ struct Route {
 library Route_ {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.Address, SchemaType.Bytes4, SchemaType.Uint8);
+    schema = SchemaLib.encode(SchemaType.ADDRESS, SchemaType.BYTES4, SchemaType.UINT8);
   }
 
   /** Register the table's schema */

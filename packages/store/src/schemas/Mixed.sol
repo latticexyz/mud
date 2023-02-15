@@ -27,7 +27,7 @@ struct Mixed {
 library Mixed_ {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.Uint32, SchemaType.Uint128, SchemaType.Uint32Array, SchemaType.String);
+    schema = SchemaLib.encode(SchemaType.UINT32, SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.STRING);
   }
 
   /** Register the table's schema */

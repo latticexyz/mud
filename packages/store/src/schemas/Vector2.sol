@@ -22,7 +22,7 @@ struct Vector2 {
 library Vector2_ {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.Uint32, SchemaType.Uint32);
+    schema = SchemaLib.encode(SchemaType.UINT32, SchemaType.UINT32);
   }
 
   /** Register the table's schema */

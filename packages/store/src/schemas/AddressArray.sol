@@ -22,7 +22,7 @@ struct AddressArray {
 library AddressArray_ {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.AddressArray);
+    schema = SchemaLib.encode(SchemaType.ADDRESS_ARRAY);
   }
 
   /** Register the table's schema */

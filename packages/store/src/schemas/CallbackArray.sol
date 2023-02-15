@@ -22,7 +22,7 @@ struct CallbackArray {
 library CallbackArray_ {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.Bytes24Array);
+    schema = SchemaLib.encode(SchemaType.BYTES24_ARRAY);
   }
 
   /** Register the table's schema */
