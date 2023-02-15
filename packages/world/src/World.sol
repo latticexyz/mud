@@ -1,30 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-contract World {}
+import { StoreView } from "store/StoreView.sol";
+import { OwnerTable } from "./tables/OwnerTable.sol";
+import { RouteAccessTable } from "./tables/RouteAccessTable.sol";
+import { RouteTable } from "./tables/RouteTable.sol";
+import { SystemRouteTable } from "./tables/SystemRouteTable.sol";
+import { SystemTable } from "./tables/SystemTable.sol";
 
-// RouteKey: [routeId]
-struct RouteSchema {
-  string preImage;
-}
-
-// RouteAccessKey: [routeId, caller]
-struct RouteAccessSchema {
-  bool access;
-}
-
-// OwnerKey: [owned]
-struct OwnerSchema {
-  address owner;
-}
-
-// SystemKey: [routeId]
-struct SystemSchema {
-  bool openAccess;
-  address system;
-}
-
-// SystemToRouteKey: [systemAddress]
-struct SystemToRouteSchema {
-  bytes32 routeId;
+contract World is StoreView {
+  constructor() {
+    SystemTable.registerSchemaInternal();
+    RouteTable.registerSchemaInternal();
+    RouteAccessTable.registerSchemaInternal();
+    SystemRouteTable.registerSchemaInternal();
+    OwnerTable.registerSchemaInternal();
+  }
 }

@@ -23,6 +23,10 @@ library SystemRouteTable {
     SchemaLib.registerSchema(tableId, store);
   }
 
+  function registerSchemaInternal() internal {
+    SchemaLib.registerSchemaInternal(tableId);
+  }
+
   /** Set the table's data */
   function set(address system, bytes32 route) internal {
     SchemaLib.set(tableId, system, route);

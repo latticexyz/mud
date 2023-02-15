@@ -35,6 +35,10 @@ library SystemSchemaLib {
     store.registerSchema(tableId, getSchema());
   }
 
+  function registerSchemaInternal(bytes32 tableId) internal {
+    StoreCore.registerSchema(tableId, getSchema());
+  }
+
   /** Set the table's data */
   function set(
     bytes32 tableId,
