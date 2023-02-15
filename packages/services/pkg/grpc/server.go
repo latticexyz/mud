@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/faucet"
+	"latticexyz/mud/packages/services/pkg/mode"
 	multiplexer "latticexyz/mud/packages/services/pkg/multiplexer"
 	"latticexyz/mud/packages/services/pkg/relay"
 	"latticexyz/mud/packages/services/pkg/snapshot"
@@ -11,6 +12,7 @@ import (
 	pb_snapshot "latticexyz/mud/packages/services/protobuf/go/ecs-snapshot"
 	pb_stream "latticexyz/mud/packages/services/protobuf/go/ecs-stream"
 	pb_faucet "latticexyz/mud/packages/services/protobuf/go/faucet"
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"net"
 	"net/http"
 
@@ -18,6 +20,7 @@ import (
 	"github.com/ethereum/go-ethereum/ethclient"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
+	"github.com/jmoiron/sqlx"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
@@ -203,6 +206,23 @@ func StartFaucetServer(
 	startHTTPServer(createWebGrpcServer(grpcServer), grpcPort+1, logger)
 }
 
+func StartMODEServer(grpcPort int, metricsPort int, ethClient *ethclient.Client, dbClient *sqlx.DB, schemaManager *mode.SchemaManager, logger *zap.Logger) {
+	// Create gRPC server.
+	grpcServer := createGrpcServer()
+
+	// Create and register the MODE server.
+	pb_mode.RegisterQueryLayerServer(grpcServer, createMODEServer(ethClient, dbClient, schemaManager, logger))
+
+	// Start the RPC server at PORT.
+	go startRPCServer(grpcServer, grpcPort, logger)
+
+	// Start a metric HTTP server.
+	go startMetricsServer(metricsPort, logger)
+
+	// Start the HTTP server at PORT+1.
+	startHTTPServer(createWebGrpcServer(grpcServer), grpcPort+1, logger)
+}
+
 func createStreamServer(ethclient *ethclient.Client, multiplexer *multiplexer.Multiplexer, logger *zap.Logger) *ecsStreamServer {
 	return &ecsStreamServer{
 		ethclient:   ethclient,
@@ -241,6 +261,20 @@ func createFaucetServer(
 		privateKey:    privateKey,
 		publicKey:     publicKey,
 		dripConfig:    dripConfig,
+		logger:        logger,
+	}
+}
+
+func createMODEServer(
+	eth *ethclient.Client,
+	db *sqlx.DB,
+	schemaManager *mode.SchemaManager,
+	logger *zap.Logger,
+) *MODEServer {
+	return &MODEServer{
+		eth:           eth,
+		db:            db,
+		schemaManager: schemaManager,
 		logger:        logger,
 	}
 }

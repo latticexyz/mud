@@ -47,6 +47,42 @@
             "value": "integer"
         }
     },
+    "component_value_schema_solidity": {
+        "component_claim": {
+            "stake": "uint32",
+            "claimer": "address"
+        },
+        "component_gameconfig": {
+            "value": "bool"
+        },
+        "component_item": {
+            "value": "uint256"
+        },
+        "component_itemprototype": {
+            "value": "bool"
+        },
+        "component_name": {
+            "value": "uint256"
+        },
+        "component_occurrence": {
+            "contr": "address",
+            "func": "bytes4"
+        },
+        "component_ownedBy": {
+            "value": "uint256"
+        },
+        "component_position": {
+            "x": "uint32",
+            "y": "uint32",
+            "z": "uint32"
+        },
+        "component_recipe": {
+            "value": "uint256"
+        },
+        "component_stake": {
+            "value": "uint32"
+        }
+    },
     "component_solidity_type_mapping": {
         "0x3bc99d5fe99b9be0112ce1d7a7a7360fb4696cc9ca15d60a116760c7f4432107": "tuple(uint32 stake, uint256 claimer)",
         "0xee6335467814bca6e120dfa0a8125ce649e003559f84314882ca48e87e9bd3cc": "bool",
