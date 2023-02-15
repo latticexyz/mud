@@ -34,10 +34,6 @@ library StringSchemaLib {
     store.registerSchema(tableId, getSchema());
   }
 
-  function registerSchemaInternal(bytes32 tableId) internal {
-    StoreCore.registerSchema(tableId, getSchema());
-  }
-
   /** Set the table's data */
   function set(
     bytes32 tableId,
@@ -66,5 +62,13 @@ library StringSchemaLib {
     keyTuple[0] = key;
     bytes memory blob = store.getRecord(tableId, keyTuple);
     return SliceLib.getSubslice(blob, 32).toString();
+  }
+
+  function has(bytes32 tableId, bytes32 key) internal view returns (bool) {
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+    bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
+    console.log("blob length %s", blob.length);
+    return blob.length > 0;
   }
 }

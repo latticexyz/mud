@@ -23,13 +23,9 @@ library RouteTable {
     SchemaLib.registerSchema(tableId, store);
   }
 
-  function registerSchemaInternal() internal {
-    SchemaLib.registerSchemaInternal(tableId);
-  }
-
   /** Set the table's data */
-  function set(bytes32 key, string memory value) internal {
-    SchemaLib.set(tableId, key, value);
+  function set(bytes32 routeId, string memory route) internal {
+    SchemaLib.set(tableId, routeId, route);
   }
 
   /** Get the table's data */
@@ -39,5 +35,9 @@ library RouteTable {
 
   function get(IStore store, bytes32 key) internal view returns (string memory) {
     return SchemaLib.get(tableId, store, key);
+  }
+
+  function has(bytes32 key) internal view returns (bool) {
+    return SchemaLib.has(tableId, key);
   }
 }

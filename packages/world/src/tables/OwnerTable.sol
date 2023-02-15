@@ -23,13 +23,9 @@ library OwnerTable {
     SchemaLib.registerSchema(tableId, store);
   }
 
-  function registerSchemaInternal() internal {
-    SchemaLib.registerSchemaInternal(tableId);
-  }
-
   /** Set the table's data */
-  function set(bytes32 key, address value) internal {
-    SchemaLib.set(tableId, key, value);
+  function set(bytes32 key, address owner) internal {
+    SchemaLib.set(tableId, key, owner);
   }
 
   /** Get the table's data */
