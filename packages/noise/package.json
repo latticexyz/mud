@@ -2,7 +2,7 @@
   "name": "@latticexyz/noise",
   "version": "1.36.1",
   "source": "ts/index.ts",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "types": "dist/types.d.ts",
   "type": "module",
   "license": "MIT",

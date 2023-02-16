@@ -3,7 +3,7 @@
   "license": "MIT",
   "version": "1.36.1",
   "source": "src/index.ts",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "engines": {
     "node": ">=16"
   },
@@ -30,10 +30,10 @@
   "peerDependencies": {
     "@ethersproject/providers": "^5.6.1",
     "@improbable-eng/grpc-web": "^0.15.0",
-    "@latticexyz/recs": "^1.28.1",
-    "@latticexyz/services": "^1.28.1",
-    "@latticexyz/solecs": "^1.28.1",
-    "@latticexyz/utils": "^1.28.1",
+    "@latticexyz/recs": "^1.36.1",
+    "@latticexyz/services": "^1.36.1",
+    "@latticexyz/solecs": "^1.36.1",
+    "@latticexyz/utils": "^1.36.1",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "async-mutex": "^0.3.2",
     "ethers": "^5.7.1",
