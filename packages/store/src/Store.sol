@@ -16,14 +16,14 @@ abstract contract Store is IStore {
   }
 
   // Get full record (including full array, load schema from storage)
-  function getRecord(uint256 table, bytes32[] memory key) public view virtual returns (bytes memory data) {
+  function getRecord(uint256 table, bytes32[] calldata key) public view virtual returns (bytes memory data) {
     data = StoreCore.getRecord(table, key);
   }
 
   // Get full record (including full array)
   function getRecord(
     uint256 table,
-    bytes32[] memory key,
+    bytes32[] calldata key,
     Schema schema
   ) public view virtual returns (bytes memory data) {
     data = StoreCore.getRecord(table, key, schema);
@@ -32,7 +32,7 @@ abstract contract Store is IStore {
   // Get partial data at schema index
   function getField(
     uint256 table,
-    bytes32[] memory key,
+    bytes32[] calldata key,
     uint8 schemaIndex
   ) public view virtual returns (bytes memory data) {
     data = StoreCore.getField(table, key, schemaIndex);

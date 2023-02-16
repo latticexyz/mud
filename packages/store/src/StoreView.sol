@@ -17,8 +17,8 @@ contract StoreView is Store {
 
   function setRecord(
     uint256,
-    bytes32[] memory,
-    bytes memory
+    bytes32[] calldata,
+    bytes calldata
   ) public virtual {
     revert StoreView_NotImplemented();
   }
@@ -26,9 +26,9 @@ contract StoreView is Store {
   // Set partial data at schema index
   function setField(
     uint256,
-    bytes32[] memory,
+    bytes32[] calldata,
     uint8,
-    bytes memory
+    bytes calldata
   ) public virtual {
     revert StoreView_NotImplemented();
   }
