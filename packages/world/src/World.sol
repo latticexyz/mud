@@ -135,6 +135,53 @@ contract World is StoreView {
     // Retract access to the given route
     RouteAccessTable.deleteRecord({ routeId: routeId, caller: grantee });
   }
+
+  /************************************************************************
+   *
+   *    STORE METHODS
+   *
+   ************************************************************************/
+
+  /**
+   * Write to a table based on a parent route access right.
+   * We check for access based on `accessRoute`, and write to `accessRoute/tableRoute`
+   * because access to a route also grants access to all sub routes.
+   */
+  function setRecord(
+    string calldata accessRoute,
+    string calldata tableRoute,
+    bytes32[] calldata key,
+    bytes calldata data
+  ) public {
+    // Check access control based on the `accessRoute`
+    bytes32 accessRouteId = keccak256(bytes(accessRoute));
+    if (!RouteAccessTable.get({ routeId: accessRouteId, caller: msg.sender }))
+      revert RouteAccessDenied(accessRoute, msg.sender);
+
+    // Construct the table route id by concatenating accessRoute and tableRoute
+    bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, "/", tableRoute));
+
+    // Set the record
+    StoreCore.setRecord(tableRouteId, key, data);
+  }
+
+  /**
+   * Write to a table based on specific access rights.
+   * This overload exists to conform with the `IStore` interface.
+   */
+  function setRecord(
+    bytes32 tableRouteId,
+    bytes32[] calldata key,
+    bytes calldata data
+  ) public override {
+    // Check access based on the tableRoute
+    if (!RouteAccessTable.get({ routeId: tableRouteId, caller: msg.sender })) revert RouteAccessDenied("", msg.sender);
+
+    // Set the record
+    StoreCore.setRecord(tableRouteId, key, data);
+  }
+
+  // TODO: add functions for `setField` and `deleteRecord` akin to `setRecord`
 }
 
 // Require route fragment to end with `/` and not contain any other `/`

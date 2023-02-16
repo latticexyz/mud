@@ -8,6 +8,7 @@ import { OwnerTable } from "../src/tables/OwnerTable.sol";
 import { RouteAccessTable } from "../src/tables/RouteAccessTable.sol";
 import { RouteAccessSchemaLib } from "../src/schemas/RouteAccess.sol";
 import { SystemTable } from "../src/tables/SystemTable.sol";
+import { BoolSchemaLib } from "../src/schemas/Bool.sol";
 
 contract WorldTest is Test {
   World world;
@@ -138,5 +139,38 @@ contract WorldTest is Test {
 
   function testRetractAccess() public {
     // TODO
+  }
+
+  function testSetRecord() public {
+    // Register a new route
+    world.registerRoute("", "testSetRecord");
+
+    // Register a new table
+    bytes32 tableRouteId = world.registerTable("/testSetRecord", "testTable", BoolSchemaLib.getSchema());
+
+    // Write data to the table
+    bytes32 key = keccak256("testKey");
+    BoolSchemaLib.set({ store: world, tableId: tableRouteId, key: key, value: true });
+
+    // Expect the data to be written
+    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+
+    // Expect an error when trying to write from an address that doesn't have access
+    vm.startPrank(address(0x01));
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "", address(0x01)));
+    BoolSchemaLib.set({ store: world, tableId: tableRouteId, key: key, value: true });
+    vm.stopPrank();
+
+    // Expect to be able to write via the base route
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+    world.setRecord("/testSetRecord", "testTable", keyTuple, abi.encodePacked(false));
+    assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+
+    // Expect an error when trying to write from an address that doesn't have access to the base route
+    vm.startPrank(address(0x01));
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord", address(0x01)));
+    world.setRecord("/testSetRecord", "testTable", keyTuple, abi.encodePacked(false));
+    vm.stopPrank();
   }
 }

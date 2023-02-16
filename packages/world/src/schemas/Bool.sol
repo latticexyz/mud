@@ -42,7 +42,18 @@ library BoolSchemaLib {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setField(tableId, keyTuple, 0, abi.encodePacked(value));
+    StoreSwitch.setRecord(tableId, keyTuple, abi.encodePacked(value));
+  }
+
+  function set(
+    bytes32 tableId,
+    IStore store,
+    bytes32 key,
+    bool value
+  ) internal {
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+    store.setRecord(tableId, keyTuple, abi.encodePacked(value));
   }
 
   /** Get the table's data */
