@@ -14,7 +14,7 @@ order: 0
 
 ## Get the starter kit
 
-You’d usually start a new MUD project with the CLI using `npx create mud emojimon`, but for this tutorial, we’ve included some initial code to help you get going faster (base styles with TailwindCSS, for example).
+You’d usually start a new MUD project with the CLI using `yarn create mud emojimon`, but for this tutorial, we’ve included some initial code to help you get going faster (base styles with TailwindCSS, for example).
 
 Fork or clone the [Emojimon starter kit repo](https://github.com/latticexyz/emojimon):
 
