@@ -68,7 +68,6 @@ library StringSchemaLib {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
-    console.log("blob length %s", blob.length);
     return blob.length > 0;
   }
 }

@@ -3,12 +3,14 @@ pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
 import { StoreView } from "store/StoreView.sol";
+import { StoreCore } from "store/StoreCore.sol";
+import { Schema } from "store/Schema.sol";
+
 import { OwnerTable, tableId as OwnerTableId } from "./tables/OwnerTable.sol";
 import { RouteAccessTable } from "./tables/RouteAccessTable.sol";
 import { RouteTable } from "./tables/RouteTable.sol";
 import { SystemRouteTable } from "./tables/SystemRouteTable.sol";
 import { SystemTable } from "./tables/SystemTable.sol";
-import { StoreCore } from "store/StoreCore.sol";
 
 bytes32 constant ROOT_ROUTE_ID = keccak256(bytes(""));
 
@@ -61,6 +63,21 @@ contract World is StoreView {
 
     // Give caller access to the route
     RouteAccessTable.set({ routeId: routeId, caller: msg.sender, access: true });
+  }
+
+  /**
+   * Register register a table with given schema at the given route
+   */
+  function registerTable(
+    string calldata baseRoute,
+    string calldata tableRoute,
+    Schema schema
+  ) public returns (bytes32 routeId) {
+    // Register table route
+    routeId = registerRoute(baseRoute, tableRoute);
+
+    // StoreCore handles checking for existence
+    StoreCore.registerSchema(routeId, schema);
   }
 }
 
