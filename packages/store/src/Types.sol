@@ -213,15 +213,15 @@ enum SchemaType {
 function getStaticByteLength(SchemaType schemaType) pure returns (uint256) {
   uint256 val = uint8(schemaType);
 
-  if (schemaType <= SchemaType.UINT256) {
+  if (val < 32) {
     // uint8-256
     return val + 1;
-  } else if (schemaType <= SchemaType.INT256) {
+  } else if (val < 64) {
     // int8-256, offset by 32
-    return val + 1 - uint256(SchemaType.INT8);
-  } else if (schemaType <= SchemaType.BYTES32) {
+    return val + 1 - 32;
+  } else if (val < 96) {
     // bytes1-32, offset by 64
-    return val + 1 - uint256(SchemaType.BYTES1);
+    return val + 1 - 64;
   }
 
   // Other static types
