@@ -15,13 +15,14 @@ message CompressedRow {
     bytes value = 3;
 }
 
-message QueryLayerResponse {
-    // For client to more easier detect the response type.
-    bool is_compressed = 1;
+message Row {
+    repeated bytes values = 2;
+}
 
-    // One of these will be available.
-    optional QueryLayerResponseCompressed responseCompressed = 2; 
-    optional QueryLayerResponseUncompressed responseUncompressed = 3;
+message QueryLayerResponse {
+    repeated string cols = 1;
+    repeated Row rows = 2;
+    repeated string schema = 3;
 }
 
 message QueryLayerResponseUncompressed {

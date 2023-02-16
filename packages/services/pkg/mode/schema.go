@@ -96,12 +96,30 @@ func BuildTableSoliditySchema(dataSchema DataSchema) map[string]Schema {
 	return tableSchemas
 }
 
-func (manager *SchemaManager) SchemaToSolidityType(schema *Schema) (*abi.Type, error) {
+func (manager *SchemaManager) SchemaToTypeList(schema *Schema) ([]*abi.Type, []string, error) {
+	_types := []*abi.Type{}
+	_typesStr := []string{}
+
+	// Add the "default" types from schema, e.g. "entityid".
+	_types = append(_types, abi.MustNewType("uint256"))
+	_typesStr = append(_typesStr, abi.MustNewType("uint256").String())
+
+	for _, _type := range schema.types {
+		_type := abi.MustNewType(_type.field_type)
+		_types = append(_types, _type)
+		_typesStr = append(_typesStr, _type.String())
+	}
+
+	return _types, _typesStr, nil
+}
+
+func (manager *SchemaManager) SchemaToType(schema *Schema) (*abi.Type, string, error) {
 	if len(schema.types) == 0 {
-		return nil, fmt.Errorf("no types in schema")
+		return nil, "", fmt.Errorf("no types in schema")
 	}
 	if len(schema.types) == 1 {
-		return abi.MustNewType(schema.types[0].field_type), nil
+		_type := abi.MustNewType(schema.types[0].field_type)
+		return _type, _type.String(), nil
 	}
 	var tuple strings.Builder
 	tuple.WriteString("tuple(")
@@ -112,7 +130,10 @@ func (manager *SchemaManager) SchemaToSolidityType(schema *Schema) (*abi.Type, e
 		}
 	}
 	tuple.WriteString(")")
-	return abi.MustNewType(tuple.String()), nil
+	println(tuple.String())
+
+	_type := abi.MustNewType(tuple.String())
+	return _type, _type.String(), nil
 }
 
 func (manager *SchemaManager) GetSoliditySchema(tableName string) *Schema {
