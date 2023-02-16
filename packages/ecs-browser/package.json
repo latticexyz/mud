@@ -3,7 +3,7 @@
   "version": "1.36.1",
   "description": "Component Browser for RECS",
   "license": "MIT",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "type": "module",
   "types": "dist/index.d.ts",
   "repository": {
@@ -46,9 +46,9 @@
     "typescript": "^4.5.5"
   },
   "peerDependencies": {
-    "@latticexyz/recs": "^1.28.1",
-    "@latticexyz/std-client": "^1.28.1",
-    "@latticexyz/utils": "^1.28.1",
+    "@latticexyz/recs": "^1.36.1",
+    "@latticexyz/std-client": "^1.36.1",
+    "@latticexyz/utils": "^1.36.1",
     "lodash": "^4.17.21",
     "mobx": "^6.4.2",
     "mobx-react-lite": "^3.4.0",
