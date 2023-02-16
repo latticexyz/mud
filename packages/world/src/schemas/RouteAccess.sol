@@ -72,4 +72,15 @@ library RouteAccessSchemaLib {
     bytes memory blob = store.getRecord(tableId, keyTuple);
     return SliceLib.fromBytes(blob).toBool();
   }
+
+  function deleteRecord(
+    bytes32 tableId,
+    bytes32 routeId,
+    address caller
+  ) internal {
+    bytes32[] memory keyTuple = new bytes32[](2);
+    keyTuple[0] = routeId;
+    keyTuple[1] = bytes32(bytes20(caller));
+    StoreSwitch.deleteRecord(tableId, keyTuple);
+  }
 }

@@ -111,6 +111,30 @@ contract World is StoreView {
     // Give the system access to its base route
     RouteAccessTable.set({ routeId: baseRouteId, caller: address(system), access: true });
   }
+
+  /**
+   * Grant access to a given route
+   */
+  function grantAccess(string calldata route, address grantee) public {
+    // Require the caller to own the route
+    bytes32 routeId = keccak256(bytes(route));
+    if (OwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
+
+    // Grant access to the given route
+    RouteAccessTable.set({ routeId: routeId, caller: grantee, access: true });
+  }
+
+  /**
+   * Retract access to a given route
+   */
+  function retractAccess(string calldata route, address grantee) public {
+    // Require the caller to own the route
+    bytes32 routeId = keccak256(bytes(route));
+    if (OwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
+
+    // Retract access to the given route
+    RouteAccessTable.deleteRecord({ routeId: routeId, caller: grantee });
+  }
 }
 
 // Require route fragment to end with `/` and not contain any other `/`

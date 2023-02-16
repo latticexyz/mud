@@ -131,4 +131,12 @@ contract WorldTest is Test {
     world.registerSystem("", "rootSystem", yetAnotherSystem, true);
     vm.stopPrank();
   }
+
+  function testGrantAccess() public {
+    // TODO
+  }
+
+  function testRetractAccess() public {
+    // TODO
+  }
 }

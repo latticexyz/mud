@@ -44,4 +44,8 @@ library RouteAccessTable {
   ) internal view returns (bool) {
     return SchemaLib.get(tableId, store, routeId, caller);
   }
+
+  function deleteRecord(bytes32 routeId, address caller) internal {
+    SchemaLib.deleteRecord(tableId, routeId, caller);
+  }
 }
