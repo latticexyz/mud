@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.36.0](https://github.com/latticexyz/mud/compare/v1.35.0...v1.36.0) (2023-02-16)
+
+### Features
+
+- **cli:** use forge config for paths to src, test, out ([#392](https://github.com/latticexyz/mud/issues/392)) ([01217d3](https://github.com/latticexyz/mud/commit/01217d3b1f39a0f0cd1b1b5c45750a65928ea02f))
+
 # [1.35.0](https://github.com/latticexyz/mud/compare/v1.34.0...v1.35.0) (2023-02-15)
 
 ### Bug Fixes
