@@ -54,7 +54,7 @@ func (server *MODEServer) Find(ctx context.Context, request *pb_mode.FindRequest
 
 	// Get a list of types for this schema. A list of types corresponds to the number
 	// of columns in a table.
-	schemaTypes, schemaTypesStr, err := server.schemaManager.SchemaToTypeList(schema)
+	schemaTypes, schemaTypesStr, err := server.schemaManager.SchemaToTypeList(schema, request.Project)
 
 	if err != nil {
 		server.logger.Error("error while transforming schema to type list", zap.Error(err))

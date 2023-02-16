@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"latticexyz/mud/packages/services/protobuf/go/mode"
 	"log"
 	"strings"
 
@@ -96,7 +97,28 @@ func BuildTableSoliditySchema(dataSchema DataSchema) map[string]Schema {
 	return tableSchemas
 }
 
-func (manager *SchemaManager) SchemaToTypeList(schema *Schema) ([]*abi.Type, []string, error) {
+func SchemaTypesWithProject(schemaTypes []SchemaPair, project []*mode.ProjectedField) (projectedSchemaTypes []SchemaPair) {
+	// No projects is equivalent to keeping everything.
+	if len(project) == 0 {
+		return schemaTypes
+	}
+
+	// Filter out fields based on projection.
+	projectSet := map[string]bool{}
+	for _, projectedField := range project {
+		projectSet[projectedField.Field.TableField] = true
+	}
+
+	for _, schemaType := range schemaTypes {
+		_, ok := projectSet[schemaType.field_name]
+		if ok {
+			projectedSchemaTypes = append(projectedSchemaTypes, schemaType)
+		}
+	}
+	return
+}
+
+func (manager *SchemaManager) SchemaToTypeList(schema *Schema, project []*mode.ProjectedField) ([]*abi.Type, []string, error) {
 	_types := []*abi.Type{}
 	_typesStr := []string{}
 
@@ -104,13 +126,13 @@ func (manager *SchemaManager) SchemaToTypeList(schema *Schema) ([]*abi.Type, []s
 	defaultSchemaPart := []SchemaPair{
 		{field_name: "entityid", field_type: "uint256"},
 	}
-	for _, schemaPair := range defaultSchemaPart {
-		_typeDefault := abi.MustNewType(schemaPair.field_type)
-		_types = append(_types, _typeDefault)
-		_typesStr = append(_typesStr, _typeDefault.String())
-	}
+	// for _, schemaPair := range defaultSchemaPart {
+	// 	_typeDefault := abi.MustNewType(schemaPair.field_type)
+	// 	_types = append(_types, _typeDefault)
+	// 	_typesStr = append(_typesStr, _typeDefault.String())
+	// }
 
-	for _, _type := range schema.types {
+	for _, _type := range SchemaTypesWithProject(append(schema.types, defaultSchemaPart...), project) {
 		_type := abi.MustNewType(_type.field_type)
 		_types = append(_types, _type)
 		_typesStr = append(_typesStr, _type.String())
