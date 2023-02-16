@@ -62,4 +62,10 @@ library AddressToBytes32SchemaLib {
     bytes memory blob = store.getRecord(tableId, keyTuple);
     return bytes32(blob);
   }
+
+  function has(bytes32 tableId, address key) internal view returns (bool) {
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = bytes20(key);
+    return bytes32(StoreSwitch.getRecord(tableId, keyTuple)) != 0;
+  }
 }

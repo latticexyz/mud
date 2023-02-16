@@ -11,12 +11,15 @@ import { RouteAccessTable } from "./tables/RouteAccessTable.sol";
 import { RouteTable } from "./tables/RouteTable.sol";
 import { SystemRouteTable } from "./tables/SystemRouteTable.sol";
 import { SystemTable } from "./tables/SystemTable.sol";
+import { System } from "./System.sol";
 
 bytes32 constant ROOT_ROUTE_ID = keccak256(bytes(""));
 
 contract World is StoreView {
   error RouteInvalid(string route);
   error RouteExists(string route);
+  error RouteAccessDenied(string route, address caller);
+  error SystemExists(address system);
 
   constructor() {
     SystemTable.registerSchema();
@@ -72,12 +75,41 @@ contract World is StoreView {
     string calldata baseRoute,
     string calldata tableRoute,
     Schema schema
-  ) public returns (bytes32 routeId) {
+  ) public returns (bytes32 tableRouteId) {
     // Register table route
-    routeId = registerRoute(baseRoute, tableRoute);
+    tableRouteId = registerRoute(baseRoute, tableRoute);
 
     // StoreCore handles checking for existence
-    StoreCore.registerSchema(routeId, schema);
+    StoreCore.registerSchema(tableRouteId, schema);
+  }
+
+  /**
+   * Register a system at the given route
+   */
+  function registerSystem(
+    string calldata baseRoute,
+    string calldata systemRoute,
+    System system,
+    bool publicAccess
+  ) public returns (bytes32 systemRouteId) {
+    // Require the system to not exist yet
+    if (SystemRouteTable.has(address(system))) revert SystemExists(address(system));
+
+    // Require the caller to own the base route
+    bytes32 baseRouteId = keccak256(bytes(baseRoute));
+    if (OwnerTable.get(baseRouteId) != msg.sender) revert RouteAccessDenied(baseRoute, msg.sender);
+
+    // Register system route
+    systemRouteId = registerRoute(baseRoute, systemRoute);
+
+    // Store the system address in the system table
+    SystemTable.set({ routeId: systemRouteId, system: address(system), publicAccess: publicAccess });
+
+    // Store the system's route in the SystemToRoute table
+    SystemRouteTable.set({ system: address(system), routeId: systemRouteId });
+
+    // Give the system access to its base route
+    RouteAccessTable.set({ routeId: baseRouteId, caller: address(system), access: true });
   }
 }
 

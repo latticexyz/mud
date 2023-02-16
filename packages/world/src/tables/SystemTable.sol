@@ -25,19 +25,19 @@ library SystemTable {
 
   /** Set the table's data */
   function set(
-    bytes32 key,
+    bytes32 routeId,
     address system,
     bool publicAccess
   ) internal {
-    SchemaLib.set(tableId, key, system, publicAccess);
+    SchemaLib.set(tableId, routeId, system, publicAccess);
   }
 
   /** Get the table's data */
-  function get(bytes32 key) internal view returns (address, bool) {
-    return SchemaLib.get(tableId, key);
+  function get(bytes32 routeId) internal view returns (address, bool) {
+    return SchemaLib.get(tableId, routeId);
   }
 
-  function get(IStore store, bytes32 key) internal view returns (address, bool) {
-    return SchemaLib.get(tableId, store, key);
+  function get(IStore store, bytes32 routeId) internal view returns (address, bool) {
+    return SchemaLib.get(tableId, store, routeId);
   }
 }

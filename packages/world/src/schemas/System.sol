@@ -52,7 +52,7 @@ library SystemSchemaLib {
   ) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    StoreSwitch.setField(tableId, keyTuple, 0, abi.encodePacked(system, publicAccess));
+    StoreSwitch.setRecord(tableId, keyTuple, abi.encodePacked(system, publicAccess));
   }
 
   function get(bytes32 tableId, bytes32 key) internal view returns (address system, bool publicAccess) {

@@ -24,8 +24,8 @@ library SystemRouteTable {
   }
 
   /** Set the table's data */
-  function set(address system, bytes32 route) internal {
-    SchemaLib.set(tableId, system, route);
+  function set(address system, bytes32 routeId) internal {
+    SchemaLib.set(tableId, system, routeId);
   }
 
   /** Get the table's data */
@@ -35,5 +35,9 @@ library SystemRouteTable {
 
   function get(IStore store, address system) internal view returns (bytes32) {
     return SchemaLib.get(tableId, store, system);
+  }
+
+  function has(address system) internal view returns (bool) {
+    return SchemaLib.has(tableId, system);
   }
 }
