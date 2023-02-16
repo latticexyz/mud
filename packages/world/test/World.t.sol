@@ -10,6 +10,16 @@ import { RouteAccessSchemaLib } from "../src/schemas/RouteAccess.sol";
 import { SystemTable } from "../src/tables/SystemTable.sol";
 import { BoolSchemaLib } from "../src/schemas/Bool.sol";
 
+contract WorldTestSystem is System {
+  function msgSender() public pure returns (address) {
+    return _msgSender();
+  }
+
+  function execute(bytes32) public pure returns (address) {
+    return _msgSender();
+  }
+}
+
 contract WorldTest is Test {
   World world;
 
@@ -29,7 +39,7 @@ contract WorldTest is Test {
 
   function testRegisterRoute() public {
     // Register a new route (by extending the root route)
-    world.registerRoute("", "test");
+    world.registerRoute("", "/test");
 
     // Owner of the new route should be the caller of the method
     address routeOwner = OwnerTable.get(world, keccak256("/test"));
@@ -43,7 +53,7 @@ contract WorldTest is Test {
 
     // Expect an error when registering an existing route
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/test"));
-    world.registerRoute("", "test");
+    world.registerRoute("", "/test");
 
     // TODO: Expect an error when registering an invalid route
     // vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "invalid/route"));
@@ -51,11 +61,11 @@ contract WorldTest is Test {
 
     // Expect an error when extending a route that doesn't exist
     vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "/invalid"));
-    world.registerRoute("/invalid", "test");
+    world.registerRoute("/invalid", "/test");
   }
 
   function testRegisterTable() public {
-    bytes32 tableId = world.registerTable("", "testRouteAccess", RouteAccessSchemaLib.getSchema());
+    bytes32 tableId = world.registerTable("", "/testRouteAccess", RouteAccessSchemaLib.getSchema());
 
     // Expect the table to be registered
     assertEq(world.getSchema(tableId).unwrap(), RouteAccessSchemaLib.getSchema().unwrap());
@@ -72,7 +82,7 @@ contract WorldTest is Test {
 
     // Expect an error when registering an existing table
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/testRouteAccess"));
-    world.registerTable("", "testRouteAccess", RouteAccessSchemaLib.getSchema());
+    world.registerTable("", "/testRouteAccess", RouteAccessSchemaLib.getSchema());
 
     // TODO: Expect an error when registering an invalid table route
     // vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "invalid/route"));
@@ -80,12 +90,12 @@ contract WorldTest is Test {
 
     // Expect an error when extending a route that doesn't exist
     vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "/invalid"));
-    world.registerTable("/invalid", "test", RouteAccessSchemaLib.getSchema());
+    world.registerTable("/invalid", "/test", RouteAccessSchemaLib.getSchema());
   }
 
   function testRegisterSystem() public {
     System system = new System();
-    bytes32 systemRouteId = world.registerSystem("", "testSystem", system, false);
+    bytes32 systemRouteId = world.registerSystem("", "/testSystem", system, false);
 
     // Expect the system to be registered
     (address registeredAddress, bool publicAccess) = SystemTable.get(world, systemRouteId);
@@ -109,12 +119,12 @@ contract WorldTest is Test {
 
     // Expect an error when registering an existing system
     vm.expectRevert(abi.encodeWithSelector(World.SystemExists.selector, address(system)));
-    world.registerSystem("", "newRoute", system, true);
+    world.registerSystem("", "/newRoute", system, true);
 
     // Expect an error when registering a system at an existing route
     System newSystem = new System();
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/testSystem"));
-    world.registerSystem("", "testSystem", newSystem, true);
+    world.registerSystem("", "/testSystem", newSystem, true);
 
     // TODO: Expect an error when registering an invalid system route
     // vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "invalid/route"));
@@ -123,13 +133,13 @@ contract WorldTest is Test {
     // Expect an error when extending a route that doesn't exist
     System anotherSystem = new System();
     vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/invalid", address(this)));
-    world.registerSystem("/invalid", "test", anotherSystem, true);
+    world.registerSystem("/invalid", "/test", anotherSystem, true);
 
     // Expect an error when registering a system at a route that is not owned by the caller
     System yetAnotherSystem = new System();
     vm.startPrank(address(0x01));
     vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "", address(0x01)));
-    world.registerSystem("", "rootSystem", yetAnotherSystem, true);
+    world.registerSystem("", "/rootSystem", yetAnotherSystem, true);
     vm.stopPrank();
   }
 
@@ -143,10 +153,10 @@ contract WorldTest is Test {
 
   function testSetRecord() public {
     // Register a new route
-    world.registerRoute("", "testSetRecord");
+    world.registerRoute("", "/testSetRecord");
 
     // Register a new table
-    bytes32 tableRouteId = world.registerTable("/testSetRecord", "testTable", BoolSchemaLib.getSchema());
+    bytes32 tableRouteId = world.registerTable("/testSetRecord", "/testTable", BoolSchemaLib.getSchema());
 
     // Write data to the table
     bytes32 key = keccak256("testKey");
@@ -164,13 +174,41 @@ contract WorldTest is Test {
     // Expect to be able to write via the base route
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    world.setRecord("/testSetRecord", "testTable", keyTuple, abi.encodePacked(false));
+    world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
     assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
     // Expect an error when trying to write from an address that doesn't have access to the base route
     vm.startPrank(address(0x01));
     vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord", address(0x01)));
-    world.setRecord("/testSetRecord", "testTable", keyTuple, abi.encodePacked(false));
+    world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
     vm.stopPrank();
   }
+
+  function testCall() public {
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem("", "/testSystem", system, false);
+
+    // Call a system function without arguments via the World
+    bytes memory result = world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+
+    // Expect the system to have received the caller's address
+    assertEq(address(uint160(uint256(bytes32(result)))), address(this));
+
+    // Call a system function with arguments via the World
+    result = world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.execute.selector, bytes32(0)));
+
+    // Expect the system to have received the caller's address
+    assertEq(address(uint160(uint256(bytes32(result)))), address(this));
+
+    // Expect an error when trying to call from an address that doesn't have access
+    vm.startPrank(address(0x01));
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSystem", address(0x01)));
+    world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    vm.stopPrank();
+
+    // TODO: register a system at a non-root route and expect calling to to work as well
+  }
+
+  // TODO: add a test for systems writing to tables via the World
 }
