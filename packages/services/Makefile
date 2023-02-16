@@ -8,7 +8,7 @@ LDFLAGSSTRING +=-X main.GitCommit=$(GITCOMMIT)
 LDFLAGSSTRING +=-X main.GitDate=$(GITDATE)
 LDFLAGS := -ldflags "$(LDFLAGSSTRING)"
 
-protoc: protoc-go protoc-ts
+protoc: protoc-go protoc-ts protoc-clean
 .PHONY: protoc
 
 protoc-go:
@@ -51,6 +51,10 @@ protoc-ts:
 	--ts_proto_opt=env=browser,outputServices=nice-grpc,outputServices=generic-definitions,outputJsonMethods=false,useExactTypes=false,eslint_disable,esModuleInterop=true \
 	--proto_path proto proto/mode.proto 
 .PHONY: protoc-ts
+
+protoc-clean:
+	cd ./protobuf/go/mode && ls *.pb.go | xargs -n1 -IX bash -c 'sed s/,omitempty// X > X.tmp && mv X{.tmp,}'
+.PHONY: protoc-clean
 
 build: ecs-stream ecs-snapshot ecs-relay faucet
 .PHONY: build

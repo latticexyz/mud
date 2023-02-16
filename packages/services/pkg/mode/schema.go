@@ -100,9 +100,15 @@ func (manager *SchemaManager) SchemaToTypeList(schema *Schema) ([]*abi.Type, []s
 	_types := []*abi.Type{}
 	_typesStr := []string{}
 
-	// Add the "default" types from schema, e.g. "entityid".
-	_types = append(_types, abi.MustNewType("uint256"))
-	_typesStr = append(_typesStr, abi.MustNewType("uint256").String())
+	// Add the "default" schema fields e.g. "entityid".
+	defaultSchemaPart := []SchemaPair{
+		{field_name: "entityid", field_type: "uint256"},
+	}
+	for _, schemaPair := range defaultSchemaPart {
+		_typeDefault := abi.MustNewType(schemaPair.field_type)
+		_types = append(_types, _typeDefault)
+		_typesStr = append(_typesStr, _typeDefault.String())
+	}
 
 	for _, _type := range schema.types {
 		_type := abi.MustNewType(_type.field_type)

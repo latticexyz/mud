@@ -25,9 +25,9 @@ type UncompressedRow struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Source   string `protobuf:"bytes,1,opt,name=source,proto3" json:"source,omitempty"`
-	EntityId string `protobuf:"bytes,2,opt,name=entity_id,json=entityId,proto3" json:"entity_id,omitempty"`
-	Value    []byte `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	Source   string `protobuf:"bytes,1,opt,name=source,proto3" json:"source"`
+	EntityId string `protobuf:"bytes,2,opt,name=entity_id,json=entityId,proto3" json:"entity_id"`
+	Value    []byte `protobuf:"bytes,3,opt,name=value,proto3" json:"value"`
 }
 
 func (x *UncompressedRow) Reset() {
@@ -88,9 +88,9 @@ type CompressedRow struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	SourceIdx   uint32 `protobuf:"varint,1,opt,name=source_idx,json=sourceIdx,proto3" json:"source_idx,omitempty"`
-	EntityIdIdx uint32 `protobuf:"varint,2,opt,name=entity_id_idx,json=entityIdIdx,proto3" json:"entity_id_idx,omitempty"`
-	Value       []byte `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	SourceIdx   uint32 `protobuf:"varint,1,opt,name=source_idx,json=sourceIdx,proto3" json:"source_idx"`
+	EntityIdIdx uint32 `protobuf:"varint,2,opt,name=entity_id_idx,json=entityIdIdx,proto3" json:"entity_id_idx"`
+	Value       []byte `protobuf:"bytes,3,opt,name=value,proto3" json:"value"`
 }
 
 func (x *CompressedRow) Reset() {
@@ -151,7 +151,7 @@ type Row struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Values [][]byte `protobuf:"bytes,2,rep,name=values,proto3" json:"values,omitempty"`
+	Values [][]byte `protobuf:"bytes,2,rep,name=values,proto3" json:"values"`
 }
 
 func (x *Row) Reset() {
@@ -198,9 +198,9 @@ type QueryLayerResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Cols   []string `protobuf:"bytes,1,rep,name=cols,proto3" json:"cols,omitempty"`
-	Rows   []*Row   `protobuf:"bytes,2,rep,name=rows,proto3" json:"rows,omitempty"`
-	Schema []string `protobuf:"bytes,3,rep,name=schema,proto3" json:"schema,omitempty"`
+	Cols   []string `protobuf:"bytes,1,rep,name=cols,proto3" json:"cols"`
+	Rows   []*Row   `protobuf:"bytes,2,rep,name=rows,proto3" json:"rows"`
+	Schema []string `protobuf:"bytes,3,rep,name=schema,proto3" json:"schema"`
 }
 
 func (x *QueryLayerResponse) Reset() {
@@ -261,7 +261,7 @@ type QueryLayerResponseUncompressed struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Rows []*UncompressedRow `protobuf:"bytes,1,rep,name=rows,proto3" json:"rows,omitempty"`
+	Rows []*UncompressedRow `protobuf:"bytes,1,rep,name=rows,proto3" json:"rows"`
 }
 
 func (x *QueryLayerResponseUncompressed) Reset() {
@@ -308,9 +308,9 @@ type QueryLayerResponseCompressed struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Rows        []*CompressedRow `protobuf:"bytes,1,rep,name=rows,proto3" json:"rows,omitempty"`
-	RowSources  []string         `protobuf:"bytes,2,rep,name=rowSources,proto3" json:"rowSources,omitempty"`
-	RowEntities []string         `protobuf:"bytes,3,rep,name=rowEntities,proto3" json:"rowEntities,omitempty"`
+	Rows        []*CompressedRow `protobuf:"bytes,1,rep,name=rows,proto3" json:"rows"`
+	RowSources  []string         `protobuf:"bytes,2,rep,name=rowSources,proto3" json:"rowSources"`
+	RowEntities []string         `protobuf:"bytes,3,rep,name=rowEntities,proto3" json:"rowEntities"`
 }
 
 func (x *QueryLayerResponseCompressed) Reset() {
@@ -371,9 +371,9 @@ type FindRequestOptions struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Compressed bool `protobuf:"varint,1,opt,name=compressed,proto3" json:"compressed,omitempty"`
-	Group      bool `protobuf:"varint,2,opt,name=group,proto3" json:"group,omitempty"`
-	Negate     bool `protobuf:"varint,3,opt,name=negate,proto3" json:"negate,omitempty"`
+	Compressed bool `protobuf:"varint,1,opt,name=compressed,proto3" json:"compressed"`
+	Group      bool `protobuf:"varint,2,opt,name=group,proto3" json:"group"`
+	Negate     bool `protobuf:"varint,3,opt,name=negate,proto3" json:"negate"`
 }
 
 func (x *FindRequestOptions) Reset() {
@@ -434,11 +434,11 @@ type FindRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	From    string            `protobuf:"bytes,1,opt,name=from,proto3" json:"from,omitempty"`
-	Filter  []*Filter         `protobuf:"bytes,2,rep,name=filter,proto3" json:"filter,omitempty"`
-	Project []*ProjectedField `protobuf:"bytes,3,rep,name=project,proto3" json:"project,omitempty"`
+	From    string            `protobuf:"bytes,1,opt,name=from,proto3" json:"from"`
+	Filter  []*Filter         `protobuf:"bytes,2,rep,name=filter,proto3" json:"filter"`
+	Project []*ProjectedField `protobuf:"bytes,3,rep,name=project,proto3" json:"project"`
 	// Options.
-	Options *FindRequestOptions `protobuf:"bytes,4,opt,name=options,proto3" json:"options,omitempty"`
+	Options *FindRequestOptions `protobuf:"bytes,4,opt,name=options,proto3" json:"options"`
 }
 
 func (x *FindRequest) Reset() {
@@ -506,9 +506,9 @@ type FindAllRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Tables []string `protobuf:"bytes,1,rep,name=tables,proto3" json:"tables,omitempty"`
+	Tables []string `protobuf:"bytes,1,rep,name=tables,proto3" json:"tables"`
 	// Options.
-	Options *FindRequestOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options,omitempty"`
+	Options *FindRequestOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options"`
 }
 
 func (x *FindAllRequest) Reset() {
@@ -562,9 +562,9 @@ type Filter struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Field    *Field `protobuf:"bytes,1,opt,name=field,proto3" json:"field,omitempty"`
-	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator,omitempty"`
-	Value    string `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	Field    *Field `protobuf:"bytes,1,opt,name=field,proto3" json:"field"`
+	Operator string `protobuf:"bytes,2,opt,name=operator,proto3" json:"operator"`
+	Value    string `protobuf:"bytes,3,opt,name=value,proto3" json:"value"`
 }
 
 func (x *Filter) Reset() {
@@ -625,8 +625,8 @@ type Field struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	TableName  string `protobuf:"bytes,1,opt,name=table_name,json=tableName,proto3" json:"table_name,omitempty"`
-	TableField string `protobuf:"bytes,2,opt,name=table_field,json=tableField,proto3" json:"table_field,omitempty"`
+	TableName  string `protobuf:"bytes,1,opt,name=table_name,json=tableName,proto3" json:"table_name"`
+	TableField string `protobuf:"bytes,2,opt,name=table_field,json=tableField,proto3" json:"table_field"`
 }
 
 func (x *Field) Reset() {
@@ -680,8 +680,8 @@ type ProjectedField struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Field  *Field  `protobuf:"bytes,1,opt,name=field,proto3" json:"field,omitempty"`
-	Rename *string `protobuf:"bytes,2,opt,name=rename,proto3,oneof" json:"rename,omitempty"`
+	Field  *Field  `protobuf:"bytes,1,opt,name=field,proto3" json:"field"`
+	Rename *string `protobuf:"bytes,2,opt,name=rename,proto3,oneof" json:"rename"`
 }
 
 func (x *ProjectedField) Reset() {

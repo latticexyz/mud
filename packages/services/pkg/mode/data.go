@@ -191,14 +191,10 @@ func SerializeRows(rows *sqlx.Rows, colTypes []*abi.Type, colTypeStrings []strin
 		rows.Scan(rowInterface...)
 		serializedRow, err := SerializeRow(row, colNames, colTypes)
 		if err != nil {
-			logger.GetLogger().Error("error while serializing", zap.Error(err))
-			return nil, err
+			logger.GetLogger().Warn("error while serializing", zap.Error(err))
+		} else {
+			serializedRows = append(serializedRows, serializedRow)
 		}
-
-		println("serializedRow:")
-		println(serializedRow)
-
-		serializedRows = append(serializedRows, serializedRow)
 	}
 
 	if err := rows.Err(); err != nil {
