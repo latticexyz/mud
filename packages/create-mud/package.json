@@ -10,7 +10,7 @@
     "templates"
   ],
   "scripts": {
-    "prepare": "cd ../../node_modules/create-create-app && npm run build",
+    "prepare": "yarn build",
     "build": "tsup src/cli.ts --minify",
     "clean": "shx rm -rf lib",
     "dev": "tsup src/cli.ts --watch",
@@ -18,7 +18,7 @@
     "test": "echo \"TODO\""
   },
   "dependencies": {
-    "create-create-app": "git+https://github.com/holic/create-create-app#41d44df2f1b2be760eaf53281a1d6a8102a76a3d"
+    "create-create-app": "git+https://github.com/holic/create-create-app#8191d0c89c3620940c21bad35786b1f0a3b0e9fc"
   },
   "devDependencies": {
     "@types/node": "^17.0.29",
