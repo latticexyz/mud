@@ -51,12 +51,15 @@ func (server *MODEServer) Find(ctx context.Context, request *pb_mode.FindRequest
 
 	// Get the schama for the table that the query is directed at.
 	schema := server.schemaManager.GetSoliditySchema(request.From)
-	schemaSolidityType, err := server.schemaManager.SchemaToSolidityType(schema)
+
+	// Get a list of types for this schema. A list of types corresponds to the number
+	// of columns in a table.
+	schemaTypes, schemaTypesStr, err := server.schemaManager.SchemaToTypeList(schema)
+
 	if err != nil {
-		server.logger.Error("error while transforming schema to type", zap.Error(err))
+		server.logger.Error("error while transforming schema to type list", zap.Error(err))
 		return nil, err
 	}
-	server.logger.Info("using value type for table", zap.String("table", request.From), zap.String("type", schemaSolidityType.String()))
 
 	// Return data serialized either compressed or uncompressed (up to client).
 	//
@@ -72,65 +75,74 @@ func (server *MODEServer) Find(ctx context.Context, request *pb_mode.FindRequest
 	//
 	//     TODO: reach consensus with team if option (2) makes sense and have both available to use. Option 2 is
 	//     trivial if raw value is stored.
-	if Request_IsCompressed(request) {
-		compressedResponse, err := mode.SerializeToCompressed(rows, schemaSolidityType, request.From)
-		if err != nil {
-			return nil, err
-		}
-		server.logger.Info("find() rows returned compressed OK", zap.Int("count", len(compressedResponse.Rows)))
 
-		return &pb_mode.QueryLayerResponse{
-			IsCompressed:       true,
-			ResponseCompressed: compressedResponse,
-		}, nil
-	} else {
-		uncompressedResponse, err := mode.SerializeToUncompressed(rows, schemaSolidityType, request.From)
-		if err != nil {
-			return nil, err
-		}
-		server.logger.Info("find() rows returned uncompressed OK", zap.Int("count", len(uncompressedResponse.Rows)))
-
-		return &pb_mode.QueryLayerResponse{
-			IsCompressed:         false,
-			ResponseUncompressed: uncompressedResponse,
-		}, nil
+	queryResponse, err := mode.SerializeRows(rows, schemaTypes, schemaTypesStr)
+	if err != nil {
+		return nil, err
 	}
+	server.logger.Info("find() OK")
+
+	return queryResponse, nil
+
+	// if Request_IsCompressed(request) {
+	// 	compressedResponse, err := mode.SerializeToCompressed(rows, schemaSolidityType, request.From)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	server.logger.Info("find() rows returned compressed OK", zap.Int("count", len(compressedResponse.Rows)))
+
+	// 	return &pb_mode.QueryLayerResponse{
+	// 		IsCompressed:       true,
+	// 		ResponseCompressed: compressedResponse,
+	// 	}, nil
+	// } else {
+	// 	uncompressedResponse, err := mode.SerializeToUncompressed(rows, schemaSolidityType, request.From)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	server.logger.Info("find() rows returned uncompressed OK", zap.Int("count", len(uncompressedResponse.Rows)))
+
+	// 	return &pb_mode.QueryLayerResponse{
+	// 		IsCompressed:         false,
+	// 		ResponseUncompressed: uncompressedResponse,
+	// 	}, nil
+	// }
 }
 
-func (server *MODEServer) FindAll(ctx context.Context, request *pb_mode.FindAllRequest) (*pb_mode.QueryLayerResponse, error) {
-	// Find all available tables.
-	allTables, err := server.schemaManager.GetAllTables()
-	if err != nil {
-		server.logger.Error("error while getting all tables for findAll()", zap.Error(err))
-		return nil, err
-	}
+// func (server *MODEServer) FindAll(ctx context.Context, request *pb_mode.FindAllRequest) (*pb_mode.QueryLayerResponse, error) {
+// 	// Find all available tables.
+// 	allTables, err := server.schemaManager.GetAllTables()
+// 	if err != nil {
+// 		server.logger.Error("error while getting all tables for findAll()", zap.Error(err))
+// 		return nil, err
+// 	}
 
-	// Create a "builder" for the request. An up-to-date list of all tables
-	// is used to return the full state, if requested.
-	builder := mode.NewFindAllBuilder(request, allTables)
+// 	// Create a "builder" for the request. An up-to-date list of all tables
+// 	// is used to return the full state, if requested.
+// 	builder := mode.NewFindAllBuilder(request, allTables)
 
-	// Build a query from the request.
-	query, err := builder.ToQuery()
-	if err != nil {
-		server.logger.Error("error while building findAll() query", zap.Error(err))
-		return nil, err
-	}
-	server.logger.Info("built findAll() query from request", zap.String("query", query))
+// 	// Build a query from the request.
+// 	query, err := builder.ToQuery()
+// 	if err != nil {
+// 		server.logger.Error("error while building findAll() query", zap.Error(err))
+// 		return nil, err
+// 	}
+// 	server.logger.Info("built findAll() query from request", zap.String("query", query))
 
-	rows, err := server.db.Queryx(query)
-	if err != nil {
-		server.logger.Error("error while executing findAll() query", zap.String("query", query), zap.Error(err))
-		return nil, err
-	}
+// 	rows, err := server.db.Queryx(query)
+// 	if err != nil {
+// 		server.logger.Error("error while executing findAll() query", zap.String("query", query), zap.Error(err))
+// 		return nil, err
+// 	}
 
-	defer rows.Close()
+// 	defer rows.Close()
 
-	// TODO: decide on serialization of full state or raw vals.
+// 	// TODO: decide on serialization of full state or raw vals.
 
-	return &pb_mode.QueryLayerResponse{
-		IsCompressed: false,
-		ResponseUncompressed: &pb_mode.QueryLayerResponseUncompressed{
-			Rows: nil,
-		},
-	}, nil
-}
+// 	return &pb_mode.QueryLayerResponse{
+// 		IsCompressed: false,
+// 		ResponseUncompressed: &pb_mode.QueryLayerResponseUncompressed{
+// 			Rows: nil,
+// 		},
+// 	}, nil
+// }
