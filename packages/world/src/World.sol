@@ -246,16 +246,29 @@ contract World is StoreView {
     // Append msg.sender to the calldata
     bytes memory callData = abi.encodePacked(funcSelectorAndArgs, msgSender);
 
-    // Call the system using `delegatecall` for root systems and `call` for others
-    (bool success, bytes memory data) = delegate
-      ? systemAddress.delegatecall(callData) // root system
-      : systemAddress.call(callData); // non-root system
+    assembly {
+      // execute function call on the system usig `delegatecall` or `call` depending on the `delegate` flag
+      let result
+      switch delegate
+      case 0 {
+        result := call(gas(), systemAddress, callvalue(), callData, mload(callData), 0, 0) // non-root system
+      }
+      default {
+        result := delegatecall(gas(), systemAddress, callData, mload(callData), 0, 0) // root system
+      }
 
-    // Forward returndata
-    if (success) return data;
+      // get any return value
+      returndatacopy(0, 0, returndatasize())
 
-    // Forward error if the call failed
-    revert("Call failed"); // TODO forward originlal error
+      // return any return value or error back to the caller
+      switch result
+      case 0 {
+        revert(0, returndatasize())
+      }
+      default {
+        return(0, returndatasize())
+      }
+    }
   }
 }
 
