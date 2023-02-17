@@ -20,10 +20,19 @@ export interface Row {
   values: Uint8Array[];
 }
 
-export interface QueryLayerResponse {
+export interface GenericTable {
   cols: string[];
   rows: Row[];
   types: string[];
+}
+
+export interface QueryLayerResponse {
+  tables: { [key: string]: GenericTable };
+}
+
+export interface QueryLayerResponse_TablesEntry {
+  key: string;
+  value: GenericTable | undefined;
 }
 
 export interface QueryLayerResponseUncompressed {
@@ -211,12 +220,12 @@ export const Row = {
   },
 };
 
-function createBaseQueryLayerResponse(): QueryLayerResponse {
+function createBaseGenericTable(): GenericTable {
   return { cols: [], rows: [], types: [] };
 }
 
-export const QueryLayerResponse = {
-  encode(message: QueryLayerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const GenericTable = {
+  encode(message: GenericTable, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     for (const v of message.cols) {
       writer.uint32(10).string(v!);
     }
@@ -229,10 +238,10 @@ export const QueryLayerResponse = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): GenericTable {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryLayerResponse();
+    const message = createBaseGenericTable();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -253,11 +262,104 @@ export const QueryLayerResponse = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<QueryLayerResponse>): QueryLayerResponse {
-    const message = createBaseQueryLayerResponse();
+  fromPartial(object: DeepPartial<GenericTable>): GenericTable {
+    const message = createBaseGenericTable();
     message.cols = object.cols?.map((e) => e) || [];
     message.rows = object.rows?.map((e) => Row.fromPartial(e)) || [];
     message.types = object.types?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseQueryLayerResponse(): QueryLayerResponse {
+  return { tables: {} };
+}
+
+export const QueryLayerResponse = {
+  encode(message: QueryLayerResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    Object.entries(message.tables).forEach(([key, value]) => {
+      QueryLayerResponse_TablesEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).ldelim();
+    });
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryLayerResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          const entry1 = QueryLayerResponse_TablesEntry.decode(reader, reader.uint32());
+          if (entry1.value !== undefined) {
+            message.tables[entry1.key] = entry1.value;
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryLayerResponse>): QueryLayerResponse {
+    const message = createBaseQueryLayerResponse();
+    message.tables = Object.entries(object.tables ?? {}).reduce<{ [key: string]: GenericTable }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = GenericTable.fromPartial(value);
+        }
+        return acc;
+      },
+      {}
+    );
+    return message;
+  },
+};
+
+function createBaseQueryLayerResponse_TablesEntry(): QueryLayerResponse_TablesEntry {
+  return { key: "", value: undefined };
+}
+
+export const QueryLayerResponse_TablesEntry = {
+  encode(message: QueryLayerResponse_TablesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== undefined) {
+      GenericTable.encode(message.value, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerResponse_TablesEntry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryLayerResponse_TablesEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = GenericTable.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryLayerResponse_TablesEntry>): QueryLayerResponse_TablesEntry {
+    const message = createBaseQueryLayerResponse_TablesEntry();
+    message.key = object.key ?? "";
+    message.value =
+      object.value !== undefined && object.value !== null ? GenericTable.fromPartial(object.value) : undefined;
     return message;
   },
 };

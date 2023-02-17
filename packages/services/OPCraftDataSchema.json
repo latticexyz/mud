@@ -56,7 +56,7 @@
                 "postgres": "bytea"
             }
         },
-        "component_ownedBy": {
+        "component_ownedby": {
             "value": {
                 "solidity": "uint256",
                 "postgres": "text"

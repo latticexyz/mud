@@ -1,8 +1,11 @@
 package mode
 
 import (
+	"latticexyz/mud/packages/services/pkg/db"
 	"latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
+
+	"github.com/jmoiron/sqlx"
 )
 
 // grpcurl -plaintext -d '{"tables": ["component_stake"]}' localhost:50091 mode.QueryLayer/FindAll
@@ -12,11 +15,29 @@ type FindAllBuilder struct {
 	AllTables []string
 }
 
-func NewFindAllBuilder(request *mode.FindAllRequest, allTables []string) *FindAllBuilder {
+func NewFindAllBuilder(request *mode.FindAllRequest, _db *sqlx.DB) (*FindAllBuilder, error) {
+	// An up-to-date list of all tables is used to return the full state, if requested.
+	allTables, err := db.GetAllTables(_db)
+	if err != nil {
+		return nil, err
+	}
+
 	return &FindAllBuilder{
 		Request:   request,
 		AllTables: allTables,
+	}, nil
+}
+
+func (builder *FindAllBuilder) TableList() (tableList []string) {
+	// If the FindAll request has specified tables which to find(),
+	// build the "FROM" based on those tables, otherwise build
+	// a "FROM" for every table.
+	if len(builder.Request.Tables) == 0 {
+		tableList = builder.AllTables
+	} else {
+		tableList = builder.Request.Tables
 	}
+	return
 }
 
 func (builder *FindAllBuilder) Validate() error {
@@ -28,22 +49,8 @@ func (builder *FindAllBuilder) BuildProjection() string {
 }
 
 func (builder *FindAllBuilder) BuildFrom() string {
-	request := builder.Request
-
 	var query strings.Builder
-
-	// If the FindAll request has specified tables which to find(),
-	// build the "FROM" based on those tables, otherwise build
-	// a "FROM" for every table.
-	var tableList []string
-
-	if len(request.Tables) == 0 {
-		tableList = builder.AllTables
-	} else {
-		tableList = request.Tables
-	}
-
-	for idx, tableName := range tableList {
+	for idx, tableName := range builder.TableList() {
 		// For initial table the clause is FROM.
 		if idx == 0 {
 			query.WriteString(" FROM ")
@@ -58,7 +65,7 @@ func (builder *FindAllBuilder) BuildFrom() string {
 
 // TODO: if favorable comments about query structure, then can refactor this to return an
 // intermediary representation of MODE "stage" to reuse code for JOINs, etc.
-func (builder *FindAllBuilder) ToQuery() (string, error) {
+func (builder *FindAllBuilder) ToSQLQuery() (string, error) {
 	err := builder.Validate()
 	if err != nil {
 		return "", err
@@ -70,4 +77,19 @@ func (builder *FindAllBuilder) ToQuery() (string, error) {
 	query.WriteString(builder.BuildFrom())
 
 	return query.String(), nil
+}
+
+func (builder *FindAllBuilder) ToSQLQueryList() (queries []string, tableList []string, err error) {
+	err = builder.Validate()
+	if err != nil {
+		return
+	}
+
+	for _, tableName := range builder.TableList() {
+		var query strings.Builder
+		query.WriteString("SELECT * FROM " + tableName)
+		queries = append(queries, query.String())
+		tableList = append(tableList, tableName)
+	}
+	return
 }
