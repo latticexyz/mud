@@ -18,7 +18,7 @@
     "test": "echo \"TODO\""
   },
   "dependencies": {
-    "create-create-app": "git+https://github.com/holic/create-create-app#8191d0c89c3620940c21bad35786b1f0a3b0e9fc"
+    "create-create-app": "git+https://github.com/holic/create-create-app#e5c8bb449033418ad8518fc73f72c1a07eab2577"
   },
   "devDependencies": {
     "@types/node": "^17.0.29",
