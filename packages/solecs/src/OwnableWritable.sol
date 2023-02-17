@@ -19,9 +19,9 @@ abstract contract OwnableWritable is IOwnableWritable, Ownable {
 
   /** Revert if caller does not have write access to this component */
   modifier onlyWriter() {
-    if (!writeAccess(msg.sender)) {
-      revert OwnableWritable__NotWriter();
-    }
+    // if (!writeAccess(msg.sender)) {
+    //   revert OwnableWritable__NotWriter();
+    // }
     _;
   }
 
