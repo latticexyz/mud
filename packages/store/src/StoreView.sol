@@ -37,7 +37,7 @@ contract StoreView is Store {
     revert StoreView_NotImplemented();
   }
 
-  function deleteRecord(uint256, bytes32[] memory) public virtual {
+  function deleteRecord(uint256, bytes32[] calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 }

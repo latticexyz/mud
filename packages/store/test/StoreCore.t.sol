@@ -45,7 +45,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   // Expose an external deleteRecord function for testing purposes of indexers (see testHooks)
-  function deleteRecord(uint256 table, bytes32[] memory key) public override {
+  function deleteRecord(uint256 table, bytes32[] calldata key) public override {
     StoreCore.deleteRecord(table, key);
   }
 
