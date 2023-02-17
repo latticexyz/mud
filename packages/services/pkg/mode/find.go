@@ -79,7 +79,7 @@ func (builder *FindBuilder) BuildProjection() string {
 
 // TODO: if favorable comments about query structure, then can refactor this to return an
 // intermediary representation of MODE "stage" to reuse code for JOINs, etc.
-func (builder *FindBuilder) ToQuery() (string, error) {
+func (builder *FindBuilder) ToSQLQuery() (string, error) {
 	err := builder.Validate()
 	if err != nil {
 		return "", err

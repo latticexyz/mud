@@ -2,71 +2,43 @@ package mode
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
-	"latticexyz/mud/packages/services/protobuf/go/mode"
 	"log"
 	"strings"
 
-	"github.com/ethereum/go-ethereum/ethclient"
-	"github.com/jmoiron/sqlx"
 	"github.com/umbracle/ethgo/abi"
-	"go.uber.org/zap"
 )
 
-type SchemaManager struct {
-	eth    *ethclient.Client
-	db     *sqlx.DB
-	logger *zap.Logger
+// func GetAllTables() ([]string, error) {
+// 	var tableNames []string
 
-	tableToSoliditySchema map[string]Schema
-}
+// 	rows, err := manager.db.Query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
+// 	if err != nil {
+// 		return tableNames, err
+// 	}
+// 	defer rows.Close()
 
-type SchemaType uint
+// 	for rows.Next() {
+// 		var tableName string
+// 		err := rows.Scan(&tableName)
+// 		if err != nil {
+// 			log.Fatal(err)
+// 		}
+// 		tableNames = append(tableNames, tableName)
+// 	}
+// 	if err := rows.Err(); err != nil {
+// 		return tableNames, err
+// 	}
 
-// TODO: how to avoid duplicating solidity-side schema work?
-const (
-	None SchemaType = iota
-	Uint8
-	Uint16
-	Uint32
-	Uint128
-	Uint256
-	Bytes4
-	Uint32Array
-	Bytes24Array
-	String
-	Address
-	AddressArray
-)
+// 	return tableNames, nil
+// }
 
-type SchemaPair struct {
-	field_name string
-	field_type string
-}
+///
+/// Data Schema
+///
 
-type Schema struct {
-	types []SchemaPair
-}
-
-func NewSchemaManager(eth *ethclient.Client, db *sqlx.DB, logger *zap.Logger, schemaDataPath string) *SchemaManager {
-	return &SchemaManager{
-		eth:                   eth,
-		db:                    db,
-		logger:                logger,
-		tableToSoliditySchema: BuildTableSoliditySchema(ParseDataSchemaFile(schemaDataPath)),
-	}
-}
-
-type DataSchema struct {
-	ComponentMapping             map[string]string            `json:"component_keccak_mapping"`
-	ComponentValueSchema         map[string]map[string]string `json:"component_value_schema"`
-	ComponentValueSchemaSolidity map[string]map[string]string `json:"component_value_schema_solidity"`
-	ComponentSolidityTypeMapping map[string]string            `json:"component_solidity_type_mapping"`
-}
-
-func ParseDataSchemaFile(path string) DataSchema {
-	content, err := ioutil.ReadFile(path)
+func NewDataSchemaFromJSON(jsonPath string) *DataSchema {
+	content, err := ioutil.ReadFile(jsonPath)
 	if err != nil {
 		log.Fatal("error when opening file: ", err)
 	}
@@ -76,121 +48,68 @@ func ParseDataSchemaFile(path string) DataSchema {
 	if err != nil {
 		log.Fatal("error unmarshalling: ", err)
 	}
-	return dataSchema
+	return &dataSchema
 }
 
-func BuildTableSoliditySchema(dataSchema DataSchema) map[string]Schema {
-	tableSchemas := map[string]Schema{}
-	for tableName, schema := range dataSchema.ComponentValueSchemaSolidity {
-		types := []SchemaPair{}
-		for field := range schema {
-			fieldType := schema[field]
-			types = append(types, SchemaPair{
-				field_name: field,
-				field_type: fieldType,
-			})
+func (dataSchema *DataSchema) BuildTableSchemas() map[string]*TableSchema {
+	tableSchemas := map[string]*TableSchema{}
+	for tableName, schema := range dataSchema.ComponentValueSchema {
+		tableSchema := &TableSchema{
+			TableName:     tableName,
+			FieldNames:    []string{},
+			SolidityTypes: map[string]string{},
+			PostgresTypes: map[string]string{},
 		}
-		tableSchemas[tableName] = Schema{
-			types: types,
+
+		// Handle the default fields.
+		for fieldName, typePair := range dataSchema.ComponentDefaultSchema {
+			tableSchema.FieldNames = append(tableSchema.FieldNames, fieldName)
+			tableSchema.SolidityTypes[fieldName] = typePair.SolidityType
+			tableSchema.PostgresTypes[fieldName] = typePair.PostgresType
 		}
+
+		// Handle all of the "value" fields.
+		for fieldName, typePair := range schema {
+			tableSchema.FieldNames = append(tableSchema.FieldNames, fieldName)
+			tableSchema.SolidityTypes[fieldName] = typePair.SolidityType
+			tableSchema.PostgresTypes[fieldName] = typePair.PostgresType
+		}
+		tableSchemas[tableName] = tableSchema
 	}
 	return tableSchemas
 }
 
-func SchemaTypesWithProject(schemaTypes []SchemaPair, project []*mode.ProjectedField) (projectedSchemaTypes []SchemaPair) {
-	// No projects is equivalent to keeping everything.
-	if len(project) == 0 {
-		return schemaTypes
-	}
+///
+/// Table Schema
+///
 
-	// Filter out fields based on projection.
-	projectSet := map[string]bool{}
-	for _, projectedField := range project {
-		projectSet[projectedField.Field.TableField] = true
-	}
-
-	for _, schemaType := range schemaTypes {
-		_, ok := projectSet[schemaType.field_name]
-		if ok {
-			projectedSchemaTypes = append(projectedSchemaTypes, schemaType)
-		}
-	}
-	return
-}
-
-func (manager *SchemaManager) SchemaToTypeList(schema *Schema, project []*mode.ProjectedField) ([]*abi.Type, []string, error) {
+func (schema *TableSchema) GetEncodingTypes(fieldNames []string) ([]*abi.Type, []string) {
 	_types := []*abi.Type{}
 	_typesStr := []string{}
-
-	// Add the "default" schema fields e.g. "entityid".
-	defaultSchemaPart := []SchemaPair{
-		{field_name: "entityid", field_type: "uint256"},
-	}
-	// for _, schemaPair := range defaultSchemaPart {
-	// 	_typeDefault := abi.MustNewType(schemaPair.field_type)
-	// 	_types = append(_types, _typeDefault)
-	// 	_typesStr = append(_typesStr, _typeDefault.String())
-	// }
-
-	for _, _type := range SchemaTypesWithProject(append(schema.types, defaultSchemaPart...), project) {
-		_type := abi.MustNewType(_type.field_type)
+	for _, fieldName := range fieldNames {
+		_type := abi.MustNewType(schema.SolidityTypes[fieldName])
 		_types = append(_types, _type)
 		_typesStr = append(_typesStr, _type.String())
 	}
-
-	return _types, _typesStr, nil
+	return _types, _typesStr
 }
 
-func (manager *SchemaManager) SchemaToType(schema *Schema) (*abi.Type, string, error) {
-	if len(schema.types) == 0 {
-		return nil, "", fmt.Errorf("no types in schema")
-	}
-	if len(schema.types) == 1 {
-		_type := abi.MustNewType(schema.types[0].field_type)
-		return _type, _type.String(), nil
-	}
+func (schema *TableSchema) GetEncodingTypesAll() ([]*abi.Type, []string) {
+	return schema.GetEncodingTypes(schema.FieldNames)
+}
+
+// TODO: a version of this function is useful when sending over "raw" values.
+func (schema *TableSchema) ToSolidityTupleString() string {
 	var tuple strings.Builder
 	tuple.WriteString("tuple(")
-	for idx, _type := range schema.types {
-		tuple.WriteString(_type.field_type + " " + _type.field_name)
-		if idx < len(schema.types)-1 {
+	idx := 0
+	for fieldName, solidityType := range schema.SolidityTypes {
+		tuple.WriteString(solidityType + " " + fieldName)
+		if idx < len(schema.SolidityTypes)-1 {
 			tuple.WriteString(", ")
 		}
+		idx++
 	}
 	tuple.WriteString(")")
-	println(tuple.String())
-
-	_type := abi.MustNewType(tuple.String())
-	return _type, _type.String(), nil
-}
-
-func (manager *SchemaManager) GetSoliditySchema(tableName string) *Schema {
-	// TODO actual schema fetch with a call via ethclient.
-	// Also, consider saving schemas locally in MODE DB instead of having to re-fetch.
-	schema := manager.tableToSoliditySchema[tableName]
-	return &schema
-}
-
-func (manager *SchemaManager) GetAllTables() ([]string, error) {
-	var tableNames []string
-
-	rows, err := manager.db.Query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
-	if err != nil {
-		return tableNames, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		var tableName string
-		err := rows.Scan(&tableName)
-		if err != nil {
-			log.Fatal(err)
-		}
-		tableNames = append(tableNames, tableName)
-	}
-	if err := rows.Err(); err != nil {
-		return tableNames, err
-	}
-
-	return tableNames, nil
+	return tuple.String()
 }

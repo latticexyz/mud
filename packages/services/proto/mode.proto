@@ -22,7 +22,7 @@ message Row {
 message QueryLayerResponse {
     repeated string cols = 1;
     repeated Row rows = 2;
-    repeated string schema = 3;
+    repeated string types = 3;
 }
 
 message QueryLayerResponseUncompressed {

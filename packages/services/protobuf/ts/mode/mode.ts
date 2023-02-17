@@ -23,7 +23,7 @@ export interface Row {
 export interface QueryLayerResponse {
   cols: string[];
   rows: Row[];
-  schema: string[];
+  types: string[];
 }
 
 export interface QueryLayerResponseUncompressed {
@@ -212,7 +212,7 @@ export const Row = {
 };
 
 function createBaseQueryLayerResponse(): QueryLayerResponse {
-  return { cols: [], rows: [], schema: [] };
+  return { cols: [], rows: [], types: [] };
 }
 
 export const QueryLayerResponse = {
@@ -223,7 +223,7 @@ export const QueryLayerResponse = {
     for (const v of message.rows) {
       Row.encode(v!, writer.uint32(18).fork()).ldelim();
     }
-    for (const v of message.schema) {
+    for (const v of message.types) {
       writer.uint32(26).string(v!);
     }
     return writer;
@@ -243,7 +243,7 @@ export const QueryLayerResponse = {
           message.rows.push(Row.decode(reader, reader.uint32()));
           break;
         case 3:
-          message.schema.push(reader.string());
+          message.types.push(reader.string());
           break;
         default:
           reader.skipType(tag & 7);
@@ -257,7 +257,7 @@ export const QueryLayerResponse = {
     const message = createBaseQueryLayerResponse();
     message.cols = object.cols?.map((e) => e) || [];
     message.rows = object.rows?.map((e) => Row.fromPartial(e)) || [];
-    message.schema = object.schema?.map((e) => e) || [];
+    message.types = object.types?.map((e) => e) || [];
     return message;
   },
 };
