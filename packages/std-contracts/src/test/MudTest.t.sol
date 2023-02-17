@@ -1,10 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { DSTest } from "ds-test/test.sol";
 import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { IUint256Component } from "solecs/interfaces/IUint256Component.sol";
-import { Vm } from "forge-std/Vm.sol";
+import { Test } from "forge-std/Test.sol";
 import { getAddressById } from "solecs/utils.sol";
 import { SystemStorage } from "solecs/SystemStorage.sol";
 import { console } from "forge-std/console.sol";
@@ -14,8 +13,7 @@ interface IDeploy {
   function deploy(address deployer) external returns (IWorld world);
 }
 
-contract MudTest is DSTest {
-  Vm internal immutable vm = Vm(HEVM_ADDRESS);
+contract MudTest is Test {
   Utilities internal immutable utils = new Utilities();
 
   address payable internal alice;
@@ -41,8 +39,14 @@ contract MudTest is DSTest {
     return getAddressById(systems, id);
   }
 
+  modifier prank(address sender) {
+    vm.startPrank(sender);
+    _;
+    vm.stopPrank();
+  }
+
   function setUp() public virtual {
-    deployer = utils.getNextUserAddress();
+    deployer = msg.sender;
     world = deploy.deploy(deployer);
 
     components = world.components();
