@@ -14,16 +14,16 @@ contract StoreView is IStore {
     StoreCore.initialize();
   }
 
-  function getSchema(bytes32 table) public view virtual returns (Schema schema) {
+  function getSchema(uint256 table) public view virtual returns (Schema schema) {
     schema = StoreCore.getSchema(table);
   }
 
-  function registerSchema(bytes32, Schema) public virtual {
+  function registerSchema(uint256, Schema) public virtual {
     revert StoreView_NotImplemented();
   }
 
   function setRecord(
-    bytes32,
+    uint256,
     bytes32[] memory,
     bytes memory
   ) public virtual {
@@ -32,7 +32,7 @@ contract StoreView is IStore {
 
   // Set partial data at schema index
   function setField(
-    bytes32,
+    uint256,
     bytes32[] memory,
     uint8,
     bytes memory
@@ -40,22 +40,22 @@ contract StoreView is IStore {
     revert StoreView_NotImplemented();
   }
 
-  function registerHook(bytes32, IStoreHook) public virtual {
+  function registerHook(uint256, IStoreHook) public virtual {
     revert StoreView_NotImplemented();
   }
 
-  function deleteRecord(bytes32, bytes32[] memory) public virtual {
+  function deleteRecord(uint256, bytes32[] memory) public virtual {
     revert StoreView_NotImplemented();
   }
 
   // Get full record (including full array, load schema from storage)
-  function getRecord(bytes32 table, bytes32[] memory key) public view virtual returns (bytes memory data) {
+  function getRecord(uint256 table, bytes32[] memory key) public view virtual returns (bytes memory data) {
     data = StoreCore.getRecord(table, key);
   }
 
   // Get full record (including full array)
   function getRecord(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     Schema schema
   ) public view virtual returns (bytes memory data) {
@@ -64,7 +64,7 @@ contract StoreView is IStore {
 
   // Get partial data at schema index
   function getField(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     uint8 schemaIndex
   ) public view virtual returns (bytes memory data) {

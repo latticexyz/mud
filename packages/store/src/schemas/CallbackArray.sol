@@ -26,17 +26,17 @@ library CallbackArray_ {
   }
 
   /** Register the table's schema */
-  function registerSchema(bytes32 tableId) internal {
+  function registerSchema(uint256 tableId) internal {
     StoreSwitch.registerSchema(tableId, getSchema());
   }
 
-  function registerSchema(bytes32 tableId, IStore store) internal {
+  function registerSchema(uint256 tableId, IStore store) internal {
     store.registerSchema(tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     bytes24[] memory callbacks
   ) internal {
@@ -51,7 +51,7 @@ library CallbackArray_ {
    * TODO: this is super inefficient right now, need to add support for pushing to arrays to the store core library to avoid reading/writing the entire array
    */
   function push(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     bytes24 callback
   ) internal {
@@ -62,7 +62,7 @@ library CallbackArray_ {
   }
 
   /** Get the table's data */
-  function get(bytes32 tableId, bytes32 key) internal view returns (bytes24[] memory callbacks) {
+  function get(uint256 tableId, bytes32 key) internal view returns (bytes24[] memory callbacks) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
@@ -70,7 +70,7 @@ library CallbackArray_ {
   }
 
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     IStore store,
     bytes32 key
   ) internal view returns (bytes24[] memory callbacks) {

@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import { StoreView } from "../../src/StoreView.sol";
 import { CallbackArray, CallbackArray_ } from "../../src/schemas/CallbackArray.sol";
 
-bytes32 constant tableId = keccak256("mud.store.table.callbackArray");
+uint256 constant tableId = uint256(keccak256("mud.store.table.callbackArray"));
 
 contract CallbackArrayTest is Test, StoreView {
   function testSetAndGet() public {

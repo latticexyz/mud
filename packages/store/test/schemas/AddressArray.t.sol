@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import { StoreView } from "../../src/StoreView.sol";
 import { AddressArray, AddressArray_ } from "../../src/schemas/AddressArray.sol";
 
-bytes32 constant tableId = keccak256("mud.store.table.addressArray");
+uint256 constant tableId = uint256(keccak256("mud.store.table.addressArray"));
 
 contract AddressArrayTest is Test, StoreView {
   function testSetAndGet() public {

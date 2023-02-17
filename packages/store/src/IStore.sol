@@ -5,48 +5,48 @@ import { SchemaType } from "./Types.sol";
 import { Schema } from "./Schema.sol";
 
 interface IStore {
-  event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
-  event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
-  event StoreDeleteRecord(bytes32 table, bytes32[] key);
+  event StoreSetRecord(uint256 table, bytes32[] key, bytes data);
+  event StoreSetField(uint256 table, bytes32[] key, uint8 schemaIndex, bytes data);
+  event StoreDeleteRecord(uint256 table, bytes32[] key);
 
-  function registerSchema(bytes32 table, Schema schema) external;
+  function registerSchema(uint256 table, Schema schema) external;
 
-  function getSchema(bytes32 table) external view returns (Schema schema);
+  function getSchema(uint256 table) external view returns (Schema schema);
 
   // Set full record (including full dynamic data)
   function setRecord(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     bytes memory data
   ) external;
 
   // Set partial data at schema index
   function setField(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data
   ) external;
 
   // Register hooks to be called when a record or field is set or deleted
-  function registerHook(bytes32 table, IStoreHook hooks) external;
+  function registerHook(uint256 table, IStoreHook hooks) external;
 
   // Set full record (including full dynamic data)
-  function deleteRecord(bytes32 table, bytes32[] memory key) external;
+  function deleteRecord(uint256 table, bytes32[] memory key) external;
 
   // Get full record (including full array, load table schema from storage)
-  function getRecord(bytes32 table, bytes32[] memory key) external view returns (bytes memory data);
+  function getRecord(uint256 table, bytes32[] memory key) external view returns (bytes memory data);
 
   // Get full record (including full array)
   function getRecord(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     Schema schema
   ) external view returns (bytes memory data);
 
   // Get partial data at schema index
   function getField(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     uint8 schemaIndex
   ) external view returns (bytes memory data);
@@ -58,17 +58,17 @@ interface IStore {
 
 interface IStoreHook {
   function onSetRecord(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     bytes memory data
   ) external;
 
   function onSetField(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data
   ) external;
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key) external;
+  function onDeleteRecord(uint256 table, bytes32[] memory key) external;
 }

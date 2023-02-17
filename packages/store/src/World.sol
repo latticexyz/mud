@@ -19,12 +19,12 @@ contract World is StoreView {
     registerSchema(RouteId, RouteTable.getSchema());
   }
 
-  function registerSchema(bytes32 table, Schema schema) public override {
+  function registerSchema(uint256 table, Schema schema) public override {
     StoreCore.registerSchema(table, schema);
   }
 
   function setRecord(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     bytes memory data
   ) public override {
@@ -32,7 +32,7 @@ contract World is StoreView {
   }
 
   function setField(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data

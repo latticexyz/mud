@@ -26,17 +26,17 @@ library Vector2_ {
   }
 
   /** Register the table's schema */
-  function registerSchema(bytes32 tableId) internal {
+  function registerSchema(uint256 tableId) internal {
     StoreSwitch.registerSchema(tableId, getSchema());
   }
 
-  function registerSchema(bytes32 tableId, IStore store) internal {
+  function registerSchema(uint256 tableId, IStore store) internal {
     store.registerSchema(tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     uint32 x,
     uint32 y
@@ -48,7 +48,7 @@ library Vector2_ {
   }
 
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     Vector2 memory vec2
   ) internal {
@@ -56,7 +56,7 @@ library Vector2_ {
   }
 
   function setX(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     uint32 x
   ) internal {
@@ -66,7 +66,7 @@ library Vector2_ {
   }
 
   function setY(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     uint32 y
   ) internal {
@@ -76,7 +76,7 @@ library Vector2_ {
   }
 
   /** Get the table's data */
-  function get(bytes32 tableId, bytes32 key) internal view returns (Vector2 memory vec2) {
+  function get(uint256 tableId, bytes32 key) internal view returns (Vector2 memory vec2) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
@@ -84,7 +84,7 @@ library Vector2_ {
   }
 
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     IStore store,
     bytes32 key
   ) internal view returns (Vector2 memory vec2) {
