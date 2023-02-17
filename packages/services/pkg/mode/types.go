@@ -1,15 +1,5 @@
 package mode
 
-import (
-	"latticexyz/mud/packages/services/protobuf/go/mode"
-)
-
-type GenericTable struct {
-	Cols  []string
-	Rows  []*mode.Row
-	Types []string
-}
-
 type TableSchema struct {
 	TableName     string
 	FieldNames    []string

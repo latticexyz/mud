@@ -46,7 +46,7 @@ func SerializeRow(row []string, colNames []string, colEncodingTypes []*abi.Type)
 	}, nil
 }
 
-func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema) (*mode.QueryLayerResponse, error) {
+func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema) (*mode.GenericTable, error) {
 	tsStart := time.Now()
 
 	colNames, row, rowInterface := PrepareForScan(rows)
@@ -70,9 +70,9 @@ func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema) (*mode.QueryLayerR
 
 	// Record how long the serialization took.
 	tsElapsed := time.Since(tsStart)
-	logger.GetLogger().Info("serialization finished", zap.String("time taken", tsElapsed.String()))
+	logger.GetLogger().Info("serialization finished", zap.String("time taken", tsElapsed.String()), zap.String("table", tableSchema.TableName))
 
-	return &mode.QueryLayerResponse{
+	return &mode.GenericTable{
 		Cols:  colNames,
 		Rows:  serializedRows,
 		Types: colEncodingTypesStrings,

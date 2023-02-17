@@ -19,10 +19,14 @@ message Row {
     repeated bytes values = 2;
 }
 
-message QueryLayerResponse {
+message GenericTable {
     repeated string cols = 1;
     repeated Row rows = 2;
-    repeated string types = 3;
+    repeated string types = 3; 
+}
+
+message QueryLayerResponse {
+    map<string, GenericTable> tables = 1;
 }
 
 message QueryLayerResponseUncompressed {

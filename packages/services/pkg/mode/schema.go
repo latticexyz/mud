@@ -9,30 +9,6 @@ import (
 	"github.com/umbracle/ethgo/abi"
 )
 
-// func GetAllTables() ([]string, error) {
-// 	var tableNames []string
-
-// 	rows, err := manager.db.Query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
-// 	if err != nil {
-// 		return tableNames, err
-// 	}
-// 	defer rows.Close()
-
-// 	for rows.Next() {
-// 		var tableName string
-// 		err := rows.Scan(&tableName)
-// 		if err != nil {
-// 			log.Fatal(err)
-// 		}
-// 		tableNames = append(tableNames, tableName)
-// 	}
-// 	if err := rows.Err(); err != nil {
-// 		return tableNames, err
-// 	}
-
-// 	return tableNames, nil
-// }
-
 ///
 /// Data Schema
 ///
