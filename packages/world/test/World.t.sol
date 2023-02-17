@@ -10,13 +10,38 @@ import { RouteAccessSchemaLib } from "../src/schemas/RouteAccess.sol";
 import { SystemTable } from "../src/tables/SystemTable.sol";
 import { BoolSchemaLib } from "../src/schemas/Bool.sol";
 
+struct WorldTestSystemReturn {
+  address sender;
+  bytes32 input;
+}
+
 contract WorldTestSystem is System {
-  function msgSender() public pure returns (address) {
+  error WorldTestSystemError(string err);
+
+  function msgSender() public view returns (address) {
+    console.log("msgsender", _msgSender());
     return _msgSender();
   }
 
-  function execute(bytes32) public pure returns (address) {
-    return _msgSender();
+  function echo(bytes32 input) public pure returns (WorldTestSystemReturn memory) {
+    return WorldTestSystemReturn(_msgSender(), input);
+  }
+
+  function err(string memory input) public pure {
+    revert WorldTestSystemError(input);
+  }
+
+  function delegateCallSubSystem(address subSystem, bytes memory funcSelectorAndCalldata)
+    public
+    returns (bytes memory)
+  {
+    (bool success, bytes memory returndata) = subSystem.delegatecall(funcSelectorAndCalldata);
+    if (!success) {
+      assembly {
+        revert(add(32, returndata), mload(returndata))
+      }
+    }
+    return returndata;
   }
 }
 
@@ -191,24 +216,65 @@ contract WorldTest is Test {
 
     // Call a system function without arguments via the World
     bytes memory result = world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+    // assertEq(result, address(this));
 
     // Expect the system to have received the caller's address
     assertEq(address(uint160(uint256(bytes32(result)))), address(this));
 
     // Call a system function with arguments via the World
-    result = world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.execute.selector, bytes32(0)));
+    result = world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.echo.selector, bytes32(uint256(0x123))));
 
-    // Expect the system to have received the caller's address
-    assertEq(address(uint160(uint256(bytes32(result)))), address(this));
+    // Expect the return data to be decodable as a tuple
+    (address returnedAddress, bytes32 returnedBytes32) = abi.decode(result, (address, bytes32));
+    assertEq(returnedAddress, address(this));
+    assertEq(returnedBytes32, bytes32(uint256(0x123)));
 
-    // Expect an error when trying to call from an address that doesn't have access
+    // Expect the return data to be decodable as a tuple
+    WorldTestSystemReturn memory returnStruct = abi.decode(result, (WorldTestSystemReturn));
+    assertEq(returnStruct.sender, address(this));
+    assertEq(returnStruct.input, bytes32(uint256(0x123)));
+
+    // Expect an error when trying to call a private system from an address that doesn't have access
     vm.startPrank(address(0x01));
     vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSystem", address(0x01)));
     world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
     vm.stopPrank();
 
-    // TODO: register a system at a non-root route and expect calling to to work as well
+    // Expect errors from the system to be forwarded
+    vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
+    world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.err.selector, "test error"));
+
+    // Register a system at a subroute
+    WorldTestSystem subSystem = new WorldTestSystem();
+    world.registerSystem("/testSystem", "/testSubSystem", subSystem, false);
+
+    // Call the subsystem via the World (with access to the base route)
+    returnedAddress = abi.decode(
+      world.call("/testSystem", "/testSubSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector)),
+      (address)
+    );
+    assertEq(returnedAddress, address(this));
+
+    // Call the subsystem via delegatecall from the system
+    // (Note: just for testing purposes, in reality systems can call subsystems directly instead of via two indirections like here)
+    bytes memory nestedReturndata = world.call(
+      "/testSystem",
+      abi.encodeWithSelector(
+        WorldTestSystem.delegateCallSubSystem.selector, // Function in system
+        address(subSystem), // Address of subsystem
+        abi.encodePacked(WorldTestSystem.msgSender.selector, address(this)) // Function in subsystem
+      )
+    );
+
+    returnedAddress = abi.decode(abi.decode(nestedReturndata, (bytes)), (address));
+    assertEq(returnedAddress, address(this), "subsystem returned wrong address");
   }
 
   // TODO: add a test for systems writing to tables via the World
+
+  function testHashEquality() public {
+    // bytes32 h1 = keccak256("testHashEquality");
+    // bytes32 h2 = keccak256(abi.encodePacked(bytes32("testHashEquality")));
+    // assertEq(h1, h2);
+  }
 }
