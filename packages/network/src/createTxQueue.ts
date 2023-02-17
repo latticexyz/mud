@@ -227,14 +227,30 @@ export function createTxQueue<C extends Contracts>(
           error &&
           (("code" in error && error.code === "NONCE_EXPIRED") ||
             JSON.stringify(error).includes("transaction already imported"));
+        const incorrectGasEstimation =
+          error &&
+          (JSON.stringify(error).includes("gas required exceeds allowance") ||
+            JSON.stringify(error).includes("intrinsic gas too low"));
         console.log(
           `[TXQueue] TX Sent (error=${!!error}, isMutationError=${!!isNonViewTransaction} incNonce=${!!shouldIncreaseNonce} resetNonce=${!!shouldResetNonce})`
         );
-        // Nonce handeling
-        if (shouldIncreaseNonce) incNonce();
+
         if (shouldResetNonce) await resetNonce();
-        // Bubble up error
-        if (error) txRequest.cancel(error);
+        const canRetry = incorrectGasEstimation || shouldResetNonce;
+
+        if (canRetry) {
+          queue.add(uuid(), {
+            execute: txRequest.execute,
+            estimateGas: txRequest.estimateGas,
+            cancel: txRequest.cancel,
+            stateMutability,
+          });
+        } else {
+          // Bubble up error
+          if (error) txRequest.cancel(error);
+          // Nonce handeling
+          if (shouldIncreaseNonce) incNonce();
+        }
       }
     });
 
