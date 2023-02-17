@@ -25,9 +25,10 @@ export function createTxQueue<C extends Contracts>(
   computedContracts: IComputedValue<C> | IObservableValue<C>,
   network: Network,
   gasPrice$: BehaviorSubject<number>,
-  options?: { concurrency?: number; devMode?: boolean }
+  options?: { concurrency?: number; devMode?: boolean; maxRetries?: number }
 ): { txQueue: TxQueue<C>; dispose: () => void; ready: IComputedValue<boolean | undefined> } {
   const { concurrency } = options || {};
+  const maxRetries = options?.maxRetries ?? 3;
 
   const queue = createPriorityQueue<{
     execute: (
@@ -37,6 +38,7 @@ export function createTxQueue<C extends Contracts>(
     estimateGas: () => BigNumberish | Promise<BigNumberish>;
     cancel: (error: any) => void;
     stateMutability?: string;
+    retryCount: number;
   }>();
   const submissionMutex = new Mutex();
   const _nonce = observable.box<number | null>(null);
@@ -166,6 +168,7 @@ export function createTxQueue<C extends Contracts>(
       estimateGas,
       cancel: (error?: any) => reject(error ?? new Error("TX_CANCELLED")),
       stateMutability,
+      retryCount: 0,
     });
 
     // Start processing the queue
@@ -236,7 +239,7 @@ export function createTxQueue<C extends Contracts>(
         );
 
         if (shouldResetNonce) await resetNonce();
-        const canRetry = incorrectGasEstimation || shouldResetNonce;
+        const canRetry = txRequest.retryCount <= maxRetries && (incorrectGasEstimation || shouldResetNonce);
 
         if (canRetry) {
           queue.add(uuid(), {
@@ -244,6 +247,7 @@ export function createTxQueue<C extends Contracts>(
             estimateGas: txRequest.estimateGas,
             cancel: txRequest.cancel,
             stateMutability,
+            retryCount: txRequest.retryCount + 1,
           });
         } else {
           // Bubble up error
