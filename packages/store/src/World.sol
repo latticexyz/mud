@@ -25,17 +25,17 @@ contract World is StoreView {
 
   function setRecord(
     uint256 table,
-    bytes32[] memory key,
-    bytes memory data
+    bytes32[] calldata key,
+    bytes calldata data
   ) public override {
     StoreCore.setRecord(table, key, data);
   }
 
   function setField(
     uint256 table,
-    bytes32[] memory key,
+    bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes memory data
+    bytes calldata data
   ) public override {
     StoreCore.setField(table, key, schemaIndex, data);
   }

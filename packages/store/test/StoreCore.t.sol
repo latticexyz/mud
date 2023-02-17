@@ -28,8 +28,8 @@ contract StoreCoreTest is Test, StoreView {
   // Expose an external setRecord function for testing purposes of indexers (see testHooks)
   function setRecord(
     uint256 table,
-    bytes32[] memory key,
-    bytes memory data
+    bytes32[] calldata key,
+    bytes calldata data
   ) public override {
     StoreCore.setRecord(table, key, data);
   }
@@ -37,9 +37,9 @@ contract StoreCoreTest is Test, StoreView {
   // Expose an external setField function for testing purposes of indexers (see testHooks)
   function setField(
     uint256 table,
-    bytes32[] memory key,
+    bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes memory data
+    bytes calldata data
   ) public override {
     StoreCore.setField(table, key, schemaIndex, data);
   }
