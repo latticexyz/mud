@@ -7,6 +7,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/grpc"
 	"latticexyz/mud/packages/services/pkg/logger"
 	"latticexyz/mud/packages/services/pkg/mode"
+	"latticexyz/mud/packages/services/pkg/mode/query"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
@@ -19,8 +20,8 @@ var (
 	wsUrl = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
 
 	// Ports.
-	port        = flag.Int("port", 50091, "gRPC Server Port")
-	metricsPort = flag.Int("metrics-port", 6060, "Prometheus metrics http handler port. Defaults to port 6060")
+	qlPort      = flag.Int("ql-port", 50091, "MODE QueryLayer port")
+	metricsPort = flag.Int("metrics-port", 6060, "MODE Prometheus Metrics port. Defaults to port 6060")
 
 	// TODO: remove when ready for V2.
 	dataSchemaPath = flag.String("schema-path", "./OPCraftDataSchema.json", "A schema file is required when working with V1 data")
@@ -60,14 +61,20 @@ func main() {
 	// Connect to an Ethereum execution client.
 	eth := eth.GetEthereumClient(*wsUrl, logger)
 
-	// Schema manager is responsible for all matters regarding the structure
-	// of the data in DB <-> as it's represented on-chain.
-	//
 	// While working with V1 data, 'dataSchemaPath' is used to load up the entire
 	// schema information into memory so that the MODE QueryLayer knows how to
 	// encode / decode the data.
-	schemaManager := mode.NewSchemaManager(eth, db, logger, *dataSchemaPath)
+	dataSchema := mode.NewDataSchemaFromJSON(*dataSchemaPath)
+	tableSchemas := dataSchema.BuildTableSchemas()
 
-	// Start gRPC server.
-	grpc.StartMODEServer(*port, *metricsPort, eth, db, schemaManager, logger)
+	for tableName, tableSchema := range tableSchemas {
+		logger.Info("table schema", zap.String("table", tableName), zap.Any("schema", tableSchema))
+	}
+
+	// Run MODE metrics server.
+	go grpc.StartMetricsServer(*metricsPort, logger)
+
+	// Run the MODE QueryLayer.
+	ql := query.NewQueryLayer(eth, db, tableSchemas, logger)
+	query.RunQueryLayer(ql, *qlPort)
 }
