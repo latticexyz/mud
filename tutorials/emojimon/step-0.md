@@ -12,6 +12,12 @@ order: 0
 - yarn (after installing node: `npm install yarn --global`)
 - familiarity with React, TailwindCSS is helpful, but not required (you can still copy+paste)
 
+!!!
+If you are running Windows, you will need to setup WSL and configure it properly. The libraries and tools listed above need to be installed in the WSL. All commands below also need to be executed in the WSL. 
+
+We recommend reading the [WSL guide from Microsoft](https://learn.microsoft.com/en-us/training/modules/wsl/wsl-introduction/introduction) to get started.
+!!!
+
 ## Get the starter kit
 
 You’d usually start a new MUD project with the CLI using `yarn create mud emojimon`, but for this tutorial, we’ve included some initial code to help you get going faster (base styles with TailwindCSS, for example).
