@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
-import { StoreView } from "store/StoreView.sol";
+import { Store, IStoreHook } from "store/Store.sol";
 import { StoreCore } from "store/StoreCore.sol";
 import { Schema } from "store/Schema.sol";
 
@@ -12,11 +12,12 @@ import { RouteTable } from "./tables/RouteTable.sol";
 import { SystemRouteTable } from "./tables/SystemRouteTable.sol";
 import { SystemTable } from "./tables/SystemTable.sol";
 import { System } from "./System.sol";
+import { ISystemHook } from "./ISystemHook.sol";
 
 bytes32 constant ROOT_ROUTE_ID = keccak256(bytes(""));
 bytes32 constant SINGLE_SLASH = "/";
 
-contract World is StoreView {
+contract World is Store {
   error RouteInvalid(string route);
   error RouteExists(string route);
   error RouteAccessDenied(string route, address caller);
@@ -82,6 +83,45 @@ contract World is StoreView {
 
     // StoreCore handles checking for existence
     StoreCore.registerSchema(tableRouteId, schema);
+  }
+
+  /**
+   * Register a schema for a given table id
+   * This overload exists to conform to the Store interface,
+   * but it requires the caller to register a route using `registerRoute` first
+   */
+  function registerSchema(bytes32 tableId, Schema schema) public override {
+    // Require caller to own the given tableId
+    if (OwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
+
+    // Register the schema
+    StoreCore.registerSchema(tableId, schema);
+  }
+
+  /**
+   * Register a hook for a given table route
+   */
+  function registerTableHook(string calldata tableRoute, IStoreHook hook) public {
+    registerStoreHook(keccak256(bytes(tableRoute)), hook);
+  }
+
+  /**
+   * Register a hook for a given table route id
+   * This overload exists to conform with the `IStore` interface.
+   */
+  function registerStoreHook(bytes32 tableId, IStoreHook hook) public override {
+    // Require caller to own the given tableId
+    if (OwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
+
+    // Register the hook
+    StoreCore.registerStoreHook(tableId, hook);
+  }
+
+  /**
+   * Register a hook for a given system route
+   */
+  function registerSystemHook(string calldata systemRoute, ISystemHook hook) public {
+    // TODO
   }
 
   /**
@@ -154,9 +194,11 @@ contract World is StoreView {
     bytes32[] calldata key,
     bytes calldata data
   ) public {
-    // Require access to accessRoute and a valid subRoute
-    _requireAccess(accessRoute);
-    _requireValidRoute(subRoute);
+    // Require access to accessRoute
+    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
+
+    // Require a valid subRoute
+    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
 
     // Construct the table route id by concatenating accessRoute and tableRoute
     bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, subRoute));
@@ -166,16 +208,17 @@ contract World is StoreView {
   }
 
   /**
-   * Write a record in a table based on specific access rights.
+   * Write a record in a table based on access right to the table route id.
    * This overload exists to conform with the `IStore` interface.
    */
   function setRecord(
     bytes32 tableRouteId,
     bytes32[] calldata key,
     bytes calldata data
-  ) public override {
+  ) public {
     // Check access based on the tableRoute
-    if (!RouteAccessTable.get({ routeId: tableRouteId, caller: msg.sender })) revert RouteAccessDenied("", msg.sender);
+    if (!_hasAccess(tableRouteId, msg.sender))
+      revert RouteAccessDenied(RouteTable.get(bytes32(tableRouteId)), msg.sender);
 
     // Set the record
     StoreCore.setRecord(tableRouteId, key, data);
@@ -193,9 +236,11 @@ contract World is StoreView {
     uint8 schemaIndex,
     bytes calldata data
   ) public {
-    // Require access to accessRoute and a valid subRoute
-    _requireAccess(accessRoute);
-    _requireValidRoute(subRoute);
+    // Require access to accessRoute
+    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
+
+    // Require a valid subRoute
+    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
 
     // Construct the table route id by concatenating accessRoute and tableRoute
     bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, subRoute));
@@ -215,7 +260,7 @@ contract World is StoreView {
     bytes calldata data
   ) public override {
     // Check access based on the tableRoute
-    if (!RouteAccessTable.get({ routeId: tableRouteId, caller: msg.sender })) revert RouteAccessDenied("", msg.sender);
+    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
 
     // Set the field
     StoreCore.setField(tableRouteId, key, schemaIndex, data);
@@ -231,9 +276,11 @@ contract World is StoreView {
     string calldata subRoute,
     bytes32[] calldata key
   ) public {
-    // Require access to accessRoute and a valid subRoute
-    _requireAccess(accessRoute);
-    _requireValidRoute(subRoute);
+    // Require access to accessRoute
+    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
+
+    // Require a valid subRoute
+    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
 
     // Construct the table route id by concatenating accessRoute and tableRoute
     bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, subRoute));
@@ -248,7 +295,7 @@ contract World is StoreView {
    */
   function deleteRecord(bytes32 tableRouteId, bytes32[] calldata key) public override {
     // Check access based on the tableRoute
-    if (!RouteAccessTable.get({ routeId: tableRouteId, caller: msg.sender })) revert RouteAccessDenied("", msg.sender);
+    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
 
     // Delete the record
     StoreCore.deleteRecord(tableRouteId, key);
@@ -277,11 +324,10 @@ contract World is StoreView {
 
     // If the system is not public, check for individual access
     if (!publicAccess) {
-      bytes32 accessRouteId = keccak256(bytes(accessRoute));
-      bool access = RouteAccessTable.get({ routeId: accessRouteId, caller: msg.sender });
-      if (!access) revert RouteAccessDenied(accessRoute, msg.sender);
+      // Require access to accessRoute
+      if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
 
-      // Require subRoute to be a valid route
+      // Require a valid subRoute
       if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
     }
 
@@ -329,21 +375,12 @@ contract World is StoreView {
     }
   }
 
-  /**
-   * Revert if msg.sender does not have access to accessRoute
-   */
-  function _requireAccess(string calldata accessRoute) internal view {
-    // Check access control based on the `accessRoute`
-    bytes32 accessRouteId = keccak256(bytes(accessRoute));
-    if (!RouteAccessTable.get({ routeId: accessRouteId, caller: msg.sender }))
-      revert RouteAccessDenied(accessRoute, msg.sender);
+  function _hasAccess(string calldata route, address caller) internal view returns (bool) {
+    return _hasAccess(keccak256(bytes(route)), caller);
   }
 
-  /**
-   * Revert if the route is not valid
-   */
-  function _requireValidRoute(string calldata route) internal pure {
-    if (!_isRoute(route)) revert RouteInvalid(route);
+  function _hasAccess(bytes32 routeId, address caller) internal view returns (bool) {
+    return RouteAccessTable.get(routeId, caller);
   }
 }
 

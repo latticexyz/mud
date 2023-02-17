@@ -2,6 +2,8 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
+import { IStoreHook } from "store/IStore.sol";
+
 import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { OwnerTable } from "../src/tables/OwnerTable.sol";
@@ -18,7 +20,7 @@ struct WorldTestSystemReturn {
 contract WorldTestSystem is System {
   error WorldTestSystemError(string err);
 
-  function msgSender() public view returns (address) {
+  function msgSender() public pure returns (address) {
     return _msgSender();
   }
 
@@ -44,7 +46,33 @@ contract WorldTestSystem is System {
   }
 }
 
+contract WorldTestTableHook is IStoreHook {
+  event HookCalled(bytes data);
+
+  function onSetRecord(
+    bytes32 table,
+    bytes32[] memory key,
+    bytes memory data
+  ) public {
+    emit HookCalled(abi.encode(table, key, data));
+  }
+
+  function onSetField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    bytes memory data
+  ) public {
+    emit HookCalled(abi.encode(table, key, schemaIndex, data));
+  }
+
+  function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
+    emit HookCalled(abi.encode(table, key));
+  }
+}
+
 contract WorldTest is Test {
+  event HookCalled(bytes data);
   World world;
 
   function setUp() public {
@@ -93,6 +121,9 @@ contract WorldTest is Test {
 
     // !gasreport validate single level route (no leading slash)
     assertFalse(_isSingleLevelRoute("noLeadingSlash"), "no leading slash");
+
+    // !gasreport validate single level route (no leading slash but contains slash)
+    assertFalse(_isSingleLevelRoute("noLeadingSlash/butContainsSlash"), "no leading slash");
   }
 
   function testRegisterRoute() public {
@@ -142,9 +173,9 @@ contract WorldTest is Test {
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/testRouteAccess"));
     world.registerTable("", "/testRouteAccess", RouteAccessSchemaLib.getSchema());
 
-    // TODO: Expect an error when registering an invalid table route
-    // vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "invalid/route"));
-    // world.registerTable("", "invalid/route", RouteAccessSchemaLib.getSchema()));
+    // Expect an error when registering an invalid table route
+    vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "invalid/route"));
+    world.registerTable("", "invalid/route", RouteAccessSchemaLib.getSchema());
 
     // Expect an error when extending a route that doesn't exist
     vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "/invalid"));
@@ -184,9 +215,10 @@ contract WorldTest is Test {
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/testSystem"));
     world.registerSystem("", "/testSystem", newSystem, true);
 
-    // TODO: Expect an error when registering an invalid system route
-    // vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "invalid/route"));
-    // world.registerSystem("", "invalid/route", new System(), true);
+    // Expect an error when registering an invalid system route
+    System oneMoreSystem = new System();
+    vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "invalid/route"));
+    world.registerSystem("", "invalid/route", oneMoreSystem, true);
 
     // Expect an error when extending a route that doesn't exist
     System anotherSystem = new System();
@@ -225,7 +257,9 @@ contract WorldTest is Test {
 
     // Expect an error when trying to write from an address that doesn't have access
     vm.startPrank(address(0x01));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "", address(0x01)));
+    vm.expectRevert(
+      abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord/testTable", address(0x01))
+    );
     BoolSchemaLib.set({ store: world, tableId: tableRouteId, key: key, value: true });
     vm.stopPrank();
 
@@ -273,7 +307,7 @@ contract WorldTest is Test {
 
     // Expect an error when trying to write from an address that doesn't have direct access
     vm.startPrank(address(0x02));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "", address(0x02)));
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetField/testTable", address(0x02)));
     world.setField(tableRouteId, keyTuple, 0, abi.encodePacked(true));
     vm.stopPrank();
   }
@@ -317,7 +351,9 @@ contract WorldTest is Test {
 
     // Expect an error when trying to delete from an address that doesn't have direct access
     vm.startPrank(address(0x02));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "", address(0x02)));
+    vm.expectRevert(
+      abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testDeleteRecord/testTable", address(0x02))
+    );
     world.deleteRecord(tableRouteId, keyTuple);
     vm.stopPrank();
   }
@@ -381,6 +417,29 @@ contract WorldTest is Test {
 
     returnedAddress = abi.decode(abi.decode(nestedReturndata, (bytes)), (address));
     assertEq(returnedAddress, address(this), "subsystem returned wrong address");
+  }
+
+  function testRegisterTableHook() public {
+    // Register a new table
+    bytes32 tableId = world.registerTable("", "/testTable", BoolSchemaLib.getSchema());
+
+    // Register a new hook
+    IStoreHook tableHook = new WorldTestTableHook();
+    world.registerTableHook("/testTable", tableHook);
+
+    // Prepare data to write to the table
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = "someKey";
+    bytes memory value = abi.encodePacked(true);
+
+    // Expect the hook to be notified when a record is written
+    vm.expectEmit(true, true, true, true);
+    emit HookCalled(abi.encode(tableId, key, value));
+    world.setRecord(tableId, key, value);
+  }
+
+  function testRegisterSystemHook() public view {
+    // TODO
   }
 
   // TODO: add a test for systems writing to tables via the World
