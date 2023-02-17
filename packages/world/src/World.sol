@@ -14,6 +14,7 @@ import { SystemTable } from "./tables/SystemTable.sol";
 import { System } from "./System.sol";
 
 bytes32 constant ROOT_ROUTE_ID = keccak256(bytes(""));
+bytes32 constant SINGLE_SLASH = "/";
 
 contract World is StoreView {
   error RouteInvalid(string route);
@@ -143,7 +144,7 @@ contract World is StoreView {
    ************************************************************************/
 
   /**
-   * Write to a table based on a parent route access right.
+   * Write a record in a table based on a parent route access right.
    * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
    * because access to a route also grants access to all sub routes.
    */
@@ -153,13 +154,9 @@ contract World is StoreView {
     bytes32[] calldata key,
     bytes calldata data
   ) public {
-    // Check access control based on the `accessRoute`
-    bytes32 accessRouteId = keccak256(bytes(accessRoute));
-    if (!RouteAccessTable.get({ routeId: accessRouteId, caller: msg.sender }))
-      revert RouteAccessDenied(accessRoute, msg.sender);
-
-    // Require subRoute to be a valid route
-    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
+    // Require access to accessRoute and a valid subRoute
+    _requireAccess(accessRoute);
+    _requireValidRoute(subRoute);
 
     // Construct the table route id by concatenating accessRoute and tableRoute
     bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, subRoute));
@@ -169,7 +166,7 @@ contract World is StoreView {
   }
 
   /**
-   * Write to a table based on specific access rights.
+   * Write a record in a table based on specific access rights.
    * This overload exists to conform with the `IStore` interface.
    */
   function setRecord(
@@ -184,7 +181,78 @@ contract World is StoreView {
     StoreCore.setRecord(tableRouteId, key, data);
   }
 
-  // TODO: add functions for `setField` and `deleteRecord` akin to `setRecord`
+  /**
+   * Write a field in a table based on a parent route access right.
+   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
+   * because access to a route also grants access to all sub routes.
+   */
+  function setField(
+    string calldata accessRoute,
+    string calldata subRoute,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata data
+  ) public {
+    // Require access to accessRoute and a valid subRoute
+    _requireAccess(accessRoute);
+    _requireValidRoute(subRoute);
+
+    // Construct the table route id by concatenating accessRoute and tableRoute
+    bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, subRoute));
+
+    // Set the field
+    StoreCore.setField(tableRouteId, key, schemaIndex, data);
+  }
+
+  /**
+   * Write a field in a table based on specific access rights.
+   * This overload exists to conform with the `IStore` interface.
+   */
+  function setField(
+    bytes32 tableRouteId,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata data
+  ) public override {
+    // Check access based on the tableRoute
+    if (!RouteAccessTable.get({ routeId: tableRouteId, caller: msg.sender })) revert RouteAccessDenied("", msg.sender);
+
+    // Set the field
+    StoreCore.setField(tableRouteId, key, schemaIndex, data);
+  }
+
+  /**
+   * Delete a record in a table based on a parent route access right.
+   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
+   * because access to a route also grants access to all sub routes.
+   */
+  function deleteRecord(
+    string calldata accessRoute,
+    string calldata subRoute,
+    bytes32[] calldata key
+  ) public {
+    // Require access to accessRoute and a valid subRoute
+    _requireAccess(accessRoute);
+    _requireValidRoute(subRoute);
+
+    // Construct the table route id by concatenating accessRoute and tableRoute
+    bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, subRoute));
+
+    // Delete the record
+    StoreCore.deleteRecord(tableRouteId, key);
+  }
+
+  /**
+   * Delete a record in a table based on specific access rights.
+   * This overload exists to conform with the `IStore` interface.
+   */
+  function deleteRecord(bytes32 tableRouteId, bytes32[] calldata key) public override {
+    // Check access based on the tableRoute
+    if (!RouteAccessTable.get({ routeId: tableRouteId, caller: msg.sender })) revert RouteAccessDenied("", msg.sender);
+
+    // Delete the record
+    StoreCore.deleteRecord(tableRouteId, key);
+  }
 
   /************************************************************************
    *
@@ -260,16 +328,54 @@ contract World is StoreView {
       revert(add(data, 0x20), mload(data))
     }
   }
+
+  /**
+   * Revert if msg.sender does not have access to accessRoute
+   */
+  function _requireAccess(string calldata accessRoute) internal view {
+    // Check access control based on the `accessRoute`
+    bytes32 accessRouteId = keccak256(bytes(accessRoute));
+    if (!RouteAccessTable.get({ routeId: accessRouteId, caller: msg.sender }))
+      revert RouteAccessDenied(accessRoute, msg.sender);
+  }
+
+  /**
+   * Revert if the route is not valid
+   */
+  function _requireValidRoute(string calldata route) internal pure {
+    if (!_isRoute(route)) revert RouteInvalid(route);
+  }
 }
 
 // A route is a string starting with `/` or an empty string
-function _isRoute(string memory) pure returns (bool) {
-  // TODO: implement
-  return true;
+function _isRoute(string memory route) pure returns (bool result) {
+  assembly {
+    // If the route is empty, return true
+    if eq(mload(route), 0) {
+      result := 1
+    }
+
+    // If the first byte is `/` (ascii 0x2f), return true
+    if eq(byte(0, mload(add(route, 0x20))), 0x2f) {
+      result := 1
+    }
+  }
 }
 
 // A top level route contains exactly one `/` at the start
-function _isSingleLevelRoute(string memory) pure returns (bool) {
-  // TODO: implement
+function _isSingleLevelRoute(string memory route) pure returns (bool result) {
+  // Verify the route is empty or starts with `/`
+  if (!_isRoute(route)) return false;
+
+  // Loop through the string and return false if another `/` is found
+  bytes memory routeBytes = bytes(route);
+  for (uint256 i = 1; i < routeBytes.length; ) {
+    if (routeBytes[i] == 0x2f) return false;
+    unchecked {
+      i++;
+    }
+  }
+
+  // Return true if no `/` was found
   return true;
 }

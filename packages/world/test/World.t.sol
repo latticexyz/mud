@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { World } from "../src/World.sol";
+import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { OwnerTable } from "../src/tables/OwnerTable.sol";
 import { RouteAccessTable } from "../src/tables/RouteAccessTable.sol";
@@ -60,6 +60,40 @@ contract WorldTest is Test {
 
   function testIsStore() public view {
     world.isStore();
+  }
+
+  function testIsRoute() public {
+    // !gasreport validate route (empty string)
+    assertTrue(_isRoute(""), "empty string");
+
+    // !gasreport validate route (single slash)
+    assertTrue(_isRoute("/"), "single slash");
+
+    // !gasreport validate route (single level)
+    assertTrue(_isRoute("/topLevel"), "single level");
+
+    // !gasreport validate route (multi level)
+    assertTrue(_isRoute("/topLevel/subLevel"), "multi level");
+
+    // !gasreport validate route (no leading slash)
+    assertFalse(_isRoute("noLeadingSlash"), "no leading slash");
+  }
+
+  function testIsSingleLevelRoute() public {
+    // !gasreport validate single level route (empty string)
+    assertTrue(_isSingleLevelRoute(""), "empty string");
+
+    // !gasreport validate single level route (single slash)
+    assertTrue(_isSingleLevelRoute("/"), "single slash");
+
+    // !gasreport validate single level route (single level)
+    assertTrue(_isSingleLevelRoute("/topLevel"), "single level");
+
+    // !gasreport validate single level route (multi level)
+    assertFalse(_isSingleLevelRoute("/topLevel/subLevel"), "multi level");
+
+    // !gasreport validate single level route (no leading slash)
+    assertFalse(_isSingleLevelRoute("noLeadingSlash"), "no leading slash");
   }
 
   function testRegisterRoute() public {
@@ -207,6 +241,46 @@ contract WorldTest is Test {
     vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord", address(0x01)));
     world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
     vm.stopPrank();
+  }
+
+  function testSetField() public {
+    // Register a new route
+    world.registerRoute("", "/testSetField");
+
+    // Register a new table
+    bytes32 tableRouteId = world.registerTable("/testSetField", "/testTable", BoolSchemaLib.getSchema());
+
+    bytes32 key = keccak256("testKey");
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+
+    // Write data to the table via access route
+    world.setField("/testSetField", "/testTable", keyTuple, 0, abi.encodePacked(true));
+
+    // Expect the data to be written
+    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+
+    // Write data to the table via direct access
+    world.setField(tableRouteId, keyTuple, 0, abi.encodePacked(false));
+
+    // Expect the data to be written
+    assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+
+    // Expect an error when trying to write from an address that doesn't have access
+    vm.startPrank(address(0x01));
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetField", address(0x01)));
+    world.setField("/testSetField", "/testTable", keyTuple, 0, abi.encodePacked(true));
+    vm.stopPrank();
+
+    // Expect an error when trying to write from an address that doesn't have direct access
+    vm.startPrank(address(0x02));
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "", address(0x02)));
+    world.setField(tableRouteId, keyTuple, 0, abi.encodePacked(true));
+    vm.stopPrank();
+  }
+
+  function testDeleteField() public {
+    // TODO
   }
 
   function testCall() public {
