@@ -3,6 +3,8 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { IStoreHook } from "store/IStore.sol";
+import { StoreCore } from "store/StoreCore.sol";
+import { StoreSwitch } from "store/StoreSwitch.sol";
 
 import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";
 import { System } from "../src/System.sol";
@@ -19,6 +21,7 @@ struct WorldTestSystemReturn {
 
 contract WorldTestSystem is System {
   error WorldTestSystemError(string err);
+  event WorldTestSystemLog(string log);
 
   function msgSender() public pure returns (address) {
     return _msgSender();
@@ -43,6 +46,30 @@ contract WorldTestSystem is System {
       }
     }
     return returndata;
+  }
+
+  function writeData(
+    string calldata accessRoute,
+    string calldata subRoute,
+    bool data
+  ) public {
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = "testKey";
+
+    if (StoreSwitch.isDelegateCall()) {
+      uint256 tableId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
+      StoreCore.setRecord(tableId, key, abi.encodePacked(data));
+    } else {
+      World(msg.sender).setRecord(accessRoute, subRoute, key, abi.encodePacked(data));
+    }
+  }
+
+  function emitCallType() public {
+    if (StoreSwitch.isDelegateCall()) {
+      emit WorldTestSystemLog("delegatecall");
+    } else {
+      emit WorldTestSystemLog("call");
+    }
   }
 }
 
@@ -73,6 +100,8 @@ contract WorldTestTableHook is IStoreHook {
 
 contract WorldTest is Test {
   event HookCalled(bytes data);
+  event WorldTestSystemLog(string log);
+
   World world;
 
   function setUp() public {
@@ -440,6 +469,66 @@ contract WorldTest is Test {
 
   function testRegisterSystemHook() public view {
     // TODO
+  }
+
+  function testWriteRootSystem() public {
+    // Register a new table
+    uint256 tableId = world.registerTable("", "/testTable", BoolSchemaLib.getSchema());
+
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem("", "/testSystem", system, false);
+
+    // Call a system function that write data to the World
+    world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.writeData.selector, "", "/testTable", true));
+
+    // Expect the data to be written
+    assertTrue(BoolSchemaLib.get(tableId, world, "testKey"));
+  }
+
+  function testWriteAutonomousSystem() public {
+    // Register a new subroute
+    world.registerRoute("", "/testRoute");
+
+    // Register a new table
+    uint256 tableId = world.registerTable("/testRoute", "/testTable", BoolSchemaLib.getSchema());
+
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem("/testRoute", "/testSystem", system, false);
+
+    // Call a system function that writes data to the World
+    world.call(
+      "/testRoute/testSystem",
+      abi.encodeWithSelector(WorldTestSystem.writeData.selector, "/testRoute", "/testTable", true)
+    );
+
+    // Expect the data to be written
+    assertTrue(BoolSchemaLib.get(tableId, world, "testKey"));
+  }
+
+  function testDelegatecallRootSystem() public {
+    // Register a new root system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem("", "/testSystem", system, false);
+
+    // Call the root sysyem
+    vm.expectEmit(true, true, true, true);
+    emit WorldTestSystemLog("delegatecall");
+    world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.emitCallType.selector));
+  }
+
+  function testCallAutonomousSystem() public {
+    world.registerRoute("", "/testRoute");
+
+    // Register a new non-root system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem("/testRoute", "/testSystem", system, false);
+
+    // Call the root sysyem
+    vm.expectEmit(true, true, true, true);
+    emit WorldTestSystemLog("call");
+    world.call("/testRoute/testSystem", abi.encodeWithSelector(WorldTestSystem.emitCallType.selector));
   }
 
   // TODO: add a test for systems writing to tables via the World
