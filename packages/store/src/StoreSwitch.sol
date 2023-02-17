@@ -33,7 +33,7 @@ library StoreSwitch {
     }
   }
 
-  function registerSchema(bytes32 table, Schema schema) internal {
+  function registerSchema(uint256 table, Schema schema) internal {
     if (isDelegateCall()) {
       StoreCore.registerSchema(table, schema);
     } else {
@@ -41,7 +41,7 @@ library StoreSwitch {
     }
   }
 
-  function getSchema(bytes32 table) internal view returns (Schema schema) {
+  function getSchema(uint256 table) internal view returns (Schema schema) {
     if (isDelegateCall()) {
       schema = StoreCore.getSchema(table);
     } else {
@@ -50,7 +50,7 @@ library StoreSwitch {
   }
 
   function setRecord(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     bytes memory data
   ) internal {
@@ -62,7 +62,7 @@ library StoreSwitch {
   }
 
   function setField(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     uint8 fieldIndex,
     bytes memory data
@@ -74,7 +74,7 @@ library StoreSwitch {
     }
   }
 
-  function deleteRecord(bytes32 table, bytes32[] memory key) internal {
+  function deleteRecord(uint256 table, bytes32[] memory key) internal {
     if (isDelegateCall()) {
       StoreCore.deleteRecord(table, key);
     } else {
@@ -82,7 +82,7 @@ library StoreSwitch {
     }
   }
 
-  function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
+  function getRecord(uint256 table, bytes32[] memory key) internal view returns (bytes memory) {
     if (isDelegateCall()) {
       return StoreCore.getRecord(table, key);
     } else {
@@ -91,7 +91,7 @@ library StoreSwitch {
   }
 
   function getRecord(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     Schema schema
   ) internal view returns (bytes memory) {
@@ -103,7 +103,7 @@ library StoreSwitch {
   }
 
   function getField(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     uint8 fieldIndex
   ) internal view returns (bytes memory) {

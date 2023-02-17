@@ -31,17 +31,17 @@ library Mixed_ {
   }
 
   /** Register the table's schema */
-  function registerSchema(bytes32 tableId) internal {
+  function registerSchema(uint256 tableId) internal {
     StoreSwitch.registerSchema(tableId, getSchema());
   }
 
-  function registerSchema(bytes32 tableId, IStore store) internal {
+  function registerSchema(uint256 tableId, IStore store) internal {
     store.registerSchema(tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     uint32 u32,
     uint128 u128,
@@ -59,7 +59,7 @@ library Mixed_ {
   }
 
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     Mixed memory mixed
   ) internal {
@@ -67,7 +67,7 @@ library Mixed_ {
   }
 
   function setU32(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     uint32 u32
   ) internal {
@@ -77,7 +77,7 @@ library Mixed_ {
   }
 
   function setU128(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     uint128 u128
   ) internal {
@@ -87,7 +87,7 @@ library Mixed_ {
   }
 
   function setA32(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     uint32[] memory a32
   ) internal {
@@ -97,7 +97,7 @@ library Mixed_ {
   }
 
   function setS(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     string memory s
   ) internal {
@@ -107,7 +107,7 @@ library Mixed_ {
   }
 
   /** Get the table's data */
-  function get(bytes32 tableId, bytes32 key) internal view returns (Mixed memory mixed) {
+  function get(uint256 tableId, bytes32 key) internal view returns (Mixed memory mixed) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple, getSchema());
@@ -115,7 +115,7 @@ library Mixed_ {
   }
 
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     IStore store,
     bytes32 key
   ) internal view returns (Mixed memory mixed) {

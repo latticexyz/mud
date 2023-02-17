@@ -27,17 +27,17 @@ library Route_ {
   }
 
   /** Register the table's schema */
-  function registerSchema(bytes32 tableId) internal {
+  function registerSchema(uint256 tableId) internal {
     StoreSwitch.registerSchema(tableId, getSchema());
   }
 
-  function registerSchema(bytes32 tableId, IStore store) internal {
+  function registerSchema(uint256 tableId, IStore store) internal {
     store.registerSchema(tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     address addr,
     bytes4 selector,
@@ -50,7 +50,7 @@ library Route_ {
   }
 
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     Route memory data
   ) internal {
@@ -58,7 +58,7 @@ library Route_ {
   }
 
   function setAddress(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     address addr
   ) internal {
@@ -68,7 +68,7 @@ library Route_ {
   }
 
   function setSelector(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     bytes4 selector
   ) internal {
@@ -78,7 +78,7 @@ library Route_ {
   }
 
   function setExecutionMode(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     uint8 executionMode
   ) internal {
@@ -88,7 +88,7 @@ library Route_ {
   }
 
   /** Get the table's data */
-  function get(bytes32 tableId, bytes32 key) internal view returns (Route memory data) {
+  function get(uint256 tableId, bytes32 key) internal view returns (Route memory data) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
@@ -96,7 +96,7 @@ library Route_ {
   }
 
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     IStore store,
     bytes32 key
   ) internal view returns (Route memory data) {
