@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { Bytes } from "./Bytes.sol";
-import { SchemaType, getStaticByteLength, getElementByteLength } from "./Types.sol";
+import { SchemaType } from "./Types.sol";
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
 import { console } from "forge-std/console.sol";
@@ -29,7 +29,7 @@ library StoreCore {
    * TODO: should we turn the schema table into a "proper table" and register it here?
    */
   function initialize() internal {
-    registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.Bytes32));
+    registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
     registerSchema(HooksTableId, HooksTable.getSchema());
   }
 
@@ -356,8 +356,8 @@ library StoreCoreInternal {
   ) internal {
     // verify the value has the correct length for the field
     SchemaType schemaType = schema.atIndex(schemaIndex);
-    if (getStaticByteLength(schemaType) != data.length)
-      revert StoreCore.StoreCore_InvalidDataLength(getStaticByteLength(schemaType), data.length);
+    if (schemaType.getStaticByteLength() != data.length)
+      revert StoreCore.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
 
     // Store the provided value in storage
     uint256 location = _getStaticDataLocation(table, key);
@@ -427,7 +427,7 @@ library StoreCoreInternal {
   ) internal view returns (bytes memory) {
     // Get the length, storage location and offset of the static field
     SchemaType schemaType = schema.atIndex(schemaIndex);
-    uint256 dataLength = getStaticByteLength(schemaType);
+    uint256 dataLength = schemaType.getStaticByteLength();
     uint256 location = _getStaticDataLocation(table, key);
     uint256 offset = _getStaticDataOffset(schema, schemaIndex);
 
@@ -476,7 +476,7 @@ library StoreCoreInternal {
   function _getStaticDataOffset(Schema schema, uint8 schemaIndex) internal pure returns (uint256) {
     uint256 offset = 0;
     for (uint256 i = 0; i < schemaIndex; i++) {
-      offset += getStaticByteLength(schema.atIndex(i));
+      offset += schema.atIndex(i).getStaticByteLength();
     }
     return offset;
   }

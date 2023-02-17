@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { SchemaType, getStaticByteLength } from "./Types.sol";
+import { SchemaType } from "./Types.sol";
 import { Bytes } from "./Bytes.sol";
 
 // - 2 bytes static length of the schema
@@ -35,7 +35,7 @@ library SchemaLib {
     // and store the schema types in the encoded schema
     bool hasDynamicFields;
     for (uint256 i = 0; i < _schema.length; ) {
-      uint16 staticByteLength = uint16(getStaticByteLength(_schema[i]));
+      uint16 staticByteLength = uint16(_schema[i].getStaticByteLength());
 
       // Increase the static field count if the field is static
       if (staticByteLength > 0) {
@@ -197,7 +197,7 @@ library SchemaLib {
     uint256 countStaticFields;
     uint256 countDynamicFields;
     for (uint256 i; i < _numStaticFields + _numDynamicFields; ) {
-      if (getStaticByteLength(schema.atIndex(i)) > 0) {
+      if (schema.atIndex(i).getStaticByteLength() > 0) {
         // Static field in dynamic part
         if (i >= _numStaticFields) revert SchemaLib_StaticTypeAfterDynamicType();
         countStaticFields++;

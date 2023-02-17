@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { SchemaType, getStaticByteLength } from "./Types.sol";
 import { Bytes } from "./Bytes.sol";
 
 // - 4 bytes accumulated counter

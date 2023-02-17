@@ -5,16 +5,17 @@ import "forge-std/Test.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { SchemaType } from "../src/Types.sol";
 
+// TODO add tests for all schema types
 contract SchemaTest is Test {
   function testEncodeDecodeSchema() public {
     uint256 gas = gasleft();
     Schema schema = SchemaLib.encode(
-      SchemaType.Uint8, // 1 byte
-      SchemaType.Uint16, // 2 bytes
-      SchemaType.Uint32, // 4 bytes
-      SchemaType.Uint128, // 16 bytes
-      SchemaType.Uint256, // 32 bytes
-      SchemaType.Uint32Array // 0 bytes (because it's dynamic)
+      SchemaType.UINT8, // 1 byte
+      SchemaType.UINT16, // 2 bytes
+      SchemaType.UINT32, // 4 bytes
+      SchemaType.UINT128, // 16 bytes
+      SchemaType.UINT256, // 32 bytes
+      SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
     );
     gas = gas - gasleft();
     console.log("GAS REPORT: encode schema with 6 entries [SchemaLib.encode]: %s", gas);
@@ -22,48 +23,48 @@ contract SchemaTest is Test {
     // !gasreport get schema type at index
     SchemaType schemaType1 = schema.atIndex(0);
 
-    assertEq(uint8(schemaType1), uint8(SchemaType.Uint8));
-    assertEq(uint8(schema.atIndex(1)), uint8(SchemaType.Uint16));
-    assertEq(uint8(schema.atIndex(2)), uint8(SchemaType.Uint32));
-    assertEq(uint8(schema.atIndex(3)), uint8(SchemaType.Uint128));
-    assertEq(uint8(schema.atIndex(4)), uint8(SchemaType.Uint256));
-    assertEq(uint8(schema.atIndex(5)), uint8(SchemaType.Uint32Array));
+    assertEq(uint8(schemaType1), uint8(SchemaType.UINT8));
+    assertEq(uint8(schema.atIndex(1)), uint8(SchemaType.UINT16));
+    assertEq(uint8(schema.atIndex(2)), uint8(SchemaType.UINT32));
+    assertEq(uint8(schema.atIndex(3)), uint8(SchemaType.UINT128));
+    assertEq(uint8(schema.atIndex(4)), uint8(SchemaType.UINT256));
+    assertEq(uint8(schema.atIndex(5)), uint8(SchemaType.UINT32_ARRAY));
   }
 
   function testFailInvalidSchemaStaticAfterDynamic() public pure {
-    SchemaLib.encode(SchemaType.Uint8, SchemaType.Uint32Array, SchemaType.Uint16);
+    SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT32_ARRAY, SchemaType.UINT16);
   }
 
   function testEncodeMaxValidLength() public {
     SchemaType[] memory schema = new SchemaType[](28);
-    schema[0] = SchemaType.Uint256;
-    schema[1] = SchemaType.Uint256;
-    schema[2] = SchemaType.Uint256;
-    schema[3] = SchemaType.Uint256;
-    schema[4] = SchemaType.Uint256;
-    schema[5] = SchemaType.Uint256;
-    schema[6] = SchemaType.Uint256;
-    schema[7] = SchemaType.Uint256;
-    schema[8] = SchemaType.Uint256;
-    schema[9] = SchemaType.Uint256;
-    schema[10] = SchemaType.Uint256;
-    schema[11] = SchemaType.Uint256;
-    schema[12] = SchemaType.Uint256;
-    schema[13] = SchemaType.Uint256;
-    schema[14] = SchemaType.Uint32Array;
-    schema[15] = SchemaType.Uint32Array;
-    schema[16] = SchemaType.Uint32Array;
-    schema[17] = SchemaType.Uint32Array;
-    schema[18] = SchemaType.Uint32Array;
-    schema[19] = SchemaType.Uint32Array;
-    schema[20] = SchemaType.Uint32Array;
-    schema[21] = SchemaType.Uint32Array;
-    schema[22] = SchemaType.Uint32Array;
-    schema[23] = SchemaType.Uint32Array;
-    schema[24] = SchemaType.Uint32Array;
-    schema[25] = SchemaType.Uint32Array;
-    schema[26] = SchemaType.Uint32Array;
-    schema[27] = SchemaType.Uint32Array;
+    schema[0] = SchemaType.UINT256;
+    schema[1] = SchemaType.UINT256;
+    schema[2] = SchemaType.UINT256;
+    schema[3] = SchemaType.UINT256;
+    schema[4] = SchemaType.UINT256;
+    schema[5] = SchemaType.UINT256;
+    schema[6] = SchemaType.UINT256;
+    schema[7] = SchemaType.UINT256;
+    schema[8] = SchemaType.UINT256;
+    schema[9] = SchemaType.UINT256;
+    schema[10] = SchemaType.UINT256;
+    schema[11] = SchemaType.UINT256;
+    schema[12] = SchemaType.UINT256;
+    schema[13] = SchemaType.UINT256;
+    schema[14] = SchemaType.UINT32_ARRAY;
+    schema[15] = SchemaType.UINT32_ARRAY;
+    schema[16] = SchemaType.UINT32_ARRAY;
+    schema[17] = SchemaType.UINT32_ARRAY;
+    schema[18] = SchemaType.UINT32_ARRAY;
+    schema[19] = SchemaType.UINT32_ARRAY;
+    schema[20] = SchemaType.UINT32_ARRAY;
+    schema[21] = SchemaType.UINT32_ARRAY;
+    schema[22] = SchemaType.UINT32_ARRAY;
+    schema[23] = SchemaType.UINT32_ARRAY;
+    schema[24] = SchemaType.UINT32_ARRAY;
+    schema[25] = SchemaType.UINT32_ARRAY;
+    schema[26] = SchemaType.UINT32_ARRAY;
+    schema[27] = SchemaType.UINT32_ARRAY;
     Schema encodedSchema = SchemaLib.encode(schema);
 
     assertEq(encodedSchema.numStaticFields() + encodedSchema.numDynamicFields(), 28);
@@ -71,54 +72,54 @@ contract SchemaTest is Test {
 
   function testFailEncodeTooLong() public pure {
     SchemaType[] memory schema = new SchemaType[](29);
-    schema[0] = SchemaType.Uint256;
-    schema[1] = SchemaType.Uint256;
-    schema[2] = SchemaType.Uint256;
-    schema[3] = SchemaType.Uint256;
-    schema[4] = SchemaType.Uint256;
-    schema[5] = SchemaType.Uint256;
-    schema[6] = SchemaType.Uint256;
-    schema[7] = SchemaType.Uint256;
-    schema[8] = SchemaType.Uint256;
-    schema[9] = SchemaType.Uint256;
-    schema[10] = SchemaType.Uint256;
-    schema[11] = SchemaType.Uint256;
-    schema[12] = SchemaType.Uint256;
-    schema[13] = SchemaType.Uint256;
-    schema[14] = SchemaType.Uint256;
-    schema[15] = SchemaType.Uint256;
-    schema[16] = SchemaType.Uint256;
-    schema[17] = SchemaType.Uint32Array;
-    schema[18] = SchemaType.Uint32Array;
-    schema[19] = SchemaType.Uint32Array;
-    schema[20] = SchemaType.Uint32Array;
-    schema[21] = SchemaType.Uint32Array;
-    schema[22] = SchemaType.Uint32Array;
-    schema[23] = SchemaType.Uint32Array;
-    schema[24] = SchemaType.Uint32Array;
-    schema[25] = SchemaType.Uint32Array;
-    schema[26] = SchemaType.Uint32Array;
-    schema[27] = SchemaType.Uint32Array;
-    schema[28] = SchemaType.Uint32Array;
+    schema[0] = SchemaType.UINT256;
+    schema[1] = SchemaType.UINT256;
+    schema[2] = SchemaType.UINT256;
+    schema[3] = SchemaType.UINT256;
+    schema[4] = SchemaType.UINT256;
+    schema[5] = SchemaType.UINT256;
+    schema[6] = SchemaType.UINT256;
+    schema[7] = SchemaType.UINT256;
+    schema[8] = SchemaType.UINT256;
+    schema[9] = SchemaType.UINT256;
+    schema[10] = SchemaType.UINT256;
+    schema[11] = SchemaType.UINT256;
+    schema[12] = SchemaType.UINT256;
+    schema[13] = SchemaType.UINT256;
+    schema[14] = SchemaType.UINT256;
+    schema[15] = SchemaType.UINT256;
+    schema[16] = SchemaType.UINT256;
+    schema[17] = SchemaType.UINT32_ARRAY;
+    schema[18] = SchemaType.UINT32_ARRAY;
+    schema[19] = SchemaType.UINT32_ARRAY;
+    schema[20] = SchemaType.UINT32_ARRAY;
+    schema[21] = SchemaType.UINT32_ARRAY;
+    schema[22] = SchemaType.UINT32_ARRAY;
+    schema[23] = SchemaType.UINT32_ARRAY;
+    schema[24] = SchemaType.UINT32_ARRAY;
+    schema[25] = SchemaType.UINT32_ARRAY;
+    schema[26] = SchemaType.UINT32_ARRAY;
+    schema[27] = SchemaType.UINT32_ARRAY;
+    schema[28] = SchemaType.UINT32_ARRAY;
     SchemaLib.encode(schema);
   }
 
   function testEncodeMaxValidDynamic() public {
     SchemaType[] memory schema = new SchemaType[](14);
-    schema[0] = SchemaType.Uint32Array;
-    schema[1] = SchemaType.Uint32Array;
-    schema[2] = SchemaType.Uint32Array;
-    schema[3] = SchemaType.Uint32Array;
-    schema[4] = SchemaType.Uint32Array;
-    schema[5] = SchemaType.Uint32Array;
-    schema[6] = SchemaType.Uint32Array;
-    schema[7] = SchemaType.Uint32Array;
-    schema[8] = SchemaType.Uint32Array;
-    schema[9] = SchemaType.Uint32Array;
-    schema[10] = SchemaType.Uint32Array;
-    schema[11] = SchemaType.Uint32Array;
-    schema[12] = SchemaType.Uint32Array;
-    schema[13] = SchemaType.Uint32Array;
+    schema[0] = SchemaType.UINT32_ARRAY;
+    schema[1] = SchemaType.UINT32_ARRAY;
+    schema[2] = SchemaType.UINT32_ARRAY;
+    schema[3] = SchemaType.UINT32_ARRAY;
+    schema[4] = SchemaType.UINT32_ARRAY;
+    schema[5] = SchemaType.UINT32_ARRAY;
+    schema[6] = SchemaType.UINT32_ARRAY;
+    schema[7] = SchemaType.UINT32_ARRAY;
+    schema[8] = SchemaType.UINT32_ARRAY;
+    schema[9] = SchemaType.UINT32_ARRAY;
+    schema[10] = SchemaType.UINT32_ARRAY;
+    schema[11] = SchemaType.UINT32_ARRAY;
+    schema[12] = SchemaType.UINT32_ARRAY;
+    schema[13] = SchemaType.UINT32_ARRAY;
     Schema encodedSchema = SchemaLib.encode(schema);
 
     assertEq(encodedSchema.numDynamicFields(), 14);
@@ -126,32 +127,32 @@ contract SchemaTest is Test {
 
   function testFailEncodeTooManyDynamic() public pure {
     SchemaType[] memory schema = new SchemaType[](15);
-    schema[0] = SchemaType.Uint32Array;
-    schema[1] = SchemaType.Uint32Array;
-    schema[2] = SchemaType.Uint32Array;
-    schema[3] = SchemaType.Uint32Array;
-    schema[4] = SchemaType.Uint32Array;
-    schema[5] = SchemaType.Uint32Array;
-    schema[6] = SchemaType.Uint32Array;
-    schema[7] = SchemaType.Uint32Array;
-    schema[8] = SchemaType.Uint32Array;
-    schema[9] = SchemaType.Uint32Array;
-    schema[10] = SchemaType.Uint32Array;
-    schema[11] = SchemaType.Uint32Array;
-    schema[12] = SchemaType.Uint32Array;
-    schema[13] = SchemaType.Uint32Array;
-    schema[14] = SchemaType.Uint32Array;
+    schema[0] = SchemaType.UINT32_ARRAY;
+    schema[1] = SchemaType.UINT32_ARRAY;
+    schema[2] = SchemaType.UINT32_ARRAY;
+    schema[3] = SchemaType.UINT32_ARRAY;
+    schema[4] = SchemaType.UINT32_ARRAY;
+    schema[5] = SchemaType.UINT32_ARRAY;
+    schema[6] = SchemaType.UINT32_ARRAY;
+    schema[7] = SchemaType.UINT32_ARRAY;
+    schema[8] = SchemaType.UINT32_ARRAY;
+    schema[9] = SchemaType.UINT32_ARRAY;
+    schema[10] = SchemaType.UINT32_ARRAY;
+    schema[11] = SchemaType.UINT32_ARRAY;
+    schema[12] = SchemaType.UINT32_ARRAY;
+    schema[13] = SchemaType.UINT32_ARRAY;
+    schema[14] = SchemaType.UINT32_ARRAY;
     SchemaLib.encode(schema);
   }
 
   function testGetStaticSchemaLength() public {
     Schema schema = SchemaLib.encode(
-      SchemaType.Uint8, // 1 byte
-      SchemaType.Uint16, // 2 bytes
-      SchemaType.Uint32, // 4 bytes
-      SchemaType.Uint128, // 16 bytes
-      SchemaType.Uint256, // 32 bytes
-      SchemaType.Uint32Array // 0 bytes (because it's dynamic)
+      SchemaType.UINT8, // 1 byte
+      SchemaType.UINT16, // 2 bytes
+      SchemaType.UINT32, // 4 bytes
+      SchemaType.UINT128, // 16 bytes
+      SchemaType.UINT256, // 32 bytes
+      SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
     );
 
     // !gasreport get static data length from schema
@@ -162,12 +163,12 @@ contract SchemaTest is Test {
 
   function testGetNumStaticFields() public {
     Schema schema = SchemaLib.encode(
-      SchemaType.Uint8, // 1 byte
-      SchemaType.Uint16, // 2 bytes
-      SchemaType.Uint32, // 4 bytes
-      SchemaType.Uint128, // 16 bytes
-      SchemaType.Uint256, // 32 bytes
-      SchemaType.Uint32Array // 0 bytes (because it's dynamic)
+      SchemaType.UINT8, // 1 byte
+      SchemaType.UINT16, // 2 bytes
+      SchemaType.UINT32, // 4 bytes
+      SchemaType.UINT128, // 16 bytes
+      SchemaType.UINT256, // 32 bytes
+      SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
     );
 
     // !gasreport get number of static fields from schema
@@ -178,12 +179,12 @@ contract SchemaTest is Test {
 
   function testGetNumDynamicFields() public {
     Schema schema = SchemaLib.encode(
-      SchemaType.Uint8, // 1 byte
-      SchemaType.Uint16, // 2 bytes
-      SchemaType.Uint32, // 4 bytes
-      SchemaType.Uint128, // 16 bytes
-      SchemaType.Uint256, // 32 bytes
-      SchemaType.Uint32Array // 0 bytes (because it's dynamic)
+      SchemaType.UINT8, // 1 byte
+      SchemaType.UINT16, // 2 bytes
+      SchemaType.UINT32, // 4 bytes
+      SchemaType.UINT128, // 16 bytes
+      SchemaType.UINT256, // 32 bytes
+      SchemaType.UINT32_ARRAY // 0 bytes (because it's dynamic)
     );
 
     // !gasreport get number of dynamic fields from schema
@@ -192,43 +193,43 @@ contract SchemaTest is Test {
     assertEq(num, 1);
   }
 
-  function testValidate() public view {
+  function testValidate() public pure {
     SchemaType[] memory schema = new SchemaType[](28);
-    schema[0] = SchemaType.Uint256;
-    schema[1] = SchemaType.Uint256;
-    schema[2] = SchemaType.Uint256;
-    schema[3] = SchemaType.Uint256;
-    schema[4] = SchemaType.Uint256;
-    schema[5] = SchemaType.Uint256;
-    schema[6] = SchemaType.Uint256;
-    schema[7] = SchemaType.Uint256;
-    schema[8] = SchemaType.Uint256;
-    schema[9] = SchemaType.Uint256;
-    schema[10] = SchemaType.Uint256;
-    schema[11] = SchemaType.Uint256;
-    schema[12] = SchemaType.Uint256;
-    schema[13] = SchemaType.Uint256;
-    schema[14] = SchemaType.Uint32Array;
-    schema[15] = SchemaType.Uint32Array;
-    schema[16] = SchemaType.Uint32Array;
-    schema[17] = SchemaType.Uint32Array;
-    schema[18] = SchemaType.Uint32Array;
-    schema[19] = SchemaType.Uint32Array;
-    schema[20] = SchemaType.Uint32Array;
-    schema[21] = SchemaType.Uint32Array;
-    schema[22] = SchemaType.Uint32Array;
-    schema[23] = SchemaType.Uint32Array;
-    schema[24] = SchemaType.Uint32Array;
-    schema[25] = SchemaType.Uint32Array;
-    schema[26] = SchemaType.Uint32Array;
-    schema[27] = SchemaType.Uint32Array;
+    schema[0] = SchemaType.UINT256;
+    schema[1] = SchemaType.UINT256;
+    schema[2] = SchemaType.UINT256;
+    schema[3] = SchemaType.UINT256;
+    schema[4] = SchemaType.UINT256;
+    schema[5] = SchemaType.UINT256;
+    schema[6] = SchemaType.UINT256;
+    schema[7] = SchemaType.UINT256;
+    schema[8] = SchemaType.UINT256;
+    schema[9] = SchemaType.UINT256;
+    schema[10] = SchemaType.UINT256;
+    schema[11] = SchemaType.UINT256;
+    schema[12] = SchemaType.UINT256;
+    schema[13] = SchemaType.UINT256;
+    schema[14] = SchemaType.UINT32_ARRAY;
+    schema[15] = SchemaType.UINT32_ARRAY;
+    schema[16] = SchemaType.UINT32_ARRAY;
+    schema[17] = SchemaType.UINT32_ARRAY;
+    schema[18] = SchemaType.UINT32_ARRAY;
+    schema[19] = SchemaType.UINT32_ARRAY;
+    schema[20] = SchemaType.UINT32_ARRAY;
+    schema[21] = SchemaType.UINT32_ARRAY;
+    schema[22] = SchemaType.UINT32_ARRAY;
+    schema[23] = SchemaType.UINT32_ARRAY;
+    schema[24] = SchemaType.UINT32_ARRAY;
+    schema[25] = SchemaType.UINT32_ARRAY;
+    schema[26] = SchemaType.UINT32_ARRAY;
+    schema[27] = SchemaType.UINT32_ARRAY;
     Schema encodedSchema = SchemaLib.encode(schema);
 
     // !gasreport validate schema
     encodedSchema.validate();
   }
 
-  function testFailValidate() public view {
+  function testFailValidate() public pure {
     Schema.wrap(keccak256("some invalid schema")).validate();
   }
 
@@ -243,7 +244,7 @@ contract SchemaTest is Test {
   }
 
   function testIsEmptyFalse() public {
-    Schema encodedSchema = SchemaLib.encode(SchemaType.Uint256);
+    Schema encodedSchema = SchemaLib.encode(SchemaType.UINT256);
 
     // !gasreport check if schema is empty (non-empty schema)
     bool empty = encodedSchema.isEmpty();
