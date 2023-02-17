@@ -133,7 +133,7 @@ library Mixed_ {
 
     uint256 start = 52;
     uint256 end = start + encodedLengths.atIndex(0);
-    mixed.a32 = SliceLib.getSubslice(blob, start, end).toUint32Array();
+    mixed.a32 = SliceLib.getSubslice(blob, start, end).decodeArray_uint32();
 
     start = end;
     end += encodedLengths.atIndex(1);
