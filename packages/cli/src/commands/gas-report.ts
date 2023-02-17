@@ -44,7 +44,7 @@ export const desc = "Create a gas report";
 
 export const builder: CommandBuilder<Options, Options> = (yargs) =>
   yargs.options({
-    path: { type: "array", default: ["Gas.t.sol"], desc: "File containing the gas tests" },
+    path: { type: "array", string: true, default: ["Gas.t.sol"], desc: "File containing the gas tests" },
     save: { type: "string", desc: "Save the gas report to a file" },
     compare: { type: "string", desc: "Compare to an existing gas report" },
   });
