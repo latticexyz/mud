@@ -17,7 +17,7 @@ You will need:
 !!!
 If you are running Windows, you will need to setup WSL and configure it properly. The libraries and tools listed above need to be installed in the WSL. All commands below also need to be executed in the WSL. 
 
-We recommend reading this guide from Microsoft to get started: [WSL Introduction](https://learn.microsoft.com/en-us/training/modules/wsl/wsl-introduction/introduction)
+We recommend reading the [WSL guide from Microsoft](https://learn.microsoft.com/en-us/training/modules/wsl/wsl-introduction/introduction) to get started.
 !!!
 
 Run the following command in the console of your choice to create a new MUD project in `my-project` using the `minimal` template.
