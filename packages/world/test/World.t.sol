@@ -50,7 +50,7 @@ contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
   function onSetRecord(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     bytes memory data
   ) public {
@@ -58,7 +58,7 @@ contract WorldTestTableHook is IStoreHook {
   }
 
   function onSetField(
-    bytes32 table,
+    uint256 table,
     bytes32[] memory key,
     uint8 schemaIndex,
     bytes memory data
@@ -66,7 +66,7 @@ contract WorldTestTableHook is IStoreHook {
     emit HookCalled(abi.encode(table, key, schemaIndex, data));
   }
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
+  function onDeleteRecord(uint256 table, bytes32[] memory key) public {
     emit HookCalled(abi.encode(table, key));
   }
 }
@@ -154,20 +154,20 @@ contract WorldTest is Test {
   }
 
   function testRegisterTable() public {
-    bytes32 tableId = world.registerTable("", "/testRouteAccess", RouteAccessSchemaLib.getSchema());
+    uint256 tableId = world.registerTable("", "/testRouteAccess", RouteAccessSchemaLib.getSchema());
 
     // Expect the table to be registered
     assertEq(world.getSchema(tableId).unwrap(), RouteAccessSchemaLib.getSchema().unwrap());
 
     // Expect the table's route to be owned by the caller
-    address routeOwner = OwnerTable.get(world, tableId);
+    address routeOwner = OwnerTable.get(world, bytes32(tableId));
     assertEq(routeOwner, address(this));
 
     // The new table should be accessible by the caller
-    assertTrue(RouteAccessTable.get({ store: world, routeId: tableId, caller: address(this) }));
+    assertTrue(RouteAccessTable.get({ store: world, routeId: bytes32(tableId), caller: address(this) }));
 
     // The new table should not be accessible by another address
-    assertFalse(RouteAccessTable.get({ store: world, routeId: tableId, caller: address(0x01) }));
+    assertFalse(RouteAccessTable.get({ store: world, routeId: bytes32(tableId), caller: address(0x01) }));
 
     // Expect an error when registering an existing table
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/testRouteAccess"));
@@ -246,7 +246,7 @@ contract WorldTest is Test {
     world.registerRoute("", "/testSetRecord");
 
     // Register a new table
-    bytes32 tableRouteId = world.registerTable("/testSetRecord", "/testTable", BoolSchemaLib.getSchema());
+    uint256 tableRouteId = world.registerTable("/testSetRecord", "/testTable", BoolSchemaLib.getSchema());
 
     // Write data to the table
     bytes32 key = keccak256("testKey");
@@ -281,7 +281,7 @@ contract WorldTest is Test {
     world.registerRoute("", "/testSetField");
 
     // Register a new table
-    bytes32 tableRouteId = world.registerTable("/testSetField", "/testTable", BoolSchemaLib.getSchema());
+    uint256 tableRouteId = world.registerTable("/testSetField", "/testTable", BoolSchemaLib.getSchema());
 
     bytes32 key = keccak256("testKey");
     bytes32[] memory keyTuple = new bytes32[](1);
@@ -317,7 +317,7 @@ contract WorldTest is Test {
     world.registerRoute("", "/testDeleteRecord");
 
     // Register a new table
-    bytes32 tableRouteId = world.registerTable("/testDeleteRecord", "/testTable", BoolSchemaLib.getSchema());
+    uint256 tableRouteId = world.registerTable("/testDeleteRecord", "/testTable", BoolSchemaLib.getSchema());
 
     bytes32 key = keccak256("testKey");
     bytes32[] memory keyTuple = new bytes32[](1);
@@ -421,7 +421,7 @@ contract WorldTest is Test {
 
   function testRegisterTableHook() public {
     // Register a new table
-    bytes32 tableId = world.registerTable("", "/testTable", BoolSchemaLib.getSchema());
+    uint256 tableId = world.registerTable("", "/testTable", BoolSchemaLib.getSchema());
 
     // Register a new hook
     IStoreHook tableHook = new WorldTestTableHook();

@@ -21,21 +21,21 @@ struct AddressSchema {
 library AddressSchemaLib {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.Address);
+    schema = SchemaLib.encode(SchemaType.ADDRESS);
   }
 
   /** Register the table's schema */
-  function registerSchema(bytes32 tableId) internal {
+  function registerSchema(uint256 tableId) internal {
     StoreSwitch.registerSchema(tableId, getSchema());
   }
 
-  function registerSchema(bytes32 tableId, IStore store) internal {
+  function registerSchema(uint256 tableId, IStore store) internal {
     store.registerSchema(tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     address addr
   ) internal {
@@ -45,7 +45,7 @@ library AddressSchemaLib {
   }
 
   /** Get the table's data */
-  function get(bytes32 tableId, bytes32 key) internal view returns (address) {
+  function get(uint256 tableId, bytes32 key) internal view returns (address) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
@@ -53,7 +53,7 @@ library AddressSchemaLib {
   }
 
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     IStore store,
     bytes32 key
   ) internal view returns (address) {

@@ -21,21 +21,21 @@ struct AddressToBytes32Schema {
 library AddressToBytes32SchemaLib {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.Bytes32);
+    schema = SchemaLib.encode(SchemaType.BYTES32);
   }
 
   /** Register the table's schema */
-  function registerSchema(bytes32 tableId) internal {
+  function registerSchema(uint256 tableId) internal {
     StoreSwitch.registerSchema(tableId, getSchema());
   }
 
-  function registerSchema(bytes32 tableId, IStore store) internal {
+  function registerSchema(uint256 tableId, IStore store) internal {
     store.registerSchema(tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     address key,
     bytes32 value
   ) internal {
@@ -45,7 +45,7 @@ library AddressToBytes32SchemaLib {
   }
 
   /** Get the table's data */
-  function get(bytes32 tableId, address key) internal view returns (bytes32) {
+  function get(uint256 tableId, address key) internal view returns (bytes32) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = bytes20(key);
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
@@ -53,7 +53,7 @@ library AddressToBytes32SchemaLib {
   }
 
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     IStore store,
     address key
   ) internal view returns (bytes32) {
@@ -63,7 +63,7 @@ library AddressToBytes32SchemaLib {
     return bytes32(blob);
   }
 
-  function has(bytes32 tableId, address key) internal view returns (bool) {
+  function has(uint256 tableId, address key) internal view returns (bool) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = bytes20(key);
     return bytes32(StoreSwitch.getRecord(tableId, keyTuple)) != 0;

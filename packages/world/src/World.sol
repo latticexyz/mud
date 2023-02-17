@@ -77,9 +77,9 @@ contract World is Store {
     string calldata baseRoute,
     string calldata tableRoute,
     Schema schema
-  ) public returns (bytes32 tableRouteId) {
+  ) public returns (uint256 tableRouteId) {
     // Register table route
-    tableRouteId = registerRoute(baseRoute, tableRoute);
+    tableRouteId = uint256(registerRoute(baseRoute, tableRoute));
 
     // StoreCore handles checking for existence
     StoreCore.registerSchema(tableRouteId, schema);
@@ -90,9 +90,10 @@ contract World is Store {
    * This overload exists to conform to the Store interface,
    * but it requires the caller to register a route using `registerRoute` first
    */
-  function registerSchema(bytes32 tableId, Schema schema) public override {
+  function registerSchema(uint256 tableId, Schema schema) public override {
     // Require caller to own the given tableId
-    if (OwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
+    if (OwnerTable.get(bytes32(tableId)) != msg.sender)
+      revert RouteAccessDenied(RouteTable.get(bytes32(tableId)), msg.sender);
 
     // Register the schema
     StoreCore.registerSchema(tableId, schema);
@@ -102,16 +103,17 @@ contract World is Store {
    * Register a hook for a given table route
    */
   function registerTableHook(string calldata tableRoute, IStoreHook hook) public {
-    registerStoreHook(keccak256(bytes(tableRoute)), hook);
+    registerStoreHook(uint256(keccak256(bytes(tableRoute))), hook);
   }
 
   /**
    * Register a hook for a given table route id
    * This overload exists to conform with the `IStore` interface.
    */
-  function registerStoreHook(bytes32 tableId, IStoreHook hook) public override {
+  function registerStoreHook(uint256 tableId, IStoreHook hook) public override {
     // Require caller to own the given tableId
-    if (OwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
+    if (OwnerTable.get(bytes32(tableId)) != msg.sender)
+      revert RouteAccessDenied(RouteTable.get(bytes32(tableId)), msg.sender);
 
     // Register the hook
     StoreCore.registerStoreHook(tableId, hook);
@@ -201,7 +203,7 @@ contract World is Store {
     if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
 
     // Construct the table route id by concatenating accessRoute and tableRoute
-    bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, subRoute));
+    uint256 tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
 
     // Set the record
     StoreCore.setRecord(tableRouteId, key, data);
@@ -212,12 +214,12 @@ contract World is Store {
    * This overload exists to conform with the `IStore` interface.
    */
   function setRecord(
-    bytes32 tableRouteId,
+    uint256 tableRouteId,
     bytes32[] calldata key,
     bytes calldata data
   ) public {
     // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender))
+    if (!_hasAccess(bytes32(tableRouteId), msg.sender))
       revert RouteAccessDenied(RouteTable.get(bytes32(tableRouteId)), msg.sender);
 
     // Set the record
@@ -243,7 +245,7 @@ contract World is Store {
     if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
 
     // Construct the table route id by concatenating accessRoute and tableRoute
-    bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, subRoute));
+    uint256 tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
 
     // Set the field
     StoreCore.setField(tableRouteId, key, schemaIndex, data);
@@ -254,13 +256,14 @@ contract World is Store {
    * This overload exists to conform with the `IStore` interface.
    */
   function setField(
-    bytes32 tableRouteId,
+    uint256 tableRouteId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
   ) public override {
     // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
+    if (!_hasAccess(bytes32(tableRouteId), msg.sender))
+      revert RouteAccessDenied(RouteTable.get(bytes32(tableRouteId)), msg.sender);
 
     // Set the field
     StoreCore.setField(tableRouteId, key, schemaIndex, data);
@@ -283,7 +286,7 @@ contract World is Store {
     if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
 
     // Construct the table route id by concatenating accessRoute and tableRoute
-    bytes32 tableRouteId = keccak256(abi.encodePacked(accessRoute, subRoute));
+    uint256 tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
 
     // Delete the record
     StoreCore.deleteRecord(tableRouteId, key);
@@ -293,9 +296,10 @@ contract World is Store {
    * Delete a record in a table based on specific access rights.
    * This overload exists to conform with the `IStore` interface.
    */
-  function deleteRecord(bytes32 tableRouteId, bytes32[] calldata key) public override {
+  function deleteRecord(uint256 tableRouteId, bytes32[] calldata key) public override {
     // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
+    if (!_hasAccess(bytes32(tableRouteId), msg.sender))
+      revert RouteAccessDenied(RouteTable.get(bytes32(tableRouteId)), msg.sender);
 
     // Delete the record
     StoreCore.deleteRecord(tableRouteId, key);

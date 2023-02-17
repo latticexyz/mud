@@ -23,21 +23,21 @@ struct AddressArraySchema {
 library AddressArraySchemaLib {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.AddressArray);
+    schema = SchemaLib.encode(SchemaType.ADDRESS_ARRAY);
   }
 
   /** Register the table's schema */
-  function registerSchema(bytes32 tableId) internal {
+  function registerSchema(uint256 tableId) internal {
     StoreSwitch.registerSchema(tableId, getSchema());
   }
 
-  function registerSchema(bytes32 tableId, IStore store) internal {
+  function registerSchema(uint256 tableId, IStore store) internal {
     store.registerSchema(tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     address[] memory addresses
   ) internal {
@@ -52,7 +52,7 @@ library AddressArraySchemaLib {
    * TODO: this is super inefficient right now, need to add support for pushing to arrays to the store core library to avoid reading/writing the entire array
    */
   function push(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     address addr
   ) internal {
@@ -63,7 +63,7 @@ library AddressArraySchemaLib {
   }
 
   /** Get the table's data */
-  function get(bytes32 tableId, bytes32 key) internal view returns (address[] memory addresses) {
+  function get(uint256 tableId, bytes32 key) internal view returns (address[] memory addresses) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
@@ -71,7 +71,7 @@ library AddressArraySchemaLib {
   }
 
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     IStore store,
     bytes32 key
   ) internal view returns (address[] memory addresses) {

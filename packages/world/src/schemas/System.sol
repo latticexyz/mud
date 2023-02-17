@@ -23,21 +23,21 @@ struct SystemSchema {
 library SystemSchemaLib {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.Bool, SchemaType.Address);
+    schema = SchemaLib.encode(SchemaType.BOOL, SchemaType.ADDRESS);
   }
 
   /** Register the table's schema */
-  function registerSchema(bytes32 tableId) internal {
+  function registerSchema(uint256 tableId) internal {
     StoreSwitch.registerSchema(tableId, getSchema());
   }
 
-  function registerSchema(bytes32 tableId, IStore store) internal {
+  function registerSchema(uint256 tableId, IStore store) internal {
     store.registerSchema(tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     SystemSchema memory value
   ) internal {
@@ -45,7 +45,7 @@ library SystemSchemaLib {
   }
 
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 key,
     address system,
     bool publicAccess
@@ -55,7 +55,7 @@ library SystemSchemaLib {
     StoreSwitch.setRecord(tableId, keyTuple, abi.encodePacked(system, publicAccess));
   }
 
-  function get(bytes32 tableId, bytes32 key) internal view returns (address system, bool publicAccess) {
+  function get(uint256 tableId, bytes32 key) internal view returns (address system, bool publicAccess) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
@@ -64,7 +64,7 @@ library SystemSchemaLib {
   }
 
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     IStore store,
     bytes32 key
   ) internal view returns (address system, bool publicAccess) {

@@ -22,21 +22,21 @@ struct RouteAccessSchema {
 library RouteAccessSchemaLib {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.Bool);
+    schema = SchemaLib.encode(SchemaType.BOOL);
   }
 
   /** Register the table's schema */
-  function registerSchema(bytes32 tableId) internal {
+  function registerSchema(uint256 tableId) internal {
     StoreSwitch.registerSchema(tableId, getSchema());
   }
 
-  function registerSchema(bytes32 tableId, IStore store) internal {
+  function registerSchema(uint256 tableId, IStore store) internal {
     store.registerSchema(tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 routeId,
     address caller,
     bool access
@@ -49,7 +49,7 @@ library RouteAccessSchemaLib {
 
   /** Get the table's data */
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 routeId,
     address caller
   ) internal view returns (bool) {
@@ -61,7 +61,7 @@ library RouteAccessSchemaLib {
   }
 
   function get(
-    bytes32 tableId,
+    uint256 tableId,
     IStore store,
     bytes32 routeId,
     address caller
@@ -74,7 +74,7 @@ library RouteAccessSchemaLib {
   }
 
   function deleteRecord(
-    bytes32 tableId,
+    uint256 tableId,
     bytes32 routeId,
     address caller
   ) internal {
