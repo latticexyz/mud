@@ -19,7 +19,6 @@ contract WorldTestSystem is System {
   error WorldTestSystemError(string err);
 
   function msgSender() public view returns (address) {
-    console.log("msgsender", _msgSender());
     return _msgSender();
   }
 
@@ -279,8 +278,48 @@ contract WorldTest is Test {
     vm.stopPrank();
   }
 
-  function testDeleteField() public {
-    // TODO
+  function testDeleteRecord() public {
+    // Register a new route
+    world.registerRoute("", "/testDeleteRecord");
+
+    // Register a new table
+    bytes32 tableRouteId = world.registerTable("/testDeleteRecord", "/testTable", BoolSchemaLib.getSchema());
+
+    bytes32 key = keccak256("testKey");
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
+
+    // Write data to the table via the access route and expect it to be written
+    world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
+    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+
+    // Delete the record via the access route and expect it to be deleted
+    world.deleteRecord("/testDeleteRecord", "/testTable", keyTuple);
+    assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+
+    // Write data to the table via the access route and expect it to be written
+    world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
+    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+
+    // Delete the record via direct access and expect it to be deleted
+    world.deleteRecord(tableRouteId, keyTuple);
+    assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+
+    // Write data to the table via the access route and expect it to be written
+    world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
+    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+
+    // Expect an error when trying to delete from an address that doesn't have access
+    vm.startPrank(address(0x01));
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testDeleteRecord", address(0x01)));
+    world.deleteRecord("/testDeleteRecord", "/testTable", keyTuple);
+    vm.stopPrank();
+
+    // Expect an error when trying to delete from an address that doesn't have direct access
+    vm.startPrank(address(0x02));
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "", address(0x02)));
+    world.deleteRecord(tableRouteId, keyTuple);
+    vm.stopPrank();
   }
 
   function testCall() public {
