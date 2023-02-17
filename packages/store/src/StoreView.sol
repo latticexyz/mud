@@ -33,7 +33,7 @@ contract StoreView is Store {
     revert StoreView_NotImplemented();
   }
 
-  function registerHook(uint256, IStoreHook) public virtual {
+  function registerStoreHook(uint256, IStoreHook) public virtual {
     revert StoreView_NotImplemented();
   }
 

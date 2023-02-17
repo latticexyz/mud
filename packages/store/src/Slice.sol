@@ -18,7 +18,7 @@ using DecodeSlice for Slice global;
  * @title Static functions for Slice
  */
 library SliceLib {
-  error Slice_OutOfBounds();
+  error Slice_OutOfBounds(bytes data, uint256 start, uint256 end);
 
   uint256 constant MASK_LEN = uint256(type(uint128).max);
   uint256 constant MASK_PTR = uint256(type(uint128).max) << 128;
@@ -40,11 +40,12 @@ library SliceLib {
    * @dev Subslice a bytes array using the given start index until the end of the array (without copying data)
    */
   function getSubslice(bytes memory data, uint256 start) internal pure returns (Slice) {
-    return getSubslice(data, start, data.length - 1);
+    return getSubslice(data, start, data.length);
   }
 
   /**
    * @dev Subslice a bytes array using the given indexes (without copying data)
+   * The start index is inclusive, the end index is exclusive
    */
   function getSubslice(
     bytes memory data,
@@ -52,7 +53,7 @@ library SliceLib {
     uint256 end
   ) internal pure returns (Slice) {
     // TODO this check helps catch bugs and can eventually be removed
-    if (!(start <= end && end <= data.length)) revert Slice_OutOfBounds();
+    if (!(start <= end && end <= data.length)) revert Slice_OutOfBounds(data, start, end);
 
     uint256 _pointer;
     assembly {
