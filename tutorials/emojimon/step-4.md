@@ -54,23 +54,30 @@ import { useMUD } from "./MUDContext";
 
 export const GameBoard = () => {
   …
-  useEffect(() => {
-    const moveTo = async (x: number, y: number) => {
-      const positionId = uuid();
-      Position.addOverride(positionId, {
-        entity: playerEntity,
-        value: { x, y },
-      });
+  const moveTo = async (x: number, y: number) => {
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
 
-      try {
-        const tx = await systems["system.Move"].executeTyped({ x, y });
-        await tx.wait();
-      } finally {
-        Position.removeOverride(positionId);
-      }
-    };
+    try {
+      const tx = await systems["system.Move"].executeTyped({ x, y });
+      await tx.wait();
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
+  useEffect(() => {
 
     const moveBy = async (deltaX: number, deltaY: number) => {
+…
+return (
+    …
+            onClick={async () => {
+              await moveTo(x,y)
+            }}
+   …
 ```
 
 Wow, isn't that so much snappier? It hardly feels like a blockchain game anymore.
