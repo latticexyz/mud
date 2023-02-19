@@ -3,7 +3,8 @@
   "license": "MIT",
   "version": "1.37.1",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
-  "main": "protobuf/ts",
+  "main": "protobuf/ts/index.ts",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
@@ -12,7 +13,8 @@
   "scripts": {
     "prepare": "make build",
     "docs": "rimraf API && mkdir -p _docs/pkg && find pkg -type f -name '*.go' -exec bash -c 'gomarkdoc {} > \"$(dirname _docs/{})\".md' \\; && mv _docs/pkg API && rimraf _docs",
-    "test": "echo 'todo: add tests'",
+    "test": "tsc --noEmit && echo 'todo: add tests'",
+    "protoc-ts": "make protoc-ts",
     "link": "yarn link",
     "release": "npm publish || echo 'version already published'"
   },
