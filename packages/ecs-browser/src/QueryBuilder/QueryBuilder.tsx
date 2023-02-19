@@ -229,7 +229,7 @@ export const QueryBuilder = ({
               return (
                 <ComponentBrowserButton
                   key={`filter-toggle-${component.id}`}
-                  active={filterActive}
+                  active={String(filterActive)}
                   onClick={() => {
                     setIsManuallyEditing(false);
                     queryInputRef.current?.focus();

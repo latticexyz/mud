@@ -69,7 +69,7 @@ export const EntityEditor = observer(
             {opened ? <>&#9660;</> : <>&#9654;</>}
           </ComponentBrowserButton>
         </div>
-        <Collapse aria-hidden={opened ? "false" : "true"} opened={opened}>
+        <Collapse aria-hidden={opened ? "false" : "true"} opened={String(opened)}>
           {[...entityComponents.values()]
             .filter((c) => c.id !== devHighlightComponent.id)
             .map((c) => (

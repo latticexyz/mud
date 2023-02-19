@@ -1,9 +1,10 @@
 import { setup, styled } from "goober";
+import React from "react";
 import { createElement } from "react";
 
 setup(createElement);
 
-export const ComponentBrowserInput = styled("input")`
+export const ComponentBrowserInput = styled("input", React.forwardRef)`
   background-color: #383c4a;
   color: #8c91a0;
   border: 1px rgba(0, 0, 0, 0.5) solid;
@@ -22,9 +23,9 @@ export const ComponentBrowserInput = styled("input")`
   }
 `;
 
-export const ComponentBrowserButton = styled("button")<{ active?: boolean }>`
-  background-color: ${({ active }) => (active ? "#8c91a0" : "#383c4a")};
-  color: ${({ active }) => (active ? "#383c4a" : "#8c91a0")};
+export const ComponentBrowserButton = styled("button")<{ active?: string }>`
+  background-color: ${({ active }) => (active === "true" ? "#8c91a0" : "#383c4a")};
+  color: ${({ active }) => (active === "true" ? "#383c4a" : "#8c91a0")};
   border: 1px rgba(0, 0, 0, 0.5) solid;
   border-radius: 4px;
   padding: 4px;
@@ -89,9 +90,9 @@ export const SmallHeadline = styled("p")`
   font-size: 14px;
 `;
 
-export const Collapse = styled("div")<{ opened: boolean }>`
-  height: ${({ opened }) => (opened ? "auto" : "0px")};
-  overflow: ${({ opened }) => (opened ? "initial" : "hidden")};
+export const Collapse = styled("div")<{ opened: string }>`
+  height: ${({ opened }) => (opened === "true" ? "auto" : "0px")};
+  overflow: ${({ opened }) => (opened === "true" ? "initial" : "hidden")};
 `;
 
 export const SyntaxHighlighterWrapper = styled("div")`
