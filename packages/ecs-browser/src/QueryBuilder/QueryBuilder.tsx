@@ -14,7 +14,6 @@ import { ComponentBrowserButton, ComponentBrowserInput, SyntaxHighlighterWrapper
 import { QueryBuilderForm, QueryShortcutContainer } from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
 import { flatten, orderBy, throttle } from "lodash";
-import { PositionFilterButton } from "./PositionFilterButton";
 import { MAX_ENTITIES } from "../constants";
 import { observe } from "mobx";
 import { useShiki } from "../hooks";
@@ -39,7 +38,6 @@ export const QueryBuilder = ({
   layers,
   world,
   devHighlightComponent,
-  hoverHighlightComponent,
   clearDevHighlights,
   setOverflow,
 }: {
@@ -48,7 +46,6 @@ export const QueryBuilder = ({
   allEntities: EntityID[];
   setFilteredEntities: (es: EntityID[]) => void;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
-  hoverHighlightComponent: Component<{ x: Type.OptionalNumber; y: Type.OptionalNumber }>;
   clearDevHighlights: () => void;
   setOverflow: (overflow: number) => void;
 }) => {
@@ -204,21 +201,6 @@ export const QueryBuilder = ({
           borderBottom: "2px grey solid",
         }}
       >
-        <h2>Query Shortcuts</h2>
-        <PositionFilterButton
-          editQuery={editQuery}
-          hoverHighlightComponent={hoverHighlightComponent}
-          queryInputRef={queryInputRef}
-          input={(layers.phaser as any)?.scenes.Main.phaserScene.input}
-        />
-        <ComponentBrowserButton
-          onClick={() => {
-            queryInputRef.current?.focus();
-            editQuery("[Has(Selected)]");
-          }}
-        >
-          View Selected Entity
-        </ComponentBrowserButton>
         <h3>Filter by Component</h3>
         <QueryShortcutContainer style={{ margin: "8px auto" }}>
           {orderBy(allComponents, (c) => c.id)
