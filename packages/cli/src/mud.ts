@@ -1,9 +1,4 @@
-#!/usr/bin/env ts-node-esm
-
-// #!/usr/bin/env -S NODE_NO_WARNINGS=1 ts-node-esm
-
-// `-S NODE_NO_WARNINGS=1` suppresses an experimental warning about esm json imports.
-// TODO It could be removed if `-S` causes issues for users, although it should be well-supported now.
+#!/usr/bin/env node
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
