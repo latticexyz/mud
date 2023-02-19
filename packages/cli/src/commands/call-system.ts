@@ -10,8 +10,8 @@ type Options = {
   world: string;
   systemId?: string;
   systemAddress?: string;
-  argTypes?: any[];
-  args?: any[];
+  argTypes?: string[];
+  args?: (string | number)[];
   calldata?: string;
   broadcast?: boolean;
   callerPrivateKey?: string;
@@ -30,7 +30,7 @@ const commandModule: CommandModule<Options, Options> = {
       world: { type: "string", required: true, description: "world contract address" },
       systemId: { type: "string", description: "system id preimage (eg mud.system.Move)" },
       systemAddress: { type: "string", description: "system address (alternative to system id)" },
-      argTypes: { type: "array", description: "system argument types for abi encoding" },
+      argTypes: { type: "array", string: true, description: "system argument types for abi encoding" },
       args: { type: "array", description: "system arguments" },
       calldata: { type: "string", description: "abi encoded system arguments (instead of args/argTypes)" },
       broadcast: { type: "boolean", description: "send txs to the chain" },

@@ -19,13 +19,13 @@ export async function generateAbiTypes(
 
   const cwd = options?.cwd ?? process.cwd();
 
-  const allFiles = typechainGlob(cwd, [`${inputDir!}/**/+([a-zA-Z0-9_]).json`]);
+  const allFiles = typechainGlob(cwd, [`${inputDir}/**/+([a-zA-Z0-9_]).json`]);
 
   const result = await runTypeChain({
     cwd,
     filesToProcess: allFiles,
     allFiles,
-    outDir: outputDir!,
+    outDir: outputDir,
     target: "ethers-v5",
   });
 
