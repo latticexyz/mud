@@ -16,6 +16,7 @@
   },
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
+    "lint": "eslint . --ext .ts",
     "build": "tsup",
     "link": "yarn link",
     "test": "tsc --noEmit && echo 'todo: add tests'",
