@@ -1,11 +1,12 @@
 import { constants, Wallet } from "ethers";
-import { generateLibDeploy, resetLibDeploy } from "./codegen";
-import { findLog } from "./findLog";
-import { generateTypes } from "./types";
+import { generateLibDeploy, resetLibDeploy } from "./codegen.js";
+import { findLog } from "./findLog.js";
+import { generateTypes } from "./typegen.js";
 import { execa } from "execa";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
+import path from "path";
 
-const contractsDir = __dirname + "/../../src/contracts";
+const contractsDirectory = new URL("../src/contracts", import.meta.url).pathname;
 
 /**
  * Deploy world, components and systems from deploy.json
@@ -39,7 +40,7 @@ export async function deploy(
     "forge",
     [
       "script",
-      contractsDir + "/Deploy.sol",
+      path.join(contractsDirectory, "/Deploy.sol"),
       "--target-contract",
       "Deploy",
       "-vvv",
@@ -85,7 +86,7 @@ export async function generateAndDeploy(args: DeployOptions) {
 
   try {
     // Generate LibDeploy
-    libDeployPath = await generateLibDeploy(args.config, contractsDir, args.systems);
+    libDeployPath = await generateLibDeploy(args.config, contractsDirectory, args.systems);
 
     // Build and generate fresh types
     await generateTypes(undefined, "./types", { clear: args.clear });
@@ -103,7 +104,7 @@ export async function generateAndDeploy(args: DeployOptions) {
   } finally {
     // Remove generated LibDeploy
     console.log("Cleaning up deployment script");
-    if (libDeployPath) await resetLibDeploy(contractsDir);
+    if (libDeployPath) await resetLibDeploy(contractsDirectory);
   }
 
   return { deployedWorldAddress, initialBlockNumber };

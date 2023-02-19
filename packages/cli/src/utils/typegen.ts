@@ -1,10 +1,9 @@
 import { runTypeChain, glob as typechainGlob } from "typechain";
-import { deferred } from "./deferred";
 import glob from "glob";
-import { extractIdFromFile } from "./ids";
+import { extractIdFromFile } from "./ids.js";
 import { rmSync, writeFileSync } from "fs";
 import path from "path";
-import { filterAbi, forgeBuild } from "./build";
+import { filterAbi, forgeBuild } from "./build.js";
 import { getOutDirectory, getSrcDirectory } from "./forgeConfig";
 import { systemsDir } from "./constants";
 
@@ -50,36 +49,30 @@ export async function generateSystemTypes(outputDir: string, options?: { clear?:
   const srcDir = await getSrcDirectory();
   const systemsPath = path.join(srcDir, systemsDir, "*.sol");
 
-  const [resolve, , promise] = deferred<void>();
-  glob(systemsPath, {}, (_, matches) => {
-    systems = matches.map((path) => {
-      const fragments = path.split("/");
-      return fragments[fragments.length - 1].split(".sol")[0];
-    });
+  const matches = glob.sync(systemsPath);
 
-    ids = matches.map((path, index) => {
-      const id = extractIdFromFile(path);
-      if (!id) {
-        console.log("Path:", path);
-        console.log("ID:", id);
-        throw new Error(
-          "No ID found for" +
-            matches[index] +
-            ". Make sure your system source file includes a ID definition (uint256 constant ID = uint256(keccak256(<ID>));)"
-        );
-      }
-      return id;
-    });
-
-    abis = systems.map((system) => `../abi/${system}.json`);
-
-    typePaths = systems.map((system) => `./ethers-contracts/${system}.ts`);
-
-    resolve();
+  systems = matches.map((path) => {
+    const fragments = path.split("/");
+    return fragments[fragments.length - 1].split(".sol")[0];
   });
 
-  // Make the callback synchronous
-  await promise;
+  ids = matches.map((path, index) => {
+    const id = extractIdFromFile(path);
+    if (!id) {
+      console.log("Path:", path);
+      console.log("ID:", id);
+      throw new Error(
+        "No ID found for" +
+          matches[index] +
+          ". Make sure your system source file includes a ID definition (uint256 constant ID = uint256(keccak256(<ID>));)"
+      );
+    }
+    return id;
+  });
+
+  abis = systems.map((system) => `../abi/${system}.json`);
+
+  typePaths = systems.map((system) => `./ethers-contracts/${system}.ts`);
 
   console.log("Matches", systems);
   console.log("Solidity", ids);
