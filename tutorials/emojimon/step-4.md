@@ -14,7 +14,7 @@ First, we need to wrap our `Position` component with `overridableComponent`. Thi
 import { world } from "./world";
 import { SystemAbis } from "contracts/types/SystemAbis.mjs";
 import { EntityID, overridableComponent } from "@latticexyz/recs";
-import { GodID as singletonEntityId } from "@latticexyz/network";
+import { SingletonID } from "@latticexyz/network";
 …
 export const setup = async () => {
   …
@@ -29,7 +29,7 @@ export const setup = async () => {
   return {
     ...result,
     world,
-    singletonEntityId,
+    singletonEntityId: SingletonID,
     singletonEntity,
     playerEntityId,
     playerEntity,
