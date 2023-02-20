@@ -60,6 +60,9 @@ export const handler = async (args: Arguments<Options>): Promise<void> => {
   if (worldAddress && args.openUrl) {
     const url = new URL(args.openUrl);
     url.searchParams.set("worldAddress", worldAddress);
+    console.log("");
+    console.log(chalk.cyan("Opening client URL to", url.toString()));
+    console.log("");
     openurl.open(url.toString());
   }
 
