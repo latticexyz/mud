@@ -3,7 +3,6 @@ import { CommandModule } from "yargs";
 import bulkupload from "./bulkupload.js";
 import callSystem from "./call-system.js";
 import codegenLibdeploy from "./codegen-libdeploy.js";
-import create from "./create.js";
 import deployContracts from "./deploy-contracts.js";
 import devnode from "./devnode.js";
 import faucet from "./faucet.js";
@@ -19,7 +18,6 @@ export const commands: CommandModule<any, any>[] = [
   bulkupload,
   callSystem,
   codegenLibdeploy,
-  create,
   deployContracts,
   devnode,
   faucet,
