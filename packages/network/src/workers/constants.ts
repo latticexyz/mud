@@ -6,4 +6,7 @@ export enum SyncState {
   LIVE,
 }
 
-export const GodID = "0x060d" as EntityID;
+export const SingletonID = "0x060d" as EntityID;
+
+/** @deprecated Import SingletonID instead */
+export const GodID = SingletonID;

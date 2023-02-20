@@ -17,7 +17,7 @@ import {
 } from "@latticexyz/recs";
 import { Coord, keccak256 } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
-import { Clock, GodID } from "@latticexyz/network";
+import { Clock, SingletonID } from "@latticexyz/network";
 import { deferred } from "@latticexyz/utils";
 import { filter } from "rxjs";
 
@@ -55,10 +55,10 @@ export function getGameConfig(
   world: World,
   gameConfigComponent: Component<{ startTime: Type.String; turnLength: Type.String; actionCooldownLength: Type.String }>
 ) {
-  const godEntityIndex = world.entityToIndex.get(GodID);
-  if (godEntityIndex == null) return;
+  const singletonEntity = world.entityToIndex.get(SingletonID);
+  if (singletonEntity == null) return;
 
-  return getComponentValue(gameConfigComponent, godEntityIndex);
+  return getComponentValue(gameConfigComponent, singletonEntity);
 }
 
 export function isUntraversable(

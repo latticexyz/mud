@@ -9,7 +9,7 @@ import { Components, EntityID } from "@latticexyz/recs";
 import { createCacheStore, storeEvent } from "./CacheStore";
 import * as syncUtils from "./syncUtils";
 import "fake-indexeddb/auto";
-import { GodID, SyncState } from "./constants";
+import { SingletonID, SyncState } from "./constants";
 import { createLatestEventStreamRPC, createLatestEventStreamService } from "./syncUtils";
 
 // Test constants
@@ -168,7 +168,7 @@ describe("Sync.worker", () => {
       type: NetworkEvents.NetworkComponentUpdate,
       component: keccak256("component.LoadingState"),
       value: { state: SyncState.LIVE, msg: "Streaming live events", percentage: 100 },
-      entity: GodID,
+      entity: SingletonID,
       txHash: "worker",
       lastEventInTx: false,
       blockNumber: 99,
