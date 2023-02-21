@@ -15,12 +15,12 @@ abstract contract Store is IStore {
     schema = StoreCore.getSchema(table);
   }
 
-  // Get full record (including full array, load schema from storage)
+  // Get full record (static and dynamic data, load schema from storage)
   function getRecord(uint256 table, bytes32[] calldata key) public view virtual returns (bytes memory data) {
     data = StoreCore.getRecord(table, key);
   }
 
-  // Get full record (including full array)
+  // Get full record (static and dynamic data)
   function getRecord(
     uint256 table,
     bytes32[] calldata key,
