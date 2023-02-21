@@ -1,0 +1,11 @@
+(test/World.t.sol) | validate route (empty string) [assertTrue(_isRoute(""), "empty string")]: 250
+(test/World.t.sol) | validate route (single slash) [assertTrue(_isRoute("/"), "single slash")]: 265
+(test/World.t.sol) | validate route (single level) [assertTrue(_isRoute("/topLevel"), "single level")]: 264
+(test/World.t.sol) | validate route (multi level) [assertTrue(_isRoute("/topLevel/subLevel"), "multi level")]: 262
+(test/World.t.sol) | validate route (no leading slash) [assertFalse(_isRoute("noLeadingSlash"), "no leading slash")]: 298
+(test/World.t.sol) | validate single level route (empty string) [assertTrue(_isSingleLevelRoute(""), "empty string")]: 347
+(test/World.t.sol) | validate single level route (single slash) [assertTrue(_isSingleLevelRoute("/"), "single slash")]: 362
+(test/World.t.sol) | validate single level route (single level) [assertTrue(_isSingleLevelRoute("/topLevel"), "single level")]: 1290
+(test/World.t.sol) | validate single level route (multi level) [assertFalse(_isSingleLevelRoute("/topLevel/subLevel"), "multi level")]: 1391
+(test/World.t.sol) | validate single level route (no leading slash) [assertFalse(_isSingleLevelRoute("noLeadingSlash"), "no leading slash")]: 351
+(test/World.t.sol) | validate single level route (no leading slash but contains slash) [assertFalse(_isSingleLevelRoute("noLeadingSlash/butContainsSlash"), "no leading slash")]: 354
