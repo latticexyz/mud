@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { IStoreHook } from "store/IStore.sol";
-import { StoreCore } from "store/StoreCore.sol";
-import { StoreSwitch } from "store/StoreSwitch.sol";
+import { IStoreHook } from "@latticexyz/store/IStore.sol";
+import { StoreCore } from "@latticexyz/store/StoreCore.sol";
+import { StoreSwitch } from "@latticexyz/store/StoreSwitch.sol";
 
 import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";
 import { System } from "../src/System.sol";

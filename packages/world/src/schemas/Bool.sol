@@ -2,14 +2,14 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
-import { IStore } from "store/IStore.sol";
-import { StoreSwitch } from "store/StoreSwitch.sol";
-import { StoreCore } from "store/StoreCore.sol";
-import { SchemaType } from "store/Types.sol";
-import { Bytes } from "store/Bytes.sol";
-import { Schema, SchemaLib } from "store/Schema.sol";
-import { PackedCounter, PackedCounterLib } from "store/PackedCounter.sol";
-import { SliceLib } from "store/Slice.sol";
+import { IStore } from "@latticexyz/store/IStore.sol";
+import { StoreSwitch } from "@latticexyz/store/StoreSwitch.sol";
+import { StoreCore } from "@latticexyz/store/StoreCore.sol";
+import { SchemaType } from "@latticexyz/store/Types.sol";
+import { Bytes } from "@latticexyz/store/Bytes.sol";
+import { Schema, SchemaLib } from "@latticexyz/store/Schema.sol";
+import { PackedCounter, PackedCounterLib } from "@latticexyz/store/PackedCounter.sol";
+import { SliceLib } from "@latticexyz/store/Slice.sol";
 
 // -- User defined schema and tableId --
 struct BoolSchema {

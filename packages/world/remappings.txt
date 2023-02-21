@@ -1,3 +1,3 @@
 ds-test/=../../node_modules/ds-test/src/
 forge-std/=../../node_modules/forge-std/src/
-store/=../../node_modules/@latticexyz/store/src/
+@latticexyz/store/=../../node_modules/@latticexyz/store/src/

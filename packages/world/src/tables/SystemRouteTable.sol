@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
-import { IStore } from "store/IStore.sol";
-import { SchemaType } from "store/Types.sol";
-import { Schema } from "store/Schema.sol";
+import { IStore } from "@latticexyz/store/IStore.sol";
+import { SchemaType } from "@latticexyz/store/Types.sol";
+import { Schema } from "@latticexyz/store/Schema.sol";
 import { AddressToBytes32SchemaLib as SchemaLib } from "../schemas/AddressToBytes32.sol";
 
 // -- User defined schema and tableId --
