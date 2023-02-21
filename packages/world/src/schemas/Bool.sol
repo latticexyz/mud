@@ -9,7 +9,7 @@ import { SchemaType } from "@latticexyz/store/Types.sol";
 import { Bytes } from "@latticexyz/store/Bytes.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/PackedCounter.sol";
-import { SliceLib } from "@latticexyz/store/Slice.sol";
+import { bytes32ToBool } from "../Utils.sol";
 
 // -- User defined schema and tableId --
 struct BoolSchema {
@@ -61,7 +61,7 @@ library BoolSchemaLib {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
-    return SliceLib.fromBytes(blob).toBool();
+    return bytes32ToBool(bytes32(blob));
   }
 
   function get(
@@ -72,6 +72,6 @@ library BoolSchemaLib {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = store.getRecord(tableId, keyTuple);
-    return SliceLib.fromBytes(blob).toBool();
+    return bytes32ToBool(bytes32(blob));
   }
 }

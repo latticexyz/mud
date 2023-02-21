@@ -50,7 +50,7 @@ library StringSchemaLib {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
-    return SliceLib.getSubslice(blob, 32).toString();
+    return string(SliceLib.getSubslice(blob, 32).toBytes());
   }
 
   function get(
@@ -61,7 +61,7 @@ library StringSchemaLib {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = store.getRecord(tableId, keyTuple);
-    return SliceLib.getSubslice(blob, 32).toString();
+    return string(SliceLib.getSubslice(blob, 32).toBytes());
   }
 
   function has(uint256 tableId, bytes32 key) internal view returns (bool) {

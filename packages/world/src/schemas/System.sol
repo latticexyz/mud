@@ -10,6 +10,7 @@ import { Bytes } from "@latticexyz/store/Bytes.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/PackedCounter.sol";
 import { SliceLib } from "@latticexyz/store/Slice.sol";
+import { bytes32ToBool } from "../Utils.sol";
 
 // -- User defined schema and tableId --
 struct SystemSchema {
@@ -60,7 +61,7 @@ library SystemSchemaLib {
     keyTuple[0] = key;
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
     system = SliceLib.fromBytes(blob).toAddress();
-    publicAccess = SliceLib.getSubslice(blob, 20).toBool();
+    publicAccess = bytes32ToBool(SliceLib.getSubslice(blob, 20).toBytes32());
   }
 
   function get(
@@ -72,6 +73,6 @@ library SystemSchemaLib {
     keyTuple[0] = key;
     bytes memory blob = store.getRecord(tableId, keyTuple);
     system = SliceLib.fromBytes(blob).toAddress();
-    publicAccess = SliceLib.getSubslice(blob, 20).toBool();
+    publicAccess = bytes32ToBool(SliceLib.getSubslice(blob, 20).toBytes32());
   }
 }
