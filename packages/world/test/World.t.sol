@@ -123,7 +123,10 @@ contract WorldTest is Test {
     assertTrue(_isRoute(""), "empty string");
 
     // !gasreport validate route (single slash)
-    assertTrue(_isRoute("/"), "single slash");
+    assertFalse(_isRoute("/"), "single slash");
+
+    // !gasreport validate route (single character)
+    assertTrue(_isRoute("/a"), "single character");
 
     // !gasreport validate route (single level)
     assertTrue(_isRoute("/topLevel"), "single level");
@@ -140,7 +143,10 @@ contract WorldTest is Test {
     assertTrue(_isSingleLevelRoute(""), "empty string");
 
     // !gasreport validate single level route (single slash)
-    assertTrue(_isSingleLevelRoute("/"), "single slash");
+    assertFalse(_isSingleLevelRoute("/"), "single slash");
+
+    // !gasreport validate route (single character)
+    assertTrue(_isRoute("/a"), "single character");
 
     // !gasreport validate single level route (single level)
     assertTrue(_isSingleLevelRoute("/topLevel"), "single level");

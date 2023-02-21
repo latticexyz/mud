@@ -400,6 +400,11 @@ function _isRoute(string memory route) pure returns (bool result) {
     if eq(byte(0, mload(add(route, 0x20))), 0x2f) {
       result := 1
     }
+
+    // If the route is only `/`, return false
+    if eq(mload(route), 1) {
+      result := 0
+    }
   }
 }
 
