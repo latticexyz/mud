@@ -6,7 +6,7 @@ import { Store, IStoreHook } from "@latticexyz/store/Store.sol";
 import { StoreCore } from "@latticexyz/store/StoreCore.sol";
 import { Schema } from "@latticexyz/store/Schema.sol";
 
-import { OwnerTable, tableId as OwnerTableId } from "./tables/OwnerTable.sol";
+import { OwnerTable } from "./tables/OwnerTable.sol";
 import { RouteAccessTable } from "./tables/RouteAccessTable.sol";
 import { RouteTable } from "./tables/RouteTable.sol";
 import { SystemRouteTable } from "./tables/SystemRouteTable.sol";
