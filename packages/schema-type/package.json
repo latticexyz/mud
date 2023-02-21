@@ -1,0 +1,32 @@
+{
+  "name": "@latticexyz/schema-type",
+  "license": "MIT",
+  "version": "1.34.0",
+  "description": "SchemaType enum for various languages",
+  "main": "src/typescript/SchemaType.ts",
+  "source": "src/typescript/SchemaType.ts",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/schema-type"
+  },
+  "scripts": {
+    "prepare": "yarn build && chmod u+x git-install.sh",
+    "git:install": "bash git-install.sh",
+    "test": "yarn test:solidity && yarn test:typescript",
+    "test:solidity": "forge test",
+    "test:typescript": "tsc --noEmit",
+    "build": "yarn build:solidity && yarn build:typescript",
+    "build:solidity": "rimraf out && forge build",
+    "build:typescript": "tsc",
+    "link": "yarn link",
+    "release": "npm publish || echo 'version already published'"
+  },
+  "devDependencies": {
+    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#f36dab24d63d1c1945a05ed375ce341d3c1a49ed",
+    "rimraf": "^3.0.2"
+  },
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+}

@@ -10,6 +10,7 @@
   "workspaces": {
     "packages": [
       "packages/utils",
+      "packages/schema-type",
       "packages/solecs",
       "packages/store",
       "packages/cli",
