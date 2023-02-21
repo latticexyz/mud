@@ -50,8 +50,8 @@ contract World is Store {
     if (!_isSingleLevelRoute(subRoute)) revert RouteInvalid(subRoute);
 
     // Require base route to exist (with a special check for the root route because it's empty and fails the `has` check)
-    if (!(keccak256(bytes(baseRoute)) == ROOT_ROUTE_ID || RouteTable.has(keccak256(bytes(baseRoute)))))
-      revert RouteInvalid(baseRoute);
+    bytes32 baseRouteId = keccak256(bytes(baseRoute));
+    if (!(baseRouteId == ROOT_ROUTE_ID || RouteTable.has(baseRouteId))) revert RouteInvalid(baseRoute);
 
     // Construct the new route
     string memory route = string(abi.encodePacked(baseRoute, subRoute));
