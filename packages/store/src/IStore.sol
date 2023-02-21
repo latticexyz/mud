@@ -13,6 +13,12 @@ interface IStore {
 
   function getSchema(uint256 table) external view returns (Schema schema);
 
+  function setMetadata(
+    uint256 table,
+    string calldata tableName,
+    string[] calldata fieldNames
+  ) external;
+
   // Set full record (including full dynamic data)
   function setRecord(
     uint256 table,

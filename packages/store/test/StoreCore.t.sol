@@ -13,6 +13,7 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreView } from "../src/StoreView.sol";
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
+import { StoreMetadata, StoreMetadataTable } from "../src/tables/StoreMetadataTable.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -22,7 +23,6 @@ struct TestStruct {
 
 contract StoreCoreTest is Test, StoreView {
   TestStruct private testStruct;
-
   mapping(uint256 => bytes) private testMapping;
 
   // Expose an external setRecord function for testing purposes of indexers (see testHooks)
@@ -92,6 +92,42 @@ contract StoreCoreTest is Test, StoreView {
 
     assertTrue(StoreCore.hasTable(table));
     assertFalse(StoreCore.hasTable(table2));
+  }
+
+  function testSetMetadata() public {
+    uint256 table = uint256(keccak256("some.table"));
+    Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
+    string memory tableName = "someTable";
+    string[] memory fieldNames = new string[](2);
+    fieldNames[0] = "field1";
+    fieldNames[1] = "field2";
+
+    // Register table
+    StoreCore.registerSchema(table, schema);
+
+    // !gasreport StoreCore: set table metadata
+    StoreCore.setMetadata(table, tableName, fieldNames);
+
+    // Get metadata for table
+    StoreMetadata memory metadata = StoreMetadataTable.get(table);
+
+    assertEq(metadata.tableName, tableName);
+    assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
+  }
+
+  function testlSetMetadataRevert() public {
+    uint256 table = uint256(keccak256("some.table"));
+    Schema schema = SchemaLib.encode(SchemaType.UINT8);
+    string memory tableName = "someTable";
+    string[] memory fieldNames = new string[](2);
+    fieldNames[0] = "field1";
+    fieldNames[1] = "field2";
+
+    // Register table
+    StoreCore.registerSchema(table, schema);
+
+    vm.expectRevert(abi.encodeWithSelector(StoreCore.StoreCore_InvalidFieldNamesLength.selector, 1, 2));
+    StoreCore.setMetadata(table, tableName, fieldNames);
   }
 
   function testSetAndGetDynamicDataLength() public {

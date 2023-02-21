@@ -5,6 +5,9 @@ import "forge-std/Test.sol";
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { SchemaType } from "@latticexyz/store/src/Types.sol";
+import { StoreMetadata, StoreMetadataTable } from "@latticexyz/store/src/tables/StoreMetadataTable.sol";
 
 import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";
 import { System } from "../src/System.sol";
@@ -214,6 +217,41 @@ contract WorldTest is Test {
     // Expect an error when extending a route that doesn't exist
     vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "/invalid"));
     world.registerTable("/invalid", "/test", RouteAccess.getSchema());
+  }
+
+  function testSetMetadata() public {
+    string memory tableName = "testTable";
+    Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT8);
+    string[] memory fieldNames = new string[](2);
+    fieldNames[0] = "testField1";
+    fieldNames[1] = "testField2";
+
+    // Expect an error when setting metadata on a route that doesn't exist
+    vm.expectRevert();
+    world.setMetadata("/invalid", tableName, fieldNames);
+
+    // Register a table
+    world.registerTable("", "/test", schema);
+
+    // Set metadata on the route
+    world.setMetadata("/test", tableName, fieldNames);
+
+    // Expect the metadata to be set
+    StoreMetadata memory metadata = StoreMetadataTable.get(world, uint256(keccak256("/test")));
+    assertEq(metadata.tableName, tableName);
+    assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
+
+    // Expect it to be possible to change metadata
+    world.setMetadata("/test", "newTableName", fieldNames);
+    metadata = StoreMetadataTable.get(world, uint256(keccak256("/test")));
+    assertEq(metadata.tableName, "newTableName");
+    assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
+
+    // Expect an error when setting metadata on a route that is not owned by the caller
+    vm.startPrank(address(1));
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/test", address(1)));
+    world.setMetadata("/test", tableName, fieldNames);
+    vm.stopPrank();
   }
 
   function testRegisterSystem() public {
