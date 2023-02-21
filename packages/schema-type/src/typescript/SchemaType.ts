@@ -639,3 +639,5 @@ export const SchemaTypeArrayToElement = {
 } as {
   [K in SchemaType]: K extends ArraySchemaType ? SchemaType : undefined;
 };
+
+export type DynamicSchemaType = ArraySchemaType | SchemaType.BYTES | SchemaType.STRING;
