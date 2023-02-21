@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
-import { Store, IStoreHook } from "@latticexyz/store/Store.sol";
-import { StoreCore } from "@latticexyz/store/StoreCore.sol";
-import { Schema } from "@latticexyz/store/Schema.sol";
+import { Store, IStoreHook } from "@latticexyz/store/src/Store.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { RouteOwnerTable } from "./tables/RouteOwnerTable.sol";
 import { RouteAccessTable } from "./tables/RouteAccessTable.sol";

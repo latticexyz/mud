@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
-import { IStore } from "@latticexyz/store/IStore.sol";
-import { SchemaType } from "@latticexyz/store/Types.sol";
-import { Schema } from "@latticexyz/store/Schema.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { SchemaType } from "@latticexyz/store/src/Types.sol";
+import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { RouteAccessSchemaLib as SchemaLib } from "../schemas/RouteAccessSchema.sol";
 
 // -- User defined schema and tableId --
