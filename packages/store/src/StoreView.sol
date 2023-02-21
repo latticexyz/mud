@@ -11,10 +11,16 @@ import { Store } from "./Store.sol";
 contract StoreView is Store {
   error StoreView_NotImplemented();
 
+  /**
+   * Not implemented in StoreView
+   */
   function registerSchema(uint256, Schema) public virtual {
     revert StoreView_NotImplemented();
   }
 
+  /**
+   * Not implemented in StoreView
+   */
   function setRecord(
     uint256,
     bytes32[] calldata,
@@ -23,7 +29,9 @@ contract StoreView is Store {
     revert StoreView_NotImplemented();
   }
 
-  // Set partial data at schema index
+  /**
+   * Not implemented in StoreView
+   */
   function setField(
     uint256,
     bytes32[] calldata,
@@ -33,10 +41,16 @@ contract StoreView is Store {
     revert StoreView_NotImplemented();
   }
 
+  /**
+   * Not implemented in StoreView
+   */
   function registerStoreHook(uint256, IStoreHook) public virtual {
     revert StoreView_NotImplemented();
   }
 
+  /**
+   * Not implemented in StoreView
+   */
   function deleteRecord(uint256, bytes32[] calldata) public virtual {
     revert StoreView_NotImplemented();
   }
