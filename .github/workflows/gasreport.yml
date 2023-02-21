@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - packages/store/**
+      - packages/world/**
 
 jobs:
   gas-report:
@@ -29,9 +30,5 @@ jobs:
       - name: Install local CLI
         run: cd packages/cli && yarn build && npm link && cd ../..
 
-      - name: Run gas report
-        run: yarn workspace @latticexyz/store run gasreport
-
-      - uses: stefanzweifel/git-auto-commit-action@v4
-        with:
-          commit_message: "test: update gas report"
+      - name: Verify that gas report is up to date
+        run: yarn workspace @latticexyz/store run gasreport && yarn workspace @latticexyx/world run gasreport && if [ -n "$(git status --porcelain)" ]; then exit 0; fi
