@@ -1,3 +1,5 @@
+// WARNING: SchemaType enum MUST mirror the solidity version!
+// WARNING: SchemaType methods use hardcoded enum indexes, review them after any changes to the enum
 export enum SchemaType {
   UINT8,
   UINT16,
