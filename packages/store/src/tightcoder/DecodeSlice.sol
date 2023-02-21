@@ -468,10 +468,6 @@ library DecodeSlice {
     }
   }
 
-  function toString(Slice self) internal view returns (string memory output) {
-    return string(self.toBytes());
-  }
-
   /************************************************************************
    *
    *    bytes1 - bytes32
