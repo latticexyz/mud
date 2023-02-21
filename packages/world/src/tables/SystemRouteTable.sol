@@ -5,7 +5,7 @@ import { console } from "forge-std/console.sol";
 import { IStore } from "@latticexyz/store/IStore.sol";
 import { SchemaType } from "@latticexyz/store/Types.sol";
 import { Schema } from "@latticexyz/store/Schema.sol";
-import { AddressToBytes32SchemaLib as SchemaLib } from "../schemas/AddressToBytes32.sol";
+import { SystemRouteSchemaLib as SchemaLib } from "../schemas/SystemRouteSchema.sol";
 
 // -- User defined schema and tableId --
 uint256 constant tableId = uint256(keccak256("mud.world.table.systemRoute"));
@@ -24,16 +24,16 @@ library SystemRouteTable {
   }
 
   /** Set the table's data */
-  function set(address system, bytes32 routeId) internal {
+  function set(address system, uint256 routeId) internal {
     SchemaLib.set(tableId, system, routeId);
   }
 
   /** Get the table's data */
-  function get(address system) internal view returns (bytes32) {
+  function get(address system) internal view returns (uint256) {
     return SchemaLib.get(tableId, system);
   }
 
-  function get(IStore store, address system) internal view returns (bytes32) {
+  function get(IStore store, address system) internal view returns (uint256) {
     return SchemaLib.get(tableId, store, system);
   }
 

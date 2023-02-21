@@ -8,9 +8,9 @@ import { StoreSwitch } from "@latticexyz/store/StoreSwitch.sol";
 
 import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";
 import { System } from "../src/System.sol";
-import { OwnerTable } from "../src/tables/OwnerTable.sol";
+import { RouteOwnerTable } from "../src/tables/RouteOwnerTable.sol";
 import { RouteAccessTable } from "../src/tables/RouteAccessTable.sol";
-import { RouteAccessSchemaLib } from "../src/schemas/RouteAccess.sol";
+import { RouteAccessSchemaLib } from "../src/schemas/RouteAccessSchema.sol";
 import { SystemTable } from "../src/tables/SystemTable.sol";
 import { BoolSchemaLib } from "../src/schemas/Bool.sol";
 
@@ -57,7 +57,7 @@ contract WorldTestSystem is System {
     key[0] = "testKey";
 
     if (StoreSwitch.isDelegateCall()) {
-      uint256 tableId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
+      uint256 tableId = uint256(uint256(keccak256(abi.encodePacked(accessRoute, subRoute))));
       StoreCore.setRecord(tableId, key, abi.encodePacked(data));
     } else {
       World(msg.sender).setRecord(accessRoute, subRoute, key, abi.encodePacked(data));
@@ -110,7 +110,7 @@ contract WorldTest is Test {
 
   function testConstructor() public {
     // Owner of root route should be the creator of the World
-    address rootOwner = OwnerTable.get(world, keccak256(""));
+    address rootOwner = RouteOwnerTable.get(world, uint256(uint256(keccak256(""))));
     assertEq(rootOwner, address(this));
   }
 
@@ -166,14 +166,14 @@ contract WorldTest is Test {
     world.registerRoute("", "/test");
 
     // Owner of the new route should be the caller of the method
-    address routeOwner = OwnerTable.get(world, keccak256("/test"));
+    address routeOwner = RouteOwnerTable.get(world, uint256(keccak256("/test")));
     assertEq(routeOwner, address(this));
 
     // The new route should be accessible by the caller
-    assertTrue(RouteAccessTable.get({ store: world, routeId: keccak256("/test"), caller: address(this) }));
+    assertTrue(RouteAccessTable.get({ store: world, routeId: uint256(keccak256("/test")), caller: address(this) }));
 
     // The new route should not be accessible by another address
-    assertFalse(RouteAccessTable.get({ store: world, routeId: keccak256("/test"), caller: address(0x01) }));
+    assertFalse(RouteAccessTable.get({ store: world, routeId: uint256(keccak256("/test")), caller: address(0x01) }));
 
     // Expect an error when registering an existing route
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/test"));
@@ -195,14 +195,14 @@ contract WorldTest is Test {
     assertEq(world.getSchema(tableId).unwrap(), RouteAccessSchemaLib.getSchema().unwrap());
 
     // Expect the table's route to be owned by the caller
-    address routeOwner = OwnerTable.get(world, bytes32(tableId));
+    address routeOwner = RouteOwnerTable.get(world, tableId);
     assertEq(routeOwner, address(this));
 
     // The new table should be accessible by the caller
-    assertTrue(RouteAccessTable.get({ store: world, routeId: bytes32(tableId), caller: address(this) }));
+    assertTrue(RouteAccessTable.get({ store: world, routeId: tableId, caller: address(this) }));
 
     // The new table should not be accessible by another address
-    assertFalse(RouteAccessTable.get({ store: world, routeId: bytes32(tableId), caller: address(0x01) }));
+    assertFalse(RouteAccessTable.get({ store: world, routeId: tableId, caller: address(0x01) }));
 
     // Expect an error when registering an existing table
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/testRouteAccess"));
@@ -219,14 +219,14 @@ contract WorldTest is Test {
 
   function testRegisterSystem() public {
     System system = new System();
-    bytes32 systemRouteId = world.registerSystem("", "/testSystem", system, false);
+    uint256 systemRouteId = world.registerSystem("", "/testSystem", system, false);
 
     // Expect the system to be registered
     (address registeredAddress, bool publicAccess) = SystemTable.get(world, systemRouteId);
     assertEq(registeredAddress, address(system));
 
     // Expect the system route to be owned by the caller
-    address routeOwner = OwnerTable.get(world, systemRouteId);
+    address routeOwner = RouteOwnerTable.get(world, systemRouteId);
     assertEq(routeOwner, address(this));
 
     // Expect the system to not be publicly accessible
@@ -239,7 +239,7 @@ contract WorldTest is Test {
     assertFalse(RouteAccessTable.get({ store: world, routeId: systemRouteId, caller: address(0x01) }));
 
     // Expect the system to have access to its own base route
-    assertTrue(RouteAccessTable.get({ store: world, routeId: keccak256(bytes("")), caller: address(system) }));
+    assertTrue(RouteAccessTable.get({ store: world, routeId: uint256(keccak256(bytes(""))), caller: address(system) }));
 
     // Expect an error when registering an existing system
     vm.expectRevert(abi.encodeWithSelector(World.SystemExists.selector, address(system)));
@@ -540,8 +540,8 @@ contract WorldTest is Test {
   // TODO: add a test for systems writing to tables via the World
 
   function testHashEquality() public {
-    // bytes32 h1 = keccak256("testHashEquality");
-    // bytes32 h2 = keccak256(abi.encodePacked(bytes32("testHashEquality")));
+    // bytes32 h1 = uint256(keccak256("testHashEquality"));
+    // bytes32 h2 = uint256(keccak256(abi.encodePacked(bytes32("testHashEquality"))));
     // assertEq(h1, h2);
   }
 }

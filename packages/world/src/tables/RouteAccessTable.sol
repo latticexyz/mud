@@ -5,7 +5,7 @@ import { console } from "forge-std/console.sol";
 import { IStore } from "@latticexyz/store/IStore.sol";
 import { SchemaType } from "@latticexyz/store/Types.sol";
 import { Schema } from "@latticexyz/store/Schema.sol";
-import { RouteAccessSchemaLib as SchemaLib } from "../schemas/RouteAccess.sol";
+import { RouteAccessSchemaLib as SchemaLib } from "../schemas/RouteAccessSchema.sol";
 
 // -- User defined schema and tableId --
 uint256 constant tableId = uint256(keccak256("mud.world.table.routeAccess"));
@@ -25,7 +25,7 @@ library RouteAccessTable {
 
   /** Set the table's data */
   function set(
-    bytes32 routeId,
+    uint256 routeId,
     address caller,
     bool access
   ) internal {
@@ -33,19 +33,19 @@ library RouteAccessTable {
   }
 
   /** Get the table's data */
-  function get(bytes32 routeId, address caller) internal view returns (bool) {
+  function get(uint256 routeId, address caller) internal view returns (bool) {
     return SchemaLib.get(tableId, routeId, caller);
   }
 
   function get(
     IStore store,
-    bytes32 routeId,
+    uint256 routeId,
     address caller
   ) internal view returns (bool) {
     return SchemaLib.get(tableId, store, routeId, caller);
   }
 
-  function deleteRecord(bytes32 routeId, address caller) internal {
+  function deleteRecord(uint256 routeId, address caller) internal {
     SchemaLib.deleteRecord(tableId, routeId, caller);
   }
 }

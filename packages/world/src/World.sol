@@ -6,7 +6,7 @@ import { Store, IStoreHook } from "@latticexyz/store/Store.sol";
 import { StoreCore } from "@latticexyz/store/StoreCore.sol";
 import { Schema } from "@latticexyz/store/Schema.sol";
 
-import { OwnerTable } from "./tables/OwnerTable.sol";
+import { RouteOwnerTable } from "./tables/RouteOwnerTable.sol";
 import { RouteAccessTable } from "./tables/RouteAccessTable.sol";
 import { RouteTable } from "./tables/RouteTable.sol";
 import { SystemRouteTable } from "./tables/SystemRouteTable.sol";
@@ -14,7 +14,7 @@ import { SystemTable } from "./tables/SystemTable.sol";
 import { System } from "./System.sol";
 import { ISystemHook } from "./ISystemHook.sol";
 
-bytes32 constant ROOT_ROUTE_ID = keccak256(bytes(""));
+uint256 constant ROOT_ROUTE_ID = uint256(keccak256(bytes("")));
 bytes32 constant SINGLE_SLASH = "/";
 
 contract World is Store {
@@ -28,11 +28,11 @@ contract World is Store {
     RouteTable.registerSchema();
     RouteAccessTable.registerSchema();
     SystemRouteTable.registerSchema();
-    OwnerTable.registerSchema();
+    RouteOwnerTable.registerSchema();
 
     // Register root route and give ownership to msg.sender
     RouteTable.set({ routeId: ROOT_ROUTE_ID, route: "" }); // Storing this explicitly to trigger the event for indexers
-    OwnerTable.set({ key: ROOT_ROUTE_ID, owner: msg.sender });
+    RouteOwnerTable.set({ routeId: ROOT_ROUTE_ID, owner: msg.sender });
     RouteAccessTable.set({ routeId: ROOT_ROUTE_ID, caller: msg.sender, access: true });
   }
 
@@ -45,17 +45,17 @@ contract World is Store {
   /**
    * Register a new route by extending an existing route
    */
-  function registerRoute(string calldata baseRoute, string calldata subRoute) public returns (bytes32 routeId) {
+  function registerRoute(string calldata baseRoute, string calldata subRoute) public returns (uint256 routeId) {
     // Require subroute to be a valid route fragment (start with `/` and don't contain any further `/`)
     if (!_isSingleLevelRoute(subRoute)) revert RouteInvalid(subRoute);
 
     // Require base route to exist (with a special check for the root route because it's empty and fails the `has` check)
-    bytes32 baseRouteId = keccak256(bytes(baseRoute));
+    uint256 baseRouteId = _toRouteId(baseRoute);
     if (!(baseRouteId == ROOT_ROUTE_ID || RouteTable.has(baseRouteId))) revert RouteInvalid(baseRoute);
 
     // Construct the new route
     string memory route = string(abi.encodePacked(baseRoute, subRoute));
-    routeId = keccak256(bytes(route));
+    routeId = _toRouteId(route);
 
     // Require route to not exist yet
     if (RouteTable.has(routeId)) revert RouteExists(route);
@@ -64,7 +64,7 @@ contract World is Store {
     RouteTable.set({ routeId: routeId, route: route });
 
     // Add caller as owner of the new route
-    OwnerTable.set({ key: routeId, owner: msg.sender });
+    RouteOwnerTable.set({ routeId: routeId, owner: msg.sender });
 
     // Give caller access to the route
     RouteAccessTable.set({ routeId: routeId, caller: msg.sender, access: true });
@@ -92,8 +92,7 @@ contract World is Store {
    */
   function registerSchema(uint256 tableId, Schema schema) public override {
     // Require caller to own the given tableId
-    if (OwnerTable.get(bytes32(tableId)) != msg.sender)
-      revert RouteAccessDenied(RouteTable.get(bytes32(tableId)), msg.sender);
+    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
 
     // Register the schema
     StoreCore.registerSchema(tableId, schema);
@@ -103,7 +102,7 @@ contract World is Store {
    * Register a hook for a given table route
    */
   function registerTableHook(string calldata tableRoute, IStoreHook hook) public {
-    registerStoreHook(uint256(keccak256(bytes(tableRoute))), hook);
+    registerStoreHook(_toRouteId(tableRoute), hook);
   }
 
   /**
@@ -112,8 +111,7 @@ contract World is Store {
    */
   function registerStoreHook(uint256 tableId, IStoreHook hook) public override {
     // Require caller to own the given tableId
-    if (OwnerTable.get(bytes32(tableId)) != msg.sender)
-      revert RouteAccessDenied(RouteTable.get(bytes32(tableId)), msg.sender);
+    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
 
     // Register the hook
     StoreCore.registerStoreHook(tableId, hook);
@@ -134,13 +132,13 @@ contract World is Store {
     string calldata systemRoute,
     System system,
     bool publicAccess
-  ) public returns (bytes32 systemRouteId) {
+  ) public returns (uint256 systemRouteId) {
     // Require the system to not exist yet
     if (SystemRouteTable.has(address(system))) revert SystemExists(address(system));
 
     // Require the caller to own the base route
-    bytes32 baseRouteId = keccak256(bytes(baseRoute));
-    if (OwnerTable.get(baseRouteId) != msg.sender) revert RouteAccessDenied(baseRoute, msg.sender);
+    uint256 baseRouteId = _toRouteId(baseRoute);
+    if (RouteOwnerTable.get(baseRouteId) != msg.sender) revert RouteAccessDenied(baseRoute, msg.sender);
 
     // Register system route
     systemRouteId = registerRoute(baseRoute, systemRoute);
@@ -160,8 +158,8 @@ contract World is Store {
    */
   function grantAccess(string calldata route, address grantee) public {
     // Require the caller to own the route
-    bytes32 routeId = keccak256(bytes(route));
-    if (OwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
+    uint256 routeId = _toRouteId(route);
+    if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
 
     // Grant access to the given route
     RouteAccessTable.set({ routeId: routeId, caller: grantee, access: true });
@@ -172,8 +170,8 @@ contract World is Store {
    */
   function retractAccess(string calldata route, address grantee) public {
     // Require the caller to own the route
-    bytes32 routeId = keccak256(bytes(route));
-    if (OwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
+    uint256 routeId = _toRouteId(route);
+    if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
 
     // Retract access to the given route
     RouteAccessTable.deleteRecord({ routeId: routeId, caller: grantee });
@@ -219,8 +217,7 @@ contract World is Store {
     bytes calldata data
   ) public {
     // Check access based on the tableRoute
-    if (!_hasAccess(bytes32(tableRouteId), msg.sender))
-      revert RouteAccessDenied(RouteTable.get(bytes32(tableRouteId)), msg.sender);
+    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
 
     // Set the record
     StoreCore.setRecord(tableRouteId, key, data);
@@ -262,8 +259,7 @@ contract World is Store {
     bytes calldata data
   ) public override {
     // Check access based on the tableRoute
-    if (!_hasAccess(bytes32(tableRouteId), msg.sender))
-      revert RouteAccessDenied(RouteTable.get(bytes32(tableRouteId)), msg.sender);
+    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
 
     // Set the field
     StoreCore.setField(tableRouteId, key, schemaIndex, data);
@@ -298,8 +294,7 @@ contract World is Store {
    */
   function deleteRecord(uint256 tableRouteId, bytes32[] calldata key) public override {
     // Check access based on the tableRoute
-    if (!_hasAccess(bytes32(tableRouteId), msg.sender))
-      revert RouteAccessDenied(RouteTable.get(bytes32(tableRouteId)), msg.sender);
+    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
 
     // Delete the record
     StoreCore.deleteRecord(tableRouteId, key);
@@ -323,7 +318,7 @@ contract World is Store {
   ) public returns (bytes memory) {
     // Check if the system is a public system and get its address
     string memory systemRoute = string(abi.encodePacked(accessRoute, subRoute));
-    bytes32 systemRouteId = keccak256(bytes(systemRoute));
+    uint256 systemRouteId = _toRouteId(systemRoute);
     (address systemAddress, bool publicAccess) = SystemTable.get(systemRouteId);
 
     // If the system is not public, check for individual access
@@ -380,10 +375,10 @@ contract World is Store {
   }
 
   function _hasAccess(string calldata route, address caller) internal view returns (bool) {
-    return _hasAccess(keccak256(bytes(route)), caller);
+    return _hasAccess(_toRouteId(route), caller);
   }
 
-  function _hasAccess(bytes32 routeId, address caller) internal view returns (bool) {
+  function _hasAccess(uint256 routeId, address caller) internal view returns (bool) {
     return RouteAccessTable.get(routeId, caller);
   }
 }
@@ -424,4 +419,8 @@ function _isSingleLevelRoute(string memory route) pure returns (bool result) {
 
   // Return true if no `/` was found
   return true;
+}
+
+function _toRouteId(string memory route) pure returns (uint256) {
+  return uint256(keccak256(bytes(route)));
 }
