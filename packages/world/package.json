@@ -22,7 +22,7 @@
     "link": "yarn link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish || echo 'version already published'",
-    "gasreport": " ../cli/dist/index.js gas-report --path test/** --save gas-report.txt"
+    "gasreport": "mud gas-report --path test/** --save gas-report.txt"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^9.0.0",
@@ -38,7 +38,7 @@
     "ts-node": "10.7",
     "typechain": "^8.1.1",
     "typedoc": "^0.23.10",
-    "@latticexyz/cli": "^1.34.0",
+    "@latticexyz/cli": "^1.37.1",
     "@latticexyz/store": "^1.34.0"
 
   },
