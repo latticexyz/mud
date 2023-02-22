@@ -19,7 +19,8 @@
     "lint": "eslint . --ext .ts",
     "build": "tsup",
     "link": "yarn link",
-    "test": "tsc --noEmit --moduleResolution nodenext && echo 'todo: add tests'",
+    "test": "tsc --noEmit && echo 'todo: add tests'",
+    "test:next": "tsc --noEmit --moduleResolution nodenext",
     "git:install": "bash git-install.sh",
     "release": "npm publish || echo 'version already published'"
   },
