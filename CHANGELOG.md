@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.38.0](https://github.com/latticexyz/mud/compare/v1.37.1...v1.38.0) (2023-02-22)
+
+### Bug Fixes
+
+- **create-mud:** small linting/type fixes for templates ([#425](https://github.com/latticexyz/mud/issues/425)) ([1f2598c](https://github.com/latticexyz/mud/commit/1f2598cff40cd9f5059b553b9291ffd2c61bacdd))
+
+### Features
+
+- **cli:** deprecate create command ([#424](https://github.com/latticexyz/mud/issues/424)) ([292119f](https://github.com/latticexyz/mud/commit/292119f4c0c40cbd3ad688ee567f4c05d957af7c))
+- **cli:** log client world URL ([#426](https://github.com/latticexyz/mud/issues/426)) ([f257467](https://github.com/latticexyz/mud/commit/f25746756ab4e93ef7a477b2b2c4948206f38f69))
+
 ## [1.37.1](https://github.com/latticexyz/mud/compare/v1.37.0...v1.37.1) (2023-02-17)
 
 **Note:** Version bump only for package mud

@@ -1,7 +1,7 @@
 {
   "name": "create-mud",
   "description": "Create a new MUD project",
-  "version": "1.37.1",
+  "version": "1.38.0",
   "author": "Lattice <mud@lattice.xyz>",
   "license": "MIT",
   "bin": "dist/cli.js",
