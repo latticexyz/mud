@@ -13,6 +13,7 @@
     "prepare": "yarn build && chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
     "codegen": "ts-node ./scripts/codegen.ts",
+    "tablegen": "mud tablegen",
     "test": "yarn codegen && forge test",
     "build": "yarn codegen && rimraf out && forge build && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && yarn rimraf abi/*.metadata.json",
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@latticexyz/cli": "^1.37.1",
+    "@latticexyz/schema-type": "^1.34.0",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",
