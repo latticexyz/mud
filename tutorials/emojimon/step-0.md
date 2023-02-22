@@ -13,7 +13,7 @@ order: 0
 - familiarity with React, TailwindCSS is helpful, but not required (you can still copy+paste)
 
 !!!
-If you are running Windows, you will need to setup WSL and configure it properly. The libraries and tools listed above need to be installed in the WSL. All commands below also need to be executed in the WSL. 
+If you are running Windows, you will need to setup WSL and configure it properly. The libraries and tools listed above need to be installed in the WSL. All commands below also need to be executed in the WSL.
 
 We recommend reading the [WSL guide from Microsoft](https://learn.microsoft.com/en-us/training/modules/wsl/wsl-introduction/introduction) to get started.
 !!!
@@ -57,7 +57,7 @@ MUD abstacts away much of the complexity of building a blockchain app, executing
 
 But wait, there's more!
 
-## Contract hot-reloading
+## Contract hot reloading
 
 Let’s change the behavior and see what happens. Open `LibMath.sol` and change the increment function to add `2` instead of just `1`.
 
@@ -71,7 +71,9 @@ library LibMath {
 
 ```
 
-After saving, the `dev:contracts` service will detect the contract change and redeploy all dependent contracts and update the client automatically. Once the client reloads, click the “increment” button and watch the counter value jump by 2 instead of 1. The live reloading of contracts will make it much quicker to iterate on our project.
+After saving, the `dev:contracts` service will detect the contract change and redeploy all dependent system contracts and update the client automatically. Once the client reloads, click the “increment” button and watch the counter value jump by 2 instead of 1. The live reloading of contracts will make it much quicker to iterate on our project.
+
+Note that hot reloading is only available for systems at the moment. New components or changes to existing components will still need to manually restart the `dev:contracts` service.
 
 <!-- TODO: figure out how to shrink this image and maybe float:right --->
 
