@@ -16,20 +16,20 @@ interface IStore {
   // Set full record (including full dynamic data)
   function setRecord(
     uint256 table,
-    bytes32[] memory key,
-    bytes memory data
+    bytes32[] calldata key,
+    bytes calldata data
   ) external;
 
   // Set partial data at schema index
   function setField(
     uint256 table,
-    bytes32[] memory key,
+    bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes memory data
+    bytes calldata data
   ) external;
 
   // Register hooks to be called when a record or field is set or deleted
-  function registerHook(uint256 table, IStoreHook hooks) external;
+  function registerStoreHook(uint256 table, IStoreHook hooks) external;
 
   // Set full record (including full dynamic data)
   function deleteRecord(uint256 table, bytes32[] memory key) external;
@@ -40,14 +40,14 @@ interface IStore {
   // Get full record (including full array)
   function getRecord(
     uint256 table,
-    bytes32[] memory key,
+    bytes32[] calldata key,
     Schema schema
   ) external view returns (bytes memory data);
 
   // Get partial data at schema index
   function getField(
     uint256 table,
-    bytes32[] memory key,
+    bytes32[] calldata key,
     uint8 schemaIndex
   ) external view returns (bytes memory data);
 

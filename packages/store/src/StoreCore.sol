@@ -78,7 +78,7 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerHook(uint256 table, IStoreHook hook) external {
+  function registerStoreHook(uint256 table, IStoreHook hook) external {
     HooksTable.push(table, address(hook));
   }
 

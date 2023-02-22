@@ -8,7 +8,7 @@ import { StoreView } from "../src/StoreView.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 
 // Mock Store to call MockSystem
-contract Store is StoreView {
+contract StoreSwitchTestStore is StoreView {
   MockSystem mockSystem = new MockSystem();
 
   function callViaDelegateCall() public returns (bool isDelegate) {
@@ -33,10 +33,10 @@ contract MockSystem {
 }
 
 contract StoreSwitchTest is Test {
-  Store store;
+  StoreSwitchTestStore store;
 
   function setUp() public {
-    store = new Store();
+    store = new StoreSwitchTestStore();
   }
 
   function testIsDelegatecall() public {

@@ -23,7 +23,9 @@ library StoreSwitch {
     assembly {
       codeSize := extcodesize(address())
     }
-    if (codeSize == 0) revert StoreSwitch_InvalidInsideConstructor();
+
+    // If the call is from within a constructor, use StoreCore to write to own storage
+    if (codeSize == 0) return true;
 
     // Check whether this contract implements the IStore interface
     try IStore(address(this)).isStore() {

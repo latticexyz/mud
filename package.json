@@ -13,6 +13,7 @@
       "packages/schema-type",
       "packages/solecs",
       "packages/store",
+      "packages/world",
       "packages/cli",
       "packages/recs",
       "packages/react",

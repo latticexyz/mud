@@ -28,8 +28,8 @@ contract StoreCoreTest is Test, StoreView {
   // Expose an external setRecord function for testing purposes of indexers (see testHooks)
   function setRecord(
     uint256 table,
-    bytes32[] memory key,
-    bytes memory data
+    bytes32[] calldata key,
+    bytes calldata data
   ) public override {
     StoreCore.setRecord(table, key, data);
   }
@@ -37,15 +37,15 @@ contract StoreCoreTest is Test, StoreView {
   // Expose an external setField function for testing purposes of indexers (see testHooks)
   function setField(
     uint256 table,
-    bytes32[] memory key,
+    bytes32[] calldata key,
     uint8 schemaIndex,
-    bytes memory data
+    bytes calldata data
   ) public override {
     StoreCore.setField(table, key, schemaIndex, data);
   }
 
   // Expose an external deleteRecord function for testing purposes of indexers (see testHooks)
-  function deleteRecord(uint256 table, bytes32[] memory key) public override {
+  function deleteRecord(uint256 table, bytes32[] calldata key) public override {
     StoreCore.deleteRecord(table, key);
   }
 
@@ -539,7 +539,7 @@ contract StoreCoreTest is Test, StoreView {
     MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
 
     // !gasreport register subscriber
-    StoreCore.registerHook(table, subscriber);
+    StoreCore.registerStoreHook(table, subscriber);
 
     bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
@@ -580,7 +580,7 @@ contract StoreCoreTest is Test, StoreView {
     MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
 
     // !gasreport register subscriber
-    StoreCore.registerHook(table, subscriber);
+    StoreCore.registerStoreHook(table, subscriber);
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;
