@@ -1,5 +1,5 @@
-import type { Arguments, CommandBuilder } from "yargs";
-import { generateLibDeploy } from "../utils";
+import type { CommandModule } from "yargs";
+import { generateLibDeploy } from "../utils/index.js";
 
 type Options = {
   config: string;
@@ -7,18 +7,23 @@ type Options = {
   systems?: string;
 };
 
-export const command = "codegen-libdeploy";
-export const desc = "Generate LibDeploy.sol from given deploy config";
+const commandModule: CommandModule<Options, Options> = {
+  command: "codegen-libdeploy",
 
-export const builder: CommandBuilder<Options, Options> = (yargs) =>
-  yargs.options({
-    config: { type: "string", default: "./deploy.json", desc: "Component and system deployment configuration" },
-    out: { type: "string", default: ".", desc: "Output directory for LibDeploy.sol" },
-    systems: { type: "string", desc: "Only generate deploy code for the given systems" },
-  });
+  describe: "Generate LibDeploy.sol from given deploy config",
 
-export const handler = async (args: Arguments<Options>): Promise<void> => {
-  const { config, out, systems } = args;
-  await generateLibDeploy(config, out, systems);
-  process.exit(0);
+  builder(yargs) {
+    return yargs.options({
+      config: { type: "string", default: "./deploy.json", desc: "Component and system deployment configuration" },
+      out: { type: "string", default: ".", desc: "Output directory for LibDeploy.sol" },
+      systems: { type: "string", desc: "Only generate deploy code for the given systems" },
+    });
+  },
+
+  async handler({ config, out, systems }) {
+    await generateLibDeploy(config, out, systems);
+    process.exit(0);
+  },
 };
+
+export default commandModule;

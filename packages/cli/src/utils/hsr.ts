@@ -39,7 +39,7 @@ export function hsr(root: string, replaceSystems: (systems: string[]) => Promise
 
   console.log("Watching system file changes...");
 
-  chokidar.watch(root).on("all", async (event, path, stats) => {
+  chokidar.watch(root).on("all", async (event, path) => {
     console.log(`[${event}]: ${path}`);
 
     // Find changed file

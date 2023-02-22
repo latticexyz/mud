@@ -2,10 +2,12 @@
   "name": "@latticexyz/cli",
   "version": "1.37.1",
   "description": "Command line interface for mud",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
   "license": "MIT",
   "bin": {
-    "mud": "./dist/index.js"
+    "mud": "./dist/mud.js"
   },
   "repository": {
     "type": "git",
@@ -14,9 +16,11 @@
   },
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
-    "build": "rimraf dist && esbuild ./src/index.ts ./src/commands/* --bundle --platform=node --outdir=dist --external:fsevents && chmod u+x dist/index.js",
+    "lint": "eslint . --ext .ts",
+    "build": "tsup",
     "link": "yarn link",
-    "test": "tsc && echo 'todo: add tests'",
+    "test": "tsc --noEmit && echo 'todo: add tests'",
+    "test:next": "tsc --noEmit --moduleResolution nodenext",
     "git:install": "bash git-install.sh",
     "release": "npm publish || echo 'version already published'"
   },
@@ -34,6 +38,7 @@
     "pkg": "^5.7.0",
     "rimraf": "^3.0.2",
     "ts-node": "^10.7.0",
+    "tsup": "^6.6.3",
     "typescript": "^4.6.4"
   },
   "dependencies": {
@@ -42,7 +47,6 @@
     "@latticexyz/services": "^1.37.1",
     "@latticexyz/solecs": "^1.37.1",
     "@latticexyz/std-contracts": "^1.37.1",
-    "@latticexyz/utils": "^1.37.1",
     "@typechain/ethers-v5": "^10.1.1",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
