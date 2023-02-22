@@ -83,19 +83,19 @@ func connectToDatabase(dsn string, schema string) (*sqlx.DB, error) {
 	return db, nil
 }
 
-func buildValueFields(valueSchema map[string]string) string {
+func buildValueFields(valueSchema map[string]mode.DataSchemaTypePair) string {
 	if len(valueSchema) == 0 {
 		return ""
 	}
 	valueFields := ""
 	for field := range valueSchema {
-		fieldType := valueSchema[field]
-		valueFields = valueFields + `, ` + field + ` ` + fieldType
+		fieldTypePair := valueSchema[field]
+		valueFields = valueFields + `, ` + field + ` ` + fieldTypePair.PostgresType
 	}
 	return valueFields
 }
 
-func buildCreateTable(tableName string, valueSchema map[string]string) string {
+func buildCreateTable(tableName string, valueSchema map[string]mode.DataSchemaTypePair) string {
 	valueFields := buildValueFields(valueSchema)
 
 	return `CREATE TABLE IF NOT EXISTS ` + tableName + ` (
@@ -104,7 +104,7 @@ func buildCreateTable(tableName string, valueSchema map[string]string) string {
 	);`
 }
 
-func buildIndexOnTable(tableName string, valueSchema map[string]string) string {
+func buildIndexOnTable(tableName string, valueSchema map[string]mode.DataSchemaTypePair) string {
 	var indexStr strings.Builder
 
 	for field := range valueSchema {
@@ -113,7 +113,7 @@ func buildIndexOnTable(tableName string, valueSchema map[string]string) string {
 	return indexStr.String()
 }
 
-func buildDatabaseSchema(state *pb.ECSStateSnapshot, dataSchema mode.DataSchema) (string, error) {
+func buildDatabaseSchema(state *pb.ECSStateSnapshot, dataSchema *mode.DataSchema) (string, error) {
 	var schema strings.Builder
 
 	for componentIdIdx := range state.StateComponents {
@@ -161,7 +161,7 @@ func loadDefaultSolidityType(solidityTypeIdentifier string, decoded interface{},
 	return err
 }
 
-func loadIntoDatabase(stateSnapshot *pb.ECSStateSnapshot, dataSchema mode.DataSchema, db *sqlx.DB) error {
+func loadIntoDatabase(stateSnapshot *pb.ECSStateSnapshot, dataSchema *mode.DataSchema, db *sqlx.DB) error {
 	logger.GetLogger().Info("preparing to insert state", zap.Int("entries", len(stateSnapshot.State)))
 	for counter, stateSlice := range stateSnapshot.State {
 		// First read the indexes from the snapshot, then lookup the actual
@@ -273,7 +273,7 @@ func main() {
 	logger := logger.GetLogger()
 	defer logger.Sync()
 
-	dataSchema := mode.ParseDataSchemaFile(*dataSchemaPath)
+	dataSchema := mode.NewDataSchemaFromJSON(*dataSchemaPath)
 
 	encoding, err := ioutil.ReadFile(*dataPath)
 	if err != nil {
