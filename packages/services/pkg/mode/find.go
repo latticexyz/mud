@@ -21,7 +21,7 @@ func (builder *FindBuilder) Validate() error {
 
 /*
 grpcurl -plaintext -d '{"from": "component_position", "filter": [{"field": {"table_name": "test", "table_field": "x"}, "operator": ">", "value": "0" }, {"field": {"table_name": "test", "table_field": "y"}, "operator": ">", "value": "0" }],  "project": [{"field": {"table_name": "test", "table_field": "x"}}, {"field": {"table_name": "test", "table_field": "y"}}] }' localhost:50091 mode.QueryLayer/Find
-grpcurl -plaintext -d '{"from": "component_stake", "filter": [],  "project": [] }' localhost:50091 mode.QueryLayer/Find
+grpcurl -plaintext -d '{"from": "component_stake", "filter": [],  "project": [{field: {table_name: 'component_stake', field_name: 'value'}, rename: 'stake'}] }' localhost:50091 mode.QueryLayer/Find
 */
 
 func (builder *FindBuilder) BuildFilter() string {
@@ -92,4 +92,17 @@ func (builder *FindBuilder) ToSQLQuery() (string, error) {
 	query.WriteString(builder.BuildFilter())
 
 	return query.String(), nil
+}
+
+func (builder *FindBuilder) GetFieldProjections() map[string]string {
+
+	fieldProjections := make(map[string]string)
+
+	for _, projection := range builder.Request.Project {
+		if projection.Rename != nil {
+			fieldProjections[*projection.Rename] = projection.Field.TableField
+		}
+	}
+
+	return fieldProjections
 }
