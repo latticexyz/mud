@@ -1,4 +1,6 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S TS_NODE_COMPILER_OPTIONS='{ "module": "esnext" }' node --loader ts-node/esm
+
+// TODO env -S flag may not be well supported, gather feedback
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";

@@ -17,7 +17,7 @@ const config: StoreUserConfig = {
       }
     },*/
     Mixed: {
-      keyTuple: ["key"], // <-- can be skipped for 1 key named 'key'
+      path: "schemas/",
       schema: {
         u32: SchemaType.UINT32,
         u128: SchemaType.UINT128,
@@ -26,6 +26,7 @@ const config: StoreUserConfig = {
       },
     },
     Route: {
+      path: "schemas/",
       schema: {
         addr: SchemaType.ADDRESS,
         selector: SchemaType.BYTES4,
@@ -33,6 +34,7 @@ const config: StoreUserConfig = {
       },
     },
     Vector2: {
+      path: "schemas/",
       schema: {
         x: SchemaType.UINT32,
         y: SchemaType.UINT32,
