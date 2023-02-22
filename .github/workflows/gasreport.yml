@@ -31,4 +31,4 @@ jobs:
         run: cd packages/cli && yarn build && npm link && cd ../..
 
       - name: Verify that gas report is up to date
-        run: yarn workspace @latticexyz/store run gasreport && yarn workspace @latticexyx/world run gasreport && if [ -n "$(git status --porcelain)" ]; then exit 0; fi
+        run: yarn workspace @latticexyz/store run gasreport && yarn workspace @latticexyz/world run gasreport && if [ -n "$(git status --porcelain)" ]; then exit 0; fi
