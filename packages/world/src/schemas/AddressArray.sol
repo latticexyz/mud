@@ -83,6 +83,6 @@ library AddressArraySchemaLib {
 
   function decode(bytes memory blob) internal pure returns (address[] memory addresses) {
     if (blob.length == 0) return new address[](0);
-    SliceLib.getSubslice(blob, 32).toAddressArray();
+    SliceLib.getSubslice(blob, 32).decodeArray_address();
   }
 }

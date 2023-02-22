@@ -60,7 +60,7 @@ library SystemSchemaLib {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = bytes32(routeId);
     bytes memory blob = StoreSwitch.getRecord(tableId, keyTuple);
-    system = SliceLib.fromBytes(blob).toAddress();
+    system = address(bytes20(blob));
     publicAccess = bytes32ToBool(SliceLib.getSubslice(blob, 20).toBytes32());
   }
 
@@ -72,7 +72,7 @@ library SystemSchemaLib {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = bytes32(routeId);
     bytes memory blob = store.getRecord(tableId, keyTuple);
-    system = SliceLib.fromBytes(blob).toAddress();
+    system = address(bytes20(blob));
     publicAccess = bytes32ToBool(SliceLib.getSubslice(blob, 20).toBytes32());
   }
 }
