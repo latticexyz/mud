@@ -23,9 +23,10 @@
     "link": "yarn link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish || echo 'version already published'",
-    "gasreport": " ../cli/dist/index.js gas-report --path test/** --save gas-report.txt"
+    "gasreport": "mud gas-report --path test/** --save gas-report.txt"
   },
   "devDependencies": {
+    "@latticexyz/cli": "^1.37.1",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",
@@ -40,8 +41,7 @@
     "solidity-docgen": "^0.6.0-beta.22",
     "ts-node": "10.7",
     "typechain": "^8.1.1",
-    "typedoc": "^0.23.10",
-    "@latticexyz/cli": "^1.34.0"
+    "typedoc": "^0.23.10"
   },
   "peerDependencies": {
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
