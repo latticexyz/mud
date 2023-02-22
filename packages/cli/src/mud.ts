@@ -1,5 +1,6 @@
-#!/usr/bin/env -S TS_NODE_COMPILER_OPTIONS='{ "module": "esnext" }' node --loader ts-node/esm
+#!/usr/bin/env ts-node-esm
 
+// -S ts-node-esm --no-warnings
 // TODO env -S flag may not be well supported, gather feedback
 
 import yargs from "yargs";

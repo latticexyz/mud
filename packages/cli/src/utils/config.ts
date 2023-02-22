@@ -46,7 +46,8 @@ export interface StoreConfig extends StoreUserConfig {
 export async function loadConfig({ configPath }: { configPath?: string }) {
   configPath = resolveConfigPath(configPath);
 
-  // TODO for now `env -S node --loader ts-node/esm` shebang is enough, is loadTsNode needed?
+  // TODO is overriding ts-node compiler options ok? is loadTsNode needed?
+  process.env.TS_NODE_COMPILER_OPTIONS = `{ "module": "esnext" }`;
   // ts-node is required to parse the typescript config
   // await loadTsNode();
 
