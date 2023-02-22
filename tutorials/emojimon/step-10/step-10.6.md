@@ -206,7 +206,7 @@ export const setup = async () => {
 The encounter screen is ready for a "throw" button. We'll create a "toast" using [react-toastify](https://github.com/fkhadra/react-toastify) to help us communicate to the user that there's a pending action and the result of that action.
 
 ```tsx !#2,8-9,20-78 packages/client/src/EncounterScreen.tsx
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 …
 export const EncounterScreen = ({ encounterId }: Props) => {

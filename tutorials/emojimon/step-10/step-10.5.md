@@ -158,11 +158,11 @@ We also needed to add a `useEffect` to clear the `showEncounter` state when we l
 
 In the encounter screen, we can query for and render the monster that just appeared.
 
-```tsx !#1-5,12-33,47-48 packages/client/src/EncounterScreen.tsx
+```tsx !#1-5,12-28,42-43 packages/client/src/EncounterScreen.tsx
 import { EntityID, getComponentValueStrict, Has, HasValue } from "@latticexyz/recs";
 import { useEntityQuery } from "./useEntityQuery";
 import { useMUD } from "./MUDContext";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { MonsterType, monsterTypes } from "./monsterTypes";
 
 type Props = {
@@ -175,12 +175,7 @@ export const EncounterScreen = ({ encounterId }: Props) => {
     components: { Encounter, MonsterType },
   } = useMUD();
 
-  const monster = useEntityQuery(
-    useMemo(
-      () => [HasValue(Encounter, { value: encounterId }), Has(MonsterType)],
-      [Encounter, MonsterType, encounterId]
-    )
-  ).map((entity) => {
+  const monster = useEntityQuery([HasValue(Encounter, { value: encounterId }), Has(MonsterType)]).map((entity) => {
     const monsterType = getComponentValueStrict(MonsterType, entity).value as MonsterType;
     return {
       entity,
@@ -213,5 +208,3 @@ export const EncounterScreen = ({ encounterId }: Props) => {
 ```
 
 Technically the query can return multiple monster entities, but we know we only spawned one, so we'll just use the first one in the list. You can imagine easily extending this to support multiple monsters!
-
-We're using `useMemo` inside the `useEntityQuery` to avoid unnecessary rerenders. We'll bake these optimizations into MUD in the future.

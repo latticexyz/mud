@@ -8,10 +8,22 @@ order: 10
 
 Let's create our first MUD project!
 
+You will need:
+- git ([download](https://git-scm.com/downloads))
+- foundry (forge, anvil, cast) ([download](https://book.getfoundry.sh/getting-started/installation), make sure to `foundryup` at least once)
+- node.js (v16+) ([download](https://nodejs.org/en/download/))
+- yarn (after installing node: `npm install yarn --global`)
+
+!!!
+If you are running Windows, you will need to setup WSL and configure it properly. The libraries and tools listed above need to be installed in the WSL. All commands below also need to be executed in the WSL. 
+
+We recommend reading the [WSL guide from Microsoft](https://learn.microsoft.com/en-us/training/modules/wsl/wsl-introduction/introduction) to get started.
+!!!
+
 Run the following command in the console of your choice to create a new MUD project in `my-project` using the `minimal` template.
 
 ```shell
-npx @latticexyz/cli create my-project --template minimal
+yarn create mud my-project --template minimal
 ```
 
 Next, run `yarn dev` in the root directory of your new project to start the development server (web client and local Ethereum node).

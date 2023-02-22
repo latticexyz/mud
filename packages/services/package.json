@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/services",
   "license": "MIT",
-  "version": "1.34.0",
+  "version": "1.37.1",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "main": "protobuf/ts",
   "repository": {
@@ -20,5 +20,10 @@
     "rimraf": "^3.0.2",
     "ts-proto": "^1.126.1"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343",
+  "dependencies": {
+    "long": "^5.2.1",
+    "nice-grpc-common": "^2.0.0",
+    "protobufjs": "^7.1.2"
+  }
 }

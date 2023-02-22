@@ -4,6 +4,9 @@ import { readFileSync } from "fs";
 import { Contract } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
+import { getSrcDirectory } from "../utils/forgeConfig";
+import path from "path";
+import { componentsDir, systemsDir } from "../utils/constants";
 
 type Options = {
   config?: string;
@@ -36,18 +39,20 @@ export const handler = async (argv: Arguments<Options>): Promise<void> => {
   const World = new Contract(world, WorldAbi, provider);
 
   if (deployData) {
+    const srcDir = await getSrcDirectory();
+
     // Create component labels
     const componentPromises = deployData.components.map(async (component: string) => {
-      const path = `${wd}/src/components/${component}.sol`;
-      const id = extractIdFromFile(path);
+      const filePath = path.join(wd, srcDir, componentsDir, `${component}.sol`);
+      const id = extractIdFromFile(filePath);
       if (!id) return;
       const address = await World.getComponent(keccak256(id));
       return [component, address];
     });
     // Create system labels
     const systemPromises = deployData.systems.map(async (system: { name: string }) => {
-      const path = `${wd}/src/systems/${system.name}.sol`;
-      const id = extractIdFromFile(path);
+      const filePath = path.join(wd, srcDir, systemsDir, `${system.name}.sol`);
+      const id = extractIdFromFile(filePath);
       if (!id) return;
       const address = await World.getSystemAddress(keccak256(id));
       return [system.name, address];

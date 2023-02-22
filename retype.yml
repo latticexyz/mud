@@ -5,7 +5,7 @@ server:
   host: 127.0.0.1:5005
 branding:
   title: MUD
-  label: 1.34.0
+  label: 1.37.1
   logo: public/logo512_dark.png
   logoDark: public/logo512.png
   colors:
@@ -19,11 +19,11 @@ links:
   - text: GitHub
     link: https://github.com/latticexyz/mud
   - text: Discord
-    link: https://discord.gg/XhZp6HbqNp
+    link: https://lattice.xyz/discord
   - text: Twitter
     link: https://twitter.com/latticexyz
 edit:
   repo: "https://github.com/latticexyz/mud"
-  label: 1.34.0
+  label: 1.37.1
 footer:
   copyright: "&copy; Copyright {{ year }}. All rights reserved."

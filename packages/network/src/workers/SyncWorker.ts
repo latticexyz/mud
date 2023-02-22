@@ -46,7 +46,7 @@ import {
   fetchEventsInBlockRangeChunked,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
-import { GodID, SyncState } from "./constants";
+import { SingletonID, SyncState } from "./constants";
 import { debug as parentDebug } from "./debug";
 
 const debug = parentDebug.extend("SyncWorker");
@@ -90,7 +90,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       type: NetworkEvents.NetworkComponentUpdate,
       component: keccak256("component.LoadingState"),
       value: newLoadingState as unknown as ComponentValue<SchemaOf<C[keyof C]>>,
-      entity: GodID,
+      entity: SingletonID,
       txHash: "worker",
       lastEventInTx: false,
       blockNumber,

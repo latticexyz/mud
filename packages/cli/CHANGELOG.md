@@ -3,6 +3,45 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.37.1](https://github.com/latticexyz/mud/compare/v1.37.0...v1.37.1) (2023-02-17)
+
+**Note:** Version bump only for package @latticexyz/cli
+
+# [1.37.0](https://github.com/latticexyz/mud/compare/v1.36.1...v1.37.0) (2023-02-16)
+
+### Bug Fixes
+
+- package entry points, peer dep versions ([#409](https://github.com/latticexyz/mud/issues/409)) ([66a7fd6](https://github.com/latticexyz/mud/commit/66a7fd6f74620ce02c60e3d55701d4740cc65251))
+
+### Reverts
+
+- Revert "chore(release): publish v1.37.0" ([c934f53](https://github.com/latticexyz/mud/commit/c934f5388c1e56f2fe6390fdda30f5b9b1ea1c20))
+
+## [1.36.1](https://github.com/latticexyz/mud/compare/v1.36.0...v1.36.1) (2023-02-16)
+
+**Note:** Version bump only for package @latticexyz/cli
+
+# [1.36.0](https://github.com/latticexyz/mud/compare/v1.35.0...v1.36.0) (2023-02-16)
+
+### Features
+
+- **cli:** use forge config for paths to src, test, out ([#392](https://github.com/latticexyz/mud/issues/392)) ([01217d3](https://github.com/latticexyz/mud/commit/01217d3b1f39a0f0cd1b1b5c45750a65928ea02f))
+
+# [1.35.0](https://github.com/latticexyz/mud/compare/v1.34.0...v1.35.0) (2023-02-15)
+
+### Bug Fixes
+
+- **cli:** exit if generateDeploy fails in deploy-contracts setup ([#377](https://github.com/latticexyz/mud/issues/377)) ([71dd7f0](https://github.com/latticexyz/mud/commit/71dd7f083b9dccd14f646ea0bdbfd3a9028d4ed5))
+- **cli:** pass reuseComponents arg in deploy command ([#356](https://github.com/latticexyz/mud/issues/356)) ([8e31984](https://github.com/latticexyz/mud/commit/8e31984e0f6b91316c18bf773233a0e5e1feb31d))
+- **cli:** use nodejs grpc transport ([#374](https://github.com/latticexyz/mud/issues/374)) ([4c9ca7d](https://github.com/latticexyz/mud/commit/4c9ca7dcd756732be817f579fc24092bd2fd7aae))
+
+### Features
+
+- **cli:** add gas-report command ([#365](https://github.com/latticexyz/mud/issues/365)) ([c2a5209](https://github.com/latticexyz/mud/commit/c2a520970d2897efdfda36df4bab0fc6988c346b))
+- **cli:** add initialization libs to deploy ([#361](https://github.com/latticexyz/mud/issues/361)) ([3999ca0](https://github.com/latticexyz/mud/commit/3999ca007c93a135692cdfe21ab263d7ab947c9c))
+- **cli:** allow initializers to utilize SystemStorage ([#371](https://github.com/latticexyz/mud/issues/371)) ([b8ba018](https://github.com/latticexyz/mud/commit/b8ba018a1abccd4fdea82a3508cb0f39d8794280))
+- update forge-std, use some new features in cli ([#311](https://github.com/latticexyz/mud/issues/311)) ([43ad118](https://github.com/latticexyz/mud/commit/43ad11837ae280509be92737e8f86d749d4d48d8))
+
 # [1.34.0](https://github.com/latticexyz/mud/compare/v1.33.1...v1.34.0) (2023-01-29)
 
 ### Bug Fixes

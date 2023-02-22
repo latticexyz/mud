@@ -57,7 +57,7 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-npx @latticexyz/cli create my-project
+yarn create mud my-project
 ```
 
 ![Scaffolding a new project with the MUD CLI.](./public/docs/mud-create.gif)
@@ -79,7 +79,7 @@ MUD consists of several libraries. They can be used independently, but are best 
 
 ## Contribute
 
-We'd love your support in improving MUD! This monorepo includes all of MUD's source code, and pull requests are always welcome. To discuss new features or changes [join our Discord](https://discord.com/invite/XhZp6HbqNp).
+We'd love your support in improving MUD! This monorepo includes all of MUD's source code, and pull requests are always welcome. To discuss new features or changes [join our Discord](https://lattice.xyz/discord).
 
 ### Local development setup
 
@@ -114,7 +114,7 @@ MUD follows the [conventional commit specification](https://www.conventionalcomm
 
 ## Community support
 
-[Join our Discord](https://discord.com/invite/XhZp6HbqNp) to get support and connect with the community!
+[Join our Discord](https://lattice.xyz/discord) to get support and connect with the community!
 
 ## License
 

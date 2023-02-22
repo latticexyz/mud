@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "ds-test/test.sol";
+import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
-import {Cheats} from "./Cheats.sol";
+
 import {BulkSetStateSystem, ID as BulkSetStateSystemID, ECSEvent} from "std-contracts/systems/BulkSetStateSystem.sol";
 import {World} from "solecs/World.sol";
 import {System} from "solecs/System.sol";
@@ -32,24 +32,22 @@ struct State {
  * Usage:
  * forge script --sig "run(string, address)" --rpc-url http://localhost:8545 src/contracts/BulkUpload.sol:BulkUpload path/to/ecs-map-test.json <WORLD_ADDRESS>
  */
-contract BulkUpload is DSTest {
-  Cheats internal immutable vm = Cheats(HEVM_ADDRESS);
-
+contract BulkUpload is Script {
   function run(
     string memory path,
     address worldAddress,
     uint256 eventsPerTx
   ) public {
-    vm.startBroadcast();
+    vmSafe.startBroadcast();
 
     // Read JSON
     console.log(path);
-    string memory json = vm.readFile(path);
+    string memory json = vmSafe.readFile(path);
 
     console.log(worldAddress);
 
     // Parse JSON
-    ParsedState memory parsedState = abi.decode(vm.parseJson(json), (ParsedState));
+    ParsedState memory parsedState = abi.decode(vmSafe.parseJson(json), (ParsedState));
 
     // Convert component ids
     uint256[] memory componentIds = new uint256[](parsedState.componentIds.length);
@@ -106,7 +104,7 @@ contract BulkUpload is DSTest {
 
     bulkSetStateSystem.execute(abi.encode(componentIds, newOverflowEntities, newOverflowEvents));
 
-    vm.stopBroadcast();
+    vmSafe.stopBroadcast();
   }
 }
 
