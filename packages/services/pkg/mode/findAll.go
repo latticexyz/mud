@@ -93,3 +93,7 @@ func (builder *FindAllBuilder) ToSQLQueryList() (queries []string, tableList []s
 	}
 	return
 }
+
+func (builder *FindAllBuilder) GetFieldProjections() map[string]string {
+	return make(map[string]string)
+}

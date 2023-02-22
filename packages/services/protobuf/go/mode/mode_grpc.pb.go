@@ -24,6 +24,8 @@ const _ = grpc.SupportPackageIsVersion7
 type QueryLayerClient interface {
 	// Find endpoint.
 	Find(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
+	// Join endpoint.
+	Join(ctx context.Context, in *JoinRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
 	// FindAll endpoint.
 	FindAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
 	// Count endpoint.
@@ -41,6 +43,15 @@ func NewQueryLayerClient(cc grpc.ClientConnInterface) QueryLayerClient {
 func (c *queryLayerClient) Find(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error) {
 	out := new(QueryLayerResponse)
 	err := c.cc.Invoke(ctx, "/mode.QueryLayer/Find", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryLayerClient) Join(ctx context.Context, in *JoinRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error) {
+	out := new(QueryLayerResponse)
+	err := c.cc.Invoke(ctx, "/mode.QueryLayer/Join", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -71,6 +82,8 @@ func (c *queryLayerClient) Count(ctx context.Context, in *FindRequest, opts ...g
 type QueryLayerServer interface {
 	// Find endpoint.
 	Find(context.Context, *FindRequest) (*QueryLayerResponse, error)
+	// Join endpoint.
+	Join(context.Context, *JoinRequest) (*QueryLayerResponse, error)
 	// FindAll endpoint.
 	FindAll(context.Context, *FindAllRequest) (*QueryLayerResponse, error)
 	// Count endpoint.
@@ -84,6 +97,9 @@ type UnimplementedQueryLayerServer struct {
 
 func (UnimplementedQueryLayerServer) Find(context.Context, *FindRequest) (*QueryLayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Find not implemented")
+}
+func (UnimplementedQueryLayerServer) Join(context.Context, *JoinRequest) (*QueryLayerResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Join not implemented")
 }
 func (UnimplementedQueryLayerServer) FindAll(context.Context, *FindAllRequest) (*QueryLayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindAll not implemented")
@@ -118,6 +134,24 @@ func _QueryLayer_Find_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryLayerServer).Find(ctx, req.(*FindRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryLayer_Join_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(JoinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryLayerServer).Join(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mode.QueryLayer/Join",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryLayerServer).Join(ctx, req.(*JoinRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -168,6 +202,10 @@ var QueryLayer_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Find",
 			Handler:    _QueryLayer_Find_Handler,
+		},
+		{
+			MethodName: "Join",
+			Handler:    _QueryLayer_Join_Handler,
 		},
 		{
 			MethodName: "FindAll",

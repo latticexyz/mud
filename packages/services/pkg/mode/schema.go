@@ -59,19 +59,26 @@ func (dataSchema *DataSchema) BuildTableSchemas() map[string]*TableSchema {
 /// Table Schema
 ///
 
-func (schema *TableSchema) GetEncodingTypes(fieldNames []string) ([]*abi.Type, []string) {
+func (schema *TableSchema) GetEncodingTypes(fieldNames []string, fieldProjections map[string]string) ([]*abi.Type, []string) {
 	_types := []*abi.Type{}
 	_typesStr := []string{}
 	for _, fieldName := range fieldNames {
-		_type := abi.MustNewType(schema.SolidityTypes[fieldName])
+		var projectedField string
+		// If the field is projected, use the projected field name, otherwise use the original field name.
+		if fieldProjections[fieldName] != "" {
+			projectedField = fieldProjections[fieldName]
+		} else {
+			projectedField = fieldName
+		}
+		_type := abi.MustNewType(schema.SolidityTypes[projectedField])
 		_types = append(_types, _type)
 		_typesStr = append(_typesStr, _type.String())
 	}
 	return _types, _typesStr
 }
 
-func (schema *TableSchema) GetEncodingTypesAll() ([]*abi.Type, []string) {
-	return schema.GetEncodingTypes(schema.FieldNames)
+func (schema *TableSchema) GetEncodingTypesAll(fieldProjections map[string]string) ([]*abi.Type, []string) {
+	return schema.GetEncodingTypes(schema.FieldNames, fieldProjections)
 }
 
 // TODO: a version of this function is useful when sending over "raw" values.
@@ -88,4 +95,37 @@ func (schema *TableSchema) ToSolidityTupleString() string {
 	}
 	tuple.WriteString(")")
 	return tuple.String()
+}
+
+func GetSchemasForTables(tableNames []string, tableSchemas map[string]*TableSchema) []*TableSchema {
+	schemas := []*TableSchema{}
+	for _, tableName := range tableNames {
+		schemas = append(schemas, tableSchemas[tableName])
+	}
+	return schemas
+}
+
+func CombineSchemas(schemas []*TableSchema) *TableSchema {
+	var combinedSchemaName strings.Builder
+	for idx, schema := range schemas {
+		combinedSchemaName.WriteString(schema.TableName)
+		if idx < len(schemas)-1 {
+			combinedSchemaName.WriteString("_")
+		}
+	}
+
+	combinedSchema := &TableSchema{
+		TableName:     combinedSchemaName.String(),
+		FieldNames:    []string{},
+		SolidityTypes: map[string]string{},
+		PostgresTypes: map[string]string{},
+	}
+	for _, schema := range schemas {
+		for fieldName, solidityType := range schema.SolidityTypes {
+			combinedSchema.FieldNames = append(combinedSchema.FieldNames, fieldName)
+			combinedSchema.SolidityTypes[fieldName] = solidityType
+			combinedSchema.PostgresTypes[fieldName] = schema.PostgresTypes[fieldName]
+		}
+	}
+	return combinedSchema
 }

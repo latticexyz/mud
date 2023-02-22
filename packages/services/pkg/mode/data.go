@@ -46,11 +46,11 @@ func SerializeRow(row []string, colNames []string, colEncodingTypes []*abi.Type)
 	}, nil
 }
 
-func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema) (*mode.GenericTable, error) {
+func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema, fieldProjections map[string]string) (*mode.GenericTable, error) {
 	tsStart := time.Now()
 
 	colNames, row, rowInterface := PrepareForScan(rows)
-	colEncodingTypes, colEncodingTypesStrings := tableSchema.GetEncodingTypes(colNames)
+	colEncodingTypes, colEncodingTypesStrings := tableSchema.GetEncodingTypes(colNames, fieldProjections)
 
 	serializedRows := []*mode.Row{}
 

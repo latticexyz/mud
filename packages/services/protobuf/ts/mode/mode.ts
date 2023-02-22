@@ -65,10 +65,20 @@ export interface FindAllRequest {
   options: FindRequestOptions | undefined;
 }
 
+export interface JoinRequest {
+  on: FieldPair | undefined;
+  children: FindRequest[];
+}
+
 export interface Filter {
   field: Field | undefined;
   operator: string;
   value: string;
+}
+
+export interface FieldPair {
+  field1: Field | undefined;
+  field2: Field | undefined;
 }
 
 export interface Field {
@@ -611,6 +621,50 @@ export const FindAllRequest = {
   },
 };
 
+function createBaseJoinRequest(): JoinRequest {
+  return { on: undefined, children: [] };
+}
+
+export const JoinRequest = {
+  encode(message: JoinRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.on !== undefined) {
+      FieldPair.encode(message.on, writer.uint32(10).fork()).ldelim();
+    }
+    for (const v of message.children) {
+      FindRequest.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): JoinRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseJoinRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.on = FieldPair.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.children.push(FindRequest.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<JoinRequest>): JoinRequest {
+    const message = createBaseJoinRequest();
+    message.on = object.on !== undefined && object.on !== null ? FieldPair.fromPartial(object.on) : undefined;
+    message.children = object.children?.map((e) => FindRequest.fromPartial(e)) || [];
+    return message;
+  },
+};
+
 function createBaseFilter(): Filter {
   return { field: undefined, operator: "", value: "" };
 }
@@ -658,6 +712,52 @@ export const Filter = {
     message.field = object.field !== undefined && object.field !== null ? Field.fromPartial(object.field) : undefined;
     message.operator = object.operator ?? "";
     message.value = object.value ?? "";
+    return message;
+  },
+};
+
+function createBaseFieldPair(): FieldPair {
+  return { field1: undefined, field2: undefined };
+}
+
+export const FieldPair = {
+  encode(message: FieldPair, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.field1 !== undefined) {
+      Field.encode(message.field1, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.field2 !== undefined) {
+      Field.encode(message.field2, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): FieldPair {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFieldPair();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.field1 = Field.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.field2 = Field.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<FieldPair>): FieldPair {
+    const message = createBaseFieldPair();
+    message.field1 =
+      object.field1 !== undefined && object.field1 !== null ? Field.fromPartial(object.field1) : undefined;
+    message.field2 =
+      object.field2 !== undefined && object.field2 !== null ? Field.fromPartial(object.field2) : undefined;
     return message;
   },
 };
@@ -764,6 +864,15 @@ export const QueryLayerDefinition = {
       responseStream: false,
       options: {},
     },
+    /** Join endpoint. */
+    join: {
+      name: "Join",
+      requestType: JoinRequest,
+      requestStream: false,
+      responseType: QueryLayerResponse,
+      responseStream: false,
+      options: {},
+    },
     /** FindAll endpoint. */
     findAll: {
       name: "FindAll",
@@ -788,6 +897,8 @@ export const QueryLayerDefinition = {
 export interface QueryLayerServiceImplementation<CallContextExt = {}> {
   /** Find endpoint. */
   find(request: FindRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
+  /** Join endpoint. */
+  join(request: JoinRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
   /** FindAll endpoint. */
   findAll(request: FindAllRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
   /** Count endpoint. */
@@ -797,6 +908,8 @@ export interface QueryLayerServiceImplementation<CallContextExt = {}> {
 export interface QueryLayerClient<CallOptionsExt = {}> {
   /** Find endpoint. */
   find(request: DeepPartial<FindRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
+  /** Join endpoint. */
+  join(request: DeepPartial<JoinRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
   /** FindAll endpoint. */
   findAll(request: DeepPartial<FindAllRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
   /** Count endpoint. */

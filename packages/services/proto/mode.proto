@@ -61,10 +61,20 @@ message FindAllRequest {
     FindRequestOptions options = 2;
 }
 
+message JoinRequest {
+    FieldPair on = 1;
+    repeated FindRequest children = 2;
+}
+
 message Filter {
     Field field = 1;
     string operator = 2;
     string value = 3;
+}
+
+message FieldPair {
+    Field field1 = 1;
+    Field field2 = 2;
 }
 
 message Field {
@@ -80,6 +90,9 @@ message ProjectedField {
 service QueryLayer {
     // Find endpoint.
     rpc Find(FindRequest) returns (QueryLayerResponse) {}
+
+    // Join endpoint.
+    rpc Join(JoinRequest) returns (QueryLayerResponse) {}
 
     // FindAll endpoint.
     rpc FindAll(FindAllRequest) returns (QueryLayerResponse) {}
