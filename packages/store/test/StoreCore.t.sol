@@ -398,7 +398,7 @@ contract StoreCoreTest is Test, StoreView {
     loadedData = StoreCore.getField(table, key, 2);
 
     // Verify loaded data is correct
-    assertEq(SliceLib.fromBytes(loadedData).toUint32Array().length, 2);
+    assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint32().length, 2);
     assertEq(loadedData.length, thirdDataBytes.length);
     assertEq(keccak256(loadedData), keccak256(thirdDataBytes));
 

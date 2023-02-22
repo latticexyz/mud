@@ -13,7 +13,7 @@ contract DecodeSliceTest is Test {
     input[63] = 0x04;
 
     // !gasreport decode packed bytes32[]
-    bytes32[] memory output = SliceLib.fromBytes(input).toBytes32Array();
+    bytes32[] memory output = SliceLib.fromBytes(input).decodeArray_bytes32();
 
     assertEq(output.length, 2);
     assertEq(uint256(output[0]), 0x0100000000000000000000000000000000000000000000000000000000000002);
@@ -29,7 +29,7 @@ contract DecodeSliceTest is Test {
     input[64] = 0x05;
 
     vm.expectRevert("unpackToArray: packedLength must be a multiple of elementSize");
-    SliceLib.fromBytes(input).toBytes32Array();
+    SliceLib.fromBytes(input).decodeArray_bytes32();
   }
 
   function testToArrayUint32() public {
@@ -38,7 +38,7 @@ contract DecodeSliceTest is Test {
     bytes memory input = abi.encodePacked(num1, num2);
 
     // !gasreport decode packed uint32[]
-    uint32[] memory arr = SliceLib.fromBytes(input).toUint32Array();
+    uint32[] memory arr = SliceLib.fromBytes(input).decodeArray_uint32();
 
     assertEq(arr.length, 2);
     assertEq(arr[0], num1);
@@ -49,6 +49,6 @@ contract DecodeSliceTest is Test {
     bytes memory input = abi.encodePacked(uint32(1), uint32(2), uint8(3));
 
     vm.expectRevert("unpackToArray: packedLength must be a multiple of elementSize");
-    SliceLib.fromBytes(input).toUint32Array();
+    SliceLib.fromBytes(input).decodeArray_uint32();
   }
 }

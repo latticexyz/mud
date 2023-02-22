@@ -81,6 +81,6 @@ library CallbackArray_ {
   }
 
   function decode(bytes memory blob) internal pure returns (bytes24[] memory callbacks) {
-    return SliceLib.getSubslice(blob, 32, blob.length).toBytes24Array();
+    return SliceLib.getSubslice(blob, 32, blob.length).decodeArray_bytes24();
   }
 }

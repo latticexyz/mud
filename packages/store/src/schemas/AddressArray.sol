@@ -82,6 +82,6 @@ library AddressArray_ {
 
   function decode(bytes memory blob) internal pure returns (address[] memory addresses) {
     if (blob.length == 0) return new address[](0);
-    return SliceLib.getSubslice(blob, 32, blob.length).toAddressArray();
+    return SliceLib.getSubslice(blob, 32, blob.length).decodeArray_address();
   }
 }

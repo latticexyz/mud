@@ -61,7 +61,7 @@ function customDecode(bytes memory input) view returns (Mixed memory) {
     Mixed({
       u32: uint32(Bytes.slice4(input, 0)),
       u128: uint128(Bytes.slice16(input, 4)),
-      a32: SliceLib.getSubslice(input, 20, 20 + 3 * 4).toUint32Array(),
+      a32: SliceLib.getSubslice(input, 20, 20 + 3 * 4).decodeArray_uint32(),
       s: string(SliceLib.getSubslice(input, 20 + 3 * 4, input.length).toBytes())
     });
 }
