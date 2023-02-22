@@ -4,9 +4,9 @@ import { readFileSync } from "fs";
 import { Contract } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import WorldAbi from "@latticexyz/solecs/abi/World.json" assert { type: "json" };
-import { getSrcDirectory } from "../utils/forgeConfig";
+import { getSrcDirectory } from "../utils/forgeConfig.js";
 import path from "path";
-import { componentsDir, systemsDir } from "../utils/constants";
+import { componentsDir, systemsDir } from "../utils/constants.js";
 
 type Options = {
   config?: string;

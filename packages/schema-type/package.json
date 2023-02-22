@@ -25,7 +25,7 @@
   },
   "devDependencies": {
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#f36dab24d63d1c1945a05ed375ce341d3c1a49ed",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "rimraf": "^3.0.2"
   },
   "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"

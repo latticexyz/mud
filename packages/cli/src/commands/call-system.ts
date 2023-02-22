@@ -2,7 +2,7 @@ import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
 import path from "path";
 import type { CommandModule } from "yargs";
 import { execLog } from "../utils/index.js";
-import { getTestDirectory } from "../utils/forgeConfig";
+import { getTestDirectory } from "../utils/forgeConfig.js";
 
 type Options = {
   rpc?: string;
