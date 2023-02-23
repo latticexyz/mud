@@ -28,6 +28,8 @@ type QueryLayerClient interface {
 	Join(ctx context.Context, in *JoinRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
 	// FindAll endpoint.
 	FindAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
+	// StreamAll endpoint.
+	StreamAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (QueryLayer_StreamAllClient, error)
 	// Count endpoint.
 	Count(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
 }
@@ -67,6 +69,38 @@ func (c *queryLayerClient) FindAll(ctx context.Context, in *FindAllRequest, opts
 	return out, nil
 }
 
+func (c *queryLayerClient) StreamAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (QueryLayer_StreamAllClient, error) {
+	stream, err := c.cc.NewStream(ctx, &QueryLayer_ServiceDesc.Streams[0], "/mode.QueryLayer/StreamAll", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &queryLayerStreamAllClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type QueryLayer_StreamAllClient interface {
+	Recv() (*QueryLayerResponse, error)
+	grpc.ClientStream
+}
+
+type queryLayerStreamAllClient struct {
+	grpc.ClientStream
+}
+
+func (x *queryLayerStreamAllClient) Recv() (*QueryLayerResponse, error) {
+	m := new(QueryLayerResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *queryLayerClient) Count(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error) {
 	out := new(QueryLayerResponse)
 	err := c.cc.Invoke(ctx, "/mode.QueryLayer/Count", in, out, opts...)
@@ -86,6 +120,8 @@ type QueryLayerServer interface {
 	Join(context.Context, *JoinRequest) (*QueryLayerResponse, error)
 	// FindAll endpoint.
 	FindAll(context.Context, *FindAllRequest) (*QueryLayerResponse, error)
+	// StreamAll endpoint.
+	StreamAll(*FindAllRequest, QueryLayer_StreamAllServer) error
 	// Count endpoint.
 	Count(context.Context, *FindRequest) (*QueryLayerResponse, error)
 	mustEmbedUnimplementedQueryLayerServer()
@@ -103,6 +139,9 @@ func (UnimplementedQueryLayerServer) Join(context.Context, *JoinRequest) (*Query
 }
 func (UnimplementedQueryLayerServer) FindAll(context.Context, *FindAllRequest) (*QueryLayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FindAll not implemented")
+}
+func (UnimplementedQueryLayerServer) StreamAll(*FindAllRequest, QueryLayer_StreamAllServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamAll not implemented")
 }
 func (UnimplementedQueryLayerServer) Count(context.Context, *FindRequest) (*QueryLayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Count not implemented")
@@ -174,6 +213,27 @@ func _QueryLayer_FindAll_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _QueryLayer_StreamAll_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(FindAllRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(QueryLayerServer).StreamAll(m, &queryLayerStreamAllServer{stream})
+}
+
+type QueryLayer_StreamAllServer interface {
+	Send(*QueryLayerResponse) error
+	grpc.ServerStream
+}
+
+type queryLayerStreamAllServer struct {
+	grpc.ServerStream
+}
+
+func (x *queryLayerStreamAllServer) Send(m *QueryLayerResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
 func _QueryLayer_Count_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(FindRequest)
 	if err := dec(in); err != nil {
@@ -216,6 +276,12 @@ var QueryLayer_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _QueryLayer_Count_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "StreamAll",
+			Handler:       _QueryLayer_StreamAll_Handler,
+			ServerStreams: true,
+		},
+	},
 	Metadata: "proto/mode.proto",
 }
