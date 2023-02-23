@@ -882,6 +882,15 @@ export const QueryLayerDefinition = {
       responseStream: false,
       options: {},
     },
+    /** StreamAll endpoint. */
+    streamAll: {
+      name: "StreamAll",
+      requestType: FindAllRequest,
+      requestStream: false,
+      responseType: QueryLayerResponse,
+      responseStream: true,
+      options: {},
+    },
     /** Count endpoint. */
     count: {
       name: "Count",
@@ -901,6 +910,11 @@ export interface QueryLayerServiceImplementation<CallContextExt = {}> {
   join(request: JoinRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
   /** FindAll endpoint. */
   findAll(request: FindAllRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
+  /** StreamAll endpoint. */
+  streamAll(
+    request: FindAllRequest,
+    context: CallContext & CallContextExt
+  ): ServerStreamingMethodResult<DeepPartial<QueryLayerResponse>>;
   /** Count endpoint. */
   count(request: FindRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
 }
@@ -912,6 +926,11 @@ export interface QueryLayerClient<CallOptionsExt = {}> {
   join(request: DeepPartial<JoinRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
   /** FindAll endpoint. */
   findAll(request: DeepPartial<FindAllRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
+  /** StreamAll endpoint. */
+  streamAll(
+    request: DeepPartial<FindAllRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): AsyncIterable<QueryLayerResponse>;
   /** Count endpoint. */
   count(request: DeepPartial<FindRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
 }
@@ -927,3 +946,5 @@ export type DeepPartial<T> = T extends Builtin
   : T extends {}
   ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
+
+export type ServerStreamingMethodResult<Response> = { [Symbol.asyncIterator](): AsyncIterator<Response, void> };

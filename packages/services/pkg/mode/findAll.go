@@ -1,11 +1,8 @@
 package mode
 
 import (
-	"latticexyz/mud/packages/services/pkg/db"
 	"latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
-
-	"github.com/jmoiron/sqlx"
 )
 
 // grpcurl -plaintext -d '{"tables": ["component_stake"]}' localhost:50091 mode.QueryLayer/FindAll
@@ -15,13 +12,7 @@ type FindAllBuilder struct {
 	AllTables []string
 }
 
-func NewFindAllBuilder(request *mode.FindAllRequest, _db *sqlx.DB) (*FindAllBuilder, error) {
-	// An up-to-date list of all tables is used to return the full state, if requested.
-	allTables, err := db.GetAllTables(_db)
-	if err != nil {
-		return nil, err
-	}
-
+func NewFindAllBuilder(request *mode.FindAllRequest, allTables []string) (*FindAllBuilder, error) {
 	return &FindAllBuilder{
 		Request:   request,
 		AllTables: allTables,

@@ -10,7 +10,7 @@ import (
 )
 
 func (ql *QueryLayer) ExecuteSQL(sqlQuery string, tableSchema *mode.TableSchema, fieldProjections map[string]string) (*pb_mode.GenericTable, error) {
-	rows, err := ql.db.Queryx(sqlQuery)
+	rows, err := ql.dl.Query(sqlQuery)
 	if err != nil {
 		ql.logger.Error("executeSQL(): error while executing query", zap.String("query", sqlQuery), zap.Error(err))
 		return nil, err
@@ -51,8 +51,15 @@ func (ql *QueryLayer) Find(ctx context.Context, request *pb_mode.FindRequest) (*
 }
 
 func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllRequest) (*pb_mode.QueryLayerResponse, error) {
+	// An up-to-date list of all tables is used to return the full state, if requested.
+	allTables, err := ql.dl.GetAllTables()
+	if err != nil {
+		ql.logger.Error("findAll(): error while getting all tables", zap.Error(err))
+		return nil, err
+	}
+
 	// Create a "builder" for the request.
-	builder, err := mode.NewFindAllBuilder(request, ql.db)
+	builder, err := mode.NewFindAllBuilder(request, allTables)
 	if err != nil {
 		ql.logger.Error("findAll(): error while creating builder", zap.Error(err))
 		return nil, err
@@ -106,4 +113,21 @@ func (ql *QueryLayer) Join(ctx context.Context, request *pb_mode.JoinRequest) (*
 
 	// Build the response from the single joined table and return.
 	return QueryLayerResponseFromTable(serializedTable, joinedTableSchema.TableName), nil
+}
+
+func (ql *QueryLayer) StreamAll(request *pb_mode.FindAllRequest, stream pb_mode.QueryLayer_StreamAllServer) error {
+	eventStream := ql.dl.Stream()
+
+	// For each event, serialize the event into a GenericTable and send it to the client.
+	for {
+		select {
+		case event := <-eventStream:
+			serializedTable, err := mode.SerializeStreamEvent(event, ql.tableSchemas[event.TableName], make(map[string]string))
+			if err != nil {
+				return err
+			}
+			// The table name is appended with the event type to distinguish between different types of events.
+			stream.Send(QueryLayerResponseFromTable(serializedTable, event.TableName+"_"+string(event.Type)))
+		}
+	}
 }

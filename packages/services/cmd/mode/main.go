@@ -1,22 +1,23 @@
 package main
 
 import (
+	"context"
 	"flag"
 
 	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/grpc"
 	"latticexyz/mud/packages/services/pkg/logger"
 	"latticexyz/mud/packages/services/pkg/mode"
+	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/query"
 
-	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
 )
 
 var (
 	// General flags.
-	dsn   = flag.String("dsn", "postgresql://localhost:5432/mode?sslmode=disable", "Connection string to Postgres")
+	dsn   = flag.String("dsn", "postgresql://localhost:5432/mode?sslmode=disable&replication=database", "Connection string to Postgres")
 	wsUrl = flag.String("ws-url", "ws://localhost:8545", "Websocket Url")
 
 	// Ports.
@@ -27,22 +28,6 @@ var (
 	dataSchemaPath = flag.String("schema-path", "./OPCraftDataSchema.json", "A schema file is required when working with V1 data")
 )
 
-func connectToDatabase(dsn string) (*sqlx.DB, error) {
-	db, err := sqlx.Connect("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	var dbName string
-	err = db.Get(&dbName, "SELECT current_database()")
-	if err != nil {
-		return nil, err
-	}
-	logger.GetLogger().Info("connected to db", zap.String("name", dbName))
-
-	return db, nil
-}
-
 func main() {
 	// Parse command line flags.
 	flag.Parse()
@@ -51,12 +36,6 @@ func main() {
 	logger.InitLogger()
 	logger := logger.GetLogger()
 	defer logger.Sync()
-
-	// Connect to the MODE database.
-	db, err := connectToDatabase(*dsn)
-	if err != nil {
-		logger.Fatal("error connecting to db", zap.Error(err))
-	}
 
 	// Connect to an Ethereum execution client.
 	eth := eth.GetEthereumClient(*wsUrl, logger)
@@ -74,7 +53,11 @@ func main() {
 	// Run MODE metrics server.
 	go grpc.StartMetricsServer(*metricsPort, logger)
 
+	// Run the MODE DatabaseLayer.
+	dl := db.NewDatabaseLayer(context.Background(), *dsn, logger)
+	go dl.RunDatabaseLayer(context.Background())
+
 	// Run the MODE QueryLayer.
-	ql := query.NewQueryLayer(eth, db, tableSchemas, logger)
+	ql := query.NewQueryLayer(eth, dl, tableSchemas, logger)
 	query.RunQueryLayer(ql, *qlPort)
 }

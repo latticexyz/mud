@@ -97,6 +97,9 @@ service QueryLayer {
     // FindAll endpoint.
     rpc FindAll(FindAllRequest) returns (QueryLayerResponse) {}
 
+    // StreamAll endpoint.
+    rpc StreamAll(FindAllRequest) returns (stream QueryLayerResponse) {}
+
     // Count endpoint.
     rpc Count(FindRequest) returns (QueryLayerResponse) {}
 }
