@@ -16,7 +16,7 @@ Before we can use the new `Position` component on the client, we need to define 
 import { defineCoordComponent } from "@latticexyz/std-client";
 import { world } from "./world";
 
-export const components = {
+export const contractComponents = {
   Position: defineCoordComponent(world, {
     metadata: {
       contractId: "component.Position",
@@ -27,14 +27,14 @@ export const components = {
 
 ## Render the world
 
-Let's create a new React component called `GameBoard` that represents the world. We'll start by rendering a simple 10&times;10 grid, filled with lime green as the "grass".
+Let's create a new React component called `GameBoard` that represents the world. We'll start by rendering a simple 20&times;20 grid, filled with lime green as the "grass".
 
 (The CSS class names come from Tailwind. Don't worry if they don't make much sense. It just lets us write styled markup that is easy to copy-and-paste.)
 
 ```tsx packages/client/src/GameBoard.tsx
 export const GameBoard = () => {
-  const rows = new Array(10).fill(0).map((_, i) => i);
-  const columns = new Array(10).fill(0).map((_, i) => i);
+  const rows = new Array(20).fill(0).map((_, i) => i);
+  const columns = new Array(20).fill(0).map((_, i) => i);
 
   return (
     <div className="inline-grid p-2 bg-lime-500">
@@ -85,13 +85,13 @@ And a small tweak to `index.html` to give the page a black background and make i
 
 There's no player on the game board because it doesn't have a position yet. Wire up a click handler on each tile to set the player position (using our `Move` system). Once a tile is clicked, the player appears and we can continue moving it around the map by clicking other tiles.
 
-```tsx !#1-2,8-14,27-30,32 packages/client/src/GameBoard.tsx
-import { useComponentValueStream } from "@latticexyz/std-client";
+```tsx !#1-2,8-14,22,27-30,32 packages/client/src/GameBoard.tsx
+import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 
 export const GameBoard = () => {
-  const rows = new Array(10).fill(0).map((_, i) => i);
-  const columns = new Array(10).fill(0).map((_, i) => i);
+  const rows = new Array(20).fill(0).map((_, i) => i);
+  const columns = new Array(20).fill(0).map((_, i) => i);
 
   const {
     components: { Position },
@@ -99,7 +99,7 @@ export const GameBoard = () => {
     playerEntity,
   } = useMUD();
 
-  const playerPosition = useComponentValueStream(Position, playerEntity);
+  const playerPosition = useComponentValue(Position, playerEntity);
 
   return (
     <div className="inline-grid p-2 bg-lime-500">

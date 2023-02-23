@@ -138,14 +138,14 @@ Just like the move system, we need to extend `deploy.json` to include our new jo
 
 In the future, we hope to make MUD automatically generate the client code for us. But for now, we need to manually add the new components to the client.
 
-```ts !#1-4,8-17 packages/client/src/mud/components.ts
+```ts !#2,8-17 packages/client/src/mud/components.ts
 import {
   defineBoolComponent,
   defineCoordComponent,
 } from "@latticexyz/std-client";
 import { world } from "./world";
 
-export const components = {
+export const contractComponents = {
   Movable: defineBoolComponent(world, {
     metadata: {
       contractId: "component.Movable",
@@ -165,49 +165,14 @@ export const components = {
 
 Our game board file is getting a little large. Before we wire up the join game system, let's refactor our movement code into its own hook to make it easier to use.
 
-```ts packages/client/src/useMovement.ts
-import { useCallback, useEffect, useMemo } from "react";
-import { useComponentValueStream } from "@latticexyz/std-client";
-import { uuid } from "@latticexyz/utils";
+```ts packages/client/src/useKeyboardMovement.ts
+import { useEffect } from "react";
 import { useMUD } from "./MUDContext";
 
-export const useMovement = () => {
+export const useKeyboardMovement = () => {
   const {
-    components: { Position },
-    systems,
-    playerEntity,
+    api: { moveBy },
   } = useMUD();
-
-  const playerPosition = useComponentValueStream(Position, playerEntity);
-
-  const moveTo = useCallback(
-    async (x: number, y: number) => {
-      const positionId = uuid();
-      Position.addOverride(positionId, {
-        entity: playerEntity,
-        value: { x, y },
-      });
-
-      try {
-        const tx = await systems["system.Move"].executeTyped({ x, y });
-        await tx.wait();
-      } finally {
-        Position.removeOverride(positionId);
-      }
-    },
-    [Position, playerEntity, systems]
-  );
-
-  const moveBy = useCallback(
-    async (deltaX: number, deltaY: number) => {
-      if (!playerPosition) {
-        console.warn("cannot moveBy without a player position, not yet spawned?");
-        return;
-      }
-      await moveTo(playerPosition.x + deltaX, playerPosition.y + deltaY);
-    },
-    [moveTo, playerPosition]
-  );
 
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
@@ -228,109 +193,78 @@ export const useMovement = () => {
     window.addEventListener("keydown", listener);
     return () => window.removeEventListener("keydown", listener);
   }, [moveBy]);
-
-  return useMemo(() => ({ moveTo, moveBy }), [moveTo, moveBy]);
 };
 ```
 
 Now we can swap out all of the inline logic with our new hook.
 
-```tsx !#3,15,30 packages/client/src/GameBoard.tsx
-import { useComponentValueStream } from "@latticexyz/std-client";
+```tsx !#3,11,15 packages/client/src/GameBoard.tsx
+import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
-import { useMovement } from "./useMovement";
+import { useKeyboardMovement } from "./useKeyboardMovement";
 
 export const GameBoard = () => {
-  const rows = new Array(10).fill(0).map((_, i) => i);
-  const columns = new Array(10).fill(0).map((_, i) => i);
+  const rows = new Array(20).fill(0).map((_, i) => i);
+  const columns = new Array(20).fill(0).map((_, i) => i);
 
   const {
     components: { Position },
+    api: { moveTo },
     playerEntity,
   } = useMUD();
 
-  const playerPosition = useComponentValueStream(Position, playerEntity);
-  const { moveTo } = useMovement();
+  useKeyboardMovement();
 
-  return (
-    <div className="inline-grid p-2 bg-lime-500">
-      {rows.map((y) =>
-        columns.map((x) => (
-          <div
-            key={`${x},${y}`}
-            className="w-8 h-8 flex items-center justify-center cursor-pointer hover:ring"
-            style={{
-              gridColumn: x + 1,
-              gridRow: y + 1,
-            }}
-            onClick={(event) => {
-              event.preventDefault();
-              moveTo(x, y);
-            }}
-          >
-            {playerPosition?.x === x && playerPosition?.y === y ? <>🤠</> : null}
-          </div>
-        ))
-      )}
-    </div>
-  );
-};
+  const playerPosition = useComponentValue(Position, playerEntity);
 ```
 
 ## Join game on click
 
-Similar to our movement hook, we need a join game hook to determine if we've already joined and, if not, call our system.
+Similar to our movement helpers, we'll add join game helper to make it easier to call our join system.
 
-```ts packages/client/src/useJoinGame.ts
-import { useCallback, useMemo } from "react";
-import { useComponentValueStream } from "@latticexyz/std-client";
-import { useMUD } from "./MUDContext";
+```ts !#3-13,20 packages/client/src/mud/setup.ts
+export const setup = async () => {
+  …
+  const joinGame = async (x: number, y: number) => {
+    const canJoinGame =
+      getComponentValue(components.Player, playerEntity)?.value !== true;
 
-export const useJoinGame = () => {
-  const {
-    components: { Player },
-    systems,
-    playerEntity,
-  } = useMUD();
+    if (!canJoinGame) {
+      throw new Error("already joined game");
+    }
 
-  const canJoinGame = useComponentValueStream(Player, playerEntity)?.value !== true;
+    const tx = await result.systems["system.JoinGame"].executeTyped({ x, y });
+    await tx.wait();
+  };
 
-  const joinGame = useCallback(
-    async (x: number, y: number) => {
-      if (!canJoinGame) {
-        throw new Error("already joined game");
-      }
-
-      const tx = await systems["system.JoinGame"].executeTyped({ x, y });
-      await tx.wait();
+  return {
+    …
+    api: {
+      moveTo,
+      moveBy,
+      joinGame,
     },
-    [canJoinGame, systems]
-  );
-
-  return useMemo(() => ({ canJoinGame, joinGame }), [canJoinGame, joinGame]);
+  };
 };
 ```
 
 And add it to the game board.
 
-```tsx !#4,17,32-36 packages/client/src/GameBoard.tsx
-import { useComponentValueStream } from "@latticexyz/std-client";
-import { useMUD } from "./MUDContext";
-import { useMovement } from "./useMovement";
-import { useJoinGame } from "./useJoinGame";
-
+```tsx !#6-7,14,29-31,33 packages/client/src/GameBoard.tsx
 export const GameBoard = () => {
-  const rows = new Array(10).fill(0).map((_, i) => i);
-  const columns = new Array(10).fill(0).map((_, i) => i);
+  const rows = new Array(20).fill(0).map((_, i) => i);
+  const columns = new Array(20).fill(0).map((_, i) => i);
 
   const {
-    components: { Position },
+    components: { Position, Player },
+    api: { moveTo, joinGame },
     playerEntity,
   } = useMUD();
 
-  const playerPosition = useComponentValueStream(Position, playerEntity);
-  const { moveTo } = useMovement();
-  const { canJoinGame, joinGame } = useJoinGame();
+  useKeyboardMovement();
+
+  const playerPosition = useComponentValue(Position, playerEntity);
+  const canJoinGame = useComponentValue(Player, playerEntity)?.value !== true;
 
   return (
     <div className="inline-grid p-2 bg-lime-500">
@@ -365,59 +299,50 @@ export const GameBoard = () => {
 
 You may see a delay between clicking a tile and the player appearing. Similar to the optimistic rendering we did for movement, we can use an override to make the player appear immediately.
 
-```ts !#4 packages/client/src/mud/setup.ts
-  // Add support for optimistic rendering
-  const componentsWithOverrides = {
-    Position: overridableComponent(components.Position),
-    Player: overridableComponent(components.Player),
-  };
-
-  return {
+```ts !#7,13 packages/client/src/mud/components.ts
+export const contractComponents = {
+  Movable: defineBoolComponent(world, {
+    metadata: {
+      contractId: "component.Movable",
+    },
+  }),
+  Player: overridableComponent(
+    defineBoolComponent(world, {
+      metadata: {
+        contractId: "component.Player",
+      },
+    })
+  ),
 ```
 
-```ts !#3,21-38,40 packages/client/src/useJoinGame.tss
-import { useCallback, useMemo } from "react";
-import { useComponentValueStream } from "@latticexyz/std-client";
-import { uuid } from "@latticexyz/utils";
-import { useMUD } from "./MUDContext";
+```ts !#11-22,25-28 packages/client/src/mud/setup.ts
+export const setup = async () => {
+  …
+  const joinGame = async (x: number, y: number) => {
+    const canJoinGame =
+      getComponentValue(components.Player, playerEntity)?.value !== true;
 
-export const useJoinGame = () => {
-  const {
-    components: { Position, Player },
-    systems,
-    playerEntity,
-  } = useMUD();
+    if (!canJoinGame) {
+      throw new Error("already joined game");
+    }
 
-  const canJoinGame = useComponentValueStream(Player, playerEntity)?.value !== true;
+    const positionId = uuid();
+    components.Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+    const playerId = uuid();
+    components.Player.addOverride(playerId, {
+      entity: playerEntity,
+      value: { value: true },
+    });
 
-  const joinGame = useCallback(
-    async (x: number, y: number) => {
-      if (!canJoinGame) {
-        throw new Error("already joined game");
-      }
-
-      const positionId = uuid();
-      Position.addOverride(positionId, {
-        entity: playerEntity,
-        value: { x, y },
-      });
-      const playerId = uuid();
-      Player.addOverride(playerId, {
-        entity: playerEntity,
-        value: { value: true },
-      });
-
-      try {
-        const tx = await systems["system.JoinGame"].executeTyped({ x, y });
-        await tx.wait();
-      } finally {
-        Position.removeOverride(positionId);
-        Player.removeOverride(playerId);
-      }
-    },
-    [Player, Position, canJoinGame, playerEntity, systems]
-  );
-
-  return useMemo(() => ({ canJoinGame, joinGame }), [canJoinGame, joinGame]);
-};
+    try {
+      const tx = await result.systems["system.JoinGame"].executeTyped({ x, y });
+      await tx.wait();
+    } finally {
+      components.Position.removeOverride(positionId);
+      components.Player.removeOverride(playerId);
+    }
+  };
 ```
