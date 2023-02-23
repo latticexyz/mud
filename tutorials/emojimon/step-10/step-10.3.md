@@ -1,3 +1,7 @@
+---
+order: -10.3
+---
+
 # 10.3. Random chance of encounter
 
 Now we can make our tall grass do something!

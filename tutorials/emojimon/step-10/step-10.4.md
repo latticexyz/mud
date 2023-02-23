@@ -1,3 +1,7 @@
+---
+order: -10.4
+---
+
 # 10.4. Spawn monster in encounter
 
 Our player is in an encounter, but with no opponent. Let's fix that by spawning a monster.

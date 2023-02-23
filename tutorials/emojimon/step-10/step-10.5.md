@@ -1,3 +1,7 @@
+---
+order: -10.5
+---
+
 # 10.5. Encounter screen
 
 We're ready to wire up the encounter on the client! We'll make a new encounter screen that we can transition to as you enter into an encounter. And we'll add a fun animation for it.

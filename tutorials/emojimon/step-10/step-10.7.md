@@ -1,3 +1,7 @@
+---
+order: -10.7
+---
+
 # 10.7. Run away
 
 Alongside our "throw" button, let's build a "run away" button to flee the encounter.

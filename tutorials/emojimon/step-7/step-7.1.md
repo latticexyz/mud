@@ -13,7 +13,7 @@ Because we have a very specific shape of data, we'll use a custom component for 
 pragma solidity >=0.8.0;
 import { BareComponent } from "solecs/BareComponent.sol";
 import { LibTypes } from "solecs/LibTypes.sol";
-import { SingletonID } from "../SingletonID.sol";
+import { SingletonID } from "solecs/SingletonID.sol";
 
 uint256 constant ID = uint256(keccak256("component.MapConfig"));
 
@@ -36,10 +36,6 @@ contract MapConfigComponent is BareComponent {
     values[1] = LibTypes.SchemaValue.UINT32;
   }
 
-  function isSet() public view returns (bool) {
-    return has(SingletonID);
-  }
-
   function set(MapConfig memory mapConfig) public {
     set(SingletonID, abi.encode(mapConfig.width, mapConfig.height));
   }
@@ -52,48 +48,31 @@ contract MapConfigComponent is BareComponent {
 
 ```
 
-## Init system
+## Initialize map config
 
-Since components are only written to by systems, we'll need one to initialize the map config.
+We can use the initializer pattern in MUD to set our map config on deploy. They exist as libraries with an internal `init` function that receives the `world` contract address.
 
-```sol packages/contracts/src/systems/InitSystem.sol
+```sol packages/contracts/src/libraries/MapConfigInitializer.sol
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { System, IWorld } from "solecs/System.sol";
-import { getAddressById } from "solecs/utils.sol";
+import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
 
-uint256 constant ID = uint256(keccak256("system.Init"));
-
-contract InitSystem is System {
-  constructor(IWorld _world, address _components) System(_world, _components) {}
-
-  function execute(bytes memory data) public returns (bytes memory) {
-    MapConfigComponent mapConfig = MapConfigComponent(getAddressById(components, MapConfigComponentID));
-    if (mapConfig.isSet()) return new bytes(0);
-
-    mapConfig.set(MapConfig({ width: 10, height: 10 }));
+library MapConfigInitializer {
+  function init(IWorld world) internal {
+    MapConfigComponent(world.getComponent(MapConfigComponentID)).set(MapConfig({ width: 20, height: 20 }));
   }
 }
 
 ```
 
-Usually it's the client calling systems. We don't want anyone else overwriting our map once initialized, so the system checks if the component `isSet` before anything else. Ideally, we want the init system to be called when we deploy the contracts, so that the map is ready to go once everything is deployed.
+Now we can add our new map config component and initializer to the `deploy.json` config. You may need to restart your `dev:contracts` service to redeploy contracts with the initializer.
 
-We can use the `initialize` key in our deploy config to do this. Its value is passed as calldata to `execute`. Since we don't have any data to pass in, we'll use an empty `bytes` value.
-
-```json !#2,4-8 packages/contracts/deploy.json
+```json !#2-3 packages/contracts/deploy.json
 {
   "components": ["MapConfigComponent", "MovableComponent", "PlayerComponent", "PositionComponent"],
+  "initializers": ["MapConfigInitializer"],
   "systems": [
-    {
-      "name": "InitSystem",
-      "writeAccess": ["MapConfigComponent"],
-      "initialize": "new bytes(0)"
-    },
-    {
-      "name": "JoinGameSystem",
-      "writeAccess": ["MovableComponent", "PlayerComponent", "PositionComponent"]
 ```
 
 ## Map config on the client
@@ -101,14 +80,14 @@ We can use the `initialize` key in our deploy config to do this. Its value is pa
 Again, because this is a custom component, we need to define its schema on the client as part of its component definition.
 
 ```ts !#1,9-19 packages/client/src/mud/components.ts
-import { defineComponent, Type } from "@latticexyz/recs";
++import { overridableComponent, defineComponent, Type } from "@latticexyz/recs";
 import {
   defineBoolComponent,
   defineCoordComponent,
 } from "@latticexyz/std-client";
 import { world } from "./world";
 
-export const components = {
+export const contractComponents = {
   MapConfig: defineComponent(
     world,
     {

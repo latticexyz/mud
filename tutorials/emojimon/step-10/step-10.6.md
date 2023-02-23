@@ -1,3 +1,7 @@
+---
+order: -10.6
+---
+
 # 10.6. Throw emojiball
 
 What would an Emojimon battle be without throwing emojiballs?
