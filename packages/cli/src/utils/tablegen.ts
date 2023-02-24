@@ -7,6 +7,7 @@ import {
 } from "../contracts/renderSchema.js";
 import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/loadStoreConfig.js";
+import { keccak256 } from "ethers/lib/utils.js";
 
 export function renderTables(config: StoreConfig) {
   const storeImportPath = config.storeImportPath;
@@ -30,10 +31,24 @@ export function renderTables(config: StoreConfig) {
     const staticFields = fields.filter(({ isDynamic }) => !isDynamic) as RenderSchemaStaticField[];
     const dynamicFields = fields.filter(({ isDynamic }) => isDynamic) as RenderSchemaDynamicField[];
 
+    // With schemaMode: tableId is a dynamic argument for each method
+    // Without schemaMode: tableId is a file-level constant generated from `staticRoute`
+    const staticRoute = (() => {
+      if (tableData.schemaMode) {
+        return;
+      } else {
+        return {
+          baseRoute: config.baseRoute + tableData.route,
+          subRoute: `/${tableName}`,
+        };
+      }
+    })();
+
     renderedTables.push({
       tableName,
       tableData,
       output: renderSchema({
+        staticRoute,
         storeImportPath,
         tableName,
         keyTuple: tableData.keyTuple,

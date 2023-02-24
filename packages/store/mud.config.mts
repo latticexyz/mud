@@ -18,6 +18,7 @@ const config: StoreUserConfig = {
     },*/
     Mixed: {
       route: "/schemas",
+      schemaMode: true,
       schema: {
         u32: SchemaType.UINT32,
         u128: SchemaType.UINT128,
@@ -27,6 +28,7 @@ const config: StoreUserConfig = {
     },
     Route: {
       route: "/schemas",
+      schemaMode: true,
       schema: {
         addr: SchemaType.ADDRESS,
         selector: SchemaType.BYTES4,
@@ -35,6 +37,7 @@ const config: StoreUserConfig = {
     },
     Vector2: {
       route: "/schemas",
+      schemaMode: true,
       schema: {
         x: SchemaType.UINT32,
         y: SchemaType.UINT32,
