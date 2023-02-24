@@ -101,11 +101,7 @@ library ${tableName}_ {
           name
       )}
       ${staticFields.length > 0 && withDynamic ? "," : ""}
-      ${renderIf(
-        withDynamic,
-        // encode dynamic lengths
-        `_encodedLengths.unwrap(),`
-      )}
+      ${_if(withDynamic)`_encodedLengths.unwrap(),`}
       ${renderList(",", dynamicFields, (field) => renderEncodeField(field))}
     );
 
@@ -176,10 +172,9 @@ ${renderList("", fields, (field, index) => {
     return decode(_blob);
   }
 
-${renderIf(
-  withDynamic,
+${
   // decode static (optionally) and dynamic data
-  `
+  _if(withDynamic)`
   function decode(bytes memory _blob) internal view returns (${tableName} memory _table) {
     // ${totalStaticLength} is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
@@ -202,12 +197,11 @@ ${renderIf(
     )}
   }
 `
-)}
+}
 
-${renderIf(
-  !withDynamic,
+${
   // decode only static data
-  `
+  _if(!withDynamic)`
   function decode(bytes memory _blob) internal pure returns (${tableName} memory _table) {
     ${renderList(
       "",
@@ -218,30 +212,37 @@ ${renderIf(
     )}
   }
 `
-)}
+}
 
 }
 
 ${
   // nothing can be cast to bool, so an assembly helper is required
-  renderIf(
-    fields.some(({ typeId }) => typeId === "bool"),
-    `
+  _if(fields.some(({ typeId }) => typeId === "bool"))`
 function _toBool(uint8 value) pure returns (bool result) {
   assembly {
     result := value
   }
 }
 `
-  )
-}`;
 }
 
-function renderIf(condition: boolean, content: string) {
+`;
+}
+
+function zipTaggedTemplate(strings: TemplateStringsArray, ...values: (string | number)[]) {
+  let result = strings[0];
+  for (const [index, value] of values.entries()) {
+    result += value + strings[index + 1];
+  }
+  return result;
+}
+
+function _if(condition: boolean) {
   if (condition) {
-    return content;
+    return zipTaggedTemplate;
   } else {
-    return "";
+    return () => "";
   }
 }
 
