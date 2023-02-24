@@ -37,14 +37,12 @@
     "nodemon": "^2.0.16",
     "pkg": "^5.7.0",
     "rimraf": "^3.0.2",
-    "ts-node": "^10.9.1",
-    "tsup": "^6.6.3",
-    "typescript": "^4.6.4"
+    "tsup": "^6.6.3"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
-    "@latticexyz/schema-type": "^1.34.0",
+    "@latticexyz/schema-type": "file:/home/vboxuser/mud/packages/schema-type",
     "@latticexyz/services": "^1.37.1",
     "@latticexyz/solecs": "^1.37.1",
     "@latticexyz/std-contracts": "^1.37.1",
@@ -72,7 +70,9 @@
     "path": "^0.12.7",
     "solmate": "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
     "table": "^6.8.1",
+    "ts-node": "^10.9.1",
     "typechain": "^8.1.1",
+    "typescript": "^4.9.5",
     "uuid": "^8.3.2",
     "yargs": "^17.5.1"
   },
