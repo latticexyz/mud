@@ -1,7 +1,7 @@
 import type { CommandModule } from "yargs";
 import { writeFileSync } from "fs";
 import path from "path";
-import { loadConfig } from "../utils/config";
+import { loadConfig } from "../utils/storeConfig";
 import { renderTables } from "../utils/tablegen";
 import { getSrcDirectory } from "../utils/forgeConfig";
 
