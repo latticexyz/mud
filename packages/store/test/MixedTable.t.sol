@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { MixedTable, tableId as MixedTableId, Mixed } from "../src/tables/MixedTable.sol";
+import { MixedTable, MixedTableId, Mixed } from "../src/tables/Mixed.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { SchemaType } from "../src/Types.sol";
 import { StoreView } from "../src/StoreView.sol";

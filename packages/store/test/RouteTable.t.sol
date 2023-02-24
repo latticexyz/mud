@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { RouteTable, tableId as RouteTableId, Route } from "../src/tables/RouteTable.sol";
+import { RouteTable, RouteTableId, Route } from "../src/tables/Route.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { SchemaType } from "../src/Types.sol";
 import { StoreView } from "../src/StoreView.sol";

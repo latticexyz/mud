@@ -13,13 +13,16 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
+uint256 constant _tableId = uint256(keccak256("/tables/Route"));
+uint256 constant RouteTableId = _tableId;
+
 struct Route {
   address addr;
   bytes4 selector;
   uint8 executionMode;
 }
 
-library Route_ {
+library RouteTable {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](3);
@@ -31,17 +34,16 @@ library Route_ {
   }
 
   /** Register the table's schema */
-  function registerSchema(uint256 tableId) internal {
-    StoreSwitch.registerSchema(tableId, getSchema());
+  function registerSchema() internal {
+    StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  function registerSchema(uint256 _tableId, IStore _store) internal {
+  function registerSchema(IStore _store) internal {
     _store.registerSchema(_tableId, getSchema());
   }
 
   /** Set the table's data */
   function set(
-    uint256 _tableId,
     bytes32 key,
     address addr,
     bytes4 selector,
@@ -55,59 +57,43 @@ library Route_ {
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
 
-  function set(
-    uint256 _tableId,
-    bytes32 key,
-    Route memory _table
-  ) internal {
-    set(_tableId, key, _table.addr, _table.selector, _table.executionMode);
+  function set(bytes32 key, Route memory _table) internal {
+    set(key, _table.addr, _table.selector, _table.executionMode);
   }
 
-  function setAddr(
-    uint256 _tableId,
-    bytes32 key,
-    address addr
-  ) internal {
+  function setAddr(bytes32 key, address addr) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(addr));
   }
 
-  function setSelector(
-    uint256 _tableId,
-    bytes32 key,
-    bytes4 selector
-  ) internal {
+  function setSelector(bytes32 key, bytes4 selector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(selector));
   }
 
-  function setExecutionMode(
-    uint256 _tableId,
-    bytes32 key,
-    uint8 executionMode
-  ) internal {
+  function setExecutionMode(bytes32 key, uint8 executionMode) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked(executionMode));
   }
 
-  function getAddr(uint256 _tableId, bytes32 key) internal view returns (address addr) {
+  function getAddr(bytes32 key) internal view returns (address addr) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return address(Bytes.slice20(_blob, 0));
   }
 
-  function getSelector(uint256 _tableId, bytes32 key) internal view returns (bytes4 selector) {
+  function getSelector(bytes32 key) internal view returns (bytes4 selector) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return Bytes.slice4(_blob, 0);
   }
 
-  function getExecutionMode(uint256 _tableId, bytes32 key) internal view returns (uint8 executionMode) {
+  function getExecutionMode(bytes32 key) internal view returns (uint8 executionMode) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
@@ -115,18 +101,14 @@ library Route_ {
   }
 
   /** Get the table's data */
-  function get(uint256 _tableId, bytes32 key) internal view returns (Route memory _table) {
+  function get(bytes32 key) internal view returns (Route memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
   }
 
-  function get(
-    uint256 _tableId,
-    IStore _store,
-    bytes32 key
-  ) internal view returns (Route memory _table) {
+  function get(IStore _store, bytes32 key) internal view returns (Route memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple);

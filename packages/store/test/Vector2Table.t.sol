@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { Vector2Table, tableId as Vector2Id, Vector2 } from "../src/tables/Vector2Table.sol";
+import { Vector2Table, Vector2TableId, Vector2 } from "../src/tables/Vector2.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { SchemaType } from "../src/Types.sol";
 import { StoreView } from "../src/StoreView.sol";
@@ -13,7 +13,7 @@ contract Vector2TableTest is Test, StoreView {
     // !gasreport register Vector2Table schema
     Vector2Table.registerSchema();
 
-    Schema registeredSchema = StoreCore.getSchema(Vector2Id);
+    Schema registeredSchema = StoreCore.getSchema(Vector2TableId);
     Schema declaredSchema = Vector2Table.getSchema();
 
     assertEq(keccak256(abi.encode(registeredSchema)), keccak256(abi.encode(declaredSchema)));
