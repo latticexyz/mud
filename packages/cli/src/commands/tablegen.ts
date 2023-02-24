@@ -12,7 +12,7 @@ type Options = {
 const commandModule: CommandModule<Options, Options> = {
   command: "tablegen",
 
-  describe: "TODO write description",
+  describe: "Autogenerate MUD Store table libraries based on the config file",
 
   builder(yargs) {
     return yargs.options({
