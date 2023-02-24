@@ -47,7 +47,7 @@ library RouteTable {
   }
 
   function setAddress(bytes32 key, address addr) internal {
-    Route_.setAddress(tableId, key, addr);
+    Route_.setAddr(tableId, key, addr);
   }
 
   function setSelector(bytes32 key, bytes4 selector) internal {

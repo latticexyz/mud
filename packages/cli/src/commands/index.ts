@@ -9,6 +9,7 @@ import faucet from "./faucet.js";
 import gasReport from "./gas-report.js";
 import hello from "./hello.js";
 import systemTypes from "./system-types.js";
+import tablegen from "./tablegen.js";
 import test from "./test.js";
 import trace from "./trace.js";
 import types from "./types.js";
@@ -24,6 +25,7 @@ export const commands: CommandModule<any, any>[] = [
   gasReport,
   hello,
   systemTypes,
+  tablegen,
   test,
   trace,
   types,
