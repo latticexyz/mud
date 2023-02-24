@@ -27,8 +27,8 @@ const commandModule: CommandModule<Options, Options> = {
     const renderedTables = renderTables(config);
 
     for (const { output, tableName } of renderedTables) {
-      const basePath = config.tables[tableName].path;
-      const outputPath = path.join(srcDir, basePath, `${tableName}.sol`);
+      const tablePath = config.tables[tableName].route;
+      const outputPath = path.join(srcDir, tablePath, `${tableName}.sol`);
       writeFileSync(outputPath, output);
       console.log(`Generated schema: ${outputPath}`);
     }
