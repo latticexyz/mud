@@ -1,3 +1,5 @@
+import { renderList, renderListWithCommas, zipTaggedTemplate, _if } from "../utils/render";
+
 /**
  * Methods prefixed with `_` involve tagged templates!
  */
@@ -70,8 +72,9 @@ export function renderSchema({
     }
   };
   const fullStaticRoute = staticRoute ? staticRoute.baseRoute + staticRoute.subRoute : "";
-
   const libraryName = tableName + (withTableIdArgument ? "Schema" : "Table");
+
+  const keyArgs = renderListWithCommas(keyTuple, (key) => `bytes32 ${key}`);
 
   return `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -94,14 +97,14 @@ uint256 constant ${tableName}TableId = _tableId;
 `}
 
 struct ${tableName} {
-  ${renderList("", fields, ({ name, typeId }) => `${typeId} ${name};`)}
+  ${renderList(fields, ({ name, typeId }) => `${typeId} ${name};`)}
 }
 
 library ${libraryName} {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](${fields.length});
-    ${renderList("", fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+    ${renderList(fields, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
 
     return SchemaLib.encode(_schema);
   }
@@ -118,13 +121,12 @@ library ${libraryName} {
   /** Set the table's data */
   function set(
     ${_tableId`,`}
-    ${renderKeyArgs(keyTuple)},
-    ${renderList(",", fields, ({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)}
+    ${keyArgs},
+    ${renderListWithCommas(fields, ({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)}
   ) internal {
     ${renderEncodedLengths(dynamicFields)}
     bytes memory _data = abi.encodePacked(
-      ${renderList(
-        ",",
+      ${renderListWithCommas(
         staticFields,
         ({ name }) =>
           // encode static fields
@@ -132,7 +134,7 @@ library ${libraryName} {
       )}
       ${staticFields.length > 0 && withDynamic ? "," : ""}
       ${_if(withDynamic)`_encodedLengths.unwrap(),`}
-      ${renderList(",", dynamicFields, (field) => renderEncodeField(field))}
+      ${renderListWithCommas(dynamicFields, (field) => renderEncodeField(field))}
     );
 
     ${renderKeyTuple(keyTuple)}
@@ -142,23 +144,23 @@ library ${libraryName} {
 
   function set(
     ${_tableId`,`}
-    ${renderKeyArgs(keyTuple)},
+    ${keyArgs},
     ${tableName} memory _table
   ) internal {
     set(
       ${_if(withTableIdArgument)`_tableId,`}
-      ${renderList(",", keyTuple, (key) => key)},
-      ${renderList(",", fields, ({ name }) => `_table.${name}`)}
+      ${renderListWithCommas(keyTuple, (key) => key)},
+      ${renderListWithCommas(fields, ({ name }) => `_table.${name}`)}
     );
   }
 
-${renderList("", fields, (field, index) => {
+${renderList(fields, (field, index) => {
   // setter for each key
   const { typeWithLocation, name, methodName } = field;
   return `
     function set${methodName}(
       ${_tableId`,`}
-      ${renderKeyArgs(keyTuple)},
+      ${keyArgs},
       ${typeWithLocation} ${name}
     ) internal {
       ${renderKeyTuple(keyTuple)}
@@ -167,13 +169,13 @@ ${renderList("", fields, (field, index) => {
   `;
 })}
 
-${renderList("", fields, (field, index) => {
+${renderList(fields, (field, index) => {
   // getter for each key
   const { typeWithLocation, name, methodName } = field;
   return `
     function get${methodName}(
       ${_tableId`,`}
-      ${renderKeyArgs(keyTuple)}
+      ${keyArgs}
     ) internal view returns (${typeWithLocation} ${name}) {
       ${renderKeyTuple(keyTuple)}
       bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, ${index});
@@ -185,7 +187,7 @@ ${renderList("", fields, (field, index) => {
   /** Get the table's data */
   function get(
     ${_tableId`,`}
-    ${renderKeyArgs(keyTuple)}
+    ${keyArgs}
   ) internal view returns (${tableName} memory _table) {
     ${renderKeyTuple(keyTuple)}
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
@@ -195,7 +197,7 @@ ${renderList("", fields, (field, index) => {
   function get(
     ${_tableId`,`}
     IStore _store,
-    ${renderKeyArgs(keyTuple)}
+    ${keyArgs}
   ) internal view returns (${tableName} memory _table) {
     ${renderKeyTuple(keyTuple)}
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
@@ -210,20 +212,20 @@ ${
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
 
     ${renderList(
-      "",
       staticFields,
-      (field, index) => `_table.${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};`
+      (field, index) => `
+      _table.${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
+      `
     )}
     uint256 _start;
     uint256 _end = ${totalStaticLength + 32};
     ${renderList(
-      "",
       dynamicFields,
-      (field, index) =>
-        `
+      (field, index) => `
       _start = _end;
       _end += _encodedLengths.atIndex(${index});
-      _table.${field.name} = ${renderDecodeDynamicFieldPartial(field)};`
+      _table.${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+      `
     )}
   }
 `
@@ -234,11 +236,10 @@ ${
   _if(!withDynamic)`
   function decode(bytes memory _blob) internal pure returns (${tableName} memory _table) {
     ${renderList(
-      "",
       staticFields,
       (field, index) => `
       _table.${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
-    `
+      `
     )}
   }
 `
@@ -260,36 +261,10 @@ function _toBool(uint8 value) pure returns (bool result) {
 `;
 }
 
-function zipTaggedTemplate(strings: TemplateStringsArray, ...values: (string | number)[]) {
-  let result = strings[0];
-  for (const [index, value] of values.entries()) {
-    result += value + strings[index + 1];
-  }
-  return result;
-}
-
-function _if(condition: boolean) {
-  if (condition) {
-    return zipTaggedTemplate;
-  } else {
-    return () => "";
-  }
-}
-
-function renderList<T>(lineTerminator: string, list: T[], renderItem: (item: T, index: number) => string) {
-  return list
-    .map((item, index) => renderItem(item, index) + (index === list.length - 1 ? "" : lineTerminator))
-    .join("\n");
-}
-
-function renderKeyArgs(keys: string[]) {
-  return renderList(",", keys, (key) => `bytes32 ${key}`);
-}
-
 function renderKeyTuple(keys: string[]) {
   return (
     `bytes32[] memory _keyTuple = new bytes32[](${keys.length});
-` + renderList("", keys, (key, index) => `_keyTuple[${index}] = ${key};`)
+` + renderList(keys, (key, index) => `_keyTuple[${index}] = ${key};`)
   );
 }
 
@@ -308,7 +283,7 @@ function renderEncodeField(field: RenderSchemaField) {
 function renderEncodedLengths(dynamicFields: RenderSchemaField[]) {
   if (dynamicFields.length > 0) {
     return `uint16[] memory _counters = new uint16[](${dynamicFields.length});
-${renderList("", dynamicFields, ({ name, arrayElement }, index) => {
+${renderList(dynamicFields, ({ name, arrayElement }, index) => {
   if (arrayElement) {
     return `_counters[${index}] = uint16(${name}.length * ${arrayElement.staticByteLength});`;
   } else {
