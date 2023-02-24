@@ -15,9 +15,6 @@ const TS_CONFIG_FILENAME = "mud.config.mts";
 export async function loadConfig(configPath?: string): Promise<unknown> {
   configPath = resolveConfigPath(configPath);
 
-  // TODO is this override really necessary?
-  process.env.TS_NODE_COMPILER_OPTIONS = `{ "module": "esnext" }`;
-
   const config = (await import(configPath)).default;
   console.log("Config loaded:", config);
   return config;
