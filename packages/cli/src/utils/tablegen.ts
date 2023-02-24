@@ -52,7 +52,7 @@ function getSchemaTypeInfo(schemaType: SchemaType): RenderSchemaType {
   const typeId = SchemaTypeId[schemaType];
   return {
     typeId,
-    typeLoc: isDynamic ? typeId + " memory" : typeId,
+    typeWithLocation: isDynamic ? typeId + " memory" : typeId,
     enumName: SchemaType[schemaType],
     staticByteLength,
     isDynamic,

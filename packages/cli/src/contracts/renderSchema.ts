@@ -23,7 +23,7 @@ export interface RenderSchemaField extends RenderSchemaType {
 
 export interface RenderSchemaType {
   typeId: string;
-  typeLoc: string;
+  typeWithLocation: string;
   enumName: string;
   staticByteLength: number;
   isDynamic: boolean;
@@ -89,7 +89,7 @@ library ${tableName}_ {
   function set(
     uint256 _tableId,
     ${renderKeyArgs(keyTuple)},
-    ${renderList(",", fields, ({ name, typeLoc }) => `${typeLoc} ${name}`)}
+    ${renderList(",", fields, ({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)}
   ) internal {
     ${renderEncodedLengths(dynamicFields)}
     bytes memory _data = abi.encodePacked(
@@ -124,12 +124,12 @@ library ${tableName}_ {
 
 ${renderList("", fields, (field, index) => {
   // setter for each key
-  const { typeLoc, name, methodName } = field;
+  const { typeWithLocation, name, methodName } = field;
   return `
     function set${methodName}(
       uint256 _tableId,
       ${renderKeyArgs(keyTuple)},
-      ${typeLoc} ${name}
+      ${typeWithLocation} ${name}
     ) internal {
       ${renderKeyTuple(keyTuple)}
       StoreSwitch.setField(_tableId, _keyTuple, ${index}, ${renderEncodeField(field)});
@@ -139,12 +139,12 @@ ${renderList("", fields, (field, index) => {
 
 ${renderList("", fields, (field, index) => {
   // getter for each key
-  const { typeLoc, name, methodName } = field;
+  const { typeWithLocation, name, methodName } = field;
   return `
     function get${methodName}(
       uint256 _tableId,
       ${renderKeyArgs(keyTuple)}
-    ) internal view returns (${typeLoc} ${name}) {
+    ) internal view returns (${typeWithLocation} ${name}) {
       ${renderKeyTuple(keyTuple)}
       bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, ${index});
       return ${renderDecodeFieldSingle(field)};
