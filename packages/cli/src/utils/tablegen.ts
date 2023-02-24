@@ -6,7 +6,7 @@ import {
   RenderSchemaType,
 } from "../contracts/renderSchema.js";
 import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
-import { StoreConfig } from "./storeConfig.js";
+import { StoreConfig } from "../config/loadStoreConfig.js";
 
 export function renderTables(config: StoreConfig) {
   const storeImportPath = config.storeImportPath;

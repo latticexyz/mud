@@ -1,9 +1,9 @@
 import type { CommandModule } from "yargs";
 import { writeFileSync } from "fs";
 import path from "path";
-import { loadConfig } from "../utils/storeConfig";
-import { renderTables } from "../utils/tablegen";
-import { getSrcDirectory } from "../utils/forgeConfig";
+import { loadStoreConfig } from "../config/loadStoreConfig.js";
+import { renderTables } from "../utils/tablegen.js";
+import { getSrcDirectory } from "../utils/forgeConfig.js";
 
 type Options = {
   configPath?: string;
@@ -23,7 +23,7 @@ const commandModule: CommandModule<Options, Options> = {
   async handler({ configPath }) {
     const srcDir = await getSrcDirectory();
 
-    const config = await loadConfig({ configPath });
+    const config = await loadStoreConfig(configPath);
     const renderedTables = renderTables(config);
 
     for (const { output, tableName } of renderedTables) {

@@ -1,1 +1,1 @@
-export type { StoreUserConfig, StoreConfig } from "./utils/storeConfig.js";
+export type { StoreUserConfig, StoreConfig } from "./config/loadStoreConfig.js";
