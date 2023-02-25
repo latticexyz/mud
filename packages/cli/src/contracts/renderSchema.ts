@@ -1,4 +1,4 @@
-import { renderList, renderListWithCommas, zipTaggedTemplate, _if } from "../utils/render";
+import { renderList, renderListWithCommas, TaggedTemplate, zipTaggedTemplate, _if } from "../utils/render";
 
 /**
  * Methods prefixed with `_` involve tagged templates!
@@ -64,7 +64,7 @@ export function renderSchema({
   // Render table argument with the appended template, if not using a static tableId
   // (the template is used to append e.g. "," for argument lists)
   const withTableIdArgument = staticRoute === undefined;
-  const _tableId = (strings: TemplateStringsArray, ...values: (string | number)[]) => {
+  const _tableId: TaggedTemplate = (strings, ...values) => {
     if (withTableIdArgument) {
       return "uint256 _tableId" + zipTaggedTemplate(strings, ...values);
     } else {
@@ -74,7 +74,13 @@ export function renderSchema({
   const fullStaticRoute = staticRoute ? staticRoute.baseRoute + staticRoute.subRoute : "";
   const libraryName = tableName + (withTableIdArgument ? "Schema" : "Table");
 
-  const keyArgs = renderListWithCommas(keyTuple, (key) => `bytes32 ${key}`);
+  const _keyArgs: TaggedTemplate = (strings, ...values) => {
+    if (keyTuple.length > 0) {
+      return renderListWithCommas(keyTuple, (key) => `bytes32 ${key}`) + zipTaggedTemplate(strings, ...values);
+    } else {
+      return "";
+    }
+  };
 
   return `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -121,7 +127,7 @@ library ${libraryName} {
   /** Set the table's data */
   function set(
     ${_tableId`,`}
-    ${keyArgs},
+    ${_keyArgs`,`}
     ${renderListWithCommas(fields, ({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)}
   ) internal {
     ${renderEncodedLengths(dynamicFields)}
@@ -144,12 +150,12 @@ library ${libraryName} {
 
   function set(
     ${_tableId`,`}
-    ${keyArgs},
+    ${_keyArgs`,`}
     ${tableName} memory _table
   ) internal {
     set(
       ${_if(withTableIdArgument)`_tableId,`}
-      ${renderListWithCommas(keyTuple, (key) => key)},
+      ${renderListWithCommas(keyTuple, (key) => key)}${keyTuple.length > 0 ? "," : ""}
       ${renderListWithCommas(fields, ({ name }) => `_table.${name}`)}
     );
   }
@@ -160,7 +166,7 @@ ${renderList(fields, (field, index) => {
   return `
     function set${methodName}(
       ${_tableId`,`}
-      ${keyArgs},
+      ${_keyArgs`,`}
       ${typeWithLocation} ${name}
     ) internal {
       ${renderKeyTuple(keyTuple)}
@@ -175,7 +181,7 @@ ${renderList(fields, (field, index) => {
   return `
     function get${methodName}(
       ${_tableId`,`}
-      ${keyArgs}
+      ${_keyArgs``}
     ) internal view returns (${typeWithLocation} ${name}) {
       ${renderKeyTuple(keyTuple)}
       bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, ${index});
@@ -187,7 +193,7 @@ ${renderList(fields, (field, index) => {
   /** Get the table's data */
   function get(
     ${_tableId`,`}
-    ${keyArgs}
+    ${_keyArgs``}
   ) internal view returns (${tableName} memory _table) {
     ${renderKeyTuple(keyTuple)}
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
@@ -196,8 +202,8 @@ ${renderList(fields, (field, index) => {
 
   function get(
     ${_tableId`,`}
-    IStore _store,
-    ${keyArgs}
+    IStore _store${keyTuple.length > 0 ? "," : ""}
+    ${_keyArgs``}
   ) internal view returns (${tableName} memory _table) {
     ${renderKeyTuple(keyTuple)}
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple);

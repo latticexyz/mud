@@ -1,3 +1,5 @@
+export type TaggedTemplate = (strings: TemplateStringsArray, ...values: (string | number)[]) => string;
+
 export function zipTaggedTemplate(strings: TemplateStringsArray, ...values: (string | number)[]) {
   let result = strings[0];
   for (const [index, value] of values.entries()) {
