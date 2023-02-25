@@ -43,12 +43,7 @@ library RouteTable {
   }
 
   /** Set the table's data */
-  function set(
-    bytes32 key,
-    address addr,
-    bytes4 selector,
-    uint8 executionMode
-  ) internal {
+  function set(bytes32 key, address addr, bytes4 selector, uint8 executionMode) internal {
     bytes memory _data = abi.encodePacked(addr, selector, executionMode);
 
     bytes32[] memory _keyTuple = new bytes32[](1);

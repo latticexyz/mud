@@ -4,6 +4,7 @@ import path from "path";
 import { loadStoreConfig } from "../config/loadStoreConfig.js";
 import { renderTables } from "../utils/tablegen.js";
 import { getSrcDirectory } from "../utils/forgeConfig.js";
+import { formatSolidity } from "../utils/format.js";
 
 type Options = {
   configPath?: string;
@@ -27,9 +28,11 @@ const commandModule: CommandModule<Options, Options> = {
     const renderedTables = renderTables(config);
 
     for (const { output, tableName } of renderedTables) {
+      const formattedOutput = await formatSolidity(output);
+
       const tablePath = config.tables[tableName].route;
       const outputPath = path.join(srcDir, tablePath, `${tableName}.sol`);
-      writeFileSync(outputPath, output);
+      writeFileSync(outputPath, formattedOutput);
       console.log(`Generated schema: ${outputPath}`);
     }
 

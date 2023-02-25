@@ -45,13 +45,7 @@ library MixedTable {
   }
 
   /** Set the table's data */
-  function set(
-    bytes32 key,
-    uint32 u32,
-    uint128 u128,
-    uint32[] memory a32,
-    string memory s
-  ) internal {
+  function set(bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
     uint16[] memory _counters = new uint16[](2);
     _counters[0] = uint16(a32.length * 4);
     _counters[1] = uint16(bytes(s).length);
@@ -141,7 +135,9 @@ library MixedTable {
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 20));
 
     _table.u32 = uint32(Bytes.slice4(_blob, 0));
+
     _table.u128 = uint128(Bytes.slice16(_blob, 4));
+
     uint256 _start;
     uint256 _end = 52;
 

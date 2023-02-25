@@ -41,11 +41,7 @@ library Vector2Table {
   }
 
   /** Set the table's data */
-  function set(
-    bytes32 key,
-    uint32 x,
-    uint32 y
-  ) internal {
+  function set(bytes32 key, uint32 x, uint32 y) internal {
     bytes memory _data = abi.encodePacked(x, y);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
