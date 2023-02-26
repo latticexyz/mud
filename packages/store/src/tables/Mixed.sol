@@ -190,15 +190,6 @@ library Mixed {
     set(key, _table.u32, _table.u128, _table.a32, _table.s);
   }
 
-  /* Delete all data for given keys */
-  function deleteRecord(bytes32 key) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-
-    _primaryKeys[0] = bytes32(key);
-
-    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
-  }
-
   /** Decode the tightly packed blob using this table's schema */
   function decode(bytes memory _blob) internal view returns (MixedData memory _table) {
     // 20 is the total byte length of static data
@@ -218,5 +209,14 @@ library Mixed {
     _start = _end;
     _end += _encodedLengths.atIndex(1);
     _table.s = string(SliceLib.getSubslice(_blob, _start, _end).toBytes());
+  }
+
+  /* Delete all data for given keys */
+  function deleteRecord(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+
+    _primaryKeys[0] = bytes32(key);
+
+    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
 }

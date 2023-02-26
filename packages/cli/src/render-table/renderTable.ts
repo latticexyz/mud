@@ -6,7 +6,7 @@ import { RenderTableOptions } from "./types.js";
 export function renderTable(options: RenderTableOptions) {
   const { libraryName, structName, staticRouteData, storeImportPath, fields, withRecordMethods } = options;
 
-  const { _typedTableId } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
   return `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -65,6 +65,11 @@ ${renderFieldMethods(options)}
 
 ${withRecordMethods ? renderRecordMethods(options) : ""}
 
+  /* Delete all data for given keys */
+  function deleteRecord(${renderArguments([_typedTableId, _typedKeyArgs])}) internal {
+    ${_primaryKeysDefinition}
+    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
 }
 
 ${

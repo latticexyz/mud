@@ -64,4 +64,13 @@ library Hooks {
     bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked(_element));
     StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
   }
+
+  /* Delete all data for given keys */
+  function deleteRecord(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+
+    _primaryKeys[0] = bytes32(key);
+
+    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
 }

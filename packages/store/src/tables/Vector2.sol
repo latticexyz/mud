@@ -119,6 +119,13 @@ library Vector2 {
     set(key, _table.x, _table.y);
   }
 
+  /** Decode the tightly packed blob using this table's schema */
+  function decode(bytes memory _blob) internal pure returns (Vector2Data memory _table) {
+    _table.x = uint32(Bytes.slice4(_blob, 0));
+
+    _table.y = uint32(Bytes.slice4(_blob, 4));
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 key) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -126,12 +133,5 @@ library Vector2 {
     _primaryKeys[0] = bytes32(key);
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
-  }
-
-  /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal pure returns (Vector2Data memory _table) {
-    _table.x = uint32(Bytes.slice4(_blob, 0));
-
-    _table.y = uint32(Bytes.slice4(_blob, 4));
   }
 }

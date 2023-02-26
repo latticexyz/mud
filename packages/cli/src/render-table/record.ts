@@ -61,14 +61,6 @@ export function renderRecordMethods(options: RenderTableOptions) {
     `;
   }
 
-  result += `
-  /* Delete all data for given keys */
-  function deleteRecord(${renderArguments([_typedTableId, _typedKeyArgs])}) internal {
-    ${_primaryKeysDefinition}
-    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
-  }
-  `;
-
   result += renderDecodeFunction(options);
 
   return result;
