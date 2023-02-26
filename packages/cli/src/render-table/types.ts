@@ -12,6 +12,8 @@ export interface RenderTableOptions {
   dynamicFields: RenderTableDynamicField[];
   /** Whether to render get/set methods for the whole record */
   withRecordMethods: boolean;
+  /** Whether to render additional methods that accept a manual `IStore` argument */
+  storeArgument: boolean;
 }
 
 export interface StaticRouteData {

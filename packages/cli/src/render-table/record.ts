@@ -3,7 +3,7 @@ import { renderDecodeValueType, renderEncodeField } from "./field.js";
 import { RenderTableDynamicField, RenderTableOptions, RenderTableStaticField } from "./types.js";
 
 export function renderRecordMethods(options: RenderTableOptions) {
-  const { staticFields, dynamicFields, structName } = options;
+  const { staticFields, dynamicFields, structName, storeArgument } = options;
   const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
   let result = `
@@ -15,18 +15,24 @@ export function renderRecordMethods(options: RenderTableOptions) {
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
     return decode(_blob);
   }
+  `;
 
-  /** Get the full data from the specified store */
-  function get(${renderArguments([
-    _typedTableId,
-    `IStore _store`,
-    _typedKeyArgs,
-  ])}) internal view returns (${renderDecodedRecord(options)}) {
-    ${_primaryKeysDefinition}
-    bytes memory _blob = _store.getRecord(_tableId, _primaryKeys);
-    return decode(_blob);
+  if (storeArgument) {
+    result += `
+    /** Get the full data from the specified store */
+    function get(${renderArguments([
+      _typedTableId,
+      `IStore _store`,
+      _typedKeyArgs,
+    ])}) internal view returns (${renderDecodedRecord(options)}) {
+      ${_primaryKeysDefinition}
+      bytes memory _blob = _store.getRecord(_tableId, _primaryKeys);
+      return decode(_blob);
+    }
+    `;
   }
 
+  result += `
   /** Set the full data using individual values */
   function set(${renderArguments([
     _typedTableId,

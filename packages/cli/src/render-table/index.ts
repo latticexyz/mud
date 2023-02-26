@@ -78,6 +78,7 @@ export function renderTablesFromConfig(config: StoreConfig) {
         staticFields,
         dynamicFields,
         withRecordMethods,
+        storeArgument: tableData.storeArgument,
       }),
     });
   }

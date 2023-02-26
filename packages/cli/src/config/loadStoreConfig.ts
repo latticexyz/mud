@@ -21,6 +21,7 @@ const FullTable = z
   .object({
     route: OrdinaryRoute.default("/tables"),
     tableIdArgument: z.boolean().default(false),
+    storeArgument: z.boolean().default(false),
     primaryKeys: PrimaryKeys,
     schema: Schema,
     dataStruct: z.boolean().optional(),
@@ -72,6 +73,8 @@ interface FullTableConfig {
   route?: string;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
   tableIdArgument?: boolean;
+  /** Include methods that accept a manual `IStore` argument. Default is false. */
+  storeArgument?: boolean;
   /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
   dataStruct?: boolean;
   /** Table's primary key names mapped to their types. Default is `{ key: SchemaType.BYTES32 }` */

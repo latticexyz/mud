@@ -56,10 +56,16 @@ library ${libraryName} {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
+${
+  !options.storeArgument
+    ? ""
+    : `
   /** Register the table's schema for the specified store */
   function registerSchema(${renderArguments([_typedTableId, "IStore _store"])}) internal {
     _store.registerSchema(_tableId, getSchema());
   }
+`
+}
 
 ${renderFieldMethods(options)}
 

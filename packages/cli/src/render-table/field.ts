@@ -18,7 +18,24 @@ export function renderFieldMethods(options: RenderTableOptions) {
       bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, ${index});
       return ${renderDecodeFieldSingle(field)};
     }
+    `;
 
+    if (options.storeArgument) {
+      result += `
+      /** Get ${field.name} from the specified store */
+      function get${field.methodNameSuffix}(${renderArguments([
+        _typedTableId,
+        `IStore _store`,
+        _typedKeyArgs,
+      ])}) internal view returns (${_typedFieldName}) {
+        ${_primaryKeysDefinition}
+        bytes memory _blob = _store.getField(_tableId, _primaryKeys, ${index});
+        return ${renderDecodeFieldSingle(field)};
+      }
+      `;
+    }
+
+    result += `
     /** Set ${field.name} */
     function set${field.methodNameSuffix}(${renderArguments([
       _typedTableId,
