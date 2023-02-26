@@ -16,13 +16,13 @@ import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 uint256 constant _tableId = uint256(keccak256("/tables/Route"));
 uint256 constant RouteTableId = _tableId;
 
-struct Route {
+struct RouteData {
   address addr;
   bytes4 selector;
   uint8 executionMode;
 }
 
-library RouteTable {
+library Route {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](3);
@@ -82,7 +82,12 @@ library RouteTable {
   }
 
   /** Set the table's data */
-  function set(bytes32 key, address addr, bytes4 selector, uint8 executionMode) internal {
+  function set(
+    bytes32 key,
+    address addr,
+    bytes4 selector,
+    uint8 executionMode
+  ) internal {
     bytes memory _data = abi.encodePacked(addr, selector, executionMode);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -91,26 +96,26 @@ library RouteTable {
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
 
-  function set(bytes32 key, Route memory _table) internal {
+  function set(bytes32 key, RouteData memory _table) internal {
     set(key, _table.addr, _table.selector, _table.executionMode);
   }
 
   /** Get the table's data */
-  function get(bytes32 key) internal view returns (Route memory _table) {
+  function get(bytes32 key) internal view returns (RouteData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
   }
 
-  function get(IStore _store, bytes32 key) internal view returns (Route memory _table) {
+  function get(IStore _store, bytes32 key) internal view returns (RouteData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
     return decode(_blob);
   }
 
-  function decode(bytes memory _blob) internal pure returns (Route memory _table) {
+  function decode(bytes memory _blob) internal pure returns (RouteData memory _table) {
     _table.addr = address(Bytes.slice20(_blob, 0));
 
     _table.selector = Bytes.slice4(_blob, 20);

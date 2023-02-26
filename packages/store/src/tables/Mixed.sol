@@ -16,14 +16,14 @@ import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 uint256 constant _tableId = uint256(keccak256("/tables/Mixed"));
 uint256 constant MixedTableId = _tableId;
 
-struct Mixed {
+struct MixedData {
   uint32 u32;
   uint128 u128;
   uint32[] a32;
   string s;
 }
 
-library MixedTable {
+library Mixed {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](4);
@@ -97,7 +97,13 @@ library MixedTable {
   }
 
   /** Set the table's data */
-  function set(bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
+  function set(
+    bytes32 key,
+    uint32 u32,
+    uint128 u128,
+    uint32[] memory a32,
+    string memory s
+  ) internal {
     uint16[] memory _counters = new uint16[](2);
     _counters[0] = uint16(a32.length * 4);
     _counters[1] = uint16(bytes(s).length);
@@ -111,26 +117,26 @@ library MixedTable {
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
 
-  function set(bytes32 key, Mixed memory _table) internal {
+  function set(bytes32 key, MixedData memory _table) internal {
     set(key, _table.u32, _table.u128, _table.a32, _table.s);
   }
 
   /** Get the table's data */
-  function get(bytes32 key) internal view returns (Mixed memory _table) {
+  function get(bytes32 key) internal view returns (MixedData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
   }
 
-  function get(IStore _store, bytes32 key) internal view returns (Mixed memory _table) {
+  function get(IStore _store, bytes32 key) internal view returns (MixedData memory _table) {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
     return decode(_blob);
   }
 
-  function decode(bytes memory _blob) internal view returns (Mixed memory _table) {
+  function decode(bytes memory _blob) internal view returns (MixedData memory _table) {
     // 20 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 20));
 

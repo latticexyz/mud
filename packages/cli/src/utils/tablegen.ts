@@ -46,14 +46,7 @@ export function renderTables(config: StoreConfig) {
       }
     })();
 
-    const libraryNameSuffix = (() => {
-      if (componentMode) {
-        // TODO discuss this
-        return tableData.schemaMode ? "Schema" : "";
-      } else {
-        return tableData.schemaMode ? "Schema" : "Table";
-      }
-    })();
+    const libraryNameSuffix = tableData.schemaMode ? "Schema" : "";
 
     renderedTables.push({
       tableName,

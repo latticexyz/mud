@@ -61,6 +61,8 @@ export function renderSchema({
   const totalStaticLength = staticFields.reduce((acc, { staticByteLength }) => acc + staticByteLength, 0);
   const withDynamic = dynamicFields.length > 0;
 
+  const structName = tableName + "Data";
+
   // Static field offsets
   const staticOffsets = staticFields.map(() => 0);
   let _acc = 0;
@@ -111,7 +113,7 @@ ${_if(!withTableIdArgument)`
 `}
 
 ${_if(withStruct)`
-  struct ${tableName} {
+  struct ${structName} {
     ${renderList(fields, ({ name, typeId }) => `${typeId} ${name};`)}
   }
 `}
@@ -193,7 +195,7 @@ ${_if(withRecordMethods)`
     function set(
       ${_tableId`,`}
       ${_keyArgs`,`}
-      ${tableName} memory _table
+      ${structName} memory _table
     ) internal {
       set(
         ${_if(withTableIdArgument)`_tableId,`}
@@ -209,7 +211,7 @@ ${_if(withRecordMethods && withStruct)`
   function get(
     ${_tableId`${_if(withKeys)`,`}`}
     ${_keyArgs``}
-  ) internal view returns (${tableName} memory _table) {
+  ) internal view returns (${structName} memory _table) {
     ${renderKeyTuple(keyTuple)}
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -219,7 +221,7 @@ ${_if(withRecordMethods && withStruct)`
     ${_tableId`,`}
     IStore _store${_if(withKeys)`,`}
     ${_keyArgs``}
-  ) internal view returns (${tableName} memory _table) {
+  ) internal view returns (${structName} memory _table) {
     ${renderKeyTuple(keyTuple)}
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
     return decode(_blob);
@@ -228,7 +230,7 @@ ${_if(withRecordMethods && withStruct)`
   ${
     // decode static (optionally) and dynamic data
     _if(withDynamic)`
-    function decode(bytes memory _blob) internal view returns (${tableName} memory _table) {
+    function decode(bytes memory _blob) internal view returns (${structName} memory _table) {
       // ${totalStaticLength} is the total byte length of static data
       PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
 
@@ -255,7 +257,7 @@ ${_if(withRecordMethods && withStruct)`
   ${
     // decode only static data
     _if(!withDynamic)`
-    function decode(bytes memory _blob) internal pure returns (${tableName} memory _table) {
+    function decode(bytes memory _blob) internal pure returns (${structName} memory _table) {
       ${renderList(
         staticFields,
         (field, index) => `
