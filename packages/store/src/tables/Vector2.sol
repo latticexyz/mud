@@ -13,7 +13,7 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/tables/Vector2"));
+uint256 constant _tableId = uint256(keccak256("/store_internals/tables/Vector2"));
 uint256 constant Vector2TableId = _tableId;
 
 struct Vector2Data {
@@ -41,15 +41,6 @@ library Vector2 {
     _store.registerSchema(_tableId, getSchema());
   }
 
-  /** Set x */
-  function setX(bytes32 key, uint32 x) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-
-    _keyTuple[0] = key;
-
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(x));
-  }
-
   /** Get x */
   function getX(bytes32 key) internal view returns (uint32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -60,13 +51,13 @@ library Vector2 {
     return uint32(Bytes.slice4(_blob, 0));
   }
 
-  /** Set y */
-  function setY(bytes32 key, uint32 y) internal {
+  /** Set x */
+  function setX(bytes32 key, uint32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
 
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(y));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(x));
   }
 
   /** Get y */
@@ -77,6 +68,15 @@ library Vector2 {
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return uint32(Bytes.slice4(_blob, 0));
+  }
+
+  /** Set y */
+  function setY(bytes32 key, uint32 y) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(y));
   }
 
   /** Get the full data */

@@ -3,19 +3,11 @@ import { SchemaType } from "@latticexyz/schema-type";
 
 const config: StoreUserConfig = {
   storeImportPath: "../",
+  baseRoute: "/store_internals",
 
   tables: {
-    // TODO these arrays require push/pull to be implemented
-    /*AddressArray: {
-      schema: {
-        addresses: SchemaType.ADDRESS_ARRAY,
-      }
-    },
-    CallbackArray: {
-      schema: {
-        callbacks: SchemaType.BYTES24_ARRAY,
-      }
-    },*/
+    Hooks: SchemaType.ADDRESS_ARRAY,
+    Callbacks: SchemaType.BYTES24_ARRAY,
     Mixed: {
       schema: {
         u32: SchemaType.UINT32,

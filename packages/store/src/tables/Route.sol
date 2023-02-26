@@ -13,7 +13,7 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/tables/Route"));
+uint256 constant _tableId = uint256(keccak256("/store_internals/tables/Route"));
 uint256 constant RouteTableId = _tableId;
 
 struct RouteData {
@@ -43,15 +43,6 @@ library Route {
     _store.registerSchema(_tableId, getSchema());
   }
 
-  /** Set addr */
-  function setAddr(bytes32 key, address addr) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-
-    _keyTuple[0] = key;
-
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(addr));
-  }
-
   /** Get addr */
   function getAddr(bytes32 key) internal view returns (address addr) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -62,13 +53,13 @@ library Route {
     return address(Bytes.slice20(_blob, 0));
   }
 
-  /** Set selector */
-  function setSelector(bytes32 key, bytes4 selector) internal {
+  /** Set addr */
+  function setAddr(bytes32 key, address addr) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
 
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(selector));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(addr));
   }
 
   /** Get selector */
@@ -81,13 +72,13 @@ library Route {
     return Bytes.slice4(_blob, 0);
   }
 
-  /** Set executionMode */
-  function setExecutionMode(bytes32 key, uint8 executionMode) internal {
+  /** Set selector */
+  function setSelector(bytes32 key, bytes4 selector) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
 
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked(executionMode));
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(selector));
   }
 
   /** Get executionMode */
@@ -98,6 +89,15 @@ library Route {
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
     return uint8(Bytes.slice1(_blob, 0));
+  }
+
+  /** Set executionMode */
+  function setExecutionMode(bytes32 key, uint8 executionMode) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 2, abi.encodePacked(executionMode));
   }
 
   /** Get the full data */

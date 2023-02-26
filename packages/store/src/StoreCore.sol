@@ -8,7 +8,7 @@ import { console } from "forge-std/console.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice } from "./Slice.sol";
-import { HooksTable, tableId as HooksTableId } from "./tables/HooksTable.sol";
+import { Hooks, HooksTableId } from "./tables/Hooks.sol";
 import { IStoreHook } from "./IStore.sol";
 
 library StoreCore {
@@ -30,7 +30,7 @@ library StoreCore {
    */
   function initialize() internal {
     registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
-    registerSchema(HooksTableId, HooksTable.getSchema());
+    registerSchema(HooksTableId, Hooks.getSchema());
   }
 
   /************************************************************************
@@ -79,7 +79,7 @@ library StoreCore {
    * Register hooks to be called when a record or field is set or deleted
    */
   function registerStoreHook(uint256 table, IStoreHook hook) external {
-    HooksTable.push(table, address(hook));
+    Hooks.push(bytes32(table), address(hook));
   }
 
   /************************************************************************
@@ -118,7 +118,7 @@ library StoreCore {
     emit StoreSetRecord(table, key, data);
 
     // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory hooks = HooksTable.get(table);
+    address[] memory hooks = Hooks.get(bytes32(table));
     for (uint256 i = 0; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onSetRecord(table, key, data);
@@ -173,7 +173,7 @@ library StoreCore {
     emit StoreSetField(table, key, schemaIndex, data);
 
     // Call onSetField hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory hooks = HooksTable.get(table);
+    address[] memory hooks = Hooks.get(bytes32(table));
     for (uint256 i = 0; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onSetField(table, key, schemaIndex, data);
@@ -194,7 +194,7 @@ library StoreCore {
     emit StoreDeleteRecord(table, key);
 
     // Call onDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
-    address[] memory hooks = HooksTable.get(table);
+    address[] memory hooks = Hooks.get(bytes32(table));
     for (uint256 i = 0; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onDeleteRecord(table, key);

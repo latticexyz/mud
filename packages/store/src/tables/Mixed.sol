@@ -13,7 +13,7 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/tables/Mixed"));
+uint256 constant _tableId = uint256(keccak256("/store_internals/tables/Mixed"));
 uint256 constant MixedTableId = _tableId;
 
 struct MixedData {
@@ -45,15 +45,6 @@ library Mixed {
     _store.registerSchema(_tableId, getSchema());
   }
 
-  /** Set u32 */
-  function setU32(bytes32 key, uint32 u32) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-
-    _keyTuple[0] = key;
-
-    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(u32));
-  }
-
   /** Get u32 */
   function getU32(bytes32 key) internal view returns (uint32 u32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
@@ -64,13 +55,13 @@ library Mixed {
     return uint32(Bytes.slice4(_blob, 0));
   }
 
-  /** Set u128 */
-  function setU128(bytes32 key, uint128 u128) internal {
+  /** Set u32 */
+  function setU32(bytes32 key, uint32 u32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
 
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(u128));
+    StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(u32));
   }
 
   /** Get u128 */
@@ -83,13 +74,13 @@ library Mixed {
     return uint128(Bytes.slice16(_blob, 0));
   }
 
-  /** Set a32 */
-  function setA32(bytes32 key, uint32[] memory a32) internal {
+  /** Set u128 */
+  function setU128(bytes32 key, uint128 u128) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
 
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(a32));
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(u128));
   }
 
   /** Get a32 */
@@ -102,13 +93,24 @@ library Mixed {
     return SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32();
   }
 
-  /** Set s */
-  function setS(bytes32 key, string memory s) internal {
+  /** Set a32 */
+  function setA32(bytes32 key, uint32[] memory a32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
 
     _keyTuple[0] = key;
 
-    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes(s));
+    StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(a32));
+  }
+
+  /** Push an element to a32 */
+  function pushA32(bytes32 key, uint32 _element) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
+    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked(_element));
+    StoreSwitch.setField(_tableId, _keyTuple, 2, _newBlob);
   }
 
   /** Get s */
@@ -119,6 +121,26 @@ library Mixed {
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
     return string(_blob);
+  }
+
+  /** Set s */
+  function setS(bytes32 key, string memory s) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes(s));
+  }
+
+  /** Push a slice to s */
+  function pushS(bytes32 key, string memory _slice) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
+    bytes memory _newBlob = abi.encodePacked(_blob, bytes(_slice));
+    StoreSwitch.setField(_tableId, _keyTuple, 3, _newBlob);
   }
 
   /** Get the full data */
