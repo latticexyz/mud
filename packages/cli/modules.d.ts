@@ -1,2 +1,1 @@
-declare module "netlify";
-declare module "inquirer-prompt-suggest";
+declare module "prettier-plugin-solidity";
