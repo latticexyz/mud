@@ -5,21 +5,24 @@ import { renderList, renderListWithCommas, TaggedTemplate, zipTaggedTemplate, _i
  */
 
 export interface RenderSchemaOptions {
+  /** Name of the library to render. */
   libraryName: string;
-  staticRoute?: StaticRoute;
+  /** Name of the struct to render. If undefined, struct and its methods aren't rendered. */
+  structName?: string;
+  /** Data used to statically registed the table. If undefined, all methods receive `_tableId` as an argument. */
+  staticRouteData?: StaticRouteData;
   storeImportPath: string;
-  tableName: string;
   keyTuple: string[];
   fields: RenderSchemaField[];
   staticFields: RenderSchemaStaticField[];
   dynamicFields: RenderSchemaDynamicField[];
   /** Whether to render get/set methods for the whole record */
   withRecordMethods: boolean;
-  /** Whether to render a struct for the schema */
-  withStruct: boolean;
 }
 
-export interface StaticRoute {
+export interface StaticRouteData {
+  /** Name of the table id constant to render. */
+  tableIdName: string;
   baseRoute: string;
   subRoute: string;
 }
@@ -48,20 +51,19 @@ export interface RenderSchemaType {
 
 export function renderSchema({
   libraryName,
-  staticRoute,
+  structName,
+  staticRouteData,
   storeImportPath,
-  tableName,
   keyTuple,
   fields,
   staticFields,
   dynamicFields,
   withRecordMethods,
-  withStruct,
 }: RenderSchemaOptions) {
   const totalStaticLength = staticFields.reduce((acc, { staticByteLength }) => acc + staticByteLength, 0);
   const withDynamic = dynamicFields.length > 0;
 
-  const structName = tableName + "Data";
+  const withStruct = structName !== undefined;
 
   // Static field offsets
   const staticOffsets = staticFields.map(() => 0);
@@ -73,7 +75,7 @@ export function renderSchema({
 
   // Render table argument with the appended template, if not using a static tableId
   // (the template is used to append e.g. "," for argument lists)
-  const withTableIdArgument = staticRoute === undefined;
+  const withTableIdArgument = staticRouteData === undefined;
   const _tableId: TaggedTemplate = (strings, ...values) => {
     if (withTableIdArgument) {
       return "uint256 _tableId" + zipTaggedTemplate(strings, ...values);
@@ -81,7 +83,7 @@ export function renderSchema({
       return "";
     }
   };
-  const fullStaticRoute = staticRoute ? staticRoute.baseRoute + staticRoute.subRoute : "";
+  const fullStaticRoute = staticRouteData ? staticRouteData.baseRoute + staticRouteData.subRoute : "";
 
   const withKeys = keyTuple.length > 0;
   const _keyArgs: TaggedTemplate = (strings, ...values) => {
@@ -91,6 +93,10 @@ export function renderSchema({
       return "";
     }
   };
+
+  /** Names should be strings even if they're never used (see {@link _if}) */
+  structName ??= "";
+  const tableIdName = staticRouteData?.tableIdName ?? "";
 
   return `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -109,7 +115,7 @@ import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter
 
 ${_if(!withTableIdArgument)`
   uint256 constant _tableId = uint256(keccak256("${fullStaticRoute}"));
-  uint256 constant ${tableName}TableId = _tableId;
+  uint256 constant ${tableIdName} = _tableId;
 `}
 
 ${_if(withStruct)`

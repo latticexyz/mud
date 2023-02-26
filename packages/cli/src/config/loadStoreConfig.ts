@@ -8,13 +8,28 @@ const TableName = ObjectName;
 const KeyName = ValueName;
 const ColumnName = ValueName;
 
-const FullTable = z.object({
-  route: OrdinaryRoute.default("/tables"),
-  schemaMode: z.boolean().default(false),
-  disableComponentMode: z.boolean().default(false),
-  keyTuple: z.array(KeyName).default(["key"]),
-  schema: z.record(ColumnName, z.nativeEnum(SchemaType)),
-});
+const Schema = z
+  .record(ColumnName, z.nativeEnum(SchemaType))
+  .refine((arg) => Object.keys(arg).length > 0, "Table schema may not be empty");
+
+const FullTable = z
+  .object({
+    route: OrdinaryRoute.default("/tables"),
+    tableIdArgument: z.boolean().default(false),
+    keyTuple: z.array(KeyName).default(["key"]),
+    schema: Schema,
+    dataStruct: z.boolean().optional(),
+  })
+  .transform((arg) => {
+    // default dataStruct value depends on schema's length
+    if (Object.keys(arg.schema).length === 1) {
+      arg.dataStruct ??= false;
+    } else {
+      arg.dataStruct ??= true;
+    }
+    return arg as Omit<typeof arg, "dataStruct"> & Required<Pick<typeof arg, "dataStruct">>;
+  });
+
 const DefaultSingleValueTable = z.nativeEnum(SchemaType).transform((schemaType) => {
   return FullTable.parse({
     schema: {
@@ -50,10 +65,10 @@ export interface StoreUserConfig {
 interface FullTableConfig {
   /** Output path for the file, also used to make table id. Default is "tables/" */
   route?: string;
-  /** Make methods accept `_tableId` argument instead of it being hardcoded. Default is false */
-  schemaMode?: boolean;
-  /** If the table has only 1 column, keep record and field methods separate. Default is false  */
-  disableComponentMode?: boolean;
+  /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
+  tableIdArgument?: boolean;
+  /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
+  dataStruct?: boolean;
   /** List of names for the table's keys. Default is ["key"] */
   keyTuple?: string[];
   /** Table's columns. The keys are column names, 1st letter should be lowercase. */
