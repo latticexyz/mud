@@ -3,9 +3,6 @@ import { z } from "zod";
 import { loadConfig } from "./loadConfig.js";
 import { validateBaseRoute, validateCapitalizedName, validateRoute, validateUncapitalizedName } from "./validation.js";
 
-// Based on hardhat's config (MIT)
-// https://github.com/NomicFoundation/hardhat/tree/main/packages/hardhat-core
-
 const TableName = z.string().superRefine(validateCapitalizedName);
 const KeyName = z.string().superRefine(validateUncapitalizedName);
 const ColumnName = z.string().superRefine(validateUncapitalizedName);
