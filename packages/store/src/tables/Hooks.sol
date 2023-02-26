@@ -30,11 +30,6 @@ library Hooks {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Register the table's schema for the specified store */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema());
-  }
-
   /** Get value */
   function get(bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _primaryKeys = new bytes32[](1);

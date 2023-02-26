@@ -36,11 +36,6 @@ library Vector2 {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Register the table's schema for the specified store */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema());
-  }
-
   /** Get x */
   function getX(bytes32 key) internal view returns (uint32 x) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -86,16 +81,6 @@ library Vector2 {
     _primaryKeys[0] = bytes32(key);
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
-    return decode(_blob);
-  }
-
-  /** Get the full data from the specified store */
-  function get(IStore _store, bytes32 key) internal view returns (Vector2Data memory _table) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-
-    _primaryKeys[0] = bytes32(key);
-
-    bytes memory _blob = _store.getRecord(_tableId, _primaryKeys);
     return decode(_blob);
   }
 
