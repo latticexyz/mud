@@ -5,6 +5,7 @@ import { renderList, renderListWithCommas, TaggedTemplate, zipTaggedTemplate, _i
  */
 
 export interface RenderSchemaOptions {
+  libraryName: string;
   staticRoute?: StaticRoute;
   storeImportPath: string;
   tableName: string;
@@ -12,6 +13,10 @@ export interface RenderSchemaOptions {
   fields: RenderSchemaField[];
   staticFields: RenderSchemaStaticField[];
   dynamicFields: RenderSchemaDynamicField[];
+  /** Whether to render get/set methods for the whole record */
+  withRecordMethods: boolean;
+  /** Whether to render a struct for the schema */
+  withStruct: boolean;
 }
 
 export interface StaticRoute {
@@ -30,7 +35,7 @@ export interface RenderSchemaDynamicField extends RenderSchemaField {
 export interface RenderSchemaField extends RenderSchemaType {
   arrayElement: RenderSchemaType | undefined;
   name: string;
-  methodName: string;
+  methodNameSuffix: string;
 }
 
 export interface RenderSchemaType {
@@ -42,6 +47,7 @@ export interface RenderSchemaType {
 }
 
 export function renderSchema({
+  libraryName,
   staticRoute,
   storeImportPath,
   tableName,
@@ -49,6 +55,8 @@ export function renderSchema({
   fields,
   staticFields,
   dynamicFields,
+  withRecordMethods,
+  withStruct,
 }: RenderSchemaOptions) {
   const totalStaticLength = staticFields.reduce((acc, { staticByteLength }) => acc + staticByteLength, 0);
   const withDynamic = dynamicFields.length > 0;
@@ -72,7 +80,6 @@ export function renderSchema({
     }
   };
   const fullStaticRoute = staticRoute ? staticRoute.baseRoute + staticRoute.subRoute : "";
-  const libraryName = tableName + (withTableIdArgument ? "Schema" : "Table");
 
   const _keyArgs: TaggedTemplate = (strings, ...values) => {
     if (keyTuple.length > 0) {
@@ -98,13 +105,15 @@ import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
 import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
 
 ${_if(!withTableIdArgument)`
-uint256 constant _tableId = uint256(keccak256("${fullStaticRoute}"));
-uint256 constant ${tableName}TableId = _tableId;
+  uint256 constant _tableId = uint256(keccak256("${fullStaticRoute}"));
+  uint256 constant ${tableName}TableId = _tableId;
 `}
 
-struct ${tableName} {
-  ${renderList(fields, ({ name, typeId }) => `${typeId} ${name};`)}
-}
+${_if(withStruct)`
+  struct ${tableName} {
+    ${renderList(fields, ({ name, typeId }) => `${typeId} ${name};`)}
+  }
+`}
 
 library ${libraryName} {
   /** Get the table's schema */
@@ -124,6 +133,37 @@ library ${libraryName} {
     _store.registerSchema(_tableId, getSchema());
   }
 
+${renderList(fields, (field, index) => {
+  // setter for each key
+  const { typeWithLocation, name, methodNameSuffix } = field;
+  return `
+    function set${methodNameSuffix}(
+      ${_tableId`,`}
+      ${_keyArgs`,`}
+      ${typeWithLocation} ${name}
+    ) internal {
+      ${renderKeyTuple(keyTuple)}
+      StoreSwitch.setField(_tableId, _keyTuple, ${index}, ${renderEncodeField(field)});
+    }
+  `;
+})}
+
+${renderList(fields, (field, index) => {
+  // getter for each key
+  const { typeWithLocation, name, methodNameSuffix } = field;
+  return `
+    function get${methodNameSuffix}(
+      ${_tableId`,`}
+      ${_keyArgs``}
+    ) internal view returns (${typeWithLocation} ${name}) {
+      ${renderKeyTuple(keyTuple)}
+      bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, ${index});
+      return ${renderDecodeFieldSingle(field)};
+    }
+  `;
+})}
+
+${_if(withRecordMethods)`
   /** Set the table's data */
   function set(
     ${_tableId`,`}
@@ -148,48 +188,22 @@ library ${libraryName} {
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
 
-  function set(
-    ${_tableId`,`}
-    ${_keyArgs`,`}
-    ${tableName} memory _table
-  ) internal {
-    set(
-      ${_if(withTableIdArgument)`_tableId,`}
-      ${renderListWithCommas(keyTuple, (key) => key)}${keyTuple.length > 0 ? "," : ""}
-      ${renderListWithCommas(fields, ({ name }) => `_table.${name}`)}
-    );
-  }
-
-${renderList(fields, (field, index) => {
-  // setter for each key
-  const { typeWithLocation, name, methodName } = field;
-  return `
-    function set${methodName}(
+  ${_if(withStruct)`
+    function set(
       ${_tableId`,`}
       ${_keyArgs`,`}
-      ${typeWithLocation} ${name}
+      ${tableName} memory _table
     ) internal {
-      ${renderKeyTuple(keyTuple)}
-      StoreSwitch.setField(_tableId, _keyTuple, ${index}, ${renderEncodeField(field)});
+      set(
+        ${_if(withTableIdArgument)`_tableId,`}
+        ${renderListWithCommas(keyTuple, (key) => key)}${keyTuple.length > 0 ? "," : ""}
+        ${renderListWithCommas(fields, ({ name }) => `_table.${name}`)}
+      );
     }
-  `;
-})}
+  `}
+`}
 
-${renderList(fields, (field, index) => {
-  // getter for each key
-  const { typeWithLocation, name, methodName } = field;
-  return `
-    function get${methodName}(
-      ${_tableId`,`}
-      ${_keyArgs``}
-    ) internal view returns (${typeWithLocation} ${name}) {
-      ${renderKeyTuple(keyTuple)}
-      bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, ${index});
-      return ${renderDecodeFieldSingle(field)};
-    }
-  `;
-})}
-
+${_if(withRecordMethods && withStruct)`
   /** Get the table's data */
   function get(
     ${_tableId`,`}
@@ -210,46 +224,47 @@ ${renderList(fields, (field, index) => {
     return decode(_blob);
   }
 
-${
-  // decode static (optionally) and dynamic data
-  _if(withDynamic)`
-  function decode(bytes memory _blob) internal view returns (${tableName} memory _table) {
-    // ${totalStaticLength} is the total byte length of static data
-    PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
+  ${
+    // decode static (optionally) and dynamic data
+    _if(withDynamic)`
+    function decode(bytes memory _blob) internal view returns (${tableName} memory _table) {
+      // ${totalStaticLength} is the total byte length of static data
+      PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
 
-    ${renderList(
-      staticFields,
-      (field, index) => `
-      _table.${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
-      `
-    )}
-    uint256 _start;
-    uint256 _end = ${totalStaticLength + 32};
-    ${renderList(
-      dynamicFields,
-      (field, index) => `
-      _start = _end;
-      _end += _encodedLengths.atIndex(${index});
-      _table.${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-      `
-    )}
+      ${renderList(
+        staticFields,
+        (field, index) => `
+        _table.${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
+        `
+      )}
+      uint256 _start;
+      uint256 _end = ${totalStaticLength + 32};
+      ${renderList(
+        dynamicFields,
+        (field, index) => `
+        _start = _end;
+        _end += _encodedLengths.atIndex(${index});
+        _table.${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+        `
+      )}
+    }
+  `
   }
-`
-}
 
-${
-  // decode only static data
-  _if(!withDynamic)`
-  function decode(bytes memory _blob) internal pure returns (${tableName} memory _table) {
-    ${renderList(
-      staticFields,
-      (field, index) => `
-      _table.${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
-      `
-    )}
+  ${
+    // decode only static data
+    _if(!withDynamic)`
+    function decode(bytes memory _blob) internal pure returns (${tableName} memory _table) {
+      ${renderList(
+        staticFields,
+        (field, index) => `
+        _table.${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
+        `
+      )}
+    }
+  `
   }
-`
-}
+`}
 
 }
 

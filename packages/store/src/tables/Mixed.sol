@@ -44,25 +44,6 @@ library MixedTable {
     _store.registerSchema(_tableId, getSchema());
   }
 
-  /** Set the table's data */
-  function set(bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
-    uint16[] memory _counters = new uint16[](2);
-    _counters[0] = uint16(a32.length * 4);
-    _counters[1] = uint16(bytes(s).length);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
-
-    bytes memory _data = abi.encodePacked(u32, u128, _encodedLengths.unwrap(), EncodeArray.encode(a32), bytes(s));
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
-  }
-
-  function set(bytes32 key, Mixed memory _table) internal {
-    set(key, _table.u32, _table.u128, _table.a32, _table.s);
-  }
-
   function setU32(bytes32 key, uint32 u32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -113,6 +94,25 @@ library MixedTable {
     _keyTuple[0] = key;
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
     return string(_blob);
+  }
+
+  /** Set the table's data */
+  function set(bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
+    uint16[] memory _counters = new uint16[](2);
+    _counters[0] = uint16(a32.length * 4);
+    _counters[1] = uint16(bytes(s).length);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+
+    bytes memory _data = abi.encodePacked(u32, u128, _encodedLengths.unwrap(), EncodeArray.encode(a32), bytes(s));
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
+  }
+
+  function set(bytes32 key, Mixed memory _table) internal {
+    set(key, _table.u32, _table.u128, _table.a32, _table.s);
   }
 
   /** Get the table's data */

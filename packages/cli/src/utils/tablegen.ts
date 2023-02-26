@@ -15,6 +15,9 @@ export function renderTables(config: StoreConfig) {
   for (const tableName of Object.keys(config.tables)) {
     const tableData = config.tables[tableName];
 
+    // keep only field get/set methods, and remove suffixes from them
+    const componentMode = !tableData.disableComponentMode && Object.keys(tableData.schema).length === 1;
+
     const fields = Object.keys(tableData.schema).map((name) => {
       const type = tableData.schema[name];
       const elementType = SchemaTypeArrayToElement[type];
@@ -22,7 +25,7 @@ export function renderTables(config: StoreConfig) {
         ...getSchemaTypeInfo(type),
         arrayElement: elementType ? getSchemaTypeInfo(elementType) : undefined,
         name,
-        methodName: `${name[0].toUpperCase()}${name.slice(1)}`,
+        methodNameSuffix: componentMode ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
       };
       return field;
     });
@@ -43,10 +46,20 @@ export function renderTables(config: StoreConfig) {
       }
     })();
 
+    const libraryNameSuffix = (() => {
+      if (componentMode) {
+        // TODO discuss this
+        return tableData.schemaMode ? "Schema" : "";
+      } else {
+        return tableData.schemaMode ? "Schema" : "Table";
+      }
+    })();
+
     renderedTables.push({
       tableName,
       tableData,
       output: renderSchema({
+        libraryName: tableName + libraryNameSuffix,
         staticRoute,
         storeImportPath,
         tableName,
@@ -54,6 +67,8 @@ export function renderTables(config: StoreConfig) {
         fields,
         staticFields,
         dynamicFields,
+        withRecordMethods: !componentMode,
+        withStruct: !componentMode,
       }),
     });
   }

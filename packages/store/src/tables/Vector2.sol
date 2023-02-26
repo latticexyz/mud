@@ -40,20 +40,6 @@ library Vector2Table {
     _store.registerSchema(_tableId, getSchema());
   }
 
-  /** Set the table's data */
-  function set(bytes32 key, uint32 x, uint32 y) internal {
-    bytes memory _data = abi.encodePacked(x, y);
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
-  }
-
-  function set(bytes32 key, Vector2 memory _table) internal {
-    set(key, _table.x, _table.y);
-  }
-
   function setX(bytes32 key, uint32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -78,6 +64,20 @@ library Vector2Table {
     _keyTuple[0] = key;
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return uint32(Bytes.slice4(_blob, 0));
+  }
+
+  /** Set the table's data */
+  function set(bytes32 key, uint32 x, uint32 y) internal {
+    bytes memory _data = abi.encodePacked(x, y);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
+  }
+
+  function set(bytes32 key, Vector2 memory _table) internal {
+    set(key, _table.x, _table.y);
   }
 
   /** Get the table's data */

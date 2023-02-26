@@ -16,6 +16,7 @@ export const StoreConfig = z.object({
     z.object({
       route: z.string().superRefine(validateRoute).default("/tables"),
       schemaMode: z.boolean().default(false),
+      disableComponentMode: z.boolean().default(false),
       keyTuple: z.array(KeyName).default(["key"]),
       schema: z.record(ColumnName, z.nativeEnum(SchemaType)),
     })
@@ -36,6 +37,8 @@ export interface StoreUserConfig {
       route?: string;
       /** Make methods accept `_tableId` argument instead of it being hardcoded. Default is false */
       schemaMode?: boolean;
+      /** If the table has only 1 column, keep record and field methods separate. Default is false  */
+      disableComponentMode?: boolean;
       /** List of names for the table's keys. Default is ["key"] */
       keyTuple?: string[];
       /** Table's columns. The keys are column names, 1st letter should be lowercase. */

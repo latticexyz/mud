@@ -42,20 +42,6 @@ library RouteTable {
     _store.registerSchema(_tableId, getSchema());
   }
 
-  /** Set the table's data */
-  function set(bytes32 key, address addr, bytes4 selector, uint8 executionMode) internal {
-    bytes memory _data = abi.encodePacked(addr, selector, executionMode);
-
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
-  }
-
-  function set(bytes32 key, Route memory _table) internal {
-    set(key, _table.addr, _table.selector, _table.executionMode);
-  }
-
   function setAddr(bytes32 key, address addr) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
     _keyTuple[0] = key;
@@ -93,6 +79,20 @@ library RouteTable {
     _keyTuple[0] = key;
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
     return uint8(Bytes.slice1(_blob, 0));
+  }
+
+  /** Set the table's data */
+  function set(bytes32 key, address addr, bytes4 selector, uint8 executionMode) internal {
+    bytes memory _data = abi.encodePacked(addr, selector, executionMode);
+
+    bytes32[] memory _keyTuple = new bytes32[](1);
+    _keyTuple[0] = key;
+
+    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
+  }
+
+  function set(bytes32 key, Route memory _table) internal {
+    set(key, _table.addr, _table.selector, _table.executionMode);
   }
 
   /** Get the table's data */
