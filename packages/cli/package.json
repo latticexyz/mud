@@ -17,6 +17,7 @@
   "scripts": {
     "prepare": "yarn build && chmod u+x git-install.sh",
     "lint": "eslint . --ext .ts",
+    "dev": "tsup --watch",
     "build": "tsup",
     "link": "yarn link",
     "test": "vitest typecheck --run && echo 'todo: add tests'",
