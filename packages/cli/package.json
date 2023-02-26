@@ -19,7 +19,7 @@
     "lint": "eslint . --ext .ts",
     "build": "tsup",
     "link": "yarn link",
-    "test": "tsc --noEmit && echo 'todo: add tests'",
+    "test": "vitest typecheck --run && echo 'todo: add tests'",
     "test:next": "tsc --noEmit --moduleResolution nodenext",
     "git:install": "bash git-install.sh",
     "release": "npm publish || echo 'version already published'"
@@ -37,7 +37,8 @@
     "nodemon": "^2.0.16",
     "pkg": "^5.7.0",
     "rimraf": "^3.0.2",
-    "tsup": "^6.6.3"
+    "tsup": "^6.6.3",
+    "vitest": "^0.29.1"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
@@ -76,7 +77,8 @@
     "typechain": "^8.1.1",
     "typescript": "^4.9.5",
     "uuid": "^8.3.2",
-    "yargs": "^17.5.1"
+    "yargs": "^17.7.1",
+    "zod": "^3.20.6"
   },
   "pkg": {
     "scripts": "build/**/*.js"

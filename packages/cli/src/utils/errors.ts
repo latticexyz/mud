@@ -40,15 +40,4 @@ export const ERRORS: { [key: string]: ErrorDescriptor } = {
     
 To learn more about MUD's configuration, please go to [TODO link to docs]`,
   },
-
-  INVALID_CONFIG: {
-    message: (...errors: string[]) => `There's one or more errors in your config file:
-
-  ${errors.join("\n  ")}
-
-To learn more about MUD's configuration, please go to [TODO link to docs]`,
-    description: `You have one or more errors in your config file.
-
-Check the error message for details, or [TODO link to docs]`,
-  },
 };

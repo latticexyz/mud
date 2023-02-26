@@ -7,7 +7,6 @@ import {
 } from "../contracts/renderSchema.js";
 import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/loadStoreConfig.js";
-import { keccak256 } from "ethers/lib/utils.js";
 
 export function renderTables(config: StoreConfig) {
   const storeImportPath = config.storeImportPath;
