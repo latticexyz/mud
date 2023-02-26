@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { writeFileSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
 import { loadStoreConfig } from "../config/loadStoreConfig.js";
 import { renderTablesFromConfig } from "../render-table/index.js";
@@ -31,7 +31,10 @@ const commandModule: CommandModule<Options, Options> = {
       const formattedOutput = await formatSolidity(output);
 
       const tablePath = config.tables[tableName].route;
-      const outputPath = path.join(srcDir, tablePath, `${tableName}.sol`);
+      const outputDirectory = path.join(srcDir, tablePath);
+      mkdirSync(outputDirectory, { recursive: true });
+
+      const outputPath = path.join(outputDirectory, `${tableName}.sol`);
       writeFileSync(outputPath, formattedOutput);
       console.log(`Generated schema: ${outputPath}`);
     }
