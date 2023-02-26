@@ -1,14 +1,9 @@
-import {
-  renderTable,
-  RenderTableDynamicField,
-  RenderTableField,
-  RenderTableStaticField,
-  RenderTableType,
-} from "../contracts/renderTable.js";
+import { renderTable } from "./renderTable.js";
 import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/loadStoreConfig.js";
+import { RenderTableDynamicField, RenderTableField, RenderTableStaticField, RenderTableType } from "./types.js";
 
-export function renderTables(config: StoreConfig) {
+export function renderTablesFromConfig(config: StoreConfig) {
   const storeImportPath = config.storeImportPath;
 
   const renderedTables = [];

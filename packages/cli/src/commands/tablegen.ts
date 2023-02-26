@@ -2,7 +2,7 @@ import type { CommandModule } from "yargs";
 import { writeFileSync } from "fs";
 import path from "path";
 import { loadStoreConfig } from "../config/loadStoreConfig.js";
-import { renderTables } from "../utils/tablegen.js";
+import { renderTablesFromConfig } from "../render-table/index.js";
 import { getSrcDirectory } from "../utils/forgeConfig.js";
 import { formatSolidity } from "../utils/format.js";
 
@@ -25,7 +25,7 @@ const commandModule: CommandModule<Options, Options> = {
     const srcDir = await getSrcDirectory();
 
     const config = await loadStoreConfig(configPath);
-    const renderedTables = renderTables(config);
+    const renderedTables = renderTablesFromConfig(config);
 
     for (const { output, tableName } of renderedTables) {
       const formattedOutput = await formatSolidity(output);

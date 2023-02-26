@@ -36,37 +36,70 @@ library Vector2 {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
+  /** Register the table's schema for the specified store */
   function registerSchema(IStore _store) internal {
     _store.registerSchema(_tableId, getSchema());
   }
 
+  /** Set x */
   function setX(bytes32 key, uint32 x) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
+
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(x));
   }
 
-  function setY(bytes32 key, uint32 y) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(y));
-  }
-
+  /** Get x */
   function getX(bytes32 key) internal view returns (uint32 x) {
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
+
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return uint32(Bytes.slice4(_blob, 0));
   }
 
+  /** Set y */
+  function setY(bytes32 key, uint32 y) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(y));
+  }
+
+  /** Get y */
   function getY(bytes32 key) internal view returns (uint32 y) {
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
+
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return uint32(Bytes.slice4(_blob, 0));
   }
 
-  /** Set the table's data */
+  /** Get the full data */
+  function get(bytes32 key) internal view returns (Vector2Data memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
+    return decode(_blob);
+  }
+
+  /** Get the full data from the specified store */
+  function get(IStore _store, bytes32 key) internal view returns (Vector2Data memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
+    return decode(_blob);
+  }
+
+  /** Set the full data using individual values */
   function set(
     bytes32 key,
     uint32 x,
@@ -75,30 +108,18 @@ library Vector2 {
     bytes memory _data = abi.encodePacked(x, y);
 
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
 
+  /** Set the full data using the data struct */
   function set(bytes32 key, Vector2Data memory _table) internal {
     set(key, _table.x, _table.y);
   }
 
-  /** Get the table's data */
-  function get(bytes32 key) internal view returns (Vector2Data memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
-    return decode(_blob);
-  }
-
-  function get(IStore _store, bytes32 key) internal view returns (Vector2Data memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
-    return decode(_blob);
-  }
-
+  /** Decode the tightly packed blob using this table's schema */
   function decode(bytes memory _blob) internal pure returns (Vector2Data memory _table) {
     _table.x = uint32(Bytes.slice4(_blob, 0));
 

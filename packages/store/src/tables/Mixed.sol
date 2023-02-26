@@ -40,63 +40,108 @@ library Mixed {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
+  /** Register the table's schema for the specified store */
   function registerSchema(IStore _store) internal {
     _store.registerSchema(_tableId, getSchema());
   }
 
+  /** Set u32 */
   function setU32(bytes32 key, uint32 u32) internal {
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
+
     StoreSwitch.setField(_tableId, _keyTuple, 0, abi.encodePacked(u32));
   }
 
-  function setU128(bytes32 key, uint128 u128) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(u128));
-  }
-
-  function setA32(bytes32 key, uint32[] memory a32) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-    StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(a32));
-  }
-
-  function setS(bytes32 key, string memory s) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes(s));
-  }
-
+  /** Get u32 */
   function getU32(bytes32 key) internal view returns (uint32 u32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
+
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
     return uint32(Bytes.slice4(_blob, 0));
   }
 
+  /** Set u128 */
+  function setU128(bytes32 key, uint128 u128) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 1, abi.encodePacked(u128));
+  }
+
+  /** Get u128 */
   function getU128(bytes32 key) internal view returns (uint128 u128) {
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
+
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 1);
     return uint128(Bytes.slice16(_blob, 0));
   }
 
+  /** Set a32 */
+  function setA32(bytes32 key, uint32[] memory a32) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 2, EncodeArray.encode(a32));
+  }
+
+  /** Get a32 */
   function getA32(bytes32 key) internal view returns (uint32[] memory a32) {
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
+
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 2);
     return SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32();
   }
 
+  /** Set s */
+  function setS(bytes32 key, string memory s) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    StoreSwitch.setField(_tableId, _keyTuple, 3, bytes(s));
+  }
+
+  /** Get s */
   function getS(bytes32 key) internal view returns (string memory s) {
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
+
     bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 3);
     return string(_blob);
   }
 
-  /** Set the table's data */
+  /** Get the full data */
+  function get(bytes32 key) internal view returns (MixedData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
+    return decode(_blob);
+  }
+
+  /** Get the full data from the specified store */
+  function get(IStore _store, bytes32 key) internal view returns (MixedData memory _table) {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
+    return decode(_blob);
+  }
+
+  /** Set the full data using individual values */
   function set(
     bytes32 key,
     uint32 u32,
@@ -112,30 +157,18 @@ library Mixed {
     bytes memory _data = abi.encodePacked(u32, u128, _encodedLengths.unwrap(), EncodeArray.encode(a32), bytes(s));
 
     bytes32[] memory _keyTuple = new bytes32[](1);
+
     _keyTuple[0] = key;
 
     StoreSwitch.setRecord(_tableId, _keyTuple, _data);
   }
 
+  /** Set the full data using the data struct */
   function set(bytes32 key, MixedData memory _table) internal {
     set(key, _table.u32, _table.u128, _table.a32, _table.s);
   }
 
-  /** Get the table's data */
-  function get(bytes32 key) internal view returns (MixedData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
-    return decode(_blob);
-  }
-
-  function get(IStore _store, bytes32 key) internal view returns (MixedData memory _table) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
-    _keyTuple[0] = key;
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
-    return decode(_blob);
-  }
-
+  /** Decode the tightly packed blob using this table's schema */
   function decode(bytes memory _blob) internal view returns (MixedData memory _table) {
     // 20 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 20));
