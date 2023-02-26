@@ -9,16 +9,6 @@ export function renderFieldMethods(options: RenderTableOptions) {
     const _typedFieldName = `${field.typeWithLocation} ${field.name}`;
 
     result += `
-    /** Set ${field.name} */
-    function set${field.methodNameSuffix}(${renderArguments([
-      _typedTableId,
-      _typedKeyArgs,
-      _typedFieldName,
-    ])}) internal {
-      ${_keyTupleDefinition}
-      StoreSwitch.setField(_tableId, _keyTuple, ${index}, ${renderEncodeField(field)});
-    }
-
     /** Get ${field.name} */
     function get${field.methodNameSuffix}(${renderArguments([
       _typedTableId,
@@ -28,7 +18,36 @@ export function renderFieldMethods(options: RenderTableOptions) {
       bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, ${index});
       return ${renderDecodeFieldSingle(field)};
     }
+
+    /** Set ${field.name} */
+    function set${field.methodNameSuffix}(${renderArguments([
+      _typedTableId,
+      _typedKeyArgs,
+      _typedFieldName,
+    ])}) internal {
+      ${_keyTupleDefinition}
+      StoreSwitch.setField(_tableId, _keyTuple, ${index}, ${renderEncodeField(field)});
+    }
     `;
+
+    // TODO: this is super inefficient right now, need to add support for pushing to arrays to the store core library to avoid reading/writing the entire array
+    if (field.isDynamic) {
+      const portionData = fieldPortionData(field);
+
+      result += `
+      /** Push ${portionData.title} to ${field.name} */
+      function push${field.methodNameSuffix}(${renderArguments([
+        _typedTableId,
+        _typedKeyArgs,
+        `${portionData.typeWithLocation} ${portionData.name}`,
+      ])}) internal {
+        ${_keyTupleDefinition}
+        bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, ${index});
+        bytes memory _newBlob = abi.encodePacked(_blob, ${portionData.encodeFunc}(${portionData.name}));
+        StoreSwitch.setField(_tableId, _keyTuple, ${index}, _newBlob);
+      }
+      `;
+    }
   }
   return result;
 }
@@ -59,6 +78,25 @@ export function renderDecodeValueType(typeId: string, staticByteLength: number, 
     return `_toBool(uint8(${innerSlice}))`;
   } else {
     throw new Error(`Unknown value type id ${typeId}`);
+  }
+}
+
+/** bytes/string are dynamic, but aren't really arrays */
+function fieldPortionData(field: RenderTableField) {
+  if (field.arrayElement) {
+    return {
+      typeWithLocation: field.arrayElement.typeWithLocation,
+      name: "_element",
+      encodeFunc: "abi.encodePacked",
+      title: "an element",
+    };
+  } else {
+    return {
+      typeWithLocation: `${field.typeId} memory`,
+      name: "_slice",
+      encodeFunc: "bytes",
+      title: "a slice",
+    };
   }
 }
 
