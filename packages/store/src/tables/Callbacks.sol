@@ -37,31 +37,31 @@ library Callbacks {
 
   /** Get value */
   function get(bytes32 key) internal view returns (bytes24[] memory value) {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
 
-    _keyTuple[0] = key;
+    _primaryKeys[0] = bytes32(key);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24();
   }
 
   /** Set value */
   function set(bytes32 key, bytes24[] memory value) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
 
-    _keyTuple[0] = key;
+    _primaryKeys[0] = bytes32(key);
 
-    StoreSwitch.setField(_tableId, _keyTuple, 0, EncodeArray.encode(value));
+    StoreSwitch.setField(_tableId, _primaryKeys, 0, EncodeArray.encode(value));
   }
 
   /** Push an element to value */
   function push(bytes32 key, bytes24 _element) internal {
-    bytes32[] memory _keyTuple = new bytes32[](1);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
 
-    _keyTuple[0] = key;
+    _primaryKeys[0] = bytes32(key);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, 0);
+    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked(_element));
-    StoreSwitch.setField(_tableId, _keyTuple, 0, _newBlob);
+    StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
   }
 }
