@@ -1,43 +1,25 @@
-// Based on hardhat's errors and errors-list (MIT)
-// https://github.com/NomicFoundation/hardhat/tree/main/packages/hardhat-core
+import chalk from "chalk";
+import { ZodError } from "zod";
+import { fromZodError } from "zod-validation-error";
 
-export interface ErrorDescriptor {
-  message: (...args: string[]) => string;
-  description: string;
+export class NotInsideProjectError extends Error {
+  name = "NotInsideProjectError";
+  message = "You are not inside a MUD project";
 }
 
-export class CustomError extends Error {
-  constructor(message: string, public readonly parent?: Error) {
-    super(message);
-
-    this.name = this.constructor.name;
+export function logError(error: Error) {
+  if (error instanceof ZodError) {
+    const validationError = fromZodError(error, {
+      prefix: chalk.red("Config Validation Error"),
+      prefixSeparator: "\n- ",
+      issueSeparator: "\n- ",
+    });
+    console.log(chalk.redBright(validationError.message));
+  } else if (error instanceof NotInsideProjectError) {
+    console.log(chalk.red(error.message));
+    console.log("");
+    console.log(chalk.blue(`To learn more about MUD's configuration, please go to [TODO link to docs]`));
+  } else {
+    console.log(error);
   }
 }
-
-export class MUDError extends CustomError {
-  public static isMUDError(other: any): other is MUDError {
-    return other !== undefined && other !== null && other._isMUDError === true;
-  }
-
-  public readonly errorDescriptor: ErrorDescriptor;
-
-  private readonly _isMUDError: boolean;
-
-  constructor(errorDescriptor: ErrorDescriptor, messageArguments: string[] = [], parentError?: Error) {
-    super(errorDescriptor.message(...messageArguments), parentError);
-
-    this.errorDescriptor = errorDescriptor;
-
-    this._isMUDError = true;
-  }
-}
-
-export const ERRORS: { [key: string]: ErrorDescriptor } = {
-  //  on how to add the config file
-  NOT_INSIDE_PROJECT: {
-    message: () => `You are not inside a MUD project.`,
-    description: `You are trying to run MUD outside of a MUD project.
-    
-To learn more about MUD's configuration, please go to [TODO link to docs]`,
-  },
-};

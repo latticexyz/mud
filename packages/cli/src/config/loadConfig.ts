@@ -1,6 +1,6 @@
 import { findUp } from "find-up";
 import path from "path";
-import { ERRORS, MUDError } from "../utils/errors.js";
+import { NotInsideProjectError } from "../utils/errors.js";
 
 // Based on hardhat's config (MIT)
 // https://github.com/NomicFoundation/hardhat/tree/main/packages/hardhat-core
@@ -37,7 +37,7 @@ async function resolveConfigPath(configPath: string | undefined) {
 async function getUserConfigPath() {
   const tsConfigPath = await findUp(configFiles);
   if (tsConfigPath === undefined) {
-    throw new MUDError(ERRORS.NOT_INSIDE_PROJECT);
+    throw new NotInsideProjectError();
   }
   return tsConfigPath;
 }
