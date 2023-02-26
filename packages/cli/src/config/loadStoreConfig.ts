@@ -1,20 +1,20 @@
 import { SchemaType } from "@latticexyz/schema-type";
 import { z, ZodError } from "zod";
 import { fromZodErrorCustom } from "../utils/errors.js";
+import { BaseRoute, ObjectName, OrdinaryRoute, ValueName } from "./commonSchemas.js";
 import { loadConfig } from "./loadConfig.js";
-import { validateBaseRoute, validateCapitalizedName, validateRoute, validateUncapitalizedName } from "./validation.js";
 
-const TableName = z.string().superRefine(validateCapitalizedName);
-const KeyName = z.string().superRefine(validateUncapitalizedName);
-const ColumnName = z.string().superRefine(validateUncapitalizedName);
+const TableName = ObjectName;
+const KeyName = ValueName;
+const ColumnName = ValueName;
 
 export const StoreConfig = z.object({
-  baseRoute: z.string().superRefine(validateBaseRoute).default(""),
+  baseRoute: BaseRoute.default(""),
   storeImportPath: z.string().default("@latticexyz/store/src/"),
   tables: z.record(
     TableName,
     z.object({
-      route: z.string().superRefine(validateRoute).default("/tables"),
+      route: OrdinaryRoute.default("/tables"),
       schemaMode: z.boolean().default(false),
       disableComponentMode: z.boolean().default(false),
       keyTuple: z.array(KeyName).default(["key"]),
