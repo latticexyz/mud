@@ -179,7 +179,7 @@ ${_if(withRecordMethods)`
           // encode static fields
           name
       )}
-      ${staticFields.length > 0 && withDynamic ? "," : ""}
+      ${_if(staticFields.length > 0 && withDynamic)`,`}
       ${_if(withDynamic)`_encodedLengths.unwrap(),`}
       ${renderListWithCommas(dynamicFields, (field) => renderEncodeField(field))}
     );
@@ -197,7 +197,7 @@ ${_if(withRecordMethods)`
     ) internal {
       set(
         ${_if(withTableIdArgument)`_tableId,`}
-        ${renderListWithCommas(keyTuple, (key) => key)}${keyTuple.length > 0 ? "," : ""}
+        ${renderListWithCommas(keyTuple, (key) => key)}${_if(withKeys)`,`}
         ${renderListWithCommas(fields, ({ name }) => `_table.${name}`)}
       );
     }
@@ -217,7 +217,7 @@ ${_if(withRecordMethods && withStruct)`
 
   function get(
     ${_tableId`,`}
-    IStore _store${keyTuple.length > 0 ? "," : ""}
+    IStore _store${_if(withKeys)`,`}
     ${_keyArgs``}
   ) internal view returns (${tableName} memory _table) {
     ${renderKeyTuple(keyTuple)}

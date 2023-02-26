@@ -8,6 +8,7 @@ export function zipTaggedTemplate(strings: TemplateStringsArray, ...values: (str
   return result;
 }
 
+// note that unlike a real `if`, this tag will *always evaluate* expressions within the template
 export function _if(condition: boolean) {
   if (condition) {
     return zipTaggedTemplate;
