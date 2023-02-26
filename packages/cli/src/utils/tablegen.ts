@@ -16,13 +16,9 @@ export function renderTables(config: StoreConfig) {
     const tableData = config.tables[tableName];
 
     // struct adds methods to get/set all values at once
-    let withStruct = tableData.dataStruct;
-    if (Object.keys(tableData.schema).length > 1) {
-      // TODO allow tuples for multicolumn tables
-      withStruct = true;
-    }
-    // record methods aren't really supported without a struct
-    const withRecordMethods = withStruct;
+    const withStruct = tableData.dataStruct;
+    // operate on all fields at once; for only 1 field keep them only if struct is also kept
+    const withRecordMethods = withStruct || Object.keys(tableData.schema).length > 1;
     // field methods can be simply get/set if there's only 1 field and no record methods
     const noFeldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
 
@@ -60,7 +56,7 @@ export function renderTables(config: StoreConfig) {
       tableData,
       output: renderSchema({
         libraryName: tableName,
-        structName: tableName + "Data",
+        structName: withStruct ? tableName + "Data" : undefined,
         staticRouteData,
         storeImportPath,
         keyTuple: tableData.keyTuple,

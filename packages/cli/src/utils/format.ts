@@ -28,7 +28,6 @@ export async function formatSolidity(content: string, prettierConfigPath?: strin
       message = error;
     }
     console.log(chalk.yellow(`Error during output formatting: ${message}`));
-    console.log(chalk.yellow(`Some files may have invalid syntax`));
     return content;
   }
 }

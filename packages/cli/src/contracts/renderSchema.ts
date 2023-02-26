@@ -1,8 +1,6 @@
 import { renderList, renderListWithCommas, TaggedTemplate, zipTaggedTemplate, _if } from "../utils/render.js";
 
-/**
- * Methods prefixed with `_` involve tagged templates!
- */
+// Methods prefixed with `_` involve tagged templates!
 
 export interface RenderSchemaOptions {
   /** Name of the library to render. */
@@ -60,18 +58,9 @@ export function renderSchema({
   dynamicFields,
   withRecordMethods,
 }: RenderSchemaOptions) {
-  const totalStaticLength = staticFields.reduce((acc, { staticByteLength }) => acc + staticByteLength, 0);
   const withDynamic = dynamicFields.length > 0;
 
   const withStruct = structName !== undefined;
-
-  // Static field offsets
-  const staticOffsets = staticFields.map(() => 0);
-  let _acc = 0;
-  for (const [index, field] of staticFields.entries()) {
-    staticOffsets[index] = _acc;
-    _acc += field.staticByteLength;
-  }
 
   // Render table argument with the appended template, if not using a static tableId
   // (the template is used to append e.g. "," for argument lists)
@@ -97,6 +86,8 @@ export function renderSchema({
   /** Names should be strings even if they're never used (see {@link _if}) */
   structName ??= "";
   const tableIdName = staticRouteData?.tableIdName ?? "";
+
+  //const renderRecordReturn = withStruct ? `${structName} memory _table` :
 
   return `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -212,12 +203,12 @@ ${_if(withRecordMethods)`
   `}
 `}
 
-${_if(withRecordMethods && withStruct)`
+${_if(withRecordMethods)`
   /** Get the table's data */
   function get(
     ${_tableId`${_if(withKeys)`,`}`}
     ${_keyArgs``}
-  ) internal view returns (${structName} memory _table) {
+  ) internal view returns (${renderDecodedRecord(withStruct, structName, fields)}) {
     ${renderKeyTuple(keyTuple)}
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
     return decode(_blob);
@@ -227,52 +218,13 @@ ${_if(withRecordMethods && withStruct)`
     ${_tableId`,`}
     IStore _store${_if(withKeys)`,`}
     ${_keyArgs``}
-  ) internal view returns (${structName} memory _table) {
+  ) internal view returns (${renderDecodedRecord(withStruct, structName, fields)}) {
     ${renderKeyTuple(keyTuple)}
     bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
     return decode(_blob);
   }
 
-  ${
-    // decode static (optionally) and dynamic data
-    _if(withDynamic)`
-    function decode(bytes memory _blob) internal view returns (${structName} memory _table) {
-      // ${totalStaticLength} is the total byte length of static data
-      PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
-
-      ${renderList(
-        staticFields,
-        (field, index) => `
-        _table.${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
-        `
-      )}
-      uint256 _start;
-      uint256 _end = ${totalStaticLength + 32};
-      ${renderList(
-        dynamicFields,
-        (field, index) => `
-        _start = _end;
-        _end += _encodedLengths.atIndex(${index});
-        _table.${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-        `
-      )}
-    }
-  `
-  }
-
-  ${
-    // decode only static data
-    _if(!withDynamic)`
-    function decode(bytes memory _blob) internal pure returns (${structName} memory _table) {
-      ${renderList(
-        staticFields,
-        (field, index) => `
-        _table.${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
-        `
-      )}
-    }
-  `
-  }
+  ${renderDecodeFunction(withStruct, structName, fields, staticFields, dynamicFields)}
 `}
 
 }
@@ -324,6 +276,81 @@ PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 `;
   } else {
     return "";
+  }
+}
+
+// contents of `returns (...)` for record getter/decoder
+function renderDecodedRecord(withStruct: boolean, structName: string, fields: RenderSchemaField[]) {
+  if (withStruct) {
+    return `${structName} memory _table`;
+  } else {
+    return renderListWithCommas(fields, ({ name, typeWithLocation }) => `${typeWithLocation} ${name}`);
+  }
+}
+
+// either set struct properties, or just variables
+function renderRecordFieldName(withStruct: boolean, { name }: RenderSchemaField) {
+  if (withStruct) {
+    return `_table.${name}`;
+  } else {
+    return `${name}`;
+  }
+}
+
+// Renders the `decode` function that parses a bytes blob into the table data
+function renderDecodeFunction(
+  withStruct: boolean,
+  structName: string,
+  fields: RenderSchemaField[],
+  staticFields: RenderSchemaStaticField[],
+  dynamicFields: RenderSchemaDynamicField[]
+) {
+  // Static field offsets
+  const staticOffsets = staticFields.map(() => 0);
+  let _acc = 0;
+  for (const [index, field] of staticFields.entries()) {
+    staticOffsets[index] = _acc;
+    _acc += field.staticByteLength;
+  }
+
+  if (dynamicFields.length > 0) {
+    const totalStaticLength = staticFields.reduce((acc, { staticByteLength }) => acc + staticByteLength, 0);
+    // decode static (optionally) and dynamic data
+    return `
+    function decode(bytes memory _blob) internal view returns (${renderDecodedRecord(withStruct, structName, fields)}) {
+      // ${totalStaticLength} is the total byte length of static data
+      PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, ${totalStaticLength})); 
+
+      ${renderList(
+        staticFields,
+        (field, index) => `
+        ${renderRecordFieldName(withStruct, field)} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
+        `
+      )}
+      uint256 _start;
+      uint256 _end = ${totalStaticLength + 32};
+      ${renderList(
+        dynamicFields,
+        (field, index) => `
+        _start = _end;
+        _end += _encodedLengths.atIndex(${index});
+        ${renderRecordFieldName(withStruct, field)} = ${renderDecodeDynamicFieldPartial(field)};
+        `
+      )}
+    }
+  `;
+  } else {
+    // decode only static data
+    return `
+    function decode(bytes memory _blob) internal pure returns (${renderDecodedRecord(withStruct, structName, fields)}) {
+      ${renderList(
+        staticFields,
+        (field, index) => `
+        ${renderRecordFieldName(withStruct, field)} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
+        `
+      )}
+    }
+    `;
   }
 }
 
