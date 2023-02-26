@@ -141,6 +141,15 @@ library Route {
     set(key, _table.addr, _table.selector, _table.executionMode);
   }
 
+  /* Delete all data for given keys */
+  function deleteRecord(bytes32 key) internal {
+    bytes32[] memory _keyTuple = new bytes32[](1);
+
+    _keyTuple[0] = key;
+
+    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+  }
+
   /** Decode the tightly packed blob using this table's schema */
   function decode(bytes memory _blob) internal pure returns (RouteData memory _table) {
     _table.addr = address(Bytes.slice20(_blob, 0));
