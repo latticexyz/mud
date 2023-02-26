@@ -1,6 +1,15 @@
 import chalk from "chalk";
 import { ZodError } from "zod";
-import { fromZodError } from "zod-validation-error";
+import { fromZodError, ValidationError } from "zod-validation-error";
+
+// Wrapper with preset styles, only requires a `prefix`
+export function fromZodErrorCustom(error: ZodError, prefix: string) {
+  return fromZodError(error, {
+    prefix: chalk.red(prefix),
+    prefixSeparator: "\n- ",
+    issueSeparator: "\n- ",
+  });
+}
 
 export class NotInsideProjectError extends Error {
   name = "NotInsideProjectError";
@@ -8,9 +17,11 @@ export class NotInsideProjectError extends Error {
 }
 
 export function logError(error: Error) {
-  if (error instanceof ZodError) {
+  if (error instanceof ValidationError) {
+    console.log(chalk.redBright(error.message));
+  } else if (error instanceof ZodError) {
+    // TODO currently this error shouldn't happen, use `fromZodErrorCustom`
     const validationError = fromZodError(error, {
-      prefix: chalk.red("Config Validation Error"),
       prefixSeparator: "\n- ",
       issueSeparator: "\n- ",
     });

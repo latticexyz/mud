@@ -1,5 +1,6 @@
 import { SchemaType } from "@latticexyz/schema-type";
-import { z } from "zod";
+import { z, ZodError } from "zod";
+import { fromZodErrorCustom } from "../utils/errors.js";
 import { loadConfig } from "./loadConfig.js";
 import { validateBaseRoute, validateCapitalizedName, validateRoute, validateUncapitalizedName } from "./validation.js";
 
@@ -48,5 +49,13 @@ export type StoreConfig = z.output<typeof StoreConfig>;
 export async function loadStoreConfig(configPath?: string) {
   const config = await loadConfig(configPath);
 
-  return StoreConfig.parse(config);
+  try {
+    return StoreConfig.parse(config);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw fromZodErrorCustom(error, "StoreConfig Validation Error");
+    } else {
+      throw error;
+    }
+  }
 }
