@@ -1,7 +1,13 @@
 import { renderTable } from "./renderTable.js";
 import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/loadStoreConfig.js";
-import { RenderTableDynamicField, RenderTableField, RenderTableStaticField, RenderTableType } from "./types.js";
+import {
+  RenderTableDynamicField,
+  RenderTableField,
+  RenderTablePrimaryKey,
+  RenderTableStaticField,
+  RenderTableType,
+} from "./types.js";
 
 export function renderTablesFromConfig(config: StoreConfig) {
   const storeImportPath = config.storeImportPath;
@@ -16,6 +22,19 @@ export function renderTablesFromConfig(config: StoreConfig) {
     const withRecordMethods = withStruct || Object.keys(tableData.schema).length > 1;
     // field methods can be simply get/set if there's only 1 field and no record methods
     const noFeldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
+
+    const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
+      const type = tableData.primaryKeys[name];
+      const typeInfo = getSchemaTypeInfo(type);
+      if (typeInfo.isDynamic) throw new Error("Parsing error: found dynamic primary key");
+
+      const primaryKey: RenderTablePrimaryKey = {
+        ...typeInfo,
+        name,
+        isDynamic: false,
+      };
+      return primaryKey;
+    });
 
     const fields = Object.keys(tableData.schema).map((name) => {
       const type = tableData.schema[name];
@@ -54,7 +73,7 @@ export function renderTablesFromConfig(config: StoreConfig) {
         structName: withStruct ? tableName + "Data" : undefined,
         staticRouteData,
         storeImportPath,
-        keyTuple: tableData.keyTuple,
+        primaryKeys,
         fields,
         staticFields,
         dynamicFields,

@@ -1,4 +1,4 @@
-import { SchemaType } from "@latticexyz/schema-type";
+import { SchemaType, getStaticByteLength } from "@latticexyz/schema-type";
 import { z, ZodError } from "zod";
 import { fromZodErrorCustom } from "../utils/errors.js";
 import { BaseRoute, ObjectName, OrdinaryRoute, ValueName } from "./commonSchemas.js";
@@ -8,6 +8,11 @@ const TableName = ObjectName;
 const KeyName = ValueName;
 const ColumnName = ValueName;
 
+const PrimaryKey = z
+  .nativeEnum(SchemaType)
+  .refine((arg) => getStaticByteLength(arg) > 0, "Primary key must not use dynamic SchemaType");
+const PrimaryKeys = z.record(KeyName, PrimaryKey).default({ key: SchemaType.BYTES32 });
+
 const Schema = z
   .record(ColumnName, z.nativeEnum(SchemaType))
   .refine((arg) => Object.keys(arg).length > 0, "Table schema may not be empty");
@@ -16,7 +21,7 @@ const FullTable = z
   .object({
     route: OrdinaryRoute.default("/tables"),
     tableIdArgument: z.boolean().default(false),
-    keyTuple: z.array(KeyName).default(["key"]),
+    primaryKeys: PrimaryKeys,
     schema: Schema,
     dataStruct: z.boolean().optional(),
   })
@@ -69,9 +74,9 @@ interface FullTableConfig {
   tableIdArgument?: boolean;
   /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
   dataStruct?: boolean;
-  /** List of names for the table's keys. Default is ["key"] */
-  keyTuple?: string[];
-  /** Table's columns. The keys are column names, 1st letter should be lowercase. */
+  /** Table's primary key names mapped to their types. Default is `{ key: SchemaType.BYTES32 }` */
+  primaryKeys?: Record<string, SchemaType>;
+  /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
   schema: Record<string, SchemaType>;
 }
 

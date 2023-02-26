@@ -4,15 +4,15 @@ import { RenderTableDynamicField, RenderTableOptions, RenderTableStaticField } f
 
 export function renderRecordMethods(options: RenderTableOptions) {
   const { staticFields, dynamicFields, structName } = options;
-  const { _tableId, _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+  const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
   let result = `
   /** Get the full data */
   function get(${renderArguments([_typedTableId, _typedKeyArgs])}) internal view returns (${renderDecodedRecord(
     options
   )}) {
-    ${_keyTupleDefinition}
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _keyTuple, getSchema());
+    ${_primaryKeysDefinition}
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
     return decode(_blob);
   }
 
@@ -22,8 +22,8 @@ export function renderRecordMethods(options: RenderTableOptions) {
     `IStore _store`,
     _typedKeyArgs,
   ])}) internal view returns (${renderDecodedRecord(options)}) {
-    ${_keyTupleDefinition}
-    bytes memory _blob = _store.getRecord(_tableId, _keyTuple);
+    ${_primaryKeysDefinition}
+    bytes memory _blob = _store.getRecord(_tableId, _primaryKeys);
     return decode(_blob);
   }
 
@@ -42,9 +42,9 @@ export function renderRecordMethods(options: RenderTableOptions) {
         : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeField(field)))]),
     ])});
 
-    ${_keyTupleDefinition}
+    ${_primaryKeysDefinition}
 
-    StoreSwitch.setRecord(_tableId, _keyTuple, _data);
+    StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
   `;
 
@@ -54,7 +54,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
     function set(${renderArguments([_typedTableId, _typedKeyArgs, `${structName} memory _table`])}) internal {
       set(${renderArguments([
         _tableId,
-        renderArguments(options.keyTuple),
+        _keyArgs,
         renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
       ])});
     }
@@ -64,8 +64,8 @@ export function renderRecordMethods(options: RenderTableOptions) {
   result += `
   /* Delete all data for given keys */
   function deleteRecord(${renderArguments([_typedTableId, _typedKeyArgs])}) internal {
-    ${_keyTupleDefinition}
-    StoreSwitch.deleteRecord(_tableId, _keyTuple);
+    ${_primaryKeysDefinition}
+    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
   `;
 

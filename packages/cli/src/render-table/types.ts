@@ -6,7 +6,7 @@ export interface RenderTableOptions {
   /** Data used to statically registed the table. If undefined, all methods receive `_tableId` as an argument. */
   staticRouteData?: StaticRouteData;
   storeImportPath: string;
-  keyTuple: string[];
+  primaryKeys: RenderTablePrimaryKey[];
   fields: RenderTableField[];
   staticFields: RenderTableStaticField[];
   dynamicFields: RenderTableDynamicField[];
@@ -27,6 +27,11 @@ export interface RenderTableType {
   enumName: string;
   staticByteLength: number;
   isDynamic: boolean;
+}
+
+export interface RenderTablePrimaryKey extends RenderTableType {
+  name: string;
+  isDynamic: false;
 }
 
 export interface RenderTableStaticField extends RenderTableField {

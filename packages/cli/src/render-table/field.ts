@@ -2,7 +2,7 @@ import { renderArguments, renderCommonData } from "./common.js";
 import { RenderTableField, RenderTableOptions } from "./types.js";
 
 export function renderFieldMethods(options: RenderTableOptions) {
-  const { _typedTableId, _typedKeyArgs, _keyTupleDefinition } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
   let result = "";
   for (const [index, field] of options.fields.entries()) {
@@ -14,8 +14,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
       _typedTableId,
       _typedKeyArgs,
     ])}) internal view returns (${_typedFieldName}) {
-      ${_keyTupleDefinition}
-      bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, ${index});
+      ${_primaryKeysDefinition}
+      bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, ${index});
       return ${renderDecodeFieldSingle(field)};
     }
 
@@ -25,8 +25,8 @@ export function renderFieldMethods(options: RenderTableOptions) {
       _typedKeyArgs,
       _typedFieldName,
     ])}) internal {
-      ${_keyTupleDefinition}
-      StoreSwitch.setField(_tableId, _keyTuple, ${index}, ${renderEncodeField(field)});
+      ${_primaryKeysDefinition}
+      StoreSwitch.setField(_tableId, _primaryKeys, ${index}, ${renderEncodeField(field)});
     }
     `;
 
@@ -41,10 +41,10 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedKeyArgs,
         `${portionData.typeWithLocation} ${portionData.name}`,
       ])}) internal {
-        ${_keyTupleDefinition}
-        bytes memory _blob = StoreSwitch.getField(_tableId, _keyTuple, ${index});
+        ${_primaryKeysDefinition}
+        bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, ${index});
         bytes memory _newBlob = abi.encodePacked(_blob, ${portionData.encodeFunc}(${portionData.name}));
-        StoreSwitch.setField(_tableId, _keyTuple, ${index}, _newBlob);
+        StoreSwitch.setField(_tableId, _primaryKeys, ${index}, _newBlob);
       }
       `;
     }
