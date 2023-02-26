@@ -1,6 +1,6 @@
 import { findUp } from "find-up";
 import path from "path";
-import { NotInsideProjectError } from "../utils/errors.js";
+import { NotESMConfigError, NotInsideProjectError } from "../utils/errors.js";
 
 // Based on hardhat's config (MIT)
 // https://github.com/NomicFoundation/hardhat/tree/main/packages/hardhat-core
@@ -14,8 +14,7 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
     return (await import(configPath)).default;
   } catch (error) {
     if (error instanceof SyntaxError && error.message === "Cannot use import statement outside a module") {
-      // TODO custom error can be used here to instruct to use .mts or type="module"
-      throw error;
+      throw new NotESMConfigError();
     } else {
       throw error;
     }

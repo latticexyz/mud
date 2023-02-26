@@ -1,4 +1,4 @@
-import { renderList, renderListWithCommas, TaggedTemplate, zipTaggedTemplate, _if } from "../utils/render";
+import { renderList, renderListWithCommas, TaggedTemplate, zipTaggedTemplate, _if } from "../utils/render.js";
 
 /**
  * Methods prefixed with `_` involve tagged templates!

@@ -16,6 +16,11 @@ export class NotInsideProjectError extends Error {
   message = "You are not inside a MUD project";
 }
 
+export class NotESMConfigError extends Error {
+  name = "NotESMConfigError";
+  message = "MUD config must be an ES module";
+}
+
 export function logError(error: Error) {
   if (error instanceof ValidationError) {
     console.log(chalk.redBright(error.message));
@@ -30,6 +35,12 @@ export function logError(error: Error) {
     console.log(chalk.red(error.message));
     console.log("");
     console.log(chalk.blue(`To learn more about MUD's configuration, please go to [TODO link to docs]`));
+  } else if (error instanceof NotESMConfigError) {
+    console.log(chalk.red(error.message));
+    console.log("");
+    console.log(
+      chalk.blue(`Please name your config file \`mud.config.mts\`, or use \`type: "module"\` in package.json`)
+    );
   } else {
     console.log(error);
   }
