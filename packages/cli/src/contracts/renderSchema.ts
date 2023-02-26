@@ -81,8 +81,9 @@ export function renderSchema({
   };
   const fullStaticRoute = staticRoute ? staticRoute.baseRoute + staticRoute.subRoute : "";
 
+  const withKeys = keyTuple.length > 0;
   const _keyArgs: TaggedTemplate = (strings, ...values) => {
-    if (keyTuple.length > 0) {
+    if (withKeys) {
       return renderListWithCommas(keyTuple, (key) => `bytes32 ${key}`) + zipTaggedTemplate(strings, ...values);
     } else {
       return "";
@@ -153,7 +154,7 @@ ${renderList(fields, (field, index) => {
   const { typeWithLocation, name, methodNameSuffix } = field;
   return `
     function get${methodNameSuffix}(
-      ${_tableId`,`}
+      ${_tableId`${_if(withKeys)`,`}`}
       ${_keyArgs``}
     ) internal view returns (${typeWithLocation} ${name}) {
       ${renderKeyTuple(keyTuple)}
@@ -206,7 +207,7 @@ ${_if(withRecordMethods)`
 ${_if(withRecordMethods && withStruct)`
   /** Get the table's data */
   function get(
-    ${_tableId`,`}
+    ${_tableId`${_if(withKeys)`,`}`}
     ${_keyArgs``}
   ) internal view returns (${tableName} memory _table) {
     ${renderKeyTuple(keyTuple)}
