@@ -80,5 +80,18 @@ ${
 `
 }
 
+${
+  // nothing can be cast from bool, so an assembly helper is required
+  !options.primaryKeys.some(({ typeId }) => typeId === "bool")
+    ? ""
+    : `
+  function _boolToBytes32(bool value) pure returns (bytes32 result) {
+    assembly {
+      result := value
+    }
+  }
+`
+}
+
 `;
 }
