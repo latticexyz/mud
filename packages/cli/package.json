@@ -20,7 +20,6 @@
     "build": "tsup",
     "link": "yarn link",
     "test": "vitest typecheck --run && echo 'todo: add tests'",
-    "test:next": "tsc --noEmit --moduleResolution nodenext",
     "git:install": "bash git-install.sh",
     "release": "npm publish || echo 'version already published'"
   },
