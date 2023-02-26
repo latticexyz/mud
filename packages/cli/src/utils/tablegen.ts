@@ -1,10 +1,10 @@
 import {
-  renderSchema,
-  RenderSchemaDynamicField,
-  RenderSchemaField,
-  RenderSchemaStaticField,
-  RenderSchemaType,
-} from "../contracts/renderSchema.js";
+  renderTable,
+  RenderTableDynamicField,
+  RenderTableField,
+  RenderTableStaticField,
+  RenderTableType,
+} from "../contracts/renderTable.js";
 import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/loadStoreConfig.js";
 
@@ -25,7 +25,7 @@ export function renderTables(config: StoreConfig) {
     const fields = Object.keys(tableData.schema).map((name) => {
       const type = tableData.schema[name];
       const elementType = SchemaTypeArrayToElement[type];
-      const field: RenderSchemaField = {
+      const field: RenderTableField = {
         ...getSchemaTypeInfo(type),
         arrayElement: elementType ? getSchemaTypeInfo(elementType) : undefined,
         name,
@@ -34,8 +34,8 @@ export function renderTables(config: StoreConfig) {
       return field;
     });
 
-    const staticFields = fields.filter(({ isDynamic }) => !isDynamic) as RenderSchemaStaticField[];
-    const dynamicFields = fields.filter(({ isDynamic }) => isDynamic) as RenderSchemaDynamicField[];
+    const staticFields = fields.filter(({ isDynamic }) => !isDynamic) as RenderTableStaticField[];
+    const dynamicFields = fields.filter(({ isDynamic }) => isDynamic) as RenderTableDynamicField[];
 
     // With tableIdArgument: tableId is a dynamic argument for each method
     // Without tableIdArgument: tableId is a file-level constant generated from `staticRouteData`
@@ -54,7 +54,7 @@ export function renderTables(config: StoreConfig) {
     renderedTables.push({
       tableName,
       tableData,
-      output: renderSchema({
+      output: renderTable({
         libraryName: tableName,
         structName: withStruct ? tableName + "Data" : undefined,
         staticRouteData,
@@ -70,7 +70,7 @@ export function renderTables(config: StoreConfig) {
   return renderedTables;
 }
 
-function getSchemaTypeInfo(schemaType: SchemaType): RenderSchemaType {
+function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
   const staticByteLength = getStaticByteLength(schemaType);
   const isDynamic = staticByteLength === 0;
   const typeId = SchemaTypeId[schemaType];

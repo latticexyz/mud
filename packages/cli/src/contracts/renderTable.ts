@@ -2,7 +2,7 @@ import { renderList, renderListWithCommas, TaggedTemplate, zipTaggedTemplate, _i
 
 // Methods prefixed with `_` involve tagged templates!
 
-export interface RenderSchemaOptions {
+export interface RenderTableOptions {
   /** Name of the library to render. */
   libraryName: string;
   /** Name of the struct to render. If undefined, struct and its methods aren't rendered. */
@@ -11,9 +11,9 @@ export interface RenderSchemaOptions {
   staticRouteData?: StaticRouteData;
   storeImportPath: string;
   keyTuple: string[];
-  fields: RenderSchemaField[];
-  staticFields: RenderSchemaStaticField[];
-  dynamicFields: RenderSchemaDynamicField[];
+  fields: RenderTableField[];
+  staticFields: RenderTableStaticField[];
+  dynamicFields: RenderTableDynamicField[];
   /** Whether to render get/set methods for the whole record */
   withRecordMethods: boolean;
 }
@@ -25,21 +25,21 @@ export interface StaticRouteData {
   subRoute: string;
 }
 
-export interface RenderSchemaStaticField extends RenderSchemaField {
+export interface RenderTableStaticField extends RenderTableField {
   isDynamic: false;
 }
 
-export interface RenderSchemaDynamicField extends RenderSchemaField {
+export interface RenderTableDynamicField extends RenderTableField {
   isDynamic: true;
 }
 
-export interface RenderSchemaField extends RenderSchemaType {
-  arrayElement: RenderSchemaType | undefined;
+export interface RenderTableField extends RenderTableType {
+  arrayElement: RenderTableType | undefined;
   name: string;
   methodNameSuffix: string;
 }
 
-export interface RenderSchemaType {
+export interface RenderTableType {
   typeId: string;
   typeWithLocation: string;
   enumName: string;
@@ -47,7 +47,7 @@ export interface RenderSchemaType {
   isDynamic: boolean;
 }
 
-export function renderSchema({
+export function renderTable({
   libraryName,
   structName,
   staticRouteData,
@@ -57,7 +57,7 @@ export function renderSchema({
   staticFields,
   dynamicFields,
   withRecordMethods,
-}: RenderSchemaOptions) {
+}: RenderTableOptions) {
   const withDynamic = dynamicFields.length > 0;
 
   const withStruct = structName !== undefined;
@@ -250,7 +250,7 @@ function renderKeyTuple(keys: string[]) {
   );
 }
 
-function renderEncodeField(field: RenderSchemaField) {
+function renderEncodeField(field: RenderTableField) {
   let func;
   if (field.arrayElement) {
     func = "EncodeArray.encode";
@@ -262,7 +262,7 @@ function renderEncodeField(field: RenderSchemaField) {
   return `${func}(${field.name})`;
 }
 
-function renderEncodedLengths(dynamicFields: RenderSchemaField[]) {
+function renderEncodedLengths(dynamicFields: RenderTableField[]) {
   if (dynamicFields.length > 0) {
     return `uint16[] memory _counters = new uint16[](${dynamicFields.length});
 ${renderList(dynamicFields, ({ name, arrayElement }, index) => {
@@ -280,7 +280,7 @@ PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 }
 
 // contents of `returns (...)` for record getter/decoder
-function renderDecodedRecord(withStruct: boolean, structName: string, fields: RenderSchemaField[]) {
+function renderDecodedRecord(withStruct: boolean, structName: string, fields: RenderTableField[]) {
   if (withStruct) {
     return `${structName} memory _table`;
   } else {
@@ -289,7 +289,7 @@ function renderDecodedRecord(withStruct: boolean, structName: string, fields: Re
 }
 
 // either set struct properties, or just variables
-function renderRecordFieldName(withStruct: boolean, { name }: RenderSchemaField) {
+function renderRecordFieldName(withStruct: boolean, { name }: RenderTableField) {
   if (withStruct) {
     return `_table.${name}`;
   } else {
@@ -301,9 +301,9 @@ function renderRecordFieldName(withStruct: boolean, { name }: RenderSchemaField)
 function renderDecodeFunction(
   withStruct: boolean,
   structName: string,
-  fields: RenderSchemaField[],
-  staticFields: RenderSchemaStaticField[],
-  dynamicFields: RenderSchemaDynamicField[]
+  fields: RenderTableField[],
+  staticFields: RenderTableStaticField[],
+  dynamicFields: RenderTableDynamicField[]
 ) {
   // Static field offsets
   const staticOffsets = staticFields.map(() => 0);
@@ -354,7 +354,7 @@ function renderDecodeFunction(
   }
 }
 
-function renderDecodeFieldSingle(field: RenderSchemaField) {
+function renderDecodeFieldSingle(field: RenderTableField) {
   const { typeId, isDynamic, arrayElement } = field;
   if (arrayElement) {
     // arrays
@@ -367,7 +367,7 @@ function renderDecodeFieldSingle(field: RenderSchemaField) {
   }
 }
 
-function renderDecodeDynamicFieldPartial(field: RenderSchemaDynamicField) {
+function renderDecodeDynamicFieldPartial(field: RenderTableDynamicField) {
   const { typeId, arrayElement } = field;
   if (arrayElement) {
     // arrays
@@ -378,7 +378,7 @@ function renderDecodeDynamicFieldPartial(field: RenderSchemaDynamicField) {
   }
 }
 
-function renderDecodeStaticFieldPartial(field: RenderSchemaStaticField, start: number) {
+function renderDecodeStaticFieldPartial(field: RenderTableStaticField, start: number) {
   const { typeId, staticByteLength } = field;
   return decodeValueType(typeId, staticByteLength, start);
 }
