@@ -41,7 +41,6 @@ export const Browser = observer(
       <BrowserContainer>
         <QueryBuilder
           devHighlightComponent={devHighlightComponent}
-          hoverHighlightComponent={hoverHighlightComponent}
           allEntities={world.entities}
           setFilteredEntities={setFilteredEntities}
           layers={layers}
