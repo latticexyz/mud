@@ -53,21 +53,53 @@ contract EncounterFleeSystem is System {
 
 ## Add run button
 
-Since our flee system always allows you to run away, we don't need to listen for system call updates to determine the outcome. We can just call the system and wait for the transaction to complete before updating the toast.
+Since our flee system always allows you to run away, we technically don't need to listen for system call updates to determine the outcome. But doing so will help our UI and toasts stay in sync with component updates.
 
 Because the encounter screen is shown only when you're in an encounter, you'll see that it will automatically disappear when you run away. This is the nice thing about MUD and declarative, responsive UI!
 
-```tsx !#18-37 packages/client/src/EncounterScreen.tsx
+```ts !#3-15,24 packages/client/src/mud/setup.ts
+export const setup = async () => {
+  …
+  const fleeEncounter = async (encounterId: EntityID) => {
+    const tx = await result.systems["system.EncounterFlee"].executeTyped(
+      encounterId
+    );
+    return new Promise<{ tx: typeof tx }>((resolve) => {
+      result.systemCallStreams["system.EncounterFlee"]
+        .pipe(filter((systemCall) => systemCall.tx.hash === tx.hash))
+        .pipe(first())
+        .subscribe(() => {
+          resolve({ tx });
+        });
+    });
+  };
+
+  return {
+    …
+    api: {
+      moveTo,
+      moveBy,
+      joinGame,
+      throwBall,
+      fleeEncounter,
+    },
+  };
+}
+```
+
+```tsx !#20-36 packages/client/src/EncounterScreen.tsx
 export const EncounterScreen = ({ encounterId }: Props) => {
   …
   return (
     <div
-      className={`flex flex-col gap-10 items-center justify-center bg-black text-white transition-opacity duration-1000 ${
+      className={twMerge(
+        "flex flex-col gap-10 items-center justify-center bg-black text-white transition-opacity duration-1000",
         appear ? "opacity-100" : "opacity-0"
-      }`}
+      )}
     >
       <div className="text-8xl animate-bounce">{monster.monster.emoji}</div>
       <div>A wild {monster.monster.name} appears!</div>
+
       <div className="flex gap-2">
         <button
           type="button"
@@ -80,10 +112,7 @@ export const EncounterScreen = ({ encounterId }: Props) => {
           className="bg-stone-800 hover:ring rounded-lg px-4 py-2"
           onClick={async () => {
             const toastId = toast.loading("Running away…");
-            const tx = await systems["system.EncounterFlee"].executeTyped(
-              encounterId
-            );
-            const receipt = await tx.wait();
+            await fleeEncounter(encounterId);
             toast.update(toastId, {
               isLoading: false,
               type: "default",
