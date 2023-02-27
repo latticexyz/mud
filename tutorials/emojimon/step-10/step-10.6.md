@@ -28,7 +28,7 @@ contract OwnedByComponent is Uint256Component {
 ```
 
 ```ts !#3-7 packages/client/src/mud/components.ts
-export const components = {
+export const contractComponents = {
   …
   OwnedBy: defineStringComponent(world, {
     metadata: {
@@ -123,7 +123,7 @@ contract CounterComponent is Uint256Component {
 ```
 
 ```ts !#2-6 packages/client/src/mud/components.ts
-export const components = {
+export const contractComponents = {
   Counter: defineNumberComponent(world, {
     metadata: {
       contractId: "component.Counter",

@@ -41,22 +41,17 @@ contract ObstructionComponent is BoolComponent {
 
 During the terrain drawing loop in our init system, we can create obstruction entities for the boulders. We also need to attach their position, so we can query for them later.
 
-```sol !#2-3,14-15,29-33 packages/contracts/src/systems/InitSystem.sol
+```sol !#2-3,9-10,24-28 packages/contracts/src/libraries/MapConfigInitializer.sol
 import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
 import { ObstructionComponent, ID as ObstructionComponentID } from "components/ObstructionComponent.sol";
 import { TerrainType } from "../TerrainType.sol";
 
-uint256 constant ID = uint256(keccak256("system.Init"));
-
-contract InitSystem is System {
-  …
-  function execute(bytes memory data) public returns (bytes memory) {
-    MapConfigComponent mapConfig = MapConfigComponent(getAddressById(components, MapConfigComponentID));
-    if (mapConfig.isSet()) return new bytes(0);
-
-    PositionComponent position = PositionComponent(getAddressById(components, PositionComponentID));
-    ObstructionComponent obstruction = ObstructionComponent(getAddressById(components, ObstructionComponentID));
+library MapConfigInitializer {
+  function init(IWorld world) internal {
+    MapConfigComponent mapConfig = MapConfigComponent(world.getComponent(MapConfigComponentID));
+    PositionComponent position = PositionComponent(world.getComponent(PositionComponentID));
+    ObstructionComponent obstruction = ObstructionComponent(world.getComponent(ObstructionComponentID));
 
     // Alias these to make em easier to draw a tile map
     TerrainType O = TerrainType.None;
@@ -79,9 +74,9 @@ contract InitSystem is System {
     }
 ```
 
-Remember that any time we add a component or write to a new component from our systems, we need to update `deploy.json` so MUD can assign the correct access controls.
+Remember that any time we add a component or write to a new component from our systems, we need to update `deploy.json` so MUD can assign the correct access controls. And because we've added a component and changed our initializer, we'll need to restart `mud dev` too.
 
-```json !#4,11 packages/contracts/deploy.json
+```json !#4 packages/contracts/deploy.json
   "components": [
     "MapConfigComponent",
     "MovableComponent",
@@ -89,12 +84,6 @@ Remember that any time we add a component or write to a new component from our s
     "PlayerComponent",
     "PositionComponent"
   ],
-  "systems": [
-    {
-      "name": "InitSystem",
-      "writeAccess": ["MapConfigComponent", "ObstructionComponent", "PositionComponent"],
-      "initialize": "new bytes(0)"
-    },
 ```
 
 ## Query for obstructions
@@ -106,10 +95,10 @@ We'll want to look for obstructions in both the move system and the join system,
 ```sol !#3-6,15-20 packages/contracts/src/LibMap.sol
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
-import { ID as ObstructionComponentID } from "components/ObstructionComponent.sol";
 import { QueryType } from "solecs/interfaces/Query.sol";
 import { IWorld, WorldQueryFragment } from "solecs/World.sol";
+import { ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
+import { ID as ObstructionComponentID } from "components/ObstructionComponent.sol";
 
 library LibMap {
   function distance(Coord memory from, Coord memory to) internal pure returns (int32) {
@@ -143,12 +132,16 @@ Everything is lined up for a quick change to our move and join systems to preven
 }
 ```
 
-```sol !#4,9 packages/contracts/src/systems/JoinGameSystem.sol
+```sol !#4,13 packages/contracts/src/systems/JoinGameSystem.sol
 import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
 import { MovableComponent, ID as MovableComponentID } from "components/MovableComponent.sol";
 import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
-import { LibMap } from "../LibMap.sol";
+import { LibMap } from "libraries/LibMap.sol";
 …
+contract JoinGameSystem is System {
+  …
+  function executeTyped(Coord memory coord) public returns (bytes memory) {
+    …
     coord.x = (coord.x + int32(mapConfig.width)) % int32(mapConfig.width);
     coord.y = (coord.y + int32(mapConfig.height)) % int32(mapConfig.height);
 
@@ -165,33 +158,26 @@ Like before, we should update our optimistic rendering to reflect the new system
 
 Fortunately, MUD has similar tools for the client to query for entities with certain components and/or component values.
 
-```ts !#2,7,17-24,27 packages/client/src/useMovement.ts
-import { useCallback, useEffect } from "react";
+```ts !#3,12-19 packages/client/src/mud/setup.ts
+import { ethers } from "ethers";
+import { uuid } from "@latticexyz/utils";
 import { Has, HasValue, runQuery } from "@latticexyz/recs";
-import { useComponentValueStream } from "@latticexyz/std-client";
 …
-export const useMovement = () => {
-  const {
-    components: { Obstruction, Position },
-    systems,
-    playerEntity,
-  } = useMUD();
+export const setup = async () => {
   …
-  const moveTo = useCallback(
-    async (x: number, y: number) => {
-      const wrappedX = (x + width) % width;
-      const wrappedY = (y + height) % height;
+  const moveTo = async (x: number, y: number) => {
+    …
+    const wrappedX = (x + mapConfig.width) % mapConfig.width;
+    const wrappedY = (y + mapConfig.height) % mapConfig.height;
 
-      const obstructed = runQuery([
-        Has(Obstruction),
-        HasValue(Position, { x: wrappedX, y: wrappedY }),
-      ]);
-      if (obstructed.size > 0) {
-        console.warn("cannot move to obstructed space");
-        return;
-      }
-      …
-    },
-    [Obstruction, Position, height, playerEntity, systems, width]
-  );
+    const obstructed = runQuery([
+      Has(components.Obstruction),
+      HasValue(components.Position, { x: wrappedX, y: wrappedY }),
+    ]);
+    if (obstructed.size > 0) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
+
+    const positionId = uuid();
 ```
