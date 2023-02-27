@@ -69,45 +69,22 @@ contract JoinGameSystem is System {
 
 If you try to move off the edge of the map, you may see your player disappear for a second and then reappear on the other side of the map. This is because we're doing an optimistic update for movement, but it's not accounting for our new wrapping logic. Let's add that in.
 
-```ts !#5,14,19-20,26-27,38 packages/client/src/useMovement.ts
-import { useCallback, useEffect } from "react";
-import { useComponentValueStream } from "@latticexyz/std-client";
-import { uuid } from "@latticexyz/utils";
-import { useMUD } from "./MUDContext";
-import { useMapConfig } from "./useMapConfig";
+```ts !#4-11,16 packages/client/src/mud/setup.ts
+export const setup = async () => {
+  …
+  const moveTo = async (x: number, y: number) => {
+    const mapConfig = getComponentValue(components.MapConfig, singletonEntity);
+    if (!mapConfig) {
+      console.warn("moveTo called before mapConfig loaded/initialized");
+      return;
+    }
 
-export const useMovement = () => {
-  const {
-    components: { Position },
-    systems,
-    playerEntity,
-  } = useMUD();
+    const wrappedX = (x + mapConfig.width) % mapConfig.width;
+    const wrappedY = (y + mapConfig.height) % mapConfig.height;
 
-  const { width, height } = useMapConfig();
-  const playerPosition = useComponentValueStream(Position, playerEntity);
-
-  const moveTo = useCallback(
-    async (x: number, y: number) => {
-      const wrappedX = (x + width) % width;
-      const wrappedY = (y + height) % height;
-
-      const positionId = uuid();
-      Position.addOverride(positionId, {
-        entity: playerEntity,
-        value: {
-          x: wrappedX,
-          y: wrappedY,
-        },
-      });
-
-      try {
-        const tx = await systems["system.Move"].executeTyped({ x, y });
-        await tx.wait();
-      } finally {
-        Position.removeOverride(positionId);
-      }
-    },
-    [Position, height, playerEntity, systems, width]
-  );
-
+    const positionId = uuid();
+    components.Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x: wrappedX, y: wrappedY },
+    });
 ```

@@ -80,7 +80,7 @@ Now we can add our new map config component and initializer to the `deploy.json`
 Again, because this is a custom component, we need to define its schema on the client as part of its component definition.
 
 ```ts !#1,9-19 packages/client/src/mud/components.ts
-+import { overridableComponent, defineComponent, Type } from "@latticexyz/recs";
+import { overridableComponent, defineComponent, Type } from "@latticexyz/recs";
 import {
   defineBoolComponent,
   defineCoordComponent,
@@ -107,7 +107,7 @@ export const contractComponents = {
 We'll use a new React hook for the map config, so we can ensure its value is present before using it. This makes types easier to work with downstream. Without the loading screen we added, using this hook would immediately throw an error.
 
 ```ts packages/client/src/useMapConfig.ts
-import { getComponentValue } from "@latticexyz/recs";
+import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 
 export const useMapConfig = () => {
@@ -116,7 +116,7 @@ export const useMapConfig = () => {
     singletonEntity,
   } = useMUD();
 
-  const mapConfig = getComponentValue(MapConfig, singletonEntity);
+  const mapConfig = useComponentValue(MapConfig, singletonEntity);
 
   if (mapConfig == null) {
     throw new Error("game config not set or not ready, only use this hook after loading state === LIVE");
@@ -129,7 +129,7 @@ export const useMapConfig = () => {
 And now we can replace the hardcoded map dimensions in the game board with the new map config.
 
 ```tsx !#5,8-10 packages/client/src/GameBoard.tsx
-import { useComponentValueStream } from "@latticexyz/std-client";
+import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { useJoinGame } from "./useJoinGame";
 import { useMovement } from "./useMovement";

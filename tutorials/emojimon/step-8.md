@@ -46,25 +46,20 @@ export const terrainTypes: Record<TerrainType, TerrainConfig> = {
 
 ## Draw the terrain map
 
-If we were following pure ECS patterns, we'd create a terrain type component and, for each position on the map, we'd create a tile entity and add the terrain type and position components to it. However, because we're in Solidity, this would exceed the 30M block gas limit for our init system deploy.
+To follow pure ECS patterns, we should create a terrain type component and, for each position on the map, create a tile entity and add the terrain type and position components to it.
 
-Instead, we'll "bitpack" the terrain values into a single `bytes` value and store it in our map config component.
+For the purposes of this tutorial, to simplify some things and work around edge cases, we'll "bitpack" the terrain values into a single `bytes` value and store it in our map config component.
 
 Let's draw the terrain map first.
 
-```sol !#4,14-53 packages/contracts/src/systems/InitSystem.sol
-import { System, IWorld } from "solecs/System.sol";
-import { getAddressById } from "solecs/utils.sol";
+```sol !#3,9-48 packages/contracts/src/libraries/MapConfigInitializer.sol
+import { IWorld } from "solecs/interfaces/IWorld.sol";
 import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
 import { TerrainType } from "../TerrainType.sol";
 
-uint256 constant ID = uint256(keccak256("system.Init"));
-
-contract InitSystem is System {
-  …
-  function execute(bytes memory data) public returns (bytes memory) {
-    MapConfigComponent mapConfig = MapConfigComponent(getAddressById(components, MapConfigComponentID));
-    if (mapConfig.isSet()) return new bytes(0);
+library MapConfigInitializer {
+  function init(IWorld world) internal {
+    MapConfigComponent mapConfig = MapConfigComponent(world.getComponent(MapConfigComponentID));
 
     // Alias these to make it easier to draw the terrain map
     TerrainType O = TerrainType.None;
@@ -107,12 +102,13 @@ contract InitSystem is System {
       }
     }
 
-    mapConfig.set(MapConfig({ width: 10, height: 10 }));
+    mapConfig.set(MapConfig({ width: 20, height: 20 }));
   }
 }
+
 ```
 
-We still need to update our map config component to support the new terrain map, so let's do that next. Don't forget to update the schema!
+Note that we haven't set our map config with new values yet. We still need to update our map config component to support the new terrain map, so let's do that next. Don't forget to update the schema!
 
 ```sol !#4,11-12,20-21,29,33-34 packages/contracts/src/components/MapConfigComponent.sol
 struct MapConfig {
@@ -158,10 +154,9 @@ You may have noticed that we're using the `STRING` schema value type. The MUD cl
 
 Now to update our map config with the terrain and new map size. You may have to restart your `mud dev` server to pick up changes to the map config.
 
-```sol !#18 packages/contracts/src/systems/InitSystem.sol
-contract InitSystem is System {
-  …
-  function execute(bytes memory data) public returns (bytes memory) {
+```sol !#17 packages/contracts/src/libraries/MapConfigInitializer.sol
+library MapConfigInitializer {
+  function init(IWorld world) internal {
     …
     uint32 height = uint32(map.length);
     uint32 width = uint32(map[0].length);
@@ -185,7 +180,10 @@ contract InitSystem is System {
 
 Before we can use the terrain string, we need to make our client component aware of it.
 
-```ts !#4 packages/client/src/mud/components.ts
+```ts !#7 packages/client/src/mud/components.ts
+export const contractComponents = {
+  MapConfig: defineComponent(
+    world,
     {
       width: Type.Number,
       height: Type.Number,
@@ -197,9 +195,9 @@ Before we can use the terrain string, we need to make our client component aware
 
 And now we can extend our `useMapConfig` hook to parse the terrain string into an array of positions and terrain types. This will make it easier to render the map next.
 
-```ts !#2,4,18-26 packages/client/src/useMapConfig.ts
-import { getComponentValue } from "@latticexyz/recs";
+```ts !#1,4,18-26 packages/client/src/useMapConfig.ts
 import { ethers } from "ethers";
+import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { terrainTypes, TerrainType } from "./terrainTypes";
 
@@ -209,7 +207,7 @@ export const useMapConfig = () => {
     singletonEntity,
   } = useMUD();
 
-  const mapConfig = getComponentValue(MapConfig, singletonEntity);
+  const mapConfig = useComponentValue(MapConfig, singletonEntity);
 
   if (mapConfig == null) {
     throw new Error("game config not set or not ready, only use this hook after loading state === LIVE");
@@ -229,7 +227,7 @@ export const useMapConfig = () => {
 
 The last step is to draw the terrain emojis on the game board.
 
-```tsx !#7-9,28-39 packages/client/src/GameBoard.tsx
+```tsx !#7-9,29-40 packages/client/src/GameBoard.tsx
 export const GameBoard = () => {
   …
   return (
@@ -243,9 +241,10 @@ export const GameBoard = () => {
           return (
             <div
               key={`${x},${y}`}
-              className={`w-8 h-8 flex items-center justify-center ${
-                canJoinGame ? "cursor-pointer hover:ring" : ""
-              }`}
+              className={twMerge(
+                "w-8 h-8 flex items-center justify-center",
+                canJoinGame ? "cursor-pointer hover:ring" : null
+              )}
               style={{
                 gridColumn: x + 1,
                 gridRow: y + 1,
@@ -271,11 +270,6 @@ export const GameBoard = () => {
               </div>
             </div>
           );
-        })
-      )}
-    </div>
-  );
-};
 ```
 
 Don't worry too much about all the extra markup and class names. It's there to separate the non-interactive terrain in the background from the moving entities (i.e. players) in the foreground.
