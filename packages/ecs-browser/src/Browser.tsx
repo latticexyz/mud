@@ -6,7 +6,6 @@ import { EntityEditor } from "./EntityEditor";
 import { QueryBuilder } from "./QueryBuilder";
 import { useClearDevHighlights } from "./hooks";
 import { observer } from "mobx-react-lite";
-import { PrototypeCreator } from "./PrototypeCreator";
 import { Coord } from "./shared";
 import { createBrowserDevComponents } from "./createBrowserDevComponents";
 
@@ -17,12 +16,8 @@ export const Browser = observer(
   ({
     layers,
     setContractComponentValue,
-    prototypeComponent,
-    nameComponent,
-    spawnPrototypeAt,
     world,
     devHighlightComponent,
-    hoverHighlightComponent,
   }: {
     layers: Layers;
     setContractComponentValue?: SetContractComponentFunction<Schema>;
@@ -48,15 +43,6 @@ export const Browser = observer(
           clearDevHighlights={clearDevHighlights}
           setOverflow={setOverflow}
         />
-        {hoverHighlightComponent && prototypeComponent && spawnPrototypeAt && nameComponent && (
-          <PrototypeCreator
-            layers={layers}
-            hoverHighlightComponent={hoverHighlightComponent}
-            prototypeComponent={prototypeComponent}
-            nameComponent={nameComponent}
-            spawnPrototypeAt={spawnPrototypeAt}
-          />
-        )}
         <SmallHeadline>
           Showing {filteredEntities.length} of {filteredEntities.length + overflow} entities
         </SmallHeadline>
