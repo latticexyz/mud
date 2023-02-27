@@ -88,7 +88,7 @@ export function renderDecodeValueType(typeId: string, staticByteLength: number, 
   if (typeId.match(/^uint\d{1,3}$/) || typeId === "address") {
     return `${typeId}(${innerSlice})`;
   } else if (typeId.match(/^int\d{1,3}$/)) {
-    return `${typeId}(uint${bits}(${innerSlice})`;
+    return `${typeId}(uint${bits}(${innerSlice}))`;
   } else if (typeId.match(/^bytes\d{1,2}$/)) {
     return innerSlice;
   } else if (typeId === "bool") {
