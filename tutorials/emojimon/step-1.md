@@ -55,13 +55,15 @@ contract MoveSystem is System {
 
 ```
 
-## Deployment config
+## Deploy config
 
 Any time we add a component or system, we need to update the `deploy.json`, which MUD uses to deploy and connect our components and systems. Because we’re setting the `PositionComponent` value in our `MoveSystem`, we must also declare that it needs `writeAccess`.
 
+It's worth noting that hot reloading doesn't work for components yet, because we can't automatically migrate your data if it changes shape. We're working on bringing this to MUD, but in the meantime, any component changes will require you restart the `yarn dev:contracts` service to redeploy all contracts.
+
 (We no longer need the project template’s counter component or increment system, so we can remove those too.)
 
-```json packages/deploy.json
+```json packages/contracts/deploy.json
 {
   "components": ["PositionComponent"],
   "systems": [

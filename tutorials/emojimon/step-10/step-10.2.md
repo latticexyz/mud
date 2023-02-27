@@ -24,7 +24,7 @@ contract EncounterableComponent is BoolComponent {
 ```
 
 ```ts !#2-6 packages/client/src/mud/components.ts
-export const components = {
+export const contractComponents = {
   Encounterable: defineBoolComponent(world, {
     metadata: {
       contractId: "component.Encounterable",
@@ -38,12 +38,10 @@ export const components = {
 
 We initialize the player within the join system, so we need to update that to add our new component to the player.
 
-```sol !#3,13 packages/contracts/src/systems/JoinGameSystem.sol
-import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
-import { MovableComponent, ID as MovableComponentID } from "components/MovableComponent.sol";
+```sol !#2,11 packages/contracts/src/systems/JoinGameSystem.sol
+import { getAddressById } from "solecs/utils.sol";
 import { EncounterableComponent, ID as EncounterableComponentID } from "components/EncounterableComponent.sol";
-import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
-import { LibMap } from "../LibMap.sol";
+import { PlayerComponent, ID as PlayerComponentID } from "components/PlayerComponent.sol";
 …
 contract JoinGameSystem is System {
   …
@@ -64,8 +62,8 @@ contract JoinGameSystem is System {
     "MapConfigComponent",
     …
   ],
+  "initializers": ["MapConfigInitializer"],
   "systems": [
-    …
     {
       "name": "JoinGameSystem",
       "writeAccess": ["EncounterableComponent", "MovableComponent", "PlayerComponent", "PositionComponent"]
