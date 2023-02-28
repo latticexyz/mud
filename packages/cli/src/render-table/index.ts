@@ -43,7 +43,7 @@ export function renderTablesFromConfig(config: StoreConfig) {
         ...getSchemaTypeInfo(type),
         arrayElement: elementType ? getSchemaTypeInfo(elementType) : undefined,
         name,
-        methodNameSuffix: noFeldMethodSuffix ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
+        methodNameSuffix: noFieldMethodSuffix ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
       };
       return field;
     });
