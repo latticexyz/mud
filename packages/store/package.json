@@ -10,8 +10,6 @@
     "directory": "packages/store"
   },
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
-    "git:install": "bash git-install.sh",
     "codegen": "ts-node ./scripts/codegen.ts",
     "tablegen": "../cli/dist/mud.js tablegen",
     "test": "yarn codegen && forge test",
