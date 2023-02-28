@@ -99,6 +99,32 @@ contract World is Store {
   }
 
   /**
+   * Register metadata (tableName, fieldNames) for a given table via its route
+   */
+  function setMetadata(
+    string calldata tableRoute,
+    string calldata tableName,
+    string[] calldata fieldNames
+  ) public {
+    setMetadata(_toRouteId(tableRoute), tableName, fieldNames);
+  }
+
+  /**
+   * Register metadata (tableName, fieldNames) for a given table via its id
+   */
+  function setMetadata(
+    uint256 tableId,
+    string calldata tableName,
+    string[] calldata fieldNames
+  ) public {
+    // Require caller to own the given tableId
+    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
+
+    // Set the table's metadata
+    StoreCore.setMetadata(tableId, tableName, fieldNames);
+  }
+
+  /**
    * Register a hook for a given table route
    */
   function registerTableHook(string calldata tableRoute, IStoreHook hook) public {

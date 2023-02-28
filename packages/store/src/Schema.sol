@@ -175,6 +175,13 @@ library SchemaLib {
   }
 
   /**
+   * Get the total number of fields for the given schema
+   */
+  function numFields(Schema schema) internal pure returns (uint8) {
+    return numStaticFields(schema) + numDynamicFields(schema);
+  }
+
+  /**
    * Check if the given schema is empty
    */
   function isEmpty(Schema schema) internal pure returns (bool) {
