@@ -21,7 +21,7 @@ export function renderTablesFromConfig(config: StoreConfig) {
     // operate on all fields at once; for only 1 field keep them only if struct is also kept
     const withRecordMethods = withStruct || Object.keys(tableData.schema).length > 1;
     // field methods can be simply get/set if there's only 1 field and no record methods
-    const noFeldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
+    const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
 
     const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
       const type = tableData.primaryKeys[name];
