@@ -10,7 +10,10 @@
   "workspaces": {
     "packages": [
       "packages/utils",
+      "packages/schema-type",
       "packages/solecs",
+      "packages/store",
+      "packages/world",
       "packages/cli",
       "packages/recs",
       "packages/react",
@@ -44,7 +47,7 @@
     "retypeapp": "^2.4.0",
     "rimraf": "^3.0.2",
     "run-pty": "^3.0.0",
-    "typescript": ">=3.0.0"
+    "typescript": "^4.9.5"
   },
   "config": {
     "commitizen": {

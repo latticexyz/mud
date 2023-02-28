@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+    "target": "es2019",
+    "moduleResolution": "node",
+    "types": ["mocha"],
+    "esModuleInterop": true
+  }
+}

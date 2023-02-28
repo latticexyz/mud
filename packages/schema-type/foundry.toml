@@ -1,0 +1,10 @@
+[profile.default]
+ffi = false
+fuzz_runs = 256
+optimizer = true
+optimizer_runs = 3000 
+verbosity = 1
+libs = ["../../node_modules"]
+src = "src/solidity"
+out = "out/solidity"
+test = "test/solidity"

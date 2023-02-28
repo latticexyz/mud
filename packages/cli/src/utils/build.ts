@@ -1,7 +1,7 @@
 import { execa } from "execa";
 import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs";
 import path from "path";
-import { getOutDirectory } from "./forgeConfig";
+import { getOutDirectory } from "./forgeConfig.js";
 
 export async function forgeBuild(options?: { clear?: boolean }) {
   if (options?.clear) {

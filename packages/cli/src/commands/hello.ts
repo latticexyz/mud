@@ -1,23 +1,28 @@
-import type { Arguments, CommandBuilder } from "yargs";
+import type { CommandModule } from "yargs";
 
 type Options = {
   name: string;
   upper: boolean | undefined;
 };
 
-export const command = "hello <name>";
-export const desc = "Greet <name> with Hello";
+const commandModule: CommandModule<Options, Options> = {
+  command: "hello <name>",
 
-export const builder: CommandBuilder<Options, Options> = (yargs) =>
-  yargs
-    .options({
-      upper: { type: "boolean" },
-    })
-    .positional("name", { type: "string", demandOption: true });
+  describe: "Greet <name> with Hello",
 
-export const handler = (argv: Arguments<Options>): void => {
-  const { name } = argv;
-  const greeting = `Gm, ${name}!`;
-  console.log(greeting);
-  process.exit(0);
+  builder(yargs) {
+    return yargs
+      .options({
+        upper: { type: "boolean" },
+      })
+      .positional("name", { type: "string", demandOption: true });
+  },
+
+  handler({ name }) {
+    const greeting = `Gm, ${name}!`;
+    console.log(greeting);
+    process.exit(0);
+  },
 };
+
+export default commandModule;
