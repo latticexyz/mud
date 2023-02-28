@@ -9,6 +9,7 @@ import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice } from "./Slice.sol";
 import { Hooks, HooksTableId } from "./tables/Hooks.sol";
+import { StoreMetadata } from "./tables/StoreMetadata.sol";
 import { IStoreHook } from "./IStore.sol";
 
 library StoreCore {
@@ -22,6 +23,7 @@ library StoreCore {
   error StoreCore_NotImplemented();
   error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
   error StoreCore_NoDynamicField();
+  error StoreCore_InvalidFieldNamesLength(uint256 expected, uint256 received);
 
   /**
    * Initialize internal tables.
@@ -30,8 +32,12 @@ library StoreCore {
    * (see https://github.com/latticexyz/mud/issues/444)
    */
   function initialize() internal {
+    // Register internal schema table
     registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
-    registerSchema(HooksTableId, Hooks.getSchema());
+
+    // Register other internal tables
+    Hooks.registerSchema();
+    StoreMetadata.registerSchema();
   }
 
   /************************************************************************
@@ -68,6 +74,26 @@ library StoreCore {
    */
   function getSchema(uint256 table) internal view returns (Schema schema) {
     return StoreCoreInternal._getSchema(table);
+  }
+
+  /**
+   * Set metadata for a given table
+   */
+  function setMetadata(
+    uint256 table,
+    string memory tableName,
+    string[] memory fieldNames
+  ) internal {
+    // Get schema of the given table
+    Schema schema = getSchema(table);
+
+    // Verify the number of field names corresponds to the schema length
+    if (!(fieldNames.length == 0 || fieldNames.length == schema.numFields())) {
+      revert StoreCore_InvalidFieldNamesLength(schema.numFields(), fieldNames.length);
+    }
+
+    // Set metadata
+    StoreMetadata.set(table, tableName, abi.encode(fieldNames));
   }
 
   /************************************************************************
