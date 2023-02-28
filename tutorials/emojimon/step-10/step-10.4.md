@@ -1,3 +1,7 @@
+---
+order: -10.4
+---
+
 # 10.4. Spawn monster in encounter
 
 Our player is in an encounter, but with no opponent. Let's fix that by spawning a monster.
@@ -83,7 +87,7 @@ import {
   defineStringComponent,
 } from "@latticexyz/std-client";
 …
-export const components = {
+export const contractComponents = {
   …
   MonsterType: defineNumberComponent(world, {
     metadata: {
@@ -98,13 +102,10 @@ export const components = {
 
 Let's pick a random monster type to spawn into the encounter with the player. Although it's not perfectly random, we'll use the same randomness approach for picking the monster that we used for triggering the encounter.
 
-```sol !#4,7,16-20 packages/contracts/src/systems/MoveSystem.sol
-import { MovableComponent, ID as MovableComponentID } from "components/MovableComponent.sol";
-import { EncounterableComponent, ID as EncounterableComponentID } from "components/EncounterableComponent.sol";
-import { EncounterComponent, ID as EncounterComponentID } from "components/EncounterComponent.sol";
-import { MonsterTypeComponent, ID as MonsterTypeComponentID } from "components/MonsterTypeComponent.sol";
+```sol !#2,4,13-17 packages/contracts/src/systems/MoveSystem.sol
 import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
-import { LibMap } from "../LibMap.sol";
+import { MonsterTypeComponent, ID as MonsterTypeComponentID } from "components/MonsterTypeComponent.sol";
+import { LibMap } from "libraries/LibMap.sol";
 import { MonsterType } from "../MonsterType.sol";
 …
 contract MoveSystem is System {

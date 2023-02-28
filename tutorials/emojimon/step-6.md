@@ -8,9 +8,9 @@ MUD's networking stack comes with a client-side `LoadingState` component to trac
 
 We'll need to make sure all of the world state is loaded in before we move on, so let's add a loading screen.
 
-```tsx !#1-3,7-16,20-26 packages/client/src/App.tsx
+```tsx !#1-3,7-16,20-24,26 packages/client/src/App.tsx
 import { SyncState } from "@latticexyz/network";
-import { useComponentValueStream } from "@latticexyz/std-client";
+import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { GameBoard } from "./GameBoard";
 
@@ -20,11 +20,11 @@ export const App = () => {
     singletonEntity,
   } = useMUD();
 
-  const loadingState = useComponentValueStream(LoadingState, singletonEntity) ?? {
+  const loadingState = useComponentValue(LoadingState, singletonEntity, {
     state: SyncState.CONNECTING,
     msg: "Connecting",
     percentage: 0,
-  };
+  });
 
   return (
     <div className="w-screen h-screen flex items-center justify-center">

@@ -2,6 +2,7 @@
 
 import { create } from "create-create-app";
 import { resolve } from "path";
+import packageJson from "../package.json";
 
 const templateRoot = resolve(__dirname, "..", "templates");
 
@@ -16,4 +17,11 @@ create("create-mud", {
   promptForLicense: false,
   promptForTemplate: true,
   caveat: ({ answers }) => `Done! Play in the MUD with \`cd ${answers.name}\` and \`yarn dev\``,
+  extra: {
+    "mud-version": {
+      type: "input",
+      describe: "The version of MUD packages to use, defaults to latest",
+      default: packageJson.version,
+    },
+  },
 });
