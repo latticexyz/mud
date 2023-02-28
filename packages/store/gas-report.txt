@@ -21,9 +21,6 @@
 (test/PackedCounter.t.sol) | set value at index of PackedCounter [packedCounter = packedCounter.setAtIndex(2, 5)]: 830
 (test/PackedCounter.t.sol) | pack uint16 array into PackedCounter [PackedCounter packedCounter = PackedCounterLib.pack(counters)]: 2148
 (test/PackedCounter.t.sol) | get total of PackedCounter [packedCounter.total()]: 33
-(test/Route.t.sol) | register Route schema [Route.registerSchema()]: 33867
-(test/Route.t.sol) | set Route record [Route.set(key, addr, selector, executionMode)]: 37691
-(test/Route.t.sol) | get Route record [RouteData memory systemEntry = Route.get(key)]: 6077
 (test/Schema.t.sol) | encode schema with 6 entries [SchemaLib.encode]: 6044
 (test/Schema.t.sol) | get schema type at index [SchemaType schemaType1 = schema.atIndex(0)]: 200
 (test/Schema.t.sol) | get number of dynamic fields from schema [uint256 num = schema.numDynamicFields()]: 80
@@ -55,12 +52,12 @@
 (test/StoreCore.t.sol) | check for existence of table (non-existent) [StoreCore.hasTable(table2)]: 2963
 (test/StoreCore.t.sol) | register subscriber [StoreCore.registerStoreHook(table, subscriber)]: 69041
 (test/StoreCore.t.sol) | set record on table with subscriber [StoreCore.setRecord(table, key, data)]: 72422
-(test/StoreCore.t.sol) | set static field on table with subscriber [StoreCore.setField(table, key, 0, data)]: 28099
-(test/StoreCore.t.sol) | delete record on table with subscriber [StoreCore.deleteRecord(table, key)]: 22869
+(test/StoreCore.t.sol) | set static field on table with subscriber [StoreCore.setField(table, key, 0, data)]: 28121
+(test/StoreCore.t.sol) | delete record on table with subscriber [StoreCore.deleteRecord(table, key)]: 22891
 (test/StoreCore.t.sol) | register subscriber [StoreCore.registerStoreHook(table, subscriber)]: 69041
 (test/StoreCore.t.sol) | set (dynamic) record on table with subscriber [StoreCore.setRecord(table, key, data)]: 165867
-(test/StoreCore.t.sol) | set (dynamic) field on table with subscriber [StoreCore.setField(table, key, 1, arrayDataBytes)]: 30942
-(test/StoreCore.t.sol) | delete (dynamic) record on table with subscriber [StoreCore.deleteRecord(table, key)]: 24517
+(test/StoreCore.t.sol) | set (dynamic) field on table with subscriber [StoreCore.setField(table, key, 1, arrayDataBytes)]: 30964
+(test/StoreCore.t.sol) | delete (dynamic) record on table with subscriber [StoreCore.deleteRecord(table, key)]: 24539
 (test/StoreCore.t.sol) | StoreCore: register schema [StoreCore.registerSchema(table, schema)]: 30019
 (test/StoreCore.t.sol) | StoreCore: get schema (warm) [Schema loadedSchema = StoreCore.getSchema(table)]: 909
 (test/StoreCore.t.sol) | set complex record with dynamic data (4 slots) [StoreCore.setRecord(table, key, data)]: 106949
@@ -82,7 +79,10 @@
 (test/StoreCore.t.sol) | get static record (1 slot) [bytes memory loadedData = StoreCore.getRecord(table, key, schema)]: 1324
 (test/StoreCore.t.sol) | set static record (2 slots) [StoreCore.setRecord(table, key, data)]: 59182
 (test/StoreCore.t.sol) | get static record (2 slots) [bytes memory loadedData = StoreCore.getRecord(table, key, schema)]: 1574
-(test/StoreSwitch.t.sol) | check if delegatecall [isDelegate = StoreSwitch.isDelegateCall()]: 671
+(test/StoreCore.t.sol) | StoreCore: set table metadata [StoreCore.setMetadata(table, tableName, fieldNames)]: 250504
+(test/StoreMetadata.t.sol) | set record in StoreMetadataTable [StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) })]: 249219
+(test/StoreMetadata.t.sol) | get record from StoreMetadataTable [StoreMetadataData memory metadata = StoreMetadata.get(tableId)]: 12045
+(test/StoreSwitch.t.sol) | check if delegatecall [isDelegate = StoreSwitch.isDelegateCall()]: 693
 (test/StoreSwitch.t.sol) | check if delegatecall [isDelegate = StoreSwitch.isDelegateCall()]: 627
 (test/Vector2.t.sol) | register Vector2 schema [Vector2.registerSchema()]: 31876
 (test/Vector2.t.sol) | set Vector2 record [Vector2.set({ key: key, x: 1, y: 2 })]: 37637

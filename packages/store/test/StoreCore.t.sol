@@ -13,7 +13,7 @@ import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreView } from "../src/StoreView.sol";
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { StoreMetadata, StoreMetadataTable } from "../src/tables/StoreMetadataTable.sol";
+import { StoreMetadataData, StoreMetadata } from "../src/tables/StoreMetadata.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -109,7 +109,7 @@ contract StoreCoreTest is Test, StoreView {
     StoreCore.setMetadata(table, tableName, fieldNames);
 
     // Get metadata for table
-    StoreMetadata memory metadata = StoreMetadataTable.get(table);
+    StoreMetadataData memory metadata = StoreMetadata.get(table);
 
     assertEq(metadata.tableName, tableName);
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));

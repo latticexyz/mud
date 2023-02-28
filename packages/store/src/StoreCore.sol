@@ -9,7 +9,7 @@ import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice } from "./Slice.sol";
 import { Hooks, HooksTableId } from "./tables/Hooks.sol";
-import { StoreMetadataTable } from "./tables/StoreMetadataTable.sol";
+import { StoreMetadata } from "./tables/StoreMetadata.sol";
 import { IStoreHook } from "./IStore.sol";
 
 library StoreCore {
@@ -37,7 +37,7 @@ library StoreCore {
 
     // Register other internal tables
     Hooks.registerSchema();
-    StoreMetadataTable.registerSchema();
+    StoreMetadata.registerSchema();
   }
 
   /************************************************************************
@@ -93,7 +93,7 @@ library StoreCore {
     }
 
     // Set metadata
-    StoreMetadataTable.set(table, tableName, fieldNames);
+    StoreMetadata.set(table, tableName, abi.encode(fieldNames));
   }
 
   /************************************************************************

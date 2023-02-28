@@ -8,6 +8,16 @@ const config: StoreUserConfig = {
   tables: {
     Hooks: SchemaType.ADDRESS_ARRAY,
     Callbacks: SchemaType.BYTES24_ARRAY,
+    StoreMetadata: {
+      primaryKeys: {
+        tableId: SchemaType.UINT256,
+      },
+      schema: {
+        tableName: SchemaType.STRING,
+        abiEncodedFieldNames: SchemaType.BYTES,
+      },
+      storeArgument: true,
+    },
     Mixed: {
       schema: {
         u32: SchemaType.UINT32,

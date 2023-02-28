@@ -7,7 +7,7 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/store/src/Types.sol";
-import { StoreMetadata, StoreMetadataTable } from "@latticexyz/store/src/tables/StoreMetadataTable.sol";
+import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/tables/StoreMetadata.sol";
 
 import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";
 import { System } from "../src/System.sol";
@@ -237,13 +237,13 @@ contract WorldTest is Test {
     world.setMetadata("/test", tableName, fieldNames);
 
     // Expect the metadata to be set
-    StoreMetadata memory metadata = StoreMetadataTable.get(world, uint256(keccak256("/test")));
+    StoreMetadataData memory metadata = StoreMetadata.get(world, uint256(keccak256("/test")));
     assertEq(metadata.tableName, tableName);
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
 
     // Expect it to be possible to change metadata
     world.setMetadata("/test", "newTableName", fieldNames);
-    metadata = StoreMetadataTable.get(world, uint256(keccak256("/test")));
+    metadata = StoreMetadata.get(world, uint256(keccak256("/test")));
     assertEq(metadata.tableName, "newTableName");
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
 
