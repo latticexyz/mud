@@ -69,7 +69,7 @@ export interface StoreUserConfig {
 }
 
 interface FullTableConfig {
-  /** Output path for the file, also used to make table id. Default is "tables/" */
+  /** Output path for the file, and relevant for the table id. The table id will be keccak256(concat(baseRoute,route,tableName)). Default is "tables/" */
   route?: string;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
   tableIdArgument?: boolean;
