@@ -1,54 +1,47 @@
-// Based on hardhat's errors and errors-list (MIT)
-// https://github.com/NomicFoundation/hardhat/tree/main/packages/hardhat-core
+import chalk from "chalk";
+import { ZodError } from "zod";
+import { fromZodError, ValidationError } from "zod-validation-error";
 
-export interface ErrorDescriptor {
-  message: (...args: string[]) => string;
-  description: string;
+// Wrapper with preset styles, only requires a `prefix`
+export function fromZodErrorCustom(error: ZodError, prefix: string) {
+  return fromZodError(error, {
+    prefix: chalk.red(prefix),
+    prefixSeparator: "\n- ",
+    issueSeparator: "\n- ",
+  });
 }
 
-export class CustomError extends Error {
-  constructor(message: string, public readonly parent?: Error) {
-    super(message);
-
-    this.name = this.constructor.name;
-  }
+export class NotInsideProjectError extends Error {
+  name = "NotInsideProjectError";
+  message = "You are not inside a MUD project";
 }
 
-export class MUDError extends CustomError {
-  public static isMUDError(other: any): other is MUDError {
-    return other !== undefined && other !== null && other._isMUDError === true;
-  }
-
-  public readonly errorDescriptor: ErrorDescriptor;
-
-  private readonly _isMUDError: boolean;
-
-  constructor(errorDescriptor: ErrorDescriptor, messageArguments: string[] = [], parentError?: Error) {
-    super(errorDescriptor.message(...messageArguments), parentError);
-
-    this.errorDescriptor = errorDescriptor;
-
-    this._isMUDError = true;
-  }
+export class NotESMConfigError extends Error {
+  name = "NotESMConfigError";
+  message = "MUD config must be an ES module";
 }
 
-export const ERRORS: { [key: string]: ErrorDescriptor } = {
-  //  on how to add the config file
-  NOT_INSIDE_PROJECT: {
-    message: () => `You are not inside a MUD project.`,
-    description: `You are trying to run MUD outside of a MUD project.
-    
-To learn more about MUD's configuration, please go to [TODO link to docs]`,
-  },
-
-  INVALID_CONFIG: {
-    message: (...errors: string[]) => `There's one or more errors in your config file:
-
-  ${errors.join("\n  ")}
-
-To learn more about MUD's configuration, please go to [TODO link to docs]`,
-    description: `You have one or more errors in your config file.
-
-Check the error message for details, or [TODO link to docs]`,
-  },
-};
+export function logError(error: Error) {
+  if (error instanceof ValidationError) {
+    console.log(chalk.redBright(error.message));
+  } else if (error instanceof ZodError) {
+    // TODO currently this error shouldn't happen, use `fromZodErrorCustom`
+    const validationError = fromZodError(error, {
+      prefixSeparator: "\n- ",
+      issueSeparator: "\n- ",
+    });
+    console.log(chalk.redBright(validationError.message));
+  } else if (error instanceof NotInsideProjectError) {
+    console.log(chalk.red(error.message));
+    console.log("");
+    console.log(chalk.blue(`To learn more about MUD's configuration, please go to [TODO link to docs]`));
+  } else if (error instanceof NotESMConfigError) {
+    console.log(chalk.red(error.message));
+    console.log("");
+    console.log(
+      chalk.blue(`Please name your config file \`mud.config.mts\`, or use \`type: "module"\` in package.json`)
+    );
+  } else {
+    console.log(error);
+  }
+}

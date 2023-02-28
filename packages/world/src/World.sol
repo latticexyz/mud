@@ -7,7 +7,7 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { RouteOwnerTable } from "./tables/RouteOwnerTable.sol";
-import { RouteAccessTable } from "./tables/RouteAccessTable.sol";
+import { RouteAccess } from "./tables/RouteAccess.sol";
 import { RouteTable } from "./tables/RouteTable.sol";
 import { SystemRouteTable } from "./tables/SystemRouteTable.sol";
 import { SystemTable } from "./tables/SystemTable.sol";
@@ -26,14 +26,14 @@ contract World is Store {
   constructor() {
     SystemTable.registerSchema();
     RouteTable.registerSchema();
-    RouteAccessTable.registerSchema();
+    RouteAccess.registerSchema();
     SystemRouteTable.registerSchema();
     RouteOwnerTable.registerSchema();
 
     // Register root route and give ownership to msg.sender
     RouteTable.set({ routeId: ROOT_ROUTE_ID, route: "" }); // Storing this explicitly to trigger the event for indexers
     RouteOwnerTable.set({ routeId: ROOT_ROUTE_ID, owner: msg.sender });
-    RouteAccessTable.set({ routeId: ROOT_ROUTE_ID, caller: msg.sender, access: true });
+    RouteAccess.set({ routeId: ROOT_ROUTE_ID, caller: msg.sender, value: true });
   }
 
   /************************************************************************
@@ -67,7 +67,7 @@ contract World is Store {
     RouteOwnerTable.set({ routeId: routeId, owner: msg.sender });
 
     // Give caller access to the route
-    RouteAccessTable.set({ routeId: routeId, caller: msg.sender, access: true });
+    RouteAccess.set({ routeId: routeId, caller: msg.sender, value: true });
   }
 
   /**
@@ -150,7 +150,7 @@ contract World is Store {
     SystemRouteTable.set({ system: address(system), routeId: systemRouteId });
 
     // Give the system access to its base route
-    RouteAccessTable.set({ routeId: baseRouteId, caller: address(system), access: true });
+    RouteAccess.set({ routeId: baseRouteId, caller: address(system), value: true });
   }
 
   /**
@@ -162,7 +162,7 @@ contract World is Store {
     if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
 
     // Grant access to the given route
-    RouteAccessTable.set({ routeId: routeId, caller: grantee, access: true });
+    RouteAccess.set({ routeId: routeId, caller: grantee, value: true });
   }
 
   /**
@@ -174,7 +174,7 @@ contract World is Store {
     if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
 
     // Retract access to the given route
-    RouteAccessTable.deleteRecord({ routeId: routeId, caller: grantee });
+    RouteAccess.deleteRecord({ routeId: routeId, caller: grantee });
   }
 
   /************************************************************************
@@ -379,7 +379,7 @@ contract World is Store {
   }
 
   function _hasAccess(uint256 routeId, address caller) internal view returns (bool) {
-    return RouteAccessTable.get(routeId, caller);
+    return RouteAccess.get(routeId, caller);
   }
 }
 

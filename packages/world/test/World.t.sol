@@ -9,8 +9,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { RouteOwnerTable } from "../src/tables/RouteOwnerTable.sol";
-import { RouteAccessTable } from "../src/tables/RouteAccessTable.sol";
-import { RouteAccessSchemaLib } from "../src/schemas/RouteAccessSchema.sol";
+import { RouteAccess } from "../src/tables/RouteAccess.sol";
 import { SystemTable } from "../src/tables/SystemTable.sol";
 import { BoolSchemaLib } from "../src/schemas/Bool.sol";
 
@@ -170,10 +169,10 @@ contract WorldTest is Test {
     assertEq(routeOwner, address(this));
 
     // The new route should be accessible by the caller
-    assertTrue(RouteAccessTable.get({ store: world, routeId: uint256(keccak256("/test")), caller: address(this) }));
+    assertTrue(RouteAccess.get({ _store: world, routeId: uint256(keccak256("/test")), caller: address(this) }));
 
     // The new route should not be accessible by another address
-    assertFalse(RouteAccessTable.get({ store: world, routeId: uint256(keccak256("/test")), caller: address(0x01) }));
+    assertFalse(RouteAccess.get({ _store: world, routeId: uint256(keccak256("/test")), caller: address(0x01) }));
 
     // Expect an error when registering an existing route
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/test"));
@@ -189,32 +188,32 @@ contract WorldTest is Test {
   }
 
   function testRegisterTable() public {
-    uint256 tableId = world.registerTable("", "/testRouteAccess", RouteAccessSchemaLib.getSchema());
+    uint256 tableId = world.registerTable("", "/testRouteAccess", RouteAccess.getSchema());
 
     // Expect the table to be registered
-    assertEq(world.getSchema(tableId).unwrap(), RouteAccessSchemaLib.getSchema().unwrap());
+    assertEq(world.getSchema(tableId).unwrap(), RouteAccess.getSchema().unwrap());
 
     // Expect the table's route to be owned by the caller
     address routeOwner = RouteOwnerTable.get(world, tableId);
     assertEq(routeOwner, address(this));
 
     // The new table should be accessible by the caller
-    assertTrue(RouteAccessTable.get({ store: world, routeId: tableId, caller: address(this) }));
+    assertTrue(RouteAccess.get({ _store: world, routeId: tableId, caller: address(this) }));
 
     // The new table should not be accessible by another address
-    assertFalse(RouteAccessTable.get({ store: world, routeId: tableId, caller: address(0x01) }));
+    assertFalse(RouteAccess.get({ _store: world, routeId: tableId, caller: address(0x01) }));
 
     // Expect an error when registering an existing table
     vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/testRouteAccess"));
-    world.registerTable("", "/testRouteAccess", RouteAccessSchemaLib.getSchema());
+    world.registerTable("", "/testRouteAccess", RouteAccess.getSchema());
 
     // Expect an error when registering an invalid table route
     vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "invalid/route"));
-    world.registerTable("", "invalid/route", RouteAccessSchemaLib.getSchema());
+    world.registerTable("", "invalid/route", RouteAccess.getSchema());
 
     // Expect an error when extending a route that doesn't exist
     vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "/invalid"));
-    world.registerTable("/invalid", "/test", RouteAccessSchemaLib.getSchema());
+    world.registerTable("/invalid", "/test", RouteAccess.getSchema());
   }
 
   function testRegisterSystem() public {
@@ -233,13 +232,13 @@ contract WorldTest is Test {
     assertFalse(publicAccess);
 
     // Expect the system to be accessible by the caller
-    assertTrue(RouteAccessTable.get({ store: world, routeId: systemRouteId, caller: address(this) }));
+    assertTrue(RouteAccess.get({ _store: world, routeId: systemRouteId, caller: address(this) }));
 
     // Expect the system to not be accessible by another address
-    assertFalse(RouteAccessTable.get({ store: world, routeId: systemRouteId, caller: address(0x01) }));
+    assertFalse(RouteAccess.get({ _store: world, routeId: systemRouteId, caller: address(0x01) }));
 
     // Expect the system to have access to its own base route
-    assertTrue(RouteAccessTable.get({ store: world, routeId: uint256(keccak256(bytes(""))), caller: address(system) }));
+    assertTrue(RouteAccess.get({ _store: world, routeId: uint256(keccak256(bytes(""))), caller: address(system) }));
 
     // Expect an error when registering an existing system
     vm.expectRevert(abi.encodeWithSelector(World.SystemExists.selector, address(system)));

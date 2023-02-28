@@ -1,10 +1,9 @@
 #!/usr/bin/env -S TS_NODE_COMPILER_OPTIONS={\"module\":\"esnext\"} node --loader=ts-node/esm --no-warnings
 
-import chalk from "chalk";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { commands } from "./commands/index.js";
-import { MUDError } from "./utils/errors.js";
+import { logError } from "./utils/errors.js";
 
 yargs(hideBin(process.argv))
   // Explicit name to display in help (by default it's the entry file, which may not be "mud" for e.g. ts-node)
@@ -16,15 +15,10 @@ yargs(hideBin(process.argv))
   .strict()
   // Custom error handler
   .fail((msg, err) => {
-    if (MUDError.isMUDError(err)) {
-      console.log("");
-      console.log(chalk.red(err.message));
-      console.log("");
-    } else {
-      console.log("");
-      console.log(err);
-      console.log("");
-    }
+    console.log("");
+    logError(err);
+    console.log("");
+
     process.exit(1);
   })
   // Useful aliases.
