@@ -1,9 +1,13 @@
 {
+  "include": ["./types"],
   "compilerOptions": {
-    /* Visit https://aka.ms/tsconfig.json to read more about this file */
+    "strict": true,
+    "lib": ["esnext"],
     "target": "es2019",
     "moduleResolution": "node",
     "types": ["node", "mocha"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true
   }
 }

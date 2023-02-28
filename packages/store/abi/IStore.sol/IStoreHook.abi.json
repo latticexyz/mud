@@ -1,0 +1,71 @@
+[
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "table",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "onDeleteRecord",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "table",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "onSetField",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "table",
+        "type": "uint256"
+      },
+      {
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "onSetRecord",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  }
+]

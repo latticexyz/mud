@@ -1,10 +1,14 @@
-cache
-abi
-out
-types/ethers-contracts
 docs
 _docs
 DOCS.md
 artifacts
 yarn-error.log
 API
+
+# forge output
+cache
+out
+broadcast
+# only check in ABIs
+abi/**/*.json
+!abi/**/*.abi.json

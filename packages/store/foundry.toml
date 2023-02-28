@@ -7,3 +7,4 @@ verbosity = 1
 libs = ["../../node_modules"]
 src = "src"
 out = "out"
+extra_output_files = ['abi']
