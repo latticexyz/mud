@@ -1,8 +1,4 @@
 import type { CommandModule } from "yargs";
-import { writeFileSync } from "fs";
-import path from "path";
-import { loadStoreConfig } from "../config/loadStoreConfig.js";
-import { renderTables } from "../utils/tablegen.js";
 import { getSrcDirectory } from "../utils/forgeConfig.js";
 import { loadWorldConfig } from "../config/loadWorldConfig.js";
 
@@ -11,7 +7,7 @@ type Options = {
 };
 
 const commandModule: CommandModule<Options, Options> = {
-  command: "deploy2",
+  command: "deploy-v2",
 
   describe: "Deploy MUD v2 contracts",
 
@@ -22,9 +18,11 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler({ configPath }) {
-    const srcDir = await getSrcDirectory();
+    // const srcDir = await getSrcDirectory();
 
     const config = await loadWorldConfig(configPath);
+
+    console.log("Loaded config", config);
 
     process.exit(0);
   },
