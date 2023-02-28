@@ -10,6 +10,7 @@
     "directory": "packages/store"
   },
   "scripts": {
+    "prepare": "echo",
     "codegen": "ts-node ./scripts/codegen.ts",
     "tablegen": "../cli/dist/mud.js tablegen",
     "test": "yarn codegen && forge test",
