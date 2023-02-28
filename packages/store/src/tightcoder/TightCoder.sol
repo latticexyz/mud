@@ -10,6 +10,7 @@ library TightCoder {
    * tightly packing it using the given size per element (in bytes)
    *
    * TODO this function is currently not used externally and will be changed in the future
+   * (see https://github.com/latticexyz/mud/issues/444)
    */
   function _encodeToLocation(
     bytes32[] memory array,
@@ -22,6 +23,7 @@ library TightCoder {
     uint256 shiftLeft = leftAligned ? 0 : 256 - elementSize * 8;
 
     // TODO temporary check to catch bugs, either remove it or use a custom error
+    // (see https://github.com/latticexyz/mud/issues/444)
     uint256 packedLength = arrayLength * elementSize;
     if (packedLength > packedSlice.length()) {
       revert("packFromArray: insufficient allocated packedSlice length");
@@ -78,6 +80,7 @@ library TightCoder {
     }
 
     // TODO temporary check to catch bugs, either remove it or use a custom error
+    // (see https://github.com/latticexyz/mud/issues/444)
     if (packedLength % elementSize != 0) {
       revert("unpackToArray: packedLength must be a multiple of elementSize");
     }

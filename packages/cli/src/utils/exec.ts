@@ -11,6 +11,7 @@ export function execLog(command: string, options: string[]) {
   console.log([command, ...options].join(" "));
 
   // TODO piping outputs and doing custom logging would be better for readability
+  // (see https://github.com/latticexyz/mud/issues/446)
   return execa(command, options, {
     stdio: ["inherit", "inherit", "inherit"],
   });

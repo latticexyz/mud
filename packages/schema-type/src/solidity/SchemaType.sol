@@ -5,7 +5,7 @@ using { getStaticByteLength } for SchemaType global;
 
 // WARNING: All enum changes MUST be mirrored for the other languages!
 // WARNING: SchemaType methods use hardcoded enum indexes, review them after any changes to the enum
-// TODO add and implement BYTES_ARRAY, STRING_ARRAY if they are needed (they are special nested arrays)
+// TODO add and implement BYTES_ARRAY, STRING_ARRAY if they are needed (see https://github.com/latticexyz/mud/issues/447)
 enum SchemaType {
   UINT8,
   UINT16,

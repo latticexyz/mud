@@ -537,6 +537,7 @@ contract WorldTest is Test {
   }
 
   // TODO: add a test for systems writing to tables via the World
+  // (see https://github.com/latticexyz/mud/issues/444)
 
   function testHashEquality() public {
     // bytes32 h1 = uint256(keccak256("testHashEquality"));

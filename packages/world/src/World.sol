@@ -121,7 +121,7 @@ contract World is Store {
    * Register a hook for a given system route
    */
   function registerSystemHook(string calldata systemRoute, ISystemHook hook) public {
-    // TODO
+    // TODO implement (see https://github.com/latticexyz/mud/issues/444)
   }
 
   /**

@@ -6,6 +6,7 @@ import { Utils } from "./Utils.sol";
 
 /**
  * TODO Probably not fully optimized
+ * (see https://github.com/latticexyz/mud/issues/444)
  */
 library Storage {
   function store(uint256 storagePointer, bytes memory data) internal {
@@ -135,6 +136,7 @@ library Storage {
     uint256 offset
   ) internal view returns (bytes memory result) {
     // TODO this will probably use less gas via manual memory allocation
+    // (see https://github.com/latticexyz/mud/issues/444)
     result = new bytes(length);
     uint256 memoryPointer;
     assembly {

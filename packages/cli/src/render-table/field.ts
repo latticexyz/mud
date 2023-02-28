@@ -48,6 +48,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
     `;
 
     // TODO: this is super inefficient right now, need to add support for pushing to arrays to the store core library to avoid reading/writing the entire array
+    // (see https://github.com/latticexyz/mud/issues/438)
     if (field.isDynamic) {
       const portionData = fieldPortionData(field);
 

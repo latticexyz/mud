@@ -27,6 +27,7 @@ library StoreCore {
    * Initialize internal tables.
    * Consumers must call this function in their constructor.
    * TODO: should we turn the schema table into a "proper table" and register it here?
+   * (see https://github.com/latticexyz/mud/issues/444)
    */
   function initialize() internal {
     registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));

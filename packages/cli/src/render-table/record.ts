@@ -43,6 +43,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
     bytes memory _data = abi.encodePacked(${renderArguments([
       renderArguments(staticFields.map(({ name }) => name)),
       // TODO try gas optimization (preallocate for all, encodePacked statics, and direct encode dynamics)
+      // (see https://github.com/latticexyz/mud/issues/444)
       ...(dynamicFields.length === 0
         ? []
         : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeField(field)))]),
