@@ -26,13 +26,6 @@ const config: StoreUserConfig = {
         s: SchemaType.STRING,
       },
     },
-    Route: {
-      schema: {
-        addr: SchemaType.ADDRESS,
-        selector: SchemaType.BYTES4,
-        executionMode: SchemaType.UINT8,
-      },
-    },
     Vector2: {
       schema: {
         x: SchemaType.UINT32,
