@@ -2,9 +2,6 @@ import { findUp } from "find-up";
 import path from "path";
 import { NotESMConfigError, NotInsideProjectError } from "../utils/errors.js";
 
-// Based on hardhat's config (MIT)
-// https://github.com/NomicFoundation/hardhat/tree/main/packages/hardhat-core
-
 // In order of preference files are checked
 const configFiles = ["mud.config.ts", "mud.config.mts"];
 
