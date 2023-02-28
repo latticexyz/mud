@@ -23,7 +23,7 @@
     "link": "yarn link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish || echo 'version already published'",
-    "gasreport": "mud gas-report --path test/** --save gas-report.txt"
+    "gas-report": "mud gas-report --path test/** --save gas-report.txt"
   },
   "devDependencies": {
     "@latticexyz/cli": "^1.37.1",

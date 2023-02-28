@@ -21,6 +21,17 @@ contract StoreView is Store {
   /**
    * Not implemented in StoreView
    */
+  function setMetadata(
+    uint256,
+    string calldata,
+    string[] calldata
+  ) public virtual {
+    revert StoreView_NotImplemented();
+  }
+
+  /**
+   * Not implemented in StoreView
+   */
   function setRecord(
     uint256,
     bytes32[] calldata,
