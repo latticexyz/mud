@@ -1,12 +1,12 @@
 import type { CommandModule } from "yargs";
-import { execLog, extractIdFromFile, keccak256 } from "../utils/index.js";
+import { execLog, extractIdFromFile, keccak256 } from "../../utils/deprecated/index.js";
 import { readFileSync } from "fs";
 import { Contract } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import WorldAbi from "@latticexyz/solecs/abi/World.json" assert { type: "json" };
-import { getSrcDirectory } from "../utils/forgeConfig.js";
+import { getSrcDirectory } from "../../utils/forgeConfig.js";
 import path from "path";
-import { componentsDir, systemsDir } from "../utils/constants.js";
+import { componentsDir, systemsDir } from "../../utils/deprecated/constants.js";
 
 type Options = {
   config?: string;

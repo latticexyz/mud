@@ -1,8 +1,8 @@
 import type { CommandModule } from "yargs";
-import { DeployOptions, generateAndDeploy, hsr } from "../utils/index.js";
+import { DeployOptions, generateAndDeploy, hsr } from "../../utils/deprecated/index.js";
 import openurl from "openurl";
 import chalk from "chalk";
-import { getSrcDirectory } from "../utils/forgeConfig.js";
+import { getSrcDirectory } from "../../utils/forgeConfig.js";
 
 type Options = DeployOptions & {
   watch?: boolean;

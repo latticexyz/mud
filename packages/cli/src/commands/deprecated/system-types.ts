@@ -1,6 +1,6 @@
 import type { CommandModule } from "yargs";
-import { generateSystemTypes } from "../utils/index.js";
-import { systemsDir } from "../utils/constants.js";
+import { generateSystemTypes } from "../../utils/deprecated/index.js";
+import { systemsDir } from "../../utils/deprecated/constants.js";
 
 type Options = {
   outputDir: string;
