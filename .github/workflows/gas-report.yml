@@ -1,0 +1,54 @@
+name: Gas report
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    paths:
+      - packages/store/**
+      - packages/world/**
+
+jobs:
+  gas-report:
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        node-version: [16.x]
+    runs-on: ${{ matrix.os }}
+
+    name: Generate gas report
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "yarn"
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: yarn install --network-concurrency 1
+
+      - name: Build and install CLI
+        working-directory: packages/cli
+        run: yarn build && yarn link
+
+      - name: Generate gas reports
+        run: yarn gas-report
+
+      - name: Outdated files detected, run `yarn gas-report` and commit them
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git status
+            git --no-pager diff
+            exit 1
+          fi
