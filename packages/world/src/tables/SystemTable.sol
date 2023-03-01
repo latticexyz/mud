@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { IStore } from "@latticexyz/store/src/IStore.sol";
-import { SchemaType } from "@latticexyz/store/src/Types.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { SystemSchemaLib as SchemaLib } from "../schemas/SystemSchema.sol";
 

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Slice, SliceLib } from "../Slice.sol";
-import { SchemaType } from "../Types.sol";
 
 library TightCoder {
   /**
