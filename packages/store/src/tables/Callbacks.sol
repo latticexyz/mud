@@ -14,7 +14,7 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/store_internals/tables/Callbacks"));
+uint256 constant _tableId = uint256(keccak256("/Callbacks"));
 uint256 constant CallbacksTableId = _tableId;
 
 library Callbacks {

@@ -14,7 +14,7 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/store_internals/tables/Hooks"));
+uint256 constant _tableId = uint256(keccak256("/Hooks"));
 uint256 constant HooksTableId = _tableId;
 
 library Hooks {
