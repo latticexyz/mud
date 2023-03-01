@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { SliceLib } from "../../src/Slice.sol";
 import { EncodeArray } from "../../src/tightcoder/EncodeArray.sol";
-import { SchemaType } from "../../src/Types.sol";
 
 contract TightCoderTest is Test {
   function testFromAndToUint32Array() public {

@@ -2,11 +2,12 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
+
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
-import { SchemaType } from "@latticexyz/store/src/Types.sol";
 import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/tables/StoreMetadata.sol";
 
 import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";

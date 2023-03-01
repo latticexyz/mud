@@ -2,7 +2,6 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
-import { SchemaType } from "./Types.sol";
 import { IStore } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";

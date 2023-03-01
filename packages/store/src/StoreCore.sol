@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+
+import { console } from "forge-std/console.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Bytes } from "./Bytes.sol";
-import { SchemaType } from "./Types.sol";
 import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
-import { console } from "forge-std/console.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice } from "./Slice.sol";

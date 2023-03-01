@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
-import { SchemaType } from "../src/Types.sol";
 
 // TODO add tests for all schema types
 contract SchemaTest is Test {
