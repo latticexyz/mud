@@ -124,7 +124,19 @@ export async function parseStoreConfig(config: unknown) {
 
 // Validate conditions that check multiple different config options simultaneously
 function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx: RefinementCtx) {
-  // global names must be unique
+  // Local table variables must be unique within the table
+  for (const table of Object.values(config.tables)) {
+    const primaryKeyNames = Object.keys(table.primaryKeys);
+    const fieldNames = Object.keys(table.schema);
+    const duplicateVariableNames = getDuplicates([...primaryKeyNames, ...fieldNames]);
+    if (duplicateVariableNames.length > 0) {
+      ctx.addIssue({
+        code: ZodIssueCode.custom,
+        message: `Field and primary key names within one table must be unique: ${duplicateVariableNames.join(", ")}`,
+      });
+    }
+  }
+  // Global names must be unique
   const tableNames = Object.keys(config.tables);
   const userTypeNames = Object.keys(config.userTypes.enums);
   const globalNames = [...tableNames];
@@ -135,7 +147,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
       message: `Table and enum names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
     });
   }
-  // user types must exist
+  // User types must exist
   for (const table of Object.values(config.tables)) {
     for (const primaryKeyType of Object.values(table.primaryKeys)) {
       validateIfUserType(userTypeNames, primaryKeyType, ctx);
