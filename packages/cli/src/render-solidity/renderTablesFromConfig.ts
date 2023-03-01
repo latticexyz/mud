@@ -1,15 +1,15 @@
 import path from "path";
 import { renderTable } from "./renderTable.js";
-import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
+import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/parseStoreConfig.js";
 import {
+  ImportDatum,
   RenderTableDynamicField,
   RenderTableField,
   RenderTablePrimaryKey,
   RenderTableStaticField,
-  RenderTableType,
 } from "./types.js";
-import { resolveSchemaOrUserType } from "./userType.js";
+import { getSchemaTypeInfo, resolveSchemaOrUserType } from "./userType.js";
 
 export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string) {
   const storeImportPath = config.storeImportPath;
@@ -25,42 +25,45 @@ export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string
     const withRecordMethods = withStruct || Object.keys(tableData.schema).length > 1;
     // field methods can be simply get/set if there's only 1 field and no record methods
     const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
+    // list of any symbols that need to be imported
+    const imports: ImportDatum[] = [];
 
     const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
       const schemaOrUserType = tableData.primaryKeys[name];
-      const { schemaType, userTypeDetails } = resolveSchemaOrUserType(
+      const { renderTableType, importDatum } = resolveSchemaOrUserType(
         schemaOrUserType,
+        srcDirectory,
         outputDirectory,
         config.userTypes
       );
+      if (importDatum) imports.push(importDatum);
 
-      const typeInfo = getSchemaTypeInfo(schemaType);
-      if (typeInfo.isDynamic) throw new Error("Parsing error: found dynamic primary key");
+      if (renderTableType.isDynamic) throw new Error("Parsing error: found dynamic primary key");
 
       const primaryKey: RenderTablePrimaryKey = {
-        ...typeInfo,
+        ...renderTableType,
         name,
         isDynamic: false,
-        userTypeDetails,
       };
       return primaryKey;
     });
 
     const fields = Object.keys(tableData.schema).map((name) => {
       const schemaOrUserType = tableData.schema[name];
-      const { schemaType, userTypeDetails } = resolveSchemaOrUserType(
+      const { renderTableType, importDatum, schemaType } = resolveSchemaOrUserType(
         schemaOrUserType,
+        srcDirectory,
         outputDirectory,
         config.userTypes
       );
+      if (importDatum) imports.push(importDatum);
 
       const elementType = SchemaTypeArrayToElement[schemaType];
       const field: RenderTableField = {
-        ...getSchemaTypeInfo(schemaType),
-        arrayElement: elementType ? getSchemaTypeInfo(elementType) : undefined,
+        ...renderTableType,
+        arrayElement: elementType !== undefined ? getSchemaTypeInfo(elementType) : undefined,
         name,
         methodNameSuffix: noFieldMethodSuffix ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
-        userTypeDetails,
       };
       return field;
     });
@@ -87,6 +90,7 @@ export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string
       tableName,
       tableData,
       output: renderTable({
+        imports,
         libraryName: tableName,
         structName: withStruct ? tableName + "Data" : undefined,
         staticRouteData,
@@ -101,17 +105,4 @@ export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string
     });
   }
   return renderedTables;
-}
-
-export function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
-  const staticByteLength = getStaticByteLength(schemaType);
-  const isDynamic = staticByteLength === 0;
-  const typeId = SchemaTypeId[schemaType];
-  return {
-    typeId,
-    typeWithLocation: isDynamic ? typeId + " memory" : typeId,
-    enumName: SchemaType[schemaType],
-    staticByteLength,
-    isDynamic,
-  };
 }

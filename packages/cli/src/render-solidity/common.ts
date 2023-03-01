@@ -1,4 +1,4 @@
-import { RenderTableOptions } from "./types.js";
+import { ImportDatum, RenderTableOptions, RenderTableType } from "./types.js";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -32,8 +32,8 @@ export function renderCommonData({ staticRouteData, primaryKeys }: RenderTableOp
     bytes32[] memory _primaryKeys = new bytes32[](${primaryKeys.length});
     ${renderList(
       primaryKeys,
-      ({ name, typeId, staticByteLength }, index) => `
-    _primaryKeys[${index}] = ${renderValueTypeToBytes32(name, typeId, staticByteLength)};
+      (primaryKey, index) => `
+    _primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};
     `
     )}
   `;
@@ -47,21 +47,44 @@ export function renderCommonData({ staticRouteData, primaryKeys }: RenderTableOp
   };
 }
 
-function renderValueTypeToBytes32(innerText: string, typeId: string, staticByteLength: number) {
-  const bits = staticByteLength * 8;
+/**
+ * Aggregates, deduplicates and renders imports for symbols per path.
+ * Identical symbols from different paths are NOT handled, they should be checked before rendering.
+ */
+export function renderImports(imports: ImportDatum[]) {
+  // Aggregate symbols by import path, also deduplicating them
+  const aggregatedImports = new Map<string, Set<string>>();
+  for (const { symbol, path } of imports) {
+    if (!aggregatedImports.has(path)) {
+      aggregatedImports.set(path, new Set());
+    }
+    aggregatedImports.get(path)?.add(symbol);
+  }
+  // Render imports
+  const renderedImports = [];
+  for (const [path, symbols] of aggregatedImports) {
+    const renderedSymbols = [...symbols].join(", ");
+    renderedImports.push(`import { ${renderedSymbols} } from "${path}";`);
+  }
+  return renderedImports.join("\n");
+}
 
-  if (typeId.match(/^uint\d{1,3}$/)) {
+function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderTableType) {
+  const bits = staticByteLength * 8;
+  const innerText = `${typeUnwrap}(${name})`;
+
+  if (internalTypeId.match(/^uint\d{1,3}$/)) {
     return `bytes32(uint256(${innerText}))`;
-  } else if (typeId.match(/^int\d{1,3}$/)) {
+  } else if (internalTypeId.match(/^int\d{1,3}$/)) {
     return `bytes32(uint256(uint${bits}(${innerText})))`;
-  } else if (typeId.match(/^bytes\d{1,2}$/)) {
+  } else if (internalTypeId.match(/^bytes\d{1,2}$/)) {
     return `bytes32(${innerText})`;
-  } else if (typeId === "address") {
+  } else if (internalTypeId === "address") {
     return `bytes32(bytes20(${innerText}))`;
-  } else if (typeId === "bool") {
+  } else if (internalTypeId === "bool") {
     return `_boolToBytes32(${innerText})`;
   } else {
-    throw new Error(`Unknown value type id ${typeId}`);
+    throw new Error(`Unknown value type id ${internalTypeId}`);
   }
 }
 

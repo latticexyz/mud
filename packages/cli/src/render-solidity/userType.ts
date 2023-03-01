@@ -1,55 +1,83 @@
-import { SchemaType } from "@latticexyz/schema-type";
+import { getStaticByteLength, SchemaType, SchemaTypeId } from "@latticexyz/schema-type";
 import path from "path";
 import { StoreConfig } from "../index.js";
+import { RenderTableType } from "./types.js";
 
-export type UserTypeDetails = ReturnType<typeof getUserTypeDetails>;
+export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 
 /**
- * Resolve a SchemaType|userType into a general type info object
+ * Resolve a SchemaType|userType into RenderTableType, required import, and internal SchemaType
  */
 export function resolveSchemaOrUserType(
-  type: SchemaType | string,
+  schemaOrUserType: SchemaType | string,
+  srcDirectory: string,
   usedInDirectory: string,
   userTypesConfig: StoreConfig["userTypes"]
 ) {
-  let schemaType;
-  let userTypeDetails;
-  if (typeof type === "string") {
-    userTypeDetails = getUserTypeDetails(type, usedInDirectory, userTypesConfig);
-    schemaType = userTypeDetails.schemaType;
+  if (typeof schemaOrUserType === "string") {
+    // Relative import path for this type.
+    // "./" must be added because path stripts it,
+    // but solidity expects it unless there's "../" ("./../" is fine)
+    const importedFromPath = path.join(srcDirectory, userTypesConfig.path);
+    const importDatum = {
+      symbol: schemaOrUserType,
+      path: "./" + path.relative(usedInDirectory, importedFromPath) + ".sol",
+    };
+    const { schemaType, renderTableType } = getUserTypeInfo(schemaOrUserType, userTypesConfig);
+    return {
+      importDatum,
+      renderTableType,
+      schemaType,
+    };
   } else {
-    schemaType = type;
+    return {
+      importDatum: undefined,
+      renderTableType: getSchemaTypeInfo(schemaOrUserType),
+      schemaType: schemaOrUserType,
+    };
   }
+}
 
+export function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
+  const staticByteLength = getStaticByteLength(schemaType);
+  const isDynamic = staticByteLength === 0;
+  const typeId = SchemaTypeId[schemaType];
   return {
-    schemaType,
-    userTypeDetails,
+    typeId,
+    typeWithLocation: isDynamic ? typeId + " memory" : typeId,
+    enumName: SchemaType[schemaType],
+    staticByteLength,
+    isDynamic,
+    typeWrap: "",
+    typeUnwrap: "",
+    internalTypeId: typeId,
   };
 }
 
-/**
- * Get all the necessary rendering details for the user type
- */
-export function getUserTypeDetails(
+export function getUserTypeInfo(
   userType: string,
-  usedInDirectory: string,
   userTypesConfig: StoreConfig["userTypes"]
-) {
-  // Relative import path for this type.
-  // "./" must be added because path stripts it,
-  // but solidity expects it unless there's "../" ("./../" is fine)
-  const importPath = "./" + path.relative(usedInDirectory, userTypesConfig.path);
-
+): {
+  schemaType: SchemaType;
+  renderTableType: RenderTableType;
+} {
   if (userType in userTypesConfig.enums) {
-    const renderCastFrom = (arg: string) => `${userType}.unwrap(${arg})`;
-    const renderCastTo = (arg: string) => `${userType}.wrap(${arg})`;
-
+    const schemaType = SchemaType.UINT8;
+    const staticByteLength = getStaticByteLength(schemaType);
+    const isDynamic = staticByteLength === 0;
+    const typeId = userType;
     return {
-      importPath,
-      userType,
-      schemaType: SchemaType.UINT8,
-      renderCastFrom,
-      renderCastTo,
+      schemaType,
+      renderTableType: {
+        typeId,
+        typeWithLocation: typeId,
+        enumName: SchemaType[schemaType],
+        staticByteLength,
+        isDynamic,
+        typeWrap: `${userType}`,
+        typeUnwrap: `${userType}`,
+        internalTypeId: `${SchemaTypeId[schemaType]}`,
+      },
     };
   } else {
     throw new Error(`User type "${userType}" does not exist`);

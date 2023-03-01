@@ -1,12 +1,13 @@
-import { UserTypeDetails } from "./userType.js";
-
 export interface RenderTableOptions {
+  /** List of symbols to import, and their file paths */
+  imports: ImportDatum[];
   /** Name of the library to render. */
   libraryName: string;
   /** Name of the struct to render. If undefined, struct and its methods aren't rendered. */
   structName?: string;
   /** Data used to statically registed the table. If undefined, all methods receive `_tableId` as an argument. */
   staticRouteData?: StaticRouteData;
+  /** Path for store package imports */
   storeImportPath: string;
   primaryKeys: RenderTablePrimaryKey[];
   fields: RenderTableField[];
@@ -16,6 +17,11 @@ export interface RenderTableOptions {
   withRecordMethods: boolean;
   /** Whether to render additional methods that accept a manual `IStore` argument */
   storeArgument: boolean;
+}
+
+export interface ImportDatum {
+  symbol: string;
+  path: string;
 }
 
 export interface StaticRouteData {
@@ -28,15 +34,21 @@ export interface StaticRouteData {
 export interface RenderTableType {
   typeId: string;
   typeWithLocation: string;
+  /** The name of the enum element in SchemaType to use for schema registration (e.g. "UINT256_ARRAY") */
   enumName: string;
   staticByteLength: number;
   isDynamic: boolean;
+  /** Empty for internal types. Custom `wrap` method for user defined types. */
+  typeWrap: string;
+  /** Empty for internal types. Custom `unwrap` method for user defined types. */
+  typeUnwrap: string;
+  /** Same as typeId for internal types. The underlying `typeId` for user defined types. */
+  internalTypeId: string;
 }
 
 export interface RenderTablePrimaryKey extends RenderTableType {
   name: string;
   isDynamic: false;
-  userTypeDetails?: UserTypeDetails;
 }
 
 export interface RenderTableStaticField extends RenderTableField {
@@ -51,7 +63,6 @@ export interface RenderTableField extends RenderTableType {
   arrayElement: RenderTableType | undefined;
   name: string;
   methodNameSuffix: string;
-  userTypeDetails?: UserTypeDetails;
 }
 
 export interface RenderTypesOptions {

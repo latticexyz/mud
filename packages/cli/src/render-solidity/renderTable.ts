@@ -1,17 +1,19 @@
-import { renderArguments, renderCommonData, renderList, renderedSolidityHeader } from "./common.js";
+import { renderArguments, renderCommonData, renderList, renderedSolidityHeader, renderImports } from "./common.js";
 import { renderFieldMethods } from "./field.js";
 import { renderRecordMethods } from "./record.js";
 import { RenderTableOptions } from "./types.js";
 
 export function renderTable(options: RenderTableOptions) {
-  const { libraryName, structName, staticRouteData, storeImportPath, fields, withRecordMethods } = options;
+  const { imports, libraryName, structName, staticRouteData, storeImportPath, fields, withRecordMethods } = options;
 
   const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
   return `${renderedSolidityHeader}
 
+// Import schema type
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
+// Import store internals
 import { IStore } from "${storeImportPath}IStore.sol";
 import { StoreSwitch } from "${storeImportPath}StoreSwitch.sol";
 import { StoreCore } from "${storeImportPath}StoreCore.sol";
@@ -22,11 +24,20 @@ import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
 import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
 
 ${
+  imports.length > 0
+    ? `
+      // Import user types
+      ${renderImports(imports)}
+    `
+    : ""
+}
+
+${
   !staticRouteData
     ? ""
     : `
-  uint256 constant _tableId = uint256(keccak256("${staticRouteData.baseRoute + staticRouteData.subRoute}"));
-  uint256 constant ${staticRouteData.tableIdName} = _tableId;
+      uint256 constant _tableId = uint256(keccak256("${staticRouteData.baseRoute + staticRouteData.subRoute}"));
+      uint256 constant ${staticRouteData.tableIdName} = _tableId;
 `
 }
 
@@ -34,9 +45,9 @@ ${
   !structName
     ? ""
     : `
-  struct ${structName} {
-    ${renderList(fields, ({ name, typeId }) => `${typeId} ${name};`)}
-  }
+      struct ${structName} {
+        ${renderList(fields, ({ name, typeId }) => `${typeId} ${name};`)}
+      }
 `
 }
 
