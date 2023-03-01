@@ -75,6 +75,19 @@ library StoreSwitch {
     }
   }
 
+  function pushToField(
+    uint256 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    bytes memory dataToPush
+  ) internal {
+    if (isDelegateCall()) {
+      StoreCore.pushToField(table, key, fieldIndex, dataToPush);
+    } else {
+      IStore(msg.sender).pushToField(table, key, fieldIndex, dataToPush);
+    }
+  }
+
   function deleteRecord(uint256 table, bytes32[] memory key) internal {
     if (isDelegateCall()) {
       StoreCore.deleteRecord(table, key);

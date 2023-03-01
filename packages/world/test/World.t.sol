@@ -9,6 +9,7 @@ import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/tables/StoreMetadata.sol";
+import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
 import { World, _isRoute, _isSingleLevelRoute } from "../src/World.sol";
 import { System } from "../src/System.sol";
@@ -16,6 +17,7 @@ import { RouteOwnerTable } from "../src/tables/RouteOwnerTable.sol";
 import { RouteAccess } from "../src/tables/RouteAccess.sol";
 import { SystemTable } from "../src/tables/SystemTable.sol";
 import { BoolSchemaLib } from "../src/schemas/Bool.sol";
+import { AddressArraySchemaLib } from "../src/schemas/AddressArray.sol";
 
 struct WorldTestSystemReturn {
   address sender;
@@ -109,6 +111,35 @@ contract WorldTest is Test {
 
   function setUp() public {
     world = new World();
+  }
+
+  // Expect an error when trying to write from an address that doesn't have access
+  function _expectRouteAccessDenied(address caller, string memory route) internal {
+    vm.prank(caller);
+    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, route, caller));
+  }
+
+  function _initRouteTableKey(
+    string memory baseRoute,
+    string memory tableRoute,
+    Schema schema
+  )
+    internal
+    returns (
+      uint256 tableRouteId,
+      bytes32 key,
+      bytes32[] memory keyTuple
+    )
+  {
+    // Register a new route
+    world.registerRoute("", baseRoute);
+
+    // Register a new table
+    tableRouteId = world.registerTable(baseRoute, tableRoute, schema);
+
+    key = keccak256("testKey");
+    keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
   }
 
   function testConstructor() public {
@@ -383,6 +414,47 @@ contract WorldTest is Test {
     vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetField/testTable", address(0x02)));
     world.setField(tableRouteId, keyTuple, 0, abi.encodePacked(true));
     vm.stopPrank();
+  }
+
+  function testPushToField() public {
+    string memory baseRoute = "/testPushToField";
+    string memory tableRoute = "/testTable";
+
+    (uint256 tableRouteId, bytes32 key, bytes32[] memory keyTuple) = _initRouteTableKey(
+      baseRoute,
+      tableRoute,
+      AddressArraySchemaLib.getSchema()
+    );
+
+    // Create data
+    address[] memory dataToPush = new address[](3);
+    dataToPush[0] = address(0x01);
+    dataToPush[1] = address(bytes20(keccak256("some address")));
+    dataToPush[2] = address(bytes20(keccak256("another address")));
+    bytes memory encodedData = EncodeArray.encode(dataToPush);
+
+    // Push data to the table via access route
+    world.pushToField(baseRoute, tableRoute, keyTuple, 0, encodedData);
+
+    // Expect the data to be written
+    assertEq(AddressArraySchemaLib.get({ store: world, tableId: tableRouteId, key: key }), dataToPush);
+
+    // Delete the data
+    world.deleteRecord(baseRoute, tableRoute, keyTuple);
+
+    // Push data to the table via direct access
+    world.pushToField(tableRouteId, keyTuple, 0, encodedData);
+
+    // Expect the data to be written
+    assertEq(AddressArraySchemaLib.get({ store: world, tableId: tableRouteId, key: key }), dataToPush);
+
+    // Expect an error when trying to write from an address that doesn't have access
+    _expectRouteAccessDenied(address(0x01), baseRoute);
+    world.pushToField(baseRoute, tableRoute, keyTuple, 0, encodedData);
+
+    // Expect an error when trying to write from an address that doesn't have access
+    _expectRouteAccessDenied(address(0x01), string.concat(baseRoute, tableRoute));
+    world.pushToField(tableRouteId, keyTuple, 0, encodedData);
   }
 
   function testDeleteRecord() public {
