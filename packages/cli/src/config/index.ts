@@ -1,5 +1,5 @@
 import { StoreUserConfig, StoreConfig } from "./loadStoreConfig.js";
-import { WorldUserConfig, WorldConfig } from "./loadWorldConfig.js";
+import { WorldUserConfig, WorldConfig, ResolvedWorldConfig } from "./loadWorldConfig.js";
 
 export type { StoreUserConfig, StoreConfig, WorldUserConfig, WorldConfig };
 export type MUDUserConfig = StoreUserConfig & WorldUserConfig;
