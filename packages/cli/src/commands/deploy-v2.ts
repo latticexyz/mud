@@ -4,13 +4,13 @@ import { execa } from "execa";
 import glob from "glob";
 import { basename } from "path";
 import type { CommandModule } from "yargs";
-import { loadWorldConfig, ResolvedWorldConfig } from "../config/loadWorldConfig.js";
+import { loadWorldConfig } from "../config/loadWorldConfig.js";
 import { deploy } from "../utils/deploy-v2.js";
 import { getOutDirectory } from "../utils/forgeConfig.js";
 
 type Options = {
   configPath?: string;
-  print?: boolean;
+  printConfig?: boolean;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -21,13 +21,11 @@ const commandModule: CommandModule<Options, Options> = {
   builder(yargs) {
     return yargs.options({
       configPath: { type: "string", desc: "Path to the config file" },
-      print: { type: "boolean", desc: "Print the resolved config" },
+      printConfig: { type: "boolean", desc: "Print the resolved config" },
     });
   },
 
-  async handler({ configPath, print }) {
-    const config = await loadWorldConfig(configPath);
-
+  async handler({ configPath, printConfig }) {
     // Run forge build
     try {
       await execa("forge", ["build"], { stdout: "inherit", stderr: "pipe" });
@@ -39,71 +37,19 @@ const commandModule: CommandModule<Options, Options> = {
       process.exit(1);
     }
 
-    // Get a list of all contracts in output ending with `System`
+    // Get a list of all contract names
     const outDir = await getOutDirectory();
-    const defaultSystemNames = glob
-      // Get all files in outDir ending in `*System.sol  `
-      .sync(`${outDir}/*System.sol`)
-      // Get the basename of the file
-      .map((path) => basename(path, ".sol"))
-      // Ignore the base System contract
-      .filter((name) => name !== "System");
-
-    // Include overridden systems (even if they don't end with `System`)
-    const allSystemNames = [...new Set([...defaultSystemNames, ...Object.keys(config.overrideSystems)])];
-
-    // Exclude systems that are in the exclude list
-    const systemNames = allSystemNames.filter((name) => !config.excludeSystems.includes(name));
-
-    // Get all contract names
-    const allContractNames = glob
-      // Get all files in outDir ending in `*.sol  `
+    const existingContracts = glob
       .sync(`${outDir}/*.sol`)
       // Get the basename of the file
       .map((path) => basename(path, ".sol"));
 
-    // Verify that the list of system names is valid
-    for (const systemName of systemNames) {
-      if (!allContractNames.includes(systemName)) {
-        console.log(chalk.red(`Can not find system "${systemName}"`));
-        process.exit(1);
-      }
-    }
+    // Load and resolve the world config
+    const config = await loadWorldConfig(configPath, existingContracts);
 
-    // Verify that the access lists only include existing systems
-    for (const [systemName, system] of Object.entries(config.overrideSystems)) {
-      if (system.openAccess) continue;
-      for (const accessElement of system.accessList) {
-        if (!ethers.utils.isAddress(accessElement) && !systemNames.includes(accessElement)) {
-          console.log(
-            chalk.red(
-              `Invalid access list in "${systemName}": "${accessElement}" is not a valid Ethereum address or name of a local system.`
-            )
-          );
-          process.exit(1);
-        }
-      }
-    }
+    if (printConfig) console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
 
-    // Extend the config with default values for non-overridden, non-excluded systems
-    const systems: ResolvedWorldConfig["systems"] = {};
-    for (const systemName of systemNames) {
-      const defaultConfig = { route: `/${systemName}`, openAccess: true, accessList: [] };
-      const overriddenConfig = config.overrideSystems[systemName] ?? defaultConfig;
-      const { route, openAccess, accessList } = { ...defaultConfig, ...overriddenConfig };
-      systems[systemName] = {
-        route,
-        openAccess,
-        accessListAddresses: openAccess ? [] : accessList.filter(ethers.utils.isAddress),
-        accessListSystems: openAccess ? [] : accessList.filter((name) => systemNames.includes(name)),
-      };
-    }
-    const { excludeSystems, overrideSystems, ...otherConfig } = config; // Omit the fields that are not part of the ResolvedWorldConfig
-    const resolvedConfig: ResolvedWorldConfig = { ...otherConfig, systems };
-
-    if (print) console.log(chalk.green("\nResolved config:\n"), JSON.stringify(resolvedConfig, null, 2));
-
-    deploy(resolvedConfig);
+    deploy(config);
     process.exit(0);
   },
 };

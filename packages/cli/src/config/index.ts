@@ -1,9 +1,9 @@
 import { StoreUserConfig, StoreConfig } from "./loadStoreConfig.js";
-import { WorldUserConfig, WorldConfig, ResolvedWorldConfig } from "./loadWorldConfig.js";
+import { WorldUserConfig, ResolvedWorldConfig } from "./loadWorldConfig.js";
 
-export type { StoreUserConfig, StoreConfig, WorldUserConfig, WorldConfig };
+export type { StoreUserConfig, StoreConfig, WorldUserConfig, ResolvedWorldConfig };
 export type MUDUserConfig = StoreUserConfig & WorldUserConfig;
-export type MUDConfig = StoreConfig & WorldConfig;
+export type MUDConfig = StoreConfig & ResolvedWorldConfig;
 
 export * from "./commonSchemas.js";
 export * from "./loadConfig.js";

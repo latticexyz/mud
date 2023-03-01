@@ -8,7 +8,7 @@ export type {
   StoreUserConfig,
   StoreConfig,
   WorldUserConfig,
-  WorldConfig,
+  ResolvedWorldConfig,
   MUDUserConfig,
   MUDConfig,
 } from "./config/index.js";

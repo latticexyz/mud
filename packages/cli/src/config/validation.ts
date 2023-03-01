@@ -94,7 +94,7 @@ export const validateSingleLevelRoute = _factoryForValidateRoute(true, true);
 
 export function validateEthereumAddressOrSystemName(address: string, ctx: RefinementCtx) {
   // if it starts with 0x, it must be a valid Ethereum address
-  if (address.substring(0, 2) == "0x") {
+  if (address.startsWith("0x")) {
     if (!ethers.utils.isAddress(address)) {
       ctx.addIssue({
         code: ZodIssueCode.custom,
