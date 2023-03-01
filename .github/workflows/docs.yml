@@ -1,5 +1,5 @@
 # .github/workflows/docs.yml
-name: Build docs
+name: Docs
 
 on:
   push:
