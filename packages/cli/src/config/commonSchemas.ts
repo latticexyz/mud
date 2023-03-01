@@ -4,6 +4,8 @@ import {
   validateCapitalizedName,
   validateDirectory,
   validateEthereumAddress,
+  validateEnum,
+  validateName,
   validateRoute,
   validateSingleLevelRoute,
   validateUncapitalizedName,
@@ -13,6 +15,10 @@ import {
 export const ObjectName = z.string().superRefine(validateCapitalizedName);
 /** Uncapitalized names of values, like keys and columns */
 export const ValueName = z.string().superRefine(validateUncapitalizedName);
+/** Name that can start with any case */
+export const AnyCaseName = z.string().superRefine(validateName);
+/** List of unique enum member names and 0 < length < 256 */
+export const UserEnum = z.array(ObjectName).superRefine(validateEnum);
 
 /** Ordinary routes */
 export const OrdinaryRoute = z.string().superRefine(validateRoute);

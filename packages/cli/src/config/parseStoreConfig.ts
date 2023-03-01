@@ -1,10 +1,12 @@
 import { SchemaType, getStaticByteLength } from "@latticexyz/schema-type";
-import { z } from "zod";
-import { BaseRoute, ObjectName, OrdinaryRoute, ValueName } from "./commonSchemas.js";
+import { RefinementCtx, z, ZodIssueCode } from "zod";
+import { BaseRoute, ObjectName, OrdinaryRoute, UserEnum, ValueName } from "./commonSchemas.js";
+import { getDuplicates } from "./validation.js";
 
 const TableName = ObjectName;
 const KeyName = ValueName;
 const ColumnName = ValueName;
+const UserEnumName = ObjectName;
 
 const PrimaryKey = z
   .nativeEnum(SchemaType)
@@ -42,11 +44,19 @@ const DefaultSingleValueTable = z.nativeEnum(SchemaType).transform((schemaType) 
   });
 });
 
-export const StoreConfig = z.object({
+const StoreConfigUnrefined = z.object({
   baseRoute: BaseRoute.default(""),
   storeImportPath: z.string().default("@latticexyz/store/src/"),
   tables: z.record(TableName, z.union([DefaultSingleValueTable, FullTable])),
+  userTypes: z
+    .object({
+      path: BaseRoute.default("/types"),
+      enums: z.record(UserEnumName, UserEnum).default({}),
+    })
+    .default({}),
 });
+// finally validate global conditions
+export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
 
 // zod doesn't preserve doc comments
 export interface StoreUserConfig {
@@ -64,6 +74,8 @@ export interface StoreUserConfig {
    *  - FullTableConfig object for multi-value tables (or for customizable options).
    */
   tables: Record<string, SchemaType | FullTableConfig>;
+  /** User-defined types that will be generated and may be used in table schemas instead of `SchemaType` */
+  userTypes?: UserTypesConfig;
 }
 
 interface FullTableConfig {
@@ -81,8 +93,30 @@ interface FullTableConfig {
   schema: Record<string, SchemaType>;
 }
 
+interface UserTypesConfig {
+  /** Path to the file where common types will be generated and imported from. Default is "/types" */
+  path?: string;
+  /** Enum names mapped to lists of their member names */
+  enums?: Record<string, string[]>;
+}
+
 export type StoreConfig = z.output<typeof StoreConfig>;
 
 export async function parseStoreConfig(config: unknown) {
   return StoreConfig.parse(config);
+}
+
+// Validate conditions that check multiple different config options simultaneously
+function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx: RefinementCtx) {
+  // global names must be unique
+  const tableNames = Object.keys(config.tables);
+  const enumNames = Object.keys(config.userTypes.enums);
+  const allNames = [...tableNames, ...enumNames];
+  const duplicateGlobalNames = getDuplicates(allNames);
+  if (duplicateGlobalNames.length > 0) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Table and enum names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
+    });
+  }
 }
