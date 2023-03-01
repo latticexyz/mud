@@ -128,11 +128,10 @@ export const useMapConfig = () => {
 
 And now we can replace the hardcoded map dimensions in the game board with the new map config.
 
-```tsx !#5,8-10 packages/client/src/GameBoard.tsx
+```tsx !#4,7-9 packages/client/src/GameBoard.tsx
 import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
-import { useJoinGame } from "./useJoinGame";
-import { useMovement } from "./useMovement";
+import { useKeyboardMovement } from "./useKeyboardMovement";
 import { useMapConfig } from "./useMapConfig";
 
 export const GameBoard = () => {
