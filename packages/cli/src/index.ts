@@ -6,4 +6,4 @@ import { renderTable } from "./render-table/renderTable.js";
 export { loadStoreConfig, parseStoreConfig, renderTablesFromConfig, renderTable };
 
 export type { StoreUserConfig, StoreConfig } from "./config/parseStoreConfig.js";
-export type { WorldUserConfig, WorldConfig, MUDUserConfig, MUDConfig } from "./config/index.js";
+export type { WorldUserConfig, ResolvedWorldConfig, MUDUserConfig, MUDConfig } from "./config/index.js";

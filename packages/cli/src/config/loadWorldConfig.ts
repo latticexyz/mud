@@ -1,5 +1,5 @@
-import { z, ZodError } from "zod";
-import { fromZodErrorCustom } from "../utils/errors.js";
+import { z, ZodError, ZodIssueCode } from "zod";
+import { fromZodErrorCustom, UnrecognizedSystemErrorFactory } from "../utils/errors.js";
 import { BaseRoute, ObjectName } from "./commonSchemas.js";
 import { loadConfig } from "./loadConfig.js";
 import { validateEthereumAddressOrSystemName } from "./validation.js";
@@ -19,21 +19,122 @@ const SystemAccessList = z
   });
 
 // The system config is a combination of a route config and access config
-const System = z.object({
-  route: SystemRoute,
-  openAccess: z.boolean().default(true),
-  accessList: SystemAccessList,
-});
+const SystemConfig = z.intersection(
+  z.object({
+    route: SystemRoute,
+  }),
+  z.discriminatedUnion("openAccess", [
+    z.object({
+      openAccess: z.literal(true),
+    }),
+    z.object({
+      openAccess: z.literal(false),
+      accessList: SystemAccessList,
+    }),
+  ])
+);
 
+// The parsed world config is the result of parsing the user config
 export const WorldConfig = z.object({
   baseRoute: BaseRoute.default(""),
   worldPath: z.string().optional(),
-  overrideSystems: z.record(SystemName, System).default({}),
+  overrideSystems: z.record(SystemName, SystemConfig).default({}),
   excludeSystems: z.array(SystemName).default([]),
 });
 
+/**
+ * Resolves the system config by combining the default and overridden system configs,
+ * @param systemName name of the system
+ * @param config optional SystemConfig object, if none is provided the default config is used
+ * @param existingContracts optional list of existing contract names, used to validate system names in the access list. If not provided, no validation is performed.
+ * @returns ResolvedSystemConfig object
+ * Default value for route is `/${systemName}`
+ * Default value for openAccess is true
+ * Default value for accessListAddresses is []
+ * Default value for accessListSystems is []
+ */
+export function resolveSystemConfig(systemName: string, config?: SystemUserConfig, existingContracts?: string[]) {
+  const route = config?.route ?? `/${systemName}`;
+  const openAccess = config?.openAccess ?? true;
+  const accessListAddresses: string[] = [];
+  const accessListSystems: string[] = [];
+  const accessList = config && !config.openAccess ? config.accessList : [];
+
+  // Split the access list into addresses and system names
+  for (const accessListItem of accessList) {
+    if (accessListItem.startsWith("0x")) {
+      accessListAddresses.push(accessListItem);
+    } else {
+      // Validate every system refers to an existing system contract
+      if (existingContracts && !existingContracts.includes(accessListItem)) {
+        throw UnrecognizedSystemErrorFactory(["overrideSystems", systemName, "accessList"], accessListItem);
+      }
+      accessListSystems.push(accessListItem);
+    }
+  }
+
+  return { route, openAccess, accessListAddresses, accessListSystems };
+}
+
+/**
+ * Resolves the world config by combining the default and overridden system configs,
+ * filtering out excluded systems, validate system names refer to existing contracts, and
+ * splitting the access list into addresses and system names.
+ */
+export function resolveWorldConfig(config: ParsedWorldConfig, existingContracts?: string[]) {
+  // Include contract names ending in "System", but not the base "System" contract
+  const defaultSystemNames = existingContracts?.filter((name) => name.endsWith("System") && name !== "System") ?? [];
+  const overriddenSystemNames = Object.keys(config.overrideSystems);
+
+  // Validate every key in overrideSystems refers to an existing system contract
+  if (existingContracts) {
+    for (const systemName of overriddenSystemNames) {
+      if (!existingContracts.includes(systemName)) {
+        throw UnrecognizedSystemErrorFactory(["overrideSystems", systemName], systemName);
+      }
+    }
+  }
+
+  // Combine the default and overridden system names and filter out excluded systems
+  const systemNames = [...new Set([...defaultSystemNames, ...overriddenSystemNames])].filter(
+    (name) => !config.excludeSystems.includes(name)
+  );
+
+  // Resolve the config
+  const resolvedSystems: Record<string, ResolvedSystemConfig> = systemNames.reduce((acc, systemName) => {
+    return {
+      ...acc,
+      [systemName]: resolveSystemConfig(systemName, config.overrideSystems[systemName], existingContracts),
+    };
+  }, {});
+
+  const { overrideSystems, excludeSystems, ...otherConfig } = config;
+  return { ...otherConfig, systems: resolvedSystems };
+}
+
+/**
+ * Loads and resolves the world config.
+ * @param configPath Path to load the config from. Defaults to "mud.config.mts" or "mud.config.ts"
+ * @param existingContracts Optional list of existing contract names to validate system names against. If not provided, no validation is performed. Contract names ending in `System` will be added to the config with default values.
+ * @returns Promise of ResolvedWorldConfig object
+ */
+export async function loadWorldConfig(configPath?: string, existingContracts?: string[]) {
+  const config = await loadConfig(configPath);
+
+  try {
+    const parsedConfig = WorldConfig.parse(config);
+    return resolveWorldConfig(parsedConfig, existingContracts);
+  } catch (error) {
+    if (error instanceof ZodError) {
+      throw fromZodErrorCustom(error, "WorldConfig Validation Error");
+    } else {
+      throw error;
+    }
+  }
+}
+
 // zod doesn't preserve doc comments
-export type SystemConfig =
+export type SystemUserConfig =
   | {
       /** The system will be deployed at `baseRoute + route` */
       route?: string;
@@ -63,36 +164,13 @@ export interface WorldUserConfig {
    * The key is the system name (capitalized).
    * The value is a SystemConfig object.
    */
-  overrideSystems?: Record<string, SystemConfig>;
+  overrideSystems?: Record<string, SystemUserConfig>;
   /** Systems to exclude from automatic deployment */
   excludeSystems?: string[];
 }
 
-// Same as WorldUserConfig, but without optional fields (because of default values)
-export type WorldConfig = z.output<typeof WorldConfig>;
+export type ParsedWorldConfig = z.output<typeof WorldConfig>;
 
-// Same as WorldConfig, but with resolved route and accessList and default values for systems that are not overridden
-export type ResolvedWorldConfig = Omit<WorldConfig, "overrideSystems" | "excludeSystems"> & {
-  systems: Record<
-    string,
-    Omit<SystemConfig, "route" | "accessList"> & {
-      route: string;
-      accessListSystems: string[];
-      accessListAddresses: string[];
-    }
-  >;
-};
+export type ResolvedSystemConfig = ReturnType<typeof resolveSystemConfig>;
 
-export async function loadWorldConfig(configPath?: string) {
-  const config = await loadConfig(configPath);
-
-  try {
-    return WorldConfig.parse(config);
-  } catch (error) {
-    if (error instanceof ZodError) {
-      throw fromZodErrorCustom(error, "WorldConfig Validation Error");
-    } else {
-      throw error;
-    }
-  }
-}
+export type ResolvedWorldConfig = ReturnType<typeof resolveWorldConfig>;

@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { ZodError } from "zod";
+import { z, ZodError, ZodIssueCode } from "zod";
 import { fromZodError, ValidationError } from "zod-validation-error";
 
 // Wrapper with preset styles, only requires a `prefix`
@@ -19,6 +19,10 @@ export class NotInsideProjectError extends Error {
 export class NotESMConfigError extends Error {
   name = "NotESMConfigError";
   message = "MUD config must be an ES module";
+}
+
+export function UnrecognizedSystemErrorFactory(path: string[], systemName: string) {
+  return new z.ZodError([{ code: ZodIssueCode.custom, path: path, message: `Unrecognized system: "${systemName}"` }]);
 }
 
 export function logError(error: Error) {
