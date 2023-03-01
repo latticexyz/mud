@@ -98,3 +98,26 @@ export const decodeData = (schema: Schema, hexData: string): Record<number, any>
 
   return data;
 };
+
+export const decodeField = (schema: Schema, schemaIndex: number, hexData: string): Record<number, any> => {
+  const data: Record<number, any> = {};
+  const bytes = new DataView(hexToArray(hexData).buffer);
+
+  schema.staticFields.forEach((fieldType, index) => {
+    if (index === schemaIndex) {
+      data[index] = decodeStaticField(fieldType as StaticSchemaType, bytes, 0);
+    }
+  });
+
+  if (schema.dynamicFields.length > 0) {
+    schema.dynamicFields.forEach((fieldType, i) => {
+      const index = schema.staticFields.length + i;
+      if (index === schemaIndex) {
+        if (hexData === "0x") console.log("decoding dynamic field");
+        data[index] = decodeDynamicField(fieldType as DynamicSchemaType, bytes.buffer);
+      }
+    });
+  }
+
+  return data;
+};

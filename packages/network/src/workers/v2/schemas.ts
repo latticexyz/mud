@@ -7,6 +7,7 @@ export type Schema = {
   staticFields: SchemaType[];
   dynamicFields: SchemaType[];
   rawSchema: string;
+  label: string;
 };
 
 // worldAddress:tableId => schema
@@ -27,7 +28,12 @@ export function decodeSchema(rawSchema: string): Schema {
     dynamicFields.push(schemaBytes.getUint8(i));
   }
   // TODO: validate sum of static field lengths is equal to staticDataLength?
-  return { staticDataLength, staticFields, dynamicFields, rawSchema };
+
+  // human readable label
+  const fieldTypes = [...staticFields, ...dynamicFields].map((type) => SchemaType[type]);
+  const label = `(${fieldTypes.join(",")})`;
+
+  return { staticDataLength, staticFields, dynamicFields, rawSchema, label };
 }
 
 // the Contract arguments below assume that they're bound to a provider
@@ -59,13 +65,14 @@ export function registerSchema(world: Contract, table: string, rawSchema?: strin
   }
 
   if (rawSchema) {
-    console.log("registering schema for table", world.address, table);
+    console.log("registering schema for table", { table, world: world.address });
     const schema = Promise.resolve(decodeSchema(rawSchema));
+    schema.then((schema) => console.log("got schema", schema, { table, world: world.address }));
     schemas[schemaKey] = schema;
     return schema;
   }
 
-  console.log("fetching schema for table", world.address, table);
+  console.log("fetching schema for table", { table, world: world.address });
   const schema = world.getSchema(table).then((rawSchema: string) => decodeSchema(rawSchema));
   schemas[schemaKey] = schema;
   return schema;

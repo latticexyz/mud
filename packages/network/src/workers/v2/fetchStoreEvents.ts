@@ -4,7 +4,7 @@ import { NetworkComponentUpdate, NetworkEvents } from "../../types";
 import { formatComponentID, formatEntityID } from "../../utils";
 import { orderBy } from "lodash";
 import { registerSchema } from "./schemas";
-import { decodeData } from "./decodeData";
+import { decodeData, decodeField } from "./decodeData";
 import { isDefined } from "./isDefined";
 
 // keccak256("mud.store.table.schema")
@@ -29,6 +29,17 @@ async function decodeStoreSetRecord(
 
   const schema = await registerSchema(contract, table);
   return decodeData(schema, data);
+}
+
+async function decodeStoreSetField(
+  contract: Contract,
+  table: string,
+  keyTuple: string[],
+  schemaIndex: number,
+  data: string
+): Promise<ComponentValue> {
+  const schema = await registerSchema(contract, table);
+  return decodeField(schema, schemaIndex, data);
 }
 
 export async function fetchStoreEvents(contract: Contract, fromBlock: number, toBlock: number) {
@@ -77,10 +88,18 @@ export async function fetchStoreEvents(contract: Contract, fromBlock: number, to
     if (name === "StoreSetRecord") {
       // TODO: parallelize this
       const value = await decodeStoreSetRecord(contract, args.table.toHexString(), args.key, args.data);
-      console.log("decoded value", value);
+      console.log("decoded StoreSetRecord value", value);
       ecsEvent.value = value;
     } else if (name === "StoreSetField") {
-      // TODO: partial set
+      const value = await decodeStoreSetField(
+        contract,
+        args.table.toHexString(),
+        args.key,
+        args.schemaIndex,
+        args.data
+      );
+      console.log("decoded StoreSetField value", value);
+      ecsEvent.value = value;
     }
 
     ecsEvents.push(ecsEvent);
