@@ -2,7 +2,7 @@ import type { CommandModule } from "yargs";
 import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
 import { loadStoreConfig } from "../config/loadStoreConfig.js";
-import { renderTablesFromConfig } from "../render-table/renderTablesFromConfig.js";
+import { renderTablesFromConfig } from "../render-solidity/renderTablesFromConfig.js";
 import { getSrcDirectory } from "../utils/foundry.js";
 import { formatSolidity } from "../utils/format.js";
 
