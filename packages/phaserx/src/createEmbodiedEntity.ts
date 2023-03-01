@@ -91,6 +91,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
     gameObject.setAlpha(1);
     gameObject.setScrollFactor(1);
     gameObject.clearMask();
+    gameObject.setData("objectPoolId", null);
     if (isSprite(gameObject, type)) {
       gameObject.clearTint();
       gameObject.setTexture("");
@@ -119,6 +120,7 @@ export function createEmbodiedEntity<Type extends keyof GameObjectTypes>(
 
     gameObject.setActive(true);
     gameObject.setVisible(true);
+    gameObject.setData("objectPoolId", id);
     activeGameObject = gameObject;
   }
 
