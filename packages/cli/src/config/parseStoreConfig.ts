@@ -50,7 +50,7 @@ const StoreConfigUnrefined = z.object({
   tables: z.record(TableName, z.union([DefaultSingleValueTable, FullTable])),
   userTypes: z
     .object({
-      path: BaseRoute.default("/types"),
+      path: OrdinaryRoute.default("/types"),
       enums: z.record(UserEnumName, UserEnum).default({}),
     })
     .default({}),

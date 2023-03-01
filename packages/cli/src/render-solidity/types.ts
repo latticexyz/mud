@@ -49,3 +49,13 @@ export interface RenderTableField extends RenderTableType {
   name: string;
   methodNameSuffix: string;
 }
+
+export interface RenderTypesOptions {
+  /** List of enums to render */
+  enums: RenderTypesEnum[];
+}
+
+export interface RenderTypesEnum {
+  name: string;
+  memberNames: string[];
+}

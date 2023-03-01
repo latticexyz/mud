@@ -5,6 +5,7 @@ import { loadStoreConfig } from "../config/loadStoreConfig.js";
 import { renderTablesFromConfig } from "../render-solidity/renderTablesFromConfig.js";
 import { getSrcDirectory } from "../utils/foundry.js";
 import { formatSolidity } from "../utils/format.js";
+import { renderTypesFromConfig } from "../render-solidity/renderTypesFromConfig.js";
 
 type Options = {
   configPath?: string;
@@ -25,8 +26,10 @@ const commandModule: CommandModule<Options, Options> = {
     const srcDir = await getSrcDirectory();
 
     const config = await loadStoreConfig(configPath);
-    const renderedTables = renderTablesFromConfig(config);
 
+    // render tables
+    const renderedTables = renderTablesFromConfig(config);
+    // write tables to files
     for (const { output, tableName } of renderedTables) {
       const formattedOutput = await formatSolidity(output);
 
@@ -36,7 +39,21 @@ const commandModule: CommandModule<Options, Options> = {
 
       const outputPath = path.join(outputDirectory, `${tableName}.sol`);
       writeFileSync(outputPath, formattedOutput);
-      console.log(`Generated schema: ${outputPath}`);
+      console.log(`Generated table: ${outputPath}`);
+    }
+
+    // render types
+    const renderedTypes = renderTypesFromConfig(config);
+    // write types to file
+    {
+      const formattedOutput = await formatSolidity(renderedTypes);
+
+      const outputPath = path.join(srcDir, `${config.userTypes.path}.sol`);
+      const outputDirectory = path.dirname(outputPath);
+      mkdirSync(outputDirectory, { recursive: true });
+
+      writeFileSync(outputPath, formattedOutput);
+      console.log(`Generated types file: ${outputPath}`);
     }
 
     process.exit(0);
