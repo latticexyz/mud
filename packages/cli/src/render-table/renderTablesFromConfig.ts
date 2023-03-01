@@ -85,7 +85,7 @@ export function renderTablesFromConfig(config: StoreConfig) {
   return renderedTables;
 }
 
-function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
+export function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
   const staticByteLength = getStaticByteLength(schemaType);
   const isDynamic = staticByteLength === 0;
   const typeId = SchemaTypeId[schemaType];
