@@ -33,6 +33,7 @@ export interface IStoreInterface extends utils.Interface {
     "registerSchema(uint256,bytes32)": FunctionFragment;
     "registerStoreHook(uint256,address)": FunctionFragment;
     "setField(uint256,bytes32[],uint8,bytes)": FunctionFragment;
+    "setMetadata(uint256,string,string[])": FunctionFragment;
     "setRecord(uint256,bytes32[],bytes)": FunctionFragment;
   };
 
@@ -66,6 +67,10 @@ export interface IStoreInterface extends utils.Interface {
     values: [BigNumberish, BytesLike[], BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "setMetadata",
+    values: [BigNumberish, string, string[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setRecord",
     values: [BigNumberish, BytesLike[], BytesLike]
   ): string;
@@ -87,6 +92,10 @@ export interface IStoreInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setField", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setMetadata",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setRecord", data: BytesLike): Result;
 
   events: {
@@ -203,6 +212,13 @@ export interface IStore extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setMetadata(
+      table: BigNumberish,
+      tableName: string,
+      fieldNames: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setRecord(
       table: BigNumberish,
       key: BytesLike[],
@@ -261,6 +277,13 @@ export interface IStore extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setMetadata(
+    table: BigNumberish,
+    tableName: string,
+    fieldNames: string[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setRecord(
     table: BigNumberish,
     key: BytesLike[],
@@ -316,6 +339,13 @@ export interface IStore extends BaseContract {
       key: BytesLike[],
       schemaIndex: BigNumberish,
       data: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setMetadata(
+      table: BigNumberish,
+      tableName: string,
+      fieldNames: string[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -413,6 +443,13 @@ export interface IStore extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setMetadata(
+      table: BigNumberish,
+      tableName: string,
+      fieldNames: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setRecord(
       table: BigNumberish,
       key: BytesLike[],
@@ -472,6 +509,13 @@ export interface IStore extends BaseContract {
       key: BytesLike[],
       schemaIndex: BigNumberish,
       data: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMetadata(
+      table: BigNumberish,
+      tableName: string,
+      fieldNames: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

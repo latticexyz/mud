@@ -318,6 +318,29 @@ const _abi = [
         type: "uint256",
       },
       {
+        internalType: "string",
+        name: "tableName",
+        type: "string",
+      },
+      {
+        internalType: "string[]",
+        name: "fieldNames",
+        type: "string[]",
+      },
+    ],
+    name: "setMetadata",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "table",
+        type: "uint256",
+      },
+      {
         internalType: "bytes32[]",
         name: "key",
         type: "bytes32[]",

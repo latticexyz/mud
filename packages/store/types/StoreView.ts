@@ -33,6 +33,7 @@ export interface StoreViewInterface extends utils.Interface {
     "registerSchema(uint256,bytes32)": FunctionFragment;
     "registerStoreHook(uint256,address)": FunctionFragment;
     "setField(uint256,bytes32[],uint8,bytes)": FunctionFragment;
+    "setMetadata(uint256,string,string[])": FunctionFragment;
     "setRecord(uint256,bytes32[],bytes)": FunctionFragment;
   };
 
@@ -66,6 +67,10 @@ export interface StoreViewInterface extends utils.Interface {
     values: [BigNumberish, BytesLike[], BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "setMetadata",
+    values: [BigNumberish, string, string[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setRecord",
     values: [BigNumberish, BytesLike[], BytesLike]
   ): string;
@@ -87,6 +92,10 @@ export interface StoreViewInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "setField", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setMetadata",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setRecord", data: BytesLike): Result;
 
   events: {
@@ -203,6 +212,13 @@ export interface StoreView extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    setMetadata(
+      arg0: BigNumberish,
+      arg1: string,
+      arg2: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     setRecord(
       arg0: BigNumberish,
       arg1: BytesLike[],
@@ -261,6 +277,13 @@ export interface StoreView extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  setMetadata(
+    arg0: BigNumberish,
+    arg1: string,
+    arg2: string[],
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   setRecord(
     arg0: BigNumberish,
     arg1: BytesLike[],
@@ -316,6 +339,13 @@ export interface StoreView extends BaseContract {
       arg1: BytesLike[],
       arg2: BigNumberish,
       arg3: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setMetadata(
+      arg0: BigNumberish,
+      arg1: string,
+      arg2: string[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -413,6 +443,13 @@ export interface StoreView extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    setMetadata(
+      arg0: BigNumberish,
+      arg1: string,
+      arg2: string[],
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     setRecord(
       arg0: BigNumberish,
       arg1: BytesLike[],
@@ -472,6 +509,13 @@ export interface StoreView extends BaseContract {
       arg1: BytesLike[],
       arg2: BigNumberish,
       arg3: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMetadata(
+      arg0: BigNumberish,
+      arg1: string,
+      arg2: string[],
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
