@@ -641,3 +641,4 @@ export const SchemaTypeArrayToElement = {
 };
 
 export type DynamicSchemaType = ArraySchemaType | SchemaType.BYTES | SchemaType.STRING;
+export type StaticSchemaType = Omit<SchemaType, DynamicSchemaType>;

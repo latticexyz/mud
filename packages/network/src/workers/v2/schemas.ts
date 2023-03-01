@@ -1,4 +1,4 @@
-import { SchemaType } from "./SchemaType";
+import { SchemaType } from "@latticexyz/schema-type";
 import { hexToArray } from "./hexToArray";
 import { Contract } from "ethers";
 

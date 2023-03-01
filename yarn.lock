@@ -1911,6 +1911,15 @@
     "@jridgewell/resolve-uri" "^3.0.3"
     "@jridgewell/sourcemap-codec" "^1.4.10"
 
+"@latticexyz/schema-type@link:packages/schema-type":
+  version "1.34.0"
+
+"@latticexyz/schema-type@link:packages/store":
+  version "1.34.0"
+
+"@latticexyz/store@link:packages/store":
+  version "1.34.0"
+
 "@lerna/add@4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@lerna/add/-/add-4.0.0.tgz#c36f57d132502a57b9e7058d1548b7a565ef183f"
