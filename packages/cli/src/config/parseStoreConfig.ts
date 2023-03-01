@@ -19,7 +19,8 @@ const Schema = z
 
 const FullTable = z
   .object({
-    route: OrdinaryRoute.default("/tables"),
+    directory: OrdinaryRoute.default("/tables"),
+    route: BaseRoute.optional(),
     tableIdArgument: z.boolean().default(false),
     storeArgument: z.boolean().default(false),
     primaryKeys: PrimaryKeys,
@@ -33,7 +34,7 @@ const FullTable = z
     } else {
       arg.dataStruct ??= true;
     }
-    return arg as Omit<typeof arg, "dataStruct"> & Required<Pick<typeof arg, "dataStruct">>;
+    return arg as RequiredKeys<typeof arg, "dataStruct">;
   });
 
 const DefaultSingleValueTable = z.nativeEnum(SchemaType).transform((schemaType) => {
@@ -44,10 +45,21 @@ const DefaultSingleValueTable = z.nativeEnum(SchemaType).transform((schemaType) 
   });
 });
 
+const TablesRecord = z.record(TableName, z.union([DefaultSingleValueTable, FullTable])).transform((tables) => {
+  // default route depends on tableName
+  for (const tableName of Object.keys(tables)) {
+    const table = tables[tableName];
+    table.route ??= `/${tableName}`;
+
+    tables[tableName] = table;
+  }
+  return tables as Record<string, RequiredKeys<typeof tables[string], "route">>;
+});
+
 const StoreConfigUnrefined = z.object({
   baseRoute: BaseRoute.default(""),
   storeImportPath: z.string().default("@latticexyz/store/src/"),
-  tables: z.record(TableName, z.union([DefaultSingleValueTable, FullTable])),
+  tables: TablesRecord,
   userTypes: z
     .object({
       path: OrdinaryRoute.default("/types"),
@@ -79,7 +91,9 @@ export interface StoreUserConfig {
 }
 
 interface FullTableConfig {
-  /** Output path for the file, and relevant for the table id. The table id will be keccak256(concat(baseRoute,route,tableName)). Default is "tables/" */
+  /** Output directory path for the file. Default is "/tables" */
+  directory?: string;
+  /** Route is used to register the table and construct its id. The table id will be keccak256(concat(baseRoute,route)). Default is "/<tableName>" */
   route?: string;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
   tableIdArgument?: boolean;
@@ -120,3 +134,5 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
     });
   }
 }
+
+type RequiredKeys<T extends Record<string, unknown>, P extends string> = T & Required<Pick<T, P>>;

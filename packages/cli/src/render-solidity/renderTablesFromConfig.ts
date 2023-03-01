@@ -59,13 +59,14 @@ export function renderTablesFromConfig(config: StoreConfig) {
       } else {
         return {
           tableIdName: tableName + "TableId",
-          baseRoute: config.baseRoute + tableData.route,
-          subRoute: `/${tableName}`,
+          baseRoute: config.baseRoute,
+          subRoute: tableData.route,
         };
       }
     })();
 
     renderedTables.push({
+      directory: tableData.directory,
       tableName,
       tableData,
       output: renderTable({
