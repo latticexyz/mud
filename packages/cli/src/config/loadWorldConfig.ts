@@ -8,28 +8,22 @@ import { validateEthereumAddressOrSystemName } from "./validation.js";
 const SystemName = ObjectName;
 
 // Base routes are ordinary routes with an empty string as a valid value
-const SystemRoute = z.object({ route: BaseRoute.default("") });
+const SystemRoute = BaseRoute.optional();
 
 // Each element in the SystemAccessList must be a valid Ethereum address or a valid system name
-const SystemAccessList = z.array(z.string()).superRefine((arr, ctx) => {
-  arr.forEach((element) => validateEthereumAddressOrSystemName(element, ctx));
-});
-
-// System access is a union type of either open access or access restricted to a list of addresses or systems
-const SystemAccess = z
-  .discriminatedUnion("openAccess", [
-    z.object({
-      openAccess: z.literal(true),
-    }),
-    z.object({
-      openAccess: z.literal(false),
-      accessList: SystemAccessList,
-    }),
-  ])
-  .default({ openAccess: true });
+const SystemAccessList = z
+  .array(z.string())
+  .default([])
+  .superRefine((arr, ctx) => {
+    arr.forEach((element) => validateEthereumAddressOrSystemName(element, ctx));
+  });
 
 // The system config is a combination of a route config and access config
-const System = z.intersection(SystemRoute, SystemAccess);
+const System = z.object({
+  route: SystemRoute,
+  openAccess: z.boolean().default(true),
+  accessList: SystemAccessList,
+});
 
 export const WorldConfig = z.object({
   baseRoute: BaseRoute.default(""),
@@ -42,7 +36,7 @@ export const WorldConfig = z.object({
 export type SystemConfig =
   | {
       /** The system will be deployed at `baseRoute + route` */
-      route: string;
+      route?: string;
     } & (
       | {
           /** If openAccess is true, any address can call the system */
@@ -76,6 +70,18 @@ export interface WorldUserConfig {
 
 // Same as WorldUserConfig, but without optional fields (because of default values)
 export type WorldConfig = z.output<typeof WorldConfig>;
+
+// Same as WorldConfig, but with resolved route and accessList and default values for systems that are not overridden
+export type ResolvedWorldConfig = Omit<WorldConfig, "overrideSystems" | "excludeSystems"> & {
+  systems: Record<
+    string,
+    Omit<SystemConfig, "route" | "accessList"> & {
+      route: string;
+      accessListSystems: string[];
+      accessListAddresses: string[];
+    }
+  >;
+};
 
 export async function loadWorldConfig(configPath?: string) {
   const config = await loadConfig(configPath);
