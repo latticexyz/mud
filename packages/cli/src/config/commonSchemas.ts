@@ -1,3 +1,4 @@
+import { getStaticByteLength, SchemaType } from "@latticexyz/schema-type";
 import { z } from "zod";
 import {
   validateBaseRoute,
@@ -32,3 +33,8 @@ export const Directory = z.string().superRefine(validateDirectory);
 
 /** A valid Ethereum address */
 export const EthereumAddress = z.string().superRefine(validateEthereumAddress);
+
+/** Static subset of SchemaType enum */
+export const StaticSchemaType = z
+  .nativeEnum(SchemaType)
+  .refine((arg) => getStaticByteLength(arg) > 0, "Primary key must not use dynamic SchemaType");

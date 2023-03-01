@@ -1,3 +1,5 @@
+import { UserTypeDetails } from "./userType.js";
+
 export interface RenderTableOptions {
   /** Name of the library to render. */
   libraryName: string;
@@ -34,6 +36,7 @@ export interface RenderTableType {
 export interface RenderTablePrimaryKey extends RenderTableType {
   name: string;
   isDynamic: false;
+  userTypeDetails?: UserTypeDetails;
 }
 
 export interface RenderTableStaticField extends RenderTableField {
@@ -48,6 +51,7 @@ export interface RenderTableField extends RenderTableType {
   arrayElement: RenderTableType | undefined;
   name: string;
   methodNameSuffix: string;
+  userTypeDetails?: UserTypeDetails;
 }
 
 export interface RenderTypesOptions {

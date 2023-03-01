@@ -1,3 +1,4 @@
+import path from "path";
 import { renderTable } from "./renderTable.js";
 import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/parseStoreConfig.js";
@@ -8,13 +9,15 @@ import {
   RenderTableStaticField,
   RenderTableType,
 } from "./types.js";
+import { resolveSchemaOrUserType } from "./userType.js";
 
-export function renderTablesFromConfig(config: StoreConfig) {
+export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string) {
   const storeImportPath = config.storeImportPath;
 
   const renderedTables = [];
   for (const tableName of Object.keys(config.tables)) {
     const tableData = config.tables[tableName];
+    const outputDirectory = path.join(srcDirectory, tableData.directory);
 
     // struct adds methods to get/set all values at once
     const withStruct = tableData.dataStruct;
@@ -24,26 +27,40 @@ export function renderTablesFromConfig(config: StoreConfig) {
     const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
 
     const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
-      const type = tableData.primaryKeys[name];
-      const typeInfo = getSchemaTypeInfo(type);
+      const schemaOrUserType = tableData.primaryKeys[name];
+      const { schemaType, userTypeDetails } = resolveSchemaOrUserType(
+        schemaOrUserType,
+        outputDirectory,
+        config.userTypes
+      );
+
+      const typeInfo = getSchemaTypeInfo(schemaType);
       if (typeInfo.isDynamic) throw new Error("Parsing error: found dynamic primary key");
 
       const primaryKey: RenderTablePrimaryKey = {
         ...typeInfo,
         name,
         isDynamic: false,
+        userTypeDetails,
       };
       return primaryKey;
     });
 
     const fields = Object.keys(tableData.schema).map((name) => {
-      const type = tableData.schema[name];
-      const elementType = SchemaTypeArrayToElement[type];
+      const schemaOrUserType = tableData.schema[name];
+      const { schemaType, userTypeDetails } = resolveSchemaOrUserType(
+        schemaOrUserType,
+        outputDirectory,
+        config.userTypes
+      );
+
+      const elementType = SchemaTypeArrayToElement[schemaType];
       const field: RenderTableField = {
-        ...getSchemaTypeInfo(type),
+        ...getSchemaTypeInfo(schemaType),
         arrayElement: elementType ? getSchemaTypeInfo(elementType) : undefined,
         name,
         methodNameSuffix: noFieldMethodSuffix ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
+        userTypeDetails,
       };
       return field;
     });
@@ -66,7 +83,7 @@ export function renderTablesFromConfig(config: StoreConfig) {
     })();
 
     renderedTables.push({
-      directory: tableData.directory,
+      outputDirectory,
       tableName,
       tableData,
       output: renderTable({
