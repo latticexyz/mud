@@ -21,6 +21,10 @@ export class NotESMConfigError extends Error {
   message = "MUD config must be an ES module";
 }
 
+export class MUDError extends Error {
+  name = "MUDError";
+}
+
 export function UnrecognizedSystemErrorFactory(path: string[], systemName: string) {
   return new z.ZodError([{ code: ZodIssueCode.custom, path: path, message: `Unrecognized system: "${systemName}"` }]);
 }
@@ -48,6 +52,8 @@ export function logError(error: Error) {
     console.log(
       chalk.blue(`Please name your config file \`mud.config.mts\`, or use \`type: "module"\` in package.json`)
     );
+  } else if (error instanceof MUDError) {
+    console.log(chalk.red(error));
   } else {
     console.log(error);
   }
