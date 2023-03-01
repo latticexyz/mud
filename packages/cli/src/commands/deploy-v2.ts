@@ -6,11 +6,15 @@ import { basename } from "path";
 import type { CommandModule } from "yargs";
 import { loadWorldConfig } from "../config/loadWorldConfig.js";
 import { deploy } from "../utils/deploy-v2.js";
+import { logError } from "../utils/errors.js";
+import { forge } from "../utils/foundry.js";
 import { getOutDirectory } from "../utils/forgeConfig.js";
 
 type Options = {
   configPath?: string;
   printConfig?: boolean;
+  rpc: string;
+  privateKey: string;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -22,20 +26,19 @@ const commandModule: CommandModule<Options, Options> = {
     return yargs.options({
       configPath: { type: "string", desc: "Path to the config file" },
       printConfig: { type: "boolean", desc: "Print the resolved config" },
+      rpc: { type: "string", desc: "RPC endpoint to deploy to", default: "http://localhost:8545" },
+      privateKey: {
+        type: "string",
+        desc: "Private key of the deployer account",
+        default: "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", // Anvil default private key
+      },
     });
   },
 
-  async handler({ configPath, printConfig }) {
+  async handler(args) {
+    const { configPath, printConfig } = args;
     // Run forge build
-    try {
-      await execa("forge", ["build"], { stdout: "inherit", stderr: "pipe" });
-    } catch (error: any) {
-      if (error?.stderr) {
-        console.error(error.stderr);
-      }
-      console.error(chalk.red("Error running `forge build`"));
-      process.exit(1);
-    }
+    await forge("build");
 
     // Get a list of all contract names
     const outDir = await getOutDirectory();
@@ -49,7 +52,13 @@ const commandModule: CommandModule<Options, Options> = {
 
     if (printConfig) console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
 
-    deploy(config);
+    try {
+      await deploy(config, args);
+    } catch (error: any) {
+      logError(error);
+      process.exit(1);
+    }
+
     process.exit(0);
   },
 };

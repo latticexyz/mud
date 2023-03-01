@@ -1,4 +1,4 @@
-import { z, ZodError, ZodIssueCode } from "zod";
+import { z, ZodError } from "zod";
 import { fromZodErrorCustom, UnrecognizedSystemErrorFactory } from "../utils/errors.js";
 import { BaseRoute, ObjectName } from "./commonSchemas.js";
 import { loadConfig } from "./loadConfig.js";
@@ -37,7 +37,7 @@ const SystemConfig = z.intersection(
 // The parsed world config is the result of parsing the user config
 export const WorldConfig = z.object({
   baseRoute: BaseRoute.default(""),
-  worldPath: z.string().optional(),
+  worldContractName: z.string().default("World"),
   overrideSystems: z.record(SystemName, SystemConfig).default({}),
   excludeSystems: z.array(SystemName).default([]),
 });
@@ -155,8 +155,8 @@ export type SystemUserConfig =
 export interface WorldUserConfig {
   /** The base route to register tables and systems at. Defaults to the root route (empty string) */
   baseRoute?: string;
-  /** The path to the World contract to deploy. If no world path is provided, a vanilla World is deployed */
-  worldPath?: string;
+  /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
+  worldContrcatName?: string;
   /**
    * Contracts named *System files will be deployed by default
    * as public systems at `baseRoute/ContractName`, unless overridden
