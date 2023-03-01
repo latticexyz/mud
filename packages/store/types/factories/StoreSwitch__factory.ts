@@ -2,7 +2,8 @@
 /* tslint:disable */
 /* eslint-disable */
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
-import { Provider, TransactionRequest } from "@ethersproject/providers";
+import type { Provider, TransactionRequest } from "@ethersproject/providers";
+import type { PromiseOrValue } from "../common";
 import type { StoreSwitch, StoreSwitchInterface } from "../StoreSwitch";
 
 const _abi = [
@@ -11,7 +12,7 @@ const _abi = [
     name: "StoreSwitch_InvalidInsideConstructor",
     type: "error",
   },
-];
+] as const;
 
 const _bytecode =
   "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea264697066735822122087b5341841ea272df398003edd5b5c960c54e20d8ed9278f4a5c1b6582273e1664736f6c634300080d0033";
@@ -31,27 +32,25 @@ export class StoreSwitch__factory extends ContractFactory {
     } else {
       super(_abi, _bytecode, args[0]);
     }
-    this.contractName = "StoreSwitch";
   }
 
-  deploy(
-    overrides?: Overrides & { from?: string | Promise<string> }
+  override deploy(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<StoreSwitch> {
     return super.deploy(overrides || {}) as Promise<StoreSwitch>;
   }
-  getDeployTransaction(
-    overrides?: Overrides & { from?: string | Promise<string> }
+  override getDeployTransaction(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
-  attach(address: string): StoreSwitch {
+  override attach(address: string): StoreSwitch {
     return super.attach(address) as StoreSwitch;
   }
-  connect(signer: Signer): StoreSwitch__factory {
+  override connect(signer: Signer): StoreSwitch__factory {
     return super.connect(signer) as StoreSwitch__factory;
   }
-  static readonly contractName: "StoreSwitch";
-  public readonly contractName: "StoreSwitch";
+
   static readonly bytecode = _bytecode;
   static readonly abi = _abi;
   static createInterface(): StoreSwitchInterface {

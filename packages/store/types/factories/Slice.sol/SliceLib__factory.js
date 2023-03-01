@@ -35,7 +35,6 @@ export class SliceLib__factory extends ContractFactory {
         else {
             super(_abi, _bytecode, args[0]);
         }
-        this.contractName = "SliceLib";
     }
     deploy(overrides) {
         return super.deploy(overrides || {});

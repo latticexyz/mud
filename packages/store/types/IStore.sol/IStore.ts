@@ -25,9 +25,9 @@ import type {
   TypedListener,
   OnEvent,
   PromiseOrValue,
-} from "./common";
+} from "../common";
 
-export interface StoreViewInterface extends utils.Interface {
+export interface IStoreInterface extends utils.Interface {
   functions: {
     "deleteRecord(uint256,bytes32[])": FunctionFragment;
     "getField(uint256,bytes32[],uint8)": FunctionFragment;
@@ -198,12 +198,12 @@ export type StoreSetRecordEvent = TypedEvent<
 
 export type StoreSetRecordEventFilter = TypedEventFilter<StoreSetRecordEvent>;
 
-export interface StoreView extends BaseContract {
+export interface IStore extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: StoreViewInterface;
+  interface: IStoreInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,
@@ -226,8 +226,8 @@ export interface StoreView extends BaseContract {
 
   functions: {
     deleteRecord(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -259,43 +259,43 @@ export interface StoreView extends BaseContract {
     isStore(overrides?: CallOverrides): Promise<[void]>;
 
     registerSchema(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      schema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     registerStoreHook(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<string>,
+      table: PromiseOrValue<BigNumberish>,
+      hooks: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     setField(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
-      arg2: PromiseOrValue<BigNumberish>,
-      arg3: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
+      schemaIndex: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     setMetadata(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<string>,
-      arg2: PromiseOrValue<string>[],
+      table: PromiseOrValue<BigNumberish>,
+      tableName: PromiseOrValue<string>,
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
     setRecord(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
-      arg2: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
 
   deleteRecord(
-    arg0: PromiseOrValue<BigNumberish>,
-    arg1: PromiseOrValue<BytesLike>[],
+    table: PromiseOrValue<BigNumberish>,
+    key: PromiseOrValue<BytesLike>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -327,43 +327,43 @@ export interface StoreView extends BaseContract {
   isStore(overrides?: CallOverrides): Promise<void>;
 
   registerSchema(
-    arg0: PromiseOrValue<BigNumberish>,
-    arg1: PromiseOrValue<BytesLike>,
+    table: PromiseOrValue<BigNumberish>,
+    schema: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   registerStoreHook(
-    arg0: PromiseOrValue<BigNumberish>,
-    arg1: PromiseOrValue<string>,
+    table: PromiseOrValue<BigNumberish>,
+    hooks: PromiseOrValue<string>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   setField(
-    arg0: PromiseOrValue<BigNumberish>,
-    arg1: PromiseOrValue<BytesLike>[],
-    arg2: PromiseOrValue<BigNumberish>,
-    arg3: PromiseOrValue<BytesLike>,
+    table: PromiseOrValue<BigNumberish>,
+    key: PromiseOrValue<BytesLike>[],
+    schemaIndex: PromiseOrValue<BigNumberish>,
+    data: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   setMetadata(
-    arg0: PromiseOrValue<BigNumberish>,
-    arg1: PromiseOrValue<string>,
-    arg2: PromiseOrValue<string>[],
+    table: PromiseOrValue<BigNumberish>,
+    tableName: PromiseOrValue<string>,
+    fieldNames: PromiseOrValue<string>[],
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   setRecord(
-    arg0: PromiseOrValue<BigNumberish>,
-    arg1: PromiseOrValue<BytesLike>[],
-    arg2: PromiseOrValue<BytesLike>,
+    table: PromiseOrValue<BigNumberish>,
+    key: PromiseOrValue<BytesLike>[],
+    data: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
   callStatic: {
     deleteRecord(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -395,36 +395,36 @@ export interface StoreView extends BaseContract {
     isStore(overrides?: CallOverrides): Promise<void>;
 
     registerSchema(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      schema: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     registerStoreHook(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<string>,
+      table: PromiseOrValue<BigNumberish>,
+      hooks: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     setField(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
-      arg2: PromiseOrValue<BigNumberish>,
-      arg3: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
+      schemaIndex: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
     setMetadata(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<string>,
-      arg2: PromiseOrValue<string>[],
+      table: PromiseOrValue<BigNumberish>,
+      tableName: PromiseOrValue<string>,
+      fieldNames: PromiseOrValue<string>[],
       overrides?: CallOverrides
     ): Promise<void>;
 
     setRecord(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
-      arg2: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -463,8 +463,8 @@ export interface StoreView extends BaseContract {
 
   estimateGas: {
     deleteRecord(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -496,44 +496,44 @@ export interface StoreView extends BaseContract {
     isStore(overrides?: CallOverrides): Promise<BigNumber>;
 
     registerSchema(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      schema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     registerStoreHook(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<string>,
+      table: PromiseOrValue<BigNumberish>,
+      hooks: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     setField(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
-      arg2: PromiseOrValue<BigNumberish>,
-      arg3: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
+      schemaIndex: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     setMetadata(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<string>,
-      arg2: PromiseOrValue<string>[],
+      table: PromiseOrValue<BigNumberish>,
+      tableName: PromiseOrValue<string>,
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
     setRecord(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
-      arg2: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
     deleteRecord(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -565,36 +565,36 @@ export interface StoreView extends BaseContract {
     isStore(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     registerSchema(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      schema: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     registerStoreHook(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<string>,
+      table: PromiseOrValue<BigNumberish>,
+      hooks: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     setField(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
-      arg2: PromiseOrValue<BigNumberish>,
-      arg3: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
+      schemaIndex: PromiseOrValue<BigNumberish>,
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     setMetadata(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<string>,
-      arg2: PromiseOrValue<string>[],
+      table: PromiseOrValue<BigNumberish>,
+      tableName: PromiseOrValue<string>,
+      fieldNames: PromiseOrValue<string>[],
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
     setRecord(
-      arg0: PromiseOrValue<BigNumberish>,
-      arg1: PromiseOrValue<BytesLike>[],
-      arg2: PromiseOrValue<BytesLike>,
+      table: PromiseOrValue<BigNumberish>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };

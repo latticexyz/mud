@@ -2,8 +2,9 @@
 /* tslint:disable */
 /* eslint-disable */
 import { Signer, utils, Contract, ContractFactory, Overrides } from "ethers";
-import { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { SliceLib, SliceLibInterface } from "../SliceLib";
+import type { Provider, TransactionRequest } from "@ethersproject/providers";
+import type { PromiseOrValue } from "../../common";
+import type { SliceLib, SliceLibInterface } from "../../Slice.sol/SliceLib";
 
 const _abi = [
   {
@@ -27,7 +28,7 @@ const _abi = [
     name: "Slice_OutOfBounds",
     type: "error",
   },
-];
+] as const;
 
 const _bytecode =
   "0x60566037600b82828239805160001a607314602a57634e487b7160e01b600052600060045260246000fd5b30600052607381538281f3fe73000000000000000000000000000000000000000030146080604052600080fdfea2646970667358221220477a1183b05926b45ee63a2afd826a0192a1932cc7facaac93d26bf06cb316ed64736f6c634300080d0033";
@@ -47,27 +48,25 @@ export class SliceLib__factory extends ContractFactory {
     } else {
       super(_abi, _bytecode, args[0]);
     }
-    this.contractName = "SliceLib";
   }
 
-  deploy(
-    overrides?: Overrides & { from?: string | Promise<string> }
+  override deploy(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<SliceLib> {
     return super.deploy(overrides || {}) as Promise<SliceLib>;
   }
-  getDeployTransaction(
-    overrides?: Overrides & { from?: string | Promise<string> }
+  override getDeployTransaction(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): TransactionRequest {
     return super.getDeployTransaction(overrides || {});
   }
-  attach(address: string): SliceLib {
+  override attach(address: string): SliceLib {
     return super.attach(address) as SliceLib;
   }
-  connect(signer: Signer): SliceLib__factory {
+  override connect(signer: Signer): SliceLib__factory {
     return super.connect(signer) as SliceLib__factory;
   }
-  static readonly contractName: "SliceLib";
-  public readonly contractName: "SliceLib";
+
   static readonly bytecode = _bytecode;
   static readonly abi = _abi;
   static createInterface(): SliceLibInterface {

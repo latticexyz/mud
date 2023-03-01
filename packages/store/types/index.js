@@ -1,9 +1,11 @@
-export { IStore__factory } from "./factories/IStore__factory";
-export { IStoreHook__factory } from "./factories/IStoreHook__factory";
-export { SchemaLib__factory } from "./factories/SchemaLib__factory";
-export { SliceLib__factory } from "./factories/SliceLib__factory";
+import * as factories_1 from "./factories";
+export { factories_1 as factories };
+export { IStore__factory } from "./factories/IStore.sol/IStore__factory";
+export { IStoreHook__factory } from "./factories/IStore.sol/IStoreHook__factory";
+export { SchemaLib__factory } from "./factories/Schema.sol/SchemaLib__factory";
+export { SliceLib__factory } from "./factories/Slice.sol/SliceLib__factory";
 export { Store__factory } from "./factories/Store__factory";
-export { StoreCore__factory } from "./factories/StoreCore__factory";
-export { StoreCoreExtended__factory } from "./factories/StoreCoreExtended__factory";
+export { StoreCore__factory } from "./factories/StoreCore.sol/StoreCore__factory";
+export { StoreCoreExtended__factory } from "./factories/StoreCore.sol/StoreCoreExtended__factory";
 export { StoreSwitch__factory } from "./factories/StoreSwitch__factory";
 export { StoreView__factory } from "./factories/StoreView__factory";

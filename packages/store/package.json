@@ -30,7 +30,7 @@
   "devDependencies": {
     "@latticexyz/cli": "^1.37.1",
     "@latticexyz/schema-type": "^1.34.0",
-    "@typechain/ethers-v5": "^9.0.0",
+    "@typechain/ethers-v5": "^10.2.0",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
