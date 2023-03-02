@@ -54,6 +54,10 @@ library ${libraryName} {
   /** Register the table's schema */
   function registerSchema(${_typedTableId}) internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
+
+    string[] memory _fieldNames = new string[](${fields.length});
+    ${renderList(fields, (field, index) => `_fieldNames[${index}] = "${field.name}";`)}
+    StoreSwitch.setMetadata(_tableId, "${libraryName}", _fieldNames);
   }
 
 ${

@@ -43,6 +43,18 @@ library StoreSwitch {
     }
   }
 
+  function setMetadata(
+    uint256 table,
+    string memory tableName,
+    string[] memory fieldNames
+  ) internal {
+    if (isDelegateCall()) {
+      StoreCore.setMetadata(table, tableName, fieldNames);
+    } else {
+      IStore(msg.sender).setMetadata(table, tableName, fieldNames);
+    }
+  }
+
   function getSchema(uint256 table) internal view returns (Schema schema) {
     if (isDelegateCall()) {
       schema = StoreCore.getSchema(table);
