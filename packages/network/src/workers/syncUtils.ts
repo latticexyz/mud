@@ -33,7 +33,7 @@ import { createChannel, createClient } from "nice-grpc-web";
 import { formatComponentID, formatEntityID } from "../utils";
 import { grpc } from "@improbable-eng/grpc-web";
 import { debug as parentDebug } from "./debug";
-import { fetchStoreEvents } from "./v2/fetchStoreEvents";
+import { fetchStoreEvents } from "../v2/fetchStoreEvents";
 import { orderBy } from "lodash";
 
 const debug = parentDebug.extend("syncUtils");

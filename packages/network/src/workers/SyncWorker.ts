@@ -48,7 +48,7 @@ import {
 import { createBlockNumberStream } from "../createBlockNumberStream";
 import { SingletonID, SyncState } from "./constants";
 import { debug as parentDebug } from "./debug";
-import { fetchStoreEvents } from "./v2/fetchStoreEvents";
+import { fetchStoreEvents } from "../v2/fetchStoreEvents";
 import { abi as IStoreAbi } from "@latticexyz/store/abi/IStore.json";
 import { Contract } from "ethers";
 

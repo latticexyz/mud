@@ -1,6 +1,6 @@
 import { Contract } from "ethers";
-import { NetworkComponentUpdate, NetworkEvents } from "../../types";
-import { formatComponentID, formatEntityID } from "../../utils";
+import { NetworkComponentUpdate, NetworkEvents } from "../types";
+import { formatComponentID, formatEntityID } from "../utils";
 import { orderBy } from "lodash";
 import { isDefined } from "./utils/isDefined";
 import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
