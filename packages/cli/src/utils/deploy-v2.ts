@@ -1,4 +1,3 @@
-import { execa } from "execa";
 import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { MUDConfig } from "../config/index.js";
@@ -17,23 +16,6 @@ export interface DeployConfig {
   privateKey: string;
 }
 
-function loadContractData(src: string): { bytecode: string; abi: ContractInterface } {
-  let data: any;
-  try {
-    data = JSON.parse(readFileSync(src, "utf8"));
-  } catch (error: any) {
-    throw new MUDError(`Error reading file at ${src}: ${error?.message}`);
-  }
-
-  const bytecode = data?.bytecode?.object;
-  if (!bytecode) throw new MUDError(`No bytecode found in ${src}`);
-
-  const abi = data?.abi;
-  if (!abi) throw new MUDError(`No ABI found in ${src}`);
-
-  return { abi, bytecode };
-}
-
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   const { worldContractName, baseRoute, postDeployScript } = mudConfig;
   const { rpc, privateKey } = deployConfig;
@@ -46,7 +28,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   console.log("Initial nonce", globalNonce.nonce);
 
   // Catch all to await any promises before exiting the script
-  const txPromises: Promise<unknown>[] = [];
+  const promises: Promise<unknown>[] = [];
 
   // Get block number before deploying
   const blockNumber = Number(await cast("block-number", "--rpc-url", rpc));
@@ -68,45 +50,73 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   if (baseRoute) await safeTxExecute(WorldContract, "registerRoute", "", baseRoute);
 
   // Register tables
-  for (const [tableName, tableConfig] of Object.entries(mudConfig.tables)) {
-    console.log(chalk.blue("Registering table", tableName, "at", baseRoute + tableConfig.route));
-    // Register nested routes
-    await registerNestedRoute(WorldContract, baseRoute, tableConfig.route);
+  promises.push(
+    ...Object.entries(mudConfig.tables).map(async ([tableName, tableConfig]) => {
+      console.log(chalk.blue("Registering table", tableName, "at", baseRoute + tableConfig.route));
+      // Register nested routes
+      await registerNestedRoute(WorldContract, baseRoute, tableConfig.route);
 
-    // TODO: Register table
-    // await safeTxExecute(
-    //   WorldContract,
-    //   "registerTable",
-    //   tableBaseRoute,
-    //   tableRouteFragments[tableRouteFragments.length - 1],
-    //   encodeSchema(tableConfig.schema)
-    // );
-  }
+      // TODO: Register table
+      // await safeTxExecute(
+      //   WorldContract,
+      //   "registerTable",
+      //   tableBaseRoute,
+      //   tableRouteFragments[tableRouteFragments.length - 1],
+      //   encodeSchema(tableConfig.schema)
+      // );
+    })
+  );
 
   // Register systems (using forEach instead of for..of to avoid blocking on async calls)
-  Object.entries(mudConfig.systems).forEach(async ([systemName, systemConfig]) => {
-    console.log(chalk.blue("Registering", systemName, "at", baseRoute + systemConfig.route));
+  promises.push(
+    ...Object.entries(mudConfig.systems).map(async ([systemName, systemConfig]) => {
+      console.log(chalk.blue("Registering", systemName, "at", baseRoute + systemConfig.route));
 
-    // Register system route
-    await registerNestedRoute(WorldContract, baseRoute, systemConfig.route, true);
+      // Register system route
+      await registerNestedRoute(WorldContract, baseRoute, systemConfig.route, true);
 
-    // Register system at route
-    await safeTxExecute(
-      WorldContract,
-      "registerSystem",
-      baseRoute,
-      systemConfig.route,
-      await contractPromises[systemName],
-      systemConfig.openAccess
+      // Register system at route
+      await safeTxExecute(
+        WorldContract,
+        "registerSystem",
+        baseRoute,
+        systemConfig.route,
+        await contractPromises[systemName],
+        systemConfig.openAccess
+      );
+
+      console.log(chalk.green("Registered", systemName, "at", baseRoute + systemConfig.route));
+    })
+  );
+
+  // Wait for routes to be registered before granting access to them
+  await Promise.all(promises);
+
+  // Grant access to systems
+  for (const [systemName, systemConfig] of Object.entries(mudConfig.systems)) {
+    const systemRoute = baseRoute + systemConfig.route;
+
+    // Grant access to addresses
+    promises.push(
+      ...systemConfig.accessListAddresses.map(async (address) => {
+        console.log(chalk.blue(`Grant ${address} access to ${systemName} (${systemRoute})`));
+        await safeTxExecute(WorldContract, "grantAccess", systemRoute, address);
+        console.log(chalk.green(`Granted ${address} access to ${systemName} (${systemRoute})`));
+      })
     );
 
-    console.log(chalk.green("Registered", systemName, "at", baseRoute + systemConfig.route));
-  });
+    // Grant access to other systems
+    promises.push(
+      ...systemConfig.accessListSystems.map(async (granteeSystem) => {
+        console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${systemRoute})`));
+        await safeTxExecute(WorldContract, "grantAccess", systemRoute, await contractPromises[granteeSystem]);
+        console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${systemRoute})`));
+      })
+    );
+  }
 
-  // TODO: Grant access to systems
-
-  // Await all transactions
-  await Promise.all(txPromises);
+  // Await all promises
+  await Promise.all(promises);
 
   // Execute postDeploy forge script
   const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
@@ -122,12 +132,15 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
         "--rpc-url",
         rpc,
         "--private-key",
-        privateKey
+        privateKey,
+        "--broadcast"
       )
     );
   } else {
     console.log(`No script at ${postDeployPath}, skipping post deploy hook`);
   }
+
+  return;
 
   // ------------------- INTERNAL FUNCTIONS -------------------
   // (Inlined to avoid having to pass around globalNonce, signer and forgeOutDir)
@@ -149,7 +162,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
       const factory = new ethers.ContractFactory(abi, bytecode, signer);
       console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${globalNonce.nonce}`));
       const deployPromise = factory.deploy({ nonce: globalNonce.nonce++ });
-      txPromises.push(deployPromise);
+      promises.push(deployPromise);
       const { address } = await deployPromise;
 
       console.log(chalk.green("Deployed", contractName, "to", address));
@@ -176,7 +189,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
       const gasLimit = await contract.estimateGas[func].apply(null, args);
       console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${globalNonce.nonce}`));
       const txPromise = contract[func].apply(null, [...args, { gasLimit, nonce: globalNonce.nonce++ }]);
-      txPromises.push(txPromise);
+      promises.push(txPromise);
       return txPromise;
     } catch (error: any) {
       throw new MUDError(`Gas estimation error for ${functionName}: ${error?.reason}`);
@@ -207,7 +220,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
    * Load the contract's abi and bytecode from the file system
    * @param contractName: Name of the contract to load
    */
-  async function getContractData(contractName: string): Promise<{ bytecode: string; abi: string }> {
+  async function getContractData(contractName: string): Promise<{ bytecode: string; abi: ContractInterface }> {
     let data: any;
     const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
     try {
