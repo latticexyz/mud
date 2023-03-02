@@ -1,84 +1,11 @@
-import { ComponentValue } from "@latticexyz/recs";
-import { Contract, ethers } from "ethers";
+import { Contract } from "ethers";
 import { NetworkComponentUpdate, NetworkEvents } from "../../types";
 import { formatComponentID, formatEntityID } from "../../utils";
 import { orderBy } from "lodash";
-import { getMetadata, registerMetadata, registerSchema } from "./schemas";
-import { decodeData, decodeField } from "./decodeData";
-import { isDefined } from "./isDefined";
-import { keccak256 } from "@latticexyz/utils";
-import { arrayToHex } from "./arrayToHex";
-
-const schemaTableId = keccak256("mud.store.table.schema");
-const metadataTableId = keccak256("/store_internals/tables/StoreMetadata");
-
-const storeEvents = ["StoreSetRecord", "StoreSetField", "StoreDeleteRecord"] as const;
-
-async function decodeStoreSetRecord(
-  contract: Contract,
-  table: string,
-  keyTuple: string[],
-  data: string
-): Promise<ComponentValue> {
-  // registerSchema event
-  if (table === schemaTableId) {
-    const [tableForSchema, ...otherKeys] = keyTuple;
-    if (otherKeys.length) {
-      console.warn("registerSchema event has more than one value in key tuple", table, keyTuple);
-    }
-    registerSchema(contract, tableForSchema, data);
-  }
-
-  const schema = await registerSchema(contract, table);
-  const decoded = decodeData(schema, data);
-
-  if (table === metadataTableId) {
-    const [tableForMetadata, ...otherKeys] = keyTuple;
-    if (otherKeys.length) {
-      console.warn("setMetadata event has more than one value in key tuple", table, keyTuple);
-    }
-    const tableName = decoded[0];
-    const [fieldNames] = ethers.utils.defaultAbiCoder.decode(["string[]"], arrayToHex(decoded[1]));
-    registerMetadata(contract, tableForMetadata, tableName, fieldNames);
-  }
-
-  const metadata = getMetadata(contract, table);
-  if (metadata) {
-    const { tableName, fieldNames } = metadata;
-    const namedValues: Record<string, any> = {};
-    for (const [index, fieldName] of fieldNames.entries()) {
-      namedValues[fieldName] = decoded[index];
-    }
-    return {
-      ...decoded,
-      ...namedValues,
-    };
-  }
-
-  return decoded;
-}
-
-async function decodeStoreSetField(
-  contract: Contract,
-  table: string,
-  keyTuple: string[],
-  schemaIndex: number,
-  data: string
-): Promise<ComponentValue> {
-  const schema = await registerSchema(contract, table);
-  const decoded = decodeField(schema, schemaIndex, data);
-
-  const metadata = getMetadata(contract, table);
-  if (metadata) {
-    const { tableName, fieldNames } = metadata;
-    return {
-      ...decoded,
-      [fieldNames[schemaIndex]]: decoded[schemaIndex],
-    };
-  }
-
-  return decoded;
-}
+import { isDefined } from "./utils/isDefined";
+import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
+import { decodeStoreSetField } from "./decodeStoreSetField";
+import { storeEvents } from "./constants";
 
 export async function fetchStoreEvents(contract: Contract, fromBlock: number, toBlock: number) {
   const topicSets = storeEvents.map((eventName) => contract.filters[eventName]().topics).filter(isDefined);
@@ -138,6 +65,8 @@ export async function fetchStoreEvents(contract: Contract, fromBlock: number, to
       );
       console.log("decoded StoreSetField value", value);
       ecsEvent.partialValue = value;
+    } else if (name === "StoreDeleteRecord") {
+      // TODO
     }
 
     ecsEvents.push(ecsEvent);

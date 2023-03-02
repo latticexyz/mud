@@ -1,6 +1,6 @@
 import { DynamicSchemaType, StaticSchemaType, SchemaType, getStaticByteLength } from "@latticexyz/schema-type";
-import { hexToArray } from "./hexToArray";
-import { TableSchema } from "./schemas";
+import { hexToArray } from "./utils/hexToArray";
+import { TableSchema } from "./constants";
 
 const unsupportedStaticField = (fieldType: StaticSchemaType): never => {
   throw new Error(`Unsupported static field type: ${SchemaType[fieldType as SchemaType] ?? fieldType}`);
