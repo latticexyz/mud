@@ -2,10 +2,10 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { SchemaType } from "@latticexyz/store/src/Types.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";

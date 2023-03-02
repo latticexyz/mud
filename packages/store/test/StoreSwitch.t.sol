@@ -2,7 +2,6 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { SchemaType } from "../src/Types.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreView } from "../src/StoreView.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";

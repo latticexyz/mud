@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Mixed, MixedData, MixedTableId } from "../src/tables/Mixed.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { SchemaType } from "../src/Types.sol";
 import { StoreView } from "../src/StoreView.sol";
 import { Schema } from "../src/Schema.sol";
 
