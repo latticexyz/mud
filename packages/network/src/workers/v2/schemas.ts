@@ -1,20 +1,27 @@
-import { SchemaType } from "@latticexyz/schema-type";
+import { SchemaType, SchemaTypeId } from "@latticexyz/schema-type";
 import { hexToArray } from "./hexToArray";
 import { Contract } from "ethers";
 
-export type Schema = {
+export type TableMetadata = {
+  tableName: string;
+  fieldNames: string[];
+};
+
+export type TableSchema = {
   staticDataLength: number;
   staticFields: SchemaType[];
   dynamicFields: SchemaType[];
   rawSchema: string;
-  label: string;
+  abi: string;
 };
 
 // worldAddress:tableId => schema
 // TODO: add chain ID to namespace?
-const schemas: Partial<Record<`${string}:${string}`, Promise<Schema>>> = {};
+const schemas: Partial<Record<`${string}:${string}`, Promise<TableSchema>>> = {};
 
-export function decodeSchema(rawSchema: string): Schema {
+const metadata: Partial<Record<`${string}:${string}`, TableMetadata>> = {};
+
+export function decodeSchema(rawSchema: string): TableSchema {
   const schemaBytes = new DataView(hexToArray(rawSchema).buffer);
   const staticDataLength = schemaBytes.getUint16(0);
   const numStaticFields = schemaBytes.getUint8(2);
@@ -29,21 +36,20 @@ export function decodeSchema(rawSchema: string): Schema {
   }
   // TODO: validate sum of static field lengths is equal to staticDataLength?
 
-  // human readable label
-  const fieldTypes = [...staticFields, ...dynamicFields].map((type) => SchemaType[type]);
-  const label = `(${fieldTypes.join(",")})`;
+  const fieldTypes = [...staticFields, ...dynamicFields].map((type) => SchemaTypeId[type]);
+  const abi = `(${fieldTypes.join(",")})`;
 
-  return { staticDataLength, staticFields, dynamicFields, rawSchema, label };
+  return { staticDataLength, staticFields, dynamicFields, rawSchema, abi };
 }
 
 // the Contract arguments below assume that they're bound to a provider
 
-export function getSchema(world: Contract, table: string): Promise<Schema> | undefined {
+export function getSchema(world: Contract, table: string): Promise<TableSchema> | undefined {
   const schemaKey = `${world.address}:${table}` as const;
   return schemas[schemaKey];
 }
 
-export function registerSchema(world: Contract, table: string, rawSchema?: string): Promise<Schema> {
+export function registerSchema(world: Contract, table: string, rawSchema?: string): Promise<TableSchema> {
   const schemaKey = `${world.address}:${table}` as const;
 
   const existingSchema = schemas[schemaKey];
@@ -76,4 +82,20 @@ export function registerSchema(world: Contract, table: string, rawSchema?: strin
   const schema = world.getSchema(table).then((rawSchema: string) => decodeSchema(rawSchema));
   schemas[schemaKey] = schema;
   return schema;
+}
+
+export function registerMetadata(world: Contract, table: string, tableName: string, fieldNames: string[]) {
+  const schemaKey = `${world.address}:${table}` as const;
+
+  if (metadata[schemaKey]) {
+    console.warn("metadata already registered for this table", { table, world: world.address });
+    return;
+  }
+
+  metadata[schemaKey] = { tableName, fieldNames };
+}
+
+export function getMetadata(world: Contract, table: string): TableMetadata | undefined {
+  const schemaKey = `${world.address}:${table}` as const;
+  return metadata[schemaKey];
 }

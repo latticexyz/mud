@@ -1,14 +1,16 @@
 import { ComponentValue } from "@latticexyz/recs";
-import { Contract } from "ethers";
+import { Contract, ethers } from "ethers";
 import { NetworkComponentUpdate, NetworkEvents } from "../../types";
 import { formatComponentID, formatEntityID } from "../../utils";
 import { orderBy } from "lodash";
-import { registerSchema } from "./schemas";
+import { getMetadata, registerMetadata, registerSchema } from "./schemas";
 import { decodeData, decodeField } from "./decodeData";
 import { isDefined } from "./isDefined";
+import { keccak256 } from "@latticexyz/utils";
+import { arrayToHex } from "./arrayToHex";
 
-// keccak256("mud.store.table.schema")
-const schemaTableId = "0x466b87090ce2bc34362737dab7b900dfc94a202aee6a6323f6813f7ce59d975e";
+const schemaTableId = keccak256("mud.store.table.schema");
+const metadataTableId = keccak256("/store_internals/tables/StoreMetadata");
 
 const storeEvents = ["StoreSetRecord", "StoreSetField", "StoreDeleteRecord"] as const;
 
@@ -28,7 +30,32 @@ async function decodeStoreSetRecord(
   }
 
   const schema = await registerSchema(contract, table);
-  return decodeData(schema, data);
+  const decoded = decodeData(schema, data);
+
+  if (table === metadataTableId) {
+    const [tableForMetadata, ...otherKeys] = keyTuple;
+    if (otherKeys.length) {
+      console.warn("setMetadata event has more than one value in key tuple", table, keyTuple);
+    }
+    const tableName = decoded[0];
+    const [fieldNames] = ethers.utils.defaultAbiCoder.decode(["string[]"], arrayToHex(decoded[1]));
+    registerMetadata(contract, tableForMetadata, tableName, fieldNames);
+  }
+
+  const metadata = getMetadata(contract, table);
+  if (metadata) {
+    const { tableName, fieldNames } = metadata;
+    const namedValues: Record<string, any> = {};
+    for (const [index, fieldName] of fieldNames.entries()) {
+      namedValues[fieldName] = decoded[index];
+    }
+    return {
+      ...decoded,
+      ...namedValues,
+    };
+  }
+
+  return decoded;
 }
 
 async function decodeStoreSetField(
@@ -65,6 +92,7 @@ export async function fetchStoreEvents(contract: Contract, fromBlock: number, to
 
   const ecsEvents: NetworkComponentUpdate[] = [];
 
+  // TODO: parallelize this
   for (const { log, parsedLog } of logs) {
     const { blockNumber, transactionHash, logIndex } = log;
     const { args, name } = parsedLog;
@@ -86,7 +114,6 @@ export async function fetchStoreEvents(contract: Contract, fromBlock: number, to
     };
 
     if (name === "StoreSetRecord") {
-      // TODO: parallelize this
       const value = await decodeStoreSetRecord(contract, args.table.toHexString(), args.key, args.data);
       console.log("decoded StoreSetRecord value", value);
       ecsEvent.value = value;

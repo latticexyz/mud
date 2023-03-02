@@ -1,6 +1,6 @@
 import { DynamicSchemaType, StaticSchemaType, SchemaType, getStaticByteLength } from "@latticexyz/schema-type";
 import { hexToArray } from "./hexToArray";
-import { Schema } from "./schemas";
+import { TableSchema } from "./schemas";
 
 const unsupportedStaticField = (fieldType: StaticSchemaType): never => {
   throw new Error(`Unsupported static field type: ${SchemaType[fieldType as SchemaType] ?? fieldType}`);
@@ -60,7 +60,7 @@ const decodeDynamicField = (fieldType: DynamicSchemaType, data: ArrayBuffer): Ar
   }
 };
 
-export const decodeData = (schema: Schema, hexData: string): Record<number, any> => {
+export const decodeData = (schema: TableSchema, hexData: string): Record<number, any> => {
   const data: Record<number, any> = {};
   const bytes = new DataView(hexToArray(hexData).buffer);
 
@@ -73,7 +73,7 @@ export const decodeData = (schema: Schema, hexData: string): Record<number, any>
     data[i] = value;
   });
 
-  // TODO: validate that bytesOffset = staticDataLenght?
+  // TODO: validate that bytesOffset = staticDataLength?
 
   if (schema.dynamicFields.length > 0) {
     const dynamicDataLayout = new DataView(bytes.buffer.slice(schema.staticDataLength, schema.staticDataLength + 32));
@@ -99,7 +99,7 @@ export const decodeData = (schema: Schema, hexData: string): Record<number, any>
   return data;
 };
 
-export const decodeField = (schema: Schema, schemaIndex: number, hexData: string): Record<number, any> => {
+export const decodeField = (schema: TableSchema, schemaIndex: number, hexData: string): Record<number, any> => {
   const data: Record<number, any> = {};
   const bytes = new DataView(hexToArray(hexData).buffer);
 
