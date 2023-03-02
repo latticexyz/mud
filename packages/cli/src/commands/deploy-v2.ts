@@ -1,6 +1,4 @@
 import chalk from "chalk";
-import { ethers } from "ethers";
-import { execa } from "execa";
 import glob from "glob";
 import { basename } from "path";
 import type { CommandModule } from "yargs";
@@ -39,7 +37,7 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(args) {
     const { configPath, printConfig } = args;
     // Run forge build
-    // await forge("build");
+    await forge("build");
 
     // Get a list of all contract names
     const outDir = await getOutDirectory();
