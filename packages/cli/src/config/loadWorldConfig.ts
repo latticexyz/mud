@@ -40,6 +40,7 @@ export const WorldConfig = z.object({
   worldContractName: z.string().default("World"),
   overrideSystems: z.record(SystemName, SystemConfig).default({}),
   excludeSystems: z.array(SystemName).default([]),
+  postDeployScript: z.string().default("PostDeploy"),
 });
 
 /**
@@ -156,7 +157,7 @@ export interface WorldUserConfig {
   /** The base route to register tables and systems at. Defaults to the root route (empty string) */
   baseRoute?: string;
   /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
-  worldContrcatName?: string;
+  worldContractName?: string;
   /**
    * Contracts named *System files will be deployed by default
    * as public systems at `baseRoute/ContractName`, unless overridden
@@ -167,6 +168,8 @@ export interface WorldUserConfig {
   overrideSystems?: Record<string, SystemUserConfig>;
   /** Systems to exclude from automatic deployment */
   excludeSystems?: string[];
+  /** Script to execute after the deployment is complete */
+  postDeployScript?: string;
 }
 
 export type ParsedWorldConfig = z.output<typeof WorldConfig>;

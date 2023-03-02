@@ -4,6 +4,7 @@ export interface ForgeConfig {
   // project
   src: string;
   test: string;
+  script: string;
   out: string;
   libs: string[];
 
@@ -26,6 +27,14 @@ export async function getForgeConfig() {
  */
 export async function getSrcDirectory() {
   return (await getForgeConfig()).src;
+}
+
+/**
+ * Get the value of "script" from forge config.
+ * The path to the contract sources relative to the root of the project.
+ */
+export async function getScriptDirectory() {
+  return (await getForgeConfig()).script;
 }
 
 /**
