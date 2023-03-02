@@ -22,6 +22,7 @@ import {
   getComponentEntities,
   getComponentValueStrict,
   Component,
+  updateComponent,
 } from "@latticexyz/recs";
 import { toEthAddress } from "@latticexyz/utils";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
@@ -163,7 +164,17 @@ export function applyNetworkUpdates<C extends Components>(
           continue;
         }
 
-        if (update.value === undefined) {
+        if (update.partialValue !== undefined) {
+          if (!getComponentValue(components[componentKey], entityIndex)) {
+            console.warn("Can't make partial update on unset component value.", {
+              componentMetadata: components[componentKey].metadata,
+              entityIndex,
+              update,
+            });
+          } else {
+            updateComponent(components[componentKey] as Component<Schema>, entityIndex, update.partialValue);
+          }
+        } else if (update.value === undefined) {
           // undefined value means component removed
           removeComponent(components[componentKey] as Component<Schema>, entityIndex);
         } else {

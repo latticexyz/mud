@@ -99,7 +99,7 @@ export async function fetchStoreEvents(contract: Contract, fromBlock: number, to
         args.data
       );
       console.log("decoded StoreSetField value", value);
-      ecsEvent.value = value;
+      ecsEvent.partialValue = value;
     }
 
     ecsEvents.push(ecsEvent);
