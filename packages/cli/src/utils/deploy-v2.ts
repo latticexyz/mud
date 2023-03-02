@@ -1,10 +1,10 @@
 import { execa } from "execa";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { MUDConfig } from "../config/index.js";
 import { MUDError } from "./errors.js";
 import { cast, forge } from "./foundry.js";
-import { getOutDirectory } from "./forgeConfig.js";
+import { getOutDirectory, getScriptDirectory } from "./forgeConfig.js";
 import { ethers } from "ethers";
 import { World } from "@latticexyz/world/types/ethers-contracts/World.js";
 import { abi as WorldABI } from "@latticexyz/world/abi/World.json";
@@ -36,7 +36,7 @@ export interface DeployConfig {
 
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   // TODO: Deploy World (either vanilla or overridden)
-  const { worldContractName, baseRoute } = mudConfig;
+  const { worldContractName, baseRoute, postDeployScript } = mudConfig;
   const { rpc, privateKey } = deployConfig;
 
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
@@ -47,6 +47,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   console.log("Start deployment at block", blockNumber);
 
   // Deploy World contract
+  console.log(chalk.blue("Deploying", worldContractName));
   const { deployedTo: worldAddress } = JSON.parse(
     await forge("create", worldContractName, "--rpc-url", rpc, "--private-key", privateKey, "--json")
   );
@@ -97,7 +98,26 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
 
   // TODO: Grant access to systems
 
-  // TODO: Execute postDeploy forge script
+  // Execute postDeploy forge script
+  const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
+  if (existsSync(postDeployPath)) {
+    console.log(chalk.blue(`Executing post deploy script "${postDeployScript}"`));
+    console.log(
+      await forge(
+        "script",
+        postDeployScript,
+        "--sig",
+        "run(address)",
+        worldAddress,
+        "--rpc-url",
+        rpc,
+        "--private-key",
+        privateKey
+      )
+    );
+  } else {
+    console.log(`No script at ${postDeployPath}, skipping post deploy hook`);
+  }
 }
 
 /**
