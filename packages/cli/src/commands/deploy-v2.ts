@@ -9,6 +9,7 @@ import { deploy } from "../utils/deploy-v2.js";
 import { logError } from "../utils/errors.js";
 import { forge } from "../utils/foundry.js";
 import { getOutDirectory } from "../utils/forgeConfig.js";
+import { loadStoreConfig } from "../index.js";
 
 type Options = {
   configPath?: string;
@@ -26,7 +27,7 @@ const commandModule: CommandModule<Options, Options> = {
     return yargs.options({
       configPath: { type: "string", desc: "Path to the config file" },
       printConfig: { type: "boolean", desc: "Print the resolved config" },
-      rpc: { type: "string", desc: "RPC endpoint to deploy to", default: "http://localhost:8545" },
+      rpc: { type: "string", desc: "RPC endpoint to deploy to", default: "http://127.0.0.1:8545" },
       privateKey: {
         type: "string",
         desc: "Private key of the deployer account",
@@ -38,7 +39,7 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(args) {
     const { configPath, printConfig } = args;
     // Run forge build
-    await forge("build");
+    // await forge("build");
 
     // Get a list of all contract names
     const outDir = await getOutDirectory();
@@ -47,13 +48,15 @@ const commandModule: CommandModule<Options, Options> = {
       // Get the basename of the file
       .map((path) => basename(path, ".sol"));
 
-    // Load and resolve the world config
-    const config = await loadWorldConfig(configPath, existingContracts);
+    // Load and resolve the config
+    const worldConfig = await loadWorldConfig(configPath, existingContracts);
+    const storeConfig = await loadStoreConfig(configPath);
+    const mudConfig = { ...worldConfig, ...storeConfig };
 
-    if (printConfig) console.log(chalk.green("\nResolved config:\n"), JSON.stringify(config, null, 2));
+    if (printConfig) console.log(chalk.green("\nResolved config:\n"), JSON.stringify(mudConfig, null, 2));
 
     try {
-      await deploy(config, args);
+      await deploy(mudConfig, args);
     } catch (error: any) {
       logError(error);
       process.exit(1);

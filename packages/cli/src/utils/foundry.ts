@@ -3,7 +3,7 @@ import { execa } from "execa";
 
 async function safeExec(command: string, args: string[]): Promise<string> {
   try {
-    console.log(chalk.gray(`\nrunning "${command} ${args.join(" ")}"`));
+    console.log(chalk.gray(`running "${command} ${args.join(" ")}"`));
     const { stdout } = await execa(command, args, { stdout: "pipe", stderr: "pipe" });
     return stdout;
   } catch (error: any) {
