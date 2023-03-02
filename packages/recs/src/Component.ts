@@ -75,7 +75,20 @@ export function setComponent<S extends Schema, T = undefined>(
 ) {
   const prevValue = getComponentValue(component, entity);
   for (const [key, val] of Object.entries(value)) {
-    component.values[key].set(entity, val);
+    if (component.values[key]) {
+      component.values[key].set(entity, val);
+    } else {
+      console.warn(
+        "Component definition for",
+        component.metadata?.contractId ?? component.id,
+        "is missing key",
+        key,
+        ", ignoring value",
+        val,
+        "for entity",
+        entity
+      );
+    }
   }
   component.update$.next({ entity, value: [value, prevValue], component });
 }
