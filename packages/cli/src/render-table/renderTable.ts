@@ -51,13 +51,18 @@ library ${libraryName} {
     return SchemaLib.encode(_schema);
   }
 
+  function getMetadata() internal pure returns (string memory, string[] memory) {
+    string[] memory _fieldNames = new string[](${fields.length});
+    ${renderList(fields, (field, index) => `_fieldNames[${index}] = "${field.name}";`)}
+    return ("${libraryName}", _fieldNames);
+  }
+
   /** Register the table's schema */
   function registerSchema(${_typedTableId}) internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
 
-    string[] memory _fieldNames = new string[](${fields.length});
-    ${renderList(fields, (field, index) => `_fieldNames[${index}] = "${field.name}";`)}
-    StoreSwitch.setMetadata(_tableId, "${libraryName}", _fieldNames);
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
 ${
