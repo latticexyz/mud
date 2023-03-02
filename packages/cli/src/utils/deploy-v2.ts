@@ -17,6 +17,7 @@ export interface DeployConfig {
 }
 
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
+  const startTime = Date.now();
   const { worldContractName, baseRoute, postDeployScript } = mudConfig;
   const { rpc, privateKey } = deployConfig;
   const forgeOutDirectory = await getOutDirectory();
@@ -140,6 +141,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
     console.log(`No script at ${postDeployPath}, skipping post deploy hook`);
   }
 
+  console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
+
   return;
 
   // ------------------- INTERNAL FUNCTIONS -------------------
@@ -153,9 +156,23 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   async function deployContract(contractName: string): Promise<string> {
     console.log(chalk.blue("Deploying", contractName));
 
+    // Alternatively to ethers we could use forge to deploy the contract, but it seems to be
+    // slightly slower (probably due to the extra overhead spawning a child process to run forge)
+    //
     // const { deployedTo } = JSON.parse(
-    //   await forge("create", contractName, "--rpc-url", rpc, "--private-key", privateKey, "--json")
+    //   await forge(
+    //     "create",
+    //     contractName,
+    //     "--rpc-url",
+    //     rpc,
+    //     "--private-key",
+    //     privateKey,
+    //     "--json",
+    //     "--nonce",
+    //     String(globalNonce.nonce++)
+    //   )
     // );
+    // return deployedTo;
 
     const { abi, bytecode } = await getContractData(contractName);
     try {
