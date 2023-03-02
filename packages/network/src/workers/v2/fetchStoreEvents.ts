@@ -66,7 +66,18 @@ async function decodeStoreSetField(
   data: string
 ): Promise<ComponentValue> {
   const schema = await registerSchema(contract, table);
-  return decodeField(schema, schemaIndex, data);
+  const decoded = decodeField(schema, schemaIndex, data);
+
+  const metadata = getMetadata(contract, table);
+  if (metadata) {
+    const { tableName, fieldNames } = metadata;
+    return {
+      ...decoded,
+      [fieldNames[schemaIndex]]: decoded[schemaIndex],
+    };
+  }
+
+  return decoded;
 }
 
 export async function fetchStoreEvents(contract: Contract, fromBlock: number, toBlock: number) {
