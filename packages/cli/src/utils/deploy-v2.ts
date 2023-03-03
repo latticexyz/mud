@@ -32,8 +32,10 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   // Set up signer for deployment
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
   const signer = new ethers.Wallet(privateKey, provider);
-  const globalNonce = { nonce: await signer.getTransactionCount() };
-  console.log("Initial nonce", globalNonce.nonce);
+
+  // Manual nonce handling to allow for faster sending of transactions without waiting for previous transactions
+  let nonce = await signer.getTransactionCount();
+  console.log("Initial nonce", nonce);
 
   // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
   const feeData = await provider.getFeeData();
@@ -179,7 +181,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   return { worldAddress: await contractPromises.World, blockNumber, rpc };
 
   // ------------------- INTERNAL FUNCTIONS -------------------
-  // (Inlined to avoid having to pass around globalNonce, signer and forgeOutDir)
+  // (Inlined to avoid having to pass around nonce, signer and forgeOutDir)
 
   /**
    * Deploy a contract and return the address
@@ -192,9 +194,9 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     const { abi, bytecode } = await getContractData(contractName);
     try {
       const factory = new ethers.ContractFactory(abi, bytecode, signer);
-      console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${globalNonce.nonce}`));
+      console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${nonce}`));
       const deployPromise = factory.deploy({
-        nonce: globalNonce.nonce++,
+        nonce: nonce++,
         maxPriorityFeePerGas,
         maxFeePerGas,
       });
@@ -228,17 +230,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
     const { deployedTo } = JSON.parse(
       await forge(
-        [
-          "create",
-          contractName,
-          "--rpc-url",
-          rpc,
-          "--private-key",
-          privateKey,
-          "--json",
-          "--nonce",
-          String(globalNonce.nonce++),
-        ],
+        ["create", contractName, "--rpc-url", rpc, "--private-key", privateKey, "--json", "--nonce", String(nonce++)],
         { profile, silent: true }
       )
     );
@@ -256,10 +248,10 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
     try {
       const gasLimit = await contract.estimateGas[func].apply(null, args);
-      console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${globalNonce.nonce}`));
+      console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
       const txPromise = contract[func].apply(null, [
         ...args,
-        { gasLimit, nonce: globalNonce.nonce++, maxPriorityFeePerGas, maxFeePerGas },
+        { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas },
       ]);
       promises.push(txPromise);
       return txPromise;
