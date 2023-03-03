@@ -170,6 +170,7 @@ export interface WorldUserConfig {
   excludeSystems?: string[];
   /** Script to execute after the deployment is complete */
   postDeployScript?: string;
+  /** */
 }
 
 export type ParsedWorldConfig = z.output<typeof WorldConfig>;

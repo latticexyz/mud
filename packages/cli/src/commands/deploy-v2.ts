@@ -6,7 +6,7 @@ import { loadWorldConfig } from "../config/loadWorldConfig.js";
 import { deploy } from "../utils/deploy-v2.js";
 import { logError } from "../utils/errors.js";
 import { forge } from "../utils/foundry.js";
-import { getOutDirectory } from "../utils/forgeConfig.js";
+import { getOutDirectory } from "../utils/foundry.js";
 import { loadStoreConfig } from "../index.js";
 
 type Options = {
