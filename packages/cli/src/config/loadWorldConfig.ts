@@ -162,7 +162,10 @@ export interface WorldUserConfig {
   overrideSystems?: Record<string, SystemUserConfig>;
   /** Systems to exclude from automatic deployment */
   excludeSystems?: string[];
-  /** Script to execute after the deployment is complete */
+  /**
+   * Script to execute after the deployment is complete (Default "PostDeploy").
+   * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
+   */
   postDeployScript?: string;
   /** Directory to write the deployment info to (Default ".") */
   deploymentInfoDirectory?: string;
