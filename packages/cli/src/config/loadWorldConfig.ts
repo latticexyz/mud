@@ -159,7 +159,7 @@ export interface WorldUserConfig {
   /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
   worldContractName?: string;
   /**
-   * Contracts named *System files will be deployed by default
+   * Contracts named *System will be deployed by default
    * as public systems at `baseRoute/ContractName`, unless overridden
    *
    * The key is the system name (capitalized).
