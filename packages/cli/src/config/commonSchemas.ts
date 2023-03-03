@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   validateBaseRoute,
   validateCapitalizedName,
+  validateDirectory,
   validateRoute,
   validateSingleLevelRoute,
   validateUncapitalizedName,
@@ -18,3 +19,6 @@ export const OrdinaryRoute = z.string().superRefine(validateRoute);
 export const SingleLevelRoute = z.string().superRefine(validateSingleLevelRoute);
 /** Base routes (can be an empty string) */
 export const BaseRoute = z.string().superRefine(validateBaseRoute);
+
+/** A directory */
+export const Directory = z.string().superRefine(validateDirectory);

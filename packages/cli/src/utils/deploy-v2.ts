@@ -10,6 +10,7 @@ import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
 import * as dotenv from "dotenv";
+import { deploymentInfoFilenamePrefix } from "../constants.js";
 dotenv.config();
 
 export interface DeployConfig {
@@ -18,9 +19,15 @@ export interface DeployConfig {
   privateKey: string;
 }
 
+export interface DeploymentInfo {
+  blockNumber: number;
+  worldAddress: string;
+  rpc: string;
+}
+
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   const startTime = Date.now();
-  const { worldContractName, baseRoute, postDeployScript } = mudConfig;
+  const { worldContractName, baseRoute, postDeployScript, deploymentInfoDirectory } = mudConfig;
   const { profile, rpc, privateKey } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
@@ -165,13 +172,19 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
 
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
-  // Write deployment result to file
-  const deploymentOutputPath = "mud-deployment-latest.json";
-  const deploymentResult = { worldAddress: await contractPromises.World, initialBlockNumber: blockNumber };
-  writeFileSync("mud-deployment-latest.json", JSON.stringify(deploymentResult, null, 2));
+  // Write deployment result to file (latest and timestamp)
+  const deploymentInfo: DeploymentInfo = { worldAddress: await contractPromises.World, blockNumber, rpc };
+  writeFileSync(
+    path.join(deploymentInfoDirectory, deploymentInfoFilenamePrefix + "latest.json"),
+    JSON.stringify(deploymentInfo, null, 2)
+  );
+  writeFileSync(
+    path.join(deploymentInfoDirectory, deploymentInfoFilenamePrefix + Date.now() + ".json"),
+    JSON.stringify(deploymentInfo, null, 2)
+  );
 
-  console.log(chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${deploymentOutputPath}) \n`)));
-  console.log(deploymentResult);
+  console.log(chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${deploymentInfoDirectory}): \n`)));
+  console.log(deploymentInfo);
 
   return;
 

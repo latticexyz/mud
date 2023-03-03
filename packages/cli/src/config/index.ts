@@ -1,4 +1,4 @@
-import { StoreUserConfig, StoreConfig } from "./loadStoreConfig.js";
+import { StoreUserConfig, StoreConfig } from "./parseStoreConfig.js";
 import { WorldUserConfig, ResolvedWorldConfig } from "./loadWorldConfig.js";
 
 export type { StoreUserConfig, StoreConfig, WorldUserConfig, ResolvedWorldConfig };
