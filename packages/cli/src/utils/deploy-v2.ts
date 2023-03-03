@@ -2,15 +2,18 @@ import { existsSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 import { MUDConfig } from "../config/index.js";
 import { MUDError } from "./errors.js";
-import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
+import { getOutDirectory, getScriptDirectory, cast, forge, getRpcUrl } from "./foundry.js";
 import { ContractInterface, ethers } from "ethers";
 import { World } from "@latticexyz/world/types/ethers-contracts/World.js";
 import { abi as WorldABI } from "@latticexyz/world/abi/World.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 export interface DeployConfig {
+  profile?: string;
   rpc: string;
   privateKey: string;
 }
@@ -18,8 +21,8 @@ export interface DeployConfig {
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   const startTime = Date.now();
   const { worldContractName, baseRoute, postDeployScript } = mudConfig;
-  const { rpc, privateKey } = deployConfig;
-  const forgeOutDirectory = await getOutDirectory();
+  const { profile, rpc, privateKey } = deployConfig;
+  const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
@@ -31,7 +34,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   const promises: Promise<unknown>[] = [];
 
   // Get block number before deploying
-  const blockNumber = Number(await cast("block-number", "--rpc-url", rpc));
+  const blockNumber = Number(await cast(["block-number", "--rpc-url", rpc], { profile }));
   console.log("Start deployment at block", blockNumber);
 
   // Deploy all contracts (World and systems)
@@ -141,16 +144,19 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
     console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
     console.log(
       await forge(
-        "script",
-        postDeployScript,
-        "--sig",
-        "run(address)",
-        await contractPromises.World,
-        "--rpc-url",
-        rpc,
-        "--private-key",
-        privateKey,
-        "--broadcast"
+        [
+          "script",
+          postDeployScript,
+          "--sig",
+          "run(address)",
+          await contractPromises.World,
+          "--broadcast",
+          "--rpc-url",
+          rpc,
+        ],
+        {
+          profile,
+        }
       )
     );
   } else {
@@ -181,7 +187,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
     console.log(chalk.blue("Deploying", contractName));
 
     // Alternatively to ethers we could use forge to deploy the contract, but it seems to be
-    // slightly slower (probably due to the extra overhead spawning a child process to run forge)
+    // slightly slower (probably due to the extra overhead spawning a child process to run forge).
+    // It would also require us to specify the private key as a command line argument.
     //
     // const { deployedTo } = JSON.parse(
     //   await forge(

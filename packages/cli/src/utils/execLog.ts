@@ -1,5 +1,5 @@
 import chalk from "chalk";
-import { execa } from "execa";
+import { execa, Options } from "execa";
 
 /**
  * Executes the given command, returns the stdout, and logs the command to the console.
@@ -8,11 +8,11 @@ import { execa } from "execa";
  * @param args The arguments to pass to the command
  * @returns The stdout of the command
  */
-export async function execLog(command: string, args: string[]): Promise<string> {
+export async function execLog(command: string, args: string[], options?: Options<string>): Promise<string> {
   const commandString = `${command} ${args.join(" ")}`;
   try {
     console.log(chalk.gray(`running "${commandString}"`));
-    const { stdout } = await execa(command, args, { stdout: "pipe", stderr: "pipe" });
+    const { stdout } = await execa(command, args, { stdout: "pipe", stderr: "pipe", ...options });
     return stdout;
   } catch (error: any) {
     let errorMessage = error?.stderr || error?.message || "";

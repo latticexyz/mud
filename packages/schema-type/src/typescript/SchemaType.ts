@@ -679,7 +679,7 @@ export function encodeSchema(schema: SchemaType[]): Uint8Array {
   if (dynamicFields > 14) throw new Error("Schema can only have up to 14 dynamic fields");
 
   // Store total static length, and number of static and dynamic fields
-  new DataView(encodedSchema).setUint16(0, length); // 2 length bytes
+  new DataView(encodedSchema.buffer).setUint16(0, length); // 2 length bytes
   encodedSchema[2] = staticFields; // number of static fields
   encodedSchema[3] = dynamicFields; // number of dynamic fields
 
