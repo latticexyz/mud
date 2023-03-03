@@ -20,7 +20,7 @@ export interface ForgeConfig {
 export async function getForgeConfig(profile?: string) {
   const { stdout } = await execa("forge", ["config", "--json"], {
     stdio: ["inherit", "pipe", "pipe"],
-    env: { ...process.env, FOUNDRY_PROFILE: profile },
+    env: { FOUNDRY_PROFILE: profile },
   });
 
   return JSON.parse(stdout) as ForgeConfig;
@@ -70,12 +70,21 @@ export async function getRpcUrl(profile?: string) {
 /**
  * Execute a forge command
  * @param args The arguments to pass to forge
+ * @param options { profile?: The foundry profile to use; silent?: If true, nothing will be logged to the console }
  * @returns Stdout of the command
  */
-export async function forge(args: string[], options?: { profile?: string }): Promise<string> {
-  return execLog("forge", args, {
-    env: { ...process.env, FOUNDRY_PROFILE: options?.profile },
-  });
+export async function forge(args: string[], options?: { profile?: string; silent?: boolean }): Promise<string> {
+  return options?.silent
+    ? (
+        await execa("forge", args, {
+          env: { FOUNDRY_PROFILE: options?.profile },
+          stdout: "pipe",
+          stderr: "pipe",
+        })
+      ).stdout
+    : execLog("forge", args, {
+        env: { FOUNDRY_PROFILE: options?.profile },
+      });
 }
 
 /**
@@ -85,6 +94,6 @@ export async function forge(args: string[], options?: { profile?: string }): Pro
  */
 export async function cast(args: string[], options?: { profile?: string }): Promise<string> {
   return execLog("cast", args, {
-    env: { ...process.env, FOUNDRY_PROFILE: options?.profile },
+    env: { FOUNDRY_PROFILE: options?.profile },
   });
 }

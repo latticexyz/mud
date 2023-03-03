@@ -77,10 +77,10 @@ export function resolveWorldConfig(config: ParsedWorldConfig, existingContracts?
   const defaultSystemNames = existingContracts?.filter((name) => name.endsWith("System") && name !== "System") ?? [];
   const overriddenSystemNames = Object.keys(config.overrideSystems);
 
-  // Validate every key in overrideSystems refers to an existing system contract
+  // Validate every key in overrideSystems refers to an existing system contract (and is not called "World")
   if (existingContracts) {
     for (const systemName of overriddenSystemNames) {
-      if (!existingContracts.includes(systemName)) {
+      if (!existingContracts.includes(systemName) || systemName === "World") {
         throw UnrecognizedSystemErrorFactory(["overrideSystems", systemName], systemName);
       }
     }

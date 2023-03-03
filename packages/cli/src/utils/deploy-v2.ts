@@ -44,10 +44,10 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   // Deploy all contracts (World and systems)
   const contractPromises = Object.keys(mudConfig.systems).reduce<Record<string, Promise<string>>>(
     (acc, systemName) => {
-      acc[systemName] = deployContract(systemName);
+      acc[systemName] = ethersDeployContract(systemName);
       return acc;
     },
-    { World: deployContract(worldContractName) }
+    { World: forgeDeployContract(worldContractName) }
   );
 
   // Create World contract instance from deployed address
@@ -179,27 +179,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
    * @param contractName Name of the contract to deploy (must exist in the file system)
    * @returns Address of the deployed contract
    */
-  async function deployContract(contractName: string): Promise<string> {
+  async function ethersDeployContract(contractName: string): Promise<string> {
     console.log(chalk.blue("Deploying", contractName));
-
-    // Alternatively to ethers we could use forge to deploy the contract, but it seems to be
-    // slightly slower (probably due to the extra overhead spawning a child process to run forge).
-    // It would also require us to specify the private key as a command line argument.
-    //
-    // const { deployedTo } = JSON.parse(
-    //   await forge(
-    //     "create",
-    //     contractName,
-    //     "--rpc-url",
-    //     rpc,
-    //     "--private-key",
-    //     privateKey,
-    //     "--json",
-    //     "--nonce",
-    //     String(globalNonce.nonce++)
-    //   )
-    // );
-    // return deployedTo;
 
     const { abi, bytecode } = await getContractData(contractName);
     try {
@@ -218,6 +199,39 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
         );
       } else throw error;
     }
+  }
+
+  /**
+   * Deploy a contract and return the address
+   * @param contractName Name of the contract to deploy (must exist in the file system)
+   * @returns Address of the deployed contract
+   *
+   * NOTE: Forge deploy seems to be slightly slower than ethers
+   * (probably due to the extra overhead spawning a child process to run forge),
+   * so we mostly use ethersDeployContract here.
+   * However, for contracts not in the user directory (eg. the vanilla World contract),
+   * using forge is more convenient because it automatically finds the contract in the @latticexyz/world package.
+   */
+  async function forgeDeployContract(contractName: string): Promise<string> {
+    console.log(chalk.blue("Deploying", contractName));
+
+    const { deployedTo } = JSON.parse(
+      await forge(
+        [
+          "create",
+          contractName,
+          "--rpc-url",
+          rpc,
+          "--private-key",
+          privateKey,
+          "--json",
+          "--nonce",
+          String(globalNonce.nonce++),
+        ],
+        { profile, silent: true }
+      )
+    );
+    return deployedTo;
   }
 
   /**
