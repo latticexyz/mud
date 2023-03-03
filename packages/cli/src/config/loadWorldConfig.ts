@@ -135,6 +135,10 @@ export async function loadWorldConfig(configPath?: string, existingContracts?: s
   }
 }
 
+export async function parseWorldConfig(config: unknown) {
+  return WorldConfig.parse(config);
+}
+
 // zod doesn't preserve doc comments
 export type SystemUserConfig =
   | {
