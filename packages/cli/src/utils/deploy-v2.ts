@@ -8,7 +8,7 @@ import { World } from "@latticexyz/world/types/ethers-contracts/World.js";
 import { abi as WorldABI } from "@latticexyz/world/abi/World.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
-import { encodeSchema } from "./schema.js";
+import { encodeSchema } from "@latticexyz/schema-type";
 
 export interface DeployConfig {
   rpc: string;
