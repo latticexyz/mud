@@ -16,6 +16,7 @@ type Options = {
   printConfig?: boolean;
   profile?: string;
   privateKey: string;
+  priorityFeeMultiplier: number;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -28,6 +29,11 @@ const commandModule: CommandModule<Options, Options> = {
       configPath: { type: "string", desc: "Path to the config file" },
       printConfig: { type: "boolean", desc: "Print the resolved config" },
       profile: { type: "string", desc: "The foundry profile to use" },
+      priorityFeeMultiplier: {
+        type: "number",
+        desc: "Multiply the estimated priority fee by the provided factor",
+        default: 1,
+      },
     });
   },
 
