@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "fs";
+import { existsSync, readFileSync, writeFileSync } from "fs";
 import path from "path";
 import { MUDConfig } from "../config/index.js";
 import { MUDError } from "./errors.js";
@@ -159,6 +159,14 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   }
 
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
+
+  // Write deployment result to file
+  const deploymentOutputPath = "mud-deployment-latest.json";
+  const deploymentResult = { worldAddress: await contractPromises.World, initialBlockNumber: blockNumber };
+  writeFileSync("mud-deployment-latest.json", JSON.stringify(deploymentResult, null, 2));
+
+  console.log(chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${deploymentOutputPath}) \n`)));
+  console.log(deploymentResult);
 
   return;
 
