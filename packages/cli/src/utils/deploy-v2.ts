@@ -9,7 +9,7 @@ import { World } from "@latticexyz/world/types/ethers-contracts/World.js";
 import { abi as WorldABI } from "@latticexyz/world/abi/World.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
-import { SchemaType } from "@latticexyz/schema-type";
+import { encodeSchema } from "./schema.js";
 
 export interface DeployConfig {
   rpc: string;
@@ -54,39 +54,47 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   promises.push(
     ...Object.entries(mudConfig.tables).map(async ([tableName, tableConfig]) => {
       console.log(chalk.blue("Registering table", tableName, "at", baseRoute + tableConfig.route));
-      // Register nested routes
-      await registerNestedRoute(WorldContract, baseRoute, tableConfig.route);
 
-      // TODO: Register table
-      // await safeTxExecute(
-      //   WorldContract,
-      //   "registerTable",
-      //   tableBaseRoute,
-      //   tableRouteFragments[tableRouteFragments.length - 1],
-      //   encodeSchema(tableConfig.schema)
-      // );
+      // Register nested route
+      const routeFragments = tableConfig.route.substring(1).split("/"); // Split route into fragments (skip leading slash)
+      const lastRouteFragment = toRoute(routeFragments.pop()); // Register last fragment separately as part of call to registerTable
+      await registerNestedRoute(WorldContract, baseRoute, routeFragments);
+
+      // Register table
+      const tableBaseRoute = toRoute(baseRoute, ...routeFragments);
+      await safeTxExecute(
+        WorldContract,
+        "registerTable",
+        tableBaseRoute,
+        lastRouteFragment,
+        encodeSchema(Object.values(tableConfig.schema))
+      );
+
+      console.log(chalk.green("Registered table", tableName, "at", baseRoute + tableConfig.route));
     })
   );
 
   // Register systems (using forEach instead of for..of to avoid blocking on async calls)
   promises.push(
     ...Object.entries(mudConfig.systems).map(async ([systemName, systemConfig]) => {
-      console.log(chalk.blue("Registering", systemName, "at", baseRoute + systemConfig.route));
+      console.log(chalk.blue("Registering system", systemName, "at", baseRoute + systemConfig.route));
 
       // Register system route
-      await registerNestedRoute(WorldContract, baseRoute, systemConfig.route, true);
+      const routeFragments = systemConfig.route.substring(1).split("/"); // Split route into fragments (skip leading slash)
+      const lastRouteFragment = toRoute(routeFragments.pop()); // Register last fragment as part of call to registerSystem
+      await registerNestedRoute(WorldContract, baseRoute, routeFragments);
 
       // Register system at route
       await safeTxExecute(
         WorldContract,
         "registerSystem",
         baseRoute,
-        systemConfig.route,
+        lastRouteFragment,
         await contractPromises[systemName],
         systemConfig.openAccess
       );
 
-      console.log(chalk.green("Registered", systemName, "at", baseRoute + systemConfig.route));
+      console.log(chalk.green("Registered system", systemName, "at", baseRoute + systemConfig.route));
     })
   );
 
@@ -122,7 +130,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   // Execute postDeploy forge script
   const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
   if (existsSync(postDeployPath)) {
-    console.log(chalk.blue(`Executing post deploy script "${postDeployScript}"`));
+    console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
     console.log(
       await forge(
         "script",
@@ -213,17 +221,10 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
     }
   }
 
-  async function registerNestedRoute(
-    WorldContract: World,
-    baseRoute: string,
-    subRoute: string,
-    skipLastFragment?: boolean
-  ) {
-    const routeFragments = subRoute.substring(1).split("/"); // skip the leading slash
-
+  async function registerNestedRoute(WorldContract: World, baseRoute: string, registerRouteFragments: string[]) {
     // Register nested routes
-    for (let i = skipLastFragment ? 1 : 0; i < routeFragments.length; i++) {
-      const subRoute = `/${routeFragments[skipLastFragment ? i - 1 : i]}`;
+    for (let i = 0; i < registerRouteFragments.length; i++) {
+      const subRoute = toRoute(registerRouteFragments[i]);
       try {
         await safeTxExecute(WorldContract, "registerRoute", baseRoute, subRoute);
       } catch (e) {
@@ -256,8 +257,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
   }
 }
 
-function encodeSchema(schema: Record<string, SchemaType>) {
-  console.log("TODO");
-  console.log(schema);
-  return "";
+function toRoute(...routeFragments: (string | undefined)[]): string {
+  const route = routeFragments.filter((e) => Boolean(e)).join("/");
+  return route ? `/${route}` : "";
 }
