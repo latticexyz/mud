@@ -1,13 +1,15 @@
 import chalk from "chalk";
 import glob from "glob";
-import { basename } from "path";
+import path, { basename } from "path";
 import type { CommandModule } from "yargs";
 import { loadWorldConfig } from "../config/loadWorldConfig.js";
 import { deploy } from "../utils/deploy-v2.js";
 import { logError, MUDError } from "../utils/errors.js";
 import { forge, getRpcUrl } from "../utils/foundry.js";
 import { getOutDirectory } from "../utils/foundry.js";
-import { loadStoreConfig } from "../index.js";
+import { writeFileSync } from "fs";
+import { loadStoreConfig } from "../config/loadStoreConfig.js";
+import { deploymentInfoFilenamePrefix } from "../constants.js";
 
 type Options = {
   configPath?: string;
@@ -59,7 +61,21 @@ const commandModule: CommandModule<Options, Options> = {
     try {
       const privateKey = process.env.PRIVATE_KEY;
       if (!privateKey) throw new MUDError("Missing PRIVATE_KEY environment variable");
-      await deploy(mudConfig, { ...args, rpc, privateKey });
+      const deploymentInfo = await deploy(mudConfig, { ...args, rpc, privateKey });
+
+      // Write deployment result to file (latest and timestamp)
+      const outputDir = mudConfig.deploymentInfoDirectory;
+      writeFileSync(
+        path.join(outputDir, deploymentInfoFilenamePrefix + "latest.json"),
+        JSON.stringify(deploymentInfo, null, 2)
+      );
+      writeFileSync(
+        path.join(outputDir, deploymentInfoFilenamePrefix + Date.now() + ".json"),
+        JSON.stringify(deploymentInfo, null, 2)
+      );
+
+      console.log(chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${outputDir}): \n`)));
+      console.log(deploymentInfo);
     } catch (error: any) {
       logError(error);
       process.exit(1);

@@ -1,17 +1,14 @@
-import { existsSync, readFileSync, writeFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { MUDConfig } from "../config/index.js";
 import { MUDError } from "./errors.js";
-import { getOutDirectory, getScriptDirectory, cast, forge, getRpcUrl } from "./foundry.js";
+import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { ContractInterface, ethers } from "ethers";
 import { World } from "@latticexyz/world/types/ethers-contracts/World.js";
 import { abi as WorldABI } from "@latticexyz/world/abi/World.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
-import * as dotenv from "dotenv";
-import { deploymentInfoFilenamePrefix } from "../constants.js";
-dotenv.config();
 
 export interface DeployConfig {
   profile?: string;
@@ -25,9 +22,9 @@ export interface DeploymentInfo {
   rpc: string;
 }
 
-export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
+export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): Promise<DeploymentInfo> {
   const startTime = Date.now();
-  const { worldContractName, baseRoute, postDeployScript, deploymentInfoDirectory } = mudConfig;
+  const { worldContractName, baseRoute, postDeployScript } = mudConfig;
   const { profile, rpc, privateKey } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
@@ -172,21 +169,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
 
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
-  // Write deployment result to file (latest and timestamp)
-  const deploymentInfo: DeploymentInfo = { worldAddress: await contractPromises.World, blockNumber, rpc };
-  writeFileSync(
-    path.join(deploymentInfoDirectory, deploymentInfoFilenamePrefix + "latest.json"),
-    JSON.stringify(deploymentInfo, null, 2)
-  );
-  writeFileSync(
-    path.join(deploymentInfoDirectory, deploymentInfoFilenamePrefix + Date.now() + ".json"),
-    JSON.stringify(deploymentInfo, null, 2)
-  );
-
-  console.log(chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${deploymentInfoDirectory}): \n`)));
-  console.log(deploymentInfo);
-
-  return;
+  return { worldAddress: await contractPromises.World, blockNumber, rpc };
 
   // ------------------- INTERNAL FUNCTIONS -------------------
   // (Inlined to avoid having to pass around globalNonce, signer and forgeOutDir)
