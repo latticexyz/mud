@@ -648,9 +648,9 @@ export type DynamicSchemaType = ArraySchemaType | SchemaType.BYTES | SchemaType.
  * @param schema The schema to encode SchemaType[]
  * @returns The encoded schema as a 32 byte hex string
  */
-export function encodeSchema(schema: SchemaType[]): string {
+export function encodeSchema(schema: SchemaType[]): Uint8Array {
   if (schema.length > 28) throw new Error("Schema can only have up to 28 fields");
-  let encodedSchema = "";
+  const encodedSchema = new Uint8Array(32);
   let length = 0;
   let staticFields = 0;
 
@@ -671,7 +671,7 @@ export function encodeSchema(schema: SchemaType[]): string {
     }
 
     length += staticByteLength;
-    encodedSchema += schema[i].toString(16).padStart(2, "0");
+    encodedSchema[i + 4] = schema[i];
   }
 
   // Require max 14 dynamic fields
@@ -679,10 +679,9 @@ export function encodeSchema(schema: SchemaType[]): string {
   if (dynamicFields > 14) throw new Error("Schema can only have up to 14 dynamic fields");
 
   // Store total static length, and number of static and dynamic fields
-  const lengthBytes = length.toString(16).padStart(4, "0"); // 2 length bytes
-  const staticFieldsByte = staticFields.toString(16).padStart(2, "0"); // number of static fields
-  const dynamicFieldsByte = dynamicFields.toString(16).padStart(2, "0"); // number of dynamic fields
-  encodedSchema = lengthBytes + staticFieldsByte + dynamicFieldsByte + encodedSchema;
+  new DataView(encodedSchema).setUint16(0, length); // 2 length bytes
+  encodedSchema[2] = staticFields; // number of static fields
+  encodedSchema[3] = dynamicFields; // number of dynamic fields
 
-  return "0x" + encodedSchema.padEnd(64, "0");
+  return encodedSchema;
 }
