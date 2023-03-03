@@ -102,17 +102,11 @@ export function validateDirectory(path: string, ctx: RefinementCtx) {
   }
 }
 
-export function validateEthereumAddressOrSystemName(address: string, ctx: RefinementCtx) {
-  // if it starts with 0x, it must be a valid Ethereum address
-  if (address.startsWith("0x")) {
-    if (!ethers.utils.isAddress(address)) {
-      ctx.addIssue({
-        code: ZodIssueCode.custom,
-        message: `Address must be a valid Ethereum address`,
-      });
-    }
-  } else {
-    // otherwise, it must be a valid system name
-    validateCapitalizedName(address, ctx);
+export function validateEthereumAddress(address: string, ctx: RefinementCtx) {
+  if (!ethers.utils.isAddress(address)) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Address must be a valid Ethereum address`,
+    });
   }
 }
