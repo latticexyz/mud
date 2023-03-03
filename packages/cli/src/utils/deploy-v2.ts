@@ -14,6 +14,7 @@ export interface DeployConfig {
   profile?: string;
   rpc: string;
   privateKey: string;
+  priorityFeeMultiplier: number;
 }
 
 export interface DeploymentInfo {
@@ -25,7 +26,7 @@ export interface DeploymentInfo {
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): Promise<DeploymentInfo> {
   const startTime = Date.now();
   const { worldContractName, baseRoute, postDeployScript } = mudConfig;
-  const { profile, rpc, privateKey } = deployConfig;
+  const { profile, rpc, privateKey, priorityFeeMultiplier } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
@@ -33,6 +34,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   const signer = new ethers.Wallet(privateKey, provider);
   const globalNonce = { nonce: await signer.getTransactionCount() };
   console.log("Initial nonce", globalNonce.nonce);
+
+  // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
+  const feeData = await provider.getFeeData();
+  if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
+  const maxPriorityFeePerGas = Math.floor(1_500_000_000 * priorityFeeMultiplier);
+  const maxFeePerGas = feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas);
 
   // Catch all to await any promises before exiting the script
   const promises: Promise<unknown>[] = [];
@@ -54,7 +61,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as World;
 
   // Register baseRoute
-  if (baseRoute) await safeTxExecute(WorldContract, "registerRoute", "", baseRoute);
+  if (baseRoute) await fastTxExecute(WorldContract, "registerRoute", "", baseRoute);
 
   // Register tables
   promises.push(
@@ -68,7 +75,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
       // Register table
       const tableBaseRoute = toRoute(baseRoute, ...routeFragments);
-      await safeTxExecute(
+      await fastTxExecute(
         WorldContract,
         "registerTable",
         tableBaseRoute,
@@ -77,7 +84,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       );
 
       // Register table metadata
-      await safeTxExecute(
+      await fastTxExecute(
         WorldContract,
         "setMetadata(string,string,string[])",
         baseRoute + tableConfig.route,
@@ -100,7 +107,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       await registerNestedRoute(WorldContract, baseRoute, routeFragments);
 
       // Register system at route
-      await safeTxExecute(
+      await fastTxExecute(
         WorldContract,
         "registerSystem",
         baseRoute,
@@ -124,7 +131,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     promises.push(
       ...systemConfig.accessListAddresses.map(async (address) => {
         console.log(chalk.blue(`Grant ${address} access to ${systemName} (${systemRoute})`));
-        await safeTxExecute(WorldContract, "grantAccess", systemRoute, address);
+        await fastTxExecute(WorldContract, "grantAccess", systemRoute, address);
         console.log(chalk.green(`Granted ${address} access to ${systemName} (${systemRoute})`));
       })
     );
@@ -133,7 +140,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     promises.push(
       ...systemConfig.accessListSystems.map(async (granteeSystem) => {
         console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${systemRoute})`));
-        await safeTxExecute(WorldContract, "grantAccess", systemRoute, await contractPromises[granteeSystem]);
+        await fastTxExecute(WorldContract, "grantAccess", systemRoute, await contractPromises[granteeSystem]);
         console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${systemRoute})`));
       })
     );
@@ -186,7 +193,11 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     try {
       const factory = new ethers.ContractFactory(abi, bytecode, signer);
       console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${globalNonce.nonce}`));
-      const deployPromise = factory.deploy({ nonce: globalNonce.nonce++ });
+      const deployPromise = factory.deploy({
+        nonce: globalNonce.nonce++,
+        maxPriorityFeePerGas,
+        maxFeePerGas,
+      });
       promises.push(deployPromise);
       const { address } = await deployPromise;
 
@@ -237,7 +248,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   /**
    * Only await gas estimation (for speed), only execute if gas estimation succeeds (for safety)
    */
-  async function safeTxExecute<C extends { estimateGas: any; [key: string]: any }, F extends keyof C>(
+  async function fastTxExecute<C extends { estimateGas: any; [key: string]: any }, F extends keyof C>(
     contract: C,
     func: F,
     ...args: ArgumentsType<C[F]>
@@ -246,7 +257,10 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     try {
       const gasLimit = await contract.estimateGas[func].apply(null, args);
       console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${globalNonce.nonce}`));
-      const txPromise = contract[func].apply(null, [...args, { gasLimit, nonce: globalNonce.nonce++ }]);
+      const txPromise = contract[func].apply(null, [
+        ...args,
+        { gasLimit, nonce: globalNonce.nonce++, maxPriorityFeePerGas, maxFeePerGas },
+      ]);
       promises.push(txPromise);
       return txPromise;
     } catch (error: any) {
@@ -259,7 +273,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     for (let i = 0; i < registerRouteFragments.length; i++) {
       const subRoute = toRoute(registerRouteFragments[i]);
       try {
-        await safeTxExecute(WorldContract, "registerRoute", baseRoute, subRoute);
+        await fastTxExecute(WorldContract, "registerRoute", baseRoute, subRoute);
       } catch (e) {
         // TODO: check if the gas estimation error is due to the route already being registered and ignore it
       }
