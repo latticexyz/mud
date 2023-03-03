@@ -35,7 +35,7 @@ const commandModule: CommandModule<Options, Options> = {
     const rpc = await getRpcUrl(profile);
     console.log(
       chalk.bgBlue(
-        chalk.whiteBright(`\n (Deploying MUD v2 contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
+        chalk.whiteBright(`\n Deploying MUD v2 contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
       )
     );
 

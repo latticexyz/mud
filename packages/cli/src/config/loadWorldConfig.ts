@@ -1,22 +1,11 @@
 import { z, ZodError } from "zod";
 import { fromZodErrorCustom, UnrecognizedSystemErrorFactory } from "../utils/errors.js";
-import { BaseRoute, Directory, ObjectName } from "./commonSchemas.js";
+import { BaseRoute, Directory, EthereumAddress, ObjectName } from "./commonSchemas.js";
 import { loadConfig } from "./loadConfig.js";
-import { validateEthereumAddressOrSystemName } from "./validation.js";
 
-// Object names have to start with a capital letter and only contain letters, numbers and underscores
 const SystemName = ObjectName;
-
-// Base routes are ordinary routes with an empty string as a valid value
 const SystemRoute = BaseRoute.optional();
-
-// Each element in the SystemAccessList must be a valid Ethereum address or a valid system name
-const SystemAccessList = z
-  .array(z.string())
-  .default([])
-  .superRefine((arr, ctx) => {
-    arr.forEach((element) => validateEthereumAddressOrSystemName(element, ctx));
-  });
+const SystemAccessList = z.array(SystemName.or(EthereumAddress)).default([]);
 
 // The system config is a combination of a route config and access config
 const SystemConfig = z.intersection(
