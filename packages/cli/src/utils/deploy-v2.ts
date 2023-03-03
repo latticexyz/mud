@@ -70,6 +70,15 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig) {
         encodeSchema(Object.values(tableConfig.schema))
       );
 
+      // Register table metadata
+      await safeTxExecute(
+        WorldContract,
+        "setMetadata(string,string,string[])",
+        baseRoute + tableConfig.route,
+        tableName,
+        Object.keys(tableConfig.schema)
+      );
+
       console.log(chalk.green("Registered table", tableName, "at", baseRoute + tableConfig.route));
     })
   );
