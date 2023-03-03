@@ -1,6 +1,6 @@
 import { z, ZodError } from "zod";
 import { fromZodErrorCustom, UnrecognizedSystemErrorFactory } from "../utils/errors.js";
-import { BaseRoute, ObjectName } from "./commonSchemas.js";
+import { BaseRoute, Directory, ObjectName } from "./commonSchemas.js";
 import { loadConfig } from "./loadConfig.js";
 import { validateEthereumAddressOrSystemName } from "./validation.js";
 
@@ -41,6 +41,7 @@ export const WorldConfig = z.object({
   overrideSystems: z.record(SystemName, SystemConfig).default({}),
   excludeSystems: z.array(SystemName).default([]),
   postDeployScript: z.string().default("PostDeploy"),
+  deploymentInfoDirectory: Directory.default("."),
 });
 
 /**
@@ -170,7 +171,8 @@ export interface WorldUserConfig {
   excludeSystems?: string[];
   /** Script to execute after the deployment is complete */
   postDeployScript?: string;
-  /** */
+  /** Directory to write the deployment info to (Default ".") */
+  deploymentInfoDirectory?: string;
 }
 
 export type ParsedWorldConfig = z.output<typeof WorldConfig>;
