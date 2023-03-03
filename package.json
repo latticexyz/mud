@@ -36,6 +36,7 @@
     "@parcel/transformer-typescript-types": "2.7.0",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
+    "chalk": "^5.2.0",
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.15.0",
@@ -47,6 +48,7 @@
     "retypeapp": "^2.4.0",
     "rimraf": "^3.0.2",
     "run-pty": "^3.0.0",
+    "shelljs": "^0.8.5",
     "typescript": "^4.9.5"
   },
   "config": {
@@ -61,7 +63,7 @@
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
     "release": "yarn && lerna publish --no-private --force-publish && yarn retype:updateversion",
-    "release:force": "yarn lerna run release",
+    "release:manual": "node scripts/workspaceRun.mjs release",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "yarn lerna run link",
     "docs": "yarn lerna run docs && yarn retype:updateversion && yarn retype build",

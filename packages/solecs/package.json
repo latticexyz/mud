@@ -21,7 +21,7 @@
     "lint": "yarn prettier && yarn solhint",
     "link": "yarn link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
-    "release": "npm publish || echo 'version already published'"
+    "release": "npm publish --access=public"
   },
   "devDependencies": {
     "@rari-capital/solmate": "https://github.com/Rari-Capital/solmate.git#b6ae78e6ff490f8fec7695c7b65d06e5614f1b65",
@@ -48,5 +48,5 @@
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "memmove": "https://github.com/dk1a/memmove.git#ffd71cd77b1708574ef46a667b23ca3a5cc9fa27"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }
