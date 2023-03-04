@@ -3,9 +3,9 @@ import path from "path";
 import { MUDConfig } from "../config/index.js";
 import { MUDError } from "./errors.js";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
-import { ContractInterface, ethers } from "ethers";
+import { BigNumber, ContractInterface, ethers } from "ethers";
 import { World } from "@latticexyz/world/types/ethers-contracts/World.js";
-import { abi as WorldABI } from "@latticexyz/world/abi/World.json";
+import { abi as WorldABI, bytecode as WorldBytecode } from "@latticexyz/world/abi/World.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
@@ -38,10 +38,9 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   console.log("Initial nonce", nonce);
 
   // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
-  const feeData = await provider.getFeeData();
-  if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
-  const maxPriorityFeePerGas = Math.floor(1_500_000_000 * priorityFeeMultiplier);
-  const maxFeePerGas = feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas);
+  let maxPriorityFeePerGas: number;
+  let maxFeePerGas: BigNumber;
+  setInternalFeePerGas(priorityFeeMultiplier);
 
   // Catch all to await any promises before exiting the script
   const promises: Promise<unknown>[] = [];
@@ -53,17 +52,21 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   // Deploy all contracts (World and systems)
   const contractPromises = Object.keys(mudConfig.systems).reduce<Record<string, Promise<string>>>(
     (acc, systemName) => {
-      acc[systemName] = ethersDeployContract(systemName);
+      acc[systemName] = deployContractByName(systemName);
       return acc;
     },
-    { World: forgeDeployContract(worldContractName) }
+    {
+      World: worldContractName
+        ? deployContractByName(worldContractName)
+        : deployContract(WorldABI, WorldBytecode, "World"),
+    }
   );
 
   // Create World contract instance from deployed address
   const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as World;
 
   // Register baseRoute
-  if (baseRoute) await fastTxExecute(WorldContract, "registerRoute", "", baseRoute);
+  if (baseRoute) await fastTxExecute(WorldContract, "registerRoute", ["", baseRoute]);
 
   // Register tables
   promises.push(
@@ -77,22 +80,18 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
       // Register table
       const tableBaseRoute = toRoute(baseRoute, ...routeFragments);
-      await fastTxExecute(
-        WorldContract,
-        "registerTable",
+      await fastTxExecute(WorldContract, "registerTable", [
         tableBaseRoute,
         lastRouteFragment,
-        encodeSchema(Object.values(tableConfig.schema))
-      );
+        encodeSchema(Object.values(tableConfig.schema)),
+      ]);
 
       // Register table metadata
-      await fastTxExecute(
-        WorldContract,
-        "setMetadata(string,string,string[])",
+      await fastTxExecute(WorldContract, "setMetadata(string,string,string[])", [
         baseRoute + tableConfig.route,
         tableName,
-        Object.keys(tableConfig.schema)
-      );
+        Object.keys(tableConfig.schema),
+      ]);
 
       console.log(chalk.green("Registered table", tableName, "at", baseRoute + tableConfig.route));
     })
@@ -109,14 +108,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       await registerNestedRoute(WorldContract, baseRoute, routeFragments);
 
       // Register system at route
-      await fastTxExecute(
-        WorldContract,
-        "registerSystem",
+      await fastTxExecute(WorldContract, "registerSystem", [
         baseRoute,
         lastRouteFragment,
         await contractPromises[systemName],
-        systemConfig.openAccess
-      );
+        systemConfig.openAccess,
+      ]);
 
       console.log(chalk.green("Registered system", systemName, "at", baseRoute + systemConfig.route));
     })
@@ -133,7 +130,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     promises.push(
       ...systemConfig.accessListAddresses.map(async (address) => {
         console.log(chalk.blue(`Grant ${address} access to ${systemName} (${systemRoute})`));
-        await fastTxExecute(WorldContract, "grantAccess", systemRoute, address);
+        await fastTxExecute(WorldContract, "grantAccess", [systemRoute, address]);
         console.log(chalk.green(`Granted ${address} access to ${systemName} (${systemRoute})`));
       })
     );
@@ -142,7 +139,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     promises.push(
       ...systemConfig.accessListSystems.map(async (granteeSystem) => {
         console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${systemRoute})`));
-        await fastTxExecute(WorldContract, "grantAccess", systemRoute, await contractPromises[granteeSystem]);
+        await fastTxExecute(WorldContract, "grantAccess", [systemRoute, await contractPromises[granteeSystem]]);
         console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${systemRoute})`));
       })
     );
@@ -188,10 +185,26 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
    * @param contractName Name of the contract to deploy (must exist in the file system)
    * @returns Address of the deployed contract
    */
-  async function ethersDeployContract(contractName: string): Promise<string> {
+  async function deployContractByName(contractName: string): Promise<string> {
     console.log(chalk.blue("Deploying", contractName));
 
     const { abi, bytecode } = await getContractData(contractName);
+    return deployContract(abi, bytecode, contractName);
+  }
+
+  /**
+   * Deploy a contract and return the address
+   * @param abi The contract interface
+   * @param bytecode The contract bytecode
+   * @param contractName The contract name (optional, used for logs)
+   * @returns Address of the deployed contract
+   */
+  async function deployContract(
+    abi: ContractInterface,
+    bytecode: string | { object: string },
+    contractName?: string,
+    retryCount = 0
+  ): Promise<string> {
     try {
       const factory = new ethers.ContractFactory(abi, bytecode, signer);
       console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${nonce}`));
@@ -206,7 +219,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       console.log(chalk.green("Deployed", contractName, "to", address));
       return address;
     } catch (error: any) {
-      if (error?.message.includes("invalid bytecode")) {
+      if (retryCount === 0 && error?.message.includes("transaction already imported")) {
+        // If the deployment failed because the transaction was already imported,
+        // retry with a higher priority fee
+        setInternalFeePerGas(priorityFeeMultiplier * 1.1);
+        return deployContract(abi, bytecode, contractName, retryCount++);
+      } else if (error?.message.includes("invalid bytecode")) {
         throw new MUDError(
           `Error deploying ${contractName}: invalid bytecode. Note that linking of public libraries is not supported yet, make sure none of your libraries use "external" functions.`
         );
@@ -225,17 +243,17 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
    * However, for contracts not in the user directory (eg. the vanilla World contract),
    * using forge is more convenient because it automatically finds the contract in the @latticexyz/world package.
    */
-  async function forgeDeployContract(contractName: string): Promise<string> {
-    console.log(chalk.blue("Deploying", contractName));
+  // async function forgeDeployContract(contractName: string): Promise<string> {
+  //   console.log(chalk.blue("Deploying", contractName));
 
-    const { deployedTo } = JSON.parse(
-      await forge(
-        ["create", contractName, "--rpc-url", rpc, "--private-key", privateKey, "--json", "--nonce", String(nonce++)],
-        { profile, silent: true }
-      )
-    );
-    return deployedTo;
-  }
+  //   const { deployedTo } = JSON.parse(
+  //     await forge(
+  //       ["create", contractName, "--rpc-url", rpc, "--private-key", privateKey, "--json", "--nonce", String(nonce++)],
+  //       { profile, silent: true }
+  //     )
+  //   );
+  //   return deployedTo;
+  // }
 
   /**
    * Only await gas estimation (for speed), only execute if gas estimation succeeds (for safety)
@@ -243,7 +261,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   async function fastTxExecute<C extends { estimateGas: any; [key: string]: any }, F extends keyof C>(
     contract: C,
     func: F,
-    ...args: ArgumentsType<C[F]>
+    args: ArgumentsType<C[F]>,
+    retryCount = 0
   ): Promise<Awaited<ReturnType<C[F]>>> {
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
     try {
@@ -256,7 +275,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       promises.push(txPromise);
       return txPromise;
     } catch (error: any) {
-      throw new MUDError(`Gas estimation error for ${functionName}: ${error?.reason}`);
+      if (retryCount === 0 && error?.message.includes("transaction already imported")) {
+        // If the deployment failed because the transaction was already imported,
+        // retry with a higher priority fee
+        setInternalFeePerGas(priorityFeeMultiplier * 1.1);
+        return fastTxExecute(contract, func, args, retryCount++);
+      } else throw new MUDError(`Gas estimation error for ${functionName}: ${error?.reason}`);
     }
   }
 
@@ -265,7 +289,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     for (let i = 0; i < registerRouteFragments.length; i++) {
       const subRoute = toRoute(registerRouteFragments[i]);
       try {
-        await fastTxExecute(WorldContract, "registerRoute", baseRoute, subRoute);
+        await fastTxExecute(WorldContract, "registerRoute", [baseRoute, subRoute]);
       } catch (e) {
         // TODO: check if the gas estimation error is due to the route already being registered and ignore it
       }
@@ -293,6 +317,14 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     if (!abi) throw new MUDError(`No ABI found in ${contractDataPath}`);
 
     return { abi, bytecode };
+  }
+
+  async function setInternalFeePerGas(multiplier: number) {
+    // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
+    const feeData = await provider.getFeeData();
+    if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
+    maxPriorityFeePerGas = Math.floor(1_500_000_000 * multiplier);
+    maxFeePerGas = feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas);
   }
 }
 
