@@ -73,6 +73,30 @@ contract World is Store {
     RouteAccess.set({ routeId: routeId, caller: msg.sender, value: true });
   }
 
+  function registerRoute(bytes16 namespace, bytes15 file) public virtual returns (uint256 routeId) {
+    // Require base route to exist
+    uint256 namespaceRouteId = _toRoute(namespace, 0);
+    if (!RouteTable.has(namespaceRouteId)) revert RouteInvalid(string(abi.encodePacked(namespace)));
+
+    // Require file to not be empty
+    if (file == 0) revert RouteInvalid(string(abi.encodePacked(file)));
+
+    // Construct the new route
+    routeId = _toRoute(namespace, file);
+
+    // Require route to not exist yet
+    if (RouteTable.has(routeId)) revert RouteExists(string(abi.encodePacked(routeId)));
+
+    // Store the route
+    RouteTable.set({ routeId: routeId, route: string(abi.encodePacked(routeId)) }); // Note: all these string(abi.encodePacked()) go away if we turn routeId into cleartext bytes32
+
+    // Add caller as owner of the new route
+    RouteOwnerTable.set({ routeId: routeId, owner: msg.sender });
+
+    // Give caller access to the route
+    RouteAccess.set({ routeId: routeId, caller: msg.sender, value: true });
+  }
+
   /**
    * Register register a table with given schema at the given route
    */
@@ -83,6 +107,14 @@ contract World is Store {
   ) public virtual returns (uint256 tableRouteId) {
     // Register table route
     tableRouteId = uint256(registerRoute(baseRoute, tableRoute));
+
+    // StoreCore handles checking for existence
+    StoreCore.registerSchema(tableRouteId, schema);
+  }
+
+  function registerTable(bytes16 namespace, bytes15 file, Schema schema) public virtual returns (uint256 tableRouteId) {
+    // Register table route
+    tableRouteId = registerRoute(namespace, file);
 
     // StoreCore handles checking for existence
     StoreCore.registerSchema(tableRouteId, schema);
@@ -176,6 +208,36 @@ contract World is Store {
 
     // Give the system access to its base route
     RouteAccess.set({ routeId: baseRouteId, caller: address(system), value: true });
+  }
+
+  /**
+   * Exploration: use namespace and file (see comment on `call`)
+   */
+  function registerSystem(
+    bytes16 namespace,
+    bytes15 file,
+    System system,
+    bool publicAccess
+  ) public virtual returns (uint256 systemRouteId) {
+    // Require the system to not exist yet
+    if (SystemRouteTable.has(address(system))) revert SystemExists(address(system));
+
+    // Require the caller to own the namespace
+    uint256 namespaceRouteId = _toRoute(namespace, 0);
+    if (RouteOwnerTable.get(namespaceRouteId) != msg.sender)
+      revert RouteAccessDenied(string(abi.encodePacked(namespace)), msg.sender);
+
+    // Register system route
+    systemRouteId = registerRoute(namespace, file);
+
+    // Store the system address in the system table
+    SystemTable.set({ routeId: systemRouteId, system: address(system), publicAccess: publicAccess });
+
+    // Store the system's route in the SystemToRoute table
+    SystemRouteTable.set({ system: address(system), routeId: systemRouteId });
+
+    // Give the system access to its base route
+    RouteAccess.set({ routeId: namespaceRouteId, caller: address(system), value: true });
   }
 
   /**
@@ -328,23 +390,63 @@ contract World is Store {
    * We check for access based on `accessRoute`, and execute `accessRoute/subRoute`
    * because access to a route also grants access to all sub routes
    */
+  // function call(
+  //   string calldata accessRoute,
+  //   string memory subRoute,
+  //   bytes calldata funcSelectorAndArgs
+  // ) public virtual returns (bytes memory) {
+  //   // Check if the system is a public virtual system and get its address
+  //   string memory systemRoute = string(abi.encodePacked(accessRoute, subRoute));
+  //   uint256 systemRouteId = _toRouteId(systemRoute);
+  //   (address systemAddress, bool publicAccess) = SystemTable.get(systemRouteId);
+
+  //   // If the system is not public virtual, check for individual access
+  //   if (!publicAccess) {
+  //     // Require access to accessRoute
+  //     if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
+
+  //     // Require a valid subRoute
+  //     if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
+  //   }
+
+  //   // Call the system and forward any return data
+  //   return
+  //     _call({
+  //       msgSender: msg.sender,
+  //       systemAddress: systemAddress,
+  //       funcSelectorAndArgs: funcSelectorAndArgs,
+  //       delegate: _isSingleLevelRoute(systemRoute)
+  //     });
+  // }
+
+  /**
+   * Exploration: what if we only allow routes with depth 2 for now - /namespace/file
+   *
+   * Pros:
+   * - less calldata overhead (no need for dynamlic length strings which use 32 bytes for encoding their length)
+   * - easier to understand for devs
+   *
+   * Cons:
+   * - less flexibility:
+   * -- namespace and file are limited to 16 bytes in length (we can always hash longer strings to bring their size to 16 bytes though) 
+   * -- no deeply nested routes (do we need them? we could add another entry point for deeper routes if we do)
+   * --- In fact we could use the same namespace + file abstraction for deep routes by hashing `accessRoute` and `subRoute` to bytes16 (or bytes32)
+
+   */
   function call(
-    string calldata accessRoute,
-    string memory subRoute,
+    bytes16 namespace,
+    bytes15 file, // bytes15 to leave space for one separation character (`/`)
     bytes calldata funcSelectorAndArgs
   ) public virtual returns (bytes memory) {
     // Check if the system is a public virtual system and get its address
-    string memory systemRoute = string(abi.encodePacked(accessRoute, subRoute));
-    uint256 systemRouteId = _toRouteId(systemRoute);
+    uint256 systemRouteId = _toRoute(namespace, file);
     (address systemAddress, bool publicAccess) = SystemTable.get(systemRouteId);
 
     // If the system is not public virtual, check for individual access
     if (!publicAccess) {
-      // Require access to accessRoute
-      if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-      // Require a valid subRoute
-      if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
+      // First check access to namespace, then fall back to checking access on full route
+      if (!_hasAccess(_toRoute(namespace, 0), msg.sender) && !_hasAccess(_toRoute(namespace, file), msg.sender))
+        revert RouteAccessDenied(string(abi.encodePacked(namespace)), msg.sender);
     }
 
     // Call the system and forward any return data
@@ -353,7 +455,7 @@ contract World is Store {
         msgSender: msg.sender,
         systemAddress: systemAddress,
         funcSelectorAndArgs: funcSelectorAndArgs,
-        delegate: _isSingleLevelRoute(systemRoute)
+        delegate: namespace == 0 ? true : false
       });
   }
 
@@ -440,4 +542,10 @@ function _isSingleLevelRoute(string memory route) pure returns (bool result) {
 
 function _toRouteId(string memory route) pure returns (uint256) {
   return uint256(keccak256(bytes(route)));
+}
+
+// TODO: route can be bytes32 if we use cleartext, so strings can be passed directly
+function _toRoute(bytes16 namespace, bytes15 file) pure returns (uint256 route) {
+  // concat(namespace, "/", file)
+  return uint256(bytes32(namespace) | (bytes32(bytes1("/")) >> 128) | (bytes32(file) >> 136));
 }
