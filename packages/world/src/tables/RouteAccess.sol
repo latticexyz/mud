@@ -49,11 +49,7 @@ library RouteAccess {
   }
 
   /** Get value from the specified store */
-  function get(
-    IStore _store,
-    uint256 routeId,
-    address caller
-  ) internal view returns (bool value) {
+  function get(IStore _store, uint256 routeId, address caller) internal view returns (bool value) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
 
     _primaryKeys[0] = bytes32(uint256(routeId));
@@ -65,11 +61,7 @@ library RouteAccess {
   }
 
   /** Set value */
-  function set(
-    uint256 routeId,
-    address caller,
-    bool value
-  ) internal {
+  function set(uint256 routeId, address caller, bool value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
 
     _primaryKeys[0] = bytes32(uint256(routeId));
