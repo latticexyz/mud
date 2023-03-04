@@ -319,6 +319,11 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     return { abi, bytecode };
   }
 
+  /**
+   * Set the maxFeePerGas and maxPriorityFeePerGas based on the current base fee and the given multiplier.
+   * The multiplier is used to allow replacing pending transactions.
+   * @param multiplier Multiplier to apply to the base fee
+   */
   async function setInternalFeePerGas(multiplier: number) {
     // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
     const feeData = await provider.getFeeData();
