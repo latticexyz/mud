@@ -26,7 +26,7 @@ const SystemConfig = z.intersection(
 // The parsed world config is the result of parsing the user config
 export const WorldConfig = z.object({
   baseRoute: BaseRoute.default(""),
-  worldContractName: z.string().default("World"),
+  worldContractName: z.string().optional(),
   overrideSystems: z.record(SystemName, SystemConfig).default({}),
   excludeSystems: z.array(SystemName).default([]),
   postDeployScript: z.string().default("PostDeploy"),
