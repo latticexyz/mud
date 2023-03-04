@@ -17,6 +17,7 @@ type Options = {
   profile?: string;
   privateKey: string;
   priorityFeeMultiplier: number;
+  clean?: boolean;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -27,6 +28,7 @@ const commandModule: CommandModule<Options, Options> = {
   builder(yargs) {
     return yargs.options({
       configPath: { type: "string", desc: "Path to the config file" },
+      clean: { type: "boolean", desc: "Remove the build forge artifacts and cache directories before building" },
       printConfig: { type: "boolean", desc: "Print the resolved config" },
       profile: { type: "string", desc: "The foundry profile to use" },
       priorityFeeMultiplier: {
@@ -38,7 +40,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler(args) {
-    const { configPath, printConfig, profile } = args;
+    const { configPath, printConfig, profile, clean } = args;
 
     const rpc = await getRpcUrl(profile);
     console.log(
@@ -46,6 +48,8 @@ const commandModule: CommandModule<Options, Options> = {
         chalk.whiteBright(`\n Deploying MUD v2 contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
       )
     );
+
+    if (clean) await forge(["clean"], { profile });
 
     // Run forge build
     await forge(["build"], { profile });

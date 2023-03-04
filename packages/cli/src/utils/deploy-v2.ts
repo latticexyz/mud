@@ -105,11 +105,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       // Register system route
       const routeFragments = systemConfig.route.substring(1).split("/"); // Split route into fragments (skip leading slash)
       const lastRouteFragment = toRoute(routeFragments.pop()); // Register last fragment as part of call to registerSystem
+      const systemBaseRoute = toRoute(baseRoute, ...routeFragments);
       await registerNestedRoute(WorldContract, baseRoute, routeFragments);
 
       // Register system at route
       await fastTxExecute(WorldContract, "registerSystem", [
-        baseRoute,
+        systemBaseRoute,
         lastRouteFragment,
         await contractPromises[systemName],
         systemConfig.openAccess,
@@ -152,22 +153,21 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
   if (existsSync(postDeployPath)) {
     console.log(chalk.blue(`Executing post deploy script at ${postDeployPath}`));
-    console.log(
-      await forge(
-        [
-          "script",
-          postDeployScript,
-          "--sig",
-          "run(address)",
-          await contractPromises.World,
-          "--broadcast",
-          "--rpc-url",
-          rpc,
-        ],
-        {
-          profile,
-        }
-      )
+    await forge(
+      [
+        "script",
+        postDeployScript,
+        "--sig",
+        "run(address)",
+        await contractPromises.World,
+        "--broadcast",
+        "--rpc-url",
+        rpc,
+        "-vvv",
+      ],
+      {
+        profile,
+      }
     );
   } else {
     console.log(`No script at ${postDeployPath}, skipping post deploy hook`);

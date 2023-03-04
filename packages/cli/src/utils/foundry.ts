@@ -1,4 +1,4 @@
-import { execa } from "execa";
+import { execa, Options } from "execa";
 import { execLog } from "./execLog.js";
 
 export interface ForgeConfig {
@@ -71,20 +71,15 @@ export async function getRpcUrl(profile?: string) {
  * Execute a forge command
  * @param args The arguments to pass to forge
  * @param options { profile?: The foundry profile to use; silent?: If true, nothing will be logged to the console }
- * @returns Stdout of the command
  */
-export async function forge(args: string[], options?: { profile?: string; silent?: boolean }): Promise<string> {
-  return options?.silent
-    ? (
-        await execa("forge", args, {
-          env: { FOUNDRY_PROFILE: options?.profile },
-          stdout: "pipe",
-          stderr: "pipe",
-        })
-      ).stdout
-    : execLog("forge", args, {
-        env: { FOUNDRY_PROFILE: options?.profile },
-      });
+export async function forge(args: string[], options?: { profile?: string; silent?: boolean }): Promise<void> {
+  const execOptions: Options<string> = {
+    env: { FOUNDRY_PROFILE: options?.profile },
+    stdout: "inherit",
+    stderr: "pipe",
+  };
+
+  await (options?.silent ? execa("forge", args, execOptions) : execLog("forge", args, execOptions));
 }
 
 /**
