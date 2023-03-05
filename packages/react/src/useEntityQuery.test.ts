@@ -34,11 +34,13 @@ describe("useEntityQuery", () => {
     const entity3 = createEntity(world, []);
 
     const { result } = renderHook(() => useEntityQuery([Has(Position)]));
+    const { result: resultOnValueChange } = renderHook(() => useEntityQuery([Has(Position)], true));
 
     expect(result.current.length).toBe(2);
     expect(result.current).toContain(entity1);
     expect(result.current).toContain(entity2);
     expect(result.current).not.toContain(entity3);
+    expect(resultOnValueChange.current).toEqual(result.current);
 
     act(() => {
       setComponent(Position, entity3, { x: 0, y: 0 });
@@ -48,6 +50,7 @@ describe("useEntityQuery", () => {
     expect(result.current).toContain(entity1);
     expect(result.current).toContain(entity2);
     expect(result.current).toContain(entity3);
+    expect(resultOnValueChange.current).toEqual(result.current);
 
     act(() => {
       removeComponent(Position, entity1);
@@ -58,6 +61,7 @@ describe("useEntityQuery", () => {
     expect(result.current).not.toContain(entity1);
     expect(result.current).toContain(entity2);
     expect(result.current).not.toContain(entity3);
+    expect(resultOnValueChange.current).toEqual(result.current);
 
     act(() => {
       removeComponent(Position, entity2);
@@ -72,6 +76,7 @@ describe("useEntityQuery", () => {
     const entity3 = createEntity(world, []);
 
     const { result } = renderHook(() => useEntityQuery([Has(Position)]));
+    const { result: resultOnValueChange } = renderHook(() => useEntityQuery([Has(Position)], true));
 
     expect(result.all).toHaveLength(2);
     expect(result.current).toHaveLength(2);
@@ -79,12 +84,14 @@ describe("useEntityQuery", () => {
     expect(result.current).toContain(entity2);
     expect(result.current).not.toContain(entity3);
 
-    // Changing the an entity's component value should NOT re-render
+    // Changing an entity's component value should NOT re-render,
+    // unless recomputeOnValueChange === true
     act(() => {
       setComponent(Position, entity2, { x: 0, y: 0 });
     });
 
     expect(result.all).toHaveLength(2);
+    expect(resultOnValueChange.all).toHaveLength(3);
 
     // Changing a different component value should NOT re-render
     act(() => {
@@ -93,6 +100,7 @@ describe("useEntityQuery", () => {
     });
 
     expect(result.all).toHaveLength(2);
+    expect(resultOnValueChange.all).toHaveLength(3);
 
     // Changing which entities have the component should re-render
     act(() => {
@@ -100,6 +108,7 @@ describe("useEntityQuery", () => {
     });
 
     expect(result.all).toHaveLength(3);
+    expect(resultOnValueChange.all).toHaveLength(4);
     expect(result.current).toHaveLength(3);
     expect(result.current).toContain(entity1);
     expect(result.current).toContain(entity2);
@@ -111,6 +120,7 @@ describe("useEntityQuery", () => {
     });
 
     expect(result.all).toHaveLength(4);
+    expect(resultOnValueChange.all).toHaveLength(5);
     expect(result.current).toHaveLength(2);
     expect(result.current).toContain(entity2);
     expect(result.current).toContain(entity3);
