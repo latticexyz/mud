@@ -12,10 +12,12 @@ import { distinctUntilChanged, map } from "rxjs";
  * and triggers a re-render as new query results come in.
  *
  * @param fragments Query fragments to match against, executed from left to right.
- * @param recomputeOnValueChange False - re-renders only on entity array changes. True - also on component value changes.
+ * @param options.recomputeOnValueChange False - re-renders only on entity array changes. True (default) - also on component value changes.
  * @returns Set of entities matching the query fragments.
  */
-export function useEntityQuery(fragments: QueryFragment[], recomputeOnValueChange = false) {
+export function useEntityQuery(fragments: QueryFragment[], options?: { recomputeOnValueChange?: boolean }) {
+  const recomputeOnValueChange = options?.recomputeOnValueChange ?? true;
+
   const stableFragments = useDeepMemo(fragments);
   const query = useMemo(() => defineQuery(stableFragments, { runOnInit: true }), [stableFragments]);
   const [entities, setEntities] = useState([...query.matching]);
