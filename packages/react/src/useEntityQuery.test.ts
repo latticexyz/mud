@@ -33,9 +33,9 @@ describe("useEntityQuery", () => {
     const entity2 = createEntity(world, [withValue(Position, { x: 2, y: 2 })]);
     const entity3 = createEntity(world, []);
 
-    const { result } = renderHook(() => useEntityQuery([Has(Position)], { recomputeOnValueChange: false }));
+    const { result } = renderHook(() => useEntityQuery([Has(Position)], { updateOnValueChange: false }));
     const { result: resultOnValueChange } = renderHook(() =>
-      useEntityQuery([Has(Position)], { recomputeOnValueChange: true })
+      useEntityQuery([Has(Position)], { updateOnValueChange: true })
     );
 
     expect(result.current.length).toBe(2);
@@ -77,9 +77,9 @@ describe("useEntityQuery", () => {
     const entity2 = createEntity(world, [withValue(Position, { x: 2, y: 2 })]);
     const entity3 = createEntity(world, []);
 
-    const { result } = renderHook(() => useEntityQuery([Has(Position)], { recomputeOnValueChange: false }));
+    const { result } = renderHook(() => useEntityQuery([Has(Position)], { updateOnValueChange: false }));
     const { result: resultOnValueChange } = renderHook(() =>
-      useEntityQuery([Has(Position)], { recomputeOnValueChange: true })
+      useEntityQuery([Has(Position)], { updateOnValueChange: true })
     );
 
     expect(result.all).toHaveLength(2);
@@ -89,7 +89,7 @@ describe("useEntityQuery", () => {
     expect(result.current).not.toContain(entity3);
 
     // Changing an entity's component value should NOT re-render,
-    // unless recomputeOnValueChange === true
+    // unless updateOnValueChange === true
     act(() => {
       setComponent(Position, entity2, { x: 0, y: 0 });
     });

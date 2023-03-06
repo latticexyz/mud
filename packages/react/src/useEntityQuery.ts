@@ -12,11 +12,11 @@ import { distinctUntilChanged, map } from "rxjs";
  * and triggers a re-render as new query results come in.
  *
  * @param fragments Query fragments to match against, executed from left to right.
- * @param options.recomputeOnValueChange False - re-renders only on entity array changes. True (default) - also on component value changes.
+ * @param options.updateOnValueChange False - re-renders only on entity array changes. True (default) - also on component value changes.
  * @returns Set of entities matching the query fragments.
  */
-export function useEntityQuery(fragments: QueryFragment[], options?: { recomputeOnValueChange?: boolean }) {
-  const recomputeOnValueChange = options?.recomputeOnValueChange ?? true;
+export function useEntityQuery(fragments: QueryFragment[], options?: { updateOnValueChange?: boolean }) {
+  const updateOnValueChange = options?.updateOnValueChange ?? true;
 
   const stableFragments = useDeepMemo(fragments);
   const query = useMemo(() => defineQuery(stableFragments, { runOnInit: true }), [stableFragments]);
@@ -25,13 +25,13 @@ export function useEntityQuery(fragments: QueryFragment[], options?: { recompute
   useEffect(() => {
     setEntities([...query.matching]);
     let observable = query.update$.pipe(map(() => [...query.matching]));
-    if (!recomputeOnValueChange) {
+    if (!updateOnValueChange) {
       // re-render only on entity array changes
       observable = observable.pipe(distinctUntilChanged((a, b) => isEqual(a, b)));
     }
     const subscription = observable.subscribe((entities) => setEntities(entities));
     return () => subscription.unsubscribe();
-  }, [query, recomputeOnValueChange]);
+  }, [query, updateOnValueChange]);
 
   return entities;
 }
