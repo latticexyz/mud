@@ -109,37 +109,21 @@ contract WorldTest is Test {
 
   World world;
 
+  bytes32 key;
+  bytes32[] keyTuple;
+
   function setUp() public {
     world = new World();
+
+    key = "testKey";
+    keyTuple = new bytes32[](1);
+    keyTuple[0] = key;
   }
 
   // Expect an error when trying to write from an address that doesn't have access
   function _expectRouteAccessDenied(address caller, string memory route) internal {
     vm.prank(caller);
     vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, route, caller));
-  }
-
-  function _initRouteTableKey(
-    string memory baseRoute,
-    string memory tableRoute,
-    Schema schema
-  )
-    internal
-    returns (
-      uint256 tableRouteId,
-      bytes32 key,
-      bytes32[] memory keyTuple
-    )
-  {
-    // Register a new route
-    world.registerRoute("", baseRoute);
-
-    // Register a new table
-    tableRouteId = world.registerTable(baseRoute, tableRoute, schema);
-
-    key = keccak256("testKey");
-    keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
   }
 
   function testConstructor() public {
@@ -353,7 +337,6 @@ contract WorldTest is Test {
     uint256 tableRouteId = world.registerTable("/testSetRecord", "/testTable", BoolSchemaLib.getSchema());
 
     // Write data to the table
-    bytes32 key = keccak256("testKey");
     BoolSchemaLib.set({ store: world, tableId: tableRouteId, key: key, value: true });
 
     // Expect the data to be written
@@ -368,8 +351,6 @@ contract WorldTest is Test {
     vm.stopPrank();
 
     // Expect to be able to write via the base route
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
     world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
     assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
@@ -386,10 +367,6 @@ contract WorldTest is Test {
 
     // Register a new table
     uint256 tableRouteId = world.registerTable("/testSetField", "/testTable", BoolSchemaLib.getSchema());
-
-    bytes32 key = keccak256("testKey");
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
 
     // Write data to the table via access route
     world.setField("/testSetField", "/testTable", keyTuple, 0, abi.encodePacked(true));
@@ -420,11 +397,11 @@ contract WorldTest is Test {
     string memory baseRoute = "/testPushToField";
     string memory tableRoute = "/testTable";
 
-    (uint256 tableRouteId, bytes32 key, bytes32[] memory keyTuple) = _initRouteTableKey(
-      baseRoute,
-      tableRoute,
-      AddressArraySchemaLib.getSchema()
-    );
+    // Register a new route
+    world.registerRoute("", baseRoute);
+
+    // Register a new table
+    uint256 tableRouteId = world.registerTable(baseRoute, tableRoute, AddressArraySchemaLib.getSchema());
 
     // Create data
     address[] memory dataToPush = new address[](3);
@@ -463,10 +440,6 @@ contract WorldTest is Test {
 
     // Register a new table
     uint256 tableRouteId = world.registerTable("/testDeleteRecord", "/testTable", BoolSchemaLib.getSchema());
-
-    bytes32 key = keccak256("testKey");
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
 
     // Write data to the table via the access route and expect it to be written
     world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
@@ -573,14 +546,12 @@ contract WorldTest is Test {
     world.registerTableHook("/testTable", tableHook);
 
     // Prepare data to write to the table
-    bytes32[] memory key = new bytes32[](1);
-    key[0] = "someKey";
     bytes memory value = abi.encodePacked(true);
 
     // Expect the hook to be notified when a record is written
     vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, value));
-    world.setRecord(tableId, key, value);
+    emit HookCalled(abi.encode(tableId, keyTuple, value));
+    world.setRecord(tableId, keyTuple, value);
   }
 
   function testRegisterSystemHook() public view {
