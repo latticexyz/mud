@@ -442,6 +442,7 @@ library StoreCoreInternal {
     // Append `dataToPush` to the end of the data in storage
     uint256 dynamicDataLocation = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
     dynamicDataLocation += oldFieldLength / 32;
+    // offset for new data (old data never has an offset because each dynamic field starts at a different storage slot)
     uint256 offset = oldFieldLength % 32;
     Storage.store({ storagePointer: dynamicDataLocation, offset: offset, data: dataToPush });
   }
