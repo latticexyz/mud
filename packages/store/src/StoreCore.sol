@@ -238,7 +238,7 @@ library StoreCore {
       revert StoreCore_NotDynamicField();
     }
 
-    // TODO add push-specific event and hook to avoid the storage read?
+    // TODO add push-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
     bytes memory fullData = abi.encodePacked(
       StoreCoreInternal._getDynamicField(table, key, schemaIndex, schema),
       dataToPush
