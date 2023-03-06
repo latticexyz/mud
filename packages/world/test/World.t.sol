@@ -264,10 +264,8 @@ contract WorldTest is Test {
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
 
     // Expect an error when setting metadata on a route that is not owned by the caller
-    vm.startPrank(address(1));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/test", address(1)));
+    _expectRouteAccessDenied(address(1), "/test");
     world.setMetadata("/test", tableName, fieldNames);
-    vm.stopPrank();
   }
 
   function testRegisterSystem() public {
@@ -310,15 +308,13 @@ contract WorldTest is Test {
 
     // Expect an error when extending a route that doesn't exist
     System anotherSystem = new System();
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/invalid", address(this)));
+    _expectRouteAccessDenied(address(this), "/invalid");
     world.registerSystem("/invalid", "/test", anotherSystem, true);
 
     // Expect an error when registering a system at a route that is not owned by the caller
     System yetAnotherSystem = new System();
-    vm.startPrank(address(0x01));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "", address(0x01)));
+    _expectRouteAccessDenied(address(0x01), "");
     world.registerSystem("", "/rootSystem", yetAnotherSystem, true);
-    vm.stopPrank();
   }
 
   function testGrantAccess() public {
@@ -343,22 +339,16 @@ contract WorldTest is Test {
     assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
     // Expect an error when trying to write from an address that doesn't have access
-    vm.startPrank(address(0x01));
-    vm.expectRevert(
-      abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord/testTable", address(0x01))
-    );
+    _expectRouteAccessDenied(address(0x01), "/testSetRecord/testTable");
     BoolSchemaLib.set({ store: world, tableId: tableRouteId, key: key, value: true });
-    vm.stopPrank();
 
     // Expect to be able to write via the base route
     world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
     assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
     // Expect an error when trying to write from an address that doesn't have access to the base route
-    vm.startPrank(address(0x01));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord", address(0x01)));
+    _expectRouteAccessDenied(address(0x01), "/testSetRecord");
     world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
-    vm.stopPrank();
   }
 
   function testSetField() public {
@@ -381,16 +371,12 @@ contract WorldTest is Test {
     assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
     // Expect an error when trying to write from an address that doesn't have access
-    vm.startPrank(address(0x01));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetField", address(0x01)));
+    _expectRouteAccessDenied(address(0x01), "/testSetField");
     world.setField("/testSetField", "/testTable", keyTuple, 0, abi.encodePacked(true));
-    vm.stopPrank();
 
     // Expect an error when trying to write from an address that doesn't have direct access
-    vm.startPrank(address(0x02));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetField/testTable", address(0x02)));
+    _expectRouteAccessDenied(address(0x02), "/testSetField/testTable");
     world.setField(tableRouteId, keyTuple, 0, abi.encodePacked(true));
-    vm.stopPrank();
   }
 
   function testPushToField() public {
@@ -462,18 +448,12 @@ contract WorldTest is Test {
     assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
     // Expect an error when trying to delete from an address that doesn't have access
-    vm.startPrank(address(0x01));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testDeleteRecord", address(0x01)));
+    _expectRouteAccessDenied(address(0x01), "/testDeleteRecord");
     world.deleteRecord("/testDeleteRecord", "/testTable", keyTuple);
-    vm.stopPrank();
 
     // Expect an error when trying to delete from an address that doesn't have direct access
-    vm.startPrank(address(0x02));
-    vm.expectRevert(
-      abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testDeleteRecord/testTable", address(0x02))
-    );
+    _expectRouteAccessDenied(address(0x02), "/testDeleteRecord/testTable");
     world.deleteRecord(tableRouteId, keyTuple);
-    vm.stopPrank();
   }
 
   function testCall() public {
@@ -502,10 +482,8 @@ contract WorldTest is Test {
     assertEq(returnStruct.input, bytes32(uint256(0x123)));
 
     // Expect an error when trying to call a private system from an address that doesn't have access
-    vm.startPrank(address(0x01));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSystem", address(0x01)));
+    _expectRouteAccessDenied(address(0x01), "/testSystem");
     world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
-    vm.stopPrank();
 
     // Expect errors from the system to be forwarded
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
