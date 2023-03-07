@@ -24,6 +24,14 @@ const config: StoreUserConfig = {
       },
       storeArgument: true,
     },
+    SystemRegistry: {
+      primaryKeys: {
+        system: SchemaType.ADDRESS,
+      },
+      schema: {
+        resourceSelector: SchemaType.BYTES32,
+      },
+    },
     RouteAccess: {
       primaryKeys: {
         routeId: SchemaType.UINT256,
@@ -34,9 +42,9 @@ const config: StoreUserConfig = {
       },
       storeArgument: true,
     },
-    SystemTable: {
+    Systems: {
       primaryKeys: {
-        routeId: SchemaType.UINT256,
+        resourceSelector: SchemaType.BYTES32,
       },
       schema: {
         system: SchemaType.ADDRESS,

@@ -14,10 +14,10 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/world_internals/tables/SystemTable"));
-uint256 constant SystemTableTableId = _tableId;
+uint256 constant _tableId = uint256(keccak256("/world_internals/tables/Systems"));
+uint256 constant SystemsTableId = _tableId;
 
-library SystemTable {
+library Systems {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
