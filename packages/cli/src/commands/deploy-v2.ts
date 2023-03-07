@@ -40,6 +40,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler(args) {
+    args.profile = args.profile ?? process.env.FOUNDRY_PROFILE;
     const { configPath, printConfig, profile, clean } = args;
 
     const rpc = await getRpcUrl(profile);
