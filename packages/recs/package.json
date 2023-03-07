@@ -21,6 +21,11 @@
     "build": "rimraf dist && rollup -c rollup.config.js",
     "release": "npm publish || echo 'version already published'"
   },
+  "dependencies": {
+    "@latticexyz/cli": "link:../cli",
+    "@latticexyz/schema-type": "link:../schema-type",
+    "@latticexyz/std-client": "link:../std-client"
+  },
   "devDependencies": {
     "@latticexyz/utils": "^1.39.0",
     "@rollup/plugin-node-resolve": "^13.1.3",

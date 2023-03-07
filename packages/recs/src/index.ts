@@ -7,3 +7,4 @@ export * from "./Query";
 export * from "./types";
 export * from "./constants";
 export * from "./utils";
+export { defineStoreComponents } from "./defineStoreComponents";
