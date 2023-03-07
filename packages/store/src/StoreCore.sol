@@ -74,12 +74,15 @@ library StoreCore {
   /**
    * Get the schema for the given table
    */
-  function getSchema(uint256 table) internal view returns (Schema schema) {
+  function getSchema(uint256 table, bool validate) internal view returns (Schema schema) {
     schema = StoreCoreInternal._getSchema(table);
-    // A race condition prevents us from doing this check ~everywhere
-    // if (schema.isEmpty()) {
-    //   revert StoreCore_TableNotFound(table);
-    // }
+    if (validate && schema.isEmpty()) {
+      revert StoreCore_TableNotFound(table);
+    }
+  }
+
+  function getSchema(uint256 table) internal view returns (Schema schema) {
+    return getSchema(table, false);
   }
 
   /**
@@ -91,7 +94,7 @@ library StoreCore {
     string[] memory fieldNames
   ) internal {
     // Get schema of the given table
-    Schema schema = getSchema(table);
+    Schema schema = getSchema(table, true);
 
     // Verify the number of field names corresponds to the schema length
     if (!(fieldNames.length == 0 || fieldNames.length == schema.numFields())) {
@@ -131,7 +134,7 @@ library StoreCore {
   ) internal {
     // verify the value has the correct length for the table (based on the table's schema)
     // to prevent invalid data from being stored
-    Schema schema = getSchema(table);
+    Schema schema = getSchema(table, true);
 
     // Verify static data length + dynamic data length matches the given data
     uint256 staticLength = schema.staticDataLength();
@@ -200,7 +203,7 @@ library StoreCore {
     uint8 schemaIndex,
     bytes memory data
   ) internal {
-    Schema schema = getSchema(table);
+    Schema schema = getSchema(table, true);
 
     // Emit event to notify indexers
     emit StoreSetField(table, key, schemaIndex, data);
@@ -256,7 +259,7 @@ library StoreCore {
    */
   function getRecord(uint256 table, bytes32[] memory key) internal view returns (bytes memory) {
     // Get schema for this table
-    Schema schema = getSchema(table);
+    Schema schema = getSchema(table, true);
 
     return getRecord(table, key, schema);
   }
@@ -323,6 +326,9 @@ library StoreCore {
     uint8 schemaIndex
   ) internal view returns (bytes memory) {
     Schema schema = getSchema(table);
+    if (schema.isEmpty()) {
+      revert("Schema not found in getField call");
+    }
 
     return getField(table, key, schemaIndex, schema);
   }
