@@ -24,7 +24,7 @@ struct SystemSchema {
 library SystemSchemaLib {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema schema) {
-    schema = SchemaLib.encode(SchemaType.BOOL, SchemaType.ADDRESS);
+    schema = SchemaLib.encode(SchemaType.ADDRESS, SchemaType.BOOL);
   }
 
   /** Register the table's schema */
