@@ -14,10 +14,17 @@ import { SystemTable } from "./tables/SystemTable.sol";
 import { System } from "./System.sol";
 import { ISystemHook } from "./ISystemHook.sol";
 
+import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
+import { ResourceAccess } from "./tables/ResourceAccess.sol";
+
+import { ResourceSelector } from "./ResourceSelector.sol";
+
 uint256 constant ROOT_ROUTE_ID = uint256(keccak256(bytes("")));
 bytes32 constant SINGLE_SLASH = "/";
 
 contract World is Store {
+  error NamespaceExists(string namespace);
+
   error RouteInvalid(string route);
   error RouteExists(string route);
   error RouteAccessDenied(string route, address caller);
@@ -71,6 +78,20 @@ contract World is Store {
 
     // Give caller access to the route
     RouteAccess.set({ routeId: routeId, caller: msg.sender, value: true });
+  }
+
+  /**
+   * Register a new namespace
+   */
+  function registerNamespace(bytes16 namespace) public virtual {
+    // Require namespace to not exist yet
+    if (NamespaceOwner.get(namespace) != address(0)) revert NamespaceExists(ResourceSelector.toString(namespace));
+
+    // Register caller as the namespace owner
+    NamespaceOwner.set({ namespace: namespace, owner: msg.sender });
+
+    // Give caller access to the new namespace
+    ResourceAccess.set({ selector: ResourceSelector.from(namespace, 0), caller: msg.sender, access: true });
   }
 
   /**

@@ -17,6 +17,10 @@ import { RouteAccess } from "../src/tables/RouteAccess.sol";
 import { SystemTable } from "../src/tables/SystemTable.sol";
 import { BoolSchemaLib } from "../src/schemas/Bool.sol";
 
+import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
+import { ResourceSelector } from "../src/ResourceSelector.sol";
+
 struct WorldTestSystemReturn {
   address sender;
   bytes32 input;
@@ -38,10 +42,10 @@ contract WorldTestSystem is System {
     revert WorldTestSystemError(input);
   }
 
-  function delegateCallSubSystem(address subSystem, bytes memory funcSelectorAndCalldata)
-    public
-    returns (bytes memory)
-  {
+  function delegateCallSubSystem(
+    address subSystem,
+    bytes memory funcSelectorAndCalldata
+  ) public returns (bytes memory) {
     (bool success, bytes memory returndata) = subSystem.delegatecall(funcSelectorAndCalldata);
     if (!success) {
       assembly {
@@ -51,11 +55,7 @@ contract WorldTestSystem is System {
     return returndata;
   }
 
-  function writeData(
-    string calldata accessRoute,
-    string calldata subRoute,
-    bool data
-  ) public {
+  function writeData(string calldata accessRoute, string calldata subRoute, bool data) public {
     bytes32[] memory key = new bytes32[](1);
     key[0] = "testKey";
 
@@ -79,20 +79,11 @@ contract WorldTestSystem is System {
 contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
-  function onSetRecord(
-    uint256 table,
-    bytes32[] memory key,
-    bytes memory data
-  ) public {
+  function onSetRecord(uint256 table, bytes32[] memory key, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, data));
   }
 
-  function onSetField(
-    uint256 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data
-  ) public {
+  function onSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, schemaIndex, data));
   }
 
@@ -162,6 +153,21 @@ contract WorldTest is Test {
 
     // !gasreport validate single level route (no leading slash but contains slash)
     assertFalse(_isSingleLevelRoute("noLeadingSlash/butContainsSlash"), "no leading slash");
+  }
+
+  function testRegisterNamespace() public {
+    // Register a new namespace
+    world.registerNamespace("test");
+
+    // Expect the caller to be the namespace owner
+    assertEq(NamespaceOwner.get(world, "test"), address(this), "caller should be namespace owner");
+
+    // Expect the caller to have access
+    assertEq(ResourceAccess.get(world, "test", address(this)), true, "caller should have access");
+
+    // Expect an error when registering an existing namespace
+    vm.expectRevert(abi.encodeWithSelector(World.NamespaceExists.selector, ResourceSelector.toString(bytes16("test"))));
+    world.registerNamespace("test");
   }
 
   function testRegisterRoute() public {
