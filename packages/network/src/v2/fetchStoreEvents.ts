@@ -2,7 +2,7 @@ import { Contract } from "ethers";
 import { NetworkComponentUpdate } from "../types";
 import { orderBy } from "lodash";
 import { isDefined } from "./utils/isDefined";
-import { storeEvents } from "./constants";
+import { storeEvents } from "./common";
 import { ecsEventFromLog } from "./ecsEventFromLog";
 
 export async function fetchStoreEvents(

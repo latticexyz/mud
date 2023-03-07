@@ -1,8 +1,8 @@
 import { ComponentValue } from "@latticexyz/recs";
 import { Contract } from "ethers";
-import { registerSchema } from "./tableSchemas";
-import { getMetadata } from "./tableMetadata";
-import { decodeField } from "./decodeData";
+import { registerSchema } from "./schemas/tableSchemas";
+import { getMetadata } from "./schemas/tableMetadata";
+import { decodeField } from "./schemas/decodeField";
 
 export async function decodeStoreSetField(
   contract: Contract,

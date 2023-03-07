@@ -1,5 +1,5 @@
 import { Contract } from "ethers";
-import { TableMetadata } from "./constants";
+import { TableMetadata } from "../common";
 
 // worldAddress:tableId => schema
 // TODO: add chain ID to namespace?

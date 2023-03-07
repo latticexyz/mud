@@ -1,6 +1,6 @@
 import { getStaticByteLength, SchemaType, SchemaTypeId } from "@latticexyz/schema-type";
-import { hexToArray } from "./utils/hexToArray";
-import { TableSchema } from "./constants";
+import { hexToArray } from "../utils/hexToArray";
+import { TableSchema } from "../common";
 
 export function decodeSchema(rawSchema: string): TableSchema {
   const schemaBytes = new DataView(hexToArray(rawSchema).buffer);

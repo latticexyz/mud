@@ -1,10 +1,10 @@
 import { ComponentValue } from "@latticexyz/recs";
 import { Contract, ethers } from "ethers";
-import { registerSchema } from "./tableSchemas";
-import { getMetadata, registerMetadata } from "./tableMetadata";
-import { decodeData } from "./decodeData";
+import { registerSchema } from "./schemas/tableSchemas";
+import { getMetadata, registerMetadata } from "./schemas/tableMetadata";
+import { decodeData } from "./schemas/decodeData";
 import { arrayToHex } from "./utils/arrayToHex";
-import { schemaTableId, metadataTableId } from "./constants";
+import { schemaTableId, metadataTableId } from "./common";
 
 export async function decodeStoreSetRecord(
   contract: Contract,
