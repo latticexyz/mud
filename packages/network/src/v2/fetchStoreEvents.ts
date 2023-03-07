@@ -1,13 +1,15 @@
 import { Contract } from "ethers";
-import { NetworkComponentUpdate, NetworkEvents } from "../types";
-import { formatComponentID, formatEntityID } from "../utils";
+import { NetworkComponentUpdate } from "../types";
 import { orderBy } from "lodash";
 import { isDefined } from "./utils/isDefined";
-import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
-import { decodeStoreSetField } from "./decodeStoreSetField";
 import { storeEvents } from "./constants";
+import { ecsEventFromLog } from "./ecsEventFromLog";
 
-export async function fetchStoreEvents(contract: Contract, fromBlock: number, toBlock: number) {
+export async function fetchStoreEvents(
+  contract: Contract,
+  fromBlock: number,
+  toBlock: number
+): Promise<NetworkComponentUpdate[]> {
   const topicSets = storeEvents.map((eventName) => contract.filters[eventName]().topics).filter(isDefined);
 
   const logSets = await Promise.all(
@@ -24,49 +26,12 @@ export async function fetchStoreEvents(contract: Contract, fromBlock: number, to
     lastLogForTx[log.transactionHash] = log.logIndex;
   });
 
-  const ecsEvents: NetworkComponentUpdate[] = [];
+  const ecsEvents = await Promise.all(
+    logs.map(({ log, parsedLog }) => {
+      const { transactionHash, logIndex } = log;
+      return ecsEventFromLog(contract, log, parsedLog, lastLogForTx[transactionHash] === logIndex);
+    })
+  );
 
-  // TODO: parallelize this
-  for (const { log, parsedLog } of logs) {
-    const { blockNumber, transactionHash, logIndex } = log;
-    const { args, name } = parsedLog;
-
-    const component = formatComponentID(args.table);
-    // TODO: support key tuples
-    const entity = formatEntityID(args.key[0]);
-
-    const ecsEvent: NetworkComponentUpdate = {
-      type: NetworkEvents.NetworkComponentUpdate,
-      component,
-      entity,
-      value: undefined,
-      blockNumber,
-      txHash: transactionHash,
-      logIndex,
-      // TODO: this approach feels weird, refactor this?
-      lastEventInTx: lastLogForTx[transactionHash] === logIndex,
-    };
-
-    if (name === "StoreSetRecord") {
-      const value = await decodeStoreSetRecord(contract, args.table.toHexString(), args.key, args.data);
-      console.log("StoreSetRecord:", { component, entity, value });
-      ecsEvent.value = value;
-    } else if (name === "StoreSetField") {
-      const value = await decodeStoreSetField(
-        contract,
-        args.table.toHexString(),
-        args.key,
-        args.schemaIndex,
-        args.data
-      );
-      console.log("StoreSetField:", { component, entity, value });
-      ecsEvent.partialValue = value;
-    } else if (name === "StoreDeleteRecord") {
-      console.log("StoreDeleteRecord:", { component, entity });
-    }
-
-    ecsEvents.push(ecsEvent);
-  }
-
-  return ecsEvents;
+  return ecsEvents.filter(isDefined);
 }

@@ -1,3 +1,4 @@
+// TODO: migrate to viem's toBytes(hex)
 export const hexToArray = (hex: string): Uint8Array => {
   if (!/^(0x)?([\da-f]{2})*$/i.test(hex)) {
     console.error("Invalid hex string", hex);
