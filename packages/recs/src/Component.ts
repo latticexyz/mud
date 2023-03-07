@@ -77,7 +77,11 @@ export function setComponent<S extends Schema, T = undefined>(
   for (const [key, val] of Object.entries(value)) {
     if (component.values[key]) {
       component.values[key].set(entity, val);
-    } else {
+    } else if (!component.metadata?.table) {
+      // If component metadata includes the table definition (from `defineStoreComponents`),
+      // we can ignore this value without logging anything.
+      //
+      // Otherwise, we should let the user know we found undefined data.
       console.warn(
         "Component definition for",
         component.metadata?.contractId ?? component.id,
