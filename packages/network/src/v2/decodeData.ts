@@ -1,17 +1,17 @@
-import { DynamicSchemaType, StaticSchemaType, SchemaType, getStaticByteLength } from "@latticexyz/schema-type";
+import { SchemaType, getStaticByteLength } from "@latticexyz/schema-type";
 import { hexToArray } from "./utils/hexToArray";
 import { TableSchema } from "./constants";
 
-const unsupportedStaticField = (fieldType: StaticSchemaType): never => {
-  throw new Error(`Unsupported static field type: ${SchemaType[fieldType as SchemaType] ?? fieldType}`);
+const unsupportedStaticField = (fieldType: SchemaType): never => {
+  throw new Error(`Unsupported static field type: ${SchemaType[fieldType] ?? fieldType}`);
 };
-const unsupportedDynamicField = (fieldType: DynamicSchemaType): never => {
-  throw new Error(`Unsupported dynamic field type: ${SchemaType[fieldType as SchemaType] ?? fieldType}`);
+const unsupportedDynamicField = (fieldType: SchemaType): never => {
+  throw new Error(`Unsupported dynamic field type: ${SchemaType[fieldType] ?? fieldType}`);
 };
 
 // TODO: decode per static field type, so we get better return types for each field type
 const decodeStaticField = (
-  fieldType: StaticSchemaType,
+  fieldType: SchemaType,
   bytes: DataView,
   offset: number
 ): boolean | number | bigint | ArrayBuffer => {
@@ -41,13 +41,12 @@ const decodeStaticField = (
       // TODO: convert to string?
       return bytes.buffer.slice(offset, offset + 20);
     default:
-      unsupportedStaticField(fieldType);
-      return 0;
+      return unsupportedStaticField(fieldType);
   }
 };
 
 // TODO: decode per dynamic field type, so we get better return types for each field type
-const decodeDynamicField = (fieldType: DynamicSchemaType, data: ArrayBuffer): ArrayBuffer | string => {
+const decodeDynamicField = (fieldType: SchemaType, data: ArrayBuffer): ArrayBuffer | string => {
   switch (fieldType) {
     case SchemaType.BYTES:
       return data;
@@ -55,8 +54,7 @@ const decodeDynamicField = (fieldType: DynamicSchemaType, data: ArrayBuffer): Ar
       return new TextDecoder().decode(data);
     // TODO: array types
     default:
-      unsupportedDynamicField(fieldType);
-      return new ArrayBuffer(0);
+      return unsupportedDynamicField(fieldType);
   }
 };
 
@@ -66,14 +64,23 @@ export const decodeData = (schema: TableSchema, hexData: string): Record<number,
 
   let bytesOffset = 0;
   schema.staticFields.forEach((fieldType, i) => {
-    // TODO: field names
-    // TODO: figure out better type approach for static vs dynamic fields
-    const value = decodeStaticField(fieldType as StaticSchemaType, bytes, bytesOffset);
+    const value = decodeStaticField(fieldType, bytes, bytesOffset);
     bytesOffset += getStaticByteLength(fieldType);
     data[i] = value;
   });
 
-  // TODO: validate that bytesOffset = staticDataLength?
+  // Warn user if static data length doesn't match the schema, because data corruption might be possible.
+  const actualStaticDataLength = bytesOffset;
+  if (actualStaticDataLength !== schema.staticDataLength) {
+    console.warn(
+      "Decoded static data length does not match schema's expected static data length. Data may get corrupted. Is `getStaticByteLength` outdated?",
+      {
+        bytesOffset,
+        schema,
+        hexData,
+      }
+    );
+  }
 
   if (schema.dynamicFields.length > 0) {
     const dynamicDataLayout = new DataView(bytes.buffer.slice(schema.staticDataLength, schema.staticDataLength + 32));
@@ -83,17 +90,23 @@ export const decodeData = (schema: TableSchema, hexData: string): Record<number,
 
     schema.dynamicFields.forEach((fieldType, i) => {
       const dataLength = dynamicDataLayout.getUint16(4 + i * 2);
-      // TODO: field names
-      // TODO: figure out better type approach for static vs dynamic fields
-      const value = decodeDynamicField(
-        fieldType as DynamicSchemaType,
-        bytes.buffer.slice(bytesOffset, bytesOffset + dataLength)
-      );
+      const value = decodeDynamicField(fieldType, bytes.buffer.slice(bytesOffset, bytesOffset + dataLength));
       bytesOffset += dataLength;
       data[schema.staticFields.length + i] = value;
     });
 
-    // TODO: validate that dynamicOffset = dynamicDataLength?
+    // Warn user if dynamic data length doesn't match the schema, because data corruption might be possible.
+    const actualDynamicDataLength = bytesOffset - 32 - actualStaticDataLength;
+    if (actualDynamicDataLength !== dynamicDataLength) {
+      console.warn(
+        "Decoded dynamic data length does not match data layout's expected data length. Data may get corrupted. Did the data layout change?",
+        {
+          bytesOffset,
+          schema,
+          hexData,
+        }
+      );
+    }
   }
 
   return data;
@@ -105,7 +118,7 @@ export const decodeField = (schema: TableSchema, schemaIndex: number, hexData: s
 
   schema.staticFields.forEach((fieldType, index) => {
     if (index === schemaIndex) {
-      data[schemaIndex] = decodeStaticField(fieldType as StaticSchemaType, bytes, 0);
+      data[schemaIndex] = decodeStaticField(fieldType, bytes, 0);
     }
   });
 
@@ -113,8 +126,8 @@ export const decodeField = (schema: TableSchema, schemaIndex: number, hexData: s
     schema.dynamicFields.forEach((fieldType, i) => {
       const index = schema.staticFields.length + i;
       if (index === schemaIndex) {
-        if (hexData === "0x") console.log("decoding dynamic field");
-        data[schemaIndex] = decodeDynamicField(fieldType as DynamicSchemaType, bytes.buffer);
+        // if (hexData === "0x") console.log("decoding dynamic field");
+        data[schemaIndex] = decodeDynamicField(fieldType, bytes.buffer);
       }
     });
   }

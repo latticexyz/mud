@@ -37,7 +37,6 @@ export function registerSchema(world: Contract, table: string, rawSchema?: strin
   if (rawSchema) {
     console.log("registering schema for table", { table, world: world.address });
     const schema = Promise.resolve(decodeSchema(rawSchema));
-    schema.then((schema) => console.log("got schema", schema, { table, world: world.address }));
     schemas[schemaKey] = schema;
     return schema;
   }

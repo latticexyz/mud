@@ -16,7 +16,10 @@ export async function decodeStoreSetRecord(
   if (table === schemaTableId) {
     const [tableForSchema, ...otherKeys] = keyTuple;
     if (otherKeys.length) {
-      console.warn("registerSchema event has more than one value in key tuple", table, keyTuple);
+      console.warn(
+        "registerSchema event has more than one value in key tuple, but this method only supports a single key",
+        { table, keyTuple }
+      );
     }
     registerSchema(contract, tableForSchema, data);
   }
@@ -27,7 +30,10 @@ export async function decodeStoreSetRecord(
   if (table === metadataTableId) {
     const [tableForMetadata, ...otherKeys] = keyTuple;
     if (otherKeys.length) {
-      console.warn("setMetadata event has more than one value in key tuple", table, keyTuple);
+      console.warn(
+        "setMetadata event has more than one value in key tuple, but this method only supports a single key",
+        { table, keyTuple }
+      );
     }
     const tableName = decoded[0];
     const [fieldNames] = ethers.utils.defaultAbiCoder.decode(["string[]"], arrayToHex(decoded[1]));

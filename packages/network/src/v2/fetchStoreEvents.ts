@@ -19,10 +19,6 @@ export async function fetchStoreEvents(contract: Contract, fromBlock: number, to
     ["log.blockNumber", "log.logIndex"]
   );
 
-  if (logs.length) {
-    console.log("got store logs", logs);
-  }
-
   const lastLogForTx: Record<string, number> = {};
   logs.map(({ log }) => {
     lastLogForTx[log.transactionHash] = log.logIndex;
@@ -53,7 +49,7 @@ export async function fetchStoreEvents(contract: Contract, fromBlock: number, to
 
     if (name === "StoreSetRecord") {
       const value = await decodeStoreSetRecord(contract, args.table.toHexString(), args.key, args.data);
-      console.log("decoded StoreSetRecord value", value);
+      console.log("StoreSetRecord:", { component, entity, value });
       ecsEvent.value = value;
     } else if (name === "StoreSetField") {
       const value = await decodeStoreSetField(
@@ -63,10 +59,10 @@ export async function fetchStoreEvents(contract: Contract, fromBlock: number, to
         args.schemaIndex,
         args.data
       );
-      console.log("decoded StoreSetField value", value);
+      console.log("StoreSetField:", { component, entity, value });
       ecsEvent.partialValue = value;
     } else if (name === "StoreDeleteRecord") {
-      // TODO
+      console.log("StoreDeleteRecord:", { component, entity });
     }
 
     ecsEvents.push(ecsEvent);
