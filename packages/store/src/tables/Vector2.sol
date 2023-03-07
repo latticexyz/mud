@@ -32,20 +32,20 @@ library Vector2 {
     return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
-  function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
-
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
-  }
-
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](2);
     _fieldNames[0] = "x";
     _fieldNames[1] = "y";
     return ("Vector2", _fieldNames);
+  }
+
+  /** Register the table's schema */
+  function registerSchema() internal {
+    StoreSwitch.registerSchema(_tableId, getSchema());
+
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get x */
