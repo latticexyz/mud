@@ -1,6 +1,6 @@
 import { renderTable } from "./renderTable.js";
 import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
-import { StoreConfig } from "../config/loadStoreConfig.js";
+import { StoreConfig } from "../config/parseStoreConfig.js";
 import {
   RenderTableDynamicField,
   RenderTableField,
