@@ -119,12 +119,13 @@ export function createTxQueue<C extends Contracts>(
 
         // Populate config
         const configOverrides = {
-          gasPrice: gasPrice$.getValue(),
+          maxPriorityFeePerGas: gasPrice$.getValue() * 2,
+          maxFeePerGas: gasPrice$.getValue() * 4,
           ...overrides,
           nonce,
           gasLimit,
         };
-        if (options?.devMode) configOverrides.gasPrice = 0;
+        if (options?.devMode) configOverrides.maxPriorityFeePerGas = 0;
 
         // Populate tx
         const populatedTx = await member(...argsWithoutOverrides, configOverrides);
