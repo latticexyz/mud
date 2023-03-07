@@ -80,11 +80,7 @@ library StoreCore {
   /**
    * Set metadata for a given table
    */
-  function setMetadata(
-    uint256 table,
-    string memory tableName,
-    string[] memory fieldNames
-  ) internal {
+  function setMetadata(uint256 table, string memory tableName, string[] memory fieldNames) internal {
     // Get schema of the given table
     Schema schema = getSchema(table);
 
@@ -106,7 +102,7 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerStoreHook(uint256 table, IStoreHook hook) external {
+  function registerStoreHook(uint256 table, IStoreHook hook) internal {
     Hooks.push(bytes32(table), address(hook));
   }
 
@@ -119,11 +115,7 @@ library StoreCore {
   /**
    * Set full data record for the given table and key tuple (static and dynamic data)
    */
-  function setRecord(
-    uint256 table,
-    bytes32[] memory key,
-    bytes memory data
-  ) internal {
+  function setRecord(uint256 table, bytes32[] memory key, bytes memory data) internal {
     // verify the value has the correct length for the table (based on the table's schema)
     // to prevent invalid data from being stored
     Schema schema = getSchema(table);
@@ -189,12 +181,7 @@ library StoreCore {
     }
   }
 
-  function setField(
-    uint256 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data
-  ) internal {
+  function setField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) internal {
     Schema schema = getSchema(table);
 
     // Emit event to notify indexers
@@ -260,11 +247,7 @@ library StoreCore {
   /**
    * Get full record (all fields, static and dynamic data) for the given table and key tuple, with the given schema
    */
-  function getRecord(
-    uint256 table,
-    bytes32[] memory key,
-    Schema schema
-  ) internal view returns (bytes memory) {
+  function getRecord(uint256 table, bytes32[] memory key, Schema schema) internal view returns (bytes memory) {
     // Get the static data length
     uint256 staticLength = schema.staticDataLength();
     uint256 outputLength = staticLength;
@@ -313,11 +296,7 @@ library StoreCore {
   /**
    * Get a single field from the given table and key tuple (loading schema from storage)
    */
-  function getField(
-    uint256 table,
-    bytes32[] memory key,
-    uint8 schemaIndex
-  ) internal view returns (bytes memory) {
+  function getField(uint256 table, bytes32[] memory key, uint8 schemaIndex) internal view returns (bytes memory) {
     Schema schema = getSchema(table);
     return getField(table, key, schemaIndex, schema);
   }
@@ -419,11 +398,7 @@ library StoreCoreInternal {
   /**
    * Get full static record for the given table and key tuple (loading schema's static length from storage)
    */
-  function _getStaticData(
-    uint256 table,
-    bytes32[] memory key,
-    uint256 memoryPointer
-  ) internal view {
+  function _getStaticData(uint256 table, bytes32[] memory key, uint256 memoryPointer) internal view {
     Schema schema = _getSchema(table);
     _getStaticData(table, key, schema.staticDataLength(), memoryPointer);
   }
@@ -431,12 +406,7 @@ library StoreCoreInternal {
   /**
    * Get full static data for the given table and key tuple, with the given static length
    */
-  function _getStaticData(
-    uint256 table,
-    bytes32[] memory key,
-    uint256 length,
-    uint256 memoryPointer
-  ) internal view {
+  function _getStaticData(uint256 table, bytes32[] memory key, uint256 length, uint256 memoryPointer) internal view {
     if (length == 0) return;
 
     // Load the data from storage
@@ -574,13 +544,13 @@ library StoreCoreExtended {
    *    GET DATA
    *
    ************************************************************************/
-  function getRecord(uint256 table, bytes32 _key) external view returns (bytes memory) {
+  function getRecord(uint256 table, bytes32 _key) internal view returns (bytes memory) {
     bytes32[] memory key = new bytes32[](1);
     key[0] = _key;
     return StoreCore.getRecord(table, key);
   }
 
-  function getData(uint256 table, bytes32[2] memory _key) external view returns (bytes memory) {
+  function getData(uint256 table, bytes32[2] memory _key) internal view returns (bytes memory) {
     bytes32[] memory key = new bytes32[](2);
     key[0] = _key[0];
     key[1] = _key[1];

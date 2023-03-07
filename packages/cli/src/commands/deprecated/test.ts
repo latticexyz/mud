@@ -1,6 +1,6 @@
 import type { CommandModule } from "yargs";
 import { execLog, generateLibDeploy, resetLibDeploy } from "../../utils/deprecated/index.js";
-import { getTestDirectory } from "../../utils/forgeConfig.js";
+import { getTestDirectory } from "../../utils/foundry.js";
 
 type Options = {
   forgeOpts?: string;

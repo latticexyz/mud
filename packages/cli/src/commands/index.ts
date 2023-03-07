@@ -14,6 +14,7 @@ import faucet from "./faucet.js";
 import gasReport from "./gas-report.js";
 import hello from "./hello.js";
 import tablegen from "./tablegen.js";
+import deployV2 from "./deploy-v2.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each command has different options
 export const commands: CommandModule<any, any>[] = [
@@ -21,6 +22,7 @@ export const commands: CommandModule<any, any>[] = [
   callSystem,
   codegenLibdeploy,
   deployContracts,
+  deployV2,
   devnode,
   faucet,
   gasReport,
