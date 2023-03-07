@@ -37,8 +37,9 @@ library StoreCore {
     registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
 
     // Register other internal tables
-    Hooks.registerSchema();
+    // StoreMetadata must be registered first, because it is used by other tables
     StoreMetadata.registerSchema();
+    Hooks.registerSchema();
   }
 
   /************************************************************************
@@ -74,7 +75,11 @@ library StoreCore {
    * Get the schema for the given table
    */
   function getSchema(uint256 table) internal view returns (Schema schema) {
-    return StoreCoreInternal._getSchema(table);
+    schema = StoreCoreInternal._getSchema(table);
+    // A race condition prevents us from doing this check ~everywhere
+    // if (schema.isEmpty()) {
+    //   revert StoreCore_TableNotFound(table);
+    // }
   }
 
   /**
@@ -252,7 +257,6 @@ library StoreCore {
   function getRecord(uint256 table, bytes32[] memory key) internal view returns (bytes memory) {
     // Get schema for this table
     Schema schema = getSchema(table);
-    if (schema.isEmpty()) revert StoreCore_TableNotFound(table);
 
     return getRecord(table, key, schema);
   }
@@ -319,6 +323,7 @@ library StoreCore {
     uint8 schemaIndex
   ) internal view returns (bytes memory) {
     Schema schema = getSchema(table);
+
     return getField(table, key, schemaIndex, schema);
   }
 
@@ -384,8 +389,9 @@ library StoreCoreInternal {
   ) internal {
     // verify the value has the correct length for the field
     SchemaType schemaType = schema.atIndex(schemaIndex);
-    if (schemaType.getStaticByteLength() != data.length)
+    if (schemaType.getStaticByteLength() != data.length) {
       revert StoreCore.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
+    }
 
     // Store the provided value in storage
     uint256 location = _getStaticDataLocation(table, key);
