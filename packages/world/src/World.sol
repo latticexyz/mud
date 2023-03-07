@@ -24,6 +24,7 @@ bytes32 constant SINGLE_SLASH = "/";
 
 contract World is Store {
   error NamespaceExists(string namespace);
+  error NamespaceAccessDenied(string namespace, address caller);
 
   error RouteInvalid(string route);
   error RouteExists(string route);
@@ -41,6 +42,10 @@ contract World is Store {
     RouteTable.set({ routeId: ROOT_ROUTE_ID, route: "" }); // Storing this explicitly to trigger the event for indexers
     RouteOwnerTable.set({ routeId: ROOT_ROUTE_ID, owner: msg.sender });
     RouteAccess.set({ routeId: ROOT_ROUTE_ID, caller: msg.sender, value: true });
+
+    // Register the root namespace and give ownership to msg.sender
+    NamespaceOwner.set({ namespace: 0, owner: msg.sender });
+    ResourceAccess.set({ selector: 0, caller: msg.sender, access: true });
   }
 
   /************************************************************************
@@ -85,6 +90,8 @@ contract World is Store {
    */
   function registerNamespace(bytes16 namespace) public virtual {
     // Require namespace to not exist yet
+    // TODO: This does not allow burning access to namespaces because someone else could re-register the namespace,
+    // so we need to add another table (Eg a ResourceTable)
     if (NamespaceOwner.get(namespace) != address(0)) revert NamespaceExists(ResourceSelector.toString(namespace));
 
     // Register caller as the namespace owner
@@ -95,31 +102,34 @@ contract World is Store {
   }
 
   /**
-   * Register register a table with given schema at the given route
+   * Register register a table with given schema in the given namespace
    */
   function registerTable(
-    string calldata baseRoute,
-    string calldata tableRoute,
+    bytes16 namespace,
+    bytes16 table,
     Schema schema
-  ) public virtual returns (uint256 tableRouteId) {
-    // Register table route
-    tableRouteId = uint256(registerRoute(baseRoute, tableRoute));
+  ) public virtual returns (bytes32 resourceSelector) {
+    // Register namespace if it doesn't exist yet, otherwise require caller to own the namespace
+    address namespaceOwner = NamespaceOwner.get(namespace);
+    if (namespaceOwner == address(0)) {
+      registerNamespace(namespace);
+    } else if (namespaceOwner != msg.sender) {
+      revert NamespaceAccessDenied(ResourceSelector.toString(namespace), msg.sender);
+    }
 
-    // StoreCore handles checking for existence
-    StoreCore.registerSchema(tableRouteId, schema);
+    resourceSelector = ResourceSelector.from(namespace, table);
+
+    // StoreCore handles checking for existence of this table
+    StoreCore.registerSchema(uint256(resourceSelector), schema);
   }
 
   /**
-   * Register a schema for a given table id
-   * This overload exists to conform to the Store interface,
-   * but it requires the caller to register a route using `registerRoute` first
+   * Register a schema for a given table id.
+   * This overload exists to conform with the IStore interface.
    */
   function registerSchema(uint256 tableId, Schema schema) public virtual override {
-    // Require caller to own the given tableId
-    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
-
-    // Register the schema
-    StoreCore.registerSchema(tableId, schema);
+    bytes32 tableSelector = bytes32(tableId);
+    registerTable(ResourceSelector.getNamespace(tableSelector), ResourceSelector.getFile(tableSelector), schema);
   }
 
   /**

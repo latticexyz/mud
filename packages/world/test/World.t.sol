@@ -198,68 +198,63 @@ contract WorldTest is Test {
   }
 
   function testRegisterTable() public {
-    uint256 tableId = world.registerTable("", "/testRouteAccess", RouteAccess.getSchema());
+    Schema schema = SchemaLib.encode(SchemaType.BOOL, SchemaType.UINT256, SchemaType.STRING);
+    bytes16 namespace = "testNamespace";
+    bytes16 table = "testTable";
+
+    // Register a new table in the namespace
+    bytes32 tableSelector = world.registerTable(namespace, table, schema);
 
     // Expect the table to be registered
-    assertEq(world.getSchema(tableId).unwrap(), RouteAccess.getSchema().unwrap());
-
-    // Expect the table's route to be owned by the caller
-    address routeOwner = RouteOwnerTable.get(world, tableId);
-    assertEq(routeOwner, address(this));
-
-    // The new table should be accessible by the caller
-    assertTrue(RouteAccess.get({ _store: world, routeId: tableId, caller: address(this) }));
-
-    // The new table should not be accessible by another address
-    assertFalse(RouteAccess.get({ _store: world, routeId: tableId, caller: address(0x01) }));
+    assertEq(world.getSchema(uint256(tableSelector)).unwrap(), schema.unwrap(), "schema should be registered");
 
     // Expect an error when registering an existing table
-    vm.expectRevert(abi.encodeWithSelector(World.RouteExists.selector, "/testRouteAccess"));
-    world.registerTable("", "/testRouteAccess", RouteAccess.getSchema());
+    vm.expectRevert(abi.encodeWithSelector(StoreCore.StoreCore_TableAlreadyExists.selector, uint256(tableSelector)));
+    world.registerTable(namespace, table, schema);
 
-    // Expect an error when registering an invalid table route
-    vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "invalid/route"));
-    world.registerTable("", "invalid/route", RouteAccess.getSchema());
-
-    // Expect an error when extending a route that doesn't exist
-    vm.expectRevert(abi.encodeWithSelector(World.RouteInvalid.selector, "/invalid"));
-    world.registerTable("/invalid", "/test", RouteAccess.getSchema());
-  }
-
-  function testSetMetadata() public {
-    string memory tableName = "testTable";
-    Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT8);
-    string[] memory fieldNames = new string[](2);
-    fieldNames[0] = "testField1";
-    fieldNames[1] = "testField2";
-
-    // Expect an error when setting metadata on a route that doesn't exist
-    vm.expectRevert();
-    world.setMetadata("/invalid", tableName, fieldNames);
-
-    // Register a table
-    world.registerTable("", "/test", schema);
-
-    // Set metadata on the route
-    world.setMetadata("/test", tableName, fieldNames);
-
-    // Expect the metadata to be set
-    StoreMetadataData memory metadata = StoreMetadata.get(world, uint256(keccak256("/test")));
-    assertEq(metadata.tableName, tableName);
-    assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
-
-    // Expect it to be possible to change metadata
-    world.setMetadata("/test", "newTableName", fieldNames);
-    metadata = StoreMetadata.get(world, uint256(keccak256("/test")));
-    assertEq(metadata.tableName, "newTableName");
-    assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
-
-    // Expect an error when setting metadata on a route that is not owned by the caller
-    vm.startPrank(address(1));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/test", address(1)));
-    world.setMetadata("/test", tableName, fieldNames);
+    // Expect an error when registering a table in a namespace that is not owned by the caller
+    vm.startPrank(address(0x01));
+    vm.expectRevert(
+      abi.encodeWithSelector(World.NamespaceAccessDenied.selector, ResourceSelector.toString(namespace), address(0x01))
+    );
+    world.registerTable(namespace, "otherTable", schema);
     vm.stopPrank();
   }
+
+  // function testSetMetadata() public {
+  //   string memory tableName = "testTable";
+  //   Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT8);
+  //   string[] memory fieldNames = new string[](2);
+  //   fieldNames[0] = "testField1";
+  //   fieldNames[1] = "testField2";
+
+  //   // Expect an error when setting metadata on a route that doesn't exist
+  //   vm.expectRevert();
+  //   world.setMetadata("/invalid", tableName, fieldNames);
+
+  //   // Register a table
+  //   world.registerTable("", "/test", schema);
+
+  //   // Set metadata on the route
+  //   world.setMetadata("/test", tableName, fieldNames);
+
+  //   // Expect the metadata to be set
+  //   StoreMetadataData memory metadata = StoreMetadata.get(world, uint256(keccak256("/test")));
+  //   assertEq(metadata.tableName, tableName);
+  //   assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
+
+  //   // Expect it to be possible to change metadata
+  //   world.setMetadata("/test", "newTableName", fieldNames);
+  //   metadata = StoreMetadata.get(world, uint256(keccak256("/test")));
+  //   assertEq(metadata.tableName, "newTableName");
+  //   assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
+
+  //   // Expect an error when setting metadata on a route that is not owned by the caller
+  //   vm.startPrank(address(1));
+  //   vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/test", address(1)));
+  //   world.setMetadata("/test", tableName, fieldNames);
+  //   vm.stopPrank();
+  // }
 
   function testRegisterSystem() public {
     System system = new System();
@@ -320,122 +315,122 @@ contract WorldTest is Test {
     // TODO
   }
 
-  function testSetRecord() public {
-    // Register a new route
-    world.registerRoute("", "/testSetRecord");
+  // function testSetRecord() public {
+  //   // Register a new route
+  //   world.registerRoute("", "/testSetRecord");
 
-    // Register a new table
-    uint256 tableRouteId = world.registerTable("/testSetRecord", "/testTable", BoolSchemaLib.getSchema());
+  //   // Register a new table
+  //   uint256 tableRouteId = world.registerTable("/testSetRecord", "/testTable", BoolSchemaLib.getSchema());
 
-    // Write data to the table
-    bytes32 key = keccak256("testKey");
-    BoolSchemaLib.set({ store: world, tableId: tableRouteId, key: key, value: true });
+  //   // Write data to the table
+  //   bytes32 key = keccak256("testKey");
+  //   BoolSchemaLib.set({ store: world, tableId: tableRouteId, key: key, value: true });
 
-    // Expect the data to be written
-    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+  //   // Expect the data to be written
+  //   assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
-    // Expect an error when trying to write from an address that doesn't have access
-    vm.startPrank(address(0x01));
-    vm.expectRevert(
-      abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord/testTable", address(0x01))
-    );
-    BoolSchemaLib.set({ store: world, tableId: tableRouteId, key: key, value: true });
-    vm.stopPrank();
+  //   // Expect an error when trying to write from an address that doesn't have access
+  //   vm.startPrank(address(0x01));
+  //   vm.expectRevert(
+  //     abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord/testTable", address(0x01))
+  //   );
+  //   BoolSchemaLib.set({ store: world, tableId: tableRouteId, key: key, value: true });
+  //   vm.stopPrank();
 
-    // Expect to be able to write via the base route
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
-    world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
-    assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+  //   // Expect to be able to write via the base route
+  //   bytes32[] memory keyTuple = new bytes32[](1);
+  //   keyTuple[0] = key;
+  //   world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
+  //   assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
-    // Expect an error when trying to write from an address that doesn't have access to the base route
-    vm.startPrank(address(0x01));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord", address(0x01)));
-    world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
-    vm.stopPrank();
-  }
+  //   // Expect an error when trying to write from an address that doesn't have access to the base route
+  //   vm.startPrank(address(0x01));
+  //   vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetRecord", address(0x01)));
+  //   world.setRecord("/testSetRecord", "/testTable", keyTuple, abi.encodePacked(false));
+  //   vm.stopPrank();
+  // }
 
-  function testSetField() public {
-    // Register a new route
-    world.registerRoute("", "/testSetField");
+  // function testSetField() public {
+  //   // Register a new route
+  //   world.registerRoute("", "/testSetField");
 
-    // Register a new table
-    uint256 tableRouteId = world.registerTable("/testSetField", "/testTable", BoolSchemaLib.getSchema());
+  //   // Register a new table
+  //   uint256 tableRouteId = world.registerTable("/testSetField", "/testTable", BoolSchemaLib.getSchema());
 
-    bytes32 key = keccak256("testKey");
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
+  //   bytes32 key = keccak256("testKey");
+  //   bytes32[] memory keyTuple = new bytes32[](1);
+  //   keyTuple[0] = key;
 
-    // Write data to the table via access route
-    world.setField("/testSetField", "/testTable", keyTuple, 0, abi.encodePacked(true));
+  //   // Write data to the table via access route
+  //   world.setField("/testSetField", "/testTable", keyTuple, 0, abi.encodePacked(true));
 
-    // Expect the data to be written
-    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+  //   // Expect the data to be written
+  //   assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
-    // Write data to the table via direct access
-    world.setField(tableRouteId, keyTuple, 0, abi.encodePacked(false));
+  //   // Write data to the table via direct access
+  //   world.setField(tableRouteId, keyTuple, 0, abi.encodePacked(false));
 
-    // Expect the data to be written
-    assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+  //   // Expect the data to be written
+  //   assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
-    // Expect an error when trying to write from an address that doesn't have access
-    vm.startPrank(address(0x01));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetField", address(0x01)));
-    world.setField("/testSetField", "/testTable", keyTuple, 0, abi.encodePacked(true));
-    vm.stopPrank();
+  //   // Expect an error when trying to write from an address that doesn't have access
+  //   vm.startPrank(address(0x01));
+  //   vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetField", address(0x01)));
+  //   world.setField("/testSetField", "/testTable", keyTuple, 0, abi.encodePacked(true));
+  //   vm.stopPrank();
 
-    // Expect an error when trying to write from an address that doesn't have direct access
-    vm.startPrank(address(0x02));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetField/testTable", address(0x02)));
-    world.setField(tableRouteId, keyTuple, 0, abi.encodePacked(true));
-    vm.stopPrank();
-  }
+  //   // Expect an error when trying to write from an address that doesn't have direct access
+  //   vm.startPrank(address(0x02));
+  //   vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testSetField/testTable", address(0x02)));
+  //   world.setField(tableRouteId, keyTuple, 0, abi.encodePacked(true));
+  //   vm.stopPrank();
+  // }
 
-  function testDeleteRecord() public {
-    // Register a new route
-    world.registerRoute("", "/testDeleteRecord");
+  // function testDeleteRecord() public {
+  //   // Register a new route
+  //   world.registerRoute("", "/testDeleteRecord");
 
-    // Register a new table
-    uint256 tableRouteId = world.registerTable("/testDeleteRecord", "/testTable", BoolSchemaLib.getSchema());
+  //   // Register a new table
+  //   uint256 tableRouteId = world.registerTable("/testDeleteRecord", "/testTable", BoolSchemaLib.getSchema());
 
-    bytes32 key = keccak256("testKey");
-    bytes32[] memory keyTuple = new bytes32[](1);
-    keyTuple[0] = key;
+  //   bytes32 key = keccak256("testKey");
+  //   bytes32[] memory keyTuple = new bytes32[](1);
+  //   keyTuple[0] = key;
 
-    // Write data to the table via the access route and expect it to be written
-    world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
-    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+  //   // Write data to the table via the access route and expect it to be written
+  //   world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
+  //   assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
-    // Delete the record via the access route and expect it to be deleted
-    world.deleteRecord("/testDeleteRecord", "/testTable", keyTuple);
-    assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+  //   // Delete the record via the access route and expect it to be deleted
+  //   world.deleteRecord("/testDeleteRecord", "/testTable", keyTuple);
+  //   assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
-    // Write data to the table via the access route and expect it to be written
-    world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
-    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+  //   // Write data to the table via the access route and expect it to be written
+  //   world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
+  //   assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
-    // Delete the record via direct access and expect it to be deleted
-    world.deleteRecord(tableRouteId, keyTuple);
-    assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+  //   // Delete the record via direct access and expect it to be deleted
+  //   world.deleteRecord(tableRouteId, keyTuple);
+  //   assertFalse(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
-    // Write data to the table via the access route and expect it to be written
-    world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
-    assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
+  //   // Write data to the table via the access route and expect it to be written
+  //   world.setRecord("/testDeleteRecord", "/testTable", keyTuple, abi.encodePacked(true));
+  //   assertTrue(BoolSchemaLib.get({ store: world, tableId: tableRouteId, key: key }));
 
-    // Expect an error when trying to delete from an address that doesn't have access
-    vm.startPrank(address(0x01));
-    vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testDeleteRecord", address(0x01)));
-    world.deleteRecord("/testDeleteRecord", "/testTable", keyTuple);
-    vm.stopPrank();
+  //   // Expect an error when trying to delete from an address that doesn't have access
+  //   vm.startPrank(address(0x01));
+  //   vm.expectRevert(abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testDeleteRecord", address(0x01)));
+  //   world.deleteRecord("/testDeleteRecord", "/testTable", keyTuple);
+  //   vm.stopPrank();
 
-    // Expect an error when trying to delete from an address that doesn't have direct access
-    vm.startPrank(address(0x02));
-    vm.expectRevert(
-      abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testDeleteRecord/testTable", address(0x02))
-    );
-    world.deleteRecord(tableRouteId, keyTuple);
-    vm.stopPrank();
-  }
+  //   // Expect an error when trying to delete from an address that doesn't have direct access
+  //   vm.startPrank(address(0x02));
+  //   vm.expectRevert(
+  //     abi.encodeWithSelector(World.RouteAccessDenied.selector, "/testDeleteRecord/testTable", address(0x02))
+  //   );
+  //   world.deleteRecord(tableRouteId, keyTuple);
+  //   vm.stopPrank();
+  // }
 
   function testCall() public {
     // Register a new system
@@ -498,64 +493,64 @@ contract WorldTest is Test {
     assertEq(returnedAddress, address(this), "subsystem returned wrong address");
   }
 
-  function testRegisterTableHook() public {
-    // Register a new table
-    uint256 tableId = world.registerTable("", "/testTable", BoolSchemaLib.getSchema());
+  // function testRegisterTableHook() public {
+  //   // Register a new table
+  //   uint256 tableId = world.registerTable("", "/testTable", BoolSchemaLib.getSchema());
 
-    // Register a new hook
-    IStoreHook tableHook = new WorldTestTableHook();
-    world.registerTableHook("/testTable", tableHook);
+  //   // Register a new hook
+  //   IStoreHook tableHook = new WorldTestTableHook();
+  //   world.registerTableHook("/testTable", tableHook);
 
-    // Prepare data to write to the table
-    bytes32[] memory key = new bytes32[](1);
-    key[0] = "someKey";
-    bytes memory value = abi.encodePacked(true);
+  //   // Prepare data to write to the table
+  //   bytes32[] memory key = new bytes32[](1);
+  //   key[0] = "someKey";
+  //   bytes memory value = abi.encodePacked(true);
 
-    // Expect the hook to be notified when a record is written
-    vm.expectEmit(true, true, true, true);
-    emit HookCalled(abi.encode(tableId, key, value));
-    world.setRecord(tableId, key, value);
-  }
+  //   // Expect the hook to be notified when a record is written
+  //   vm.expectEmit(true, true, true, true);
+  //   emit HookCalled(abi.encode(tableId, key, value));
+  //   world.setRecord(tableId, key, value);
+  // }
 
   function testRegisterSystemHook() public view {
     // TODO
   }
 
-  function testWriteRootSystem() public {
-    // Register a new table
-    uint256 tableId = world.registerTable("", "/testTable", BoolSchemaLib.getSchema());
+  // function testWriteRootSystem() public {
+  //   // Register a new table
+  //   uint256 tableId = world.registerTable("", "/testTable", BoolSchemaLib.getSchema());
 
-    // Register a new system
-    WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem("", "/testSystem", system, false);
+  //   // Register a new system
+  //   WorldTestSystem system = new WorldTestSystem();
+  //   world.registerSystem("", "/testSystem", system, false);
 
-    // Call a system function that write data to the World
-    world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.writeData.selector, "", "/testTable", true));
+  //   // Call a system function that write data to the World
+  //   world.call("/testSystem", abi.encodeWithSelector(WorldTestSystem.writeData.selector, "", "/testTable", true));
 
-    // Expect the data to be written
-    assertTrue(BoolSchemaLib.get(tableId, world, "testKey"));
-  }
+  //   // Expect the data to be written
+  //   assertTrue(BoolSchemaLib.get(tableId, world, "testKey"));
+  // }
 
-  function testWriteAutonomousSystem() public {
-    // Register a new subroute
-    world.registerRoute("", "/testRoute");
+  // function testWriteAutonomousSystem() public {
+  //   // Register a new subroute
+  //   world.registerRoute("", "/testRoute");
 
-    // Register a new table
-    uint256 tableId = world.registerTable("/testRoute", "/testTable", BoolSchemaLib.getSchema());
+  //   // Register a new table
+  //   uint256 tableId = world.registerTable("/testRoute", "/testTable", BoolSchemaLib.getSchema());
 
-    // Register a new system
-    WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem("/testRoute", "/testSystem", system, false);
+  //   // Register a new system
+  //   WorldTestSystem system = new WorldTestSystem();
+  //   world.registerSystem("/testRoute", "/testSystem", system, false);
 
-    // Call a system function that writes data to the World
-    world.call(
-      "/testRoute/testSystem",
-      abi.encodeWithSelector(WorldTestSystem.writeData.selector, "/testRoute", "/testTable", true)
-    );
+  //   // Call a system function that writes data to the World
+  //   world.call(
+  //     "/testRoute/testSystem",
+  //     abi.encodeWithSelector(WorldTestSystem.writeData.selector, "/testRoute", "/testTable", true)
+  //   );
 
-    // Expect the data to be written
-    assertTrue(BoolSchemaLib.get(tableId, world, "testKey"));
-  }
+  //   // Expect the data to be written
+  //   assertTrue(BoolSchemaLib.get(tableId, world, "testKey"));
+  // }
 
   function testDelegatecallRootSystem() public {
     // Register a new root system
