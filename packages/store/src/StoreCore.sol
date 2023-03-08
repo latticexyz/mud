@@ -55,10 +55,20 @@ library StoreCore {
    ************************************************************************/
 
   /**
+   * Get the schema for the given table
+   */
+  function getSchema(uint256 table) internal view returns (Schema schema) {
+    schema = StoreCoreInternal._getSchema(table);
+    if (schema.isEmpty()) {
+      revert StoreCore_TableNotFound(table);
+    }
+  }
+
+  /**
    * Check if the given table exists
    */
   function hasTable(uint256 table) internal view returns (bool) {
-    return !getSchema(table).isEmpty();
+    return !StoreCoreInternal._getSchema(table).isEmpty();
   }
 
   /**
@@ -75,20 +85,6 @@ library StoreCore {
 
     // Register the schema
     StoreCoreInternal._registerSchemaUnchecked(table, schema);
-  }
-
-  /**
-   * Get the schema for the given table
-   */
-  function getSchema(uint256 table, bool requireTableExists) internal view returns (Schema schema) {
-    schema = StoreCoreInternal._getSchema(table);
-    if (requireTableExists && schema.isEmpty()) {
-      revert StoreCore_TableNotFound(table);
-    }
-  }
-
-  function getSchema(uint256 table) internal view returns (Schema schema) {
-    return getSchema(table, true);
   }
 
   /**
