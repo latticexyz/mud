@@ -1,6 +1,6 @@
 import { renderList, renderArguments, renderCommonData } from "./common.js";
 import { renderDecodeValueType, renderEncodeField } from "./field.js";
-import { RenderTableDynamicField, RenderTableOptions, RenderTableStaticField } from "./types.js";
+import { RenderTableDynamicField, RenderTableOptions } from "./types.js";
 
 export function renderRecordMethods(options: RenderTableOptions) {
   const { staticFields, dynamicFields, structName, storeArgument } = options;
@@ -101,7 +101,7 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
       ${renderList(
         staticFields,
         (field, index) => `
-        ${fieldNamePrefix}${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
+        ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
         `
       )}
       uint256 _start;
@@ -124,7 +124,7 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
       ${renderList(
         staticFields,
         (field, index) => `
-        ${fieldNamePrefix}${field.name} = ${renderDecodeStaticFieldPartial(field, staticOffsets[index])};
+        ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
         `
       )}
     }
@@ -150,11 +150,6 @@ function renderDecodeDynamicFieldPartial(field: RenderTableDynamicField) {
     // bytes/string
     return `${typeId}(SliceLib.getSubslice(_blob, _start, _end).toBytes())`;
   }
-}
-
-function renderDecodeStaticFieldPartial(field: RenderTableStaticField, start: number) {
-  const { typeId, staticByteLength } = field;
-  return renderDecodeValueType(typeId, staticByteLength, start);
 }
 
 function renderEncodedLengths(dynamicFields: RenderTableDynamicField[]) {
