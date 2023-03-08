@@ -38,14 +38,13 @@ library StoreCore {
     registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
 
     // Register other internal tables
-    // StoreMetadata must come first, because it is used by other tables
-    StoreMetadata.registerSchema();
     Hooks.registerSchema();
+    StoreMetadata.registerSchema();
     // Then set their table metadata. If this is done before `registerSchema`,
     // then downstream validation will fail due to `StoreMetadata` and `Hooks`
     // loosely depending on one another (by way of `StoreCore` internals).
-    StoreMetadata.setMetadata();
     Hooks.setMetadata();
+    StoreMetadata.setMetadata();
   }
 
   /************************************************************************
