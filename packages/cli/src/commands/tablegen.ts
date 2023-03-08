@@ -23,7 +23,7 @@ const commandModule: CommandModule<Options, Options> = {
 
     const config = await loadStoreConfig(configPath);
 
-    tablegen(config, srcDirectory);
+    await tablegen(config, srcDirectory);
 
     process.exit(0);
   },
