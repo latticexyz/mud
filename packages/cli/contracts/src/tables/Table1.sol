@@ -17,7 +17,7 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 // Import user types
-import { Enum1, Enum2 } from "./../types.sol";
+import { Enum1, Enum2 } from "./../Types.sol";
 
 uint256 constant _tableId = uint256(keccak256("/Table1"));
 uint256 constant Table1TableId = _tableId;

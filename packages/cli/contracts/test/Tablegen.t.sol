@@ -4,11 +4,16 @@ pragma solidity >=0.8.0;
 import { Test } from "forge-std/Test.sol";
 import { StoreView } from "@latticexyz/store/src/StoreView.sol";
 
+// User types
+import { Enum1, Enum2 } from "../src/Types.sol";
+
+// Tables
 import { Table1, Table1Data } from "../src/tables/Table1.sol";
-import { Enum1, Enum2 } from "../src/types.sol";
-import { Singletons } from "../src/prototypes/Singletons.sol";
 import { Singleton1, Singleton1TableId } from "../src/tables/Singleton1.sol";
 import { Singleton2, Singleton2TableId } from "../src/tables/Singleton2.sol";
+
+// Prototypes
+import { Singletons } from "../src/prototypes/Singletons.sol";
 
 contract TablegenTest is Test, StoreView {
   function testTable1SetAndGet() public {

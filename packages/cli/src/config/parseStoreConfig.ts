@@ -89,7 +89,7 @@ const TablesRecord = z.record(TableName, z.union([TableDataShorthand, TableDataF
  ************************************************************************/
 
 export interface UserTypesConfig {
-  /** Path to the file where common types will be generated and imported from. Default is "types" */
+  /** Path to the file where common types will be generated and imported from. Default is "Types" */
   path?: string;
   /** Enum names mapped to lists of their member names */
   enums?: Record<string, string[]>;
@@ -97,7 +97,7 @@ export interface UserTypesConfig {
 
 export const UserTypesConfig = z
   .object({
-    path: z.string().default("types"),
+    path: z.string().default("Types"),
     enums: z.record(UserEnumName, UserEnum).default({}),
   })
   .default({});

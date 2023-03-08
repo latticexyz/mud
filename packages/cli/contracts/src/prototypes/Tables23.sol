@@ -5,7 +5,7 @@ pragma solidity >=0.8.0;
 
 import { Table2, Table2Data } from "./../tables/Table2.sol";
 import { Table3 } from "./../tables/Table3.sol";
-import { Enum1 } from "./../types.sol";
+import { Enum1 } from "./../Types.sol";
 
 library Tables23 {
   function create(bytes32 key, Table2Data memory _data_Table2, Enum1 _v1_Table3) internal {
