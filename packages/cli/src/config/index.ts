@@ -5,7 +5,6 @@ export type MUDUserConfig = StoreUserConfig & WorldUserConfig;
 export type MUDConfig = StoreConfig & ResolvedWorldConfig;
 
 export * from "./commonSchemas.js";
-export * from "./parseStoreConfig.js";
 export * from "./loadConfig.js";
 export * from "./loadStoreConfig.js";
 export * from "./parseStoreConfig.js";
