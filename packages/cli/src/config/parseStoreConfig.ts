@@ -16,6 +16,29 @@ const FieldData = z.union([z.nativeEnum(SchemaType), UserEnumName]);
 const PrimaryKey = z.union([StaticSchemaType, UserEnumName]);
 const PrimaryKeys = z.record(KeyName, PrimaryKey).default({ key: SchemaType.BYTES32 });
 
+/************************************************************************
+ *
+ *    TABLES
+ *
+ ************************************************************************/
+
+interface FullTableConfig {
+  /** Output directory path for the file. Default is "tables" */
+  directory?: string;
+  /** Route is used to register the table and construct its id. The table id will be keccak256(concat(baseRoute,route)). Default is "/<tableName>" */
+  route?: string;
+  /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
+  tableIdArgument?: boolean;
+  /** Include methods that accept a manual `IStore` argument. Default is false. */
+  storeArgument?: boolean;
+  /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
+  dataStruct?: boolean;
+  /** Table's primary key names mapped to their types. Default is `{ key: SchemaType.BYTES32 }` */
+  primaryKeys?: Record<string, z.input<typeof PrimaryKey>>;
+  /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
+  schema: Record<string, z.input<typeof FieldData>>;
+}
+
 const Schema = z
   .record(ColumnName, FieldData)
   .refine((arg) => Object.keys(arg).length > 0, "Table schema may not be empty");
@@ -59,6 +82,49 @@ const TablesRecord = z.record(TableName, z.union([TableDataShorthand, TableDataF
   return tables as Record<string, RequireKeys<(typeof tables)[string], "route">>;
 });
 
+/************************************************************************
+ *
+ *    USER TYPES
+ *
+ ************************************************************************/
+
+export interface UserTypesConfig {
+  /** Path to the file where common types will be generated and imported from. Default is "types" */
+  path?: string;
+  /** Enum names mapped to lists of their member names */
+  enums?: Record<string, string[]>;
+}
+
+export const UserTypesConfig = z
+  .object({
+    path: z.string().default("types"),
+    enums: z.record(UserEnumName, UserEnum).default({}),
+  })
+  .default({});
+
+/************************************************************************
+ *
+ *    PROTOTYPES
+ *
+ ************************************************************************/
+
+export interface PrototypeConfig {
+  /** Output directory path for the file. Default is "prototypes" */
+  directory?: string;
+  /** Table names used in this prototype, mapped to their options */
+  tables: Record<
+    string,
+    {
+      /**
+       * Default value is either a string for structs, or a record of strings for each key
+       *
+       * The string is rendered in solidity as-is, unescaped and without adding quotes
+       */
+      default?: string | Record<z.input<typeof ColumnName>, string>;
+    }
+  >;
+}
+
 export const PrototypeConfig = z.object({
   directory: z.string().default("prototypes"),
   tables: z.record(
@@ -69,20 +135,11 @@ export const PrototypeConfig = z.object({
   ),
 });
 
-const StoreConfigUnrefined = z.object({
-  baseRoute: BaseRoute.default(""),
-  storeImportPath: z.string().default("@latticexyz/store/src/"),
-  tables: TablesRecord,
-  userTypes: z
-    .object({
-      path: z.string().default("types"),
-      enums: z.record(UserEnumName, UserEnum).default({}),
-    })
-    .default({}),
-  prototypes: z.record(PrototypeName, PrototypeConfig).default({}),
-});
-// finally validate global conditions
-export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
+/************************************************************************
+ *
+ *    FINAL
+ *
+ ************************************************************************/
 
 // zod doesn't preserve doc comments
 export interface StoreUserConfig {
@@ -110,53 +167,28 @@ export interface StoreUserConfig {
   prototypes?: Record<string, PrototypeConfig>;
 }
 
-interface FullTableConfig {
-  /** Output directory path for the file. Default is "tables" */
-  directory?: string;
-  /** Route is used to register the table and construct its id. The table id will be keccak256(concat(baseRoute,route)). Default is "/<tableName>" */
-  route?: string;
-  /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
-  tableIdArgument?: boolean;
-  /** Include methods that accept a manual `IStore` argument. Default is false. */
-  storeArgument?: boolean;
-  /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
-  dataStruct?: boolean;
-  /** Table's primary key names mapped to their types. Default is `{ key: SchemaType.BYTES32 }` */
-  primaryKeys?: Record<string, z.input<typeof PrimaryKey>>;
-  /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
-  schema: Record<string, z.input<typeof FieldData>>;
-}
-
-interface UserTypesConfig {
-  /** Path to the file where common types will be generated and imported from. Default is "types" */
-  path?: string;
-  /** Enum names mapped to lists of their member names */
-  enums?: Record<string, string[]>;
-}
-
-// note that prototype is an array of objects
-export interface PrototypeConfig {
-  /** Output directory path for the file. Default is "prototypes" */
-  directory?: string;
-  /** Table names used in this prototype, mapped to their options */
-  tables: Record<
-    string,
-    {
-      /**
-       * Default value is either a string for structs, or a record of strings for each key
-       *
-       * The string is rendered in solidity as-is, unescaped and without adding quotes
-       */
-      default?: string | Record<z.input<typeof ColumnName>, string>;
-    }
-  >;
-}
-
 export type StoreConfig = z.output<typeof StoreConfig>;
+
+const StoreConfigUnrefined = z.object({
+  baseRoute: BaseRoute.default(""),
+  storeImportPath: z.string().default("@latticexyz/store/src/"),
+  tables: TablesRecord,
+  userTypes: UserTypesConfig,
+  prototypes: z.record(PrototypeName, PrototypeConfig).default({}),
+});
+
+// finally validate global conditions
+export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
 
 export async function parseStoreConfig(config: unknown) {
   return StoreConfig.parse(config);
 }
+
+/************************************************************************
+ *
+ *    HELPERS
+ *
+ ************************************************************************/
 
 // Validate conditions that check multiple different config options simultaneously
 function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx: RefinementCtx) {
