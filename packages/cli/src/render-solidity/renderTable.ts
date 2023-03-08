@@ -5,13 +5,23 @@ import {
   renderedSolidityHeader,
   renderImports,
   renderTableId,
+  renderWithStore,
 } from "./common.js";
 import { renderFieldMethods } from "./field.js";
 import { renderRecordMethods } from "./record.js";
 import { RenderTableOptions } from "./types.js";
 
 export function renderTable(options: RenderTableOptions) {
-  const { imports, libraryName, structName, staticRouteData, storeImportPath, fields, withRecordMethods } = options;
+  const {
+    imports,
+    libraryName,
+    structName,
+    staticRouteData,
+    storeImportPath,
+    fields,
+    withRecordMethods,
+    storeArgument,
+  } = options;
 
   const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
@@ -67,43 +77,41 @@ library ${libraryName} {
     return ("${libraryName}", _fieldNames);
   }
 
-  /** Register the table's schema */
-  function registerSchema(${_typedTableId}) internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
-  }
+  ${renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix) => `
+    /** Register the table's schema${_commentSuffix} */
+    function registerSchema(${renderArguments([_typedStore, _typedTableId])}) internal {
+      ${_store}.registerSchema(_tableId, getSchema());
+    }
+  `
+  )}
 
-  /** Set the table's metadata */
-  function setMetadata(${_typedTableId}) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
-  }
+  ${renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix) => `
+    /** Set the table's metadata${_commentSuffix} */
+    function setMetadata(${renderArguments([_typedStore, _typedTableId])}) internal {
+      (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+      ${_store}.setMetadata(_tableId, _tableName, _fieldNames);
+    }
+  `
+  )}
 
-${
-  !options.storeArgument
-    ? ""
-    : `
-  /** Register the table's schema for the specified store */
-  function registerSchema(${renderArguments([_typedTableId, "IStore _store"])}) internal {
-    _store.registerSchema(_tableId, getSchema());
-  }
+  ${renderFieldMethods(options)}
 
-  /** Set the table's metadata for the specified store */
-  function setMetadata(${renderArguments([_typedTableId, "IStore _store"])}) internal {
-    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
-    _store.setMetadata(_tableId, _tableName, _fieldNames);
-  }
-`
-}
+  ${withRecordMethods ? renderRecordMethods(options) : ""}
 
-${renderFieldMethods(options)}
-
-${withRecordMethods ? renderRecordMethods(options) : ""}
-
-  /* Delete all data for given keys */
-  function deleteRecord(${renderArguments([_typedTableId, _typedKeyArgs])}) internal {
-    ${_primaryKeysDefinition}
-    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
-  }
+  ${renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix) => `
+    /* Delete all data for given keys${_commentSuffix} */
+    function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
+      ${_primaryKeysDefinition}
+      ${_store}.deleteRecord(_tableId, _primaryKeys);
+    }
+  `
+  )}
 }
 
 ${

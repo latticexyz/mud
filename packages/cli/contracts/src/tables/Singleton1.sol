@@ -35,18 +35,18 @@ library Singleton1 {
     return ("Singleton1", _fieldNames);
   }
 
-  /** Register the table's schema */
+  /** Register the table's schema  */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Set the table's metadata */
+  /** Set the table's metadata  */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get v1 */
+  /** Get v1  */
   function get() internal view returns (int256 v1) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
@@ -54,14 +54,14 @@ library Singleton1 {
     return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
-  /** Set v1 */
+  /** Set v1  */
   function set(int256 v1) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((v1)));
   }
 
-  /* Delete all data for given keys */
+  /* Delete all data for given keys  */
   function deleteRecord() internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 

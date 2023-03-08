@@ -79,6 +79,25 @@ export function renderImports(imports: ImportDatum[]) {
   return renderedImports.join("\n");
 }
 
+export function renderWithStore(
+  storeArgument: boolean,
+  callback: (
+    _typedStore: string | undefined,
+    _store: string,
+    _commentSuffix: string,
+    _untypedStore: string | undefined
+  ) => string
+) {
+  let result = "";
+  result += callback(undefined, "StoreSwitch", "", undefined);
+
+  if (storeArgument) {
+    result += "\n" + callback("IStore _store", "_store", " (using the specified store)", "_store");
+  }
+
+  return result;
+}
+
 export function renderTableId(staticRouteData: StaticRouteData) {
   const hardcodedTableId = `uint256(keccak256("${staticRouteData.baseRoute + staticRouteData.subRoute}"))`;
   const tableIdDefinition = `

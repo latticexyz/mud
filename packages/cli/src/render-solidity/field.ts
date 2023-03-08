@@ -1,70 +1,68 @@
-import { renderArguments, renderCommonData } from "./common.js";
+import { renderArguments, renderCommonData, renderWithStore } from "./common.js";
 import { RenderTableField, RenderTableOptions, RenderTableType } from "./types.js";
 
 export function renderFieldMethods(options: RenderTableOptions) {
+  const storeArgument = options.storeArgument;
   const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
   let result = "";
   for (const [index, field] of options.fields.entries()) {
     const _typedFieldName = `${field.typeWithLocation} ${field.name}`;
 
-    result += `
-    /** Get ${field.name} */
-    function get${field.methodNameSuffix}(${renderArguments([
-      _typedTableId,
-      _typedKeyArgs,
-    ])}) internal view returns (${_typedFieldName}) {
-      ${_primaryKeysDefinition}
-      bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, ${index});
-      return ${renderDecodeFieldSingle(field)};
-    }
-    `;
-
-    if (options.storeArgument) {
-      result += `
-      /** Get ${field.name} from the specified store */
+    result += renderWithStore(
+      storeArgument,
+      (_typedStore, _store, _commentSuffix) => `
+      /** Get ${field.name}${_commentSuffix} */
       function get${field.methodNameSuffix}(${renderArguments([
+        _typedStore,
         _typedTableId,
-        `IStore _store`,
         _typedKeyArgs,
       ])}) internal view returns (${_typedFieldName}) {
         ${_primaryKeysDefinition}
-        bytes memory _blob = _store.getField(_tableId, _primaryKeys, ${index});
+        bytes memory _blob = ${_store}.getField(_tableId, _primaryKeys, ${index});
         return ${renderDecodeFieldSingle(field)};
       }
-      `;
-    }
+    `
+    );
 
-    result += `
-    /** Set ${field.name} */
-    function set${field.methodNameSuffix}(${renderArguments([
-      _typedTableId,
-      _typedKeyArgs,
-      _typedFieldName,
-    ])}) internal {
-      ${_primaryKeysDefinition}
-      StoreSwitch.setField(_tableId, _primaryKeys, ${index}, ${renderEncodeField(field)});
-    }
-    `;
+    result += renderWithStore(
+      storeArgument,
+      (_typedStore, _store, _commentSuffix) => `
+      /** Set ${field.name}${_commentSuffix} */
+      function set${field.methodNameSuffix}(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        _typedFieldName,
+      ])}) internal {
+        ${_primaryKeysDefinition}
+        ${_store}.setField(_tableId, _primaryKeys, ${index}, ${renderEncodeField(field)});
+      }
+    `
+    );
 
     // TODO: this is super inefficient right now, need to add support for pushing to arrays to the store core library to avoid reading/writing the entire array
     // (see https://github.com/latticexyz/mud/issues/438)
     if (field.isDynamic) {
       const portionData = fieldPortionData(field);
 
-      result += `
-      /** Push ${portionData.title} to ${field.name} */
-      function push${field.methodNameSuffix}(${renderArguments([
-        _typedTableId,
-        _typedKeyArgs,
-        `${portionData.typeWithLocation} ${portionData.name}`,
-      ])}) internal {
-        ${_primaryKeysDefinition}
-        bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, ${index});
-        bytes memory _newBlob = abi.encodePacked(_blob, ${portionData.encoded});
-        StoreSwitch.setField(_tableId, _primaryKeys, ${index}, _newBlob);
-      }
-      `;
+      result += renderWithStore(
+        storeArgument,
+        (_typedStore, _store, _commentSuffix) => `
+        /** Push ${portionData.title} to ${field.name}${_commentSuffix} */
+        function push${field.methodNameSuffix}(${renderArguments([
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+          `${portionData.typeWithLocation} ${portionData.name}`,
+        ])}) internal {
+          ${_primaryKeysDefinition}
+          bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, ${index});
+          bytes memory _newBlob = abi.encodePacked(_blob, ${portionData.encoded});
+          ${_store}.setField(_tableId, _primaryKeys, ${index}, _newBlob);
+        }
+      `
+      );
     }
   }
   return result;
