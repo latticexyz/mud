@@ -1,6 +1,6 @@
 import { z, ZodError } from "zod";
 import { fromZodErrorCustom, UnrecognizedSystemErrorFactory } from "../utils/errors.js";
-import { BaseRoute, Directory, EthereumAddress, ObjectName } from "./commonSchemas.js";
+import { BaseRoute, EthereumAddress, ObjectName } from "./commonSchemas.js";
 import { loadConfig } from "./loadConfig.js";
 
 const SystemName = ObjectName;
@@ -30,7 +30,7 @@ export const WorldConfig = z.object({
   overrideSystems: z.record(SystemName, SystemConfig).default({}),
   excludeSystems: z.array(SystemName).default([]),
   postDeployScript: z.string().default("PostDeploy"),
-  deploymentInfoDirectory: Directory.default("."),
+  deploymentInfoDirectory: z.string().default("."),
 });
 
 /**
