@@ -1,5 +1,4 @@
 import { ethers } from "ethers";
-import { existsSync, statSync } from "fs";
 import { ZodIssueCode, RefinementCtx } from "zod";
 
 export function validateName(name: string, ctx: RefinementCtx) {
@@ -116,15 +115,6 @@ export const validateRoute = _factoryForValidateRoute(true, false);
 export const validateBaseRoute = _factoryForValidateRoute(false, false);
 
 export const validateSingleLevelRoute = _factoryForValidateRoute(true, true);
-
-export function validateDirectory(path: string, ctx: RefinementCtx) {
-  if (!existsSync(path) || !statSync(path).isDirectory()) {
-    ctx.addIssue({
-      code: ZodIssueCode.custom,
-      message: `Invalid directory`,
-    });
-  }
-}
 
 export function validateEthereumAddress(address: string, ctx: RefinementCtx) {
   if (!ethers.utils.isAddress(address)) {

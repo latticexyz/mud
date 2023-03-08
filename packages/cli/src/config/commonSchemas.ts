@@ -28,9 +28,6 @@ export const SingleLevelRoute = z.string().superRefine(validateSingleLevelRoute)
 /** Base routes (can be an empty string) */
 export const BaseRoute = z.string().superRefine(validateBaseRoute);
 
-/** A directory existing in the user's file system */
-export const Directory = z.string().superRefine(validateDirectory);
-
 /** A valid Ethereum address */
 export const EthereumAddress = z.string().superRefine(validateEthereumAddress);
 
