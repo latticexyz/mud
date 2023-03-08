@@ -10,7 +10,7 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/tables/StoreMetadata.sol";
 
-import { World } from "../src/World.sol";
+import { World, ROOT_NAMESPACE } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { RouteOwnerTable } from "../src/tables/RouteOwnerTable.sol";
 import { RouteAccess } from "../src/tables/RouteAccess.sol";
@@ -104,8 +104,11 @@ contract WorldTest is Test {
 
   function testConstructor() public {
     // Owner of root route should be the creator of the World
-    address rootOwner = RouteOwnerTable.get(world, uint256(uint256(keccak256(""))));
+    address rootOwner = NamespaceOwner.get(world, ROOT_NAMESPACE);
     assertEq(rootOwner, address(this));
+
+    // The creator of the World should have access to the root namespace
+    assertTrue(ResourceAccess.get(world, ROOT_NAMESPACE, address(this)));
   }
 
   function testIsStore() public view {
