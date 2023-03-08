@@ -38,7 +38,8 @@ export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string
       );
       if (importDatum) imports.push(importDatum);
 
-      if (renderTableType.isDynamic) throw new Error("Parsing error: found dynamic primary key");
+      if (renderTableType.isDynamic)
+        throw new Error(`Parsing error: found dynamic primary key ${name} in table ${tableName}`);
 
       const primaryKey: RenderTablePrimaryKey = {
         ...renderTableType,
