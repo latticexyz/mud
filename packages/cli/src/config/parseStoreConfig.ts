@@ -18,11 +18,31 @@ const PrimaryKeys = z.record(KeyName, PrimaryKey).default({ key: SchemaType.BYTE
 
 /************************************************************************
  *
- *    TABLES
+ *    TABLE SCHEMA
  *
  ************************************************************************/
 
-interface FullTableConfig {
+export type SchemaConfig = Record<string, z.input<typeof FieldData>> | z.input<typeof FieldData>;
+
+const FullSchemaConfig = z
+  .record(ColumnName, FieldData)
+  .refine((arg) => Object.keys(arg).length > 0, "Table schema may not be empty");
+
+const ShorthandSchemaConfig = FieldData.transform((fieldData) => {
+  return FullSchemaConfig.parse({
+    value: fieldData,
+  });
+});
+
+export const SchemaConfig = FullSchemaConfig.or(ShorthandSchemaConfig);
+
+/************************************************************************
+ *
+ *    TABLE
+ *
+ ************************************************************************/
+
+export interface TableConfig {
   /** Output directory path for the file. Default is "tables" */
   directory?: string;
   /** Route is used to register the table and construct its id. The table id will be keccak256(concat(baseRoute,route)). Default is "/<tableName>" */
@@ -36,21 +56,17 @@ interface FullTableConfig {
   /** Table's primary key names mapped to their types. Default is `{ key: SchemaType.BYTES32 }` */
   primaryKeys?: Record<string, z.input<typeof PrimaryKey>>;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
-  schema: Record<string, z.input<typeof FieldData>>;
+  schema: SchemaConfig;
 }
 
-const Schema = z
-  .record(ColumnName, FieldData)
-  .refine((arg) => Object.keys(arg).length > 0, "Table schema may not be empty");
-
-const TableDataFull = z
+const FullTableConfig = z
   .object({
     directory: z.string().default("tables"),
     route: BaseRoute.optional(),
     tableIdArgument: z.boolean().default(false),
     storeArgument: z.boolean().default(false),
     primaryKeys: PrimaryKeys,
-    schema: Schema,
+    schema: SchemaConfig,
     dataStruct: z.boolean().optional(),
   })
   .transform((arg) => {
@@ -63,15 +79,25 @@ const TableDataFull = z
     return arg as RequireKeys<typeof arg, "dataStruct">;
   });
 
-const TableDataShorthand = FieldData.transform((fieldData) => {
-  return TableDataFull.parse({
+const ShorthandTableConfig = FieldData.transform((fieldData) => {
+  return FullTableConfig.parse({
     schema: {
       value: fieldData,
     },
   });
 });
 
-const TablesRecord = z.record(TableName, z.union([TableDataShorthand, TableDataFull])).transform((tables) => {
+export const TableConfig = FullTableConfig.or(ShorthandTableConfig);
+
+/************************************************************************
+ *
+ *    TABLES
+ *
+ ************************************************************************/
+
+export type TablesConfig = Record<string, TableConfig | z.input<typeof FieldData>>;
+
+export const TablesConfig = z.record(TableName, TableConfig).transform((tables) => {
   // default route depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
@@ -156,7 +182,7 @@ export interface StoreUserConfig {
    *  - `SchemaType | userType` for a single-value table (aka ECS component).
    *  - FullTableConfig object for multi-value tables (or for customizable options).
    */
-  tables: Record<string, z.input<typeof FieldData> | FullTableConfig>;
+  tables: TablesConfig;
   /** User-defined types that will be generated and may be used in table schemas instead of `SchemaType` */
   userTypes?: UserTypesConfig;
   /**
@@ -172,7 +198,7 @@ export type StoreConfig = z.output<typeof StoreConfig>;
 const StoreConfigUnrefined = z.object({
   baseRoute: BaseRoute.default(""),
   storeImportPath: z.string().default("@latticexyz/store/src/"),
-  tables: TablesRecord,
+  tables: TablesConfig,
   userTypes: UserTypesConfig,
   prototypes: z.record(PrototypeName, PrototypeConfig).default({}),
 });
