@@ -115,11 +115,7 @@ contract World is Store {
   /**
    * Register metadata (tableName, fieldNames) for a given table via its id
    */
-  function setMetadata(
-    uint256 tableId,
-    string calldata tableName,
-    string[] calldata fieldNames
-  ) public virtual {
+  function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
     // Require caller to own the given tableId
     if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
 
@@ -240,11 +236,7 @@ contract World is Store {
    * Write a record in a table based on access right to the table route id.
    * This overload exists to conform with the `IStore` interface.
    */
-  function setRecord(
-    uint256 tableRouteId,
-    bytes32[] calldata key,
-    bytes calldata data
-  ) public virtual {
+  function setRecord(uint256 tableRouteId, bytes32[] calldata key, bytes calldata data) public virtual {
     // Check access based on the tableRoute
     if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
 
@@ -295,15 +287,47 @@ contract World is Store {
   }
 
   /**
+   * Push data to the end of a field in a table based on a parent route access right.
+   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
+   * because access to a route also grants access to all sub routes.
+   */
+  function pushToField(
+    string calldata accessRoute,
+    string calldata subRoute,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata dataToPush
+  ) public {
+    // Check access based on accessRoute
+    uint256 tableRouteId = _verifiedTableRouteId(accessRoute, subRoute);
+
+    // Push to the field
+    StoreCore.pushToField(tableRouteId, key, schemaIndex, dataToPush);
+  }
+
+  /**
+   * Push data to the end of a field in a table based on specific access rights.
+   * This overload exists to conform with the `IStore` interface.
+   */
+  function pushToField(
+    uint256 tableRouteId,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata dataToPush
+  ) public override {
+    // Check access based on the tableRoute
+    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
+
+    // Push to the field
+    StoreCore.pushToField(tableRouteId, key, schemaIndex, dataToPush);
+  }
+
+  /**
    * Delete a record in a table based on a parent route access right.
    * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
    * because access to a route also grants access to all sub routes.
    */
-  function deleteRecord(
-    string calldata accessRoute,
-    string calldata subRoute,
-    bytes32[] calldata key
-  ) public virtual {
+  function deleteRecord(string calldata accessRoute, string calldata subRoute, bytes32[] calldata key) public virtual {
     // Require access to accessRoute
     if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
 
@@ -327,6 +351,25 @@ contract World is Store {
 
     // Delete the record
     StoreCore.deleteRecord(tableRouteId, key);
+  }
+
+  /**
+   * Check for access based on `accessRoute`
+   * and return `tableRouteId` for `accessRoute/subRoute`
+   * because access to a route also grants access to all sub routes.
+   */
+  function _verifiedTableRouteId(
+    string calldata accessRoute,
+    string calldata subRoute
+  ) internal view returns (uint256 tableRouteId) {
+    // Require access to accessRoute
+    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
+
+    // Require a valid subRoute
+    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
+
+    // Construct the table route id by concatenating accessRoute and tableRoute
+    tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
   }
 
   /************************************************************************

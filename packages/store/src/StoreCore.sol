@@ -24,8 +24,8 @@ library StoreCore {
   error StoreCore_TableNotFound(uint256 table);
   error StoreCore_NotImplemented();
   error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
-  error StoreCore_NoDynamicField();
   error StoreCore_InvalidFieldNamesLength(uint256 expected, uint256 received);
+  error StoreCore_NotDynamicField();
 
   /**
    * Initialize internal tables.
@@ -236,6 +236,32 @@ library StoreCore {
     Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
   }
 
+  function pushToField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory dataToPush) internal {
+    Schema schema = getSchema(table);
+
+    if (schemaIndex < schema.numStaticFields()) {
+      revert StoreCore_NotDynamicField();
+    }
+
+    // TODO add push-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
+    bytes memory fullData = abi.encodePacked(
+      StoreCoreInternal._getDynamicField(table, key, schemaIndex, schema),
+      dataToPush
+    );
+
+    // Emit event to notify indexers
+    emit StoreSetField(table, key, schemaIndex, fullData);
+
+    // Call onSetField hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    address[] memory hooks = Hooks.get(bytes32(table));
+    for (uint256 i = 0; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.onSetField(table, key, schemaIndex, fullData);
+    }
+
+    StoreCoreInternal._pushToDynamicField(table, key, schema, schemaIndex, dataToPush);
+  }
+
   /************************************************************************
    *
    *    GET DATA
@@ -394,6 +420,34 @@ library StoreCoreInternal {
     // Store the provided value in storage
     uint256 dynamicDataLocation = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
     Storage.store({ storagePointer: dynamicDataLocation, data: data });
+  }
+
+  function _pushToDynamicField(
+    uint256 table,
+    bytes32[] memory key,
+    Schema schema,
+    uint8 schemaIndex,
+    bytes memory dataToPush
+  ) internal {
+    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
+
+    // Load dynamic data length from storage
+    uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(table, key);
+    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicSchemaLengthSlot }));
+
+    // Update the encoded length
+    uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
+    encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, oldFieldLength + dataToPush.length);
+
+    // Set the new length
+    Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
+
+    // Append `dataToPush` to the end of the data in storage
+    uint256 dynamicDataLocation = _getDynamicDataLocation(table, key, dynamicSchemaIndex);
+    dynamicDataLocation += oldFieldLength / 32;
+    // offset for new data (old data never has an offset because each dynamic field starts at a different storage slot)
+    uint256 offset = oldFieldLength % 32;
+    Storage.store({ storagePointer: dynamicDataLocation, offset: offset, data: dataToPush });
   }
 
   /************************************************************************
