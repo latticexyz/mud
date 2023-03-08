@@ -1,6 +1,6 @@
 import { SchemaType } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { BaseRoute, ObjectName, OrdinaryRoute, StaticSchemaType, UserEnum, ValueName } from "./commonSchemas.js";
+import { BaseRoute, ObjectName, StaticSchemaType, UserEnum, ValueName } from "./commonSchemas.js";
 import { getDuplicates } from "./validation.js";
 
 const TableName = ObjectName;
@@ -22,7 +22,7 @@ const Schema = z
 
 const TableDataFull = z
   .object({
-    directory: OrdinaryRoute.default("/tables"),
+    directory: z.string().default("tables"),
     route: BaseRoute.optional(),
     tableIdArgument: z.boolean().default(false),
     storeArgument: z.boolean().default(false),
@@ -60,7 +60,7 @@ const TablesRecord = z.record(TableName, z.union([TableDataShorthand, TableDataF
 });
 
 export const PrototypeConfig = z.object({
-  directory: OrdinaryRoute.default("/prototypes"),
+  directory: z.string().default("prototypes"),
   tables: z.record(
     TableName,
     z.object({
@@ -75,7 +75,7 @@ const StoreConfigUnrefined = z.object({
   tables: TablesRecord,
   userTypes: z
     .object({
-      path: OrdinaryRoute.default("/types"),
+      path: z.string().default("types"),
       enums: z.record(UserEnumName, UserEnum).default({}),
     })
     .default({}),
@@ -111,7 +111,7 @@ export interface StoreUserConfig {
 }
 
 interface FullTableConfig {
-  /** Output directory path for the file. Default is "/tables" */
+  /** Output directory path for the file. Default is "tables" */
   directory?: string;
   /** Route is used to register the table and construct its id. The table id will be keccak256(concat(baseRoute,route)). Default is "/<tableName>" */
   route?: string;
@@ -128,7 +128,7 @@ interface FullTableConfig {
 }
 
 interface UserTypesConfig {
-  /** Path to the file where common types will be generated and imported from. Default is "/types" */
+  /** Path to the file where common types will be generated and imported from. Default is "types" */
   path?: string;
   /** Enum names mapped to lists of their member names */
   enums?: Record<string, string[]>;
@@ -136,7 +136,7 @@ interface UserTypesConfig {
 
 // note that prototype is an array of objects
 export interface PrototypeConfig {
-  /** Output directory path for the file. Default is "/prototypes" */
+  /** Output directory path for the file. Default is "prototypes" */
   directory?: string;
   /** Table names used in this prototype, mapped to their options */
   tables: Record<
