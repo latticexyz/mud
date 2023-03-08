@@ -1,6 +1,6 @@
 import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
-import { StoreConfig, StoreUserConfig } from "./parseStoreConfig.js";
+import { PrototypeConfig, StoreConfig, StoreUserConfig } from "./parseStoreConfig.js";
 
 describe("StoreUserConfig", () => {
   // Typecheck manual interfaces against zod
@@ -10,5 +10,7 @@ describe("StoreUserConfig", () => {
   expectTypeOf<NonNullable<NonNullable<StoreUserConfig["userTypes"]>["enums"]>[string]>().toEqualTypeOf<
     NonNullable<NonNullable<z.input<typeof StoreConfig>["userTypes"]>["enums"]>[string]
   >();
+  expectTypeOf<PrototypeConfig>().toEqualTypeOf<z.input<typeof PrototypeConfig>>();
+  expectTypeOf<PrototypeConfig["tables"][string]>().toEqualTypeOf<z.input<typeof PrototypeConfig>["tables"][string]>();
   // TODO If more nested schemas are added, provide separate tests for them
 });

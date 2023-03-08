@@ -22,6 +22,7 @@ export interface RenderTableOptions {
 export interface ImportDatum {
   symbol: string;
   path: string;
+  pathFromSrc: string;
 }
 
 export interface StaticRouteData {
@@ -73,4 +74,32 @@ export interface RenderTypesOptions {
 export interface RenderTypesEnum {
   name: string;
   memberNames: string[];
+}
+
+export interface RenderPrototypeOptions {
+  /** List of symbols to import, and their file paths */
+  imports: ImportDatum[];
+  /** Name of the library to render. */
+  libraryName: string;
+  primaryKeys: RenderTablePrimaryKey[];
+  /** Data for tables used for this prototype */
+  tables: RenderTableForPrototype[];
+}
+
+export type RenderTableForPrototype = {
+  libraryName: string;
+  staticRouteData: StaticRouteData;
+} & (
+  | {
+      structName: undefined;
+      fields: RenderTableFieldForPrototype[];
+    }
+  | {
+      structName: string;
+      default?: string;
+    }
+);
+
+export interface RenderTableFieldForPrototype extends RenderTableField {
+  default?: string;
 }

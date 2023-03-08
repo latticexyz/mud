@@ -1,4 +1,11 @@
-import { renderArguments, renderCommonData, renderList, renderedSolidityHeader, renderImports } from "./common.js";
+import {
+  renderArguments,
+  renderCommonData,
+  renderList,
+  renderedSolidityHeader,
+  renderImports,
+  renderTableId,
+} from "./common.js";
 import { renderFieldMethods } from "./field.js";
 import { renderRecordMethods } from "./record.js";
 import { RenderTableOptions } from "./types.js";
@@ -32,14 +39,7 @@ ${
     : ""
 }
 
-${
-  !staticRouteData
-    ? ""
-    : `
-      uint256 constant _tableId = uint256(keccak256("${staticRouteData.baseRoute + staticRouteData.subRoute}"));
-      uint256 constant ${staticRouteData.tableIdName} = _tableId;
-`
-}
+${staticRouteData ? renderTableId(staticRouteData).tableIdDefinition : ""}
 
 ${
   !structName

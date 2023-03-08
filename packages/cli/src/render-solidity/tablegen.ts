@@ -2,19 +2,21 @@ import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
 import { StoreConfig } from "../index.js";
 import { formatSolidity } from "../utils/format.js";
-import { renderTablesFromConfig } from "./renderTablesFromConfig.js";
+import { getAllTableOptions } from "./tableOptions.js";
+import { renderTable } from "./renderTable.js";
 import { renderTypesFromConfig } from "./renderTypesFromConfig.js";
+import { getAllPrototypeOptions } from "./prototypeOptions.js";
+import { renderPrototype } from "./renderPrototype.js";
 
 export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {
-  // render tables
-  const renderedTables = renderTablesFromConfig(config, outputBaseDirectory);
+  const allTableOptions = getAllTableOptions(config, outputBaseDirectory);
   // write tables to files
-  for (const { outputDirectory, output, tableName } of renderedTables) {
+  for (const { outputDirectory, outputPath, renderOptions } of allTableOptions) {
+    const output = renderTable(renderOptions);
     const formattedOutput = await formatSolidity(output);
 
     mkdirSync(outputDirectory, { recursive: true });
 
-    const outputPath = path.join(outputDirectory, `${tableName}.sol`);
     writeFileSync(outputPath, formattedOutput);
     console.log(`Generated table: ${outputPath}`);
   }
@@ -31,5 +33,18 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string)
 
     writeFileSync(outputPath, formattedOutput);
     console.log(`Generated types file: ${outputPath}`);
+  }
+
+  const allPrototypeOptions = getAllPrototypeOptions(config, allTableOptions, outputBaseDirectory);
+  // write prototypes to files
+  for (const { outputDirectory, prototypeName, renderOptions } of allPrototypeOptions) {
+    const output = renderPrototype(renderOptions);
+    const formattedOutput = await formatSolidity(output);
+
+    mkdirSync(outputDirectory, { recursive: true });
+
+    const outputPath = path.join(outputDirectory, `${prototypeName}.sol`);
+    writeFileSync(outputPath, formattedOutput);
+    console.log(`Generated prototype: ${outputPath}`);
   }
 }

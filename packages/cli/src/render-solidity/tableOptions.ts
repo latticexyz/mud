@@ -1,20 +1,27 @@
 import path from "path";
-import { renderTable } from "./renderTable.js";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/parseStoreConfig.js";
 import {
   ImportDatum,
   RenderTableDynamicField,
   RenderTableField,
+  RenderTableOptions,
   RenderTablePrimaryKey,
   RenderTableStaticField,
 } from "./types.js";
 import { getSchemaTypeInfo, resolveSchemaOrUserType } from "./userType.js";
 
-export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string) {
+export interface TableOptions {
+  outputDirectory: string;
+  outputPath: string;
+  tableName: string;
+  renderOptions: RenderTableOptions;
+}
+
+export function getAllTableOptions(config: StoreConfig, srcDirectory: string): TableOptions[] {
   const storeImportPath = config.storeImportPath;
 
-  const renderedTables = [];
+  const options = [];
   for (const tableName of Object.keys(config.tables)) {
     const tableData = config.tables[tableName];
     const outputDirectory = path.join(srcDirectory, tableData.directory);
@@ -86,11 +93,11 @@ export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string
       }
     })();
 
-    renderedTables.push({
+    options.push({
       outputDirectory,
+      outputPath: path.join(outputDirectory, `${tableName}.sol`),
       tableName,
-      tableData,
-      output: renderTable({
+      renderOptions: {
         imports,
         libraryName: tableName,
         structName: withStruct ? tableName + "Data" : undefined,
@@ -102,8 +109,8 @@ export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string
         dynamicFields,
         withRecordMethods,
         storeArgument: tableData.storeArgument,
-      }),
+      },
     });
   }
-  return renderedTables;
+  return options;
 }

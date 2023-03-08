@@ -1,4 +1,4 @@
-import { ImportDatum, RenderTableOptions, RenderTableType } from "./types.js";
+import { ImportDatum, RenderTableOptions, RenderTableType, StaticRouteData } from "./types.js";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -20,7 +20,10 @@ export function renderArguments(args: (string | undefined)[]) {
   return internalRenderList(",", filteredArgs, (arg) => arg);
 }
 
-export function renderCommonData({ staticRouteData, primaryKeys }: RenderTableOptions) {
+export function renderCommonData({
+  staticRouteData,
+  primaryKeys,
+}: Pick<RenderTableOptions, "staticRouteData" | "primaryKeys">) {
   // static route means static tableId as well, and no tableId arguments
   const _tableId = staticRouteData ? "" : "_tableId";
   const _typedTableId = staticRouteData ? "" : "uint256 _tableId";
@@ -65,6 +68,18 @@ export function renderImports(imports: ImportDatum[]) {
     renderedImports.push(`import { ${renderedSymbols} } from "${path}";`);
   }
   return renderedImports.join("\n");
+}
+
+export function renderTableId(staticRouteData: StaticRouteData) {
+  const hardcodedTableId = `uint256(keccak256("${staticRouteData.baseRoute + staticRouteData.subRoute}"))`;
+  const tableIdDefinition = `
+    uint256 constant _tableId = ${hardcodedTableId};
+    uint256 constant ${staticRouteData.tableIdName} = _tableId;
+  `;
+  return {
+    hardcodedTableId,
+    tableIdDefinition,
+  };
 }
 
 function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderTableType) {

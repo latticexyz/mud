@@ -7,6 +7,7 @@ const TableName = ObjectName;
 const KeyName = ValueName;
 const ColumnName = ValueName;
 const UserEnumName = ObjectName;
+const PrototypeName = ObjectName;
 
 // Fields can use SchemaType or one of user defined wrapper types
 const FieldData = z.union([z.nativeEnum(SchemaType), UserEnumName]);
@@ -55,7 +56,17 @@ const TablesRecord = z.record(TableName, z.union([TableDataShorthand, TableDataF
 
     tables[tableName] = table;
   }
-  return tables as Record<string, RequireKeys<typeof tables[string], "route">>;
+  return tables as Record<string, RequireKeys<(typeof tables)[string], "route">>;
+});
+
+export const PrototypeConfig = z.object({
+  directory: OrdinaryRoute.default("/prototypes"),
+  tables: z.record(
+    TableName,
+    z.object({
+      default: z.union([z.string(), z.record(ColumnName, z.string())]).optional(),
+    })
+  ),
 });
 
 const StoreConfigUnrefined = z.object({
@@ -68,6 +79,7 @@ const StoreConfigUnrefined = z.object({
       enums: z.record(UserEnumName, UserEnum).default({}),
     })
     .default({}),
+  prototypes: z.record(PrototypeName, PrototypeConfig).default({}),
 });
 // finally validate global conditions
 export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
@@ -90,6 +102,12 @@ export interface StoreUserConfig {
   tables: Record<string, z.input<typeof FieldData> | FullTableConfig>;
   /** User-defined types that will be generated and may be used in table schemas instead of `SchemaType` */
   userTypes?: UserTypesConfig;
+  /**
+   * Configuration for each prototype - a collection of tables that share primary keys.
+   *
+   * The key is the prototype name (capitalized). The value is PrototypeConfig.
+   */
+  prototypes?: Record<string, PrototypeConfig>;
 }
 
 interface FullTableConfig {
@@ -116,6 +134,24 @@ interface UserTypesConfig {
   enums?: Record<string, string[]>;
 }
 
+// note that prototype is an array of objects
+export interface PrototypeConfig {
+  /** Output directory path for the file. Default is "/prototypes" */
+  directory?: string;
+  /** Table names used in this prototype, mapped to their options */
+  tables: Record<
+    string,
+    {
+      /**
+       * Default value is either a string for structs, or a record of strings for each key
+       *
+       * The string is rendered in solidity as-is, unescaped and without adding quotes
+       */
+      default?: string | Record<z.input<typeof ColumnName>, string>;
+    }
+  >;
+}
+
 export type StoreConfig = z.output<typeof StoreConfig>;
 
 export async function parseStoreConfig(config: unknown) {
@@ -139,12 +175,13 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   // Global names must be unique
   const tableNames = Object.keys(config.tables);
   const userTypeNames = Object.keys(config.userTypes.enums);
-  const globalNames = [...tableNames, ...userTypeNames];
+  const prototypeNames = Object.keys(config.prototypes);
+  const globalNames = [...tableNames, ...userTypeNames, ...prototypeNames];
   const duplicateGlobalNames = getDuplicates(globalNames);
   if (duplicateGlobalNames.length > 0) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
-      message: `Table and enum names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
+      message: `Table, enum, prototype names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
     });
   }
   // User types must exist
@@ -154,6 +191,41 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
     }
     for (const fieldType of Object.values(table.schema)) {
       validateIfUserType(userTypeNames, fieldType, ctx);
+    }
+  }
+  // Prototypes must use valid tables which use the same primary key types
+  for (const prototypeName of Object.keys(config.prototypes)) {
+    const prototype = config.prototypes[prototypeName];
+    if (Object.keys(prototype.tables).length === 0) {
+      ctx.addIssue({
+        code: ZodIssueCode.custom,
+        message: `Prototype "${prototypeName}" must not be empty`,
+      });
+    }
+
+    let primaryKeys, firstTableName;
+    for (const prototypeTableName of Object.keys(prototype.tables)) {
+      if (!tableNames.includes(prototypeTableName)) {
+        // check table's existance
+        ctx.addIssue({
+          code: ZodIssueCode.custom,
+          message: `Prototype "${prototypeName}" uses an invalid table "${prototypeTableName}"`,
+        });
+      } else {
+        // check primary keys
+        const tablePrimaryKeys = config.tables[prototypeTableName].primaryKeys;
+        if (primaryKeys === undefined) {
+          primaryKeys = tablePrimaryKeys;
+          firstTableName = prototypeTableName;
+        } else if (!arraysShallowEqual(Object.values(primaryKeys), Object.values(tablePrimaryKeys))) {
+          ctx.addIssue({
+            code: ZodIssueCode.custom,
+            message:
+              `Prototype "${prototypeName}": different types of primary keys` +
+              ` for tables "${prototypeTableName}" and "${firstTableName}"`,
+          });
+        }
+      }
     }
   }
 }
@@ -169,6 +241,10 @@ function validateIfUserType(
       message: `User type ${type} is not defined in userTypes`,
     });
   }
+}
+
+function arraysShallowEqual<T>(array1: T[], array2: T[]) {
+  return array1.length === array2.length && array1.every((value, index) => value === array2[index]);
 }
 
 type RequireKeys<T extends Record<string, unknown>, P extends string> = T & Required<Pick<T, P>>;

@@ -37,6 +37,7 @@ export function resolveSchemaOrUserType(
     const importDatum = {
       symbol: schemaOrUserType,
       path: "./" + path.relative(usedInDirectory, importedFromPath) + ".sol",
+      pathFromSrc: importedFromPath,
     };
     const { schemaType, renderTableType } = getUserTypeInfo(schemaOrUserType, userTypesConfig);
     return {
