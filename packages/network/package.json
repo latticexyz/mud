@@ -1,9 +1,9 @@
 {
   "name": "@latticexyz/network",
   "license": "MIT",
-  "version": "1.39.0",
+  "version": "1.40.0",
   "source": "src/index.ts",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "engines": {
     "node": ">=16"
   },
@@ -22,7 +22,7 @@
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "build": "(rimraf dist && rimraf ./.parcel-cache && yarn prepack && parcel build && tsc --emitDeclarationOnly || true) && yarn postpack",
-    "release": "npm publish || echo 'version already published'"
+    "release": "npm publish --access=public"
   },
   "dependencies": {
     "debug": "^4.3.4",
@@ -50,12 +50,12 @@
     "@ethersproject/abi": "^5.6.0",
     "@ethersproject/providers": "^5.6.1",
     "@improbable-eng/grpc-web": "^0.15.0",
-    "@latticexyz/recs": "^1.39.0",
-    "@latticexyz/schema-type": "link:../store",
-    "@latticexyz/services": "^1.39.0",
-    "@latticexyz/solecs": "^1.39.0",
-    "@latticexyz/store": "link:../store",
-    "@latticexyz/utils": "^1.39.0",
+    "@latticexyz/recs": "^1.40.0",
+    "@latticexyz/schema-type": "^1.40.0",
+    "@latticexyz/services": "^1.40.0",
+    "@latticexyz/solecs": "^1.40.0",
+    "@latticexyz/store": "^1.40.0",
+    "@latticexyz/utils": "^1.40.0",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "@types/debug": "^4.1.7",
     "@types/google-protobuf": "^3.15.6",
@@ -79,5 +79,5 @@
     "typedoc-plugin-markdown": "^3.13.6",
     "typescript": "^4.6.2"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

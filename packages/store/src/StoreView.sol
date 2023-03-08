@@ -20,34 +20,28 @@ contract StoreView is Store {
   /**
    * Not implemented in StoreView
    */
-  function setMetadata(
-    uint256,
-    string calldata,
-    string[] calldata
-  ) public virtual {
+  function setMetadata(uint256, string calldata, string[] calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 
   /**
    * Not implemented in StoreView
    */
-  function setRecord(
-    uint256,
-    bytes32[] calldata,
-    bytes calldata
-  ) public virtual {
+  function setRecord(uint256, bytes32[] calldata, bytes calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 
   /**
    * Not implemented in StoreView
    */
-  function setField(
-    uint256,
-    bytes32[] calldata,
-    uint8,
-    bytes calldata
-  ) public virtual {
+  function setField(uint256, bytes32[] calldata, uint8, bytes calldata) public virtual {
+    revert StoreView_NotImplemented();
+  }
+
+  /**
+   * Not implemented in StoreView
+   */
+  function pushToField(uint256, bytes32[] calldata, uint8, bytes calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 

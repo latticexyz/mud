@@ -5,6 +5,10 @@ import { hideBin } from "yargs/helpers";
 import { commands } from "./commands/index.js";
 import { logError } from "./utils/errors.js";
 
+// Load .env file into process.env
+import * as dotenv from "dotenv";
+dotenv.config();
+
 yargs(hideBin(process.argv))
   // Explicit name to display in help (by default it's the entry file, which may not be "mud" for e.g. ts-node)
   .scriptName("mud")

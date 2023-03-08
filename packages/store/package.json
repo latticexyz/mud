@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/store",
   "license": "MIT",
-  "version": "1.34.0",
+  "version": "1.40.0",
   "description": "Store",
   "types": "./types/ethers-contracts/",
   "repository": {
@@ -23,12 +23,12 @@
     "lint": "yarn prettier && yarn solhint",
     "link": "yarn link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
-    "release": "npm publish || echo 'version already published'",
+    "release": "npm publish --access=public",
     "gas-report": "mud gas-report --path test/** --save gas-report.txt"
   },
   "devDependencies": {
-    "@latticexyz/cli": "^1.37.1",
-    "@latticexyz/schema-type": "^1.34.0",
+    "@latticexyz/cli": "^1.40.0",
+    "@latticexyz/schema-type": "^1.40.0",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",
@@ -36,8 +36,8 @@
     "ejs": "^3.1.8",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "hardhat": "^2.10.1",
-    "prettier": "^2.6.2",
-    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "prettier": "^2.8.4",
+    "prettier-plugin-solidity": "^1.1.2",
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
@@ -49,5 +49,5 @@
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

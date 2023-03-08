@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/cli",
-  "version": "1.39.0",
+  "version": "1.40.0",
   "description": "Command line interface for mud",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,7 +22,7 @@
     "link": "yarn link",
     "test": "vitest typecheck --run && echo 'todo: add tests'",
     "git:install": "bash git-install.sh",
-    "release": "npm publish || echo 'version already published'"
+    "release": "npm publish --access=public"
   },
   "devDependencies": {
     "@types/ejs": "^3.1.1",
@@ -37,17 +37,18 @@
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
-    "@latticexyz/schema-type": "link:../schema-type",
-    "@latticexyz/services": "^1.39.0",
-    "@latticexyz/solecs": "^1.39.0",
-    "@latticexyz/std-contracts": "^1.39.0",
+    "@latticexyz/schema-type": "^1.40.0",
+    "@latticexyz/services": "^1.40.0",
+    "@latticexyz/solecs": "^1.40.0",
+    "@latticexyz/std-contracts": "^1.40.0",
     "@typechain/ethers-v5": "^10.1.1",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
+    "dotenv": "^16.0.3",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ejs": "^3.1.8",
     "ethers": "^5.7.2",
-    "execa": "^6.1.0",
+    "execa": "^7.0.0",
     "find-up": "^6.3.0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "glob": "^8.0.3",
@@ -65,5 +66,5 @@
     "zod": "^3.20.6",
     "zod-validation-error": "^0.3.2"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

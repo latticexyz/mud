@@ -2,7 +2,7 @@ import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
 import { StoreConfig, StoreUserConfig } from "./parseStoreConfig.js";
 
-describe("parseStoreConfig", () => {
+describe("StoreUserConfig", () => {
   // Typecheck manual interfaces against zod
   expectTypeOf<StoreUserConfig>().toEqualTypeOf<z.input<typeof StoreConfig>>();
   // type equality isn't deep for optionals

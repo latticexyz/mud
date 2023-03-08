@@ -36,11 +36,7 @@ library AddressArraySchemaLib {
   }
 
   /** Set the table's data */
-  function set(
-    uint256 tableId,
-    bytes32 key,
-    address[] memory addresses
-  ) internal {
+  function set(uint256 tableId, bytes32 key, address[] memory addresses) internal {
     bytes memory data = EncodeArray.encode(addresses);
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
@@ -49,17 +45,11 @@ library AddressArraySchemaLib {
 
   /**
    * Push an element to the addresses array
-   * TODO: this is super inefficient right now, need to add support for pushing to arrays to the store core library to avoid reading/writing the entire array
    */
-  function push(
-    uint256 tableId,
-    bytes32 key,
-    address addr
-  ) internal {
+  function push(uint256 tableId, bytes32 key, address addr) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
-    bytes memory addresses = abi.encodePacked(StoreSwitch.getField(tableId, keyTuple, 0), addr);
-    StoreSwitch.setField(tableId, keyTuple, 0, addresses);
+    StoreSwitch.pushToField(tableId, keyTuple, 0, abi.encodePacked(addr));
   }
 
   /** Get the table's data */
@@ -70,11 +60,7 @@ library AddressArraySchemaLib {
     return decode(blob);
   }
 
-  function get(
-    uint256 tableId,
-    IStore store,
-    bytes32 key
-  ) internal view returns (address[] memory addresses) {
+  function get(uint256 tableId, IStore store, bytes32 key) internal view returns (address[] memory addresses) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = store.getRecord(tableId, keyTuple);
@@ -83,6 +69,6 @@ library AddressArraySchemaLib {
 
   function decode(bytes memory blob) internal pure returns (address[] memory addresses) {
     if (blob.length == 0) return new address[](0);
-    SliceLib.getSubslice(blob, 32).decodeArray_address();
+    return SliceLib.getSubslice(blob, 32).decodeArray_address();
   }
 }

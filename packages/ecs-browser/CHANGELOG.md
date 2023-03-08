@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.40.0](https://github.com/latticexyz/mud/compare/v1.39.0...v1.40.0) (2023-03-03)
+
+### Bug Fixes
+
+- **ecs-browser:** fix some errors in ecs-browser ([#420](https://github.com/latticexyz/mud/issues/420)) ([2a7ce21](https://github.com/latticexyz/mud/commit/2a7ce210553b2b9a6b2dffddac069be24802645f))
+
 # [1.39.0](https://github.com/latticexyz/mud/compare/v1.38.0...v1.39.0) (2023-02-22)
 
 **Note:** Version bump only for package @latticexyz/ecs-browser

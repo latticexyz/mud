@@ -32,9 +32,23 @@ library Vector2 {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get the table's metadata */
+  function getMetadata() internal pure returns (string memory, string[] memory) {
+    string[] memory _fieldNames = new string[](2);
+    _fieldNames[0] = "x";
+    _fieldNames[1] = "y";
+    return ("Vector2", _fieldNames);
+  }
+
   /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
+  }
+
+  /** Set the table's metadata */
+  function setMetadata() internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get x */
@@ -86,11 +100,7 @@ library Vector2 {
   }
 
   /** Set the full data using individual values */
-  function set(
-    bytes32 key,
-    uint32 x,
-    uint32 y
-  ) internal {
+  function set(bytes32 key, uint32 x, uint32 y) internal {
     bytes memory _data = abi.encodePacked(x, y);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);

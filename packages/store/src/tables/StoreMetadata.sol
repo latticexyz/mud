@@ -32,14 +32,34 @@ library StoreMetadata {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get the table's metadata */
+  function getMetadata() internal pure returns (string memory, string[] memory) {
+    string[] memory _fieldNames = new string[](2);
+    _fieldNames[0] = "tableName";
+    _fieldNames[1] = "abiEncodedFieldNames";
+    return ("StoreMetadata", _fieldNames);
+  }
+
   /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
+  /** Set the table's metadata */
+  function setMetadata() internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
   /** Register the table's schema for the specified store */
   function registerSchema(IStore _store) internal {
     _store.registerSchema(_tableId, getSchema());
+  }
+
+  /** Set the table's metadata for the specified store */
+  function setMetadata(IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get tableName */
@@ -93,11 +113,10 @@ library StoreMetadata {
   }
 
   /** Get abiEncodedFieldNames from the specified store */
-  function getAbiEncodedFieldNames(IStore _store, uint256 tableId)
-    internal
-    view
-    returns (bytes memory abiEncodedFieldNames)
-  {
+  function getAbiEncodedFieldNames(
+    IStore _store,
+    uint256 tableId
+  ) internal view returns (bytes memory abiEncodedFieldNames) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
     _primaryKeys[0] = bytes32(uint256(tableId));
@@ -147,11 +166,7 @@ library StoreMetadata {
   }
 
   /** Set the full data using individual values */
-  function set(
-    uint256 tableId,
-    string memory tableName,
-    bytes memory abiEncodedFieldNames
-  ) internal {
+  function set(uint256 tableId, string memory tableName, bytes memory abiEncodedFieldNames) internal {
     uint16[] memory _counters = new uint16[](2);
     _counters[0] = uint16(bytes(tableName).length);
     _counters[1] = uint16(bytes(abiEncodedFieldNames).length);
