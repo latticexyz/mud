@@ -12,6 +12,7 @@ import { Slice } from "./Slice.sol";
 import { Hooks, HooksTableId } from "./tables/Hooks.sol";
 import { StoreMetadata } from "./tables/StoreMetadata.sol";
 import { IStoreHook } from "./IStore.sol";
+import { StoreSwitch } from "./StoreSwitch.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
@@ -37,9 +38,14 @@ library StoreCore {
     registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
 
     // Register other internal tables
-    // StoreMetadata must be registered first, because it is used by other tables
+    // StoreMetadata must come first, because it is used by other tables
     StoreMetadata.registerSchema();
     Hooks.registerSchema();
+    // Then set their table metadata. If this is done before `registerSchema`,
+    // then downstream validation will fail due to `StoreMetadata` and `Hooks`
+    // loosely depending on one another (by way of `StoreCore` internals).
+    StoreMetadata.setMetadata();
+    Hooks.setMetadata();
   }
 
   /************************************************************************
@@ -74,15 +80,15 @@ library StoreCore {
   /**
    * Get the schema for the given table
    */
-  function getSchema(uint256 table, bool validate) internal view returns (Schema schema) {
+  function getSchema(uint256 table, bool requireTableExists) internal view returns (Schema schema) {
     schema = StoreCoreInternal._getSchema(table);
-    if (validate && schema.isEmpty()) {
+    if (requireTableExists && schema.isEmpty()) {
       revert StoreCore_TableNotFound(table);
     }
   }
 
   function getSchema(uint256 table) internal view returns (Schema schema) {
-    return getSchema(table, false);
+    return getSchema(table, true);
   }
 
   /**
@@ -93,8 +99,7 @@ library StoreCore {
     string memory tableName,
     string[] memory fieldNames
   ) internal {
-    // Get schema of the given table
-    Schema schema = getSchema(table, true);
+    Schema schema = getSchema(table);
 
     // Verify the number of field names corresponds to the schema length
     if (!(fieldNames.length == 0 || fieldNames.length == schema.numFields())) {
@@ -134,7 +139,7 @@ library StoreCore {
   ) internal {
     // verify the value has the correct length for the table (based on the table's schema)
     // to prevent invalid data from being stored
-    Schema schema = getSchema(table, true);
+    Schema schema = getSchema(table);
 
     // Verify static data length + dynamic data length matches the given data
     uint256 staticLength = schema.staticDataLength();
@@ -203,7 +208,7 @@ library StoreCore {
     uint8 schemaIndex,
     bytes memory data
   ) internal {
-    Schema schema = getSchema(table, true);
+    Schema schema = getSchema(table);
 
     // Emit event to notify indexers
     emit StoreSetField(table, key, schemaIndex, data);
@@ -223,7 +228,6 @@ library StoreCore {
   }
 
   function deleteRecord(uint256 table, bytes32[] memory key) internal {
-    // Get schema for this table
     Schema schema = getSchema(table);
 
     // Emit event to notify indexers
@@ -258,9 +262,7 @@ library StoreCore {
    * Get full record (all fields, static and dynamic data) for the given table and key tuple (loading schema from storage)
    */
   function getRecord(uint256 table, bytes32[] memory key) internal view returns (bytes memory) {
-    // Get schema for this table
-    Schema schema = getSchema(table, true);
-
+    Schema schema = getSchema(table);
     return getRecord(table, key, schema);
   }
 
@@ -326,10 +328,6 @@ library StoreCore {
     uint8 schemaIndex
   ) internal view returns (bytes memory) {
     Schema schema = getSchema(table);
-    if (schema.isEmpty()) {
-      revert("Schema not found in getField call");
-    }
-
     return getField(table, key, schemaIndex, schema);
   }
 
