@@ -145,7 +145,13 @@ contract WorldTest is Test {
     assertEq(world.getSchema(uint256(tableSelector)).unwrap(), schema.unwrap(), "schema should be registered");
 
     // Expect an error when registering an existing table
-    vm.expectRevert(abi.encodeWithSelector(StoreCore.StoreCore_TableAlreadyExists.selector, uint256(tableSelector)));
+    vm.expectRevert(
+      abi.encodeWithSelector(
+        StoreCore.StoreCore_TableAlreadyExists.selector,
+        uint256(tableSelector),
+        string(abi.encodePacked(tableSelector))
+      )
+    );
     world.registerTable(namespace, table, schema);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
