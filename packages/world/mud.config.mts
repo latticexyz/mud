@@ -42,6 +42,7 @@ const config: StoreUserConfig = {
       dataStruct: false,
     },
     // Bool: {
+    // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
     //   primaryKeys: {},
     //   schema: {
     //     value: SchemaType.BOOL,
@@ -50,6 +51,7 @@ const config: StoreUserConfig = {
     //   tableIdArgument: true,
     // },
     AddressArray: {
+      // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
       schema: { value: SchemaType.ADDRESS_ARRAY },
       storeArgument: true,
       tableIdArgument: true,
