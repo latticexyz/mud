@@ -23,7 +23,9 @@ struct Vector2Data {
 }
 
 library Vector2 {
-  /** Get the table's schema */
+  /**
+   * Get the table's schema
+   */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
     _schema[0] = SchemaType.UINT32;
@@ -32,12 +34,16 @@ library Vector2 {
     return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
+  /**
+   * Register the table's schema
+   */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Get x */
+  /**
+   * Get x
+   */
   function getX(bytes32 key) internal view returns (uint32 x) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -47,7 +53,9 @@ library Vector2 {
     return uint32(Bytes.slice4(_blob, 0));
   }
 
-  /** Set x */
+  /**
+   * Set x
+   */
   function setX(bytes32 key, uint32 x) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -56,7 +64,9 @@ library Vector2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(x));
   }
 
-  /** Get y */
+  /**
+   * Get y
+   */
   function getY(bytes32 key) internal view returns (uint32 y) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -66,7 +76,9 @@ library Vector2 {
     return uint32(Bytes.slice4(_blob, 0));
   }
 
-  /** Set y */
+  /**
+   * Set y
+   */
   function setY(bytes32 key, uint32 y) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -75,7 +87,9 @@ library Vector2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked(y));
   }
 
-  /** Get the full data */
+  /**
+   * Get the full data
+   */
   function get(bytes32 key) internal view returns (Vector2Data memory _table) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -85,7 +99,9 @@ library Vector2 {
     return decode(_blob);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * Set the full data using individual values
+   */
   function set(
     bytes32 key,
     uint32 x,
@@ -100,12 +116,16 @@ library Vector2 {
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
 
-  /** Set the full data using the data struct */
+  /**
+   * Set the full data using the data struct
+   */
   function set(bytes32 key, Vector2Data memory _table) internal {
     set(key, _table.x, _table.y);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema
+   */
   function decode(bytes memory _blob) internal pure returns (Vector2Data memory _table) {
     _table.x = uint32(Bytes.slice4(_blob, 0));
 

@@ -18,7 +18,9 @@ uint256 constant _tableId = uint256(keccak256("/world_internals/tables/RouteAcce
 uint256 constant RouteAccessTableId = _tableId;
 
 library RouteAccess {
-  /** Get the table's schema */
+  /**
+   * Get the table's schema
+   */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BOOL;
@@ -26,17 +28,23 @@ library RouteAccess {
     return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
+  /**
+   * Register the table's schema
+   */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Register the table's schema for the specified store */
+  /**
+   * Register the table's schema for the specified store
+   */
   function registerSchema(IStore _store) internal {
     _store.registerSchema(_tableId, getSchema());
   }
 
-  /** Get value */
+  /**
+   * Get value
+   */
   function get(uint256 routeId, address caller) internal view returns (bool value) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
 
@@ -48,8 +56,14 @@ library RouteAccess {
     return _toBool(uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Get value from the specified store */
-  function get(IStore _store, uint256 routeId, address caller) internal view returns (bool value) {
+  /**
+   * Get value from the specified store
+   */
+  function get(
+    IStore _store,
+    uint256 routeId,
+    address caller
+  ) internal view returns (bool value) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
 
     _primaryKeys[0] = bytes32(uint256(routeId));
@@ -60,8 +74,14 @@ library RouteAccess {
     return _toBool(uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Set value */
-  function set(uint256 routeId, address caller, bool value) internal {
+  /**
+   * Set value
+   */
+  function set(
+    uint256 routeId,
+    address caller,
+    bool value
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
 
     _primaryKeys[0] = bytes32(uint256(routeId));

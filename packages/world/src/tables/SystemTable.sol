@@ -18,7 +18,9 @@ uint256 constant _tableId = uint256(keccak256("/world_internals/tables/SystemTab
 uint256 constant SystemTableTableId = _tableId;
 
 library SystemTable {
-  /** Get the table's schema */
+  /**
+   * Get the table's schema
+   */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
     _schema[0] = SchemaType.ADDRESS;
@@ -27,17 +29,23 @@ library SystemTable {
     return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
+  /**
+   * Register the table's schema
+   */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Register the table's schema for the specified store */
+  /**
+   * Register the table's schema for the specified store
+   */
   function registerSchema(IStore _store) internal {
     _store.registerSchema(_tableId, getSchema());
   }
 
-  /** Get system */
+  /**
+   * Get system
+   */
   function getSystem(uint256 routeId) internal view returns (address system) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -47,7 +55,9 @@ library SystemTable {
     return address(Bytes.slice20(_blob, 0));
   }
 
-  /** Get system from the specified store */
+  /**
+   * Get system from the specified store
+   */
   function getSystem(IStore _store, uint256 routeId) internal view returns (address system) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -57,7 +67,9 @@ library SystemTable {
     return address(Bytes.slice20(_blob, 0));
   }
 
-  /** Set system */
+  /**
+   * Set system
+   */
   function setSystem(uint256 routeId, address system) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -66,7 +78,9 @@ library SystemTable {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(system));
   }
 
-  /** Get publicAccess */
+  /**
+   * Get publicAccess
+   */
   function getPublicAccess(uint256 routeId) internal view returns (bool publicAccess) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -76,7 +90,9 @@ library SystemTable {
     return _toBool(uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Get publicAccess from the specified store */
+  /**
+   * Get publicAccess from the specified store
+   */
   function getPublicAccess(IStore _store, uint256 routeId) internal view returns (bool publicAccess) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -86,7 +102,9 @@ library SystemTable {
     return _toBool(uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Set publicAccess */
+  /**
+   * Set publicAccess
+   */
   function setPublicAccess(uint256 routeId, bool publicAccess) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -95,7 +113,9 @@ library SystemTable {
     StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked(publicAccess));
   }
 
-  /** Get the full data */
+  /**
+   * Get the full data
+   */
   function get(uint256 routeId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -105,7 +125,9 @@ library SystemTable {
     return decode(_blob);
   }
 
-  /** Get the full data from the specified store */
+  /**
+   * Get the full data from the specified store
+   */
   function get(IStore _store, uint256 routeId) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -115,8 +137,14 @@ library SystemTable {
     return decode(_blob);
   }
 
-  /** Set the full data using individual values */
-  function set(uint256 routeId, address system, bool publicAccess) internal {
+  /**
+   * Set the full data using individual values
+   */
+  function set(
+    uint256 routeId,
+    address system,
+    bool publicAccess
+  ) internal {
     bytes memory _data = abi.encodePacked(system, publicAccess);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -126,7 +154,9 @@ library SystemTable {
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema
+   */
   function decode(bytes memory _blob) internal pure returns (address system, bool publicAccess) {
     system = address(Bytes.slice20(_blob, 0));
 

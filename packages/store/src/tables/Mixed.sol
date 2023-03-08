@@ -25,7 +25,9 @@ struct MixedData {
 }
 
 library Mixed {
-  /** Get the table's schema */
+  /**
+   * Get the table's schema
+   */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](4);
     _schema[0] = SchemaType.UINT32;
@@ -36,12 +38,16 @@ library Mixed {
     return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
+  /**
+   * Register the table's schema
+   */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Get u32 */
+  /**
+   * Get u32
+   */
   function getU32(bytes32 key) internal view returns (uint32 u32) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -51,7 +57,9 @@ library Mixed {
     return uint32(Bytes.slice4(_blob, 0));
   }
 
-  /** Set u32 */
+  /**
+   * Set u32
+   */
   function setU32(bytes32 key, uint32 u32) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -60,7 +68,9 @@ library Mixed {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(u32));
   }
 
-  /** Get u128 */
+  /**
+   * Get u128
+   */
   function getU128(bytes32 key) internal view returns (uint128 u128) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -70,7 +80,9 @@ library Mixed {
     return uint128(Bytes.slice16(_blob, 0));
   }
 
-  /** Set u128 */
+  /**
+   * Set u128
+   */
   function setU128(bytes32 key, uint128 u128) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -79,7 +91,9 @@ library Mixed {
     StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked(u128));
   }
 
-  /** Get a32 */
+  /**
+   * Get a32
+   */
   function getA32(bytes32 key) internal view returns (uint32[] memory a32) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -89,7 +103,9 @@ library Mixed {
     return SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32();
   }
 
-  /** Set a32 */
+  /**
+   * Set a32
+   */
   function setA32(bytes32 key, uint32[] memory a32) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -98,7 +114,9 @@ library Mixed {
     StoreSwitch.setField(_tableId, _primaryKeys, 2, EncodeArray.encode(a32));
   }
 
-  /** Push an element to a32 */
+  /**
+   * Push an element to a32
+   */
   function pushA32(bytes32 key, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -109,7 +127,9 @@ library Mixed {
     StoreSwitch.setField(_tableId, _primaryKeys, 2, _newBlob);
   }
 
-  /** Get s */
+  /**
+   * Get s
+   */
   function getS(bytes32 key) internal view returns (string memory s) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -119,7 +139,9 @@ library Mixed {
     return string(_blob);
   }
 
-  /** Set s */
+  /**
+   * Set s
+   */
   function setS(bytes32 key, string memory s) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -128,7 +150,9 @@ library Mixed {
     StoreSwitch.setField(_tableId, _primaryKeys, 3, bytes(s));
   }
 
-  /** Push a slice to s */
+  /**
+   * Push a slice to s
+   */
   function pushS(bytes32 key, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -139,7 +163,9 @@ library Mixed {
     StoreSwitch.setField(_tableId, _primaryKeys, 3, _newBlob);
   }
 
-  /** Get the full data */
+  /**
+   * Get the full data
+   */
   function get(bytes32 key) internal view returns (MixedData memory _table) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -149,7 +175,9 @@ library Mixed {
     return decode(_blob);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * Set the full data using individual values
+   */
   function set(
     bytes32 key,
     uint32 u32,
@@ -171,12 +199,16 @@ library Mixed {
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
 
-  /** Set the full data using the data struct */
+  /**
+   * Set the full data using the data struct
+   */
   function set(bytes32 key, MixedData memory _table) internal {
     set(key, _table.u32, _table.u128, _table.a32, _table.s);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema
+   */
   function decode(bytes memory _blob) internal view returns (MixedData memory _table) {
     // 20 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 20));

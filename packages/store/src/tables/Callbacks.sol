@@ -18,7 +18,9 @@ uint256 constant _tableId = uint256(keccak256("/store_internals/tables/Callbacks
 uint256 constant CallbacksTableId = _tableId;
 
 library Callbacks {
-  /** Get the table's schema */
+  /**
+   * Get the table's schema
+   */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES24_ARRAY;
@@ -26,12 +28,16 @@ library Callbacks {
     return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
+  /**
+   * Register the table's schema
+   */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Get value */
+  /**
+   * Get value
+   */
   function get(bytes32 key) internal view returns (bytes24[] memory value) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -41,7 +47,9 @@ library Callbacks {
     return SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24();
   }
 
-  /** Set value */
+  /**
+   * Set value
+   */
   function set(bytes32 key, bytes24[] memory value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -50,7 +58,9 @@ library Callbacks {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, EncodeArray.encode(value));
   }
 
-  /** Push an element to value */
+  /**
+   * Push an element to value
+   */
   function push(bytes32 key, bytes24 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 

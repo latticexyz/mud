@@ -23,7 +23,9 @@ struct StoreMetadataData {
 }
 
 library StoreMetadata {
-  /** Get the table's schema */
+  /**
+   * Get the table's schema
+   */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
     _schema[0] = SchemaType.STRING;
@@ -32,17 +34,23 @@ library StoreMetadata {
     return SchemaLib.encode(_schema);
   }
 
-  /** Register the table's schema */
+  /**
+   * Register the table's schema
+   */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Register the table's schema for the specified store */
+  /**
+   * Register the table's schema for the specified store
+   */
   function registerSchema(IStore _store) internal {
     _store.registerSchema(_tableId, getSchema());
   }
 
-  /** Get tableName */
+  /**
+   * Get tableName
+   */
   function getTableName(uint256 tableId) internal view returns (string memory tableName) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -52,7 +60,9 @@ library StoreMetadata {
     return string(_blob);
   }
 
-  /** Get tableName from the specified store */
+  /**
+   * Get tableName from the specified store
+   */
   function getTableName(IStore _store, uint256 tableId) internal view returns (string memory tableName) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -62,7 +72,9 @@ library StoreMetadata {
     return string(_blob);
   }
 
-  /** Set tableName */
+  /**
+   * Set tableName
+   */
   function setTableName(uint256 tableId, string memory tableName) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -71,7 +83,9 @@ library StoreMetadata {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, bytes(tableName));
   }
 
-  /** Push a slice to tableName */
+  /**
+   * Push a slice to tableName
+   */
   function pushTableName(uint256 tableId, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -82,7 +96,9 @@ library StoreMetadata {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
   }
 
-  /** Get abiEncodedFieldNames */
+  /**
+   * Get abiEncodedFieldNames
+   */
   function getAbiEncodedFieldNames(uint256 tableId) internal view returns (bytes memory abiEncodedFieldNames) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -92,7 +108,9 @@ library StoreMetadata {
     return bytes(_blob);
   }
 
-  /** Get abiEncodedFieldNames from the specified store */
+  /**
+   * Get abiEncodedFieldNames from the specified store
+   */
   function getAbiEncodedFieldNames(IStore _store, uint256 tableId)
     internal
     view
@@ -106,7 +124,9 @@ library StoreMetadata {
     return bytes(_blob);
   }
 
-  /** Set abiEncodedFieldNames */
+  /**
+   * Set abiEncodedFieldNames
+   */
   function setAbiEncodedFieldNames(uint256 tableId, bytes memory abiEncodedFieldNames) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -115,7 +135,9 @@ library StoreMetadata {
     StoreSwitch.setField(_tableId, _primaryKeys, 1, bytes(abiEncodedFieldNames));
   }
 
-  /** Push a slice to abiEncodedFieldNames */
+  /**
+   * Push a slice to abiEncodedFieldNames
+   */
   function pushAbiEncodedFieldNames(uint256 tableId, bytes memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -126,7 +148,9 @@ library StoreMetadata {
     StoreSwitch.setField(_tableId, _primaryKeys, 1, _newBlob);
   }
 
-  /** Get the full data */
+  /**
+   * Get the full data
+   */
   function get(uint256 tableId) internal view returns (StoreMetadataData memory _table) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -136,7 +160,9 @@ library StoreMetadata {
     return decode(_blob);
   }
 
-  /** Get the full data from the specified store */
+  /**
+   * Get the full data from the specified store
+   */
   function get(IStore _store, uint256 tableId) internal view returns (StoreMetadataData memory _table) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
@@ -146,7 +172,9 @@ library StoreMetadata {
     return decode(_blob);
   }
 
-  /** Set the full data using individual values */
+  /**
+   * Set the full data using individual values
+   */
   function set(
     uint256 tableId,
     string memory tableName,
@@ -166,12 +194,16 @@ library StoreMetadata {
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
 
-  /** Set the full data using the data struct */
+  /**
+   * Set the full data using the data struct
+   */
   function set(uint256 tableId, StoreMetadataData memory _table) internal {
     set(tableId, _table.tableName, _table.abiEncodedFieldNames);
   }
 
-  /** Decode the tightly packed blob using this table's schema */
+  /**
+   * Decode the tightly packed blob using this table's schema
+   */
   function decode(bytes memory _blob) internal view returns (StoreMetadataData memory _table) {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
