@@ -2,8 +2,6 @@ import { StoreUserConfig } from "@latticexyz/cli";
 import { SchemaType } from "@latticexyz/schema-type";
 
 const config: StoreUserConfig = {
-  baseRoute: "/world_internals",
-
   tables: {
     NamespaceOwner: {
       primaryKeys: {
@@ -51,6 +49,11 @@ const config: StoreUserConfig = {
     //   storeArgument: true, // TODO Add support for store argument in setter function to table autogen
     //   tableIdArgument: true,
     // },
+    AddressArray: {
+      schema: { value: SchemaType.ADDRESS_ARRAY },
+      storeArgument: true,
+      tableIdArgument: true,
+    },
   },
 };
 

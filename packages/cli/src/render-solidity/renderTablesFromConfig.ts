@@ -1,20 +1,23 @@
+import path from "path";
 import { renderTable } from "./renderTable.js";
-import { SchemaType, SchemaTypeArrayToElement, SchemaTypeId, getStaticByteLength } from "@latticexyz/schema-type";
+import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/parseStoreConfig.js";
 import {
+  ImportDatum,
   RenderTableDynamicField,
   RenderTableField,
   RenderTablePrimaryKey,
   RenderTableStaticField,
-  RenderTableType,
 } from "./types.js";
+import { getSchemaTypeInfo, resolveSchemaOrUserType } from "./userType.js";
 
-export function renderTablesFromConfig(config: StoreConfig) {
+export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string) {
   const storeImportPath = config.storeImportPath;
 
   const renderedTables = [];
   for (const tableName of Object.keys(config.tables)) {
     const tableData = config.tables[tableName];
+    const outputDirectory = path.join(srcDirectory, tableData.directory);
 
     // struct adds methods to get/set all values at once
     const withStruct = tableData.dataStruct;
@@ -22,14 +25,24 @@ export function renderTablesFromConfig(config: StoreConfig) {
     const withRecordMethods = withStruct || Object.keys(tableData.schema).length > 1;
     // field methods can be simply get/set if there's only 1 field and no record methods
     const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
+    // list of any symbols that need to be imported
+    const imports: ImportDatum[] = [];
 
     const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
-      const type = tableData.primaryKeys[name];
-      const typeInfo = getSchemaTypeInfo(type);
-      if (typeInfo.isDynamic) throw new Error("Parsing error: found dynamic primary key");
+      const schemaOrUserType = tableData.primaryKeys[name];
+      const { renderTableType, importDatum } = resolveSchemaOrUserType(
+        schemaOrUserType,
+        srcDirectory,
+        outputDirectory,
+        config.userTypes
+      );
+      if (importDatum) imports.push(importDatum);
+
+      if (renderTableType.isDynamic)
+        throw new Error(`Parsing error: found dynamic primary key ${name} in table ${tableName}`);
 
       const primaryKey: RenderTablePrimaryKey = {
-        ...typeInfo,
+        ...renderTableType,
         name,
         isDynamic: false,
       };
@@ -37,11 +50,19 @@ export function renderTablesFromConfig(config: StoreConfig) {
     });
 
     const fields = Object.keys(tableData.schema).map((name) => {
-      const type = tableData.schema[name];
-      const elementType = SchemaTypeArrayToElement[type];
+      const schemaOrUserType = tableData.schema[name];
+      const { renderTableType, importDatum, schemaType } = resolveSchemaOrUserType(
+        schemaOrUserType,
+        srcDirectory,
+        outputDirectory,
+        config.userTypes
+      );
+      if (importDatum) imports.push(importDatum);
+
+      const elementType = SchemaTypeArrayToElement[schemaType];
       const field: RenderTableField = {
-        ...getSchemaTypeInfo(type),
-        arrayElement: elementType ? getSchemaTypeInfo(elementType) : undefined,
+        ...renderTableType,
+        arrayElement: elementType !== undefined ? getSchemaTypeInfo(elementType) : undefined,
         name,
         methodNameSuffix: noFieldMethodSuffix ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
       };
@@ -59,16 +80,18 @@ export function renderTablesFromConfig(config: StoreConfig) {
       } else {
         return {
           tableIdName: tableName + "TableId",
-          baseRoute: config.baseRoute + tableData.route,
-          subRoute: `/${tableName}`,
+          baseRoute: config.baseRoute,
+          subRoute: tableData.route,
         };
       }
     })();
 
     renderedTables.push({
+      outputDirectory,
       tableName,
       tableData,
       output: renderTable({
+        imports,
         libraryName: tableName,
         structName: withStruct ? tableName + "Data" : undefined,
         staticRouteData,
@@ -83,17 +106,4 @@ export function renderTablesFromConfig(config: StoreConfig) {
     });
   }
   return renderedTables;
-}
-
-function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
-  const staticByteLength = getStaticByteLength(schemaType);
-  const isDynamic = staticByteLength === 0;
-  const typeId = SchemaTypeId[schemaType];
-  return {
-    typeId,
-    typeWithLocation: isDynamic ? typeId + " memory" : typeId,
-    enumName: SchemaType[schemaType],
-    staticByteLength,
-    isDynamic,
-  };
 }

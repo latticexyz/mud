@@ -93,11 +93,8 @@ contract World is Store {
    * Requires the caller to own the namespace.
    */
   function registerTableHook(bytes16 namespace, bytes16 file, IStoreHook hook) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
-
-    // Require caller to own the namespace of the given tableId
-    if (NamespaceOwner.get(namespace) != msg.sender)
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), msg.sender);
+    // Require caller to own the namespace
+    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
 
     // Register the hook
     StoreCore.registerStoreHook(uint256(resourceSelector), hook);
@@ -171,11 +168,8 @@ contract World is Store {
    * Requires the caller to own the namespace.
    */
   function grantAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
-
     // Require the caller to own the namespace
-    if (NamespaceOwner.get(namespace) != msg.sender)
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), msg.sender);
+    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
 
     // Grant access to the given resource
     ResourceAccess.set({ selector: resourceSelector, caller: grantee, access: true });
@@ -185,11 +179,8 @@ contract World is Store {
    * Retract access from the resource at the given namespace and file.
    */
   function retractAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
-
     // Require the caller to own the namespace
-    if (NamespaceOwner.get(namespace) != msg.sender)
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), msg.sender);
+    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
 
     // Retract access from the given resource
     ResourceAccess.deleteRecord({ selector: resourceSelector, caller: grantee });
@@ -206,11 +197,8 @@ contract World is Store {
    * Requires the caller to have access to the namespace or file.
    */
   function setRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key, bytes calldata data) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
-
     // Require access to the namespace or file
-    if (!_hasAccess(namespace, file, msg.sender))
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), msg.sender);
+    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Set the record
     StoreCore.setRecord(uint256(resourceSelector), key, data);
@@ -237,11 +225,8 @@ contract World is Store {
     uint8 schemaIndex,
     bytes calldata data
   ) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
-
     // Require access to namespace or file
-    if (!_hasAccess(namespace, file, msg.sender))
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), msg.sender);
+    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Set the field
     StoreCore.setField(uint256(resourceSelector), key, schemaIndex, data);
@@ -269,15 +254,51 @@ contract World is Store {
   }
 
   /**
+   * Push data to the end of a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function pushToField(
+    bytes16 namespace,
+    bytes16 file,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata dataToPush
+  ) public {
+    // Require access to namespace or file
+    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
+
+    // Push to the field
+    StoreCore.pushToField(uint256(resourceSelector), key, schemaIndex, dataToPush);
+  }
+
+  /**
+   * Push data to the end of a field in the table at the given tableId.
+   * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
+   */
+  function pushToField(
+    uint256 tableId,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata dataToPush
+  ) public override {
+    bytes32 resourceSelector = bytes32(tableId);
+    pushToField(
+      ResourceSelector.getNamespace(resourceSelector),
+      ResourceSelector.getFile(resourceSelector),
+      key,
+      schemaIndex,
+      dataToPush
+    );
+  }
+
+  /**
    * Delete a record in the table at the given namespace and file.
    * Requires the caller to have access to the namespace or file.
    */
   function deleteRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
-
     // Require access to namespace or file
-    if (!_hasAccess(namespace, file, msg.sender))
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), msg.sender);
+    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Delete the record
     StoreCore.deleteRecord(uint256(resourceSelector), key);
@@ -312,12 +333,10 @@ contract World is Store {
     string calldata tableName,
     string[] calldata fieldNames
   ) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
-
     // Require caller to own the namespace
-    if (NamespaceOwner.get(namespace) != msg.sender)
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), msg.sender);
+    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
 
+    // Set the metadata
     StoreCore.setMetadata(uint256(resourceSelector), tableName, fieldNames);
   }
 
@@ -351,15 +370,11 @@ contract World is Store {
     bytes16 file,
     bytes calldata funcSelectorAndArgs
   ) public virtual returns (bytes memory) {
-    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
-
     // Load the system data
-    (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
+    (address systemAddress, bool publicAccess) = Systems.get(ResourceSelector.from(namespace, file));
 
     // Allow access if the system is public or the caller has access to the namespace or file
-    if (!publicAccess && !_hasAccess(namespace, file, msg.sender)) {
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), msg.sender);
-    }
+    if (!publicAccess) _requireAccess(namespace, file, msg.sender);
 
     // Call the system and forward any return data
     return
@@ -411,11 +426,41 @@ contract World is Store {
   }
 
   /**
-   * Check if the given caller has access to the given namespace or file
+   * Returns true if the caller has access to the namespace or file, false otherwise.
    */
   function _hasAccess(bytes16 namespace, bytes16 file, address caller) internal view returns (bool) {
     return
-      ResourceAccess.get(ResourceSelector.from(namespace, 0), caller) || // First check based on namespace
+      ResourceAccess.get(ResourceSelector.from(namespace, 0), caller) || // First check access based on the namespace
       ResourceAccess.get(ResourceSelector.from(namespace, file), caller); // If caller has no namespace access, check access on the file
+  }
+
+  /**
+   * Check for access at the given namespace or file.
+   * Returns the resourceSelector if the caller has access.
+   * Reverts with AccessDenied if the caller has no access.
+   */
+  function _requireAccess(
+    bytes16 namespace,
+    bytes16 file,
+    address caller
+  ) internal view returns (bytes32 resourceSelector) {
+    resourceSelector = ResourceSelector.from(namespace, file);
+
+    // Check if the given caller has access to the given namespace or file
+    if (!_hasAccess(namespace, file, msg.sender)) {
+      revert AccessDenied(ResourceSelector.toString(resourceSelector), caller);
+    }
+  }
+
+  function _requireOwner(
+    bytes16 namespace,
+    bytes16 file,
+    address caller
+  ) internal view returns (bytes32 resourceSelector) {
+    resourceSelector = ResourceSelector.from(namespace, file);
+
+    if (NamespaceOwner.get(namespace) != msg.sender) {
+      revert AccessDenied(ResourceSelector.toString(resourceSelector), caller);
+    }
   }
 }

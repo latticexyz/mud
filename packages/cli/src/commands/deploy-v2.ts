@@ -7,7 +7,7 @@ import { deploy } from "../utils/deploy-v2.js";
 import { logError, MUDError } from "../utils/errors.js";
 import { forge, getRpcUrl } from "../utils/foundry.js";
 import { getOutDirectory } from "../utils/foundry.js";
-import { writeFileSync } from "fs";
+import { mkdirSync, writeFileSync } from "fs";
 import { loadStoreConfig } from "../config/loadStoreConfig.js";
 import { deploymentInfoFilenamePrefix } from "../constants.js";
 
@@ -76,6 +76,7 @@ const commandModule: CommandModule<Options, Options> = {
 
       // Write deployment result to file (latest and timestamp)
       const outputDir = mudConfig.deploymentInfoDirectory;
+      mkdirSync(outputDir, { recursive: true });
       writeFileSync(
         path.join(outputDir, deploymentInfoFilenamePrefix + "latest.json"),
         JSON.stringify(deploymentInfo, null, 2)

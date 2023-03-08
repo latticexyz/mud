@@ -16,14 +16,14 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/NamespaceOwner"));
-uint256 constant NamespaceOwnerTableId = _tableId;
+uint256 constant _tableId = uint256(keccak256("/AddressArray"));
+uint256 constant AddressArrayTableId = _tableId;
 
-library NamespaceOwner {
+library AddressArray {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.ADDRESS;
+    _schema[0] = SchemaType.ADDRESS_ARRAY;
 
     return SchemaLib.encode(_schema);
   }
@@ -31,8 +31,8 @@ library NamespaceOwner {
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
-    _fieldNames[0] = "owner";
-    return ("NamespaceOwner", _fieldNames);
+    _fieldNames[0] = "value";
+    return ("AddressArray", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -57,36 +57,46 @@ library NamespaceOwner {
     _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get owner */
-  function get(bytes16 namespace) internal view returns (address owner) {
+  /** Get value */
+  function get(bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
+    _primaryKeys[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    return (address(Bytes.slice20(_blob, 0)));
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /** Get owner from the specified store */
-  function get(IStore _store, bytes16 namespace) internal view returns (address owner) {
+  /** Get value from the specified store */
+  function get(IStore _store, bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
+    _primaryKeys[0] = bytes32((key));
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
-    return (address(Bytes.slice20(_blob, 0)));
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /** Set owner */
-  function set(bytes16 namespace, address owner) internal {
+  /** Set value */
+  function set(bytes32 key, address[] memory value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
+    _primaryKeys[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((owner)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 0, EncodeArray.encode((value)));
+  }
+
+  /** Push an element to value */
+  function push(bytes32 key, address _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
+    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes16 namespace) internal {
+  function deleteRecord(bytes32 key) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
+    _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
