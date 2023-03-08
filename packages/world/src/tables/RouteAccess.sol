@@ -26,14 +26,33 @@ library RouteAccess {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get the table's metadata */
+  function getMetadata() internal pure returns (string memory, string[] memory) {
+    string[] memory _fieldNames = new string[](1);
+    _fieldNames[0] = "value";
+    return ("RouteAccess", _fieldNames);
+  }
+
   /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
+  /** Set the table's metadata */
+  function setMetadata() internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
   /** Register the table's schema for the specified store */
   function registerSchema(IStore _store) internal {
     _store.registerSchema(_tableId, getSchema());
+  }
+
+  /** Set the table's metadata for the specified store */
+  function setMetadata(IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get value */
@@ -49,7 +68,11 @@ library RouteAccess {
   }
 
   /** Get value from the specified store */
-  function get(IStore _store, uint256 routeId, address caller) internal view returns (bool value) {
+  function get(
+    IStore _store,
+    uint256 routeId,
+    address caller
+  ) internal view returns (bool value) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
 
     _primaryKeys[0] = bytes32(uint256(routeId));
@@ -61,7 +84,11 @@ library RouteAccess {
   }
 
   /** Set value */
-  function set(uint256 routeId, address caller, bool value) internal {
+  function set(
+    uint256 routeId,
+    address caller,
+    bool value
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
 
     _primaryKeys[0] = bytes32(uint256(routeId));

@@ -116,7 +116,11 @@ library SystemTable {
   }
 
   /** Set the full data using individual values */
-  function set(uint256 routeId, address system, bool publicAccess) internal {
+  function set(
+    uint256 routeId,
+    address system,
+    bool publicAccess
+  ) internal {
     bytes memory _data = abi.encodePacked(system, publicAccess);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
