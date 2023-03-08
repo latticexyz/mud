@@ -37,4 +37,4 @@ export const EthereumAddress = z.string().superRefine(validateEthereumAddress);
 /** Static subset of SchemaType enum */
 export const StaticSchemaType = z
   .nativeEnum(SchemaType)
-  .refine((arg) => getStaticByteLength(arg) > 0, "Primary key must not use dynamic SchemaType");
+  .refine((arg) => getStaticByteLength(arg) > 0, "SchemaType must be static");
