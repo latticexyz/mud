@@ -74,7 +74,8 @@
     "yalc:reset": "yarn entry:src",
     "entry:dist": "yarn lerna run prepack",
     "entry:src": "yarn lerna run postpack",
-    "gas-report": "yarn workspace @latticexyz/store run gas-report && yarn workspace @latticexyz/world run gas-report"
+    "gas-report": "yarn workspace @latticexyz/store run gas-report && yarn workspace @latticexyz/world run gas-report",
+    "tablegen": "yarn workspace @latticexyz/store run tablegen && yarn workspace @latticexyz/world run tablegen"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
