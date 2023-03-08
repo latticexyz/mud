@@ -57,7 +57,7 @@ export function storeEvent<Cm extends Components>(
   if (partialValue !== undefined) {
     const currentValue = state.get(key);
     if (currentValue === undefined) {
-      console.warn("Can't make partial update on unset component value.", {
+      console.warn("Can't make partial update on unset component value. Ignoring update.", {
         component,
         entity,
         entityIndex,

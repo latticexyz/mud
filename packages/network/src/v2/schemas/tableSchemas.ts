@@ -1,5 +1,5 @@
 import { Contract } from "ethers";
-import { TableSchema } from "./common";
+import { TableSchema } from "../common";
 import { decodeSchema } from "./decodeSchema";
 
 // worldAddress:tableId => schema

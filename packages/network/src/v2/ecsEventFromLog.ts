@@ -27,7 +27,6 @@ export const ecsEventFromLog = async (
     blockNumber,
     txHash: transactionHash,
     logIndex,
-    // TODO: this approach feels weird, refactor this?
     lastEventInTx,
   };
 

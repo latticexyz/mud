@@ -209,6 +209,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
         txHash: log.transactionHash,
         lastEventInTx,
         blockNumber: log.blockNumber,
+        logIndex: log.logIndex,
       });
     } catch (e) {
       console.warn("Error", e);

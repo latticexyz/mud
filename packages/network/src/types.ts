@@ -71,6 +71,9 @@ export type ContractEvent<C extends Contracts> = {
   txHash: string;
   lastEventInTx: boolean;
   blockNumber: number;
+  // TODO: make this required, so we can later sort by logIndex when concatenating event types
+  //       would require updating the ECS snapshot, though
+  logIndex?: number;
 };
 
 // Mapping from hashed contract component id to client component key
@@ -92,6 +95,7 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
   txMetadata?: TxMetadata;
   blockNumber: number;
   // TODO: make this required, so we can later sort by logIndex when concatenating event types
+  //       would require updating the ECS snapshot, though
   logIndex?: number;
 };
 

@@ -271,7 +271,6 @@ export function createLatestEventStreamRPC(
         fetchWorldEvents(from, to),
         boundFetchStoreEvents(from, to),
       ]);
-      // TODO: sort events by block+log index? concating here for ease
       const events = orderBy([...worldEvents, ...storeEvents], ["blockNumber", "logIndex"]);
       debug(`fetched ${events.length} events from block range ${from} -> ${to}`);
 
