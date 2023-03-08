@@ -36,7 +36,7 @@ const TableDataFull = z
     } else {
       arg.dataStruct ??= true;
     }
-    return arg as RequiredKeys<typeof arg, "dataStruct">;
+    return arg as RequireKeys<typeof arg, "dataStruct">;
   });
 
 const TableDataShorthand = FieldData.transform((fieldData) => {
@@ -55,7 +55,7 @@ const TablesRecord = z.record(TableName, z.union([TableDataShorthand, TableDataF
 
     tables[tableName] = table;
   }
-  return tables as Record<string, RequiredKeys<typeof tables[string], "route">>;
+  return tables as Record<string, RequireKeys<typeof tables[string], "route">>;
 });
 
 const StoreConfigUnrefined = z.object({
@@ -171,4 +171,4 @@ function validateIfUserType(
   }
 }
 
-type RequiredKeys<T extends Record<string, unknown>, P extends string> = T & Required<Pick<T, P>>;
+type RequireKeys<T extends Record<string, unknown>, P extends string> = T & Required<Pick<T, P>>;
