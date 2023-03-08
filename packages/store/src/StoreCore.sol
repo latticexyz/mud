@@ -115,7 +115,7 @@ library StoreCore {
   /*
    * Register hooks to be called when a record or field is set or deleted
    */
-  function registerStoreHook(uint256 table, IStoreHook hook) external {
+  function registerStoreHook(uint256 table, IStoreHook hook) internal {
     Hooks.push(bytes32(table), address(hook));
   }
 
@@ -580,13 +580,13 @@ library StoreCoreExtended {
    *    GET DATA
    *
    ************************************************************************/
-  function getRecord(uint256 table, bytes32 _key) external view returns (bytes memory) {
+  function getRecord(uint256 table, bytes32 _key) internal view returns (bytes memory) {
     bytes32[] memory key = new bytes32[](1);
     key[0] = _key;
     return StoreCore.getRecord(table, key);
   }
 
-  function getData(uint256 table, bytes32[2] memory _key) external view returns (bytes memory) {
+  function getData(uint256 table, bytes32[2] memory _key) internal view returns (bytes memory) {
     bytes32[] memory key = new bytes32[](2);
     key[0] = _key[0];
     key[1] = _key[1];

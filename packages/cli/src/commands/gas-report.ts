@@ -156,7 +156,7 @@ console.log("GAS REPORT: ${name} [${functionCall.replaceAll('"', '\\"')}]:", _ga
     stdio: ["inherit", "pipe", "inherit"],
   });
 
-  // Extrect the logs from the child process
+  // Extract the logs from the child process
   let logs = "";
   try {
     logs = (await child).stdout;

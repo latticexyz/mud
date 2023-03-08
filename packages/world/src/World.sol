@@ -45,13 +45,16 @@ contract World is Store {
   /**
    * Register a new route by extending an existing route
    */
-  function registerRoute(string calldata baseRoute, string calldata subRoute) public returns (uint256 routeId) {
+  function registerRoute(string calldata baseRoute, string calldata subRoute) public virtual returns (uint256 routeId) {
     // Require subroute to be a valid route fragment (start with `/` and don't contain any further `/`)
     if (!_isSingleLevelRoute(subRoute)) revert RouteInvalid(subRoute);
 
     // Require base route to exist (with a special check for the root route because it's empty and fails the `has` check)
     uint256 baseRouteId = _toRouteId(baseRoute);
     if (!(baseRouteId == ROOT_ROUTE_ID || RouteTable.has(baseRouteId))) revert RouteInvalid(baseRoute);
+
+    // Require subRoute to not be empty
+    if (bytes(subRoute).length == 0) revert RouteInvalid(subRoute);
 
     // Construct the new route
     string memory route = string(abi.encodePacked(baseRoute, subRoute));
@@ -77,7 +80,7 @@ contract World is Store {
     string calldata baseRoute,
     string calldata tableRoute,
     Schema schema
-  ) public returns (uint256 tableRouteId) {
+  ) public virtual returns (uint256 tableRouteId) {
     // Register table route
     tableRouteId = uint256(registerRoute(baseRoute, tableRoute));
 
@@ -90,7 +93,7 @@ contract World is Store {
    * This overload exists to conform to the Store interface,
    * but it requires the caller to register a route using `registerRoute` first
    */
-  function registerSchema(uint256 tableId, Schema schema) public override {
+  function registerSchema(uint256 tableId, Schema schema) public virtual override {
     // Require caller to own the given tableId
     if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
 
@@ -105,7 +108,7 @@ contract World is Store {
     string calldata tableRoute,
     string calldata tableName,
     string[] calldata fieldNames
-  ) public {
+  ) public virtual {
     setMetadata(_toRouteId(tableRoute), tableName, fieldNames);
   }
 
@@ -116,7 +119,7 @@ contract World is Store {
     uint256 tableId,
     string calldata tableName,
     string[] calldata fieldNames
-  ) public {
+  ) public virtual {
     // Require caller to own the given tableId
     if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
 
@@ -127,7 +130,7 @@ contract World is Store {
   /**
    * Register a hook for a given table route
    */
-  function registerTableHook(string calldata tableRoute, IStoreHook hook) public {
+  function registerTableHook(string calldata tableRoute, IStoreHook hook) public virtual {
     registerStoreHook(_toRouteId(tableRoute), hook);
   }
 
@@ -135,7 +138,7 @@ contract World is Store {
    * Register a hook for a given table route id
    * This overload exists to conform with the `IStore` interface.
    */
-  function registerStoreHook(uint256 tableId, IStoreHook hook) public override {
+  function registerStoreHook(uint256 tableId, IStoreHook hook) public virtual override {
     // Require caller to own the given tableId
     if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
 
@@ -146,7 +149,7 @@ contract World is Store {
   /**
    * Register a hook for a given system route
    */
-  function registerSystemHook(string calldata systemRoute, ISystemHook hook) public {
+  function registerSystemHook(string calldata systemRoute, ISystemHook hook) public virtual {
     // TODO implement (see https://github.com/latticexyz/mud/issues/444)
   }
 
@@ -158,7 +161,7 @@ contract World is Store {
     string calldata systemRoute,
     System system,
     bool publicAccess
-  ) public returns (uint256 systemRouteId) {
+  ) public virtual returns (uint256 systemRouteId) {
     // Require the system to not exist yet
     if (SystemRouteTable.has(address(system))) revert SystemExists(address(system));
 
@@ -182,7 +185,7 @@ contract World is Store {
   /**
    * Grant access to a given route
    */
-  function grantAccess(string calldata route, address grantee) public {
+  function grantAccess(string calldata route, address grantee) public virtual {
     // Require the caller to own the route
     uint256 routeId = _toRouteId(route);
     if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
@@ -194,7 +197,7 @@ contract World is Store {
   /**
    * Retract access to a given route
    */
-  function retractAccess(string calldata route, address grantee) public {
+  function retractAccess(string calldata route, address grantee) public virtual {
     // Require the caller to own the route
     uint256 routeId = _toRouteId(route);
     if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
@@ -219,7 +222,7 @@ contract World is Store {
     string calldata subRoute,
     bytes32[] calldata key,
     bytes calldata data
-  ) public {
+  ) public virtual {
     // Require access to accessRoute
     if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
 
@@ -241,7 +244,7 @@ contract World is Store {
     uint256 tableRouteId,
     bytes32[] calldata key,
     bytes calldata data
-  ) public {
+  ) public virtual {
     // Check access based on the tableRoute
     if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
 
@@ -260,7 +263,7 @@ contract World is Store {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
-  ) public {
+  ) public virtual {
     // Require access to accessRoute
     if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
 
@@ -283,7 +286,7 @@ contract World is Store {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
-  ) public override {
+  ) public virtual override {
     // Check access based on the tableRoute
     if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
 
@@ -300,7 +303,7 @@ contract World is Store {
     string calldata accessRoute,
     string calldata subRoute,
     bytes32[] calldata key
-  ) public {
+  ) public virtual {
     // Require access to accessRoute
     if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
 
@@ -318,7 +321,7 @@ contract World is Store {
    * Delete a record in a table based on specific access rights.
    * This overload exists to conform with the `IStore` interface.
    */
-  function deleteRecord(uint256 tableRouteId, bytes32[] calldata key) public override {
+  function deleteRecord(uint256 tableRouteId, bytes32[] calldata key) public virtual override {
     // Check access based on the tableRoute
     if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
 
@@ -341,13 +344,13 @@ contract World is Store {
     string calldata accessRoute,
     string memory subRoute,
     bytes calldata funcSelectorAndArgs
-  ) public returns (bytes memory) {
-    // Check if the system is a public system and get its address
+  ) public virtual returns (bytes memory) {
+    // Check if the system is a public virtual system and get its address
     string memory systemRoute = string(abi.encodePacked(accessRoute, subRoute));
     uint256 systemRouteId = _toRouteId(systemRoute);
     (address systemAddress, bool publicAccess) = SystemTable.get(systemRouteId);
 
-    // If the system is not public, check for individual access
+    // If the system is not public virtual, check for individual access
     if (!publicAccess) {
       // Require access to accessRoute
       if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
@@ -367,9 +370,9 @@ contract World is Store {
   }
 
   /**
-   * Overload for the function above to check access based on the full system route instead of a parent route (better devex for public systems)
+   * Overload for the function above to check access based on the full system route instead of a parent route (better devex for public virtual systems)
    */
-  function call(string calldata systemRoute, bytes calldata funcSelectorAndArgs) public returns (bytes memory) {
+  function call(string calldata systemRoute, bytes calldata funcSelectorAndArgs) public virtual returns (bytes memory) {
     return call(systemRoute, "", funcSelectorAndArgs);
   }
 
