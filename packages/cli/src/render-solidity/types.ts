@@ -21,8 +21,8 @@ export interface RenderTableOptions {
 
 export interface ImportDatum {
   symbol: string;
-  path: string;
-  pathFromSrc: string;
+  fromPath: string;
+  usedInPath: string;
 }
 
 export interface StaticRouteData {

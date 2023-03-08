@@ -1,23 +1,18 @@
-import path from "path";
 import { StoreConfig } from "../config/parseStoreConfig.js";
 import { ImportDatum, RenderPrototypeOptions, RenderTableForPrototype } from "./types.js";
 import { TableOptions } from "./tableOptions.js";
+import path from "path";
 
 export interface PrototypeOptions {
-  outputDirectory: string;
+  outputPath: string;
   prototypeName: string;
   renderOptions: RenderPrototypeOptions;
 }
 
-export function getAllPrototypeOptions(
-  config: StoreConfig,
-  allTablesOptions: TableOptions[],
-  srcDirectory: string
-): PrototypeOptions[] {
+export function getPrototypeOptions(config: StoreConfig, allTablesOptions: TableOptions[]): PrototypeOptions[] {
   const options = [];
   for (const prototypeName of Object.keys(config.prototypes)) {
     const prototypeData = config.prototypes[prototypeName];
-    const outputDirectory = path.join(srcDirectory, prototypeData.directory);
 
     const tablesOptions = allTablesOptions.filter(({ tableName }) =>
       Object.keys(prototypeData.tables).includes(tableName)
@@ -39,23 +34,22 @@ export function getAllPrototypeOptions(
         staticRouteData,
       } = tableOptions.renderOptions;
 
-      const importTableRelativePath = "./" + path.relative(outputDirectory, tableOptions.outputPath);
       imports.push({
         symbol: tableLibraryName,
-        path: importTableRelativePath,
-        pathFromSrc: tableOptions.outputDirectory,
+        fromPath: tableOptions.outputPath,
+        usedInPath: prototypeData.directory,
       });
       if (structName !== undefined) {
         imports.push({
           symbol: structName,
-          path: importTableRelativePath,
-          pathFromSrc: tableOptions.outputDirectory,
+          fromPath: tableOptions.outputPath,
+          usedInPath: prototypeData.directory,
         });
       }
       for (const importDatum of tableImports) {
         imports.push({
           ...importDatum,
-          path: "./" + path.relative(outputDirectory, importDatum.pathFromSrc) + ".sol",
+          usedInPath: prototypeData.directory,
         });
       }
 
@@ -78,7 +72,7 @@ export function getAllPrototypeOptions(
     });
 
     options.push({
-      outputDirectory,
+      outputPath: path.join(prototypeData.directory, `${prototypeName}.sol`),
       prototypeName,
       renderOptions: {
         imports,

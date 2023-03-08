@@ -9,22 +9,20 @@ import {
   RenderTablePrimaryKey,
   RenderTableStaticField,
 } from "./types.js";
-import { getSchemaTypeInfo, resolveSchemaOrUserType } from "./userType.js";
+import { getSchemaTypeInfo, importForSchemaOrUserType, resolveSchemaOrUserType } from "./userType.js";
 
 export interface TableOptions {
-  outputDirectory: string;
   outputPath: string;
   tableName: string;
   renderOptions: RenderTableOptions;
 }
 
-export function getAllTableOptions(config: StoreConfig, srcDirectory: string): TableOptions[] {
+export function getTableOptions(config: StoreConfig): TableOptions[] {
   const storeImportPath = config.storeImportPath;
 
   const options = [];
   for (const tableName of Object.keys(config.tables)) {
     const tableData = config.tables[tableName];
-    const outputDirectory = path.join(srcDirectory, tableData.directory);
 
     // struct adds methods to get/set all values at once
     const withStruct = tableData.dataStruct;
@@ -37,12 +35,9 @@ export function getAllTableOptions(config: StoreConfig, srcDirectory: string): T
 
     const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
       const schemaOrUserType = tableData.primaryKeys[name];
-      const { renderTableType, importDatum } = resolveSchemaOrUserType(
-        schemaOrUserType,
-        srcDirectory,
-        outputDirectory,
-        config.userTypes
-      );
+      const { renderTableType } = resolveSchemaOrUserType(schemaOrUserType, config.userTypes);
+
+      const importDatum = importForSchemaOrUserType(schemaOrUserType, tableData.directory, config.userTypes);
       if (importDatum) imports.push(importDatum);
 
       if (renderTableType.isDynamic)
@@ -58,12 +53,9 @@ export function getAllTableOptions(config: StoreConfig, srcDirectory: string): T
 
     const fields = Object.keys(tableData.schema).map((name) => {
       const schemaOrUserType = tableData.schema[name];
-      const { renderTableType, importDatum, schemaType } = resolveSchemaOrUserType(
-        schemaOrUserType,
-        srcDirectory,
-        outputDirectory,
-        config.userTypes
-      );
+      const { renderTableType, schemaType } = resolveSchemaOrUserType(schemaOrUserType, config.userTypes);
+
+      const importDatum = importForSchemaOrUserType(schemaOrUserType, tableData.directory, config.userTypes);
       if (importDatum) imports.push(importDatum);
 
       const elementType = SchemaTypeArrayToElement[schemaType];
@@ -94,8 +86,7 @@ export function getAllTableOptions(config: StoreConfig, srcDirectory: string): T
     })();
 
     options.push({
-      outputDirectory,
-      outputPath: path.join(outputDirectory, `${tableName}.sol`),
+      outputPath: path.join(tableData.directory, `${tableName}.sol`),
       tableName,
       renderOptions: {
         imports,

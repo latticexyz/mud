@@ -9,7 +9,7 @@ import { abi as WorldABI, bytecode as WorldBytecode } from "@latticexyz/world/ab
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { resolveSchemaOrUserTypeSimple } from "../render-solidity/userType.js";
+import { resolveSchemaOrUserType } from "../render-solidity/userType.js";
 
 export interface DeployConfig {
   profile?: string;
@@ -83,7 +83,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       const tableBaseRoute = toRoute(baseRoute, ...routeFragments);
 
       const schemaTypes = Object.values(tableConfig.schema).map((schemaOrUserType) => {
-        return resolveSchemaOrUserTypeSimple(schemaOrUserType, mudConfig.userTypes);
+        const { schemaType } = resolveSchemaOrUserType(schemaOrUserType, mudConfig.userTypes);
+        return schemaType;
       });
 
       await fastTxExecute(WorldContract, "registerTable", [

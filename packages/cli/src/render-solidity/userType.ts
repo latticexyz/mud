@@ -1,56 +1,43 @@
 import { getStaticByteLength, SchemaType, SchemaTypeId } from "@latticexyz/schema-type";
-import path from "path";
 import { StoreConfig } from "../index.js";
-import { RenderTableType } from "./types.js";
+import { ImportDatum, RenderTableType } from "./types.js";
 
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 
 /**
  * Resolve a SchemaType|userType into a SchemaType
  */
-export function resolveSchemaOrUserTypeSimple(
+export function resolveSchemaOrUserType(
   schemaOrUserType: SchemaType | string,
   userTypesConfig: StoreConfig["userTypes"]
 ) {
   if (typeof schemaOrUserType === "string") {
-    const { schemaType } = getUserTypeInfo(schemaOrUserType, userTypesConfig);
-    return schemaType;
+    const { schemaType, renderTableType } = getUserTypeInfo(schemaOrUserType, userTypesConfig);
+    return { schemaType, renderTableType };
   } else {
-    return schemaOrUserType;
+    return {
+      schemaType: schemaOrUserType,
+      renderTableType: getSchemaTypeInfo(schemaOrUserType),
+    };
   }
 }
 
 /**
- * Resolve a SchemaType|userType into RenderTableType, required import, and internal SchemaType
+ * Get the required import for SchemaType|userType (`undefined` means that no import is required)
  */
-export function resolveSchemaOrUserType(
+export function importForSchemaOrUserType(
   schemaOrUserType: SchemaType | string,
-  srcDirectory: string,
   usedInDirectory: string,
   userTypesConfig: StoreConfig["userTypes"]
-) {
+): ImportDatum | undefined {
   if (typeof schemaOrUserType === "string") {
-    // Relative import path for this type.
-    // "./" must be added because path stripts it,
-    // but solidity expects it unless there's "../" ("./../" is fine)
-    const importedFromPath = path.join(srcDirectory, userTypesConfig.path);
-    const importDatum = {
-      symbol: schemaOrUserType,
-      path: "./" + path.relative(usedInDirectory, importedFromPath) + ".sol",
-      pathFromSrc: importedFromPath,
-    };
-    const { schemaType, renderTableType } = getUserTypeInfo(schemaOrUserType, userTypesConfig);
     return {
-      importDatum,
-      renderTableType,
-      schemaType,
+      symbol: schemaOrUserType,
+      fromPath: userTypesConfig.path + ".sol",
+      usedInPath: usedInDirectory,
     };
   } else {
-    return {
-      importDatum: undefined,
-      renderTableType: getSchemaTypeInfo(schemaOrUserType),
-      schemaType: schemaOrUserType,
-    };
+    return undefined;
   }
 }
 

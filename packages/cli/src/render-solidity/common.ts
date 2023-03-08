@@ -1,3 +1,4 @@
+import path from "path";
 import { ImportDatum, RenderTableOptions, RenderTableType, StaticRouteData } from "./types.js";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
@@ -48,6 +49,13 @@ export function renderCommonData({
   };
 }
 
+/** For 2 paths which are relative to a common root, create a relative import path from one to another */
+export function solidityRelativeImportPath(fromPath: string, usedInPath: string) {
+  // "./" must be added because path stripts it,
+  // but solidity expects it unless there's "../" ("./../" is fine)
+  return "./" + path.relative(usedInPath, fromPath);
+}
+
 /**
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
@@ -55,7 +63,8 @@ export function renderCommonData({
 export function renderImports(imports: ImportDatum[]) {
   // Aggregate symbols by import path, also deduplicating them
   const aggregatedImports = new Map<string, Set<string>>();
-  for (const { symbol, path } of imports) {
+  for (const { symbol, fromPath, usedInPath } of imports) {
+    const path = solidityRelativeImportPath(fromPath, usedInPath);
     if (!aggregatedImports.has(path)) {
       aggregatedImports.set(path, new Set());
     }
