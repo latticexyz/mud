@@ -6,7 +6,7 @@ import {StoreView} from "@latticexyz/store/src/StoreView.sol";
 import {Table1, Table1Data} from "../src/tables/Table1.sol";
 import {Enum1, Enum2} from "../src/types.sol";
 
-contract tablegenTest is Test, StoreView {
+contract TablegenTest is Test, StoreView {
   function testTable1SetAndGet() public {
     Table1.registerSchema();
 
