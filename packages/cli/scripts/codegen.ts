@@ -1,9 +1,8 @@
 import { SchemaType } from "@latticexyz/schema-type";
-import path from "path";
 import { parseStoreConfig, StoreUserConfig } from "../src/config/index.js";
 import { tablegen } from "../src/render-solidity/tablegen.js";
 import { logError } from "../src/utils/errors.js";
-import { getSrcDirectory } from "../src/utils/forgeConfig.js";
+import { getSrcDirectory } from "../src/utils/foundry.js";
 
 // This config is used only for tests
 const config: StoreUserConfig = {

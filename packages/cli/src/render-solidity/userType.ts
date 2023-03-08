@@ -6,6 +6,21 @@ import { RenderTableType } from "./types.js";
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 
 /**
+ * Resolve a SchemaType|userType into a SchemaType
+ */
+export function resolveSchemaOrUserTypeSimple(
+  schemaOrUserType: SchemaType | string,
+  userTypesConfig: StoreConfig["userTypes"]
+) {
+  if (typeof schemaOrUserType === "string") {
+    const { schemaType } = getUserTypeInfo(schemaOrUserType, userTypesConfig);
+    return schemaType;
+  } else {
+    return schemaOrUserType;
+  }
+}
+
+/**
  * Resolve a SchemaType|userType into RenderTableType, required import, and internal SchemaType
  */
 export function resolveSchemaOrUserType(
