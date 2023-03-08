@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import {Table1, Table1Data} from "../test-contracts-src/tables/Table1.sol";
-import {Enum1, Enum2} from "../test-contracts-src/types.sol";
+import {Table1, Table1Data} from "../src/tables/Table1.sol";
+import {Enum1, Enum2} from "../src/types.sol";
 
 contract tablegenTest is Test {
   function isStore() external view {}
