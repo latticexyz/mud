@@ -45,6 +45,10 @@ yarn dev
 
 Once the contracts are compiled and deployed to the anvil node (a minute or two), a browser window should automatically open that will show the client app. You should see a “counter” without a value and a button to “increment” the counter.
 
+### Tests
+
+You can run the tests with `yarn test`. This will run the tests in the contract package and you can edit tests by altering in the `src/test` directory the `Deploy.t.sol`. 
+
 ## Send transactions
 
 Press the button and watch the counter tick upward.
@@ -78,3 +82,4 @@ Note that hot reloading is only available for systems at the moment. New compone
 <!-- TODO: figure out how to shrink this image and maybe float:right --->
 
 ![MUD development cycle](./images/mud-dev-cycle.png)
+
