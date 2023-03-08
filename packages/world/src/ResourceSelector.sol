@@ -30,6 +30,6 @@ library ResourceSelector {
    * Convert a selector to a string for more readable logs
    */
   function toString(bytes32 resourceSelector) internal pure returns (string memory) {
-    return string(abi.encodePacked(getNamespace(selector), "/", getFile(selector)));
+    return string(abi.encodePacked(getNamespace(resourceSelector), "/", getFile(resourceSelector)));
   }
 }

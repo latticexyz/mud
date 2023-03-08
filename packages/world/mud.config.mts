@@ -32,16 +32,6 @@ const config: StoreUserConfig = {
         resourceSelector: SchemaType.BYTES32,
       },
     },
-    RouteAccess: {
-      primaryKeys: {
-        routeId: SchemaType.UINT256,
-        caller: SchemaType.ADDRESS,
-      },
-      schema: {
-        value: SchemaType.BOOL,
-      },
-      storeArgument: true,
-    },
     Systems: {
       primaryKeys: {
         resourceSelector: SchemaType.BYTES32,
@@ -53,6 +43,14 @@ const config: StoreUserConfig = {
       storeArgument: true,
       dataStruct: false,
     },
+    // Bool: {
+    //   primaryKeys: {},
+    //   schema: {
+    //     value: SchemaType.BOOL,
+    //   },
+    //   storeArgument: true, // TODO Add support for store argument in setter function to table autogen
+    //   tableIdArgument: true,
+    // },
   },
 };
 

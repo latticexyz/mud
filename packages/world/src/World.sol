@@ -19,8 +19,8 @@ bytes16 constant ROOT_NAMESPACE = 0;
 bytes16 constant ROOT_FILE = 0;
 
 contract World is Store {
-  error NamespaceExists(string namespace);
-  error AccessDenied(string namespace, address caller);
+  error ResourceExists(string resource);
+  error AccessDenied(string resource, address caller);
   error InvalidSelector(bytes32 selector);
   error SystemExists(address system);
 
@@ -48,7 +48,7 @@ contract World is Store {
     // Require namespace to not exist yet
     // TODO: This does not allow burning access to namespaces because someone else could re-register the namespace,
     // so we need to add another table (Eg a ResourceTable)
-    if (NamespaceOwner.get(namespace) != address(0)) revert NamespaceExists(ResourceSelector.toString(namespace));
+    if (NamespaceOwner.get(namespace) != address(0)) revert ResourceExists(ResourceSelector.toString(namespace));
 
     // Register caller as the namespace owner
     NamespaceOwner.set({ namespace: namespace, owner: msg.sender });
@@ -143,6 +143,8 @@ contract World is Store {
 
     // Register namespace if it doesn't exist yet, otherwise require caller to own the namespace
     _registerNamespaceOrRequireOwner(namespace);
+
+    // TODO: require no file at the given selector yet
 
     resourceSelector = ResourceSelector.from(namespace, file);
 
@@ -304,7 +306,12 @@ contract World is Store {
    * Register metadata (tableName, fieldNames) for the table at the given namespace and file.
    * Requires the caller to own the namespace.
    */
-  function setMetadata(bytes16 namespace, bytes16 file, string[] calldata fieldNames) public virtual {
+  function setMetadata(
+    bytes16 namespace,
+    bytes16 file,
+    string calldata tableName,
+    string[] calldata fieldNames
+  ) public virtual {
     bytes32 resourceSelector = ResourceSelector.from(namespace, file);
 
     // Require caller to own the namespace
