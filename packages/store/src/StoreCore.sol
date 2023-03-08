@@ -38,11 +38,13 @@ library StoreCore {
     registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
 
     // Register other internal tables
+    //
+    // For hooks and metadata tables, we need to register the schemas first and
+    // then their metadata. This is because setMetadata (a store set record)
+    // triggers a hook call, which uses getField, which will fail if the schema
+    // is not registered yet.
     Hooks.registerSchema();
     StoreMetadata.registerSchema();
-    // Then set their table metadata. If this is done before `registerSchema`,
-    // then downstream validation will fail due to `StoreMetadata` and `Hooks`
-    // loosely depending on one another (by way of `StoreCore` internals).
     Hooks.setMetadata();
     StoreMetadata.setMetadata();
   }
@@ -89,11 +91,7 @@ library StoreCore {
   /**
    * Set metadata for a given table
    */
-  function setMetadata(
-    uint256 table,
-    string memory tableName,
-    string[] memory fieldNames
-  ) internal {
+  function setMetadata(uint256 table, string memory tableName, string[] memory fieldNames) internal {
     Schema schema = getSchema(table);
 
     // Verify the number of field names corresponds to the schema length
@@ -127,11 +125,7 @@ library StoreCore {
   /**
    * Set full data record for the given table and key tuple (static and dynamic data)
    */
-  function setRecord(
-    uint256 table,
-    bytes32[] memory key,
-    bytes memory data
-  ) internal {
+  function setRecord(uint256 table, bytes32[] memory key, bytes memory data) internal {
     // verify the value has the correct length for the table (based on the table's schema)
     // to prevent invalid data from being stored
     Schema schema = getSchema(table);
@@ -197,12 +191,7 @@ library StoreCore {
     }
   }
 
-  function setField(
-    uint256 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data
-  ) internal {
+  function setField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) internal {
     Schema schema = getSchema(table);
 
     // Emit event to notify indexers
@@ -264,11 +253,7 @@ library StoreCore {
   /**
    * Get full record (all fields, static and dynamic data) for the given table and key tuple, with the given schema
    */
-  function getRecord(
-    uint256 table,
-    bytes32[] memory key,
-    Schema schema
-  ) internal view returns (bytes memory) {
+  function getRecord(uint256 table, bytes32[] memory key, Schema schema) internal view returns (bytes memory) {
     // Get the static data length
     uint256 staticLength = schema.staticDataLength();
     uint256 outputLength = staticLength;
@@ -317,11 +302,7 @@ library StoreCore {
   /**
    * Get a single field from the given table and key tuple (loading schema from storage)
    */
-  function getField(
-    uint256 table,
-    bytes32[] memory key,
-    uint8 schemaIndex
-  ) internal view returns (bytes memory) {
+  function getField(uint256 table, bytes32[] memory key, uint8 schemaIndex) internal view returns (bytes memory) {
     Schema schema = getSchema(table);
     return getField(table, key, schemaIndex, schema);
   }
@@ -424,11 +405,7 @@ library StoreCoreInternal {
   /**
    * Get full static record for the given table and key tuple (loading schema's static length from storage)
    */
-  function _getStaticData(
-    uint256 table,
-    bytes32[] memory key,
-    uint256 memoryPointer
-  ) internal view {
+  function _getStaticData(uint256 table, bytes32[] memory key, uint256 memoryPointer) internal view {
     Schema schema = _getSchema(table);
     _getStaticData(table, key, schema.staticDataLength(), memoryPointer);
   }
@@ -436,12 +413,7 @@ library StoreCoreInternal {
   /**
    * Get full static data for the given table and key tuple, with the given static length
    */
-  function _getStaticData(
-    uint256 table,
-    bytes32[] memory key,
-    uint256 length,
-    uint256 memoryPointer
-  ) internal view {
+  function _getStaticData(uint256 table, bytes32[] memory key, uint256 length, uint256 memoryPointer) internal view {
     if (length == 0) return;
 
     // Load the data from storage
