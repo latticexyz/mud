@@ -150,13 +150,7 @@ library Mixed {
   }
 
   /** Set the full data using individual values */
-  function set(
-    bytes32 key,
-    uint32 u32,
-    uint128 u128,
-    uint32[] memory a32,
-    string memory s
-  ) internal {
+  function set(bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
     uint16[] memory _counters = new uint16[](2);
     _counters[0] = uint16(a32.length * 4);
     _counters[1] = uint16(bytes(s).length);

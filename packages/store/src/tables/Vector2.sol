@@ -86,11 +86,7 @@ library Vector2 {
   }
 
   /** Set the full data using individual values */
-  function set(
-    bytes32 key,
-    uint32 x,
-    uint32 y
-  ) internal {
+  function set(bytes32 key, uint32 x, uint32 y) internal {
     bytes memory _data = abi.encodePacked(x, y);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
