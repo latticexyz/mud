@@ -318,7 +318,7 @@ contract World is Store {
     if (NamespaceOwner.get(namespace) != msg.sender)
       revert AccessDenied(ResourceSelector.toString(resourceSelector), msg.sender);
 
-    setMetadata(uint256(resourceSelector), tableName, fieldNames);
+    StoreCore.setMetadata(uint256(resourceSelector), tableName, fieldNames);
   }
 
   /**
