@@ -113,11 +113,10 @@ library StoreMetadata {
   }
 
   /** Get abiEncodedFieldNames from the specified store */
-  function getAbiEncodedFieldNames(IStore _store, uint256 tableId)
-    internal
-    view
-    returns (bytes memory abiEncodedFieldNames)
-  {
+  function getAbiEncodedFieldNames(
+    IStore _store,
+    uint256 tableId
+  ) internal view returns (bytes memory abiEncodedFieldNames) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
 
     _primaryKeys[0] = bytes32(uint256(tableId));
@@ -167,11 +166,7 @@ library StoreMetadata {
   }
 
   /** Set the full data using individual values */
-  function set(
-    uint256 tableId,
-    string memory tableName,
-    bytes memory abiEncodedFieldNames
-  ) internal {
+  function set(uint256 tableId, string memory tableName, bytes memory abiEncodedFieldNames) internal {
     uint16[] memory _counters = new uint16[](2);
     _counters[0] = uint16(bytes(tableName).length);
     _counters[1] = uint16(bytes(abiEncodedFieldNames).length);
