@@ -33,6 +33,14 @@ interface IStore {
     bytes calldata data
   ) external;
 
+  // Push encoded items to the dynamic field at schema index
+  function pushToField(
+    uint256 table,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata dataToPush
+  ) external;
+
   // Register hooks to be called when a record or field is set or deleted
   function registerStoreHook(uint256 table, IStoreHook hooks) external;
 
