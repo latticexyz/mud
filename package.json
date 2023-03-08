@@ -44,7 +44,8 @@
     "jq-cli-wrapper": "^1.6.1",
     "lerna": "^4.0.0",
     "lint-staged": ">=10",
-    "prettier": "^2.6.2",
+    "prettier": "^2.8.4",
+    "prettier-plugin-solidity": "^1.1.2",
     "retypeapp": "^2.4.0",
     "rimraf": "^3.0.2",
     "run-pty": "^3.0.0",
@@ -74,7 +75,8 @@
     "yalc:reset": "yarn entry:src",
     "entry:dist": "yarn lerna run prepack",
     "entry:src": "yarn lerna run postpack",
-    "gas-report": "yarn workspace @latticexyz/store run gas-report && yarn workspace @latticexyz/world run gas-report"
+    "gas-report": "yarn workspace @latticexyz/store run gas-report && yarn workspace @latticexyz/world run gas-report",
+    "tablegen": "yarn workspace @latticexyz/store run tablegen && yarn workspace @latticexyz/world run tablegen"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",

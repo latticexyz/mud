@@ -1,3 +1,4 @@
+import { ethers } from "ethers";
 import { ZodIssueCode, RefinementCtx } from "zod";
 
 export function validateName(name: string, ctx: RefinementCtx) {
@@ -27,6 +28,30 @@ export function validateUncapitalizedName(name: string, ctx: RefinementCtx) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
       message: `Name must start with a lowercase letter`,
+    });
+  }
+}
+
+// validates only the enum array, not the names of enum members
+export function validateEnum(members: string[], ctx: RefinementCtx) {
+  if (members.length === 0) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Enum must not be empty`,
+    });
+  }
+  if (members.length >= 256) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Length of enum must be < 256`,
+    });
+  }
+
+  const duplicates = getDuplicates(members);
+  if (duplicates.length > 0) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Enum must not have duplicate names for: ${duplicates.join(", ")}`,
     });
   }
 }
@@ -90,3 +115,24 @@ export const validateRoute = _factoryForValidateRoute(true, false);
 export const validateBaseRoute = _factoryForValidateRoute(false, false);
 
 export const validateSingleLevelRoute = _factoryForValidateRoute(true, true);
+
+export function validateEthereumAddress(address: string, ctx: RefinementCtx) {
+  if (!ethers.utils.isAddress(address)) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Address must be a valid Ethereum address`,
+    });
+  }
+}
+
+export function getDuplicates<T>(array: T[]) {
+  const checked = new Set<T>();
+  const duplicates = new Set<T>();
+  for (const element of array) {
+    if (checked.has(element)) {
+      duplicates.add(element);
+    }
+    checked.add(element);
+  }
+  return [...duplicates];
+}
