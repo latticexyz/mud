@@ -44,6 +44,16 @@ contract StoreCoreTest is Test, StoreView {
     StoreCore.setField(table, key, schemaIndex, data);
   }
 
+  // Expose an external pushToField function for testing purposes of indexers (see testHooks)
+  function pushToField(
+    uint256 table,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata dataToPush
+  ) public override {
+    StoreCore.pushToField(table, key, schemaIndex, dataToPush);
+  }
+
   // Expose an external deleteRecord function for testing purposes of indexers (see testHooks)
   function deleteRecord(uint256 table, bytes32[] calldata key) public override {
     StoreCore.deleteRecord(table, key);
@@ -537,6 +547,111 @@ contract StoreCoreTest is Test, StoreView {
     // Verify data is deleted
     loadedData = StoreCore.getRecord(table, key);
     assertEq(keccak256(loadedData), keccak256(new bytes(schema.staticDataLength())));
+  }
+
+  function testPushToField() public {
+    uint256 table = uint256(keccak256("some.table"));
+
+    {
+      // Register table's schema
+      Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
+      StoreCore.registerSchema(table, schema);
+    }
+
+    // Create key
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = bytes32("some.key");
+
+    // Create data
+    bytes32 firstDataBytes = keccak256("some data");
+    bytes memory secondDataBytes;
+    {
+      uint32[] memory secondData = new uint32[](2);
+      secondData[0] = 0x11121314;
+      secondData[1] = 0x15161718;
+      secondDataBytes = EncodeArray.encode(secondData);
+    }
+    bytes memory thirdDataBytes;
+    {
+      uint32[] memory thirdData = new uint32[](3);
+      thirdData[0] = 0x191a1b1c;
+      thirdData[1] = 0x1d1e1f20;
+      thirdData[2] = 0x21222324;
+      thirdDataBytes = EncodeArray.encode(thirdData);
+    }
+
+    // Set fields
+    StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes));
+    StoreCore.setField(table, key, 1, secondDataBytes);
+    // Initialize a field with push
+    StoreCore.pushToField(table, key, 2, thirdDataBytes);
+
+    // Create data to push
+    bytes memory secondDataToPush;
+    {
+      uint32[] memory secondData = new uint32[](1);
+      secondData[0] = 0x25262728;
+      secondDataToPush = EncodeArray.encode(secondData);
+    }
+    bytes memory newSecondDataBytes = abi.encodePacked(secondDataBytes, secondDataToPush);
+
+    // Expect a StoreSetField event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit StoreSetField(table, key, 1, newSecondDataBytes);
+
+    // Push to second field
+    // !gasreport push to field (1 slot, 1 uint32 item)
+    StoreCore.pushToField(table, key, 1, secondDataToPush);
+
+    // Get second field
+    bytes memory loadedData = StoreCore.getField(table, key, 1);
+
+    // Verify loaded data is correct
+    assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint32().length, 2 + 1);
+    assertEq(loadedData.length, newSecondDataBytes.length);
+    assertEq(loadedData, newSecondDataBytes);
+
+    // Verify none of the other fields were impacted
+    assertEq(bytes32(StoreCore.getField(table, key, 0)), firstDataBytes);
+    assertEq(StoreCore.getField(table, key, 2), thirdDataBytes);
+
+    // Create data to push
+    bytes memory thirdDataToPush;
+    {
+      uint32[] memory thirdData = new uint32[](10);
+      thirdData[0] = 0x12345678;
+      thirdData[1] = 0x9abcdef0;
+      thirdData[2] = 0x12345678;
+      thirdData[3] = 0x9abcdef0;
+      thirdData[4] = 0x12345678;
+      thirdData[5] = 0x9abcdef0;
+      thirdData[6] = 0x12345678;
+      thirdData[7] = 0x9abcdef0;
+      thirdData[8] = 0x12345678;
+      thirdData[9] = 0x9abcdef0;
+      thirdDataToPush = EncodeArray.encode(thirdData);
+    }
+    bytes memory newThirdDataBytes = abi.encodePacked(thirdDataBytes, thirdDataToPush);
+
+    // Expect a StoreSetField event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit StoreSetField(table, key, 2, newThirdDataBytes);
+
+    // Push to third field
+    // !gasreport push to field (2 slots, 10 uint32 items)
+    StoreCore.pushToField(table, key, 2, thirdDataToPush);
+
+    // Get third field
+    loadedData = StoreCore.getField(table, key, 2);
+
+    // Verify loaded data is correct
+    assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint32().length, 3 + 10);
+    assertEq(loadedData.length, newThirdDataBytes.length);
+    assertEq(loadedData, newThirdDataBytes);
+
+    // Verify none of the other fields were impacted
+    assertEq(bytes32(StoreCore.getField(table, key, 0)), firstDataBytes);
+    assertEq(StoreCore.getField(table, key, 1), newSecondDataBytes);
   }
 
   function testAccessEmptyData() public {
