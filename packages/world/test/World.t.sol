@@ -164,13 +164,7 @@ contract WorldTest is Test {
     assertEq(world.getSchema(uint256(tableSelector)).unwrap(), schema.unwrap(), "schema should be registered");
 
     // Expect an error when registering an existing table
-    vm.expectRevert(
-      abi.encodeWithSelector(
-        StoreCore.StoreCore_TableAlreadyExists.selector,
-        uint256(tableSelector),
-        string(abi.encodePacked(tableSelector))
-      )
-    );
+    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, ResourceSelector.toString(tableSelector)));
     world.registerTable(namespace, table, schema);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
@@ -252,14 +246,33 @@ contract WorldTest is Test {
     // Expect an error when registering a system at an existing resource selector
     System newSystem = new System();
 
-    // // TODO: Prevent registration of a system at an existing resource selector
-    // // vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, ResourceSelector.toString(resourceSelector)));
+    // Expect an error when registering a system at an existing resource selector
+    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, ResourceSelector.toString(resourceSelector)));
     resourceSelector = world.registerSystem("", "testSystem", newSystem, true);
 
     // Expect an error when registering a system in a namespace is not owned by the caller
     System yetAnotherSystem = new System();
     _expectAccessDenied(address(0x01), "", "");
     world.registerSystem("", "rootSystem", yetAnotherSystem, true);
+  }
+
+  function testDuplicateSelectors() public {
+    // Register a new table
+    bytes32 resourceSelector = world.registerTable("namespace", "file", Bool.getSchema());
+
+    // Deploy a new system
+    System system = new System();
+
+    // Expect an error when trying to register a system at the same selector
+    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, ResourceSelector.toString(resourceSelector)));
+    world.registerSystem("namespace", "file", system, false);
+
+    // Register a new system
+    resourceSelector = world.registerSystem("namespace2", "file", new System(), false);
+
+    // Expect an error when trying to register a table at the same selector
+    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, ResourceSelector.toString(resourceSelector)));
+    world.registerTable("namespace2", "file", Bool.getSchema());
   }
 
   function testGrantAccess() public {

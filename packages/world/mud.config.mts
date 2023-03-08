@@ -14,7 +14,7 @@ const config: StoreUserConfig = {
     },
     ResourceAccess: {
       primaryKeys: {
-        selector: SchemaType.BYTES32,
+        resourceSelector: SchemaType.BYTES32,
         caller: SchemaType.ADDRESS,
       },
       schema: {
@@ -41,6 +41,14 @@ const config: StoreUserConfig = {
       storeArgument: true,
       dataStruct: false,
     },
+    ResourceType: {
+      primaryKeys: {
+        resourceSelector: SchemaType.BYTES32,
+      },
+      schema: {
+        resourceType: "Resource",
+      },
+    },
     // Bool: {
     // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
     //   primaryKeys: {},
@@ -55,6 +63,11 @@ const config: StoreUserConfig = {
       schema: { value: SchemaType.ADDRESS_ARRAY },
       storeArgument: true,
       tableIdArgument: true,
+    },
+  },
+  userTypes: {
+    enums: {
+      Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
     },
   },
 };

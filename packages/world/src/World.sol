@@ -9,9 +9,11 @@ import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { System } from "./System.sol";
 import { ISystemHook } from "./ISystemHook.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
+import { Resource } from "./types.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { ResourceAccess } from "./tables/ResourceAccess.sol";
+import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
 import { Systems } from "./tables/Systems.sol";
 
@@ -25,14 +27,26 @@ contract World is Store {
   error SystemExists(address system);
 
   constructor() {
+    // Register internal tables
     NamespaceOwner.registerSchema();
+    NamespaceOwner.setMetadata();
+
     ResourceAccess.registerSchema();
+    ResourceAccess.setMetadata();
+
+    ResourceType.registerSchema();
+    ResourceType.setMetadata();
+
     SystemRegistry.registerSchema();
+    SystemRegistry.setMetadata();
+
     Systems.registerSchema();
+    Systems.setMetadata();
 
     // Register the root namespace and give ownership to msg.sender
-    NamespaceOwner.set({ namespace: ROOT_NAMESPACE, owner: msg.sender });
-    ResourceAccess.set({ selector: ROOT_NAMESPACE, caller: msg.sender, access: true });
+    ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
+    NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
+    ResourceAccess.set(ROOT_NAMESPACE, msg.sender, true);
   }
 
   /************************************************************************
@@ -46,9 +60,10 @@ contract World is Store {
    */
   function registerNamespace(bytes16 namespace) public virtual {
     // Require namespace to not exist yet
-    // TODO: This does not allow burning access to namespaces because someone else could re-register the namespace,
-    // so we need to add another table (Eg a ResourceTable)
-    if (NamespaceOwner.get(namespace) != address(0)) revert ResourceExists(ResourceSelector.toString(namespace));
+    if (ResourceType.get(namespace) != Resource.NONE) revert ResourceExists(ResourceSelector.toString(namespace));
+
+    // Register namespace resource
+    ResourceType.set(namespace, Resource.NAMESPACE);
 
     // Register caller as the namespace owner
     NamespaceOwner.set({ namespace: namespace, owner: msg.sender });
@@ -65,13 +80,23 @@ contract World is Store {
     bytes16 file,
     Schema schema
   ) public virtual returns (bytes32 resourceSelector) {
-    // Require the file selector to not be the root file
+    // Require the file selector to not be the namespace's root file
     if (file == ROOT_FILE) revert InvalidSelector(file);
 
-    // Register namespace if it doesn't exist yet, otherwise require caller to own the namespace
-    _registerNamespaceOrRequireOwner(namespace);
+    // If the namespace doesn't exist yet, register it
+    // otherwise require caller to own the namespace
+    if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
+    else _requireOwner(namespace, ROOT_FILE, msg.sender);
 
     resourceSelector = ResourceSelector.from(namespace, file);
+
+    // Require no resource to exist at this selector yet
+    if (ResourceType.get(resourceSelector) != Resource.NONE) {
+      revert ResourceExists(ResourceSelector.toString(resourceSelector));
+    }
+
+    // Store the table resource type
+    ResourceType.set(resourceSelector, Resource.TABLE);
 
     // StoreCore handles checking for existence of this table
     StoreCore.registerSchema(uint256(resourceSelector), schema);
@@ -132,18 +157,26 @@ contract World is Store {
     System system,
     bool publicAccess
   ) public virtual returns (bytes32 resourceSelector) {
-    // Require the file selector to not be the root file
+    // Require the file selector to not be the namespace's root file
     if (file == ROOT_FILE) revert InvalidSelector(file);
 
     // Require the system to not exist yet
     if (SystemRegistry.get(address(system)) != 0) revert SystemExists(address(system));
 
-    // Register namespace if it doesn't exist yet, otherwise require caller to own the namespace
-    _registerNamespaceOrRequireOwner(namespace);
-
-    // TODO: require no file at the given selector yet
+    // If the namespace doesn't exist yet, register it
+    // otherwise require caller to own the namespace
+    if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
+    else _requireOwner(namespace, ROOT_FILE, msg.sender);
 
     resourceSelector = ResourceSelector.from(namespace, file);
+
+    // Require no resource to exist at this selector yet
+    if (ResourceType.get(resourceSelector) != Resource.NONE) {
+      revert ResourceExists(ResourceSelector.toString(resourceSelector));
+    }
+
+    // Store the system resource type
+    ResourceType.set(resourceSelector, Resource.SYSTEM);
 
     // Systems = mapping from resourceSelector to system address and publicAccess
     Systems.set(resourceSelector, address(system), publicAccess);
