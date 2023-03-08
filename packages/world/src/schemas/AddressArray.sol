@@ -36,11 +36,7 @@ library AddressArraySchemaLib {
   }
 
   /** Set the table's data */
-  function set(
-    uint256 tableId,
-    bytes32 key,
-    address[] memory addresses
-  ) internal {
+  function set(uint256 tableId, bytes32 key, address[] memory addresses) internal {
     bytes memory data = EncodeArray.encode(addresses);
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
@@ -50,11 +46,7 @@ library AddressArraySchemaLib {
   /**
    * Push an element to the addresses array
    */
-  function push(
-    uint256 tableId,
-    bytes32 key,
-    address addr
-  ) internal {
+  function push(uint256 tableId, bytes32 key, address addr) internal {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     StoreSwitch.pushToField(tableId, keyTuple, 0, abi.encodePacked(addr));
@@ -68,11 +60,7 @@ library AddressArraySchemaLib {
     return decode(blob);
   }
 
-  function get(
-    uint256 tableId,
-    IStore store,
-    bytes32 key
-  ) internal view returns (address[] memory addresses) {
+  function get(uint256 tableId, IStore store, bytes32 key) internal view returns (address[] memory addresses) {
     bytes32[] memory keyTuple = new bytes32[](1);
     keyTuple[0] = key;
     bytes memory blob = store.getRecord(tableId, keyTuple);

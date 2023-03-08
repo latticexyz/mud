@@ -36,9 +36,25 @@ library Mixed {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get the table's metadata */
+  function getMetadata() internal pure returns (string memory, string[] memory) {
+    string[] memory _fieldNames = new string[](4);
+    _fieldNames[0] = "u32";
+    _fieldNames[1] = "u128";
+    _fieldNames[2] = "a32";
+    _fieldNames[3] = "s";
+    return ("Mixed", _fieldNames);
+  }
+
   /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
+  }
+
+  /** Set the table's metadata */
+  function setMetadata() internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get u32 */

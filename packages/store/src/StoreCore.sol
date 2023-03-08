@@ -12,6 +12,7 @@ import { Slice } from "./Slice.sol";
 import { Hooks, HooksTableId } from "./tables/Hooks.sol";
 import { StoreMetadata } from "./tables/StoreMetadata.sol";
 import { IStoreHook } from "./IStore.sol";
+import { StoreSwitch } from "./StoreSwitch.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
@@ -37,8 +38,15 @@ library StoreCore {
     registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
 
     // Register other internal tables
+    //
+    // For hooks and metadata tables, we need to register the schemas first and
+    // then their metadata. This is because setMetadata (a store set record)
+    // triggers a hook call, which uses getField, which will fail if the schema
+    // is not registered yet.
     Hooks.registerSchema();
     StoreMetadata.registerSchema();
+    Hooks.setMetadata();
+    StoreMetadata.setMetadata();
   }
 
   /************************************************************************
@@ -48,10 +56,20 @@ library StoreCore {
    ************************************************************************/
 
   /**
+   * Get the schema for the given table
+   */
+  function getSchema(uint256 table) internal view returns (Schema schema) {
+    schema = StoreCoreInternal._getSchema(table);
+    if (schema.isEmpty()) {
+      revert StoreCore_TableNotFound(table);
+    }
+  }
+
+  /**
    * Check if the given table exists
    */
   function hasTable(uint256 table) internal view returns (bool) {
-    return !getSchema(table).isEmpty();
+    return !StoreCoreInternal._getSchema(table).isEmpty();
   }
 
   /**
@@ -71,17 +89,9 @@ library StoreCore {
   }
 
   /**
-   * Get the schema for the given table
-   */
-  function getSchema(uint256 table) internal view returns (Schema schema) {
-    return StoreCoreInternal._getSchema(table);
-  }
-
-  /**
    * Set metadata for a given table
    */
   function setMetadata(uint256 table, string memory tableName, string[] memory fieldNames) internal {
-    // Get schema of the given table
     Schema schema = getSchema(table);
 
     // Verify the number of field names corresponds to the schema length
@@ -226,12 +236,7 @@ library StoreCore {
     Storage.store({ storagePointer: dynamicDataLengthLocation, data: bytes32(0) });
   }
 
-  function pushToField(
-    uint256 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory dataToPush
-  ) internal {
+  function pushToField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory dataToPush) internal {
     Schema schema = getSchema(table);
 
     if (schemaIndex < schema.numStaticFields()) {
@@ -267,10 +272,7 @@ library StoreCore {
    * Get full record (all fields, static and dynamic data) for the given table and key tuple (loading schema from storage)
    */
   function getRecord(uint256 table, bytes32[] memory key) internal view returns (bytes memory) {
-    // Get schema for this table
     Schema schema = getSchema(table);
-    if (schema.isEmpty()) revert StoreCore_TableNotFound(table);
-
     return getRecord(table, key, schema);
   }
 
@@ -393,8 +395,9 @@ library StoreCoreInternal {
   ) internal {
     // verify the value has the correct length for the field
     SchemaType schemaType = schema.atIndex(schemaIndex);
-    if (schemaType.getStaticByteLength() != data.length)
+    if (schemaType.getStaticByteLength() != data.length) {
       revert StoreCore.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
+    }
 
     // Store the provided value in storage
     uint256 location = _getStaticDataLocation(table, key);

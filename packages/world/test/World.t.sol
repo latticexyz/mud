@@ -40,10 +40,10 @@ contract WorldTestSystem is System {
     revert WorldTestSystemError(input);
   }
 
-  function delegateCallSubSystem(address subSystem, bytes memory funcSelectorAndCalldata)
-    public
-    returns (bytes memory)
-  {
+  function delegateCallSubSystem(
+    address subSystem,
+    bytes memory funcSelectorAndCalldata
+  ) public returns (bytes memory) {
     (bool success, bytes memory returndata) = subSystem.delegatecall(funcSelectorAndCalldata);
     if (!success) {
       assembly {
@@ -53,11 +53,7 @@ contract WorldTestSystem is System {
     return returndata;
   }
 
-  function writeData(
-    string calldata accessRoute,
-    string calldata subRoute,
-    bool data
-  ) public {
+  function writeData(string calldata accessRoute, string calldata subRoute, bool data) public {
     bytes32[] memory key = new bytes32[](1);
     key[0] = "testKey";
 
@@ -81,20 +77,11 @@ contract WorldTestSystem is System {
 contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
-  function onSetRecord(
-    uint256 table,
-    bytes32[] memory key,
-    bytes memory data
-  ) public {
+  function onSetRecord(uint256 table, bytes32[] memory key, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, data));
   }
 
-  function onSetField(
-    uint256 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data
-  ) public {
+  function onSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, schemaIndex, data));
   }
 

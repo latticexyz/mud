@@ -26,21 +26,12 @@ contract StoreCoreTest is Test, StoreView {
   mapping(uint256 => bytes) private testMapping;
 
   // Expose an external setRecord function for testing purposes of indexers (see testHooks)
-  function setRecord(
-    uint256 table,
-    bytes32[] calldata key,
-    bytes calldata data
-  ) public override {
+  function setRecord(uint256 table, bytes32[] calldata key, bytes calldata data) public override {
     StoreCore.setRecord(table, key, data);
   }
 
   // Expose an external setField function for testing purposes of indexers (see testHooks)
-  function setField(
-    uint256 table,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    bytes calldata data
-  ) public override {
+  function setField(uint256 table, bytes32[] calldata key, uint8 schemaIndex, bytes calldata data) public override {
     StoreCore.setField(table, key, schemaIndex, data);
   }
 
@@ -780,21 +771,12 @@ contract MirrorSubscriber is IStoreHook {
     _table = table;
   }
 
-  function onSetRecord(
-    uint256 table,
-    bytes32[] memory key,
-    bytes memory data
-  ) public {
+  function onSetRecord(uint256 table, bytes32[] memory key, bytes memory data) public {
     if (table != table) revert("invalid table");
     StoreSwitch.setRecord(indexerTableId, key, data);
   }
 
-  function onSetField(
-    uint256 table,
-    bytes32[] memory key,
-    uint8 schemaIndex,
-    bytes memory data
-  ) public {
+  function onSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     if (table != table) revert("invalid table");
     StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
   }

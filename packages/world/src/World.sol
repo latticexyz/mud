@@ -358,11 +358,10 @@ contract World is Store {
    * and return `tableRouteId` for `accessRoute/subRoute`
    * because access to a route also grants access to all sub routes.
    */
-  function _verifiedTableRouteId(string calldata accessRoute, string calldata subRoute)
-    internal
-    view
-    returns (uint256 tableRouteId)
-  {
+  function _verifiedTableRouteId(
+    string calldata accessRoute,
+    string calldata subRoute
+  ) internal view returns (uint256 tableRouteId) {
     // Require access to accessRoute
     if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
 

@@ -52,9 +52,22 @@ library ${libraryName} {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get the table's metadata */
+  function getMetadata() internal pure returns (string memory, string[] memory) {
+    string[] memory _fieldNames = new string[](${fields.length});
+    ${renderList(fields, (field, index) => `_fieldNames[${index}] = "${field.name}";`)}
+    return ("${libraryName}", _fieldNames);
+  }
+
   /** Register the table's schema */
   function registerSchema(${_typedTableId}) internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
+  }
+
+  /** Set the table's metadata */
+  function setMetadata(${_typedTableId}) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
 ${
@@ -64,6 +77,12 @@ ${
   /** Register the table's schema for the specified store */
   function registerSchema(${renderArguments([_typedTableId, "IStore _store"])}) internal {
     _store.registerSchema(_tableId, getSchema());
+  }
+
+  /** Set the table's metadata for the specified store */
+  function setMetadata(${renderArguments([_typedTableId, "IStore _store"])}) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 `
 }
