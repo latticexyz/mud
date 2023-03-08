@@ -3,7 +3,6 @@ import { z } from "zod";
 import {
   validateBaseRoute,
   validateCapitalizedName,
-  validateDirectory,
   validateEthereumAddress,
   validateEnum,
   validateName,
