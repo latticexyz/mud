@@ -83,7 +83,16 @@ library Table1 {
   }
 
   /** Set v1 */
-  function setV1(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, uint256 v1) internal {
+  function setV1(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum1 k6,
+    Enum2 k7,
+    uint256 v1
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
 
     _primaryKeys[0] = bytes32(uint256((k1)));
@@ -134,7 +143,16 @@ library Table1 {
   }
 
   /** Set v2 */
-  function setV2(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, int32 v2) internal {
+  function setV2(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum1 k6,
+    Enum2 k7,
+    int32 v2
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
 
     _primaryKeys[0] = bytes32(uint256((k1)));
@@ -185,7 +203,16 @@ library Table1 {
   }
 
   /** Set v3 */
-  function setV3(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, bytes16 v3) internal {
+  function setV3(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum1 k6,
+    Enum2 k7,
+    bytes16 v3
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
 
     _primaryKeys[0] = bytes32(uint256((k1)));
@@ -236,7 +263,16 @@ library Table1 {
   }
 
   /** Set v4 */
-  function setV4(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, address v4) internal {
+  function setV4(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum1 k6,
+    Enum2 k7,
+    address v4
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
 
     _primaryKeys[0] = bytes32(uint256((k1)));
@@ -287,7 +323,16 @@ library Table1 {
   }
 
   /** Set v5 */
-  function setV5(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, bool v5) internal {
+  function setV5(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum1 k6,
+    Enum2 k7,
+    bool v5
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
 
     _primaryKeys[0] = bytes32(uint256((k1)));
@@ -338,7 +383,16 @@ library Table1 {
   }
 
   /** Set v6 */
-  function setV6(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, Enum1 v6) internal {
+  function setV6(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum1 k6,
+    Enum2 k7,
+    Enum1 v6
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
 
     _primaryKeys[0] = bytes32(uint256((k1)));
@@ -389,7 +443,16 @@ library Table1 {
   }
 
   /** Set v7 */
-  function setV7(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7, Enum2 v7) internal {
+  function setV7(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum1 k6,
+    Enum2 k7,
+    Enum2 v7
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
 
     _primaryKeys[0] = bytes32(uint256((k1)));
@@ -509,7 +572,15 @@ library Table1 {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7) internal {
+  function deleteRecord(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum1 k6,
+    Enum2 k7
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
 
     _primaryKeys[0] = bytes32(uint256((k1)));
