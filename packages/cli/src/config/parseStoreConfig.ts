@@ -139,7 +139,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   // Global names must be unique
   const tableNames = Object.keys(config.tables);
   const userTypeNames = Object.keys(config.userTypes.enums);
-  const globalNames = [...tableNames];
+  const globalNames = [...tableNames, ...userTypeNames];
   const duplicateGlobalNames = getDuplicates(globalNames);
   if (duplicateGlobalNames.length > 0) {
     ctx.addIssue({
