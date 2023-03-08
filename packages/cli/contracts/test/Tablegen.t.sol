@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import "forge-std/Test.sol";
+import { Test } from "forge-std/Test.sol";
 import { StoreView } from "@latticexyz/store/src/StoreView.sol";
+
 import { Table1, Table1Data } from "../src/tables/Table1.sol";
 import { Enum1, Enum2 } from "../src/types.sol";
-import { Singletons, Singleton1, Singleton2 } from "../src/prototypes/Singletons.sol";
+import { Singletons } from "../src/prototypes/Singletons.sol";
+import { Singleton1, Singleton1TableId } from "../src/tables/Singleton1.sol";
+import { Singleton2, Singleton2TableId } from "../src/tables/Singleton2.sol";
 
 contract TablegenTest is Test, StoreView {
   function testTable1SetAndGet() public {
@@ -36,6 +39,15 @@ contract TablegenTest is Test, StoreView {
     v1[1] = hex"0304";
     Singletons.create(-123, v1);
 
+    assertEq(Singleton1.get(), int256(-123));
+    assertEq(abi.encode(Singleton2.get()), abi.encode(v1));
+
     Singletons.destroy();
+
+    assertEq(Singleton1.get(), int256(0));
+    assertEq(abi.encode(Singleton2.get()), abi.encode(new bytes32[](0)));
+
+    assertEq(Singletons.getTableIds()[0], Singleton1TableId);
+    assertEq(Singletons.getTableIds()[1], Singleton2TableId);
   }
 }
