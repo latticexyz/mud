@@ -47,9 +47,28 @@ library Table1 {
     return SchemaLib.encode(_schema);
   }
 
+  /** Get the table's metadata */
+  function getMetadata() internal pure returns (string memory, string[] memory) {
+    string[] memory _fieldNames = new string[](7);
+    _fieldNames[0] = "v1";
+    _fieldNames[1] = "v2";
+    _fieldNames[2] = "v3";
+    _fieldNames[3] = "v4";
+    _fieldNames[4] = "v5";
+    _fieldNames[5] = "v6";
+    _fieldNames[6] = "v7";
+    return ("Table1", _fieldNames);
+  }
+
   /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
+  }
+
+  /** Set the table's metadata */
+  function setMetadata() internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get v1 */
