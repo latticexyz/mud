@@ -14,7 +14,7 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/world_internals/tables/RouteAccess"));
+uint256 constant _tableId = uint256(keccak256("/RouteAccess"));
 uint256 constant RouteAccessTableId = _tableId;
 
 library RouteAccess {

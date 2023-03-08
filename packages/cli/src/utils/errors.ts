@@ -29,7 +29,7 @@ export function UnrecognizedSystemErrorFactory(path: string[], systemName: strin
   return new z.ZodError([{ code: ZodIssueCode.custom, path: path, message: `Unrecognized system: "${systemName}"` }]);
 }
 
-export function logError(error: Error) {
+export function logError(error: unknown) {
   if (error instanceof ValidationError) {
     console.log(chalk.redBright(error.message));
   } else if (error instanceof ZodError) {

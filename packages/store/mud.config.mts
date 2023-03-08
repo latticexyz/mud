@@ -3,7 +3,6 @@ import { SchemaType } from "@latticexyz/schema-type";
 
 const config: StoreUserConfig = {
   storeImportPath: "../",
-  baseRoute: "/store_internals",
 
   tables: {
     Hooks: SchemaType.ADDRESS_ARRAY,
