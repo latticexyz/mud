@@ -6,6 +6,10 @@ library Utils {
     return a / b + (a % b == 0 ? 0 : 1);
   }
 
+  function toString(uint256 input) internal pure returns (string memory) {
+    return string(abi.encodePacked(input));
+  }
+
   /**
    * Adapted from https://github.com/dk1a/solidity-stringutils/blob/main/src/utils/mem.sol#L149-L167
    * @dev Left-aligned byte mask (e.g. for partial mload/mstore).

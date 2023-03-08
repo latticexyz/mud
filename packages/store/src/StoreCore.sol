@@ -12,6 +12,7 @@ import { Slice } from "./Slice.sol";
 import { Hooks, HooksTableId } from "./tables/Hooks.sol";
 import { StoreMetadata } from "./tables/StoreMetadata.sol";
 import { IStoreHook } from "./IStore.sol";
+import { Utils } from "./Utils.sol";
 
 library StoreCore {
   // note: the preimage of the tuple of keys used to index is part of the event, so it can be used by indexers
@@ -19,8 +20,8 @@ library StoreCore {
   event StoreSetField(uint256 table, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(uint256 table, bytes32[] key);
 
-  error StoreCore_TableAlreadyExists(uint256 table);
-  error StoreCore_TableNotFound(uint256 table);
+  error StoreCore_TableAlreadyExists(uint256 tableId, string tableIdString);
+  error StoreCore_TableNotFound(uint256 tableId, string tableIdString);
   error StoreCore_NotImplemented();
   error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
   error StoreCore_NoDynamicField();
@@ -63,7 +64,7 @@ library StoreCore {
 
     // Verify the schema doesn't exist yet
     if (hasTable(table)) {
-      revert StoreCore_TableAlreadyExists(table);
+      revert StoreCore_TableAlreadyExists(table, Utils.toString(table));
     }
 
     // Register the schema
@@ -239,7 +240,7 @@ library StoreCore {
   function getRecord(uint256 table, bytes32[] memory key) internal view returns (bytes memory) {
     // Get schema for this table
     Schema schema = getSchema(table);
-    if (schema.isEmpty()) revert StoreCore_TableNotFound(table);
+    if (schema.isEmpty()) revert StoreCore_TableNotFound(table, Utils.toString(table));
 
     return getRecord(table, key, schema);
   }
