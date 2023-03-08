@@ -32,9 +32,7 @@ export function renderCommonData({ staticRouteData, primaryKeys }: RenderTableOp
     bytes32[] memory _primaryKeys = new bytes32[](${primaryKeys.length});
     ${renderList(
       primaryKeys,
-      (primaryKey, index) => `
-    _primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};
-    `
+      (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
     )}
   `;
 

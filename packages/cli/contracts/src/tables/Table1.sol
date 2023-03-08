@@ -63,19 +63,12 @@ library Table1 {
     Enum2 k7
   ) internal view returns (uint256 v1) {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
@@ -94,19 +87,12 @@ library Table1 {
     uint256 v1
   ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((v1)));
@@ -123,19 +109,12 @@ library Table1 {
     Enum2 k7
   ) internal view returns (int32 v2) {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 1);
@@ -154,19 +133,12 @@ library Table1 {
     int32 v2
   ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked((v2)));
@@ -183,19 +155,12 @@ library Table1 {
     Enum2 k7
   ) internal view returns (bytes16 v3) {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 2);
@@ -214,19 +179,12 @@ library Table1 {
     bytes16 v3
   ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 2, abi.encodePacked((v3)));
@@ -243,19 +201,12 @@ library Table1 {
     Enum2 k7
   ) internal view returns (address v4) {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 3);
@@ -274,19 +225,12 @@ library Table1 {
     address v4
   ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 3, abi.encodePacked((v4)));
@@ -303,19 +247,12 @@ library Table1 {
     Enum2 k7
   ) internal view returns (bool v5) {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 4);
@@ -334,19 +271,12 @@ library Table1 {
     bool v5
   ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 4, abi.encodePacked((v5)));
@@ -363,19 +293,12 @@ library Table1 {
     Enum2 k7
   ) internal view returns (Enum1 v6) {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 5);
@@ -394,19 +317,12 @@ library Table1 {
     Enum1 v6
   ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 5, abi.encodePacked(Enum1(v6)));
@@ -423,19 +339,12 @@ library Table1 {
     Enum2 k7
   ) internal view returns (Enum2 v7) {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 6);
@@ -454,19 +363,12 @@ library Table1 {
     Enum2 v7
   ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 6, abi.encodePacked(Enum2(v7)));
@@ -483,19 +385,12 @@ library Table1 {
     Enum2 k7
   ) internal view returns (Table1Data memory _table) {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
@@ -522,19 +417,12 @@ library Table1 {
     bytes memory _data = abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
 
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
@@ -582,19 +470,12 @@ library Table1 {
     Enum2 k7
   ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
-
     _primaryKeys[0] = bytes32(uint256((k1)));
-
     _primaryKeys[1] = bytes32(uint256(uint32((k2))));
-
     _primaryKeys[2] = bytes32((k3));
-
     _primaryKeys[3] = bytes32(bytes20((k4)));
-
     _primaryKeys[4] = _boolToBytes32((k5));
-
     _primaryKeys[5] = bytes32(uint256(Enum1(k6)));
-
     _primaryKeys[6] = bytes32(uint256(Enum2(k7)));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
