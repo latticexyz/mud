@@ -92,6 +92,8 @@ contract WorldTestTableHook is IStoreHook {
 }
 
 contract WorldTest is Test {
+  using ResourceSelector for bytes32;
+
   event HookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
@@ -113,11 +115,7 @@ contract WorldTest is Test {
   function _expectAccessDenied(address caller, bytes16 namespace, bytes16 file) internal {
     vm.prank(caller);
     vm.expectRevert(
-      abi.encodeWithSelector(
-        World.AccessDenied.selector,
-        ResourceSelector.toString(ResourceSelector.from(namespace, file)),
-        caller
-      )
+      abi.encodeWithSelector(World.AccessDenied.selector, ResourceSelector.from(namespace, file).toString(), caller)
     );
   }
 
@@ -164,7 +162,7 @@ contract WorldTest is Test {
     assertEq(world.getSchema(uint256(tableSelector)).unwrap(), schema.unwrap(), "schema should be registered");
 
     // Expect an error when registering an existing table
-    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, ResourceSelector.toString(tableSelector)));
+    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, tableSelector.toString()));
     world.registerTable(namespace, table, schema);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
@@ -247,7 +245,7 @@ contract WorldTest is Test {
     System newSystem = new System();
 
     // Expect an error when registering a system at an existing resource selector
-    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, ResourceSelector.toString(resourceSelector)));
+    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, resourceSelector.toString()));
     resourceSelector = world.registerSystem("", "testSystem", newSystem, true);
 
     // Expect an error when registering a system in a namespace is not owned by the caller
@@ -264,14 +262,14 @@ contract WorldTest is Test {
     System system = new System();
 
     // Expect an error when trying to register a system at the same selector
-    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, ResourceSelector.toString(resourceSelector)));
+    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, resourceSelector.toString()));
     world.registerSystem("namespace", "file", system, false);
 
     // Register a new system
     resourceSelector = world.registerSystem("namespace2", "file", new System(), false);
 
     // Expect an error when trying to register a table at the same selector
-    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, ResourceSelector.toString(resourceSelector)));
+    vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, resourceSelector.toString()));
     world.registerTable("namespace2", "file", Bool.getSchema());
   }
 
