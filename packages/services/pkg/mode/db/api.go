@@ -1,6 +1,7 @@
 package db
 
 import (
+	"database/sql"
 	"log"
 
 	"github.com/jmoiron/sqlx"
@@ -28,6 +29,14 @@ func (dl *DatabaseLayer) GetAllTables() ([]string, error) {
 	}
 
 	return tableNames, nil
+}
+
+func (dl *DatabaseLayer) Get(result interface{}, sql string) error {
+	return dl.db.Get(result, sql)
+}
+
+func (dl *DatabaseLayer) Exec(sql string) (sql.Result, error) {
+	return dl.db.Exec(sql)
 }
 
 func (dl *DatabaseLayer) Query(sql string) (*sqlx.Rows, error) {

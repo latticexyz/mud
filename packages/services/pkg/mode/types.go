@@ -1,15 +1,22 @@
 package mode
 
-type TableSchema struct {
-	TableName     string
-	FieldNames    []string
-	SolidityTypes map[string]string // Field name -> Solidity type
-	PostgresTypes map[string]string // Field name -> Postgres type
-}
+import "latticexyz/mud/packages/services/pkg/mode/storecore"
 
 type DataSchemaTypePair struct {
 	SolidityType string `json:"solidity"`
 	PostgresType string `json:"postgres"`
+}
+
+type TableSchema struct {
+	TableName     string            `json:"name"`
+	FieldNames    []string          `json:"field_names"`
+	SolidityTypes map[string]string `json:"solidity_types"` // Field name -> Solidity type
+	PostgresTypes map[string]string `json:"postgres_types"` // Field name -> Postgres type
+
+	// Auxiliary data about the table.
+	StoreCoreSchemaTypePair storecore.SchemaTypePair `json:"store_core_schema_type_pair"`
+	PrimaryKey              string                   `json:"primary_key"`
+	ReadableName            string                   `json:"readable_name"`
 }
 
 type DataSchema struct {

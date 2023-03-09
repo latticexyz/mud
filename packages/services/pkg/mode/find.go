@@ -37,8 +37,9 @@ func (builder *FindBuilder) BuildFilter() string {
 		query.WriteString(filter.Field.TableName + "." + filter.Field.TableField)
 		query.WriteString(" ")
 		query.WriteString(filter.Operator)
-		query.WriteString(" ")
+		query.WriteString(" '")
 		query.WriteString(filter.Value)
+		query.WriteString("' ")
 
 		if idx < len(request.Filter)-1 {
 			query.WriteString(" AND ")

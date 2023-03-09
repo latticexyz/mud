@@ -7,18 +7,15 @@ import (
 
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 
-	"github.com/ethereum/go-ethereum/ethclient"
 	"go.uber.org/zap"
 )
 
 func NewQueryLayer(
-	eth *ethclient.Client,
 	dl *db.DatabaseLayer,
 	tableSchemas map[string]*mode.TableSchema,
 	logger *zap.Logger,
 ) *QueryLayer {
 	return &QueryLayer{
-		eth:          eth,
 		dl:           dl,
 		tableSchemas: tableSchemas,
 		logger:       logger,

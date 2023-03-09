@@ -66,6 +66,26 @@ message JoinRequest {
     repeated FindRequest children = 2;
 }
 
+message DeleteRequest {
+    string from = 1;
+    repeated Filter filter = 2; 
+}
+
+message UpdateRequest {
+    string target = 1;
+    repeated Filter filter = 2;
+    map<string, string> row = 3;
+}
+
+message InsertRequest {
+    string into = 1;
+    map<string, string> row = 3; 
+}
+
+message CreateRequest {
+    string name = 1;
+}
+
 message Filter {
     Field field = 1;
     string operator = 2;
