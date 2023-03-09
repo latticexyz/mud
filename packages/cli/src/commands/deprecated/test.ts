@@ -37,8 +37,8 @@ const commandModule: CommandModule<Options, Options> = {
 
     process.on("SIGINT", async () => {
       console.log("\ngracefully shutting down from SIGINT (Crtl-C)");
-      await resetLibDeploy(testDir);
       child.kill();
+      await resetLibDeploy(testDir);
       process.exit();
     });
 
