@@ -16,10 +16,10 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/SystemTable"));
-uint256 constant SystemTableTableId = _tableId;
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Systems"))));
+uint256 constant SystemsTableId = _tableId;
 
-library SystemTable {
+library Systems {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
@@ -34,7 +34,7 @@ library SystemTable {
     string[] memory _fieldNames = new string[](2);
     _fieldNames[0] = "system";
     _fieldNames[1] = "publicAccess";
-    return ("SystemTable", _fieldNames);
+    return ("Systems", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -60,81 +60,81 @@ library SystemTable {
   }
 
   /** Get system */
-  function getSystem(uint256 routeId) internal view returns (address system) {
+  function getSystem(bytes32 resourceSelector) internal view returns (address system) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return (address(Bytes.slice20(_blob, 0)));
   }
 
   /** Get system from the specified store */
-  function getSystem(IStore _store, uint256 routeId) internal view returns (address system) {
+  function getSystem(IStore _store, bytes32 resourceSelector) internal view returns (address system) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
     return (address(Bytes.slice20(_blob, 0)));
   }
 
   /** Set system */
-  function setSystem(uint256 routeId, address system) internal {
+  function setSystem(bytes32 resourceSelector, address system) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((system)));
   }
 
   /** Get publicAccess */
-  function getPublicAccess(uint256 routeId) internal view returns (bool publicAccess) {
+  function getPublicAccess(bytes32 resourceSelector) internal view returns (bool publicAccess) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 1);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
   /** Get publicAccess from the specified store */
-  function getPublicAccess(IStore _store, uint256 routeId) internal view returns (bool publicAccess) {
+  function getPublicAccess(IStore _store, bytes32 resourceSelector) internal view returns (bool publicAccess) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 1);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
   /** Set publicAccess */
-  function setPublicAccess(uint256 routeId, bool publicAccess) internal {
+  function setPublicAccess(bytes32 resourceSelector, bool publicAccess) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked((publicAccess)));
   }
 
   /** Get the full data */
-  function get(uint256 routeId) internal view returns (address system, bool publicAccess) {
+  function get(bytes32 resourceSelector) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
     return decode(_blob);
   }
 
   /** Get the full data from the specified store */
-  function get(IStore _store, uint256 routeId) internal view returns (address system, bool publicAccess) {
+  function get(IStore _store, bytes32 resourceSelector) internal view returns (address system, bool publicAccess) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     bytes memory _blob = _store.getRecord(_tableId, _primaryKeys);
     return decode(_blob);
   }
 
   /** Set the full data using individual values */
-  function set(uint256 routeId, address system, bool publicAccess) internal {
+  function set(bytes32 resourceSelector, address system, bool publicAccess) internal {
     bytes memory _data = abi.encodePacked(system, publicAccess);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
@@ -147,9 +147,9 @@ library SystemTable {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(uint256 routeId) internal {
+  function deleteRecord(bytes32 resourceSelector) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }

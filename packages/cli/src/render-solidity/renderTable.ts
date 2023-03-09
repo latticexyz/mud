@@ -4,7 +4,7 @@ import { renderRecordMethods } from "./record.js";
 import { RenderTableOptions } from "./types.js";
 
 export function renderTable(options: RenderTableOptions) {
-  const { imports, libraryName, structName, staticRouteData, storeImportPath, fields, withRecordMethods } = options;
+  const { imports, libraryName, structName, staticResourceData, storeImportPath, fields, withRecordMethods } = options;
 
   const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
@@ -33,11 +33,11 @@ ${
 }
 
 ${
-  !staticRouteData
+  !staticResourceData
     ? ""
     : `
-      uint256 constant _tableId = uint256(keccak256("${staticRouteData.baseRoute + staticRouteData.subRoute}"));
-      uint256 constant ${staticRouteData.tableIdName} = _tableId;
+      uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16("${staticResourceData.namespace}"), bytes16("${staticResourceData.fileSelector}"))));
+      uint256 constant ${staticResourceData.tableIdName} = _tableId;
 `
 }
 

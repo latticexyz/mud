@@ -2,9 +2,9 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import {StoreView} from "@latticexyz/store/src/StoreView.sol";
-import {Table1, Table1Data} from "../src/tables/Table1.sol";
-import {Enum1, Enum2} from "../src/types.sol";
+import { StoreView } from "@latticexyz/store/src/StoreView.sol";
+import { Table1, Table1Data } from "../src/tables/Table1.sol";
+import { Enum1, Enum2 } from "../src/types.sol";
 
 contract TablegenTest is Test, StoreView {
   function testTable1SetAndGet() public {

@@ -20,10 +20,10 @@ export function renderArguments(args: (string | undefined)[]) {
   return internalRenderList(",", filteredArgs, (arg) => arg);
 }
 
-export function renderCommonData({ staticRouteData, primaryKeys }: RenderTableOptions) {
+export function renderCommonData({ staticResourceData, primaryKeys }: RenderTableOptions) {
   // static route means static tableId as well, and no tableId arguments
-  const _tableId = staticRouteData ? "" : "_tableId";
-  const _typedTableId = staticRouteData ? "" : "uint256 _tableId";
+  const _tableId = staticResourceData ? "" : "_tableId";
+  const _typedTableId = staticResourceData ? "" : "uint256 _tableId";
 
   const _keyArgs = renderArguments(primaryKeys.map(({ name }) => name));
   const _typedKeyArgs = renderArguments(primaryKeys.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));

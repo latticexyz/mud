@@ -136,3 +136,18 @@ export function getDuplicates<T>(array: T[]) {
   }
   return [...duplicates];
 }
+
+export function validateSelector(name: string, ctx: RefinementCtx) {
+  if (name.length > 16) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Selector must be <= 16 characters`,
+    });
+  }
+  if (!/^\w*$/.test(name)) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Selector must contain only alphanumeric & underscore characters`,
+    });
+  }
+}

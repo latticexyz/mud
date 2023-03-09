@@ -73,15 +73,15 @@ export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string
     const dynamicFields = fields.filter(({ isDynamic }) => isDynamic) as RenderTableDynamicField[];
 
     // With tableIdArgument: tableId is a dynamic argument for each method
-    // Without tableIdArgument: tableId is a file-level constant generated from `staticRouteData`
-    const staticRouteData = (() => {
+    // Without tableIdArgument: tableId is a file-level constant generated from `staticResourceData`
+    const staticResourceData = (() => {
       if (tableData.tableIdArgument) {
         return;
       } else {
         return {
           tableIdName: tableName + "TableId",
-          baseRoute: config.baseRoute,
-          subRoute: tableData.route,
+          namespace: config.namespace,
+          fileSelector: tableData.fileSelector,
         };
       }
     })();
@@ -94,7 +94,7 @@ export function renderTablesFromConfig(config: StoreConfig, srcDirectory: string
         imports,
         libraryName: tableName,
         structName: withStruct ? tableName + "Data" : undefined,
-        staticRouteData,
+        staticResourceData,
         storeImportPath,
         primaryKeys,
         fields,
