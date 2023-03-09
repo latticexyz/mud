@@ -29,20 +29,24 @@ const commandModule: CommandModule<Options, Options> = {
     await generateLibDeploy(config, testDir);
 
     // Call forge test
-    await execLog("forge", [
+    const child = execLog("forge", [
       "test",
       ...(v ? ["-" + [...new Array(v)].map(() => "v").join("")] : []),
       ...(forgeOpts?.split(" ") || []),
     ]);
 
+    process.on("SIGINT", async () => {
+      console.log("\ngracefully shutting down from SIGINT (Crtl-C)");
+      await resetLibDeploy(testDir);
+      child.kill();
+      process.exit();
+    });
+
     // Reset LibDeploy.sol
     console.log("Reset LibDeploy.sol");
     await resetLibDeploy(testDir);
 
-    process.on("SIGINT", () => {
-      console.log("\ngracefully shutting down from SIGINT (Crtl-C)");
-      process.exit();
-    });
+    await child;
   },
 };
 
