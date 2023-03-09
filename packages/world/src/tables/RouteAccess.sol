@@ -40,18 +40,18 @@ library RouteAccess {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Register the table's schema for the specified store */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema());
-  }
-
-  /** Set the table's metadata for the specified store */
+  /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     _store.setMetadata(_tableId, _tableName, _fieldNames);
@@ -67,7 +67,7 @@ library RouteAccess {
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
-  /** Get value from the specified store */
+  /** Get value (using the specified store) */
   function get(IStore _store, uint256 routeId, address caller) internal view returns (bool value) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32(uint256((routeId)));
@@ -86,6 +86,15 @@ library RouteAccess {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
 
+  /** Set value (using the specified store) */
+  function set(IStore _store, uint256 routeId, address caller, bool value) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[1] = bytes32(bytes20((caller)));
+
+    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(uint256 routeId, address caller) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
@@ -93,6 +102,15 @@ library RouteAccess {
     _primaryKeys[1] = bytes32(bytes20((caller)));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, uint256 routeId, address caller) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32(uint256((routeId)));
+    _primaryKeys[1] = bytes32(bytes20((caller)));
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }
 
