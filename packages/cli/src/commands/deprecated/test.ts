@@ -35,15 +35,18 @@ const commandModule: CommandModule<Options, Options> = {
       ...(forgeOpts?.split(" ") || []),
     ]);
 
+    process.on("SIGINT", async () => {
+      console.log("\ngracefully shutting down from SIGINT (Crtl-C)");
+      child.kill();
+      await resetLibDeploy(testDir);
+      process.exit();
+    });
+
+    await child;
+    
     // Reset LibDeploy.sol
     console.log("Reset LibDeploy.sol");
     await resetLibDeploy(testDir);
-
-    process.on("SIGINT", () => {
-      console.log("\ngracefully shutting down from SIGINT (Crtl-C)");
-      child.kill();
-      process.exit();
-    });
   },
 };
 
