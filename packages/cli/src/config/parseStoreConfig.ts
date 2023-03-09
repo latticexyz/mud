@@ -284,6 +284,15 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
               ` for tables "${prototypeTableName}" and "${firstTableName}"`,
           });
         }
+        // prototypes don't support tableIdArgument
+        if (prototypeTable.tableIdArgument) {
+          ctx.addIssue({
+            code: ZodIssueCode.custom,
+            message:
+              `Prototype "${prototypeName}" table "${prototypeTableName}": ` +
+              `prototypes require tableIdArgument of all their tables to be false`,
+          });
+        }
         // also ensure that field defaults are valid
         const tableDefault = prototype.tables[prototypeTableName].default;
         if (typeof tableDefault === "string" && !prototypeTable.dataStruct) {
