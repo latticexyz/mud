@@ -357,7 +357,7 @@ library StoreCore {
 
 library StoreCoreInternal {
   bytes32 internal constant SLOT = keccak256("mud.store");
-  uint256 internal constant SCHEMA_TABLE = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("schema"))));
+  uint256 internal constant SCHEMA_TABLE = uint256(bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("schema"))));
 
   /************************************************************************
    *
