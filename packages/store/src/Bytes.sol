@@ -39,11 +39,7 @@ library Bytes {
   /**
    * Overwrite a single byte of a `bytes32` value and return the new value.
    */
-  function setBytes1(
-    bytes32 input,
-    uint256 index,
-    bytes1 overwrite
-  ) internal pure returns (bytes32 output) {
+  function setBytes1(bytes32 input, uint256 index, bytes1 overwrite) internal pure returns (bytes32 output) {
     bytes1 mask = 0xff;
     assembly {
       mask := shr(mul(8, index), mask) // create a mask by shifting 0xff right by index bytes
@@ -56,11 +52,7 @@ library Bytes {
   /**
    * Overwrite two bytes of a `bytes32` value and return the new value.
    */
-  function setBytes2(
-    bytes32 input,
-    uint256 index,
-    bytes2 overwrite
-  ) internal pure returns (bytes32 output) {
+  function setBytes2(bytes32 input, uint256 index, bytes2 overwrite) internal pure returns (bytes32 output) {
     bytes2 mask = 0xffff;
     assembly {
       mask := shr(mul(8, index), mask) // create a mask by shifting 0xffff right by index bytes
@@ -73,11 +65,7 @@ library Bytes {
   /**
    * Overwrite four bytes of a `bytes32` value and return the new value.
    */
-  function setBytes4(
-    bytes32 input,
-    uint256 index,
-    bytes4 overwrite
-  ) internal pure returns (bytes32 output) {
+  function setBytes4(bytes32 input, uint256 index, bytes4 overwrite) internal pure returns (bytes32 output) {
     bytes4 mask = 0xffffffff;
     assembly {
       mask := shr(mul(8, index), mask) // create a mask by shifting 0xffffffff right by index bytes
@@ -85,6 +73,17 @@ library Bytes {
       output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
     }
     return output;
+  }
+
+  /**
+   * In-place overwrite a four bytes of a `bytes memory` value.
+   * TOOD: this might be more efficient in assembly
+   */
+  function setBytes4(bytes memory input, uint256 index, bytes4 overwrite) internal returns (bytes memory) {
+    for (uint256 i; i < 4; i++) {
+      input[index + i] = bytes1(overwrite << (i * 8));
+    }
+    return input;
   }
 
   /************************************************************************

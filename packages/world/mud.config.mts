@@ -49,6 +49,18 @@ const config: StoreUserConfig = {
         resourceType: "Resource",
       },
     },
+    FunctionSelectors: {
+      fileSelector: "funcSelectors",
+      primaryKeys: {
+        functionSelector: SchemaType.BYTES4,
+      },
+      schema: {
+        namespace: SchemaType.BYTES16,
+        file: SchemaType.BYTES16,
+        systemFunctionSelector: SchemaType.BYTES4,
+      },
+      dataStruct: false,
+    },
     // Bool: {
     // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
     //   primaryKeys: {},
