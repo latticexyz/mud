@@ -19,7 +19,7 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 // Import user types
 import { Resource } from "./../types.sol";
 
-uint256 constant _tableId = uint256(keccak256("/ResourceType"));
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("ResourceType"))));
 uint256 constant ResourceTypeTableId = _tableId;
 
 library ResourceType {
@@ -50,26 +50,26 @@ library ResourceType {
   }
 
   /** Get resourceType */
-  function get(bytes32 selector) internal view returns (Resource resourceType) {
+  function get(bytes32 resourceSelector) internal view returns (Resource resourceType) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((selector));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return Resource(uint8(Bytes.slice1(_blob, 0)));
   }
 
   /** Set resourceType */
-  function set(bytes32 selector, Resource resourceType) internal {
+  function set(bytes32 resourceSelector, Resource resourceType) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((selector));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(Resource(resourceType)));
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 selector) internal {
+  function deleteRecord(bytes32 resourceSelector) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((selector));
+    _primaryKeys[0] = bytes32((resourceSelector));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }

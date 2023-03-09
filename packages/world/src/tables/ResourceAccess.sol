@@ -16,7 +16,7 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/ResourceAccess"));
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("ResourceAccess"))));
 uint256 constant ResourceAccessTableId = _tableId;
 
 library ResourceAccess {
@@ -58,9 +58,9 @@ library ResourceAccess {
   }
 
   /** Get access */
-  function get(bytes32 selector, address caller) internal view returns (bool access) {
+  function get(bytes32 resourceSelector, address caller) internal view returns (bool access) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((selector));
+    _primaryKeys[0] = bytes32((resourceSelector));
     _primaryKeys[1] = bytes32(bytes20((caller)));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
@@ -68,9 +68,9 @@ library ResourceAccess {
   }
 
   /** Get access from the specified store */
-  function get(IStore _store, bytes32 selector, address caller) internal view returns (bool access) {
+  function get(IStore _store, bytes32 resourceSelector, address caller) internal view returns (bool access) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((selector));
+    _primaryKeys[0] = bytes32((resourceSelector));
     _primaryKeys[1] = bytes32(bytes20((caller)));
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
@@ -78,18 +78,18 @@ library ResourceAccess {
   }
 
   /** Set access */
-  function set(bytes32 selector, address caller, bool access) internal {
+  function set(bytes32 resourceSelector, address caller, bool access) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((selector));
+    _primaryKeys[0] = bytes32((resourceSelector));
     _primaryKeys[1] = bytes32(bytes20((caller)));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((access)));
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 selector, address caller) internal {
+  function deleteRecord(bytes32 resourceSelector, address caller) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((selector));
+    _primaryKeys[0] = bytes32((resourceSelector));
     _primaryKeys[1] = bytes32(bytes20((caller)));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);

@@ -185,7 +185,7 @@ contract World is Store {
     SystemRegistry.set(address(system), resourceSelector);
 
     // Grant the system access to its namespace
-    ResourceAccess.set({ selector: namespace, caller: address(system), access: true });
+    ResourceAccess.set(namespace, address(system), true);
   }
 
   /**
@@ -205,7 +205,7 @@ contract World is Store {
     bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
 
     // Grant access to the given resource
-    ResourceAccess.set({ selector: resourceSelector, caller: grantee, access: true });
+    ResourceAccess.set(resourceSelector, grantee, true);
   }
 
   /**
@@ -216,7 +216,7 @@ contract World is Store {
     bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
 
     // Retract access from the given resource
-    ResourceAccess.deleteRecord({ selector: resourceSelector, caller: grantee });
+    ResourceAccess.deleteRecord(resourceSelector, grantee);
   }
 
   /************************************************************************

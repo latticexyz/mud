@@ -224,13 +224,13 @@ contract WorldTest is Test {
     assertFalse(publicAccess);
 
     // Expect the system to be accessible by the caller
-    assertTrue(ResourceAccess.get({ _store: world, selector: "", caller: address(this) }));
+    assertTrue(ResourceAccess.get({ _store: world, resourceSelector: "", caller: address(this) }));
 
     // Expect the system to not be accessible by another address
-    assertFalse(ResourceAccess.get({ _store: world, selector: "", caller: address(0x1) }));
+    assertFalse(ResourceAccess.get({ _store: world, resourceSelector: "", caller: address(0x1) }));
 
     // Expect the system to have access to its own namespace
-    assertTrue(ResourceAccess.get({ _store: world, selector: "", caller: address(system) }));
+    assertTrue(ResourceAccess.get({ _store: world, resourceSelector: "", caller: address(system) }));
 
     // Expect the namespace to be created if it doesn't exist yet
     assertEq(NamespaceOwner.get(world, "newNamespace"), address(0));
