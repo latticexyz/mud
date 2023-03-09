@@ -13,6 +13,20 @@ library ResourceSelector {
   }
 
   /**
+   * Create a 32-byte resource selector from a namespace. The selector points to the namespace's root file.
+   */
+  function from(bytes16 namespace) internal pure returns (bytes32) {
+    return bytes32(namespace);
+  }
+
+  /**
+   * Create a 32-byte resource selector from a uint256 tableId
+   */
+  function from(uint256 tableId) internal pure returns (bytes32) {
+    return bytes32(tableId);
+  }
+
+  /**
    * Get the namespace of a ResourceSelector.
    */
   function getNamespace(bytes32 resourceSelector) internal pure returns (bytes16) {
@@ -31,5 +45,12 @@ library ResourceSelector {
    */
   function toString(bytes32 resourceSelector) internal pure returns (string memory) {
     return string(abi.encodePacked(getNamespace(resourceSelector), "/", getFile(resourceSelector)));
+  }
+
+  /**
+   * Convert a resource selector to a uint256
+   */
+  function toUint256(bytes32 resourceSelector) internal pure returns (uint256) {
+    return uint256(resourceSelector);
   }
 }

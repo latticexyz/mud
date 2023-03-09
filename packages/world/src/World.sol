@@ -21,6 +21,8 @@ bytes16 constant ROOT_NAMESPACE = 0;
 bytes16 constant ROOT_FILE = 0;
 
 contract World is Store {
+  using ResourceSelector for bytes32;
+
   error ResourceExists(string resource);
   error AccessDenied(string resource, address caller);
   error InvalidSelector(bytes32 selector);
@@ -59,17 +61,19 @@ contract World is Store {
    * Register a new namespace
    */
   function registerNamespace(bytes16 namespace) public virtual {
+    bytes32 resourceSelector = ResourceSelector.from(namespace);
+
     // Require namespace to not exist yet
-    if (ResourceType.get(namespace) != Resource.NONE) revert ResourceExists(ResourceSelector.toString(namespace));
+    if (ResourceType.get(namespace) != Resource.NONE) revert ResourceExists(resourceSelector.toString());
 
     // Register namespace resource
     ResourceType.set(namespace, Resource.NAMESPACE);
 
     // Register caller as the namespace owner
-    NamespaceOwner.set({ namespace: namespace, owner: msg.sender });
+    NamespaceOwner.set(namespace, msg.sender);
 
     // Give caller access to the new namespace
-    ResourceAccess.set({ selector: ResourceSelector.from(namespace, ROOT_FILE), caller: msg.sender, access: true });
+    ResourceAccess.set(resourceSelector, msg.sender, true);
   }
 
   /**
@@ -92,7 +96,7 @@ contract World is Store {
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
-      revert ResourceExists(ResourceSelector.toString(resourceSelector));
+      revert ResourceExists(resourceSelector.toString());
     }
 
     // Store the table resource type
@@ -130,12 +134,8 @@ contract World is Store {
    * This overload exists to conform with the `IStore` interface.
    */
   function registerStoreHook(uint256 tableId, IStoreHook hook) public virtual override {
-    bytes32 resourceSelector = bytes32(tableId);
-    registerTableHook(
-      ResourceSelector.getNamespace(resourceSelector),
-      ResourceSelector.getFile(resourceSelector),
-      hook
-    );
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    registerTableHook(resourceSelector.getNamespace(), resourceSelector.getFile(), hook);
   }
 
   /**
@@ -172,7 +172,7 @@ contract World is Store {
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
-      revert ResourceExists(ResourceSelector.toString(resourceSelector));
+      revert ResourceExists(resourceSelector.toString());
     }
 
     // Store the system resource type
@@ -243,8 +243,8 @@ contract World is Store {
    * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
   function setRecord(uint256 tableId, bytes32[] calldata key, bytes calldata data) public virtual {
-    bytes32 resourceSelector = bytes32(tableId);
-    setRecord(ResourceSelector.getNamespace(resourceSelector), ResourceSelector.getFile(resourceSelector), key, data);
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    setRecord(resourceSelector.getNamespace(), resourceSelector.getFile(), key, data);
   }
 
   /**
@@ -276,14 +276,8 @@ contract World is Store {
     uint8 schemaIndex,
     bytes calldata data
   ) public virtual override {
-    bytes32 resourceSelector = bytes32(tableId);
-    setField(
-      ResourceSelector.getNamespace(resourceSelector),
-      ResourceSelector.getFile(resourceSelector),
-      key,
-      schemaIndex,
-      data
-    );
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    setField(resourceSelector.getNamespace(), resourceSelector.getFile(), key, schemaIndex, data);
   }
 
   /**
@@ -315,14 +309,8 @@ contract World is Store {
     uint8 schemaIndex,
     bytes calldata dataToPush
   ) public override {
-    bytes32 resourceSelector = bytes32(tableId);
-    pushToField(
-      ResourceSelector.getNamespace(resourceSelector),
-      ResourceSelector.getFile(resourceSelector),
-      key,
-      schemaIndex,
-      dataToPush
-    );
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    pushToField(resourceSelector.getNamespace(), resourceSelector.getFile(), key, schemaIndex, dataToPush);
   }
 
   /**
@@ -343,8 +331,8 @@ contract World is Store {
    * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
   function deleteRecord(uint256 tableId, bytes32[] calldata key) public virtual override {
-    bytes32 resourceSelector = bytes32(tableId);
-    deleteRecord(ResourceSelector.getNamespace(resourceSelector), ResourceSelector.getFile(resourceSelector), key);
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    deleteRecord(resourceSelector.getNamespace(), resourceSelector.getFile(), key);
   }
 
   /**
@@ -352,8 +340,8 @@ contract World is Store {
    * This overload exists to conform with the IStore interface.
    */
   function registerSchema(uint256 tableId, Schema schema) public virtual override {
-    bytes32 tableSelector = bytes32(tableId);
-    registerTable(ResourceSelector.getNamespace(tableSelector), ResourceSelector.getFile(tableSelector), schema);
+    bytes32 tableSelector = ResourceSelector.from(tableId);
+    registerTable(tableSelector.getNamespace(), tableSelector.getFile(), schema);
   }
 
   /**
@@ -379,13 +367,8 @@ contract World is Store {
    * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
   function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
-    bytes32 resourceSelector = bytes32(tableId);
-    setMetadata(
-      ResourceSelector.getNamespace(resourceSelector),
-      ResourceSelector.getFile(resourceSelector),
-      tableName,
-      fieldNames
-    );
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    setMetadata(resourceSelector.getNamespace(), resourceSelector.getFile(), tableName, fieldNames);
   }
 
   /************************************************************************
@@ -481,7 +464,7 @@ contract World is Store {
 
     // Check if the given caller has access to the given namespace or file
     if (!_hasAccess(namespace, file, msg.sender)) {
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), caller);
+      revert AccessDenied(resourceSelector.toString(), caller);
     }
   }
 
@@ -493,7 +476,7 @@ contract World is Store {
     resourceSelector = ResourceSelector.from(namespace, file);
 
     if (NamespaceOwner.get(namespace) != msg.sender) {
-      revert AccessDenied(ResourceSelector.toString(resourceSelector), caller);
+      revert AccessDenied(resourceSelector.toString(), caller);
     }
   }
 }
