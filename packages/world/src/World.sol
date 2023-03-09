@@ -77,7 +77,7 @@ contract World is Store {
   }
 
   /**
-   * Register register a table with given schema in the given namespace
+   * Register a table with given schema in the given namespace
    */
   function registerTable(
     bytes16 namespace,
