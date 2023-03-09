@@ -34,7 +34,7 @@ library Table3 {
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
-    _fieldNames[0] = "v1";
+    _fieldNames[0] = "value";
     return ("Table3", _fieldNames);
   }
 
@@ -49,8 +49,8 @@ library Table3 {
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get v1 */
-  function get(bytes32 key) internal view returns (Enum1 v1) {
+  /** Get value */
+  function get(bytes32 key) internal view returns (Enum1 value) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -58,12 +58,12 @@ library Table3 {
     return Enum1(uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Set v1 */
-  function set(bytes32 key, Enum1 v1) internal {
+  /** Set value */
+  function set(bytes32 key, Enum1 value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(Enum1(v1)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(Enum1(value)));
   }
 
   /* Delete all data for given keys */

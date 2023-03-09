@@ -37,9 +37,7 @@ const config: StoreUserConfig = {
       },
     },
     Table3: {
-      schema: {
-        v1: "Enum1",
-      },
+      schema: "Enum1",
     },
     Singleton1: {
       dataStruct: false,

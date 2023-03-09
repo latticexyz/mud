@@ -8,10 +8,10 @@ import { Table3 } from "./../tables/Table3.sol";
 import { Enum1 } from "./../Types.sol";
 
 library Tables23 {
-  function create(bytes32 key, Table2Data memory _data_Table2, Enum1 _v1_Table3) internal {
+  function create(bytes32 key, Table2Data memory _data_Table2, Enum1 _value_Table3) internal {
     Table2.set(key, _data_Table2);
 
-    Table3.set(key, _v1_Table3);
+    Table3.set(key, _value_Table3);
   }
 
   function destroy(bytes32 key) internal {
