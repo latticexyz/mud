@@ -34,3 +34,5 @@ export const EthereumAddress = z.string().superRefine(validateEthereumAddress);
 export const StaticSchemaType = z
   .nativeEnum(SchemaType)
   .refine((arg) => getStaticByteLength(arg) > 0, "SchemaType must be static");
+
+export const Selector = AnyCaseName.refine((selector) => selector.length <= 16, "Selector must fit into 16 characters");

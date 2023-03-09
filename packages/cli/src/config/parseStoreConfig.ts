@@ -1,6 +1,14 @@
 import { SchemaType } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { BaseRoute, ObjectName, OrdinaryRoute, StaticSchemaType, UserEnum, ValueName } from "./commonSchemas.js";
+import {
+  AnyCaseName,
+  ObjectName,
+  OrdinaryRoute,
+  Selector,
+  StaticSchemaType,
+  UserEnum,
+  ValueName,
+} from "./commonSchemas.js";
 import { getDuplicates } from "./validation.js";
 
 const TableName = ObjectName;
@@ -22,7 +30,7 @@ const Schema = z
 const TableDataFull = z
   .object({
     directory: OrdinaryRoute.default("/tables"),
-    route: BaseRoute.optional(),
+    fileSelector: Selector.optional(),
     tableIdArgument: z.boolean().default(false),
     storeArgument: z.boolean().default(false),
     primaryKeys: PrimaryKeys,
@@ -48,18 +56,18 @@ const TableDataShorthand = FieldData.transform((fieldData) => {
 });
 
 const TablesRecord = z.record(TableName, z.union([TableDataShorthand, TableDataFull])).transform((tables) => {
-  // default route depends on tableName
+  // default fileSelector depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
-    table.route ??= `/${tableName}`;
+    table.fileSelector ??= tableName;
 
     tables[tableName] = table;
   }
-  return tables as Record<string, RequireKeys<(typeof tables)[string], "route">>;
+  return tables as Record<string, RequireKeys<(typeof tables)[string], "fileSelector">>;
 });
 
 const StoreConfigUnrefined = z.object({
-  baseRoute: BaseRoute.default(""),
+  namespace: Selector.default(""),
   storeImportPath: z.string().default("@latticexyz/store/src/"),
   tables: TablesRecord,
   userTypes: z
@@ -74,8 +82,8 @@ export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig)
 
 // zod doesn't preserve doc comments
 export interface StoreUserConfig {
-  /** The base route prefix for table ids. Default is "" (empty string) */
-  baseRoute?: string;
+  /** The namespace for tableIds. Default is "" (empty string) */
+  namespace?: string;
   /** Path for store package imports. Default is "@latticexyz/store/src/" */
   storeImportPath?: string;
   /**
@@ -95,8 +103,12 @@ export interface StoreUserConfig {
 interface FullTableConfig {
   /** Output directory path for the file. Default is "/tables" */
   directory?: string;
-  /** Route is used to register the table and construct its id. The table id will be keccak256(concat(baseRoute,route)). Default is "/<tableName>" */
-  route?: string;
+  /**
+   * The fileSelector is used with the namespace to register the table and construct its id.
+   * The table id will be uint256(bytes32(abi.encodePacked(bytes16(namespace), bytes16(fileSelector)))).
+   * Default is "<tableName>"
+   * */
+  fileSelector?: string;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
   tableIdArgument?: boolean;
   /** Include methods that accept a manual `IStore` argument. Default is false. */
