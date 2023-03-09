@@ -26,7 +26,7 @@ export interface DeploymentInfo {
 
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): Promise<DeploymentInfo> {
   const startTime = Date.now();
-  const { worldContractName, baseRoute, postDeployScript } = mudConfig;
+  const { worldContractName, namespace, postDeployScript } = mudConfig;
   const { profile, rpc, privateKey, priorityFeeMultiplier } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
@@ -66,88 +66,86 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   // Create World contract instance from deployed address
   const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as World;
 
-  // Register baseRoute
-  if (baseRoute) await fastTxExecute(WorldContract, "registerRoute", ["", baseRoute]);
+  // Register namespace
+  if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)]);
 
   // Register tables
   promises.push(
-    ...Object.entries(mudConfig.tables).map(async ([tableName, tableConfig]) => {
-      console.log(chalk.blue("Registering table", tableName, "at", baseRoute + tableConfig.route));
-
-      // Register nested route
-      const routeFragments = tableConfig.route.substring(1).split("/"); // Split route into fragments (skip leading slash)
-      const lastRouteFragment = toRoute(routeFragments.pop()); // Register last fragment separately as part of call to registerTable
-      await registerNestedRoute(WorldContract, baseRoute, routeFragments);
+    ...Object.entries(mudConfig.tables).map(async ([tableName, { fileSelector, schema }]) => {
+      console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${fileSelector}`));
 
       // Register table
-      const tableBaseRoute = toRoute(baseRoute, ...routeFragments);
-
-      const schemaTypes = Object.values(tableConfig.schema).map((schemaOrUserType) => {
+      const schemaTypes = Object.values(schema).map((schemaOrUserType) => {
         return resolveSchemaOrUserTypeSimple(schemaOrUserType, mudConfig.userTypes);
       });
 
       await fastTxExecute(WorldContract, "registerTable", [
-        tableBaseRoute,
-        lastRouteFragment,
+        toBytes16(namespace),
+        toBytes16(fileSelector),
         encodeSchema(schemaTypes),
       ]);
 
       // Register table metadata
-      await fastTxExecute(WorldContract, "setMetadata(string,string,string[])", [
-        baseRoute + tableConfig.route,
+      await fastTxExecute(WorldContract, "setMetadata(bytes16,bytes16,string,string[])", [
+        toBytes16(namespace),
+        toBytes16(fileSelector),
         tableName,
-        Object.keys(tableConfig.schema),
+        Object.keys(schema),
       ]);
 
-      console.log(chalk.green("Registered table", tableName, "at", baseRoute + tableConfig.route));
+      console.log(chalk.green(`Registered table ${tableName} at ${fileSelector}`));
     })
   );
 
   // Register systems (using forEach instead of for..of to avoid blocking on async calls)
   promises.push(
-    ...Object.entries(mudConfig.systems).map(async ([systemName, systemConfig]) => {
-      console.log(chalk.blue("Registering system", systemName, "at", baseRoute + systemConfig.route));
-
-      // Register system route
-      const routeFragments = systemConfig.route.substring(1).split("/"); // Split route into fragments (skip leading slash)
-      const lastRouteFragment = toRoute(routeFragments.pop()); // Register last fragment as part of call to registerSystem
-      const systemBaseRoute = toRoute(baseRoute, ...routeFragments);
-      await registerNestedRoute(WorldContract, baseRoute, routeFragments);
+    ...Object.entries(mudConfig.systems).map(async ([systemName, { fileSelector, openAccess }]) => {
+      console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${fileSelector}`));
 
       // Register system at route
       await fastTxExecute(WorldContract, "registerSystem", [
-        systemBaseRoute,
-        lastRouteFragment,
+        toBytes16(namespace),
+        toBytes16(fileSelector),
         await contractPromises[systemName],
-        systemConfig.openAccess,
+        openAccess,
       ]);
 
-      console.log(chalk.green("Registered system", systemName, "at", baseRoute + systemConfig.route));
+      console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${fileSelector}`));
     })
   );
 
-  // Wait for routes to be registered before granting access to them
+  // Wait for resources to be registered before granting access to them
   await Promise.all(promises);
 
   // Grant access to systems
-  for (const [systemName, systemConfig] of Object.entries(mudConfig.systems)) {
-    const systemRoute = baseRoute + systemConfig.route;
+  for (const [systemName, { fileSelector, accessListAddresses, accessListSystems }] of Object.entries(
+    mudConfig.systems
+  )) {
+    const resourceSelector = `${namespace}/${fileSelector}`;
 
     // Grant access to addresses
     promises.push(
-      ...systemConfig.accessListAddresses.map(async (address) => {
-        console.log(chalk.blue(`Grant ${address} access to ${systemName} (${systemRoute})`));
-        await fastTxExecute(WorldContract, "grantAccess", [systemRoute, address]);
-        console.log(chalk.green(`Granted ${address} access to ${systemName} (${systemRoute})`));
+      ...accessListAddresses.map(async (address) => {
+        console.log(chalk.blue(`Grant ${address} access to ${systemName} (${resourceSelector})`));
+        await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
+          toBytes16(namespace),
+          toBytes16(fileSelector),
+          address,
+        ]);
+        console.log(chalk.green(`Granted ${address} access to ${systemName} (${namespace}/${fileSelector})`));
       })
     );
 
     // Grant access to other systems
     promises.push(
-      ...systemConfig.accessListSystems.map(async (granteeSystem) => {
-        console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${systemRoute})`));
-        await fastTxExecute(WorldContract, "grantAccess", [systemRoute, await contractPromises[granteeSystem]]);
-        console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${systemRoute})`));
+      ...accessListSystems.map(async (granteeSystem) => {
+        console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${resourceSelector})`));
+        await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
+          toBytes16(namespace),
+          toBytes16(fileSelector),
+          await contractPromises[granteeSystem],
+        ]);
+        console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${resourceSelector})`));
       })
     );
   }
@@ -290,19 +288,6 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     }
   }
 
-  async function registerNestedRoute(WorldContract: World, baseRoute: string, registerRouteFragments: string[]) {
-    // Register nested routes
-    for (let i = 0; i < registerRouteFragments.length; i++) {
-      const subRoute = toRoute(registerRouteFragments[i]);
-      try {
-        await fastTxExecute(WorldContract, "registerRoute", [baseRoute, subRoute]);
-      } catch (e) {
-        // TODO: check if the gas estimation error is due to the route already being registered and ignore it
-      }
-      baseRoute += subRoute;
-    }
-  }
-
   /**
    * Load the contract's abi and bytecode from the file system
    * @param contractName: Name of the contract to load
@@ -334,12 +319,24 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
     const feeData = await provider.getFeeData();
     if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
-    maxPriorityFeePerGas = Math.floor(1_500_000_000 * multiplier);
+
+    // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets
+    maxPriorityFeePerGas = feeData.lastBaseFeePerGas.eq(0) ? 0 : Math.floor(1_500_000_000 * multiplier);
     maxFeePerGas = feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas);
   }
 }
 
-function toRoute(...routeFragments: (string | undefined)[]): string {
-  const route = routeFragments.filter((e) => Boolean(e)).join("/");
-  return route ? `/${route}` : "";
+function toBytes16(input: string) {
+  if (input.length > 16) throw new Error("String does not fit into 16 bytes");
+
+  const result = new Uint8Array(16);
+  // Set ascii bytes
+  for (let i = 0; i < input.length; i++) {
+    result[i] = input.charCodeAt(i);
+  }
+  // Set the remaining bytes to 0
+  for (let i = input.length; i < 16; i++) {
+    result[i] = 0;
+  }
+  return result;
 }

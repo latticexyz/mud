@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/world",
   "license": "MIT",
-  "version": "1.40.0",
+  "version": "1.41.0",
   "description": "World framework",
   "types": "./types/ethers-contracts/",
   "repository": {
@@ -26,9 +26,9 @@
     "gas-report": "mud gas-report --path test/** --save gas-report.txt"
   },
   "devDependencies": {
-    "@latticexyz/cli": "^1.40.0",
-    "@latticexyz/schema-type": "^1.40.0",
-    "@latticexyz/store": "^1.40.0",
+    "@latticexyz/cli": "^1.41.0",
+    "@latticexyz/schema-type": "^1.41.0",
+    "@latticexyz/store": "^1.41.0",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/mocha": "^9.1.1",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",

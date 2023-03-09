@@ -3,7 +3,7 @@ import { SchemaType } from "@latticexyz/schema-type";
 
 const config: StoreUserConfig = {
   storeImportPath: "../",
-
+  namespace: "mudstore",
   tables: {
     Hooks: SchemaType.ADDRESS_ARRAY,
     Callbacks: SchemaType.BYTES24_ARRAY,

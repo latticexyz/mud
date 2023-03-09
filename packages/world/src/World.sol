@@ -6,34 +6,49 @@ import { Store, IStoreHook } from "@latticexyz/store/src/Store.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
-import { RouteOwnerTable } from "./tables/RouteOwnerTable.sol";
-import { RouteAccess } from "./tables/RouteAccess.sol";
-import { RouteTable } from "./tables/RouteTable.sol";
-import { SystemRouteTable } from "./tables/SystemRouteTable.sol";
-import { SystemTable } from "./tables/SystemTable.sol";
 import { System } from "./System.sol";
 import { ISystemHook } from "./ISystemHook.sol";
+import { ResourceSelector } from "./ResourceSelector.sol";
+import { Resource } from "./types.sol";
 
-uint256 constant ROOT_ROUTE_ID = uint256(keccak256(bytes("")));
-bytes32 constant SINGLE_SLASH = "/";
+import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
+import { ResourceAccess } from "./tables/ResourceAccess.sol";
+import { ResourceType } from "./tables/ResourceType.sol";
+import { SystemRegistry } from "./tables/SystemRegistry.sol";
+import { Systems } from "./tables/Systems.sol";
+
+bytes16 constant ROOT_NAMESPACE = 0;
+bytes16 constant ROOT_FILE = 0;
 
 contract World is Store {
-  error RouteInvalid(string route);
-  error RouteExists(string route);
-  error RouteAccessDenied(string route, address caller);
+  using ResourceSelector for bytes32;
+
+  error ResourceExists(string resource);
+  error AccessDenied(string resource, address caller);
+  error InvalidSelector(string resource);
   error SystemExists(address system);
 
   constructor() {
-    SystemTable.registerSchema();
-    RouteTable.registerSchema();
-    RouteAccess.registerSchema();
-    SystemRouteTable.registerSchema();
-    RouteOwnerTable.registerSchema();
+    // Register internal tables
+    NamespaceOwner.registerSchema();
+    NamespaceOwner.setMetadata();
 
-    // Register root route and give ownership to msg.sender
-    RouteTable.set({ routeId: ROOT_ROUTE_ID, route: "" }); // Storing this explicitly to trigger the event for indexers
-    RouteOwnerTable.set({ routeId: ROOT_ROUTE_ID, owner: msg.sender });
-    RouteAccess.set({ routeId: ROOT_ROUTE_ID, caller: msg.sender, value: true });
+    ResourceAccess.registerSchema();
+    ResourceAccess.setMetadata();
+
+    ResourceType.registerSchema();
+    ResourceType.setMetadata();
+
+    SystemRegistry.registerSchema();
+    SystemRegistry.setMetadata();
+
+    Systems.registerSchema();
+    Systems.setMetadata();
+
+    // Register the root namespace and give ownership to msg.sender
+    ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
+    NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
+    ResourceAccess.set(ROOT_NAMESPACE, msg.sender, true);
   }
 
   /************************************************************************
@@ -43,163 +58,209 @@ contract World is Store {
    ************************************************************************/
 
   /**
-   * Register a new route by extending an existing route
+   * Register a new namespace
    */
-  function registerRoute(string calldata baseRoute, string calldata subRoute) public virtual returns (uint256 routeId) {
-    // Require subroute to be a valid route fragment (start with `/` and don't contain any further `/`)
-    if (!_isSingleLevelRoute(subRoute)) revert RouteInvalid(subRoute);
+  function registerNamespace(bytes16 namespace) public virtual {
+    bytes32 resourceSelector = ResourceSelector.from(namespace);
 
-    // Require base route to exist (with a special check for the root route because it's empty and fails the `has` check)
-    uint256 baseRouteId = _toRouteId(baseRoute);
-    if (!(baseRouteId == ROOT_ROUTE_ID || RouteTable.has(baseRouteId))) revert RouteInvalid(baseRoute);
+    // Require namespace to not exist yet
+    if (ResourceType.get(namespace) != Resource.NONE) revert ResourceExists(resourceSelector.toString());
 
-    // Require subRoute to not be empty
-    if (bytes(subRoute).length == 0) revert RouteInvalid(subRoute);
+    // Register namespace resource
+    ResourceType.set(namespace, Resource.NAMESPACE);
 
-    // Construct the new route
-    string memory route = string(abi.encodePacked(baseRoute, subRoute));
-    routeId = _toRouteId(route);
+    // Register caller as the namespace owner
+    NamespaceOwner.set(namespace, msg.sender);
 
-    // Require route to not exist yet
-    if (RouteTable.has(routeId)) revert RouteExists(route);
-
-    // Store the route
-    RouteTable.set({ routeId: routeId, route: route });
-
-    // Add caller as owner of the new route
-    RouteOwnerTable.set({ routeId: routeId, owner: msg.sender });
-
-    // Give caller access to the route
-    RouteAccess.set({ routeId: routeId, caller: msg.sender, value: true });
+    // Give caller access to the new namespace
+    ResourceAccess.set(resourceSelector, msg.sender, true);
   }
 
   /**
-   * Register register a table with given schema at the given route
+   * Register a table with given schema in the given namespace
    */
   function registerTable(
-    string calldata baseRoute,
-    string calldata tableRoute,
+    bytes16 namespace,
+    bytes16 file,
     Schema schema
-  ) public virtual returns (uint256 tableRouteId) {
-    // Register table route
-    tableRouteId = uint256(registerRoute(baseRoute, tableRoute));
+  ) public virtual returns (bytes32 resourceSelector) {
+    resourceSelector = ResourceSelector.from(namespace, file);
 
-    // StoreCore handles checking for existence
-    StoreCore.registerSchema(tableRouteId, schema);
+    // Require the file selector to not be the namespace's root file
+    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
+
+    // If the namespace doesn't exist yet, register it
+    // otherwise require caller to own the namespace
+    if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
+    else _requireOwner(namespace, ROOT_FILE, msg.sender);
+
+    // Require no resource to exist at this selector yet
+    if (ResourceType.get(resourceSelector) != Resource.NONE) {
+      revert ResourceExists(resourceSelector.toString());
+    }
+
+    // Store the table resource type
+    ResourceType.set(resourceSelector, Resource.TABLE);
+
+    // Register the table's schema
+    StoreCore.registerSchema(resourceSelector.toTableId(), schema);
   }
 
   /**
-   * Register a schema for a given table id
-   * This overload exists to conform to the Store interface,
-   * but it requires the caller to register a route using `registerRoute` first
+   * Register the given schema for the given table id.
+   * This overload exists to conform with the IStore interface.
    */
   function registerSchema(uint256 tableId, Schema schema) public virtual override {
-    // Require caller to own the given tableId
-    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
-
-    // Register the schema
-    StoreCore.registerSchema(tableId, schema);
+    bytes32 tableSelector = ResourceSelector.from(tableId);
+    registerTable(tableSelector.getNamespace(), tableSelector.getFile(), schema);
   }
 
   /**
-   * Register metadata (tableName, fieldNames) for a given table via its route
+   * Register metadata (tableName, fieldNames) for the table at the given namespace and file.
+   * Requires the caller to own the namespace.
    */
   function setMetadata(
-    string calldata tableRoute,
+    bytes16 namespace,
+    bytes16 file,
     string calldata tableName,
     string[] calldata fieldNames
   ) public virtual {
-    setMetadata(_toRouteId(tableRoute), tableName, fieldNames);
+    // Require caller to own the namespace
+    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
+
+    // Set the metadata
+    StoreCore.setMetadata(resourceSelector.toTableId(), tableName, fieldNames);
   }
 
   /**
-   * Register metadata (tableName, fieldNames) for a given table via its id
+   * Register metadata (tableName, fieldNames) for the table at the given tableId.
+   * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
   function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
-    // Require caller to own the given tableId
-    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
-
-    // Set the table's metadata
-    StoreCore.setMetadata(tableId, tableName, fieldNames);
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    setMetadata(resourceSelector.getNamespace(), resourceSelector.getFile(), tableName, fieldNames);
   }
 
   /**
-   * Register a hook for a given table route
+   * Register the given store hook for the table at the given namespace and file.
+   * Hooks on table files must implement the IStoreHook interface,
+   * and hooks on system files must implement the ISystemHook interface.
    */
-  function registerTableHook(string calldata tableRoute, IStoreHook hook) public virtual {
-    registerStoreHook(_toRouteId(tableRoute), hook);
+  function registerHook(bytes16 namespace, bytes16 file, address hook) public virtual {
+    Resource resourceType = ResourceType.get(ResourceSelector.from(namespace, file));
+
+    if (resourceType == Resource.TABLE) {
+      return registerTableHook(namespace, file, IStoreHook(hook));
+    }
+
+    if (resourceType == Resource.SYSTEM) {
+      return registerSystemHook(namespace, file, ISystemHook(hook));
+    }
+
+    revert InvalidSelector(ResourceSelector.from(namespace, file).toString());
   }
 
   /**
-   * Register a hook for a given table route id
+   * Register a hook for the table at the given namepace and file.
+   * Requires the caller to own the namespace.
+   */
+  function registerTableHook(bytes16 namespace, bytes16 file, IStoreHook hook) public virtual {
+    // Require caller to own the namespace
+    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
+
+    // Register the hook
+    StoreCore.registerStoreHook(resourceSelector.toTableId(), hook);
+  }
+
+  /**
+   * Register a hook for the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
    */
   function registerStoreHook(uint256 tableId, IStoreHook hook) public virtual override {
-    // Require caller to own the given tableId
-    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
-
-    // Register the hook
-    StoreCore.registerStoreHook(tableId, hook);
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    registerTableHook(resourceSelector.getNamespace(), resourceSelector.getFile(), hook);
   }
 
   /**
-   * Register a hook for a given system route
+   * Register a hook for the system at the given namespace and file
    */
-  function registerSystemHook(string calldata systemRoute, ISystemHook hook) public virtual {
+  function registerSystemHook(bytes16 namespace, bytes16 file, ISystemHook hook) public virtual {
     // TODO implement (see https://github.com/latticexyz/mud/issues/444)
   }
 
   /**
-   * Register a system at the given route
+   * Register the given system in the given namespace.
+   * If the namespace doesn't exist yet, it is registered.
+   * The system is granted access to its namespace, so it can write to any table in the same namespace.
+   * If publicAccess is true, no access control check is performed for calling the system.
    */
   function registerSystem(
-    string calldata baseRoute,
-    string calldata systemRoute,
+    bytes16 namespace,
+    bytes16 file,
     System system,
     bool publicAccess
-  ) public virtual returns (uint256 systemRouteId) {
+  ) public virtual returns (bytes32 resourceSelector) {
+    resourceSelector = ResourceSelector.from(namespace, file);
+
+    // Require the file selector to not be the namespace's root file
+    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
+
     // Require the system to not exist yet
-    if (SystemRouteTable.has(address(system))) revert SystemExists(address(system));
+    if (SystemRegistry.get(address(system)) != 0) revert SystemExists(address(system));
 
-    // Require the caller to own the base route
-    uint256 baseRouteId = _toRouteId(baseRoute);
-    if (RouteOwnerTable.get(baseRouteId) != msg.sender) revert RouteAccessDenied(baseRoute, msg.sender);
+    // If the namespace doesn't exist yet, register it
+    // otherwise require caller to own the namespace
+    if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
+    else _requireOwner(namespace, ROOT_FILE, msg.sender);
 
-    // Register system route
-    systemRouteId = registerRoute(baseRoute, systemRoute);
+    // Require no resource to exist at this selector yet
+    if (ResourceType.get(resourceSelector) != Resource.NONE) {
+      revert ResourceExists(resourceSelector.toString());
+    }
 
-    // Store the system address in the system table
-    SystemTable.set({ routeId: systemRouteId, system: address(system), publicAccess: publicAccess });
+    // Store the system resource type
+    ResourceType.set(resourceSelector, Resource.SYSTEM);
 
-    // Store the system's route in the SystemToRoute table
-    SystemRouteTable.set({ system: address(system), routeId: systemRouteId });
+    // Systems = mapping from resourceSelector to system address and publicAccess
+    Systems.set(resourceSelector, address(system), publicAccess);
 
-    // Give the system access to its base route
-    RouteAccess.set({ routeId: baseRouteId, caller: address(system), value: true });
+    // SystemRegistry = mapping from system address to resourceSelector
+    SystemRegistry.set(address(system), resourceSelector);
+
+    // Grant the system access to its namespace
+    ResourceAccess.set(namespace, address(system), true);
   }
 
   /**
-   * Grant access to a given route
+   * Grant access to the given namespace.
+   * Requires the caller to own the namespace.
    */
-  function grantAccess(string calldata route, address grantee) public virtual {
-    // Require the caller to own the route
-    uint256 routeId = _toRouteId(route);
-    if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
-
-    // Grant access to the given route
-    RouteAccess.set({ routeId: routeId, caller: grantee, value: true });
+  function grantAccess(bytes16 namespace, address grantee) public virtual {
+    grantAccess(namespace, ROOT_FILE, grantee);
   }
 
   /**
-   * Retract access to a given route
+   * Grant access to the resource at the given namespace and file.
+   * Requires the caller to own the namespace.
    */
-  function retractAccess(string calldata route, address grantee) public virtual {
-    // Require the caller to own the route
-    uint256 routeId = _toRouteId(route);
-    if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
+  function grantAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
+    // Require the caller to own the namespace
+    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
 
-    // Retract access to the given route
-    RouteAccess.deleteRecord({ routeId: routeId, caller: grantee });
+    // Grant access to the given resource
+    ResourceAccess.set(resourceSelector, grantee, true);
+  }
+
+  /**
+   * Retract access from the resource at the given namespace and file.
+   */
+  function retractAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
+    // Require the caller to own the namespace
+    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
+
+    // Retract access from the given resource
+    ResourceAccess.deleteRecord(resourceSelector, grantee);
   }
 
   /************************************************************************
@@ -209,167 +270,113 @@ contract World is Store {
    ************************************************************************/
 
   /**
-   * Write a record in a table based on a parent route access right.
-   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
+   * Write a record in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
    */
-  function setRecord(
-    string calldata accessRoute,
-    string calldata subRoute,
-    bytes32[] calldata key,
-    bytes calldata data
-  ) public virtual {
-    // Require access to accessRoute
-    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-    // Require a valid subRoute
-    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-
-    // Construct the table route id by concatenating accessRoute and tableRoute
-    uint256 tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
+  function setRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key, bytes calldata data) public virtual {
+    // Require access to the namespace or file
+    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableRouteId, key, data);
+    StoreCore.setRecord(resourceSelector.toTableId(), key, data);
   }
 
   /**
-   * Write a record in a table based on access right to the table route id.
+   * Write a record in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
-  function setRecord(uint256 tableRouteId, bytes32[] calldata key, bytes calldata data) public virtual {
-    // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
-
-    // Set the record
-    StoreCore.setRecord(tableRouteId, key, data);
+  function setRecord(uint256 tableId, bytes32[] calldata key, bytes calldata data) public virtual {
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    setRecord(resourceSelector.getNamespace(), resourceSelector.getFile(), key, data);
   }
 
   /**
-   * Write a field in a table based on a parent route access right.
-   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
+   * Write a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
    */
   function setField(
-    string calldata accessRoute,
-    string calldata subRoute,
+    bytes16 namespace,
+    bytes16 file,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
   ) public virtual {
-    // Require access to accessRoute
-    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-    // Require a valid subRoute
-    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-
-    // Construct the table route id by concatenating accessRoute and tableRoute
-    uint256 tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
+    // Require access to namespace or file
+    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Set the field
-    StoreCore.setField(tableRouteId, key, schemaIndex, data);
+    StoreCore.setField(resourceSelector.toTableId(), key, schemaIndex, data);
   }
 
   /**
-   * Write a field in a table based on specific access rights.
+   * Write a field in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
   function setField(
-    uint256 tableRouteId,
+    uint256 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
   ) public virtual override {
-    // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
-
-    // Set the field
-    StoreCore.setField(tableRouteId, key, schemaIndex, data);
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    setField(resourceSelector.getNamespace(), resourceSelector.getFile(), key, schemaIndex, data);
   }
 
   /**
-   * Push data to the end of a field in a table based on a parent route access right.
-   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
+   * Push data to the end of a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
    */
   function pushToField(
-    string calldata accessRoute,
-    string calldata subRoute,
+    bytes16 namespace,
+    bytes16 file,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush
   ) public {
-    // Check access based on accessRoute
-    uint256 tableRouteId = _verifiedTableRouteId(accessRoute, subRoute);
+    // Require access to namespace or file
+    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(tableRouteId, key, schemaIndex, dataToPush);
+    StoreCore.pushToField(resourceSelector.toTableId(), key, schemaIndex, dataToPush);
   }
 
   /**
-   * Push data to the end of a field in a table based on specific access rights.
+   * Push data to the end of a field in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
   function pushToField(
-    uint256 tableRouteId,
+    uint256 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush
   ) public override {
-    // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
-
-    // Push to the field
-    StoreCore.pushToField(tableRouteId, key, schemaIndex, dataToPush);
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    pushToField(resourceSelector.getNamespace(), resourceSelector.getFile(), key, schemaIndex, dataToPush);
   }
 
   /**
-   * Delete a record in a table based on a parent route access right.
-   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
+   * Delete a record in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
    */
-  function deleteRecord(string calldata accessRoute, string calldata subRoute, bytes32[] calldata key) public virtual {
-    // Require access to accessRoute
-    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-    // Require a valid subRoute
-    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-
-    // Construct the table route id by concatenating accessRoute and tableRoute
-    uint256 tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
+  function deleteRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key) public virtual {
+    // Require access to namespace or file
+    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(tableRouteId, key);
+    StoreCore.deleteRecord(resourceSelector.toTableId(), key);
   }
 
   /**
-   * Delete a record in a table based on specific access rights.
+   * Delete a record in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
-  function deleteRecord(uint256 tableRouteId, bytes32[] calldata key) public virtual override {
-    // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
-
-    // Delete the record
-    StoreCore.deleteRecord(tableRouteId, key);
-  }
-
-  /**
-   * Check for access based on `accessRoute`
-   * and return `tableRouteId` for `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
-   */
-  function _verifiedTableRouteId(
-    string calldata accessRoute,
-    string calldata subRoute
-  ) internal view returns (uint256 tableRouteId) {
-    // Require access to accessRoute
-    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-    // Require a valid subRoute
-    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-
-    // Construct the table route id by concatenating accessRoute and tableRoute
-    tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
+  function deleteRecord(uint256 tableId, bytes32[] calldata key) public virtual override {
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    deleteRecord(resourceSelector.getNamespace(), resourceSelector.getFile(), key);
   }
 
   /************************************************************************
@@ -379,28 +386,19 @@ contract World is Store {
    ************************************************************************/
 
   /**
-   * Call a system based on a parent route access right
-   * We check for access based on `accessRoute`, and execute `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes
+   * Call the system at the given namespace and file.
+   * If the system is not public, the caller must have access to the namespace or file.
    */
   function call(
-    string calldata accessRoute,
-    string memory subRoute,
+    bytes16 namespace,
+    bytes16 file,
     bytes calldata funcSelectorAndArgs
   ) public virtual returns (bytes memory) {
-    // Check if the system is a public virtual system and get its address
-    string memory systemRoute = string(abi.encodePacked(accessRoute, subRoute));
-    uint256 systemRouteId = _toRouteId(systemRoute);
-    (address systemAddress, bool publicAccess) = SystemTable.get(systemRouteId);
+    // Load the system data
+    (address systemAddress, bool publicAccess) = Systems.get(ResourceSelector.from(namespace, file));
 
-    // If the system is not public virtual, check for individual access
-    if (!publicAccess) {
-      // Require access to accessRoute
-      if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-      // Require a valid subRoute
-      if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-    }
+    // Allow access if the system is public or the caller has access to the namespace or file
+    if (!publicAccess) _requireAccess(namespace, file, msg.sender);
 
     // Call the system and forward any return data
     return
@@ -408,15 +406,8 @@ contract World is Store {
         msgSender: msg.sender,
         systemAddress: systemAddress,
         funcSelectorAndArgs: funcSelectorAndArgs,
-        delegate: _isSingleLevelRoute(systemRoute)
+        delegate: namespace == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
       });
-  }
-
-  /**
-   * Overload for the function above to check access based on the full system route instead of a parent route (better devex for public virtual systems)
-   */
-  function call(string calldata systemRoute, bytes calldata funcSelectorAndArgs) public virtual returns (bytes memory) {
-    return call(systemRoute, "", funcSelectorAndArgs);
   }
 
   /**
@@ -446,53 +437,42 @@ contract World is Store {
     }
   }
 
-  function _hasAccess(string calldata route, address caller) internal view returns (bool) {
-    return _hasAccess(_toRouteId(route), caller);
+  /**
+   * Returns true if the caller has access to the namespace or file, false otherwise.
+   */
+  function _hasAccess(bytes16 namespace, bytes16 file, address caller) internal view returns (bool) {
+    return
+      ResourceAccess.get(ResourceSelector.from(namespace, 0), caller) || // First check access based on the namespace
+      ResourceAccess.get(ResourceSelector.from(namespace, file), caller); // If caller has no namespace access, check access on the file
   }
 
-  function _hasAccess(uint256 routeId, address caller) internal view returns (bool) {
-    return RouteAccess.get(routeId, caller);
-  }
-}
+  /**
+   * Check for access at the given namespace or file.
+   * Returns the resourceSelector if the caller has access.
+   * Reverts with AccessDenied if the caller has no access.
+   */
+  function _requireAccess(
+    bytes16 namespace,
+    bytes16 file,
+    address caller
+  ) internal view returns (bytes32 resourceSelector) {
+    resourceSelector = ResourceSelector.from(namespace, file);
 
-// A route is a string starting with `/` or an empty string
-function _isRoute(string memory route) pure returns (bool result) {
-  assembly {
-    // If the route is empty, return true
-    if eq(mload(route), 0) {
-      result := 1
-    }
-
-    // If the first byte is `/` (ascii 0x2f), return true
-    if eq(byte(0, mload(add(route, 0x20))), 0x2f) {
-      result := 1
-    }
-
-    // If the route is only `/`, return false
-    if eq(mload(route), 1) {
-      result := 0
-    }
-  }
-}
-
-// A top level route contains exactly one `/` at the start
-function _isSingleLevelRoute(string memory route) pure returns (bool result) {
-  // Verify the route is empty or starts with `/`
-  if (!_isRoute(route)) return false;
-
-  // Loop through the string and return false if another `/` is found
-  bytes memory routeBytes = bytes(route);
-  for (uint256 i = 1; i < routeBytes.length; ) {
-    if (routeBytes[i] == 0x2f) return false;
-    unchecked {
-      i++;
+    // Check if the given caller has access to the given namespace or file
+    if (!_hasAccess(namespace, file, msg.sender)) {
+      revert AccessDenied(resourceSelector.toString(), caller);
     }
   }
 
-  // Return true if no `/` was found
-  return true;
-}
+  function _requireOwner(
+    bytes16 namespace,
+    bytes16 file,
+    address caller
+  ) internal view returns (bytes32 resourceSelector) {
+    resourceSelector = ResourceSelector.from(namespace, file);
 
-function _toRouteId(string memory route) pure returns (uint256) {
-  return uint256(keccak256(bytes(route)));
+    if (NamespaceOwner.get(namespace) != msg.sender) {
+      revert AccessDenied(resourceSelector.toString(), caller);
+    }
+  }
 }

@@ -16,14 +16,14 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/RouteAccess"));
-uint256 constant RouteAccessTableId = _tableId;
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("NamespaceOwner"))));
+uint256 constant NamespaceOwnerTableId = _tableId;
 
-library RouteAccess {
+library NamespaceOwner {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BOOL;
+    _schema[0] = SchemaType.ADDRESS;
 
     return SchemaLib.encode(_schema);
   }
@@ -31,8 +31,8 @@ library RouteAccess {
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
-    _fieldNames[0] = "value";
-    return ("RouteAccess", _fieldNames);
+    _fieldNames[0] = "owner";
+    return ("NamespaceOwner", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -57,47 +57,37 @@ library RouteAccess {
     _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get value */
-  function get(uint256 routeId, address caller) internal view returns (bool value) {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+  /** Get owner */
+  function get(bytes16 namespace) internal view returns (address owner) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((namespace));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Get value from the specified store */
-  function get(IStore _store, uint256 routeId, address caller) internal view returns (bool value) {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+  /** Get owner from the specified store */
+  function get(IStore _store, bytes16 namespace) internal view returns (address owner) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((namespace));
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
-    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+    return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Set value */
-  function set(uint256 routeId, address caller, bool value) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+  /** Set owner */
+  function set(bytes16 namespace, address owner) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((namespace));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((owner)));
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(uint256 routeId, address caller) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32(uint256((routeId)));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+  function deleteRecord(bytes16 namespace) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((namespace));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
-  }
-}
-
-function _toBool(uint8 value) pure returns (bool result) {
-  assembly {
-    result := value
   }
 }

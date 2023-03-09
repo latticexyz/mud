@@ -7,19 +7,16 @@ pragma solidity >=0.8.0;
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 // Import store internals
-import { IStore } from "../IStore.sol";
-import { StoreSwitch } from "../StoreSwitch.sol";
-import { StoreCore } from "../StoreCore.sol";
-import { Bytes } from "../Bytes.sol";
-import { SliceLib } from "../Slice.sol";
-import { EncodeArray } from "../tightcoder/EncodeArray.sol";
-import { Schema, SchemaLib } from "../Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { SliceLib } from "@latticexyz/store/src/Slice.sol";
+import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
+import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Hooks"))));
-uint256 constant HooksTableId = _tableId;
-
-library Hooks {
+library AddressArray {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
@@ -32,22 +29,33 @@ library Hooks {
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "value";
-    return ("Hooks", _fieldNames);
+    return ("AddressArray", _fieldNames);
   }
 
   /** Register the table's schema */
-  function registerSchema() internal {
+  function registerSchema(uint256 _tableId) internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
   /** Set the table's metadata */
-  function setMetadata() internal {
+  function setMetadata(uint256 _tableId) internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
+  /** Register the table's schema for the specified store */
+  function registerSchema(uint256 _tableId, IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema());
+  }
+
+  /** Set the table's metadata for the specified store */
+  function setMetadata(uint256 _tableId, IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
   /** Get value */
-  function get(bytes32 key) internal view returns (address[] memory value) {
+  function get(uint256 _tableId, bytes32 key) internal view returns (address[] memory value) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -55,8 +63,17 @@ library Hooks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
+  /** Get value from the specified store */
+  function get(uint256 _tableId, IStore _store, bytes32 key) internal view returns (address[] memory value) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
+  }
+
   /** Set value */
-  function set(bytes32 key, address[] memory value) internal {
+  function set(uint256 _tableId, bytes32 key, address[] memory value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -64,7 +81,7 @@ library Hooks {
   }
 
   /** Push an element to value */
-  function push(bytes32 key, address _element) internal {
+  function push(uint256 _tableId, bytes32 key, address _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -74,7 +91,7 @@ library Hooks {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 key) internal {
+  function deleteRecord(uint256 _tableId, bytes32 key) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 

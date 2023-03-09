@@ -19,7 +19,7 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 // Import user types
 import { Enum1, Enum2 } from "./../types.sol";
 
-uint256 constant _tableId = uint256(keccak256("/Table1"));
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Table1"))));
 uint256 constant Table1TableId = _tableId;
 
 struct Table1Data {
