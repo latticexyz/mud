@@ -29,7 +29,7 @@ const commandModule: CommandModule<Options, Options> = {
     await generateLibDeploy(config, testDir);
 
     // Call forge test
-    const child = execLog("forge", [
+    await execLog("forge", [
       "test",
       ...(v ? ["-" + [...new Array(v)].map(() => "v").join("")] : []),
       ...(forgeOpts?.split(" ") || []),
@@ -41,7 +41,6 @@ const commandModule: CommandModule<Options, Options> = {
 
     process.on("SIGINT", () => {
       console.log("\ngracefully shutting down from SIGINT (Crtl-C)");
-      child.kill();
       process.exit();
     });
   },
