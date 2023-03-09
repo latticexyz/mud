@@ -22,46 +22,87 @@ uint256 constant Singleton1TableId = _tableId;
 library Singleton1 {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
+    SchemaType[] memory _schema = new SchemaType[](2);
     _schema[0] = SchemaType.INT256;
+    _schema[1] = SchemaType.UINT256;
 
     return SchemaLib.encode(_schema);
   }
 
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
-    string[] memory _fieldNames = new string[](1);
+    string[] memory _fieldNames = new string[](2);
     _fieldNames[0] = "v1";
+    _fieldNames[1] = "v2";
     return ("Singleton1", _fieldNames);
   }
 
-  /** Register the table's schema  */
+  /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Set the table's metadata  */
+  /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get v1  */
-  function get() internal view returns (int256 v1) {
+  /** Get v1 */
+  function getV1() internal view returns (int256 v1) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
-  /** Set v1  */
-  function set(int256 v1) internal {
+  /** Set v1 */
+  function setV1(int256 v1) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((v1)));
   }
 
-  /* Delete all data for given keys  */
+  /** Get v2 */
+  function getV2() internal view returns (uint256 v2) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 1);
+    return (uint256(Bytes.slice32(_blob, 0)));
+  }
+
+  /** Set v2 */
+  function setV2(uint256 v2) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked((v2)));
+  }
+
+  /** Get the full data */
+  function get() internal view returns (int256 v1, uint256 v2) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
+    return decode(_blob);
+  }
+
+  /** Set the full data using individual values */
+  function set(int256 v1, uint256 v2) internal {
+    bytes memory _data = abi.encodePacked(v1, v2);
+
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
+  }
+
+  /** Decode the tightly packed blob using this table's schema */
+  function decode(bytes memory _blob) internal pure returns (int256 v1, uint256 v2) {
+    v1 = (int256(uint256(Bytes.slice32(_blob, 0))));
+
+    v2 = (uint256(Bytes.slice32(_blob, 32)));
+  }
+
+  /* Delete all data for given keys */
   function deleteRecord() internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 

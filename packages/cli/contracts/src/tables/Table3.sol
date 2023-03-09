@@ -38,18 +38,18 @@ library Table3 {
     return ("Table3", _fieldNames);
   }
 
-  /** Register the table's schema  */
+  /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Set the table's metadata  */
+  /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get v1  */
+  /** Get v1 */
   function get(bytes32 key) internal view returns (Enum1 v1) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -58,7 +58,7 @@ library Table3 {
     return Enum1(uint8(Bytes.slice1(_blob, 0)));
   }
 
-  /** Set v1  */
+  /** Set v1 */
   function set(bytes32 key, Enum1 v1) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -66,7 +66,7 @@ library Table3 {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(Enum1(v1)));
   }
 
-  /* Delete all data for given keys  */
+  /* Delete all data for given keys */
   function deleteRecord(bytes32 key) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));

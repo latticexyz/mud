@@ -44,12 +44,14 @@ contract TablegenTest is Test, StoreView {
     v1[1] = hex"0304";
     Singletons.create(-123, v1);
 
-    assertEq(Singleton1.get(), int256(-123));
+    assertEq(Singleton1.getV1(), int256(-123));
     assertEq(abi.encode(Singleton2.get()), abi.encode(v1));
+    // default set via `codegen.ts`
+    assertEq(Singleton1.getV2(), 123);
 
     Singletons.destroy();
 
-    assertEq(Singleton1.get(), int256(0));
+    assertEq(Singleton1.getV1(), int256(0));
     assertEq(abi.encode(Singleton2.get()), abi.encode(new bytes32[](0)));
 
     assertEq(Singletons.getTableIds()[0], Singleton1TableId);

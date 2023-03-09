@@ -42,9 +42,11 @@ const config: StoreUserConfig = {
       },
     },
     Singleton1: {
+      dataStruct: false,
       primaryKeys: {},
       schema: {
         v1: SchemaType.INT256,
+        v2: SchemaType.UINT256,
       },
     },
     Singleton2: {
@@ -71,7 +73,7 @@ const config: StoreUserConfig = {
     },
     Singletons: {
       tables: {
-        Singleton1: {},
+        Singleton1: { default: { v2: "123" } },
         Singleton2: {},
       },
     },

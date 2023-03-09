@@ -270,8 +270,9 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
           message: `Prototype "${prototypeName}" uses an invalid table "${prototypeTableName}"`,
         });
       } else {
+        const prototypeTable = config.tables[prototypeTableName];
         // check primary keys
-        const tablePrimaryKeys = config.tables[prototypeTableName].primaryKeys;
+        const tablePrimaryKeys = prototypeTable.primaryKeys;
         if (primaryKeys === undefined) {
           primaryKeys = tablePrimaryKeys;
           firstTableName = prototypeTableName;
@@ -281,6 +282,23 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
             message:
               `Prototype "${prototypeName}": different types of primary keys` +
               ` for tables "${prototypeTableName}" and "${firstTableName}"`,
+          });
+        }
+        // also ensure that field defaults are valid
+        const tableDefault = prototype.tables[prototypeTableName].default;
+        if (typeof tableDefault === "string" && !prototypeTable.dataStruct) {
+          ctx.addIssue({
+            code: ZodIssueCode.custom,
+            message:
+              `Prototype "${prototypeName}": default for table "${prototypeTableName}"` +
+              ` must be an object with individual field defaults, because it has dataStruct == false`,
+          });
+        } else if (typeof tableDefault === "object" && prototypeTable.dataStruct) {
+          ctx.addIssue({
+            code: ZodIssueCode.custom,
+            message:
+              `Prototype "${prototypeName}": default for table "${prototypeTableName}"` +
+              ` must be a string with a single default value, because it has dataStruct == true`,
           });
         }
       }

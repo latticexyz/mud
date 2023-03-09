@@ -51,18 +51,18 @@ library Table2 {
     return ("Table2", _fieldNames);
   }
 
-  /** Register the table's schema  */
+  /** Register the table's schema */
   function registerSchema() internal {
     StoreSwitch.registerSchema(_tableId, getSchema());
   }
 
-  /** Set the table's metadata  */
+  /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Get v1  */
+  /** Get v1 */
   function getV1(bytes32 key) internal view returns (uint256[] memory v1) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -71,7 +71,7 @@ library Table2 {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint256());
   }
 
-  /** Set v1  */
+  /** Set v1 */
   function setV1(bytes32 key, uint256[] memory v1) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -79,7 +79,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, EncodeArray.encode((v1)));
   }
 
-  /** Push an element to v1  */
+  /** Push an element to v1 */
   function pushV1(bytes32 key, uint256 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -89,7 +89,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
   }
 
-  /** Get v2  */
+  /** Get v2 */
   function getV2(bytes32 key) internal view returns (int32[] memory v2) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -98,7 +98,7 @@ library Table2 {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
   }
 
-  /** Set v2  */
+  /** Set v2 */
   function setV2(bytes32 key, int32[] memory v2) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -106,7 +106,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 1, EncodeArray.encode((v2)));
   }
 
-  /** Push an element to v2  */
+  /** Push an element to v2 */
   function pushV2(bytes32 key, int32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -116,7 +116,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 1, _newBlob);
   }
 
-  /** Get v3  */
+  /** Get v3 */
   function getV3(bytes32 key) internal view returns (bytes16[] memory v3) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -125,7 +125,7 @@ library Table2 {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes16());
   }
 
-  /** Set v3  */
+  /** Set v3 */
   function setV3(bytes32 key, bytes16[] memory v3) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -133,7 +133,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 2, EncodeArray.encode((v3)));
   }
 
-  /** Push an element to v3  */
+  /** Push an element to v3 */
   function pushV3(bytes32 key, bytes16 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -143,7 +143,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 2, _newBlob);
   }
 
-  /** Get v4  */
+  /** Get v4 */
   function getV4(bytes32 key) internal view returns (address[] memory v4) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -152,7 +152,7 @@ library Table2 {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
-  /** Set v4  */
+  /** Set v4 */
   function setV4(bytes32 key, address[] memory v4) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -160,7 +160,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 3, EncodeArray.encode((v4)));
   }
 
-  /** Push an element to v4  */
+  /** Push an element to v4 */
   function pushV4(bytes32 key, address _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -170,7 +170,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 3, _newBlob);
   }
 
-  /** Get v5  */
+  /** Get v5 */
   function getV5(bytes32 key) internal view returns (bool[] memory v5) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -179,7 +179,7 @@ library Table2 {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
   }
 
-  /** Set v5  */
+  /** Set v5 */
   function setV5(bytes32 key, bool[] memory v5) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -187,7 +187,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 4, EncodeArray.encode((v5)));
   }
 
-  /** Push an element to v5  */
+  /** Push an element to v5 */
   function pushV5(bytes32 key, bool _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -197,7 +197,7 @@ library Table2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 4, _newBlob);
   }
 
-  /** Get the full data  */
+  /** Get the full data */
   function get(bytes32 key) internal view returns (Table2Data memory _table) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -206,7 +206,7 @@ library Table2 {
     return decode(_blob);
   }
 
-  /** Set the full data using individual values  */
+  /** Set the full data using individual values */
   function set(
     bytes32 key,
     uint256[] memory v1,
@@ -238,7 +238,7 @@ library Table2 {
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
 
-  /** Set the full data using the data struct  */
+  /** Set the full data using the data struct */
   function set(bytes32 key, Table2Data memory _table) internal {
     set(key, _table.v1, _table.v2, _table.v3, _table.v4, _table.v5);
   }
@@ -272,7 +272,7 @@ library Table2 {
     _table.v5 = SliceLib.getSubslice(_blob, _start, _end).decodeArray_bool();
   }
 
-  /* Delete all data for given keys  */
+  /* Delete all data for given keys */
   function deleteRecord(bytes32 key) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
