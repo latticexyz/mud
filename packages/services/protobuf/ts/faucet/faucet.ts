@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
 import { CallContext, CallOptions } from "nice-grpc-common";
-import _m0 from "protobufjs/minimal.js";
+import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "faucet";
 
