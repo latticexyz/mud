@@ -35,11 +35,11 @@ library StoreCore {
   /**
    * Initialize internal tables.
    * Consumers must call this function in their constructor.
-   * TODO: should we turn the schema tableId into a "proper tableId" and register it here?
+   * TODO: should we turn the schema table into a "proper tableId" and register it here?
    * (see https://github.com/latticexyz/mud/issues/444)
    */
   function initialize() internal {
-    // Register internal schema tableId
+    // Register internal schema table
     registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
 
     // Register other internal tables
@@ -71,7 +71,7 @@ library StoreCore {
   }
 
   /**
-   * Check if the given tableId exists
+   * Check if a table with the given tableId exists
    */
   function hasTable(uint256 tableId) internal view returns (bool) {
     return !StoreCoreInternal._getSchema(tableId).isEmpty();
@@ -357,7 +357,7 @@ library StoreCore {
 
 library StoreCoreInternal {
   bytes32 internal constant SLOT = keccak256("mud.store");
-  uint256 internal constant SCHEMA_TABLE = uint256(keccak256("mud.store.tableId.schema"));
+  uint256 internal constant SCHEMA_TABLE = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("schema"))));
 
   /************************************************************************
    *
