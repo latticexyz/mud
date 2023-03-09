@@ -25,7 +25,7 @@ contract World is Store {
 
   error ResourceExists(string resource);
   error AccessDenied(string resource, address caller);
-  error InvalidSelector(bytes32 selector);
+  error InvalidSelector(string resource);
   error SystemExists(address system);
 
   constructor() {
@@ -84,15 +84,15 @@ contract World is Store {
     bytes16 file,
     Schema schema
   ) public virtual returns (bytes32 resourceSelector) {
+    resourceSelector = ResourceSelector.from(namespace, file);
+
     // Require the file selector to not be the namespace's root file
-    if (file == ROOT_FILE) revert InvalidSelector(file);
+    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
 
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
     else _requireOwner(namespace, ROOT_FILE, msg.sender);
-
-    resourceSelector = ResourceSelector.from(namespace, file);
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -102,19 +102,63 @@ contract World is Store {
     // Store the table resource type
     ResourceType.set(resourceSelector, Resource.TABLE);
 
-    // StoreCore handles checking for existence of this table
-    StoreCore.registerSchema(uint256(resourceSelector), schema);
+    // Register the table's schema
+    StoreCore.registerSchema(resourceSelector.toTableId(), schema);
   }
 
   /**
-   * Register a store hook for table at a given namespace and file.
+   * Register the given schema for the given table id.
+   * This overload exists to conform with the IStore interface.
+   */
+  function registerSchema(uint256 tableId, Schema schema) public virtual override {
+    bytes32 tableSelector = ResourceSelector.from(tableId);
+    registerTable(tableSelector.getNamespace(), tableSelector.getFile(), schema);
+  }
+
+  /**
+   * Register metadata (tableName, fieldNames) for the table at the given namespace and file.
+   * Requires the caller to own the namespace.
+   */
+  function setMetadata(
+    bytes16 namespace,
+    bytes16 file,
+    string calldata tableName,
+    string[] calldata fieldNames
+  ) public virtual {
+    // Require caller to own the namespace
+    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
+
+    // Set the metadata
+    StoreCore.setMetadata(resourceSelector.toTableId(), tableName, fieldNames);
+  }
+
+  /**
+   * Register metadata (tableName, fieldNames) for the table at the given tableId.
+   * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
+   */
+  function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    setMetadata(resourceSelector.getNamespace(), resourceSelector.getFile(), tableName, fieldNames);
+  }
+
+  /**
+   * Register the given store hook for the table at the given namespace and file.
    * Hooks on table files must implement the IStoreHook interface,
    * and hooks on system files must implement the ISystemHook interface.
    */
   function registerHook(bytes16 namespace, bytes16 file, address hook) public virtual {
-    // TODO: Check which file type is at this selector and call the appropriate register hook method
-    // For now we just assume it's a table file
-    registerTableHook(namespace, file, IStoreHook(hook));
+    Resource resourceType = ResourceType.get(ResourceSelector.from(namespace, file));
+
+    if (resourceType == Resource.TABLE) {
+      return registerTableHook(namespace, file, IStoreHook(hook));
+    }
+
+    if (resourceType == Resource.SYSTEM) {
+      return registerSystemHook(namespace, file, ISystemHook(hook));
+    }
+
+    revert InvalidSelector(ResourceSelector.from(namespace, file).toString());
   }
 
   /**
@@ -126,7 +170,7 @@ contract World is Store {
     bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
 
     // Register the hook
-    StoreCore.registerStoreHook(uint256(resourceSelector), hook);
+    StoreCore.registerStoreHook(resourceSelector.toTableId(), hook);
   }
 
   /**
@@ -146,7 +190,7 @@ contract World is Store {
   }
 
   /**
-   * Register a system in the given namespace.
+   * Register the given system in the given namespace.
    * If the namespace doesn't exist yet, it is registered.
    * The system is granted access to its namespace, so it can write to any table in the same namespace.
    * If publicAccess is true, no access control check is performed for calling the system.
@@ -157,8 +201,10 @@ contract World is Store {
     System system,
     bool publicAccess
   ) public virtual returns (bytes32 resourceSelector) {
+    resourceSelector = ResourceSelector.from(namespace, file);
+
     // Require the file selector to not be the namespace's root file
-    if (file == ROOT_FILE) revert InvalidSelector(file);
+    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
 
     // Require the system to not exist yet
     if (SystemRegistry.get(address(system)) != 0) revert SystemExists(address(system));
@@ -167,8 +213,6 @@ contract World is Store {
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
     else _requireOwner(namespace, ROOT_FILE, msg.sender);
-
-    resourceSelector = ResourceSelector.from(namespace, file);
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -226,7 +270,7 @@ contract World is Store {
    ************************************************************************/
 
   /**
-   * Write a record in a table at a given namespace and file.
+   * Write a record in the table at the given namespace and file.
    * Requires the caller to have access to the namespace or file.
    */
   function setRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key, bytes calldata data) public virtual {
@@ -234,7 +278,7 @@ contract World is Store {
     bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(uint256(resourceSelector), key, data);
+    StoreCore.setRecord(resourceSelector.toTableId(), key, data);
   }
 
   /**
@@ -262,7 +306,7 @@ contract World is Store {
     bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Set the field
-    StoreCore.setField(uint256(resourceSelector), key, schemaIndex, data);
+    StoreCore.setField(resourceSelector.toTableId(), key, schemaIndex, data);
   }
 
   /**
@@ -295,7 +339,7 @@ contract World is Store {
     bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(uint256(resourceSelector), key, schemaIndex, dataToPush);
+    StoreCore.pushToField(resourceSelector.toTableId(), key, schemaIndex, dataToPush);
   }
 
   /**
@@ -322,7 +366,7 @@ contract World is Store {
     bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(uint256(resourceSelector), key);
+    StoreCore.deleteRecord(resourceSelector.toTableId(), key);
   }
 
   /**
@@ -335,42 +379,6 @@ contract World is Store {
     deleteRecord(resourceSelector.getNamespace(), resourceSelector.getFile(), key);
   }
 
-  /**
-   * Register a schema for a given table id.
-   * This overload exists to conform with the IStore interface.
-   */
-  function registerSchema(uint256 tableId, Schema schema) public virtual override {
-    bytes32 tableSelector = ResourceSelector.from(tableId);
-    registerTable(tableSelector.getNamespace(), tableSelector.getFile(), schema);
-  }
-
-  /**
-   * Register metadata (tableName, fieldNames) for the table at the given namespace and file.
-   * Requires the caller to own the namespace.
-   */
-  function setMetadata(
-    bytes16 namespace,
-    bytes16 file,
-    string calldata tableName,
-    string[] calldata fieldNames
-  ) public virtual {
-    // Require caller to own the namespace
-    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
-
-    // Set the metadata
-    StoreCore.setMetadata(uint256(resourceSelector), tableName, fieldNames);
-  }
-
-  /**
-   * Register metadata (tableName, fieldNames) for the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
-   */
-  function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
-    setMetadata(resourceSelector.getNamespace(), resourceSelector.getFile(), tableName, fieldNames);
-  }
-
   /************************************************************************
    *
    *    SYSTEM CALLS
@@ -378,7 +386,7 @@ contract World is Store {
    ************************************************************************/
 
   /**
-   * Call a system at a given namespace and file.
+   * Call the system at the given namespace and file.
    * If the system is not public, the caller must have access to the namespace or file.
    */
   function call(
@@ -426,18 +434,6 @@ contract World is Store {
     assembly {
       // data+32 is a pointer to the error message, mload(data) is the length of the error message
       revert(add(data, 0x20), mload(data))
-    }
-  }
-
-  /**
-   * Register a namespace if it doesn't exist yet, or require that the caller is the owner of the namespace
-   */
-  function _registerNamespaceOrRequireOwner(bytes16 namespace) internal {
-    address namespaceOwner = NamespaceOwner.get(namespace);
-    if (namespaceOwner == address(0)) {
-      registerNamespace(namespace);
-    } else if (namespaceOwner != msg.sender) {
-      revert AccessDenied(ResourceSelector.toString(namespace), msg.sender);
     }
   }
 

@@ -6,7 +6,7 @@ export interface RenderTableOptions {
   /** Name of the struct to render. If undefined, struct and its methods aren't rendered. */
   structName?: string;
   /** Data used to statically registed the table. If undefined, all methods receive `_tableId` as an argument. */
-  staticResourceData?: StaticTableIdData;
+  staticResourceData?: StaticResourceData;
   /** Path for store package imports */
   storeImportPath: string;
   primaryKeys: RenderTablePrimaryKey[];
@@ -24,7 +24,7 @@ export interface ImportDatum {
   path: string;
 }
 
-export interface StaticTableIdData {
+export interface StaticResourceData {
   /** Name of the table id constant to render. */
   tableIdName: string;
   namespace: string;

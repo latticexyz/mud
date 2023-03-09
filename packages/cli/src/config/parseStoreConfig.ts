@@ -1,14 +1,6 @@
 import { SchemaType } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import {
-  AnyCaseName,
-  ObjectName,
-  OrdinaryRoute,
-  Selector,
-  StaticSchemaType,
-  UserEnum,
-  ValueName,
-} from "./commonSchemas.js";
+import { ObjectName, OrdinaryRoute, Selector, StaticSchemaType, UserEnum, ValueName } from "./commonSchemas.js";
 import { getDuplicates } from "./validation.js";
 
 const TableName = ObjectName;
@@ -82,7 +74,7 @@ export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig)
 
 // zod doesn't preserve doc comments
 export interface StoreUserConfig {
-  /** The namespace for tableIds. Default is "" (empty string) */
+  /** The namespace for table ids. Default is "" (empty string) */
   namespace?: string;
   /** Path for store package imports. Default is "@latticexyz/store/src/" */
   storeImportPath?: string;

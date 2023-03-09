@@ -327,6 +327,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 }
 
 function toBytes16(input: string) {
+  if (input.length > 16) throw new Error("String does not fit into 16 bytes");
+
   const result = new Uint8Array(16);
   // Set ascii bytes
   for (let i = 0; i < input.length; i++) {

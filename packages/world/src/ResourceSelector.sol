@@ -6,7 +6,7 @@ library ResourceSelector {
    * Create a 32-byte resource selector from a namespace and a file.
    *
    * A ResourceSelector is a 32-byte value that uniquely identifies a resource.
-   * The first 16 bits represent the namespace, the last 16 bits represent the file.
+   * The first 16 bytes represent the namespace, the last 16 bytes represent the file.
    */
   function from(bytes16 namespace, bytes16 file) internal pure returns (bytes32) {
     return bytes32(namespace) | (bytes32(file) >> 128);
@@ -48,9 +48,9 @@ library ResourceSelector {
   }
 
   /**
-   * Convert a resource selector to a uint256
+   * Convert a resource selector to a tableId
    */
-  function toUint256(bytes32 resourceSelector) internal pure returns (uint256) {
+  function toTableId(bytes32 resourceSelector) internal pure returns (uint256) {
     return uint256(resourceSelector);
   }
 }
