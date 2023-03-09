@@ -70,6 +70,36 @@ export interface JoinRequest {
   children: FindRequest[];
 }
 
+export interface DeleteRequest {
+  from: string;
+  filter: Filter[];
+}
+
+export interface UpdateRequest {
+  target: string;
+  filter: Filter[];
+  row: { [key: string]: string };
+}
+
+export interface UpdateRequest_RowEntry {
+  key: string;
+  value: string;
+}
+
+export interface InsertRequest {
+  into: string;
+  row: { [key: string]: string };
+}
+
+export interface InsertRequest_RowEntry {
+  key: string;
+  value: string;
+}
+
+export interface CreateRequest {
+  name: string;
+}
+
 export interface Filter {
   field: Field | undefined;
   operator: string;
@@ -661,6 +691,286 @@ export const JoinRequest = {
     const message = createBaseJoinRequest();
     message.on = object.on !== undefined && object.on !== null ? FieldPair.fromPartial(object.on) : undefined;
     message.children = object.children?.map((e) => FindRequest.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseDeleteRequest(): DeleteRequest {
+  return { from: "", filter: [] };
+}
+
+export const DeleteRequest = {
+  encode(message: DeleteRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.from !== "") {
+      writer.uint32(10).string(message.from);
+    }
+    for (const v of message.filter) {
+      Filter.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DeleteRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDeleteRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.from = reader.string();
+          break;
+        case 2:
+          message.filter.push(Filter.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<DeleteRequest>): DeleteRequest {
+    const message = createBaseDeleteRequest();
+    message.from = object.from ?? "";
+    message.filter = object.filter?.map((e) => Filter.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+function createBaseUpdateRequest(): UpdateRequest {
+  return { target: "", filter: [], row: {} };
+}
+
+export const UpdateRequest = {
+  encode(message: UpdateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.target !== "") {
+      writer.uint32(10).string(message.target);
+    }
+    for (const v of message.filter) {
+      Filter.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    Object.entries(message.row).forEach(([key, value]) => {
+      UpdateRequest_RowEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).ldelim();
+    });
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.target = reader.string();
+          break;
+        case 2:
+          message.filter.push(Filter.decode(reader, reader.uint32()));
+          break;
+        case 3:
+          const entry3 = UpdateRequest_RowEntry.decode(reader, reader.uint32());
+          if (entry3.value !== undefined) {
+            message.row[entry3.key] = entry3.value;
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<UpdateRequest>): UpdateRequest {
+    const message = createBaseUpdateRequest();
+    message.target = object.target ?? "";
+    message.filter = object.filter?.map((e) => Filter.fromPartial(e)) || [];
+    message.row = Object.entries(object.row ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = String(value);
+      }
+      return acc;
+    }, {});
+    return message;
+  },
+};
+
+function createBaseUpdateRequest_RowEntry(): UpdateRequest_RowEntry {
+  return { key: "", value: "" };
+}
+
+export const UpdateRequest_RowEntry = {
+  encode(message: UpdateRequest_RowEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateRequest_RowEntry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUpdateRequest_RowEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<UpdateRequest_RowEntry>): UpdateRequest_RowEntry {
+    const message = createBaseUpdateRequest_RowEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
+    return message;
+  },
+};
+
+function createBaseInsertRequest(): InsertRequest {
+  return { into: "", row: {} };
+}
+
+export const InsertRequest = {
+  encode(message: InsertRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.into !== "") {
+      writer.uint32(10).string(message.into);
+    }
+    Object.entries(message.row).forEach(([key, value]) => {
+      InsertRequest_RowEntry.encode({ key: key as any, value }, writer.uint32(26).fork()).ldelim();
+    });
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): InsertRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseInsertRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.into = reader.string();
+          break;
+        case 3:
+          const entry3 = InsertRequest_RowEntry.decode(reader, reader.uint32());
+          if (entry3.value !== undefined) {
+            message.row[entry3.key] = entry3.value;
+          }
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<InsertRequest>): InsertRequest {
+    const message = createBaseInsertRequest();
+    message.into = object.into ?? "";
+    message.row = Object.entries(object.row ?? {}).reduce<{ [key: string]: string }>((acc, [key, value]) => {
+      if (value !== undefined) {
+        acc[key] = String(value);
+      }
+      return acc;
+    }, {});
+    return message;
+  },
+};
+
+function createBaseInsertRequest_RowEntry(): InsertRequest_RowEntry {
+  return { key: "", value: "" };
+}
+
+export const InsertRequest_RowEntry = {
+  encode(message: InsertRequest_RowEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
+    }
+    if (message.value !== "") {
+      writer.uint32(18).string(message.value);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): InsertRequest_RowEntry {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseInsertRequest_RowEntry();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.key = reader.string();
+          break;
+        case 2:
+          message.value = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<InsertRequest_RowEntry>): InsertRequest_RowEntry {
+    const message = createBaseInsertRequest_RowEntry();
+    message.key = object.key ?? "";
+    message.value = object.value ?? "";
+    return message;
+  },
+};
+
+function createBaseCreateRequest(): CreateRequest {
+  return { name: "" };
+}
+
+export const CreateRequest = {
+  encode(message: CreateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.name !== "") {
+      writer.uint32(10).string(message.name);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CreateRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCreateRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.name = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<CreateRequest>): CreateRequest {
+    const message = createBaseCreateRequest();
+    message.name = object.name ?? "";
     return message;
   },
 };
