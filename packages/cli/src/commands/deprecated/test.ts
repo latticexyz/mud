@@ -42,11 +42,11 @@ const commandModule: CommandModule<Options, Options> = {
       process.exit();
     });
 
+    await child;
+    
     // Reset LibDeploy.sol
     console.log("Reset LibDeploy.sol");
     await resetLibDeploy(testDir);
-
-    await child;
   },
 };
 
