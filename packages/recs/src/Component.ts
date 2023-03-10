@@ -77,8 +77,8 @@ export function setComponent<S extends Schema, T = undefined>(
   for (const [key, val] of Object.entries(value)) {
     if (component.values[key]) {
       component.values[key].set(entity, val);
-    } else if (!component.metadata?.table) {
-      // If component metadata includes the table definition (from `defineStoreComponents`),
+    } else if (!component.metadata?.tableId) {
+      // If component metadata includes the tableId (from `defineStoreComponents`),
       // we can ignore this value without logging anything.
       //
       // Otherwise, we should let the user know we found undefined data.
@@ -353,7 +353,7 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       : undefined;
   }
 
-  const valueProxyHandler: (key: keyof S) => ProxyHandler<typeof component.values[typeof key]> = (key: keyof S) => ({
+  const valueProxyHandler: (key: keyof S) => ProxyHandler<(typeof component.values)[typeof key]> = (key: keyof S) => ({
     get(target, prop) {
       // Intercept calls to component.value[key].get(entity)
       if (prop === "get") {

@@ -71,10 +71,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   const storeSchemaTableId = new TableId("mudstore", "schema");
   const storeSchemaComponent = defineComponent(
     world,
-    {
-      0: Type.T,
-      schema: Type.T,
-    },
+    { schema: Type.T },
     {
       metadata: {
         contractId: storeSchemaTableId.toHexString(),
