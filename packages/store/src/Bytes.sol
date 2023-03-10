@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
+import { SliceLib } from "./Slice.sol";
 
 library Bytes {
   /**
@@ -77,11 +78,14 @@ library Bytes {
 
   /**
    * In-place overwrite a four bytes of a `bytes memory` value.
-   * TOOD: this might be more efficient in assembly
    */
-  function setBytes4(bytes memory input, uint256 index, bytes4 overwrite) internal returns (bytes memory) {
-    for (uint256 i; i < 4; i++) {
-      input[index + i] = bytes1(overwrite << (i * 8));
+  function setBytes4(bytes memory input, uint256 offset, bytes4 overwrite) internal pure returns (bytes memory) {
+    bytes4 mask = 0xffffffff;
+    assembly {
+      let value := mload(add(add(input, 0x20), offset))
+      value := and(value, not(mask)) // zero out the first 4 bytes
+      value := or(value, overwrite) // set the bytes at the offset
+      mstore(add(add(input, 0x20), offset), value) // store the new value
     }
     return input;
   }
