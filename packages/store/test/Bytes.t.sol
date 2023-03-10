@@ -135,6 +135,6 @@ contract BytesTest is Test {
     assertEq(keccak256(result), keccak256(abi.encodePacked(overwrite, remainder)));
 
     // Operation happened in-place
-    // assertEq(keccak256(input), keccak256(result));
+    assertEq(keccak256(input), keccak256(result));
   }
 }

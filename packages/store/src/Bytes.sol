@@ -87,12 +87,12 @@ library Bytes {
   }
 
   /**
-   * In-place overwrite a four bytes of a `bytes memory` value.
+   * In-place overwrite four bytes of a `bytes memory` value.
    */
   function setBytes4(bytes memory input, uint256 offset, bytes4 overwrite) internal pure returns (bytes memory) {
     bytes4 mask = 0xffffffff;
     assembly {
-      let value := mload(add(add(input, 0x20), offset))
+      let value := mload(add(add(input, 0x20), offset)) // load 32 bytes from input starting at offset
       value := and(value, not(mask)) // zero out the first 4 bytes
       value := or(value, overwrite) // set the bytes at the offset
       mstore(add(add(input, 0x20), offset), value) // store the new value

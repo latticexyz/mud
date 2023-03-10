@@ -3,6 +3,9 @@ pragma solidity >=0.8.0;
 import { ROOT_NAMESPACE, ROOT_FILE } from "./constants.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
+bytes16 constant ROOT_NAMESPACE_STRING = bytes16("ROOT_NAMESPACE");
+bytes16 constant ROOT_FILE_STRING = bytes16("ROOT_FILE");
+
 library ResourceSelector {
   /**
    * Create a 32-byte resource selector from a namespace and a file.
@@ -51,9 +54,9 @@ library ResourceSelector {
     return
       string(
         abi.encodePacked(
-          namespace == ROOT_NAMESPACE ? bytes16("ROOT_NAMESPACE") : namespace,
+          namespace == ROOT_NAMESPACE ? ROOT_NAMESPACE_STRING : namespace,
           "/",
-          file == ROOT_FILE ? bytes16("ROOT_FILE") : file
+          file == ROOT_FILE ? ROOT_FILE_STRING : file
         )
       );
   }

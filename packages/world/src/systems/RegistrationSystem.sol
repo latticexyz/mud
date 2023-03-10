@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-
 import { Store, IStoreHook } from "@latticexyz/store/src/Store.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -12,6 +10,7 @@ import { ResourceSelector } from "../ResourceSelector.sol";
 import { Resource } from "../types.sol";
 import { ROOT_NAMESPACE, ROOT_FILE } from "../constants.sol";
 import { Errors } from "../Errors.sol";
+import { AccessControl } from "../AccessControl.sol";
 
 import { NamespaceOwner } from "../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../tables/ResourceAccess.sol";
@@ -21,7 +20,7 @@ import { Systems } from "../tables/Systems.sol";
 import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
 
 import { ISystemHook } from "../interfaces/ISystemHook.sol";
-import { IRegistrationSystem } from "../interfaces/IRegistrationSystem.sol";
+import { IRegistrationSystem } from "../interfaces/systems/IRegistrationSystem.sol";
 
 contract RegistrationSystem is System, IRegistrationSystem {
   using ResourceSelector for bytes32;
@@ -62,7 +61,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else _requireOwner(namespace, ROOT_FILE, _msgSender());
+    else AccessControl.requireOwner(namespace, ROOT_FILE, _msgSender());
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -87,7 +86,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     string[] calldata fieldNames
   ) public virtual {
     // Require caller to own the namespace
-    bytes32 resourceSelector = _requireOwner(namespace, file, _msgSender());
+    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, _msgSender());
 
     // Set the metadata
     StoreCore.setMetadata(resourceSelector.toTableId(), tableName, fieldNames);
@@ -118,7 +117,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
    */
   function registerTableHook(bytes16 namespace, bytes16 file, IStoreHook hook) public virtual {
     // Require caller to own the namespace
-    bytes32 resourceSelector = _requireOwner(namespace, file, _msgSender());
+    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, _msgSender());
 
     // Register the hook
     StoreCore.registerStoreHook(resourceSelector.toTableId(), hook);
@@ -154,7 +153,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else _requireOwner(namespace, ROOT_FILE, _msgSender());
+    else AccessControl.requireOwner(namespace, ROOT_FILE, _msgSender());
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -187,7 +186,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     string memory functionArguments
   ) public returns (bytes4 globalFunctionSelector) {
     // Require the caller to own the namespace
-    _requireOwner(namespace, file, _msgSender());
+    AccessControl.requireOwner(namespace, file, _msgSender());
 
     // Compute global function selector
     string memory namespaceString = ResourceSelector.toTrimmedString(namespace);
@@ -224,7 +223,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     bytes4 systemFunctionSelector
   ) public returns (bytes4) {
     // Require the caller to own the root namespace
-    _requireOwner(ROOT_NAMESPACE, ROOT_FILE, _msgSender());
+    AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, _msgSender());
 
     // Require the function selector to be globally unique
     bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
@@ -236,17 +235,5 @@ contract RegistrationSystem is System, IRegistrationSystem {
     FunctionSelectors.set(worldFunctionSelector, namespace, file, systemFunctionSelector);
 
     return worldFunctionSelector;
-  }
-
-  function _requireOwner(
-    bytes16 namespace,
-    bytes16 file,
-    address caller
-  ) internal view returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, file);
-
-    if (NamespaceOwner.get(namespace) != _msgSender()) {
-      revert Errors.AccessDenied(resourceSelector.toString(), caller);
-    }
   }
 }

@@ -4,9 +4,9 @@ pragma solidity >=0.8.0;
 import { IStoreHook } from "@latticexyz/store/src/Store.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
-import { System } from "../System.sol";
+import { System } from "../../System.sol";
 
-import { ISystemHook } from "./ISystemHook.sol";
+import { ISystemHook } from "../ISystemHook.sol";
 
 // TODO: autogenerate
 

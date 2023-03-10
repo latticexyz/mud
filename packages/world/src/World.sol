@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
 import { Store, IStoreHook } from "@latticexyz/store/src/Store.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
@@ -12,6 +11,7 @@ import { ResourceSelector } from "./ResourceSelector.sol";
 import { Resource } from "./types.sol";
 import { ROOT_NAMESPACE, ROOT_FILE } from "./constants.sol";
 import { Errors } from "./Errors.sol";
+import { AccessControl } from "./AccessControl.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { ResourceAccess } from "./tables/ResourceAccess.sol";
@@ -22,25 +22,14 @@ import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
 
 import { RegistrationSystem } from "./systems/RegistrationSystem.sol";
 
-import { ISystemHook } from "./interfaces/ISystemHook.sol";
-import { IWorldWithSystems } from "./interfaces/IWorldWithSystems.sol";
+import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 
-contract World is Store, IWorld {
+contract World is Store, IWorldCore {
   using ResourceSelector for bytes32;
 
-  // We have to replicate the error definitions from Errors.sol here because otherwise
-  // they are not available in the ABI and not logged by the forge console.
-  // TODO: Ask forge team to fix this
-  // error ResourceExists(string resource);
-  // error AccessDenied(string resource, address caller);
-  // error ResourceNotFound(string resource);
-  // error InvalidSelector(string resource);
-  // error SystemExists(address system);
-  // error FunctionSelectorExists(bytes4 functionSelector);
-  // error FunctionSelectorNotFound(bytes4 functionSelector);
-
-  IWorldWithSystems private immutable _this = IWorldWithSystems(address(this));
+  // IWorld includes interfaces for dynamically registered systems (e.g. IRegistrationSystem)
+  IWorld private immutable _this = IWorld(address(this));
 
   constructor() {
     // Register internal tables
@@ -72,10 +61,10 @@ contract World is Store, IWorld {
    * Register internal function selectors
    */
   function initialize() public {
-    // Require that the caller is the root namespace owner
-    _requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
+    // Require the caller to be the root namespace owner
+    AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
 
-    bytes16 registrationFile = "registration";
+    bytes16 registrationSystemFile = "registration";
 
     // Register RegistrationSystem
     RegistrationSystem registrationSystem = new RegistrationSystem();
@@ -85,7 +74,7 @@ contract World is Store, IWorld {
       funcSelectorAndArgs: abi.encodeWithSelector(
         RegistrationSystem.registerSystem.selector,
         ROOT_NAMESPACE,
-        registrationFile,
+        registrationSystemFile,
         address(registrationSystem),
         true
       ),
@@ -112,8 +101,8 @@ contract World is Store, IWorld {
         funcSelectorAndArgs: abi.encodeWithSelector(
           RegistrationSystem.registerRootFunctionSelector.selector,
           ROOT_NAMESPACE,
-          registrationFile,
-          rootFunctionSelectors[i],
+          registrationSystemFile,
+          rootFunctionSelectors[i], // Use the same function selector for the World as in RegistrationSystem
           rootFunctionSelectors[i]
         ),
         delegate: true
@@ -123,7 +112,7 @@ contract World is Store, IWorld {
 
   /************************************************************************
    *
-   *    REGISTRATION METHODS
+   *    WORLD METHODS
    *
    ************************************************************************/
 
@@ -141,7 +130,7 @@ contract World is Store, IWorld {
    */
   function grantAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
     // Require the caller to own the namespace
-    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
+    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, msg.sender);
 
     // Grant access to the given resource
     ResourceAccess.set(resourceSelector, grantee, true);
@@ -152,7 +141,7 @@ contract World is Store, IWorld {
    */
   function retractAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
     // Require the caller to own the namespace
-    bytes32 resourceSelector = _requireOwner(namespace, file, msg.sender);
+    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, msg.sender);
 
     // Retract access from the given resource
     ResourceAccess.deleteRecord(resourceSelector, grantee);
@@ -160,13 +149,80 @@ contract World is Store, IWorld {
 
   /************************************************************************
    *
-   *    STORE METHODS
+   *    WORLD STORE METHODS
+   *
+   ************************************************************************/
+
+  /**
+   * Write a record in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function setRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key, bytes calldata data) public virtual {
+    // Require access to the namespace or file
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
+
+    // Set the record
+    StoreCore.setRecord(resourceSelector.toTableId(), key, data);
+  }
+
+  /**
+   * Write a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function setField(
+    bytes16 namespace,
+    bytes16 file,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata data
+  ) public virtual {
+    // Require access to namespace or file
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
+
+    // Set the field
+    StoreCore.setField(resourceSelector.toTableId(), key, schemaIndex, data);
+  }
+
+  /**
+   * Push data to the end of a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function pushToField(
+    bytes16 namespace,
+    bytes16 file,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata dataToPush
+  ) public virtual {
+    // Require access to namespace or file
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
+
+    // Push to the field
+    StoreCore.pushToField(resourceSelector.toTableId(), key, schemaIndex, dataToPush);
+  }
+
+  /**
+   * Delete a record in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function deleteRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key) public virtual {
+    // Require access to namespace or file
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
+
+    // Delete the record
+    StoreCore.deleteRecord(resourceSelector.toTableId(), key);
+  }
+
+  /************************************************************************
+   *
+   *    STORE OVERRIDE METHODS
    *
    ************************************************************************/
 
   /**
    * Register the given schema for the given table id.
    * This overload exists to conform with the IStore interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
   function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) public virtual {
     bytes32 tableSelector = ResourceSelector.from(tableId);
@@ -193,18 +249,6 @@ contract World is Store, IWorld {
   }
 
   /**
-   * Write a record in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
-   */
-  function setRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key, bytes calldata data) public virtual {
-    // Require access to the namespace or file
-    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
-
-    // Set the record
-    StoreCore.setRecord(resourceSelector.toTableId(), key, data);
-  }
-
-  /**
    * Write a record in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
    * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
@@ -212,24 +256,6 @@ contract World is Store, IWorld {
   function setRecord(uint256 tableId, bytes32[] calldata key, bytes calldata data) public virtual {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     setRecord(resourceSelector.getNamespace(), resourceSelector.getFile(), key, data);
-  }
-
-  /**
-   * Write a field in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
-   */
-  function setField(
-    bytes16 namespace,
-    bytes16 file,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    bytes calldata data
-  ) public virtual {
-    // Require access to namespace or file
-    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
-
-    // Set the field
-    StoreCore.setField(resourceSelector.toTableId(), key, schemaIndex, data);
   }
 
   /**
@@ -248,24 +274,6 @@ contract World is Store, IWorld {
   }
 
   /**
-   * Push data to the end of a field in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
-   */
-  function pushToField(
-    bytes16 namespace,
-    bytes16 file,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    bytes calldata dataToPush
-  ) public virtual {
-    // Require access to namespace or file
-    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
-
-    // Push to the field
-    StoreCore.pushToField(resourceSelector.toTableId(), key, schemaIndex, dataToPush);
-  }
-
-  /**
    * Push data to the end of a field in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
    * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
@@ -278,18 +286,6 @@ contract World is Store, IWorld {
   ) public override {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     pushToField(resourceSelector.getNamespace(), resourceSelector.getFile(), key, schemaIndex, dataToPush);
-  }
-
-  /**
-   * Delete a record in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
-   */
-  function deleteRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key) public virtual {
-    // Require access to namespace or file
-    bytes32 resourceSelector = _requireAccess(namespace, file, msg.sender);
-
-    // Delete the record
-    StoreCore.deleteRecord(resourceSelector.toTableId(), key);
   }
 
   /**
@@ -325,7 +321,7 @@ contract World is Store, IWorld {
     if (systemAddress == address(0)) revert Errors.ResourceNotFound(resourceSelector.toString());
 
     // Allow access if the system is public or the caller has access to the namespace or file
-    if (!publicAccess) _requireAccess(namespace, file, msg.sender);
+    if (!publicAccess) AccessControl.requireAccess(namespace, file, msg.sender);
 
     // Call the system and forward any return data
     return
@@ -339,7 +335,7 @@ contract World is Store, IWorld {
 
   /************************************************************************
    *
-   *    CUSTOM FUNCTION SELECTORS
+   *    DYNAMIC FUNCTION SELECTORS
    *
    ************************************************************************/
 
@@ -390,45 +386,6 @@ contract World is Store, IWorld {
     assembly {
       // data+32 is a pointer to the error message, mload(data) is the length of the error message
       revert(add(data, 0x20), mload(data))
-    }
-  }
-
-  /**
-   * Returns true if the caller has access to the namespace or file, false otherwise.
-   */
-  function _hasAccess(bytes16 namespace, bytes16 file, address caller) internal view returns (bool) {
-    return
-      ResourceAccess.get(ResourceSelector.from(namespace, 0), caller) || // First check access based on the namespace
-      ResourceAccess.get(ResourceSelector.from(namespace, file), caller); // If caller has no namespace access, check access on the file
-  }
-
-  /**
-   * Check for access at the given namespace or file.
-   * Returns the resourceSelector if the caller has access.
-   * Reverts with AccessDenied if the caller has no access.
-   */
-  function _requireAccess(
-    bytes16 namespace,
-    bytes16 file,
-    address caller
-  ) internal view returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, file);
-
-    // Check if the given caller has access to the given namespace or file
-    if (!_hasAccess(namespace, file, msg.sender)) {
-      revert Errors.AccessDenied(resourceSelector.toString(), caller);
-    }
-  }
-
-  function _requireOwner(
-    bytes16 namespace,
-    bytes16 file,
-    address caller
-  ) internal view returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, file);
-
-    if (NamespaceOwner.get(namespace) != msg.sender) {
-      revert Errors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
 }

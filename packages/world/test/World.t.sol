@@ -23,7 +23,7 @@ import { Systems } from "../src/tables/Systems.sol";
 import { Bool } from "../src/tables/Bool.sol";
 import { AddressArray } from "../src/tables/AddressArray.sol";
 
-import { IWorldWithSystems } from "../src/interfaces/IWorldWithSystems.sol";
+import { IWorld } from "../src/interfaces/IWorld.sol";
 
 struct WorldTestSystemReturn {
   address sender;
@@ -66,7 +66,7 @@ contract WorldTestSystem is System {
       uint256 tableId = uint256(ResourceSelector.from(namespace, file));
       StoreCore.setRecord(tableId, key, abi.encodePacked(data));
     } else {
-      World(payable(msg.sender)).setRecord(namespace, file, key, abi.encodePacked(data));
+      World(msg.sender).setRecord(namespace, file, key, abi.encodePacked(data));
     }
   }
 
@@ -78,7 +78,7 @@ contract WorldTestSystem is System {
     }
   }
 
-  fallback() external payable {
+  fallback() external {
     emit WorldTestSystemLog("fallback");
   }
 }
@@ -106,14 +106,14 @@ contract WorldTest is Test {
   event WorldTestSystemLog(string log);
 
   Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
-  IWorldWithSystems world;
+  IWorld world;
 
   bytes32 key;
   bytes32[] keyTuple;
   bytes32[] singletonKey;
 
   function setUp() public {
-    world = IWorldWithSystems(address(new World()));
+    world = IWorld(address(new World()));
     world.initialize();
     key = "testKey";
     keyTuple = new bytes32[](1);

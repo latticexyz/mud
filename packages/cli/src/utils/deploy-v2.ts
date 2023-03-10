@@ -4,7 +4,7 @@ import { MUDConfig } from "../config/index.js";
 import { MUDError } from "./errors.js";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { BigNumber, ContractInterface, ethers } from "ethers";
-import { IWorldWithSystems } from "@latticexyz/world/types/ethers-contracts/IWorldWithSystems.js";
+import { IWorld } from "@latticexyz/world/types/ethers-contracts/IWorld.js";
 import { abi as WorldABI, bytecode as WorldBytecode } from "@latticexyz/world/abi/World.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
@@ -64,7 +64,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   );
 
   // Create World contract instance from deployed address
-  const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as IWorldWithSystems;
+  const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as IWorld;
 
   // Register namespace
   if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)]);
