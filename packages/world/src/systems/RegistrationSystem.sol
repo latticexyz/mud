@@ -176,9 +176,9 @@ contract RegistrationSystem is System, IRegistrationSystem {
 
   /**
    * Register a World function selector for the given namespace, file and system function.
-   * TODO: directly map to the system to avoid an extra storage load for indirection to namespace/file
-   * TODO: only allow for public systems
-   * TODO: store reverse mapping from system to function selectors to allow for unregistering
+   * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
+   * which would save one sload per call, but add some complexity to upgrading systems. TBD.
+   * (see https://github.com/latticexyz/mud/issues/444)
    */
   function registerFunctionSelector(
     bytes16 namespace,
@@ -213,6 +213,9 @@ contract RegistrationSystem is System, IRegistrationSystem {
   /**
    * Register a root World function selector (without namespace / file prefix).
    * Requires the caller to own the root namespace.
+   * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
+   * which would save one sload per call, but add some complexity to upgrading systems. TBD.
+   * (see https://github.com/latticexyz/mud/issues/444)
    */
   function registerRootFunctionSelector(
     bytes16 namespace,
