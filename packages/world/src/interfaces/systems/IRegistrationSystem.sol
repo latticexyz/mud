@@ -74,9 +74,9 @@ interface IRegistrationSystem {
   function registerFunctionSelector(
     bytes16 namespace,
     bytes16 file,
-    string memory functionName,
-    string memory functionArguments
-  ) external returns (bytes4 functionSelector);
+    string memory systenFunctionName,
+    string memory systemFunctionArguments
+  ) external returns (bytes4 worldFunctionSelector);
 
   /**
    * Register a root World function selector (without namespace / file prefix).

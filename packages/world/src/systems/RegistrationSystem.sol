@@ -182,31 +182,31 @@ contract RegistrationSystem is System, IRegistrationSystem {
   function registerFunctionSelector(
     bytes16 namespace,
     bytes16 file,
-    string memory functionName,
-    string memory functionArguments
-  ) public returns (bytes4 globalFunctionSelector) {
+    string memory systemFunctionName,
+    string memory systemFunctionArguments
+  ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the namespace
     AccessControl.requireOwner(namespace, file, _msgSender());
 
     // Compute global function selector
     string memory namespaceString = ResourceSelector.toTrimmedString(namespace);
     string memory fileString = ResourceSelector.toTrimmedString(file);
-    globalFunctionSelector = bytes4(
-      keccak256(abi.encodePacked(namespaceString, "_", fileString, "_", functionName, functionArguments))
+    worldFunctionSelector = bytes4(
+      keccak256(abi.encodePacked(namespaceString, "_", fileString, "_", systemFunctionName, systemFunctionArguments))
     );
 
     // Require the function selector to be globally unique
-    bytes16 existingNamespace = FunctionSelectors.getNamespace(globalFunctionSelector);
-    bytes16 existingFile = FunctionSelectors.getFile(globalFunctionSelector);
+    bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
+    bytes16 existingFile = FunctionSelectors.getFile(worldFunctionSelector);
 
-    if (existingNamespace != 0 || existingFile != 0) revert Errors.FunctionSelectorExists(globalFunctionSelector);
+    if (existingNamespace != 0 || existingFile != 0) revert Errors.FunctionSelectorExists(worldFunctionSelector);
 
     // Register the function selector
-    bytes memory systemFunctionSignature = abi.encodePacked(functionName, functionArguments);
+    bytes memory systemFunctionSignature = abi.encodePacked(systemFunctionName, systemFunctionArguments);
     bytes4 systemFunctionSelector = systemFunctionSignature.length == 0
       ? bytes4(0) // Save gas by storing 0x0 for empty function signatures (= fallback function)
       : bytes4(keccak256(systemFunctionSignature));
-    FunctionSelectors.set(globalFunctionSelector, namespace, file, systemFunctionSelector);
+    FunctionSelectors.set(worldFunctionSelector, namespace, file, systemFunctionSelector);
   }
 
   /**
