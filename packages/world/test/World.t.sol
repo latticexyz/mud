@@ -97,6 +97,7 @@ contract WorldTest is Test {
   event HookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
+  Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
   World world;
 
   bytes32 key;
@@ -153,7 +154,7 @@ contract WorldTest is Test {
     bytes16 table = "testTable";
 
     // Register a new table in the namespace
-    bytes32 tableSelector = world.registerTable(namespace, table, schema);
+    bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema);
 
     // Expect the namespace to be created and owned by the caller
     assertEq(NamespaceOwner.get(world, namespace), address(this));
@@ -163,11 +164,11 @@ contract WorldTest is Test {
 
     // Expect an error when registering an existing table
     vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, tableSelector.toString()));
-    world.registerTable(namespace, table, schema);
+    world.registerTable(namespace, table, schema, defaultKeySchema);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
     _expectAccessDenied(address(0x01), namespace, "");
-    world.registerTable(namespace, "otherTable", schema);
+    world.registerTable(namespace, "otherTable", schema, defaultKeySchema);
   }
 
   function testSetMetadata() public {
@@ -187,7 +188,7 @@ contract WorldTest is Test {
     world.setMetadata("invalid", "invalid", tableName, fieldNames);
 
     // Register a table
-    world.registerTable(namespace, file, schema);
+    world.registerTable(namespace, file, schema, defaultKeySchema);
 
     // Set metadata
     world.setMetadata(namespace, file, tableName, fieldNames);
@@ -256,7 +257,7 @@ contract WorldTest is Test {
 
   function testDuplicateSelectors() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("namespace", "file", Bool.getSchema());
+    bytes32 resourceSelector = world.registerTable("namespace", "file", Bool.getSchema(), defaultKeySchema);
 
     // Deploy a new system
     System system = new System();
@@ -270,7 +271,7 @@ contract WorldTest is Test {
 
     // Expect an error when trying to register a table at the same selector
     vm.expectRevert(abi.encodeWithSelector(World.ResourceExists.selector, resourceSelector.toString()));
-    world.registerTable("namespace2", "file", Bool.getSchema());
+    world.registerTable("namespace2", "file", Bool.getSchema(), defaultKeySchema);
   }
 
   function testGrantAccess() public {
@@ -283,7 +284,7 @@ contract WorldTest is Test {
 
   function testSetRecord() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("testSetRecord", "testTable", Bool.getSchema());
+    bytes32 resourceSelector = world.registerTable("testSetRecord", "testTable", Bool.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);
 
     // Write data to the table
@@ -299,7 +300,7 @@ contract WorldTest is Test {
 
   function testSetField() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("testSetField", "testTable", Bool.getSchema());
+    bytes32 resourceSelector = world.registerTable("testSetField", "testTable", Bool.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);
 
     // Write data to the table via its namespace
@@ -328,7 +329,7 @@ contract WorldTest is Test {
     bytes16 file = "testTable";
 
     // Register a new table
-    bytes32 resourceSelector = world.registerTable(namespace, file, AddressArray.getSchema());
+    bytes32 resourceSelector = world.registerTable(namespace, file, AddressArray.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);
 
     // Create data
@@ -364,7 +365,7 @@ contract WorldTest is Test {
 
   function testDeleteRecord() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("testDeleteRecord", "testTable", Bool.getSchema());
+    bytes32 resourceSelector = world.registerTable("testDeleteRecord", "testTable", Bool.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);
 
     // Write data to the table via the namespace and expect it to be written
@@ -465,7 +466,7 @@ contract WorldTest is Test {
 
   function testRegisterTableHook() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("", "testTable", Bool.getSchema());
+    bytes32 resourceSelector = world.registerTable("", "testTable", Bool.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);
 
     // Register a new hook
@@ -487,7 +488,7 @@ contract WorldTest is Test {
 
   function testWriteRootSystem() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("namespace", "testTable", Bool.getSchema());
+    bytes32 resourceSelector = world.registerTable("namespace", "testTable", Bool.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);
 
     // Register a new system
@@ -507,7 +508,7 @@ contract WorldTest is Test {
 
   function testWriteAutonomousSystem() public {
     // Register a new table
-    uint256 tableId = uint256(world.registerTable("namespace", "testTable", Bool.getSchema()));
+    uint256 tableId = uint256(world.registerTable("namespace", "testTable", Bool.getSchema(), defaultKeySchema));
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();

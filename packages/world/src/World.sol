@@ -82,7 +82,8 @@ contract World is Store {
   function registerTable(
     bytes16 namespace,
     bytes16 file,
-    Schema schema
+    Schema valueSchema,
+    Schema keySchema
   ) public virtual returns (bytes32 resourceSelector) {
     resourceSelector = ResourceSelector.from(namespace, file);
 
@@ -102,17 +103,17 @@ contract World is Store {
     // Store the table resource type
     ResourceType.set(resourceSelector, Resource.TABLE);
 
-    // Register the table's schema
-    StoreCore.registerSchema(resourceSelector.toTableId(), schema);
+    // Register the table's valueSchema and keySchema
+    StoreCore.registerSchema(resourceSelector.toTableId(), valueSchema, keySchema);
   }
 
   /**
    * Register the given schema for the given table id.
    * This overload exists to conform with the IStore interface.
    */
-  function registerSchema(uint256 tableId, Schema schema) public virtual override {
+  function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) public virtual override {
     bytes32 tableSelector = ResourceSelector.from(tableId);
-    registerTable(tableSelector.getNamespace(), tableSelector.getFile(), schema);
+    registerTable(tableSelector.getNamespace(), tableSelector.getFile(), valueSchema, keySchema);
   }
 
   /**

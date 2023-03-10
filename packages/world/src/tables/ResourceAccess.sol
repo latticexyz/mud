@@ -28,6 +28,14 @@ library ResourceAccess {
     return SchemaLib.encode(_schema);
   }
 
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](2);
+    _schema[0] = SchemaType.BYTES32;
+    _schema[1] = SchemaType.ADDRESS;
+
+    return SchemaLib.encode(_schema);
+  }
+
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
@@ -37,7 +45,7 @@ library ResourceAccess {
 
   /** Register the table's schema */
   function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
+    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */
@@ -48,7 +56,7 @@ library ResourceAccess {
 
   /** Register the table's schema for the specified store */
   function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema());
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata for the specified store */
