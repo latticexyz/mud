@@ -13,7 +13,7 @@ contract StoreView is Store {
   /**
    * Not implemented in StoreView
    */
-  function registerSchema(uint256, Schema) public virtual {
+  function registerSchema(uint256, Schema, Schema) public virtual {
     revert StoreView_NotImplemented();
   }
 
