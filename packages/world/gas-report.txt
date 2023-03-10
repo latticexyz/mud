@@ -1,0 +1,1 @@
+(test/World.t.sol) | Register a new namespace [world.registerNamespace("test")]: 151546

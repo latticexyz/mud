@@ -32,13 +32,13 @@ contract World is Store, IWorld {
   // We have to replicate the error definitions from Errors.sol here because otherwise
   // they are not available in the ABI and not logged by the forge console.
   // TODO: Ask forge team to fix this
-  error ResourceExists(string resource);
-  error AccessDenied(string resource, address caller);
-  error ResourceNotFound(string resource);
-  error InvalidSelector(string resource);
-  error SystemExists(address system);
-  error FunctionSelectorExists(bytes4 functionSelector);
-  error FunctionSelectorNotFound(bytes4 functionSelector);
+  // error ResourceExists(string resource);
+  // error AccessDenied(string resource, address caller);
+  // error ResourceNotFound(string resource);
+  // error InvalidSelector(string resource);
+  // error SystemExists(address system);
+  // error FunctionSelectorExists(bytes4 functionSelector);
+  // error FunctionSelectorNotFound(bytes4 functionSelector);
 
   IWorldWithSystems private immutable _this = IWorldWithSystems(address(this));
 
@@ -106,7 +106,7 @@ contract World is Store, IWorld {
     ];
 
     for (uint256 i = 0; i < rootFunctionSelectors.length; i++) {
-      bytes memory result = _call({
+      _call({
         msgSender: msg.sender,
         systemAddress: address(registrationSystem),
         funcSelectorAndArgs: abi.encodeWithSelector(
@@ -322,7 +322,7 @@ contract World is Store, IWorld {
     (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
 
     // Check if the system exists
-    if (systemAddress == address(0)) revert ResourceNotFound(resourceSelector.toString());
+    if (systemAddress == address(0)) revert Errors.ResourceNotFound(resourceSelector.toString());
 
     // Allow access if the system is public or the caller has access to the namespace or file
     if (!publicAccess) _requireAccess(namespace, file, msg.sender);
@@ -349,7 +349,7 @@ contract World is Store, IWorld {
   fallback() external {
     (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) = FunctionSelectors.get(msg.sig);
 
-    if (namespace == 0 && file == 0) revert FunctionSelectorNotFound(msg.sig);
+    if (namespace == 0 && file == 0) revert Errors.FunctionSelectorNotFound(msg.sig);
 
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
@@ -416,7 +416,7 @@ contract World is Store, IWorld {
 
     // Check if the given caller has access to the given namespace or file
     if (!_hasAccess(namespace, file, msg.sender)) {
-      revert AccessDenied(resourceSelector.toString(), caller);
+      revert Errors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
 
@@ -428,7 +428,7 @@ contract World is Store, IWorld {
     resourceSelector = ResourceSelector.from(namespace, file);
 
     if (NamespaceOwner.get(namespace) != msg.sender) {
-      revert AccessDenied(resourceSelector.toString(), caller);
+      revert Errors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
 }

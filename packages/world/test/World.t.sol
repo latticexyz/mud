@@ -139,7 +139,7 @@ contract WorldTest is Test {
   }
 
   function testRegisterNamespace() public {
-    // Register a new namespace
+    // !gasreport Register a new namespace
     world.registerNamespace("test");
 
     // Expect the caller to be the namespace owner
@@ -471,10 +471,6 @@ contract WorldTest is Test {
   }
 
   function testRegisterTableHook() public {
-    return;
-    // TODO: do this in the set up function, but it doesn't show logs
-    world.initialize();
-
     // Register a new table
     bytes32 resourceSelector = world.registerTable("", "testTable", Bool.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);

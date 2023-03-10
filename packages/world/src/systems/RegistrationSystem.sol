@@ -26,16 +26,6 @@ import { IRegistrationSystem } from "../interfaces/IRegistrationSystem.sol";
 contract RegistrationSystem is System, IRegistrationSystem {
   using ResourceSelector for bytes32;
 
-  // We have to replicate the error definitions from Errors.sol here because otherwise
-  // they are not available in the ABI and not logged by the forge console.
-  // TODO: Ask forge team to fix this
-  error ResourceExists(string resource);
-  error AccessDenied(string resource, address caller);
-  error InvalidSelector(string resource);
-  error SystemExists(address system);
-  error FunctionSelectorExists(bytes4 functionSelector);
-  error FunctionSelectorNotFound(bytes4 functionSelector);
-
   /**
    * Register a new namespace
    */
@@ -43,7 +33,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     bytes32 resourceSelector = ResourceSelector.from(namespace);
 
     // Require namespace to not exist yet
-    if (ResourceType.get(namespace) != Resource.NONE) revert ResourceExists(resourceSelector.toString());
+    if (ResourceType.get(namespace) != Resource.NONE) revert Errors.ResourceExists(resourceSelector.toString());
 
     // Register namespace resource
     ResourceType.set(namespace, Resource.NAMESPACE);
@@ -67,7 +57,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     resourceSelector = ResourceSelector.from(namespace, file);
 
     // Require the file selector to not be the namespace's root file
-    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
+    if (file == ROOT_FILE) revert Errors.InvalidSelector(resourceSelector.toString());
 
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
@@ -76,7 +66,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
-      revert ResourceExists(resourceSelector.toString());
+      revert Errors.ResourceExists(resourceSelector.toString());
     }
 
     // Store the table resource type
@@ -119,7 +109,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
       return registerSystemHook(namespace, file, ISystemHook(hook));
     }
 
-    revert InvalidSelector(ResourceSelector.from(namespace, file).toString());
+    revert Errors.InvalidSelector(ResourceSelector.from(namespace, file).toString());
   }
 
   /**
@@ -156,10 +146,10 @@ contract RegistrationSystem is System, IRegistrationSystem {
     resourceSelector = ResourceSelector.from(namespace, file);
 
     // Require the file selector to not be the namespace's root file
-    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
+    if (file == ROOT_FILE) revert Errors.InvalidSelector(resourceSelector.toString());
 
     // Require the system to not exist yet
-    if (SystemRegistry.get(address(system)) != 0) revert SystemExists(address(system));
+    if (SystemRegistry.get(address(system)) != 0) revert Errors.SystemExists(address(system));
 
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
@@ -168,7 +158,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
-      revert ResourceExists(resourceSelector.toString());
+      revert Errors.ResourceExists(resourceSelector.toString());
     }
 
     // Store the system resource type
@@ -210,7 +200,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     bytes16 existingNamespace = FunctionSelectors.getNamespace(globalFunctionSelector);
     bytes16 existingFile = FunctionSelectors.getFile(globalFunctionSelector);
 
-    if (existingNamespace != 0 || existingFile != 0) revert FunctionSelectorExists(globalFunctionSelector);
+    if (existingNamespace != 0 || existingFile != 0) revert Errors.FunctionSelectorExists(globalFunctionSelector);
 
     // Register the function selector
     bytes4 systemFunctionSelector = bytes4(keccak256(abi.encodePacked(functionName, functionArguments)));
@@ -234,7 +224,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
     bytes16 existingFile = FunctionSelectors.getFile(worldFunctionSelector);
 
-    if (!(existingNamespace == 0 && existingFile == 0)) revert FunctionSelectorExists(worldFunctionSelector);
+    if (!(existingNamespace == 0 && existingFile == 0)) revert Errors.FunctionSelectorExists(worldFunctionSelector);
 
     // Register the function selector
     FunctionSelectors.set(worldFunctionSelector, namespace, file, systemFunctionSelector);
@@ -248,7 +238,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     resourceSelector = ResourceSelector.from(namespace, file);
 
     if (NamespaceOwner.get(namespace) != _msgSender()) {
-      revert AccessDenied(resourceSelector.toString(), caller);
+      revert Errors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
 }
