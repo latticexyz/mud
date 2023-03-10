@@ -158,7 +158,7 @@ contract WorldTest is Test {
     bytes16 namespace = "testNamespace";
     bytes16 table = "testTable";
 
-    // Register a new table in the namespace
+    // !gasreport Register a new table in the namespace
     bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema);
 
     // Expect the namespace to be created and owned by the caller
@@ -196,7 +196,7 @@ contract WorldTest is Test {
     // Register a table
     world.registerTable(namespace, file, schema, defaultKeySchema);
 
-    // Set metadata
+    // !gasreport Set metadata
     world.setMetadata(namespace, file, tableName, fieldNames);
 
     // Expect the metadata to be set
@@ -217,7 +217,11 @@ contract WorldTest is Test {
 
   function testRegisterSystem() public {
     System system = new System();
-    bytes32 resourceSelector = world.registerSystem("", "testSystem", system, false);
+    bytes16 namespace = "";
+    bytes16 file = "testSystem";
+
+    // !gasrepot Register a new system
+    bytes32 resourceSelector = world.registerSystem(namespace, file, system, false);
 
     // Expect the system to be registered
     (address registeredAddress, bool publicAccess) = Systems.get(world, resourceSelector);
@@ -293,7 +297,7 @@ contract WorldTest is Test {
     bytes32 resourceSelector = world.registerTable("testSetRecord", "testTable", Bool.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);
 
-    // Write data to the table
+    // !gasreport Write data to the table
     Bool.set(tableId, world, true);
 
     // Expect the data to be written
@@ -305,12 +309,15 @@ contract WorldTest is Test {
   }
 
   function testSetField() public {
+    bytes16 namespace = "testSetField";
+    bytes16 file = "testTable";
+
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("testSetField", "testTable", Bool.getSchema(), defaultKeySchema);
+    bytes32 resourceSelector = world.registerTable(namespace, file, Bool.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);
 
-    // Write data to the table via its namespace
-    world.setField("testSetField", "testTable", singletonKey, 0, abi.encodePacked(true));
+    // !gasreport Write data to a table field
+    world.setField(namespace, file, singletonKey, 0, abi.encodePacked(true));
 
     // Expect the data to be written
     assertTrue(Bool.get(tableId, world));
@@ -345,7 +352,7 @@ contract WorldTest is Test {
     dataToPush[2] = address(bytes20(keccak256("another address")));
     bytes memory encodedData = EncodeArray.encode(dataToPush);
 
-    // Push data to the table via namespace/file
+    // !gasreport Push data to the table
     world.pushToField(namespace, file, keyTuple, 0, encodedData);
 
     // Expect the data to be written
@@ -370,16 +377,21 @@ contract WorldTest is Test {
   }
 
   function testDeleteRecord() public {
+    bytes16 namespace = "testDeleteRecord";
+    bytes16 file = "testTable";
+
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("testDeleteRecord", "testTable", Bool.getSchema(), defaultKeySchema);
+    bytes32 resourceSelector = world.registerTable(namespace, file, Bool.getSchema(), defaultKeySchema);
     uint256 tableId = uint256(resourceSelector);
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord("testDeleteRecord", "testTable", singletonKey, abi.encodePacked(true));
+    world.setRecord(namespace, file, singletonKey, abi.encodePacked(true));
     assertTrue(Bool.get(tableId, world));
 
-    // Delete the record via the namespace and expect it to be deleted
-    world.deleteRecord("testDeleteRecord", "testTable", singletonKey);
+    // !gasreport Delete record
+    world.deleteRecord(namespace, file, singletonKey);
+
+    // expect it to be deleted
     assertFalse(Bool.get(tableId, world));
 
     // Write data to the table via the namespace and expect it to be written

@@ -1,1 +1,7 @@
+(test/World.t.sol) | Delete record [world.deleteRecord(namespace, file, singletonKey)]: 16026
+(test/World.t.sol) | Push data to the table [world.pushToField(namespace, file, keyTuple, 0, encodedData)]: 96353
 (test/World.t.sol) | Register a new namespace [world.registerNamespace("test")]: 151546
+(test/World.t.sol) | Register a new table in the namespace [bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema)]: 252061
+(test/World.t.sol) | Write data to a table field [world.setField(namespace, file, singletonKey, 0, abi.encodePacked(true))]: 44692
+(test/World.t.sol) | Set metadata [world.setMetadata(namespace, file, tableName, fieldNames)]: 277127
+(test/World.t.sol) | Write data to the table [Bool.set(tableId, world, true)]: 42576
