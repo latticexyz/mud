@@ -1,4 +1,5 @@
 import { ComponentValue } from "@latticexyz/recs";
+import { TableId } from "@latticexyz/utils";
 import { Contract } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
 import { getMetadata } from "./schemas/tableMetadata";
@@ -7,7 +8,7 @@ import { TableSchema } from "./common";
 
 export async function decodeStoreSetField(
   contract: Contract,
-  table: string,
+  table: TableId,
   keyTuple: string[],
   schemaIndex: number,
   data: string

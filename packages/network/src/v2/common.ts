@@ -1,8 +1,8 @@
 import { SchemaType } from "@latticexyz/schema-type";
-import { toTableId } from "./utils/tableId";
+import { TableId } from "@latticexyz/utils";
 
-export const schemaTableId = toTableId("mudstore", "schema");
-export const metadataTableId = toTableId("mudstore", "StoreMetadata");
+export const schemaTableId = new TableId("mudstore", "schema");
+export const metadataTableId = new TableId("mudstore", "StoreMetadata");
 
 export const storeEvents = ["StoreSetRecord", "StoreSetField", "StoreDeleteRecord"] as const;
 

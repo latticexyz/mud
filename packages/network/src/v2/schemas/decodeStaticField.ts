@@ -1,5 +1,5 @@
 import { SchemaType } from "@latticexyz/schema-type";
-import { arrayToHex } from "../utils/arrayToHex";
+import { arrayToHex } from "@latticexyz/utils";
 
 const unsupportedStaticField = (fieldType: SchemaType): never => {
   throw new Error(`Unsupported static field type: ${SchemaType[fieldType] ?? fieldType}`);

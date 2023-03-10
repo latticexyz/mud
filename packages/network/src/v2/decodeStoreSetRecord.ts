@@ -1,19 +1,19 @@
 import { ComponentValue } from "@latticexyz/recs";
-import { Contract, ethers } from "ethers";
+import { TableId, arrayToHex } from "@latticexyz/utils";
+import { Contract, utils } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
 import { getMetadata, registerMetadata } from "./schemas/tableMetadata";
 import { decodeData } from "./schemas/decodeData";
-import { arrayToHex } from "./utils/arrayToHex";
 import { schemaTableId, metadataTableId } from "./common";
 
 export async function decodeStoreSetRecord(
   contract: Contract,
-  table: string,
+  table: TableId,
   keyTuple: string[],
   data: string
 ): Promise<ComponentValue> {
   // registerSchema event
-  if (table === schemaTableId) {
+  if (table.toHexString() === schemaTableId.toHexString()) {
     const [tableForSchema, ...otherKeys] = keyTuple;
     if (otherKeys.length) {
       console.warn(
@@ -21,13 +21,13 @@ export async function decodeStoreSetRecord(
         { table, keyTuple }
       );
     }
-    registerSchema(contract, tableForSchema, data);
+    registerSchema(contract, TableId.fromBytes32(utils.arrayify(tableForSchema)), data);
   }
 
   const schema = await registerSchema(contract, table);
   const decoded = decodeData(schema, data);
 
-  if (table === metadataTableId) {
+  if (table.toHexString() === metadataTableId.toHexString()) {
     const [tableForMetadata, ...otherKeys] = keyTuple;
     if (otherKeys.length) {
       console.warn(
@@ -36,8 +36,8 @@ export async function decodeStoreSetRecord(
       );
     }
     const tableName = decoded[0];
-    const [fieldNames] = ethers.utils.defaultAbiCoder.decode(["string[]"], arrayToHex(decoded[1]));
-    registerMetadata(contract, tableForMetadata, tableName, fieldNames);
+    const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], arrayToHex(decoded[1]));
+    registerMetadata(contract, TableId.fromBytes32(utils.arrayify(tableForMetadata)), tableName, fieldNames);
   }
 
   const metadata = getMetadata(contract, table);

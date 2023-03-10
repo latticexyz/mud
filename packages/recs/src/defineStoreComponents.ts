@@ -1,5 +1,5 @@
 import { parseStoreConfig, StoreUserConfig } from "@latticexyz/cli/src/config/parseStoreConfig";
-import { TableId } from "./tableId";
+import { TableId } from "@latticexyz/utils";
 import { ContractComponents } from "@latticexyz/std-client";
 import { World, Schema } from "./types";
 import { Type } from "./constants";

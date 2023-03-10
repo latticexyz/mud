@@ -1,4 +1,4 @@
-import { hexToArray } from "../utils/hexToArray";
+import { hexToArray } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 import { decodeStaticField } from "./decodeStaticField";
 import { decodeDynamicField } from "./decodeDynamicField";

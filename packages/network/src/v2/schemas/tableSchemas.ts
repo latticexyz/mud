@@ -1,6 +1,6 @@
 import { Contract } from "ethers";
+import { TableId } from "@latticexyz/utils";
 import { TableSchema } from "../common";
-import { fromTableId } from "../utils/tableId";
 import { decodeSchema } from "./decodeSchema";
 
 // worldAddress:tableId => schema
@@ -9,12 +9,12 @@ const schemas: Partial<Record<`${string}:${string}`, Promise<TableSchema>>> = {}
 
 // the Contract arguments below assume that they're bound to a provider
 
-export function getSchema(world: Contract, table: string): Promise<TableSchema> | undefined {
+export function getSchema(world: Contract, table: TableId): Promise<TableSchema> | undefined {
   const schemaKey = `${world.address}:${table}` as const;
   return schemas[schemaKey];
 }
 
-export function registerSchema(world: Contract, table: string, rawSchema?: string): Promise<TableSchema> {
+export function registerSchema(world: Contract, table: TableId, rawSchema?: string): Promise<TableSchema> {
   const schemaKey = `${world.address}:${table}` as const;
 
   const existingSchema = schemas[schemaKey];
@@ -36,13 +36,13 @@ export function registerSchema(world: Contract, table: string, rawSchema?: strin
   }
 
   if (rawSchema) {
-    console.log("registering schema for table", { table: fromTableId(table).toString(), world: world.address });
+    console.log("registering schema for table", { table: table.toString(), world: world.address });
     const schema = Promise.resolve(decodeSchema(rawSchema));
     schemas[schemaKey] = schema;
     return schema;
   }
 
-  console.log("fetching schema for table", { table: fromTableId(table).toString(), world: world.address });
+  console.log("fetching schema for table", { table: table.toString(), world: world.address });
   const schema = world.getSchema(table).then((rawSchema: string) => decodeSchema(rawSchema));
   schemas[schemaKey] = schema;
   return schema;

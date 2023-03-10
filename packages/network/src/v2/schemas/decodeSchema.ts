@@ -1,5 +1,5 @@
 import { getStaticByteLength, SchemaType, SchemaTypeId } from "@latticexyz/schema-type";
-import { hexToArray } from "../utils/hexToArray";
+import { hexToArray } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 
 export function decodeSchema(rawSchema: string): TableSchema {

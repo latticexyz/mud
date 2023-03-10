@@ -9,9 +9,9 @@ import {
   InputType,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { defineComponent, Type, World, TableId } from "@latticexyz/recs";
+import { defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
-import { keccak256 } from "@latticexyz/utils";
+import { keccak256, TableId } from "@latticexyz/utils";
 import { Contract, ContractInterface } from "ethers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
