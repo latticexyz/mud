@@ -316,8 +316,7 @@ export async function fetchEventsInBlockRangeChunked(
     if (setPercentage) setPercentage(((i * interval) / delta) * 100);
     debug(`initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
 
-    // TODO: sort events by block+log index? concating here for ease
-    events = events.concat(worldEvents, storeEvents);
+    events = events.concat(orderBy([...worldEvents, ...storeEvents], ["blockNumber", "logIndex"]));
   }
 
   return events;
@@ -418,7 +417,7 @@ export function createFetchWorldEventsInBlockRange<C extends Components>(
     const ecsEvents: NetworkComponentUpdate<C>[] = [];
 
     for (const event of contractsEvents) {
-      const { lastEventInTx, txHash, args } = event;
+      const { lastEventInTx, txHash, logIndex, args } = event;
       const {
         component: address,
         entity: entityId,
@@ -441,6 +440,7 @@ export function createFetchWorldEventsInBlockRange<C extends Components>(
         entity,
         value: undefined,
         blockNumber,
+        logIndex,
         lastEventInTx,
         txHash,
       } as NetworkComponentUpdate<C>;
