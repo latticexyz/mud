@@ -9,7 +9,7 @@ import {
   InputType,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { defineComponent, Type, World } from "@latticexyz/recs";
+import { defineComponent, Type, World, TableId } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256 } from "@latticexyz/utils";
 import { Contract, ContractInterface } from "ethers";
@@ -24,6 +24,9 @@ import {
   createEncoders,
   createSystemCallStreams,
 } from "./utils";
+import { defineStoreComponents } from "@latticexyz/recs";
+import storeMudConfig from "@latticexyz/store/mud.config.mjs";
+import worldMudConfig from "@latticexyz/world/mud.config.mjs";
 
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
@@ -65,7 +68,28 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     )
   );
 
+  const storeSchemaTableId = new TableId("mudstore", "schema");
+  const storeSchemaComponents = defineComponent(
+    world,
+    {
+      0: Type.T,
+      schema: Type.T,
+    },
+    {
+      metadata: {
+        contractId: storeSchemaTableId.toHexString(),
+        tableId: storeSchemaTableId.toString(),
+      },
+    }
+  );
+
+  const storeComponents = defineStoreComponents(world, storeMudConfig);
+  const worldComponents = defineStoreComponents(world, worldMudConfig);
+
   const components: NetworkComponents<C> = {
+    storeSchemaComponents,
+    ...storeComponents,
+    ...worldComponents,
     ...contractComponents,
     SystemsRegistry,
     ComponentsRegistry,
@@ -77,8 +101,12 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
 
   // Function to register new components in mappings object
   function registerComponent(key: string, component: ContractComponent) {
-    const { contractId } = component.metadata;
-    mappings[keccak256(contractId)] = key;
+    const { contractId, tableId } = component.metadata;
+    if (tableId) {
+      mappings[tableId] = key;
+    } else {
+      mappings[keccak256(contractId)] = key;
+    }
   }
 
   // Register initial components in mappings object

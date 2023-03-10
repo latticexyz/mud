@@ -3,6 +3,7 @@ import { Contract } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
 import { getMetadata } from "./schemas/tableMetadata";
 import { decodeField } from "./schemas/decodeField";
+import { TableSchema } from "./common";
 
 export async function decodeStoreSetField(
   contract: Contract,
@@ -10,18 +11,21 @@ export async function decodeStoreSetField(
   keyTuple: string[],
   schemaIndex: number,
   data: string
-): Promise<ComponentValue> {
+): Promise<{ schema: TableSchema; value: ComponentValue }> {
   const schema = await registerSchema(contract, table);
-  const decoded = decodeField(schema, schemaIndex, data);
+  const value = decodeField(schema, schemaIndex, data);
 
   const metadata = getMetadata(contract, table);
   if (metadata) {
     const { tableName, fieldNames } = metadata;
     return {
-      ...decoded,
-      [fieldNames[schemaIndex]]: decoded[schemaIndex],
+      schema,
+      value: {
+        ...value,
+        [fieldNames[schemaIndex]]: value[schemaIndex],
+      },
     };
   }
 
-  return decoded;
+  return { schema, value };
 }

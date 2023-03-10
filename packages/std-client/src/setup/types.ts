@@ -22,7 +22,7 @@ export type DecodedSystemCall<
   updates: DecodedNetworkComponentUpdate[];
 };
 
-export type ContractComponent = Component<Schema, { contractId: string }>;
+export type ContractComponent = Component<Schema, { contractId: string; tableId?: string }>;
 
 export type ContractComponents = {
   [key: string]: ContractComponent;

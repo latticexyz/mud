@@ -1,4 +1,5 @@
 import { parseStoreConfig, StoreUserConfig } from "@latticexyz/cli/src/config/parseStoreConfig";
+import { TableId } from "./tableId";
 import { ContractComponents } from "@latticexyz/std-client";
 import { World, Schema } from "./types";
 import { Type } from "./constants";
@@ -11,7 +12,7 @@ export function defineStoreComponents(world: World, userConfig: StoreUserConfig)
   const components = Object.fromEntries(
     Object.entries(config.tables).map(([tableName, table]) => {
       // TODO: move this to a util to share this logic with cli/autogen
-      const route = `${config.baseRoute}${table.route}/${tableName}`;
+      const tableId = new TableId(config.namespace, table.fileSelector);
       // translate v2 schema type to v1 RECS generic type
       const schema: Schema = Object.fromEntries(
         Object.entries(table.schema).map(([fieldName, schemaType]) =>
@@ -19,7 +20,9 @@ export function defineStoreComponents(world: World, userConfig: StoreUserConfig)
           [fieldName, Type.T]
         )
       );
-      const component = defineComponent(world, schema, { metadata: { contractId: route, table } });
+      const component = defineComponent(world, schema, {
+        metadata: { contractId: tableId.toHexString(), tableId: tableId.toString(), table },
+      });
       return [tableName, component];
     })
   );

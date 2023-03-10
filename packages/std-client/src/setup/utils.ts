@@ -163,23 +163,24 @@ export function applyNetworkUpdates<C extends Components>(
           console.warn("Unknown component:", update);
           continue;
         }
+        const component = components[componentKey] as Component<Schema>;
 
         // keep this logic aligned with CacheStore's storeEvent
         if (update.partialValue !== undefined) {
-          if (!getComponentValue(components[componentKey], entityIndex)) {
+          if (!getComponentValue(component, entityIndex)) {
             console.warn("Can't make partial update on unset component value. Ignoring update.", {
-              componentMetadata: components[componentKey].metadata,
+              componentMetadata: component.metadata,
               entityIndex,
               update,
             });
           } else {
-            updateComponent(components[componentKey] as Component<Schema>, entityIndex, update.partialValue);
+            updateComponent(component, entityIndex, update.partialValue);
           }
         } else if (update.value === undefined) {
           // undefined value means component removed
-          removeComponent(components[componentKey] as Component<Schema>, entityIndex);
+          removeComponent(component, entityIndex);
         } else {
-          setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
+          setComponent(component, entityIndex, update.value);
         }
       } else if (decodeAndEmitSystemCall && isSystemCallEvent(update)) {
         decodeAndEmitSystemCall(update);

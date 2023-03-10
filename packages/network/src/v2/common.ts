@@ -1,8 +1,8 @@
-import { keccak256 } from "@latticexyz/utils";
 import { SchemaType } from "@latticexyz/schema-type";
+import { toTableId } from "./utils/tableId";
 
-export const schemaTableId = keccak256("mud.store.table.schema");
-export const metadataTableId = keccak256("/store_internals/tables/StoreMetadata");
+export const schemaTableId = toTableId("mudstore", "schema");
+export const metadataTableId = toTableId("mudstore", "StoreMetadata");
 
 export const storeEvents = ["StoreSetRecord", "StoreSetField", "StoreDeleteRecord"] as const;
 

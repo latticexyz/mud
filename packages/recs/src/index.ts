@@ -8,3 +8,4 @@ export * from "./types";
 export * from "./constants";
 export * from "./utils";
 export { defineStoreComponents } from "./defineStoreComponents";
+export * from "./tableId";

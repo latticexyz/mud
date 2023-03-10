@@ -1,5 +1,6 @@
 import { Contract } from "ethers";
 import { TableSchema } from "../common";
+import { fromTableId } from "../utils/tableId";
 import { decodeSchema } from "./decodeSchema";
 
 // worldAddress:tableId => schema
@@ -35,13 +36,13 @@ export function registerSchema(world: Contract, table: string, rawSchema?: strin
   }
 
   if (rawSchema) {
-    console.log("registering schema for table", { table, world: world.address });
+    console.log("registering schema for table", { table: fromTableId(table).toString(), world: world.address });
     const schema = Promise.resolve(decodeSchema(rawSchema));
     schemas[schemaKey] = schema;
     return schema;
   }
 
-  console.log("fetching schema for table", { table, world: world.address });
+  console.log("fetching schema for table", { table: fromTableId(table).toString(), world: world.address });
   const schema = world.getSchema(table).then((rawSchema: string) => decodeSchema(rawSchema));
   schemas[schemaKey] = schema;
   return schema;
