@@ -86,5 +86,5 @@ interface IRegistrationSystem {
     bytes16 file,
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
-  ) external;
+  ) external returns (bytes4 functionSelector);
 }

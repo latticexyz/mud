@@ -77,6 +77,10 @@ contract WorldTestSystem is System {
       emit WorldTestSystemLog("call");
     }
   }
+
+  fallback() external payable {
+    emit WorldTestSystemLog("fallback");
+  }
 }
 
 contract WorldTestTableHook is IStoreHook {
@@ -563,6 +567,81 @@ contract WorldTest is Test {
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("call");
     world.call("namespace", "testSystem", abi.encodeWithSelector(WorldTestSystem.emitCallType.selector));
+  }
+
+  function testRegisterFunctionSelector() public {
+    bytes16 namespace = "testNamespace";
+    bytes16 file = "testSystem";
+
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem(namespace, file, system, true);
+
+    // !gasreport Register a function selector
+    bytes4 functionSelector = world.registerFunctionSelector(namespace, file, "msgSender", "()");
+
+    string memory expectedWorldFunctionSignature = "testNamespace_testSystem_msgSender()";
+    bytes4 expectedWorldFunctionSelector = bytes4(keccak256(abi.encodePacked(expectedWorldFunctionSignature)));
+    assertEq(functionSelector, expectedWorldFunctionSelector, "wrong function selector returned");
+
+    // Call the system via the World with the registered function selector
+    (bool success, bytes memory data) = address(world).call(abi.encodePacked(expectedWorldFunctionSelector));
+
+    assertTrue(success, "call failed");
+    assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
+  }
+
+  function testRegisterRootFunctionSelector() public {
+    bytes16 namespace = "testNamespace";
+    bytes16 file = "testSystem";
+
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem(namespace, file, system, true);
+
+    bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
+    bytes4 sysFunc = WorldTestSystem.msgSender.selector;
+
+    // !gasreport Register a root function selector
+    bytes4 functionSelector = world.registerRootFunctionSelector(namespace, file, worldFunc, sysFunc);
+
+    assertEq(functionSelector, worldFunc, "wrong function selector returned");
+
+    // Call the system via the World with the registered function selector
+    (bool success, bytes memory data) = address(world).call(abi.encodePacked(worldFunc));
+
+    assertTrue(success, "call failed");
+    assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
+  }
+
+  function testRegisterFallbackSystem() public {
+    bytes16 namespace = "testNamespace";
+    bytes16 file = "testSystem";
+
+    // Register a new system
+    WorldTestSystem system = new WorldTestSystem();
+    world.registerSystem(namespace, file, system, true);
+
+    // !gasreport Register a fallback system
+    bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, "", "");
+
+    // Call the system's fallback function
+    vm.expectEmit(true, true, true, true);
+    emit WorldTestSystemLog("fallback");
+    (bool success, bytes memory data) = address(world).call(abi.encodeWithSelector(funcSelector1));
+    assertTrue(success, "call failed");
+
+    bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
+
+    // !gasreport Register a root fallback system
+    bytes4 funcSelector2 = world.registerRootFunctionSelector(namespace, file, worldFunc, 0);
+    assertEq(funcSelector2, worldFunc, "wrong function selector returned");
+
+    // Call the system's fallback function
+    vm.expectEmit(true, true, true, true);
+    emit WorldTestSystemLog("fallback");
+    (success, data) = address(world).call(abi.encodeWithSelector(worldFunc));
+    assertTrue(success, "call failed");
   }
 
   // TODO: add a test for systems writing to tables via the World

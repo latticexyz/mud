@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 import { ROOT_NAMESPACE, ROOT_FILE } from "./constants.sol";
+import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
 library ResourceSelector {
   /**
@@ -55,6 +56,16 @@ library ResourceSelector {
           file == ROOT_FILE ? bytes16("ROOT_FILE") : file
         )
       );
+  }
+
+  /**
+   * Convert a selector to a trimmed string (no trailing `null` ASCII characters)
+   */
+  function toTrimmedString(bytes16 selector) internal pure returns (string memory) {
+    uint256 length;
+    for (; length < 16; length++) if (Bytes.slice1(selector, length) == 0) break;
+    bytes memory packedSelector = abi.encodePacked(selector);
+    return string(Bytes.setLength(packedSelector, length));
   }
 
   /**

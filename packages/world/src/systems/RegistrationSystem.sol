@@ -190,8 +190,8 @@ contract RegistrationSystem is System, IRegistrationSystem {
     _requireOwner(namespace, file, _msgSender());
 
     // Compute global function selector
-    string memory namespaceString = string(abi.encodePacked(namespace));
-    string memory fileString = string(abi.encodePacked(file));
+    string memory namespaceString = ResourceSelector.toTrimmedString(namespace);
+    string memory fileString = ResourceSelector.toTrimmedString(file);
     globalFunctionSelector = bytes4(
       keccak256(abi.encodePacked(namespaceString, "_", fileString, "_", functionName, functionArguments))
     );
@@ -203,7 +203,10 @@ contract RegistrationSystem is System, IRegistrationSystem {
     if (existingNamespace != 0 || existingFile != 0) revert Errors.FunctionSelectorExists(globalFunctionSelector);
 
     // Register the function selector
-    bytes4 systemFunctionSelector = bytes4(keccak256(abi.encodePacked(functionName, functionArguments)));
+    bytes memory systemFunctionSignature = abi.encodePacked(functionName, functionArguments);
+    bytes4 systemFunctionSelector = systemFunctionSignature.length == 0
+      ? bytes4(0) // Save gas by storing 0x0 for empty function signatures (= fallback function)
+      : bytes4(keccak256(systemFunctionSignature));
     FunctionSelectors.set(globalFunctionSelector, namespace, file, systemFunctionSelector);
   }
 
@@ -216,7 +219,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     bytes16 file,
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
-  ) public {
+  ) public returns (bytes4) {
     // Require the caller to own the root namespace
     _requireOwner(ROOT_NAMESPACE, ROOT_FILE, _msgSender());
 
@@ -228,6 +231,8 @@ contract RegistrationSystem is System, IRegistrationSystem {
 
     // Register the function selector
     FunctionSelectors.set(worldFunctionSelector, namespace, file, systemFunctionSelector);
+
+    return worldFunctionSelector;
   }
 
   function _requireOwner(
