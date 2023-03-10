@@ -31,6 +31,16 @@ library Bytes {
     return keccak256(a) == keccak256(b);
   }
 
+  /**
+   * In-place set the length of a `bytes` memory value.
+   */
+  function setLength(bytes memory input, uint256 length) internal pure returns (bytes memory) {
+    assembly {
+      mstore(input, length)
+    }
+    return input;
+  }
+
   /************************************************************************
    *
    *    SET
