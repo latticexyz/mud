@@ -22,14 +22,6 @@ const config: StoreUserConfig = {
       },
       storeArgument: true,
     },
-    SystemRegistry: {
-      primaryKeys: {
-        system: SchemaType.ADDRESS,
-      },
-      schema: {
-        resourceSelector: SchemaType.BYTES32,
-      },
-    },
     Systems: {
       primaryKeys: {
         resourceSelector: SchemaType.BYTES32,
@@ -41,7 +33,17 @@ const config: StoreUserConfig = {
       storeArgument: true,
       dataStruct: false,
     },
+    SystemRegistry: {
+      directory: "/modules/registration/tables",
+      primaryKeys: {
+        system: SchemaType.ADDRESS,
+      },
+      schema: {
+        resourceSelector: SchemaType.BYTES32,
+      },
+    },
     ResourceType: {
+      directory: "/modules/registration/tables",
       primaryKeys: {
         resourceSelector: SchemaType.BYTES32,
       },
