@@ -237,6 +237,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
         throw new MUDError(
           `Error deploying ${contractName}: invalid bytecode. Note that linking of public libraries is not supported yet, make sure none of your libraries use "external" functions.`
         );
+      } else if (error?.message.includes("CreateContractLimit")) {
+        throw new MUDError(`Error deploying ${contractName}: CreateContractLimit exceeded.`);
       } else throw error;
     }
   }
