@@ -17,7 +17,6 @@ export const decodeField = (schema: TableSchema, schemaIndex: number, hexData: s
     schema.dynamicFields.forEach((fieldType, i) => {
       const index = schema.staticFields.length + i;
       if (index === schemaIndex) {
-        // if (hexData === "0x") console.log("decoding dynamic field");
         data[schemaIndex] = decodeDynamicField(fieldType, bytes.buffer);
       }
     });
