@@ -30,22 +30,13 @@ contract World is Store, IWorldCore, IErrors {
   IWorld private immutable _this = IWorld(address(this));
 
   constructor() {
-    // Register internal tables
+    // Register internal NamespaceOwner table (because it is required by AccessControl)
     NamespaceOwner.registerSchema();
-    NamespaceOwner.setMetadata();
-
-    ResourceAccess.registerSchema();
-    ResourceAccess.setMetadata();
-
-    Systems.registerSchema();
-    Systems.setMetadata();
-
-    FunctionSelectors.registerSchema();
-    FunctionSelectors.setMetadata();
 
     // Register the root namespace and give ownership to msg.sender
     NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
-    ResourceAccess.set(ROOT_NAMESPACE, msg.sender, true);
+
+    // Other internal tables are registered by the CoreModule to reduce World's bytecode size
   }
 
   /**

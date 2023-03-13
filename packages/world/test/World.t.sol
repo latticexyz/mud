@@ -22,6 +22,7 @@ import { Systems } from "../src/tables/Systems.sol";
 import { Bool } from "../src/tables/Bool.sol";
 import { AddressArray } from "../src/tables/AddressArray.sol";
 
+import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 
 import { IWorld } from "../src/interfaces/IWorld.sol";
@@ -116,6 +117,7 @@ contract WorldTest is Test {
 
   function setUp() public {
     world = IWorld(address(new World()));
+    world.installRootModule(new CoreModule());
     world.installRootModule(new RegistrationModule());
 
     key = "testKey";
