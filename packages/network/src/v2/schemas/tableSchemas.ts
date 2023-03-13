@@ -43,7 +43,7 @@ export function registerSchema(world: Contract, table: TableId, rawSchema?: stri
   }
 
   console.log("fetching schema for table", { table: table.toString(), world: world.address });
-  const schema = world.getSchema(table).then((rawSchema: string) => decodeSchema(rawSchema));
+  const schema = world.getSchema(table).then(decodeSchema);
   schemas[schemaKey] = schema;
   return schema;
 }
