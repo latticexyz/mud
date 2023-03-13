@@ -23,14 +23,20 @@ library Bool {
     return SchemaLib.encode(_schema);
   }
 
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](0);
+
+    return SchemaLib.encode(_schema);
+  }
+
   /** Register the table's schema */
   function registerSchema(uint256 _tableId) internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
+    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Register the table's schema for the specified store */
   function registerSchema(uint256 _tableId, IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema());
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Get value */

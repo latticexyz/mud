@@ -71,7 +71,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
   // Register tables
   promises.push(
-    ...Object.entries(mudConfig.tables).map(async ([tableName, { fileSelector, schema }]) => {
+    ...Object.entries(mudConfig.tables).map(async ([tableName, { fileSelector, schema, primaryKeys }]) => {
       console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${fileSelector}`));
 
       // Register table
@@ -79,10 +79,15 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
         return resolveSchemaOrUserTypeSimple(schemaOrUserType, mudConfig.userTypes);
       });
 
+      const keyTypes = Object.values(primaryKeys).map((schemaOrUserType) => {
+        return resolveSchemaOrUserTypeSimple(schemaOrUserType, mudConfig.userTypes);
+      });
+
       await fastTxExecute(WorldContract, "registerTable", [
         toBytes16(namespace),
         toBytes16(fileSelector),
         encodeSchema(schemaTypes),
+        encodeSchema(keyTypes),
       ]);
 
       // Register table metadata

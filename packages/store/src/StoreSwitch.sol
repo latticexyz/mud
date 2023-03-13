@@ -34,11 +34,11 @@ library StoreSwitch {
     }
   }
 
-  function registerSchema(uint256 table, Schema schema) internal {
+  function registerSchema(uint256 table, Schema schema, Schema keySchema) internal {
     if (isDelegateCall()) {
-      StoreCore.registerSchema(table, schema);
+      StoreCore.registerSchema(table, schema, keySchema);
     } else {
-      IStore(msg.sender).registerSchema(table, schema);
+      IStore(msg.sender).registerSchema(table, schema, keySchema);
     }
   }
 

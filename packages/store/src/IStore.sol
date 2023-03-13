@@ -8,9 +8,11 @@ interface IStore {
   event StoreSetField(uint256 table, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(uint256 table, bytes32[] key);
 
-  function registerSchema(uint256 table, Schema schema) external;
+  function registerSchema(uint256 table, Schema schema, Schema keySchema) external;
 
   function getSchema(uint256 table) external view returns (Schema schema);
+
+  function getKeySchema(uint256 table) external view returns (Schema schema);
 
   function setMetadata(uint256 table, string calldata tableName, string[] calldata fieldNames) external;
 

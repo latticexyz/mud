@@ -4,7 +4,16 @@ import { renderRecordMethods } from "./record.js";
 import { RenderTableOptions } from "./types.js";
 
 export function renderTable(options: RenderTableOptions) {
-  const { imports, libraryName, structName, staticResourceData, storeImportPath, fields, withRecordMethods } = options;
+  const {
+    imports,
+    libraryName,
+    structName,
+    staticResourceData,
+    storeImportPath,
+    fields,
+    withRecordMethods,
+    primaryKeys,
+  } = options;
 
   const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
@@ -60,6 +69,13 @@ library ${libraryName} {
     return SchemaLib.encode(_schema);
   }
 
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](${primaryKeys.length});
+    ${renderList(primaryKeys, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+
+    return SchemaLib.encode(_schema);
+  }
+
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](${fields.length});
@@ -69,7 +85,7 @@ library ${libraryName} {
 
   /** Register the table's schema */
   function registerSchema(${_typedTableId}) internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
+    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */
@@ -84,7 +100,7 @@ ${
     : `
   /** Register the table's schema for the specified store */
   function registerSchema(${renderArguments([_typedTableId, "IStore _store"])}) internal {
-    _store.registerSchema(_tableId, getSchema());
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata for the specified store */

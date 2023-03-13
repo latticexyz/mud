@@ -40,7 +40,11 @@ library StoreCore {
    */
   function initialize() internal {
     // Register internal schema table
-    registerSchema(StoreCoreInternal.SCHEMA_TABLE, SchemaLib.encode(SchemaType.BYTES32));
+    registerSchema(
+      StoreCoreInternal.SCHEMA_TABLE,
+      SchemaLib.encode(SchemaType.BYTES32, SchemaType.BYTES32), // The Schema table's valueSchema is { valueSchema: BYTES32, keySchema: BYTES32 }
+      SchemaLib.encode(SchemaType.UINT256) // The Schema table's keySchema is { tableId: UINT256 }
+    );
 
     // Register other internal tables
     //
@@ -71,6 +75,16 @@ library StoreCore {
   }
 
   /**
+   * Get the key schema for the given tableId
+   */
+  function getKeySchema(uint256 tableId) internal view returns (Schema keySchema) {
+    keySchema = StoreCoreInternal._getKeySchema(tableId);
+    if (keySchema.isEmpty()) {
+      revert StoreCore_TableNotFound(tableId, tableId.toString());
+    }
+  }
+
+  /**
    * Check if a table with the given tableId exists
    */
   function hasTable(uint256 tableId) internal view returns (bool) {
@@ -80,9 +94,10 @@ library StoreCore {
   /**
    * Register a new tableId schema
    */
-  function registerSchema(uint256 tableId, Schema schema) internal {
+  function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) internal {
     // Verify the schema is valid
-    schema.validate();
+    valueSchema.validate();
+    keySchema.validate();
 
     // Verify the schema doesn't exist yet
     if (hasTable(tableId)) {
@@ -90,7 +105,7 @@ library StoreCore {
     }
 
     // Register the schema
-    StoreCoreInternal._registerSchemaUnchecked(tableId, schema);
+    StoreCoreInternal._registerSchemaUnchecked(tableId, valueSchema, keySchema);
   }
 
   /**
@@ -372,17 +387,25 @@ library StoreCoreInternal {
     return Schema.wrap(Storage.load({ storagePointer: location }));
   }
 
+  function _getKeySchema(uint256 tableId) internal view returns (Schema) {
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = bytes32(tableId);
+    uint256 location = StoreCoreInternal._getStaticDataLocation(SCHEMA_TABLE, key);
+    return Schema.wrap(Storage.load({ storagePointer: location + 0x20 }));
+  }
+
   /**
    * Register a new tableId schema without validity checks
    */
-  function _registerSchemaUnchecked(uint256 tableId, Schema schema) internal {
+  function _registerSchemaUnchecked(uint256 tableId, Schema valueSchema, Schema keySchema) internal {
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32(tableId);
     uint256 location = _getStaticDataLocation(SCHEMA_TABLE, key);
-    Storage.store({ storagePointer: location, data: schema.unwrap() });
+    Storage.store({ storagePointer: location, data: valueSchema.unwrap() });
+    Storage.store({ storagePointer: location + 0x20, data: keySchema.unwrap() });
 
     // Emit an event to notify indexers
-    emit StoreCore.StoreSetRecord(SCHEMA_TABLE, key, abi.encodePacked(schema.unwrap()));
+    emit StoreCore.StoreSetRecord(SCHEMA_TABLE, key, abi.encodePacked(valueSchema.unwrap(), keySchema.unwrap()));
   }
 
   /************************************************************************
