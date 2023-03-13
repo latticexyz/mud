@@ -18,10 +18,10 @@ import { SystemRegistry } from "./tables/SystemRegistry.sol";
  * and all required tables and function selectors in the World.
 
  * Note:
- * This module is required to be delegatecalled via `World.registerRootSystem`,
- * because otherwise the registration of tables would require the `registerTable`
- * function selector to already exist on the World, but it is only
- * added in this module.
+ * This module is required to be delegatecalled via `World.registerRootSystem`.
+ * because otherwise the table libraries would try to call methods on the World contract
+ * that are only registered in this module (e.g. `registerTable`).
+ * If the module is delegatecalled, the StoreCore functions are used directly.
  */
 contract RegistrationModule is IModule, WithMsgSender {
   error RegistrationModule_OnlyRoot();
@@ -31,28 +31,19 @@ contract RegistrationModule is IModule, WithMsgSender {
   address immutable registrationSystem = address(new RegistrationSystem());
   bytes16 immutable registrationSystemFile = bytes16("registration");
 
-  // The RegistrationModule can only be installed once per World, and is always installed in the root namespace.
-  // Therefore the `namespace` argument is not needed.
+  // The namespace argument is not used because the module is always installed in the root namespace
   function install(bytes16) public {
-    // Register tables that are relevant for the RegistrationSystem
-    // Note: This only works if the RegistrationModule is delegatecalled and therefore the StoreCore library
-    // is used directly to register the tables, because the `registerTable` function is not registered yet in the World
-    // before this module is installed.
-
+    // Register tables required by RegistrationSystem
     SystemRegistry.registerSchema();
     SystemRegistry.setMetadata();
-
     ResourceType.registerSchema();
     ResourceType.setMetadata();
 
-    // Bootstap by setting the ROOT_NAMESPACE resource type to NAMESPACE
+    // Set the ROOT_NAMESPACE resource type to NAMESPACE
     ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
 
-    // When this module is installed, the `registerSystem` function is not registered in the World yet.
-    // But we can delegatecall the RegistrationSystem's `registerSystem` function directly.
-    // a) If this module was delegatecalled, it is as if the `registerSystem` function was delegatecalled from the World.
-    // b) If this module was called, in `registerSystem` msg.sender stays the World and _msgSender stays the original caller
-    //   (case b is only for illustration purposes, as this module has to be installed as a root system and therefore is always delegatecalled)
+    // Delegatecall the RegistrationSystem and pass on the original _msgSender() value.
+    // This is required because the `registerSystem` function selector is not registered in the World yet.
     Call.withSender({
       msgSender: _msgSender(),
       target: registrationSystem,
@@ -79,11 +70,9 @@ contract RegistrationModule is IModule, WithMsgSender {
       RegistrationSystem.registerRootFunctionSelector.selector
     ];
 
-    // As above, we have to delegatecall the RegistrationSystem directly
-    // because the function selectors are not registered on the World yet.
+    // As above, delegatecall the RegistrationSystem directly because the
+    // `registerRootFunctionSelector` method is not registered in the World yet.
     for (uint256 i = 0; i < rootFunctionSelectors.length; i++) {
-      // console.log("Register function selector");
-      // console.logBytes4(rootFunctionSelectors[i]);
       Call.withSender({
         msgSender: _msgSender(),
         target: registrationSystem,

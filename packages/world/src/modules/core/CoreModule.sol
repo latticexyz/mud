@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { ROOT_NAMESPACE } from "../../Constants.sol";
+import { ROOT_NAMESPACE } from "../../constants.sol";
+import { WithMsgSender } from "../../WithMsgSender.sol";
 
 import { IModule } from "../../interfaces/IModule.sol";
 
@@ -19,13 +20,13 @@ import { FunctionSelectors } from "../../tables/FunctionSelectors.sol";
  * function selector to already exist on the World, but it is only
  * added in `RegistrationModule`, which is installed after `CoreModule`.
  */
-contract CoreModule is IModule {
+contract CoreModule is IModule, WithMsgSender {
   function install(bytes16) external override {
     NamespaceOwner.setMetadata();
 
     ResourceAccess.registerSchema();
     ResourceAccess.setMetadata();
-    ResourceAccess.set(ROOT_NAMESPACE, msg.sender, true);
+    ResourceAccess.set(ROOT_NAMESPACE, _msgSender(), true);
 
     Systems.registerSchema();
     Systems.setMetadata();
