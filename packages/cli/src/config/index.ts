@@ -4,6 +4,10 @@ import { WorldUserConfig, ResolvedWorldConfig } from "./loadWorldConfig.js";
 export type MUDUserConfig = StoreUserConfig & WorldUserConfig;
 export type MUDConfig = StoreConfig & ResolvedWorldConfig;
 
+export function defineConfig<T extends MUDUserConfig>(config: T): T {
+  return config;
+}
+
 export * from "./commonSchemas.js";
 export * from "./loadConfig.js";
 export * from "./loadStoreConfig.js";

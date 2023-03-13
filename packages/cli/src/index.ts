@@ -11,6 +11,7 @@ export type {
   ResolvedWorldConfig,
   MUDUserConfig,
   MUDConfig,
+  defineConfig,
 } from "./config/index.js";
 
 export * from "./constants.js";
