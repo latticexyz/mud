@@ -6,18 +6,26 @@ import { console } from "forge-std/console.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IWorld } from "../../interfaces/IWorld.sol";
+import { IModule } from "../../interfaces/IModule.sol";
+
 import { ROOT_NAMESPACE, CORE_MODULE_NAME } from "../../constants.sol";
 import { WorldContext } from "../../WorldContext.sol";
-import { IModule } from "../../interfaces/IModule.sol";
-import { ReverseMappingHook } from "./ReverseMappingHook.sol";
-import { ReverseMapping } from "./tables/ReverseMapping.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
+import { ReverseMappingHook } from "./ReverseMappingHook.sol";
+import { ReverseMapping } from "./tables/ReverseMapping.sol";
+
 /**
- * Args: table id to register a hook for.
- * The module registers another table that maps from hash of value to list of keys.
- * For now we just support single keys, no composite keys. (Those can be realized with parallel arrays.)
- * The module also deploys a hook that is called when a value is set and does the required computations to keep the index up to date.
+ * This module deploys a hook that is called when a value is set in the `sourceTableId`
+ * provided in the install methods arguments. The hook keeps track of a "reverse mapping"
+ * from value to list of keys with this value. This mapping is stored in a table registered
+ * by the module at the `targetTableId` provided in the install methods arguments.
+ *
+ * Note: for now this module only supports tables with single keys, no composite keys.
+ * Support for composite keys can be added by using a parallel array to store the key in the target table.
+ *
+ * Note: this module currently expects to be `delegatecalled` via World.installRootModule.
+ * Support for installing it via `World.installModule` depends on `World.callFrom` being implemented.
  */
 contract IndexModule is IModule, WorldContext {
   error CouldNotGrantAccess(string resource);
@@ -38,7 +46,6 @@ contract IndexModule is IModule, WorldContext {
     ReverseMappingHook hook = new ReverseMappingHook(sourceTableId, targetTableId);
 
     // Grant the hook access to the target table
-    // TODO: this only works if the module is delegatecalled. Replace this with `callFrom` once it's ready.
     bytes32 targetTableSelector = ResourceSelector.from(targetTableId);
     (bool success, ) = _world().delegatecall(
       abi.encodeWithSignature(
@@ -54,11 +61,3 @@ contract IndexModule is IModule, WorldContext {
     StoreSwitch.registerStoreHook(sourceTableId, hook);
   }
 }
-
-/**
- * TODO:
- * - add proper support for modules to the CLI -> let users register modules in the config file, including the config that is passed to them.
- *   For this one specifically the config needs to include the table to track, and probably the tableId to store the result in?
- *
- * => there can be a single wrapper library to interact with the indexed tables, similar to `getEntitiesWithValue`
- */

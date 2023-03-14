@@ -10,8 +10,10 @@ import { ReverseMapping } from "./tables/ReverseMapping.sol";
 import { ArrayLib } from "./ArrayLib.sol";
 
 /**
- * This is an extremely naive and inefficient implementation for now.
- * We need support for `setFieldIndex` to make it more efficient (like the previous Set.sol)
+ * This is a very naive and inefficient implementation for now.
+ * We can optimize this by adding support for `setIndexOfField` in Store
+ * and then replicate logic from solecs's Set.sol.
+ * (See https://github.com/latticexyz/mud/issues/444)
  */
 contract ReverseMappingHook is IStoreHook {
   using ArrayLib for bytes32[];
@@ -36,10 +38,10 @@ contract ReverseMappingHook is IStoreHook {
     // Return if the value hasn't changed
     if (previousValue == keccak256(data)) return;
 
-    // Remove the current key from the list of keys with the previous value
+    // Remove the key from the list of keys with the previous value
     _removeKeyFromList(key[0], previousValue);
 
-    // Push the current key to the list of keys with the new value
+    // Push the key to the list of keys with the new value
     ReverseMapping.push(targetTableId, keccak256(data), key[0]);
   }
 
@@ -62,7 +64,7 @@ contract ReverseMappingHook is IStoreHook {
   function onDeleteRecord(uint256 table, bytes32[] memory key) public {
     _sanityChecks(table, key);
 
-    // Get the previous value
+    // Remove the key from the list of keys with the previous value
     bytes32 previousValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
     _removeKeyFromList(key[0], previousValue);
   }

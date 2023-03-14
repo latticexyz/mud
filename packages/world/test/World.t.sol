@@ -515,6 +515,7 @@ contract WorldTest is Test {
     world.setRecord(tableId, singletonKey, value);
 
     // TODO: add tests for other hook methods (preSetField, postSetField, onDeleteRecord)
+    // (See https://github.com/latticexyz/mud/issues/444)
   }
 
   function testRegisterSystemHook() public view {
