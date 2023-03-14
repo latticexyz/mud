@@ -5,7 +5,10 @@ import { MUDError } from "./errors.js";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IWorld } from "@latticexyz/world/types/ethers-contracts/IWorld.js";
-import { abi as WorldABI, bytecode as WorldBytecode } from "@latticexyz/world/abi/World.json";
+import { bytecode as WorldBytecode } from "@latticexyz/world/abi/World.json";
+import { abi as WorldABI } from "@latticexyz/world/abi/IWorld.json";
+import CoreModuleData from "@latticexyz/world/abi/CoreModule.json";
+import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
@@ -16,6 +19,7 @@ export interface DeployConfig {
   rpc: string;
   privateKey: string;
   priorityFeeMultiplier: number;
+  debug?: boolean;
 }
 
 export interface DeploymentInfo {
@@ -27,7 +31,7 @@ export interface DeploymentInfo {
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): Promise<DeploymentInfo> {
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
-  const { profile, rpc, privateKey, priorityFeeMultiplier } = deployConfig;
+  const { profile, rpc, privateKey, priorityFeeMultiplier, debug } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
@@ -60,11 +64,19 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       World: worldContractName
         ? deployContractByName(worldContractName)
         : deployContract(WorldABI, WorldBytecode, "World"),
+      CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, "CoreModule"),
+      RegistrationModule: deployContract(RegistrationModuleData.abi, RegistrationModuleData.bytecode, "RootModule"),
     }
   );
 
   // Create World contract instance from deployed address
   const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as IWorld;
+
+  // Install core Modules
+  console.log(chalk.blue("Installing modules"));
+  await fastTxExecute(WorldContract, "installRootModule", [await contractPromises.CoreModule]);
+  await fastTxExecute(WorldContract, "installRootModule", [await contractPromises.RegistrationModule]);
+  console.log(chalk.green("Installed modules"));
 
   // Register namespace
   if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)]);
@@ -228,6 +240,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       console.log(chalk.green("Deployed", contractName, "to", address));
       return address;
     } catch (error: any) {
+      if (debug) console.error(error);
       if (retryCount === 0 && error?.message.includes("transaction already imported")) {
         // If the deployment failed because the transaction was already imported,
         // retry with a higher priority fee
@@ -286,6 +299,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       promises.push(txPromise);
       return txPromise;
     } catch (error: any) {
+      if (debug) console.error(error);
       if (retryCount === 0 && error?.message.includes("transaction already imported")) {
         // If the deployment failed because the transaction was already imported,
         // retry with a higher priority fee

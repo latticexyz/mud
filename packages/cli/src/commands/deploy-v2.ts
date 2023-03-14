@@ -5,8 +5,7 @@ import type { CommandModule } from "yargs";
 import { loadWorldConfig } from "../config/loadWorldConfig.js";
 import { deploy } from "../utils/deploy-v2.js";
 import { logError, MUDError } from "../utils/errors.js";
-import { forge, getRpcUrl } from "../utils/foundry.js";
-import { getOutDirectory } from "../utils/foundry.js";
+import { forge, getRpcUrl, getSrcDirectory } from "../utils/foundry.js";
 import { mkdirSync, writeFileSync } from "fs";
 import { loadStoreConfig } from "../config/loadStoreConfig.js";
 import { deploymentInfoFilenamePrefix } from "../constants.js";
@@ -18,6 +17,7 @@ type Options = {
   privateKey: string;
   priorityFeeMultiplier: number;
   clean?: boolean;
+  debug?: boolean;
 };
 
 const commandModule: CommandModule<Options, Options> = {
@@ -31,6 +31,7 @@ const commandModule: CommandModule<Options, Options> = {
       clean: { type: "boolean", desc: "Remove the build forge artifacts and cache directories before building" },
       printConfig: { type: "boolean", desc: "Print the resolved config" },
       profile: { type: "string", desc: "The foundry profile to use" },
+      debug: { type: "boolean", desc: "Print debug logs, like full error messages" },
       priorityFeeMultiplier: {
         type: "number",
         desc: "Multiply the estimated priority fee by the provided factor",
@@ -56,9 +57,9 @@ const commandModule: CommandModule<Options, Options> = {
     await forge(["build"], { profile });
 
     // Get a list of all contract names
-    const outDir = await getOutDirectory();
+    const srcDir = await getSrcDirectory();
     const existingContracts = glob
-      .sync(`${outDir}/*.sol`)
+      .sync(`${srcDir}/**/*.sol`)
       // Get the basename of the file
       .map((path) => basename(path, ".sol"));
 
