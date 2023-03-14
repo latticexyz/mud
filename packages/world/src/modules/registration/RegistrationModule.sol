@@ -24,8 +24,6 @@ import { SystemRegistry } from "./tables/SystemRegistry.sol";
  * If the module is delegatecalled, the StoreCore functions are used directly.
  */
 contract RegistrationModule is IModule, WithMsgSender {
-  error RegistrationModule_OnlyRoot();
-
   // Since the RegistrationSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable registrationSystem = address(new RegistrationSystem());
