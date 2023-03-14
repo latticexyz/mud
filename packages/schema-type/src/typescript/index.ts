@@ -5,7 +5,7 @@ export { SchemaType };
 export type { ArraySchemaType };
 
 export type DynamicSchemaType = ArraySchemaType | SchemaType.BYTES | SchemaType.STRING;
-export type StaticSchemaType = Omit<SchemaType, DynamicSchemaType>;
+export type StaticSchemaType = Exclude<SchemaType, DynamicSchemaType>;
 
 export { encodeSchema } from "./encodeSchema";
 export { getStaticByteLength } from "./getStaticByteLength";
