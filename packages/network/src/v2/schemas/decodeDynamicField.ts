@@ -1,4 +1,5 @@
 import { SchemaType } from "@latticexyz/schema-type";
+import { arrayToHex } from "@latticexyz/utils";
 
 const unsupportedDynamicField = (fieldType: SchemaType): never => {
   throw new Error(`Unsupported dynamic field type: ${SchemaType[fieldType] ?? fieldType}`);
@@ -8,7 +9,7 @@ const unsupportedDynamicField = (fieldType: SchemaType): never => {
 export const decodeDynamicField = (fieldType: SchemaType, data: ArrayBuffer): ArrayBuffer | string => {
   switch (fieldType) {
     case SchemaType.BYTES:
-      return data;
+      return arrayToHex(data);
     case SchemaType.STRING:
       return new TextDecoder().decode(data);
     // TODO: array types
