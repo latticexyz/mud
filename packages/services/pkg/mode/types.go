@@ -14,9 +14,10 @@ type TableSchema struct {
 	PostgresTypes map[string]string `json:"postgres_types"` // Field name -> Postgres type
 
 	// Auxiliary data about the table.
-	StoreCoreSchemaTypePair storecore.SchemaTypePair `json:"store_core_schema_type_pair"`
-	PrimaryKey              string                   `json:"primary_key"`
-	ReadableName            string                   `json:"readable_name"`
+	Namespace             string                  `json:"namespace"`
+	StoreCoreSchemaTypeKV *storecore.SchemaTypeKV `json:"store_core_schema_type_kv"`
+	PrimaryKey            string                  `json:"primary_key"`
+	ReadableName          string                  `json:"readable_name"`
 }
 
 type DataSchema struct {

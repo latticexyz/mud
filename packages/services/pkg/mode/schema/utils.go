@@ -2,8 +2,6 @@ package schema
 
 import (
 	"fmt"
-
-	"github.com/ethereum/go-ethereum/crypto"
 )
 
 //
@@ -19,7 +17,7 @@ func WorldTable(chainId string, worldAddress string) string {
 }
 
 func MUDTable(chainId string, worldAddress string, tableName string) string {
-	return ChainTable(chainId) + CONNECTOR + crypto.Keccak256Hash([]byte(WorldTable(chainId, worldAddress)+CONNECTOR+tableName)).Hex()
+	return TABLE_PREFIX + CONNECTOR + tableName
 }
 
 //

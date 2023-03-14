@@ -42,23 +42,21 @@ func (builder *CreateBuilder) BuildCreateTableFields() string {
 }
 
 func (builder *CreateBuilder) BuildCreate() string {
-	return `CREATE TABLE IF NOT EXISTS ` + builder.TableSchema.TableName + ` (
+	return `CREATE TABLE IF NOT EXISTS ` + builder.TableSchema.FullTableName() + ` (
 	` + builder.BuildCreateTableFields() + `
 	);`
 }
 
 func (builder *CreateBuilder) BuildIndex() string {
-	schema := builder.TableSchema
-
 	var indexStr strings.Builder
-	for _, field := range schema.FieldNames {
-		indexStr.WriteString(`CREATE INDEX IF NOT EXISTS ` + schema.TableName + `_` + field + `_idx ON ` + schema.TableName + `("` + field + `");`)
+	for _, field := range builder.TableSchema.FieldNames {
+		indexStr.WriteString(`CREATE INDEX IF NOT EXISTS ` + builder.TableSchema.TableName + `_` + field + `_idx ON ` + builder.TableSchema.FullTableName() + `("` + field + `");`)
 	}
 	return indexStr.String()
 }
 
 func (builder *CreateBuilder) BuildIndentityFullModifier() string {
-	return "ALTER TABLE " + builder.TableSchema.TableName + " REPLICA IDENTITY FULL;"
+	return "ALTER TABLE " + builder.TableSchema.FullTableName() + " REPLICA IDENTITY FULL;"
 }
 
 func (builder *CreateBuilder) ToSQLQueries() (string, string, error) {

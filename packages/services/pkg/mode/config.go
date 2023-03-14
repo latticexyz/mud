@@ -12,7 +12,8 @@ type ChainConfig struct {
 }
 
 type DbConfig struct {
-	Dsn string `yaml:"dsn"`
+	Dsn  string `yaml:"dsn"`
+	Wipe bool   `yaml:"wipe"`
 }
 
 type QlConfig struct {

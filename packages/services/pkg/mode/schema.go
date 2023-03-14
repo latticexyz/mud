@@ -59,6 +59,10 @@ func (dataSchema *DataSchema) BuildTableSchemas() map[string]*TableSchema {
 /// Table Schema
 ///
 
+func (schema *TableSchema) FullTableName() string {
+	return schema.Namespace + "." + schema.TableName
+}
+
 func (schema *TableSchema) GetEncodingTypes(fieldNames []string, fieldProjections map[string]string) ([]*abi.Type, []string) {
 	_types := []*abi.Type{}
 	_typesStr := []string{}

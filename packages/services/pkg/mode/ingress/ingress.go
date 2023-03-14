@@ -35,6 +35,7 @@ func New(config *mode.ChainConfig, wl *write.WriteLayer, schemaCache *schema.Sch
 	eth := eth.GetEthereumClient(config.Rpc.Ws, logger)
 
 	// Perform chain-specific actions on the write layer.
+	// Create a table that stores the schemas for every table on the chain that this ingress layer is indexing.
 	wl.CreateTable(schema.SchemaTableSchema(config.Id))
 
 	return &IngressLayer{
@@ -97,26 +98,33 @@ func (il *IngressLayer) Run() {
 			for _, vLog := range filteredLogs {
 				switch vLog.Topics[0].Hex() {
 				case StoreSetRecordEvent().Hex():
+					println("------------------StoreSetRecordEvent------------------")
+					println("-------------------------------------------------------")
+					println("-------------------------------------------------------")
+					println("-------------------------------------------------------")
 					event, err := ParseStoreSetRecord(vLog)
 					if err != nil {
 						il.logger.Error("failed to parse StoreSetRecord event", zap.Error(err))
 						continue
 					}
 					il.handleSetRecordEvent(event)
-				case StoreSetFieldEvent().Hex():
-					event, err := ParseStoreSetField(vLog)
-					if err != nil {
-						il.logger.Error("failed to parse StoreSetField event", zap.Error(err))
-						continue
-					}
-					il.handleSetFieldEvent(event)
-				case StoreDeleteRecordEvent().Hex():
-					event, err := ParseStoreDeleteRecord(vLog)
-					if err != nil {
-						il.logger.Error("failed to parse StoreDeleteRecord event", zap.Error(err))
-						continue
-					}
-					il.handleDeleteRecordEvent(event)
+					println("-------------------------------------------------------")
+					println("-------------------------------------------------------")
+					println("-------------------------------------------------------")
+					// case StoreSetFieldEvent().Hex():
+					// 	event, err := ParseStoreSetField(vLog)
+					// 	if err != nil {
+					// 		il.logger.Error("failed to parse StoreSetField event", zap.Error(err))
+					// 		continue
+					// 	}
+					// 	il.handleSetFieldEvent(event)
+					// case StoreDeleteRecordEvent().Hex():
+					// 	event, err := ParseStoreDeleteRecord(vLog)
+					// 	if err != nil {
+					// 		il.logger.Error("failed to parse StoreDeleteRecord event", zap.Error(err))
+					// 		continue
+					// 	}
+					// 	il.handleDeleteRecordEvent(event)
 				}
 			}
 		}

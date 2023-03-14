@@ -14,7 +14,7 @@ func BuildTableSchemas() map[string]*mode.TableSchema {
 	blockNumberTableSchema := BlockNumberTableSchema()
 
 	return map[string]*mode.TableSchema{
-		blockNumberTableSchema.TableName: blockNumberTableSchema,
+		blockNumberTableSchema.FullTableName(): blockNumberTableSchema,
 	}
 }
 
@@ -31,7 +31,7 @@ func (cache *SchemaCache) Update() error {
 }
 
 func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, tableName string) (*mode.TableSchema, error) {
-	schemaTableName := SchemaTableSchema(chainId).TableName
+	schemaTableName := SchemaTableSchema(chainId).FullTableName()
 
 	// Create a request builder for the table schema query.
 	request := &pb_mode.FindRequest{
@@ -73,7 +73,7 @@ func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, ta
 	schemaResponse := &SchemaCacheResponse{}
 	err = cache.dl.Get(schemaResponse, query)
 	if err != nil {
-		cache.logger.Error("failed to get schema", zap.Error(err))
+		cache.logger.Error("failed to get schema", zap.Error(err), zap.String("query", query))
 		return nil, err
 	}
 
