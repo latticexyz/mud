@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { RegistrationSystem } from "./RegistrationSystem.sol";
 
 import { Call } from "../../Call.sol";
-import { ROOT_NAMESPACE, REGISTRATION_MODULE_NAME } from "../../constants.sol";
+import { ROOT_NAMESPACE, REGISTRATION_MODULE_NAME, CORE_MODULE_NAME } from "../../constants.sol";
 import { WorldContext } from "../../WorldContext.sol";
 import { Resource } from "../../types.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -41,8 +41,8 @@ contract RegistrationModule is IModule, WorldContext {
   // The namespace argument is not used because the module is always installed in the root namespace
   function install(bytes16) public {
     // Require the CoreModule to be installed in the root namespace
-    if (InstalledModules.get(ROOT_NAMESPACE, bytes16("core")).moduleAddress == address(0)) {
-      revert RequiredModuleNotFound(ResourceSelector.from(ROOT_NAMESPACE, bytes16("core")).toString());
+    if (InstalledModules.get(ROOT_NAMESPACE, CORE_MODULE_NAME).moduleAddress == address(0)) {
+      revert RequiredModuleNotFound(ResourceSelector.from(ROOT_NAMESPACE, CORE_MODULE_NAME).toString());
     }
 
     // Register tables required by RegistrationSystem

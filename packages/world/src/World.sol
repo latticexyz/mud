@@ -44,7 +44,7 @@ contract World is Store, IWorldCore, IErrors {
    * Install the given module at the given namespace in the World.
    */
   function installModule(IModule module, bytes16 namespace) public {
-    // Prevent the same module from being installed twice in the same namespace
+    // Prevent the same module from being installed multiple times in the same namespace
     if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
       revert ModuleAlreadyInstalled(ResourceSelector.from(namespace, module.getName()).toString());
     }
@@ -68,7 +68,7 @@ contract World is Store, IWorldCore, IErrors {
   function installRootModule(IModule module) public {
     AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
 
-    // Prevent the same module from being installed twice in the same namespace
+    // Prevent the same module from being installed multiple times in the same namespace
     if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
       revert ModuleAlreadyInstalled(ResourceSelector.from(ROOT_NAMESPACE, module.getName()).toString());
     }
