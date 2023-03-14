@@ -7,6 +7,7 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { IWorld } from "@latticexyz/world/src/interfaces/IWorld.sol";
 
 import { ReverseMapping } from "./tables/ReverseMapping.sol";
+import { ArrayLib } from "./ArrayLib.sol";
 
 /**
  * This is an extremely naive and inefficient implementation for now.
@@ -36,11 +37,8 @@ contract ReverseMappingHook is IStoreHook {
     // Return if the value hasn't changed
     if (previousValue == keccak256(data)) return;
 
-    // Get the keys with the previous value excluding the current key
-    bytes32[] memory keysWithPreviousValue = ReverseMapping.get(targetTableId, previousValue).filter(key[0]);
-
-    // Set the keys with the previous value
-    ReverseMapping.set(targetTableId, previousValue, keysWithPreviousValue);
+    // Remove the current key from the list of keys with the previous value
+    _removeKeyFromList(key[0], previousValue);
 
     // Push the current key to the list of keys with the new value
     ReverseMapping.push(targetTableId, keccak256(data), key[0]);
@@ -50,37 +48,20 @@ contract ReverseMappingHook is IStoreHook {
     console.log("set field");
   }
 
-  function onDeleteRecord(uint256 table, bytes32[] memory key) public view {
-    console.log("delete record");
-  }
-}
+  function onDeleteRecord(uint256 table, bytes32[] memory key) public {
+    if (key.length > 1) revert MultipleKeysNotSupported();
+    if (table != sourceTableId) revert InvalidTable(table, sourceTableId);
 
-library ArrayLib {
-  function includes(bytes32[] memory arr, bytes32 element) internal pure returns (bool) {
-    for (uint256 i; i < arr.length; i++) {
-      if (arr[i] == element) {
-        return true;
-      }
-    }
-    return false;
+    // Get the previous value
+    bytes32 previousValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
+    _removeKeyFromList(key[0], previousValue);
   }
 
-  function filter(bytes32[] memory arr, bytes32 element) internal pure returns (bytes32[] memory) {
-    bytes32[] memory filtered = new bytes32[](arr.length);
-    uint256 filteredIndex = 0;
-    for (uint256 i; i < arr.length; i++) {
-      if (arr[i] != element) {
-        filtered[filteredIndex] = arr[i];
-        filteredIndex++;
-      }
-    }
+  function _removeKeyFromList(bytes32 key, bytes32 valueHash) internal {
+    // Get the keys with the previous value excluding the current key
+    bytes32[] memory keysWithPreviousValue = ReverseMapping.get(targetTableId, valueHash).filter(key);
 
-    // In-place update the length of the array
-    // (Note: this does not update the free memory pointer)
-    assembly {
-      mstore(filtered, filteredIndex)
-    }
-
-    return filtered;
+    // Set the keys with the previous value
+    ReverseMapping.set(targetTableId, valueHash, keysWithPreviousValue);
   }
 }
