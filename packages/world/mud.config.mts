@@ -89,7 +89,7 @@ const config: StoreUserConfig = {
       // TODO: this is a workaround to use `getRecord` instead of `getField` in the autogen library,
       // to allow using the table before it is registered. This is because `getRecord` passes the schema
       // to store, while `getField` loads it from storage. Remove this once we have support for passing the
-      // schema in `getField` too.
+      // schema in `getField` too. (See https://github.com/latticexyz/mud/issues/444)
       dataStruct: true,
     },
   },
