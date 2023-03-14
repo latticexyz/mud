@@ -5,7 +5,7 @@ import { RegistrationSystem } from "./RegistrationSystem.sol";
 
 import { Call } from "../../Call.sol";
 import { ROOT_NAMESPACE, REGISTRATION_MODULE_NAME } from "../../constants.sol";
-import { WithMsgSender } from "../../WithMsgSender.sol";
+import { WorldContext } from "../../WorldContext.sol";
 import { Resource } from "../../types.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
@@ -26,7 +26,7 @@ import { SystemRegistry } from "./tables/SystemRegistry.sol";
  * that are only registered in this module (e.g. `registerTable`).
  * If the module is delegatecalled, the StoreCore functions are used directly.
  */
-contract RegistrationModule is IModule, WithMsgSender {
+contract RegistrationModule is IModule, WorldContext {
   using ResourceSelector for bytes32;
 
   // Since the RegistrationSystem only exists once per World and writes to

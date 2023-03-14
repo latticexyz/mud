@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { ROOT_NAMESPACE, CORE_MODULE_NAME } from "../../constants.sol";
-import { WithMsgSender } from "../../WithMsgSender.sol";
+import { WorldContext } from "../../WorldContext.sol";
 
 import { IModule } from "../../interfaces/IModule.sol";
 
@@ -21,7 +21,7 @@ import { InstalledModules } from "../../tables/InstalledModules.sol";
  * function selector to already exist on the World, but it is only
  * added in `RegistrationModule`, which is installed after `CoreModule`.
  */
-contract CoreModule is IModule, WithMsgSender {
+contract CoreModule is IModule, WorldContext {
   function getName() public pure returns (bytes16) {
     return CORE_MODULE_NAME;
   }
