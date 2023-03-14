@@ -127,4 +127,38 @@ contract IndexModuleTest is Test {
     // Assert that the list is correct
     assertEq(keysWithValue.length, 0, "9");
   }
+
+  function testSetField() public {
+    _installIndexModule();
+
+    // Set a value in the source table
+    uint256 value1 = 1;
+
+    world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1));
+
+    // Get the list of entities with value1 from the target table
+    bytes32[] memory keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value1)));
+
+    // Assert that the list is correct
+    assertEq(keysWithValue.length, 1);
+    assertEq(keysWithValue[0], key1);
+
+    uint256 value2 = 2;
+
+    // Change the value using setField
+    world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2));
+
+    // Get the list of entities with value1 from the target table
+    keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value1)));
+
+    // Assert that the list is correct
+    assertEq(keysWithValue.length, 0);
+
+    // Get the list of entities with value2 from the target table
+    keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value2)));
+
+    // Assert that the list is correct
+    assertEq(keysWithValue.length, 1);
+    assertEq(keysWithValue[0], key1);
+  }
 }

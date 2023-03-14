@@ -28,8 +28,7 @@ contract ReverseMappingHook is IStoreHook {
   }
 
   function onSetRecord(uint256 table, bytes32[] memory key, bytes memory data) public {
-    if (key.length > 1) revert MultipleKeysNotSupported();
-    if (table != sourceTableId) revert InvalidTable(table, sourceTableId);
+    _sanityChecks(table, key);
 
     // Get the previous value
     bytes32 previousValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
@@ -44,17 +43,33 @@ contract ReverseMappingHook is IStoreHook {
     ReverseMapping.push(targetTableId, keccak256(data), key[0]);
   }
 
-  function onSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public view {
-    console.log("set field");
+  function preSetField(uint256 table, bytes32[] memory key, uint8, bytes memory) public {
+    _sanityChecks(table, key);
+
+    // Remove the key from the list of keys with the previous value
+    bytes32 previousValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
+    _removeKeyFromList(key[0], previousValue);
+  }
+
+  function postSetField(uint256 table, bytes32[] memory key, uint8, bytes memory) public {
+    _sanityChecks(table, key);
+
+    // Add the key to the list of keys with the new value
+    bytes32 newValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
+    ReverseMapping.push(targetTableId, newValue, key[0]);
   }
 
   function onDeleteRecord(uint256 table, bytes32[] memory key) public {
-    if (key.length > 1) revert MultipleKeysNotSupported();
-    if (table != sourceTableId) revert InvalidTable(table, sourceTableId);
+    _sanityChecks(table, key);
 
     // Get the previous value
     bytes32 previousValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
     _removeKeyFromList(key[0], previousValue);
+  }
+
+  function _sanityChecks(uint256 table, bytes32[] memory key) internal view {
+    if (key.length > 1) revert MultipleKeysNotSupported();
+    if (table != sourceTableId) revert InvalidTable(table, sourceTableId);
   }
 
   function _removeKeyFromList(bytes32 key, bytes32 valueHash) internal {
