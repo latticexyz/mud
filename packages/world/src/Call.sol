@@ -34,20 +34,4 @@ library Call {
       revert(add(data, 0x20), mload(data))
     }
   }
-
-  function internalWithSender(
-    address msgSender,
-    bytes4 functionSelector,
-    bytes memory args
-  ) internal returns (bytes memory) {
-    (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) = FunctionSelectors.get(functionSelector);
-    address systemAddress = Systems.getSystem(ResourceSelector.from(namespace, file));
-    return
-      withSender({
-        msgSender: msgSender,
-        target: systemAddress,
-        funcSelectorAndArgs: abi.encodePacked(systemFunctionSelector, args),
-        delegate: false
-      });
-  }
 }

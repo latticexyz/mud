@@ -9,7 +9,7 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { Resource } from "./types.sol";
-import { ROOT_NAMESPACE, ROOT_FILE } from "./constants.sol";
+import { ROOT_NAMESPACE, ROOT_FILE, REGISTRATION_SYSTEM_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { Call } from "./Call.sol";
 
@@ -27,9 +27,6 @@ import { IRegistrationSystem } from "./interfaces/systems/IRegistrationSystem.so
 
 contract World is Store, IWorldCore, IErrors {
   using ResourceSelector for bytes32;
-
-  // IWorld includes interfaces for dynamically registered systems (e.g. IRegistrationSystem)
-  IWorld private immutable _this = IWorld(address(this));
 
   constructor() {
     // Register internal NamespaceOwner table and give ownership of the root
@@ -191,13 +188,20 @@ contract World is Store, IWorldCore, IErrors {
    */
   function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) public virtual {
     bytes32 tableSelector = ResourceSelector.from(tableId);
-    // TODO: the reason this is needed is because "internal calls" to _this don't preserve the msg.sender,
-    // so the msg.sender will be the World contract, not the caller of this function.
-    // How can we make this less ugly? Maybe by moving these functions into the IRegistrationSystem?
-    Call.internalWithSender({
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+
+    // We can't call IWorld(this).registerSchema directly because it would lose the msg.sender
+    Call.withSender({
       msgSender: msg.sender,
-      functionSelector: IRegistrationSystem.registerTable.selector,
-      args: abi.encode(tableSelector.getNamespace(), tableSelector.getFile(), valueSchema, keySchema)
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        IRegistrationSystem.registerTable.selector,
+        tableSelector.getNamespace(),
+        tableSelector.getFile(),
+        valueSchema,
+        keySchema
+      ),
+      delegate: false
     });
   }
 
@@ -208,11 +212,20 @@ contract World is Store, IWorldCore, IErrors {
    */
   function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
-    _this.setMetadata(resourceSelector.getNamespace(), resourceSelector.getFile(), tableName, fieldNames);
-    Call.internalWithSender({
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+
+    // We can't call IWorld(this).setMetadata directly because it would lose the msg.sender
+    Call.withSender({
       msgSender: msg.sender,
-      functionSelector: IRegistrationSystem.setMetadata.selector,
-      args: abi.encode(resourceSelector.getNamespace(), resourceSelector.getFile(), tableName, fieldNames)
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        IRegistrationSystem.setMetadata.selector,
+        resourceSelector.getNamespace(),
+        resourceSelector.getFile(),
+        tableName,
+        fieldNames
+      ),
+      delegate: false
     });
   }
 
@@ -222,10 +235,19 @@ contract World is Store, IWorldCore, IErrors {
    */
   function registerStoreHook(uint256 tableId, IStoreHook hook) public virtual {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
-    Call.internalWithSender({
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+
+    // We can't call IWorld(this).setMetadata directly because it would lose the msg.sender
+    Call.withSender({
       msgSender: msg.sender,
-      functionSelector: IRegistrationSystem.registerTableHook.selector,
-      args: abi.encode(resourceSelector.getNamespace(), resourceSelector.getFile(), hook)
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        IRegistrationSystem.registerTableHook.selector,
+        resourceSelector.getNamespace(),
+        resourceSelector.getFile(),
+        hook
+      ),
+      delegate: false
     });
   }
 

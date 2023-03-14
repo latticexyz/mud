@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { RegistrationSystem } from "./RegistrationSystem.sol";
 
 import { Call } from "../../Call.sol";
-import { ROOT_NAMESPACE, REGISTRATION_MODULE_NAME, CORE_MODULE_NAME } from "../../constants.sol";
+import { ROOT_NAMESPACE, REGISTRATION_MODULE_NAME, CORE_MODULE_NAME, REGISTRATION_SYSTEM_NAME } from "../../constants.sol";
 import { WorldContext } from "../../WorldContext.sol";
 import { Resource } from "../../types.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -32,7 +32,6 @@ contract RegistrationModule is IModule, WorldContext {
   // Since the RegistrationSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable registrationSystem = address(new RegistrationSystem());
-  bytes16 immutable registrationSystemFile = bytes16("registration");
 
   function getName() public pure returns (bytes16) {
     return REGISTRATION_MODULE_NAME;
@@ -63,7 +62,7 @@ contract RegistrationModule is IModule, WorldContext {
       funcSelectorAndArgs: abi.encodeWithSelector(
         RegistrationSystem.registerSystem.selector,
         ROOT_NAMESPACE,
-        registrationSystemFile,
+        REGISTRATION_SYSTEM_NAME,
         registrationSystem,
         true
       )
@@ -92,7 +91,7 @@ contract RegistrationModule is IModule, WorldContext {
         funcSelectorAndArgs: abi.encodeWithSelector(
           RegistrationSystem.registerRootFunctionSelector.selector,
           ROOT_NAMESPACE,
-          registrationSystemFile,
+          REGISTRATION_SYSTEM_NAME,
           rootFunctionSelectors[i], // Use the same function selector for the World as in RegistrationSystem
           rootFunctionSelectors[i]
         )
