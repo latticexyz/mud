@@ -2,7 +2,7 @@ import { ComponentValue } from "@latticexyz/recs";
 import { TableId, arrayToHex } from "@latticexyz/utils";
 import { Contract, utils } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
-import { getMetadata, registerMetadata } from "./schemas/tableMetadata";
+import { registerMetadata } from "./schemas/tableMetadata";
 import { decodeData } from "./schemas/decodeData";
 import { schemaTableId, metadataTableId } from "./common";
 
@@ -37,10 +37,10 @@ export async function decodeStoreSetRecord(
     }
     const tableName = decoded[0];
     const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], arrayToHex(decoded[1]));
-    registerMetadata(contract, TableId.fromBytes32(utils.arrayify(tableForMetadata)), tableName, fieldNames);
+    registerMetadata(contract, TableId.fromBytes32(utils.arrayify(tableForMetadata)), { tableName, fieldNames });
   }
 
-  const metadata = getMetadata(contract, table);
+  const metadata = await registerMetadata(contract, table);
   if (metadata) {
     const { tableName, fieldNames } = metadata;
     const namedValues: Record<string, any> = {};

@@ -2,7 +2,7 @@ import { ComponentValue } from "@latticexyz/recs";
 import { TableId } from "@latticexyz/utils";
 import { Contract } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
-import { getMetadata } from "./schemas/tableMetadata";
+import { registerMetadata } from "./schemas/tableMetadata";
 import { decodeField } from "./schemas/decodeField";
 import { TableSchema } from "./common";
 
@@ -16,7 +16,7 @@ export async function decodeStoreSetField(
   const schema = await registerSchema(contract, table);
   const value = decodeField(schema, schemaIndex, data);
 
-  const metadata = getMetadata(contract, table);
+  const metadata = await registerMetadata(contract, table);
   if (metadata) {
     const { tableName, fieldNames } = metadata;
     return {
