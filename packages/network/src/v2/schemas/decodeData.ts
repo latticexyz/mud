@@ -1,4 +1,4 @@
-import { getStaticByteLength } from "@latticexyz/schema-type";
+import { DynamicSchemaType, getStaticByteLength, StaticSchemaType } from "@latticexyz/schema-type";
 import { hexToArray } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 import { decodeStaticField } from "./decodeStaticField";
@@ -10,7 +10,7 @@ export const decodeData = (schema: TableSchema, hexData: string): Record<number,
 
   let bytesOffset = 0;
   schema.staticFields.forEach((fieldType, i) => {
-    const value = decodeStaticField(fieldType, bytes, bytesOffset);
+    const value = decodeStaticField(fieldType as StaticSchemaType, bytes, bytesOffset);
     bytesOffset += getStaticByteLength(fieldType);
     data[i] = value;
   });
@@ -36,7 +36,10 @@ export const decodeData = (schema: TableSchema, hexData: string): Record<number,
 
     schema.dynamicFields.forEach((fieldType, i) => {
       const dataLength = dynamicDataLayout.getUint16(4 + i * 2);
-      const value = decodeDynamicField(fieldType, bytes.buffer.slice(bytesOffset, bytesOffset + dataLength));
+      const value = decodeDynamicField(
+        fieldType as DynamicSchemaType,
+        bytes.buffer.slice(bytesOffset, bytesOffset + dataLength)
+      );
       bytesOffset += dataLength;
       data[schema.staticFields.length + i] = value;
     });
