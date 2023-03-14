@@ -77,21 +77,24 @@ export function setComponent<S extends Schema, T = undefined>(
   for (const [key, val] of Object.entries(value)) {
     if (component.values[key]) {
       component.values[key].set(entity, val);
-    } else if (!component.metadata?.tableId) {
-      // If component metadata includes the tableId (from `defineStoreComponents`),
-      // we can ignore this value without logging anything.
-      //
-      // Otherwise, we should let the user know we found undefined data.
-      console.warn(
-        "Component definition for",
-        component.metadata?.contractId ?? component.id,
-        "is missing key",
-        key,
-        ", ignoring value",
-        val,
-        "for entity",
-        entity
-      );
+    } else {
+      const isTableFieldIndex = component.metadata?.tableId && /^\d+$/.test(key);
+      if (!isTableFieldIndex) {
+        // If this key looks like a field index from `defineStoreComponents`,
+        // we can ignore this value without logging anything.
+        //
+        // Otherwise, we should let the user know we found undefined data.
+        console.warn(
+          "Component definition for",
+          component.metadata?.contractId ?? component.id,
+          "is missing key",
+          key,
+          ", ignoring value",
+          val,
+          "for entity",
+          entity
+        );
+      }
     }
   }
   component.update$.next({ entity, value: [value, prevValue], component });
