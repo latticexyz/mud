@@ -13,22 +13,27 @@ type TableSchemaToComponentSchema<TableSchema extends FullTableConfig["schema"]>
   [K in keyof TableSchema]: TableSchema[K] extends SchemaType
     ? SchemaTypeToRecsType<TableSchema[K]>
     : TableSchema[K] extends string
-    ? RecsType.T // TODO: support user enums (strings)
-    : RecsType.T;
+    ? // TODO: better support user enums
+      RecsType.Number
+    : never;
 };
 
-type TablesToComponents<Tables extends StoreUserConfig["tables"]> = {
+type TablesToComponents<Tables extends Record<string, FullTableConfig>> = {
+  [K in keyof Tables]: Component<
+    TableSchemaToComponentSchema<Tables[K]["schema"]>,
+    { contractId: string; tableId: string; table: Tables[K] }
+  >;
+};
+
+type ExpandTables<Tables extends StoreUserConfig["tables"]> = {
   [K in keyof Tables]: Tables[K] extends FullTableConfig
-    ? Component<
-        TableSchemaToComponentSchema<Tables[K]["schema"]>,
-        { contractId: string; tableId: string; table: Tables[K] }
-      >
+    ? Tables[K]
     : Tables[K] extends SchemaType
-    ? Component<
-        TableSchemaToComponentSchema<{ value: Tables[K] }>,
-        { contractId: string; tableId: string; table: Tables[K] }
-      >
-    : unknown; // TODO: support user enums (strings)
+    ? { schema: { value: Tables[K] } }
+    : Tables[K] extends string
+    ? // TODO: better support for user enums
+      { schema: { value: SchemaType.UINT256 } }
+    : never;
 };
 
 const tableSchemaToRecsSchema = <TableSchema extends FullTableConfig["schema"]>(
@@ -44,7 +49,10 @@ const tableSchemaToRecsSchema = <TableSchema extends FullTableConfig["schema"]>(
   ) as any;
 };
 
-export function defineStoreComponents<T extends StoreUserConfig>(world: World, userConfig: T) {
+export function defineStoreComponents<T extends StoreUserConfig>(
+  world: World,
+  userConfig: T
+): TablesToComponents<ExpandTables<T["tables"]>> {
   // TODO: extend parseStoreConfig to translate StoreUserConfig to StoreConfig and keep originating types
   const config = parseStoreConfig(userConfig);
 
@@ -59,5 +67,6 @@ export function defineStoreComponents<T extends StoreUserConfig>(world: World, u
     })
   );
 
-  return components as TablesToComponents<T["tables"]>;
+  // TODO: figure out how to map types so we don't have to cast
+  return components as any;
 }

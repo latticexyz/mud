@@ -1,7 +1,7 @@
-import { defineConfig } from "@latticexyz/cli";
+import { MUDUserConfig } from "@latticexyz/cli";
 import { SchemaType } from "@latticexyz/schema-type";
 
-const config = defineConfig({
+const config = {
   storeImportPath: "../",
   namespace: "mudstore",
   tables: {
@@ -32,6 +32,6 @@ const config = defineConfig({
       },
     },
   },
-});
+} satisfies MUDUserConfig;
 
 export default config;
