@@ -62,7 +62,7 @@ export function registerMetadata(
     // TODO: error if schema or record not found?
     const decoded = decodeData(metadataSchema, metadataRecord);
     const tableName = decoded[0];
-    const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], arrayToHex(decoded[1]));
+    const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], decoded[1]);
     return { tableName, fieldNames };
   });
   metadataCache[cacheKey] = metadataPromise;

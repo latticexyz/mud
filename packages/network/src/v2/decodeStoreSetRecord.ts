@@ -36,7 +36,7 @@ export async function decodeStoreSetRecord(
       );
     }
     const tableName = decoded[0];
-    const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], arrayToHex(decoded[1]));
+    const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], decoded[1]);
     registerMetadata(contract, TableId.fromBytes32(utils.arrayify(tableForMetadata)), { tableName, fieldNames });
   }
 
