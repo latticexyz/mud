@@ -5,11 +5,13 @@ import { console } from "forge-std/console.sol";
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
+import { IWorld } from "../../interfaces/IWorld.sol";
 import { ROOT_NAMESPACE, CORE_MODULE_NAME } from "../../constants.sol";
 import { WorldContext } from "../../WorldContext.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 import { ReverseMappingHook } from "./ReverseMappingHook.sol";
 import { ReverseMapping } from "./tables/ReverseMapping.sol";
+import { ResourceSelector } from "../../ResourceSelector.sol";
 
 /**
  * Args: table id to register a hook for.
@@ -18,6 +20,9 @@ import { ReverseMapping } from "./tables/ReverseMapping.sol";
  * The module also deploys a hook that is called when a value is set and does the required computations to keep the index up to date.
  */
 contract IndexModule is IModule, WorldContext {
+  error CouldNotGrantAccess(string resource);
+  using ResourceSelector for bytes32;
+
   function getName() public pure returns (bytes16) {
     return bytes16("index");
   }
@@ -30,7 +35,20 @@ contract IndexModule is IModule, WorldContext {
     StoreSwitch.registerSchema(targetTableId, ReverseMapping.getSchema(), ReverseMapping.getKeySchema());
 
     // Deploy a new hook contract that is called when a value is set in the source table
-    ReverseMappingHook hook = new ReverseMappingHook(targetTableId);
+    ReverseMappingHook hook = new ReverseMappingHook(sourceTableId, targetTableId);
+
+    // Grant the hook access to the target table
+    // TODO: this only works if the module is delegatecalled. Replace this with `callFrom` once it's ready.
+    bytes32 targetTableSelector = ResourceSelector.from(targetTableId);
+    (bool success, ) = _world().delegatecall(
+      abi.encodeWithSignature(
+        "grantAccess(bytes16,bytes16,address)",
+        targetTableSelector.getNamespace(),
+        targetTableSelector.getFile(),
+        address(hook)
+      )
+    );
+    if (!success) revert CouldNotGrantAccess(ResourceSelector.from(sourceTableId).toString());
 
     // Register a hook that is called when a value is set in the source table
     StoreSwitch.registerStoreHook(sourceTableId, hook);

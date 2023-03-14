@@ -9,6 +9,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { World } from "../src/World.sol";
 import { IWorld } from "../src/interfaces/IWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
+import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
@@ -30,7 +31,7 @@ contract IndexModuleTest is Test {
     Schema sourceTableSchema = SchemaLib.encode(SchemaType.UINT256);
     Schema sourceTableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
 
-    bytes16 namespace = bytes16("test");
+    bytes16 namespace = ROOT_NAMESPACE;
     bytes16 sourceFile = bytes16("source");
     bytes16 targetFile = bytes16("target");
     uint256 targetTableId = ResourceSelector.from(namespace, targetFile).toTableId();
@@ -56,8 +57,8 @@ contract IndexModuleTest is Test {
     // Get the list of entities with this value from the target table
     bytes32[] memory keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value)));
 
-    // // Assert that the list is correct
+    // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
-    // assertEq(keysWithValue[0], key);
+    assertEq(keysWithValue[0], key);
   }
 }
