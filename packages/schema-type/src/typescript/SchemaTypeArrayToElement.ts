@@ -1,4 +1,4 @@
-import { StaticSchemaType } from "./StaticSchemaType";
+import { StaticSchemaType } from "./StaticSchemaType.js";
 import { ArraySchemaType } from "./ArraySchemaType.js";
 import { SchemaType } from "./SchemaType.js";
 
