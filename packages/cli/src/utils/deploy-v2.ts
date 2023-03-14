@@ -65,7 +65,11 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
         ? deployContractByName(worldContractName)
         : deployContract(WorldABI, WorldBytecode, "World"),
       CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, "CoreModule"),
-      RegistrationModule: deployContract(RegistrationModuleData.abi, RegistrationModuleData.bytecode, "RootModule"),
+      RegistrationModule: deployContract(
+        RegistrationModuleData.abi,
+        RegistrationModuleData.bytecode,
+        "RegistrationModule"
+      ),
     }
   );
 
