@@ -4,11 +4,14 @@ pragma solidity >=0.8.0;
 import { RegistrationSystem } from "./RegistrationSystem.sol";
 
 import { Call } from "../../Call.sol";
-import { ROOT_NAMESPACE } from "../../constants.sol";
+import { ROOT_NAMESPACE, REGISTRATION_MODULE_NAME } from "../../constants.sol";
 import { WithMsgSender } from "../../WithMsgSender.sol";
 import { Resource } from "../../types.sol";
+import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { IModule } from "../../interfaces/IModule.sol";
+
+import { InstalledModules } from "../../tables/InstalledModules.sol";
 
 import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
@@ -24,13 +27,24 @@ import { SystemRegistry } from "./tables/SystemRegistry.sol";
  * If the module is delegatecalled, the StoreCore functions are used directly.
  */
 contract RegistrationModule is IModule, WithMsgSender {
+  using ResourceSelector for bytes32;
+
   // Since the RegistrationSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable registrationSystem = address(new RegistrationSystem());
   bytes16 immutable registrationSystemFile = bytes16("registration");
 
+  function getName() public pure returns (bytes16) {
+    return REGISTRATION_MODULE_NAME;
+  }
+
   // The namespace argument is not used because the module is always installed in the root namespace
   function install(bytes16) public {
+    // Require the CoreModule to be installed in the root namespace
+    if (InstalledModules.get(ROOT_NAMESPACE, bytes16("core")).moduleAddress == address(0)) {
+      revert RequiredModuleNotFound(ResourceSelector.from(ROOT_NAMESPACE, bytes16("core")).toString());
+    }
+
     // Register tables required by RegistrationSystem
     SystemRegistry.registerSchema();
     SystemRegistry.setMetadata();

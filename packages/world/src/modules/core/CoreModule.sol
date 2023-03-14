@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { ROOT_NAMESPACE } from "../../constants.sol";
+import { ROOT_NAMESPACE, CORE_MODULE_NAME } from "../../constants.sol";
 import { WithMsgSender } from "../../WithMsgSender.sol";
 
 import { IModule } from "../../interfaces/IModule.sol";
@@ -10,6 +10,7 @@ import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
 import { Systems } from "../../tables/Systems.sol";
 import { FunctionSelectors } from "../../tables/FunctionSelectors.sol";
+import { InstalledModules } from "../../tables/InstalledModules.sol";
 
 /**
  * The CoreModule registers internal World tables.
@@ -21,8 +22,15 @@ import { FunctionSelectors } from "../../tables/FunctionSelectors.sol";
  * added in `RegistrationModule`, which is installed after `CoreModule`.
  */
 contract CoreModule is IModule, WithMsgSender {
-  function install(bytes16) external override {
+  function getName() public pure returns (bytes16) {
+    return CORE_MODULE_NAME;
+  }
+
+  function install(bytes16) public override {
     NamespaceOwner.setMetadata();
+
+    InstalledModules.registerSchema();
+    InstalledModules.setMetadata();
 
     ResourceAccess.registerSchema();
     ResourceAccess.setMetadata();

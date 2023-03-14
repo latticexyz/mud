@@ -78,6 +78,20 @@ const config: StoreUserConfig = {
       storeArgument: true,
       tableIdArgument: true,
     },
+    InstalledModules: {
+      primaryKeys: {
+        namespace: SchemaType.BYTES16,
+        mdouleName: SchemaType.BYTES16,
+      },
+      schema: {
+        moduleAddress: SchemaType.ADDRESS,
+      },
+      // TODO: this is a workaround to use `getRecord` instead of `getField` in the autogen library,
+      // to allow using the table before it is registered. This is because `getRecord` passes the schema
+      // to store, while `getField` loads it from storage. Remove this once we have support for passing the
+      // schema in `getField` too.
+      dataStruct: true,
+    },
   },
   userTypes: {
     enums: {

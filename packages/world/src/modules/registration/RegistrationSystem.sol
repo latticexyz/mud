@@ -20,7 +20,7 @@ import { Systems } from "../../tables/Systems.sol";
 import { FunctionSelectors } from "../../tables/FunctionSelectors.sol";
 
 import { ISystemHook } from "../../interfaces/ISystemHook.sol";
-import { IErrors } from "../interfaces/IErrors.sol";
+import { IErrors } from "../../interfaces/IErrors.sol";
 import { IRegistrationSystem } from "../../interfaces/systems/IRegistrationSystem.sol";
 
 contract RegistrationSystem is System, IRegistrationSystem, IErrors {

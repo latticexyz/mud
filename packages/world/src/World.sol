@@ -17,6 +17,7 @@ import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { ResourceAccess } from "./tables/ResourceAccess.sol";
 import { Systems } from "./tables/Systems.sol";
 import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
+import { InstalledModules } from "./tables/InstalledModules.sol";
 
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
@@ -43,12 +44,20 @@ contract World is Store, IWorldCore, IErrors {
    * Install the given module at the given namespace in the World.
    */
   function installModule(IModule module, bytes16 namespace) public {
+    // Prevent the same module from being installed twice in the same namespace
+    if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
+      revert ModuleAlreadyInstalled(ResourceSelector.from(namespace, module.getName()).toString());
+    }
+
     Call.withSender({
       msgSender: msg.sender,
       target: address(module),
       funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, namespace),
       delegate: false
     });
+
+    // Register the module in the InstalledModules table
+    InstalledModules.set(namespace, module.getName(), address(module));
   }
 
   /**
@@ -58,12 +67,21 @@ contract World is Store, IWorldCore, IErrors {
    */
   function installRootModule(IModule module) public {
     AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
+
+    // Prevent the same module from being installed twice in the same namespace
+    if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
+      revert ModuleAlreadyInstalled(ResourceSelector.from(ROOT_NAMESPACE, module.getName()).toString());
+    }
+
     Call.withSender({
       msgSender: msg.sender,
       target: address(module),
       funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, ROOT_NAMESPACE),
       delegate: true // The module is delegate called so it can edit any table
     });
+
+    // Register the module in the InstalledModules table
+    InstalledModules.set(ROOT_NAMESPACE, module.getName(), address(module));
   }
 
   /************************************************************************

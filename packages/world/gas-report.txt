@@ -1,11 +1,11 @@
-(test/World.t.sol) | Delete record [world.deleteRecord(namespace, file, singletonKey)]: 16038
-(test/World.t.sol) | Push data to the table [world.pushToField(namespace, file, keyTuple, 0, encodedData)]: 96409
-(test/World.t.sol) | Register a fallback system [bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, "", "")]: 80937
-(test/World.t.sol) | Register a root fallback system [bytes4 funcSelector2 = world.registerRootFunctionSelector(namespace, file, worldFunc, 0)]: 72163
-(test/World.t.sol) | Register a function selector [bytes4 functionSelector = world.registerFunctionSelector(namespace, file, "msgSender", "()")]: 101534
-(test/World.t.sol) | Register a new namespace [world.registerNamespace("test")]: 151628
-(test/World.t.sol) | Register a root function selector [bytes4 functionSelector = world.registerRootFunctionSelector(namespace, file, worldFunc, sysFunc)]: 96069
-(test/World.t.sol) | Register a new table in the namespace [bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema)]: 252155
-(test/World.t.sol) | Write data to a table field [world.setField(namespace, file, singletonKey, 0, abi.encodePacked(true))]: 44726
-(test/World.t.sol) | Set metadata [world.setMetadata(namespace, file, tableName, fieldNames)]: 277162
+(test/World.t.sol) | Delete record [world.deleteRecord(namespace, file, singletonKey)]: 16026
+(test/World.t.sol) | Push data to the table [world.pushToField(namespace, file, keyTuple, 0, encodedData)]: 96397
+(test/World.t.sol) | Register a fallback system [bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, "", "")]: 80940
+(test/World.t.sol) | Register a root fallback system [bytes4 funcSelector2 = world.registerRootFunctionSelector(namespace, file, worldFunc, 0)]: 72166
+(test/World.t.sol) | Register a function selector [bytes4 functionSelector = world.registerFunctionSelector(namespace, file, "msgSender", "()")]: 101537
+(test/World.t.sol) | Register a new namespace [world.registerNamespace("test")]: 151631
+(test/World.t.sol) | Register a root function selector [bytes4 functionSelector = world.registerRootFunctionSelector(namespace, file, worldFunc, sysFunc)]: 96072
+(test/World.t.sol) | Register a new table in the namespace [bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema)]: 252158
+(test/World.t.sol) | Write data to a table field [world.setField(namespace, file, singletonKey, 0, abi.encodePacked(true))]: 44714
+(test/World.t.sol) | Set metadata [world.setMetadata(namespace, file, tableName, fieldNames)]: 277165
 (test/World.t.sol) | Write data to the table [Bool.set(tableId, world, true)]: 42598
