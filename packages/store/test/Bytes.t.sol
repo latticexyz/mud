@@ -119,4 +119,22 @@ contract BytesTest is Test {
       bytes32(0x0000006d000a0000000000000000000000000000000000000000000000000000)
     );
   }
+
+  function testSetBytes4Memory() public {
+    bytes4 first = bytes4(0x1000000a);
+    bytes32 remainder = bytes32(keccak256("some data"));
+    bytes4 overwrite = bytes4(0x2000000b);
+
+    bytes memory input = abi.encodePacked(first, remainder);
+
+    // !gasreport set bytes4 in bytes memory
+    bytes memory result = Bytes.setBytes4(input, 0, overwrite);
+
+    // First 4 bytes should be overwritten
+    assertEq(bytes4(result), overwrite);
+    assertEq(keccak256(result), keccak256(abi.encodePacked(overwrite, remainder)));
+
+    // Operation happened in-place
+    assertEq(keccak256(input), keccak256(result));
+  }
 }

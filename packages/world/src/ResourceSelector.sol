@@ -1,5 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
+import { ROOT_NAMESPACE, ROOT_FILE } from "./constants.sol";
+import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+
+bytes16 constant ROOT_NAMESPACE_STRING = bytes16("ROOT_NAMESPACE");
+bytes16 constant ROOT_FILE_STRING = bytes16("ROOT_FILE");
 
 library ResourceSelector {
   /**
@@ -44,7 +49,26 @@ library ResourceSelector {
    * Convert a selector to a string for more readable logs
    */
   function toString(bytes32 resourceSelector) internal pure returns (string memory) {
-    return string(abi.encodePacked(getNamespace(resourceSelector), "/", getFile(resourceSelector)));
+    bytes16 namespace = getNamespace(resourceSelector);
+    bytes16 file = getFile(resourceSelector);
+    return
+      string(
+        abi.encodePacked(
+          namespace == ROOT_NAMESPACE ? ROOT_NAMESPACE_STRING : namespace,
+          "/",
+          file == ROOT_FILE ? ROOT_FILE_STRING : file
+        )
+      );
+  }
+
+  /**
+   * Convert a selector to a trimmed string (no trailing `null` ASCII characters)
+   */
+  function toTrimmedString(bytes16 selector) internal pure returns (string memory) {
+    uint256 length;
+    for (; length < 16; length++) if (Bytes.slice1(selector, length) == 0) break;
+    bytes memory packedSelector = abi.encodePacked(selector);
+    return string(Bytes.setLength(packedSelector, length));
   }
 
   /**

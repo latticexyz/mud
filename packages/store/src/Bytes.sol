@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
+import { SliceLib } from "./Slice.sol";
 
 library Bytes {
   /**
@@ -30,6 +31,16 @@ library Bytes {
     return keccak256(a) == keccak256(b);
   }
 
+  /**
+   * In-place set the length of a `bytes` memory value.
+   */
+  function setLength(bytes memory input, uint256 length) internal pure returns (bytes memory) {
+    assembly {
+      mstore(input, length)
+    }
+    return input;
+  }
+
   /************************************************************************
    *
    *    SET
@@ -39,11 +50,7 @@ library Bytes {
   /**
    * Overwrite a single byte of a `bytes32` value and return the new value.
    */
-  function setBytes1(
-    bytes32 input,
-    uint256 index,
-    bytes1 overwrite
-  ) internal pure returns (bytes32 output) {
+  function setBytes1(bytes32 input, uint256 index, bytes1 overwrite) internal pure returns (bytes32 output) {
     bytes1 mask = 0xff;
     assembly {
       mask := shr(mul(8, index), mask) // create a mask by shifting 0xff right by index bytes
@@ -56,11 +63,7 @@ library Bytes {
   /**
    * Overwrite two bytes of a `bytes32` value and return the new value.
    */
-  function setBytes2(
-    bytes32 input,
-    uint256 index,
-    bytes2 overwrite
-  ) internal pure returns (bytes32 output) {
+  function setBytes2(bytes32 input, uint256 index, bytes2 overwrite) internal pure returns (bytes32 output) {
     bytes2 mask = 0xffff;
     assembly {
       mask := shr(mul(8, index), mask) // create a mask by shifting 0xffff right by index bytes
@@ -73,11 +76,7 @@ library Bytes {
   /**
    * Overwrite four bytes of a `bytes32` value and return the new value.
    */
-  function setBytes4(
-    bytes32 input,
-    uint256 index,
-    bytes4 overwrite
-  ) internal pure returns (bytes32 output) {
+  function setBytes4(bytes32 input, uint256 index, bytes4 overwrite) internal pure returns (bytes32 output) {
     bytes4 mask = 0xffffffff;
     assembly {
       mask := shr(mul(8, index), mask) // create a mask by shifting 0xffffffff right by index bytes
@@ -85,6 +84,20 @@ library Bytes {
       output := or(output, shr(mul(8, index), overwrite)) // set the byte at index
     }
     return output;
+  }
+
+  /**
+   * In-place overwrite four bytes of a `bytes memory` value.
+   */
+  function setBytes4(bytes memory input, uint256 offset, bytes4 overwrite) internal pure returns (bytes memory) {
+    bytes4 mask = 0xffffffff;
+    assembly {
+      let value := mload(add(add(input, 0x20), offset)) // load 32 bytes from input starting at offset
+      value := and(value, not(mask)) // zero out the first 4 bytes
+      value := or(value, overwrite) // set the bytes at the offset
+      mstore(add(add(input, 0x20), offset), value) // store the new value
+    }
+    return input;
   }
 
   /************************************************************************
