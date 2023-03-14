@@ -286,6 +286,12 @@ library StoreCore {
     }
 
     StoreCoreInternal._pushToDynamicField(tableId, key, schema, schemaIndex, dataToPush);
+
+    // Call postSetField hooks (after modifying the state)
+    for (uint256 i; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.postSetField(tableId, key, schemaIndex, fullData);
+    }
   }
 
   /************************************************************************
