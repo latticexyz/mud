@@ -49,7 +49,10 @@ interface IStore {
 interface IStoreHook {
   function onSetRecord(uint256 table, bytes32[] memory key, bytes memory data) external;
 
-  function onSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) external;
+  // Split onSetField into pre and post to simplify the implementation of hooks
+  function preSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) external;
+
+  function postSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) external;
 
   function onDeleteRecord(uint256 table, bytes32[] memory key) external;
 }

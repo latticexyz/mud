@@ -169,7 +169,7 @@ library StoreCore {
 
     // Call onSetRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = Hooks.get(bytes32(tableId));
-    for (uint256 i = 0; i < hooks.length; i++) {
+    for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onSetRecord(tableId, key, data);
     }
@@ -217,17 +217,23 @@ library StoreCore {
     // Emit event to notify indexers
     emit StoreSetField(tableId, key, schemaIndex, data);
 
-    // Call onSetField hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    // Call preSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(bytes32(tableId));
-    for (uint256 i = 0; i < hooks.length; i++) {
+    for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetField(tableId, key, schemaIndex, data);
+      hook.preSetField(tableId, key, schemaIndex, data);
     }
 
     if (schemaIndex < schema.numStaticFields()) {
       StoreCoreInternal._setStaticField(tableId, key, schema, schemaIndex, data);
     } else {
       StoreCoreInternal._setDynamicField(tableId, key, schema, schemaIndex, data);
+    }
+
+    // Call postSetField hooks (after modifying the state)
+    for (uint256 i; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.postSetField(tableId, key, schemaIndex, data);
     }
   }
 
@@ -239,7 +245,7 @@ library StoreCore {
 
     // Call onDeleteRecord hooks (before actually modifying the state, so observers have access to the previous state if needed)
     address[] memory hooks = Hooks.get(bytes32(tableId));
-    for (uint256 i = 0; i < hooks.length; i++) {
+    for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onDeleteRecord(tableId, key);
     }
@@ -272,11 +278,11 @@ library StoreCore {
     // Emit event to notify indexers
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
-    // Call onSetField hooks (before actually modifying the state, so observers have access to the previous state if needed)
+    // Call preSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(bytes32(tableId));
-    for (uint256 i = 0; i < hooks.length; i++) {
+    for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.onSetField(tableId, key, schemaIndex, fullData);
+      hook.preSetField(tableId, key, schemaIndex, fullData);
     }
 
     StoreCoreInternal._pushToDynamicField(tableId, key, schema, schemaIndex, dataToPush);
@@ -562,7 +568,7 @@ library StoreCoreInternal {
    */
   function _getStaticDataOffset(Schema schema, uint8 schemaIndex) internal pure returns (uint256) {
     uint256 offset = 0;
-    for (uint256 i = 0; i < schemaIndex; i++) {
+    for (uint256 i; i < schemaIndex; i++) {
       offset += schema.atIndex(i).getStaticByteLength();
     }
     return offset;
