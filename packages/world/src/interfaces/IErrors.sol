@@ -9,4 +9,5 @@ interface IErrors {
   error SystemExists(address system);
   error FunctionSelectorExists(bytes4 functionSelector);
   error FunctionSelectorNotFound(bytes4 functionSelector);
+  error ModuleAlreadyInstalled(string module);
 }

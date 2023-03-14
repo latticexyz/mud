@@ -11,16 +11,15 @@ import { ResourceSelector } from "./ResourceSelector.sol";
 import { Resource } from "./types.sol";
 import { ROOT_NAMESPACE, ROOT_FILE } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
+import { Call } from "./Call.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
 import { ResourceAccess } from "./tables/ResourceAccess.sol";
-import { ResourceType } from "./tables/ResourceType.sol";
-import { SystemRegistry } from "./tables/SystemRegistry.sol";
 import { Systems } from "./tables/Systems.sol";
 import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
+import { InstalledModules } from "./tables/InstalledModules.sol";
 
-import { RegistrationSystem } from "./systems/RegistrationSystem.sol";
-
+import { IModule } from "./interfaces/IModule.sol";
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 import { IErrors } from "./interfaces/IErrors.sol";
@@ -32,82 +31,57 @@ contract World is Store, IWorldCore, IErrors {
   IWorld private immutable _this = IWorld(address(this));
 
   constructor() {
-    // Register internal tables
+    // Register internal NamespaceOwner table and give ownership of the root
+    // namespace to msg.sender. This is done in the constructor instead of a
+    // module, so that we can use it for access control checks in `installRootModule`.
     NamespaceOwner.registerSchema();
-    NamespaceOwner.setMetadata();
-
-    ResourceAccess.registerSchema();
-    ResourceAccess.setMetadata();
-
-    ResourceType.registerSchema();
-    ResourceType.setMetadata();
-
-    SystemRegistry.registerSchema();
-    SystemRegistry.setMetadata();
-
-    Systems.registerSchema();
-    Systems.setMetadata();
-
-    FunctionSelectors.registerSchema();
-    FunctionSelectors.setMetadata();
-
-    // Register the root namespace and give ownership to msg.sender
-    ResourceType.set(ROOT_NAMESPACE, Resource.NAMESPACE);
     NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
-    ResourceAccess.set(ROOT_NAMESPACE, msg.sender, true);
+
+    // Other internal tables are registered by the CoreModule to reduce World's bytecode size.
   }
 
   /**
-   * Register internal function selectors
+   * Install the given module at the given namespace in the World.
    */
-  function initialize() public {
-    // Require the caller to be the root namespace owner
-    AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
+  function installModule(IModule module, bytes16 namespace) public {
+    // Prevent the same module from being installed multiple times in the same namespace
+    if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
+      revert ModuleAlreadyInstalled(ResourceSelector.from(namespace, module.getName()).toString());
+    }
 
-    bytes16 registrationSystemFile = "registration";
-
-    // Register RegistrationSystem
-    RegistrationSystem registrationSystem = new RegistrationSystem();
-    _call({
+    Call.withSender({
       msgSender: msg.sender,
-      systemAddress: address(registrationSystem),
-      funcSelectorAndArgs: abi.encodeWithSelector(
-        RegistrationSystem.registerSystem.selector,
-        ROOT_NAMESPACE,
-        registrationSystemFile,
-        address(registrationSystem),
-        true
-      ),
-      delegate: true
+      target: address(module),
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, namespace),
+      delegate: false
     });
 
-    // Register root function selectors for internal systems
-    bytes4[9] memory rootFunctionSelectors = [
-      registrationSystem.registerNamespace.selector,
-      registrationSystem.registerTable.selector,
-      registrationSystem.setMetadata.selector,
-      registrationSystem.registerHook.selector,
-      registrationSystem.registerTableHook.selector,
-      registrationSystem.registerSystemHook.selector,
-      registrationSystem.registerSystem.selector,
-      registrationSystem.registerFunctionSelector.selector,
-      registrationSystem.registerRootFunctionSelector.selector
-    ];
+    // Register the module in the InstalledModules table
+    InstalledModules.set(namespace, module.getName(), address(module));
+  }
 
-    for (uint256 i = 0; i < rootFunctionSelectors.length; i++) {
-      _call({
-        msgSender: msg.sender,
-        systemAddress: address(registrationSystem),
-        funcSelectorAndArgs: abi.encodeWithSelector(
-          RegistrationSystem.registerRootFunctionSelector.selector,
-          ROOT_NAMESPACE,
-          registrationSystemFile,
-          rootFunctionSelectors[i], // Use the same function selector for the World as in RegistrationSystem
-          rootFunctionSelectors[i]
-        ),
-        delegate: true
-      });
+  /**
+   * Install the given root module in the World.
+   * Requires the caller to own the root namespace.
+   * The module is delegatecalled and installed in the root namespace.
+   */
+  function installRootModule(IModule module) public {
+    AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
+
+    // Prevent the same module from being installed multiple times in the same namespace
+    if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
+      revert ModuleAlreadyInstalled(ResourceSelector.from(ROOT_NAMESPACE, module.getName()).toString());
     }
+
+    Call.withSender({
+      msgSender: msg.sender,
+      target: address(module),
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, ROOT_NAMESPACE),
+      delegate: true // The module is delegate called so it can edit any table
+    });
+
+    // Register the module in the InstalledModules table
+    InstalledModules.set(ROOT_NAMESPACE, module.getName(), address(module));
   }
 
   /************************************************************************
@@ -325,9 +299,9 @@ contract World is Store, IWorldCore, IErrors {
 
     // Call the system and forward any return data
     return
-      _call({
+      Call.withSender({
         msgSender: msg.sender,
-        systemAddress: systemAddress,
+        target: systemAddress,
         funcSelectorAndArgs: funcSelectorAndArgs,
         delegate: namespace == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
       });
@@ -353,39 +327,6 @@ contract World is Store, IWorldCore, IErrors {
     bytes memory returnData = call(namespace, file, callData);
     assembly {
       return(add(returnData, 0x20), mload(returnData))
-    }
-  }
-
-  /************************************************************************
-   *
-   *    INTERNAL FUNCTIONS
-   *
-   ************************************************************************/
-
-  /**
-   * Internal function to call system with delegatecall/call, without access control
-   */
-  function _call(
-    address msgSender,
-    address systemAddress,
-    bytes memory funcSelectorAndArgs,
-    bool delegate
-  ) internal returns (bytes memory) {
-    // Append msg.sender to the calldata
-    bytes memory callData = abi.encodePacked(funcSelectorAndArgs, msgSender);
-
-    // Call the system using `delegatecall` for root systems and `call` for others
-    (bool success, bytes memory data) = delegate
-      ? systemAddress.delegatecall(callData) // root system
-      : systemAddress.call(callData); // non-root system
-
-    // Forward returned data if the call succeeded
-    if (success) return data;
-
-    // Forward error if the call failed
-    assembly {
-      // data+32 is a pointer to the error message, mload(data) is the length of the error message
-      revert(add(data, 0x20), mload(data))
     }
   }
 }

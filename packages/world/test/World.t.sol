@@ -22,6 +22,9 @@ import { Systems } from "../src/tables/Systems.sol";
 import { Bool } from "../src/tables/Bool.sol";
 import { AddressArray } from "../src/tables/AddressArray.sol";
 
+import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
+
 import { IWorld } from "../src/interfaces/IWorld.sol";
 import { IErrors } from "../src/interfaces/IErrors.sol";
 
@@ -34,11 +37,11 @@ contract WorldTestSystem is System {
   error WorldTestSystemError(string err);
   event WorldTestSystemLog(string log);
 
-  function msgSender() public pure returns (address) {
+  function msgSender() public view returns (address) {
     return _msgSender();
   }
 
-  function echo(bytes32 input) public pure returns (WorldTestSystemReturn memory) {
+  function echo(bytes32 input) public view returns (WorldTestSystemReturn memory) {
     return WorldTestSystemReturn(_msgSender(), input);
   }
 
@@ -114,7 +117,9 @@ contract WorldTest is Test {
 
   function setUp() public {
     world = IWorld(address(new World()));
-    world.initialize();
+    world.installRootModule(new CoreModule());
+    world.installRootModule(new RegistrationModule());
+
     key = "testKey";
     keyTuple = new bytes32[](1);
     keyTuple[0] = key;

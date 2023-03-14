@@ -6,7 +6,7 @@ import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 
 contract TestSystem is System {
-  function msgSender() public pure returns (address) {
+  function msgSender() public view returns (address) {
     return _msgSender();
   }
 }

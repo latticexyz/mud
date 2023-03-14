@@ -8,4 +8,10 @@ import { IWorldCore } from "./IWorldCore.sol";
 // TODO: autogenerate / auto-include all system interfaces
 import { IRegistrationSystem } from "./systems/IRegistrationSystem.sol";
 
-interface IWorld is IStore, IWorldCore, IRegistrationSystem {}
+/**
+ * The IWorld interface includes all systems dynamically added to the World
+ * during the deploy process.
+ */
+interface IWorld is IStore, IWorldCore, IRegistrationSystem {
+
+}

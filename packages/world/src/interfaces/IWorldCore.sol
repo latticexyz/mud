@@ -4,17 +4,25 @@ pragma solidity >=0.8.0;
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { ISystemHook } from "./ISystemHook.sol";
+import { IModule } from "./IModule.sol";
 
 /**
- * This interfaces includes all World methods with a static function selector.
+ * The IWorldCore interfaces includes all World methods with a static function selector.
  * Consumers should use the `IWorld` interface instead, which includes
  * dynamically registered function selectors (e.g. IRegistrationSystem)
  */
 interface IWorldCore {
   /**
-   * Register internal function selectors
+   * Install the given module at the given namespace in the World.
    */
-  function initialize() external;
+  function installModule(IModule module, bytes16 namespace) external;
+
+  /**
+   * Install the given root module in the World.
+   * Requires the caller to own the root namespace.
+   * The module is delegatecalled and installed in the root namespace.
+   */
+  function installRootModule(IModule module) external;
 
   /************************************************************************
    *

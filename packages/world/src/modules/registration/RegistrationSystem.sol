@@ -5,22 +5,23 @@ import { Store, IStoreHook } from "@latticexyz/store/src/Store.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
-import { System } from "../System.sol";
-import { ResourceSelector } from "../ResourceSelector.sol";
-import { Resource } from "../types.sol";
-import { ROOT_NAMESPACE, ROOT_FILE } from "../constants.sol";
-import { AccessControl } from "../AccessControl.sol";
+import { ResourceType } from "./tables/ResourceType.sol";
+import { SystemRegistry } from "./tables/SystemRegistry.sol";
 
-import { NamespaceOwner } from "../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../tables/ResourceAccess.sol";
-import { ResourceType } from "../tables/ResourceType.sol";
-import { SystemRegistry } from "../tables/SystemRegistry.sol";
-import { Systems } from "../tables/Systems.sol";
-import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
+import { System } from "../../System.sol";
+import { ResourceSelector } from "../../ResourceSelector.sol";
+import { Resource } from "../../types.sol";
+import { ROOT_NAMESPACE, ROOT_FILE } from "../../constants.sol";
+import { AccessControl } from "../../AccessControl.sol";
 
-import { ISystemHook } from "../interfaces/ISystemHook.sol";
-import { IRegistrationSystem } from "../interfaces/systems/IRegistrationSystem.sol";
-import { IErrors } from "../interfaces/IErrors.sol";
+import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../../tables/ResourceAccess.sol";
+import { Systems } from "../../tables/Systems.sol";
+import { FunctionSelectors } from "../../tables/FunctionSelectors.sol";
+
+import { ISystemHook } from "../../interfaces/ISystemHook.sol";
+import { IErrors } from "../../interfaces/IErrors.sol";
+import { IRegistrationSystem } from "../../interfaces/systems/IRegistrationSystem.sol";
 
 contract RegistrationSystem is System, IRegistrationSystem, IErrors {
   using ResourceSelector for bytes32;
