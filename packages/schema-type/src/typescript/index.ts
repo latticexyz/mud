@@ -1,14 +1,10 @@
-import { SchemaType } from "./SchemaType";
-import { ArraySchemaType } from "./ArraySchemaType";
-
-export { SchemaType };
-export type { ArraySchemaType };
-
-export type DynamicSchemaType = ArraySchemaType | SchemaType.BYTES | SchemaType.STRING;
-export type StaticSchemaType = Exclude<SchemaType, DynamicSchemaType>;
-
-export { encodeSchema } from "./encodeSchema";
-export { getStaticByteLength } from "./getStaticByteLength";
-export { SchemaTypeArrayToElement } from "./SchemaTypeArrayToElement";
-export { SchemaTypeId } from "./SchemaTypeId";
+export type { StaticSchemaType } from "./StaticSchemaType.js";
+export type { DynamicSchemaType } from "./DynamicSchemaType.js";
+export type { ArraySchemaType } from "./ArraySchemaType.js";
 export type { SchemaTypeToPrimitive } from "./SchemaTypeToPrimitive";
+
+export { SchemaType } from "./SchemaType.js";
+export { encodeSchema } from "./encodeSchema.js";
+export { getStaticByteLength } from "./getStaticByteLength.js";
+export { SchemaTypeArrayToElement } from "./SchemaTypeArrayToElement.js";
+export { SchemaTypeId } from "./SchemaTypeId.js";

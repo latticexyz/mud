@@ -1,4 +1,4 @@
-import { SchemaType } from "./SchemaType";
+import { SchemaType } from "./SchemaType.js";
 
 export const SchemaTypeId: Record<SchemaType, string> = {
   [SchemaType.UINT8]: "uint8",
