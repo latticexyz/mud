@@ -788,12 +788,12 @@ contract MirrorSubscriber is IStoreHook {
     StoreSwitch.setRecord(indexerTableId, key, data);
   }
 
-  function preSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onBeforeSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     if (table != table) revert("invalid table");
     StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
   }
 
-  function postSetField(uint256, bytes32[] memory, uint8, bytes memory) public {}
+  function onAfterSetField(uint256, bytes32[] memory, uint8, bytes memory) public {}
 
   function onDeleteRecord(uint256 table, bytes32[] memory key) public {
     if (table != table) revert("invalid table");

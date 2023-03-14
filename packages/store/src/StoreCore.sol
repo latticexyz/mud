@@ -217,11 +217,11 @@ library StoreCore {
     // Emit event to notify indexers
     emit StoreSetField(tableId, key, schemaIndex, data);
 
-    // Call preSetField hooks (before modifying the state)
+    // Call onBeforeSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(bytes32(tableId));
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.preSetField(tableId, key, schemaIndex, data);
+      hook.onBeforeSetField(tableId, key, schemaIndex, data);
     }
 
     if (schemaIndex < schema.numStaticFields()) {
@@ -230,10 +230,10 @@ library StoreCore {
       StoreCoreInternal._setDynamicField(tableId, key, schema, schemaIndex, data);
     }
 
-    // Call postSetField hooks (after modifying the state)
+    // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.postSetField(tableId, key, schemaIndex, data);
+      hook.onAfterSetField(tableId, key, schemaIndex, data);
     }
   }
 
@@ -278,19 +278,19 @@ library StoreCore {
     // Emit event to notify indexers
     emit StoreSetField(tableId, key, schemaIndex, fullData);
 
-    // Call preSetField hooks (before modifying the state)
+    // Call onBeforeSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(bytes32(tableId));
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.preSetField(tableId, key, schemaIndex, fullData);
+      hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
     }
 
     StoreCoreInternal._pushToDynamicField(tableId, key, schema, schemaIndex, dataToPush);
 
-    // Call postSetField hooks (after modifying the state)
+    // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      hook.postSetField(tableId, key, schemaIndex, fullData);
+      hook.onAfterSetField(tableId, key, schemaIndex, fullData);
     }
   }
 

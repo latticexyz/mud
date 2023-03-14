@@ -93,11 +93,11 @@ contract WorldTestTableHook is IStoreHook {
     emit HookCalled(abi.encode(table, key, data));
   }
 
-  function preSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onBeforeSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, schemaIndex, data));
   }
 
-  function postSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onAfterSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, schemaIndex, data));
   }
 
@@ -514,7 +514,7 @@ contract WorldTest is Test {
     emit HookCalled(abi.encode(tableId, singletonKey, value));
     world.setRecord(tableId, singletonKey, value);
 
-    // TODO: add tests for other hook methods (preSetField, postSetField, onDeleteRecord)
+    // TODO: add tests for other hook methods (onBeforeSetField, onAfterSetField, onDeleteRecord)
     // (See https://github.com/latticexyz/mud/issues/444)
   }
 

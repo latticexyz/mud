@@ -45,7 +45,7 @@ contract ReverseMappingHook is IStoreHook {
     ReverseMapping.push(targetTableId, keccak256(data), key[0]);
   }
 
-  function preSetField(uint256 table, bytes32[] memory key, uint8, bytes memory) public {
+  function onBeforeSetField(uint256 table, bytes32[] memory key, uint8, bytes memory) public {
     _sanityChecks(table, key);
 
     // Remove the key from the list of keys with the previous value
@@ -53,7 +53,7 @@ contract ReverseMappingHook is IStoreHook {
     _removeKeyFromList(key[0], previousValue);
   }
 
-  function postSetField(uint256 table, bytes32[] memory key, uint8, bytes memory) public {
+  function onAfterSetField(uint256 table, bytes32[] memory key, uint8, bytes memory) public {
     _sanityChecks(table, key);
 
     // Add the key to the list of keys with the new value
