@@ -32,7 +32,7 @@ library AccessControl {
     resourceSelector = ResourceSelector.from(namespace, file);
 
     // Check if the given caller has access to the given namespace or file
-    if (!hasAccess(namespace, file, msg.sender)) {
+    if (!hasAccess(namespace, file, caller)) {
       revert IErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
@@ -44,7 +44,7 @@ library AccessControl {
   ) internal view returns (bytes32 resourceSelector) {
     resourceSelector = ResourceSelector.from(namespace, file);
 
-    if (NamespaceOwner.get(namespace) != msg.sender) {
+    if (NamespaceOwner.get(namespace) != caller) {
       revert IErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
