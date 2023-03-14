@@ -26,7 +26,7 @@ contract CoreModule is IModule, WorldContext {
     return CORE_MODULE_NAME;
   }
 
-  function install(bytes16) public override {
+  function install(bytes memory) public override {
     NamespaceOwner.setMetadata();
 
     InstalledModules.registerSchema();

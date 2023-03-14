@@ -35,7 +35,7 @@ library InstalledModules {
   function getKeySchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
     _schema[0] = SchemaType.BYTES16;
-    _schema[1] = SchemaType.BYTES16;
+    _schema[1] = SchemaType.BYTES32;
 
     return SchemaLib.encode(_schema);
   }
@@ -59,48 +59,48 @@ library InstalledModules {
   }
 
   /** Get moduleAddress */
-  function getModuleAddress(bytes16 namespace, bytes16 mdouleName) internal view returns (address moduleAddress) {
+  function getModuleAddress(bytes16 moduleName, bytes32 configHash) internal view returns (address moduleAddress) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((namespace));
-    _primaryKeys[1] = bytes32((mdouleName));
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((configHash));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return (address(Bytes.slice20(_blob, 0)));
   }
 
   /** Set moduleAddress */
-  function setModuleAddress(bytes16 namespace, bytes16 mdouleName, address moduleAddress) internal {
+  function setModuleAddress(bytes16 moduleName, bytes32 configHash, address moduleAddress) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((namespace));
-    _primaryKeys[1] = bytes32((mdouleName));
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((configHash));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((moduleAddress)));
   }
 
   /** Get the full data */
-  function get(bytes16 namespace, bytes16 mdouleName) internal view returns (InstalledModulesData memory _table) {
+  function get(bytes16 moduleName, bytes32 configHash) internal view returns (InstalledModulesData memory _table) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((namespace));
-    _primaryKeys[1] = bytes32((mdouleName));
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((configHash));
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
     return decode(_blob);
   }
 
   /** Set the full data using individual values */
-  function set(bytes16 namespace, bytes16 mdouleName, address moduleAddress) internal {
+  function set(bytes16 moduleName, bytes32 configHash, address moduleAddress) internal {
     bytes memory _data = abi.encodePacked(moduleAddress);
 
     bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((namespace));
-    _primaryKeys[1] = bytes32((mdouleName));
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((configHash));
 
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
 
   /** Set the full data using the data struct */
-  function set(bytes16 namespace, bytes16 mdouleName, InstalledModulesData memory _table) internal {
-    set(namespace, mdouleName, _table.moduleAddress);
+  function set(bytes16 moduleName, bytes32 configHash, InstalledModulesData memory _table) internal {
+    set(moduleName, configHash, _table.moduleAddress);
   }
 
   /** Decode the tightly packed blob using this table's schema */
@@ -109,10 +109,10 @@ library InstalledModules {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes16 namespace, bytes16 mdouleName) internal {
+  function deleteRecord(bytes16 moduleName, bytes32 configHash) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((namespace));
-    _primaryKeys[1] = bytes32((mdouleName));
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((configHash));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }

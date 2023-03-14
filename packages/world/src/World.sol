@@ -23,6 +23,7 @@ import { IModule } from "./interfaces/IModule.sol";
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 import { IErrors } from "./interfaces/IErrors.sol";
+import { IRegistrationSystem } from "./interfaces/systems/IRegistrationSystem.sol";
 
 contract World is Store, IWorldCore, IErrors {
   using ResourceSelector for bytes32;
@@ -43,21 +44,22 @@ contract World is Store, IWorldCore, IErrors {
   /**
    * Install the given module at the given namespace in the World.
    */
-  function installModule(IModule module, bytes16 namespace) public {
-    // Prevent the same module from being installed multiple times in the same namespace
-    if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
-      revert ModuleAlreadyInstalled(ResourceSelector.from(namespace, module.getName()).toString());
+  function installModule(IModule module, bytes memory args) public {
+    // Prevent the same module from being installed multiple times
+    // TODO: do we need this?
+    if (InstalledModules.get(module.getName(), keccak256(args)).moduleAddress != address(0)) {
+      revert ModuleAlreadyInstalled(ResourceSelector.from(module.getName()).toString());
     }
 
     Call.withSender({
       msgSender: msg.sender,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, namespace),
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
       delegate: false
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(namespace, module.getName(), address(module));
+    InstalledModules.set(module.getName(), keccak256(args), address(module));
   }
 
   /**
@@ -65,23 +67,24 @@ contract World is Store, IWorldCore, IErrors {
    * Requires the caller to own the root namespace.
    * The module is delegatecalled and installed in the root namespace.
    */
-  function installRootModule(IModule module) public {
+  function installRootModule(IModule module, bytes memory args) public {
     AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
 
-    // Prevent the same module from being installed multiple times in the same namespace
-    if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
-      revert ModuleAlreadyInstalled(ResourceSelector.from(ROOT_NAMESPACE, module.getName()).toString());
+    // Prevent the same module from being installed multiple times
+    // TODO: do we need this?
+    if (InstalledModules.get(module.getName(), keccak256(args)).moduleAddress != address(0)) {
+      revert ModuleAlreadyInstalled(ResourceSelector.from(module.getName()).toString());
     }
 
     Call.withSender({
       msgSender: msg.sender,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, ROOT_NAMESPACE),
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
       delegate: true // The module is delegate called so it can edit any table
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(ROOT_NAMESPACE, module.getName(), address(module));
+    InstalledModules.set(module.getName(), keccak256(args), address(module));
   }
 
   /************************************************************************
@@ -200,7 +203,14 @@ contract World is Store, IWorldCore, IErrors {
    */
   function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) public virtual {
     bytes32 tableSelector = ResourceSelector.from(tableId);
-    _this.registerTable(tableSelector.getNamespace(), tableSelector.getFile(), valueSchema, keySchema);
+    // TODO: the reason this is needed is because "internal calls" to _this don't preserve the msg.sender,
+    // so the msg.sender will be the World contract, not the caller of this function.
+    // How can we make this less ugly? Maybe by moving these functions into the IRegistrationSystem?
+    Call.internalWithSender({
+      msgSender: msg.sender,
+      functionSelector: IRegistrationSystem.registerTable.selector,
+      args: abi.encode(tableSelector.getNamespace(), tableSelector.getFile(), valueSchema, keySchema)
+    });
   }
 
   /**
@@ -211,6 +221,11 @@ contract World is Store, IWorldCore, IErrors {
   function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     _this.setMetadata(resourceSelector.getNamespace(), resourceSelector.getFile(), tableName, fieldNames);
+    Call.internalWithSender({
+      msgSender: msg.sender,
+      functionSelector: IRegistrationSystem.setMetadata.selector,
+      args: abi.encode(resourceSelector.getNamespace(), resourceSelector.getFile(), tableName, fieldNames)
+    });
   }
 
   /**
@@ -219,7 +234,11 @@ contract World is Store, IWorldCore, IErrors {
    */
   function registerStoreHook(uint256 tableId, IStoreHook hook) public virtual {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
-    _this.registerTableHook(resourceSelector.getNamespace(), resourceSelector.getFile(), hook);
+    Call.internalWithSender({
+      msgSender: msg.sender,
+      functionSelector: IRegistrationSystem.registerTableHook.selector,
+      args: abi.encode(resourceSelector.getNamespace(), resourceSelector.getFile(), hook)
+    });
   }
 
   /**

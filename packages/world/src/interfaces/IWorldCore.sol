@@ -15,14 +15,14 @@ interface IWorldCore {
   /**
    * Install the given module at the given namespace in the World.
    */
-  function installModule(IModule module, bytes16 namespace) external;
+  function installModule(IModule module, bytes memory args) external;
 
   /**
    * Install the given root module in the World.
    * Requires the caller to own the root namespace.
    * The module is delegatecalled and installed in the root namespace.
    */
-  function installRootModule(IModule module) external;
+  function installRootModule(IModule module, bytes memory args) external;
 
   /************************************************************************
    *

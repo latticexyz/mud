@@ -117,8 +117,8 @@ contract WorldTest is Test {
 
   function setUp() public {
     world = IWorld(address(new World()));
-    world.installRootModule(new CoreModule());
-    world.installRootModule(new RegistrationModule());
+    world.installRootModule(new CoreModule(), new bytes(0));
+    world.installRootModule(new RegistrationModule(), new bytes(0));
 
     key = "testKey";
     keyTuple = new bytes32[](1);

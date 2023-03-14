@@ -39,9 +39,9 @@ contract RegistrationModule is IModule, WorldContext {
   }
 
   // The namespace argument is not used because the module is always installed in the root namespace
-  function install(bytes16) public {
+  function install(bytes memory) public {
     // Require the CoreModule to be installed in the root namespace
-    if (InstalledModules.get(ROOT_NAMESPACE, CORE_MODULE_NAME).moduleAddress == address(0)) {
+    if (InstalledModules.get(CORE_MODULE_NAME, keccak256(new bytes(0))).moduleAddress == address(0)) {
       revert RequiredModuleNotFound(ResourceSelector.from(ROOT_NAMESPACE, CORE_MODULE_NAME).toString());
     }
 

@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { ResourceSelector } from "./ResourceSelector.sol";
+import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
+import { Systems } from "./tables/Systems.sol";
+
 library Call {
   /**
    * Call a contract with delegatecall/call and append the given msgSender to the calldata.
@@ -29,5 +33,21 @@ library Call {
       // data+32 is a pointer to the error message, mload(data) is the length of the error message
       revert(add(data, 0x20), mload(data))
     }
+  }
+
+  function internalWithSender(
+    address msgSender,
+    bytes4 functionSelector,
+    bytes memory args
+  ) internal returns (bytes memory) {
+    (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) = FunctionSelectors.get(functionSelector);
+    address systemAddress = Systems.getSystem(ResourceSelector.from(namespace, file));
+    return
+      withSender({
+        msgSender: msgSender,
+        target: systemAddress,
+        funcSelectorAndArgs: abi.encodePacked(systemFunctionSelector, args),
+        delegate: false
+      });
   }
 }
