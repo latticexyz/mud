@@ -9,7 +9,6 @@ import { System } from "../System.sol";
 import { ResourceSelector } from "../ResourceSelector.sol";
 import { Resource } from "../types.sol";
 import { ROOT_NAMESPACE, ROOT_FILE } from "../constants.sol";
-import { Errors } from "../Errors.sol";
 import { AccessControl } from "../AccessControl.sol";
 
 import { NamespaceOwner } from "../tables/NamespaceOwner.sol";
@@ -21,8 +20,9 @@ import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
 
 import { ISystemHook } from "../interfaces/ISystemHook.sol";
 import { IRegistrationSystem } from "../interfaces/systems/IRegistrationSystem.sol";
+import { IErrors } from "../interfaces/IErrors.sol";
 
-contract RegistrationSystem is System, IRegistrationSystem {
+contract RegistrationSystem is System, IRegistrationSystem, IErrors {
   using ResourceSelector for bytes32;
 
   /**
@@ -32,7 +32,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     bytes32 resourceSelector = ResourceSelector.from(namespace);
 
     // Require namespace to not exist yet
-    if (ResourceType.get(namespace) != Resource.NONE) revert Errors.ResourceExists(resourceSelector.toString());
+    if (ResourceType.get(namespace) != Resource.NONE) revert ResourceExists(resourceSelector.toString());
 
     // Register namespace resource
     ResourceType.set(namespace, Resource.NAMESPACE);
@@ -56,7 +56,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     resourceSelector = ResourceSelector.from(namespace, file);
 
     // Require the file selector to not be the namespace's root file
-    if (file == ROOT_FILE) revert Errors.InvalidSelector(resourceSelector.toString());
+    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
 
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
@@ -65,7 +65,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
-      revert Errors.ResourceExists(resourceSelector.toString());
+      revert ResourceExists(resourceSelector.toString());
     }
 
     // Store the table resource type
@@ -108,7 +108,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
       return registerSystemHook(namespace, file, ISystemHook(hook));
     }
 
-    revert Errors.InvalidSelector(ResourceSelector.from(namespace, file).toString());
+    revert InvalidSelector(ResourceSelector.from(namespace, file).toString());
   }
 
   /**
@@ -145,10 +145,10 @@ contract RegistrationSystem is System, IRegistrationSystem {
     resourceSelector = ResourceSelector.from(namespace, file);
 
     // Require the file selector to not be the namespace's root file
-    if (file == ROOT_FILE) revert Errors.InvalidSelector(resourceSelector.toString());
+    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
 
     // Require the system to not exist yet
-    if (SystemRegistry.get(address(system)) != 0) revert Errors.SystemExists(address(system));
+    if (SystemRegistry.get(address(system)) != 0) revert SystemExists(address(system));
 
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
@@ -157,7 +157,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
-      revert Errors.ResourceExists(resourceSelector.toString());
+      revert ResourceExists(resourceSelector.toString());
     }
 
     // Store the system resource type
@@ -199,7 +199,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
     bytes16 existingFile = FunctionSelectors.getFile(worldFunctionSelector);
 
-    if (existingNamespace != 0 || existingFile != 0) revert Errors.FunctionSelectorExists(worldFunctionSelector);
+    if (existingNamespace != 0 || existingFile != 0) revert FunctionSelectorExists(worldFunctionSelector);
 
     // Register the function selector
     bytes memory systemFunctionSignature = abi.encodePacked(systemFunctionName, systemFunctionArguments);
@@ -229,7 +229,7 @@ contract RegistrationSystem is System, IRegistrationSystem {
     bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
     bytes16 existingFile = FunctionSelectors.getFile(worldFunctionSelector);
 
-    if (!(existingNamespace == 0 && existingFile == 0)) revert Errors.FunctionSelectorExists(worldFunctionSelector);
+    if (!(existingNamespace == 0 && existingFile == 0)) revert FunctionSelectorExists(worldFunctionSelector);
 
     // Register the function selector
     FunctionSelectors.set(worldFunctionSelector, namespace, file, systemFunctionSelector);

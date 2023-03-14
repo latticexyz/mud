@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-library Errors {
+interface IErrors {
   error ResourceExists(string resource);
   error ResourceNotFound(string resource);
   error AccessDenied(string resource, address caller);

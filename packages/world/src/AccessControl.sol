@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { ResourceSelector } from "./ResourceSelector.sol";
-import { Errors } from "./Errors.sol";
+import { IErrors } from "./interfaces/IErrors.sol";
 
 import { ResourceAccess } from "./tables/ResourceAccess.sol";
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
@@ -33,7 +33,7 @@ library AccessControl {
 
     // Check if the given caller has access to the given namespace or file
     if (!hasAccess(namespace, file, msg.sender)) {
-      revert Errors.AccessDenied(resourceSelector.toString(), caller);
+      revert IErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
 
@@ -45,7 +45,7 @@ library AccessControl {
     resourceSelector = ResourceSelector.from(namespace, file);
 
     if (NamespaceOwner.get(namespace) != msg.sender) {
-      revert Errors.AccessDenied(resourceSelector.toString(), caller);
+      revert IErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
 }

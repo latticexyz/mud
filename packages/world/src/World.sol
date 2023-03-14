@@ -10,7 +10,6 @@ import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { Resource } from "./types.sol";
 import { ROOT_NAMESPACE, ROOT_FILE } from "./constants.sol";
-import { Errors } from "./Errors.sol";
 import { AccessControl } from "./AccessControl.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
@@ -24,8 +23,9 @@ import { RegistrationSystem } from "./systems/RegistrationSystem.sol";
 
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
+import { IErrors } from "./interfaces/IErrors.sol";
 
-contract World is Store, IWorldCore {
+contract World is Store, IWorldCore, IErrors {
   using ResourceSelector for bytes32;
 
   // IWorld includes interfaces for dynamically registered systems (e.g. IRegistrationSystem)
@@ -318,7 +318,7 @@ contract World is Store, IWorldCore {
     (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
 
     // Check if the system exists
-    if (systemAddress == address(0)) revert Errors.ResourceNotFound(resourceSelector.toString());
+    if (systemAddress == address(0)) revert ResourceNotFound(resourceSelector.toString());
 
     // Allow access if the system is public or the caller has access to the namespace or file
     if (!publicAccess) AccessControl.requireAccess(namespace, file, msg.sender);
@@ -345,7 +345,7 @@ contract World is Store, IWorldCore {
   fallback() external {
     (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) = FunctionSelectors.get(msg.sig);
 
-    if (namespace == 0 && file == 0) revert Errors.FunctionSelectorNotFound(msg.sig);
+    if (namespace == 0 && file == 0) revert FunctionSelectorNotFound(msg.sig);
 
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
