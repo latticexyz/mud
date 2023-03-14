@@ -42,7 +42,7 @@ export function registerSchema(world: Contract, table: TableId, rawSchema?: stri
     return schema;
   }
 
-  // TODO: populate from ECS cache?
+  // TODO: populate from ECS cache before fetching from RPC
 
   console.log("fetching schema for table", { table: table.toString(), world: world.address });
   // TODO: error if schema is not found?
