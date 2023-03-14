@@ -1,11 +1,23 @@
 package storecore
 
-import "github.com/ethereum/go-ethereum/crypto"
+import (
+	"math/big"
+
+	"github.com/ethereum/go-ethereum/common"
+)
 
 func SchemaTable() string {
-	return crypto.Keccak256Hash([]byte("mud.store.table.schema")).Hex()
+	return "0x" + common.Bytes2Hex(append(RightPadId("mudstore"), RightPadId("schema")...))
+}
+
+func RightPadId(id string) []byte {
+	return common.RightPadBytes([]byte(id), 16)
 }
 
 func MetadataTable() string {
-	return crypto.Keccak256Hash([]byte("/store_internals/tables/StoreMetadata")).Hex()
+	return "0x" + common.Bytes2Hex(append(RightPadId("mudstore"), RightPadId("StoreMetadata")...))
+}
+
+func PaddedTableName(id *big.Int) string {
+	return "0x" + common.Bytes2Hex(common.LeftPadBytes(id.Bytes(), 32))
 }

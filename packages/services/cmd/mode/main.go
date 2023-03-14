@@ -62,7 +62,7 @@ func main() {
 	go grpc.StartMetricsServer(config.Metrics.Port, logger)
 
 	// Run the MODE DatabaseLayer.
-	dl := db.NewDatabaseLayer(context.Background(), config.Db.Dsn, logger)
+	dl := db.NewDatabaseLayer(context.Background(), config.Db.Dsn, config.Db.Wipe, logger)
 	go dl.RunDatabaseLayer(context.Background())
 
 	// Create a MODE WriteLayer for modifying the database.

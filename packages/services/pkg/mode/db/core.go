@@ -2,7 +2,7 @@ package db
 
 import (
 	"context"
-	"encoding/hex"
+	"database/sql"
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/logger"
 	"latticexyz/mud/packages/services/pkg/multiplexer"
@@ -32,9 +32,40 @@ func connectToDatabase(dsn string) (*sqlx.DB, error) {
 	return db, nil
 }
 
+func wipeSchemas(db *sql.DB, logger *zap.Logger) error {
+	rows, err := db.Query(`
+		SELECT n.nspname
+		FROM pg_catalog.pg_namespace n
+		WHERE n.nspname !~ '^pg_' AND n.nspname <> 'information_schema'
+	`)
+	if err != nil {
+		return err
+	}
+
+	var schemas []string
+	for rows.Next() {
+		var schemaName string
+		if err = rows.Scan(&schemaName); err != nil {
+			return err
+		}
+		schemas = append(schemas, schemaName)
+	}
+
+	for _, schema := range schemas {
+		_, err = db.Exec("DROP SCHEMA IF EXISTS " + schema + " CASCADE")
+		if err != nil {
+			return err
+		}
+		logger.Info("dropped schema", zap.String("schema", schema))
+	}
+
+	return nil
+}
+
 func NewDatabaseLayer(
 	ctx context.Context,
 	dsn string,
+	wipe bool,
 	logger *zap.Logger,
 ) *DatabaseLayer {
 
@@ -48,6 +79,15 @@ func NewDatabaseLayer(
 	conn, err := pgconn.Connect(ctx, dsn)
 	if err != nil {
 		logger.Fatal("failed to connect to database", zap.Error(err))
+	}
+
+	// If running with wipe ON, wipe the database.
+	if wipe {
+		logger.Info("wiping the database")
+		err := wipeSchemas(db.DB, logger)
+		if err != nil {
+			logger.Error("failed to wipe the database", zap.Error(err))
+		}
 	}
 
 	// Create a WAL configuration object.
@@ -169,13 +209,13 @@ func (dl *DatabaseLayer) RunDatabaseLayer(ctx context.Context) {
 			if err != nil {
 				dl.logger.Fatal("failed to parse xlog data", zap.Error(err))
 			}
-			dl.logger.Info("received WAL data", zap.String("wal_start", xld.WALStart.String()), zap.String("wal_end", xld.ServerWALEnd.String()), zap.Time("server_time", xld.ServerTime), zap.String("wal_data", hex.Dump(xld.WALData)))
+			// dl.logger.Info("received WAL data", zap.String("wal_start", xld.WALStart.String()), zap.String("wal_end", xld.ServerWALEnd.String()), zap.Time("server_time", xld.ServerTime), zap.String("wal_data", hex.Dump(xld.WALData)))
 
 			logicalMsg, err := pglogrepl.Parse(xld.WALData)
 			if err != nil {
 				dl.logger.Fatal("failed to parse logical replication message", zap.Error(err))
 			}
-			dl.logger.Info("received logical replication message", zap.String("message", logicalMsg.Type().String()))
+			// dl.logger.Info("received logical replication message", zap.String("message", logicalMsg.Type().String()))
 
 			switch logicalMsg := logicalMsg.(type) {
 			// Record the data for the relation.

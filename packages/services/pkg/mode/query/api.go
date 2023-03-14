@@ -112,7 +112,7 @@ func (ql *QueryLayer) Join(ctx context.Context, request *pb_mode.JoinRequest) (*
 	}
 
 	// Build the response from the single joined table and return.
-	return QueryLayerResponseFromTable(serializedTable, joinedTableSchema.TableName), nil
+	return QueryLayerResponseFromTable(serializedTable, joinedTableSchema.FullTableName()), nil
 }
 
 func (ql *QueryLayer) StreamAll(request *pb_mode.FindAllRequest, stream pb_mode.QueryLayer_StreamAllServer) error {

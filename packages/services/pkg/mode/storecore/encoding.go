@@ -214,13 +214,26 @@ const (
 	STRING
 )
 
+type SchemaTypeKV struct {
+	Key   *SchemaTypePair `json:"key"`
+	Value *SchemaTypePair `json:"value"`
+}
+
+func (pair *SchemaTypeKV) Flatten() []SchemaType {
+	return append(pair.Key.Flatten(), pair.Value.Flatten()...)
+}
+
 type SchemaTypePair struct {
 	Static           []SchemaType `json:"static"`
 	Dynamic          []SchemaType `json:"dynamic"`
 	StaticDataLength uint64       `json:"static_data_length"`
 }
 
-func DecodeSchemaTypePair(encoding []byte) SchemaTypePair {
+func (tuple *SchemaTypePair) Flatten() []SchemaType {
+	return append(tuple.Static, tuple.Dynamic...)
+}
+
+func DecodeSchemaTypePair(encoding []byte) *SchemaTypePair {
 
 	staticDataLength := new(big.Int).SetBytes(encoding[0:2]).Uint64()
 	numStaticFields := new(big.Int).SetBytes(encoding[2:3]).Uint64()
@@ -237,15 +250,22 @@ func DecodeSchemaTypePair(encoding []byte) SchemaTypePair {
 		dynamicFields = append(dynamicFields, SchemaType(encoding[i]))
 	}
 
-	return SchemaTypePair{
+	return &SchemaTypePair{
 		Static:           staticFields,
 		Dynamic:          dynamicFields,
 		StaticDataLength: staticDataLength,
 	}
 }
 
+func SchemaTypeKVFromPairs(key *SchemaTypePair, value *SchemaTypePair) *SchemaTypeKV {
+	return &SchemaTypeKV{
+		Key:   key,
+		Value: value,
+	}
+}
+
 func CombineSchemaTypePair(schemaTypePair SchemaTypePair) []SchemaType {
-	return append(schemaTypePair.Static, schemaTypePair.Dynamic...)
+	return schemaTypePair.Flatten()
 }
 
 func StringifySchemaTypes(schemaType []SchemaType) []string {
@@ -391,6 +411,10 @@ func DecodeStaticField(schemaType SchemaType, encoding []byte, bytesOffset uint6
 		return fmt.Sprint(new(big.Int).SetBytes(encoding[bytesOffset : bytesOffset+32]).Uint64())
 	case BYTES4:
 		return hexutil.Encode(encoding[bytesOffset : bytesOffset+4])
+	case BYTES8:
+		return hexutil.Encode(encoding[bytesOffset : bytesOffset+8])
+	case BYTES16:
+		return hexutil.Encode(encoding[bytesOffset : bytesOffset+16])
 	case BYTES32:
 		return hexutil.Encode(encoding[bytesOffset : bytesOffset+32])
 	case BOOL:
