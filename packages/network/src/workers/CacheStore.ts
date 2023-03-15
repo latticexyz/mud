@@ -31,8 +31,9 @@ export function storeEvent<Cm extends Components>(
   cacheStore: CacheStore,
   { component, entity, value, partialValue, blockNumber }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
-  // Remove the 0 padding from all entityes
-  const normalizedEntity = formatEntityID(entity);
+  // Normalize entity ID without zero padding for v1 entities
+  // Leave v2 entity IDs alone
+  const entityId = entity.startsWith("v2:") ? entity : formatEntityID(entity);
 
   const { components, entities, componentToIndex, entityToIndex, state } = cacheStore;
 
@@ -44,10 +45,10 @@ export function storeEvent<Cm extends Components>(
   }
 
   // Get entity index
-  let entityIndex = entityToIndex.get(normalizedEntity);
+  let entityIndex = entityToIndex.get(entityId);
   if (entityIndex == null) {
-    entityIndex = entities.push(normalizedEntity) - 1;
-    entityToIndex.set(normalizedEntity, entityIndex);
+    entityIndex = entities.push(entityId) - 1;
+    entityToIndex.set(entityId, entityIndex);
   }
 
   // Entity index gets the right 24 bits, component index the left 8 bits
