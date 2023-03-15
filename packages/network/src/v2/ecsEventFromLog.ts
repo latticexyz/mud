@@ -19,7 +19,7 @@ export const ecsEventFromLog = async (
   const tableId = TableId.fromBytes32(utils.arrayify(args.table));
   const component = tableId.toString();
   // TODO: revisit key tuple encoding for client
-  const entity = `v2:${args.key.join(":")}` as EntityID;
+  const entity = args.key.join(":") as EntityID;
 
   const ecsEvent: NetworkComponentUpdate = {
     type: NetworkEvents.NetworkComponentUpdate,

@@ -31,9 +31,9 @@ export function storeEvent<Cm extends Components>(
   cacheStore: CacheStore,
   { component, entity, value, partialValue, blockNumber }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
-  // Normalize entity ID without zero padding for v1 entities
-  // Leave v2 entity IDs alone
-  const entityId = entity.startsWith("v2:") ? entity : formatEntityID(entity);
+  // Normalize entity ID without zero padding for v1 entities and single-key v2 entities
+  // For composite-key v2 entities (concatenated with `:`), leave the ID as is.
+  const entityId = entity.includes(":") ? entity : formatEntityID(entity);
 
   const { components, entities, componentToIndex, entityToIndex, state } = cacheStore;
 
