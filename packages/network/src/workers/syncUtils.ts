@@ -33,6 +33,8 @@ import { createChannel, createClient } from "nice-grpc-web";
 import { formatComponentID, formatEntityID } from "../utils";
 import { grpc } from "@improbable-eng/grpc-web";
 import { debug as parentDebug } from "./debug";
+import { fetchStoreEvents } from "../v2/fetchStoreEvents";
+import orderBy from "lodash/orderBy";
 
 const debug = parentDebug.extend("syncUtils");
 
@@ -254,6 +256,7 @@ export function createLatestEventStreamService(
 export function createLatestEventStreamRPC(
   blockNumber$: Observable<number>,
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  boundFetchStoreEvents: (fromBlock: number, toBlock: number) => ReturnType<typeof fetchStoreEvents>,
   fetchSystemCallsFromEvents?: ReturnType<typeof createFetchSystemCallsFromEvents>
 ): Observable<NetworkEvent> {
   let lastSyncedBlockNumber: number | undefined;
@@ -264,7 +267,11 @@ export function createLatestEventStreamRPC(
         lastSyncedBlockNumber == null || lastSyncedBlockNumber >= blockNumber ? blockNumber : lastSyncedBlockNumber + 1;
       const to = blockNumber;
       lastSyncedBlockNumber = to;
-      const events = await fetchWorldEvents(from, to);
+      const [worldEvents, storeEvents] = await Promise.all([
+        fetchWorldEvents(from, to),
+        boundFetchStoreEvents(from, to),
+      ]);
+      const events = orderBy([...worldEvents, ...storeEvents], ["blockNumber", "logIndex"]);
       debug(`fetched ${events.length} events from block range ${from} -> ${to}`);
 
       if (fetchSystemCallsFromEvents && events.length > 0) {
@@ -290,12 +297,13 @@ export function createLatestEventStreamRPC(
  */
 export async function fetchEventsInBlockRangeChunked(
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  boundFetchStoreEvents: (fromBlock: number, toBlock: number) => ReturnType<typeof fetchStoreEvents>,
   fromBlockNumber: number,
   toBlockNumber: number,
   interval = 50,
   setPercentage?: (percentage: number) => void
 ): Promise<NetworkComponentUpdate<Components>[]> {
-  const events: NetworkComponentUpdate<Components>[] = [];
+  let events: NetworkComponentUpdate<Components>[] = [];
   const delta = toBlockNumber - fromBlockNumber;
   const numSteps = Math.ceil(delta / interval);
   const steps = [...range(numSteps, interval, fromBlockNumber)];
@@ -303,12 +311,12 @@ export async function fetchEventsInBlockRangeChunked(
   for (let i = 0; i < steps.length; i++) {
     const from = steps[i];
     const to = i === steps.length - 1 ? toBlockNumber : steps[i + 1] - 1;
-    const chunkEvents = await fetchWorldEvents(from, to);
+    const [worldEvents, storeEvents] = await Promise.all([fetchWorldEvents(from, to), boundFetchStoreEvents(from, to)]);
 
     if (setPercentage) setPercentage(((i * interval) / delta) * 100);
     debug(`initial sync fetched ${events.length} events from block range ${from} -> ${to}`);
 
-    events.push(...chunkEvents);
+    events = events.concat(orderBy([...worldEvents, ...storeEvents], ["blockNumber", "logIndex"]));
   }
 
   return events;
@@ -325,6 +333,7 @@ export async function fetchEventsInBlockRangeChunked(
  */
 export async function fetchStateInBlockRange(
   fetchWorldEvents: ReturnType<typeof createFetchWorldEventsInBlockRange>,
+  boundFetchStoreEvents: (fromBlock: number, toBlock: number) => ReturnType<typeof fetchStoreEvents>,
   fromBlockNumber: number,
   toBlockNumber: number,
   interval = 50,
@@ -334,6 +343,7 @@ export async function fetchStateInBlockRange(
 
   const events = await fetchEventsInBlockRangeChunked(
     fetchWorldEvents,
+    boundFetchStoreEvents,
     fromBlockNumber,
     toBlockNumber,
     interval,
@@ -407,7 +417,7 @@ export function createFetchWorldEventsInBlockRange<C extends Components>(
     const ecsEvents: NetworkComponentUpdate<C>[] = [];
 
     for (const event of contractsEvents) {
-      const { lastEventInTx, txHash, args } = event;
+      const { lastEventInTx, txHash, logIndex, args } = event;
       const {
         component: address,
         entity: entityId,
@@ -430,6 +440,7 @@ export function createFetchWorldEventsInBlockRange<C extends Components>(
         entity,
         value: undefined,
         blockNumber,
+        logIndex,
         lastEventInTx,
         txHash,
       } as NetworkComponentUpdate<C>;

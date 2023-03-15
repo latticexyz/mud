@@ -7,7 +7,7 @@ export async function loadStoreConfig(configPath?: string) {
   const config = await loadConfig(configPath);
 
   try {
-    return parseStoreConfig(config);
+    return parseStoreConfig(config as any);
   } catch (error) {
     if (error instanceof ZodError) {
       throw fromZodErrorCustom(error, "StoreConfig Validation Error");

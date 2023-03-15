@@ -29,10 +29,11 @@ export function createCacheStore() {
 
 export function storeEvent<Cm extends Components>(
   cacheStore: CacheStore,
-  { component, entity, value, blockNumber }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
+  { component, entity, value, partialValue, blockNumber }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
-  // Remove the 0 padding from all entityes
-  const normalizedEntity = formatEntityID(entity);
+  // Normalize entity ID without zero padding for v1 entities and single-key v2 entities
+  // For composite-key v2 entities (concatenated with `:`), leave the ID as is.
+  const entityId = entity.includes(":") ? entity : formatEntityID(entity);
 
   const { components, entities, componentToIndex, entityToIndex, state } = cacheStore;
 
@@ -44,16 +45,34 @@ export function storeEvent<Cm extends Components>(
   }
 
   // Get entity index
-  let entityIndex = entityToIndex.get(normalizedEntity);
+  let entityIndex = entityToIndex.get(entityId);
   if (entityIndex == null) {
-    entityIndex = entities.push(normalizedEntity) - 1;
-    entityToIndex.set(normalizedEntity, entityIndex);
+    entityIndex = entities.push(entityId) - 1;
+    entityToIndex.set(entityId, entityIndex);
   }
 
   // Entity index gets the right 24 bits, component index the left 8 bits
   const key = packTuple([componentIndex, entityIndex]);
-  if (value == null) state.delete(key);
-  else state.set(key, value);
+
+  // keep this logic aligned with applyNetworkUpdates
+  if (partialValue !== undefined) {
+    const currentValue = state.get(key);
+    if (currentValue === undefined) {
+      console.warn("Can't make partial update on unset component value. Ignoring update.", {
+        component,
+        entity,
+        entityIndex,
+        partialValue,
+      });
+    } else {
+      state.set(key, { ...currentValue, ...partialValue });
+    }
+  } else if (value === undefined) {
+    console.log("deleting key", key);
+    state.delete(key);
+  } else {
+    state.set(key, value);
+  }
 
   // Set block number to one less than the last received event's block number
   // (Events are expected to be ordered, so once a new block number appears,

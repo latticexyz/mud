@@ -92,7 +92,7 @@ export interface StoreUserConfig {
   userTypes?: UserTypesConfig;
 }
 
-interface FullTableConfig {
+export interface FullTableConfig {
   /** Output directory path for the file. Default is "/tables" */
   directory?: string;
   /**
@@ -113,16 +113,16 @@ interface FullTableConfig {
   schema: Record<string, z.input<typeof FieldData>>;
 }
 
-interface UserTypesConfig {
+interface UserTypesConfig<Enums extends Record<string, string[]> = Record<string, string[]>> {
   /** Path to the file where common types will be generated and imported from. Default is "/types" */
   path?: string;
   /** Enum names mapped to lists of their member names */
-  enums?: Record<string, string[]>;
+  enums?: Enums;
 }
 
 export type StoreConfig = z.output<typeof StoreConfig>;
 
-export async function parseStoreConfig(config: unknown) {
+export function parseStoreConfig(config: StoreUserConfig) {
   return StoreConfig.parse(config);
 }
 
