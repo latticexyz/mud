@@ -378,7 +378,8 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       if (prop === "keys") {
         return () => new Set([...target.keys(), ...overriddenEntityValues.keys()]).values();
       }
-      return Reflect.get(target, prop).bind(target);
+
+      return Reflect.get(target, prop, target);
     },
   });
 
