@@ -11,9 +11,10 @@ var logger *zap.Logger
 
 // InitLogger initialized the global logger instance.
 func InitLogger() {
-	loggerConfig := zap.NewProductionConfig()
+	loggerConfig := zap.NewDevelopmentConfig()
 	loggerConfig.EncoderConfig.TimeKey = "timestamp"
 	loggerConfig.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout(time.RFC3339)
+	loggerConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	logger, _ = loggerConfig.Build()
 }
 
