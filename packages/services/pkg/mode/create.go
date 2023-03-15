@@ -21,7 +21,27 @@ func (builder *CreateBuilder) Validate() error {
 	return nil
 }
 
-func (builder *CreateBuilder) BuildCreateTableFields() string {
+func (builder *CreateBuilder) BuildCreateTableKeyFields() string {
+	schema := builder.TableSchema
+
+	if len(schema.KeyNames) == 0 {
+		return ""
+	}
+	keyFields := ""
+	for idx, field := range schema.KeyNames {
+		postgresType := schema.PostgresTypes[field]
+		keyFields = keyFields + field + ` ` + postgresType
+		if field == schema.PrimaryKey {
+			keyFields = keyFields + ` PRIMARY KEY`
+		}
+		if idx != len(schema.KeyNames)-1 {
+			keyFields = keyFields + `, `
+		}
+	}
+	return keyFields
+}
+
+func (builder *CreateBuilder) BuildCreateTableValueFields() string {
 	schema := builder.TableSchema
 
 	if len(schema.FieldNames) == 0 {
@@ -39,6 +59,19 @@ func (builder *CreateBuilder) BuildCreateTableFields() string {
 		}
 	}
 	return valueFields
+}
+
+func (builder *CreateBuilder) BuildCreateTableFields() string {
+	var str strings.Builder
+	keyFields := builder.BuildCreateTableKeyFields()
+	valueFields := builder.BuildCreateTableValueFields()
+	if keyFields != "" {
+		str.WriteString(keyFields + ",")
+	}
+	if valueFields != "" {
+		str.WriteString(valueFields)
+	}
+	return str.String()
 }
 
 func (builder *CreateBuilder) BuildCreate() string {

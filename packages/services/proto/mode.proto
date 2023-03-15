@@ -45,6 +45,11 @@ message FindRequestOptions {
    bool negate = 3;
 }
 
+message Namespace {
+    string chainId = 1;
+    string worldAddress = 2;
+}
+
 message FindRequest {
     string from = 1;
     repeated Filter filter = 2;
@@ -57,8 +62,11 @@ message FindRequest {
 message FindAllRequest {
     repeated string tables = 1;
 
+    // Namespace.
+    Namespace namespace = 2;
+
     // Options.
-    FindRequestOptions options = 2;
+    FindRequestOptions options = 3;
 }
 
 message JoinRequest {

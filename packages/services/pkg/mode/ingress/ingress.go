@@ -111,20 +111,27 @@ func (il *IngressLayer) Run() {
 					println("-------------------------------------------------------")
 					println("-------------------------------------------------------")
 					println("-------------------------------------------------------")
-					// case StoreSetFieldEvent().Hex():
-					// 	event, err := ParseStoreSetField(vLog)
-					// 	if err != nil {
-					// 		il.logger.Error("failed to parse StoreSetField event", zap.Error(err))
-					// 		continue
-					// 	}
-					// 	il.handleSetFieldEvent(event)
-					// case StoreDeleteRecordEvent().Hex():
-					// 	event, err := ParseStoreDeleteRecord(vLog)
-					// 	if err != nil {
-					// 		il.logger.Error("failed to parse StoreDeleteRecord event", zap.Error(err))
-					// 		continue
-					// 	}
-					// 	il.handleDeleteRecordEvent(event)
+				case StoreSetFieldEvent().Hex():
+					println("------------------StoreSetFieldEvent------------------")
+					println("-------------------------------------------------------")
+					println("-------------------------------------------------------")
+					println("-------------------------------------------------------")
+					event, err := ParseStoreSetField(vLog)
+					if err != nil {
+						il.logger.Error("failed to parse StoreSetField event", zap.Error(err))
+						continue
+					}
+					il.handleSetFieldEvent(event)
+					println("-------------------------------------------------------")
+					println("-------------------------------------------------------")
+					println("-------------------------------------------------------")
+				case StoreDeleteRecordEvent().Hex():
+					event, err := ParseStoreDeleteRecord(vLog)
+					if err != nil {
+						il.logger.Error("failed to parse StoreDeleteRecord event", zap.Error(err))
+						continue
+					}
+					il.handleDeleteRecordEvent(event)
 				}
 			}
 		}

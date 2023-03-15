@@ -21,9 +21,21 @@ func MUDTable(chainId string, worldAddress string, tableName string) string {
 }
 
 //
+// Utilities for converting table names.
+//
+
+func RemoveTablePrefix(fullTableName string) string {
+	return fullTableName[len(TABLE_PREFIX)+len(CONNECTOR):]
+}
+
+//
 // Utilities for building field names.
 //
 
 func DefaultFieldName(index int) string {
 	return "field_" + fmt.Sprint(index)
+}
+
+func DefaultKeyName(index int) string {
+	return "key_" + fmt.Sprint(index)
 }

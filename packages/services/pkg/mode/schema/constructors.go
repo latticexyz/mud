@@ -1,7 +1,9 @@
 package schema
 
 import (
+	"fmt"
 	"latticexyz/mud/packages/services/pkg/mode"
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 )
 
@@ -64,7 +66,20 @@ func Namespace(chainId string, worldAddress string) string {
 		str.WriteString(CONNECTOR + chainId)
 	}
 	if worldAddress != "" {
-		str.WriteString(CONNECTOR + worldAddress)
+		str.WriteString(CONNECTOR + strings.ToLower(worldAddress))
 	}
 	return str.String()
+}
+
+func NamespaceFromNamespaceObject(namespace *pb_mode.Namespace) (string, error) {
+	if namespace == nil {
+		return "", fmt.Errorf("namespace is nil")
+	}
+	if namespace.ChainId == "" {
+		return "", fmt.Errorf("chainId is empty")
+	}
+	if namespace.WorldAddress == "" {
+		return "", fmt.Errorf("worldAddress is empty")
+	}
+	return Namespace(namespace.ChainId, namespace.WorldAddress), nil
 }
