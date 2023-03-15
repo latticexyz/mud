@@ -298,20 +298,33 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
           });
         }
         // also ensure that field defaults are valid
+        // (for single-col tables both object and string formats are valid)
         const tableDefault = prototype.tables[prototypeTableName].default;
-        if (typeof tableDefault === "string" && !prototypeTable.dataStruct) {
+        const isSingleColumn = Object.keys(prototypeTable.schema).length === 1;
+        if (typeof tableDefault === "string") {
+          if (!prototypeTable.dataStruct && !isSingleColumn) {
+            ctx.addIssue({
+              code: ZodIssueCode.custom,
+              message:
+                `Prototype "${prototypeName}": default for table "${prototypeTableName}"` +
+                ` must be an object with individual field defaults, because it has dataStruct == false`,
+            });
+          }
+        } else if (typeof tableDefault === "object") {
+          if (prototypeTable.dataStruct && !isSingleColumn) {
+            ctx.addIssue({
+              code: ZodIssueCode.custom,
+              message:
+                `Prototype "${prototypeName}": default for table "${prototypeTableName}"` +
+                ` must be a string with a single default value, because it has dataStruct == true`,
+            });
+          }
+        } else if (typeof tableDefault !== "undefined") {
           ctx.addIssue({
             code: ZodIssueCode.custom,
             message:
               `Prototype "${prototypeName}": default for table "${prototypeTableName}"` +
-              ` must be an object with individual field defaults, because it has dataStruct == false`,
-          });
-        } else if (typeof tableDefault === "object" && prototypeTable.dataStruct) {
-          ctx.addIssue({
-            code: ZodIssueCode.custom,
-            message:
-              `Prototype "${prototypeName}": default for table "${prototypeTableName}"` +
-              ` must be a string with a single default value, because it has dataStruct == true`,
+              ` has invalid type "${typeof tableDefault}"`,
           });
         }
       }

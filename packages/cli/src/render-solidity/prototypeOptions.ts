@@ -54,9 +54,17 @@ export function getPrototypeOptions(config: StoreConfig, allTablesOptions: Table
       }
 
       const fields = tableOptions.renderOptions.fields.map((field) => {
+        let fieldDefault = undefined;
+        if (typeof tableDefault === "object") {
+          // multi-col tables need an object for per-column defaults
+          fieldDefault = tableDefault[field.name];
+        } else if (typeof tableDefault === "string" && tableOptions.renderOptions.fields.length === 1) {
+          // single-col tables can also use a string for the default of its 1 col
+          fieldDefault = tableDefault;
+        }
         return {
           ...field,
-          default: typeof tableDefault === "object" ? tableDefault[field.name] : undefined,
+          default: fieldDefault,
         };
       });
 
@@ -67,6 +75,7 @@ export function getPrototypeOptions(config: StoreConfig, allTablesOptions: Table
         structName,
         staticResourceData,
         fields,
+        // struct default, it must be a string and is only used when the data struct exists
         default: typeof structName !== "undefined" && typeof tableDefault === "string" ? tableDefault : undefined,
       };
     });
