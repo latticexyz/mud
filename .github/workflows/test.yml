@@ -13,9 +13,11 @@ jobs:
     runs-on: ubuntu-22.04
     name: Run tests
     steps:
-      - uses: actions/setup-node@v3
+      - name: Setup node
+        uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18.x
+          cache: "yarn"
 
       - name: git-checkout
         uses: actions/checkout@v2
