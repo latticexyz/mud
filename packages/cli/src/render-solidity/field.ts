@@ -57,9 +57,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
           ${_primaryKeysDefinition}
-          bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, ${index});
-          bytes memory _newBlob = abi.encodePacked(_blob, ${portionData.encoded});
-          ${_store}.setField(_tableId, _primaryKeys, ${index}, _newBlob);
+          ${_store}.pushToField(_tableId, _primaryKeys, ${index}, ${portionData.encoded});
         }
       `
       );

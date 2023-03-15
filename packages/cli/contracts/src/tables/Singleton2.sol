@@ -71,9 +71,7 @@ library Singleton2 {
   function push(bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
   /* Delete all data for given keys */

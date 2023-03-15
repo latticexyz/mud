@@ -100,9 +100,7 @@ library AddressArray {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
   /** Push an element to value (using the specified store) */
@@ -110,9 +108,7 @@ library AddressArray {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    _store.setField(_tableId, _primaryKeys, 0, _newBlob);
+    _store.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
   /* Delete all data for given keys */

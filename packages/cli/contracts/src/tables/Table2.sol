@@ -91,9 +91,7 @@ library Table2 {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
   /** Get v2 */
@@ -118,9 +116,7 @@ library Table2 {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 1);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 1, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
   }
 
   /** Get v3 */
@@ -145,9 +141,7 @@ library Table2 {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 2);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 2, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
   /** Get v4 */
@@ -172,9 +166,7 @@ library Table2 {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 3);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 3, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
   }
 
   /** Get v5 */
@@ -199,9 +191,7 @@ library Table2 {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 4);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 4, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 4, abi.encodePacked((_element)));
   }
 
   /** Get the full data */
