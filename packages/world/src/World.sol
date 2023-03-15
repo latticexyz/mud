@@ -9,7 +9,7 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
 import { Resource } from "./types.sol";
-import { ROOT_NAMESPACE, ROOT_FILE } from "./constants.sol";
+import { ROOT_NAMESPACE, ROOT_FILE, REGISTRATION_SYSTEM_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { Call } from "./Call.sol";
 
@@ -23,12 +23,10 @@ import { IModule } from "./interfaces/IModule.sol";
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 import { IErrors } from "./interfaces/IErrors.sol";
+import { IRegistrationSystem } from "./interfaces/systems/IRegistrationSystem.sol";
 
 contract World is Store, IWorldCore, IErrors {
   using ResourceSelector for bytes32;
-
-  // IWorld includes interfaces for dynamically registered systems (e.g. IRegistrationSystem)
-  IWorld private immutable _this = IWorld(address(this));
 
   constructor() {
     // Register internal NamespaceOwner table and give ownership of the root
@@ -43,21 +41,16 @@ contract World is Store, IWorldCore, IErrors {
   /**
    * Install the given module at the given namespace in the World.
    */
-  function installModule(IModule module, bytes16 namespace) public {
-    // Prevent the same module from being installed multiple times in the same namespace
-    if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
-      revert ModuleAlreadyInstalled(ResourceSelector.from(namespace, module.getName()).toString());
-    }
-
+  function installModule(IModule module, bytes memory args) public {
     Call.withSender({
       msgSender: msg.sender,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, namespace),
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
       delegate: false
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(namespace, module.getName(), address(module));
+    InstalledModules.set(module.getName(), keccak256(args), address(module));
   }
 
   /**
@@ -65,23 +58,18 @@ contract World is Store, IWorldCore, IErrors {
    * Requires the caller to own the root namespace.
    * The module is delegatecalled and installed in the root namespace.
    */
-  function installRootModule(IModule module) public {
+  function installRootModule(IModule module, bytes memory args) public {
     AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
-
-    // Prevent the same module from being installed multiple times in the same namespace
-    if (InstalledModules.get(ROOT_NAMESPACE, module.getName()).moduleAddress != address(0)) {
-      revert ModuleAlreadyInstalled(ResourceSelector.from(ROOT_NAMESPACE, module.getName()).toString());
-    }
 
     Call.withSender({
       msgSender: msg.sender,
       target: address(module),
-      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, ROOT_NAMESPACE),
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
       delegate: true // The module is delegate called so it can edit any table
     });
 
     // Register the module in the InstalledModules table
-    InstalledModules.set(ROOT_NAMESPACE, module.getName(), address(module));
+    InstalledModules.set(module.getName(), keccak256(args), address(module));
   }
 
   /************************************************************************
@@ -200,7 +188,22 @@ contract World is Store, IWorldCore, IErrors {
    */
   function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) public virtual {
     bytes32 tableSelector = ResourceSelector.from(tableId);
-    _this.registerTable(tableSelector.getNamespace(), tableSelector.getFile(), valueSchema, keySchema);
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+
+    // We can't call IWorld(this).registerSchema directly because it would be handled like
+    // an external call, so msg.sender would be the address of the World contract
+    Call.withSender({
+      msgSender: msg.sender,
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        IRegistrationSystem.registerTable.selector,
+        tableSelector.getNamespace(),
+        tableSelector.getFile(),
+        valueSchema,
+        keySchema
+      ),
+      delegate: false
+    });
   }
 
   /**
@@ -210,7 +213,22 @@ contract World is Store, IWorldCore, IErrors {
    */
   function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
-    _this.setMetadata(resourceSelector.getNamespace(), resourceSelector.getFile(), tableName, fieldNames);
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+
+    // We can't call IWorld(this).setMetadata directly because it would be handled like
+    // an external call, so msg.sender would be the address of the World contract
+    Call.withSender({
+      msgSender: msg.sender,
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        IRegistrationSystem.setMetadata.selector,
+        resourceSelector.getNamespace(),
+        resourceSelector.getFile(),
+        tableName,
+        fieldNames
+      ),
+      delegate: false
+    });
   }
 
   /**
@@ -219,7 +237,21 @@ contract World is Store, IWorldCore, IErrors {
    */
   function registerStoreHook(uint256 tableId, IStoreHook hook) public virtual {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
-    _this.registerTableHook(resourceSelector.getNamespace(), resourceSelector.getFile(), hook);
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+
+    // We can't call IWorld(this).registerStoreHook directly because it would be handled like
+    // an external call, so msg.sender would be the address of the World contract
+    Call.withSender({
+      msgSender: msg.sender,
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        IRegistrationSystem.registerTableHook.selector,
+        resourceSelector.getNamespace(),
+        resourceSelector.getFile(),
+        hook
+      ),
+      delegate: false
+    });
   }
 
   /**

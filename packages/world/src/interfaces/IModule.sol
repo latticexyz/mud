@@ -13,5 +13,5 @@ interface IModule {
   /**
    * A module expects to be called via the World contract, and therefore installs itself on its `msg.sender`.
    */
-  function install(bytes16 namespace) external;
+  function install(bytes memory args) external;
 }
