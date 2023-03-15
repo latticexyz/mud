@@ -25,7 +25,7 @@
     "@latticexyz/std-client": "^1.41.0",
     "@latticexyz/utils": "^1.41.0",
     "@rollup/plugin-node-resolve": "^13.1.3",
-    "@rollup/plugin-typescript": "^8.3.1",
+    "@rollup/plugin-typescript": "^11.0.0",
     "@types/jest": "^27.4.1",
     "@types/lodash": "^4.14.182",
     "@types/react": "^18.0.12",
@@ -43,7 +43,7 @@
     "rxjs": "^7.5.5",
     "tslib": "^2.3.1",
     "tsup": "^6.5.0",
-    "typescript": "^4.5.5"
+    "typescript": "^4.9.5"
   },
   "peerDependencies": {
     "@latticexyz/recs": "latest",
