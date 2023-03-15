@@ -1,3 +1,4 @@
+import { DynamicSchemaType, StaticSchemaType } from "@latticexyz/schema-type";
 import { hexToArray } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 import { decodeStaticField } from "./decodeStaticField";
@@ -9,7 +10,7 @@ export const decodeField = (schema: TableSchema, schemaIndex: number, hexData: s
 
   schema.staticFields.forEach((fieldType, index) => {
     if (index === schemaIndex) {
-      data[schemaIndex] = decodeStaticField(fieldType, bytes, 0);
+      data[schemaIndex] = decodeStaticField(fieldType as StaticSchemaType, bytes, 0);
     }
   });
 
@@ -17,7 +18,7 @@ export const decodeField = (schema: TableSchema, schemaIndex: number, hexData: s
     schema.dynamicFields.forEach((fieldType, i) => {
       const index = schema.staticFields.length + i;
       if (index === schemaIndex) {
-        data[schemaIndex] = decodeDynamicField(fieldType, bytes.buffer);
+        data[schemaIndex] = decodeDynamicField(fieldType as DynamicSchemaType, bytes.buffer);
       }
     });
   }
