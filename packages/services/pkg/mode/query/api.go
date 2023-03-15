@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"fmt"
 
 	"go.uber.org/zap"
 
@@ -41,7 +42,13 @@ func (ql *QueryLayer) Find(ctx context.Context, request *pb_mode.FindRequest) (*
 	ql.logger.Info("find(): built query from request", zap.String("query", query))
 
 	// Get the TableSchema for the table that the query is directed at and execute the built query.
-	serializedTable, err := ql.ExecuteSQL(query, ql.tableSchemas[request.From], builder.GetFieldProjections())
+	tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, request.From)
+	if err != nil {
+		ql.logger.Error("find(): error while getting table schema", zap.Error(err))
+		return nil, err
+	}
+
+	serializedTable, err := ql.ExecuteSQL(query, tableSchema, builder.GetFieldProjections())
 	if err != nil {
 		ql.logger.Error("find(): error while executing query", zap.String("query", query), zap.Error(err))
 		return nil, err
@@ -124,7 +131,11 @@ func (ql *QueryLayer) Join(ctx context.Context, request *pb_mode.JoinRequest) (*
 	ql.logger.Info("join(): built query from request", zap.String("query", query))
 
 	tableList := builder.GetTableList()
-	tableSchemas := mode.GetSchemasForTables(tableList, ql.tableSchemas)
+	tableSchemas, err := ql.schemaCache.GetTableSchemas(request.Namespace.ChainId, request.Namespace.WorldAddress, tableList)
+	if err != nil {
+		ql.logger.Error("join(): error while getting table schemas", zap.Error(err))
+		return nil, err
+	}
 
 	// Combine the table schemas and execute the built query.
 	joinedTableSchema := mode.CombineSchemas(tableSchemas)
@@ -139,13 +150,22 @@ func (ql *QueryLayer) Join(ctx context.Context, request *pb_mode.JoinRequest) (*
 }
 
 func (ql *QueryLayer) StreamAll(request *pb_mode.FindAllRequest, stream pb_mode.QueryLayer_StreamAllServer) error {
+	if schema.ValidateNamespace(request.Namespace) != nil {
+		return fmt.Errorf("invalid namespace")
+	}
+
 	eventStream := ql.dl.Stream()
 
 	// For each event, serialize the event into a GenericTable and send it to the client.
 	for {
 		select {
 		case event := <-eventStream:
-			serializedTable, err := mode.SerializeStreamEvent(event, ql.tableSchemas[event.TableName], make(map[string]string))
+			// Get the TableSchema for the table that the event is directed at.
+			tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, event.TableName)
+			if err != nil {
+				return err
+			}
+			serializedTable, err := mode.SerializeStreamEvent(event, tableSchema, make(map[string]string))
 			if err != nil {
 				return err
 			}

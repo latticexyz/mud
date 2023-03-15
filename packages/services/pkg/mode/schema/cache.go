@@ -88,3 +88,15 @@ func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, ta
 
 	return tableSchema, nil
 }
+
+func (cache *SchemaCache) GetTableSchemas(chainId string, worldAddress string, tableNames []string) ([]*mode.TableSchema, error) {
+	tableSchemas := []*mode.TableSchema{}
+	for _, tableName := range tableNames {
+		tableSchema, err := cache.GetTableSchema(chainId, worldAddress, tableName)
+		if err != nil {
+			return nil, err
+		}
+		tableSchemas = append(tableSchemas, tableSchema)
+	}
+	return tableSchemas, nil
+}

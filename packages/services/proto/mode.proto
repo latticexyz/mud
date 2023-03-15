@@ -55,8 +55,11 @@ message FindRequest {
     repeated Filter filter = 2;
     repeated ProjectedField project = 3;
 
+    // Namespace.
+    Namespace namespace = 4;
+
     // Options.
-    FindRequestOptions options = 4; 
+    FindRequestOptions options = 5; 
 }
 
 message FindAllRequest {
@@ -72,6 +75,9 @@ message FindAllRequest {
 message JoinRequest {
     FieldPair on = 1;
     repeated FindRequest children = 2;
+
+    // Namespace.
+    Namespace namespace = 3;
 }
 
 message DeleteRequest {

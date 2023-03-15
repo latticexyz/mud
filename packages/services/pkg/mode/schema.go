@@ -101,14 +101,6 @@ func (schema *TableSchema) ToSolidityTupleString() string {
 	return tuple.String()
 }
 
-func GetSchemasForTables(tableNames []string, tableSchemas map[string]*TableSchema) []*TableSchema {
-	schemas := []*TableSchema{}
-	for _, tableName := range tableNames {
-		schemas = append(schemas, tableSchemas[tableName])
-	}
-	return schemas
-}
-
 func CombineSchemas(schemas []*TableSchema) *TableSchema {
 	var combinedSchemaName strings.Builder
 	for idx, schema := range schemas {

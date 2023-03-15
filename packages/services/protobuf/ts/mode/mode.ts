@@ -60,6 +60,8 @@ export interface FindRequest {
   from: string;
   filter: Filter[];
   project: ProjectedField[];
+  /** Namespace. */
+  namespace: Namespace | undefined;
   /** Options. */
   options: FindRequestOptions | undefined;
 }
@@ -75,6 +77,8 @@ export interface FindAllRequest {
 export interface JoinRequest {
   on: FieldPair | undefined;
   children: FindRequest[];
+  /** Namespace. */
+  namespace: Namespace | undefined;
 }
 
 export interface DeleteRequest {
@@ -595,7 +599,7 @@ export const Namespace = {
 };
 
 function createBaseFindRequest(): FindRequest {
-  return { from: "", filter: [], project: [], options: undefined };
+  return { from: "", filter: [], project: [], namespace: undefined, options: undefined };
 }
 
 export const FindRequest = {
@@ -609,8 +613,11 @@ export const FindRequest = {
     for (const v of message.project) {
       ProjectedField.encode(v!, writer.uint32(26).fork()).ldelim();
     }
+    if (message.namespace !== undefined) {
+      Namespace.encode(message.namespace, writer.uint32(34).fork()).ldelim();
+    }
     if (message.options !== undefined) {
-      FindRequestOptions.encode(message.options, writer.uint32(34).fork()).ldelim();
+      FindRequestOptions.encode(message.options, writer.uint32(42).fork()).ldelim();
     }
     return writer;
   },
@@ -632,6 +639,9 @@ export const FindRequest = {
           message.project.push(ProjectedField.decode(reader, reader.uint32()));
           break;
         case 4:
+          message.namespace = Namespace.decode(reader, reader.uint32());
+          break;
+        case 5:
           message.options = FindRequestOptions.decode(reader, reader.uint32());
           break;
         default:
@@ -647,6 +657,8 @@ export const FindRequest = {
     message.from = object.from ?? "";
     message.filter = object.filter?.map((e) => Filter.fromPartial(e)) || [];
     message.project = object.project?.map((e) => ProjectedField.fromPartial(e)) || [];
+    message.namespace =
+      object.namespace !== undefined && object.namespace !== null ? Namespace.fromPartial(object.namespace) : undefined;
     message.options =
       object.options !== undefined && object.options !== null
         ? FindRequestOptions.fromPartial(object.options)
@@ -711,7 +723,7 @@ export const FindAllRequest = {
 };
 
 function createBaseJoinRequest(): JoinRequest {
-  return { on: undefined, children: [] };
+  return { on: undefined, children: [], namespace: undefined };
 }
 
 export const JoinRequest = {
@@ -721,6 +733,9 @@ export const JoinRequest = {
     }
     for (const v of message.children) {
       FindRequest.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.namespace !== undefined) {
+      Namespace.encode(message.namespace, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -738,6 +753,9 @@ export const JoinRequest = {
         case 2:
           message.children.push(FindRequest.decode(reader, reader.uint32()));
           break;
+        case 3:
+          message.namespace = Namespace.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -750,6 +768,8 @@ export const JoinRequest = {
     const message = createBaseJoinRequest();
     message.on = object.on !== undefined && object.on !== null ? FieldPair.fromPartial(object.on) : undefined;
     message.children = object.children?.map((e) => FindRequest.fromPartial(e)) || [];
+    message.namespace =
+      object.namespace !== undefined && object.namespace !== null ? Namespace.fromPartial(object.namespace) : undefined;
     return message;
   },
 };
