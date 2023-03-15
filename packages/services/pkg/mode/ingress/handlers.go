@@ -107,10 +107,29 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 		// Create a postgres namespace ('schema') for the world address + the chain (if it doesn't already exist).
 		Namespace: schema.Namespace(il.chainConfig.Id, event.WorldAddress()),
 	}
-	// Populate the schema with default values.
+
+	// Populate the schema with default values. First populate values.
 	for idx, schemaType := range storeCoreSchemaTypeKV.Value.Flatten() {
 		columnName := schema.DefaultFieldName(idx)
 		tableSchema.FieldNames = append(tableSchema.FieldNames, columnName)
+
+		solidityType := storecore.SchemaTypeToSolidityType(schemaType)
+		postgresType := storecore.SchemaTypeToPostgresType(schemaType)
+
+		if tableSchema.SolidityTypes == nil {
+			tableSchema.SolidityTypes = make(map[string]string)
+		}
+		tableSchema.SolidityTypes[columnName] = solidityType
+
+		if tableSchema.PostgresTypes == nil {
+			tableSchema.PostgresTypes = make(map[string]string)
+		}
+		tableSchema.PostgresTypes[columnName] = postgresType
+	}
+	// Then populate keys.
+	for idx, schemaType := range storeCoreSchemaTypeKV.Key.Flatten() {
+		columnName := schema.DefaultKeyName(idx)
+		tableSchema.KeyNames = append(tableSchema.KeyNames, columnName)
 
 		solidityType := storecore.SchemaTypeToSolidityType(schemaType)
 		postgresType := storecore.SchemaTypeToPostgresType(schemaType)
@@ -135,12 +154,12 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 	row := write.RowKV{
 		"world_address": event.WorldAddress(),
 		"namespace":     tableSchema.Namespace,
-		"table_name":    tableSchema.TableName,
+		"table_name":    tableSchema.TableName[:63],
 		"schema":        string(tableSchemaJson),
 	}
 	// This takes care of the update being unique since the table name is based on both the world
 	// address, chain ID, and table name.
-	filter := schemaTableSchema.FilterFromMap(map[string]string{"table_name": tableSchema.TableName})
+	filter := schemaTableSchema.FilterFromMap(map[string]string{"table_name": tableSchema.TableName[:63]})
 	il.wl.UpdateOrInsertRow(schemaTableSchema, row, filter)
 
 	il.logger.Info("schema table event handled", zap.String("world_address", event.WorldAddress()), zap.String("table_name", hexutil.Encode(event.Key[0][:])), zap.String("schema", string(tableSchemaJson)))
@@ -186,6 +205,16 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	if err != nil {
 		il.logger.Error("failed to decode table column names", zap.Error(err))
 		return
+	}
+
+	println("PARSED OUT COLUMN NAMES:")
+	for _, col := range outStruct.Cols {
+		println(col)
+	}
+
+	println("OLD COLUMN NAMES:")
+	for _, col := range tableSchema.FieldNames {
+		println(col)
 	}
 
 	// Add extracted metdata to the schema, essentially completing it.
@@ -241,10 +270,10 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	row := write.RowKV{
 		"world_address": event.WorldAddress(),
 		"namespace":     tableSchema.Namespace,
-		"table_name":    tableSchema.TableName,
+		"table_name":    tableSchema.TableName[:63],
 		"schema":        string(tableSchemaJson),
 	}
-	filter := schemaTableSchema.FilterFromMap(map[string]string{"table_name": tableSchema.TableName})
+	filter := schemaTableSchema.FilterFromMap(map[string]string{"table_name": tableSchema.TableName[:63]})
 	il.wl.UpdateOrInsertRow(schemaTableSchema, row, filter)
 
 	// Update the table field names based on the new metadata.

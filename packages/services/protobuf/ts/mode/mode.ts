@@ -51,6 +51,11 @@ export interface FindRequestOptions {
   negate: boolean;
 }
 
+export interface Namespace {
+  chainId: string;
+  worldAddress: string;
+}
+
 export interface FindRequest {
   from: string;
   filter: Filter[];
@@ -61,6 +66,8 @@ export interface FindRequest {
 
 export interface FindAllRequest {
   tables: string[];
+  /** Namespace. */
+  namespace: Namespace | undefined;
   /** Options. */
   options: FindRequestOptions | undefined;
 }
@@ -543,6 +550,50 @@ export const FindRequestOptions = {
   },
 };
 
+function createBaseNamespace(): Namespace {
+  return { chainId: "", worldAddress: "" };
+}
+
+export const Namespace = {
+  encode(message: Namespace, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.chainId !== "") {
+      writer.uint32(10).string(message.chainId);
+    }
+    if (message.worldAddress !== "") {
+      writer.uint32(18).string(message.worldAddress);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Namespace {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNamespace();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.chainId = reader.string();
+          break;
+        case 2:
+          message.worldAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<Namespace>): Namespace {
+    const message = createBaseNamespace();
+    message.chainId = object.chainId ?? "";
+    message.worldAddress = object.worldAddress ?? "";
+    return message;
+  },
+};
+
 function createBaseFindRequest(): FindRequest {
   return { from: "", filter: [], project: [], options: undefined };
 }
@@ -605,7 +656,7 @@ export const FindRequest = {
 };
 
 function createBaseFindAllRequest(): FindAllRequest {
-  return { tables: [], options: undefined };
+  return { tables: [], namespace: undefined, options: undefined };
 }
 
 export const FindAllRequest = {
@@ -613,8 +664,11 @@ export const FindAllRequest = {
     for (const v of message.tables) {
       writer.uint32(10).string(v!);
     }
+    if (message.namespace !== undefined) {
+      Namespace.encode(message.namespace, writer.uint32(18).fork()).ldelim();
+    }
     if (message.options !== undefined) {
-      FindRequestOptions.encode(message.options, writer.uint32(18).fork()).ldelim();
+      FindRequestOptions.encode(message.options, writer.uint32(26).fork()).ldelim();
     }
     return writer;
   },
@@ -630,6 +684,9 @@ export const FindAllRequest = {
           message.tables.push(reader.string());
           break;
         case 2:
+          message.namespace = Namespace.decode(reader, reader.uint32());
+          break;
+        case 3:
           message.options = FindRequestOptions.decode(reader, reader.uint32());
           break;
         default:
@@ -643,6 +700,8 @@ export const FindAllRequest = {
   fromPartial(object: DeepPartial<FindAllRequest>): FindAllRequest {
     const message = createBaseFindAllRequest();
     message.tables = object.tables?.map((e) => e) || [];
+    message.namespace =
+      object.namespace !== undefined && object.namespace !== null ? Namespace.fromPartial(object.namespace) : undefined;
     message.options =
       object.options !== undefined && object.options !== null
         ? FindRequestOptions.fromPartial(object.options)

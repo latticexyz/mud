@@ -8,8 +8,10 @@ type DataSchemaTypePair struct {
 }
 
 type TableSchema struct {
-	TableName     string            `json:"name"`
-	FieldNames    []string          `json:"field_names"`
+	TableName  string   `json:"name"`
+	FieldNames []string `json:"field_names"`
+	KeyNames   []string `json:"key_names"` // Key names are separte from field names and are used for searching.
+
 	SolidityTypes map[string]string `json:"solidity_types"` // Field name -> Solidity type
 	PostgresTypes map[string]string `json:"postgres_types"` // Field name -> Postgres type
 

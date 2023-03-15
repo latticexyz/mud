@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"os"
 
 	"latticexyz/mud/packages/services/pkg/grpc"
 	"latticexyz/mud/packages/services/pkg/logger"
@@ -16,12 +15,21 @@ import (
 
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
-	"gopkg.in/yaml.v3"
 )
 
 var (
-	// Config file.
-	configFile = flag.String("config", "config.mode.yaml", "path to config file")
+	// Configuration can be specified via a YAML file.
+	configFile = flag.String("config", "", "path to config file")
+
+	// Alternatively, the configuration can be specified via command line flags.
+	chainNames    = flag.String("chain-names", "", "comma separated list of chain names")
+	chainIds      = flag.String("chain-ids", "", "comma separated list of chain ids")
+	chainRpcsHttp = flag.String("chain-rpcs-http", "", "comma separated list of chain rpcs (http)")
+	chainRpcsWs   = flag.String("chain-rpcs-ws", "", "comma separated list of chain rpcs (ws)")
+	dbDsn         = flag.String("db-dsn", "", "database dsn")
+	dbWipe        = flag.Bool("db-wipe", false, "wipe database on launch")
+	portQl        = flag.Int("port-ql", 0, "port for query layer")
+	portMetrics   = flag.Int("port-metrics", 0, "port for metrics server")
 
 	// TODO: remove when ready for V2.
 	dataSchemaPath = flag.String("schema-path", "./OPCraftDataSchema.json", "A schema file is required when working with V1 data")
@@ -37,15 +45,17 @@ func main() {
 	defer logger.Sync()
 
 	// Setup config.
-	data, err := os.ReadFile(*configFile)
-	if err != nil {
-		logger.Fatal("could not read config file", zap.Error(err))
+	var config *mode.Config
+	var err error
+	if *configFile != "" {
+		// Load config from file.
+		config, err = mode.ConfigFromFile(*configFile, logger)
+	} else {
+		// Load config from command line flags.
+		config, err = mode.ConfigFromFlags(*chainNames, *chainIds, *chainRpcsHttp, *chainRpcsWs, *dbDsn, *dbWipe, *portQl, *portMetrics)
 	}
-
-	config := &mode.Config{}
-	err = yaml.Unmarshal(data, config)
 	if err != nil {
-		logger.Fatal("could not parse config file", zap.Error(err))
+		logger.Fatal("failed to load config", zap.Error(err))
 	}
 
 	// While working with V1 data, 'dataSchemaPath' is used to load up the entire
@@ -78,6 +88,6 @@ func main() {
 	}
 
 	// Run the MODE QueryLayer.
-	ql := query.NewQueryLayer(dl, tableSchemas, logger)
+	ql := query.NewQueryLayer(dl, schemaCache, tableSchemas, logger)
 	query.RunQueryLayer(ql, config.Ql.Port)
 }

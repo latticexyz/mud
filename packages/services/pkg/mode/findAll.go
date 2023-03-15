@@ -10,12 +10,14 @@ import (
 type FindAllBuilder struct {
 	Request   *mode.FindAllRequest
 	AllTables []string
+	Namespace string
 }
 
-func NewFindAllBuilder(request *mode.FindAllRequest, allTables []string) (*FindAllBuilder, error) {
+func NewFindAllBuilder(request *mode.FindAllRequest, namespace string, allTables []string) (*FindAllBuilder, error) {
 	return &FindAllBuilder{
 		Request:   request,
 		AllTables: allTables,
+		Namespace: namespace,
 	}, nil
 }
 
@@ -49,7 +51,8 @@ func (builder *FindAllBuilder) BuildFrom() string {
 			query.WriteString(" NATURAL FULL JOIN ")
 		}
 		// Write the SELECT per-table.
-		query.WriteString("(SELECT '" + tableName + "' AS source, entityid FROM " + tableName + ") " + tableName + "")
+		fullTableName := builder.Namespace + "." + tableName
+		query.WriteString("(SELECT '" + fullTableName + "' AS source, entityid FROM " + fullTableName + ") " + fullTableName + "")
 	}
 	return query.String()
 }
@@ -78,7 +81,7 @@ func (builder *FindAllBuilder) ToSQLQueryList() (queries []string, tableList []s
 
 	for _, tableName := range builder.TableList() {
 		var query strings.Builder
-		query.WriteString("SELECT * FROM " + tableName)
+		query.WriteString("SELECT * FROM " + builder.Namespace + "." + tableName)
 		queries = append(queries, query.String())
 		tableList = append(tableList, tableName)
 	}

@@ -158,7 +158,7 @@ func (wl *WriteLayer) UpdateRow(tableSchema *mode.TableSchema, row RowKV, filter
 		return nil, err
 	}
 
-	wl.logger.Info("updated row", zap.String("table", tableSchema.FullTableName()))
+	wl.logger.Info("updated row", zap.String("table", tableSchema.FullTableName()), zap.String("query", updateRowQuery))
 
 	return result, nil
 }

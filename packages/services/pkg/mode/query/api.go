@@ -6,6 +6,7 @@ import (
 	"go.uber.org/zap"
 
 	"latticexyz/mud/packages/services/pkg/mode"
+	"latticexyz/mud/packages/services/pkg/mode/schema"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 )
 
@@ -51,15 +52,22 @@ func (ql *QueryLayer) Find(ctx context.Context, request *pb_mode.FindRequest) (*
 }
 
 func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllRequest) (*pb_mode.QueryLayerResponse, error) {
+	// Get a string namespace for the request.
+	namespace, err := schema.NamespaceFromNamespaceObject(request.Namespace)
+	if err != nil {
+		ql.logger.Error("findAll(): error while getting namespace", zap.Error(err))
+		return nil, err
+	}
+
 	// An up-to-date list of all tables is used to return the full state, if requested.
-	allTables, err := ql.dl.GetAllTables()
+	allTables, err := ql.dl.GetAllTables(namespace)
 	if err != nil {
 		ql.logger.Error("findAll(): error while getting all tables", zap.Error(err))
 		return nil, err
 	}
 
 	// Create a "builder" for the request.
-	builder, err := mode.NewFindAllBuilder(request, allTables)
+	builder, err := mode.NewFindAllBuilder(request, namespace, allTables)
 	if err != nil {
 		ql.logger.Error("findAll(): error while creating builder", zap.Error(err))
 		return nil, err
@@ -72,11 +80,21 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 		return nil, err
 	}
 	ql.logger.Info("findAll(): built queries from request", zap.Int("count", len(queries)))
+	for idx, query := range queries {
+		ql.logger.Info("findAll(): built query", zap.Int("index", idx), zap.String("query", query))
+	}
 
 	// Execute the queries and serialize each result into a GenericTable.
 	serializedTables := []*pb_mode.GenericTable{}
 	for idx, query := range queries {
-		serializedTable, err := ql.ExecuteSQL(query, ql.tableSchemas[tableList[idx]], builder.GetFieldProjections())
+		// Fetch the TableSchema for the table that the query is directed at and execute the built query.
+		tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, tableList[idx])
+		if err != nil {
+			ql.logger.Error("findAll(): error while getting table schema", zap.Error(err))
+			return nil, err
+		}
+
+		serializedTable, err := ql.ExecuteSQL(query, tableSchema, builder.GetFieldProjections())
 		if err != nil {
 			ql.logger.Error("findAll(): error while executing query", zap.String("query", query), zap.Error(err))
 			return nil, err
@@ -85,7 +103,12 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 	}
 
 	// Build the response from the multiple tables and return.
-	return QueryLayerResponseFromTables(serializedTables, tableList), nil
+	// One extra step is to format the table list without the specific prefix namings.
+	tableListFormatted := []string{}
+	for _, table := range tableList {
+		tableListFormatted = append(tableListFormatted, schema.RemoveTablePrefix(table))
+	}
+	return QueryLayerResponseFromTables(serializedTables, tableListFormatted), nil
 }
 
 func (ql *QueryLayer) Join(ctx context.Context, request *pb_mode.JoinRequest) (*pb_mode.QueryLayerResponse, error) {

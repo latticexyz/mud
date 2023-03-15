@@ -7,10 +7,11 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-func (dl *DatabaseLayer) GetAllTables() ([]string, error) {
+func (dl *DatabaseLayer) GetAllTables(namespace string) ([]string, error) {
 	var tableNames []string
 
-	rows, err := dl.db.Query("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
+	query := "SELECT tablename FROM pg_tables WHERE schemaname = '" + namespace + "'"
+	rows, err := dl.db.Query(query)
 	if err != nil {
 		return tableNames, err
 	}
@@ -27,6 +28,13 @@ func (dl *DatabaseLayer) GetAllTables() ([]string, error) {
 	if err := rows.Err(); err != nil {
 		return tableNames, err
 	}
+
+	println("GOT TABLE NAMES:")
+	for _, tableName := range tableNames {
+		println(tableName)
+	}
+	println("QUERY:")
+	println(query)
 
 	return tableNames, nil
 }
