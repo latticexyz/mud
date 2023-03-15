@@ -44,6 +44,8 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
       map((state) => {
         // Because this event stream is throttled, we're dropping events which contain delta data, so we need to calculate the delta ourselves.
         const zoom = zoom$.getValue();
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         const delta = state.offset[0] - zoom;
         const scaledDelta = delta * options.pinchSpeed;
         return zoom + scaledDelta;
@@ -61,8 +63,10 @@ export function createCamera(phaserCamera: Phaser.Cameras.Scene2D.Camera, option
     .pipe(
       filter((state) => !state.pinching),
       sampleTime(10),
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
       map((state) => state.delta.map((x) => x * options.wheelSpeed)), // Compute wheel speed
-      map((movement) => movement.map((m) => m / phaserCamera.zoom)), // Adjust for current zoom value
+      map((movement) => movement.map((m: number) => m / phaserCamera.zoom)), // Adjust for current zoom value
       map((movement) => [phaserCamera.scrollX + movement[0], phaserCamera.scrollY + movement[1]]) // Compute new pinch
     )
     .subscribe(([x, y]) => {
