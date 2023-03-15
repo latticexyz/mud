@@ -50,7 +50,7 @@ export function registerSchema(world: Contract, table: TableId, rawSchema?: stri
     if (decodedSchema.isEmpty) {
       console.warn("Schema not found for table", { table: table.toString(), world: world.address });
     }
-    return decodeSchema;
+    return decodedSchema;
   });
   schemaCache[cacheKey] = schema;
   return schema;
