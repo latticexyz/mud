@@ -32,8 +32,6 @@ import { getTargetTableSelector } from "./getTargetTableSelector.sol";
 contract ReverseMappingModule is IModule, WorldContext {
   using ResourceSelector for bytes32;
 
-  error CouldNotGrantAccess(string resource);
-
   // The reverse mapping hook is deployed once and infers the target table id
   // from the source table id (passed as argument to the hook methods)
   ReverseMappingHook immutable hook = new ReverseMappingHook();
@@ -43,7 +41,7 @@ contract ReverseMappingModule is IModule, WorldContext {
   }
 
   function install(bytes memory args) public override {
-    // Extract source and target table ids from args
+    // Extract source table id from args
     uint256 sourceTableId = abi.decode(args, (uint256));
     bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);
 

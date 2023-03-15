@@ -173,8 +173,12 @@ contract ReverseMappingModuleTest is Test {
     // !gasreport compute the target table selector
     bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);
 
-    // The first 12 bytes are the module namespace, followed by 4 bytes of the hash of the source table id
+    // The first 12 bytes are the module namespace
     assertEq(bytes12(targetTableSelector), MODULE_NAMESPACE);
+
+    // followed by the first 4 bytes of the source table namespace
+    assertEq(bytes4(targetTableSelector << 96), bytes4(namespace));
+
     // The last 16 bytes are the source file
     assertEq(targetTableSelector.getFile(), sourceFile);
   }
