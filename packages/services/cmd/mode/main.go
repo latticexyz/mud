@@ -30,9 +30,6 @@ var (
 	dbWipe        = flag.Bool("db-wipe", false, "wipe database on launch")
 	portQl        = flag.Int("port-ql", 0, "port for query layer")
 	portMetrics   = flag.Int("port-metrics", 0, "port for metrics server")
-
-	// TODO: remove when ready for V2.
-	dataSchemaPath = flag.String("schema-path", "./OPCraftDataSchema.json", "A schema file is required when working with V1 data")
 )
 
 func main() {
@@ -58,16 +55,6 @@ func main() {
 		logger.Fatal("failed to load config", zap.Error(err))
 	}
 
-	// While working with V1 data, 'dataSchemaPath' is used to load up the entire
-	// schema information into memory so that the MODE QueryLayer knows how to
-	// encode / decode the data.
-	dataSchema := mode.NewDataSchemaFromJSON(*dataSchemaPath)
-	tableSchemas := dataSchema.BuildTableSchemas()
-
-	for tableName, tableSchema := range tableSchemas {
-		logger.Info("table schema", zap.String("table", tableName), zap.Any("schema", tableSchema))
-	}
-
 	// Run MODE metrics server.
 	go grpc.StartMetricsServer(config.Metrics.Port, logger)
 
@@ -88,6 +75,6 @@ func main() {
 	}
 
 	// Run the MODE QueryLayer.
-	ql := query.NewQueryLayer(dl, schemaCache, tableSchemas, logger)
+	ql := query.NewQueryLayer(dl, schemaCache, logger)
 	query.RunQueryLayer(ql, config.Ql.Port)
 }

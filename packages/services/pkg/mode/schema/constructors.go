@@ -72,14 +72,21 @@ func Namespace(chainId string, worldAddress string) string {
 }
 
 func NamespaceFromNamespaceObject(namespace *pb_mode.Namespace) (string, error) {
-	if namespace == nil {
-		return "", fmt.Errorf("namespace is nil")
-	}
-	if namespace.ChainId == "" {
-		return "", fmt.Errorf("chainId is empty")
-	}
-	if namespace.WorldAddress == "" {
-		return "", fmt.Errorf("worldAddress is empty")
+	if err := ValidateNamespace(namespace); err != nil {
+		return "", err
 	}
 	return Namespace(namespace.ChainId, namespace.WorldAddress), nil
+}
+
+func ValidateNamespace(namespace *pb_mode.Namespace) error {
+	if namespace == nil {
+		return fmt.Errorf("namespace is nil")
+	}
+	if namespace.ChainId == "" {
+		return fmt.Errorf("chainId is empty")
+	}
+	if namespace.WorldAddress == "" {
+		return fmt.Errorf("worldAddress is empty")
+	}
+	return nil
 }

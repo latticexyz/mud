@@ -2,7 +2,6 @@ package query
 
 import (
 	"latticexyz/mud/packages/services/pkg/grpc"
-	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/schema"
 
@@ -14,14 +13,12 @@ import (
 func NewQueryLayer(
 	dl *db.DatabaseLayer,
 	schemaCache *schema.SchemaCache,
-	tableSchemas map[string]*mode.TableSchema,
 	logger *zap.Logger,
 ) *QueryLayer {
 	return &QueryLayer{
-		dl:           dl,
-		schemaCache:  schemaCache,
-		tableSchemas: tableSchemas,
-		logger:       logger,
+		dl:          dl,
+		schemaCache: schemaCache,
+		logger:      logger,
 	}
 }
 
