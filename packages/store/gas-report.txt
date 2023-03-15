@@ -3,6 +3,7 @@
 (test/Bytes.t.sol) | set bytes1 in bytes32 [Bytes.setBytes1(input, 8, 0xff)]: 7
 (test/Bytes.t.sol) | set bytes2 in bytes32 [Bytes.setBytes2(input, 8, 0xffff)]: 7
 (test/Bytes.t.sol) | set bytes4 in bytes32 [Bytes.setBytes4(input, 8, 0xffffffff)]: 7
+(test/Bytes.t.sol) | set bytes4 in bytes memory [bytes memory result = Bytes.setBytes4(input, 0, overwrite)]: 43
 (test/Bytes.t.sol) | slice bytes3 with offset 1 [bytes3 b = Bytes.slice3(a, 1)]: 77
 (test/Bytes.t.sol) | slice bytes32 with offset 10 [bytes32 output = Bytes.slice32(input, 10)]: 74
 (test/Bytes.t.sol) | create bytes32 from bytes memory with offset 0 [bytes32 output = Bytes.toBytes32(input, 0)]: 22

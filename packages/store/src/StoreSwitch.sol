@@ -17,7 +17,7 @@ library StoreSwitch {
    * (The isStore method doesn't return a value to save gas, but it if exists, the call will succeed.)
    */
   function isDelegateCall() internal view returns (bool success) {
-    // Detect calls from within a constructor and revert to avoid unexpected behavior
+    // Detect calls from within a constructor
     uint256 codeSize;
     assembly {
       codeSize := extcodesize(address())

@@ -22,14 +22,6 @@ const config = {
       },
       storeArgument: true,
     },
-    SystemRegistry: {
-      primaryKeys: {
-        system: SchemaType.ADDRESS,
-      },
-      schema: {
-        resourceSelector: SchemaType.BYTES32,
-      },
-    },
     Systems: {
       primaryKeys: {
         resourceSelector: SchemaType.BYTES32,
@@ -41,13 +33,35 @@ const config = {
       storeArgument: true,
       dataStruct: false,
     },
+    SystemRegistry: {
+      directory: "/modules/registration/tables",
+      primaryKeys: {
+        system: SchemaType.ADDRESS,
+      },
+      schema: {
+        resourceSelector: SchemaType.BYTES32,
+      },
+    },
     ResourceType: {
+      directory: "/modules/registration/tables",
       primaryKeys: {
         resourceSelector: SchemaType.BYTES32,
       },
       schema: {
         resourceType: "Resource",
       },
+    },
+    FunctionSelectors: {
+      fileSelector: "funcSelectors",
+      primaryKeys: {
+        functionSelector: SchemaType.BYTES4,
+      },
+      schema: {
+        namespace: SchemaType.BYTES16,
+        file: SchemaType.BYTES16,
+        systemFunctionSelector: SchemaType.BYTES4,
+      },
+      dataStruct: false,
     },
     // Bool: {
     // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
@@ -63,6 +77,20 @@ const config = {
       schema: { value: SchemaType.ADDRESS_ARRAY },
       storeArgument: true,
       tableIdArgument: true,
+    },
+    InstalledModules: {
+      primaryKeys: {
+        namespace: SchemaType.BYTES16,
+        mdouleName: SchemaType.BYTES16,
+      },
+      schema: {
+        moduleAddress: SchemaType.ADDRESS,
+      },
+      // TODO: this is a workaround to use `getRecord` instead of `getField` in the autogen library,
+      // to allow using the table before it is registered. This is because `getRecord` passes the schema
+      // to store, while `getField` loads it from storage. Remove this once we have support for passing the
+      // schema in `getField` too. (See https://github.com/latticexyz/mud/issues/444)
+      dataStruct: true,
     },
   },
   userTypes: {
