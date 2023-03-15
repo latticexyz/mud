@@ -73,7 +73,7 @@ func (builder *FindAllBuilder) ToSQLQuery() (string, error) {
 	return query.String(), nil
 }
 
-func (builder *FindAllBuilder) ToSQLQueryList() (queries []string, tableList []string, err error) {
+func (builder *FindAllBuilder) ToSQLQueryList() (queries []string, tableNameList []string, err error) {
 	err = builder.Validate()
 	if err != nil {
 		return
@@ -83,7 +83,7 @@ func (builder *FindAllBuilder) ToSQLQueryList() (queries []string, tableList []s
 		var query strings.Builder
 		query.WriteString("SELECT * FROM " + builder.Namespace + "." + tableName)
 		queries = append(queries, query.String())
-		tableList = append(tableList, tableName)
+		tableNameList = append(tableNameList, tableName)
 	}
 	return
 }

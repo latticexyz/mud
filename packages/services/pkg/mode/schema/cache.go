@@ -9,20 +9,20 @@ import (
 	"go.uber.org/zap"
 )
 
-func BuildTableSchemas() map[string]*mode.TableSchema {
-	// TODO: fetch from DB.
-	blockNumberTableSchema := BlockNumberTableSchema()
+func BuildInternalTableSchemas() map[string]*mode.TableSchema {
+	// Create references to all of the internal table schemas.
+	blockNumberTableSchema := Internal__BlockNumberTableSchema()
 
 	return map[string]*mode.TableSchema{
-		blockNumberTableSchema.FullTableName(): blockNumberTableSchema,
+		blockNumberTableSchema.TableName: blockNumberTableSchema,
 	}
 }
 
 func NewCache(dl *db.DatabaseLayer, chains []mode.ChainConfig, logger *zap.Logger) *SchemaCache {
 	return &SchemaCache{
-		dl:           dl,
-		logger:       logger,
-		tableSchemas: BuildTableSchemas(),
+		dl:                   dl,
+		logger:               logger,
+		internalTableSchemas: BuildInternalTableSchemas(),
 	}
 }
 
@@ -31,7 +31,13 @@ func (cache *SchemaCache) Update() error {
 }
 
 func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, tableName string) (*mode.TableSchema, error) {
-	schemaTableName := SchemaTableSchema(chainId).FullTableName()
+	// If the table name is for an internal table, return schema directly.
+	if schema, ok := cache.internalTableSchemas[tableName]; ok {
+		return schema, nil
+	}
+
+	// Otherwise lookup the schema from the internal schemas table.
+	schemaTableName := Internal__SchemaTableSchema(chainId).FullTableName()
 
 	// Create a request builder for the table schema query.
 	request := &pb_mode.FindRequest{

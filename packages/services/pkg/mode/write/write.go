@@ -14,11 +14,11 @@ func New(dl *db.DatabaseLayer, logger *zap.Logger) *WriteLayer {
 	}
 
 	// Perform MODE-specific actions on the write layer.
-	err := wl.CreateTable(schema.NamespacesTableSchema())
+	err := wl.CreateTable(schema.Internal__NamespacesTableSchema())
 	if err != nil {
 		wl.logger.Fatal("failed to create table", zap.Error(err))
 	}
-	err = wl.CreateTable(schema.BlockNumberTableSchema())
+	err = wl.CreateTable(schema.Internal__BlockNumberTableSchema())
 	if err != nil {
 		wl.logger.Fatal("failed to create table", zap.Error(err))
 	}

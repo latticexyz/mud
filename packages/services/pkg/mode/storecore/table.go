@@ -6,18 +6,18 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func SchemaTable() string {
+func Internal__SchemaTableId() string {
 	return "0x" + common.Bytes2Hex(append(RightPadId("mudstore"), RightPadId("schema")...))
+}
+
+func Internal__MetadataTableId() string {
+	return "0x" + common.Bytes2Hex(append(RightPadId("mudstore"), RightPadId("StoreMetadata")...))
 }
 
 func RightPadId(id string) []byte {
 	return common.RightPadBytes([]byte(id), 16)
 }
 
-func MetadataTable() string {
-	return "0x" + common.Bytes2Hex(append(RightPadId("mudstore"), RightPadId("StoreMetadata")...))
-}
-
-func PaddedTableName(id *big.Int) string {
+func PaddedTableId(id *big.Int) string {
 	return "0x" + common.Bytes2Hex(common.LeftPadBytes(id.Bytes(), 32))
 }

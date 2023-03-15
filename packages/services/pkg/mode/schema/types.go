@@ -11,7 +11,8 @@ type SchemaCache struct {
 	dl     *db.DatabaseLayer
 	logger *zap.Logger
 
-	tableSchemas map[string]*mode.TableSchema
+	// Table name -> Table schema.
+	internalTableSchemas map[string]*mode.TableSchema
 }
 
 type SchemaCacheResponse struct {

@@ -8,7 +8,8 @@ type DataSchemaTypePair struct {
 }
 
 type TableSchema struct {
-	TableName  string   `json:"name"`
+	TableId    string   `json:"id"`   // Table ID as it comes from chain.
+	TableName  string   `json:"name"` // Table name is table ID but with naming adjustments to work with the database.
 	FieldNames []string `json:"field_names"`
 	KeyNames   []string `json:"key_names"` // Key names are separte from field names and are used for searching.
 

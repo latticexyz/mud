@@ -108,5 +108,5 @@ run-migrator:
 .PHONY: run-migrator
 
 run-mode:
-	./bin/mode --chain-names "localhost" --chain-ids "371337" --chain-rpcs-http "http://localhost:8545" --chain-rpcs-ws "ws://localhost:8545" --db-dsn "postgresql://localhost:5432/mode_ephemeral?sslmode=disable&replication=database" --db-wipe --port-ql 50091 --port-metrics 6060
+	./bin/mode --config config.mode.yaml
 .PHONY: run-mode

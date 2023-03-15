@@ -81,7 +81,7 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 	}
 
 	// Get a series of queries from the builder, since the request is for multiple tables.
-	queries, tableList, err := builder.ToSQLQueryList()
+	queries, tableNameList, err := builder.ToSQLQueryList()
 	if err != nil {
 		ql.logger.Error("findAll(): error while building queries", zap.Error(err))
 		return nil, err
@@ -95,7 +95,7 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 	serializedTables := []*pb_mode.GenericTable{}
 	for idx, query := range queries {
 		// Fetch the TableSchema for the table that the query is directed at and execute the built query.
-		tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, tableList[idx])
+		tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, tableNameList[idx])
 		if err != nil {
 			ql.logger.Error("findAll(): error while getting table schema", zap.Error(err))
 			return nil, err
@@ -112,8 +112,8 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 	// Build the response from the multiple tables and return.
 	// One extra step is to format the table list without the specific prefix namings.
 	tableListFormatted := []string{}
-	for _, table := range tableList {
-		tableListFormatted = append(tableListFormatted, schema.RemoveTablePrefix(table))
+	for _, tableName := range tableNameList {
+		tableListFormatted = append(tableListFormatted, schema.TableNameToTableId(tableName))
 	}
 	return QueryLayerResponseFromTables(serializedTables, tableListFormatted), nil
 }
