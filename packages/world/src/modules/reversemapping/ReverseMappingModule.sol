@@ -14,6 +14,8 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { ReverseMappingHook } from "./ReverseMappingHook.sol";
 import { ReverseMapping } from "./tables/ReverseMapping.sol";
+import { MODULE_NAMESPACE } from "./constants.sol";
+import { getTargetTableSelector } from "./getTargetTableSelector.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
@@ -28,8 +30,13 @@ import { ReverseMapping } from "./tables/ReverseMapping.sol";
  * Support for installing it via `World.installModule` depends on `World.callFrom` being implemented.
  */
 contract ReverseMappingModule is IModule, WorldContext {
-  error CouldNotGrantAccess(string resource);
   using ResourceSelector for bytes32;
+
+  error CouldNotGrantAccess(string resource);
+
+  // The reverse mapping hook is deployed once and infers the target table id
+  // from the source table id (passed as argument to the hook methods)
+  ReverseMappingHook immutable hook = new ReverseMappingHook();
 
   function getName() public pure returns (bytes16) {
     return bytes16("index");
@@ -37,25 +44,19 @@ contract ReverseMappingModule is IModule, WorldContext {
 
   function install(bytes memory args) public override {
     // Extract source and target table ids from args
-    (uint256 sourceTableId, uint256 targetTableId) = abi.decode(args, (uint256, uint256));
+    uint256 sourceTableId = abi.decode(args, (uint256));
+    bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);
 
     // Register the target table
-    StoreSwitch.registerSchema(targetTableId, ReverseMapping.getSchema(), ReverseMapping.getKeySchema());
-
-    // Deploy a new hook contract that is called when a value is set in the source table
-    ReverseMappingHook hook = new ReverseMappingHook(sourceTableId, targetTableId);
+    IWorld(_world()).registerTable(
+      targetTableSelector.getNamespace(),
+      targetTableSelector.getFile(),
+      ReverseMapping.getSchema(),
+      ReverseMapping.getKeySchema()
+    );
 
     // Grant the hook access to the target table
-    bytes32 targetTableSelector = ResourceSelector.from(targetTableId);
-    (bool success, ) = _world().delegatecall(
-      abi.encodeWithSignature(
-        "grantAccess(bytes16,bytes16,address)",
-        targetTableSelector.getNamespace(),
-        targetTableSelector.getFile(),
-        address(hook)
-      )
-    );
-    if (!success) revert CouldNotGrantAccess(ResourceSelector.from(sourceTableId).toString());
+    IWorld(_world()).grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getFile(), address(hook));
 
     // Register a hook that is called when a value is set in the source table
     StoreSwitch.registerStoreHook(sourceTableId, hook);

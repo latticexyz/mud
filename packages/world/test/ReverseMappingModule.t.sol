@@ -13,8 +13,10 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { ReverseMappingModule } from "../src/modules/reversemapping/ReverseMappingModule.sol";
+import { ReverseMappingModule, MODULE_NAMESPACE } from "../src/modules/reversemapping/ReverseMappingModule.sol";
 import { ReverseMapping } from "../src/modules/reversemapping/tables/ReverseMapping.sol";
+import { getKeysWithValue } from "../src/modules/reversemapping/getKeysWithValue.sol";
+import { getTargetTableSelector } from "../src/modules/reversemapping/getTargetTableSelector.sol";
 
 contract ReverseMappingModuleTest is Test {
   using ResourceSelector for bytes32;
@@ -23,7 +25,6 @@ contract ReverseMappingModuleTest is Test {
 
   bytes16 namespace = ROOT_NAMESPACE;
   bytes16 sourceFile = bytes16("source");
-  bytes16 targetFile = bytes16("target");
   bytes32 key1 = keccak256("test");
   bytes32[] keyTuple1;
   bytes32 key2 = keccak256("test2");
@@ -44,18 +45,19 @@ contract ReverseMappingModuleTest is Test {
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
+    sourceTableId = ResourceSelector.from(namespace, sourceFile).toTableId();
+    targetTableId = getTargetTableSelector(sourceTableId).toTableId();
   }
 
   function _installReverseMappingModule() internal {
-    targetTableId = ResourceSelector.from(namespace, targetFile).toTableId();
-
     // Register source table
     sourceTableId = uint256(world.registerTable(namespace, sourceFile, sourceTableSchema, sourceTableKeySchema));
 
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    world.installRootModule(reverseMappingModule, abi.encode(sourceTableId, targetTableId));
+    // !gasreport install reverse mapping module
+    world.installRootModule(reverseMappingModule, abi.encode(sourceTableId));
   }
 
   function testInstall() public {
@@ -165,5 +167,42 @@ contract ReverseMappingModuleTest is Test {
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
     assertEq(keysWithValue[0], key1);
+  }
+
+  function testGetTargetTableSelector() public {
+    // !gasreport compute the target table selector
+    bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);
+
+    // The first 12 bytes are the module namespace, followed by 4 bytes of the hash of the source table id
+    assertEq(bytes12(targetTableSelector), MODULE_NAMESPACE);
+    // The last 16 bytes are the source file
+    assertEq(targetTableSelector.getFile(), sourceFile);
+  }
+
+  function testGetKeysWithValue() public {
+    _installReverseMappingModule();
+
+    // Set a value in the source table
+    uint256 value1 = 1;
+
+    world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
+
+    // !gasreport Get list of keys with a given value
+    bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1));
+
+    // Assert that the list is correct
+    assertEq(keysWithValue.length, 1);
+    assertEq(keysWithValue[0], key1);
+
+    // Set a another key with the same value
+    world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value1));
+
+    // Get the list of keys with value2 from the target table
+    keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1));
+
+    // Assert that the list is correct
+    assertEq(keysWithValue.length, 2);
+    assertEq(keysWithValue[0], key1);
+    assertEq(keysWithValue[1], key2);
   }
 }
