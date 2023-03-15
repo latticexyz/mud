@@ -93,19 +93,21 @@ jest.mock("./syncUtils", () => ({
     for (const event of snapshotEvents) storeEvent(store, event);
     return store;
   },
-  fetchStateInBlockRange: jest.fn((fetchWorldEvents: any, from: number, to: number) => {
+  fetchStateInBlockRange: jest.fn((fetchWorldEvents: any, boundFetchStoreEvents: any, from: number, to: number) => {
     const store = createCacheStore();
     if (to > 1000) {
       for (const event of gapStateEvents) storeEvent(store, event);
     }
     return store;
   }),
-  fetchEventsInBlockRangeChunked: jest.fn((fetchWorldEvents: any, from: number, to: number) => {
-    if (to > 1000) {
-      return gapStateEvents;
+  fetchEventsInBlockRangeChunked: jest.fn(
+    (fetchWorldEvents: any, boundFetchStoreEvents: any, from: number, to: number) => {
+      if (to > 1000) {
+        return gapStateEvents;
+      }
+      return [];
     }
-    return [];
-  }),
+  ),
 }));
 
 // Tests
@@ -349,6 +351,7 @@ describe("Sync.worker", () => {
     // Expect state between cache block number and current block number to have been fetched
     expect(syncUtils.fetchEventsInBlockRangeChunked).toHaveBeenLastCalledWith(
       expect.anything(),
+      expect.anything(),
       cacheBlockNumber,
       currentBlockNumber,
       expect.anything(),
@@ -440,6 +443,7 @@ describe("Sync.worker", () => {
 
     // Expect state between cache block number and current block number to have been fetched
     expect(syncUtils.fetchEventsInBlockRangeChunked).toHaveBeenLastCalledWith(
+      expect.anything(),
       expect.anything(),
       cacheBlockNumber,
       firstLiveBlockNumber,

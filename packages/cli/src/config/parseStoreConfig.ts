@@ -22,7 +22,9 @@ const PrimaryKeys = z.record(KeyName, PrimaryKey).default({ key: SchemaType.BYTE
  *
  ************************************************************************/
 
-export type SchemaConfig = Record<string, z.input<typeof FieldData>> | z.input<typeof FieldData>;
+export type FullSchemaConfig = Record<string, z.input<typeof FieldData>>;
+export type ShorthandSchemaConfig = z.input<typeof FieldData>;
+export type SchemaConfig = FullSchemaConfig | ShorthandSchemaConfig;
 
 const FullSchemaConfig = z
   .record(ColumnName, FieldData)
@@ -118,11 +120,11 @@ export const TablesConfig = z.record(TableName, TableConfig).transform((tables) 
  *
  ************************************************************************/
 
-export interface UserTypesConfig {
+export interface UserTypesConfig<Enums extends Record<string, string[]> = Record<string, string[]>> {
   /** Path to the file where common types will be generated and imported from. Default is "Types" */
   path?: string;
   /** Enum names mapped to lists of their member names */
-  enums?: Record<string, string[]>;
+  enums?: Enums;
 }
 
 export const UserTypesConfig = z
@@ -210,7 +212,7 @@ const StoreConfigUnrefined = z.object({
 // finally validate global conditions
 export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
 
-export async function parseStoreConfig(config: unknown) {
+export function parseStoreConfig(config: unknown) {
   return StoreConfig.parse(config);
 }
 

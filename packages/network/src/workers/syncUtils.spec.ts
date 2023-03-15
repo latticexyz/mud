@@ -39,10 +39,11 @@ describe("syncUtils", () => {
         blockNumber: 1,
       };
 
-      const fetchWorldEvents = jest.fn(() => Promise.resolve([event, event]));
+      const fetchWorldEvents = jest.fn(() => Promise.resolve([event]));
+      const fetchStoreEvents = jest.fn(() => Promise.resolve([event]));
       const latestEvent = jest.fn();
 
-      createLatestEventStreamRPC(blockNumber$, fetchWorldEvents).subscribe(latestEvent);
+      createLatestEventStreamRPC(blockNumber$, fetchWorldEvents, fetchStoreEvents).subscribe(latestEvent);
 
       expect(fetchWorldEvents).not.toHaveBeenCalled();
 
@@ -80,9 +81,10 @@ describe("syncUtils", () => {
         blockNumber: 4242,
       };
 
-      const fetchWorldEvents = jest.fn(() => Promise.resolve([event, event]));
+      const fetchWorldEvents = jest.fn(() => Promise.resolve([event]));
+      const fetchStoreEvents = jest.fn(() => Promise.resolve([event]));
 
-      const state = await fetchStateInBlockRange(fetchWorldEvents, 42, 6969, 100, () => void 0);
+      const state = await fetchStateInBlockRange(fetchWorldEvents, fetchStoreEvents, 42, 6969, 100, () => void 0);
 
       expect(fetchWorldEvents).toHaveBeenCalledTimes(Math.ceil((6969 - 42) / 100));
       expect(fetchWorldEvents).toHaveBeenCalledWith(42, 141);

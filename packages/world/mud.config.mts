@@ -1,7 +1,7 @@
-import { StoreUserConfig } from "@latticexyz/cli";
+import { MUDUserConfig } from "@latticexyz/cli";
 import { SchemaType } from "@latticexyz/schema-type";
 
-const config: StoreUserConfig = {
+const config = {
   tables: {
     NamespaceOwner: {
       primaryKeys: {
@@ -109,6 +109,6 @@ const config: StoreUserConfig = {
       Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
     },
   },
-};
+} satisfies MUDUserConfig;
 
 export default config;

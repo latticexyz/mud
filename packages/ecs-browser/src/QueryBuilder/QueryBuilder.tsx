@@ -13,7 +13,9 @@ import {
 import { ComponentBrowserButton, ComponentBrowserInput, SyntaxHighlighterWrapper } from "../StyledComponents";
 import { QueryBuilderForm, QueryShortcutContainer } from "./StyledComponents";
 import * as recs from "@latticexyz/recs";
-import { flatten, orderBy, throttle } from "lodash";
+import flatten from "lodash/flatten";
+import orderBy from "lodash/orderBy";
+import throttle from "lodash/throttle";
 import { MAX_ENTITIES } from "../constants";
 import { observe } from "mobx";
 import { useShiki } from "../hooks";

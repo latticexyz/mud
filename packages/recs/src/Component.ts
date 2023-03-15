@@ -75,7 +75,27 @@ export function setComponent<S extends Schema, T = undefined>(
 ) {
   const prevValue = getComponentValue(component, entity);
   for (const [key, val] of Object.entries(value)) {
-    component.values[key].set(entity, val);
+    if (component.values[key]) {
+      component.values[key].set(entity, val);
+    } else {
+      const isTableFieldIndex = component.metadata?.tableId && /^\d+$/.test(key);
+      if (!isTableFieldIndex) {
+        // If this key looks like a field index from `defineStoreComponents`,
+        // we can ignore this value without logging anything.
+        //
+        // Otherwise, we should let the user know we found undefined data.
+        console.warn(
+          "Component definition for",
+          component.metadata?.contractId ?? component.id,
+          "is missing key",
+          key,
+          ", ignoring value",
+          val,
+          "for entity",
+          entity
+        );
+      }
+    }
   }
   component.update$.next({ entity, value: [value, prevValue], component });
 }
@@ -336,7 +356,7 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       : undefined;
   }
 
-  const valueProxyHandler: (key: keyof S) => ProxyHandler<typeof component.values[typeof key]> = (key: keyof S) => ({
+  const valueProxyHandler: (key: keyof S) => ProxyHandler<(typeof component.values)[typeof key]> = (key: keyof S) => ({
     get(target, prop) {
       // Intercept calls to component.value[key].get(entity)
       if (prop === "get") {
@@ -358,7 +378,8 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       if (prop === "keys") {
         return () => new Set([...target.keys(), ...overriddenEntityValues.keys()]).values();
       }
-      return Reflect.get(target, prop).bind(target);
+
+      return Reflect.get(target, prop, target);
     },
   });
 

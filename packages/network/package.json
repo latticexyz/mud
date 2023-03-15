@@ -3,7 +3,7 @@
   "license": "MIT",
   "version": "1.41.0",
   "source": "src/index.ts",
-  "main": "dist/index.js",
+  "main": "src/index.ts",
   "engines": {
     "node": ">=16"
   },
@@ -16,7 +16,7 @@
   "scripts": {
     "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
-    "test": "tsc && jest --forceExit",
+    "test": "tsc --noEmit && jest --forceExit",
     "link": "yarn link",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
@@ -25,15 +25,18 @@
     "release": "npm publish --access=public"
   },
   "dependencies": {
-    "debug": "^4.3.4"
+    "debug": "^4.3.4",
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
     "@ethersproject/providers": "^5.6.1",
     "@improbable-eng/grpc-web": "^0.15.0",
-    "@latticexyz/recs": "^1.36.1",
-    "@latticexyz/services": "^1.36.1",
-    "@latticexyz/solecs": "^1.36.1",
-    "@latticexyz/utils": "^1.36.1",
+    "@latticexyz/recs": "latest",
+    "@latticexyz/schema-type": "latest",
+    "@latticexyz/services": "latest",
+    "@latticexyz/solecs": "latest",
+    "@latticexyz/store": "latest",
+    "@latticexyz/utils": "latest",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "async-mutex": "^0.3.2",
     "ethers": "^5.7.1",
@@ -48,8 +51,10 @@
     "@ethersproject/providers": "^5.6.1",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/recs": "^1.41.0",
+    "@latticexyz/schema-type": "^1.41.0",
     "@latticexyz/services": "^1.41.0",
     "@latticexyz/solecs": "^1.41.0",
+    "@latticexyz/store": "^1.41.0",
     "@latticexyz/utils": "^1.41.0",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "@types/debug": "^4.1.7",
@@ -63,7 +68,7 @@
     "jest": "^27.5.1",
     "mobx": "^6.5.0",
     "nice-grpc-web": "^2.0.0",
-    "parcel": "^2.7.0",
+    "parcel": "2.8.3",
     "rimraf": "^3.0.2",
     "rxjs": "^7.5.5",
     "threads": "^1.7.0",
@@ -72,7 +77,7 @@
     "tslib": "^2.3.1",
     "typedoc": "0.23.21",
     "typedoc-plugin-markdown": "^3.13.6",
-    "typescript": "^4.6.2"
+    "typescript": "^4.9.5"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }
