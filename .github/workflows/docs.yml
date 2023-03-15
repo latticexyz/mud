@@ -20,11 +20,9 @@ jobs:
       - name: Setup gomarkdoc
         run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest && export PATH=${PATH}:`go env GOPATH`/bin
 
-      - name: Setup node
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 18.x
-          cache: "yarn"
+          node-version: 16
 
       - name: git-checkout
         uses: actions/checkout@v2
