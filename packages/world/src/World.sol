@@ -190,7 +190,8 @@ contract World is Store, IWorldCore, IErrors {
     bytes32 tableSelector = ResourceSelector.from(tableId);
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
-    // We can't call IWorld(this).registerSchema directly because it would lose the msg.sender
+    // We can't call IWorld(this).registerSchema directly because it would be handled like
+    // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: msg.sender,
       target: systemAddress,
@@ -214,7 +215,8 @@ contract World is Store, IWorldCore, IErrors {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
-    // We can't call IWorld(this).setMetadata directly because it would lose the msg.sender
+    // We can't call IWorld(this).setMetadata directly because it would be handled like
+    // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: msg.sender,
       target: systemAddress,
@@ -237,7 +239,8 @@ contract World is Store, IWorldCore, IErrors {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
-    // We can't call IWorld(this).setMetadata directly because it would lose the msg.sender
+    // We can't call IWorld(this).registerStoreHook directly because it would be handled like
+    // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: msg.sender,
       target: systemAddress,
