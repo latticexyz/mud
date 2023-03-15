@@ -36,7 +36,7 @@ func New(config *mode.ChainConfig, wl *write.WriteLayer, schemaCache *schema.Sch
 
 	// Perform chain-specific actions on the write layer.
 	// Create a table that stores the schemas for every table on the chain that this ingress layer is indexing.
-	wl.CreateTable(schema.SchemaTableSchema(config.Id))
+	wl.CreateTable(schema.Internal__SchemaTableSchema(config.Id))
 
 	return &IngressLayer{
 		eth:         eth,
@@ -145,7 +145,7 @@ func (il *IngressLayer) UpdateBlockNumber(chainId string, blockNumber *big.Int) 
 		"block_number": blockNumber.String(),
 	}
 	// Insert the block number into the database.
-	tableSchema := schema.BlockNumberTableSchema()
+	tableSchema := schema.Internal__BlockNumberTableSchema()
 	filter := tableSchema.FilterFromMap(map[string]string{"chain_id": chainId})
 	err := il.wl.UpdateOrInsertRow(tableSchema, row, filter)
 	if err != nil {
