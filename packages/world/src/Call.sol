@@ -1,6 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { ResourceSelector } from "./ResourceSelector.sol";
+import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
+import { Systems } from "./tables/Systems.sol";
+
 library Call {
   /**
    * Call a contract with delegatecall/call and append the given msgSender to the calldata.

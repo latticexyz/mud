@@ -93,7 +93,11 @@ contract WorldTestTableHook is IStoreHook {
     emit HookCalled(abi.encode(table, key, data));
   }
 
-  function onSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onBeforeSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+    emit HookCalled(abi.encode(table, key, schemaIndex, data));
+  }
+
+  function onAfterSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, schemaIndex, data));
   }
 
@@ -117,8 +121,8 @@ contract WorldTest is Test {
 
   function setUp() public {
     world = IWorld(address(new World()));
-    world.installRootModule(new CoreModule());
-    world.installRootModule(new RegistrationModule());
+    world.installRootModule(new CoreModule(), new bytes(0));
+    world.installRootModule(new RegistrationModule(), new bytes(0));
 
     key = "testKey";
     keyTuple = new bytes32[](1);
@@ -509,6 +513,9 @@ contract WorldTest is Test {
     vm.expectEmit(true, true, true, true);
     emit HookCalled(abi.encode(tableId, singletonKey, value));
     world.setRecord(tableId, singletonKey, value);
+
+    // TODO: add tests for other hook methods (onBeforeSetField, onAfterSetField, onDeleteRecord)
+    // (See https://github.com/latticexyz/mud/issues/444)
   }
 
   function testRegisterSystemHook() public view {

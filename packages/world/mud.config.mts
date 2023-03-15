@@ -80,8 +80,8 @@ const config: StoreUserConfig = {
     },
     InstalledModules: {
       primaryKeys: {
-        namespace: SchemaType.BYTES16,
-        mdouleName: SchemaType.BYTES16,
+        moduleName: SchemaType.BYTES16,
+        argumentsHash: SchemaType.BYTES32, // Hash of the params passed to the `install` function
       },
       schema: {
         moduleAddress: SchemaType.ADDRESS,
@@ -91,6 +91,17 @@ const config: StoreUserConfig = {
       // to store, while `getField` loads it from storage. Remove this once we have support for passing the
       // schema in `getField` too. (See https://github.com/latticexyz/mud/issues/444)
       dataStruct: true,
+    },
+    ReverseMapping: {
+      directory: "/modules/reversemapping/tables",
+      primaryKeys: {
+        valueHash: SchemaType.BYTES32,
+      },
+      schema: {
+        keysWithValue: SchemaType.BYTES32_ARRAY, // For now only supports 1 key per value
+      },
+      tableIdArgument: true,
+      storeArgument: true,
     },
   },
   userTypes: {
