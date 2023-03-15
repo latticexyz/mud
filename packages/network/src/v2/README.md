@@ -6,7 +6,7 @@ Here you'll find the code to fetch and process MUD v2 data events (e.g. `StoreSe
 
 Use the v2 `mud.config.mts` configuration and `mud tablegen` to define schemas and generate tables.
 
-Then use `defineTableComponents` to translate your v2 config into v1 component definitions (i.e `defineComponent`).
+Then use `defineStoreComponents` to translate your v2 config into v1 component definitions (i.e `defineComponent`).
 
 # Client expectations
 
