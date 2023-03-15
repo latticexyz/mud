@@ -34,9 +34,16 @@ func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.
 		println(colName + ":")
 		println(row[i])
 
-		encodedField, err := colEncodingType.Encode(row[i])
-		if err != nil {
-			return nil, err
+		var encodedField []byte
+		var err error
+		if row[i] == nil {
+			// If the field is null, we just encode it as an empty string.
+			encodedField = []byte("")
+		} else {
+			encodedField, err = colEncodingType.Encode(row[i])
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		values = append(values, encodedField)
