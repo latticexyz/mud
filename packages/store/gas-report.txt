@@ -52,12 +52,12 @@
 (test/StoreCore.t.sol) | Check for existence of table (existent) [StoreCore.hasTable(table)]: 1117
 (test/StoreCore.t.sol) | check for existence of table (non-existent) [StoreCore.hasTable(table2)]: 3143
 (test/StoreCore.t.sol) | register subscriber [StoreCore.registerStoreHook(table, subscriber)]: 67314
-(test/StoreCore.t.sol) | set record on table with subscriber [StoreCore.setRecord(table, key, data)]: 73764
-(test/StoreCore.t.sol) | set static field on table with subscriber [StoreCore.setField(table, key, 0, data)]: 32014
+(test/StoreCore.t.sol) | set record on table with subscriber [StoreCore.setRecord(table, key, data)]: 73786
+(test/StoreCore.t.sol) | set static field on table with subscriber [StoreCore.setField(table, key, 0, data)]: 31992
 (test/StoreCore.t.sol) | delete record on table with subscriber [StoreCore.deleteRecord(table, key)]: 24387
 (test/StoreCore.t.sol) | register subscriber [StoreCore.registerStoreHook(table, subscriber)]: 67314
-(test/StoreCore.t.sol) | set (dynamic) record on table with subscriber [StoreCore.setRecord(table, key, data)]: 167171
-(test/StoreCore.t.sol) | set (dynamic) field on table with subscriber [StoreCore.setField(table, key, 1, arrayDataBytes)]: 35099
+(test/StoreCore.t.sol) | set (dynamic) record on table with subscriber [StoreCore.setRecord(table, key, data)]: 167193
+(test/StoreCore.t.sol) | set (dynamic) field on table with subscriber [StoreCore.setField(table, key, 1, arrayDataBytes)]: 35077
 (test/StoreCore.t.sol) | delete (dynamic) record on table with subscriber [StoreCore.deleteRecord(table, key)]: 25867
 (test/StoreCore.t.sol) | push to field (1 slot, 1 uint32 item) [StoreCore.pushToField(table, key, 1, secondDataToPush)]: 16965
 (test/StoreCore.t.sol) | push to field (2 slots, 10 uint32 items) [StoreCore.pushToField(table, key, 2, thirdDataToPush)]: 39687

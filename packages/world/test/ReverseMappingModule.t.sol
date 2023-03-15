@@ -63,6 +63,7 @@ contract ReverseMappingModuleTest is Test {
     // Set a value in the source table
     uint256 value = 1;
 
+    // !gasreport set a record on a table with ReverseMappingModule installed
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value));
 
     // Get the list of entities with this value from the target table
@@ -102,6 +103,7 @@ contract ReverseMappingModuleTest is Test {
     // Change the value of the first key
     uint256 value2 = 2;
 
+    // !gasreport change a record on a table with ReverseMappingModule installed
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2));
 
     // Get the list of entities with value1 from the target table
@@ -119,6 +121,7 @@ contract ReverseMappingModuleTest is Test {
     assertEq(keysWithValue[0], key1, "8");
 
     // Delete the first key
+    // !gasreport delete a record on a table with ReverseMappingModule installed
     world.deleteRecord(namespace, sourceFile, keyTuple1);
 
     // Get the list of entities with value2 from the target table
@@ -134,6 +137,7 @@ contract ReverseMappingModuleTest is Test {
     // Set a value in the source table
     uint256 value1 = 1;
 
+    // !gasreport set a field on a table with ReverseMappingModule installed
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1));
 
     // Get the list of entities with value1 from the target table
@@ -146,6 +150,7 @@ contract ReverseMappingModuleTest is Test {
     uint256 value2 = 2;
 
     // Change the value using setField
+    // !gasreport change a field on a table with ReverseMappingModule installed
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2));
 
     // Get the list of entities with value1 from the target table
