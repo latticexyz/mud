@@ -13,13 +13,13 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { IndexModule } from "../src/modules/index/IndexModule.sol";
-import { ReverseMapping } from "../src/modules/index/tables/ReverseMapping.sol";
+import { ReverseMappingModule } from "../src/modules/reversemapping/ReverseMappingModule.sol";
+import { ReverseMapping } from "../src/modules/reversemapping/tables/ReverseMapping.sol";
 
-contract IndexModuleTest is Test {
+contract ReverseMappingModuleTest is Test {
   using ResourceSelector for bytes32;
   IWorld world;
-  IndexModule indexModule = new IndexModule(); // Modules can be deployed once and installed multiple times
+  ReverseMappingModule reverseMappingModule = new ReverseMappingModule(); // Modules can be deployed once and installed multiple times
 
   bytes16 namespace = ROOT_NAMESPACE;
   bytes16 sourceFile = bytes16("source");
@@ -46,7 +46,7 @@ contract IndexModuleTest is Test {
     keyTuple2[0] = key2;
   }
 
-  function _installIndexModule() internal {
+  function _installReverseMappingModule() internal {
     targetTableId = ResourceSelector.from(namespace, targetFile).toTableId();
 
     // Register source table
@@ -55,11 +55,11 @@ contract IndexModuleTest is Test {
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    world.installRootModule(indexModule, abi.encode(sourceTableId, targetTableId));
+    world.installRootModule(reverseMappingModule, abi.encode(sourceTableId, targetTableId));
   }
 
   function testInstall() public {
-    _installIndexModule();
+    _installReverseMappingModule();
     // Set a value in the source table
     uint256 value = 1;
 
@@ -74,7 +74,7 @@ contract IndexModuleTest is Test {
   }
 
   function testSetAndDeleteRecordHook() public {
-    _installIndexModule();
+    _installReverseMappingModule();
 
     // Set a value in the source table
     uint256 value1 = 1;
@@ -129,7 +129,7 @@ contract IndexModuleTest is Test {
   }
 
   function testSetField() public {
-    _installIndexModule();
+    _installReverseMappingModule();
 
     // Set a value in the source table
     uint256 value1 = 1;

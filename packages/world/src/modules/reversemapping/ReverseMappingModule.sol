@@ -27,7 +27,7 @@ import { ReverseMapping } from "./tables/ReverseMapping.sol";
  * Note: this module currently expects to be `delegatecalled` via World.installRootModule.
  * Support for installing it via `World.installModule` depends on `World.callFrom` being implemented.
  */
-contract IndexModule is IModule, WorldContext {
+contract ReverseMappingModule is IModule, WorldContext {
   error CouldNotGrantAccess(string resource);
   using ResourceSelector for bytes32;
 

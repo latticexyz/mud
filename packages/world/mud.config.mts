@@ -93,7 +93,7 @@ const config: StoreUserConfig = {
       dataStruct: true,
     },
     ReverseMapping: {
-      directory: "/modules/index/tables",
+      directory: "/modules/reversemapping/tables",
       primaryKeys: {
         valueHash: SchemaType.BYTES32,
       },
