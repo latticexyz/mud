@@ -6,6 +6,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/mode/schema"
 	"latticexyz/mud/packages/services/pkg/mode/storecore"
 	"latticexyz/mud/packages/services/pkg/mode/write"
+	"strings"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 	"github.com/umbracle/ethgo/abi"
@@ -231,7 +232,7 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	newTableFieldNames := []string{}
 
 	for idx, schemaType := range tableSchema.StoreCoreSchemaTypeKV.Value.Flatten() {
-		columnName := outStruct.Cols[idx]
+		columnName := strings.ToLower(outStruct.Cols[idx])
 		newTableFieldNames = append(newTableFieldNames, columnName)
 
 		solidityType := storecore.SchemaTypeToSolidityType(schemaType)

@@ -74,7 +74,8 @@ func (schema *TableSchema) GetEncodingTypes(fieldNames []string, fieldProjection
 		} else {
 			projectedField = fieldName
 		}
-		_type := abi.MustNewType(schema.SolidityTypes[projectedField])
+		solType := schema.SolidityTypes[projectedField]
+		_type := abi.MustNewType(solType)
 		_types = append(_types, _type)
 		_typesStr = append(_typesStr, _type.String())
 	}
