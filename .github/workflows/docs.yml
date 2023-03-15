@@ -35,8 +35,13 @@ jobs:
       - name: Install dependencies
         run: yarn install --network-concurrency 1
 
-      - name: Generate docs
-        run: yarn docs
+      - name: Prepare docs
+        run: yarn docs:prepare
+
+      - name: Build docs
+        uses: retypeapp/action-build@v2
+        with:
+          license: ${{ secrets.RETYPE_SECRET }}
 
       - name: Publish to Cloudflare Pages
         if: github.ref == 'refs/heads/main' || github.event.pull_request.head.repo.full_name == github.repository
