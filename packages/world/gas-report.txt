@@ -1,14 +1,14 @@
-(test/ReverseMappingModule.t.sol) | install reverse mapping module [world.installRootModule(reverseMappingModule, abi.encode(sourceTableId))]: 394637
-(test/ReverseMappingModule.t.sol) | Get list of keys with a given value [bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1))]: 9134
-(test/ReverseMappingModule.t.sol) | compute the target table selector [bytes32 targetTableSelector = getTargetTableSelector(sourceTableId)]: 3713
-(test/ReverseMappingModule.t.sol) | install reverse mapping module [world.installRootModule(reverseMappingModule, abi.encode(sourceTableId))]: 394637
-(test/ReverseMappingModule.t.sol) | set a record on a table with ReverseMappingModule installed [world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value))]: 174769
-(test/ReverseMappingModule.t.sol) | install reverse mapping module [world.installRootModule(reverseMappingModule, abi.encode(sourceTableId))]: 394637
-(test/ReverseMappingModule.t.sol) | change a record on a table with ReverseMappingModule installed [world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2))]: 140768
-(test/ReverseMappingModule.t.sol) | delete a record on a table with ReverseMappingModule installed [world.deleteRecord(namespace, sourceFile, keyTuple1)]: 59457
-(test/ReverseMappingModule.t.sol) | install reverse mapping module [world.installRootModule(reverseMappingModule, abi.encode(sourceTableId))]: 394637
-(test/ReverseMappingModule.t.sol) | set a field on a table with ReverseMappingModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1))]: 184483
-(test/ReverseMappingModule.t.sol) | change a field on a table with ReverseMappingModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2))]: 148827
+(test/ReverseMappingModule.t.sol) | install reverse mapping module [world.installRootModule(reverseMappingModule, abi.encode(sourceTableId))]: 393176
+(test/ReverseMappingModule.t.sol) | Get list of keys with a given value [bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1))]: 7672
+(test/ReverseMappingModule.t.sol) | compute the target table selector [bytes32 targetTableSelector = getTargetTableSelector(sourceTableId)]: 2245
+(test/ReverseMappingModule.t.sol) | install reverse mapping module [world.installRootModule(reverseMappingModule, abi.encode(sourceTableId))]: 393176
+(test/ReverseMappingModule.t.sol) | set a record on a table with ReverseMappingModule installed [world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value))]: 173310
+(test/ReverseMappingModule.t.sol) | install reverse mapping module [world.installRootModule(reverseMappingModule, abi.encode(sourceTableId))]: 393176
+(test/ReverseMappingModule.t.sol) | change a record on a table with ReverseMappingModule installed [world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2))]: 139308
+(test/ReverseMappingModule.t.sol) | delete a record on a table with ReverseMappingModule installed [world.deleteRecord(namespace, sourceFile, keyTuple1)]: 57998
+(test/ReverseMappingModule.t.sol) | install reverse mapping module [world.installRootModule(reverseMappingModule, abi.encode(sourceTableId))]: 393176
+(test/ReverseMappingModule.t.sol) | set a field on a table with ReverseMappingModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1))]: 181563
+(test/ReverseMappingModule.t.sol) | change a field on a table with ReverseMappingModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2))]: 145908
 (test/World.t.sol) | Delete record [world.deleteRecord(namespace, file, singletonKey)]: 16115
 (test/World.t.sol) | Push data to the table [world.pushToField(namespace, file, keyTuple, 0, encodedData)]: 96477
 (test/World.t.sol) | Register a fallback system [bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, "", "")]: 81255
