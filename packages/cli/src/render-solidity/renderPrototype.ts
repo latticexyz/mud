@@ -15,16 +15,7 @@ export function renderPrototype(options: RenderPrototypeOptions) {
     primaryKeys.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
   );
 
-  const getFieldNameFactory = (libraryName: string) => {
-    return {
-      getName: ({ name }: { name: string }) => `_${name}_${libraryName}`,
-      getTypedName: ({ typeWithLocation, name }: { typeWithLocation: string; name: string }) =>
-        `${typeWithLocation} _${name}_${libraryName}`,
-    };
-  };
-
   const tablesData = tables.map((table) => {
-    const { getName, getTypedName } = getFieldNameFactory(table.libraryName);
     const { _keyArgs } = renderCommonData({ staticResourceData: table.staticResourceData, primaryKeys });
     const common = {
       libraryName: table.libraryName,
@@ -33,9 +24,9 @@ export function renderPrototype(options: RenderPrototypeOptions) {
     };
 
     if (table.structName !== undefined) {
-      const typeWithLocation = `${table.structName} memory`;
-      const name = getName({ name: "data" });
-      const typedName = getTypedName({ typeWithLocation, name: "data" });
+      // a struct can only be 1 argument
+      const name = `_${table.libraryName}`;
+      const typedName = `${table.structName} memory ${name}`;
       return {
         ...common,
         args: table.default === undefined ? [name] : [],
@@ -47,6 +38,16 @@ export function renderPrototype(options: RenderPrototypeOptions) {
         ],
       };
     } else {
+      // if table provides only 1 argument, use only the table name for it.
+      // if table provides multiple arguments, prefix each one with its field name.
+      const isPrefixed = table.fields.length > 1;
+      const getName = ({ name }: { name: string }) => {
+        return isPrefixed ? `_${name}_${table.libraryName}` : `_${table.libraryName}`;
+      };
+      const getTypedName = ({ typeWithLocation, name }: { typeWithLocation: string; name: string }) => {
+        return `${typeWithLocation} ${getName({ name })}`;
+      };
+
       const fieldsNoDefault = table.fields.filter((field) => field.default === undefined);
       return {
         ...common,

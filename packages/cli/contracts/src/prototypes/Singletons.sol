@@ -7,9 +7,9 @@ import { Singleton1 } from "./../tables/Singleton1.sol";
 import { Singleton2 } from "./../tables/Singleton2.sol";
 
 library Singletons {
-  function create(int256 _v1_Singleton1, bytes32[] memory _v1_Singleton2) internal {
+  function create(int256 _v1_Singleton1, bytes32[] memory _Singleton2) internal {
     Singleton1.set(_v1_Singleton1, 123);
-    Singleton2.set(_v1_Singleton2);
+    Singleton2.set(_Singleton2);
   }
 
   function destroy() internal {
