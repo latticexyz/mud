@@ -77,28 +77,20 @@ library ${libraryName} {
   function create(${renderArguments([allTypedKeyArgs, _typedTableDataArgs])}) internal {
     ${renderList(
       tablesData,
-      ({ libraryName, inputs, _keyArgs }) => `
-      ${libraryName}.set(${renderArguments([_keyArgs, ...inputs.map(({ value }) => value)])});
-    `
+      ({ libraryName, inputs, _keyArgs }) =>
+        `${libraryName}.set(${renderArguments([_keyArgs, ...inputs.map(({ value }) => value)])});`
     )}
   }
 
   function destroy(${allTypedKeyArgs}) internal {
-    ${renderList(
-      tablesData,
-      ({ libraryName, _keyArgs }) => `
-      ${libraryName}.deleteRecord(${_keyArgs});
-    `
-    )}
+    ${renderList(tablesData, ({ libraryName, _keyArgs }) => `${libraryName}.deleteRecord(${_keyArgs});`)}
   }
 
   function getTableIds() internal pure returns (uint256[] memory _tableIds) {
     _tableIds = new uint256[](${tablesData.length});
     ${renderList(
       tablesData,
-      ({ staticResourceData }, index) => `
-      _tableIds[${index}] = ${renderTableId(staticResourceData).hardcodedTableId};
-    `
+      ({ staticResourceData }, index) => `_tableIds[${index}] = ${renderTableId(staticResourceData).hardcodedTableId};`
     )}
   }
 }

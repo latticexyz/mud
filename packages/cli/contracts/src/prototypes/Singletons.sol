@@ -9,21 +9,17 @@ import { Singleton2 } from "./../tables/Singleton2.sol";
 library Singletons {
   function create(int256 _v1_Singleton1, bytes32[] memory _v1_Singleton2) internal {
     Singleton1.set(_v1_Singleton1, 123);
-
     Singleton2.set(_v1_Singleton2);
   }
 
   function destroy() internal {
     Singleton1.deleteRecord();
-
     Singleton2.deleteRecord();
   }
 
   function getTableIds() internal pure returns (uint256[] memory _tableIds) {
     _tableIds = new uint256[](2);
-
     _tableIds[0] = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Singleton1"))));
-
     _tableIds[1] = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Singleton2"))));
   }
 }

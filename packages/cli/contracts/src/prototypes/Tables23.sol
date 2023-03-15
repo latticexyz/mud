@@ -10,21 +10,17 @@ import { Enum1 } from "./../Types.sol";
 library Tables23 {
   function create(bytes32 key, Table2Data memory _data_Table2, Enum1 _value_Table3) internal {
     Table2.set(key, _data_Table2);
-
     Table3.set(key, _value_Table3);
   }
 
   function destroy(bytes32 key) internal {
     Table2.deleteRecord(key);
-
     Table3.deleteRecord(key);
   }
 
   function getTableIds() internal pure returns (uint256[] memory _tableIds) {
     _tableIds = new uint256[](2);
-
     _tableIds[0] = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Table2"))));
-
     _tableIds[1] = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Table3"))));
   }
 }
