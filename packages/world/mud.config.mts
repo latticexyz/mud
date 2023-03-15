@@ -81,7 +81,7 @@ const config: StoreUserConfig = {
     InstalledModules: {
       primaryKeys: {
         moduleName: SchemaType.BYTES16,
-        configHash: SchemaType.BYTES32, // Hash of the params passed to the `install` function
+        argumentsHash: SchemaType.BYTES32, // Hash of the params passed to the `install` function
       },
       schema: {
         moduleAddress: SchemaType.ADDRESS,
