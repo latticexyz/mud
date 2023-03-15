@@ -236,7 +236,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
         console.log("Initial sync from MODE");
         const response = modeClient.findAll({
           tables: [],
-          namespace: { chainId: "371337", worldAddress: "0x6E9163736C26380c8FCdF6e594E2Bed8742B47B4" },
+          namespace: { chainId: "4242", worldAddress: "0x40a42Baf86Fc821f972Ad2aC878729063CeEF403" },
         });
         console.log(response);
         console.log(await response);
