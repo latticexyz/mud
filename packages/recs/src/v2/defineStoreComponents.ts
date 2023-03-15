@@ -22,22 +22,24 @@ type SchemaOrUserTypeToRecsType<T extends SchemaType | string> = T extends Schem
     RecsType.Number
   : never;
 
-type TableSchemaToComponentSchema<TableSchema extends TableConfig["schema"]> = TableSchema extends FullSchemaConfig
-  ? {
-      [K in keyof TableSchema]: SchemaOrUserTypeToRecsType<TableSchema[K]>;
-    }
-  : TableSchema extends ShorthandSchemaConfig
-  ? {
-      value: SchemaOrUserTypeToRecsType<TableSchema>;
-    }
-  : never;
+type TableSchemaToComponentSchema<TableSchema extends FullSchemaConfig> = {
+  [K in keyof TableSchema]: SchemaOrUserTypeToRecsType<TableSchema[K]>;
+};
 
 type TablesToComponents<Tables extends Record<string, TableConfig>> = {
   [K in keyof Tables]: Component<
-    TableSchemaToComponentSchema<Tables[K]["schema"]>,
+    TableSchemaToComponentSchema<ExpandSchema<Tables[K]["schema"]>>,
     { contractId: string; tableId: string; table: Tables[K] }
   >;
 };
+
+type ExpandSchema<TableSchema extends TableConfig["schema"]> = TableSchema extends FullSchemaConfig
+  ? TableSchema
+  : TableSchema extends ShorthandSchemaConfig
+  ? {
+      value: TableSchema;
+    }
+  : never;
 
 type ExpandTables<Tables extends StoreUserConfig["tables"]> = {
   [K in keyof Tables]: Tables[K] extends TableConfig
@@ -50,26 +52,17 @@ type ExpandTables<Tables extends StoreUserConfig["tables"]> = {
     : never;
 };
 
-const tableSchemaToRecsSchema = <TableSchema extends TableConfig["schema"]>(
+const tableSchemaToRecsSchema = <TableSchema extends FullSchemaConfig>(
   tableSchema: TableSchema
 ): TableSchemaToComponentSchema<TableSchema> => {
-  if (typeof tableSchema === "object") {
-    return Object.fromEntries(
-      Object.entries(tableSchema).map(([fieldName, schemaType]) => [
-        fieldName,
-        typeof schemaType === "string"
-          ? RecsType.T // TODO: support user enums
-          : schemaTypesToRecsTypes[schemaType],
-      ])
-    ) as any;
-  } else {
-    return {
-      value:
-        typeof tableSchema === "string"
-          ? RecsType.T // TODO: support user enums
-          : schemaTypesToRecsTypes[tableSchema as SchemaType],
-    } as any;
-  }
+  return Object.fromEntries(
+    Object.entries(tableSchema).map(([fieldName, schemaType]) => [
+      fieldName,
+      typeof schemaType === "string"
+        ? RecsType.T // TODO: support user enums
+        : schemaTypesToRecsTypes[schemaType],
+    ])
+  ) as any;
 };
 
 export function defineStoreComponents<T extends StoreUserConfig>(
