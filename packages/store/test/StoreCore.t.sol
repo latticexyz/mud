@@ -24,6 +24,7 @@ struct TestStruct {
 contract StoreCoreTest is Test, StoreView {
   TestStruct private testStruct;
   mapping(uint256 => bytes) private testMapping;
+  Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
 
   // Expose an external setRecord function for testing purposes of indexers (see testHooks)
   function setRecord(uint256 table, bytes32[] calldata key, bytes calldata data) public override {
@@ -51,12 +52,13 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   // Expose an external registerSchema function for testing purposes of indexers (see testHooks)
-  function registerSchema(uint256 table, Schema schema) public override {
-    StoreCore.registerSchema(table, schema);
+  function registerSchema(uint256 table, Schema schema, Schema keySchema) public override {
+    StoreCore.registerSchema(table, schema, keySchema);
   }
 
   function testRegisterAndGetSchema() public {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
+    Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
 
     uint256 table = uint256(keccak256("some.table"));
 
@@ -64,26 +66,34 @@ contract StoreCoreTest is Test, StoreView {
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32(table);
     vm.expectEmit(true, true, true, true);
-    emit StoreSetRecord(StoreCoreInternal.SCHEMA_TABLE, key, abi.encodePacked(schema.unwrap()));
+    emit StoreSetRecord(StoreCoreInternal.SCHEMA_TABLE, key, abi.encodePacked(schema.unwrap(), keySchema.unwrap()));
 
     // !gasreport StoreCore: register schema
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, keySchema);
 
     // !gasreport StoreCore: get schema (warm)
     Schema loadedSchema = StoreCore.getSchema(table);
 
-    assertEq(schema.unwrap(), loadedSchema.unwrap());
+    assertEq(loadedSchema.unwrap(), schema.unwrap());
+
+    // !gasreport StoreCore: get key schema (warm)
+    Schema loadedKeySchema = StoreCore.getKeySchema(table);
+    assertEq(loadedKeySchema.unwrap(), keySchema.unwrap());
   }
 
   function testFailRegisterInvalidSchema() public {
-    StoreCore.registerSchema(uint256(keccak256("table")), Schema.wrap(keccak256("random bytes as schema")));
+    StoreCore.registerSchema(
+      uint256(keccak256("table")),
+      Schema.wrap(keccak256("random bytes as schema")),
+      Schema.wrap(keccak256("random bytes as key schema"))
+    );
   }
 
   function testHasSchema() public {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     uint256 table = uint256(keccak256("some.table"));
     uint256 table2 = uint256(keccak256("other.table"));
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // !gasreport Check for existence of table (existent)
     StoreCore.hasTable(table);
@@ -98,13 +108,14 @@ contract StoreCoreTest is Test, StoreView {
   function testSetMetadata() public {
     uint256 table = uint256(keccak256("some.table"));
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
+    Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "field1";
     fieldNames[1] = "field2";
 
     // Register table
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, keySchema);
 
     // !gasreport StoreCore: set table metadata
     StoreCore.setMetadata(table, tableName, fieldNames);
@@ -119,13 +130,14 @@ contract StoreCoreTest is Test, StoreView {
   function testlSetMetadataRevert() public {
     uint256 table = uint256(keccak256("some.table"));
     Schema schema = SchemaLib.encode(SchemaType.UINT8);
+    Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "field1";
     fieldNames[1] = "field2";
 
     // Register table
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, keySchema);
 
     vm.expectRevert(abi.encodeWithSelector(StoreCore.StoreCore_InvalidFieldNamesLength.selector, 1, 2));
     StoreCore.setMetadata(table, tableName, fieldNames);
@@ -143,7 +155,7 @@ contract StoreCoreTest is Test, StoreView {
     );
 
     // Register schema
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Create some key
     bytes32[] memory key = new bytes32[](1);
@@ -182,7 +194,7 @@ contract StoreCoreTest is Test, StoreView {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
 
     uint256 table = uint256(keccak256("some.table"));
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
@@ -208,7 +220,7 @@ contract StoreCoreTest is Test, StoreView {
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     uint256 table = uint256(keccak256("some.table"));
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
@@ -224,7 +236,7 @@ contract StoreCoreTest is Test, StoreView {
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT256);
     uint256 table = uint256(keccak256("some.table"));
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Set data
     bytes memory data = abi.encodePacked(
@@ -255,7 +267,7 @@ contract StoreCoreTest is Test, StoreView {
     {
       // Register table's schema
       Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
-      StoreCore.registerSchema(table, schema);
+      StoreCore.registerSchema(table, schema, defaultKeySchema);
     }
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -339,7 +351,7 @@ contract StoreCoreTest is Test, StoreView {
         SchemaType.UINT32_ARRAY,
         SchemaType.UINT32_ARRAY
       );
-      StoreCore.registerSchema(table, schema);
+      StoreCore.registerSchema(table, schema, defaultKeySchema);
     }
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -477,7 +489,7 @@ contract StoreCoreTest is Test, StoreView {
 
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -546,7 +558,7 @@ contract StoreCoreTest is Test, StoreView {
     {
       // Register table's schema
       Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
-      StoreCore.registerSchema(table, schema);
+      StoreCore.registerSchema(table, schema, defaultKeySchema);
     }
 
     // Create key
@@ -649,7 +661,7 @@ contract StoreCoreTest is Test, StoreView {
     uint256 table = uint256(keccak256("some.table"));
     Schema schema = SchemaLib.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
@@ -675,10 +687,10 @@ contract StoreCoreTest is Test, StoreView {
 
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128);
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Create subscriber
-    MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
+    MirrorSubscriber subscriber = new MirrorSubscriber(table, schema, defaultKeySchema);
 
     // !gasreport register subscriber
     StoreCore.registerStoreHook(table, subscriber);
@@ -716,10 +728,10 @@ contract StoreCoreTest is Test, StoreView {
 
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY);
-    StoreCore.registerSchema(table, schema);
+    StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Create subscriber
-    MirrorSubscriber subscriber = new MirrorSubscriber(table, schema);
+    MirrorSubscriber subscriber = new MirrorSubscriber(table, schema, defaultKeySchema);
 
     // !gasreport register subscriber
     StoreCore.registerStoreHook(table, subscriber);
@@ -766,8 +778,8 @@ uint256 constant indexerTableId = uint256(keccak256("indexer.table"));
 contract MirrorSubscriber is IStoreHook {
   uint256 _table;
 
-  constructor(uint256 table, Schema schema) {
-    IStore(msg.sender).registerSchema(indexerTableId, schema);
+  constructor(uint256 table, Schema schema, Schema keySchema) {
+    IStore(msg.sender).registerSchema(indexerTableId, schema, keySchema);
     _table = table;
   }
 
@@ -776,10 +788,12 @@ contract MirrorSubscriber is IStoreHook {
     StoreSwitch.setRecord(indexerTableId, key, data);
   }
 
-  function onSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onBeforeSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     if (table != table) revert("invalid table");
     StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
   }
+
+  function onAfterSetField(uint256, bytes32[] memory, uint8, bytes memory) public {}
 
   function onDeleteRecord(uint256 table, bytes32[] memory key) public {
     if (table != table) revert("invalid table");

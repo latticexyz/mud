@@ -1,375 +1,307 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
 import { Store, IStoreHook } from "@latticexyz/store/src/Store.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
+import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
-import { RouteOwnerTable } from "./tables/RouteOwnerTable.sol";
-import { RouteAccess } from "./tables/RouteAccess.sol";
-import { RouteTable } from "./tables/RouteTable.sol";
-import { SystemRouteTable } from "./tables/SystemRouteTable.sol";
-import { SystemTable } from "./tables/SystemTable.sol";
 import { System } from "./System.sol";
-import { ISystemHook } from "./ISystemHook.sol";
+import { ResourceSelector } from "./ResourceSelector.sol";
+import { Resource } from "./Types.sol";
+import { ROOT_NAMESPACE, ROOT_FILE, REGISTRATION_SYSTEM_NAME } from "./constants.sol";
+import { AccessControl } from "./AccessControl.sol";
+import { Call } from "./Call.sol";
 
-uint256 constant ROOT_ROUTE_ID = uint256(keccak256(bytes("")));
-bytes32 constant SINGLE_SLASH = "/";
+import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
+import { ResourceAccess } from "./tables/ResourceAccess.sol";
+import { Systems } from "./tables/Systems.sol";
+import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
+import { InstalledModules } from "./tables/InstalledModules.sol";
 
-contract World is Store {
-  error RouteInvalid(string route);
-  error RouteExists(string route);
-  error RouteAccessDenied(string route, address caller);
-  error SystemExists(address system);
+import { IModule } from "./interfaces/IModule.sol";
+import { IWorldCore } from "./interfaces/IWorldCore.sol";
+import { IWorld } from "./interfaces/IWorld.sol";
+import { IErrors } from "./interfaces/IErrors.sol";
+import { IRegistrationSystem } from "./interfaces/systems/IRegistrationSystem.sol";
+
+contract World is Store, IWorldCore, IErrors {
+  using ResourceSelector for bytes32;
 
   constructor() {
-    SystemTable.registerSchema();
-    RouteTable.registerSchema();
-    RouteAccess.registerSchema();
-    SystemRouteTable.registerSchema();
-    RouteOwnerTable.registerSchema();
+    // Register internal NamespaceOwner table and give ownership of the root
+    // namespace to msg.sender. This is done in the constructor instead of a
+    // module, so that we can use it for access control checks in `installRootModule`.
+    NamespaceOwner.registerSchema();
+    NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
 
-    // Register root route and give ownership to msg.sender
-    RouteTable.set({ routeId: ROOT_ROUTE_ID, route: "" }); // Storing this explicitly to trigger the event for indexers
-    RouteOwnerTable.set({ routeId: ROOT_ROUTE_ID, owner: msg.sender });
-    RouteAccess.set({ routeId: ROOT_ROUTE_ID, caller: msg.sender, value: true });
+    // Other internal tables are registered by the CoreModule to reduce World's bytecode size.
+  }
+
+  /**
+   * Install the given module at the given namespace in the World.
+   */
+  function installModule(IModule module, bytes memory args) public {
+    Call.withSender({
+      msgSender: msg.sender,
+      target: address(module),
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
+      delegate: false
+    });
+
+    // Register the module in the InstalledModules table
+    InstalledModules.set(module.getName(), keccak256(args), address(module));
+  }
+
+  /**
+   * Install the given root module in the World.
+   * Requires the caller to own the root namespace.
+   * The module is delegatecalled and installed in the root namespace.
+   */
+  function installRootModule(IModule module, bytes memory args) public {
+    AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
+
+    Call.withSender({
+      msgSender: msg.sender,
+      target: address(module),
+      funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
+      delegate: true // The module is delegate called so it can edit any table
+    });
+
+    // Register the module in the InstalledModules table
+    InstalledModules.set(module.getName(), keccak256(args), address(module));
   }
 
   /************************************************************************
    *
-   *    REGISTRATION METHODS
+   *    WORLD METHODS
    *
    ************************************************************************/
 
   /**
-   * Register a new route by extending an existing route
+   * Grant access to the given namespace.
+   * Requires the caller to own the namespace.
    */
-  function registerRoute(string calldata baseRoute, string calldata subRoute) public virtual returns (uint256 routeId) {
-    // Require subroute to be a valid route fragment (start with `/` and don't contain any further `/`)
-    if (!_isSingleLevelRoute(subRoute)) revert RouteInvalid(subRoute);
-
-    // Require base route to exist (with a special check for the root route because it's empty and fails the `has` check)
-    uint256 baseRouteId = _toRouteId(baseRoute);
-    if (!(baseRouteId == ROOT_ROUTE_ID || RouteTable.has(baseRouteId))) revert RouteInvalid(baseRoute);
-
-    // Require subRoute to not be empty
-    if (bytes(subRoute).length == 0) revert RouteInvalid(subRoute);
-
-    // Construct the new route
-    string memory route = string(abi.encodePacked(baseRoute, subRoute));
-    routeId = _toRouteId(route);
-
-    // Require route to not exist yet
-    if (RouteTable.has(routeId)) revert RouteExists(route);
-
-    // Store the route
-    RouteTable.set({ routeId: routeId, route: route });
-
-    // Add caller as owner of the new route
-    RouteOwnerTable.set({ routeId: routeId, owner: msg.sender });
-
-    // Give caller access to the route
-    RouteAccess.set({ routeId: routeId, caller: msg.sender, value: true });
+  function grantAccess(bytes16 namespace, address grantee) public virtual {
+    grantAccess(namespace, ROOT_FILE, grantee);
   }
 
   /**
-   * Register register a table with given schema at the given route
+   * Grant access to the resource at the given namespace and file.
+   * Requires the caller to own the namespace.
    */
-  function registerTable(
-    string calldata baseRoute,
-    string calldata tableRoute,
-    Schema schema
-  ) public virtual returns (uint256 tableRouteId) {
-    // Register table route
-    tableRouteId = uint256(registerRoute(baseRoute, tableRoute));
+  function grantAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
+    // Require the caller to own the namespace
+    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, msg.sender);
 
-    // StoreCore handles checking for existence
-    StoreCore.registerSchema(tableRouteId, schema);
+    // Grant access to the given resource
+    ResourceAccess.set(resourceSelector, grantee, true);
   }
 
   /**
-   * Register a schema for a given table id
-   * This overload exists to conform to the Store interface,
-   * but it requires the caller to register a route using `registerRoute` first
+   * Retract access from the resource at the given namespace and file.
    */
-  function registerSchema(uint256 tableId, Schema schema) public virtual override {
-    // Require caller to own the given tableId
-    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
+  function retractAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
+    // Require the caller to own the namespace
+    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, msg.sender);
 
-    // Register the schema
-    StoreCore.registerSchema(tableId, schema);
-  }
-
-  /**
-   * Register metadata (tableName, fieldNames) for a given table via its route
-   */
-  function setMetadata(
-    string calldata tableRoute,
-    string calldata tableName,
-    string[] calldata fieldNames
-  ) public virtual {
-    setMetadata(_toRouteId(tableRoute), tableName, fieldNames);
-  }
-
-  /**
-   * Register metadata (tableName, fieldNames) for a given table via its id
-   */
-  function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
-    // Require caller to own the given tableId
-    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
-
-    // Set the table's metadata
-    StoreCore.setMetadata(tableId, tableName, fieldNames);
-  }
-
-  /**
-   * Register a hook for a given table route
-   */
-  function registerTableHook(string calldata tableRoute, IStoreHook hook) public virtual {
-    registerStoreHook(_toRouteId(tableRoute), hook);
-  }
-
-  /**
-   * Register a hook for a given table route id
-   * This overload exists to conform with the `IStore` interface.
-   */
-  function registerStoreHook(uint256 tableId, IStoreHook hook) public virtual override {
-    // Require caller to own the given tableId
-    if (RouteOwnerTable.get(tableId) != msg.sender) revert RouteAccessDenied(RouteTable.get(tableId), msg.sender);
-
-    // Register the hook
-    StoreCore.registerStoreHook(tableId, hook);
-  }
-
-  /**
-   * Register a hook for a given system route
-   */
-  function registerSystemHook(string calldata systemRoute, ISystemHook hook) public virtual {
-    // TODO implement (see https://github.com/latticexyz/mud/issues/444)
-  }
-
-  /**
-   * Register a system at the given route
-   */
-  function registerSystem(
-    string calldata baseRoute,
-    string calldata systemRoute,
-    System system,
-    bool publicAccess
-  ) public virtual returns (uint256 systemRouteId) {
-    // Require the system to not exist yet
-    if (SystemRouteTable.has(address(system))) revert SystemExists(address(system));
-
-    // Require the caller to own the base route
-    uint256 baseRouteId = _toRouteId(baseRoute);
-    if (RouteOwnerTable.get(baseRouteId) != msg.sender) revert RouteAccessDenied(baseRoute, msg.sender);
-
-    // Register system route
-    systemRouteId = registerRoute(baseRoute, systemRoute);
-
-    // Store the system address in the system table
-    SystemTable.set({ routeId: systemRouteId, system: address(system), publicAccess: publicAccess });
-
-    // Store the system's route in the SystemToRoute table
-    SystemRouteTable.set({ system: address(system), routeId: systemRouteId });
-
-    // Give the system access to its base route
-    RouteAccess.set({ routeId: baseRouteId, caller: address(system), value: true });
-  }
-
-  /**
-   * Grant access to a given route
-   */
-  function grantAccess(string calldata route, address grantee) public virtual {
-    // Require the caller to own the route
-    uint256 routeId = _toRouteId(route);
-    if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
-
-    // Grant access to the given route
-    RouteAccess.set({ routeId: routeId, caller: grantee, value: true });
-  }
-
-  /**
-   * Retract access to a given route
-   */
-  function retractAccess(string calldata route, address grantee) public virtual {
-    // Require the caller to own the route
-    uint256 routeId = _toRouteId(route);
-    if (RouteOwnerTable.get(routeId) != msg.sender) revert RouteAccessDenied(route, msg.sender);
-
-    // Retract access to the given route
-    RouteAccess.deleteRecord({ routeId: routeId, caller: grantee });
+    // Retract access from the given resource
+    ResourceAccess.deleteRecord(resourceSelector, grantee);
   }
 
   /************************************************************************
    *
-   *    STORE METHODS
+   *    WORLD STORE METHODS
    *
    ************************************************************************/
 
   /**
-   * Write a record in a table based on a parent route access right.
-   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
+   * Write a record in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
    */
-  function setRecord(
-    string calldata accessRoute,
-    string calldata subRoute,
-    bytes32[] calldata key,
-    bytes calldata data
-  ) public virtual {
-    // Require access to accessRoute
-    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-    // Require a valid subRoute
-    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-
-    // Construct the table route id by concatenating accessRoute and tableRoute
-    uint256 tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
+  function setRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key, bytes calldata data) public virtual {
+    // Require access to the namespace or file
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(tableRouteId, key, data);
+    StoreCore.setRecord(resourceSelector.toTableId(), key, data);
   }
 
   /**
-   * Write a record in a table based on access right to the table route id.
-   * This overload exists to conform with the `IStore` interface.
-   */
-  function setRecord(uint256 tableRouteId, bytes32[] calldata key, bytes calldata data) public virtual {
-    // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
-
-    // Set the record
-    StoreCore.setRecord(tableRouteId, key, data);
-  }
-
-  /**
-   * Write a field in a table based on a parent route access right.
-   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
+   * Write a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
    */
   function setField(
-    string calldata accessRoute,
-    string calldata subRoute,
+    bytes16 namespace,
+    bytes16 file,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
   ) public virtual {
-    // Require access to accessRoute
-    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-    // Require a valid subRoute
-    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-
-    // Construct the table route id by concatenating accessRoute and tableRoute
-    uint256 tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
+    // Require access to namespace or file
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
 
     // Set the field
-    StoreCore.setField(tableRouteId, key, schemaIndex, data);
+    StoreCore.setField(resourceSelector.toTableId(), key, schemaIndex, data);
   }
 
   /**
-   * Write a field in a table based on specific access rights.
+   * Push data to the end of a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function pushToField(
+    bytes16 namespace,
+    bytes16 file,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    bytes calldata dataToPush
+  ) public virtual {
+    // Require access to namespace or file
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
+
+    // Push to the field
+    StoreCore.pushToField(resourceSelector.toTableId(), key, schemaIndex, dataToPush);
+  }
+
+  /**
+   * Delete a record in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function deleteRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key) public virtual {
+    // Require access to namespace or file
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
+
+    // Delete the record
+    StoreCore.deleteRecord(resourceSelector.toTableId(), key);
+  }
+
+  /************************************************************************
+   *
+   *    STORE OVERRIDE METHODS
+   *
+   ************************************************************************/
+
+  /**
+   * Register the given schema for the given table id.
+   * This overload exists to conform with the IStore interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
+   */
+  function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) public virtual {
+    bytes32 tableSelector = ResourceSelector.from(tableId);
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+
+    // We can't call IWorld(this).registerSchema directly because it would be handled like
+    // an external call, so msg.sender would be the address of the World contract
+    Call.withSender({
+      msgSender: msg.sender,
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        IRegistrationSystem.registerTable.selector,
+        tableSelector.getNamespace(),
+        tableSelector.getFile(),
+        valueSchema,
+        keySchema
+      ),
+      delegate: false
+    });
+  }
+
+  /**
+   * Register metadata (tableName, fieldNames) for the table at the given tableId.
+   * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
+   */
+  function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+
+    // We can't call IWorld(this).setMetadata directly because it would be handled like
+    // an external call, so msg.sender would be the address of the World contract
+    Call.withSender({
+      msgSender: msg.sender,
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        IRegistrationSystem.setMetadata.selector,
+        resourceSelector.getNamespace(),
+        resourceSelector.getFile(),
+        tableName,
+        fieldNames
+      ),
+      delegate: false
+    });
+  }
+
+  /**
+   * Register a hook for the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
    */
+  function registerStoreHook(uint256 tableId, IStoreHook hook) public virtual {
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+
+    // We can't call IWorld(this).registerStoreHook directly because it would be handled like
+    // an external call, so msg.sender would be the address of the World contract
+    Call.withSender({
+      msgSender: msg.sender,
+      target: systemAddress,
+      funcSelectorAndArgs: abi.encodeWithSelector(
+        IRegistrationSystem.registerTableHook.selector,
+        resourceSelector.getNamespace(),
+        resourceSelector.getFile(),
+        hook
+      ),
+      delegate: false
+    });
+  }
+
+  /**
+   * Write a record in the table at the given tableId.
+   * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
+   */
+  function setRecord(uint256 tableId, bytes32[] calldata key, bytes calldata data) public virtual {
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    setRecord(resourceSelector.getNamespace(), resourceSelector.getFile(), key, data);
+  }
+
+  /**
+   * Write a field in the table at the given tableId.
+   * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
+   */
   function setField(
-    uint256 tableRouteId,
+    uint256 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
   ) public virtual override {
-    // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
-
-    // Set the field
-    StoreCore.setField(tableRouteId, key, schemaIndex, data);
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    setField(resourceSelector.getNamespace(), resourceSelector.getFile(), key, schemaIndex, data);
   }
 
   /**
-   * Push data to the end of a field in a table based on a parent route access right.
-   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
-   */
-  function pushToField(
-    string calldata accessRoute,
-    string calldata subRoute,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    bytes calldata dataToPush
-  ) public {
-    // Check access based on accessRoute
-    uint256 tableRouteId = _verifiedTableRouteId(accessRoute, subRoute);
-
-    // Push to the field
-    StoreCore.pushToField(tableRouteId, key, schemaIndex, dataToPush);
-  }
-
-  /**
-   * Push data to the end of a field in a table based on specific access rights.
+   * Push data to the end of a field in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
   function pushToField(
-    uint256 tableRouteId,
+    uint256 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush
   ) public override {
-    // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
-
-    // Push to the field
-    StoreCore.pushToField(tableRouteId, key, schemaIndex, dataToPush);
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    pushToField(resourceSelector.getNamespace(), resourceSelector.getFile(), key, schemaIndex, dataToPush);
   }
 
   /**
-   * Delete a record in a table based on a parent route access right.
-   * We check for access based on `accessRoute`, and write to `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
-   */
-  function deleteRecord(string calldata accessRoute, string calldata subRoute, bytes32[] calldata key) public virtual {
-    // Require access to accessRoute
-    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-    // Require a valid subRoute
-    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-
-    // Construct the table route id by concatenating accessRoute and tableRoute
-    uint256 tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
-
-    // Delete the record
-    StoreCore.deleteRecord(tableRouteId, key);
-  }
-
-  /**
-   * Delete a record in a table based on specific access rights.
+   * Delete a record in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
    */
-  function deleteRecord(uint256 tableRouteId, bytes32[] calldata key) public virtual override {
-    // Check access based on the tableRoute
-    if (!_hasAccess(tableRouteId, msg.sender)) revert RouteAccessDenied(RouteTable.get(tableRouteId), msg.sender);
-
-    // Delete the record
-    StoreCore.deleteRecord(tableRouteId, key);
-  }
-
-  /**
-   * Check for access based on `accessRoute`
-   * and return `tableRouteId` for `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes.
-   */
-  function _verifiedTableRouteId(
-    string calldata accessRoute,
-    string calldata subRoute
-  ) internal view returns (uint256 tableRouteId) {
-    // Require access to accessRoute
-    if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
-
-    // Require a valid subRoute
-    if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-
-    // Construct the table route id by concatenating accessRoute and tableRoute
-    tableRouteId = uint256(keccak256(abi.encodePacked(accessRoute, subRoute)));
+  function deleteRecord(uint256 tableId, bytes32[] calldata key) public virtual override {
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    deleteRecord(resourceSelector.getNamespace(), resourceSelector.getFile(), key);
   }
 
   /************************************************************************
@@ -379,120 +311,54 @@ contract World is Store {
    ************************************************************************/
 
   /**
-   * Call a system based on a parent route access right
-   * We check for access based on `accessRoute`, and execute `accessRoute/subRoute`
-   * because access to a route also grants access to all sub routes
+   * Call the system at the given namespace and file.
+   * If the system is not public, the caller must have access to the namespace or file.
    */
   function call(
-    string calldata accessRoute,
-    string memory subRoute,
-    bytes calldata funcSelectorAndArgs
+    bytes16 namespace,
+    bytes16 file,
+    bytes memory funcSelectorAndArgs
   ) public virtual returns (bytes memory) {
-    // Check if the system is a public virtual system and get its address
-    string memory systemRoute = string(abi.encodePacked(accessRoute, subRoute));
-    uint256 systemRouteId = _toRouteId(systemRoute);
-    (address systemAddress, bool publicAccess) = SystemTable.get(systemRouteId);
+    // Load the system data
+    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
+    (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
 
-    // If the system is not public virtual, check for individual access
-    if (!publicAccess) {
-      // Require access to accessRoute
-      if (!_hasAccess(accessRoute, msg.sender)) revert RouteAccessDenied(accessRoute, msg.sender);
+    // Check if the system exists
+    if (systemAddress == address(0)) revert ResourceNotFound(resourceSelector.toString());
 
-      // Require a valid subRoute
-      if (!_isRoute(subRoute)) revert RouteInvalid(subRoute);
-    }
+    // Allow access if the system is public or the caller has access to the namespace or file
+    if (!publicAccess) AccessControl.requireAccess(namespace, file, msg.sender);
 
     // Call the system and forward any return data
     return
-      _call({
+      Call.withSender({
         msgSender: msg.sender,
-        systemAddress: systemAddress,
+        target: systemAddress,
         funcSelectorAndArgs: funcSelectorAndArgs,
-        delegate: _isSingleLevelRoute(systemRoute)
+        delegate: namespace == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
       });
   }
 
-  /**
-   * Overload for the function above to check access based on the full system route instead of a parent route (better devex for public virtual systems)
-   */
-  function call(string calldata systemRoute, bytes calldata funcSelectorAndArgs) public virtual returns (bytes memory) {
-    return call(systemRoute, "", funcSelectorAndArgs);
-  }
+  /************************************************************************
+   *
+   *    DYNAMIC FUNCTION SELECTORS
+   *
+   ************************************************************************/
 
   /**
-   * Internal function to call system with delegatecall/call, without access control
+   * Fallback function to call registered function selectors
    */
-  function _call(
-    address msgSender,
-    address systemAddress,
-    bytes calldata funcSelectorAndArgs,
-    bool delegate
-  ) internal returns (bytes memory) {
-    // Append msg.sender to the calldata
-    bytes memory callData = abi.encodePacked(funcSelectorAndArgs, msgSender);
+  fallback() external {
+    (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) = FunctionSelectors.get(msg.sig);
 
-    // Call the system using `delegatecall` for root systems and `call` for others
-    (bool success, bytes memory data) = delegate
-      ? systemAddress.delegatecall(callData) // root system
-      : systemAddress.call(callData); // non-root system
+    if (namespace == 0 && file == 0) revert FunctionSelectorNotFound(msg.sig);
 
-    // Forward returned data if the call succeeded
-    if (success) return data;
+    // Replace function selector in the calldata with the system function selector
+    bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
-    // Forward error if the call failed
+    bytes memory returnData = call(namespace, file, callData);
     assembly {
-      // data+32 is a pointer to the error message, mload(data) is the length of the error message
-      revert(add(data, 0x20), mload(data))
+      return(add(returnData, 0x20), mload(returnData))
     }
   }
-
-  function _hasAccess(string calldata route, address caller) internal view returns (bool) {
-    return _hasAccess(_toRouteId(route), caller);
-  }
-
-  function _hasAccess(uint256 routeId, address caller) internal view returns (bool) {
-    return RouteAccess.get(routeId, caller);
-  }
-}
-
-// A route is a string starting with `/` or an empty string
-function _isRoute(string memory route) pure returns (bool result) {
-  assembly {
-    // If the route is empty, return true
-    if eq(mload(route), 0) {
-      result := 1
-    }
-
-    // If the first byte is `/` (ascii 0x2f), return true
-    if eq(byte(0, mload(add(route, 0x20))), 0x2f) {
-      result := 1
-    }
-
-    // If the route is only `/`, return false
-    if eq(mload(route), 1) {
-      result := 0
-    }
-  }
-}
-
-// A top level route contains exactly one `/` at the start
-function _isSingleLevelRoute(string memory route) pure returns (bool result) {
-  // Verify the route is empty or starts with `/`
-  if (!_isRoute(route)) return false;
-
-  // Loop through the string and return false if another `/` is found
-  bytes memory routeBytes = bytes(route);
-  for (uint256 i = 1; i < routeBytes.length; ) {
-    if (routeBytes[i] == 0x2f) return false;
-    unchecked {
-      i++;
-    }
-  }
-
-  // Return true if no `/` was found
-  return true;
-}
-
-function _toRouteId(string memory route) pure returns (uint256) {
-  return uint256(keccak256(bytes(route)));
 }

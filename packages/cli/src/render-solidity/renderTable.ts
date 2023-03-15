@@ -16,11 +16,12 @@ export function renderTable(options: RenderTableOptions) {
     imports,
     libraryName,
     structName,
-    staticRouteData,
+    staticResourceData,
     storeImportPath,
     fields,
     withRecordMethods,
     storeArgument,
+    primaryKeys,
   } = options;
 
   const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
@@ -49,7 +50,7 @@ ${
     : ""
 }
 
-${staticRouteData ? renderTableId(staticRouteData).tableIdDefinition : ""}
+${staticResourceData ? renderTableId(staticResourceData).tableIdDefinition : ""}
 
 ${
   !structName
@@ -70,6 +71,13 @@ library ${libraryName} {
     return SchemaLib.encode(_schema);
   }
 
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](${primaryKeys.length});
+    ${renderList(primaryKeys, ({ enumName }, index) => `_schema[${index}] = SchemaType.${enumName};`)}
+
+    return SchemaLib.encode(_schema);
+  }
+
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](${fields.length});
@@ -82,7 +90,7 @@ library ${libraryName} {
     (_typedStore, _store, _commentSuffix) => `
     /** Register the table's schema${_commentSuffix} */
     function registerSchema(${renderArguments([_typedStore, _typedTableId])}) internal {
-      ${_store}.registerSchema(_tableId, getSchema());
+      ${_store}.registerSchema(_tableId, getSchema(), getKeySchema());
     }
   `
   )}

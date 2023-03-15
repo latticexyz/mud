@@ -16,7 +16,7 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/Callbacks"));
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Callbacks"))));
 uint256 constant CallbacksTableId = _tableId;
 
 library Callbacks {
@@ -24,6 +24,13 @@ library Callbacks {
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES24_ARRAY;
+
+    return SchemaLib.encode(_schema);
+  }
+
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.BYTES32;
 
     return SchemaLib.encode(_schema);
   }
@@ -37,7 +44,7 @@ library Callbacks {
 
   /** Register the table's schema */
   function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
+    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */

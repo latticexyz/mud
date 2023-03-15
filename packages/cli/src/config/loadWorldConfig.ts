@@ -1,16 +1,15 @@
 import { z, ZodError } from "zod";
 import { fromZodErrorCustom, UnrecognizedSystemErrorFactory } from "../utils/errors.js";
-import { BaseRoute, EthereumAddress, ObjectName } from "./commonSchemas.js";
+import { EthereumAddress, ObjectName, Selector } from "./commonSchemas.js";
 import { loadConfig } from "./loadConfig.js";
 
 const SystemName = ObjectName;
-const SystemRoute = BaseRoute.optional();
 const SystemAccessList = z.array(SystemName.or(EthereumAddress)).default([]);
 
-// The system config is a combination of a route config and access config
+// The system config is a combination of a fileSelector config and access config
 const SystemConfig = z.intersection(
   z.object({
-    route: SystemRoute,
+    fileSelector: Selector,
   }),
   z.discriminatedUnion("openAccess", [
     z.object({
@@ -25,7 +24,7 @@ const SystemConfig = z.intersection(
 
 // The parsed world config is the result of parsing the user config
 export const WorldConfig = z.object({
-  baseRoute: BaseRoute.default(""),
+  namespace: Selector.default(""),
   worldContractName: z.string().optional(),
   overrideSystems: z.record(SystemName, SystemConfig).default({}),
   excludeSystems: z.array(SystemName).default([]),
@@ -39,13 +38,13 @@ export const WorldConfig = z.object({
  * @param config optional SystemConfig object, if none is provided the default config is used
  * @param existingContracts optional list of existing contract names, used to validate system names in the access list. If not provided, no validation is performed.
  * @returns ResolvedSystemConfig object
- * Default value for route is `/${systemName}`
+ * Default value for fileSelector is `systemName`
  * Default value for openAccess is true
  * Default value for accessListAddresses is []
  * Default value for accessListSystems is []
  */
 export function resolveSystemConfig(systemName: string, config?: SystemUserConfig, existingContracts?: string[]) {
-  const route = config?.route ?? `/${systemName}`;
+  const fileSelector = config?.fileSelector ?? systemName;
   const openAccess = config?.openAccess ?? true;
   const accessListAddresses: string[] = [];
   const accessListSystems: string[] = [];
@@ -64,7 +63,7 @@ export function resolveSystemConfig(systemName: string, config?: SystemUserConfi
     }
   }
 
-  return { route, openAccess, accessListAddresses, accessListSystems };
+  return { fileSelector, openAccess, accessListAddresses, accessListSystems };
 }
 
 /**
@@ -131,8 +130,8 @@ export async function parseWorldConfig(config: unknown) {
 // zod doesn't preserve doc comments
 export type SystemUserConfig =
   | {
-      /** The system will be deployed at `baseRoute + route` */
-      route?: string;
+      /** The full resource selector consists of namespace and fileSelector */
+      fileSelector?: string;
     } & (
       | {
           /** If openAccess is true, any address can call the system */
@@ -148,13 +147,13 @@ export type SystemUserConfig =
 
 // zod doesn't preserve doc comments
 export interface WorldUserConfig {
-  /** The base route to register tables and systems at. Defaults to the root route (empty string) */
-  baseRoute?: string;
+  /** The namespace to register tables and systems at. Defaults to the root namespace (empty string) */
+  namespace?: string;
   /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
   worldContractName?: string;
   /**
    * Contracts named *System will be deployed by default
-   * as public systems at `baseRoute/ContractName`, unless overridden
+   * as public systems at `namespace/ContractName`, unless overridden
    *
    * The key is the system name (capitalized).
    * The value is a SystemConfig object.

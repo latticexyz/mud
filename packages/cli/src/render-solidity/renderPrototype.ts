@@ -25,10 +25,10 @@ export function renderPrototype(options: RenderPrototypeOptions) {
 
   const tablesData = tables.map((table) => {
     const { getName, getTypedName } = getFieldNameFactory(table.libraryName);
-    const { _keyArgs } = renderCommonData({ staticRouteData: table.staticRouteData, primaryKeys });
+    const { _keyArgs } = renderCommonData({ staticResourceData: table.staticResourceData, primaryKeys });
     const common = {
       libraryName: table.libraryName,
-      staticRouteData: table.staticRouteData,
+      staticResourceData: table.staticResourceData,
       _keyArgs,
     };
 
@@ -96,8 +96,8 @@ library ${libraryName} {
     _tableIds = new uint256[](${tablesData.length});
     ${renderList(
       tablesData,
-      ({ staticRouteData }, index) => `
-      _tableIds[${index}] = ${renderTableId(staticRouteData).hardcodedTableId};
+      ({ staticResourceData }, index) => `
+      _tableIds[${index}] = ${renderTableId(staticResourceData).hardcodedTableId};
     `
     )}
   }

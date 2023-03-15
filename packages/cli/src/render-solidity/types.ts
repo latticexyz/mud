@@ -6,7 +6,7 @@ export interface RenderTableOptions {
   /** Name of the struct to render. If undefined, struct and its methods aren't rendered. */
   structName?: string;
   /** Data used to statically registed the table. If undefined, all methods receive `_tableId` as an argument. */
-  staticRouteData?: StaticRouteData;
+  staticResourceData?: StaticResourceData;
   /** Path for store package imports */
   storeImportPath: string;
   primaryKeys: RenderTablePrimaryKey[];
@@ -25,11 +25,11 @@ export interface ImportDatum {
   usedInPath: string;
 }
 
-export interface StaticRouteData {
+export interface StaticResourceData {
   /** Name of the table id constant to render. */
   tableIdName: string;
-  baseRoute: string;
-  subRoute: string;
+  namespace: string;
+  fileSelector: string;
 }
 
 export interface RenderTableType {
@@ -88,7 +88,7 @@ export interface RenderPrototypeOptions {
 
 export type RenderTableForPrototype = {
   libraryName: string;
-  staticRouteData: StaticRouteData;
+  staticResourceData: StaticResourceData;
 } & (
   | {
       structName: undefined;

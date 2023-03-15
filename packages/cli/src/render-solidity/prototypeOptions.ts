@@ -31,7 +31,7 @@ export function getPrototypeOptions(config: StoreConfig, allTablesOptions: Table
         libraryName: tableLibraryName,
         structName,
         imports: tableImports,
-        staticRouteData,
+        staticResourceData,
       } = tableOptions.renderOptions;
 
       imports.push({
@@ -60,12 +60,12 @@ export function getPrototypeOptions(config: StoreConfig, allTablesOptions: Table
         };
       });
 
-      if (staticRouteData === undefined) throw new Error("Prototypes with table id arguments are not supported");
+      if (staticResourceData === undefined) throw new Error("Prototypes with table id arguments are not supported");
 
       return {
         libraryName: tableLibraryName,
         structName,
-        staticRouteData,
+        staticResourceData,
         fields,
         default: typeof structName !== "undefined" && typeof tableDefault === "string" ? tableDefault : undefined,
       };

@@ -16,7 +16,7 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/Hooks"));
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Hooks"))));
 uint256 constant HooksTableId = _tableId;
 
 library Hooks {
@@ -24,6 +24,13 @@ library Hooks {
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.ADDRESS_ARRAY;
+
+    return SchemaLib.encode(_schema);
+  }
+
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.BYTES32;
 
     return SchemaLib.encode(_schema);
   }
@@ -37,7 +44,7 @@ library Hooks {
 
   /** Register the table's schema */
   function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
+    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */

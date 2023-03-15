@@ -4,8 +4,11 @@ import { MUDConfig } from "../config/index.js";
 import { MUDError } from "./errors.js";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { BigNumber, ContractInterface, ethers } from "ethers";
-import { World } from "@latticexyz/world/types/ethers-contracts/World.js";
-import { abi as WorldABI, bytecode as WorldBytecode } from "@latticexyz/world/abi/World.json";
+import { IWorld } from "@latticexyz/world/types/ethers-contracts/IWorld.js";
+import { bytecode as WorldBytecode } from "@latticexyz/world/abi/World.json";
+import { abi as WorldABI } from "@latticexyz/world/abi/IWorld.json";
+import CoreModuleData from "@latticexyz/world/abi/CoreModule.json";
+import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
@@ -16,6 +19,7 @@ export interface DeployConfig {
   rpc: string;
   privateKey: string;
   priorityFeeMultiplier: number;
+  debug?: boolean;
 }
 
 export interface DeploymentInfo {
@@ -26,8 +30,8 @@ export interface DeploymentInfo {
 
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): Promise<DeploymentInfo> {
   const startTime = Date.now();
-  const { worldContractName, baseRoute, postDeployScript } = mudConfig;
-  const { profile, rpc, privateKey, priorityFeeMultiplier } = deployConfig;
+  const { worldContractName, namespace, postDeployScript } = mudConfig;
+  const { profile, rpc, privateKey, priorityFeeMultiplier, debug } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
@@ -60,95 +64,111 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       World: worldContractName
         ? deployContractByName(worldContractName)
         : deployContract(WorldABI, WorldBytecode, "World"),
+      CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, "CoreModule"),
+      RegistrationModule: deployContract(
+        RegistrationModuleData.abi,
+        RegistrationModuleData.bytecode,
+        "RegistrationModule"
+      ),
     }
   );
 
   // Create World contract instance from deployed address
-  const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as World;
+  const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as IWorld;
 
-  // Register baseRoute
-  if (baseRoute) await fastTxExecute(WorldContract, "registerRoute", ["", baseRoute]);
+  // Install core Modules
+  console.log(chalk.blue("Installing modules"));
+  await fastTxExecute(WorldContract, "installRootModule", [await contractPromises.CoreModule, "0x"]);
+  await fastTxExecute(WorldContract, "installRootModule", [await contractPromises.RegistrationModule, "0x"]);
+  console.log(chalk.green("Installed modules"));
+
+  // Register namespace
+  if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)]);
 
   // Register tables
   promises.push(
-    ...Object.entries(mudConfig.tables).map(async ([tableName, tableConfig]) => {
-      console.log(chalk.blue("Registering table", tableName, "at", baseRoute + tableConfig.route));
-
-      // Register nested route
-      const routeFragments = tableConfig.route.substring(1).split("/"); // Split route into fragments (skip leading slash)
-      const lastRouteFragment = toRoute(routeFragments.pop()); // Register last fragment separately as part of call to registerTable
-      await registerNestedRoute(WorldContract, baseRoute, routeFragments);
+    ...Object.entries(mudConfig.tables).map(async ([tableName, { fileSelector, schema, primaryKeys }]) => {
+      console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${fileSelector}`));
 
       // Register table
-      const tableBaseRoute = toRoute(baseRoute, ...routeFragments);
+      const schemaTypes = Object.values(schema).map((schemaOrUserType) => {
+        const { schemaType } = resolveSchemaOrUserType(schemaOrUserType, mudConfig.userTypes);
+        return schemaType;
+      });
 
-      const schemaTypes = Object.values(tableConfig.schema).map((schemaOrUserType) => {
+      const keyTypes = Object.values(primaryKeys).map((schemaOrUserType) => {
         const { schemaType } = resolveSchemaOrUserType(schemaOrUserType, mudConfig.userTypes);
         return schemaType;
       });
 
       await fastTxExecute(WorldContract, "registerTable", [
-        tableBaseRoute,
-        lastRouteFragment,
+        toBytes16(namespace),
+        toBytes16(fileSelector),
         encodeSchema(schemaTypes),
+        encodeSchema(keyTypes),
       ]);
 
       // Register table metadata
-      await fastTxExecute(WorldContract, "setMetadata(string,string,string[])", [
-        baseRoute + tableConfig.route,
+      await fastTxExecute(WorldContract, "setMetadata(bytes16,bytes16,string,string[])", [
+        toBytes16(namespace),
+        toBytes16(fileSelector),
         tableName,
-        Object.keys(tableConfig.schema),
+        Object.keys(schema),
       ]);
 
-      console.log(chalk.green("Registered table", tableName, "at", baseRoute + tableConfig.route));
+      console.log(chalk.green(`Registered table ${tableName} at ${fileSelector}`));
     })
   );
 
   // Register systems (using forEach instead of for..of to avoid blocking on async calls)
   promises.push(
-    ...Object.entries(mudConfig.systems).map(async ([systemName, systemConfig]) => {
-      console.log(chalk.blue("Registering system", systemName, "at", baseRoute + systemConfig.route));
-
-      // Register system route
-      const routeFragments = systemConfig.route.substring(1).split("/"); // Split route into fragments (skip leading slash)
-      const lastRouteFragment = toRoute(routeFragments.pop()); // Register last fragment as part of call to registerSystem
-      const systemBaseRoute = toRoute(baseRoute, ...routeFragments);
-      await registerNestedRoute(WorldContract, baseRoute, routeFragments);
+    ...Object.entries(mudConfig.systems).map(async ([systemName, { fileSelector, openAccess }]) => {
+      console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${fileSelector}`));
 
       // Register system at route
       await fastTxExecute(WorldContract, "registerSystem", [
-        systemBaseRoute,
-        lastRouteFragment,
+        toBytes16(namespace),
+        toBytes16(fileSelector),
         await contractPromises[systemName],
-        systemConfig.openAccess,
+        openAccess,
       ]);
 
-      console.log(chalk.green("Registered system", systemName, "at", baseRoute + systemConfig.route));
+      console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${fileSelector}`));
     })
   );
 
-  // Wait for routes to be registered before granting access to them
+  // Wait for resources to be registered before granting access to them
   await Promise.all(promises);
 
   // Grant access to systems
-  for (const [systemName, systemConfig] of Object.entries(mudConfig.systems)) {
-    const systemRoute = baseRoute + systemConfig.route;
+  for (const [systemName, { fileSelector, accessListAddresses, accessListSystems }] of Object.entries(
+    mudConfig.systems
+  )) {
+    const resourceSelector = `${namespace}/${fileSelector}`;
 
     // Grant access to addresses
     promises.push(
-      ...systemConfig.accessListAddresses.map(async (address) => {
-        console.log(chalk.blue(`Grant ${address} access to ${systemName} (${systemRoute})`));
-        await fastTxExecute(WorldContract, "grantAccess", [systemRoute, address]);
-        console.log(chalk.green(`Granted ${address} access to ${systemName} (${systemRoute})`));
+      ...accessListAddresses.map(async (address) => {
+        console.log(chalk.blue(`Grant ${address} access to ${systemName} (${resourceSelector})`));
+        await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
+          toBytes16(namespace),
+          toBytes16(fileSelector),
+          address,
+        ]);
+        console.log(chalk.green(`Granted ${address} access to ${systemName} (${namespace}/${fileSelector})`));
       })
     );
 
     // Grant access to other systems
     promises.push(
-      ...systemConfig.accessListSystems.map(async (granteeSystem) => {
-        console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${systemRoute})`));
-        await fastTxExecute(WorldContract, "grantAccess", [systemRoute, await contractPromises[granteeSystem]]);
-        console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${systemRoute})`));
+      ...accessListSystems.map(async (granteeSystem) => {
+        console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${resourceSelector})`));
+        await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
+          toBytes16(namespace),
+          toBytes16(fileSelector),
+          await contractPromises[granteeSystem],
+        ]);
+        console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${resourceSelector})`));
       })
     );
   }
@@ -226,6 +246,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       console.log(chalk.green("Deployed", contractName, "to", address));
       return address;
     } catch (error: any) {
+      if (debug) console.error(error);
       if (retryCount === 0 && error?.message.includes("transaction already imported")) {
         // If the deployment failed because the transaction was already imported,
         // retry with a higher priority fee
@@ -235,6 +256,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
         throw new MUDError(
           `Error deploying ${contractName}: invalid bytecode. Note that linking of public libraries is not supported yet, make sure none of your libraries use "external" functions.`
         );
+      } else if (error?.message.includes("CreateContractLimit")) {
+        throw new MUDError(`Error deploying ${contractName}: CreateContractLimit exceeded.`);
       } else throw error;
     }
   }
@@ -282,25 +305,13 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       promises.push(txPromise);
       return txPromise;
     } catch (error: any) {
+      if (debug) console.error(error);
       if (retryCount === 0 && error?.message.includes("transaction already imported")) {
         // If the deployment failed because the transaction was already imported,
         // retry with a higher priority fee
         setInternalFeePerGas(priorityFeeMultiplier * 1.1);
         return fastTxExecute(contract, func, args, retryCount++);
       } else throw new MUDError(`Gas estimation error for ${functionName}: ${error?.reason}`);
-    }
-  }
-
-  async function registerNestedRoute(WorldContract: World, baseRoute: string, registerRouteFragments: string[]) {
-    // Register nested routes
-    for (let i = 0; i < registerRouteFragments.length; i++) {
-      const subRoute = toRoute(registerRouteFragments[i]);
-      try {
-        await fastTxExecute(WorldContract, "registerRoute", [baseRoute, subRoute]);
-      } catch (e) {
-        // TODO: check if the gas estimation error is due to the route already being registered and ignore it
-      }
-      baseRoute += subRoute;
     }
   }
 
@@ -335,12 +346,24 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     // Compute maxFeePerGas and maxPriorityFeePerGas like ethers, but allow for a multiplier to allow replacing pending transactions
     const feeData = await provider.getFeeData();
     if (!feeData.lastBaseFeePerGas) throw new MUDError("Can not fetch lastBaseFeePerGas from RPC");
-    maxPriorityFeePerGas = Math.floor(1_500_000_000 * multiplier);
+
+    // Set the priority fee to 0 for development chains with no base fee, to allow transactions from unfunded wallets
+    maxPriorityFeePerGas = feeData.lastBaseFeePerGas.eq(0) ? 0 : Math.floor(1_500_000_000 * multiplier);
     maxFeePerGas = feeData.lastBaseFeePerGas.mul(2).add(maxPriorityFeePerGas);
   }
 }
 
-function toRoute(...routeFragments: (string | undefined)[]): string {
-  const route = routeFragments.filter((e) => Boolean(e)).join("/");
-  return route ? `/${route}` : "";
+function toBytes16(input: string) {
+  if (input.length > 16) throw new Error("String does not fit into 16 bytes");
+
+  const result = new Uint8Array(16);
+  // Set ascii bytes
+  for (let i = 0; i < input.length; i++) {
+    result[i] = input.charCodeAt(i);
+  }
+  // Set the remaining bytes to 0
+  for (let i = input.length; i < 16; i++) {
+    result[i] = 0;
+  }
+  return result;
 }

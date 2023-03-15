@@ -9,6 +9,7 @@ import {
   validateRoute,
   validateSingleLevelRoute,
   validateUncapitalizedName,
+  validateSelector,
 } from "./validation.js";
 
 /** Capitalized names of objects, like tables and systems */
@@ -34,3 +35,6 @@ export const EthereumAddress = z.string().superRefine(validateEthereumAddress);
 export const StaticSchemaType = z
   .nativeEnum(SchemaType)
   .refine((arg) => getStaticByteLength(arg) > 0, "SchemaType must be static");
+
+/** A selector for namespace/file/resource */
+export const Selector = z.string().superRefine(validateSelector);

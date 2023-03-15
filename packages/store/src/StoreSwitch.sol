@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
-import { IStore } from "./IStore.sol";
+import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
@@ -17,7 +17,7 @@ library StoreSwitch {
    * (The isStore method doesn't return a value to save gas, but it if exists, the call will succeed.)
    */
   function isDelegateCall() internal view returns (bool success) {
-    // Detect calls from within a constructor and revert to avoid unexpected behavior
+    // Detect calls from within a constructor
     uint256 codeSize;
     assembly {
       codeSize := extcodesize(address())
@@ -34,11 +34,11 @@ library StoreSwitch {
     }
   }
 
-  function registerSchema(uint256 table, Schema schema) internal {
+  function registerStoreHook(uint256 table, IStoreHook hook) internal {
     if (isDelegateCall()) {
-      StoreCore.registerSchema(table, schema);
+      StoreCore.registerStoreHook(table, hook);
     } else {
-      IStore(msg.sender).registerSchema(table, schema);
+      IStore(msg.sender).registerStoreHook(table, hook);
     }
   }
 
@@ -55,6 +55,14 @@ library StoreSwitch {
       StoreCore.setMetadata(table, tableName, fieldNames);
     } else {
       IStore(msg.sender).setMetadata(table, tableName, fieldNames);
+    }
+  }
+
+  function registerSchema(uint256 table, Schema schema, Schema keySchema) internal {
+    if (isDelegateCall()) {
+      StoreCore.registerSchema(table, schema, keySchema);
+    } else {
+      IStore(msg.sender).registerSchema(table, schema, keySchema);
     }
   }
 

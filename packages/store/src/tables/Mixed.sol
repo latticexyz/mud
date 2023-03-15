@@ -16,7 +16,7 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/Mixed"));
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Mixed"))));
 uint256 constant MixedTableId = _tableId;
 
 struct MixedData {
@@ -38,6 +38,13 @@ library Mixed {
     return SchemaLib.encode(_schema);
   }
 
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.BYTES32;
+
+    return SchemaLib.encode(_schema);
+  }
+
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](4);
@@ -50,7 +57,7 @@ library Mixed {
 
   /** Register the table's schema */
   function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
+    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */

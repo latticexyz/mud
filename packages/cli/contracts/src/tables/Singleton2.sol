@@ -16,7 +16,7 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/Singleton2"));
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Singleton2"))));
 uint256 constant Singleton2TableId = _tableId;
 
 library Singleton2 {
@@ -24,6 +24,12 @@ library Singleton2 {
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.BYTES32_ARRAY;
+
+    return SchemaLib.encode(_schema);
+  }
+
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](0);
 
     return SchemaLib.encode(_schema);
   }
@@ -37,7 +43,7 @@ library Singleton2 {
 
   /** Register the table's schema */
   function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
+    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */

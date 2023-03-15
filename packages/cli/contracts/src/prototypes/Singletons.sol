@@ -22,8 +22,8 @@ library Singletons {
   function getTableIds() internal pure returns (uint256[] memory _tableIds) {
     _tableIds = new uint256[](2);
 
-    _tableIds[0] = uint256(keccak256("/Singleton1"));
+    _tableIds[0] = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Singleton1"))));
 
-    _tableIds[1] = uint256(keccak256("/Singleton2"));
+    _tableIds[1] = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Singleton2"))));
   }
 }

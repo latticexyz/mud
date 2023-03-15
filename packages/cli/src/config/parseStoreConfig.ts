@@ -1,6 +1,6 @@
 import { SchemaType } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { BaseRoute, ObjectName, StaticSchemaType, UserEnum, ValueName } from "./commonSchemas.js";
+import { ObjectName, Selector, StaticSchemaType, UserEnum, ValueName } from "./commonSchemas.js";
 import { getDuplicates } from "./validation.js";
 
 const TableName = ObjectName;
@@ -45,8 +45,12 @@ export const SchemaConfig = FullSchemaConfig.or(ShorthandSchemaConfig);
 export interface TableConfig {
   /** Output directory path for the file. Default is "tables" */
   directory?: string;
-  /** Route is used to register the table and construct its id. The table id will be keccak256(concat(baseRoute,route)). Default is "/<tableName>" */
-  route?: string;
+  /**
+   * The fileSelector is used with the namespace to register the table and construct its id.
+   * The table id will be uint256(bytes32(abi.encodePacked(bytes16(namespace), bytes16(fileSelector)))).
+   * Default is "<tableName>"
+   * */
+  fileSelector?: string;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
   tableIdArgument?: boolean;
   /** Include methods that accept a manual `IStore` argument. Default is false. */
@@ -62,7 +66,7 @@ export interface TableConfig {
 const FullTableConfig = z
   .object({
     directory: z.string().default("tables"),
-    route: BaseRoute.optional(),
+    fileSelector: Selector.optional(),
     tableIdArgument: z.boolean().default(false),
     storeArgument: z.boolean().default(false),
     primaryKeys: PrimaryKeys,
@@ -101,11 +105,11 @@ export const TablesConfig = z.record(TableName, TableConfig).transform((tables) 
   // default route depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
-    table.route ??= `/${tableName}`;
+    table.fileSelector ??= tableName;
 
     tables[tableName] = table;
   }
-  return tables as Record<string, RequireKeys<(typeof tables)[string], "route">>;
+  return tables as Record<string, RequireKeys<(typeof tables)[string], "fileSelector">>;
 });
 
 /************************************************************************
@@ -169,8 +173,8 @@ export const PrototypeConfig = z.object({
 
 // zod doesn't preserve doc comments
 export interface StoreUserConfig {
-  /** The base route prefix for table ids. Default is "" (empty string) */
-  baseRoute?: string;
+  /** The namespace for table ids. Default is "" (empty string) */
+  namespace?: string;
   /** Path for store package imports. Default is "@latticexyz/store/src/" */
   storeImportPath?: string;
   /**
@@ -196,7 +200,7 @@ export interface StoreUserConfig {
 export type StoreConfig = z.output<typeof StoreConfig>;
 
 const StoreConfigUnrefined = z.object({
-  baseRoute: BaseRoute.default(""),
+  namespace: Selector.default(""),
   storeImportPath: z.string().default("@latticexyz/store/src/"),
   tables: TablesConfig,
   userTypes: UserTypesConfig,

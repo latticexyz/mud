@@ -19,7 +19,7 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 // Import user types
 import { Enum1 } from "./../Types.sol";
 
-uint256 constant _tableId = uint256(keccak256("/Table3"));
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Table3"))));
 uint256 constant Table3TableId = _tableId;
 
 library Table3 {
@@ -27,6 +27,13 @@ library Table3 {
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
     _schema[0] = SchemaType.UINT8;
+
+    return SchemaLib.encode(_schema);
+  }
+
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.BYTES32;
 
     return SchemaLib.encode(_schema);
   }
@@ -40,7 +47,7 @@ library Table3 {
 
   /** Register the table's schema */
   function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
+    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */

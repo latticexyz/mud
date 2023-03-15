@@ -1,5 +1,5 @@
 import path from "path";
-import { ImportDatum, RenderTableOptions, RenderTableType, StaticRouteData } from "./types.js";
+import { ImportDatum, RenderTableOptions, RenderTableType, StaticResourceData } from "./types.js";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -22,12 +22,12 @@ export function renderArguments(args: (string | undefined)[]) {
 }
 
 export function renderCommonData({
-  staticRouteData,
+  staticResourceData,
   primaryKeys,
-}: Pick<RenderTableOptions, "staticRouteData" | "primaryKeys">) {
+}: Pick<RenderTableOptions, "staticResourceData" | "primaryKeys">) {
   // static route means static tableId as well, and no tableId arguments
-  const _tableId = staticRouteData ? "" : "_tableId";
-  const _typedTableId = staticRouteData ? "" : "uint256 _tableId";
+  const _tableId = staticResourceData ? "" : "_tableId";
+  const _typedTableId = staticResourceData ? "" : "uint256 _tableId";
 
   const _keyArgs = renderArguments(primaryKeys.map(({ name }) => name));
   const _typedKeyArgs = renderArguments(primaryKeys.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
@@ -51,9 +51,10 @@ export function renderCommonData({
 
 /** For 2 paths which are relative to a common root, create a relative import path from one to another */
 export function solidityRelativeImportPath(fromPath: string, usedInPath: string) {
-  // "./" must be added because path strips it,
-  // but solidity expects it unless there's "../" ("./../" is fine)
-  return "./" + path.relative(usedInPath, fromPath);
+  // 1st "./" must be added because path strips it,
+  // but solidity expects it unless there's "../" ("./../" is fine).
+  // 2nd and 3rd "./" forcefully avoid absolute paths (everything is relative to `src`).
+  return "./" + path.relative("./" + usedInPath, "./" + fromPath);
 }
 
 /**
@@ -98,11 +99,12 @@ export function renderWithStore(
   return result;
 }
 
-export function renderTableId(staticRouteData: StaticRouteData) {
-  const hardcodedTableId = `uint256(keccak256("${staticRouteData.baseRoute + staticRouteData.subRoute}"))`;
+export function renderTableId(staticResourceData: StaticResourceData) {
+  const hardcodedTableId = `uint256(bytes32(abi.encodePacked(bytes16("${staticResourceData.namespace}"), bytes16("${staticResourceData.fileSelector}"))))`;
+
   const tableIdDefinition = `
     uint256 constant _tableId = ${hardcodedTableId};
-    uint256 constant ${staticRouteData.tableIdName} = _tableId;
+    uint256 constant ${staticResourceData.tableIdName} = _tableId;
   `;
   return {
     hardcodedTableId,

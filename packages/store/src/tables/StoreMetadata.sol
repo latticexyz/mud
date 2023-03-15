@@ -16,7 +16,7 @@ import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(keccak256("/StoreMetadata"));
+uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("StoreMetadata"))));
 uint256 constant StoreMetadataTableId = _tableId;
 
 struct StoreMetadataData {
@@ -34,6 +34,13 @@ library StoreMetadata {
     return SchemaLib.encode(_schema);
   }
 
+  function getKeySchema() internal pure returns (Schema) {
+    SchemaType[] memory _schema = new SchemaType[](1);
+    _schema[0] = SchemaType.UINT256;
+
+    return SchemaLib.encode(_schema);
+  }
+
   /** Get the table's metadata */
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](2);
@@ -44,12 +51,12 @@ library StoreMetadata {
 
   /** Register the table's schema */
   function registerSchema() internal {
-    StoreSwitch.registerSchema(_tableId, getSchema());
+    StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Register the table's schema (using the specified store) */
   function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema());
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */

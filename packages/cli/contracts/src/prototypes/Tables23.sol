@@ -23,8 +23,8 @@ library Tables23 {
   function getTableIds() internal pure returns (uint256[] memory _tableIds) {
     _tableIds = new uint256[](2);
 
-    _tableIds[0] = uint256(keccak256("/Table2"));
+    _tableIds[0] = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Table2"))));
 
-    _tableIds[1] = uint256(keccak256("/Table3"));
+    _tableIds[1] = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Table3"))));
   }
 }
