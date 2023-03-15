@@ -45,8 +45,13 @@ export function registerSchema(world: Contract, table: TableId, rawSchema?: stri
   // TODO: populate from ECS cache before fetching from RPC
 
   console.log("fetching schema for table", { table: table.toString(), world: world.address });
-  // TODO: error if schema is not found?
-  const schema = world.getSchema(table).then(decodeSchema);
+  const schema = world.getSchema(table).then((rawSchema: string) => {
+    const decodedSchema = decodeSchema(rawSchema);
+    if (decodedSchema.isEmpty) {
+      console.warn("Schema not found for table", { table: table.toString(), world: world.address });
+    }
+    return decodeSchema;
+  });
   schemaCache[cacheKey] = schema;
   return schema;
 }

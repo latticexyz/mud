@@ -3,7 +3,8 @@ import { hexToArray } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 
 export function decodeSchema(rawSchema: string): TableSchema {
-  const schemaBytes = new DataView(hexToArray(rawSchema).buffer);
+  const isEmpty = !rawSchema || rawSchema === "0x";
+  const schemaBytes = new DataView(isEmpty ? new Uint8Array(32).buffer : hexToArray(rawSchema).buffer);
   const staticDataLength = schemaBytes.getUint16(0);
   const numStaticFields = schemaBytes.getUint8(2);
   const numDynamicFields = schemaBytes.getUint8(3);
@@ -30,5 +31,5 @@ export function decodeSchema(rawSchema: string): TableSchema {
   const fieldTypes = [...staticFields, ...dynamicFields].map((type) => SchemaTypeId[type]);
   const abi = `(${fieldTypes.join(",")})`;
 
-  return { staticDataLength, staticFields, dynamicFields, rawSchema, abi };
+  return { staticDataLength, staticFields, dynamicFields, rawSchema, abi, isEmpty };
 }

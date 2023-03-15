@@ -57,9 +57,15 @@ export function registerMetadata(
   const metadataPromise = Promise.all([
     registerSchema(world, metadataTableId),
     // TODO: figure out how to pass in rawSchema, it was giving me "incorrect length" errors before
+    //       we still have to do both calls though, and this is a getter, so this should be fine
     world["getRecord(uint256,bytes32[])"](metadataTableId.toHexString(), [table.toHexString()]),
   ]).then(([metadataSchema, metadataRecord]) => {
-    // TODO: error if schema or record not found?
+    if (metadataSchema.isEmpty) {
+      console.warn("Metadata schema not found", { table: metadataTableId.toString(), world: world.address });
+    }
+    if (!metadataRecord || metadataRecord === "0x") {
+      console.warn("Metadata not found for table", { table: table.toString(), world: world.address });
+    }
     const decoded = decodeData(metadataSchema, metadataRecord);
     const tableName = decoded[0];
     const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], decoded[1]);

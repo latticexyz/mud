@@ -12,6 +12,7 @@ export type TableSchema = {
   dynamicFields: SchemaType[];
   rawSchema: string;
   abi: string;
+  isEmpty: boolean;
 };
 
 export type TableMetadata = {
