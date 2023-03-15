@@ -11,7 +11,7 @@ import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 
-contract SystemTest is Test, StoreView {
+contract AccessControlTest is Test, StoreView {
   bytes16 namespace = "namespace";
   bytes16 file = "file";
   address caller = address(0x01);
