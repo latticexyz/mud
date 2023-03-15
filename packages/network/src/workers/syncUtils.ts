@@ -34,7 +34,7 @@ import { formatComponentID, formatEntityID } from "../utils";
 import { grpc } from "@improbable-eng/grpc-web";
 import { debug as parentDebug } from "./debug";
 import { fetchStoreEvents } from "../v2/fetchStoreEvents";
-import { orderBy } from "lodash";
+import orderBy from "lodash/orderBy";
 
 const debug = parentDebug.extend("syncUtils");
 

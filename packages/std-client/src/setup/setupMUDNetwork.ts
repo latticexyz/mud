@@ -16,7 +16,7 @@ import { Contract, ContractInterface } from "ethers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { defineStringComponent } from "../components";
-import { keys } from "lodash";
+import keys from "lodash/keys";
 import { ContractComponent, ContractComponents, NetworkComponents, SetupContractConfig } from "./types";
 import {
   applyNetworkUpdates,

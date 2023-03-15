@@ -10,7 +10,7 @@ import {
   isOptionalType,
   Schema,
 } from "@latticexyz/recs";
-import { startCase } from "lodash";
+import startCase from "lodash/startCase";
 import { ComponentBrowserInput, ComponentBrowserSelect, ValueForm } from "./StyledComponents";
 import { DraggableNumberLabel } from "./DraggableNumberLabel";
 import { hasContract, SetContractComponentFunction } from "./types";
