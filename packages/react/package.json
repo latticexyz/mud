@@ -21,7 +21,7 @@
     "release": "npm publish --access=public"
   },
   "peerDependencies": {
-    "@latticexyz/recs": "^1.36.1",
+    "@latticexyz/recs": "latest",
     "mobx": "^6.4.2",
     "react": "^18.2.0",
     "rxjs": "^7.5.5"
