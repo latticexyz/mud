@@ -102,6 +102,7 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 
 	// Create a schema table row for the table.
 	tableSchema := &mode.TableSchema{
+		TableId:               tableId,
 		TableName:             schema.TableIdToTableName(tableId),
 		StoreCoreSchemaTypeKV: storeCoreSchemaTypeKV,
 		// Create a postgres namespace ('schema') for the world address + the chain (if it doesn't already exist).
