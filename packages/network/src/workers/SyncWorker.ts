@@ -51,6 +51,7 @@ import { debug as parentDebug } from "./debug";
 import { fetchStoreEvents } from "../v2/fetchStoreEvents";
 import { abi as IStoreAbi } from "@latticexyz/store/abi/IStore.json";
 import { Contract } from "ethers";
+import { createModeClient } from "../v2/createModeClient";
 
 const debug = parentDebug.extend("SyncWorker");
 
@@ -145,6 +146,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const { providers } = await createReconnectingProvider(computed(() => computedConfig.get().provider));
     const provider = providers.get().json;
     const snapshotClient = snapshotServiceUrl ? createSnapshotClient(snapshotServiceUrl) : undefined;
+    const modeClient = createModeClient("https://mode.testnet-mud-services.linfra.xyz");
     const indexDbCache = await getIndexDbECSCache(chainId, worldContract.address);
     const decode = createDecode(worldContract, provider);
     const fetchWorldEvents = createFetchWorldEventsInBlockRange(
@@ -214,6 +216,8 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const cacheBlockNumber = !disableCache ? await getIndexDBCacheStoreBlockNumber(indexDbCache) : -1;
     this.setLoadingState({ percentage: 50 });
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
+    const modeBlockNumber = 1; // TODO fetch mode block number
+
     this.setLoadingState({ percentage: 100 });
     debug(
       `cache block: ${cacheBlockNumber}, snapshot block: ${
@@ -222,13 +226,21 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     );
 
     let initialState = createCacheStore();
-    if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber)) {
+    if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber, modeBlockNumber)) {
       initialState.blockNumber = initialBlockNumber;
     } else {
       // Load from cache if the snapshot is less than <cacheAgeThreshold> blocks newer than the cache
       const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
-
-      if (syncFromSnapshot) {
+      const syncFromMode = true; // TODO: add conditional based on modeBlockNumber / snapshotBlockNumber
+      if (syncFromMode) {
+        console.log("Initial sync from MODE");
+        const response = modeClient.findAll({
+          tables: [],
+          namespace: { chainId: "371337", worldAddress: "0x6E9163736C26380c8FCdF6e594E2Bed8742B47B4" },
+        });
+        console.log(response);
+        console.log(await response);
+      } else if (syncFromSnapshot) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from snapshot", percentage: 0 });
         initialState = await fetchSnapshotChunked(
           snapshotClient,
