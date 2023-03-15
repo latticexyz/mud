@@ -30,10 +30,15 @@ func (cache *SchemaCache) Update() error {
 	return nil
 }
 
+func (cache *SchemaCache) IsInternalTable(tableName string) bool {
+	_, ok := cache.internalTableSchemas[tableName]
+	return ok
+}
+
 func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, tableName string) (*mode.TableSchema, error) {
 	// If the table name is for an internal table, return schema directly.
-	if schema, ok := cache.internalTableSchemas[tableName]; ok {
-		return schema, nil
+	if cache.IsInternalTable(tableName) {
+		return cache.internalTableSchemas[tableName], nil
 	}
 
 	// Otherwise lookup the schema from the internal schemas table.

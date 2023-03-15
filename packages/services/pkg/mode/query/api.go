@@ -160,14 +160,22 @@ func (ql *QueryLayer) StreamAll(request *pb_mode.FindAllRequest, stream pb_mode.
 	for {
 		select {
 		case event := <-eventStream:
+			// Avoid streaming internal table updates.
+			if ql.schemaCache.IsInternalTable(event.TableName) {
+				ql.logger.Info("streamAll(): skipping internal table update", zap.String("table", event.TableName))
+				continue
+			}
+
 			// Get the TableSchema for the table that the event is directed at.
 			tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, event.TableName)
 			if err != nil {
-				return err
+				ql.logger.Error("streamAll(): no schema matching chainId, worldAddress, and table name", zap.Error(err))
+				continue
 			}
 			serializedTable, err := mode.SerializeStreamEvent(event, tableSchema, make(map[string]string))
 			if err != nil {
-				return err
+				ql.logger.Error("streamAll(): error while serializing stream event", zap.Error(err))
+				continue
 			}
 			// The table name is appended with the event type to distinguish between different types of events.
 			stream.Send(QueryLayerResponseFromTable(serializedTable, event.TableName+"_"+string(event.Type)))
