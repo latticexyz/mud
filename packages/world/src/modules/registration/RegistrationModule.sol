@@ -6,7 +6,7 @@ import { RegistrationSystem } from "./RegistrationSystem.sol";
 import { Call } from "../../Call.sol";
 import { ROOT_NAMESPACE, REGISTRATION_MODULE_NAME, CORE_MODULE_NAME, REGISTRATION_SYSTEM_NAME } from "../../constants.sol";
 import { WorldContext } from "../../WorldContext.sol";
-import { Resource } from "../../types.sol";
+import { Resource } from "../../Types.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { IModule } from "../../interfaces/IModule.sol";

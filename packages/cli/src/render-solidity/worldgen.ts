@@ -22,7 +22,8 @@ export async function worldgen(
     const { functions, symbols } = contractToInterface(data, system.basename);
     const imports = symbols.map((symbol) => ({
       symbol,
-      path: "./" + path.relative(worldgenBaseDirectory, system.path),
+      fromPath: system.path,
+      usedInPath: worldgenBaseDirectory,
     }));
     const systemInterfaceName = `I${system.basename}`;
     // create an interface using the external functions and imports
@@ -39,7 +40,8 @@ export async function worldgen(
     // prepare imports for IWorld
     systemInterfaceImports.push({
       symbol: systemInterfaceName,
-      path: `./${systemInterfaceName}.sol`,
+      fromPath: `${systemInterfaceName}.sol`,
+      usedInPath: "./",
     });
   }
 

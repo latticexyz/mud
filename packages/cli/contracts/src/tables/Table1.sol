@@ -17,7 +17,7 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 // Import user types
-import { Enum1, Enum2 } from "./../types.sol";
+import { Enum1, Enum2 } from "./../Types.sol";
 
 uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Table1"))));
 uint256 constant Table1TableId = _tableId;
@@ -437,7 +437,7 @@ library Table1 {
     bool v5,
     Enum1 v6,
     Enum2 v7
-  ) internal returns (bytes memory) {
+  ) internal pure returns (bytes memory) {
     return abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
   }
 

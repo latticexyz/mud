@@ -48,18 +48,18 @@ library ResourceAccess {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Register the table's schema for the specified store */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema(), getKeySchema());
-  }
-
-  /** Set the table's metadata for the specified store */
+  /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     _store.setMetadata(_tableId, _tableName, _fieldNames);
@@ -75,7 +75,7 @@ library ResourceAccess {
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
-  /** Get access from the specified store */
+  /** Get access (using the specified store) */
   function get(IStore _store, bytes32 resourceSelector, address caller) internal view returns (bool access) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32((resourceSelector));
@@ -94,8 +94,17 @@ library ResourceAccess {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((access)));
   }
 
+  /** Set access (using the specified store) */
+  function set(IStore _store, bytes32 resourceSelector, address caller, bool access) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((resourceSelector));
+    _primaryKeys[1] = bytes32(bytes20((caller)));
+
+    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((access)));
+  }
+
   /** Tightly pack full data using this table's schema */
-  function encode(bool access) internal returns (bytes memory) {
+  function encode(bool access) internal pure returns (bytes memory) {
     return abi.encodePacked(access);
   }
 
@@ -106,6 +115,15 @@ library ResourceAccess {
     _primaryKeys[1] = bytes32(bytes20((caller)));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, bytes32 resourceSelector, address caller) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((resourceSelector));
+    _primaryKeys[1] = bytes32(bytes20((caller)));
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }
 

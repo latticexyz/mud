@@ -17,7 +17,7 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 // Import user types
-import { Resource } from "./../../../types.sol";
+import { Resource } from "./../../../Types.sol";
 
 uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("ResourceType"))));
 uint256 constant ResourceTypeTableId = _tableId;
@@ -74,7 +74,7 @@ library ResourceType {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(Resource resourceType) internal returns (bytes memory) {
+  function encode(Resource resourceType) internal pure returns (bytes memory) {
     return abi.encodePacked(resourceType);
   }
 

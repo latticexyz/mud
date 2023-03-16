@@ -21,7 +21,8 @@ export interface RenderTableOptions {
 
 export interface ImportDatum {
   symbol: string;
-  path: string;
+  fromPath: string;
+  usedInPath: string;
 }
 
 export interface StaticResourceData {

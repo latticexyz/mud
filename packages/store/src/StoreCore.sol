@@ -95,8 +95,8 @@ library StoreCore {
    */
   function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) internal {
     // Verify the schema is valid
-    valueSchema.validate();
-    keySchema.validate();
+    valueSchema.validate(false);
+    keySchema.validate(true);
 
     // Verify the schema doesn't exist yet
     if (hasTable(tableId)) {

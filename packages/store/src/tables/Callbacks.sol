@@ -75,13 +75,11 @@ library Callbacks {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bytes24[] memory value) internal returns (bytes memory) {
+  function encode(bytes24[] memory value) internal pure returns (bytes memory) {
     uint16[] memory _counters = new uint16[](1);
     _counters[0] = uint16(value.length * 24);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);

@@ -126,7 +126,7 @@ library Vector2 {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint32 x, uint32 y) internal returns (bytes memory) {
+  function encode(uint32 x, uint32 y) internal pure returns (bytes memory) {
     return abi.encodePacked(x, y);
   }
 

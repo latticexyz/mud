@@ -1,6 +1,6 @@
 import { SchemaType } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { ObjectName, OrdinaryRoute, Selector, StaticSchemaType, UserEnum, ValueName } from "./commonSchemas.js";
+import { ObjectName, Selector, StaticSchemaType, UserEnum, ValueName } from "./commonSchemas.js";
 import { getDuplicates } from "./validation.js";
 
 const TableName = ObjectName;
@@ -15,85 +15,36 @@ const FieldData = z.union([z.nativeEnum(SchemaType), UserEnumName]);
 const PrimaryKey = z.union([StaticSchemaType, UserEnumName]);
 const PrimaryKeys = z.record(KeyName, PrimaryKey).default({ key: SchemaType.BYTES32 });
 
-const Schema = z
+/************************************************************************
+ *
+ *    TABLE SCHEMA
+ *
+ ************************************************************************/
+
+export type FullSchemaConfig = Record<string, z.input<typeof FieldData>>;
+export type ShorthandSchemaConfig = z.input<typeof FieldData>;
+export type SchemaConfig = FullSchemaConfig | ShorthandSchemaConfig;
+
+const FullSchemaConfig = z
   .record(ColumnName, FieldData)
   .refine((arg) => Object.keys(arg).length > 0, "Table schema may not be empty");
 
-const TableDataFull = z
-  .object({
-    directory: OrdinaryRoute.default("/tables"),
-    fileSelector: Selector.optional(),
-    tableIdArgument: z.boolean().default(false),
-    storeArgument: z.boolean().default(false),
-    primaryKeys: PrimaryKeys,
-    schema: Schema,
-    dataStruct: z.boolean().optional(),
-  })
-  .transform((arg) => {
-    // default dataStruct value depends on schema's length
-    if (Object.keys(arg.schema).length === 1) {
-      arg.dataStruct ??= false;
-    } else {
-      arg.dataStruct ??= true;
-    }
-    return arg as RequireKeys<typeof arg, "dataStruct">;
-  });
-
-const TableDataShorthand = FieldData.transform((fieldData) => {
-  return TableDataFull.parse({
-    schema: {
-      value: fieldData,
-    },
+const ShorthandSchemaConfig = FieldData.transform((fieldData) => {
+  return FullSchemaConfig.parse({
+    value: fieldData,
   });
 });
 
-const TablesRecord = z.record(TableName, z.union([TableDataShorthand, TableDataFull])).transform((tables) => {
-  // default fileSelector depends on tableName
-  for (const tableName of Object.keys(tables)) {
-    const table = tables[tableName];
-    table.fileSelector ??= tableName;
+export const SchemaConfig = FullSchemaConfig.or(ShorthandSchemaConfig);
 
-    tables[tableName] = table;
-  }
-  return tables as Record<string, RequireKeys<(typeof tables)[string], "fileSelector">>;
-});
+/************************************************************************
+ *
+ *    TABLE
+ *
+ ************************************************************************/
 
-const StoreConfigUnrefined = z.object({
-  namespace: Selector.default(""),
-  storeImportPath: z.string().default("@latticexyz/store/src/"),
-  tables: TablesRecord,
-  userTypes: z
-    .object({
-      path: OrdinaryRoute.default("/types"),
-      enums: z.record(UserEnumName, UserEnum).default({}),
-    })
-    .default({}),
-});
-// finally validate global conditions
-export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
-
-// zod doesn't preserve doc comments
-export interface StoreUserConfig {
-  /** The namespace for table ids. Default is "" (empty string) */
-  namespace?: string;
-  /** Path for store package imports. Default is "@latticexyz/store/src/" */
-  storeImportPath?: string;
-  /**
-   * Configuration for each table.
-   *
-   * The key is the table name (capitalized).
-   *
-   * The value:
-   *  - `SchemaType | userType` for a single-value table (aka ECS component).
-   *  - FullTableConfig object for multi-value tables (or for customizable options).
-   */
-  tables: Record<string, z.input<typeof FieldData> | FullTableConfig>;
-  /** User-defined types that will be generated and may be used in table schemas instead of `SchemaType` */
-  userTypes?: UserTypesConfig;
-}
-
-export interface FullTableConfig {
-  /** Output directory path for the file. Default is "/tables" */
+export interface TableConfig {
+  /** Output directory path for the file. Default is "tables" */
   directory?: string;
   /**
    * The fileSelector is used with the namespace to register the table and construct its id.
@@ -110,21 +61,125 @@ export interface FullTableConfig {
   /** Table's primary key names mapped to their types. Default is `{ key: SchemaType.BYTES32 }` */
   primaryKeys?: Record<string, z.input<typeof PrimaryKey>>;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
-  schema: Record<string, z.input<typeof FieldData>>;
+  schema: SchemaConfig;
 }
 
-interface UserTypesConfig<Enums extends Record<string, string[]> = Record<string, string[]>> {
-  /** Path to the file where common types will be generated and imported from. Default is "/types" */
+const FullTableConfig = z
+  .object({
+    directory: z.string().default("tables"),
+    fileSelector: Selector.optional(),
+    tableIdArgument: z.boolean().default(false),
+    storeArgument: z.boolean().default(false),
+    primaryKeys: PrimaryKeys,
+    schema: SchemaConfig,
+    dataStruct: z.boolean().optional(),
+  })
+  .transform((arg) => {
+    // default dataStruct value depends on schema's length
+    if (Object.keys(arg.schema).length === 1) {
+      arg.dataStruct ??= false;
+    } else {
+      arg.dataStruct ??= true;
+    }
+    return arg as RequireKeys<typeof arg, "dataStruct">;
+  });
+
+const ShorthandTableConfig = FieldData.transform((fieldData) => {
+  return FullTableConfig.parse({
+    schema: {
+      value: fieldData,
+    },
+  });
+});
+
+export const TableConfig = FullTableConfig.or(ShorthandTableConfig);
+
+/************************************************************************
+ *
+ *    TABLES
+ *
+ ************************************************************************/
+
+export type TablesConfig = Record<string, TableConfig | z.input<typeof FieldData>>;
+
+export const TablesConfig = z.record(TableName, TableConfig).transform((tables) => {
+  // default fileSelector depends on tableName
+  for (const tableName of Object.keys(tables)) {
+    const table = tables[tableName];
+    table.fileSelector ??= tableName;
+
+    tables[tableName] = table;
+  }
+  return tables as Record<string, RequireKeys<(typeof tables)[string], "fileSelector">>;
+});
+
+/************************************************************************
+ *
+ *    USER TYPES
+ *
+ ************************************************************************/
+
+export interface UserTypesConfig<Enums extends Record<string, string[]> = Record<string, string[]>> {
+  /** Path to the file where common types will be generated and imported from. Default is "Types" */
   path?: string;
   /** Enum names mapped to lists of their member names */
   enums?: Enums;
 }
 
+export const UserTypesConfig = z
+  .object({
+    path: z.string().default("Types"),
+    enums: z.record(UserEnumName, UserEnum).default({}),
+  })
+  .default({});
+
+/************************************************************************
+ *
+ *    FINAL
+ *
+ ************************************************************************/
+
+// zod doesn't preserve doc comments
+export interface StoreUserConfig {
+  /** The namespace for table ids. Default is "" (empty string) */
+  namespace?: string;
+  /** Path for store package imports. Default is "@latticexyz/store/src/" */
+  storeImportPath?: string;
+  /**
+   * Configuration for each table.
+   *
+   * The key is the table name (capitalized).
+   *
+   * The value:
+   *  - `SchemaType | userType` for a single-value table (aka ECS component).
+   *  - FullTableConfig object for multi-value tables (or for customizable options).
+   */
+  tables: TablesConfig;
+  /** User-defined types that will be generated and may be used in table schemas instead of `SchemaType` */
+  userTypes?: UserTypesConfig;
+}
+
 export type StoreConfig = z.output<typeof StoreConfig>;
 
-export function parseStoreConfig(config: StoreUserConfig) {
+const StoreConfigUnrefined = z.object({
+  namespace: Selector.default(""),
+  storeImportPath: z.string().default("@latticexyz/store/src/"),
+  tables: TablesConfig,
+  userTypes: UserTypesConfig,
+});
+
+// finally validate global conditions
+export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
+
+export function parseStoreConfig(config: unknown) {
   return StoreConfig.parse(config);
 }
+
+/************************************************************************
+ *
+ *    HELPERS
+ *
+ ************************************************************************/
 
 // Validate conditions that check multiple different config options simultaneously
 function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx: RefinementCtx) {
@@ -148,7 +203,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   if (duplicateGlobalNames.length > 0) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
-      message: `Table and enum names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
+      message: `Table, enum names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
     });
   }
   // User types must exist

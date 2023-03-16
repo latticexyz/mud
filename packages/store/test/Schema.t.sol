@@ -226,11 +226,11 @@ contract SchemaTest is Test {
     Schema encodedSchema = SchemaLib.encode(schema);
 
     // !gasreport validate schema
-    encodedSchema.validate();
+    encodedSchema.validate(false);
   }
 
   function testFailValidate() public pure {
-    Schema.wrap(keccak256("some invalid schema")).validate();
+    Schema.wrap(keccak256("some invalid schema")).validate(false);
   }
 
   function testIsEmptyTrue() public {

@@ -1,4 +1,5 @@
-import { ImportDatum, RenderTableOptions, RenderTableType } from "./types.js";
+import path from "path";
+import { ImportDatum, RenderTableOptions, RenderTableType, StaticResourceData } from "./types.js";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -20,8 +21,11 @@ export function renderArguments(args: (string | undefined)[]) {
   return internalRenderList(",", filteredArgs, (arg) => arg);
 }
 
-export function renderCommonData({ staticResourceData, primaryKeys }: RenderTableOptions) {
-  // static route means static tableId as well, and no tableId arguments
+export function renderCommonData({
+  staticResourceData,
+  primaryKeys,
+}: Pick<RenderTableOptions, "staticResourceData" | "primaryKeys">) {
+  // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
   const _typedTableId = staticResourceData ? "" : "uint256 _tableId";
 
@@ -45,6 +49,14 @@ export function renderCommonData({ staticResourceData, primaryKeys }: RenderTabl
   };
 }
 
+/** For 2 paths which are relative to a common root, create a relative import path from one to another */
+export function solidityRelativeImportPath(fromPath: string, usedInPath: string) {
+  // 1st "./" must be added because path strips it,
+  // but solidity expects it unless there's "../" ("./../" is fine).
+  // 2nd and 3rd "./" forcefully avoid absolute paths (everything is relative to `src`).
+  return "./" + path.relative("./" + usedInPath, "./" + fromPath);
+}
+
 /**
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
@@ -52,7 +64,8 @@ export function renderCommonData({ staticResourceData, primaryKeys }: RenderTabl
 export function renderImports(imports: ImportDatum[]) {
   // Aggregate symbols by import path, also deduplicating them
   const aggregatedImports = new Map<string, Set<string>>();
-  for (const { symbol, path } of imports) {
+  for (const { symbol, fromPath, usedInPath } of imports) {
+    const path = solidityRelativeImportPath(fromPath, usedInPath);
     if (!aggregatedImports.has(path)) {
       aggregatedImports.set(path, new Set());
     }
@@ -65,6 +78,38 @@ export function renderImports(imports: ImportDatum[]) {
     renderedImports.push(`import { ${renderedSymbols} } from "${path}";`);
   }
   return renderedImports.join("\n");
+}
+
+export function renderWithStore(
+  storeArgument: boolean,
+  callback: (
+    _typedStore: string | undefined,
+    _store: string,
+    _commentSuffix: string,
+    _untypedStore: string | undefined
+  ) => string
+) {
+  let result = "";
+  result += callback(undefined, "StoreSwitch", "", undefined);
+
+  if (storeArgument) {
+    result += "\n" + callback("IStore _store", "_store", " (using the specified store)", "_store");
+  }
+
+  return result;
+}
+
+export function renderTableId(staticResourceData: StaticResourceData) {
+  const hardcodedTableId = `uint256(bytes32(abi.encodePacked(bytes16("${staticResourceData.namespace}"), bytes16("${staticResourceData.fileSelector}"))))`;
+
+  const tableIdDefinition = `
+    uint256 constant _tableId = ${hardcodedTableId};
+    uint256 constant ${staticResourceData.tableIdName} = _tableId;
+  `;
+  return {
+    hardcodedTableId,
+    tableIdDefinition,
+  };
 }
 
 function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderTableType) {
