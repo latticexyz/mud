@@ -21,9 +21,8 @@ import { FunctionSelectors } from "../../tables/FunctionSelectors.sol";
 
 import { ISystemHook } from "../../interfaces/ISystemHook.sol";
 import { IErrors } from "../../interfaces/IErrors.sol";
-import { IRegistrationSystem } from "../../interfaces/systems/IRegistrationSystem.sol";
 
-contract RegistrationSystem is System, IRegistrationSystem, IErrors {
+contract RegistrationSystem is System, IErrors {
   using ResourceSelector for bytes32;
 
   /**

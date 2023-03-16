@@ -30,6 +30,8 @@ export const WorldConfig = z.object({
   excludeSystems: z.array(SystemName).default([]),
   postDeployScript: z.string().default("PostDeploy"),
   deploymentInfoDirectory: z.string().default("."),
+  worldgenDirectory: z.string().default("world"),
+  worldImportPath: z.string().default("@latticexyz/world/src/"),
 });
 
 /**
@@ -72,8 +74,9 @@ export function resolveSystemConfig(systemName: string, config?: SystemUserConfi
  * splitting the access list into addresses and system names.
  */
 export function resolveWorldConfig(config: ParsedWorldConfig, existingContracts?: string[]) {
-  // Include contract names ending in "System", but not the base "System" contract
-  const defaultSystemNames = existingContracts?.filter((name) => name.endsWith("System") && name !== "System") ?? [];
+  // Include contract names ending in "System", but not the base "System" contract, and not Interfaces
+  const defaultSystemNames =
+    existingContracts?.filter((name) => name.endsWith("System") && name !== "System" && !name.match(/^I[A-Z]/)) ?? [];
   const overriddenSystemNames = Object.keys(config.overrideSystems);
 
   // Validate every key in overrideSystems refers to an existing system contract (and is not called "World")
@@ -168,6 +171,10 @@ export interface WorldUserConfig {
   postDeployScript?: string;
   /** Directory to write the deployment info to (Default ".") */
   deploymentInfoDirectory?: string;
+  /** Directory to output system and world interfaces of `worldgen` (Default "world") */
+  worldgenDirectory?: string;
+  /** Path for world package imports. Default is "@latticexyz/world/src/" */
+  worldImportPath?: string;
 }
 
 export type ParsedWorldConfig = z.output<typeof WorldConfig>;

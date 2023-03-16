@@ -44,6 +44,7 @@
     "@latticexyz/services": "^1.41.0",
     "@latticexyz/solecs": "^1.41.0",
     "@latticexyz/std-contracts": "^1.41.0",
+    "@solidity-parser/parser": "^0.16.0",
     "@typechain/ethers-v5": "^10.1.1",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",

@@ -74,3 +74,28 @@ export interface RenderTypesEnum {
   name: string;
   memberNames: string[];
 }
+
+export interface RenderSystemInterfaceOptions {
+  /** List of symbols to import, and their file paths */
+  imports: ImportDatum[];
+  name: string;
+  functionPrefix: string;
+  functions: RenderSystemInterfaceFunction[];
+}
+
+export interface RenderSystemInterfaceFunction {
+  name: string;
+  parameters: string[];
+  returnParameters: string[];
+}
+
+export interface RenderWorldOptions {
+  /** List of symbols to import, and their file paths */
+  imports: ImportDatum[];
+  /** Name of the interface to render */
+  interfaceName: string;
+  /** Path for store package imports */
+  storeImportPath: string;
+  /** Path for world package imports */
+  worldImportPath: string;
+}
