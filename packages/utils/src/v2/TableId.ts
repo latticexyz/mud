@@ -1,5 +1,6 @@
 import { arrayToHex } from "./arrayToHex";
 import { bytesToString } from "./bytesToString";
+import { hexToArray } from "./hexToArray";
 import { stringToBytes16 } from "./stringToBytes16";
 
 export class TableId {
@@ -24,6 +25,10 @@ export class TableId {
     tableId.set(stringToBytes16(namespace), 0);
     tableId.set(stringToBytes16(name), 16);
     return arrayToHex(tableId);
+  }
+
+  static fromHexString(tableId: string) {
+    return TableId.fromBytes32(hexToArray(tableId));
   }
 
   static fromBytes32(tableId: Uint8Array) {
