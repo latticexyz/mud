@@ -26,7 +26,7 @@ func (builder *UpdateBuilder) BuildUpdateRowFromKV(row map[string]string, fieldN
 	rowStr := ""
 	for idx, field := range fieldNames {
 		rowStr = rowStr + field + ` = ` + `'` + row[field] + `'`
-		if idx != len(row)-1 {
+		if idx != len(fieldNames)-1 {
 			rowStr = rowStr + `, `
 		}
 	}
