@@ -3,6 +3,7 @@ package schema
 import (
 	"encoding/json"
 	"latticexyz/mud/packages/services/pkg/mode"
+	"latticexyz/mud/packages/services/pkg/mode/config"
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/ops/find"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
@@ -19,7 +20,7 @@ func BuildInternalTableSchemas() map[string]*mode.TableSchema {
 	}
 }
 
-func NewCache(dl *db.DatabaseLayer, chains []mode.ChainConfig, logger *zap.Logger) *SchemaCache {
+func NewCache(dl *db.DatabaseLayer, chains []config.ChainConfig, logger *zap.Logger) *SchemaCache {
 	return &SchemaCache{
 		dl:                   dl,
 		logger:               logger,

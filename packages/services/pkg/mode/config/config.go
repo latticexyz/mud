@@ -1,4 +1,4 @@
-package mode
+package config
 
 import (
 	"fmt"
@@ -40,7 +40,7 @@ type Config struct {
 	Metrics MetricsConfig `yaml:"metrics"`
 }
 
-func ConfigFromFile(configFile string, logger *zap.Logger) (*Config, error) {
+func FromFile(configFile string, logger *zap.Logger) (*Config, error) {
 	config := &Config{}
 	data, err := os.ReadFile(configFile)
 	if err != nil {
@@ -54,7 +54,7 @@ func ConfigFromFile(configFile string, logger *zap.Logger) (*Config, error) {
 	return config, nil
 }
 
-func ConfigFromFlags(chainNames, chainIds, chainRpcsHttp, chainRpcsWs, dbDsn string, dbWipe bool, portQl, portMetrics int) (*Config, error) {
+func FromFlags(chainNames, chainIds, chainRpcsHttp, chainRpcsWs, dbDsn string, dbWipe bool, portQl, portMetrics int) (*Config, error) {
 	config := &Config{
 		Chains: make([]ChainConfig, 0),
 		Db: DbConfig{
