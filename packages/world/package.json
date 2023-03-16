@@ -13,6 +13,7 @@
     "prepare": "yarn build && chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
     "tablegen": "../cli/dist/mud.js tablegen",
+    "worldgen": "../cli/dist/mud.js worldgen",
     "test": "forge test",
     "build": "rimraf out && forge build && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && yarn rimraf abi/*.metadata.json",

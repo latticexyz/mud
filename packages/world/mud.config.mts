@@ -2,6 +2,8 @@ import { MUDUserConfig } from "@latticexyz/cli";
 import { SchemaType } from "@latticexyz/schema-type";
 
 const config = {
+  worldImportPath: "../",
+  worldgenDirectory: "interfaces",
   tables: {
     NamespaceOwner: {
       primaryKeys: {
