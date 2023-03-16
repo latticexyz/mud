@@ -18,13 +18,18 @@ export type SystemUserConfig =
         }
     );
 
+export type ValueWithType = {
+  value: string | number | Uint8Array;
+  type: string;
+};
+
 export type ModuleConfig = {
   /** The name of the module */
   name: string;
   /** Should this module be installed as a root module? */
   root?: boolean;
   /** Arguments to be passed to the module's install method */
-  args?: (string | number | Uint8Array | DynamicResulution)[];
+  args?: (ValueWithType | DynamicResulution)[];
 };
 
 // zod doesn't preserve doc comments

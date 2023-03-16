@@ -22,13 +22,16 @@ const SystemConfig = z.intersection(
   ])
 );
 
-const BytesLike = z.union([z.string(), z.number(), z.instanceof(Uint8Array)]);
+const ValueWithType = z.object({
+  value: z.union([z.string(), z.number(), z.instanceof(Uint8Array)]),
+  type: z.string(),
+});
 const DynamicResulution = z.object({ type: z.nativeEnum(DynamicResolutionType), input: z.string() });
 
 const ModuleConfig = z.object({
   name: ModuleName,
   root: z.boolean().default(false),
-  args: z.array(z.union([BytesLike, DynamicResulution])).default([]),
+  args: z.array(z.union([ValueWithType, DynamicResulution])).default([]),
 });
 
 // The parsed world config is the result of parsing the user config
