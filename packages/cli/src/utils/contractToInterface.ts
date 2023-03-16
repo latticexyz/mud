@@ -119,7 +119,7 @@ function flattenTypeName(typeName: TypeName | null): { name: string; stateMutabi
 // Get symbols that need to be imported for given typeName
 function typeNameToExternalSymbols(typeName: TypeName | null): string[] {
   if (typeName?.type === "UserDefinedTypeName") {
-    // split accounts for types/structs within libraries
+    // split is needed to get a library, if types are internal to it
     const symbol = typeName.namePath.split(".")[0];
     return [symbol];
   } else if (typeName?.type === "ArrayTypeName") {
