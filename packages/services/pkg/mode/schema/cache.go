@@ -63,6 +63,7 @@ func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, ta
 				},
 				Operator: "=",
 				Value:    tableName,
+				Function: "LOWER",
 			},
 		},
 		Project: []*pb_mode.ProjectedField{

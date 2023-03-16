@@ -115,6 +115,7 @@ export interface Filter {
   field: Field | undefined;
   operator: string;
   value: string;
+  function: string;
 }
 
 export interface FieldPair {
@@ -1055,7 +1056,7 @@ export const CreateRequest = {
 };
 
 function createBaseFilter(): Filter {
-  return { field: undefined, operator: "", value: "" };
+  return { field: undefined, operator: "", value: "", function: "" };
 }
 
 export const Filter = {
@@ -1068,6 +1069,9 @@ export const Filter = {
     }
     if (message.value !== "") {
       writer.uint32(26).string(message.value);
+    }
+    if (message.function !== "") {
+      writer.uint32(34).string(message.function);
     }
     return writer;
   },
@@ -1088,6 +1092,9 @@ export const Filter = {
         case 3:
           message.value = reader.string();
           break;
+        case 4:
+          message.function = reader.string();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1101,6 +1108,7 @@ export const Filter = {
     message.field = object.field !== undefined && object.field !== null ? Field.fromPartial(object.field) : undefined;
     message.operator = object.operator ?? "";
     message.value = object.value ?? "";
+    message.function = object.function ?? "";
     return message;
   },
 };

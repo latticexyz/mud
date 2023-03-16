@@ -92,6 +92,9 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 	}
 
 	// Execute the queries and serialize each result into a GenericTable.
+	tableListFormatted := []string{}
+	// One extra step is to format the table list to preserve casing, so we use the table names
+	// directly from schema as opposed to from the GetAllTables() which reads from the DB.
 	serializedTables := []*pb_mode.GenericTable{}
 	for idx, query := range queries {
 		// Fetch the TableSchema for the table that the query is directed at and execute the built query.
@@ -107,14 +110,10 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 			return nil, err
 		}
 		serializedTables = append(serializedTables, serializedTable)
+		tableListFormatted = append(tableListFormatted, tableSchema.TableName)
 	}
 
 	// Build the response from the multiple tables and return.
-	// One extra step is to format the table list without the specific prefix namings.
-	tableListFormatted := []string{}
-	for _, tableName := range tableNameList {
-		tableListFormatted = append(tableListFormatted, schema.TableNameToTableId(tableName))
-	}
 	return QueryLayerResponseFromTables(serializedTables, tableListFormatted), nil
 }
 
