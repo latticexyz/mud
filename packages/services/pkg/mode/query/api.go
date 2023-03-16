@@ -7,6 +7,8 @@ import (
 	"go.uber.org/zap"
 
 	"latticexyz/mud/packages/services/pkg/mode"
+	"latticexyz/mud/packages/services/pkg/mode/ops/find"
+	"latticexyz/mud/packages/services/pkg/mode/ops/join"
 	"latticexyz/mud/packages/services/pkg/mode/schema"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 )
@@ -38,7 +40,7 @@ func (ql *QueryLayer) Find(ctx context.Context, request *pb_mode.FindRequest) (*
 	}
 
 	// Create a "builder" for the request.
-	builder := mode.NewFindBuilder(request, namespace)
+	builder := find.NewFindBuilder(request, namespace)
 
 	// Build a query from the request.
 	query, err := builder.ToSQLQuery()
@@ -81,7 +83,7 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 	}
 
 	// Create a "builder" for the request.
-	builder, err := mode.NewFindAllBuilder(request, namespace, allTables)
+	builder, err := find.NewFindAllBuilder(request, namespace, allTables)
 	if err != nil {
 		ql.logger.Error("findAll(): error while creating builder", zap.Error(err))
 		return nil, err
@@ -130,7 +132,7 @@ func (ql *QueryLayer) Join(ctx context.Context, request *pb_mode.JoinRequest) (*
 	}
 
 	// Create a "builder" for the request.
-	builder := mode.NewJoinBuilder(request)
+	builder := join.NewJoinBuilder(request)
 
 	// Build a query from the request.
 	query, err := builder.ToSQLQuery()

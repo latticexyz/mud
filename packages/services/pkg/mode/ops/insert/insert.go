@@ -1,16 +1,17 @@
-package mode
+package insert
 
 import (
-	"latticexyz/mud/packages/services/protobuf/go/mode"
+	"latticexyz/mud/packages/services/pkg/mode"
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 )
 
 type InsertBuilder struct {
-	Request     *mode.InsertRequest
-	TableSchema *TableSchema
+	Request     *pb_mode.InsertRequest
+	TableSchema *mode.TableSchema
 }
 
-func NewInsertBuilder(request *mode.InsertRequest, tableSchema *TableSchema) *InsertBuilder {
+func NewInsertBuilder(request *pb_mode.InsertRequest, tableSchema *mode.TableSchema) *InsertBuilder {
 	return &InsertBuilder{
 		Request:     request,
 		TableSchema: tableSchema,

@@ -1,16 +1,17 @@
-package mode
+package create
 
 import (
-	"latticexyz/mud/packages/services/protobuf/go/mode"
+	"latticexyz/mud/packages/services/pkg/mode"
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 )
 
 type CreateBuilder struct {
-	Request     *mode.CreateRequest
-	TableSchema *TableSchema
+	Request     *pb_mode.CreateRequest
+	TableSchema *mode.TableSchema
 }
 
-func NewCreateBuilder(request *mode.CreateRequest, tableSchema *TableSchema) *CreateBuilder {
+func NewCreateBuilder(request *pb_mode.CreateRequest, tableSchema *mode.TableSchema) *CreateBuilder {
 	return &CreateBuilder{
 		Request:     request,
 		TableSchema: tableSchema,

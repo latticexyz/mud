@@ -1,16 +1,16 @@
-package mode
+package find
 
 import (
-	"latticexyz/mud/packages/services/protobuf/go/mode"
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 )
 
 type FindBuilder struct {
-	Request   *mode.FindRequest
+	Request   *pb_mode.FindRequest
 	Namespace string
 }
 
-func NewFindBuilder(request *mode.FindRequest, namespace string) *FindBuilder {
+func NewFindBuilder(request *pb_mode.FindRequest, namespace string) *FindBuilder {
 	return &FindBuilder{
 		Request:   request,
 		Namespace: namespace,
