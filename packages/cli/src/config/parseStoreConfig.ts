@@ -103,7 +103,7 @@ export const TableConfig = FullTableConfig.or(ShorthandTableConfig);
 export type TablesConfig = Record<string, TableConfig | z.input<typeof FieldData>>;
 
 export const TablesConfig = z.record(TableName, TableConfig).transform((tables) => {
-  // default route depends on tableName
+  // default fileSelector depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
     table.fileSelector ??= tableName;
