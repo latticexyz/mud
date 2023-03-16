@@ -57,7 +57,6 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   console.log("Start deployment at block", blockNumber);
 
   // Deploy World
-
   const worldPromise = {
     World: worldContractName
       ? deployContractByName(worldContractName)

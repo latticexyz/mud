@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { console } from "forge-std/console.sol";
 
 import { Store, IStoreHook } from "@latticexyz/store/src/Store.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
@@ -139,13 +138,8 @@ contract World is Store, IWorldCore, IErrors {
     uint8 schemaIndex,
     bytes calldata data
   ) public virtual {
-    console.log("set field");
     // Require access to namespace or file
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
-    console.log(resourceSelector.toString());
-    // console.logBytes32(key[0]);
-    console.logBytes(data);
-    console.logBytes32(keccak256(data));
 
     // Set the field
     StoreCore.setField(resourceSelector.toTableId(), key, schemaIndex, data);

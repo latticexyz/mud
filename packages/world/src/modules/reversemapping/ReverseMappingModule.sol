@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
 import { IWorld } from "../../interfaces/IWorld.sol";
@@ -41,7 +39,6 @@ contract ReverseMappingModule is IModule, WorldContext {
   }
 
   function install(bytes memory args) public override {
-    console.log("install");
     // Extract source table id from args
     uint256 sourceTableId = abi.decode(args, (uint256));
     bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);

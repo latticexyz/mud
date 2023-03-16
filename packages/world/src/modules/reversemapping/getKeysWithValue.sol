@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
-
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
@@ -33,9 +31,6 @@ function getKeysWithValue(
   uint256 tableId,
   bytes memory value
 ) view returns (bytes32[] memory keysWithValue) {
-  console.log("getKeysWithValue");
-  console.logBytes(value);
-  console.logBytes32(keccak256(value));
   // Get the corresponding reverse mapping table
   uint256 reverseMappingTableId = uint256(getTargetTableSelector(tableId));
 

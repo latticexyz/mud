@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Bytes } from "./Bytes.sol";
 import { Storage } from "./Storage.sol";
@@ -219,11 +218,9 @@ library StoreCore {
 
     // Call onBeforeSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(bytes32(tableId));
-    console.log("num hooks", hooks.length);
 
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      console.log("calling hook on before %s", address(hook));
       hook.onBeforeSetField(tableId, key, schemaIndex, data);
     }
 
@@ -236,7 +233,6 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
-      console.log("calling hook on after %s", address(hook));
       hook.onAfterSetField(tableId, key, schemaIndex, data);
     }
   }

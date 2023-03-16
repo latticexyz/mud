@@ -26,7 +26,9 @@ export function isDynamicResolution(value: unknown): value is DynamicResulution 
   return typeof value === "object" && value !== null && "type" in value && "input" in value;
 }
 
-/** Implementation of all dynamic resolution logic */
+/**
+ * Turn a DynamicResolution object into a ValueWithType based on the provided context
+ */
 export async function resolveWithContext(
   unresolved: any,
   context: { systemAddresses?: Record<string, Promise<string>>; tableIds?: Record<string, Uint8Array> }
@@ -36,7 +38,6 @@ export async function resolveWithContext(
 
   if (unresolved.type === DynamicResolutionType.TABLE_ID) {
     const tableId = context.tableIds?.[unresolved.input];
-    console.log("tableid", tableId);
     resolved = tableId && { value: tableId, type: "bytes32" };
   }
 
