@@ -26,11 +26,9 @@ export async function syncTablesFromMode(
   // TODO: get this from MODE
   const blockNumber = 1;
 
-  for (const [truncatedTableId, { rows, cols, types }] of Object.entries(tables)) {
-    // table names get truncated by MODE, so we need to pad just to make them valid bytes32, but
-    // the table names are still not accurate so we may have data loss
-    // TODO: fix this in MODE
-    const tableId = TableId.fromHexString(truncatedTableId.padEnd(66, "0"));
+  for (const [fullTableName, { rows, cols, types }] of Object.entries(tables)) {
+    const [tableNamespace, tableName] = fullTableName.split("__");
+    const tableId = new TableId(tableNamespace, tableName);
 
     const component = tableId.toString();
 
