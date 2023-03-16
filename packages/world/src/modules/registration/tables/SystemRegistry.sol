@@ -71,7 +71,7 @@ library SystemRegistry {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bytes32 resourceSelector) internal returns (bytes memory) {
+  function encode(bytes32 resourceSelector) internal pure returns (bytes memory) {
     return abi.encodePacked(resourceSelector);
   }
 

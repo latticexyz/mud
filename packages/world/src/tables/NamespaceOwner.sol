@@ -99,7 +99,7 @@ library NamespaceOwner {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(address owner) internal returns (bytes memory) {
+  function encode(address owner) internal pure returns (bytes memory) {
     return abi.encodePacked(owner);
   }
 

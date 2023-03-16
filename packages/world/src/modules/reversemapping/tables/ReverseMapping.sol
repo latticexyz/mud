@@ -116,7 +116,7 @@ library ReverseMapping {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bytes32[] memory keysWithValue) internal returns (bytes memory) {
+  function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory) {
     uint16[] memory _counters = new uint16[](1);
     _counters[0] = uint16(keysWithValue.length * 32);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);

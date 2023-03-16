@@ -196,7 +196,7 @@ library Mixed {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal returns (bytes memory) {
+  function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal pure returns (bytes memory) {
     uint16[] memory _counters = new uint16[](2);
     _counters[0] = uint16(a32.length * 4);
     _counters[1] = uint16(bytes(s).length);

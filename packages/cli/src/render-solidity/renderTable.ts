@@ -114,7 +114,7 @@ library ${libraryName} {
   /** Tightly pack full data using this table's schema */
   function encode(${renderArguments(
     options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
-  )}) internal returns (bytes memory) {
+  )}) internal pure returns (bytes memory) {
     ${renderEncodedLengths(dynamicFields)}
     return abi.encodePacked(${renderArguments([
       renderArguments(staticFields.map(({ name }) => name)),

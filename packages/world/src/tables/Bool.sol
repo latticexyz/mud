@@ -91,7 +91,7 @@ library Bool {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bool value) internal returns (bytes memory) {
+  function encode(bool value) internal pure returns (bytes memory) {
     return abi.encodePacked(value);
   }
 

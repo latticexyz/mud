@@ -437,7 +437,7 @@ library Table1 {
     bool v5,
     Enum1 v6,
     Enum2 v7
-  ) internal returns (bytes memory) {
+  ) internal pure returns (bytes memory) {
     return abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
   }
 

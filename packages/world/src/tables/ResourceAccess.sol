@@ -104,7 +104,7 @@ library ResourceAccess {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bool access) internal returns (bytes memory) {
+  function encode(bool access) internal pure returns (bytes memory) {
     return abi.encodePacked(access);
   }
 
