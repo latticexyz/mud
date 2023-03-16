@@ -21,21 +21,6 @@ func (wl *WriteLayer) CreateNamespace(namespace string) error {
 	}
 	wl.logger.Info("created namespace", zap.String("namespace", namespace))
 
-	// // Save namespace to the database.
-	// namespacesTableSchema := schema.NamespacesTableSchema()
-	// insertBuilder := mode.NewInsertBuilder(&pb_mode.InsertRequest{
-	// 	Into: namespacesTableSchema.FullTableName(),
-	// 	Row: RowKV{
-	// 		"namespace": namespace,
-	// 	},
-	// }, namespacesTableSchema)
-	// insertRowQuery := insertBuilder.ToSQLQuery()
-	// _, err = wl.dl.Exec(insertRowQuery)
-	// if err != nil {
-	// 	wl.logger.Error("failed to insert namespace", zap.String("query", insertRowQuery), zap.Error(err))
-	// 	return err
-	// }
-
 	return nil
 }
 
@@ -60,7 +45,7 @@ func (wl *WriteLayer) CreateTable(tableSchema *mode.TableSchema) error {
 
 	// Create a table creator builder.
 	createBuilder := create.NewCreateBuilder(&pb_mode.CreateRequest{
-		Name: tableSchema.FullTableName(),
+		Name: tableSchema.NamespacedTableName(),
 	}, tableSchema)
 
 	// Get the table creation + index creation SQL queries.
@@ -76,7 +61,7 @@ func (wl *WriteLayer) CreateTable(tableSchema *mode.TableSchema) error {
 		wl.logger.Error("failed to create table", zap.String("query", createTableQuery), zap.Error(err))
 		return err
 	}
-	wl.logger.Info("created table", zap.String("table", tableSchema.FullTableName()))
+	wl.logger.Info("created table", zap.String("table", tableSchema.NamespacedTableName()))
 
 	// Execute the query to create indexes.
 	_, err = wl.dl.Exec(createIndexQueries)
@@ -84,7 +69,7 @@ func (wl *WriteLayer) CreateTable(tableSchema *mode.TableSchema) error {
 		wl.logger.Error("failed to create indexes on table", zap.Error(err), zap.String("query", createIndexQueries))
 		return err
 	}
-	wl.logger.Info("created indexes on table", zap.String("table", tableSchema.FullTableName()))
+	wl.logger.Info("created indexes on table", zap.String("table", tableSchema.NamespacedTableName()))
 
 	if tableSchema.PrimaryKey == "" {
 		// If the table does not have a primary key, then we need to set the replica identity to FULL.
@@ -114,7 +99,7 @@ func (wl *WriteLayer) RenameTableFields(tableSchema *mode.TableSchema, oldTableF
 	// Build the SQL statement to rename the columns
 	var sqlStmt strings.Builder
 	for i := 0; i < len(oldTableFieldNames); i++ {
-		sqlStmt.WriteString("ALTER TABLE " + tableSchema.FullTableName() + " RENAME COLUMN " + oldTableFieldNames[i] + " TO " + newTableFieldNames[i] + ";")
+		sqlStmt.WriteString("ALTER TABLE " + tableSchema.NamespacedTableName() + " RENAME COLUMN " + oldTableFieldNames[i] + " TO " + newTableFieldNames[i] + ";")
 	}
 
 	// Execute the SQL statement
@@ -130,7 +115,7 @@ func (wl *WriteLayer) RenameTableFields(tableSchema *mode.TableSchema, oldTableF
 func (wl *WriteLayer) InsertRow(tableSchema *mode.TableSchema, row RowKV) error {
 	// Create an insert builder.
 	insertBuilder := insert.NewInsertBuilder(&pb_mode.InsertRequest{
-		Into: tableSchema.FullTableName(),
+		Into: tableSchema.NamespacedTableName(),
 		Row:  row,
 	}, tableSchema)
 	insertRowQuery := insertBuilder.ToSQLQuery()
@@ -141,7 +126,7 @@ func (wl *WriteLayer) InsertRow(tableSchema *mode.TableSchema, row RowKV) error 
 		return err
 	}
 
-	wl.logger.Info("inserted row", zap.String("table", tableSchema.FullTableName()))
+	wl.logger.Info("inserted row", zap.String("table", tableSchema.NamespacedTableName()))
 
 	return nil
 }
@@ -149,7 +134,7 @@ func (wl *WriteLayer) InsertRow(tableSchema *mode.TableSchema, row RowKV) error 
 func (wl *WriteLayer) UpdateRow(tableSchema *mode.TableSchema, row RowKV, filter []*pb_mode.Filter) (sql.Result, error) {
 	// Create an update builder.
 	updateBuilder := update.NewUpdateBuilder(&pb_mode.UpdateRequest{
-		Target: tableSchema.FullTableName(),
+		Target: tableSchema.NamespacedTableName(),
 		Filter: filter,
 		Row:    row,
 	}, tableSchema)
@@ -162,7 +147,7 @@ func (wl *WriteLayer) UpdateRow(tableSchema *mode.TableSchema, row RowKV, filter
 		return nil, err
 	}
 
-	wl.logger.Info("updated row", zap.String("table", tableSchema.FullTableName()), zap.String("query", updateRowQuery))
+	wl.logger.Info("updated row", zap.String("table", tableSchema.NamespacedTableName()), zap.String("query", updateRowQuery))
 
 	return result, nil
 }
@@ -181,7 +166,7 @@ func (wl *WriteLayer) UpdateOrInsertRow(tableSchema *mode.TableSchema, row RowKV
 		return err
 	}
 	if rowsAffected > 0 {
-		wl.logger.Info("updated row", zap.String("table", tableSchema.FullTableName()))
+		wl.logger.Info("updated row", zap.String("table", tableSchema.NamespacedTableName()))
 		return nil
 	}
 
@@ -191,7 +176,7 @@ func (wl *WriteLayer) UpdateOrInsertRow(tableSchema *mode.TableSchema, row RowKV
 		wl.logger.Error("failed to insert row", zap.Error(err))
 		return err
 	}
-	wl.logger.Info("inserted row", zap.String("table", tableSchema.FullTableName()))
+	wl.logger.Info("inserted row", zap.String("table", tableSchema.NamespacedTableName()))
 
 	return nil
 }
@@ -199,7 +184,7 @@ func (wl *WriteLayer) UpdateOrInsertRow(tableSchema *mode.TableSchema, row RowKV
 func (wl *WriteLayer) DeleteRow(tableSchema *mode.TableSchema, filter []*pb_mode.Filter) error {
 	// Create a delete builder.
 	deleteBuilder := delete.NewDeleteBuilder(&pb_mode.DeleteRequest{
-		From:   tableSchema.FullTableName(),
+		From:   tableSchema.NamespacedTableName(),
 		Filter: filter,
 	}, tableSchema)
 
@@ -210,7 +195,7 @@ func (wl *WriteLayer) DeleteRow(tableSchema *mode.TableSchema, filter []*pb_mode
 		wl.logger.Error("failed to delete row", zap.Error(err), zap.String("query", deleteRowQuery))
 		return err
 	}
-	wl.logger.Info("deleted row", zap.String("table", tableSchema.FullTableName()))
+	wl.logger.Info("deleted row", zap.String("table", tableSchema.NamespacedTableName()))
 
 	return nil
 }
