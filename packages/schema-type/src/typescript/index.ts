@@ -8,3 +8,4 @@ export { encodeSchema } from "./encodeSchema.js";
 export { getStaticByteLength } from "./getStaticByteLength.js";
 export { SchemaTypeArrayToElement } from "./SchemaTypeArrayToElement.js";
 export { SchemaTypeToAbiType } from "./SchemaTypeToAbiType.js";
+export { AbiTypeToSchemaType } from "./AbiTypeToSchemaType.js";
