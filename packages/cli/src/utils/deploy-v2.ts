@@ -9,7 +9,7 @@ import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
 import { resolveAbiOrUserType } from "../render-solidity/userType.js";
-import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
+import { defaultAbiCoder as abi, Fragment } from "ethers/lib/utils.js";
 
 import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" };
 import IWorldData from "@latticexyz/world/abi/IWorld.json" assert { type: "json" };
@@ -152,19 +152,54 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   // Register systems (using forEach instead of for..of to avoid blocking on async calls)
   promises = [
     ...promises,
-    ...Object.entries(mudConfig.systems).map(async ([systemName, { fileSelector, openAccess }]) => {
-      console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${fileSelector}`));
+    ...Object.entries(mudConfig.systems).map(
+      async ([systemName, { fileSelector, openAccess, registerFunctionSelectors }]) => {
+        // Register system at route
+        console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${fileSelector}`));
+        await fastTxExecute(WorldContract, "registerSystem", [
+          toBytes16(namespace),
+          toBytes16(fileSelector),
+          await contractPromises[systemName],
+          openAccess,
+        ]);
+        console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${fileSelector}`));
 
-      // Register system at route
-      await fastTxExecute(WorldContract, "registerSystem", [
-        toBytes16(namespace),
-        toBytes16(fileSelector),
-        await contractPromises[systemName],
-        openAccess,
-      ]);
+        // Register function selectors for the system
+        if (registerFunctionSelectors) {
+          const functionSignatures: FunctionSignature[] = await loadFunctionSignatures(systemName);
+          const isRoot = namespace === "";
+          for (const { functionName, functionArgs } of functionSignatures) {
+            const functionSignature = isRoot
+              ? functionName + functionArgs
+              : `${namespace}_${fileSelector}_${functionName}${functionArgs}`;
 
-      console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${fileSelector}`));
-    }),
+            console.log(chalk.blue(`Registering function "${functionSignature}"`));
+            if (isRoot) {
+              const worldFunctionSelector = toFunctionSelector(
+                functionSignature === ""
+                  ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
+                  : { functionName, functionArgs }
+              );
+              const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
+              await fastTxExecute(WorldContract, "registerRootFunctionSelector", [
+                toBytes16(namespace),
+                toBytes16(fileSelector),
+                worldFunctionSelector,
+                systemFunctionSelector,
+              ]);
+            } else {
+              await fastTxExecute(WorldContract, "registerFunctionSelector", [
+                toBytes16(namespace),
+                toBytes16(fileSelector),
+                functionName,
+                functionArgs,
+              ]);
+            }
+            console.log(chalk.green(`Registered function "${functionSignature}"`));
+          }
+        }
+      }
+    ),
   ];
 
   // Wait for resources to be registered before granting access to them
@@ -347,6 +382,18 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   //   return deployedTo;
   // }
 
+  async function loadFunctionSignatures(contractName: string): Promise<FunctionSignature[]> {
+    const { abi } = await getContractData(contractName);
+
+    return abi
+      .filter((item) => ["fallback", "function"].includes(item.type))
+      .map((item) => {
+        if (item.type === "fallback") return { functionName: "", functionArgs: "" };
+
+        return { functionName: item.name, functionArgs: `(${item.inputs.map((arg) => arg.type).join(",")})` };
+      });
+  }
+
   /**
    * Only await gas estimation (for speed), only execute if gas estimation succeeds (for safety)
    */
@@ -381,7 +428,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
    * Load the contract's abi and bytecode from the file system
    * @param contractName: Name of the contract to load
    */
-  async function getContractData(contractName: string): Promise<{ bytecode: string; abi: ContractInterface }> {
+  async function getContractData(contractName: string): Promise<{ bytecode: string; abi: Fragment[] }> {
     let data: any;
     const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
     try {
@@ -441,4 +488,23 @@ function toResourceSelector(namespace: string, file: string): Uint8Array {
   result.set(namespaceBytes);
   result.set(fileBytes, 16);
   return result;
+}
+
+interface FunctionSignature {
+  functionName: string;
+  functionArgs: string;
+}
+
+// TODO: move this to utils as soon as utils are usable inside cli
+// (see https://github.com/latticexyz/mud/issues/499)
+function toFunctionSelector({ functionName, functionArgs }: FunctionSignature): string {
+  const functionSignature = functionName + functionArgs;
+  if (functionSignature === "") return "0x";
+  return sigHash(functionSignature);
+}
+
+// TODO: move this to utils as soon as utils are usable inside cli
+// (see https://github.com/latticexyz/mud/issues/499)
+function sigHash(signature: string) {
+  return ethers.utils.hexDataSlice(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(signature)), 0, 4);
 }
