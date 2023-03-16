@@ -3,6 +3,13 @@ import { TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/
 import { RenderSystemInterfaceFunction } from "../render-solidity/types.js";
 import { MUDError } from "./errors.js";
 
+/**
+ * Parse the contract data to get the functions necessary to generate an interface,
+ * and symbols to import from the original contract.
+ * @param data contents of a file with the solidity contract
+ * @param contractName name of the contract
+ * @returns interface data
+ */
 export function contractToInterface(data: string, contractName: string) {
   const ast = parse(data);
 
