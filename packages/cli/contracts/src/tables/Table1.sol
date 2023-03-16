@@ -383,7 +383,7 @@ library Table1 {
     Enum1 v6,
     Enum2 v7
   ) internal {
-    bytes memory _data = abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
+    bytes memory _data = encode(v1, v2, v3, v4, v5, v6, v7);
 
     bytes32[] memory _primaryKeys = new bytes32[](7);
     _primaryKeys[0] = bytes32(uint256((k1)));
@@ -426,6 +426,19 @@ library Table1 {
     _table.v6 = Enum1(uint8(Bytes.slice1(_blob, 73)));
 
     _table.v7 = Enum2(uint8(Bytes.slice1(_blob, 74)));
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(
+    uint256 v1,
+    int32 v2,
+    bytes16 v3,
+    address v4,
+    bool v5,
+    Enum1 v6,
+    Enum2 v7
+  ) internal returns (bytes memory) {
+    return abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
   }
 
   /* Delete all data for given keys */
