@@ -6,12 +6,14 @@ import (
 )
 
 type FindBuilder struct {
-	Request *mode.FindRequest
+	Request   *mode.FindRequest
+	Namespace string
 }
 
-func NewFindBuilder(request *mode.FindRequest) *FindBuilder {
+func NewFindBuilder(request *mode.FindRequest, namespace string) *FindBuilder {
 	return &FindBuilder{
-		Request: request,
+		Request:   request,
+		Namespace: namespace,
 	}
 }
 
@@ -66,7 +68,7 @@ func (builder *FindBuilder) BuildFilter() string {
 
 func (builder *FindBuilder) BuildFrom() string {
 	var query strings.Builder
-	query.WriteString(" FROM " + builder.Request.From)
+	query.WriteString(" FROM " + builder.Namespace + "." + builder.Request.From)
 	return query.String()
 }
 

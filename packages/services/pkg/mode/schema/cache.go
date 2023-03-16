@@ -42,7 +42,8 @@ func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, ta
 	}
 
 	// Otherwise lookup the schema from the internal schemas table.
-	schemaTableName := Internal__SchemaTableSchema(chainId).FullTableName()
+	schemaTableSchema := Internal__SchemaTableSchema(chainId)
+	schemaTableName := schemaTableSchema.TableName
 
 	// Create a request builder for the table schema query.
 	request := &pb_mode.FindRequest{
@@ -76,7 +77,7 @@ func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, ta
 		},
 	}
 	// Query the DB for the schema.
-	builder := mode.NewFindBuilder(request)
+	builder := mode.NewFindBuilder(request, schemaTableSchema.Namespace)
 	query, err := builder.ToSQLQuery()
 	if err != nil {
 		cache.logger.Error("failed to build query", zap.Error(err))
