@@ -62,11 +62,11 @@ func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema, fieldProjections m
 
 	serializedRows := []*mode.Row{}
 
-	if rows.Next() {
+	for rows.Next() {
 		rows.Scan(rowInterface...)
 		serializedRow, err := SerializeRow(row, colNames, colEncodingTypes)
 		if err != nil {
-			logger.GetLogger().Warn("error while serializing", zap.Error(err))
+			logger.GetLogger().Warn("error while serializing", zap.Error(err), zap.String("table", tableSchema.NamespacedTableName()))
 		} else {
 			serializedRows = append(serializedRows, serializedRow)
 		}

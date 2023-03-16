@@ -15,8 +15,13 @@ func BuildInternalTableSchemas(chains []config.ChainConfig) map[string]*mode.Tab
 	// Create references to all of the internal table schemas.
 	tableSchemas := map[string]*mode.TableSchema{}
 	for _, chain := range chains {
+		// Add the block number table schema.
 		blockNumberTableSchema := Internal__BlockNumberTableSchema(chain.Id)
 		tableSchemas[blockNumberTableSchema.TableName] = blockNumberTableSchema
+
+		// Add the schema table schema.
+		schemaTableSchema := Internal__SchemaTableSchema(chain.Id)
+		tableSchemas[schemaTableSchema.TableName] = schemaTableSchema
 	}
 	return tableSchemas
 }

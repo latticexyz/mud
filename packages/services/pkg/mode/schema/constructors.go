@@ -62,7 +62,7 @@ func Internal__SchemaTableSchema(chainId string) *mode.TableSchema {
 			"world_address": "address",
 			"namespace":     "string",
 			"table_name":    "string",
-			"schema":        "string",
+			"schema":        "bytes",
 		},
 		Namespace: Namespace(chainId, ""),
 	}
