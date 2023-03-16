@@ -3,7 +3,7 @@ import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 
 // TODO: figure out how to use with SchemaTypeToPrimitive<T> return type to ensure correctness here
-export const decodeValue = <T extends SchemaType>(schemaType: T, value: ArrayBufferLike) => {
+export function decodeValue<T extends SchemaType>(schemaType: T, value: ArrayBufferLike) {
   switch (schemaType) {
     case SchemaType.BOOL:
     case SchemaType.UINT8:
@@ -107,4 +107,4 @@ export const decodeValue = <T extends SchemaType>(schemaType: T, value: ArrayBuf
     default:
       return decodeDynamicField(schemaType, value);
   }
-};
+}

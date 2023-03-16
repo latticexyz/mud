@@ -53,6 +53,7 @@ import { abi as IStoreAbi } from "@latticexyz/store/abi/IStore.json";
 import { Contract } from "ethers";
 import { createModeClient } from "../v2/mode/createModeClient";
 import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";
+import { getModeBlockNumber } from "../v2/mode/getModeBlockNumber";
 
 const debug = parentDebug.extend("SyncWorker");
 
@@ -217,7 +218,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const cacheBlockNumber = !disableCache ? await getIndexDBCacheStoreBlockNumber(indexDbCache) : -1;
     this.setLoadingState({ percentage: 50 });
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
-    const modeBlockNumber = 1; // TODO fetch mode block number
+    const modeBlockNumber = await getModeBlockNumber(modeClient, chainId);
 
     this.setLoadingState({ percentage: 100 });
     debug(

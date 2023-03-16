@@ -10,6 +10,7 @@ import { keyTupleToEntityID } from "../keyTupleToEntityID";
 import { decodeValue } from "../schemas/decodeValue";
 import { registerMetadata } from "../schemas/tableMetadata";
 import { registerSchema } from "../schemas/tableSchemas";
+import { getBlockNumberFromModeTable } from "./getBlockNumberFromModeTable";
 
 export async function syncTablesFromMode(
   client: QueryLayerClient,
@@ -25,14 +26,17 @@ export async function syncTablesFromMode(
       worldAddress: world.address,
     },
   });
-  console.log("got initial data from MODE", response);
+  console.log("syncTablesFromMode response", response);
 
-  // TODO: get this from MODE
-  const blockNumber = 1;
+  // TODO: figure out why this number is so different from `getModeBlockNumber`
+  const blockNumber = getBlockNumberFromModeTable(response.tables["block_number"]);
+  console.log("block number for sync tables", blockNumber);
+  // TODO: mode should separate user tables from meta/internal tables
+  const userTables = Object.entries(response.tables).filter(([fullTableName]) => fullTableName.includes("__"));
 
-  const registrationPromises: Promise<any>[] = [];
+  const registrationPromises: Promise<unknown>[] = [];
 
-  for (const [fullTableName, { rows, cols, types }] of Object.entries(response.tables)) {
+  for (const [fullTableName, { rows, cols, types }] of userTables) {
     const [tableNamespace, tableName] = fullTableName.split("__");
     const tableId = new TableId(tableNamespace, tableName);
 
