@@ -4,6 +4,7 @@ import (
 	"context"
 	"latticexyz/mud/packages/services/pkg/eth"
 	"latticexyz/mud/packages/services/pkg/mode/config"
+	"latticexyz/mud/packages/services/pkg/mode/read"
 	"latticexyz/mud/packages/services/pkg/mode/schema"
 	"latticexyz/mud/packages/services/pkg/mode/storecore"
 	"latticexyz/mud/packages/services/pkg/mode/write"
@@ -21,6 +22,7 @@ import (
 type IngressLayer struct {
 	eth *ethclient.Client
 	wl  *write.WriteLayer
+	rl  *read.ReadLayer
 
 	schemaCache *schema.SchemaCache
 	chainConfig *config.ChainConfig
@@ -28,7 +30,7 @@ type IngressLayer struct {
 	logger *zap.Logger
 }
 
-func New(config *config.ChainConfig, wl *write.WriteLayer, schemaCache *schema.SchemaCache, logger *zap.Logger) *IngressLayer {
+func New(config *config.ChainConfig, wl *write.WriteLayer, rl *read.ReadLayer, schemaCache *schema.SchemaCache, logger *zap.Logger) *IngressLayer {
 	logger.Info("creating ingress layer connected to websocket", zap.String("ws", config.Rpc.Ws))
 
 	// Create a connection to an Ethereum execution client.
@@ -41,6 +43,7 @@ func New(config *config.ChainConfig, wl *write.WriteLayer, schemaCache *schema.S
 	return &IngressLayer{
 		eth:         eth,
 		wl:          wl,
+		rl:          rl,
 		schemaCache: schemaCache,
 		chainConfig: config,
 		logger:      logger,
@@ -98,33 +101,19 @@ func (il *IngressLayer) Run() {
 			for _, vLog := range filteredLogs {
 				switch vLog.Topics[0].Hex() {
 				case StoreSetRecordEvent().Hex():
-					println("------------------StoreSetRecordEvent------------------")
-					println("-------------------------------------------------------")
-					println("-------------------------------------------------------")
-					println("-------------------------------------------------------")
 					event, err := ParseStoreSetRecord(vLog)
 					if err != nil {
 						il.logger.Error("failed to parse StoreSetRecord event", zap.Error(err))
 						continue
 					}
 					il.handleSetRecordEvent(event)
-					println("-------------------------------------------------------")
-					println("-------------------------------------------------------")
-					println("-------------------------------------------------------")
 				case StoreSetFieldEvent().Hex():
-					println("------------------StoreSetFieldEvent------------------")
-					println("-------------------------------------------------------")
-					println("-------------------------------------------------------")
-					println("-------------------------------------------------------")
 					event, err := ParseStoreSetField(vLog)
 					if err != nil {
 						il.logger.Error("failed to parse StoreSetField event", zap.Error(err))
 						continue
 					}
 					il.handleSetFieldEvent(event)
-					println("-------------------------------------------------------")
-					println("-------------------------------------------------------")
-					println("-------------------------------------------------------")
 				case StoreDeleteRecordEvent().Hex():
 					event, err := ParseStoreDeleteRecord(vLog)
 					if err != nil {
