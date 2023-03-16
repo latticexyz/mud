@@ -21,6 +21,7 @@ type TableSchema struct {
 	StoreCoreSchemaTypeKV *storecore.SchemaTypeKV `json:"store_core_schema_type_kv"`
 	PrimaryKey            string                  `json:"primary_key"`
 	ReadableName          string                  `json:"readable_name"`
+	CapitalizationMap     map[string]string       `json:"capitalization_map"`
 }
 
 type DataSchema struct {

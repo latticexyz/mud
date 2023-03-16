@@ -81,7 +81,7 @@ func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema, fieldProjections m
 	logger.GetLogger().Info("serialization finished", zap.String("time taken", tsElapsed.String()), zap.String("table", tableSchema.FullTableName()))
 
 	return &mode.GenericTable{
-		Cols:  colNames,
+		Cols:  CapitalizeColNames(colNames, tableSchema),
 		Rows:  serializedRows,
 		Types: colEncodingTypesStrings,
 	}, nil
@@ -106,8 +106,21 @@ func SerializeStreamEvent(event *db.StreamEvent, tableSchema *TableSchema, field
 	}
 
 	return &mode.GenericTable{
-		Cols:  colNames,
+		Cols:  CapitalizeColNames(colNames, tableSchema),
 		Rows:  serializedRows,
 		Types: colEncodingTypesStrings,
 	}, nil
+}
+
+func CapitalizeColNames(colNames []string, tableSchema *TableSchema) []string {
+	capitalizedCols := []string{}
+	for _, colName := range colNames {
+		originalName := tableSchema.CapitalizationMap[colName]
+		if originalName != "" {
+			capitalizedCols = append(capitalizedCols, originalName)
+		} else {
+			capitalizedCols = append(capitalizedCols, colName)
+		}
+	}
+	return capitalizedCols
 }
