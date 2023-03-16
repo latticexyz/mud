@@ -70,6 +70,11 @@ library SystemRegistry {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((resourceSelector)));
   }
 
+  /** Tightly pack full data using this table's schema */
+  function encode(bytes32 resourceSelector) internal returns (bytes memory) {
+    return abi.encodePacked(resourceSelector);
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(address system) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

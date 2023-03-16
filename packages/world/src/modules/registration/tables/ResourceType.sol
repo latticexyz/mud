@@ -73,6 +73,11 @@ library ResourceType {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(Resource(resourceType)));
   }
 
+  /** Tightly pack full data using this table's schema */
+  function encode(Resource resourceType) internal returns (bytes memory) {
+    return abi.encodePacked(resourceType);
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

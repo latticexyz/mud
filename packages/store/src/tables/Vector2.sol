@@ -105,7 +105,7 @@ library Vector2 {
 
   /** Set the full data using individual values */
   function set(bytes32 key, uint32 x, uint32 y) internal {
-    bytes memory _data = abi.encodePacked(x, y);
+    bytes memory _data = encode(x, y);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -123,6 +123,11 @@ library Vector2 {
     _table.x = (uint32(Bytes.slice4(_blob, 0)));
 
     _table.y = (uint32(Bytes.slice4(_blob, 4)));
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(uint32 x, uint32 y) internal returns (bytes memory) {
+    return abi.encodePacked(x, y);
   }
 
   /* Delete all data for given keys */

@@ -101,6 +101,15 @@ library ReverseMapping {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
   }
 
+  /** Tightly pack full data using this table's schema */
+  function encode(bytes32[] memory keysWithValue) internal returns (bytes memory) {
+    uint16[] memory _counters = new uint16[](1);
+    _counters[0] = uint16(keysWithValue.length * 32);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+
+    return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((keysWithValue)));
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(uint256 _tableId, bytes32 valueHash) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
