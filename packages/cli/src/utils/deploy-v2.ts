@@ -5,16 +5,17 @@ import { MUDError } from "./errors.js";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IWorld } from "@latticexyz/world/types/ethers-contracts/IWorld.js";
-import { bytecode as WorldBytecode } from "@latticexyz/world/abi/World.json";
-import { abi as WorldABI } from "@latticexyz/world/abi/IWorld.json";
-import CoreModuleData from "@latticexyz/world/abi/CoreModule.json";
-import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json";
-import ReverseMappingModuleData from "@latticexyz/world/abi/ReverseMappingModule.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
 import { resolveSchemaOrUserTypeSimple } from "../render-solidity/userType.js";
 import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
+
+import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" };
+import IWorldData from "@latticexyz/world/abi/IWorld.json" assert { type: "json" };
+import CoreModuleData from "@latticexyz/world/abi/CoreModule.json" assert { type: "json" };
+import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json" assert { type: "json" };
+import ReverseMappingModuleData from "@latticexyz/world/abi/ReverseMappingModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
@@ -60,7 +61,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   const worldPromise = {
     World: worldContractName
       ? deployContractByName(worldContractName)
-      : deployContract(WorldABI, WorldBytecode, "World"),
+      : deployContract(IWorldData.abi, WorldData.bytecode, "World"),
   };
 
   // Deploy Systems
@@ -97,7 +98,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   const contractPromises: Record<string, Promise<string>> = { ...worldPromise, ...systemPromises, ...modulePromises };
 
   // Create World contract instance from deployed address
-  const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as IWorld;
+  const WorldContract = new ethers.Contract(await contractPromises.World, IWorldData.abi, signer) as IWorld;
 
   // Install core Modules
   console.log(chalk.blue("Installing core World modules"));
