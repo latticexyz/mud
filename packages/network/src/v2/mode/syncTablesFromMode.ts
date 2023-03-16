@@ -1,32 +1,36 @@
 import { ComponentValue } from "@latticexyz/recs";
-import { AbiTypeToSchemaType } from "@latticexyz/schema-type";
+import { AbiTypeToSchemaType, encodeSchema } from "@latticexyz/schema-type";
 import { QueryLayerClient } from "@latticexyz/services/protobuf/ts/mode/mode";
-import { TableId } from "@latticexyz/utils";
+import { arrayToHex, TableId } from "@latticexyz/utils";
+import { Contract } from "ethers";
 import { NetworkEvents } from "../../types";
 
 import { CacheStore, createCacheStore, storeEvent } from "../../workers";
 import { keyTupleToEntityID } from "../keyTupleToEntityID";
 import { decodeValue } from "../schemas/decodeValue";
+import { registerMetadata } from "../schemas/tableMetadata";
+import { registerSchema } from "../schemas/tableSchemas";
 
 export async function syncTablesFromMode(
   client: QueryLayerClient,
   chainId: number,
-  worldAddress: string
+  world: Contract
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
 
-  const { tables } = await client.findAll({
+  const response = await client.findAll({
     tables: [],
     namespace: {
       chainId: chainId.toString(),
-      worldAddress: worldAddress,
+      worldAddress: world.address,
     },
   });
+  console.log("got initial data from MODE", response);
 
   // TODO: get this from MODE
   const blockNumber = 1;
 
-  for (const [fullTableName, { rows, cols, types }] of Object.entries(tables)) {
+  for (const [fullTableName, { rows, cols, types }] of Object.entries(response.tables)) {
     const [tableNamespace, tableName] = fullTableName.split("__");
     const tableId = new TableId(tableNamespace, tableName);
 
@@ -38,6 +42,11 @@ export async function syncTablesFromMode(
     const keyTypes = types.slice(0, keyLength).map((abiType) => AbiTypeToSchemaType[abiType]);
     const fieldNames = cols.slice(keyLength);
     const fieldTypes = types.slice(keyLength).map((abiType) => AbiTypeToSchemaType[abiType]);
+
+    const rawSchema = arrayToHex(encodeSchema(fieldTypes));
+    // TODO: refactor registerSchema/registerMetadata to take chain+world address rather than Contract
+    registerSchema(world, tableId, rawSchema);
+    registerMetadata(world, tableId, { tableName, fieldNames });
 
     for (const row of rows) {
       const keyTuple = row.values.slice(0, keyLength).map((bytes, i) => decodeValue(keyTypes[i], bytes.buffer));

@@ -238,7 +238,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from MODE", percentage: 0 });
         // TODO: pass in function to act as progress meter if we need it
         // TODO: pass in optional tables to sync? block number to sync from?
-        initialState = await syncTablesFromMode(modeClient, chainId, worldContract.address);
+        initialState = await syncTablesFromMode(modeClient, chainId, storeContract);
       } else if (syncFromSnapshot) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from snapshot", percentage: 0 });
         initialState = await fetchSnapshotChunked(
