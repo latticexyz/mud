@@ -5,7 +5,7 @@ import { TableId } from "@latticexyz/utils";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
 import { decodeStoreSetField } from "./decodeStoreSetField";
-import { EntityID } from "@latticexyz/recs";
+import { keyTupleToEntityID } from "./keyTupleToEntityID";
 
 export const ecsEventFromLog = async (
   contract: Contract,
@@ -18,8 +18,7 @@ export const ecsEventFromLog = async (
 
   const tableId = TableId.fromBytes32(utils.arrayify(args.table));
   const component = tableId.toString();
-  // TODO: revisit key tuple encoding for client
-  const entity = args.key.join(":") as EntityID;
+  const entity = keyTupleToEntityID(args.key);
 
   const ecsEvent: NetworkComponentUpdate = {
     type: NetworkEvents.NetworkComponentUpdate,

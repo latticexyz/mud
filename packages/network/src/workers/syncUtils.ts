@@ -30,7 +30,7 @@ import {
   ECSStreamServiceDefinition,
 } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
 import { createChannel, createClient } from "nice-grpc-web";
-import { formatComponentID, formatEntityID } from "../utils";
+import { normalizeComponentID, normalizeEntityID } from "../utils";
 import { grpc } from "@improbable-eng/grpc-web";
 import { debug as parentDebug } from "./debug";
 import { fetchStoreEvents } from "../v2/fetchStoreEvents";
@@ -430,8 +430,8 @@ export function createFetchWorldEventsInBlockRange<C extends Components>(
         componentId: BigNumber;
       };
 
-      const component = formatComponentID(rawComponentId);
-      const entity = formatEntityID(entityId);
+      const component = normalizeComponentID(rawComponentId);
+      const entity = normalizeEntityID(entityId);
       const blockNumber = to;
 
       const ecsEvent = {
@@ -477,8 +477,8 @@ export function createTransformWorldEventsFromStream(decode: ReturnType<typeof c
       const entityId = ecsEvent.entityId;
       const txHash = ecsEvent.txHash;
 
-      const component = formatComponentID(rawComponentId);
-      const entity = formatEntityID(entityId);
+      const component = normalizeComponentID(rawComponentId);
+      const entity = normalizeEntityID(entityId);
 
       const value = ecsEvent.eventType === "ComponentValueSet" ? await decode(component, ecsEvent.value) : undefined;
 
