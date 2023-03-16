@@ -125,6 +125,10 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 }
 
 func (ql *QueryLayer) Join(ctx context.Context, request *pb_mode.JoinRequest) (*pb_mode.QueryLayerResponse, error) {
+	if schema.ValidateNamespace(request.Namespace) != nil {
+		return nil, fmt.Errorf("invalid namespace")
+	}
+
 	// Create a "builder" for the request.
 	builder := mode.NewJoinBuilder(request)
 
