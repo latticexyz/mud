@@ -11,20 +11,21 @@ import (
 	"go.uber.org/zap"
 )
 
-func BuildInternalTableSchemas() map[string]*mode.TableSchema {
+func BuildInternalTableSchemas(chains []config.ChainConfig) map[string]*mode.TableSchema {
 	// Create references to all of the internal table schemas.
-	blockNumberTableSchema := Internal__BlockNumberTableSchema()
-
-	return map[string]*mode.TableSchema{
-		blockNumberTableSchema.TableName: blockNumberTableSchema,
+	tableSchemas := map[string]*mode.TableSchema{}
+	for _, chain := range chains {
+		blockNumberTableSchema := Internal__BlockNumberTableSchema(chain.Id)
+		tableSchemas[blockNumberTableSchema.TableName] = blockNumberTableSchema
 	}
+	return tableSchemas
 }
 
 func NewCache(dl *db.DatabaseLayer, chains []config.ChainConfig, logger *zap.Logger) *SchemaCache {
 	return &SchemaCache{
 		dl:                   dl,
 		logger:               logger,
-		internalTableSchemas: BuildInternalTableSchemas(),
+		internalTableSchemas: BuildInternalTableSchemas(chains),
 	}
 }
 

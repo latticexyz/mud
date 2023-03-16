@@ -11,6 +11,8 @@ import (
 	"latticexyz/mud/packages/services/pkg/utils"
 	"math/big"
 
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
+
 	"github.com/avast/retry-go"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -38,7 +40,15 @@ func New(config *config.ChainConfig, wl *write.WriteLayer, rl *read.ReadLayer, s
 
 	// Perform chain-specific actions on the write layer.
 	// Create a table that stores the schemas for every table on the chain that this ingress layer is indexing.
-	wl.CreateTable(schema.Internal__SchemaTableSchema(config.Id))
+	err := wl.CreateTable(schema.Internal__SchemaTableSchema(config.Id))
+	if err != nil {
+		logger.Fatal("failed to create Internal__SchemaTable", zap.Error(err))
+	}
+	// Create a table that stores the current block number on the chain that this ingress layer is indexing.
+	err = wl.CreateTable(schema.Internal__BlockNumberTableSchema(config.Id))
+	if err != nil {
+		logger.Fatal("failed to create Internal__BlockNumberTable", zap.Error(err))
+	}
 
 	return &IngressLayer{
 		eth:         eth,
@@ -130,13 +140,11 @@ func (il *IngressLayer) Run() {
 func (il *IngressLayer) UpdateBlockNumber(chainId string, blockNumber *big.Int) {
 	// Build the row to update or insert (contains the block number).
 	row := write.RowKV{
-		"chain_id":     chainId,
 		"block_number": blockNumber.String(),
 	}
 	// Insert the block number into the database.
-	tableSchema := schema.Internal__BlockNumberTableSchema()
-	filter := tableSchema.FilterFromMap(map[string]string{"chain_id": chainId})
-	err := il.wl.UpdateOrInsertRow(tableSchema, row, filter)
+	tableSchema := schema.Internal__BlockNumberTableSchema(chainId)
+	err := il.wl.UpdateOrInsertRow(tableSchema, row, []*pb_mode.Filter{})
 	if err != nil {
 		il.logger.Error("failed to update or insert block number", zap.Error(err))
 	}

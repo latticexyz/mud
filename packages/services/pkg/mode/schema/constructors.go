@@ -10,23 +10,19 @@ import (
 const CONNECTOR string = "__"
 const TABLE_PREFIX string = "mode"
 
-func Internal__BlockNumberTableSchema() *mode.TableSchema {
+func Internal__BlockNumberTableSchema(chainId string) *mode.TableSchema {
 	return &mode.TableSchema{
-		TableName: "block_numbers",
+		TableName: "block_number",
 		FieldNames: []string{
-			"chain_id",
 			"block_number",
 		},
 		PostgresTypes: map[string]string{
-			"chain_id":     "text",
 			"block_number": "text",
 		},
 		SolidityTypes: map[string]string{
-			"chain_id":     "string",
 			"block_number": "uint256",
 		},
-		PrimaryKey: "chain_id",
-		Namespace:  Namespace("", ""),
+		Namespace: Namespace(chainId, ""),
 	}
 }
 
