@@ -51,7 +51,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   setInternalFeePerGas(priorityFeeMultiplier);
 
   // Catch all to await any promises before exiting the script
-  const promises: Promise<unknown>[] = [];
+  let promises: Promise<unknown>[] = [];
 
   // Get block number before deploying
   const blockNumber = Number(await cast(["block-number", "--rpc-url", rpc], { profile }));
@@ -111,7 +111,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
   // Register tables
   const tableIds: { [tableName: string]: Uint8Array } = {};
-  promises.push(
+  promises = [
+    ...promises,
     ...Object.entries(mudConfig.tables).map(async ([tableName, { fileSelector, schema, primaryKeys }]) => {
       console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${fileSelector}`));
 
@@ -143,11 +144,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       ]);
 
       console.log(chalk.green(`Registered table ${tableName} at ${fileSelector}`));
-    })
-  );
+    }),
+  ];
 
   // Register systems (using forEach instead of for..of to avoid blocking on async calls)
-  promises.push(
+  promises = [
+    ...promises,
     ...Object.entries(mudConfig.systems).map(async ([systemName, { fileSelector, openAccess }]) => {
       console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${fileSelector}`));
 
@@ -160,11 +162,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       ]);
 
       console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${fileSelector}`));
-    })
-  );
+    }),
+  ];
 
   // Wait for resources to be registered before granting access to them
   await Promise.all(promises); // ----------------------------------------------------------------------------------------------
+  promises = [];
 
   // Grant access to systems
   for (const [systemName, { fileSelector, accessListAddresses, accessListSystems }] of Object.entries(
@@ -173,7 +176,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     const resourceSelector = `${namespace}/${fileSelector}`;
 
     // Grant access to addresses
-    promises.push(
+    promises = [
+      ...promises,
       ...accessListAddresses.map(async (address) => {
         console.log(chalk.blue(`Grant ${address} access to ${systemName} (${resourceSelector})`));
         await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
@@ -182,11 +186,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
           address,
         ]);
         console.log(chalk.green(`Granted ${address} access to ${systemName} (${namespace}/${fileSelector})`));
-      })
-    );
+      }),
+    ];
 
     // Grant access to other systems
-    promises.push(
+    promises = [
+      ...promises,
       ...accessListSystems.map(async (granteeSystem) => {
         console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${resourceSelector})`));
         await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
@@ -195,15 +200,17 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
           await contractPromises[granteeSystem],
         ]);
         console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${resourceSelector})`));
-      })
-    );
+      }),
+    ];
   }
 
   // Wait for access to be granted before installing modules
   await Promise.all(promises); // ----------------------------------------------------------------------------------------------
+  promises = [];
 
   // Install modules
-  promises.push(
+  promises = [
+    ...promises,
     ...mudConfig.modules.map(async (module) => {
       console.log(chalk.blue(`Installing${module.root ? " root " : " "}module ${module.name}`));
       // Resolve arguments
@@ -222,11 +229,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       ]);
 
       console.log(chalk.green(`Installed${module.root ? " root " : " "}module ${module.name}`));
-    })
-  );
+    }),
+  ];
 
   // Await all promises before executing PostDeploy script
   await Promise.all(promises); // ----------------------------------------------------------------------------------------------
+  promises = [];
 
   // Execute postDeploy forge script
   const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
@@ -405,6 +413,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   }
 }
 
+// TODO: use stringToBytes16 from utils as soon as utils are usable inside cli
+// (see https://github.com/latticexyz/mud/issues/499)
 function toBytes16(input: string) {
   if (input.length > 16) throw new Error("String does not fit into 16 bytes");
 
@@ -420,6 +430,8 @@ function toBytes16(input: string) {
   return result;
 }
 
+// TODO: use TableId from utils as soon as utils are usable inside cli
+// (see https://github.com/latticexyz/mud/issues/499)
 function toResourceSelector(namespace: string, file: string): Uint8Array {
   const namespaceBytes = toBytes16(namespace);
   const fileBytes = toBytes16(file);

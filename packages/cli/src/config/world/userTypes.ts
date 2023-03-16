@@ -1,4 +1,4 @@
-import { DynamicResulution } from "../dynamicResolution.js";
+import { DynamicResolution } from "../dynamicResolution.js";
 
 // zod doesn't preserve doc comments
 export type SystemUserConfig =
@@ -29,7 +29,7 @@ export type ModuleConfig = {
   /** Should this module be installed as a root module? */
   root?: boolean;
   /** Arguments to be passed to the module's install method */
-  args?: (ValueWithType | DynamicResulution)[];
+  args?: (ValueWithType | DynamicResolution)[];
 };
 
 // zod doesn't preserve doc comments

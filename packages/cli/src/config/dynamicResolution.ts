@@ -6,7 +6,7 @@ export enum DynamicResolutionType {
   SYSTEM_ADDRESS,
 }
 
-export type DynamicResulution = {
+export type DynamicResolution = {
   type: DynamicResolutionType;
   input: string;
 };
@@ -22,7 +22,7 @@ export function resolveTableId(tableName: string) {
 }
 
 /** Type guard for DynamicResolution */
-export function isDynamicResolution(value: unknown): value is DynamicResulution {
+export function isDynamicResolution(value: unknown): value is DynamicResolution {
   return typeof value === "object" && value !== null && "type" in value && "input" in value;
 }
 
