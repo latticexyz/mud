@@ -51,8 +51,8 @@ func (builder *FindAllBuilder) BuildFrom() string {
 			query.WriteString(" NATURAL FULL JOIN ")
 		}
 		// Write the SELECT per-table.
-		fullTableName := builder.Namespace + "." + tableName
-		query.WriteString("(SELECT '" + fullTableName + "' AS source, entityid FROM " + fullTableName + ") " + fullTableName + "")
+		namespacedTableName := builder.Namespace + "." + tableName
+		query.WriteString("(SELECT '" + namespacedTableName + "' AS source, entityid FROM " + namespacedTableName + ") " + namespacedTableName + "")
 	}
 	return query.String()
 }

@@ -76,7 +76,7 @@ func (builder *CreateBuilder) BuildCreateTableFields() string {
 }
 
 func (builder *CreateBuilder) BuildCreate() string {
-	return `CREATE TABLE IF NOT EXISTS ` + builder.TableSchema.FullTableName() + ` (
+	return `CREATE TABLE IF NOT EXISTS ` + builder.TableSchema.NamespacedTableName() + ` (
 	` + builder.BuildCreateTableFields() + `
 	);`
 }
@@ -84,13 +84,13 @@ func (builder *CreateBuilder) BuildCreate() string {
 func (builder *CreateBuilder) BuildIndex() string {
 	var indexStr strings.Builder
 	for _, field := range builder.TableSchema.FieldNames {
-		indexStr.WriteString(`CREATE INDEX IF NOT EXISTS ` + builder.TableSchema.TableName + `_` + field + `_idx ON ` + builder.TableSchema.FullTableName() + `("` + field + `");`)
+		indexStr.WriteString(`CREATE INDEX IF NOT EXISTS ` + builder.TableSchema.TableName + `_` + field + `_idx ON ` + builder.TableSchema.NamespacedTableName() + `("` + field + `");`)
 	}
 	return indexStr.String()
 }
 
 func (builder *CreateBuilder) BuildIndentityFullModifier() string {
-	return "ALTER TABLE " + builder.TableSchema.FullTableName() + " REPLICA IDENTITY FULL;"
+	return "ALTER TABLE " + builder.TableSchema.NamespacedTableName() + " REPLICA IDENTITY FULL;"
 }
 
 func (builder *CreateBuilder) ToSQLQueries() (string, string, error) {

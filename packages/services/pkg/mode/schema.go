@@ -59,7 +59,7 @@ func (dataSchema *DataSchema) BuildTableSchemas() map[string]*TableSchema {
 /// Table Schema
 ///
 
-func (schema *TableSchema) FullTableName() string {
+func (schema *TableSchema) NamespacedTableName() string {
 	return schema.Namespace + "." + schema.TableName
 }
 

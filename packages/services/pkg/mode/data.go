@@ -78,7 +78,7 @@ func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema, fieldProjections m
 
 	// Record how long the serialization took.
 	tsElapsed := time.Since(tsStart)
-	logger.GetLogger().Info("serialization finished", zap.String("time taken", tsElapsed.String()), zap.String("table", tableSchema.FullTableName()))
+	logger.GetLogger().Info("serialization finished", zap.String("time taken", tsElapsed.String()), zap.String("table", tableSchema.NamespacedTableName()))
 
 	return &mode.GenericTable{
 		Cols:  CapitalizeColNames(colNames, tableSchema),
