@@ -35,5 +35,5 @@ function getKeysWithValue(
   uint256 reverseMappingTableId = uint256(getTargetTableSelector(tableId));
 
   // Get the keys with the given value
-  keysWithValue = ReverseMapping.get(reverseMappingTableId, store, keccak256(value));
+  keysWithValue = ReverseMapping.get(store, reverseMappingTableId, keccak256(value));
 }

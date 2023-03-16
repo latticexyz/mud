@@ -10,7 +10,7 @@ import { SystemRegistry } from "./tables/SystemRegistry.sol";
 
 import { System } from "../../System.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
-import { Resource } from "../../types.sol";
+import { Resource } from "../../Types.sol";
 import { ROOT_NAMESPACE, ROOT_FILE } from "../../constants.sol";
 import { AccessControl } from "../../AccessControl.sol";
 

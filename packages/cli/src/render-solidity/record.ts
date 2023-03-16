@@ -1,4 +1,4 @@
-import { renderList, renderArguments, renderCommonData } from "./common.js";
+import { renderList, renderArguments, renderCommonData, renderWithStore } from "./common.js";
 import { renderDecodeValueType } from "./field.js";
 import { RenderTableDynamicField, RenderTableOptions } from "./types.js";
 
@@ -6,58 +6,61 @@ export function renderRecordMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
   const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
-  let result = `
-  /** Get the full data */
-  function get(${renderArguments([_typedTableId, _typedKeyArgs])}) internal view returns (${renderDecodedRecord(
-    options
-  )}) {
-    ${_primaryKeysDefinition}
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
-    return decode(_blob);
-  }
-  `;
-
-  if (storeArgument) {
-    result += `
-    /** Get the full data from the specified store */
+  let result = renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix) => `
+    /** Get the full data${_commentSuffix} */
     function get(${renderArguments([
+      _typedStore,
       _typedTableId,
-      `IStore _store`,
       _typedKeyArgs,
     ])}) internal view returns (${renderDecodedRecord(options)}) {
       ${_primaryKeysDefinition}
-      bytes memory _blob = _store.getRecord(_tableId, _primaryKeys);
+      bytes memory _blob = ${_store}.getRecord(_tableId, _primaryKeys, getSchema());
       return decode(_blob);
     }
-    `;
-  }
+  `
+  );
 
-  result += `
-  /** Set the full data using individual values */
-  function set(${renderArguments([
-    _typedTableId,
-    _typedKeyArgs,
-    renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-  ])}) internal {
-    bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
+  result += renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix) => `
+    /** Set the full data using individual values${_commentSuffix} */
+    function set(${renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+    ])}) internal {
+      bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
 
-    ${_primaryKeysDefinition}
+      ${_primaryKeysDefinition}
 
-    StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
-  }
-  `;
+      ${_store}.setRecord(_tableId, _primaryKeys, _data);
+    }
+  `
+  );
 
   if (structName !== undefined) {
-    result += `
-    /** Set the full data using the data struct */
-    function set(${renderArguments([_typedTableId, _typedKeyArgs, `${structName} memory _table`])}) internal {
-      set(${renderArguments([
-        _tableId,
-        _keyArgs,
-        renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
-      ])});
-    }
-    `;
+    result += renderWithStore(
+      storeArgument,
+      (_typedStore, _store, _commentSuffix, _untypedStore) => `
+      /** Set the full data using the data struct${_commentSuffix} */
+      function set(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        `${structName} memory _table`,
+      ])}) internal {
+        set(${renderArguments([
+          _untypedStore,
+          _tableId,
+          _keyArgs,
+          renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
+        ])});
+      }
+    `
+    );
   }
 
   result += renderDecodeFunction(options);

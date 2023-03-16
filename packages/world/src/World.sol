@@ -8,7 +8,7 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
-import { Resource } from "./types.sol";
+import { Resource } from "./Types.sol";
 import { ROOT_NAMESPACE, ROOT_FILE, REGISTRATION_SYSTEM_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { Call } from "./Call.sol";

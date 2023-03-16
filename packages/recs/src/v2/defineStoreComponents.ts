@@ -1,4 +1,10 @@
-import { parseStoreConfig, StoreUserConfig, FullTableConfig } from "@latticexyz/cli/src/config/parseStoreConfig";
+import {
+  parseStoreConfig,
+  StoreUserConfig,
+  TableConfig,
+  FullSchemaConfig,
+  ShorthandSchemaConfig,
+} from "@latticexyz/cli/src/config/parseStoreConfig";
 import { TableId } from "@latticexyz/utils";
 import { World, Component } from "../types";
 import { Type as RecsType } from "../constants";
@@ -9,24 +15,34 @@ import { schemaTypesToRecsTypes } from "./schemaTypesToRecsTypes";
 
 type SchemaTypeToRecsType<T extends SchemaType> = (typeof schemaTypesToRecsTypes)[T];
 
-type TableSchemaToComponentSchema<TableSchema extends FullTableConfig["schema"]> = {
-  [K in keyof TableSchema]: TableSchema[K] extends SchemaType
-    ? SchemaTypeToRecsType<TableSchema[K]>
-    : TableSchema[K] extends string
-    ? // TODO: better support user enums
-      RecsType.Number
-    : never;
+type SchemaOrUserTypeToRecsType<T extends SchemaType | string> = T extends SchemaType
+  ? SchemaTypeToRecsType<T>
+  : T extends string
+  ? // TODO: better support user enums
+    RecsType.Number
+  : never;
+
+type TableSchemaToComponentSchema<TableSchema extends FullSchemaConfig> = {
+  [K in keyof TableSchema]: SchemaOrUserTypeToRecsType<TableSchema[K]>;
 };
 
-type TablesToComponents<Tables extends Record<string, FullTableConfig>> = {
+type TablesToComponents<Tables extends Record<string, TableConfig>> = {
   [K in keyof Tables]: Component<
-    TableSchemaToComponentSchema<Tables[K]["schema"]>,
+    TableSchemaToComponentSchema<ExpandSchema<Tables[K]["schema"]>>,
     { contractId: string; tableId: string; table: Tables[K] }
   >;
 };
 
+type ExpandSchema<TableSchema extends TableConfig["schema"]> = TableSchema extends FullSchemaConfig
+  ? TableSchema
+  : TableSchema extends ShorthandSchemaConfig
+  ? {
+      value: TableSchema;
+    }
+  : never;
+
 type ExpandTables<Tables extends StoreUserConfig["tables"]> = {
-  [K in keyof Tables]: Tables[K] extends FullTableConfig
+  [K in keyof Tables]: Tables[K] extends TableConfig
     ? Tables[K]
     : Tables[K] extends SchemaType
     ? { schema: { value: Tables[K] } }
@@ -36,7 +52,7 @@ type ExpandTables<Tables extends StoreUserConfig["tables"]> = {
     : never;
 };
 
-const tableSchemaToRecsSchema = <TableSchema extends FullTableConfig["schema"]>(
+const tableSchemaToRecsSchema = <TableSchema extends FullSchemaConfig>(
   tableSchema: TableSchema
 ): TableSchemaToComponentSchema<TableSchema> => {
   return Object.fromEntries(

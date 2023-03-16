@@ -69,7 +69,7 @@ contract ReverseMappingModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value));
 
     // Get the list of entities with this value from the target table
-    bytes32[] memory keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value)));
+    bytes32[] memory keysWithValue = ReverseMapping.get(world, targetTableId, keccak256(abi.encode(value)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
@@ -85,7 +85,7 @@ contract ReverseMappingModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value1)));
+    bytes32[] memory keysWithValue = ReverseMapping.get(world, targetTableId, keccak256(abi.encode(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "1");
@@ -95,7 +95,7 @@ contract ReverseMappingModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value1));
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value1)));
+    keysWithValue = ReverseMapping.get(world, targetTableId, keccak256(abi.encode(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 2);
@@ -109,14 +109,14 @@ contract ReverseMappingModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2));
 
     // Get the list of entities with value1 from the target table
-    keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value1)));
+    keysWithValue = ReverseMapping.get(world, targetTableId, keccak256(abi.encode(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "5");
     assertEq(keysWithValue[0], key2, "6");
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value2)));
+    keysWithValue = ReverseMapping.get(world, targetTableId, keccak256(abi.encode(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "7");
@@ -127,7 +127,7 @@ contract ReverseMappingModuleTest is Test {
     world.deleteRecord(namespace, sourceFile, keyTuple1);
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value2)));
+    keysWithValue = ReverseMapping.get(world, targetTableId, keccak256(abi.encode(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 0, "9");
@@ -143,7 +143,7 @@ contract ReverseMappingModuleTest is Test {
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1));
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value1)));
+    bytes32[] memory keysWithValue = ReverseMapping.get(world, targetTableId, keccak256(abi.encode(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
@@ -156,13 +156,13 @@ contract ReverseMappingModuleTest is Test {
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2));
 
     // Get the list of entities with value1 from the target table
-    keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value1)));
+    keysWithValue = ReverseMapping.get(world, targetTableId, keccak256(abi.encode(value1)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 0);
 
     // Get the list of entities with value2 from the target table
-    keysWithValue = ReverseMapping.get(targetTableId, world, keccak256(abi.encode(value2)));
+    keysWithValue = ReverseMapping.get(world, targetTableId, keccak256(abi.encode(value2)));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);

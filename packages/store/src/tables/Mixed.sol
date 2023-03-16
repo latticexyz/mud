@@ -122,9 +122,7 @@ library Mixed {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 2);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 2, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
   /** Get s */
@@ -149,9 +147,7 @@ library Mixed {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 3);
-    bytes memory _newBlob = abi.encodePacked(_blob, bytes((_slice)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 3, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 3, bytes((_slice)));
   }
 
   /** Get the full data */

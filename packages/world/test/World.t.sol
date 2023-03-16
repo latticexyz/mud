@@ -313,14 +313,14 @@ contract WorldTest is Test {
     uint256 tableId = uint256(resourceSelector);
 
     // !gasreport Write data to the table
-    Bool.set(tableId, world, true);
+    Bool.set(world, tableId, true);
 
     // Expect the data to be written
-    assertTrue(Bool.get(tableId, world));
+    assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), "testSetRecord", "testTable");
-    Bool.set(tableId, world, true);
+    Bool.set(world, tableId, true);
   }
 
   function testSetField() public {
@@ -335,13 +335,13 @@ contract WorldTest is Test {
     world.setField(namespace, file, singletonKey, 0, abi.encodePacked(true));
 
     // Expect the data to be written
-    assertTrue(Bool.get(tableId, world));
+    assertTrue(Bool.get(world, tableId));
 
     // Write data to the table via its tableId
     world.setField(uint256(resourceSelector), singletonKey, 0, abi.encodePacked(false));
 
     // Expect the data to be written
-    assertFalse(Bool.get(tableId, world));
+    assertFalse(Bool.get(world, tableId));
 
     // Expect an error when trying to write from an address that doesn't have access when calling via the namespace
     _expectAccessDenied(address(0x01), "testSetField", "testTable");
@@ -371,7 +371,7 @@ contract WorldTest is Test {
     world.pushToField(namespace, file, keyTuple, 0, encodedData);
 
     // Expect the data to be written
-    assertEq(AddressArray.get(tableId, world, key), dataToPush);
+    assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Delete the data
     world.deleteRecord(namespace, file, keyTuple);
@@ -380,7 +380,7 @@ contract WorldTest is Test {
     world.pushToField(tableId, keyTuple, 0, encodedData);
 
     // Expect the data to be written
-    assertEq(AddressArray.get(tableId, world, key), dataToPush);
+    assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Expect an error when trying to write from an address that doesn't have access (via namespace/file)
     _expectAccessDenied(address(0x01), namespace, file);
@@ -401,25 +401,25 @@ contract WorldTest is Test {
 
     // Write data to the table via the namespace and expect it to be written
     world.setRecord(namespace, file, singletonKey, abi.encodePacked(true));
-    assertTrue(Bool.get(tableId, world));
+    assertTrue(Bool.get(world, tableId));
 
     // !gasreport Delete record
     world.deleteRecord(namespace, file, singletonKey);
 
     // expect it to be deleted
-    assertFalse(Bool.get(tableId, world));
+    assertFalse(Bool.get(world, tableId));
 
     // Write data to the table via the namespace and expect it to be written
     world.setRecord("testDeleteRecord", "testTable", singletonKey, abi.encodePacked(true));
-    assertTrue(Bool.get(tableId, world));
+    assertTrue(Bool.get(world, tableId));
 
     // Delete the record via the tableId and expect it to be deleted
     world.deleteRecord(tableId, singletonKey);
-    assertFalse(Bool.get(tableId, world));
+    assertFalse(Bool.get(world, tableId));
 
     // Write data to the table via the namespace and expect it to be written
     world.setRecord("testDeleteRecord", "testTable", singletonKey, abi.encodePacked(true));
-    assertTrue(Bool.get(tableId, world));
+    assertTrue(Bool.get(world, tableId));
 
     // Expect an error when trying to delete from an address that doesn't have access when calling via the namespace
     _expectAccessDenied(address(0x01), "testDeleteRecord", "testTable");
@@ -539,7 +539,7 @@ contract WorldTest is Test {
     );
 
     // Expect the data to be written
-    assertTrue(Bool.get(tableId, world));
+    assertTrue(Bool.get(world, tableId));
   }
 
   function testWriteAutonomousSystem() public {
@@ -558,7 +558,7 @@ contract WorldTest is Test {
     );
 
     // Expect the data to be written
-    assertTrue(Bool.get(tableId, world));
+    assertTrue(Bool.get(world, tableId));
   }
 
   function testDelegatecallRootSystem() public {

@@ -2,34 +2,32 @@ import { mkdirSync, writeFileSync } from "fs";
 import path from "path";
 import { StoreConfig } from "../index.js";
 import { formatSolidity } from "../utils/format.js";
-import { renderTablesFromConfig } from "./renderTablesFromConfig.js";
+import { getTableOptions } from "./tableOptions.js";
+import { renderTable } from "./renderTable.js";
 import { renderTypesFromConfig } from "./renderTypesFromConfig.js";
 
 export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {
-  // render tables
-  const renderedTables = renderTablesFromConfig(config, outputBaseDirectory);
+  const allTableOptions = getTableOptions(config);
   // write tables to files
-  for (const { outputDirectory, output, tableName } of renderedTables) {
-    const formattedOutput = await formatSolidity(output);
-
-    mkdirSync(outputDirectory, { recursive: true });
-
-    const outputPath = path.join(outputDirectory, `${tableName}.sol`);
-    writeFileSync(outputPath, formattedOutput);
-    console.log(`Generated table: ${outputPath}`);
+  for (const { outputPath, renderOptions } of allTableOptions) {
+    const fullOutputPath = path.join(outputBaseDirectory, outputPath);
+    const output = renderTable(renderOptions);
+    formatAndWrite(output, fullOutputPath, "Generated table");
   }
 
-  // render types
+  // write types to file
   if (Object.keys(config.userTypes.enums).length > 0) {
-    const renderedTypes = renderTypesFromConfig(config);
-    // write types to file
-    const formattedOutput = await formatSolidity(renderedTypes);
-
-    const outputPath = path.join(outputBaseDirectory, `${config.userTypes.path}.sol`);
-    const outputDirectory = path.dirname(outputPath);
-    mkdirSync(outputDirectory, { recursive: true });
-
-    writeFileSync(outputPath, formattedOutput);
-    console.log(`Generated types file: ${outputPath}`);
+    const fullOutputPath = path.join(outputBaseDirectory, `${config.userTypes.path}.sol`);
+    const output = renderTypesFromConfig(config);
+    formatAndWrite(output, fullOutputPath, "Generated types file");
   }
+}
+
+async function formatAndWrite(output: string, fullOutputPath: string, logPrefix: string) {
+  const formattedOutput = await formatSolidity(output);
+
+  mkdirSync(path.dirname(fullOutputPath), { recursive: true });
+
+  writeFileSync(fullOutputPath, formattedOutput);
+  console.log(`${logPrefix}: ${fullOutputPath}`);
 }

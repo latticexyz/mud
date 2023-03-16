@@ -75,9 +75,7 @@ library Callbacks {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
   /** Tightly pack full data using this table's schema */
