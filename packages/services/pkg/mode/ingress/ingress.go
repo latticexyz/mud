@@ -3,7 +3,7 @@ package ingress
 import (
 	"context"
 	"latticexyz/mud/packages/services/pkg/eth"
-	"latticexyz/mud/packages/services/pkg/mode"
+	"latticexyz/mud/packages/services/pkg/mode/config"
 	"latticexyz/mud/packages/services/pkg/mode/schema"
 	"latticexyz/mud/packages/services/pkg/mode/storecore"
 	"latticexyz/mud/packages/services/pkg/mode/write"
@@ -23,12 +23,12 @@ type IngressLayer struct {
 	wl  *write.WriteLayer
 
 	schemaCache *schema.SchemaCache
-	chainConfig *mode.ChainConfig
+	chainConfig *config.ChainConfig
 
 	logger *zap.Logger
 }
 
-func New(config *mode.ChainConfig, wl *write.WriteLayer, schemaCache *schema.SchemaCache, logger *zap.Logger) *IngressLayer {
+func New(config *config.ChainConfig, wl *write.WriteLayer, schemaCache *schema.SchemaCache, logger *zap.Logger) *IngressLayer {
 	logger.Info("creating ingress layer connected to websocket", zap.String("ws", config.Rpc.Ws))
 
 	// Create a connection to an Ethereum execution client.

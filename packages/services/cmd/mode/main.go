@@ -6,7 +6,7 @@ import (
 
 	"latticexyz/mud/packages/services/pkg/grpc"
 	"latticexyz/mud/packages/services/pkg/logger"
-	"latticexyz/mud/packages/services/pkg/mode"
+	mode_config "latticexyz/mud/packages/services/pkg/mode/config"
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/ingress"
 	"latticexyz/mud/packages/services/pkg/mode/query"
@@ -42,14 +42,14 @@ func main() {
 	defer logger.Sync()
 
 	// Setup config.
-	var config *mode.Config
+	var config *mode_config.Config
 	var err error
 	if *configFile != "" {
 		// Load config from file.
-		config, err = mode.ConfigFromFile(*configFile, logger)
+		config, err = mode_config.FromFile(*configFile, logger)
 	} else {
 		// Load config from command line flags.
-		config, err = mode.ConfigFromFlags(*chainNames, *chainIds, *chainRpcsHttp, *chainRpcsWs, *dbDsn, *dbWipe, *portQl, *portMetrics)
+		config, err = mode_config.FromFlags(*chainNames, *chainIds, *chainRpcsHttp, *chainRpcsWs, *dbDsn, *dbWipe, *portQl, *portMetrics)
 	}
 	if err != nil {
 		logger.Fatal("failed to load config", zap.Error(err))
