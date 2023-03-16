@@ -10,6 +10,7 @@ const SystemAccessList = z.array(SystemName.or(EthereumAddress)).default([]);
 const SystemConfig = z.intersection(
   z.object({
     fileSelector: Selector,
+    registerFunctionSelectors: z.boolean().default(true),
   }),
   z.discriminatedUnion("openAccess", [
     z.object({
