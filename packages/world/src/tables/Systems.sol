@@ -138,7 +138,7 @@ library Systems {
 
   /** Set the full data using individual values */
   function set(bytes32 resourceSelector, address system, bool publicAccess) internal {
-    bytes memory _data = abi.encodePacked(system, publicAccess);
+    bytes memory _data = encode(system, publicAccess);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((resourceSelector));
@@ -151,6 +151,11 @@ library Systems {
     system = (address(Bytes.slice20(_blob, 0)));
 
     publicAccess = (_toBool(uint8(Bytes.slice1(_blob, 20))));
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(address system, bool publicAccess) internal returns (bytes memory) {
+    return abi.encodePacked(system, publicAccess);
   }
 
   /* Delete all data for given keys */

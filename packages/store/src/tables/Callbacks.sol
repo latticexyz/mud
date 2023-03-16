@@ -80,6 +80,15 @@ library Callbacks {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, _newBlob);
   }
 
+  /** Tightly pack full data using this table's schema */
+  function encode(bytes24[] memory value) internal returns (bytes memory) {
+    uint16[] memory _counters = new uint16[](1);
+    _counters[0] = uint16(value.length * 24);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+
+    return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((value)));
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 key) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

@@ -166,12 +166,7 @@ library StoreMetadata {
 
   /** Set the full data using individual values */
   function set(uint256 tableId, string memory tableName, bytes memory abiEncodedFieldNames) internal {
-    uint16[] memory _counters = new uint16[](2);
-    _counters[0] = uint16(bytes(tableName).length);
-    _counters[1] = uint16(bytes(abiEncodedFieldNames).length);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
-
-    bytes memory _data = abi.encodePacked(_encodedLengths.unwrap(), bytes((tableName)), bytes((abiEncodedFieldNames)));
+    bytes memory _data = encode(tableName, abiEncodedFieldNames);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32(uint256((tableId)));
@@ -199,6 +194,16 @@ library StoreMetadata {
     _start = _end;
     _end += _encodedLengths.atIndex(1);
     _table.abiEncodedFieldNames = bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes());
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(string memory tableName, bytes memory abiEncodedFieldNames) internal returns (bytes memory) {
+    uint16[] memory _counters = new uint16[](2);
+    _counters[0] = uint16(bytes(tableName).length);
+    _counters[1] = uint16(bytes(abiEncodedFieldNames).length);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+
+    return abi.encodePacked(_encodedLengths.unwrap(), bytes((tableName)), bytes((abiEncodedFieldNames)));
   }
 
   /* Delete all data for given keys */

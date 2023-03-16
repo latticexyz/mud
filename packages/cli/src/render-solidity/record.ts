@@ -1,9 +1,9 @@
 import { renderList, renderArguments, renderCommonData } from "./common.js";
-import { renderDecodeValueType, renderEncodeField } from "./field.js";
+import { renderDecodeValueType } from "./field.js";
 import { RenderTableDynamicField, RenderTableOptions } from "./types.js";
 
 export function renderRecordMethods(options: RenderTableOptions) {
-  const { staticFields, dynamicFields, structName, storeArgument } = options;
+  const { structName, storeArgument } = options;
   const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
   let result = `
@@ -39,15 +39,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
     _typedKeyArgs,
     renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
   ])}) internal {
-    ${renderEncodedLengths(dynamicFields)}
-    bytes memory _data = abi.encodePacked(${renderArguments([
-      renderArguments(staticFields.map(({ name }) => name)),
-      // TODO try gas optimization (preallocate for all, encodePacked statics, and direct encode dynamics)
-      // (see https://github.com/latticexyz/mud/issues/444)
-      ...(dynamicFields.length === 0
-        ? []
-        : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeField(field)))]),
-    ])});
+    bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
 
     ${_primaryKeysDefinition}
 
@@ -149,23 +141,5 @@ function renderDecodeDynamicFieldPartial(field: RenderTableDynamicField) {
   } else {
     // bytes/string
     return `${typeId}(SliceLib.getSubslice(_blob, _start, _end).toBytes())`;
-  }
-}
-
-function renderEncodedLengths(dynamicFields: RenderTableDynamicField[]) {
-  if (dynamicFields.length > 0) {
-    return `
-    uint16[] memory _counters = new uint16[](${dynamicFields.length});
-    ${renderList(dynamicFields, ({ name, arrayElement }, index) => {
-      if (arrayElement) {
-        return `_counters[${index}] = uint16(${name}.length * ${arrayElement.staticByteLength});`;
-      } else {
-        return `_counters[${index}] = uint16(bytes(${name}).length);`;
-      }
-    })}
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
-    `;
-  } else {
-    return "";
   }
 }

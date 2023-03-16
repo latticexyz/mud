@@ -90,6 +90,11 @@ library NamespaceOwner {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((owner)));
   }
 
+  /** Tightly pack full data using this table's schema */
+  function encode(address owner) internal returns (bytes memory) {
+    return abi.encodePacked(owner);
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes16 namespace) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

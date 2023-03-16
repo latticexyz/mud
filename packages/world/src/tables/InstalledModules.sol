@@ -89,7 +89,7 @@ library InstalledModules {
 
   /** Set the full data using individual values */
   function set(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
-    bytes memory _data = abi.encodePacked(moduleAddress);
+    bytes memory _data = encode(moduleAddress);
 
     bytes32[] memory _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32((moduleName));
@@ -106,6 +106,11 @@ library InstalledModules {
   /** Decode the tightly packed blob using this table's schema */
   function decode(bytes memory _blob) internal pure returns (InstalledModulesData memory _table) {
     _table.moduleAddress = (address(Bytes.slice20(_blob, 0)));
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(address moduleAddress) internal returns (bytes memory) {
+    return abi.encodePacked(moduleAddress);
   }
 
   /* Delete all data for given keys */

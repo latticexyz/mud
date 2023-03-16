@@ -94,6 +94,11 @@ library ResourceAccess {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((access)));
   }
 
+  /** Tightly pack full data using this table's schema */
+  function encode(bool access) internal returns (bytes memory) {
+    return abi.encodePacked(access);
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector, address caller) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
