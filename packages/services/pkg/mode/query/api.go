@@ -30,8 +30,15 @@ func (ql *QueryLayer) ExecuteSQL(sqlQuery string, tableSchema *mode.TableSchema,
 }
 
 func (ql *QueryLayer) Find(ctx context.Context, request *pb_mode.FindRequest) (*pb_mode.QueryLayerResponse, error) {
+	// Get a string namespace for the request.
+	namespace, err := schema.NamespaceFromNamespaceObject(request.Namespace)
+	if err != nil {
+		ql.logger.Error("find(): error while getting namespace", zap.Error(err))
+		return nil, err
+	}
+
 	// Create a "builder" for the request.
-	builder := mode.NewFindBuilder(request)
+	builder := mode.NewFindBuilder(request, namespace)
 
 	// Build a query from the request.
 	query, err := builder.ToSQLQuery()
