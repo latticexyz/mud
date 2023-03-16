@@ -51,7 +51,8 @@ import { debug as parentDebug } from "./debug";
 import { fetchStoreEvents } from "../v2/fetchStoreEvents";
 import { abi as IStoreAbi } from "@latticexyz/store/abi/IStore.json";
 import { Contract } from "ethers";
-import { createModeClient } from "../v2/createModeClient";
+import { createModeClient } from "../v2/mode/createModeClient";
+import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";
 
 const debug = parentDebug.extend("SyncWorker");
 
@@ -234,12 +235,10 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       const syncFromMode = true; // TODO: add conditional based on modeBlockNumber / snapshotBlockNumber
       if (syncFromMode) {
         console.log("Initial sync from MODE");
-        const response = modeClient.findAll({
-          tables: [],
-          namespace: { chainId: "4242", worldAddress: "0x8bCe54ff8aB45CB075b044AE117b8fD91F9351aB" },
-        });
-        console.log(response);
-        console.log(await response);
+        this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from MODE", percentage: 0 });
+        // TODO: pass in function to act as progress meter if we need it
+        // TODO: pass in optional tables to sync? block number to sync from?
+        initialState = await syncTablesFromMode(modeClient, chainId, worldContract.address);
       } else if (syncFromSnapshot) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from snapshot", percentage: 0 });
         initialState = await fetchSnapshotChunked(
