@@ -1,16 +1,17 @@
-package mode
+package update
 
 import (
-	"latticexyz/mud/packages/services/protobuf/go/mode"
+	"latticexyz/mud/packages/services/pkg/mode"
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 )
 
 type UpdateBuilder struct {
-	Request     *mode.UpdateRequest
-	TableSchema *TableSchema
+	Request     *pb_mode.UpdateRequest
+	TableSchema *mode.TableSchema
 }
 
-func NewUpdateBuilder(request *mode.UpdateRequest, tableSchema *TableSchema) *UpdateBuilder {
+func NewUpdateBuilder(request *pb_mode.UpdateRequest, tableSchema *mode.TableSchema) *UpdateBuilder {
 	return &UpdateBuilder{
 		Request:     request,
 		TableSchema: tableSchema,

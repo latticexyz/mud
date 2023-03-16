@@ -1,19 +1,19 @@
-package mode
+package find
 
 import (
-	"latticexyz/mud/packages/services/protobuf/go/mode"
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 )
 
 // grpcurl -plaintext -d '{"tables": ["component_stake"]}' localhost:50091 mode.QueryLayer/FindAll
 
 type FindAllBuilder struct {
-	Request   *mode.FindAllRequest
+	Request   *pb_mode.FindAllRequest
 	AllTables []string
 	Namespace string
 }
 
-func NewFindAllBuilder(request *mode.FindAllRequest, namespace string, allTables []string) (*FindAllBuilder, error) {
+func NewFindAllBuilder(request *pb_mode.FindAllRequest, namespace string, allTables []string) (*FindAllBuilder, error) {
 	return &FindAllBuilder{
 		Request:   request,
 		AllTables: allTables,

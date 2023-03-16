@@ -1,16 +1,17 @@
-package mode
+package delete
 
 import (
-	"latticexyz/mud/packages/services/protobuf/go/mode"
+	"latticexyz/mud/packages/services/pkg/mode"
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 )
 
 type DeleteBuilder struct {
-	Request     *mode.DeleteRequest
-	TableSchema *TableSchema
+	Request     *pb_mode.DeleteRequest
+	TableSchema *mode.TableSchema
 }
 
-func NewDeleteBuilder(request *mode.DeleteRequest, tableSchema *TableSchema) *DeleteBuilder {
+func NewDeleteBuilder(request *pb_mode.DeleteRequest, tableSchema *mode.TableSchema) *DeleteBuilder {
 	return &DeleteBuilder{
 		Request:     request,
 		TableSchema: tableSchema,

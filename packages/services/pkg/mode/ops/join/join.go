@@ -1,4 +1,4 @@
-package mode
+package join
 
 import (
 	"latticexyz/mud/packages/services/pkg/logger"

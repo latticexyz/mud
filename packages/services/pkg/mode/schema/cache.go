@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/db"
+	"latticexyz/mud/packages/services/pkg/mode/ops/find"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 
 	"go.uber.org/zap"
@@ -77,7 +78,7 @@ func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, ta
 		},
 	}
 	// Query the DB for the schema.
-	builder := mode.NewFindBuilder(request, schemaTableSchema.Namespace)
+	builder := find.NewFindBuilder(request, schemaTableSchema.Namespace)
 	query, err := builder.ToSQLQuery()
 	if err != nil {
 		cache.logger.Error("failed to build query", zap.Error(err))

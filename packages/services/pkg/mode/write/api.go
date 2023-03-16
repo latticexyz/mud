@@ -3,6 +3,10 @@ package write
 import (
 	"database/sql"
 	"latticexyz/mud/packages/services/pkg/mode"
+	"latticexyz/mud/packages/services/pkg/mode/ops/create"
+	"latticexyz/mud/packages/services/pkg/mode/ops/delete"
+	"latticexyz/mud/packages/services/pkg/mode/ops/insert"
+	"latticexyz/mud/packages/services/pkg/mode/ops/update"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 
@@ -55,7 +59,7 @@ func (wl *WriteLayer) CreateTable(tableSchema *mode.TableSchema) error {
 	}
 
 	// Create a table creator builder.
-	createBuilder := mode.NewCreateBuilder(&pb_mode.CreateRequest{
+	createBuilder := create.NewCreateBuilder(&pb_mode.CreateRequest{
 		Name: tableSchema.FullTableName(),
 	}, tableSchema)
 
@@ -125,7 +129,7 @@ func (wl *WriteLayer) RenameTableFields(tableSchema *mode.TableSchema, oldTableF
 
 func (wl *WriteLayer) InsertRow(tableSchema *mode.TableSchema, row RowKV) error {
 	// Create an insert builder.
-	insertBuilder := mode.NewInsertBuilder(&pb_mode.InsertRequest{
+	insertBuilder := insert.NewInsertBuilder(&pb_mode.InsertRequest{
 		Into: tableSchema.FullTableName(),
 		Row:  row,
 	}, tableSchema)
@@ -144,7 +148,7 @@ func (wl *WriteLayer) InsertRow(tableSchema *mode.TableSchema, row RowKV) error 
 
 func (wl *WriteLayer) UpdateRow(tableSchema *mode.TableSchema, row RowKV, filter []*pb_mode.Filter) (sql.Result, error) {
 	// Create an update builder.
-	updateBuilder := mode.NewUpdateBuilder(&pb_mode.UpdateRequest{
+	updateBuilder := update.NewUpdateBuilder(&pb_mode.UpdateRequest{
 		Target: tableSchema.FullTableName(),
 		Filter: filter,
 		Row:    row,
@@ -194,7 +198,7 @@ func (wl *WriteLayer) UpdateOrInsertRow(tableSchema *mode.TableSchema, row RowKV
 
 func (wl *WriteLayer) DeleteRow(tableSchema *mode.TableSchema, filter []*pb_mode.Filter) error {
 	// Create a delete builder.
-	deleteBuilder := mode.NewDeleteBuilder(&pb_mode.DeleteRequest{
+	deleteBuilder := delete.NewDeleteBuilder(&pb_mode.DeleteRequest{
 		From:   tableSchema.FullTableName(),
 		Filter: filter,
 	}, tableSchema)
