@@ -3,7 +3,7 @@ import { packTuple, transformIterator, unpackTuple } from "@latticexyz/utils";
 import { initCache } from "../initCache";
 import { ECSStateReply } from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
-import { formatEntityID } from "../utils";
+import { normalizeEntityID } from "../utils";
 import { debug as parentDebug } from "./debug";
 
 const debug = parentDebug.extend("CacheStore");
@@ -31,9 +31,7 @@ export function storeEvent<Cm extends Components>(
   cacheStore: CacheStore,
   { component, entity, value, partialValue, blockNumber }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
-  // Normalize entity ID without zero padding for v1 entities and single-key v2 entities
-  // For composite-key v2 entities (concatenated with `:`), leave the ID as is.
-  const entityId = entity.includes(":") ? entity : formatEntityID(entity);
+  const entityId = normalizeEntityID(entity);
 
   const { components, entities, componentToIndex, entityToIndex, state } = cacheStore;
 

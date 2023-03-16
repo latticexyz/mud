@@ -1,6 +1,8 @@
+import { isHex } from "./isHex";
+
 // TODO: migrate to viem's toBytes(hex)
 export const hexToArray = (hex: string): Uint8Array => {
-  if (!/^(0x)?([\da-f]{2})*$/i.test(hex)) {
+  if (!isHex(hex)) {
     console.error("Invalid hex string", hex);
     throw new Error("Invalid hex string");
   }
