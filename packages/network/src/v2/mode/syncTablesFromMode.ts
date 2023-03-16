@@ -30,6 +30,8 @@ export async function syncTablesFromMode(
   // TODO: get this from MODE
   const blockNumber = 1;
 
+  const registrationPromises: Promise<any>[] = [];
+
   for (const [fullTableName, { rows, cols, types }] of Object.entries(response.tables)) {
     const [tableNamespace, tableName] = fullTableName.split("__");
     const tableId = new TableId(tableNamespace, tableName);
@@ -45,8 +47,8 @@ export async function syncTablesFromMode(
 
     const rawSchema = arrayToHex(encodeSchema(fieldTypes));
     // TODO: refactor registerSchema/registerMetadata to take chain+world address rather than Contract
-    registerSchema(world, tableId, rawSchema);
-    registerMetadata(world, tableId, { tableName, fieldNames });
+    registrationPromises.push(registerSchema(world, tableId, rawSchema));
+    registrationPromises.push(registerMetadata(world, tableId, { tableName, fieldNames }));
 
     for (const row of rows) {
       const keyTuple = row.values.slice(0, keyLength).map((bytes, i) => decodeValue(keyTypes[i], bytes.buffer));
@@ -64,6 +66,9 @@ export async function syncTablesFromMode(
       storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
     }
   }
+
+  // make sure all schemas/metadata are registered before returning to avoid downstream lookup issues
+  await Promise.all(registrationPromises);
 
   return cacheStore;
 }
