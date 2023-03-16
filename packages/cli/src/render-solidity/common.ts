@@ -25,7 +25,7 @@ export function renderCommonData({
   staticResourceData,
   primaryKeys,
 }: Pick<RenderTableOptions, "staticResourceData" | "primaryKeys">) {
-  // static route means static tableId as well, and no tableId arguments
+  // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
   const _typedTableId = staticResourceData ? "" : "uint256 _tableId";
 
