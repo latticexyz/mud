@@ -15,7 +15,7 @@ type Options = {
 const commandModule: CommandModule<Options, Options> = {
   command: "worldgen",
 
-  describe: "TODO desc",
+  describe: "Autogenerate interfaces for Systems and World based on existing contracts and the config file",
 
   builder(yargs) {
     return yargs.options({
