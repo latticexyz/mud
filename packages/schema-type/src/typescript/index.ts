@@ -7,4 +7,4 @@ export { SchemaType } from "./SchemaType.js";
 export { encodeSchema } from "./encodeSchema.js";
 export { getStaticByteLength } from "./getStaticByteLength.js";
 export { SchemaTypeArrayToElement } from "./SchemaTypeArrayToElement.js";
-export { SchemaTypeId } from "./SchemaTypeId.js";
+export { SchemaTypeToAbiType } from "./SchemaTypeToAbiType.js";

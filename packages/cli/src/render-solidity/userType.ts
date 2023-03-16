@@ -1,4 +1,4 @@
-import { getStaticByteLength, SchemaType, SchemaTypeId } from "@latticexyz/schema-type";
+import { getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
 import path from "path";
 import { StoreConfig } from "../index.js";
 import { RenderTableType } from "./types.js";
@@ -56,7 +56,7 @@ export function resolveSchemaOrUserType(
 export function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
   const staticByteLength = getStaticByteLength(schemaType);
   const isDynamic = staticByteLength === 0;
-  const typeId = SchemaTypeId[schemaType];
+  const typeId = SchemaTypeToAbiType[schemaType];
   return {
     typeId,
     typeWithLocation: isDynamic ? typeId + " memory" : typeId,
@@ -91,7 +91,7 @@ export function getUserTypeInfo(
         isDynamic,
         typeWrap: `${userType}`,
         typeUnwrap: `${userType}`,
-        internalTypeId: `${SchemaTypeId[schemaType]}`,
+        internalTypeId: `${SchemaTypeToAbiType[schemaType]}`,
       },
     };
   } else {
