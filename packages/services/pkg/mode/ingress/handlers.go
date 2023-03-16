@@ -161,8 +161,12 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 		"table_name":    tableSchema.TableName,
 		"schema":        string(tableSchemaJson),
 	}
-	// TODO: also filter based on world address / namespace.
-	filter := schemaTableSchema.FilterFromMap(map[string]string{"table_name": tableSchema.TableName})
+	// Filter based on table name, world address, and namespace.
+	filter := schemaTableSchema.FilterFromMap(map[string]string{
+		"table_name":    tableSchema.TableName,
+		"world_address": event.WorldAddress(),
+		"namespace":     tableSchema.Namespace,
+	})
 	il.wl.UpdateOrInsertRow(schemaTableSchema, row, filter)
 
 	il.logger.Info("schema table event handled", zap.String("world_address", event.WorldAddress()), zap.String("table_name", hexutil.Encode(event.Key[0][:])), zap.String("schema", string(tableSchemaJson)))
@@ -285,7 +289,11 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 		"table_name":    tableSchema.TableName,
 		"schema":        string(tableSchemaJson),
 	}
-	filter := schemaTableSchema.FilterFromMap(map[string]string{"table_name": tableSchema.TableName})
+	filter := schemaTableSchema.FilterFromMap(map[string]string{
+		"table_name":    tableSchema.TableName,
+		"world_address": event.WorldAddress(),
+		"namespace":     tableSchema.Namespace,
+	})
 	il.wl.UpdateOrInsertRow(schemaTableSchema, row, filter)
 
 	// Update the table field names based on the new metadata.
