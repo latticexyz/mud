@@ -8,5 +8,6 @@ export * from "./commonSchemas.js";
 export * from "./loadConfig.js";
 export * from "./loadStoreConfig.js";
 export * from "./parseStoreConfig.js";
-export * from "./world/loadWorldConfig.js";
+export * from "./world/index.js";
 export * from "./validation.js";
+export * from "./dynamicResolution.js";

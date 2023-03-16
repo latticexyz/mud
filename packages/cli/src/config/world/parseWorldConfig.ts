@@ -1,7 +1,9 @@
 import { z } from "zod";
 import { EthereumAddress, ObjectName, Selector } from "../commonSchemas.js";
+import { DynamicResolutionType } from "../dynamicResolution.js";
 
 const SystemName = ObjectName;
+const ModuleName = ObjectName;
 const SystemAccessList = z.array(SystemName.or(EthereumAddress)).default([]);
 
 // The system config is a combination of a fileSelector config and access config
@@ -20,6 +22,15 @@ const SystemConfig = z.intersection(
   ])
 );
 
+const BytesLike = z.union([z.string(), z.number(), z.instanceof(Uint8Array)]);
+const DynamicResulution = z.object({ type: z.nativeEnum(DynamicResolutionType), input: z.string() });
+
+const ModuleConfig = z.object({
+  name: ModuleName,
+  root: z.boolean().default(false),
+  args: z.array(z.union([BytesLike, DynamicResulution])).default([]),
+});
+
 // The parsed world config is the result of parsing the user config
 export const WorldConfig = z.object({
   namespace: Selector.default(""),
@@ -30,6 +41,7 @@ export const WorldConfig = z.object({
   deploymentInfoDirectory: z.string().default("."),
   worldgenDirectory: z.string().default("world"),
   worldImportPath: z.string().default("@latticexyz/world/src/"),
+  modules: z.array(ModuleConfig).default([]),
 });
 
 export async function parseWorldConfig(config: unknown) {

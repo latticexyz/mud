@@ -1,3 +1,5 @@
+import { DynamicResulution } from "../dynamicResolution.js";
+
 // zod doesn't preserve doc comments
 export type SystemUserConfig =
   | {
@@ -22,7 +24,7 @@ export type ModuleConfig = {
   /** Should this module be installed as a root module? */
   root?: boolean;
   /** Arguments to be passed to the module's install method */
-  args?: (string | number | Uint8Array)[];
+  args?: (string | number | Uint8Array | DynamicResulution)[];
 };
 
 // zod doesn't preserve doc comments
@@ -48,10 +50,10 @@ export interface WorldUserConfig {
   postDeployScript?: string;
   /** Directory to write the deployment info to (Default ".") */
   deploymentInfoDirectory?: string;
-  /** Modules to in the World */
-  modules?: ModuleConfig[];
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
   worldImportPath?: string;
+  /** Modules to in the World */
+  modules?: ModuleConfig[];
 }
