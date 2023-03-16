@@ -34,12 +34,27 @@ func (builder *FindBuilder) BuildFilter() string {
 	var query strings.Builder
 	query.WriteString(" WHERE ")
 	for idx, filter := range request.Filter {
+		if filter.Function != "" {
+			query.WriteString(filter.Function)
+			query.WriteString("(")
+		}
 		query.WriteString(filter.Field.TableName + "." + filter.Field.TableField)
+		if filter.Function != "" {
+			query.WriteString(")")
+		}
 		query.WriteString(" ")
 		query.WriteString(filter.Operator)
-		query.WriteString(" '")
+		query.WriteString(" ")
+		if filter.Function != "" {
+			query.WriteString(filter.Function)
+			query.WriteString("(")
+		}
+		query.WriteString("'")
 		query.WriteString(filter.Value)
-		query.WriteString("' ")
+		query.WriteString("'")
+		if filter.Function != "" {
+			query.WriteString(")")
+		}
 
 		if idx < len(request.Filter)-1 {
 			query.WriteString(" AND ")

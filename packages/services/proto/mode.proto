@@ -104,6 +104,7 @@ message Filter {
     Field field = 1;
     string operator = 2;
     string value = 3;
+    string function = 4;
 }
 
 message FieldPair {
