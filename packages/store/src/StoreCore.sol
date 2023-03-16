@@ -219,8 +219,11 @@ library StoreCore {
 
     // Call onBeforeSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(bytes32(tableId));
+    console.log("num hooks", hooks.length);
+
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
+      console.log("calling hook on before %s", address(hook));
       hook.onBeforeSetField(tableId, key, schemaIndex, data);
     }
 
@@ -233,6 +236,7 @@ library StoreCore {
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
+      console.log("calling hook on after %s", address(hook));
       hook.onAfterSetField(tableId, key, schemaIndex, data);
     }
   }

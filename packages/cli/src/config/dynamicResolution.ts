@@ -36,7 +36,8 @@ export async function resolveWithContext(
 
   if (unresolved.type === DynamicResolutionType.TABLE_ID) {
     const tableId = context.tableIds?.[unresolved.input];
-    resolved = tableId && { value: tableId, type: "uint256" };
+    console.log("tableid", tableId);
+    resolved = tableId && { value: tableId, type: "bytes32" };
   }
 
   if (resolved === undefined) {

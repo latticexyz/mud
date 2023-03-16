@@ -41,6 +41,7 @@ contract ReverseMappingModule is IModule, WorldContext {
   }
 
   function install(bytes memory args) public override {
+    console.log("install");
     // Extract source table id from args
     uint256 sourceTableId = abi.decode(args, (uint256));
     bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);

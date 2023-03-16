@@ -25,6 +25,7 @@ contract ReverseMappingHook is IStoreHook {
   error MultipleKeysNotSupported();
 
   function onSetRecord(uint256 sourceTableId, bytes32[] memory key, bytes memory data) public {
+    console.log("on set rec");
     _requireSingleKey(key);
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
 
@@ -42,6 +43,7 @@ contract ReverseMappingHook is IStoreHook {
   }
 
   function onBeforeSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
+    console.log("on before");
     _requireSingleKey(key);
 
     // Remove the key from the list of keys with the previous value
@@ -51,6 +53,7 @@ contract ReverseMappingHook is IStoreHook {
   }
 
   function onAfterSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
+    console.log("on after");
     _requireSingleKey(key);
 
     // Add the key to the list of keys with the new value
@@ -73,6 +76,7 @@ contract ReverseMappingHook is IStoreHook {
   }
 
   function _removeKeyFromList(uint256 targetTableId, bytes32 key, bytes32 valueHash) internal {
+    console.log("on after");
     // Get the keys with the previous value excluding the current key
     bytes32[] memory keysWithPreviousValue = ReverseMapping.get(targetTableId, valueHash).filter(key);
 
