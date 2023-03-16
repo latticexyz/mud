@@ -2,6 +2,7 @@ package query
 
 import (
 	"latticexyz/mud/packages/services/pkg/mode/db"
+	"latticexyz/mud/packages/services/pkg/mode/read"
 	"latticexyz/mud/packages/services/pkg/mode/schema"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 
@@ -12,6 +13,7 @@ type QueryLayer struct {
 	pb_mode.UnimplementedQueryLayerServer
 
 	dl          *db.DatabaseLayer
+	rl          *read.ReadLayer
 	schemaCache *schema.SchemaCache
 
 	logger *zap.Logger

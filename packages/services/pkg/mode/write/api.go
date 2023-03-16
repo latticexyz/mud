@@ -126,7 +126,7 @@ func (wl *WriteLayer) InsertRow(tableSchema *mode.TableSchema, row RowKV) error 
 		return err
 	}
 
-	wl.logger.Info("inserted row", zap.String("table", tableSchema.NamespacedTableName()))
+	wl.logger.Info("inserted row", zap.String("table", tableSchema.NamespacedTableName()), zap.String("query", insertRowQuery))
 
 	return nil
 }

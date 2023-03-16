@@ -76,7 +76,7 @@ func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllReque
 	}
 
 	// An up-to-date list of all tables is used to return the full state, if requested.
-	allTables, err := ql.dl.GetAllTables(namespace)
+	allTables, err := ql.rl.GetAllTables(namespace)
 	if err != nil {
 		ql.logger.Error("findAll(): error while getting all tables", zap.Error(err))
 		return nil, err

@@ -10,6 +10,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/ingress"
 	"latticexyz/mud/packages/services/pkg/mode/query"
+	"latticexyz/mud/packages/services/pkg/mode/read"
 	"latticexyz/mud/packages/services/pkg/mode/schema"
 	"latticexyz/mud/packages/services/pkg/mode/write"
 
@@ -65,16 +66,19 @@ func main() {
 	// Create a MODE WriteLayer for modifying the database.
 	wl := write.New(dl, logger)
 
+	// Create a MODE ReadLayer for reading from the database.
+	rl := read.New(dl, logger)
+
 	// Create a SchemaCache for storing + retrieving table schemas.
 	schemaCache := schema.NewCache(dl, config.Chains, logger)
 
 	// Run the MODE IngressLayers for every chain that is being indexed by MODE.
 	for _, chain := range config.Chains {
-		il := ingress.New(&chain, wl, schemaCache, logger)
+		il := ingress.New(&chain, wl, rl, schemaCache, logger)
 		go il.Run()
 	}
 
 	// Run the MODE QueryLayer.
-	ql := query.NewQueryLayer(dl, schemaCache, logger)
+	ql := query.NewQueryLayer(dl, rl, schemaCache, logger)
 	query.RunQueryLayer(ql, config.Ql.Port)
 }

@@ -6,6 +6,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/mode/schema"
 	"latticexyz/mud/packages/services/pkg/mode/storecore"
 	"latticexyz/mud/packages/services/pkg/mode/write"
+	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -21,20 +22,71 @@ func (il *IngressLayer) handleSetRecordEvent(event *storecore.StorecoreStoreSetR
 	// 1. The table is the schema table. This means that a new table should be created.
 	// 2. The table is the metadata table. This means we need to update a schema of an existing table.
 	// 3. The table is a generic table. This means we need to update rows of an existing table.
+	println("-------------------------------------------------------")
+	println("-------------------------------------------------------")
+	println("------------------StoreSetRecordEvent------------------")
+	println("-------------------------------------------------------")
+	println("-------------------------------------------------------")
+
 	switch tableId {
 	case storecore.Internal__SchemaTableId():
-		println("--- handleSchemaTableEvent ---")
+		println("----------------handleSchemaTableEvent-----------------")
+		println("-------------------------------------------------------")
+		println("-------------------------------------------------------")
 		il.handleSchemaTableEvent(event)
 	case storecore.Internal__MetadataTableId():
-		println("--- handleMetadataTableEvent ---")
+		println("---------------handleMetadataTableEvent----------------")
+		println("-------------------------------------------------------")
+		println("-------------------------------------------------------")
 		il.handleMetadataTableEvent(event)
 	default:
-		println("--- handleGenericTableEvent ---")
+		println("---------------handleGenericTableEvent-----------------")
+		println("-------------------------------------------------------")
+		println("-------------------------------------------------------")
 		il.handleGenericTableEvent(event)
 	}
 }
 
+func (il *IngressLayer) handleSetFieldEventUpdateRow(event *storecore.StorecoreStoreSetField, tableSchema *mode.TableSchema, filter []*pb_mode.Filter) {
+	// Decode the field.
+	fieldValue := storecore.DecodeDataField(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value, event.SchemaIndex)
+
+	// Get the name of the field. This is the name of the column in the database and the way to
+	// get it is just to lookup what the field name is at the specified index in the schema, since
+	// schema types and field names are 1:1.
+	fieldName := tableSchema.FieldNames[event.SchemaIndex]
+
+	// Create a row object. It's a partial row because we're only updating a single field.
+	partialRow := write.RowKV{
+		fieldName: fieldValue,
+	}
+	// Update the row.
+	il.wl.UpdateRow(tableSchema, partialRow, filter)
+}
+
+func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreStoreSetField, tableSchema *mode.TableSchema, filter []*pb_mode.Filter) {
+	// Decode the row record data (value).
+	decodedData := storecore.DecodeData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value)
+
+	// Create a row for the table.
+	row := write.RowKV{}
+	for idx, field_name := range tableSchema.FieldNames {
+		row[field_name] = decodedData.DataAt(idx)
+	}
+
+	println("inserting new row for setField")
+
+	// Insert the row into the table.
+	il.wl.InsertRow(tableSchema, row)
+}
+
 func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetField) {
+	println("-------------------------------------------------------")
+	println("-------------------------------------------------------")
+	println("------------------StoreSetFieldEvent------------------")
+	println("-------------------------------------------------------")
+	println("-------------------------------------------------------")
+
 	tableId := storecore.PaddedTableId(event.Table)
 	il.logger.Info("handling set field event", zap.String("table_id", tableId))
 
@@ -45,24 +97,32 @@ func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetFi
 		return
 	}
 
-	// Decode the field.
-	fieldValue := storecore.DecodeDataField(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value, event.SchemaIndex)
+	// Handle the following scenarios:
+	// 1. The setField event is modifying a row that doesn't yet exist (i.e. key doesn't match anything),
+	//    in which case we insert a new row with default values for each column.
+	//
+	// 2. The setField event is modifying a row that already exists, in which case we update the
+	//    row by constructing a partial row with the new value for the field that was modified.
 
-	// Get the name of the field. This is the name of the column in the database and the way to
-	// get it is just to lookup what the field name is at the specified index in the schema, since
-	// schema types and field names are 1:1.
-	fieldName := tableSchema.FieldNames[event.SchemaIndex]
-
+	// Build the "filter" from the setField key. This is used to find the actual row/record that
+	// we're updating (or inserting if doesn't exist).
 	// TODO: properly parse out the key and build a "filter" that the builder can use.
-	// Build the filter for the row to update.
 	filter := KeyToFilter(tableSchema, event.Key)
 
-	// Create a row object. It's a partial row because we're only updating a single field.
-	partialRow := write.RowKV{
-		fieldName: fieldValue,
+	rowExists, err := il.rl.DoesRowExist(tableSchema, filter)
+	if err != nil {
+		il.logger.Error("failed to check if row exists", zap.Error(err))
+		return
 	}
-	// Update the row.
-	il.wl.UpdateRow(tableSchema, partialRow, filter)
+
+	// Handle the two scenarios described above.
+	if rowExists {
+		println("ROW EXISTS")
+		il.handleSetFieldEventUpdateRow(event, tableSchema, filter)
+	} else {
+		println("ROW DOES NOT EXIST")
+		il.handleSetFieldEventInsertRow(event, tableSchema, filter)
+	}
 }
 
 func (il *IngressLayer) handleDeleteRecordEvent(event *storecore.StorecoreStoreDeleteRecord) {
@@ -84,9 +144,6 @@ func (il *IngressLayer) handleDeleteRecordEvent(event *storecore.StorecoreStoreD
 }
 
 func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSetRecord) {
-	println("------------------handleSchemaTableEvent------------------")
-	println("\n\n")
-
 	tableId := hexutil.Encode(event.Key[0][:])
 	il.logger.Info("handling schema table event", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId))
 
@@ -170,13 +227,9 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 	il.wl.UpdateOrInsertRow(schemaTableSchema, row, filter)
 
 	il.logger.Info("schema table event handled", zap.String("world_address", event.WorldAddress()), zap.String("table_name", hexutil.Encode(event.Key[0][:])), zap.String("schema", string(tableSchemaJson)))
-	println("------------------handleSchemaTableEvent------------------")
 }
 
 func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStoreSetRecord) {
-	println("------------------handleMetadataTableEvent------------------")
-	println("\n\n")
-
 	tableId := hexutil.Encode(event.Key[0][:])
 	il.logger.Info("handling metadata table event", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId))
 
@@ -214,16 +267,6 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	if err != nil {
 		il.logger.Error("failed to decode table column names", zap.Error(err))
 		return
-	}
-
-	println("PARSED OUT COLUMN NAMES:")
-	for _, col := range outStruct.Cols {
-		println(col)
-	}
-
-	println("OLD COLUMN NAMES:")
-	for _, col := range tableSchema.FieldNames {
-		println(col)
 	}
 
 	// Add extracted metdata to the schema, essentially completing it.
@@ -265,20 +308,6 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	}
 	// Update the field names in the schema.
 	tableSchema.FieldNames = newTableFieldNames
-
-	println("---------")
-	println("new column names: ")
-	for _, name := range newTableFieldNames {
-		println(name)
-	}
-	println("---------")
-
-	println("---------")
-	println("old column names: ")
-	for _, name := range oldTableFieldNames {
-		println(name)
-	}
-	println("---------")
 
 	// Save the completed schema to the schema table.
 	tableSchemaJson, _ := json.Marshal(tableSchema)

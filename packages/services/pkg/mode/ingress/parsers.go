@@ -69,7 +69,6 @@ func KeyToFilter(tableSchema *mode.TableSchema, key [][32]byte) []*pb_mode.Filte
 		tmp := make([]byte, 32)
 		copy(tmp, key[i][:])
 		println("KEY: " + fmt.Sprint(tmp))
-		println(tmp)
 
 		filters = append(filters, &pb_mode.Filter{
 			Field: &pb_mode.Field{
