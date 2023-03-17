@@ -94,8 +94,8 @@ const config = {
       // schema in `getField` too. (See https://github.com/latticexyz/mud/issues/444)
       dataStruct: true,
     },
-    ReverseMapping: {
-      directory: "/modules/reversemapping/tables",
+    KeysWithValue: {
+      directory: "/modules/keyswithvalue/tables",
       primaryKeys: {
         valueHash: SchemaType.BYTES32,
       },
