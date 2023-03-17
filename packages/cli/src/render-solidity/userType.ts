@@ -1,43 +1,41 @@
-import { getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
+import { AbiTypeToSchemaType, getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
 import { StoreConfig } from "../index.js";
 import { ImportDatum, RenderTableType } from "./types.js";
 
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 
 /**
- * Resolve a SchemaType|userType into a SchemaType
+ * Resolve an abi or user type into a SchemaType
  */
-export function resolveSchemaOrUserType(
-  schemaOrUserType: SchemaType | string,
-  userTypesConfig: StoreConfig["userTypes"]
-) {
-  if (typeof schemaOrUserType === "string") {
-    const { schemaType, renderTableType } = getUserTypeInfo(schemaOrUserType, userTypesConfig);
-    return { schemaType, renderTableType };
-  } else {
+export function resolveAbiOrUserType(abiOrUserType: string, config: StoreConfig) {
+  if (abiOrUserType in AbiTypeToSchemaType) {
+    const schemaType = AbiTypeToSchemaType[abiOrUserType];
     return {
-      schemaType: schemaOrUserType,
-      renderTableType: getSchemaTypeInfo(schemaOrUserType),
+      schemaType,
+      renderTableType: getSchemaTypeInfo(schemaType),
     };
+  } else {
+    const { schemaType, renderTableType } = getUserTypeInfo(abiOrUserType, config);
+    return { schemaType, renderTableType };
   }
 }
 
 /**
  * Get the required import for SchemaType|userType (`undefined` means that no import is required)
  */
-export function importForSchemaOrUserType(
-  schemaOrUserType: SchemaType | string,
+export function importForAbiOrUserType(
+  abiOrUserType: string,
   usedInDirectory: string,
-  userTypesConfig: StoreConfig["userTypes"]
+  config: StoreConfig
 ): ImportDatum | undefined {
-  if (typeof schemaOrUserType === "string") {
+  if (abiOrUserType in AbiTypeToSchemaType) {
+    return undefined;
+  } else {
     return {
-      symbol: schemaOrUserType,
-      fromPath: userTypesConfig.path + ".sol",
+      symbol: abiOrUserType,
+      fromPath: config.userTypesPath + ".sol",
       usedInPath: usedInDirectory,
     };
-  } else {
-    return undefined;
   }
 }
 
@@ -59,12 +57,12 @@ export function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
 
 export function getUserTypeInfo(
   userType: string,
-  userTypesConfig: StoreConfig["userTypes"]
+  config: StoreConfig
 ): {
   schemaType: SchemaType;
   renderTableType: RenderTableType;
 } {
-  if (userType in userTypesConfig.enums) {
+  if (userType in config.enums) {
     const schemaType = SchemaType.UINT8;
     const staticByteLength = getStaticByteLength(schemaType);
     const isDynamic = staticByteLength === 0;

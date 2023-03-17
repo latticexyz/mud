@@ -207,4 +207,4 @@ export const SchemaTypeToAbiType = {
 
   [SchemaType.BYTES]: "bytes",
   [SchemaType.STRING]: "string",
-} satisfies Record<SchemaType, string>;
+} as const satisfies Record<SchemaType, string>;
