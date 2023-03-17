@@ -10,20 +10,18 @@ import { World, Component } from "../types";
 import { Type as RecsType } from "../constants";
 import { defineComponent } from "../Component";
 
-import { SchemaType } from "@latticexyz/schema-type";
-import { schemaTypesToRecsTypes } from "./schemaTypesToRecsTypes";
+import { AbiType } from "@latticexyz/schema-type";
+import { abiTypesToRecsTypes } from "./abiTypesToRecsTypes";
 
-type SchemaTypeToRecsType<T extends SchemaType> = (typeof schemaTypesToRecsTypes)[T];
-
-type SchemaOrUserTypeToRecsType<T extends SchemaType | string> = T extends SchemaType
-  ? SchemaTypeToRecsType<T>
+type AbiOrUserTypeToRecsType<T extends string> = T extends AbiType
+  ? (typeof abiTypesToRecsTypes)[T]
   : T extends string
   ? // TODO: better support user enums
     RecsType.Number
   : never;
 
 type TableSchemaToComponentSchema<TableSchema extends FullSchemaConfig> = {
-  [K in keyof TableSchema]: SchemaOrUserTypeToRecsType<TableSchema[K]>;
+  [K in keyof TableSchema]: AbiOrUserTypeToRecsType<TableSchema[K]>;
 };
 
 type TablesToComponents<Tables extends Record<string, TableConfig>> = {
@@ -44,23 +42,25 @@ type ExpandSchema<TableSchema extends TableConfig["schema"]> = TableSchema exten
 type ExpandTables<Tables extends StoreUserConfig["tables"]> = {
   [K in keyof Tables]: Tables[K] extends TableConfig
     ? Tables[K]
-    : Tables[K] extends SchemaType
+    : Tables[K] extends AbiType
     ? { schema: { value: Tables[K] } }
     : Tables[K] extends string
     ? // TODO: better support for user enums
-      { schema: { value: SchemaType.UINT256 } }
+      { schema: { value: "uint8" } }
     : never;
 };
+
+function isAbiType(value: string): value is AbiType {
+  return value in abiTypesToRecsTypes;
+}
 
 const tableSchemaToRecsSchema = <TableSchema extends FullSchemaConfig>(
   tableSchema: TableSchema
 ): TableSchemaToComponentSchema<TableSchema> => {
   return Object.fromEntries(
-    Object.entries(tableSchema).map(([fieldName, schemaType]) => [
+    Object.entries(tableSchema).map(([fieldName, abiType]) => [
       fieldName,
-      typeof schemaType === "string"
-        ? RecsType.T // TODO: support user enums
-        : schemaTypesToRecsTypes[schemaType],
+      isAbiType(abiType) ? abiTypesToRecsTypes[abiType] : RecsType.T, // TODO: support user enums
     ])
   ) as any;
 };
