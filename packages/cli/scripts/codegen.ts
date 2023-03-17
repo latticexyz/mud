@@ -27,12 +27,53 @@ const config: StoreUserConfig = {
         v7: "Enum2",
       },
     },
+    Table2: {
+      schema: {
+        v1: SchemaType.UINT256_ARRAY,
+        v2: SchemaType.INT32_ARRAY,
+        v3: SchemaType.BYTES16_ARRAY,
+        v4: SchemaType.ADDRESS_ARRAY,
+        v5: SchemaType.BOOL_ARRAY,
+      },
+    },
+    Table3: {
+      schema: "Enum1",
+    },
+    Singleton1: {
+      dataStruct: false,
+      primaryKeys: {},
+      schema: {
+        v1: SchemaType.INT256,
+        v2: SchemaType.UINT256,
+      },
+    },
+    Singleton2: {
+      primaryKeys: {},
+      schema: {
+        v1: SchemaType.BYTES32_ARRAY,
+      },
+    },
   },
 
   userTypes: {
     enums: {
       Enum1: ["E1", "E2", "E3"],
       Enum2: ["E1"],
+    },
+  },
+
+  prototypes: {
+    Tables23: {
+      tables: {
+        Table2: {},
+        Table3: {},
+      },
+    },
+    Singletons: {
+      tables: {
+        Singleton1: { default: { v2: "123" } },
+        Singleton2: {},
+      },
     },
   },
 };
