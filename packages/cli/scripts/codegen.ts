@@ -28,11 +28,9 @@ const config = defineStoreUserConfig({
     },
   },
 
-  userTypes: {
-    enums: {
-      Enum1: ["E1", "E2", "E3"],
-      Enum2: ["E1"],
-    },
+  enums: {
+    Enum1: ["E1", "E2", "E3"],
+    Enum2: ["E1"],
   },
 });
 

@@ -35,9 +35,9 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
       const abiOrUserType = tableData.primaryKeys[name];
-      const { renderTableType } = resolveAbiOrUserType(abiOrUserType, config.userTypes);
+      const { renderTableType } = resolveAbiOrUserType(abiOrUserType, config);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config.userTypes);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
       if (importDatum) imports.push(importDatum);
 
       if (renderTableType.isDynamic)
@@ -53,9 +53,9 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     const fields = Object.keys(tableData.schema).map((name) => {
       const abiOrUserType = tableData.schema[name];
-      const { renderTableType, schemaType } = resolveAbiOrUserType(abiOrUserType, config.userTypes);
+      const { renderTableType, schemaType } = resolveAbiOrUserType(abiOrUserType, config);
 
-      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config.userTypes);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
       if (importDatum) imports.push(importDatum);
 
       const elementType = SchemaTypeArrayToElement[schemaType];

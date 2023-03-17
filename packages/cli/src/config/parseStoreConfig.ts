@@ -130,19 +130,25 @@ export const zTablesConfig = z.record(TableName, zTableConfig).transform((tables
  *
  ************************************************************************/
 
-export interface UserTypesConfig<EnumNames extends StringForUnion = StringForUnion> {
-  /** Path to the file where common types will be generated and imported from. Default is "Types" */
-  path?: string;
-  /** Enum names mapped to lists of their member names */
-  enums?: Record<EnumNames, string[]>;
-}
+export type EnumsConfig<EnumNames extends StringForUnion = StringForUnion> = string extends EnumNames
+  ? {
+      /**
+       * Enum names mapped to lists of their member names
+       */
+      enums?: Record<EnumNames, string[]>;
+    }
+  : {
+      /**
+       * Enum names mapped to lists of their member names
+       *
+       * Required if used in tables
+       */
+      enums: Record<EnumNames, string[]>;
+    };
 
-export const zUserTypesConfig = z
-  .object({
-    path: z.string().default("Types"),
-    enums: z.record(UserEnumName, UserEnum).default({}),
-  })
-  .default({});
+export const zEnumsConfig = z.object({
+  enums: z.record(UserEnumName, UserEnum).default({}),
+});
 
 /************************************************************************
  *
@@ -151,7 +157,7 @@ export const zUserTypesConfig = z
  ************************************************************************/
 
 // zod doesn't preserve doc comments
-export interface StoreUserConfig<EnumNames extends StringForUnion = StringForUnion> {
+export type StoreUserConfig<EnumNames extends StringForUnion = StringForUnion> = EnumsConfig<EnumNames> & {
   /** The namespace for table ids. Default is "" (empty string) */
   namespace?: string;
   /** Path for store package imports. Default is "@latticexyz/store/src/" */
@@ -166,9 +172,9 @@ export interface StoreUserConfig<EnumNames extends StringForUnion = StringForUni
    *  - FullTableConfig object for multi-value tables (or for customizable options).
    */
   tables: TablesConfig<EnumNames>;
-  /** User-defined types that will be generated and may be used in table schemas instead of abi types */
-  userTypes?: UserTypesConfig<EnumNames>;
-}
+  /** Path to the file where common user types will be generated and imported from. Default is "Types" */
+  userTypesPath?: string;
+};
 
 /** Type helper for defining StoreUserConfig */
 export function defineStoreUserConfig<EnumNames extends StringForUnion = StringForUnion>(
@@ -179,12 +185,14 @@ export function defineStoreUserConfig<EnumNames extends StringForUnion = StringF
 
 export type StoreConfig = z.output<typeof StoreConfig>;
 
-const StoreConfigUnrefined = z.object({
-  namespace: Selector.default(""),
-  storeImportPath: z.string().default("@latticexyz/store/src/"),
-  tables: zTablesConfig,
-  userTypes: zUserTypesConfig,
-});
+const StoreConfigUnrefined = z
+  .object({
+    namespace: Selector.default(""),
+    storeImportPath: z.string().default("@latticexyz/store/src/"),
+    tables: zTablesConfig,
+    userTypesPath: z.string().default("Types"),
+  })
+  .merge(zEnumsConfig);
 
 // finally validate global conditions
 export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
@@ -215,7 +223,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   }
   // Global names must be unique
   const tableNames = Object.keys(config.tables);
-  const userTypeNames = Object.keys(config.userTypes.enums);
+  const userTypeNames = Object.keys(config.enums);
   const globalNames = [...tableNames, ...userTypeNames];
   const duplicateGlobalNames = getDuplicates(globalNames);
   if (duplicateGlobalNames.length > 0) {

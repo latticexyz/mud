@@ -121,12 +121,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
       // Register table
       const schemaTypes = Object.values(schema).map((abiOrUserType) => {
-        const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig.userTypes);
+        const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
         return schemaType;
       });
 
       const keyTypes = Object.values(primaryKeys).map((abiOrUserType) => {
-        const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig.userTypes);
+        const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
         return schemaType;
       });
 

@@ -7,7 +7,7 @@ export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 /**
  * Resolve an abi or user type into a SchemaType
  */
-export function resolveAbiOrUserType(abiOrUserType: string, userTypesConfig: StoreConfig["userTypes"]) {
+export function resolveAbiOrUserType(abiOrUserType: string, config: StoreConfig) {
   if (abiOrUserType in AbiTypeToSchemaType) {
     const schemaType = AbiTypeToSchemaType[abiOrUserType];
     return {
@@ -15,7 +15,7 @@ export function resolveAbiOrUserType(abiOrUserType: string, userTypesConfig: Sto
       renderTableType: getSchemaTypeInfo(schemaType),
     };
   } else {
-    const { schemaType, renderTableType } = getUserTypeInfo(abiOrUserType, userTypesConfig);
+    const { schemaType, renderTableType } = getUserTypeInfo(abiOrUserType, config);
     return { schemaType, renderTableType };
   }
 }
@@ -26,14 +26,14 @@ export function resolveAbiOrUserType(abiOrUserType: string, userTypesConfig: Sto
 export function importForAbiOrUserType(
   abiOrUserType: string,
   usedInDirectory: string,
-  userTypesConfig: StoreConfig["userTypes"]
+  config: StoreConfig
 ): ImportDatum | undefined {
   if (abiOrUserType in AbiTypeToSchemaType) {
     return undefined;
   } else {
     return {
       symbol: abiOrUserType,
-      fromPath: userTypesConfig.path + ".sol",
+      fromPath: config.userTypesPath + ".sol",
       usedInPath: usedInDirectory,
     };
   }
@@ -57,12 +57,12 @@ export function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
 
 export function getUserTypeInfo(
   userType: string,
-  userTypesConfig: StoreConfig["userTypes"]
+  config: StoreConfig
 ): {
   schemaType: SchemaType;
   renderTableType: RenderTableType;
 } {
-  if (userType in userTypesConfig.enums) {
+  if (userType in config.enums) {
     const schemaType = SchemaType.UINT8;
     const staticByteLength = getStaticByteLength(schemaType);
     const isDynamic = staticByteLength === 0;

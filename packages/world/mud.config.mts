@@ -105,9 +105,7 @@ export default defineMUDUserConfig({
       storeArgument: true,
     },
   },
-  userTypes: {
-    enums: {
-      Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
-    },
+  enums: {
+    Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
   },
 });
