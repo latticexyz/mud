@@ -1,4 +1,4 @@
-import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
+import { AbiType, AbiTypes, StaticAbiTypes } from "@latticexyz/schema-type";
 import { z } from "zod";
 import {
   validateBaseRoute,
