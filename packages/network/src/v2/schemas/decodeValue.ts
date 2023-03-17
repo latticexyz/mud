@@ -1,26 +1,17 @@
-import { getStaticByteLength, SchemaType, StaticSchemaType } from "@latticexyz/schema-type";
-import { arrayToHex } from "@latticexyz/utils";
-
-const unsupportedStaticField = (fieldType: never): never => {
-  throw new Error(`Unsupported static field type: ${SchemaType[fieldType] ?? fieldType}`);
-};
+import { SchemaType } from "@latticexyz/schema-type";
+import { decodeDynamicField } from "./decodeDynamicField";
+import { decodeStaticField } from "./decodeStaticField";
 
 // TODO: figure out how to use with SchemaTypeToPrimitive<T> return type to ensure correctness here
-export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, bytes: Uint8Array, offset: number) => {
-  const staticLength = getStaticByteLength(fieldType);
-  const slice = bytes.slice(offset, offset + staticLength);
-  const hex = arrayToHex(slice);
-
-  switch (fieldType) {
+export function decodeValue<T extends SchemaType>(schemaType: T, bytes: Uint8Array) {
+  switch (schemaType) {
     case SchemaType.BOOL:
-      return Number(hex) !== 0;
     case SchemaType.UINT8:
     case SchemaType.UINT16:
     case SchemaType.UINT24:
     case SchemaType.UINT32:
     case SchemaType.UINT40:
     case SchemaType.UINT48:
-      return Number(hex);
     case SchemaType.UINT56:
     case SchemaType.UINT64:
     case SchemaType.UINT72:
@@ -47,17 +38,12 @@ export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, byte
     case SchemaType.UINT240:
     case SchemaType.UINT248:
     case SchemaType.UINT256:
-      return BigInt(hex);
     case SchemaType.INT8:
     case SchemaType.INT16:
     case SchemaType.INT24:
     case SchemaType.INT32:
     case SchemaType.INT40:
-    case SchemaType.INT48: {
-      const max = 2 ** (staticLength * 8);
-      const num = Number(hex);
-      return num < max / 2 ? num : num - max;
-    }
+    case SchemaType.INT48:
     case SchemaType.INT56:
     case SchemaType.INT64:
     case SchemaType.INT72:
@@ -83,11 +69,7 @@ export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, byte
     case SchemaType.INT232:
     case SchemaType.INT240:
     case SchemaType.INT248:
-    case SchemaType.INT256: {
-      const max = 2n ** (BigInt(staticLength) * 8n);
-      const num = BigInt(hex);
-      return num < max / 2n ? num : num - max;
-    }
+    case SchemaType.INT256:
     case SchemaType.BYTES1:
     case SchemaType.BYTES2:
     case SchemaType.BYTES3:
@@ -121,8 +103,8 @@ export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, byte
     case SchemaType.BYTES31:
     case SchemaType.BYTES32:
     case SchemaType.ADDRESS:
-      return hex;
+      return decodeStaticField(schemaType, bytes, 0);
     default:
-      return unsupportedStaticField(fieldType);
+      return decodeDynamicField(schemaType, bytes);
   }
-};
+}

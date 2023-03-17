@@ -6,7 +6,7 @@ import { decodeDynamicField } from "./decodeDynamicField";
 
 export const decodeData = (schema: TableSchema, hexData: string): Record<number, any> => {
   const data: Record<number, any> = {};
-  const bytes = new DataView(hexToArray(hexData).buffer);
+  const bytes = hexToArray(hexData);
 
   let bytesOffset = 0;
   schema.staticFields.forEach((fieldType, i) => {
@@ -29,7 +29,7 @@ export const decodeData = (schema: TableSchema, hexData: string): Record<number,
   }
 
   if (schema.dynamicFields.length > 0) {
-    const dynamicDataLayout = new DataView(bytes.buffer.slice(schema.staticDataLength, schema.staticDataLength + 32));
+    const dynamicDataLayout = new DataView(bytes.slice(schema.staticDataLength, schema.staticDataLength + 32).buffer);
     bytesOffset += 32;
 
     const dynamicDataLength = dynamicDataLayout.getUint32(0);
@@ -38,7 +38,7 @@ export const decodeData = (schema: TableSchema, hexData: string): Record<number,
       const dataLength = dynamicDataLayout.getUint16(4 + i * 2);
       const value = decodeDynamicField(
         fieldType as DynamicSchemaType,
-        bytes.buffer.slice(bytesOffset, bytesOffset + dataLength)
+        bytes.slice(bytesOffset, bytesOffset + dataLength)
       );
       bytesOffset += dataLength;
       data[schema.staticFields.length + i] = value;
