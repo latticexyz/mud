@@ -13,13 +13,13 @@ const UserEnumName = ObjectName;
 // (user types are refined later, based on the appropriate config options)
 const zFieldData = z.union([zAbiType, z.string()]);
 
-type FieldData<UserTypes extends string> = AbiType | UserTypes;
+type FieldData<UserTypes extends StringForUnion = StringForUnion> = AbiType | UserTypes;
 
 // Primary keys allow only static types
 const zPrimaryKey = z.union([zStaticAbiType, z.string()]);
 const zPrimaryKeys = z.record(KeyName, zPrimaryKey).default({ key: "bytes32" });
 
-type PrimaryKey<StaticUserTypes extends string> = StaticAbiType | StaticUserTypes;
+type PrimaryKey<StaticUserTypes extends StringForUnion = StringForUnion> = StaticAbiType | StaticUserTypes;
 
 /************************************************************************
  *
@@ -27,9 +27,11 @@ type PrimaryKey<StaticUserTypes extends string> = StaticAbiType | StaticUserType
  *
  ************************************************************************/
 
-export type FullSchemaConfig<UserTypes extends string> = Record<string, FieldData<UserTypes>>;
-export type ShorthandSchemaConfig<UserTypes extends string> = FieldData<UserTypes>;
-export type SchemaConfig<UserTypes extends string> = FullSchemaConfig<UserTypes> | ShorthandSchemaConfig<UserTypes>;
+export type FullSchemaConfig<UserTypes extends StringForUnion = StringForUnion> = Record<string, FieldData<UserTypes>>;
+export type ShorthandSchemaConfig<UserTypes extends StringForUnion = StringForUnion> = FieldData<UserTypes>;
+export type SchemaConfig<UserTypes extends StringForUnion = StringForUnion> =
+  | FullSchemaConfig<UserTypes>
+  | ShorthandSchemaConfig<UserTypes>;
 
 const zFullSchemaConfig = z
   .record(ColumnName, zFieldData)
@@ -49,7 +51,7 @@ export const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
  *
  ************************************************************************/
 
-export interface TableConfig<UserTypes extends string> {
+export interface TableConfig<UserTypes extends StringForUnion = StringForUnion> {
   /** Output directory path for the file. Default is "tables" */
   directory?: string;
   /**
@@ -106,7 +108,10 @@ export const zTableConfig = zFullTableConfig.or(zShorthandTableConfig);
  *
  ************************************************************************/
 
-export type TablesConfig<UserTypes extends string> = Record<string, TableConfig<UserTypes> | FieldData<UserTypes>>;
+export type TablesConfig<UserTypes extends StringForUnion = StringForUnion> = Record<
+  string,
+  TableConfig<UserTypes> | FieldData<UserTypes>
+>;
 
 export const zTablesConfig = z.record(TableName, zTableConfig).transform((tables) => {
   // default fileSelector depends on tableName
@@ -125,7 +130,7 @@ export const zTablesConfig = z.record(TableName, zTableConfig).transform((tables
  *
  ************************************************************************/
 
-export interface UserTypesConfig<EnumNames extends string> {
+export interface UserTypesConfig<EnumNames extends StringForUnion = StringForUnion> {
   /** Path to the file where common types will be generated and imported from. Default is "Types" */
   path?: string;
   /** Enum names mapped to lists of their member names */
