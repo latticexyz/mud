@@ -36,7 +36,7 @@ export class TableId {
     // this is scary, since zero padding is different depending on the type (bytes types vs number types)
     // TODO: fix this after we move tableIds to bytes32 instead of uint256
     const tableIdBytes = new Uint8Array(32);
-    tableIdBytes.set(tableId.reverse());
+    tableIdBytes.set(tableId.slice().reverse());
     tableIdBytes.reverse();
     const namespace = bytesToString(tableIdBytes.slice(0, 16)).replace(/\0+$/, "");
     const name = bytesToString(tableIdBytes.slice(16, 32)).replace(/\0+$/, "");
