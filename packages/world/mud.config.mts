@@ -1,6 +1,6 @@
-import { defineMUDUserConfig } from "@latticexyz/cli";
+import { mudConfig } from "@latticexyz/cli";
 
-export default defineMUDUserConfig({
+export default mudConfig({
   worldImportPath: "../",
   worldgenDirectory: "interfaces",
   tables: {

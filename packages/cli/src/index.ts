@@ -13,7 +13,7 @@ export type {
   MUDUserConfig,
   MUDConfig,
 } from "./config/index.js";
-export { defineStoreUserConfig, defineMUDUserConfig } from "./config/index.js";
+export { storeConfig, mudConfig } from "./config/index.js";
 
 export * from "./constants.js";
 export * from "./utils/index.js";

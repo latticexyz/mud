@@ -178,9 +178,7 @@ export type StoreUserConfig<EnumNames extends StringForUnion = StringForUnion> =
 };
 
 /** Type helper for defining StoreUserConfig */
-export function defineStoreUserConfig<EnumNames extends StringForUnion = StringForUnion>(
-  config: StoreUserConfig<EnumNames>
-) {
+export function storeConfig<EnumNames extends StringForUnion = StringForUnion>(config: StoreUserConfig<EnumNames>) {
   return config;
 }
 

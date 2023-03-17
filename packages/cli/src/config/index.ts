@@ -7,9 +7,7 @@ export type MUDUserConfig<EnumNames extends StringForUnion = StringForUnion> = S
 export type MUDConfig = StoreConfig & ResolvedWorldConfig;
 
 /** Type helper for defining MUDUserConfig */
-export function defineMUDUserConfig<EnumNames extends StringForUnion = StringForUnion>(
-  config: MUDUserConfig<EnumNames>
-) {
+export function mudConfig<EnumNames extends StringForUnion = StringForUnion>(config: MUDUserConfig<EnumNames>) {
   return config;
 }
 

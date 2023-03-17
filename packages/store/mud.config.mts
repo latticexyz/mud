@@ -1,6 +1,6 @@
-import { defineStoreUserConfig } from "@latticexyz/cli";
+import { storeConfig } from "@latticexyz/cli";
 
-export default defineStoreUserConfig({
+export default storeConfig({
   storeImportPath: "../",
   namespace: "mudstore",
   tables: {
