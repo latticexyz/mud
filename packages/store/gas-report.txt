@@ -29,7 +29,7 @@
 (test/Schema.t.sol) | get static data length from schema [uint256 length = schema.staticDataLength()]: 39
 (test/Schema.t.sol) | check if schema is empty (non-empty schema) [bool empty = encodedSchema.isEmpty()]: 13
 (test/Schema.t.sol) | check if schema is empty (empty schema) [bool empty = encodedSchema.isEmpty()]: 13
-(test/Schema.t.sol) | validate schema [encodedSchema.validate(false)]: 18965
+(test/Schema.t.sol) | validate schema [encodedSchema.validate({ allowEmpty: false })]: 18965
 (test/Slice.t.sol) | make Slice from bytes [Slice slice = SliceLib.fromBytes(data)]: 40
 (test/Slice.t.sol) | get Slice length [slice.length()]: 7
 (test/Slice.t.sol) | get Slice pointer [slice.pointer()]: 33

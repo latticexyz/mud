@@ -16,7 +16,7 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-library ReverseMapping {
+library KeysWithValue {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
@@ -36,7 +36,7 @@ library ReverseMapping {
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "keysWithValue";
-    return ("ReverseMapping", _fieldNames);
+    return ("KeysWithValue", _fieldNames);
   }
 
   /** Register the table's schema */

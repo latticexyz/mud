@@ -15,7 +15,7 @@ import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" }
 import IWorldData from "@latticexyz/world/abi/IWorld.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/abi/CoreModule.json" assert { type: "json" };
 import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json" assert { type: "json" };
-import ReverseMappingModuleData from "@latticexyz/world/abi/ReverseMappingModule.json" assert { type: "json" };
+import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
@@ -79,10 +79,10 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       RegistrationModuleData.bytecode,
       "RegistrationModule"
     ),
-    ReverseMappingModule: deployContract(
-      ReverseMappingModuleData.abi,
-      ReverseMappingModuleData.bytecode,
-      "ReverseMappingModule"
+    KeysWithValueModule: deployContract(
+      KeysWithValueModuleData.abi,
+      KeysWithValueModuleData.bytecode,
+      "KeysWithValueModule"
     ),
   };
 
