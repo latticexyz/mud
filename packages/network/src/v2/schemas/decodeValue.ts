@@ -3,7 +3,7 @@ import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 
 // TODO: figure out how to use with SchemaTypeToPrimitive<T> return type to ensure correctness here
-export function decodeValue<T extends SchemaType>(schemaType: T, value: ArrayBufferLike) {
+export function decodeValue<T extends SchemaType>(schemaType: T, bytes: Uint8Array) {
   switch (schemaType) {
     case SchemaType.BOOL:
     case SchemaType.UINT8:
@@ -103,8 +103,8 @@ export function decodeValue<T extends SchemaType>(schemaType: T, value: ArrayBuf
     case SchemaType.BYTES31:
     case SchemaType.BYTES32:
     case SchemaType.ADDRESS:
-      return decodeStaticField(schemaType, new DataView(value), 0);
+      return decodeStaticField(schemaType, bytes, 0);
     default:
-      return decodeDynamicField(schemaType, value);
+      return decodeDynamicField(schemaType, bytes);
   }
 }

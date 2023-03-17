@@ -55,8 +55,8 @@ export async function syncTablesFromMode(
     registrationPromises.push(registerMetadata(world, tableId, { tableName, fieldNames }));
 
     for (const row of rows) {
-      const keyTuple = row.values.slice(0, keyLength).map((bytes, i) => decodeValue(keyTypes[i], bytes.buffer));
-      const values = row.values.slice(keyLength).map((bytes, i) => decodeValue(fieldTypes[i], bytes.buffer));
+      const keyTuple = row.values.slice(0, keyLength).map((bytes, i) => decodeValue(keyTypes[i], bytes));
+      const values = row.values.slice(keyLength).map((bytes, i) => decodeValue(fieldTypes[i], bytes));
 
       const entity = keyTupleToEntityID(keyTuple);
       const value = Object.fromEntries(values.map((value, i) => [fieldNames[i], value])) as ComponentValue;

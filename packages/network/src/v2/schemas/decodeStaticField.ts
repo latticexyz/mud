@@ -5,56 +5,22 @@ const unsupportedStaticField = (fieldType: never): never => {
   throw new Error(`Unsupported static field type: ${SchemaType[fieldType] ?? fieldType}`);
 };
 
-const uintToNumber = (bytes: DataView, offset: number, length: number) => {
-  if (length > 6) {
-    throw new Error("uintToNumber: number can only fit 6 bytes");
-  }
-  let num = 0;
-  for (let i = 0; i < length; i++) {
-    num += bytes.getUint8(offset + i);
-  }
-  return num;
-};
-
-const intToNumber = (bytes: DataView, offset: number, length: number) => {
-  if (length > 6) {
-    throw new Error("uintToNumber: number can only fit 6 bytes");
-  }
-  let num = 0;
-  for (let i = 0; i < length; i++) {
-    num += bytes.getInt8(offset + i);
-  }
-  return num;
-};
-
-const uintToBigInt = (bytes: DataView, offset: number, length: number) => {
-  let num = 0n;
-  for (let i = 0; i < length; i++) {
-    num += BigInt(bytes.getUint8(offset + i));
-  }
-  return num;
-};
-
-const intToBigInt = (bytes: DataView, offset: number, length: number) => {
-  let num = 0n;
-  for (let i = 0; i < length; i++) {
-    num += BigInt(bytes.getInt8(offset + i));
-  }
-  return num;
-};
-
 // TODO: figure out how to use with SchemaTypeToPrimitive<T> return type to ensure correctness here
-export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, bytes: DataView, offset: number) => {
+export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, bytes: Uint8Array, offset: number) => {
+  const staticLength = getStaticByteLength(fieldType);
+  const slice = bytes.slice(offset, offset + staticLength);
+  const hex = arrayToHex(slice);
+
   switch (fieldType) {
     case SchemaType.BOOL:
-      return uintToNumber(bytes, offset, 1) === 1;
+      return Number(hex) !== 0;
     case SchemaType.UINT8:
     case SchemaType.UINT16:
     case SchemaType.UINT24:
     case SchemaType.UINT32:
     case SchemaType.UINT40:
     case SchemaType.UINT48:
-      return uintToNumber(bytes, offset, getStaticByteLength(fieldType));
+      return Number(hex);
     case SchemaType.UINT56:
     case SchemaType.UINT64:
     case SchemaType.UINT72:
@@ -81,14 +47,17 @@ export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, byte
     case SchemaType.UINT240:
     case SchemaType.UINT248:
     case SchemaType.UINT256:
-      return uintToBigInt(bytes, offset, getStaticByteLength(fieldType));
+      return BigInt(hex);
     case SchemaType.INT8:
     case SchemaType.INT16:
     case SchemaType.INT24:
     case SchemaType.INT32:
     case SchemaType.INT40:
-    case SchemaType.INT48:
-      return intToNumber(bytes, offset, getStaticByteLength(fieldType));
+    case SchemaType.INT48: {
+      const max = 2 ** (staticLength * 8);
+      const num = Number(hex);
+      return num < max / 2 ? num : num - max;
+    }
     case SchemaType.INT56:
     case SchemaType.INT64:
     case SchemaType.INT72:
@@ -114,8 +83,11 @@ export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, byte
     case SchemaType.INT232:
     case SchemaType.INT240:
     case SchemaType.INT248:
-    case SchemaType.INT256:
-      return intToBigInt(bytes, offset, getStaticByteLength(fieldType as SchemaType));
+    case SchemaType.INT256: {
+      const max = 2n ** (BigInt(staticLength) * 8n);
+      const num = BigInt(hex);
+      return num < max / 2n ? num : num - max;
+    }
     case SchemaType.BYTES1:
     case SchemaType.BYTES2:
     case SchemaType.BYTES3:
@@ -149,7 +121,7 @@ export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, byte
     case SchemaType.BYTES31:
     case SchemaType.BYTES32:
     case SchemaType.ADDRESS:
-      return arrayToHex(bytes.buffer.slice(offset, offset + getStaticByteLength(fieldType as SchemaType)));
+      return hex;
     default:
       return unsupportedStaticField(fieldType);
   }
