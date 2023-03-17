@@ -1,8 +1,17 @@
+import { StringForUnion } from "../utils/typeUtils.js";
 import { StoreUserConfig, StoreConfig } from "./parseStoreConfig.js";
 import { WorldUserConfig, ResolvedWorldConfig } from "./world/index.js";
 
-export type MUDUserConfig = StoreUserConfig & WorldUserConfig;
+export type MUDUserConfig<EnumNames extends StringForUnion = StringForUnion> = StoreUserConfig<EnumNames> &
+  WorldUserConfig;
 export type MUDConfig = StoreConfig & ResolvedWorldConfig;
+
+/** Type helper for defining MUDUserConfig */
+export function defineMUDUserConfig<EnumNames extends StringForUnion = StringForUnion>(
+  config: MUDUserConfig<EnumNames>
+) {
+  return config;
+}
 
 export * from "./commonSchemas.js";
 export * from "./loadConfig.js";

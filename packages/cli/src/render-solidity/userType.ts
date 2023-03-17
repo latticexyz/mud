@@ -1,43 +1,41 @@
-import { getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
+import { AbiTypeToSchemaType, getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
 import { StoreConfig } from "../index.js";
 import { ImportDatum, RenderTableType } from "./types.js";
 
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 
 /**
- * Resolve a SchemaType|userType into a SchemaType
+ * Resolve an abi or user type into a SchemaType
  */
-export function resolveSchemaOrUserType(
-  schemaOrUserType: SchemaType | string,
-  userTypesConfig: StoreConfig["userTypes"]
-) {
-  if (typeof schemaOrUserType === "string") {
-    const { schemaType, renderTableType } = getUserTypeInfo(schemaOrUserType, userTypesConfig);
-    return { schemaType, renderTableType };
-  } else {
+export function resolveAbiOrUserType(abiOrUserType: string, userTypesConfig: StoreConfig["userTypes"]) {
+  if (abiOrUserType in AbiTypeToSchemaType) {
+    const schemaType = AbiTypeToSchemaType[abiOrUserType];
     return {
-      schemaType: schemaOrUserType,
-      renderTableType: getSchemaTypeInfo(schemaOrUserType),
+      schemaType,
+      renderTableType: getSchemaTypeInfo(schemaType),
     };
+  } else {
+    const { schemaType, renderTableType } = getUserTypeInfo(abiOrUserType, userTypesConfig);
+    return { schemaType, renderTableType };
   }
 }
 
 /**
  * Get the required import for SchemaType|userType (`undefined` means that no import is required)
  */
-export function importForSchemaOrUserType(
-  schemaOrUserType: SchemaType | string,
+export function importForAbiOrUserType(
+  abiOrUserType: string,
   usedInDirectory: string,
   userTypesConfig: StoreConfig["userTypes"]
 ): ImportDatum | undefined {
-  if (typeof schemaOrUserType === "string") {
+  if (abiOrUserType in AbiTypeToSchemaType) {
+    return undefined;
+  } else {
     return {
-      symbol: schemaOrUserType,
+      symbol: abiOrUserType,
       fromPath: userTypesConfig.path + ".sol",
       usedInPath: usedInDirectory,
     };
-  } else {
-    return undefined;
   }
 }
 

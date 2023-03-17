@@ -1,36 +1,35 @@
-import { MUDUserConfig } from "@latticexyz/cli";
-import { SchemaType } from "@latticexyz/schema-type";
+import { defineMUDUserConfig } from "@latticexyz/cli";
 
-const config = {
+export default defineMUDUserConfig({
   worldImportPath: "../",
   worldgenDirectory: "interfaces",
   tables: {
     NamespaceOwner: {
       primaryKeys: {
-        namespace: SchemaType.BYTES16,
+        namespace: "bytes16",
       },
       schema: {
-        owner: SchemaType.ADDRESS,
+        owner: "address",
       },
       storeArgument: true,
     },
     ResourceAccess: {
       primaryKeys: {
-        resourceSelector: SchemaType.BYTES32,
-        caller: SchemaType.ADDRESS,
+        resourceSelector: "bytes32",
+        caller: "address",
       },
       schema: {
-        access: SchemaType.BOOL,
+        access: "bool",
       },
       storeArgument: true,
     },
     Systems: {
       primaryKeys: {
-        resourceSelector: SchemaType.BYTES32,
+        resourceSelector: "bytes32",
       },
       schema: {
-        system: SchemaType.ADDRESS,
-        publicAccess: SchemaType.BOOL,
+        system: "address",
+        publicAccess: "bool",
       },
       storeArgument: true,
       dataStruct: false,
@@ -38,16 +37,16 @@ const config = {
     SystemRegistry: {
       directory: "/modules/registration/tables",
       primaryKeys: {
-        system: SchemaType.ADDRESS,
+        system: "address",
       },
       schema: {
-        resourceSelector: SchemaType.BYTES32,
+        resourceSelector: "bytes32",
       },
     },
     ResourceType: {
       directory: "/modules/registration/tables",
       primaryKeys: {
-        resourceSelector: SchemaType.BYTES32,
+        resourceSelector: "bytes32",
       },
       schema: {
         resourceType: "Resource",
@@ -56,12 +55,12 @@ const config = {
     FunctionSelectors: {
       fileSelector: "funcSelectors",
       primaryKeys: {
-        functionSelector: SchemaType.BYTES4,
+        functionSelector: "bytes4",
       },
       schema: {
-        namespace: SchemaType.BYTES16,
-        file: SchemaType.BYTES16,
-        systemFunctionSelector: SchemaType.BYTES4,
+        namespace: "bytes16",
+        file: "bytes16",
+        systemFunctionSelector: "bytes4",
       },
       dataStruct: false,
     },
@@ -69,24 +68,24 @@ const config = {
       // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
       primaryKeys: {},
       schema: {
-        value: SchemaType.BOOL,
+        value: "bool",
       },
       storeArgument: true,
       tableIdArgument: true,
     },
     AddressArray: {
       // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
-      schema: { value: SchemaType.ADDRESS_ARRAY },
+      schema: "address[]",
       storeArgument: true,
       tableIdArgument: true,
     },
     InstalledModules: {
       primaryKeys: {
-        moduleName: SchemaType.BYTES16,
-        argumentsHash: SchemaType.BYTES32, // Hash of the params passed to the `install` function
+        moduleName: "bytes16",
+        argumentsHash: "bytes32", // Hash of the params passed to the `install` function
       },
       schema: {
-        moduleAddress: SchemaType.ADDRESS,
+        moduleAddress: "address",
       },
       // TODO: this is a workaround to use `getRecord` instead of `getField` in the autogen library,
       // to allow using the table before it is registered. This is because `getRecord` passes the schema
@@ -97,10 +96,10 @@ const config = {
     KeysWithValue: {
       directory: "/modules/keyswithvalue/tables",
       primaryKeys: {
-        valueHash: SchemaType.BYTES32,
+        valueHash: "bytes32",
       },
       schema: {
-        keysWithValue: SchemaType.BYTES32_ARRAY, // For now only supports 1 key per value
+        keysWithValue: "bytes32[]", // For now only supports 1 key per value
       },
       tableIdArgument: true,
       storeArgument: true,
@@ -111,6 +110,4 @@ const config = {
       Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
     },
   },
-} satisfies MUDUserConfig;
-
-export default config;
+});

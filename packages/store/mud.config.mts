@@ -1,37 +1,34 @@
-import { MUDUserConfig } from "@latticexyz/cli";
-import { SchemaType } from "@latticexyz/schema-type";
+import { defineStoreUserConfig } from "@latticexyz/cli";
 
-const config = {
+export default defineStoreUserConfig({
   storeImportPath: "../",
   namespace: "mudstore",
   tables: {
-    Hooks: SchemaType.ADDRESS_ARRAY,
-    Callbacks: SchemaType.BYTES24_ARRAY,
+    Hooks: "address[]",
+    Callbacks: "bytes24[]",
     StoreMetadata: {
       primaryKeys: {
-        tableId: SchemaType.UINT256,
+        tableId: "uint256",
       },
       schema: {
-        tableName: SchemaType.STRING,
-        abiEncodedFieldNames: SchemaType.BYTES,
+        tableName: "string",
+        abiEncodedFieldNames: "bytes",
       },
       storeArgument: true,
     },
     Mixed: {
       schema: {
-        u32: SchemaType.UINT32,
-        u128: SchemaType.UINT128,
-        a32: SchemaType.UINT32_ARRAY,
-        s: SchemaType.STRING,
+        u32: "uint32",
+        u128: "uint128",
+        a32: "uint32[]",
+        s: "string",
       },
     },
     Vector2: {
       schema: {
-        x: SchemaType.UINT32,
-        y: SchemaType.UINT32,
+        x: "uint32",
+        y: "uint32",
       },
     },
   },
-} satisfies MUDUserConfig;
-
-export default config;
+});

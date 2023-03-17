@@ -9,7 +9,7 @@ import {
   RenderTablePrimaryKey,
   RenderTableStaticField,
 } from "./types.js";
-import { getSchemaTypeInfo, importForSchemaOrUserType, resolveSchemaOrUserType } from "./userType.js";
+import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType.js";
 
 export interface TableOptions {
   outputPath: string;
@@ -34,10 +34,10 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     const imports: ImportDatum[] = [];
 
     const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
-      const schemaOrUserType = tableData.primaryKeys[name];
-      const { renderTableType } = resolveSchemaOrUserType(schemaOrUserType, config.userTypes);
+      const abiOrUserType = tableData.primaryKeys[name];
+      const { renderTableType } = resolveAbiOrUserType(abiOrUserType, config.userTypes);
 
-      const importDatum = importForSchemaOrUserType(schemaOrUserType, tableData.directory, config.userTypes);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config.userTypes);
       if (importDatum) imports.push(importDatum);
 
       if (renderTableType.isDynamic)
@@ -52,10 +52,10 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     });
 
     const fields = Object.keys(tableData.schema).map((name) => {
-      const schemaOrUserType = tableData.schema[name];
-      const { renderTableType, schemaType } = resolveSchemaOrUserType(schemaOrUserType, config.userTypes);
+      const abiOrUserType = tableData.schema[name];
+      const { renderTableType, schemaType } = resolveAbiOrUserType(abiOrUserType, config.userTypes);
 
-      const importDatum = importForSchemaOrUserType(schemaOrUserType, tableData.directory, config.userTypes);
+      const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config.userTypes);
       if (importDatum) imports.push(importDatum);
 
       const elementType = SchemaTypeArrayToElement[schemaType];
