@@ -5,6 +5,8 @@ export type SystemUserConfig =
   | {
       /** The full resource selector consists of namespace and fileSelector */
       fileSelector?: string;
+      /** Enable system call stream (defaults off) */
+      enableCallStream?: boolean;
     } & (
       | {
           /** If openAccess is true, any address can call the system */

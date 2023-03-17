@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
 import { fromZodErrorCustom } from "../../utils/errors.js";
 import { loadConfig } from "../loadConfig.js";
-import { WorldConfig } from "./parseWorldConfig.js";
+import { parseWorldConfig } from "./parseWorldConfig.js";
 import { resolveWorldConfig } from "./resolveWorldConfig.js";
 
 /**
@@ -14,8 +14,7 @@ export async function loadWorldConfig(configPath?: string, existingContracts?: s
   const config = await loadConfig(configPath);
 
   try {
-    const parsedConfig = WorldConfig.parse(config);
-    return resolveWorldConfig(parsedConfig, existingContracts);
+    return resolveWorldConfig(parseWorldConfig(config), existingContracts);
   } catch (error) {
     if (error instanceof ZodError) {
       throw fromZodErrorCustom(error, "WorldConfig Validation Error");

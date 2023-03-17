@@ -10,6 +10,7 @@ const SystemAccessList = z.array(SystemName.or(EthereumAddress)).default([]);
 const SystemConfig = z.intersection(
   z.object({
     fileSelector: Selector,
+    enableCallStream: z.boolean().default(false),
   }),
   z.discriminatedUnion("openAccess", [
     z.object({
@@ -47,7 +48,7 @@ export const WorldConfig = z.object({
   modules: z.array(ModuleConfig).default([]),
 });
 
-export async function parseWorldConfig(config: unknown) {
+export function parseWorldConfig(config: unknown) {
   return WorldConfig.parse(config);
 }
 

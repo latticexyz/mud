@@ -18,22 +18,24 @@ import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { defineStringComponent } from "../components";
 import keys from "lodash/keys";
 import { ContractComponent, ContractComponents, NetworkComponents, SetupContractConfig } from "./types";
-import {
-  applyNetworkUpdates,
-  createDecodeNetworkComponentUpdate,
-  createEncoders,
-  createSystemCallStreams,
-} from "./utils";
+import { applyNetworkUpdates, createDecodeNetworkComponentUpdate, createEncoders } from "./utils";
+import { createSystemCallStreams } from "./createSystemCallStreams";
 import { defineStoreComponents } from "@latticexyz/recs";
 import storeMudConfig from "@latticexyz/store/mud.config.mjs";
 import worldMudConfig from "@latticexyz/world/mud.config.mjs";
+import { MUDUserConfig } from "@latticexyz/cli";
+import { createV2SystemCallStreams } from "./v2/createV2SystemCallStreams";
 
-export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
+export async function setupMUDNetwork<
+  C extends ContractComponents,
+  SystemTypes extends { [key: string]: Contract },
+  M extends MUDUserConfig
+>(
   networkConfig: SetupContractConfig,
   world: World,
   contractComponents: C,
   SystemAbis: { [key in keyof SystemTypes]: ContractInterface },
-  options?: { initialGasPrice?: number; fetchSystemCalls?: boolean }
+  options?: { initialGasPrice?: number; fetchSystemCalls?: boolean; mudConfig: M }
 ) {
   const SystemsRegistry = findOrDefineComponent(
     contractComponents,
@@ -194,6 +196,9 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     registerComponent,
     registerSystem,
     components,
+    v2SystemCallStreams: options?.mudConfig
+      ? createV2SystemCallStreams(options.mudConfig, networkConfig.worldAddress, network.providers.get().json)
+      : null,
   };
 }
 

@@ -14,7 +14,6 @@ import {
   World,
   Schema,
   Type,
-  EntityID,
   getComponentValue,
   removeComponent,
   setComponent,
@@ -27,13 +26,11 @@ import {
 import { toEthAddress } from "@latticexyz/utils";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
-import { Contract, BigNumber, Signer } from "ethers";
+import { Contract, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import toLower from "lodash/toLower";
-import compact from "lodash/compact";
 import { IComputedValue } from "mobx";
 import { filter, map, Observable, Subject, timer } from "rxjs";
-import { DecodedNetworkComponentUpdate, DecodedSystemCall } from "./types";
+import { DecodedNetworkComponentUpdate } from "./types";
 
 export function createDecodeNetworkComponentUpdate<C extends Components>(
   world: World,
@@ -55,48 +52,6 @@ export function createDecodeNetworkComponentUpdate<C extends Components>(
       entity: entityIndex,
       component,
     };
-  };
-}
-
-export function createSystemCallStreams<C extends Components, SystemTypes extends { [key: string]: Contract }>(
-  world: World,
-  systemNames: string[],
-  systemsRegistry: Component<{ value: Type.String }>,
-  getSystemContract: (systemId: string) => { name: string; contract: Contract },
-  decodeNetworkComponentUpdate: ReturnType<typeof createDecodeNetworkComponentUpdate>
-) {
-  const systemCallStreams = systemNames.reduce(
-    (streams, systemId) => ({ ...streams, [systemId]: new Subject<DecodedSystemCall<SystemTypes>>() }),
-    {} as Record<string, Subject<DecodedSystemCall<SystemTypes, C>>>
-  );
-
-  return {
-    systemCallStreams,
-    decodeAndEmitSystemCall: (systemCall: SystemCall<C>) => {
-      const { tx } = systemCall;
-
-      const systemEntityIndex = world.entityToIndex.get(toLower(BigNumber.from(tx.to).toHexString()) as EntityID);
-      if (!systemEntityIndex) return;
-
-      const hashedSystemId = getComponentValue(systemsRegistry, systemEntityIndex)?.value;
-      if (!hashedSystemId) return;
-
-      const { name, contract } = getSystemContract(hashedSystemId);
-
-      const decodedTx = contract.interface.parseTransaction({ data: tx.data, value: tx.value });
-
-      // If this is a newly registered System make a new Subject
-      if (!systemCallStreams[name]) {
-        systemCallStreams[name] = new Subject<DecodedSystemCall<SystemTypes>>();
-      }
-
-      systemCallStreams[name].next({
-        ...systemCall,
-        updates: compact(systemCall.updates.map(decodeNetworkComponentUpdate)),
-        systemId: name,
-        args: decodedTx.args,
-      });
-    },
   };
 }
 

@@ -60,6 +60,7 @@ export function resolveSystemConfig(systemName: string, config?: SystemUserConfi
   const accessListAddresses: string[] = [];
   const accessListSystems: string[] = [];
   const accessList = config && !config.openAccess ? config.accessList : [];
+  const enableCallStream = config?.enableCallStream ?? false;
 
   // Split the access list into addresses and system names
   for (const accessListItem of accessList) {
@@ -74,5 +75,5 @@ export function resolveSystemConfig(systemName: string, config?: SystemUserConfi
     }
   }
 
-  return { fileSelector, openAccess, accessListAddresses, accessListSystems };
+  return { fileSelector, openAccess, accessListAddresses, accessListSystems, enableCallStream };
 }

@@ -571,6 +571,9 @@ export function createFetchSystemCallsFromEvents(provider: JsonRpcProvider) {
       });
     }
 
+    console.log("txData", txData);
+    console.log("systemCalls", systemCalls);
+
     return systemCalls;
   };
 }
