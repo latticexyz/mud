@@ -168,35 +168,38 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
         if (registerFunctionSelectors) {
           const functionSignatures: FunctionSignature[] = await loadFunctionSignatures(systemName);
           const isRoot = namespace === "";
-          for (const { functionName, functionArgs } of functionSignatures) {
-            const functionSignature = isRoot
-              ? functionName + functionArgs
-              : `${namespace}_${fileSelector}_${functionName}${functionArgs}`;
+          // Using Promise.all to avoid blocking on async calls
+          await Promise.all(
+            functionSignatures.map(async ({ functionName, functionArgs }) => {
+              const functionSignature = isRoot
+                ? functionName + functionArgs
+                : `${namespace}_${fileSelector}_${functionName}${functionArgs}`;
 
-            console.log(chalk.blue(`Registering function "${functionSignature}"`));
-            if (isRoot) {
-              const worldFunctionSelector = toFunctionSelector(
-                functionSignature === ""
-                  ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
-                  : { functionName, functionArgs }
-              );
-              const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
-              await fastTxExecute(WorldContract, "registerRootFunctionSelector", [
-                toBytes16(namespace),
-                toBytes16(fileSelector),
-                worldFunctionSelector,
-                systemFunctionSelector,
-              ]);
-            } else {
-              await fastTxExecute(WorldContract, "registerFunctionSelector", [
-                toBytes16(namespace),
-                toBytes16(fileSelector),
-                functionName,
-                functionArgs,
-              ]);
-            }
-            console.log(chalk.green(`Registered function "${functionSignature}"`));
-          }
+              console.log(chalk.blue(`Registering function "${functionSignature}"`));
+              if (isRoot) {
+                const worldFunctionSelector = toFunctionSelector(
+                  functionSignature === ""
+                    ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
+                    : { functionName, functionArgs }
+                );
+                const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
+                await fastTxExecute(WorldContract, "registerRootFunctionSelector", [
+                  toBytes16(namespace),
+                  toBytes16(fileSelector),
+                  worldFunctionSelector,
+                  systemFunctionSelector,
+                ]);
+              } else {
+                await fastTxExecute(WorldContract, "registerFunctionSelector", [
+                  toBytes16(namespace),
+                  toBytes16(fileSelector),
+                  functionName,
+                  functionArgs,
+                ]);
+              }
+              console.log(chalk.green(`Registered function "${functionSignature}"`));
+            })
+          );
         }
       }
     ),
