@@ -31,14 +31,5 @@ export const BaseRoute = z.string().superRefine(validateBaseRoute);
 /** A valid Ethereum address */
 export const EthereumAddress = z.string().superRefine(validateEthereumAddress);
 
-export const zAbiType = z
-  .string()
-  .refine((val): val is AbiType => (AbiTypes as string[]).includes(val), "Invalid abi type");
-
-/** Static subset of SchemaType enum */
-export const zStaticAbiType = z
-  .string()
-  .refine((val): val is AbiType => (StaticAbiTypes as string[]).includes(val), "Abi type must be static");
-
 /** A selector for namespace/file/resource */
 export const Selector = z.string().superRefine(validateSelector);

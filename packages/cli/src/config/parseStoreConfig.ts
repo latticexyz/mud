@@ -1,7 +1,7 @@
-import { AbiType, AbiTypes, StaticAbiType } from "@latticexyz/schema-type";
+import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
 import { RequireKeys, StringForUnion } from "../utils/typeUtils.js";
-import { ObjectName, Selector, zAbiType, zStaticAbiType, UserEnum, ValueName } from "./commonSchemas.js";
+import { ObjectName, Selector, UserEnum, ValueName } from "./commonSchemas.js";
 import { getDuplicates } from "./validation.js";
 
 const TableName = ObjectName;
@@ -11,12 +11,13 @@ const UserEnumName = ObjectName;
 
 // Fields can use AbiType or one of user-defined wrapper types
 // (user types are refined later, based on the appropriate config options)
-const zFieldData = z.union([zAbiType, z.string()]);
+const zFieldData = z.string();
 
 type FieldData<UserTypes extends StringForUnion = StringForUnion> = AbiType | UserTypes;
 
 // Primary keys allow only static types
-const zPrimaryKey = z.union([zStaticAbiType, z.string()]);
+// (user types are refined later, based on the appropriate config options)
+const zPrimaryKey = z.string();
 const zPrimaryKeys = z.record(KeyName, zPrimaryKey).default({ key: "bytes32" });
 
 type PrimaryKey<StaticUserTypes extends StringForUnion = StringForUnion> = StaticAbiType | StaticUserTypes;
@@ -223,7 +224,8 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   }
   // Global names must be unique
   const tableNames = Object.keys(config.tables);
-  const userTypeNames = Object.keys(config.enums);
+  const staticUserTypeNames = Object.keys(config.enums);
+  const userTypeNames = staticUserTypeNames;
   const globalNames = [...tableNames, ...userTypeNames];
   const duplicateGlobalNames = getDuplicates(globalNames);
   if (duplicateGlobalNames.length > 0) {
@@ -235,7 +237,7 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
   // User types must exist
   for (const table of Object.values(config.tables)) {
     for (const primaryKeyType of Object.values(table.primaryKeys)) {
-      validateAbiOrUserType(userTypeNames, primaryKeyType, ctx);
+      validateStaticAbiOrUserType(staticUserTypeNames, primaryKeyType, ctx);
     }
     for (const fieldType of Object.values(table.schema)) {
       validateAbiOrUserType(userTypeNames, fieldType, ctx);
@@ -248,6 +250,15 @@ function validateAbiOrUserType(userTypeNames: string[], type: string, ctx: Refin
     ctx.addIssue({
       code: ZodIssueCode.custom,
       message: `${type} is not a valid abi type, and is not defined in userTypes`,
+    });
+  }
+}
+
+function validateStaticAbiOrUserType(staticUserTypeNames: string[], type: string, ctx: RefinementCtx) {
+  if (!(StaticAbiTypes as string[]).includes(type) && !staticUserTypeNames.includes(type)) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `${type} is not a static type`,
     });
   }
 }
