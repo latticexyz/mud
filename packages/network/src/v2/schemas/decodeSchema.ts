@@ -1,4 +1,4 @@
-import { getStaticByteLength, SchemaType, SchemaTypeId } from "@latticexyz/schema-type";
+import { getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
 import { hexToArray } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 
@@ -28,8 +28,8 @@ export function decodeSchema(rawSchema: string): TableSchema {
     throw new Error("Schema static data length mismatch! Is `getStaticByteLength` outdated?");
   }
 
-  const fieldTypes = [...staticFields, ...dynamicFields].map((type) => SchemaTypeId[type]);
-  const abi = `(${fieldTypes.join(",")})`;
+  const abiTypes = [...staticFields, ...dynamicFields].map((type) => SchemaTypeToAbiType[type]);
+  const abi = `(${abiTypes.join(",")})`;
 
   return { staticDataLength, staticFields, dynamicFields, rawSchema, abi, isEmpty };
 }
