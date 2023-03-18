@@ -151,3 +151,13 @@ export function validateSelector(name: string, ctx: RefinementCtx) {
     });
   }
 }
+
+/** Returns null if the type does not look like a static array, otherwise element and length data */
+export function parseStaticArray(abiType: string) {
+  const matches = abiType.match(/^(\w+)\[(\d+)\]$/);
+  if (matches === null) return null;
+  return {
+    elementType: matches[1],
+    staticLength: Number.parseInt(matches[2]),
+  };
+}
