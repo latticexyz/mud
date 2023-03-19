@@ -3,7 +3,7 @@ export { parseStoreConfig } from "./config/parseStoreConfig.js";
 export { loadWorldConfig, resolveWorldConfig, parseWorldConfig } from "./config/world/index.js";
 export { getTableOptions } from "./render-solidity/tableOptions.js";
 export { renderTable } from "./render-solidity/renderTable.js";
-export { resolveTableId } from "./config/dynamicResolution.js";
+// export { resolveTableId } from "./config/dynamicResolution.js";
 
 export type {
   StoreUserConfig,

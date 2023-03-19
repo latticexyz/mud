@@ -6,6 +6,7 @@ export type MUDUserConfig<
   EnumNames extends StringForUnion = StringForUnion,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
 > = StoreUserConfig<EnumNames, StaticUserTypes> & WorldUserConfig;
+
 export type MUDConfig = StoreConfig & ResolvedWorldConfig;
 
 export function mudConfig<

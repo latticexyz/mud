@@ -1,4 +1,4 @@
-import { MUDError } from "../index.js";
+import { MUDError } from "../utils/errors.js";
 import { ValueWithType } from "./world/userTypes.js";
 
 export enum DynamicResolutionType {
