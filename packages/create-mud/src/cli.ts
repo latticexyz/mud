@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { create } from "create-create-app";
-import { resolve } from "path";
+import { resolve } from "node:path";
 import packageJson from "../package.json";
 
 const templateRoot = resolve(__dirname, "..", "templates");

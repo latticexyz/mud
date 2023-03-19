@@ -3,7 +3,7 @@ import { loadStoreConfig } from "../config/loadStoreConfig.js";
 import { loadWorldConfig } from "../config/index.js";
 import { getSrcDirectory } from "../utils/foundry.js";
 import glob from "glob";
-import path, { basename } from "path";
+import path, { basename } from "node:path";
 import { worldgen } from "../render-solidity/worldgen.js";
 import { rmSync } from "fs";
 

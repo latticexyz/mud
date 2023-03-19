@@ -1,4 +1,4 @@
-import path from "path";
+import path from "node:path";
 import { ImportDatum, RenderTableOptions, RenderTableType, StaticResourceData } from "./types.js";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT

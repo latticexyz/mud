@@ -1,6 +1,6 @@
 import { TASK_COMPILE_SOLIDITY } from "hardhat/builtin-tasks/task-names";
 import * as fs from "fs";
-import * as path from "path";
+import * as path from "node:path";
 import { subtask } from "hardhat/config";
 
 subtask(TASK_COMPILE_SOLIDITY).setAction(async (_: { force: boolean; quiet: boolean }, { config }, runSuper) => {
