@@ -16,8 +16,8 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string)
   }
 
   // write types to file
-  if (Object.keys(config.userTypes.enums).length > 0) {
-    const fullOutputPath = path.join(outputBaseDirectory, `${config.userTypes.path}.sol`);
+  if (Object.keys(config.enums).length > 0) {
+    const fullOutputPath = path.join(outputBaseDirectory, `${config.userTypesPath}.sol`);
     const output = renderTypesFromConfig(config);
     formatAndWrite(output, fullOutputPath, "Generated types file");
   }

@@ -1,6 +1,6 @@
 import { SchemaType } from "./SchemaType.js";
 
-export const SchemaTypeId: Record<SchemaType, string> = {
+export const SchemaTypeToAbiType = {
   [SchemaType.UINT8]: "uint8",
   [SchemaType.UINT16]: "uint16",
   [SchemaType.UINT24]: "uint24",
@@ -207,4 +207,4 @@ export const SchemaTypeId: Record<SchemaType, string> = {
 
   [SchemaType.BYTES]: "bytes",
   [SchemaType.STRING]: "string",
-};
+} as const satisfies Record<SchemaType, string>;

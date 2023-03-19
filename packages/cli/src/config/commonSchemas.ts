@@ -1,4 +1,4 @@
-import { getStaticByteLength, SchemaType } from "@latticexyz/schema-type";
+import { AbiType, AbiTypes, StaticAbiTypes } from "@latticexyz/schema-type";
 import { z } from "zod";
 import {
   validateBaseRoute,
@@ -30,11 +30,6 @@ export const BaseRoute = z.string().superRefine(validateBaseRoute);
 
 /** A valid Ethereum address */
 export const EthereumAddress = z.string().superRefine(validateEthereumAddress);
-
-/** Static subset of SchemaType enum */
-export const StaticSchemaType = z
-  .nativeEnum(SchemaType)
-  .refine((arg) => getStaticByteLength(arg) > 0, "SchemaType must be static");
 
 /** A selector for namespace/file/resource */
 export const Selector = z.string().superRefine(validateSelector);

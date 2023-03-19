@@ -8,7 +8,7 @@ import { IWorld } from "@latticexyz/world/types/ethers-contracts/IWorld.js";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { resolveSchemaOrUserType } from "../render-solidity/userType.js";
+import { resolveAbiOrUserType } from "../render-solidity/userType.js";
 import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
 
 import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" };
@@ -120,13 +120,13 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       tableIds[tableName] = toResourceSelector(namespace, fileSelector);
 
       // Register table
-      const schemaTypes = Object.values(schema).map((schemaOrUserType) => {
-        const { schemaType } = resolveSchemaOrUserType(schemaOrUserType, mudConfig.userTypes);
+      const schemaTypes = Object.values(schema).map((abiOrUserType) => {
+        const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
         return schemaType;
       });
 
-      const keyTypes = Object.values(primaryKeys).map((schemaOrUserType) => {
-        const { schemaType } = resolveSchemaOrUserType(schemaOrUserType, mudConfig.userTypes);
+      const keyTypes = Object.values(primaryKeys).map((abiOrUserType) => {
+        const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
         return schemaType;
       });
 
