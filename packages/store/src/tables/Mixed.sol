@@ -11,6 +11,7 @@ import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { Bytes } from "../Bytes.sol";
+import { Memory } from "../Memory.sol";
 import { SliceLib } from "../Slice.sol";
 import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
@@ -188,15 +189,15 @@ library Mixed {
 
     _start = _end;
     _end += _encodedLengths.atIndex(0);
-    _table.a32 = SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32();
+    _table.a32 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
 
     _start = _end;
     _end += _encodedLengths.atIndex(1);
-    _table.s = string(SliceLib.getSubslice(_blob, _start, _end).toBytes());
+    _table.s = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal pure returns (bytes memory) {
+  function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal view returns (bytes memory) {
     uint16[] memory _counters = new uint16[](2);
     _counters[0] = uint16(a32.length * 4);
     _counters[1] = uint16(bytes(s).length);

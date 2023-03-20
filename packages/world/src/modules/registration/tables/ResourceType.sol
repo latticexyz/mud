@@ -11,6 +11,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -70,11 +71,11 @@ library ResourceType {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((resourceSelector));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(Resource(resourceType)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(uint8(resourceType)));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(Resource resourceType) internal pure returns (bytes memory) {
+  function encode(Resource resourceType) internal view returns (bytes memory) {
     return abi.encodePacked(resourceType);
   }
 

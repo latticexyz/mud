@@ -11,6 +11,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -116,7 +117,7 @@ library KeysWithValue {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bytes32[] memory keysWithValue) internal pure returns (bytes memory) {
+  function encode(bytes32[] memory keysWithValue) internal view returns (bytes memory) {
     uint16[] memory _counters = new uint16[](1);
     _counters[0] = uint16(keysWithValue.length * 32);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);

@@ -11,6 +11,7 @@ import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { Bytes } from "../Bytes.sol";
+import { Memory } from "../Memory.sol";
 import { SliceLib } from "../Slice.sol";
 import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
@@ -79,7 +80,7 @@ library Callbacks {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bytes24[] memory value) internal pure returns (bytes memory) {
+  function encode(bytes24[] memory value) internal view returns (bytes memory) {
     uint16[] memory _counters = new uint16[](1);
     _counters[0] = uint16(value.length * 24);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
