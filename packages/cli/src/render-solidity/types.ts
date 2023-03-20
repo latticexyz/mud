@@ -43,9 +43,17 @@ export interface RenderTableType {
   typeWrap: string;
   /** Empty for internal types. Custom `unwrap` method for user defined types. */
   typeUnwrap: string;
+  /** Data to generate the custom wrapper and unwrapper if necessary. */
+  typeWrappingData?: RenderTableTypeWrappingData;
   /** Same as typeId for internal types. The underlying `typeId` for user defined types. */
   internalTypeId: string;
 }
+
+export type RenderTableTypeWrappingData = {
+  kind: "staticArray";
+  elementType: string;
+  staticLength: number;
+};
 
 export interface RenderTablePrimaryKey extends RenderTableType {
   name: string;

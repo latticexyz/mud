@@ -1,6 +1,6 @@
 import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { ExtractUserTypes, RequireKeys, StringForUnion } from "../utils/typeUtils.js";
+import { ExtractUserTypes, RequireKeys, StaticArray, StringForUnion } from "../utils/typeUtils.js";
 import { ObjectName, Selector, UserEnum, ValueName } from "./commonSchemas.js";
 import { getDuplicates, parseStaticArray } from "./validation.js";
 
@@ -13,7 +13,7 @@ const UserEnumName = ObjectName;
 // (user types are refined later, based on the appropriate config options)
 const zFieldData = z.string();
 
-type FieldData<UserTypes extends StringForUnion> = AbiType | UserTypes;
+type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray | UserTypes;
 
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
@@ -309,12 +309,6 @@ function validateStaticArray(
     ctx.addIssue({
       code: ZodIssueCode.custom,
       message: `Static array length must be less than 2**16`,
-    });
-  } else {
-    // TODO add static array support to tablegen
-    ctx.addIssue({
-      code: ZodIssueCode.custom,
-      message: `Static arrays are not yet supported`,
     });
   }
 }

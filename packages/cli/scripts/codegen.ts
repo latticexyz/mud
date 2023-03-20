@@ -6,7 +6,7 @@ import { getSrcDirectory } from "../src/utils/foundry.js";
 // This config is used only for tests
 const config = storeConfig({
   tables: {
-    Table1: {
+    Statics: {
       primaryKeys: {
         k1: "uint256",
         k2: "int32",
@@ -25,6 +25,27 @@ const config = storeConfig({
         v6: "Enum1",
         v7: "Enum2",
       },
+    },
+    Dynamics: {
+      schema: {
+        staticB32: "bytes32[1]",
+        staticI32: "int32[2]",
+        staticU128: "uint128[3]",
+        staticAddrs: "address[4]",
+        staticBools: "bool[5]",
+        u64: "uint64[]",
+        str: "string",
+        b: "bytes",
+      },
+    },
+    Singleton: {
+      primaryKeys: {},
+      schema: {
+        v1: "int256",
+        v2: "uint32[2]",
+        v3: "uint32[2]",
+      },
+      dataStruct: false,
     },
   },
 
