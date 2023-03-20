@@ -119,8 +119,8 @@ function getStaticArrayTypeInfo(abiType: string, elementType: string, staticLeng
       enumName: SchemaType[schemaType],
       staticByteLength: 0,
       isDynamic: true,
-      typeWrap: `toStaticArray_${elementType}`,
-      typeUnwrap: `fromStaticArray_${elementType}`,
+      typeWrap: `toStaticArray_${elementType}_${staticLength}`,
+      typeUnwrap: `fromStaticArray_${elementType}_${staticLength}`,
       typeWrappingData: {
         kind: "staticArray",
         elementType,

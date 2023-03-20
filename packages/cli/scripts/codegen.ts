@@ -44,6 +44,7 @@ const config = storeConfig({
         v1: "int256",
         v2: "uint32[2]",
         v3: "uint32[2]",
+        v4: "uint32[1]",
       },
       dataStruct: false,
     },

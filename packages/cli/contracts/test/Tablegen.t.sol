@@ -67,9 +67,10 @@ contract TablegenTest is Test, StoreView {
   function testSingletonSetAndGet() public {
     Singleton.registerSchema();
 
-    Singleton.set(-10, [uint32(1), 2], [uint32(3), 4]);
+    Singleton.set(-10, [uint32(1), 2], [uint32(3), 4], [uint32(5)]);
     assertEq(Singleton.getV1(), -10);
     assertEq(abi.encode(Singleton.getV2()), abi.encode([uint32(1), 2]));
     assertEq(abi.encode(Singleton.getV3()), abi.encode([uint32(3), 4]));
+    assertEq(abi.encode(Singleton.getV4()), abi.encode([uint32(5)]));
   }
 }

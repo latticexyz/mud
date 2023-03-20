@@ -85,7 +85,7 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    return toStaticArray_bytes32(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
+    return toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes32());
   }
 
   /** Set staticB32 */
@@ -93,7 +93,7 @@ library Dynamics {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, EncodeArray.encode(fromStaticArray_bytes32(staticB32)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 0, EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)));
   }
 
   /** Push an element to staticB32 */
@@ -110,7 +110,7 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 1);
-    return toStaticArray_int32(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
+    return toStaticArray_int32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_int32());
   }
 
   /** Set staticI32 */
@@ -118,7 +118,7 @@ library Dynamics {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 1, EncodeArray.encode(fromStaticArray_int32(staticI32)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 1, EncodeArray.encode(fromStaticArray_int32_2(staticI32)));
   }
 
   /** Push an element to staticI32 */
@@ -135,7 +135,7 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 2);
-    return toStaticArray_uint128(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
+    return toStaticArray_uint128_3(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint128());
   }
 
   /** Set staticU128 */
@@ -143,7 +143,7 @@ library Dynamics {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 2, EncodeArray.encode(fromStaticArray_uint128(staticU128)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 2, EncodeArray.encode(fromStaticArray_uint128_3(staticU128)));
   }
 
   /** Push an element to staticU128 */
@@ -160,7 +160,7 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 3);
-    return toStaticArray_address(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
+    return toStaticArray_address_4(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_address());
   }
 
   /** Set staticAddrs */
@@ -168,7 +168,7 @@ library Dynamics {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 3, EncodeArray.encode(fromStaticArray_address(staticAddrs)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 3, EncodeArray.encode(fromStaticArray_address_4(staticAddrs)));
   }
 
   /** Push an element to staticAddrs */
@@ -185,7 +185,7 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 4);
-    return toStaticArray_bool(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
+    return toStaticArray_bool_5(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bool());
   }
 
   /** Set staticBools */
@@ -193,7 +193,7 @@ library Dynamics {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 4, EncodeArray.encode(fromStaticArray_bool(staticBools)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 4, EncodeArray.encode(fromStaticArray_bool_5(staticBools)));
   }
 
   /** Push an element to staticBools */
@@ -333,23 +333,23 @@ library Dynamics {
 
     _start = _end;
     _end += _encodedLengths.atIndex(0);
-    _table.staticB32 = toStaticArray_bytes32(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
+    _table.staticB32 = toStaticArray_bytes32_1(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bytes32());
 
     _start = _end;
     _end += _encodedLengths.atIndex(1);
-    _table.staticI32 = toStaticArray_int32(SliceLib.getSubslice(_blob, _start, _end).decodeArray_int32());
+    _table.staticI32 = toStaticArray_int32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_int32());
 
     _start = _end;
     _end += _encodedLengths.atIndex(2);
-    _table.staticU128 = toStaticArray_uint128(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint128());
+    _table.staticU128 = toStaticArray_uint128_3(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint128());
 
     _start = _end;
     _end += _encodedLengths.atIndex(3);
-    _table.staticAddrs = toStaticArray_address(SliceLib.getSubslice(_blob, _start, _end).decodeArray_address());
+    _table.staticAddrs = toStaticArray_address_4(SliceLib.getSubslice(_blob, _start, _end).decodeArray_address());
 
     _start = _end;
     _end += _encodedLengths.atIndex(4);
-    _table.staticBools = toStaticArray_bool(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bool());
+    _table.staticBools = toStaticArray_bool_5(SliceLib.getSubslice(_blob, _start, _end).decodeArray_bool());
 
     _start = _end;
     _end += _encodedLengths.atIndex(5);
@@ -389,11 +389,11 @@ library Dynamics {
     return
       abi.encodePacked(
         _encodedLengths.unwrap(),
-        EncodeArray.encode(fromStaticArray_bytes32(staticB32)),
-        EncodeArray.encode(fromStaticArray_int32(staticI32)),
-        EncodeArray.encode(fromStaticArray_uint128(staticU128)),
-        EncodeArray.encode(fromStaticArray_address(staticAddrs)),
-        EncodeArray.encode(fromStaticArray_bool(staticBools)),
+        EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)),
+        EncodeArray.encode(fromStaticArray_int32_2(staticI32)),
+        EncodeArray.encode(fromStaticArray_uint128_3(staticU128)),
+        EncodeArray.encode(fromStaticArray_address_4(staticAddrs)),
+        EncodeArray.encode(fromStaticArray_bool_5(staticBools)),
         EncodeArray.encode((u64)),
         bytes((str)),
         bytes((b))
@@ -409,42 +409,42 @@ library Dynamics {
   }
 }
 
-function toStaticArray_bytes32(bytes32[] memory _value) pure returns (bytes32[1] memory _result) {
+function toStaticArray_bytes32_1(bytes32[] memory _value) pure returns (bytes32[1] memory _result) {
   // in memory static arrays are just dynamic arrays without the length byte
   assembly {
     _result := add(_value, 0x20)
   }
 }
 
-function toStaticArray_int32(int32[] memory _value) pure returns (int32[2] memory _result) {
+function toStaticArray_int32_2(int32[] memory _value) pure returns (int32[2] memory _result) {
   // in memory static arrays are just dynamic arrays without the length byte
   assembly {
     _result := add(_value, 0x20)
   }
 }
 
-function toStaticArray_uint128(uint128[] memory _value) pure returns (uint128[3] memory _result) {
+function toStaticArray_uint128_3(uint128[] memory _value) pure returns (uint128[3] memory _result) {
   // in memory static arrays are just dynamic arrays without the length byte
   assembly {
     _result := add(_value, 0x20)
   }
 }
 
-function toStaticArray_address(address[] memory _value) pure returns (address[4] memory _result) {
+function toStaticArray_address_4(address[] memory _value) pure returns (address[4] memory _result) {
   // in memory static arrays are just dynamic arrays without the length byte
   assembly {
     _result := add(_value, 0x20)
   }
 }
 
-function toStaticArray_bool(bool[] memory _value) pure returns (bool[5] memory _result) {
+function toStaticArray_bool_5(bool[] memory _value) pure returns (bool[5] memory _result) {
   // in memory static arrays are just dynamic arrays without the length byte
   assembly {
     _result := add(_value, 0x20)
   }
 }
 
-function fromStaticArray_bytes32(bytes32[1] memory _value) view returns (bytes32[] memory _result) {
+function fromStaticArray_bytes32_1(bytes32[1] memory _value) view returns (bytes32[] memory _result) {
   _result = new bytes32[](1);
   uint256 fromPointer;
   uint256 toPointer;
@@ -455,7 +455,7 @@ function fromStaticArray_bytes32(bytes32[1] memory _value) view returns (bytes32
   Memory.copy(fromPointer, toPointer, 32);
 }
 
-function fromStaticArray_int32(int32[2] memory _value) view returns (int32[] memory _result) {
+function fromStaticArray_int32_2(int32[2] memory _value) view returns (int32[] memory _result) {
   _result = new int32[](2);
   uint256 fromPointer;
   uint256 toPointer;
@@ -466,7 +466,7 @@ function fromStaticArray_int32(int32[2] memory _value) view returns (int32[] mem
   Memory.copy(fromPointer, toPointer, 64);
 }
 
-function fromStaticArray_uint128(uint128[3] memory _value) view returns (uint128[] memory _result) {
+function fromStaticArray_uint128_3(uint128[3] memory _value) view returns (uint128[] memory _result) {
   _result = new uint128[](3);
   uint256 fromPointer;
   uint256 toPointer;
@@ -477,7 +477,7 @@ function fromStaticArray_uint128(uint128[3] memory _value) view returns (uint128
   Memory.copy(fromPointer, toPointer, 96);
 }
 
-function fromStaticArray_address(address[4] memory _value) view returns (address[] memory _result) {
+function fromStaticArray_address_4(address[4] memory _value) view returns (address[] memory _result) {
   _result = new address[](4);
   uint256 fromPointer;
   uint256 toPointer;
@@ -488,7 +488,7 @@ function fromStaticArray_address(address[4] memory _value) view returns (address
   Memory.copy(fromPointer, toPointer, 128);
 }
 
-function fromStaticArray_bool(bool[5] memory _value) view returns (bool[] memory _result) {
+function fromStaticArray_bool_5(bool[5] memory _value) view returns (bool[] memory _result) {
   _result = new bool[](5);
   uint256 fromPointer;
   uint256 toPointer;
