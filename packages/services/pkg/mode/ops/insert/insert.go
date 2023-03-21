@@ -26,7 +26,7 @@ func (builder *InsertBuilder) BuildInsertRowFromKV(row map[string]string, fieldN
 	rowStr := ""
 	for idx, field := range fieldNames {
 		rowStr = rowStr + `'` + row[field] + `'`
-		if idx != len(row)-1 {
+		if idx != len(fieldNames)-1 {
 			rowStr = rowStr + `, `
 		}
 	}
@@ -36,8 +36,11 @@ func (builder *InsertBuilder) BuildInsertRowFromKV(row map[string]string, fieldN
 func (builder *InsertBuilder) BuildInsert() string {
 	request := builder.Request
 
+	// Table columns are the key columns and the field columns.
+	tableCols := append(builder.TableSchema.KeyNames, builder.TableSchema.FieldNames...)
+
 	var query strings.Builder
-	query.WriteString("INSERT INTO " + request.Into + " VALUES (" + builder.BuildInsertRowFromKV(request.Row, builder.TableSchema.FieldNames) + ")")
+	query.WriteString("INSERT INTO " + request.Into + " VALUES (" + builder.BuildInsertRowFromKV(request.Row, tableCols) + ")")
 	return query.String()
 }
 

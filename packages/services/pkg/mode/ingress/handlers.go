@@ -64,17 +64,21 @@ func (il *IngressLayer) handleSetFieldEventUpdateRow(event *storecore.StorecoreS
 	il.wl.UpdateRow(tableSchema, partialRow, filter)
 }
 
-func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreStoreSetField, tableSchema *mode.TableSchema, filter []*pb_mode.Filter) {
+func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreStoreSetField, tableSchema *mode.TableSchema) {
 	// Decode the row record data (value).
-	decodedData := storecore.DecodeData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value)
+	decodedFieldData := storecore.DecodeData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value)
+	// Decode the row key.
+	aggregateKey := mode.AggregateKey(event.Key)
+	decodedKeyData := storecore.DecodeData(aggregateKey, *tableSchema.StoreCoreSchemaTypeKV.Key)
 
-	// Create a row for the table.
-	row := write.RowKV{}
-	for idx, field_name := range tableSchema.FieldNames {
-		row[field_name] = decodedData.DataAt(idx)
-	}
+	// Create a row for the table from the decoded data.
+	row := write.RowFromDecodedData(decodedKeyData, decodedFieldData, tableSchema)
 
 	println("inserting new row for setField")
+	println("row being inserted:")
+	for k, v := range row {
+		println(k, v)
+	}
 
 	// Insert the row into the table.
 	il.wl.InsertRow(tableSchema, row)
@@ -106,8 +110,7 @@ func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetFi
 
 	// Build the "filter" from the setField key. This is used to find the actual row/record that
 	// we're updating (or inserting if doesn't exist).
-	// TODO: properly parse out the key and build a "filter" that the builder can use.
-	filter := KeyToFilter(tableSchema, event.Key)
+	filter := mode.KeyToFilter(tableSchema, event.Key)
 
 	rowExists, err := il.rl.DoesRowExist(tableSchema, filter)
 	if err != nil {
@@ -121,7 +124,7 @@ func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetFi
 		il.handleSetFieldEventUpdateRow(event, tableSchema, filter)
 	} else {
 		println("ROW DOES NOT EXIST")
-		il.handleSetFieldEventInsertRow(event, tableSchema, filter)
+		il.handleSetFieldEventInsertRow(event, tableSchema)
 	}
 }
 
@@ -136,8 +139,9 @@ func (il *IngressLayer) handleDeleteRecordEvent(event *storecore.StorecoreStoreD
 		return
 	}
 
-	// TODO: properly parse out the key and build a "filter" that the delete request builder can use.
-	filter := KeyToFilter(tableSchema, event.Key)
+	// Build the "filter" from the deleteRecord key. This is used to find the actual row/record that
+	// we're deleting.
+	filter := mode.KeyToFilter(tableSchema, event.Key)
 	il.wl.DeleteRow(tableSchema, filter)
 
 	il.logger.Info("delete record event handled", zap.String("table_id", tableId))
@@ -327,8 +331,6 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 
 	// Update the table field names based on the new metadata.
 	il.wl.RenameTableFields(tableSchema, oldTableFieldNames, tableSchema.FieldNames)
-	// Update the table name.
-	// il.wl.RenameTable(tableSchema, tableSchema.TableName, tableSchema.ReadableName)
 
 	il.logger.Info("metadata table event handled (schema updated)", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId), zap.String("schema", string(tableSchemaJson)))
 }
@@ -345,13 +347,14 @@ func (il *IngressLayer) handleGenericTableEvent(event *storecore.StorecoreStoreS
 	}
 
 	// Decode the row record data (value).
-	decodedData := storecore.DecodeData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value)
+	decodedFieldData := storecore.DecodeData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value)
 
-	// Create a row for the table.
-	row := write.RowKV{}
-	for idx, field_name := range tableSchema.FieldNames {
-		row[field_name] = decodedData.DataAt(idx)
-	}
+	// Decode the row key.
+	aggregateKey := mode.AggregateKey(event.Key)
+	decodedKeyData := storecore.DecodeData(aggregateKey, *tableSchema.StoreCoreSchemaTypeKV.Key)
+
+	// Create a row for the table from the decoded data.
+	row := write.RowFromDecodedData(decodedKeyData, decodedFieldData, tableSchema)
 
 	// Insert the row into the table.
 	il.wl.InsertRow(tableSchema, row)

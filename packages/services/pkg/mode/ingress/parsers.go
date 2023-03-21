@@ -2,9 +2,7 @@ package ingress
 
 import (
 	"fmt"
-	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/storecore"
-	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
@@ -58,26 +56,4 @@ func UnpackLog(out interface{}, eventName string, log types.Log) error {
 		}
 	}
 	return abi.ParseTopics(out, indexed, log.Topics[1:])
-}
-
-// TODO: proper parsing + implementation
-func KeyToFilter(tableSchema *mode.TableSchema, key [][32]byte) []*pb_mode.Filter {
-	filters := []*pb_mode.Filter{}
-	println("HAVE KEYS: " + fmt.Sprint(len(key)))
-	println(key)
-	for i := 0; i < len(key); i++ {
-		tmp := make([]byte, 32)
-		copy(tmp, key[i][:])
-		println("KEY: " + fmt.Sprint(tmp))
-
-		filters = append(filters, &pb_mode.Filter{
-			Field: &pb_mode.Field{
-				TableName:  tableSchema.TableName,
-				TableField: tableSchema.KeyNames[i],
-			},
-			Operator: "=",
-			Value:    fmt.Sprint(tmp),
-		})
-	}
-	return filters
 }
