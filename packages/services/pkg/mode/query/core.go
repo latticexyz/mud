@@ -38,3 +38,22 @@ func RunQueryLayer(ql *QueryLayer, qlGrpcPort int) {
 	// Start the HTTP server at PORT+1.
 	grpc.StartHTTPServer(grpc.CreateWebGrpcServer(grpcServer), qlGrpcPort+1, ql.logger)
 }
+
+func NewBufferedEvents() *BufferedEvents {
+	return &BufferedEvents{
+		ChainTables:     make([]*pb_mode.GenericTable, 0),
+		WorldTables:     make([]*pb_mode.GenericTable, 0),
+		ChainTableNames: make([]string, 0),
+		WorldTableNames: make([]string, 0),
+	}
+}
+
+func (buffer *BufferedEvents) AddChainTable(table *pb_mode.GenericTable, tableName string) {
+	buffer.ChainTables = append(buffer.ChainTables, table)
+	buffer.ChainTableNames = append(buffer.ChainTableNames, tableName)
+}
+
+func (buffer *BufferedEvents) AddWorldTable(table *pb_mode.GenericTable, tableName string) {
+	buffer.WorldTables = append(buffer.WorldTables, table)
+	buffer.WorldTableNames = append(buffer.WorldTableNames, tableName)
+}

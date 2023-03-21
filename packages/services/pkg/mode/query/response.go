@@ -39,3 +39,11 @@ func QueryLayerStateResponseFromTables(chainTables []*mode.GenericTable, worldTa
 		WorldTables: worldTableMap,
 	}
 }
+
+func QueryLayerStateStreamResponseFromTables(inserted *BufferedEvents, updated *BufferedEvents, deleted *BufferedEvents) *mode.QueryLayerStateStreamResponse {
+	return &mode.QueryLayerStateStreamResponse{
+		Inserted: QueryLayerStateResponseFromTables(inserted.ChainTables, inserted.WorldTables, inserted.ChainTableNames, inserted.WorldTableNames),
+		Updated:  QueryLayerStateResponseFromTables(updated.ChainTables, updated.WorldTables, updated.ChainTableNames, updated.WorldTableNames),
+		Deleted:  QueryLayerStateResponseFromTables(deleted.ChainTables, deleted.WorldTables, deleted.ChainTableNames, deleted.WorldTableNames),
+	}
+}

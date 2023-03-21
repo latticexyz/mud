@@ -1,6 +1,7 @@
 package mode
 
 import (
+	"encoding/json"
 	"latticexyz/mud/packages/services/pkg/logger"
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/protobuf/go/mode"
@@ -27,12 +28,8 @@ func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.
 	values := [][]byte{}
 
 	// Iterate columns and serialize each field for this row.
-	for i, colName := range colNames {
+	for i, _ := range colNames {
 		colEncodingType := colEncodingTypes[i]
-
-		println(colEncodingType.String())
-		println(colName + ":")
-		println(row[i])
 
 		var encodedField []byte
 		var err error
@@ -40,7 +37,19 @@ func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.
 			// If the field is null, we just encode it as an empty string.
 			encodedField = []byte("")
 		} else {
-			encodedField, err = colEncodingType.Encode(row[i])
+			// If the field is a map, we need to marshal it to JSON first.
+			if _map, ok := row[i].(map[string]interface{}); ok {
+				_mapStr, err := json.Marshal(_map)
+				if err != nil {
+					return nil, err
+				}
+				encodedField, err = colEncodingType.Encode(_mapStr)
+				if err != nil {
+					return nil, err
+				}
+			} else {
+				encodedField, err = colEncodingType.Encode(row[i])
+			}
 			if err != nil {
 				return nil, err
 			}

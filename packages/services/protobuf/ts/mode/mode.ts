@@ -40,6 +40,12 @@ export interface QueryLayerStateResponse_WorldTablesEntry {
   value: GenericTable | undefined;
 }
 
+export interface QueryLayerStateStreamResponse {
+  inserted: QueryLayerStateResponse | undefined;
+  updated: QueryLayerStateResponse | undefined;
+  deleted: QueryLayerStateResponse | undefined;
+}
+
 export interface Namespace {
   chainId: string;
   worldAddress: string;
@@ -472,6 +478,66 @@ export const QueryLayerStateResponse_WorldTablesEntry = {
     message.key = object.key ?? "";
     message.value =
       object.value !== undefined && object.value !== null ? GenericTable.fromPartial(object.value) : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryLayerStateStreamResponse(): QueryLayerStateStreamResponse {
+  return { inserted: undefined, updated: undefined, deleted: undefined };
+}
+
+export const QueryLayerStateStreamResponse = {
+  encode(message: QueryLayerStateStreamResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.inserted !== undefined) {
+      QueryLayerStateResponse.encode(message.inserted, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.updated !== undefined) {
+      QueryLayerStateResponse.encode(message.updated, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.deleted !== undefined) {
+      QueryLayerStateResponse.encode(message.deleted, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerStateStreamResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryLayerStateStreamResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.inserted = QueryLayerStateResponse.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.updated = QueryLayerStateResponse.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.deleted = QueryLayerStateResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryLayerStateStreamResponse>): QueryLayerStateStreamResponse {
+    const message = createBaseQueryLayerStateStreamResponse();
+    message.inserted =
+      object.inserted !== undefined && object.inserted !== null
+        ? QueryLayerStateResponse.fromPartial(object.inserted)
+        : undefined;
+    message.updated =
+      object.updated !== undefined && object.updated !== null
+        ? QueryLayerStateResponse.fromPartial(object.updated)
+        : undefined;
+    message.deleted =
+      object.deleted !== undefined && object.deleted !== null
+        ? QueryLayerStateResponse.fromPartial(object.deleted)
+        : undefined;
     return message;
   },
 };
@@ -1290,7 +1356,7 @@ export const QueryLayerDefinition = {
       name: "StreamState",
       requestType: StateRequest,
       requestStream: false,
-      responseType: QueryLayerStateResponse,
+      responseType: QueryLayerStateStreamResponse,
       responseStream: true,
       options: {},
     },
@@ -1349,7 +1415,7 @@ export interface QueryLayerServiceImplementation<CallContextExt = {}> {
   streamState(
     request: StateRequest,
     context: CallContext & CallContextExt
-  ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateResponse>>;
+  ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateStreamResponse>>;
   /** Find endpoint. */
   find(request: FindRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
   /** Join endpoint. */
@@ -1375,7 +1441,7 @@ export interface QueryLayerClient<CallOptionsExt = {}> {
   streamState(
     request: DeepPartial<StateRequest>,
     options?: CallOptions & CallOptionsExt
-  ): AsyncIterable<QueryLayerStateResponse>;
+  ): AsyncIterable<QueryLayerStateStreamResponse>;
   /** Find endpoint. */
   find(request: DeepPartial<FindRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
   /** Join endpoint. */

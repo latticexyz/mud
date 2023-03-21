@@ -18,3 +18,11 @@ type QueryLayer struct {
 
 	logger *zap.Logger
 }
+
+type BufferedEvents struct {
+	ChainTables []*pb_mode.GenericTable
+	WorldTables []*pb_mode.GenericTable
+
+	ChainTableNames []string
+	WorldTableNames []string
+}

@@ -110,9 +110,6 @@ func (il *IngressLayer) Run() {
 			blockNumber := block.Number()
 			il.logger.Info("received new block", zap.String("hash", header.Hash().String()), zap.String("number", blockNumber.String()))
 
-			// Update the current block number in the database.
-			il.UpdateBlockNumber(il.chainConfig.Id, blockNumber)
-
 			// Get all events in this block, then process and filter out logs.
 			filteredLogs := eth.FilterLogs(il.FetchEventsInBlock(blockNumber))
 
@@ -125,6 +122,10 @@ func (il *IngressLayer) Run() {
 				// If the ingress layer is not syncing, then handle the logs immediately.
 				il.handleLogs(filteredLogs)
 			}
+
+			// Now that logs have been handled, update the current block number in the database.
+			// TODO: consider moving the order of updates when buffering / syncing.
+			il.UpdateBlockNumber(il.chainConfig.Id, blockNumber)
 		}
 	}
 }

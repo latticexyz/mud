@@ -71,7 +71,7 @@ func (c *queryLayerClient) StreamState(ctx context.Context, in *StateRequest, op
 }
 
 type QueryLayer_StreamStateClient interface {
-	Recv() (*QueryLayerStateResponse, error)
+	Recv() (*QueryLayerStateStreamResponse, error)
 	grpc.ClientStream
 }
 
@@ -79,8 +79,8 @@ type queryLayerStreamStateClient struct {
 	grpc.ClientStream
 }
 
-func (x *queryLayerStreamStateClient) Recv() (*QueryLayerStateResponse, error) {
-	m := new(QueryLayerStateResponse)
+func (x *queryLayerStreamStateClient) Recv() (*QueryLayerStateStreamResponse, error) {
+	m := new(QueryLayerStateStreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -241,7 +241,7 @@ func _QueryLayer_StreamState_Handler(srv interface{}, stream grpc.ServerStream) 
 }
 
 type QueryLayer_StreamStateServer interface {
-	Send(*QueryLayerStateResponse) error
+	Send(*QueryLayerStateStreamResponse) error
 	grpc.ServerStream
 }
 
@@ -249,7 +249,7 @@ type queryLayerStreamStateServer struct {
 	grpc.ServerStream
 }
 
-func (x *queryLayerStreamStateServer) Send(m *QueryLayerStateResponse) error {
+func (x *queryLayerStreamStateServer) Send(m *QueryLayerStateStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 

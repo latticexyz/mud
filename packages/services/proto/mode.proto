@@ -36,6 +36,12 @@ message QueryLayerStateResponse {
     map<string, GenericTable> worldTables = 2;
 }
 
+message QueryLayerStateStreamResponse {
+   QueryLayerStateResponse inserted = 1;
+   QueryLayerStateResponse updated = 2;
+   QueryLayerStateResponse deleted = 3;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 //                                                                                       //
 // Namespaces are used by MODE to separate data by chain (network) ID and world address. //
@@ -164,7 +170,7 @@ service QueryLayer {
     rpc GetState(StateRequest) returns (QueryLayerStateResponse) {}
 
     // Stream state endpoint.
-    rpc StreamState(StateRequest) returns (stream QueryLayerStateResponse) {}
+    rpc StreamState(StateRequest) returns (stream QueryLayerStateStreamResponse) {}
 
     // Find endpoint.
     rpc Find(FindRequest) returns (QueryLayerResponse) {}

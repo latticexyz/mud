@@ -38,6 +38,10 @@ func (cache *SchemaCache) Update() error {
 	return nil
 }
 
+func (cache *SchemaCache) IsInternal__BlockNumberTable(chainId string, tableName string) bool {
+	return tableName == Internal__BlockNumberTableSchema(chainId).TableName
+}
+
 func (cache *SchemaCache) IsInternalTable(tableName string) bool {
 	_, ok := cache.internalTableSchemas[tableName]
 	return ok
