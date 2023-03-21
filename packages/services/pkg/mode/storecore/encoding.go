@@ -297,6 +297,10 @@ func NewDecodedData(schemaTypePair SchemaTypePair) *DecodedData {
 	}
 }
 
+func (d *DecodedData) Length() int {
+	return len(d.schemaTypes)
+}
+
 func (d *DecodedData) Set(key string, value *DataSchemaTypePair) {
 	d.data[key] = value
 }
