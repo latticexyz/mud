@@ -26,6 +26,22 @@ func Internal__BlockNumberTableSchema(chainId string) *mode.TableSchema {
 	}
 }
 
+func Internal__SyncStatusTableSchema(chainId string) *mode.TableSchema {
+	return &mode.TableSchema{
+		TableName: "sync_status",
+		FieldNames: []string{
+			"syncing",
+		},
+		PostgresTypes: map[string]string{
+			"syncing": "boolean",
+		},
+		SolidityTypes: map[string]string{
+			"syncing": "bool",
+		},
+		Namespace: Namespace(chainId, ""),
+	}
+}
+
 func Internal__NamespacesTableSchema() *mode.TableSchema {
 	return &mode.TableSchema{
 		TableName: "namespaces",
