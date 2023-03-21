@@ -1,23 +1,25 @@
 package find
 
 import (
-	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 	"strings"
 )
 
 // grpcurl -plaintext -d '{"tables": ["component_stake"]}' localhost:50091 mode.QueryLayer/FindAll
 
 type FindAllBuilder struct {
-	Request   *pb_mode.FindAllRequest
-	AllTables []string
-	Namespace string
+	QueryNamespace string
+	WorldNamespace string
+
+	TablesInNamespace []string
+	TablesFilter      []string
 }
 
-func NewFindAllBuilder(request *pb_mode.FindAllRequest, namespace string, allTables []string) (*FindAllBuilder, error) {
+func NewFindAllBuilder(queryNamespace, worldNamespace string, tablesInNamespace []string, tablesFilter []string) (*FindAllBuilder, error) {
 	return &FindAllBuilder{
-		Request:   request,
-		AllTables: allTables,
-		Namespace: namespace,
+		QueryNamespace:    queryNamespace,
+		WorldNamespace:    worldNamespace,
+		TablesInNamespace: tablesInNamespace,
+		TablesFilter:      tablesFilter,
 	}, nil
 }
 
@@ -25,52 +27,16 @@ func (builder *FindAllBuilder) TableList() (tableList []string) {
 	// If the FindAll request has specified tables which to find(),
 	// build the "FROM" based on those tables, otherwise build
 	// a "FROM" for every table.
-	if len(builder.Request.Tables) == 0 {
-		tableList = builder.AllTables
+	if len(builder.TablesFilter) == 0 {
+		tableList = builder.TablesInNamespace
 	} else {
-		tableList = builder.Request.Tables
+		tableList = builder.TablesFilter
 	}
 	return
 }
 
 func (builder *FindAllBuilder) Validate() error {
 	return nil
-}
-
-func (builder *FindAllBuilder) BuildProjection() string {
-	return "SELECT *"
-}
-
-func (builder *FindAllBuilder) BuildFrom() string {
-	var query strings.Builder
-	for idx, tableName := range builder.TableList() {
-		// For initial table the clause is FROM.
-		if idx == 0 {
-			query.WriteString(" FROM ")
-		} else {
-			query.WriteString(" NATURAL FULL JOIN ")
-		}
-		// Write the SELECT per-table.
-		namespacedTableName := builder.Namespace + "." + tableName
-		query.WriteString("(SELECT '" + namespacedTableName + "' AS source, entityid FROM " + namespacedTableName + ") " + namespacedTableName + "")
-	}
-	return query.String()
-}
-
-// TODO: if favorable comments about query structure, then can refactor this to return an
-// intermediary representation of MODE "stage" to reuse code for JOINs, etc.
-func (builder *FindAllBuilder) ToSQLQuery() (string, error) {
-	err := builder.Validate()
-	if err != nil {
-		return "", err
-	}
-
-	var query strings.Builder
-
-	query.WriteString(builder.BuildProjection())
-	query.WriteString(builder.BuildFrom())
-
-	return query.String(), nil
 }
 
 func (builder *FindAllBuilder) ToSQLQueryList() (queries []string, tableNameList []string, err error) {
@@ -81,7 +47,13 @@ func (builder *FindAllBuilder) ToSQLQueryList() (queries []string, tableNameList
 
 	for _, tableName := range builder.TableList() {
 		var query strings.Builder
-		query.WriteString("SELECT * FROM " + builder.Namespace + "." + tableName)
+		query.WriteString("SELECT * FROM " + builder.QueryNamespace + "." + tableName)
+		// Handle the internal schema table specially. The schemas are stored all in one
+		// table even though for different namespaces (i.e. different worlds), so we need
+		// to filter by namespace.
+		if tableName == "schemas" {
+			query.WriteString(" WHERE namespace = '" + builder.WorldNamespace + "'")
+		}
 		queries = append(queries, query.String())
 		tableNameList = append(tableNameList, tableName)
 	}
