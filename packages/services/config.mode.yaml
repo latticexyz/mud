@@ -7,7 +7,11 @@ chains:
       ws: "ws://localhost:8545"
 db:
   dsn: "postgresql://localhost:5432/mode_ephemeral?sslmode=disable&replication=database"
-  wipe: true
+  wipe: false
+sync:
+  enabled: true
+  startBlock: 0
+  blockBatchCount: 10000
 ql:
   port: 50091
 metrics:

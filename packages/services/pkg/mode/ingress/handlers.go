@@ -10,9 +10,39 @@ import (
 	"strings"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
+	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/umbracle/ethgo/abi"
 	"go.uber.org/zap"
 )
+
+func (il *IngressLayer) handleLogs(logs []types.Log) {
+	// Process each log and handle any MUD events.
+	for _, vLog := range logs {
+		switch vLog.Topics[0].Hex() {
+		case StoreSetRecordEvent().Hex():
+			event, err := ParseStoreSetRecord(vLog)
+			if err != nil {
+				il.logger.Error("failed to parse StoreSetRecord event", zap.Error(err))
+				continue
+			}
+			il.handleSetRecordEvent(event)
+		case StoreSetFieldEvent().Hex():
+			event, err := ParseStoreSetField(vLog)
+			if err != nil {
+				il.logger.Error("failed to parse StoreSetField event", zap.Error(err))
+				continue
+			}
+			il.handleSetFieldEvent(event)
+		case StoreDeleteRecordEvent().Hex():
+			event, err := ParseStoreDeleteRecord(vLog)
+			if err != nil {
+				il.logger.Error("failed to parse StoreDeleteRecord event", zap.Error(err))
+				continue
+			}
+			il.handleDeleteRecordEvent(event)
+		}
+	}
+}
 
 func (il *IngressLayer) handleSetRecordEvent(event *storecore.StorecoreStoreSetRecord) {
 	tableId := storecore.PaddedTableId(event.Table)
