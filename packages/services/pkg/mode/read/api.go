@@ -95,7 +95,7 @@ func (rl *ReadLayer) GetBlockNumber(chainId string) (*big.Int, error) {
 
 	// If there are no rows, then the block number does not exist.
 	if !rows.Next() {
-		rl.logger.Info("GetBlockNumber(): block number does not exist")
+		rl.logger.Error("GetBlockNumber(): block number does not exist")
 		return nil, nil
 	}
 
@@ -115,4 +115,43 @@ func (rl *ReadLayer) GetBlockNumber(chainId string) (*big.Int, error) {
 	}
 
 	return blockNumber, nil
+}
+
+func (rl *ReadLayer) GetSyncStatus(chainId string) (bool, error) {
+	// Create a find builder.
+	syncStatusTableSchema := schema.Internal__SyncStatusTableSchema(chainId)
+
+	findBuilder := find.NewFindBuilder(&pb_mode.FindRequest{
+		From: syncStatusTableSchema.TableName,
+	}, syncStatusTableSchema.Namespace)
+
+	selectRowQuery, err := findBuilder.ToSQLQuery()
+	if err != nil {
+		rl.logger.Error("GetSyncStatus(): error while building query", zap.Error(err))
+		return false, err
+	}
+
+	// Execute the query.
+	rows, err := rl.dl.Query(selectRowQuery)
+	if err != nil {
+		rl.logger.Error("GetSyncStatus(): error while executing query", zap.String("query", selectRowQuery), zap.Error(err))
+		return false, err
+	}
+	defer rows.Close()
+
+	// If there are no rows, then the sync status does not exist.
+	if !rows.Next() {
+		rl.logger.Error("GetSyncStatus(): sync status does not exist")
+		return false, nil
+	}
+
+	// If there is a row, then the sync status exists.
+	var syncStatus bool
+	err = rows.Scan(&syncStatus)
+	if err != nil {
+		rl.logger.Error("GetSyncStatus(): error while scanning row", zap.Error(err))
+		return false, err
+	}
+
+	return syncStatus, nil
 }

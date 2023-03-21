@@ -19,6 +19,10 @@ func BuildInternalTableSchemas(chains []config.ChainConfig) map[string]*mode.Tab
 		blockNumberTableSchema := Internal__BlockNumberTableSchema(chain.Id)
 		tableSchemas[blockNumberTableSchema.TableName] = blockNumberTableSchema
 
+		// Add the sync status table schema.
+		syncStatusTableSchema := Internal__SyncStatusTableSchema(chain.Id)
+		tableSchemas[syncStatusTableSchema.TableName] = syncStatusTableSchema
+
 		// Add the schema table schema.
 		schemaTableSchema := Internal__SchemaTableSchema(chain.Id)
 		tableSchemas[schemaTableSchema.TableName] = schemaTableSchema

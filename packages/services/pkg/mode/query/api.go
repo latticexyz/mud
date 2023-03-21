@@ -287,6 +287,17 @@ func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateReques
 		return nil, fmt.Errorf("invalid namespace")
 	}
 
+	// Check if request can be processed.
+	isSyncing, err := ql.rl.GetSyncStatus(request.Namespace.ChainId)
+	if err != nil {
+		ql.logger.Error("GetState(): error while getting sync status", zap.Error(err))
+		return nil, err
+	}
+	if isSyncing {
+		ql.logger.Info("GetState(): cannot process request while syncing")
+		return nil, fmt.Errorf("cannot process request while syncing")
+	}
+
 	// Get namespaces for the request. A namespace is a chainId and worldAddress pair.
 	chainNamespace := &pb_mode.Namespace{
 		ChainId:      request.Namespace.ChainId,
@@ -330,6 +341,17 @@ func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateReques
 func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stream pb_mode.QueryLayer_StreamStateServer) error {
 	if schema.ValidateNamespace(request.Namespace) != nil {
 		return fmt.Errorf("invalid namespace")
+	}
+
+	// Check if request can be processed.
+	isSyncing, err := ql.rl.GetSyncStatus(request.Namespace.ChainId)
+	if err != nil {
+		ql.logger.Error("GetState(): error while getting sync status", zap.Error(err))
+		return err
+	}
+	if isSyncing {
+		ql.logger.Info("GetState(): cannot process request while syncing")
+		return fmt.Errorf("cannot process request while syncing")
 	}
 
 	// The stream for all events.

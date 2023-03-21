@@ -10,6 +10,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/mode/write"
 	"latticexyz/mud/packages/services/pkg/utils"
 	"math/big"
+	"strconv"
 
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 
@@ -53,6 +54,11 @@ func New(chainConfig *config.ChainConfig, syncConfig *config.SyncConfig, wl *wri
 	err = wl.CreateTable(schema.Internal__BlockNumberTableSchema(chainConfig.Id))
 	if err != nil {
 		logger.Fatal("failed to create Internal__BlockNumberTable", zap.Error(err))
+	}
+	// Create a table that stores the current sync status of this ingress layer.
+	err = wl.CreateTable(schema.Internal__SyncStatusTableSchema(chainConfig.Id))
+	if err != nil {
+		logger.Fatal("failed to create Internal__SyncStatusTable", zap.Error(err))
 	}
 
 	return &IngressLayer{
@@ -141,7 +147,8 @@ func (il *IngressLayer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int)
 	}
 	il.logger.Info("syncing from block", zap.String("start_block_number", startBlockNumber.String()), zap.String("end_block_number", endBlockNumber.String()))
 
-	il.syncing = true
+	// Set the syncing status to true.
+	il.UpdateSyncStatus(il.chainConfig.Id, true)
 
 	// Get the block number that the state is currently at.
 	currentBlockNumber, err := il.rl.GetBlockNumber(il.chainConfig.Id)
@@ -178,7 +185,8 @@ func (il *IngressLayer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int)
 		il.logger.Info("handled buffered block", zap.Uint64("block_number", il.syncLogBufferBlockNumber[i]))
 	}
 
-	il.syncing = false
+	// Set the syncing status to false.
+	il.UpdateSyncStatus(il.chainConfig.Id, false)
 	il.logger.Info("finished syncing")
 }
 
@@ -194,6 +202,22 @@ func (il *IngressLayer) UpdateBlockNumber(chainId string, blockNumber *big.Int) 
 		il.logger.Error("failed to update or insert block number", zap.Error(err))
 	}
 	il.logger.Info("updated block number", zap.String("chain_id", chainId), zap.String("block_number", blockNumber.String()))
+}
+
+func (il *IngressLayer) UpdateSyncStatus(chainId string, syncing bool) {
+	il.syncing = syncing
+
+	// Build the row to update or insert (contains the syncing status).
+	row := write.RowKV{
+		"syncing": strconv.FormatBool(syncing),
+	}
+	// Insert the syncing status into the database.
+	tableSchema := schema.Internal__SyncStatusTableSchema(chainId)
+	err := il.wl.UpdateOrInsertRow(tableSchema, row, []*pb_mode.Filter{})
+	if err != nil {
+		il.logger.Error("failed to update or insert syncing status", zap.Error(err))
+	}
+	il.logger.Info("updated syncing status", zap.String("chain_id", chainId), zap.Bool("syncing", syncing))
 }
 
 func (il *IngressLayer) FetchEventsInBlock(blockNumber *big.Int) []types.Log {
