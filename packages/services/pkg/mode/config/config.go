@@ -25,6 +25,12 @@ type DbConfig struct {
 	Wipe bool   `yaml:"wipe"`
 }
 
+type SyncConfig struct {
+	Enabled         bool   `yaml:"enabled"`
+	StartBlock      uint64 `yaml:"startBlock"`
+	BlockBatchCount uint64 `yaml:"blockBatchCount"`
+}
+
 type QlConfig struct {
 	Port int `yaml:"port"`
 }
@@ -36,6 +42,7 @@ type MetricsConfig struct {
 type Config struct {
 	Chains  []ChainConfig `yaml:"chains"`
 	Db      DbConfig      `yaml:"db"`
+	Sync    SyncConfig    `yaml:"sync"`
 	Ql      QlConfig      `yaml:"ql"`
 	Metrics MetricsConfig `yaml:"metrics"`
 }
@@ -54,12 +61,23 @@ func FromFile(configFile string, logger *zap.Logger) (*Config, error) {
 	return config, nil
 }
 
-func FromFlags(chainNames, chainIds, chainRpcsHttp, chainRpcsWs, dbDsn string, dbWipe bool, portQl, portMetrics int) (*Config, error) {
+func FromFlags(
+	chainNames, chainIds, chainRpcsHttp, chainRpcsWs, dbDsn string,
+	dbWipe bool,
+	syncEnabled bool,
+	syncStartBlock, syncBlockBatchCount uint64,
+	portQl, portMetrics int,
+) (*Config, error) {
 	config := &Config{
 		Chains: make([]ChainConfig, 0),
 		Db: DbConfig{
 			Dsn:  dbDsn,
 			Wipe: dbWipe,
+		},
+		Sync: SyncConfig{
+			Enabled:         syncEnabled,
+			StartBlock:      syncStartBlock,
+			BlockBatchCount: syncBlockBatchCount,
 		},
 		Ql: QlConfig{
 			Port: portQl,

@@ -1,9 +1,12 @@
 package read
 
 import (
+	"errors"
 	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/ops/find"
+	"latticexyz/mud/packages/services/pkg/mode/schema"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
+	"math/big"
 
 	"go.uber.org/zap"
 )
@@ -66,4 +69,50 @@ func (rl *ReadLayer) DoesRowExist(tableSchema *mode.TableSchema, filter []*pb_mo
 
 	// If there is a row, then the row exists.
 	return true, nil
+}
+
+func (rl *ReadLayer) GetBlockNumber(chainId string) (*big.Int, error) {
+	// Create a find builder.
+	blockNumberTableSchema := schema.Internal__BlockNumberTableSchema(chainId)
+
+	findBuilder := find.NewFindBuilder(&pb_mode.FindRequest{
+		From: blockNumberTableSchema.TableName,
+	}, blockNumberTableSchema.Namespace)
+
+	selectRowQuery, err := findBuilder.ToSQLQuery()
+	if err != nil {
+		rl.logger.Error("GetBlockNumber(): error while building query", zap.Error(err))
+		return nil, err
+	}
+
+	// Execute the query.
+	rows, err := rl.dl.Query(selectRowQuery)
+	if err != nil {
+		rl.logger.Error("GetBlockNumber(): error while executing query", zap.String("query", selectRowQuery), zap.Error(err))
+		return nil, err
+	}
+	defer rows.Close()
+
+	// If there are no rows, then the block number does not exist.
+	if !rows.Next() {
+		rl.logger.Info("GetBlockNumber(): block number does not exist")
+		return nil, nil
+	}
+
+	// If there is a row, then the block number exists.
+	var blockNumberStr string
+	err = rows.Scan(&blockNumberStr)
+	if err != nil {
+		rl.logger.Error("GetBlockNumber(): error while scanning row", zap.Error(err))
+		return nil, err
+	}
+
+	// Parse the block number.
+	blockNumber, ok := new(big.Int).SetString(blockNumberStr, 10)
+	if !ok {
+		rl.logger.Error("GetBlockNumber(): error while parsing block number", zap.String("block_number", blockNumberStr))
+		return nil, errors.New("error while parsing block number")
+	}
+
+	return blockNumber, nil
 }
