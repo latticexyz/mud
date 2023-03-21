@@ -468,14 +468,41 @@ func SchemaTypeToSolidityType(schemaType SchemaType) string {
 }
 
 func SchemaTypeToPostgresType(schemaType SchemaType) string {
-	// TODO: implement fully based on SchemaType ranges.
-	if schemaType == UINT32 {
+	if (schemaType >= UINT8 && schemaType <= UINT32) || (schemaType >= INT8 && schemaType <= INT32) {
+		// Integer.
 		return "integer"
-	} else if schemaType == BOOL {
-		return "boolean"
-	} else if schemaType == BYTES {
+	} else if (schemaType >= UINT64 && schemaType <= UINT256) || (schemaType >= INT64 && schemaType <= INT256) {
+		// Big integer.
+		return "text"
+	} else if (schemaType >= BYTES1 && schemaType <= BYTES32) || (schemaType == BYTES) {
+		// Bytes.
 		return "bytea"
+	} else if schemaType == BOOL {
+		// Boolean.
+		return "boolean"
+	} else if schemaType == ADDRESS {
+		// Address.
+		return "text"
+	} else if schemaType == STRING {
+		// String.
+		return "text"
+	} else if (schemaType >= UINT8_ARRAY && schemaType <= UINT32_ARRAY) || (schemaType >= INT8_ARRAY && schemaType <= INT32_ARRAY) {
+		// Integer array.
+		return "integer[]"
+	} else if (schemaType >= UINT64_ARRAY && schemaType <= UINT256_ARRAY) || (schemaType >= INT64_ARRAY && schemaType <= INT256_ARRAY) {
+		// Big integer array.
+		return "text[]"
+	} else if schemaType >= BYTES1_ARRAY && schemaType <= BYTES32_ARRAY {
+		// Bytes array.
+		return "bytea[]"
+	} else if schemaType == BOOL_ARRAY {
+		// Boolean array.
+		return "boolean[]"
+	} else if schemaType == ADDRESS_ARRAY {
+		// Address array.
+		return "text[]"
 	} else {
+		// Default to text.
 		return "text"
 	}
 }
