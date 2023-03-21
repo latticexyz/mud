@@ -7,6 +7,7 @@ import (
 	"go.uber.org/zap"
 
 	"latticexyz/mud/packages/services/pkg/mode"
+	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/ops/find"
 	"latticexyz/mud/packages/services/pkg/mode/ops/join"
 	"latticexyz/mud/packages/services/pkg/mode/schema"
@@ -216,6 +217,10 @@ func (ql *QueryLayer) StreamAll(request *pb_mode.FindAllRequest, stream pb_mode.
 	}
 }
 
+///
+/// GetState_Namespaced returns the state in a given namespace. Used with GetState to get the state across the chain and world namespaces.
+///
+
 func (ql *QueryLayer) GetState_Namespaced(ctx context.Context, tablesFilter []string, queryNamespace *pb_mode.Namespace, worldNamespace *pb_mode.Namespace) (tables []*pb_mode.GenericTable, tableNames []string, err error) {
 	// Get a string representation of the query namespace.
 	queryNamespaceString := schema.Namespace(queryNamespace.ChainId, queryNamespace.WorldAddress)
@@ -273,7 +278,7 @@ func (ql *QueryLayer) GetState_Namespaced(ctx context.Context, tablesFilter []st
 }
 
 ///
-/// GetState returns the full state given a namespace. Allows for filtering if only a subset of the state is desired.
+/// GetState returns the full state given a chain + world namespace. Allows for filtering if only a subset of the state is desired.
 ///
 
 func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateRequest) (*pb_mode.QueryLayerStateResponse, error) {
@@ -323,5 +328,73 @@ func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateReques
 ///
 
 func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stream pb_mode.QueryLayer_StreamStateServer) error {
-	return nil
+	if schema.ValidateNamespace(request.Namespace) != nil {
+		return fmt.Errorf("invalid namespace")
+	}
+
+	// The stream for all events.
+	eventStream := ql.dl.Stream()
+
+	// Keep track of events that are for all tables other than the block number table. Once the block number table is
+	// updated, we package all events into a single response and send it to the client. The events themselves are
+	// serialized into a GenericTable.
+	inserted := NewBufferedEvents()
+	updated := NewBufferedEvents()
+	deleted := NewBufferedEvents()
+
+	// For each event, serialize the event and either
+	// 1. store and wait for block number event to send
+	// 2. send the stored events if the event is the block number
+	for {
+		select {
+		case event := <-eventStream:
+			// Get the TableSchema for the table that the event is directed at.
+			tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, event.TableName)
+			if err != nil {
+				ql.logger.Error("StreamState(): no schema matching chainId, worldAddress, and table name", zap.Error(err))
+				continue
+			}
+			serializedTable, err := mode.SerializeStreamEvent(event, tableSchema, make(map[string]string))
+			if err != nil {
+				ql.logger.Error("StreamState(): error while serializing stream event", zap.Error(err))
+				continue
+			}
+
+			// Check if the event is for the block number table.
+			if ql.schemaCache.IsInternal__BlockNumberTable(request.Namespace.ChainId, event.TableName) {
+				// Append the block number event to the response as a single update event.
+				updated.AddChainTable(serializedTable, tableSchema.TableName)
+
+				// Send the stored events as a single response. Every buffered event is combined into
+				// a single response and sent to the client.
+				stream.Send(QueryLayerStateStreamResponseFromTables(inserted, updated, deleted))
+
+				// Clear the buffers.
+				inserted = NewBufferedEvents()
+				updated = NewBufferedEvents()
+				deleted = NewBufferedEvents()
+			} else {
+				// Process the event and store in a "buffer" awaiting the block number event. We append
+				// the serialized table to the appropriate list to differentiate between inserts, updates,
+				// and deletes.
+				if ql.schemaCache.IsInternalTable(event.TableName) {
+					if event.Type == db.StreamEventTypeInsert {
+						inserted.AddChainTable(serializedTable, tableSchema.TableName)
+					} else if event.Type == db.StreamEventTypeUpdate {
+						updated.AddChainTable(serializedTable, tableSchema.TableName)
+					} else if event.Type == db.StreamEventTypeDelete {
+						deleted.AddChainTable(serializedTable, tableSchema.TableName)
+					}
+				} else {
+					if event.Type == db.StreamEventTypeInsert {
+						inserted.AddWorldTable(serializedTable, tableSchema.TableName)
+					} else if event.Type == db.StreamEventTypeUpdate {
+						updated.AddWorldTable(serializedTable, tableSchema.TableName)
+					} else if event.Type == db.StreamEventTypeDelete {
+						deleted.AddWorldTable(serializedTable, tableSchema.TableName)
+					}
+				}
+			}
+		}
+	}
 }
