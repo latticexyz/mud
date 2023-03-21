@@ -67,85 +67,85 @@ func (ql *QueryLayer) Find(ctx context.Context, request *pb_mode.FindRequest) (*
 	return QueryLayerResponseFromTable(serializedTable, request.From), nil
 }
 
-func (ql *QueryLayer) FindAll_Namespaced(ctx context.Context, request *pb_mode.FindAllRequest, namespace string) (tables []*pb_mode.GenericTable, tableNames []string, err error) {
-	// An up-to-date list of all tables is used to return the full state, if requested.
-	allTables, err := ql.rl.GetAllTables(namespace)
-	if err != nil {
-		ql.logger.Error("findAll(): error while getting all tables", zap.Error(err))
-		return
-	}
+// func (ql *QueryLayer) FindAll_Namespaced(ctx context.Context, request *pb_mode.FindAllRequest, namespace string) (tables []*pb_mode.GenericTable, tableNames []string, err error) {
+// 	// An up-to-date list of all tables is used to return the full state, if requested.
+// 	allTables, err := ql.rl.GetAllTables(namespace)
+// 	if err != nil {
+// 		ql.logger.Error("findAll(): error while getting all tables", zap.Error(err))
+// 		return
+// 	}
 
-	// Create a "builder" for the request.
-	builder, err := find.NewFindAllBuilder(request, namespace, allTables)
-	if err != nil {
-		ql.logger.Error("findAll(): error while creating builder", zap.Error(err))
-		return
-	}
+// 	// Create a "builder" for the request.
+// 	builder, err := find.NewFindAllBuilder(request, namespace, allTables)
+// 	if err != nil {
+// 		ql.logger.Error("findAll(): error while creating builder", zap.Error(err))
+// 		return
+// 	}
 
-	// Get a series of queries from the builder, since the request is for multiple tables.
-	queries, tableNameList, err := builder.ToSQLQueryList()
-	if err != nil {
-		ql.logger.Error("findAll(): error while building queries", zap.Error(err))
-		return
-	}
-	ql.logger.Info("findAll(): built queries from request", zap.Int("count", len(queries)))
-	for idx, query := range queries {
-		ql.logger.Info("findAll(): built query", zap.Int("index", idx), zap.String("query", query))
-	}
+// 	// Get a series of queries from the builder, since the request is for multiple tables.
+// 	queries, tableNameList, err := builder.ToSQLQueryList()
+// 	if err != nil {
+// 		ql.logger.Error("findAll(): error while building queries", zap.Error(err))
+// 		return
+// 	}
+// 	ql.logger.Info("findAll(): built queries from request", zap.Int("count", len(queries)))
+// 	for idx, query := range queries {
+// 		ql.logger.Info("findAll(): built query", zap.Int("index", idx), zap.String("query", query))
+// 	}
 
-	// Execute the queries and serialize each result into a GenericTable.
-	tableListFormatted := []string{}
-	// One extra step is to format the table list to preserve casing, so we use the table names
-	// directly from schema as opposed to from the GetAllTables() which reads from the DB.
-	serializedTables := []*pb_mode.GenericTable{}
-	for idx, query := range queries {
-		// Fetch the TableSchema for the table that the query is directed at and execute the built query.
-		tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, tableNameList[idx])
-		if err != nil {
-			ql.logger.Error("findAll(): error while getting table schema", zap.Error(err))
-			return tables, tableNames, err
-		}
+// 	// Execute the queries and serialize each result into a GenericTable.
+// 	tableListFormatted := []string{}
+// 	// One extra step is to format the table list to preserve casing, so we use the table names
+// 	// directly from schema as opposed to from the GetAllTables() which reads from the DB.
+// 	serializedTables := []*pb_mode.GenericTable{}
+// 	for idx, query := range queries {
+// 		// Fetch the TableSchema for the table that the query is directed at and execute the built query.
+// 		tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, tableNameList[idx])
+// 		if err != nil {
+// 			ql.logger.Error("findAll(): error while getting table schema", zap.Error(err))
+// 			return tables, tableNames, err
+// 		}
 
-		serializedTable, err := ql.ExecuteSQL(query, tableSchema, builder.GetFieldProjections())
-		if err != nil {
-			ql.logger.Error("findAll(): error while executing query", zap.String("query", query), zap.Error(err))
-			return tables, tableNames, err
-		}
-		serializedTables = append(serializedTables, serializedTable)
-		tableListFormatted = append(tableListFormatted, tableSchema.TableName)
-	}
+// 		serializedTable, err := ql.ExecuteSQL(query, tableSchema, builder.GetFieldProjections())
+// 		if err != nil {
+// 			ql.logger.Error("findAll(): error while executing query", zap.String("query", query), zap.Error(err))
+// 			return tables, tableNames, err
+// 		}
+// 		serializedTables = append(serializedTables, serializedTable)
+// 		tableListFormatted = append(tableListFormatted, tableSchema.TableName)
+// 	}
 
-	return serializedTables, tableListFormatted, nil
-}
+// 	return serializedTables, tableListFormatted, nil
+// }
 
-func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllRequest) (*pb_mode.QueryLayerResponse, error) {
-	if schema.ValidateNamespace(request.Namespace) != nil {
-		return nil, fmt.Errorf("invalid namespace")
-	}
+// func (ql *QueryLayer) FindAll(ctx context.Context, request *pb_mode.FindAllRequest) (*pb_mode.QueryLayerResponse, error) {
+// 	if schema.ValidateNamespace(request.Namespace) != nil {
+// 		return nil, fmt.Errorf("invalid namespace")
+// 	}
 
-	// Get namespaces for the request.
-	chainNamespace := schema.Namespace(request.Namespace.ChainId, "")
-	worldNamespace := schema.Namespace(request.Namespace.ChainId, request.Namespace.WorldAddress)
+// 	// Get namespaces for the request.
+// 	chainNamespace := schema.Namespace(request.Namespace.ChainId, "")
+// 	worldNamespace := schema.Namespace(request.Namespace.ChainId, request.Namespace.WorldAddress)
 
-	// Execute FindAll_Namespaced for each namespace.
-	chainTables, chainTableNames, err := ql.FindAll_Namespaced(ctx, request, chainNamespace)
-	if err != nil {
-		ql.logger.Error("findAll(): error while executing FindAll_Namespaced for chain namespace", zap.Error(err))
-		return nil, err
-	}
-	worldTables, worldTableNames, err := ql.FindAll_Namespaced(ctx, request, worldNamespace)
-	if err != nil {
-		ql.logger.Error("findAll(): error while executing FindAll_Namespaced for world namespace", zap.Error(err))
-		return nil, err
-	}
+// 	// Execute FindAll_Namespaced for each namespace.
+// 	chainTables, chainTableNames, err := ql.FindAll_Namespaced(ctx, request, chainNamespace)
+// 	if err != nil {
+// 		ql.logger.Error("findAll(): error while executing FindAll_Namespaced for chain namespace", zap.Error(err))
+// 		return nil, err
+// 	}
+// 	worldTables, worldTableNames, err := ql.FindAll_Namespaced(ctx, request, worldNamespace)
+// 	if err != nil {
+// 		ql.logger.Error("findAll(): error while executing FindAll_Namespaced for world namespace", zap.Error(err))
+// 		return nil, err
+// 	}
 
-	// Combine the tables and table names from the two namespaces.
-	tables := append(chainTables, worldTables...)
-	tableNames := append(chainTableNames, worldTableNames...)
+// 	// Combine the tables and table names from the two namespaces.
+// 	tables := append(chainTables, worldTables...)
+// 	tableNames := append(chainTableNames, worldTableNames...)
 
-	// Build the response from the tables and return.
-	return QueryLayerResponseFromTables(tables, tableNames), nil
-}
+// 	// Build the response from the tables and return.
+// 	return QueryLayerResponseFromTables(tables, tableNames), nil
+// }
 
 func (ql *QueryLayer) Join(ctx context.Context, request *pb_mode.JoinRequest) (*pb_mode.QueryLayerResponse, error) {
 	if schema.ValidateNamespace(request.Namespace) != nil {
@@ -214,4 +214,114 @@ func (ql *QueryLayer) StreamAll(request *pb_mode.FindAllRequest, stream pb_mode.
 			stream.Send(QueryLayerResponseFromTable(serializedTable, event.TableName+"_"+string(event.Type)))
 		}
 	}
+}
+
+func (ql *QueryLayer) GetState_Namespaced(ctx context.Context, tablesFilter []string, queryNamespace *pb_mode.Namespace, worldNamespace *pb_mode.Namespace) (tables []*pb_mode.GenericTable, tableNames []string, err error) {
+	// Get a string representation of the query namespace.
+	queryNamespaceString := schema.Namespace(queryNamespace.ChainId, queryNamespace.WorldAddress)
+	// Get a string representation of the world namespace.
+	worldNamespaceString := schema.Namespace(worldNamespace.ChainId, worldNamespace.WorldAddress)
+
+	// An up-to-date list of all tables is used to return the full state, if requested.
+	tablesInNamespace, err := ql.rl.GetAllTables(queryNamespaceString)
+	if err != nil {
+		ql.logger.Error("GetState_Namespaced(): error while getting all tables in namespace", zap.Error(err))
+		return
+	}
+
+	// Create a "builder" for the request.
+	builder, err := find.NewFindAllBuilder(queryNamespaceString, worldNamespaceString, tablesInNamespace, tablesFilter)
+	if err != nil {
+		ql.logger.Error("GetState_Namespaced(): error while creating builder", zap.Error(err))
+		return
+	}
+
+	// Get a series of queries from the builder, since the request is for multiple tables.
+	queries, tableNameList, err := builder.ToSQLQueryList()
+	if err != nil {
+		ql.logger.Error("GetState_Namespaced(): error while building queries", zap.Error(err))
+		return
+	}
+	ql.logger.Info("GetState_Namespaced(): built queries from request", zap.Int("count", len(queries)))
+	for idx, query := range queries {
+		ql.logger.Info("GetState_Namespaced(): built query", zap.Int("index", idx), zap.String("query", query))
+	}
+
+	// Execute the queries and serialize each result into a GenericTable.
+	tableListFormatted := []string{}
+	// One extra step is to format the table list to preserve casing, so we use the table names
+	// directly from schema as opposed to from the GetAllTables() which reads from the DB.
+	serializedTables := []*pb_mode.GenericTable{}
+	for idx, query := range queries {
+		// Fetch the TableSchema for the table that the query is directed at and execute the built query.
+		tableSchema, err := ql.schemaCache.GetTableSchema(queryNamespace.ChainId, queryNamespace.WorldAddress, tableNameList[idx])
+		if err != nil {
+			ql.logger.Error("GetState_Namespaced(): error while getting table schema", zap.Error(err))
+			return tables, tableNames, err
+		}
+
+		serializedTable, err := ql.ExecuteSQL(query, tableSchema, builder.GetFieldProjections())
+		if err != nil {
+			ql.logger.Error("GetState_Namespaced(): error while executing query", zap.String("query", query), zap.Error(err))
+			return tables, tableNames, err
+		}
+		serializedTables = append(serializedTables, serializedTable)
+		tableListFormatted = append(tableListFormatted, tableSchema.TableName)
+	}
+
+	return serializedTables, tableListFormatted, nil
+}
+
+///
+/// GetState returns the full state given a namespace. Allows for filtering if only a subset of the state is desired.
+///
+
+func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateRequest) (*pb_mode.QueryLayerStateResponse, error) {
+	// Validate the namespace.
+	if schema.ValidateNamespace(request.Namespace) != nil {
+		return nil, fmt.Errorf("invalid namespace")
+	}
+
+	// Get namespaces for the request. A namespace is a chainId and worldAddress pair.
+	chainNamespace := &pb_mode.Namespace{
+		ChainId:      request.Namespace.ChainId,
+		WorldAddress: "",
+	}
+	worldNamespace := &pb_mode.Namespace{
+		ChainId:      request.Namespace.ChainId,
+		WorldAddress: request.Namespace.WorldAddress,
+	}
+
+	// Execute GetState_Namespaced for each namespace.
+	chainTables, chainTableNames, err := ql.GetState_Namespaced(
+		ctx,
+		request.ChainTables,
+		chainNamespace,
+		worldNamespace,
+	)
+	if err != nil {
+		ql.logger.Error("GetState(): error while executing GetState_Namespaced for chain namespace", zap.Error(err))
+		return nil, err
+	}
+	worldTables, worldTableNames, err := ql.GetState_Namespaced(
+		ctx,
+		request.WorldTables,
+		worldNamespace,
+		worldNamespace,
+	)
+	if err != nil {
+		ql.logger.Error("GetState(): error while executing GetState_Namespaced for world namespace", zap.Error(err))
+		return nil, err
+	}
+
+	// Build the state response from the tables and return.
+	return QueryLayerStateResponseFromTables(chainTables, worldTables, chainTableNames, worldTableNames), nil
+}
+
+///
+/// StreamState streams changes to the full state given a namespace. Allows for filtering if only a subset of the state is desired.
+///
+
+func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stream pb_mode.QueryLayer_StreamStateServer) error {
+	return nil
 }
