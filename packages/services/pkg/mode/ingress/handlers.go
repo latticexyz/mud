@@ -169,8 +169,8 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 		StoreCoreSchemaTypeKV: storeCoreSchemaTypeKV,
 		// Create a postgres namespace ('schema') for the world address + the chain (if it doesn't already exist).
 		Namespace: schema.Namespace(il.chainConfig.Id, event.WorldAddress()),
-		// Keeping track of capitalized field names for compatibility with clients.
-		CapitalizationMap: map[string]string{},
+		// Keeping track of columns names as they are case sensitive coming from the chain.
+		OnChainColNames: map[string]string{},
 	}
 
 	// Populate the schema with default values. First populate values.
@@ -277,7 +277,7 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	//
 	// 1. Add the readable name.
 	// 2. Add the column names and types.
-	tableSchema.ReadableName = tableReadableName
+	tableSchema.OnChainReadableName = tableReadableName
 
 	// Keep a record of the old field names so we can update the table.
 	oldTableFieldNames := tableSchema.FieldNames
@@ -285,8 +285,8 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	newTableFieldNames := []string{}
 
 	for idx, schemaType := range tableSchema.StoreCoreSchemaTypeKV.Value.Flatten() {
-		capitalizedColumnName := outStruct.Cols[idx]
-		columnName := strings.ToLower(capitalizedColumnName)
+		columnNameFromChain := outStruct.Cols[idx]
+		columnName := strings.ToLower(columnNameFromChain)
 		newTableFieldNames = append(newTableFieldNames, columnName)
 
 		solidityType := storecore.SchemaTypeToSolidityType(schemaType)
@@ -304,11 +304,11 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 		}
 		tableSchema.PostgresTypes[columnName] = postgresType
 
-		// Update capitalization map.
-		if tableSchema.CapitalizationMap == nil {
-			tableSchema.CapitalizationMap = make(map[string]string)
+		// Update the records of the column names as they are originally spelled.
+		if tableSchema.OnChainColNames == nil {
+			tableSchema.OnChainColNames = make(map[string]string)
 		}
-		tableSchema.CapitalizationMap[columnName] = capitalizedColumnName
+		tableSchema.OnChainColNames[columnName] = columnNameFromChain
 	}
 	// Update the field names in the schema.
 	tableSchema.FieldNames = newTableFieldNames
