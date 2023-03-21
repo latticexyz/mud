@@ -115,7 +115,7 @@ func SerializeStreamEvent(event *db.StreamEvent, tableSchema *TableSchema, field
 func CapitalizeColNames(colNames []string, tableSchema *TableSchema) []string {
 	capitalizedCols := []string{}
 	for _, colName := range colNames {
-		originalName := tableSchema.CapitalizationMap[colName]
+		originalName := tableSchema.OnChainColNames[colName]
 		if originalName != "" {
 			capitalizedCols = append(capitalizedCols, originalName)
 		} else {
