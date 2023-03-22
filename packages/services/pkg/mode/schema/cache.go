@@ -93,7 +93,7 @@ func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, ta
 		},
 	}
 	// Query the DB for the schema.
-	builder := find.NewFindBuilder(request, schemaTableSchema.Namespace)
+	builder := find.New__FromFindRequest(request, schemaTableSchema.Namespace)
 	query, err := builder.ToSQLQuery()
 	if err != nil {
 		cache.logger.Error("failed to build query", zap.Error(err))

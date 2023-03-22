@@ -62,6 +62,17 @@ export interface StateRequest {
   chainTables: string[];
 }
 
+export interface SingleStateRequest {
+  /** Namespace. */
+  namespace: Namespace | undefined;
+  /** Table. */
+  table: string;
+  /** Filters. */
+  filter: Filter[];
+  /** Projections. */
+  project: ProjectedField[];
+}
+
 export interface FindRequest {
   from: string;
   filter: Filter[];
@@ -634,6 +645,65 @@ export const StateRequest = {
       object.namespace !== undefined && object.namespace !== null ? Namespace.fromPartial(object.namespace) : undefined;
     message.worldTables = object.worldTables?.map((e) => e) || [];
     message.chainTables = object.chainTables?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseSingleStateRequest(): SingleStateRequest {
+  return { namespace: undefined, table: "", filter: [], project: [] };
+}
+
+export const SingleStateRequest = {
+  encode(message: SingleStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.namespace !== undefined) {
+      Namespace.encode(message.namespace, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.table !== "") {
+      writer.uint32(18).string(message.table);
+    }
+    for (const v of message.filter) {
+      Filter.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    for (const v of message.project) {
+      ProjectedField.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SingleStateRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSingleStateRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.namespace = Namespace.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.table = reader.string();
+          break;
+        case 3:
+          message.filter.push(Filter.decode(reader, reader.uint32()));
+          break;
+        case 4:
+          message.project.push(ProjectedField.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<SingleStateRequest>): SingleStateRequest {
+    const message = createBaseSingleStateRequest();
+    message.namespace =
+      object.namespace !== undefined && object.namespace !== null ? Namespace.fromPartial(object.namespace) : undefined;
+    message.table = object.table ?? "";
+    message.filter = object.filter?.map((e) => Filter.fromPartial(e)) || [];
+    message.project = object.project?.map((e) => ProjectedField.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1360,6 +1430,24 @@ export const QueryLayerDefinition = {
       responseStream: true,
       options: {},
     },
+    /** Get state from single table endpoint. */
+    single__GetState: {
+      name: "Single__GetState",
+      requestType: SingleStateRequest,
+      requestStream: false,
+      responseType: QueryLayerStateResponse,
+      responseStream: false,
+      options: {},
+    },
+    /** Stream state from single table endpoint. */
+    single__StreamState: {
+      name: "Single__StreamState",
+      requestType: SingleStateRequest,
+      requestStream: false,
+      responseType: QueryLayerStateStreamResponse,
+      responseStream: true,
+      options: {},
+    },
     /** Find endpoint. */
     find: {
       name: "Find",
@@ -1416,6 +1504,16 @@ export interface QueryLayerServiceImplementation<CallContextExt = {}> {
     request: StateRequest,
     context: CallContext & CallContextExt
   ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateStreamResponse>>;
+  /** Get state from single table endpoint. */
+  single__GetState(
+    request: SingleStateRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<QueryLayerStateResponse>>;
+  /** Stream state from single table endpoint. */
+  single__StreamState(
+    request: SingleStateRequest,
+    context: CallContext & CallContextExt
+  ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateStreamResponse>>;
   /** Find endpoint. */
   find(request: FindRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
   /** Join endpoint. */
@@ -1440,6 +1538,16 @@ export interface QueryLayerClient<CallOptionsExt = {}> {
   /** Stream state endpoint. */
   streamState(
     request: DeepPartial<StateRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): AsyncIterable<QueryLayerStateStreamResponse>;
+  /** Get state from single table endpoint. */
+  single__GetState(
+    request: DeepPartial<SingleStateRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<QueryLayerStateResponse>;
+  /** Stream state from single table endpoint. */
+  single__StreamState(
+    request: DeepPartial<SingleStateRequest>,
     options?: CallOptions & CallOptionsExt
   ): AsyncIterable<QueryLayerStateStreamResponse>;
   /** Find endpoint. */

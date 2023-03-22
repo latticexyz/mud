@@ -23,6 +23,21 @@ func QueryLayerResponseFromTables(tables []*mode.GenericTable, tableNames []stri
 	}
 }
 
+func QueryLayerStateResponseFromTable(table *mode.GenericTable, tableName string, isChainTable bool) *mode.QueryLayerStateResponse {
+	tables := map[string]*mode.GenericTable{
+		tableName: table,
+	}
+	if isChainTable {
+		return &mode.QueryLayerStateResponse{
+			ChainTables: tables,
+		}
+	} else {
+		return &mode.QueryLayerStateResponse{
+			WorldTables: tables,
+		}
+	}
+}
+
 func QueryLayerStateResponseFromTables(chainTables []*mode.GenericTable, worldTables []*mode.GenericTable, chainTableNames []string, worldTableNames []string) *mode.QueryLayerStateResponse {
 	chainTableMap := make(map[string]*mode.GenericTable)
 	for i := range chainTables {

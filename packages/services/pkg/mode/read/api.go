@@ -43,7 +43,7 @@ func (rl *ReadLayer) GetAllTables(namespace string) ([]string, error) {
 
 func (rl *ReadLayer) DoesRowExist(tableSchema *mode.TableSchema, filter []*pb_mode.Filter) (bool, error) {
 	// Create a find builder.
-	findBuilder := find.NewFindBuilder(&pb_mode.FindRequest{
+	findBuilder := find.New__FromFindRequest(&pb_mode.FindRequest{
 		From:   tableSchema.TableName,
 		Filter: filter,
 	}, tableSchema.Namespace)
@@ -75,7 +75,7 @@ func (rl *ReadLayer) GetBlockNumber(chainId string) (*big.Int, error) {
 	// Create a find builder.
 	blockNumberTableSchema := schema.Internal__BlockNumberTableSchema(chainId)
 
-	findBuilder := find.NewFindBuilder(&pb_mode.FindRequest{
+	findBuilder := find.New__FromFindRequest(&pb_mode.FindRequest{
 		From: blockNumberTableSchema.TableName,
 	}, blockNumberTableSchema.Namespace)
 
@@ -121,7 +121,7 @@ func (rl *ReadLayer) GetSyncStatus(chainId string) (bool, error) {
 	// Create a find builder.
 	syncStatusTableSchema := schema.Internal__SyncStatusTableSchema(chainId)
 
-	findBuilder := find.NewFindBuilder(&pb_mode.FindRequest{
+	findBuilder := find.New__FromFindRequest(&pb_mode.FindRequest{
 		From: syncStatusTableSchema.TableName,
 	}, syncStatusTableSchema.Namespace)
 

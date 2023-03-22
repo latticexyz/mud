@@ -69,6 +69,20 @@ message StateRequest {
     repeated string chainTables = 3;
 }
 
+message Single__StateRequest {
+    // Namespace.
+    Namespace namespace = 1;
+
+    // Table.
+    string table = 2;
+
+    // Filters.
+    repeated Filter filter = 3;
+
+    // Projections.
+    repeated ProjectedField project = 4;
+}
+
 message FindRequest {
     string from = 1;
     repeated Filter filter = 2;
@@ -171,6 +185,12 @@ service QueryLayer {
 
     // Stream state endpoint.
     rpc StreamState(StateRequest) returns (stream QueryLayerStateStreamResponse) {}
+
+    // Get state from single table endpoint.
+    rpc Single__GetState(Single__StateRequest) returns (QueryLayerStateResponse) {}
+
+    // Stream state from single table endpoint.
+    rpc Single__StreamState(Single__StateRequest) returns (stream QueryLayerStateStreamResponse) {}
 
     // Find endpoint.
     rpc Find(FindRequest) returns (QueryLayerResponse) {}
