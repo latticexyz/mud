@@ -1,6 +1,6 @@
 import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { ExtractUserTypes, RequireKeys, StaticArray, StringForUnion } from "../utils/typeUtils.js";
+import { AsDependent, ExtractUserTypes, RequireKeys, StaticArray, StringForUnion } from "../utils/typeUtils.js";
 import { ObjectName, Selector, UserEnum, ValueName } from "./commonSchemas.js";
 import { getDuplicates, parseStaticArray } from "./validation.js";
 
@@ -189,7 +189,7 @@ export type StoreUserConfig<
    *  - abi or user type for a single-value table (aka ECS component).
    *  - FullTableConfig object for multi-value tables (or for customizable options).
    */
-  tables: TablesConfig<StaticUserTypes, StaticUserTypes>;
+  tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
   /** Path to the file where common user types will be generated and imported from. Default is "Types" */
   userTypesPath?: string;
 };
