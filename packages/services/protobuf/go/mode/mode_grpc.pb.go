@@ -26,6 +26,10 @@ type QueryLayerClient interface {
 	GetState(ctx context.Context, in *StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error)
 	// Stream state endpoint.
 	StreamState(ctx context.Context, in *StateRequest, opts ...grpc.CallOption) (QueryLayer_StreamStateClient, error)
+	// Get state from single table endpoint.
+	Single__GetState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error)
+	// Stream state from single table endpoint.
+	Single__StreamState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (QueryLayer_Single__StreamStateClient, error)
 	// Find endpoint.
 	Find(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
 	// Join endpoint.
@@ -87,6 +91,47 @@ func (x *queryLayerStreamStateClient) Recv() (*QueryLayerStateStreamResponse, er
 	return m, nil
 }
 
+func (c *queryLayerClient) Single__GetState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error) {
+	out := new(QueryLayerStateResponse)
+	err := c.cc.Invoke(ctx, "/mode.QueryLayer/Single__GetState", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryLayerClient) Single__StreamState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (QueryLayer_Single__StreamStateClient, error) {
+	stream, err := c.cc.NewStream(ctx, &QueryLayer_ServiceDesc.Streams[1], "/mode.QueryLayer/Single__StreamState", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &queryLayerSingle__StreamStateClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type QueryLayer_Single__StreamStateClient interface {
+	Recv() (*QueryLayerStateStreamResponse, error)
+	grpc.ClientStream
+}
+
+type queryLayerSingle__StreamStateClient struct {
+	grpc.ClientStream
+}
+
+func (x *queryLayerSingle__StreamStateClient) Recv() (*QueryLayerStateStreamResponse, error) {
+	m := new(QueryLayerStateStreamResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 func (c *queryLayerClient) Find(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error) {
 	out := new(QueryLayerResponse)
 	err := c.cc.Invoke(ctx, "/mode.QueryLayer/Find", in, out, opts...)
@@ -115,7 +160,7 @@ func (c *queryLayerClient) FindAll(ctx context.Context, in *FindAllRequest, opts
 }
 
 func (c *queryLayerClient) StreamAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (QueryLayer_StreamAllClient, error) {
-	stream, err := c.cc.NewStream(ctx, &QueryLayer_ServiceDesc.Streams[1], "/mode.QueryLayer/StreamAll", opts...)
+	stream, err := c.cc.NewStream(ctx, &QueryLayer_ServiceDesc.Streams[2], "/mode.QueryLayer/StreamAll", opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -163,6 +208,10 @@ type QueryLayerServer interface {
 	GetState(context.Context, *StateRequest) (*QueryLayerStateResponse, error)
 	// Stream state endpoint.
 	StreamState(*StateRequest, QueryLayer_StreamStateServer) error
+	// Get state from single table endpoint.
+	Single__GetState(context.Context, *Single__StateRequest) (*QueryLayerStateResponse, error)
+	// Stream state from single table endpoint.
+	Single__StreamState(*Single__StateRequest, QueryLayer_Single__StreamStateServer) error
 	// Find endpoint.
 	Find(context.Context, *FindRequest) (*QueryLayerResponse, error)
 	// Join endpoint.
@@ -185,6 +234,12 @@ func (UnimplementedQueryLayerServer) GetState(context.Context, *StateRequest) (*
 }
 func (UnimplementedQueryLayerServer) StreamState(*StateRequest, QueryLayer_StreamStateServer) error {
 	return status.Errorf(codes.Unimplemented, "method StreamState not implemented")
+}
+func (UnimplementedQueryLayerServer) Single__GetState(context.Context, *Single__StateRequest) (*QueryLayerStateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Single__GetState not implemented")
+}
+func (UnimplementedQueryLayerServer) Single__StreamState(*Single__StateRequest, QueryLayer_Single__StreamStateServer) error {
+	return status.Errorf(codes.Unimplemented, "method Single__StreamState not implemented")
 }
 func (UnimplementedQueryLayerServer) Find(context.Context, *FindRequest) (*QueryLayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Find not implemented")
@@ -250,6 +305,45 @@ type queryLayerStreamStateServer struct {
 }
 
 func (x *queryLayerStreamStateServer) Send(m *QueryLayerStateStreamResponse) error {
+	return x.ServerStream.SendMsg(m)
+}
+
+func _QueryLayer_Single__GetState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Single__StateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryLayerServer).Single__GetState(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/mode.QueryLayer/Single__GetState",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryLayerServer).Single__GetState(ctx, req.(*Single__StateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryLayer_Single__StreamState_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(Single__StateRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(QueryLayerServer).Single__StreamState(m, &queryLayerSingle__StreamStateServer{stream})
+}
+
+type QueryLayer_Single__StreamStateServer interface {
+	Send(*QueryLayerStateStreamResponse) error
+	grpc.ServerStream
+}
+
+type queryLayerSingle__StreamStateServer struct {
+	grpc.ServerStream
+}
+
+func (x *queryLayerSingle__StreamStateServer) Send(m *QueryLayerStateStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
@@ -358,6 +452,10 @@ var QueryLayer_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _QueryLayer_GetState_Handler,
 		},
 		{
+			MethodName: "Single__GetState",
+			Handler:    _QueryLayer_Single__GetState_Handler,
+		},
+		{
 			MethodName: "Find",
 			Handler:    _QueryLayer_Find_Handler,
 		},
@@ -378,6 +476,11 @@ var QueryLayer_ServiceDesc = grpc.ServiceDesc{
 		{
 			StreamName:    "StreamState",
 			Handler:       _QueryLayer_StreamState_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "Single__StreamState",
+			Handler:       _QueryLayer_Single__StreamState_Handler,
 			ServerStreams: true,
 		},
 		{

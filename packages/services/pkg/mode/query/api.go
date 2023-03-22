@@ -10,6 +10,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/ops/find"
 	"latticexyz/mud/packages/services/pkg/mode/ops/join"
+	"latticexyz/mud/packages/services/pkg/mode/ops/stream"
 	"latticexyz/mud/packages/services/pkg/mode/schema"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 )
@@ -32,41 +33,41 @@ func (ql *QueryLayer) ExecuteSQL(sqlQuery string, tableSchema *mode.TableSchema,
 	return serializedTable, nil
 }
 
-func (ql *QueryLayer) Find(ctx context.Context, request *pb_mode.FindRequest) (*pb_mode.QueryLayerResponse, error) {
-	// Get a string namespace for the request.
-	namespace, err := schema.NamespaceFromNamespaceObject(request.Namespace)
-	if err != nil {
-		ql.logger.Error("find(): error while getting namespace", zap.Error(err))
-		return nil, err
-	}
+// func (ql *QueryLayer) Find(ctx context.Context, request *pb_mode.FindRequest) (*pb_mode.QueryLayerResponse, error) {
+// 	// Get a string namespace for the request.
+// 	namespace, err := schema.NamespaceFromNamespaceObject(request.Namespace)
+// 	if err != nil {
+// 		ql.logger.Error("find(): error while getting namespace", zap.Error(err))
+// 		return nil, err
+// 	}
 
-	// Create a "builder" for the request.
-	builder := find.NewFindBuilder(request, namespace)
+// 	// Create a "builder" for the request.
+// 	builder := find.New__FromFindRequest(request, namespace)
 
-	// Build a query from the request.
-	query, err := builder.ToSQLQuery()
-	if err != nil {
-		ql.logger.Error("find(): error while building query", zap.Error(err))
-		return nil, err
-	}
-	ql.logger.Info("find(): built query from request", zap.String("query", query))
+// 	// Build a query from the request.
+// 	query, err := builder.ToSQLQuery()
+// 	if err != nil {
+// 		ql.logger.Error("find(): error while building query", zap.Error(err))
+// 		return nil, err
+// 	}
+// 	ql.logger.Info("find(): built query from request", zap.String("query", query))
 
-	// Get the TableSchema for the table that the query is directed at and execute the built query.
-	tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, request.From)
-	if err != nil {
-		ql.logger.Error("find(): error while getting table schema", zap.Error(err))
-		return nil, err
-	}
+// 	// Get the TableSchema for the table that the query is directed at and execute the built query.
+// 	tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, request.From)
+// 	if err != nil {
+// 		ql.logger.Error("find(): error while getting table schema", zap.Error(err))
+// 		return nil, err
+// 	}
 
-	serializedTable, err := ql.ExecuteSQL(query, tableSchema, builder.GetFieldProjections())
-	if err != nil {
-		ql.logger.Error("find(): error while executing query", zap.String("query", query), zap.Error(err))
-		return nil, err
-	}
+// 	serializedTable, err := ql.ExecuteSQL(query, tableSchema, builder.GetFieldProjections())
+// 	if err != nil {
+// 		ql.logger.Error("find(): error while executing query", zap.String("query", query), zap.Error(err))
+// 		return nil, err
+// 	}
 
-	// Build the response from the single table and return.
-	return QueryLayerResponseFromTable(serializedTable, request.From), nil
-}
+// 	// Build the response from the single table and return.
+// 	return QueryLayerResponseFromTable(serializedTable, request.From), nil
+// }
 
 // func (ql *QueryLayer) FindAll_Namespaced(ctx context.Context, request *pb_mode.FindAllRequest, namespace string) (tables []*pb_mode.GenericTable, tableNames []string, err error) {
 // 	// An up-to-date list of all tables is used to return the full state, if requested.
@@ -338,7 +339,7 @@ func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateReques
 /// StreamState streams changes to the full state given a namespace. Allows for filtering if only a subset of the state is desired.
 ///
 
-func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stream pb_mode.QueryLayer_StreamStateServer) error {
+func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.QueryLayer_StreamStateServer) error {
 	if schema.ValidateNamespace(request.Namespace) != nil {
 		return fmt.Errorf("invalid namespace")
 	}
@@ -357,12 +358,17 @@ func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stream pb_mode.
 	// The stream for all events.
 	eventStream := ql.dl.Stream()
 
+	// Build a streaming builder. This is slightly different from a query builder in that it is
+	// not responsible for building a query, but rather serves as a utility for deciding whether
+	// to include an event in the stream response.
+	builder := stream.NewStreamAllBuilder(request.ChainTables, request.WorldTables)
+
 	// Keep track of events that are for all tables other than the block number table. Once the block number table is
 	// updated, we package all events into a single response and send it to the client. The events themselves are
 	// serialized into a GenericTable.
-	inserted := NewBufferedEvents()
-	updated := NewBufferedEvents()
-	deleted := NewBufferedEvents()
+	inserted := NewBufferedEvents(builder)
+	updated := NewBufferedEvents(builder)
+	deleted := NewBufferedEvents(builder)
 
 	// For each event, serialize the event and either
 	// 1. store and wait for block number event to send
@@ -389,12 +395,12 @@ func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stream pb_mode.
 
 				// Send the stored events as a single response. Every buffered event is combined into
 				// a single response and sent to the client.
-				stream.Send(QueryLayerStateStreamResponseFromTables(inserted, updated, deleted))
+				stateStream.Send(QueryLayerStateStreamResponseFromTables(inserted, updated, deleted))
 
 				// Clear the buffers.
-				inserted = NewBufferedEvents()
-				updated = NewBufferedEvents()
-				deleted = NewBufferedEvents()
+				inserted.Clear()
+				updated.Clear()
+				deleted.Clear()
 			} else {
 				// Process the event and store in a "buffer" awaiting the block number event. We append
 				// the serialized table to the appropriate list to differentiate between inserts, updates,
@@ -419,4 +425,44 @@ func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stream pb_mode.
 			}
 		}
 	}
+}
+
+func (ql *QueryLayer) Single__GetState(ctx context.Context, request *pb_mode.Single__StateRequest) (*pb_mode.QueryLayerStateResponse, error) {
+	// Get a string namespace for the request.
+	namespace, err := schema.NamespaceFromNamespaceObject(request.Namespace)
+	if err != nil {
+		ql.logger.Error("Single__GetState(): error while getting namespace", zap.Error(err))
+		return nil, err
+	}
+
+	// Create a "builder" for the request.
+	builder := find.New__FromSingle__StateRequest(request, namespace)
+
+	// Build a query from the request.
+	query, err := builder.ToSQLQuery()
+	if err != nil {
+		ql.logger.Error("Single__GetState(): error while building query", zap.Error(err))
+		return nil, err
+	}
+	ql.logger.Info("Single__GetState(): built query from request", zap.String("query", query))
+
+	// Get the TableSchema for the table that the query is directed at and execute the built query.
+	tableSchema, err := ql.schemaCache.GetTableSchema(request.Namespace.ChainId, request.Namespace.WorldAddress, request.Table)
+	if err != nil {
+		ql.logger.Error("Single__GetState(): error while getting table schema", zap.Error(err))
+		return nil, err
+	}
+
+	serializedTable, err := ql.ExecuteSQL(query, tableSchema, builder.GetFieldProjections())
+	if err != nil {
+		ql.logger.Error("Single__GetState(): error while executing query", zap.String("query", query), zap.Error(err))
+		return nil, err
+	}
+
+	// Build the response from the single table and return.
+	return QueryLayerStateResponseFromTable(serializedTable, request.Table, ql.schemaCache.IsInternalTable(request.Table)), nil
+}
+
+func (ql *QueryLayer) Single__StreamState(request *pb_mode.Single__StateRequest, stream pb_mode.QueryLayer_Single__StreamStateServer) error {
+	return nil
 }

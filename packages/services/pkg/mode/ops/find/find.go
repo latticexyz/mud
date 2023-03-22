@@ -6,14 +6,30 @@ import (
 )
 
 type FindBuilder struct {
-	Request   *pb_mode.FindRequest
-	Namespace string
+	TableName       string
+	Filter          []*pb_mode.Filter
+	Project         []*pb_mode.ProjectedField
+	Namespace       *pb_mode.Namespace
+	NamespaceString string
 }
 
-func NewFindBuilder(request *pb_mode.FindRequest, namespace string) *FindBuilder {
+func New__FromFindRequest(request *pb_mode.FindRequest, namespace string) *FindBuilder {
 	return &FindBuilder{
-		Request:   request,
-		Namespace: namespace,
+		TableName:       request.From,
+		Filter:          request.Filter,
+		Project:         request.Project,
+		Namespace:       request.Namespace,
+		NamespaceString: namespace,
+	}
+}
+
+func New__FromSingle__StateRequest(request *pb_mode.Single__StateRequest, namespace string) *FindBuilder {
+	return &FindBuilder{
+		TableName:       request.Table,
+		Filter:          request.Filter,
+		Project:         request.Project,
+		Namespace:       request.Namespace,
+		NamespaceString: namespace,
 	}
 }
 
@@ -27,15 +43,13 @@ grpcurl -plaintext -d '{"from": "component_stake", "filter": [],  "project": [{f
 */
 
 func (builder *FindBuilder) BuildFilter() string {
-	request := builder.Request
-
-	if len(request.Filter) == 0 {
+	if len(builder.Filter) == 0 {
 		return ""
 	}
 
 	var query strings.Builder
 	query.WriteString(" WHERE ")
-	for idx, filter := range request.Filter {
+	for idx, filter := range builder.Filter {
 		if filter.Function != "" {
 			query.WriteString(filter.Function)
 			query.WriteString("(")
@@ -58,7 +72,7 @@ func (builder *FindBuilder) BuildFilter() string {
 			query.WriteString(")")
 		}
 
-		if idx < len(request.Filter)-1 {
+		if idx < len(builder.Filter)-1 {
 			query.WriteString(" AND ")
 		}
 	}
@@ -68,27 +82,25 @@ func (builder *FindBuilder) BuildFilter() string {
 
 func (builder *FindBuilder) BuildFrom() string {
 	var query strings.Builder
-	query.WriteString(" FROM " + builder.Namespace + "." + builder.Request.From)
+	query.WriteString(" FROM " + builder.NamespaceString + "." + builder.TableName)
 	return query.String()
 }
 
 func (builder *FindBuilder) BuildProjection() string {
-	request := builder.Request
-
 	var query strings.Builder
 	query.WriteString("SELECT ")
 
-	if len(request.Project) == 0 {
+	if len(builder.Project) == 0 {
 		query.WriteString("*")
 		return query.String()
 	}
 
-	for idx, projection := range request.Project {
+	for idx, projection := range builder.Project {
 		query.WriteString(projection.Field.TableName + "." + projection.Field.TableField)
 		if projection.Rename != nil {
 			query.WriteString(" AS " + *projection.Rename)
 		}
-		if idx < len(request.Project)-1 {
+		if idx < len(builder.Project)-1 {
 			query.WriteString(", ")
 		}
 	}
@@ -116,7 +128,7 @@ func (builder *FindBuilder) GetFieldProjections() map[string]string {
 
 	fieldProjections := make(map[string]string)
 
-	for _, projection := range builder.Request.Project {
+	for _, projection := range builder.Project {
 		if projection.Rename != nil {
 			fieldProjections[*projection.Rename] = projection.Field.TableField
 		}
