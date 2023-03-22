@@ -98,11 +98,11 @@ func (ql *QueryLayer) GetState_Namespaced(ctx context.Context, tablesFilter []st
 
 func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateRequest) (*pb_mode.QueryLayerStateResponse, error) {
 	// Validate the namespace.
-	if schema.ValidateNamespace(request.Namespace) != nil {
-		return nil, fmt.Errorf("invalid namespace")
+	if err := schema.ValidateNamespace__State(request.Namespace); err != nil {
+		return nil, fmt.Errorf("invalid namespace for GetState(): %v", err)
 	}
 
-	// Check if request can be processed.
+	// Check if request can be processed. We do not allow GetState() requests while syncing.
 	isSyncing, err := ql.rl.GetSyncStatus(request.Namespace.ChainId)
 	if err != nil {
 		ql.logger.Error("GetState(): error while getting sync status", zap.Error(err))
@@ -113,17 +113,10 @@ func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateReques
 		return nil, fmt.Errorf("cannot process request while syncing")
 	}
 
-	// Get namespaces for the request. A namespace is a chainId and worldAddress pair.
-	chainNamespace := &pb_mode.Namespace{
-		ChainId:      request.Namespace.ChainId,
-		WorldAddress: "",
-	}
-	worldNamespace := &pb_mode.Namespace{
-		ChainId:      request.Namespace.ChainId,
-		WorldAddress: request.Namespace.WorldAddress,
-	}
+	// Get sub-namespaces for the request. A namespace is a chainId and worldAddress pair.
+	chainNamespace, worldNamespace := schema.NamespaceToSubNamespaces(request.Namespace)
 
-	// Execute GetState_Namespaced for each namespace.
+	// Execute GetState_Namespaced for each sub-namespace.
 	chainTables, chainTableNames, err := ql.GetState_Namespaced(
 		ctx,
 		request.ChainTables,
@@ -154,8 +147,8 @@ func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateReques
 ///
 
 func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.QueryLayer_StreamStateServer) error {
-	if schema.ValidateNamespace(request.Namespace) != nil {
-		return fmt.Errorf("invalid namespace")
+	if err := schema.ValidateNamespace__State(request.Namespace); err != nil {
+		return fmt.Errorf("invalid namespace for StreamState(): %v", err)
 	}
 
 	// Check if request can be processed.
@@ -175,7 +168,11 @@ func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stateStream pb_
 	// Build a streaming builder. This is slightly different from a query builder in that it is
 	// not responsible for building a query, but rather serves as a utility for deciding whether
 	// to include an event in the stream response.
-	builder := stream.NewStreamAllBuilder(request.ChainTables, request.WorldTables)
+	builder := stream.NewStreamAllBuilder(
+		request.Namespace, // Namespace from stream query / request.
+		request.ChainTables,
+		request.WorldTables,
+	)
 
 	// Keep track of events that are for all tables other than the block number table. Once the block number table is
 	// updated, we package all events into a single response and send it to the client. The events themselves are
@@ -205,7 +202,7 @@ func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stateStream pb_
 			// Check if the event is for the block number table.
 			if ql.schemaCache.IsInternal__BlockNumberTable(request.Namespace.ChainId, event.TableName) {
 				// Append the block number event to the response as a single update event.
-				updated.AddChainTable(serializedTable, tableSchema.TableName)
+				updated.AddChainTable(serializedTable, tableSchema)
 
 				// Send the stored events as a single response. Every buffered event is combined into
 				// a single response and sent to the client.
@@ -221,19 +218,19 @@ func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stateStream pb_
 				// and deletes.
 				if ql.schemaCache.IsInternalTable(event.TableName) {
 					if event.Type == db.StreamEventTypeInsert {
-						inserted.AddChainTable(serializedTable, tableSchema.TableName)
+						inserted.AddChainTable(serializedTable, tableSchema)
 					} else if event.Type == db.StreamEventTypeUpdate {
-						updated.AddChainTable(serializedTable, tableSchema.TableName)
+						updated.AddChainTable(serializedTable, tableSchema)
 					} else if event.Type == db.StreamEventTypeDelete {
-						deleted.AddChainTable(serializedTable, tableSchema.TableName)
+						deleted.AddChainTable(serializedTable, tableSchema)
 					}
 				} else {
 					if event.Type == db.StreamEventTypeInsert {
-						inserted.AddWorldTable(serializedTable, tableSchema.TableName)
+						inserted.AddWorldTable(serializedTable, tableSchema)
 					} else if event.Type == db.StreamEventTypeUpdate {
-						updated.AddWorldTable(serializedTable, tableSchema.TableName)
+						updated.AddWorldTable(serializedTable, tableSchema)
 					} else if event.Type == db.StreamEventTypeDelete {
-						deleted.AddWorldTable(serializedTable, tableSchema.TableName)
+						deleted.AddWorldTable(serializedTable, tableSchema)
 					}
 				}
 			}
@@ -242,6 +239,10 @@ func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stateStream pb_
 }
 
 func (ql *QueryLayer) Single__GetState(ctx context.Context, request *pb_mode.Single__StateRequest) (*pb_mode.QueryLayerStateResponse, error) {
+	if err := schema.ValidateNamespace__State(request.Namespace); err != nil {
+		return nil, fmt.Errorf("invalid namespace for Single__GetState(): %v", err)
+	}
+
 	// Get a string namespace for the request.
 	namespace, err := schema.NamespaceFromNamespaceObject(request.Namespace)
 	if err != nil {

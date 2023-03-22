@@ -2,6 +2,7 @@ package query
 
 import (
 	"latticexyz/mud/packages/services/pkg/grpc"
+	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/ops/stream"
 	"latticexyz/mud/packages/services/pkg/mode/read"
@@ -50,18 +51,18 @@ func NewBufferedEvents(streamAllBuilder *stream.StreamAllBuilder) *BufferedEvent
 	}
 }
 
-func (buffer *BufferedEvents) AddChainTable(table *pb_mode.GenericTable, tableName string) {
+func (buffer *BufferedEvents) AddChainTable(table *pb_mode.GenericTable, tableSchema *mode.TableSchema) {
 	// Use the StreamAllBuilder to decide if table is to be streamed.
-	if buffer.StreamAllBuilder.ShouldStream(tableName) {
+	if buffer.StreamAllBuilder.ShouldStream(tableSchema) {
 		buffer.ChainTables = append(buffer.ChainTables, table)
-		buffer.ChainTableNames = append(buffer.ChainTableNames, tableName)
+		buffer.ChainTableNames = append(buffer.ChainTableNames, tableSchema.TableName)
 	}
 }
 
-func (buffer *BufferedEvents) AddWorldTable(table *pb_mode.GenericTable, tableName string) {
-	if buffer.StreamAllBuilder.ShouldStream(tableName) {
+func (buffer *BufferedEvents) AddWorldTable(table *pb_mode.GenericTable, tableSchema *mode.TableSchema) {
+	if buffer.StreamAllBuilder.ShouldStream(tableSchema) {
 		buffer.WorldTables = append(buffer.WorldTables, table)
-		buffer.WorldTableNames = append(buffer.WorldTableNames, tableName)
+		buffer.WorldTableNames = append(buffer.WorldTableNames, tableSchema.TableName)
 	}
 }
 
