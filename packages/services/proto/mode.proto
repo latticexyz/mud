@@ -191,19 +191,4 @@ service QueryLayer {
 
     // Stream state from single table endpoint.
     rpc Single__StreamState(Single__StateRequest) returns (stream QueryLayerStateStreamResponse) {}
-
-    // Find endpoint.
-    rpc Find(FindRequest) returns (QueryLayerResponse) {}
-
-    // Join endpoint.
-    rpc Join(JoinRequest) returns (QueryLayerResponse) {}
-
-    // FindAll endpoint.
-    rpc FindAll(FindAllRequest) returns (QueryLayerResponse) {}
-
-    // StreamAll endpoint.
-    rpc StreamAll(FindAllRequest) returns (stream QueryLayerResponse) {}
-
-    // Count endpoint.
-    rpc Count(FindRequest) returns (QueryLayerResponse) {}
 }
