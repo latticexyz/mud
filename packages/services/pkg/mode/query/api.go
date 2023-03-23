@@ -14,6 +14,16 @@ import (
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 )
 
+// ExecuteSQL executes the given SQL query and returns the result as a serialized GenericTable.
+//
+// Parameters:
+// - sqlQuery (string): The SQL query to execute.
+// - tableSchema (*mode.TableSchema): The schema of the table that the query operates on.
+// - fieldProjections (map[string]string): A map of fields to project from the table.
+//
+// Returns:
+// - (*pb_mode.GenericTable): A serialized representation of the result of executing the given SQL query.
+// - (error): Returns an error if there was an error while executing the query.
 func (ql *QueryLayer) ExecuteSQL(sqlQuery string, tableSchema *mode.TableSchema, fieldProjections map[string]string) (*pb_mode.GenericTable, error) {
 	rows, err := ql.dl.Query(sqlQuery)
 	if err != nil {
@@ -32,10 +42,18 @@ func (ql *QueryLayer) ExecuteSQL(sqlQuery string, tableSchema *mode.TableSchema,
 	return serializedTable, nil
 }
 
-///
-/// GetState_Namespaced returns the state in a given namespace. Used with GetState to get the state across the chain and world namespaces.
-///
-
+// GetState_Namespaced retrieves the state of the tables specified in the given `tablesFilter` for the given query and world namespaces.
+//
+// Parameters:
+// - ctx (context.Context): The context of the request.
+// - tablesFilter ([]string): A list of table names to retrieve state for. If empty, returns all tables.
+// - queryNamespace (*pb_mode.Namespace): The query namespace.
+// - worldNamespace (*pb_mode.Namespace): The world namespace.
+//
+// Returns:
+// - ([]*pb_mode.GenericTable): A list of serialized representations of the state of the requested tables.
+// - ([]string): A list of names of the tables whose state was retrieved.
+// - (error): Returns an error if there was an error while retrieving the state.
 func (ql *QueryLayer) GetState_Namespaced(ctx context.Context, tablesFilter []string, queryNamespace *pb_mode.Namespace, worldNamespace *pb_mode.Namespace) (tables []*pb_mode.GenericTable, tableNames []string, err error) {
 	// Get a string representation of the query namespace.
 	queryNamespaceString := schema.Namespace(queryNamespace.ChainId, queryNamespace.WorldAddress)
@@ -92,10 +110,15 @@ func (ql *QueryLayer) GetState_Namespaced(ctx context.Context, tablesFilter []st
 	return serializedTables, tableListFormatted, nil
 }
 
-///
-/// GetState returns the full state given a chain + world namespace. Allows for filtering if only a subset of the state is desired.
-///
-
+// GetState returns the state of the given chain and world tables for the given namespace.
+//
+// Parameters:
+// - ctx (context.Context): The context of the request.
+// - request (*pb_mode.StateRequest): The state request containing the namespace and tables to filter on (if any).
+//
+// Returns:
+// - (*pb_mode.QueryLayerStateResponse): The state of the chain and world tables for the given namespace.
+// - (error): Returns an error if there was an error while retrieving the state.
 func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateRequest) (*pb_mode.QueryLayerStateResponse, error) {
 	// Validate the namespace.
 	if err := schema.ValidateNamespace__State(request.Namespace); err != nil {
@@ -142,10 +165,14 @@ func (ql *QueryLayer) GetState(ctx context.Context, request *pb_mode.StateReques
 	return QueryLayerStateResponseFromTables(chainTables, worldTables, chainTableNames, worldTableNames), nil
 }
 
-///
-/// StreamState streams changes to the full state given a namespace. Allows for filtering if only a subset of the state is desired.
-///
-
+// StreamState streams incremental updates to the state of the tables specified in the given state request.
+//
+// Parameters:
+// - request (*pb_mode.StateRequest): The state request.
+// - stateStream (pb_mode.QueryLayer_StreamStateServer): The server stream for streaming state updates.
+//
+// Returns:
+// - (error): Returns an error if there was an error while streaming the state.
 func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stateStream pb_mode.QueryLayer_StreamStateServer) error {
 	if err := schema.ValidateNamespace__State(request.Namespace); err != nil {
 		return fmt.Errorf("invalid namespace for StreamState(): %v", err)
@@ -238,6 +265,21 @@ func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stateStream pb_
 	}
 }
 
+// Single__GetState returns the state for a single table specified in the request. The table name and namespace are
+// specified in the request. A SQL query is built from the request using a builder, and the query is executed to
+// retrieve the state of the table. The retrieved state is then serialized into a GenericTable and returned as part of
+// the QueryLayerStateResponse.
+//
+// If an error is encountered during validation, query building, or execution, this function returns a nil response and
+// an error message.
+//
+// Parameters:
+// - ctx (context.Context): The context of the request.
+// - request (*pb_mode.Single__StateRequest): The request for a single table state.
+//
+// Returns:
+// - (*pb_mode.QueryLayerStateResponse): The response containing the single table state.
+// - (error): An error encountered during validation, query building, or execution.
 func (ql *QueryLayer) Single__GetState(ctx context.Context, request *pb_mode.Single__StateRequest) (*pb_mode.QueryLayerStateResponse, error) {
 	if err := schema.ValidateNamespace__State(request.Namespace); err != nil {
 		return nil, fmt.Errorf("invalid namespace for Single__GetState(): %v", err)
@@ -278,6 +320,19 @@ func (ql *QueryLayer) Single__GetState(ctx context.Context, request *pb_mode.Sin
 	return QueryLayerStateResponseFromTable(serializedTable, request.Table, ql.schemaCache.IsInternalTable(request.Table)), nil
 }
 
+// Single__StreamState streams incremental updates for a single table specified in the request. The table name and
+// namespace are specified in the request. The function listens to the stream of events from the database layer and
+// serializes any events that match the table in the request. Once a block number event is encountered, all buffered
+// events are combined into a single response and sent to the client as part of the QueryLayerStateStreamResponse. If
+// an error is encountered during validation or execution, the function returns an error message and closes the stream.
+//
+// Parameters:
+// - request (*pb_mode.Single__StateRequest): The request for a single table state.
+// - stateStream (pb_mode.QueryLayer_Single__StreamStateServer): The stream to send incremental updates to the client.
+//
+// Returns:
+// - (error): An error encountered during validation or execution.
 func (ql *QueryLayer) Single__StreamState(request *pb_mode.Single__StateRequest, stream pb_mode.QueryLayer_Single__StreamStateServer) error {
+	// TODO: implement
 	return nil
 }

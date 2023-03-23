@@ -7,9 +7,9 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-//
-// Utilities for building table names.
-//
+/////////////////////////////////////////
+// Utilities for building table names. //
+/////////////////////////////////////////
 
 func TableIdToTableName(tableId string) string {
 	// Table ID comes in as a uint256 in string format comprised of two bytes16s
@@ -37,9 +37,9 @@ func TableNameToTableId(tableName string) string {
 	return "0x" + common.Bytes2Hex(append(common.FromHex("0x"+parts[0]), common.FromHex("0x"+parts[1])...))
 }
 
-//
-// Utilities for building field names.
-//
+/////////////////////////////////////////
+// Utilities for building field names. //
+/////////////////////////////////////////
 
 func DefaultFieldName(index int) string {
 	return "field_" + fmt.Sprint(index)
