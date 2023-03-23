@@ -38,6 +38,18 @@ type IngressLayer struct {
 	logger *zap.Logger
 }
 
+// New creates a new IngressLayer instance connected to an Ethereum execution client.
+//
+// Parameters:
+// - chainConfig (*config.ChainConfig): The configuration for the chain to index.
+// - syncConfig (*config.SyncConfig): The configuration for the syncing process.
+// - wl (*write.WriteLayer): The WriteLayer instance to use for writing data to the database.
+// - rl (*read.ReadLayer): The ReadLayer instance to use for reading data from the database.
+// - schemaCache (*schema.SchemaCache): The SchemaCache instance to use for caching table schemas.
+// - logger (*zap.Logger): The logger to use for logging messages.
+//
+// Returns:
+// - (*IngressLayer): A pointer to the new IngressLayer instance.
 func New(chainConfig *config.ChainConfig, syncConfig *config.SyncConfig, wl *write.WriteLayer, rl *read.ReadLayer, schemaCache *schema.SchemaCache, logger *zap.Logger) *IngressLayer {
 	logger.Info("creating ingress layer connected to websocket", zap.String("ws", chainConfig.Rpc.Ws))
 
@@ -74,6 +86,12 @@ func New(chainConfig *config.ChainConfig, syncConfig *config.SyncConfig, wl *wri
 	}
 }
 
+// Run starts the main loop of the IngressLayer object.
+// It subscribes to block headers and processes new blocks as they arrive, parsing and filtering their logs.
+// If the ingress layer is currently syncing, logs are buffered until the sync is complete.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) Run() {
 	// Get an instance of a websocket subscription to the client.
 	headers := make(chan *types.Header)
@@ -136,6 +154,18 @@ func (il *IngressLayer) Run() {
 	}
 }
 
+// Sync performs a sync operation on the ingress layer, processing events in a specified block range.
+// If startBlockNumber is not provided, it defaults to the genesis block number.
+// If endBlockNumber is not provided, it defaults to the latest block number.
+// During the sync, the application is in syncing status and logs are buffered.
+// After the sync, the buffered logs are handled, and the syncing status is set to false.
+//
+// Parameters:
+// - startBlockNumber (*big.Int): The starting block number to sync from (optional).
+// - endBlockNumber (*big.Int): The ending block number to sync to (optional).
+//
+// Returns:
+// - void.
 func (il *IngressLayer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int) {
 	// If the startBlockNumber is not provided, default to the genesis block number.
 	if startBlockNumber == nil {
@@ -190,6 +220,14 @@ func (il *IngressLayer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int)
 	il.logger.Info("finished syncing")
 }
 
+// UpdateBlockNumber updates the block number for a given chain using the write layer.
+//
+// Parameters:
+// - chainId (string): The ID of the chain for which to update the block number.
+// - blockNumber (*big.Int): The new block number to update.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) UpdateBlockNumber(chainId string, blockNumber *big.Int) {
 	// Build the row to update or insert (contains the block number).
 	row := write.RowKV{
@@ -204,6 +242,14 @@ func (il *IngressLayer) UpdateBlockNumber(chainId string, blockNumber *big.Int) 
 	il.logger.Info("updated block number", zap.String("chain_id", chainId), zap.String("block_number", blockNumber.String()))
 }
 
+// UpdateSyncStatus updates the syncing status for a given chain using the write layer.
+//
+// Parameters:
+// - chainId (string): The ID of the chain for which to update the syncing status.
+// - syncing (bool): The new syncing status to update.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) UpdateSyncStatus(chainId string, syncing bool) {
 	il.syncing = syncing
 
@@ -220,10 +266,25 @@ func (il *IngressLayer) UpdateSyncStatus(chainId string, syncing bool) {
 	il.logger.Info("updated syncing status", zap.String("chain_id", chainId), zap.Bool("syncing", syncing))
 }
 
+// FetchEventsInBlock fetches the events that occurred in a specific block using the Ethereum client.
+//
+// Parameters:
+// - blockNumber (*big.Int): The block number of the block to fetch events from.
+//
+// Returns:
+// - ([]types.Log): A slice of `types.Log` that contains the events that occurred in the block.
 func (il *IngressLayer) FetchEventsInBlock(blockNumber *big.Int) []types.Log {
 	return il.FetchEventsInBlockRange(blockNumber, blockNumber)
 }
 
+// FetchEventsInBlockRange fetches the events that occurred in a specific block range using the Ethereum client.
+//
+// Parameters:
+// - startBlockNumber (*big.Int): The block number of the first block in the range to fetch events from.
+// - endBlockNumber (*big.Int): The block number of the last block in the range to fetch events from.
+//
+// Returns:
+// - ([]types.Log): A slice of `types.Log` that contains the events that occurred in the block range.
 func (il *IngressLayer) FetchEventsInBlockRange(startBlockNumber *big.Int, endBlockNumber *big.Int) []types.Log {
 	query := ethereum.FilterQuery{
 		FromBlock: startBlockNumber,

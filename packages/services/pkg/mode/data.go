@@ -13,6 +13,15 @@ import (
 	"go.uber.org/zap"
 )
 
+// PrepareForScan prepares the rows object for scanning and returns the column names, row, and rowInterface.
+//
+// Parameters:
+//   - rows (*sqlx.Rows): The sqlx.Rows object.
+//
+// Returns:
+//   - (colNames []string): A slice of column names.
+//   - (row []interface{}): A slice of row interfaces.
+//   - (rowInterface []interface{}): A slice of row interfaces.
 func PrepareForScan(rows *sqlx.Rows) (colNames []string, row []interface{}, rowInterface []interface{}) {
 	colNames, _ = rows.Columns()
 	row = make([]interface{}, len(colNames))
@@ -23,6 +32,16 @@ func PrepareForScan(rows *sqlx.Rows) (colNames []string, row []interface{}, rowI
 	return
 }
 
+// SerializeRow serializes a single row with all fields encoded and returns it as a mode.Row.
+//
+// Parameters:
+//   - row ([]interface{}): A slice of fields for a single row.
+//   - colNames ([]string): A slice of column names.
+//   - colEncodingTypes ([]*abi.Type): A slice of column encoding types.
+//
+// Returns:
+//   - (*mode.Row): A pointer to the mode.Row containing the serialized row.
+//   - (error): An error, if any occurred during serialization.
 func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.Type) (*mode.Row, error) {
 	// A single row but every field is encoded.
 	values := [][]byte{}
@@ -63,6 +82,16 @@ func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.
 	}, nil
 }
 
+// SerializeRows serializes multiple rows from the provided sqlx.Rows object and returns a mode.GenericTable.
+//
+// Parameters:
+//   - rows (*sqlx.Rows): The sqlx.Rows object.
+//   - tableSchema (*TableSchema): A pointer to the schema of the table.
+//   - fieldProjections (map[string]string): A map of field projections.
+//
+// Returns:
+//   - (*mode.GenericTable): A pointer to the mode.GenericTable containing the serialized rows.
+//   - (error): An error, if any occurred during serialization.
 func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema, fieldProjections map[string]string) (*mode.GenericTable, error) {
 	tsStart := time.Now()
 
@@ -96,6 +125,16 @@ func SerializeRows(rows *sqlx.Rows, tableSchema *TableSchema, fieldProjections m
 	}, nil
 }
 
+// SerializeStreamEvent serializes a single stream event and returns it as a mode.GenericTable.
+//
+// Parameters:
+//   - event (*db.StreamEvent): The stream event to serialize.
+//   - tableSchema (*TableSchema): A pointer to the schema of the table.
+//   - fieldProjections (map[string]string): A map of field projections.
+//
+// Returns:
+//   - (*mode.GenericTable): A pointer to the mode.GenericTable containing the serialized stream event.
+//   - (error): An error, if any occurred during serialization.
 func SerializeStreamEvent(event *db.StreamEvent, tableSchema *TableSchema, fieldProjections map[string]string) (*mode.GenericTable, error) {
 	colNames := []string{}
 	row := []interface{}{}
@@ -121,6 +160,14 @@ func SerializeStreamEvent(event *db.StreamEvent, tableSchema *TableSchema, field
 	}, nil
 }
 
+// CapitalizeColNames capitalizes the column names and returns them in a slice.
+//
+// Parameters:
+//   - colNames ([]string): A slice of column names.
+//   - tableSchema (*TableSchema): A pointer to the schema of the table.
+//
+// Returns:
+//   - ([]string): A slice of capitalized column names.
 func CapitalizeColNames(colNames []string, tableSchema *TableSchema) []string {
 	capitalizedCols := []string{}
 	for _, colName := range colNames {

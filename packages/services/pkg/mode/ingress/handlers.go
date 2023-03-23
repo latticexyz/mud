@@ -15,8 +15,15 @@ import (
 	"go.uber.org/zap"
 )
 
+// handleLogs processes and handles logs of events in the ingress layer.
+//
+// Parameters:
+// - logs ([]types.Log): A slice of `types.Log` containing the logs of events to handle.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) handleLogs(logs []types.Log) {
-	// Process each log and handle any MUD events.
+	// Process each log and handle events.
 	for _, vLog := range logs {
 		switch vLog.Topics[0].Hex() {
 		case StoreSetRecordEvent().Hex():
@@ -44,6 +51,13 @@ func (il *IngressLayer) handleLogs(logs []types.Log) {
 	}
 }
 
+// handleSetRecordEvent handles the StoreSetRecord event by determining the table ID and calling the appropriate handler function.
+//
+// Parameters:
+// - event (*storecore.StorecoreStoreSetRecord): A pointer to the parsed `StoreSetRecord` event to handle.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) handleSetRecordEvent(event *storecore.StorecoreStoreSetRecord) {
 	tableId := storecore.PaddedTableId(event.Table)
 	il.logger.Info("handling set record event", zap.String("table_id", tableId))
@@ -77,6 +91,15 @@ func (il *IngressLayer) handleSetRecordEvent(event *storecore.StorecoreStoreSetR
 	}
 }
 
+// handleSetFieldEventUpdateRow handles the StoreSetField event by decoding the field, getting the name of the field, creating a partial row object, and updating the row.
+//
+// Parameters:
+// - event (*storecore.StorecoreStoreSetField): A pointer to the parsed `StoreSetField` event to handle.
+// - tableSchema (*mode.TableSchema): A pointer to the `TableSchema` object representing the table schema of the table to update.
+// - filter ([]*pb_mode.Filter): An array of filter objects used to identify the row to update.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) handleSetFieldEventUpdateRow(event *storecore.StorecoreStoreSetField, tableSchema *mode.TableSchema, filter []*pb_mode.Filter) {
 	// Decode the field.
 	fieldValue := storecore.DecodeDataField(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value, event.SchemaIndex)
@@ -94,6 +117,14 @@ func (il *IngressLayer) handleSetFieldEventUpdateRow(event *storecore.StorecoreS
 	il.wl.UpdateRow(tableSchema, partialRow, filter)
 }
 
+// handleSetFieldEventInsertRow handles the StoreSetField event by decoding the row record data (value) and key, creating a row object, and inserting the row into the table.
+//
+// Parameters:
+// - event (*storecore.StorecoreStoreSetField): A pointer to the parsed `StoreSetField` event to handle.
+// - tableSchema (*mode.TableSchema): A pointer to the `TableSchema` object representing the table schema of the table to insert into.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreStoreSetField, tableSchema *mode.TableSchema) {
 	// Decode the row record data (value).
 	decodedFieldData := storecore.DecodeData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value)
@@ -114,6 +145,16 @@ func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreS
 	il.wl.InsertRow(tableSchema, row)
 }
 
+// handleSetFieldEvent handles the StoreSetField event, which is triggered when a field in a row of a table is updated or created.
+// The function checks if the row exists in the table by building a filter from the setField key. If the row exists, the function
+// constructs a partial row with the new value for the field that was modified and updates the row. If the row does not exist, the
+// function constructs a new row with default values for each column and inserts it into the table.
+//
+// Parameters:
+// - event (*storecore.StorecoreStoreSetField): The StoreSetField event to be handled.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetField) {
 	println("-------------------------------------------------------")
 	println("-------------------------------------------------------")
@@ -158,6 +199,13 @@ func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetFi
 	}
 }
 
+// handleDeleteRecordEvent deletes a row from a given table based on the provided event data.
+//
+// Parameters:
+// - event (*storecore.StorecoreStoreDeleteRecord): The StoreDeleteRecord event to be handled.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) handleDeleteRecordEvent(event *storecore.StorecoreStoreDeleteRecord) {
 	tableId := storecore.PaddedTableId(event.Table)
 	il.logger.Info("handling delete record event", zap.String("table_id", tableId))
@@ -177,6 +225,13 @@ func (il *IngressLayer) handleDeleteRecordEvent(event *storecore.StorecoreStoreD
 	il.logger.Info("delete record event handled", zap.String("table_id", tableId))
 }
 
+// handleSchemaTableEvent handles an event to set the schema for a table in the database.
+//
+// Parameters:
+// - event (*storecore.StorecoreStoreSetRecord): The StoreSetRecord event to handle, containing the key, world address, and table schema.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSetRecord) {
 	tableId := hexutil.Encode(event.Key[0][:])
 	il.logger.Info("handling schema table event", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId))
@@ -263,6 +318,13 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 	il.logger.Info("schema table event handled", zap.String("world_address", event.WorldAddress()), zap.String("table_name", hexutil.Encode(event.Key[0][:])), zap.String("schema", string(tableSchemaJson)))
 }
 
+// handleMetadataTableEvent handles an event to add metadata to a table schema in the database.
+//
+// Parameters:
+// - event (*storecore.StorecoreStoreSetRecord): The StoreSetRecord event to handle, containing the key, world address, and metadata for the target table schema.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStoreSetRecord) {
 	tableId := hexutil.Encode(event.Key[0][:])
 	il.logger.Info("handling metadata table event", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId))
@@ -365,6 +427,13 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	il.logger.Info("metadata table event handled (schema updated)", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId), zap.String("schema", string(tableSchemaJson)))
 }
 
+// handleGenericTableEvent handles a generic event to set a row in a table in the database.
+//
+// Parameters:
+// - event (*storecore.StorecoreStoreSetRecord): The StoreSetRecord event to handle, containing the key, world address, and row data.
+//
+// Returns:
+// - void.
 func (il *IngressLayer) handleGenericTableEvent(event *storecore.StorecoreStoreSetRecord) {
 	tableId := storecore.PaddedTableId(event.Table)
 	il.logger.Info("handling generic table event", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId))
