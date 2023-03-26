@@ -16,28 +16,17 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16.x
-          cache: "yarn"
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
-      - name: Install dependencies
-        run: yarn install --network-concurrency 1
+      - name: 'Setup'
+        uses: ./.github/actions/setup
 
       - name: Build and install CLI
         working-directory: packages/cli
-        run: yarn build && yarn link
+        run: pnpm build && pnpm link
 
       - name: Generate tables
-        run: yarn tablegen
+        run: pnpm tablegen
 
-      - name: Outdated files detected, run `yarn tablegen` and commit them
+      - name: Outdated files detected, run `pnpm tablegen` and commit them
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
             git status
@@ -46,9 +35,9 @@ jobs:
           fi
 
       - name: Generate gas reports
-        run: yarn gas-report
+        run: pnpm gas-report
 
-      - name: Outdated files detected, run `yarn gas-report` and commit them
+      - name: Outdated files detected, run `pnpm gas-report` and commit them
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
             git status
