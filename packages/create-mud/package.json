@@ -10,7 +10,7 @@
     "templates"
   ],
   "scripts": {
-    "prepare": "yarn build",
+    "prepare": "pnpm build",
     "build": "tsup src/cli.ts --minify",
     "clean": "shx rm -rf lib",
     "dev": "tsup src/cli.ts --watch",

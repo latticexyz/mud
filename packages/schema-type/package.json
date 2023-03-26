@@ -12,15 +12,15 @@
     "directory": "packages/schema-type"
   },
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
+    "prepare": "pnpm build && chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
-    "test": "yarn test:solidity && yarn test:typescript",
+    "test": "pnpm test:solidity && pnpm test:typescript",
     "test:solidity": "forge test",
     "test:typescript": "tsc --noEmit",
-    "build": "yarn build:solidity && yarn build:typescript",
+    "build": "pnpm build:solidity && pnpm build:typescript",
     "build:solidity": "rimraf out && forge build",
     "build:typescript": "tsc",
-    "link": "yarn link",
+    "link": "pnpm link",
     "release": "npm publish --access=public"
   },
   "devDependencies": {

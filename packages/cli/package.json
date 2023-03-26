@@ -15,14 +15,14 @@
     "directory": "packages/cli"
   },
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
+    "prepare": "pnpm build && chmod u+x git-install.sh",
     "codegen": "ts-node --esm --files ./scripts/codegen.ts",
     "lint": "eslint . --ext .ts",
     "dev": "tsup --watch",
     "build": "tsup",
-    "link": "yarn link",
-    "test": "vitest typecheck --run && yarn test:contracts",
-    "test:contracts": "yarn codegen && forge test",
+    "link": "pnpm link",
+    "test": "vitest typecheck --run && pnpm test:contracts",
+    "test:contracts": "pnpm codegen && forge test",
     "git:install": "bash git-install.sh",
     "release": "npm publish --access=public"
   },

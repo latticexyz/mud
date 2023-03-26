@@ -10,18 +10,18 @@
     "directory": "packages/world"
   },
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
+    "prepare": "pnpm build && chmod u+x git-install.sh",
     "git:install": "bash git-install.sh",
     "tablegen": "../cli/dist/mud.js tablegen",
     "worldgen": "../cli/dist/mud.js worldgen",
     "test": "forge test",
-    "build": "rimraf out && forge build && yarn dist && yarn types",
-    "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && yarn rimraf abi/*.metadata.json",
+    "build": "rimraf out && forge build && pnpm dist && pnpm types",
+    "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && pnpm rimraf abi/*.metadata.json",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "lint": "yarn prettier && yarn solhint",
-    "link": "yarn link",
+    "lint": "pnpm prettier && pnpm solhint",
+    "link": "pnpm link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish --access=public",
     "gas-report": "mud gas-report --path test/** --save gas-report.txt"
