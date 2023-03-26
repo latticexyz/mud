@@ -57,7 +57,7 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-yarn create mud my-project
+pnpm create mud my-project
 ```
 
 ![Scaffolding a new project with the MUD CLI.](./public/docs/mud-create.gif)
@@ -91,16 +91,22 @@ The following steps are only necessary if you want to contribute to MUD. To use 
 
 2. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
 
-3. Clone the MUD monorepo
+3. Install pnpm
+
+```bash
+npm install pnpm --global
+```
+
+4. Clone the MUD monorepo
 
 ```
 git clone https://github.com/latticexyz/mud
 ```
 
-4. Install MUD dependencies and setup local environment
+5. Install MUD dependencies and setup local environment
 
 ```
-cd mud && yarn
+cd mud && pnpm i 
 ```
 
 ### Pull requests
