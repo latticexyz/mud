@@ -137,12 +137,18 @@ function renderDecodedRecord({ structName, fields }: RenderTableOptions) {
 }
 
 function renderDecodeDynamicFieldPartial(field: RenderTableDynamicField) {
-  const { typeId, arrayElement } = field;
+  const { typeId, arrayElement, typeWrap } = field;
   if (arrayElement) {
     // arrays
-    return `SliceLib.getSubslice(_blob, _start, _end).decodeArray_${arrayElement.typeId}()`;
+    return `${typeWrap}(
+      SliceLib.getSubslice(_blob, _start, _end).decodeArray_${arrayElement.typeId}()
+    )`;
   } else {
     // bytes/string
-    return `${typeId}(SliceLib.getSubslice(_blob, _start, _end).toBytes())`;
+    return `${typeWrap}(
+      ${typeId}(
+        SliceLib.getSubslice(_blob, _start, _end).toBytes()
+      )
+    )`;
   }
 }

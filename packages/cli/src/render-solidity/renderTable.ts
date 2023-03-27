@@ -9,6 +9,7 @@ import {
 } from "./common.js";
 import { renderEncodeField, renderFieldMethods } from "./field.js";
 import { renderRecordMethods } from "./record.js";
+import { renderTypeHelpers } from "./renderTypeHelpers.js";
 import { RenderTableDynamicField, RenderTableOptions } from "./types.js";
 
 export function renderTable(options: RenderTableOptions) {
@@ -38,6 +39,7 @@ import { IStore } from "${storeImportPath}IStore.sol";
 import { StoreSwitch } from "${storeImportPath}StoreSwitch.sol";
 import { StoreCore } from "${storeImportPath}StoreCore.sol";
 import { Bytes } from "${storeImportPath}Bytes.sol";
+import { Memory } from "${storeImportPath}Memory.sol";
 import { SliceLib } from "${storeImportPath}Slice.sol";
 import { EncodeArray } from "${storeImportPath}tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
@@ -114,7 +116,7 @@ library ${libraryName} {
   /** Tightly pack full data using this table's schema */
   function encode(${renderArguments(
     options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)
-  )}) internal pure returns (bytes memory) {
+  )}) internal view returns (bytes memory) {
     ${renderEncodedLengths(dynamicFields)}
     return abi.encodePacked(${renderArguments([
       renderArguments(staticFields.map(({ name }) => name)),
@@ -138,31 +140,7 @@ library ${libraryName} {
   )}
 }
 
-${
-  // nothing can be cast to bool, so an assembly helper is required
-  !fields.some(({ typeId }) => typeId === "bool")
-    ? ""
-    : `
-  function _toBool(uint8 value) pure returns (bool result) {
-    assembly {
-      result := value
-    }
-  }
-`
-}
-
-${
-  // nothing can be cast from bool, so an assembly helper is required
-  !options.primaryKeys.some(({ typeId }) => typeId === "bool")
-    ? ""
-    : `
-  function _boolToBytes32(bool value) pure returns (bytes32 result) {
-    assembly {
-      result := value
-    }
-  }
-`
-}
+${renderTypeHelpers(options)}
 
 `;
 }

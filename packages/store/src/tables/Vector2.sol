@@ -11,6 +11,7 @@ import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { Bytes } from "../Bytes.sol";
+import { Memory } from "../Memory.sol";
 import { SliceLib } from "../Slice.sol";
 import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
@@ -126,7 +127,7 @@ library Vector2 {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint32 x, uint32 y) internal pure returns (bytes memory) {
+  function encode(uint32 x, uint32 y) internal view returns (bytes memory) {
     return abi.encodePacked(x, y);
   }
 

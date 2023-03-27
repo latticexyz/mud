@@ -11,6 +11,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -109,7 +110,7 @@ library InstalledModules {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(address moduleAddress) internal pure returns (bytes memory) {
+  function encode(address moduleAddress) internal view returns (bytes memory) {
     return abi.encodePacked(moduleAddress);
   }
 

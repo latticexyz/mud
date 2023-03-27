@@ -11,6 +11,7 @@ import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { Bytes } from "../Bytes.sol";
+import { Memory } from "../Memory.sol";
 import { SliceLib } from "../Slice.sol";
 import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
@@ -232,15 +233,15 @@ library StoreMetadata {
 
     _start = _end;
     _end += _encodedLengths.atIndex(0);
-    _table.tableName = string(SliceLib.getSubslice(_blob, _start, _end).toBytes());
+    _table.tableName = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
 
     _start = _end;
     _end += _encodedLengths.atIndex(1);
-    _table.abiEncodedFieldNames = bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes());
+    _table.abiEncodedFieldNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(string memory tableName, bytes memory abiEncodedFieldNames) internal pure returns (bytes memory) {
+  function encode(string memory tableName, bytes memory abiEncodedFieldNames) internal view returns (bytes memory) {
     uint16[] memory _counters = new uint16[](2);
     _counters[0] = uint16(bytes(tableName).length);
     _counters[1] = uint16(bytes(abiEncodedFieldNames).length);
