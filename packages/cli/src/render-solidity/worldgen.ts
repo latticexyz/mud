@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import path from "path";
-import { MUDConfig } from "../index.js";
+import { MUDConfig } from "../config/index.js";
 import { contractToInterface } from "../utils/contractToInterface.js";
 import { formatAndWrite } from "../utils/formatAndWrite.js";
 import { renderSystemInterface } from "./renderSystemInterface.js";
