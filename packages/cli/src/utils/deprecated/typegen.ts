@@ -2,7 +2,7 @@ import { runTypeChain, glob as typechainGlob } from "typechain";
 import glob from "glob";
 import { extractIdFromFile } from "./ids.js";
 import { rmSync, writeFileSync } from "fs";
-import path from "path";
+import path from "node:path";
 import { filterAbi, forgeBuild } from "./build.js";
 import { getOutDirectory, getSrcDirectory } from "../foundry.js";
 import { systemsDir } from "./constants.js";

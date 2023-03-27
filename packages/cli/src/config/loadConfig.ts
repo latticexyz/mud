@@ -1,5 +1,5 @@
 import { findUp } from "find-up";
-import path from "path";
+import path from "node:path";
 import { NotESMConfigError, NotInsideProjectError } from "../utils/errors.js";
 
 // In order of preference files are checked

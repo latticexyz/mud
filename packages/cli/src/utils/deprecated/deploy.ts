@@ -4,7 +4,7 @@ import { findLog } from "./findLog.js";
 import { generateTypes } from "./typegen.js";
 import { execa } from "execa";
 import { StaticJsonRpcProvider } from "@ethersproject/providers";
-import path from "path";
+import path from "node:path";
 
 const contractsDirectory = new URL("../src/contracts", import.meta.url).pathname;
 

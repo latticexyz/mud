@@ -5,7 +5,7 @@ import { Contract } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import WorldAbi from "@latticexyz/solecs/abi/World.json" assert { type: "json" };
 import { getSrcDirectory } from "../../utils/foundry.js";
-import path from "path";
+import path from "node:path";
 import { componentsDir, systemsDir } from "../../utils/deprecated/constants.js";
 
 type Options = {

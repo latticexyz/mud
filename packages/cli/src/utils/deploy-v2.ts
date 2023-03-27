@@ -1,5 +1,5 @@
 import { existsSync, readFileSync } from "fs";
-import path from "path";
+import path from "node:path";
 import { MUDConfig, resolveWithContext } from "../config/index.js";
 import { MUDError } from "./errors.js";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";

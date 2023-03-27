@@ -58,7 +58,6 @@
     "glob": "^8.0.3",
     "nice-grpc-web": "^2.0.1",
     "openurl": "^1.1.1",
-    "path": "^0.12.7",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
     "solmate": "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",

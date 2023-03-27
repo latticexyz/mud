@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from "fs";
-import path from "path";
+import path from "node:path";
 import { StoreConfig } from "../config/index.js";
 import { formatSolidity } from "../utils/format.js";
 import { getTableOptions } from "./tableOptions.js";
