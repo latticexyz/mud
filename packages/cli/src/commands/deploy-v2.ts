@@ -77,7 +77,7 @@ const commandModule: CommandModule<Options, Options> = {
 
       // Write deployment result to file (latest and timestamp)
       const chainId = await getChainId(rpc);
-      const outputDir = path.join(mudConfig.deploymentInfoDirectory, chainId.toString());
+      const outputDir = path.join(mudConfig.deploysDirectory, chainId.toString());
       mkdirSync(outputDir, { recursive: true });
       writeFileSync(path.join(outputDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
       writeFileSync(path.join(outputDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));

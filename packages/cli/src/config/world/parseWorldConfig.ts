@@ -42,7 +42,7 @@ export const zWorldConfig = z.object({
   overrideSystems: z.record(zSystemName, zSystemConfig).default({}),
   excludeSystems: z.array(zSystemName).default([]),
   postDeployScript: z.string().default("PostDeploy"),
-  deploymentInfoDirectory: z.string().default("."),
+  deploysDirectory: z.string().default("./deploys"),
   worldgenDirectory: z.string().default("world"),
   worldImportPath: z.string().default("@latticexyz/world/src/"),
   modules: z.array(zModuleConfig).default([]),
