@@ -28,7 +28,6 @@ export interface DeployConfig {
 export interface DeploymentInfo {
   blockNumber: number;
   worldAddress: string;
-  rpc: string;
 }
 
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): Promise<DeploymentInfo> {
@@ -302,7 +301,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
-  return { worldAddress: await contractPromises.World, blockNumber, rpc };
+  return { worldAddress: await contractPromises.World, blockNumber };
 
   // ------------------- INTERNAL FUNCTIONS -------------------
   // (Inlined to avoid having to pass around nonce, signer and forgeOutDir)
