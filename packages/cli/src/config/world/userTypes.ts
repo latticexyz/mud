@@ -5,6 +5,14 @@ export type SystemUserConfig =
   | {
       /** The full resource selector consists of namespace and fileSelector */
       fileSelector?: string;
+      /**
+       * Register function selectors for the system in the World.
+       * Defaults to true.
+       * Note:
+       * - For root systems all World function selectors will correspond to the system's function selectors.
+       * - For non-root systems, the World function selectors will be <namespace>_<system>_<function>.
+       */
+      registerFunctionSelectors?: boolean;
     } & (
       | {
           /** If openAccess is true, any address can call the system */
