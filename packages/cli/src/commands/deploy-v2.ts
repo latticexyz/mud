@@ -8,7 +8,7 @@ import { logError, MUDError } from "../utils/errors.js";
 import { forge, getRpcUrl, getSrcDirectory } from "../utils/foundry.js";
 import { mkdirSync, writeFileSync } from "fs";
 import { loadStoreConfig } from "../config/loadStoreConfig.js";
-import { deploymentInfoFilenamePrefix } from "../constants.js";
+import { getChainId } from "../utils/getChainId.js";
 
 type Options = {
   configPath?: string;
@@ -76,16 +76,12 @@ const commandModule: CommandModule<Options, Options> = {
       const deploymentInfo = await deploy(mudConfig, { ...args, rpc, privateKey });
 
       // Write deployment result to file (latest and timestamp)
-      const outputDir = mudConfig.deploymentInfoDirectory;
+      const chainId = await getChainId(rpc);
+      console.log("result", chainId);
+      const outputDir = path.join(mudConfig.deploymentInfoDirectory, chainId.toString());
       mkdirSync(outputDir, { recursive: true });
-      writeFileSync(
-        path.join(outputDir, deploymentInfoFilenamePrefix + "latest.json"),
-        JSON.stringify(deploymentInfo, null, 2)
-      );
-      writeFileSync(
-        path.join(outputDir, deploymentInfoFilenamePrefix + Date.now() + ".json"),
-        JSON.stringify(deploymentInfo, null, 2)
-      );
+      writeFileSync(path.join(outputDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
+      writeFileSync(path.join(outputDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
 
       console.log(chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${outputDir}): \n`)));
       console.log(deploymentInfo);

@@ -14,5 +14,3 @@ export type {
   MUDConfig,
 } from "./config/index.js";
 export { storeConfig, mudConfig } from "./config/index.js";
-
-export * from "./constants.js";
