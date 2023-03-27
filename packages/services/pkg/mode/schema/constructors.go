@@ -228,3 +228,21 @@ func ValidateNamespace__State(namespace *pb_mode.Namespace) error {
 	}
 	return nil
 }
+
+// ValidateNamespace__State validates the given Namespace instance for state-related operations on
+// a single table.
+//
+// Parameters:
+// - namespace (*pb_mode.Namespace): A pointer to the Namespace instance to validate.
+//
+// Returns:
+// (error) - An error, if any occurred during the validation.
+func ValidateNamespace__SingleState(namespace *pb_mode.Namespace) error {
+	if err := ValidateNamespace(namespace); err != nil {
+		return err
+	}
+	if namespace.ChainId == "" {
+		return fmt.Errorf("chainId is empty")
+	}
+	return nil
+}
