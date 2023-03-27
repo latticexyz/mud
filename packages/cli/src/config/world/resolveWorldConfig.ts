@@ -50,12 +50,14 @@ export function resolveWorldConfig(config: ParsedWorldConfig, existingContracts?
  * @param existingContracts optional list of existing contract names, used to validate system names in the access list. If not provided, no validation is performed.
  * @returns ResolvedSystemConfig object
  * Default value for fileSelector is `systemName`
+ * Default value for registerFunctionSelectors is true
  * Default value for openAccess is true
  * Default value for accessListAddresses is []
  * Default value for accessListSystems is []
  */
 export function resolveSystemConfig(systemName: string, config?: SystemUserConfig, existingContracts?: string[]) {
   const fileSelector = config?.fileSelector ?? systemName;
+  const registerFunctionSelectors = config?.registerFunctionSelectors ?? true;
   const openAccess = config?.openAccess ?? true;
   const accessListAddresses: string[] = [];
   const accessListSystems: string[] = [];
@@ -74,5 +76,5 @@ export function resolveSystemConfig(systemName: string, config?: SystemUserConfi
     }
   }
 
-  return { fileSelector, openAccess, accessListAddresses, accessListSystems };
+  return { fileSelector, registerFunctionSelectors, openAccess, accessListAddresses, accessListSystems };
 }

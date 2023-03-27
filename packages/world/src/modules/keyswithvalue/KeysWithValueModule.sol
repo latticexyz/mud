@@ -51,6 +51,15 @@ contract KeysWithValueModule is IModule, WorldContext {
       KeysWithValue.getKeySchema()
     );
 
+    // Register metadata for the target table
+    (string memory tableName, string[] memory fieldNames) = KeysWithValue.getMetadata();
+    IWorld(_world()).setMetadata(
+      targetTableSelector.getNamespace(),
+      targetTableSelector.getFile(),
+      tableName,
+      fieldNames
+    );
+
     // Grant the hook access to the target table
     IWorld(_world()).grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getFile(), address(hook));
 
