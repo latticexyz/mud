@@ -29,7 +29,6 @@ export async function syncTablesFromMode(
   });
   console.log("syncTablesFromMode response", response);
 
-  // TODO: figure out why this number is so different from `getModeBlockNumber`
   const blockNumber = getBlockNumberFromModeTable(response.chainTables["block_number"]);
   console.log("block number for sync tables", blockNumber);
   // TODO: mode should separate user tables from meta/internal tables
