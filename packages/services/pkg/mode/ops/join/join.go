@@ -20,14 +20,6 @@ func (builder *JoinBuilder) Validate() error {
 	return nil
 }
 
-/*
-grpcurl -plaintext -d '{"on": {"field1": {"table_name": "test1", "table_field": "x"}, "field2": {"table_name": "test2", "table_field": "x"}}, "children": [{"from": "test1", "filter": [{"field": {"table_name": "test1", "table_field": "x"}, "operator": ">", "value": "0" }],  "project": [] }, {"from": "test2", "filter": [],  "project": [] }]}' localhost:50091 mode.QueryLayer/Join
-grpcurl -plaintext -d '{"on": {"field1": {"table_name": "component_item", "table_field": "entityid"}, "field2": {"table_name": "component_position", "table_field": "entityid"}}, "children": [{"from": "component_item", "filter": [],  "project": [] }, {"from": "component_position", "filter": [{"field": {"table_name": "component_position", "table_field": "x"}, "operator": ">", "value": "0" }],  "project": [] }]}' localhost:50091 mode.QueryLayer/Join
-
-
-grpcurl -plaintext -d '{"on": {"field1": {"table_name": "component_item", "table_field": "entityid"}, "field2": {"table_name": "component_position", "table_field": "entityid"}}, "children": [{"from": "component_item", "filter": [],  "project": [{"field": {"table_name": "component_position", "table_field": "entityid"}, "rename": "position_entityid"}] }, {"from": "component_position", "filter": [{"field": {"table_name": "component_position", "table_field": "x"}, "operator": ">", "value": "0" }],  "project": [] }]}' localhost:50091 mode.QueryLayer/Join
-*/
-
 func (builder *JoinBuilder) BuildFilter() string {
 	if len(builder.Request.Children) != 2 {
 		logger.GetLogger().Fatal("Currently JOIN only support two tables")

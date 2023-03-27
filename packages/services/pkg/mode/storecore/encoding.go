@@ -290,6 +290,13 @@ type DecodedData struct {
 	schemaTypes []SchemaType
 }
 
+// NewDecodedData creates a new instance of DecodedData with the provided SchemaTypePair.
+//
+// Parameters:
+// - schemaTypePair (SchemaTypePair): The SchemaTypePair to use for the DecodedData instance.
+//
+// Returns:
+// (*DecodedData): The new DecodedData instance.
 func NewDecodedData(schemaTypePair SchemaTypePair) *DecodedData {
 	return &DecodedData{
 		data:        map[string]*DataSchemaTypePair{},
@@ -297,30 +304,87 @@ func NewDecodedData(schemaTypePair SchemaTypePair) *DecodedData {
 	}
 }
 
+// Length returns the length of the schema types in the DecodedData instance.
+//
+// Returns:
+// (int): The length of the schema types in the DecodedData instance.
+func (d *DecodedData) Length() int {
+	return len(d.schemaTypes)
+}
+
+// Set sets the value for the given key in the DecodedData instance.
+//
+// Parameters:
+// - key (string): The key to set the value for.
+// - value (*DataSchemaTypePair): The value to set for the key.
+//
+// Returns:
+// - void.
 func (d *DecodedData) Set(key string, value *DataSchemaTypePair) {
 	d.data[key] = value
 }
 
+// Get retrieves the value for the given key in the DecodedData instance.
+//
+// Parameters:
+// - key (string): The key to retrieve the value for.
+//
+// Returns:
+// (*DataSchemaTypePair): The value for the given key in the DecodedData instance.
 func (d *DecodedData) Get(key string) *DataSchemaTypePair {
 	return d.data[key]
 }
 
+// At retrieves the DataSchemaTypePair at the given index in the DecodedData instance.
+//
+// Parameters:
+// - index (int): The index to retrieve the DataSchemaTypePair for.
+//
+// Returns:
+// (*DataSchemaTypePair): The DataSchemaTypePair at the given index in the DecodedData instance.
 func (d *DecodedData) At(index int) *DataSchemaTypePair {
 	return d.data[d.schemaTypes[index].String()]
 }
 
+// DataAt retrieves the data value at the given index in the DecodedData instance.
+//
+// Parameters:
+// - index (int): The index to retrieve the data value for.
+//
+// Returns:
+// (string): The data value at the given index in the DecodedData instance.
 func (d *DecodedData) DataAt(index int) string {
 	return d.At(index).Data
 }
 
+// SchemaTypeAt retrieves the schema type at the given index in the DecodedData instance.
+//
+// Parameters:
+// - index (int): The index to retrieve the schema type for.
+//
+// Returns:
+// (SchemaType): The schema type at the given index in the DecodedData instance.
 func (d *DecodedData) SchemaTypeAt(index int) SchemaType {
 	return d.At(index).SchemaType
 }
 
+// SchemaTypes retrieves a slice of all the schema types in the DecodedData instance.
+//
+// Returns:
+// ([]SchemaType): A slice of all the schema types in the DecodedData instance.
 func (d *DecodedData) SchemaTypes() []SchemaType {
 	return d.schemaTypes
 }
 
+// DecodeDataField decodes the provided byte encoding using the provided SchemaTypePair and index.
+//
+// Parameters:
+// - encoding ([]byte): The byte encoding to decode.
+// - schemaTypePair (SchemaTypePair): The SchemaTypePair to use for decoding.
+// - index (uint8): The index of the data field to decode.
+//
+// Returns:
+// (string): The decoded value of the specified data field.
 func DecodeDataField(encoding []byte, schemaTypePair SchemaTypePair, index uint8) string {
 	// Try to decode either as a static or dynamic field.
 	for idx, fieldType := range schemaTypePair.Static {
@@ -338,10 +402,20 @@ func DecodeDataField(encoding []byte, schemaTypePair SchemaTypePair, index uint8
 	return ""
 }
 
-// TODO: To minimize bugs/diff the decoding function (and others) are following
+// DecodeData decodes the given byte slice `encoding` into a `DecodedData` object
+// using the provided schema type pair `schemaTypePair`.
+//
+// To minimize bugs/diff the decoding function (and others) are following
 // @frolic's TS implementation in the client sync patch. We should coordinate
 // whether or not we want to keep the code exactly the same or if we want to
 // refactor / implement in a more idiomatic way.
+//
+// Parameters:
+// - encoding ([]byte) - The byte slice to be decoded.
+// - schemaTypePair (SchemaTypePair) - The schema type pair used to decode the byte slice.
+//
+// Returns:
+// - (*DecodedData) - A pointer to the `DecodedData` object.
 func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
 	var bytesOffset uint64 = 0
 
@@ -383,6 +457,14 @@ func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
 	return data
 }
 
+// DecodeDynamicField decodes the dynamic field of the specified schema type from the given byte slice encoding.
+//
+// Parameters:
+// - schemaType (SchemaType): The schema type of the dynamic field to be decoded.
+// - encodingSlice ([]byte): The byte slice encoding of the dynamic field.
+//
+// Returns:
+// - (string): The decoded value of the dynamic field as a string.
 func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
 	switch schemaType {
 	case BYTES:
@@ -395,6 +477,15 @@ func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
 	}
 }
 
+// DecodeStaticField decodes a static field of a given schema type from a byte slice.
+//
+// Parameters:
+// - schemaType (SchemaType): The schema type of the field to decode.
+// - encoding ([]byte): The byte slice containing the encoded field.
+// - bytesOffset (uint64): The offset in bytes within the encoding byte slice where the field to be decoded starts.
+//
+// Returns:
+// - (string): The decoded field as a string.
 func DecodeStaticField(schemaType SchemaType, encoding []byte, bytesOffset uint64) string {
 	switch schemaType {
 	case UINT8:
@@ -431,6 +522,13 @@ func DecodeStaticField(schemaType SchemaType, encoding []byte, bytesOffset uint6
 	}
 }
 
+// getStaticByteLength returns the number of bytes required for a static type schema.
+//
+// Parameters:
+// - schemaType (SchemaType): The SchemaType instance for which to return the number of bytes.
+//
+// Returns:
+// (uint64) - The number of bytes required for a static type schema.
 func getStaticByteLength(schemaType SchemaType) uint64 {
 	if schemaType < 32 {
 		// uint8-256
@@ -454,6 +552,13 @@ func getStaticByteLength(schemaType SchemaType) uint64 {
 	return 0
 }
 
+// SchemaTypeToSolidityType converts the specified SchemaType instance to the corresponding Solidity type.
+//
+// Parameters:
+// - schemaType (SchemaType): The SchemaType instance to convert to a Solidity type.
+//
+// Returns:
+// (string) - A string representing the Solidity type for the specified SchemaType instance.
 func SchemaTypeToSolidityType(schemaType SchemaType) string {
 	if strings.Contains(schemaType.String(), "ARRAY") {
 		_type := strings.Split(schemaType.String(), "_")[0]
@@ -463,15 +568,50 @@ func SchemaTypeToSolidityType(schemaType SchemaType) string {
 	}
 }
 
+// SchemaTypeToPostgresType converts the specified SchemaType instance to the corresponding PostgreSQL type.
+// The function returns a string representing the PostgreSQL type for the specified SchemaType instance.
+//
+// Parameters:
+// - schemaType (SchemaType): The SchemaType instance to convert to a PostgreSQL type.
+//
+// Returns:
+// (string) - A string representing the PostgreSQL type for the specified SchemaType instance.
 func SchemaTypeToPostgresType(schemaType SchemaType) string {
-	// TODO: implement fully based on SchemaType ranges.
-	if schemaType == UINT32 {
+	if (schemaType >= UINT8 && schemaType <= UINT32) || (schemaType >= INT8 && schemaType <= INT32) {
+		// Integer.
 		return "integer"
-	} else if schemaType == BOOL {
-		return "boolean"
-	} else if schemaType == BYTES {
+	} else if (schemaType >= UINT64 && schemaType <= UINT256) || (schemaType >= INT64 && schemaType <= INT256) {
+		// Big integer.
+		return "text"
+	} else if (schemaType >= BYTES1 && schemaType <= BYTES32) || (schemaType == BYTES) {
+		// Bytes.
 		return "bytea"
+	} else if schemaType == BOOL {
+		// Boolean.
+		return "boolean"
+	} else if schemaType == ADDRESS {
+		// Address.
+		return "text"
+	} else if schemaType == STRING {
+		// String.
+		return "text"
+	} else if (schemaType >= UINT8_ARRAY && schemaType <= UINT32_ARRAY) || (schemaType >= INT8_ARRAY && schemaType <= INT32_ARRAY) {
+		// Integer array.
+		return "integer[]"
+	} else if (schemaType >= UINT64_ARRAY && schemaType <= UINT256_ARRAY) || (schemaType >= INT64_ARRAY && schemaType <= INT256_ARRAY) {
+		// Big integer array.
+		return "text[]"
+	} else if schemaType >= BYTES1_ARRAY && schemaType <= BYTES32_ARRAY {
+		// Bytes array.
+		return "bytea[]"
+	} else if schemaType == BOOL_ARRAY {
+		// Boolean array.
+		return "boolean[]"
+	} else if schemaType == ADDRESS_ARRAY {
+		// Address array.
+		return "text[]"
 	} else {
+		// Default to text.
 		return "text"
 	}
 }

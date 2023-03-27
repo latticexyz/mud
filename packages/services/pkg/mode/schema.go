@@ -9,10 +9,17 @@ import (
 	"github.com/umbracle/ethgo/abi"
 )
 
-///
-/// Data Schema
-///
+//////////////////
+/// Data Schema //
+//////////////////
 
+// NewDataSchemaFromJSON creates a new DataSchema instance from a JSON file at the specified path.
+//
+// Parameters:
+//   - jsonPath (string): The path to the JSON file.
+//
+// Returns:
+//   - (*DataSchema): A pointer to the new DataSchema instance.
 func NewDataSchemaFromJSON(jsonPath string) *DataSchema {
 	content, err := ioutil.ReadFile(jsonPath)
 	if err != nil {
@@ -27,6 +34,10 @@ func NewDataSchemaFromJSON(jsonPath string) *DataSchema {
 	return &dataSchema
 }
 
+// BuildTableSchemas builds table schemas for each table in the DataSchema.
+//
+// Returns:
+//   - (map[string]*TableSchema): A map of table schemas keyed by table name.
 func (dataSchema *DataSchema) BuildTableSchemas() map[string]*TableSchema {
 	tableSchemas := map[string]*TableSchema{}
 	for tableName, schema := range dataSchema.ComponentValueSchema {
@@ -55,14 +66,27 @@ func (dataSchema *DataSchema) BuildTableSchemas() map[string]*TableSchema {
 	return tableSchemas
 }
 
-///
-/// Table Schema
-///
+///////////////////
+/// Table Schema //
+///////////////////
 
+// NamespacedTableName returns the fully-qualified table name in the format "namespace.table_name".
+//
+// Returns:
+//   - (string): The fully-qualified table name.
 func (schema *TableSchema) NamespacedTableName() string {
 	return schema.Namespace + "." + schema.TableName
 }
 
+// GetEncodingTypes returns the encoding types for the specified field names and projections.
+//
+// Parameters:
+//   - fieldNames ([]string): A slice of field names.
+//   - fieldProjections (map[string]string): A map of field projections.
+//
+// Returns:
+//   - ([]*abi.Type): A slice of encoding types.
+//   - ([]string): A slice of encoding type strings.
 func (schema *TableSchema) GetEncodingTypes(fieldNames []string, fieldProjections map[string]string) ([]*abi.Type, []string) {
 	_types := []*abi.Type{}
 	_typesStr := []string{}
@@ -82,11 +106,10 @@ func (schema *TableSchema) GetEncodingTypes(fieldNames []string, fieldProjection
 	return _types, _typesStr
 }
 
-func (schema *TableSchema) GetEncodingTypesAll(fieldProjections map[string]string) ([]*abi.Type, []string) {
-	return schema.GetEncodingTypes(schema.FieldNames, fieldProjections)
-}
-
-// TODO: a version of this function is useful when sending over "raw" values.
+// ToSolidityTupleString returns the Solidity tuple string for the table schema.
+//
+// Returns:
+//   - (string): The Solidity tuple string for the table schema.
 func (schema *TableSchema) ToSolidityTupleString() string {
 	var tuple strings.Builder
 	tuple.WriteString("tuple(")
@@ -102,6 +125,13 @@ func (schema *TableSchema) ToSolidityTupleString() string {
 	return tuple.String()
 }
 
+// CombineSchemas combines multiple table schemas into a single schema with the combined table name.
+//
+// Parameters:
+//   - schemas ([]*TableSchema): A slice of table schemas to combine.
+//
+// Returns:
+//   - (*TableSchema): A pointer to the combined table schema.
 func CombineSchemas(schemas []*TableSchema) *TableSchema {
 	var combinedSchemaName strings.Builder
 	for idx, schema := range schemas {

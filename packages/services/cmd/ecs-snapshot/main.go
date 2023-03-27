@@ -104,7 +104,7 @@ func main() {
 
 	// 2. Kick off the service to catch up on state up to the current block number.
 	fromBlock := big.NewInt(*block)
-	toBlock := eth.GetCurrentBlockHead(ethclient)
+	toBlock := eth.GetCurrentBlockNumber(ethclient)
 
 	initialState := snapshot.Sync(ethclient, fromBlock, toBlock, worlds, config)
 

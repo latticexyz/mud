@@ -2,15 +2,20 @@ package ingress
 
 import (
 	"fmt"
-	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/storecore"
-	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/core/types"
 )
 
 // ParseStoreSetRecord extracts a structured StoreSetRecord event from a log.
+//
+// Parameters:
+// - log: The log to parse.
+//
+// Returns:
+// - *storecore.StorecoreStoreSetRecord: The parsed StorecoreStoreSetRecord event.
+// - error: An error, if one occurred during parsing.
 func ParseStoreSetRecord(log types.Log) (*storecore.StorecoreStoreSetRecord, error) {
 	event := new(storecore.StorecoreStoreSetRecord)
 	if err := UnpackLog(event, "StoreSetRecord", log); err != nil {
@@ -21,6 +26,13 @@ func ParseStoreSetRecord(log types.Log) (*storecore.StorecoreStoreSetRecord, err
 }
 
 // ParseStoreSetField extracts a structured StoreSetField event from a log.
+//
+// Parameters:
+// - log: The log to parse.
+//
+// Returns:
+// - *storecore.StorecoreStoreSetField: The parsed StorecoreStoreSetField event.
+// - error: An error, if one occurred during parsing.
 func ParseStoreSetField(log types.Log) (*storecore.StorecoreStoreSetField, error) {
 	event := new(storecore.StorecoreStoreSetField)
 	if err := UnpackLog(event, "StoreSetField", log); err != nil {
@@ -31,6 +43,13 @@ func ParseStoreSetField(log types.Log) (*storecore.StorecoreStoreSetField, error
 }
 
 // ParseStoreDeleteRecord extracts a structured StoreDeleteRecord event from a log.
+//
+// Parameters:
+// - log: The log to parse.
+//
+// Returns:
+// - *storecore.StorecoreStoreDeleteRecord: The parsed StorecoreStoreDeleteRecord event.
+// - error: An error, if one occurred during parsing.
 func ParseStoreDeleteRecord(log types.Log) (*storecore.StorecoreStoreDeleteRecord, error) {
 	event := new(storecore.StorecoreStoreDeleteRecord)
 	if err := UnpackLog(event, "StoreDeleteRecord", log); err != nil {
@@ -41,6 +60,14 @@ func ParseStoreDeleteRecord(log types.Log) (*storecore.StorecoreStoreDeleteRecor
 }
 
 // UnpackLog extracts an event from a log given an eventName and places it into out.
+//
+// Parameters:
+// - out: The output interface into which to unpack the log.
+// - eventName: The name of the event corresponding to the log.
+// - log: The log to unpack.
+//
+// Returns:
+// - error: An error, if one occurred during unpacking.
 func UnpackLog(out interface{}, eventName string, log types.Log) error {
 	storecoreAbi := storecore.GetABI()
 	if log.Topics[0] != storecoreAbi.Events[eventName].ID {
@@ -58,26 +85,4 @@ func UnpackLog(out interface{}, eventName string, log types.Log) error {
 		}
 	}
 	return abi.ParseTopics(out, indexed, log.Topics[1:])
-}
-
-// TODO: proper parsing + implementation
-func KeyToFilter(tableSchema *mode.TableSchema, key [][32]byte) []*pb_mode.Filter {
-	filters := []*pb_mode.Filter{}
-	println("HAVE KEYS: " + fmt.Sprint(len(key)))
-	println(key)
-	for i := 0; i < len(key); i++ {
-		tmp := make([]byte, 32)
-		copy(tmp, key[i][:])
-		println("KEY: " + fmt.Sprint(tmp))
-
-		filters = append(filters, &pb_mode.Filter{
-			Field: &pb_mode.Field{
-				TableName:  tableSchema.TableName,
-				TableField: tableSchema.KeyNames[i],
-			},
-			Operator: "=",
-			Value:    fmt.Sprint(tmp),
-		})
-	}
-	return filters
 }

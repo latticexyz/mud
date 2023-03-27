@@ -22,16 +22,14 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type QueryLayerClient interface {
-	// Find endpoint.
-	Find(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
-	// Join endpoint.
-	Join(ctx context.Context, in *JoinRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
-	// FindAll endpoint.
-	FindAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
-	// StreamAll endpoint.
-	StreamAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (QueryLayer_StreamAllClient, error)
-	// Count endpoint.
-	Count(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error)
+	// Get state endpoint.
+	GetState(ctx context.Context, in *StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error)
+	// Stream state endpoint.
+	StreamState(ctx context.Context, in *StateRequest, opts ...grpc.CallOption) (QueryLayer_StreamStateClient, error)
+	// Get state from single table endpoint.
+	Single__GetState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error)
+	// Stream state from single table endpoint.
+	Single__StreamState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (QueryLayer_Single__StreamStateClient, error)
 }
 
 type queryLayerClient struct {
@@ -42,39 +40,21 @@ func NewQueryLayerClient(cc grpc.ClientConnInterface) QueryLayerClient {
 	return &queryLayerClient{cc}
 }
 
-func (c *queryLayerClient) Find(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error) {
-	out := new(QueryLayerResponse)
-	err := c.cc.Invoke(ctx, "/mode.QueryLayer/Find", in, out, opts...)
+func (c *queryLayerClient) GetState(ctx context.Context, in *StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error) {
+	out := new(QueryLayerStateResponse)
+	err := c.cc.Invoke(ctx, "/mode.QueryLayer/GetState", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *queryLayerClient) Join(ctx context.Context, in *JoinRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error) {
-	out := new(QueryLayerResponse)
-	err := c.cc.Invoke(ctx, "/mode.QueryLayer/Join", in, out, opts...)
+func (c *queryLayerClient) StreamState(ctx context.Context, in *StateRequest, opts ...grpc.CallOption) (QueryLayer_StreamStateClient, error) {
+	stream, err := c.cc.NewStream(ctx, &QueryLayer_ServiceDesc.Streams[0], "/mode.QueryLayer/StreamState", opts...)
 	if err != nil {
 		return nil, err
 	}
-	return out, nil
-}
-
-func (c *queryLayerClient) FindAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error) {
-	out := new(QueryLayerResponse)
-	err := c.cc.Invoke(ctx, "/mode.QueryLayer/FindAll", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryLayerClient) StreamAll(ctx context.Context, in *FindAllRequest, opts ...grpc.CallOption) (QueryLayer_StreamAllClient, error) {
-	stream, err := c.cc.NewStream(ctx, &QueryLayer_ServiceDesc.Streams[0], "/mode.QueryLayer/StreamAll", opts...)
-	if err != nil {
-		return nil, err
-	}
-	x := &queryLayerStreamAllClient{stream}
+	x := &queryLayerStreamStateClient{stream}
 	if err := x.ClientStream.SendMsg(in); err != nil {
 		return nil, err
 	}
@@ -84,46 +64,76 @@ func (c *queryLayerClient) StreamAll(ctx context.Context, in *FindAllRequest, op
 	return x, nil
 }
 
-type QueryLayer_StreamAllClient interface {
-	Recv() (*QueryLayerResponse, error)
+type QueryLayer_StreamStateClient interface {
+	Recv() (*QueryLayerStateStreamResponse, error)
 	grpc.ClientStream
 }
 
-type queryLayerStreamAllClient struct {
+type queryLayerStreamStateClient struct {
 	grpc.ClientStream
 }
 
-func (x *queryLayerStreamAllClient) Recv() (*QueryLayerResponse, error) {
-	m := new(QueryLayerResponse)
+func (x *queryLayerStreamStateClient) Recv() (*QueryLayerStateStreamResponse, error) {
+	m := new(QueryLayerStateStreamResponse)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
 	return m, nil
 }
 
-func (c *queryLayerClient) Count(ctx context.Context, in *FindRequest, opts ...grpc.CallOption) (*QueryLayerResponse, error) {
-	out := new(QueryLayerResponse)
-	err := c.cc.Invoke(ctx, "/mode.QueryLayer/Count", in, out, opts...)
+func (c *queryLayerClient) Single__GetState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (*QueryLayerStateResponse, error) {
+	out := new(QueryLayerStateResponse)
+	err := c.cc.Invoke(ctx, "/mode.QueryLayer/Single__GetState", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
+func (c *queryLayerClient) Single__StreamState(ctx context.Context, in *Single__StateRequest, opts ...grpc.CallOption) (QueryLayer_Single__StreamStateClient, error) {
+	stream, err := c.cc.NewStream(ctx, &QueryLayer_ServiceDesc.Streams[1], "/mode.QueryLayer/Single__StreamState", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &queryLayerSingle__StreamStateClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
+	return x, nil
+}
+
+type QueryLayer_Single__StreamStateClient interface {
+	Recv() (*QueryLayerStateStreamResponse, error)
+	grpc.ClientStream
+}
+
+type queryLayerSingle__StreamStateClient struct {
+	grpc.ClientStream
+}
+
+func (x *queryLayerSingle__StreamStateClient) Recv() (*QueryLayerStateStreamResponse, error) {
+	m := new(QueryLayerStateStreamResponse)
+	if err := x.ClientStream.RecvMsg(m); err != nil {
+		return nil, err
+	}
+	return m, nil
+}
+
 // QueryLayerServer is the server API for QueryLayer service.
 // All implementations must embed UnimplementedQueryLayerServer
 // for forward compatibility
 type QueryLayerServer interface {
-	// Find endpoint.
-	Find(context.Context, *FindRequest) (*QueryLayerResponse, error)
-	// Join endpoint.
-	Join(context.Context, *JoinRequest) (*QueryLayerResponse, error)
-	// FindAll endpoint.
-	FindAll(context.Context, *FindAllRequest) (*QueryLayerResponse, error)
-	// StreamAll endpoint.
-	StreamAll(*FindAllRequest, QueryLayer_StreamAllServer) error
-	// Count endpoint.
-	Count(context.Context, *FindRequest) (*QueryLayerResponse, error)
+	// Get state endpoint.
+	GetState(context.Context, *StateRequest) (*QueryLayerStateResponse, error)
+	// Stream state endpoint.
+	StreamState(*StateRequest, QueryLayer_StreamStateServer) error
+	// Get state from single table endpoint.
+	Single__GetState(context.Context, *Single__StateRequest) (*QueryLayerStateResponse, error)
+	// Stream state from single table endpoint.
+	Single__StreamState(*Single__StateRequest, QueryLayer_Single__StreamStateServer) error
 	mustEmbedUnimplementedQueryLayerServer()
 }
 
@@ -131,20 +141,17 @@ type QueryLayerServer interface {
 type UnimplementedQueryLayerServer struct {
 }
 
-func (UnimplementedQueryLayerServer) Find(context.Context, *FindRequest) (*QueryLayerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Find not implemented")
+func (UnimplementedQueryLayerServer) GetState(context.Context, *StateRequest) (*QueryLayerStateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetState not implemented")
 }
-func (UnimplementedQueryLayerServer) Join(context.Context, *JoinRequest) (*QueryLayerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Join not implemented")
+func (UnimplementedQueryLayerServer) StreamState(*StateRequest, QueryLayer_StreamStateServer) error {
+	return status.Errorf(codes.Unimplemented, "method StreamState not implemented")
 }
-func (UnimplementedQueryLayerServer) FindAll(context.Context, *FindAllRequest) (*QueryLayerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method FindAll not implemented")
+func (UnimplementedQueryLayerServer) Single__GetState(context.Context, *Single__StateRequest) (*QueryLayerStateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Single__GetState not implemented")
 }
-func (UnimplementedQueryLayerServer) StreamAll(*FindAllRequest, QueryLayer_StreamAllServer) error {
-	return status.Errorf(codes.Unimplemented, "method StreamAll not implemented")
-}
-func (UnimplementedQueryLayerServer) Count(context.Context, *FindRequest) (*QueryLayerResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Count not implemented")
+func (UnimplementedQueryLayerServer) Single__StreamState(*Single__StateRequest, QueryLayer_Single__StreamStateServer) error {
+	return status.Errorf(codes.Unimplemented, "method Single__StreamState not implemented")
 }
 func (UnimplementedQueryLayerServer) mustEmbedUnimplementedQueryLayerServer() {}
 
@@ -159,97 +166,82 @@ func RegisterQueryLayerServer(s grpc.ServiceRegistrar, srv QueryLayerServer) {
 	s.RegisterService(&QueryLayer_ServiceDesc, srv)
 }
 
-func _QueryLayer_Find_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindRequest)
+func _QueryLayer_GetState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(StateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryLayerServer).Find(ctx, in)
+		return srv.(QueryLayerServer).GetState(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mode.QueryLayer/Find",
+		FullMethod: "/mode.QueryLayer/GetState",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryLayerServer).Find(ctx, req.(*FindRequest))
+		return srv.(QueryLayerServer).GetState(ctx, req.(*StateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _QueryLayer_Join_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(JoinRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryLayerServer).Join(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/mode.QueryLayer/Join",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryLayerServer).Join(ctx, req.(*JoinRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _QueryLayer_FindAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindAllRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryLayerServer).FindAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/mode.QueryLayer/FindAll",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryLayerServer).FindAll(ctx, req.(*FindAllRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _QueryLayer_StreamAll_Handler(srv interface{}, stream grpc.ServerStream) error {
-	m := new(FindAllRequest)
+func _QueryLayer_StreamState_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(StateRequest)
 	if err := stream.RecvMsg(m); err != nil {
 		return err
 	}
-	return srv.(QueryLayerServer).StreamAll(m, &queryLayerStreamAllServer{stream})
+	return srv.(QueryLayerServer).StreamState(m, &queryLayerStreamStateServer{stream})
 }
 
-type QueryLayer_StreamAllServer interface {
-	Send(*QueryLayerResponse) error
+type QueryLayer_StreamStateServer interface {
+	Send(*QueryLayerStateStreamResponse) error
 	grpc.ServerStream
 }
 
-type queryLayerStreamAllServer struct {
+type queryLayerStreamStateServer struct {
 	grpc.ServerStream
 }
 
-func (x *queryLayerStreamAllServer) Send(m *QueryLayerResponse) error {
+func (x *queryLayerStreamStateServer) Send(m *QueryLayerStateStreamResponse) error {
 	return x.ServerStream.SendMsg(m)
 }
 
-func _QueryLayer_Count_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(FindRequest)
+func _QueryLayer_Single__GetState_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(Single__StateRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(QueryLayerServer).Count(ctx, in)
+		return srv.(QueryLayerServer).Single__GetState(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/mode.QueryLayer/Count",
+		FullMethod: "/mode.QueryLayer/Single__GetState",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryLayerServer).Count(ctx, req.(*FindRequest))
+		return srv.(QueryLayerServer).Single__GetState(ctx, req.(*Single__StateRequest))
 	}
 	return interceptor(ctx, in, info, handler)
+}
+
+func _QueryLayer_Single__StreamState_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(Single__StateRequest)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(QueryLayerServer).Single__StreamState(m, &queryLayerSingle__StreamStateServer{stream})
+}
+
+type QueryLayer_Single__StreamStateServer interface {
+	Send(*QueryLayerStateStreamResponse) error
+	grpc.ServerStream
+}
+
+type queryLayerSingle__StreamStateServer struct {
+	grpc.ServerStream
+}
+
+func (x *queryLayerSingle__StreamStateServer) Send(m *QueryLayerStateStreamResponse) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 // QueryLayer_ServiceDesc is the grpc.ServiceDesc for QueryLayer service.
@@ -260,26 +252,23 @@ var QueryLayer_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*QueryLayerServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Find",
-			Handler:    _QueryLayer_Find_Handler,
+			MethodName: "GetState",
+			Handler:    _QueryLayer_GetState_Handler,
 		},
 		{
-			MethodName: "Join",
-			Handler:    _QueryLayer_Join_Handler,
-		},
-		{
-			MethodName: "FindAll",
-			Handler:    _QueryLayer_FindAll_Handler,
-		},
-		{
-			MethodName: "Count",
-			Handler:    _QueryLayer_Count_Handler,
+			MethodName: "Single__GetState",
+			Handler:    _QueryLayer_Single__GetState_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "StreamAll",
-			Handler:       _QueryLayer_StreamAll_Handler,
+			StreamName:    "StreamState",
+			Handler:       _QueryLayer_StreamState_Handler,
+			ServerStreams: true,
+		},
+		{
+			StreamName:    "Single__StreamState",
+			Handler:       _QueryLayer_Single__StreamState_Handler,
 			ServerStreams: true,
 		},
 	},

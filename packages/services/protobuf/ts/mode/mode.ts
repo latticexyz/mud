@@ -4,22 +4,12 @@ import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "mode";
 
-export interface UncompressedRow {
-  source: string;
-  entityId: string;
-  value: Uint8Array;
-}
-
-export interface CompressedRow {
-  sourceIdx: number;
-  entityIdIdx: number;
-  value: Uint8Array;
-}
-
+/** A Row is just a list of raw bytes. */
 export interface Row {
   values: Uint8Array[];
 }
 
+/** A GenericTable is a representation of a table. */
 export interface GenericTable {
   cols: string[];
   rows: Row[];
@@ -35,25 +25,52 @@ export interface QueryLayerResponse_TablesEntry {
   value: GenericTable | undefined;
 }
 
-export interface QueryLayerResponseUncompressed {
-  rows: UncompressedRow[];
+export interface QueryLayerStateResponse {
+  chainTables: { [key: string]: GenericTable };
+  worldTables: { [key: string]: GenericTable };
 }
 
-export interface QueryLayerResponseCompressed {
-  rows: CompressedRow[];
-  rowSources: string[];
-  rowEntities: string[];
+export interface QueryLayerStateResponse_ChainTablesEntry {
+  key: string;
+  value: GenericTable | undefined;
 }
 
-export interface FindRequestOptions {
-  compressed: boolean;
-  group: boolean;
-  negate: boolean;
+export interface QueryLayerStateResponse_WorldTablesEntry {
+  key: string;
+  value: GenericTable | undefined;
+}
+
+export interface QueryLayerStateStreamResponse {
+  inserted: QueryLayerStateResponse | undefined;
+  updated: QueryLayerStateResponse | undefined;
+  deleted: QueryLayerStateResponse | undefined;
 }
 
 export interface Namespace {
   chainId: string;
   worldAddress: string;
+}
+
+export interface StateRequest {
+  /** Namespace. */
+  namespace: Namespace | undefined;
+  /**
+   * Selection of world and chain tables. If left empty, all tables
+   * are included.
+   */
+  worldTables: string[];
+  chainTables: string[];
+}
+
+export interface SingleStateRequest {
+  /** Namespace. */
+  namespace: Namespace | undefined;
+  /** Table. */
+  table: string;
+  /** Filters. */
+  filter: Filter[];
+  /** Projections. */
+  project: ProjectedField[];
 }
 
 export interface FindRequest {
@@ -111,16 +128,10 @@ export interface CreateRequest {
   name: string;
 }
 
-export interface Filter {
-  field: Field | undefined;
-  operator: string;
-  value: string;
-  function: string;
-}
-
-export interface FieldPair {
-  field1: Field | undefined;
-  field2: Field | undefined;
+export interface FindRequestOptions {
+  compressed: boolean;
+  group: boolean;
+  negate: boolean;
 }
 
 export interface Field {
@@ -128,112 +139,22 @@ export interface Field {
   tableField: string;
 }
 
+export interface FieldPair {
+  field1: Field | undefined;
+  field2: Field | undefined;
+}
+
 export interface ProjectedField {
   field: Field | undefined;
   rename?: string | undefined;
 }
 
-function createBaseUncompressedRow(): UncompressedRow {
-  return { source: "", entityId: "", value: new Uint8Array() };
+export interface Filter {
+  field: Field | undefined;
+  operator: string;
+  value: string;
+  function: string;
 }
-
-export const UncompressedRow = {
-  encode(message: UncompressedRow, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.source !== "") {
-      writer.uint32(10).string(message.source);
-    }
-    if (message.entityId !== "") {
-      writer.uint32(18).string(message.entityId);
-    }
-    if (message.value.length !== 0) {
-      writer.uint32(26).bytes(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): UncompressedRow {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUncompressedRow();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.source = reader.string();
-          break;
-        case 2:
-          message.entityId = reader.string();
-          break;
-        case 3:
-          message.value = reader.bytes();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromPartial(object: DeepPartial<UncompressedRow>): UncompressedRow {
-    const message = createBaseUncompressedRow();
-    message.source = object.source ?? "";
-    message.entityId = object.entityId ?? "";
-    message.value = object.value ?? new Uint8Array();
-    return message;
-  },
-};
-
-function createBaseCompressedRow(): CompressedRow {
-  return { sourceIdx: 0, entityIdIdx: 0, value: new Uint8Array() };
-}
-
-export const CompressedRow = {
-  encode(message: CompressedRow, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.sourceIdx !== 0) {
-      writer.uint32(8).uint32(message.sourceIdx);
-    }
-    if (message.entityIdIdx !== 0) {
-      writer.uint32(16).uint32(message.entityIdIdx);
-    }
-    if (message.value.length !== 0) {
-      writer.uint32(26).bytes(message.value);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): CompressedRow {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseCompressedRow();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.sourceIdx = reader.uint32();
-          break;
-        case 2:
-          message.entityIdIdx = reader.uint32();
-          break;
-        case 3:
-          message.value = reader.bytes();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromPartial(object: DeepPartial<CompressedRow>): CompressedRow {
-    const message = createBaseCompressedRow();
-    message.sourceIdx = object.sourceIdx ?? 0;
-    message.entityIdIdx = object.entityIdIdx ?? 0;
-    message.value = object.value ?? new Uint8Array();
-    return message;
-  },
-};
 
 function createBaseRow(): Row {
   return { values: [] };
@@ -416,27 +337,39 @@ export const QueryLayerResponse_TablesEntry = {
   },
 };
 
-function createBaseQueryLayerResponseUncompressed(): QueryLayerResponseUncompressed {
-  return { rows: [] };
+function createBaseQueryLayerStateResponse(): QueryLayerStateResponse {
+  return { chainTables: {}, worldTables: {} };
 }
 
-export const QueryLayerResponseUncompressed = {
-  encode(message: QueryLayerResponseUncompressed, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.rows) {
-      UncompressedRow.encode(v!, writer.uint32(10).fork()).ldelim();
-    }
+export const QueryLayerStateResponse = {
+  encode(message: QueryLayerStateResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    Object.entries(message.chainTables).forEach(([key, value]) => {
+      QueryLayerStateResponse_ChainTablesEntry.encode({ key: key as any, value }, writer.uint32(10).fork()).ldelim();
+    });
+    Object.entries(message.worldTables).forEach(([key, value]) => {
+      QueryLayerStateResponse_WorldTablesEntry.encode({ key: key as any, value }, writer.uint32(18).fork()).ldelim();
+    });
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerResponseUncompressed {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerStateResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryLayerResponseUncompressed();
+    const message = createBaseQueryLayerStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.rows.push(UncompressedRow.decode(reader, reader.uint32()));
+          const entry1 = QueryLayerStateResponse_ChainTablesEntry.decode(reader, reader.uint32());
+          if (entry1.value !== undefined) {
+            message.chainTables[entry1.key] = entry1.value;
+          }
+          break;
+        case 2:
+          const entry2 = QueryLayerStateResponse_WorldTablesEntry.decode(reader, reader.uint32());
+          if (entry2.value !== undefined) {
+            message.worldTables[entry2.key] = entry2.value;
+          }
           break;
         default:
           reader.skipType(tag & 7);
@@ -446,46 +379,57 @@ export const QueryLayerResponseUncompressed = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<QueryLayerResponseUncompressed>): QueryLayerResponseUncompressed {
-    const message = createBaseQueryLayerResponseUncompressed();
-    message.rows = object.rows?.map((e) => UncompressedRow.fromPartial(e)) || [];
+  fromPartial(object: DeepPartial<QueryLayerStateResponse>): QueryLayerStateResponse {
+    const message = createBaseQueryLayerStateResponse();
+    message.chainTables = Object.entries(object.chainTables ?? {}).reduce<{ [key: string]: GenericTable }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = GenericTable.fromPartial(value);
+        }
+        return acc;
+      },
+      {}
+    );
+    message.worldTables = Object.entries(object.worldTables ?? {}).reduce<{ [key: string]: GenericTable }>(
+      (acc, [key, value]) => {
+        if (value !== undefined) {
+          acc[key] = GenericTable.fromPartial(value);
+        }
+        return acc;
+      },
+      {}
+    );
     return message;
   },
 };
 
-function createBaseQueryLayerResponseCompressed(): QueryLayerResponseCompressed {
-  return { rows: [], rowSources: [], rowEntities: [] };
+function createBaseQueryLayerStateResponse_ChainTablesEntry(): QueryLayerStateResponse_ChainTablesEntry {
+  return { key: "", value: undefined };
 }
 
-export const QueryLayerResponseCompressed = {
-  encode(message: QueryLayerResponseCompressed, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    for (const v of message.rows) {
-      CompressedRow.encode(v!, writer.uint32(10).fork()).ldelim();
+export const QueryLayerStateResponse_ChainTablesEntry = {
+  encode(message: QueryLayerStateResponse_ChainTablesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
     }
-    for (const v of message.rowSources) {
-      writer.uint32(18).string(v!);
-    }
-    for (const v of message.rowEntities) {
-      writer.uint32(26).string(v!);
+    if (message.value !== undefined) {
+      GenericTable.encode(message.value, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerResponseCompressed {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerStateResponse_ChainTablesEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryLayerResponseCompressed();
+    const message = createBaseQueryLayerStateResponse_ChainTablesEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.rows.push(CompressedRow.decode(reader, reader.uint32()));
+          message.key = reader.string();
           break;
         case 2:
-          message.rowSources.push(reader.string());
-          break;
-        case 3:
-          message.rowEntities.push(reader.string());
+          message.value = GenericTable.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -495,48 +439,42 @@ export const QueryLayerResponseCompressed = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<QueryLayerResponseCompressed>): QueryLayerResponseCompressed {
-    const message = createBaseQueryLayerResponseCompressed();
-    message.rows = object.rows?.map((e) => CompressedRow.fromPartial(e)) || [];
-    message.rowSources = object.rowSources?.map((e) => e) || [];
-    message.rowEntities = object.rowEntities?.map((e) => e) || [];
+  fromPartial(object: DeepPartial<QueryLayerStateResponse_ChainTablesEntry>): QueryLayerStateResponse_ChainTablesEntry {
+    const message = createBaseQueryLayerStateResponse_ChainTablesEntry();
+    message.key = object.key ?? "";
+    message.value =
+      object.value !== undefined && object.value !== null ? GenericTable.fromPartial(object.value) : undefined;
     return message;
   },
 };
 
-function createBaseFindRequestOptions(): FindRequestOptions {
-  return { compressed: false, group: false, negate: false };
+function createBaseQueryLayerStateResponse_WorldTablesEntry(): QueryLayerStateResponse_WorldTablesEntry {
+  return { key: "", value: undefined };
 }
 
-export const FindRequestOptions = {
-  encode(message: FindRequestOptions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.compressed === true) {
-      writer.uint32(8).bool(message.compressed);
+export const QueryLayerStateResponse_WorldTablesEntry = {
+  encode(message: QueryLayerStateResponse_WorldTablesEntry, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.key !== "") {
+      writer.uint32(10).string(message.key);
     }
-    if (message.group === true) {
-      writer.uint32(16).bool(message.group);
-    }
-    if (message.negate === true) {
-      writer.uint32(24).bool(message.negate);
+    if (message.value !== undefined) {
+      GenericTable.encode(message.value, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): FindRequestOptions {
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerStateResponse_WorldTablesEntry {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseFindRequestOptions();
+    const message = createBaseQueryLayerStateResponse_WorldTablesEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.compressed = reader.bool();
+          message.key = reader.string();
           break;
         case 2:
-          message.group = reader.bool();
-          break;
-        case 3:
-          message.negate = reader.bool();
+          message.value = GenericTable.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -546,11 +484,71 @@ export const FindRequestOptions = {
     return message;
   },
 
-  fromPartial(object: DeepPartial<FindRequestOptions>): FindRequestOptions {
-    const message = createBaseFindRequestOptions();
-    message.compressed = object.compressed ?? false;
-    message.group = object.group ?? false;
-    message.negate = object.negate ?? false;
+  fromPartial(object: DeepPartial<QueryLayerStateResponse_WorldTablesEntry>): QueryLayerStateResponse_WorldTablesEntry {
+    const message = createBaseQueryLayerStateResponse_WorldTablesEntry();
+    message.key = object.key ?? "";
+    message.value =
+      object.value !== undefined && object.value !== null ? GenericTable.fromPartial(object.value) : undefined;
+    return message;
+  },
+};
+
+function createBaseQueryLayerStateStreamResponse(): QueryLayerStateStreamResponse {
+  return { inserted: undefined, updated: undefined, deleted: undefined };
+}
+
+export const QueryLayerStateStreamResponse = {
+  encode(message: QueryLayerStateStreamResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.inserted !== undefined) {
+      QueryLayerStateResponse.encode(message.inserted, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.updated !== undefined) {
+      QueryLayerStateResponse.encode(message.updated, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.deleted !== undefined) {
+      QueryLayerStateResponse.encode(message.deleted, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerStateStreamResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryLayerStateStreamResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.inserted = QueryLayerStateResponse.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.updated = QueryLayerStateResponse.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.deleted = QueryLayerStateResponse.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<QueryLayerStateStreamResponse>): QueryLayerStateStreamResponse {
+    const message = createBaseQueryLayerStateStreamResponse();
+    message.inserted =
+      object.inserted !== undefined && object.inserted !== null
+        ? QueryLayerStateResponse.fromPartial(object.inserted)
+        : undefined;
+    message.updated =
+      object.updated !== undefined && object.updated !== null
+        ? QueryLayerStateResponse.fromPartial(object.updated)
+        : undefined;
+    message.deleted =
+      object.deleted !== undefined && object.deleted !== null
+        ? QueryLayerStateResponse.fromPartial(object.deleted)
+        : undefined;
     return message;
   },
 };
@@ -595,6 +593,117 @@ export const Namespace = {
     const message = createBaseNamespace();
     message.chainId = object.chainId ?? "";
     message.worldAddress = object.worldAddress ?? "";
+    return message;
+  },
+};
+
+function createBaseStateRequest(): StateRequest {
+  return { namespace: undefined, worldTables: [], chainTables: [] };
+}
+
+export const StateRequest = {
+  encode(message: StateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.namespace !== undefined) {
+      Namespace.encode(message.namespace, writer.uint32(10).fork()).ldelim();
+    }
+    for (const v of message.worldTables) {
+      writer.uint32(18).string(v!);
+    }
+    for (const v of message.chainTables) {
+      writer.uint32(26).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): StateRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStateRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.namespace = Namespace.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.worldTables.push(reader.string());
+          break;
+        case 3:
+          message.chainTables.push(reader.string());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<StateRequest>): StateRequest {
+    const message = createBaseStateRequest();
+    message.namespace =
+      object.namespace !== undefined && object.namespace !== null ? Namespace.fromPartial(object.namespace) : undefined;
+    message.worldTables = object.worldTables?.map((e) => e) || [];
+    message.chainTables = object.chainTables?.map((e) => e) || [];
+    return message;
+  },
+};
+
+function createBaseSingleStateRequest(): SingleStateRequest {
+  return { namespace: undefined, table: "", filter: [], project: [] };
+}
+
+export const SingleStateRequest = {
+  encode(message: SingleStateRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.namespace !== undefined) {
+      Namespace.encode(message.namespace, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.table !== "") {
+      writer.uint32(18).string(message.table);
+    }
+    for (const v of message.filter) {
+      Filter.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    for (const v of message.project) {
+      ProjectedField.encode(v!, writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SingleStateRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseSingleStateRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.namespace = Namespace.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.table = reader.string();
+          break;
+        case 3:
+          message.filter.push(Filter.decode(reader, reader.uint32()));
+          break;
+        case 4:
+          message.project.push(ProjectedField.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<SingleStateRequest>): SingleStateRequest {
+    const message = createBaseSingleStateRequest();
+    message.namespace =
+      object.namespace !== undefined && object.namespace !== null ? Namespace.fromPartial(object.namespace) : undefined;
+    message.table = object.table ?? "";
+    message.filter = object.filter?.map((e) => Filter.fromPartial(e)) || [];
+    message.project = object.project?.map((e) => ProjectedField.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1055,6 +1164,191 @@ export const CreateRequest = {
   },
 };
 
+function createBaseFindRequestOptions(): FindRequestOptions {
+  return { compressed: false, group: false, negate: false };
+}
+
+export const FindRequestOptions = {
+  encode(message: FindRequestOptions, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.compressed === true) {
+      writer.uint32(8).bool(message.compressed);
+    }
+    if (message.group === true) {
+      writer.uint32(16).bool(message.group);
+    }
+    if (message.negate === true) {
+      writer.uint32(24).bool(message.negate);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): FindRequestOptions {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFindRequestOptions();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.compressed = reader.bool();
+          break;
+        case 2:
+          message.group = reader.bool();
+          break;
+        case 3:
+          message.negate = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<FindRequestOptions>): FindRequestOptions {
+    const message = createBaseFindRequestOptions();
+    message.compressed = object.compressed ?? false;
+    message.group = object.group ?? false;
+    message.negate = object.negate ?? false;
+    return message;
+  },
+};
+
+function createBaseField(): Field {
+  return { tableName: "", tableField: "" };
+}
+
+export const Field = {
+  encode(message: Field, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.tableName !== "") {
+      writer.uint32(10).string(message.tableName);
+    }
+    if (message.tableField !== "") {
+      writer.uint32(18).string(message.tableField);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Field {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseField();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.tableName = reader.string();
+          break;
+        case 2:
+          message.tableField = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<Field>): Field {
+    const message = createBaseField();
+    message.tableName = object.tableName ?? "";
+    message.tableField = object.tableField ?? "";
+    return message;
+  },
+};
+
+function createBaseFieldPair(): FieldPair {
+  return { field1: undefined, field2: undefined };
+}
+
+export const FieldPair = {
+  encode(message: FieldPair, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.field1 !== undefined) {
+      Field.encode(message.field1, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.field2 !== undefined) {
+      Field.encode(message.field2, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): FieldPair {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseFieldPair();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.field1 = Field.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.field2 = Field.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<FieldPair>): FieldPair {
+    const message = createBaseFieldPair();
+    message.field1 =
+      object.field1 !== undefined && object.field1 !== null ? Field.fromPartial(object.field1) : undefined;
+    message.field2 =
+      object.field2 !== undefined && object.field2 !== null ? Field.fromPartial(object.field2) : undefined;
+    return message;
+  },
+};
+
+function createBaseProjectedField(): ProjectedField {
+  return { field: undefined, rename: undefined };
+}
+
+export const ProjectedField = {
+  encode(message: ProjectedField, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.field !== undefined) {
+      Field.encode(message.field, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.rename !== undefined) {
+      writer.uint32(18).string(message.rename);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ProjectedField {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProjectedField();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.field = Field.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.rename = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromPartial(object: DeepPartial<ProjectedField>): ProjectedField {
+    const message = createBaseProjectedField();
+    message.field = object.field !== undefined && object.field !== null ? Field.fromPartial(object.field) : undefined;
+    message.rename = object.rename ?? undefined;
+    return message;
+  },
+};
+
 function createBaseFilter(): Filter {
   return { field: undefined, operator: "", value: "", function: "" };
 }
@@ -1113,223 +1407,91 @@ export const Filter = {
   },
 };
 
-function createBaseFieldPair(): FieldPair {
-  return { field1: undefined, field2: undefined };
-}
-
-export const FieldPair = {
-  encode(message: FieldPair, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.field1 !== undefined) {
-      Field.encode(message.field1, writer.uint32(10).fork()).ldelim();
-    }
-    if (message.field2 !== undefined) {
-      Field.encode(message.field2, writer.uint32(18).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): FieldPair {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseFieldPair();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.field1 = Field.decode(reader, reader.uint32());
-          break;
-        case 2:
-          message.field2 = Field.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromPartial(object: DeepPartial<FieldPair>): FieldPair {
-    const message = createBaseFieldPair();
-    message.field1 =
-      object.field1 !== undefined && object.field1 !== null ? Field.fromPartial(object.field1) : undefined;
-    message.field2 =
-      object.field2 !== undefined && object.field2 !== null ? Field.fromPartial(object.field2) : undefined;
-    return message;
-  },
-};
-
-function createBaseField(): Field {
-  return { tableName: "", tableField: "" };
-}
-
-export const Field = {
-  encode(message: Field, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.tableName !== "") {
-      writer.uint32(10).string(message.tableName);
-    }
-    if (message.tableField !== "") {
-      writer.uint32(18).string(message.tableField);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): Field {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseField();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.tableName = reader.string();
-          break;
-        case 2:
-          message.tableField = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromPartial(object: DeepPartial<Field>): Field {
-    const message = createBaseField();
-    message.tableName = object.tableName ?? "";
-    message.tableField = object.tableField ?? "";
-    return message;
-  },
-};
-
-function createBaseProjectedField(): ProjectedField {
-  return { field: undefined, rename: undefined };
-}
-
-export const ProjectedField = {
-  encode(message: ProjectedField, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.field !== undefined) {
-      Field.encode(message.field, writer.uint32(10).fork()).ldelim();
-    }
-    if (message.rename !== undefined) {
-      writer.uint32(18).string(message.rename);
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): ProjectedField {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseProjectedField();
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.field = Field.decode(reader, reader.uint32());
-          break;
-        case 2:
-          message.rename = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromPartial(object: DeepPartial<ProjectedField>): ProjectedField {
-    const message = createBaseProjectedField();
-    message.field = object.field !== undefined && object.field !== null ? Field.fromPartial(object.field) : undefined;
-    message.rename = object.rename ?? undefined;
-    return message;
-  },
-};
-
 export type QueryLayerDefinition = typeof QueryLayerDefinition;
 export const QueryLayerDefinition = {
   name: "QueryLayer",
   fullName: "mode.QueryLayer",
   methods: {
-    /** Find endpoint. */
-    find: {
-      name: "Find",
-      requestType: FindRequest,
+    /** Get state endpoint. */
+    getState: {
+      name: "GetState",
+      requestType: StateRequest,
       requestStream: false,
-      responseType: QueryLayerResponse,
+      responseType: QueryLayerStateResponse,
       responseStream: false,
       options: {},
     },
-    /** Join endpoint. */
-    join: {
-      name: "Join",
-      requestType: JoinRequest,
+    /** Stream state endpoint. */
+    streamState: {
+      name: "StreamState",
+      requestType: StateRequest,
       requestStream: false,
-      responseType: QueryLayerResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** FindAll endpoint. */
-    findAll: {
-      name: "FindAll",
-      requestType: FindAllRequest,
-      requestStream: false,
-      responseType: QueryLayerResponse,
-      responseStream: false,
-      options: {},
-    },
-    /** StreamAll endpoint. */
-    streamAll: {
-      name: "StreamAll",
-      requestType: FindAllRequest,
-      requestStream: false,
-      responseType: QueryLayerResponse,
+      responseType: QueryLayerStateStreamResponse,
       responseStream: true,
       options: {},
     },
-    /** Count endpoint. */
-    count: {
-      name: "Count",
-      requestType: FindRequest,
+    /** Get state from single table endpoint. */
+    single__GetState: {
+      name: "Single__GetState",
+      requestType: SingleStateRequest,
       requestStream: false,
-      responseType: QueryLayerResponse,
+      responseType: QueryLayerStateResponse,
       responseStream: false,
+      options: {},
+    },
+    /** Stream state from single table endpoint. */
+    single__StreamState: {
+      name: "Single__StreamState",
+      requestType: SingleStateRequest,
+      requestStream: false,
+      responseType: QueryLayerStateStreamResponse,
+      responseStream: true,
       options: {},
     },
   },
 } as const;
 
 export interface QueryLayerServiceImplementation<CallContextExt = {}> {
-  /** Find endpoint. */
-  find(request: FindRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
-  /** Join endpoint. */
-  join(request: JoinRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
-  /** FindAll endpoint. */
-  findAll(request: FindAllRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
-  /** StreamAll endpoint. */
-  streamAll(
-    request: FindAllRequest,
+  /** Get state endpoint. */
+  getState(request: StateRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerStateResponse>>;
+  /** Stream state endpoint. */
+  streamState(
+    request: StateRequest,
     context: CallContext & CallContextExt
-  ): ServerStreamingMethodResult<DeepPartial<QueryLayerResponse>>;
-  /** Count endpoint. */
-  count(request: FindRequest, context: CallContext & CallContextExt): Promise<DeepPartial<QueryLayerResponse>>;
+  ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateStreamResponse>>;
+  /** Get state from single table endpoint. */
+  single__GetState(
+    request: SingleStateRequest,
+    context: CallContext & CallContextExt
+  ): Promise<DeepPartial<QueryLayerStateResponse>>;
+  /** Stream state from single table endpoint. */
+  single__StreamState(
+    request: SingleStateRequest,
+    context: CallContext & CallContextExt
+  ): ServerStreamingMethodResult<DeepPartial<QueryLayerStateStreamResponse>>;
 }
 
 export interface QueryLayerClient<CallOptionsExt = {}> {
-  /** Find endpoint. */
-  find(request: DeepPartial<FindRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
-  /** Join endpoint. */
-  join(request: DeepPartial<JoinRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
-  /** FindAll endpoint. */
-  findAll(request: DeepPartial<FindAllRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
-  /** StreamAll endpoint. */
-  streamAll(
-    request: DeepPartial<FindAllRequest>,
+  /** Get state endpoint. */
+  getState(
+    request: DeepPartial<StateRequest>,
     options?: CallOptions & CallOptionsExt
-  ): AsyncIterable<QueryLayerResponse>;
-  /** Count endpoint. */
-  count(request: DeepPartial<FindRequest>, options?: CallOptions & CallOptionsExt): Promise<QueryLayerResponse>;
+  ): Promise<QueryLayerStateResponse>;
+  /** Stream state endpoint. */
+  streamState(
+    request: DeepPartial<StateRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): AsyncIterable<QueryLayerStateStreamResponse>;
+  /** Get state from single table endpoint. */
+  single__GetState(
+    request: DeepPartial<SingleStateRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): Promise<QueryLayerStateResponse>;
+  /** Stream state from single table endpoint. */
+  single__StreamState(
+    request: DeepPartial<SingleStateRequest>,
+    options?: CallOptions & CallOptionsExt
+  ): AsyncIterable<QueryLayerStateStreamResponse>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

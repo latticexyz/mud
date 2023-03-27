@@ -16,6 +16,14 @@ import (
 	"go.uber.org/zap"
 )
 
+// connectToDatabase creates a connection to a PostgreSQL database using the specified DSN.
+//
+// Parameters:
+//   - dsn (string): The Data Source Name to connect to the database.
+//
+// Returns:
+//   - (*sqlx.DB): A pointer to the connected database instance.
+//   - (error): An error if any occurred during the connection process.
 func connectToDatabase(dsn string) (*sqlx.DB, error) {
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
@@ -32,6 +40,14 @@ func connectToDatabase(dsn string) (*sqlx.DB, error) {
 	return db, nil
 }
 
+// wipeSchemas drops all the schemas from the specified database except for internal schemas.
+//
+// Parameters:
+//   - db (*sql.DB): The database connection instance to use.
+//   - logger (*zap.Logger): The logger to use for logging messages.
+//
+// Returns:
+//   - (error): An error if any occurred during the schema wiping process.
 func wipeSchemas(db *sql.DB, logger *zap.Logger) error {
 	rows, err := db.Query(`
 		SELECT n.nspname
@@ -62,6 +78,16 @@ func wipeSchemas(db *sql.DB, logger *zap.Logger) error {
 	return nil
 }
 
+// NewDatabaseLayer creates a new instance of the DatabaseLayer struct with the given configuration.
+//
+// Parameters:
+// - ctx (context.Context): The context of the request.
+// - dsn (string): The DSN of the database to connect to.
+// - wipe (bool): Whether or not to wipe the database.
+// - logger (*zap.Logger): The logger to use for logging messages.
+//
+// Returns:
+// - (*DatabaseLayer): The new instance of the DatabaseLayer struct.
 func NewDatabaseLayer(
 	ctx context.Context,
 	dsn string,
@@ -111,6 +137,15 @@ func NewDatabaseLayer(
 	}
 }
 
+// RunDatabaseLayer runs the database layer.
+// It starts the multiplexer, prepares the database for replication, creates a replication slot,
+// starts replication, and consumes WAL data, forwarding relevant events to the multiplexer.
+//
+// Parameters:
+// - ctx: A context object for the function call.
+//
+// Returns:
+// - void
 func (dl *DatabaseLayer) RunDatabaseLayer(ctx context.Context) {
 	defer dl.conn.Close(context.Background())
 

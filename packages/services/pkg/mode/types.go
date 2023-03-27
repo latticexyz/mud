@@ -20,8 +20,8 @@ type TableSchema struct {
 	Namespace             string                  `json:"namespace"`
 	StoreCoreSchemaTypeKV *storecore.SchemaTypeKV `json:"store_core_schema_type_kv"`
 	PrimaryKey            string                  `json:"primary_key"`
-	ReadableName          string                  `json:"readable_name"`
-	CapitalizationMap     map[string]string       `json:"capitalization_map"`
+	OnChainReadableName   string                  `json:"on_chain_readable_name"`
+	OnChainColNames       map[string]string       `json:"on_chain_col_names"`
 }
 
 type DataSchema struct {

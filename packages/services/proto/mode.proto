@@ -3,51 +3,84 @@ package mode;
 
 option go_package = "protobuf/go/mode";
 
-message UncompressedRow {
-    string source = 1;
-    string entity_id = 2;
-    bytes value = 3;
-}
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                                      //
+// Messages for standardized table format that MODE uses to send over QueryLayer results to the client. //
+//                                                                                                      //
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-message CompressedRow {
-    uint32 source_idx = 1;
-    uint32 entity_id_idx = 2;
-    bytes value = 3;
-}
-
+// A Row is just a list of raw bytes.
 message Row {
     repeated bytes values = 2;
 }
 
+// A GenericTable is a representation of a table.
 message GenericTable {
     repeated string cols = 1;
     repeated Row rows = 2;
     repeated string types = 3; 
 }
 
+///////////////////////////////////////////////////////////////////////
+//                                                                   //
+// Messages that MODE uses to send over responses on the QueryLayer. //
+//                                                                   //
+///////////////////////////////////////////////////////////////////////
+
 message QueryLayerResponse {
     map<string, GenericTable> tables = 1;
 }
 
-message QueryLayerResponseUncompressed {
-   repeated UncompressedRow rows = 1;
+message QueryLayerStateResponse {
+    map<string, GenericTable> chainTables = 1;
+    map<string, GenericTable> worldTables = 2;
 }
 
-message QueryLayerResponseCompressed {
-    repeated CompressedRow rows = 1;
-    repeated string rowSources = 2;
-    repeated string rowEntities = 3;
+message QueryLayerStateStreamResponse {
+   QueryLayerStateResponse inserted = 1;
+   QueryLayerStateResponse updated = 2;
+   QueryLayerStateResponse deleted = 3;
 }
 
-message FindRequestOptions {
-   bool compressed = 1;  
-   bool group = 2;
-   bool negate = 3;
-}
+///////////////////////////////////////////////////////////////////////////////////////////
+//                                                                                       //
+// Namespaces are used by MODE to separate data by chain (network) ID and world address. //
+//                                                                                       //
+///////////////////////////////////////////////////////////////////////////////////////////
 
 message Namespace {
     string chainId = 1;
     string worldAddress = 2;
+}
+
+//////////////////////////////////////////////////////////////////
+//                                                              //
+// Messages for various requests that MODE QueryLayer supports. //
+//                                                              //
+//////////////////////////////////////////////////////////////////
+
+message StateRequest {
+    // Namespace.
+    Namespace namespace = 1;
+    
+    // Selection of world and chain tables. If left empty, all tables
+    // are included.
+    repeated string worldTables = 2;
+    repeated string chainTables = 3;
+}
+
+message Single__StateRequest {
+    // Namespace.
+    Namespace namespace = 1;
+
+    // Table.
+    string table = 2;
+
+    // Filters.
+    repeated Filter filter = 3;
+
+    // Projections.
+    repeated ProjectedField project = 4;
 }
 
 message FindRequest {
@@ -100,11 +133,27 @@ message CreateRequest {
     string name = 1;
 }
 
-message Filter {
-    Field field = 1;
-    string operator = 2;
-    string value = 3;
-    string function = 4;
+/////////////////////////////////////////////////////////////////////////////////////
+//                                                                                 //
+// Messages for various request options on requests that MODE QueryLayer supports. //
+//                                                                                 //
+/////////////////////////////////////////////////////////////////////////////////////
+
+message FindRequestOptions {
+   bool compressed = 1;  
+   bool group = 2;
+   bool negate = 3;
+}
+
+//////////////////////////////////////////////////////////////
+//                                                          //
+// Messages for basic primitives that MODE QueryLayer uses. //
+//                                                          //
+//////////////////////////////////////////////////////////////
+
+message Field {
+    string table_name = 1;
+    string table_field = 2;
 }
 
 message FieldPair {
@@ -112,29 +161,34 @@ message FieldPair {
     Field field2 = 2;
 }
 
-message Field {
-    string table_name = 1;
-    string table_field = 2;
-}
-
 message ProjectedField {
     Field field = 1;
     optional string rename = 2;
 }
 
+message Filter {
+    Field field = 1;
+    string operator = 2;
+    string value = 3;
+    string function = 4;
+}
+
+//////////////////////////
+//                      //
+// Service definitions. //
+//                      //
+//////////////////////////
+
 service QueryLayer {
-    // Find endpoint.
-    rpc Find(FindRequest) returns (QueryLayerResponse) {}
+    // Get state endpoint.
+    rpc GetState(StateRequest) returns (QueryLayerStateResponse) {}
 
-    // Join endpoint.
-    rpc Join(JoinRequest) returns (QueryLayerResponse) {}
+    // Stream state endpoint.
+    rpc StreamState(StateRequest) returns (stream QueryLayerStateStreamResponse) {}
 
-    // FindAll endpoint.
-    rpc FindAll(FindAllRequest) returns (QueryLayerResponse) {}
+    // Get state from single table endpoint.
+    rpc Single__GetState(Single__StateRequest) returns (QueryLayerStateResponse) {}
 
-    // StreamAll endpoint.
-    rpc StreamAll(FindAllRequest) returns (stream QueryLayerResponse) {}
-
-    // Count endpoint.
-    rpc Count(FindRequest) returns (QueryLayerResponse) {}
+    // Stream state from single table endpoint.
+    rpc Single__StreamState(Single__StateRequest) returns (stream QueryLayerStateStreamResponse) {}
 }

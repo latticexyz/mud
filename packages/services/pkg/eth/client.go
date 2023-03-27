@@ -43,8 +43,8 @@ func GetEthereumSubscription(client *ethclient.Client, headers chan *types.Heade
 	return client.SubscribeNewHead(context.Background(), headers)
 }
 
-// GetCurrentBlockHead returns the block number of the block at the tip of the chain.
-func GetCurrentBlockHead(client *ethclient.Client) *big.Int {
+// GetCurrentBlockNumber returns the block number of the block at the tip of the chain.
+func GetCurrentBlockNumber(client *ethclient.Client) *big.Int {
 	currentHead, err := client.HeaderByNumber(context.Background(), nil)
 	if err != nil {
 		logger.GetLogger().Fatal("failed to get the current block head",
