@@ -19,8 +19,9 @@ export async function syncTablesFromMode(
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
 
-  const response = await client.findAll({
-    tables: [],
+  const response = await client.getState({
+    chainTables: [],
+    worldTables: [],
     namespace: {
       chainId: chainId.toString(),
       worldAddress: world.address,
@@ -29,10 +30,10 @@ export async function syncTablesFromMode(
   console.log("syncTablesFromMode response", response);
 
   // TODO: figure out why this number is so different from `getModeBlockNumber`
-  const blockNumber = getBlockNumberFromModeTable(response.tables["block_number"]);
+  const blockNumber = getBlockNumberFromModeTable(response.chainTables["block_number"]);
   console.log("block number for sync tables", blockNumber);
   // TODO: mode should separate user tables from meta/internal tables
-  const userTables = Object.entries(response.tables).filter(([fullTableName]) => fullTableName.includes("__"));
+  const userTables = Object.entries(response.worldTables).filter(([fullTableName]) => fullTableName.includes("__"));
 
   const registrationPromises: Promise<unknown>[] = [];
 
