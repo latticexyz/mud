@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
 import { fromZodErrorCustom } from "../../utils/errors.js";
 import { loadConfig } from "../loadConfig.js";
-import { WorldConfig } from "./parseWorldConfig.js";
+import { zWorldConfig } from "./parseWorldConfig.js";
 import { resolveWorldConfig } from "./resolveWorldConfig.js";
 
 /**
@@ -14,7 +14,7 @@ export async function loadWorldConfig(configPath?: string, existingContracts?: s
   const config = await loadConfig(configPath);
 
   try {
-    const parsedConfig = WorldConfig.parse(config);
+    const parsedConfig = zWorldConfig.parse(config);
     return resolveWorldConfig(parsedConfig, existingContracts);
   } catch (error) {
     if (error instanceof ZodError) {
