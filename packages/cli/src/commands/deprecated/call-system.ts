@@ -1,5 +1,5 @@
 import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
-import path from "node:path";
+import path from "path";
 import type { CommandModule } from "yargs";
 import { execLog } from "../../utils/deprecated/index.js";
 import { getTestDirectory } from "../../utils/foundry.js";

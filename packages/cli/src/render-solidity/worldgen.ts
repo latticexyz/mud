@@ -1,5 +1,5 @@
 import { readFileSync } from "fs";
-import path from "node:path";
+import path from "path";
 import { MUDConfig } from "../config/index.js";
 import { contractToInterface } from "../utils/contractToInterface.js";
 import { formatAndWrite } from "../utils/formatAndWrite.js";

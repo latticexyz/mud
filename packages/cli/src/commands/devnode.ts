@@ -1,6 +1,6 @@
 import { rmSync } from "fs";
 import { homedir } from "os";
-import path from "node:path";
+import path from "path";
 import type { CommandModule } from "yargs";
 import { execLog } from "../utils/deprecated/index.js";
 

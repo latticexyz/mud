@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import glob from "glob";
-import path, { basename } from "node:path";
+import path, { basename } from "path";
 import type { CommandModule } from "yargs";
 import { loadWorldConfig } from "../config/world/index.js";
 import { deploy } from "../utils/deploy-v2.js";

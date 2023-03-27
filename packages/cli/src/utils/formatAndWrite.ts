@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from "fs";
-import { dirname } from "node:path";
+import { dirname } from "path";
 import { formatSolidity } from "./format.js";
 
 export async function formatAndWrite(output: string, fullOutputPath: string, logPrefix: string) {

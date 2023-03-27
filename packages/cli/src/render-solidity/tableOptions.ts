@@ -1,4 +1,4 @@
-import path from "node:path";
+import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
 import { StoreConfig } from "../config/parseStoreConfig.js";
 import {

@@ -1,5 +1,5 @@
 import { execa } from "execa";
-import path from "node:path";
+import path from "path";
 import type { CommandModule } from "yargs";
 
 const contractsDirectory = new URL("../src/contracts", import.meta.url).pathname;

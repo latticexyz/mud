@@ -1,6 +1,6 @@
 import { readFile, writeFile } from "fs/promises";
 import ejs from "ejs";
-import path from "node:path";
+import path from "path";
 
 const contractsDirectory = new URL("../src/contracts", import.meta.url).pathname;
 
