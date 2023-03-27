@@ -237,9 +237,10 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 	il.logger.Info("handling schema table event", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId))
 
 	// Parse out the schema types (both static and dynamic) for the table.
-	valueStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(event.Data[:32])
+	keySchemaBytes32, valueSchemaBytes32 := event.Data[:32], event.Data[32:]
+	valueStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(keySchemaBytes32)
 	// The last 32 bytes are the table "key" schema.
-	keyStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(event.Data[32:])
+	keyStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(valueSchemaBytes32)
 
 	// Merge the two schemas into one, since the table schema is a combination of the key schema and the value schema.
 	storeCoreSchemaTypeKV := storecore.SchemaTypeKVFromPairs(keyStoreCoreSchemaTypePair, valueStoreCoreSchemaTypePair)
@@ -306,6 +307,8 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 		"namespace":     tableSchema.Namespace,
 		"table_name":    tableSchema.TableName,
 		"schema":        string(tableSchemaJson),
+		"key_schema":    hexutil.Encode(keySchemaBytes32),
+		"value_schema":  hexutil.Encode(valueSchemaBytes32),
 	}
 	// Filter based on table name, world address, and namespace.
 	filter := schemaTableSchema.FilterFromMap(map[string]string{

@@ -49,6 +49,10 @@ func (builder *UpdateBuilder) Validate() error {
 func (builder *UpdateBuilder) BuildUpdateRowFromKV(row map[string]string, fieldNames []string) string {
 	rowStr := ""
 	for idx, field := range fieldNames {
+		// Skip fields that are not being updated.
+		if _, ok := row[field]; !ok {
+			continue
+		}
 		rowStr = rowStr + field + ` = ` + `'` + row[field] + `'`
 		if idx != len(fieldNames)-1 {
 			rowStr = rowStr + `, `

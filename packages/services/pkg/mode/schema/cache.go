@@ -79,6 +79,81 @@ func (cache *SchemaCache) IsInternalTable(tableName string) bool {
 	return ok
 }
 
+// GetTableKeyValueSchemas retrieves the key + value schemas for a specified table given a namespace and table name.
+//
+// Parameters:
+// - chainId (string): The chain ID of the table.
+// - worldAddress (string): The world address of the table.
+// - tableName (string): The name of the table.
+//
+// Returns:
+// (string) - Hex-encoded string representation of the key schema.
+// (string) - Hex-encoded string representation of the value schema.
+// (error) - An error, if any occurred during the operation.
+func (cache *SchemaCache) GetTableKeyValueSchemas(chainId string, worldAddress string, tableName string) (string, string, error) {
+	// Lookup the schema from the internal schemas table.
+	schemaTableSchema := Internal__SchemaTableSchema(chainId)
+	schemaTableName := schemaTableSchema.TableName
+
+	// Create a request builder for the table schema query.
+	request := &pb_mode.FindRequest{
+		From: schemaTableName,
+		Filter: []*pb_mode.Filter{
+			{
+				Field: &pb_mode.Field{
+					TableName:  schemaTableName,
+					TableField: "world_address",
+				},
+				Operator: "=",
+				Value:    worldAddress,
+			},
+			{
+				Field: &pb_mode.Field{
+					TableName:  schemaTableName,
+					TableField: "table_name",
+				},
+				Operator: "=",
+				Value:    tableName,
+				Function: "LOWER",
+			},
+		},
+		Project: []*pb_mode.ProjectedField{
+			{
+				Field: &pb_mode.Field{
+					TableName:  schemaTableName,
+					TableField: "key_schema",
+				},
+			},
+			{
+				Field: &pb_mode.Field{
+					TableName:  schemaTableName,
+					TableField: "value_schema",
+				},
+			},
+		},
+	}
+	// Query the DB for the key and value schemas.
+	builder := find.New__FromFindRequest(request, schemaTableSchema.Namespace)
+	query, err := builder.ToSQLQuery()
+	if err != nil {
+		cache.logger.Error("failed to build query", zap.Error(err))
+		return "", "", err
+	}
+	keyValueSchemasResponse := &KeyValueSchemaCacheResponse{}
+	err = cache.dl.Get(keyValueSchemasResponse, query)
+	if err != nil {
+		cache.logger.Error("failed to get key+value schemas", zap.Error(err), zap.String("query", query))
+		return "", "", err
+	}
+
+	keySchema := keyValueSchemasResponse.KeySchema
+	valueSchema := keyValueSchemasResponse.ValueSchema
+
+	cache.logger.Info("got table key+value schemas", zap.String("key_schema", keySchema), zap.String("value_schema", valueSchema))
+
+	return keySchema, valueSchema, nil
+}
+
 // GetTableSchema retrieves the TableSchema instance for the specified chain ID, world address, and table name from the cache.
 //
 // Parameters:
