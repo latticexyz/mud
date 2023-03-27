@@ -3,10 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
-import { ResourceSelector } from "../../ResourceSelector.sol";
-import { MODULE_NAMESPACE } from "./constants.sol";
 import { getTargetTableSelector } from "./getTargetTableSelector.sol";
-
 import { KeysWithValue } from "./tables/KeysWithValue.sol";
 
 /**

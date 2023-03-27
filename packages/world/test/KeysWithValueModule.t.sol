@@ -13,7 +13,8 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { KeysWithValueModule, MODULE_NAMESPACE } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
+import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
+import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
 import { getTargetTableSelector } from "../src/modules/keyswithvalue/getTargetTableSelector.sol";
