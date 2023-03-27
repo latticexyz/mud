@@ -1,5 +1,5 @@
 import { AbiTypeToSchemaType, getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
-import { StoreConfig } from "../index.js";
+import { StoreConfig } from "../config/index.js";
 import { ImportDatum, RenderTableType } from "./types.js";
 import { parseStaticArray } from "../config/validation.js";
 
