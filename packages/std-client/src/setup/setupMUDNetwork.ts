@@ -29,7 +29,7 @@ import { createV2SystemCallStreams } from "./v2/createV2SystemCallStreams";
 export async function setupMUDNetwork<
   C extends ContractComponents,
   SystemTypes extends { [key: string]: Contract },
-  M extends MUDUserConfig
+  M extends MUDUserConfig = MUDUserConfig
 >(
   networkConfig: SetupContractConfig,
   world: World,
@@ -176,7 +176,14 @@ export async function setupMUDNetwork<
     });
   }
 
-  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$, decodeAndEmitSystemCall);
+  const v2SystemCallStreams = options?.mudConfig
+    ? createV2SystemCallStreams(options.mudConfig, networkConfig.worldAddress, network.providers.get().json)
+    : null;
+
+  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$, (systemCall) => {
+    decodeAndEmitSystemCall(systemCall);
+    v2SystemCallStreams?.decodeAndEmitSystemCall(systemCall);
+  });
 
   const encoders = networkConfig.encoders
     ? createEncoders(world, ComponentsRegistry, signerOrProvider)
@@ -196,9 +203,7 @@ export async function setupMUDNetwork<
     registerComponent,
     registerSystem,
     components,
-    v2SystemCallStreams: options?.mudConfig
-      ? createV2SystemCallStreams(options.mudConfig, networkConfig.worldAddress, network.providers.get().json)
-      : null,
+    v2SystemCallStreams: v2SystemCallStreams?.callStreams,
   };
 }
 

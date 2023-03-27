@@ -50,6 +50,10 @@ type ExpandTables<Tables extends StoreUserConfig["tables"]> = {
     : never;
 };
 
+export type StoreUserConfigToComponents<Config extends StoreUserConfig> = TablesToComponents<
+  ExpandTables<Config["tables"]>
+>;
+
 function isAbiType(value: string): value is AbiType {
   return value in abiTypesToRecsTypes;
 }
@@ -65,10 +69,10 @@ const tableSchemaToRecsSchema = <TableSchema extends FullSchemaConfig>(
   ) as any;
 };
 
-export function defineStoreComponents<T extends StoreUserConfig>(
+export function defineStoreComponents<Config extends StoreUserConfig>(
   world: World,
-  userConfig: T
-): TablesToComponents<ExpandTables<T["tables"]>> {
+  userConfig: Config
+): StoreUserConfigToComponents<Config> {
   // TODO: extend parseStoreConfig to translate StoreUserConfig to StoreConfig and keep originating types
   const config = parseStoreConfig(userConfig);
 
