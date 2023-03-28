@@ -58,8 +58,8 @@
     }
   },
   "scripts": {
-    "prepare": "husky install && (forge --version || yarn foundryup)",
-    "postinstall": "yarn && yarn workspaces run prepare",
+    "prepare": "husky install",
+    "postinstall": "(forge --version || yarn foundryup) && yarn workspaces run prepare",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
