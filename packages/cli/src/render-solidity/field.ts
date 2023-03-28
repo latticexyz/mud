@@ -63,7 +63,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
       result += renderWithStore(
         storeArgument,
         (_typedStore, _store, _commentSuffix) => `
-        /** Push ${portionData.title} to ${field.name}${_commentSuffix} */
+        /** Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\` */
         function update${field.methodNameSuffix}(${renderArguments([
           _typedStore,
           _typedTableId,
