@@ -33,7 +33,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   world: World,
   contractComponents: C,
   SystemAbis: { [key in keyof SystemTypes]: ContractInterface },
-  options?: { initialGasPrice?: number; fetchSystemCalls?: boolean }
+  options?: { initialGasPrice?: number; fetchSystemCalls?: boolean; syncThread?: "main" | "worker" }
 ) {
   const SystemsRegistry = findOrDefineComponent(
     contractComponents,
@@ -158,7 +158,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     provider: { externalProvider: _, ...providerConfig },
     ...syncWorkerConfig
   } = networkConfig;
-  const { ecsEvents$, input$, dispose } = createSyncWorker<C>(ack$);
+  const { ecsEvents$, input$, dispose } = createSyncWorker<C>(ack$, { thread: options?.syncThread });
   world.registerDisposer(dispose);
   function startSync() {
     input$.next({
