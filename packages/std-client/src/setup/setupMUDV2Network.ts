@@ -6,6 +6,7 @@ import {
   createSyncWorker,
   Ack,
   InputType,
+  SingletonID,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
 import { Components, createWorld, defineComponent, Type } from "@latticexyz/recs";
@@ -16,18 +17,26 @@ import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
 import { defineStringComponent } from "../components";
 import { ContractComponent, SetupContractConfig } from "./types";
 import { applyNetworkUpdates, createEncoders } from "./utils";
-import { defineStoreComponents } from "@latticexyz/recs";
+import { defineStoreComponents, EntityID } from "@latticexyz/recs";
 import storeMudConfig from "@latticexyz/store/mud.config.mjs";
 import worldMudConfig from "@latticexyz/world/mud.config.mjs";
 import { MUDUserConfig } from "@latticexyz/cli";
 
-export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>(options: {
+type SetupMUDV2NetworkOptions<M extends MUDUserConfig = MUDUserConfig> = {
   mudConfig: M;
   networkConfig: SetupContractConfig;
   initialGasPrice?: number;
   fetchSystemCalls?: boolean;
   syncThread?: "main" | "worker";
-}) {
+};
+
+export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>({
+  mudConfig,
+  networkConfig,
+  initialGasPrice,
+  fetchSystemCalls,
+  syncThread,
+}: SetupMUDV2NetworkOptions<M>) {
   const world = createWorld();
 
   const SystemsRegistry = defineStringComponent(world, {
@@ -67,7 +76,7 @@ export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>
 
   const storeComponents = defineStoreComponents(world, storeMudConfig);
   const worldComponents = defineStoreComponents(world, worldMudConfig);
-  const userComponents = defineStoreComponents(world, options.mudConfig);
+  const userComponents = defineStoreComponents(world, mudConfig);
 
   const components = {
     // v2 components
@@ -80,8 +89,6 @@ export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>
     ComponentsRegistry,
     LoadingState,
   } satisfies Components;
-
-  storeComponents.StoreMetadata;
 
   // Mapping from component contract id to key in components object
   const mappings: Mappings<typeof components> = {};
@@ -101,25 +108,32 @@ export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>
     registerComponent(key, components[key]);
   }
 
-  const network = await createNetwork(options.networkConfig);
+  const network = await createNetwork(networkConfig);
   world.registerDisposer(network.dispose);
 
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
   const { contracts, config: contractsConfig } = await createContracts<{ World: WorldContract }>({
-    config: { World: { abi: WorldAbi, address: options.networkConfig.worldAddress } },
+    config: { World: { abi: WorldAbi, address: networkConfig.worldAddress } },
     signerOrProvider,
   });
 
   const gasPriceInput$ = new BehaviorSubject<number>(
     // If no initial gas price is provided, check the gas price once and add a 30% buffer
-    options?.initialGasPrice || Math.ceil((await signerOrProvider.get().getGasPrice()).toNumber() * 1.3)
+    initialGasPrice || Math.ceil((await signerOrProvider.get().getGasPrice()).toNumber() * 1.3)
   );
 
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, gasPriceInput$, {
-    devMode: options.networkConfig.devMode,
+    devMode: networkConfig.devMode,
   });
   world.registerDisposer(disposeTxQueue);
+
+  // For LoadingState updates
+  const singletonEntity = world.registerEntity({ id: SingletonID });
+  // Register player entity
+  const address = network.connectedAddress.get();
+  const playerEntityId = address ? (address as EntityID) : undefined;
+  const playerEntity = playerEntityId ? world.registerEntity({ id: playerEntityId }) : undefined;
 
   // Create sync worker
   const ack$ = new Subject<Ack>();
@@ -127,8 +141,8 @@ export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>
   const {
     provider: { externalProvider: _, ...providerConfig },
     ...syncWorkerConfig
-  } = options.networkConfig;
-  const { ecsEvents$, input$, dispose } = createSyncWorker<typeof components>(ack$, { thread: options?.syncThread });
+  } = networkConfig;
+  const { ecsEvents$, input$, dispose } = createSyncWorker<typeof components>(ack$, { thread: syncThread });
   world.registerDisposer(dispose);
   function startSync() {
     input$.next({
@@ -137,16 +151,16 @@ export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>
         ...syncWorkerConfig,
         provider: providerConfig,
         worldContract: contractsConfig.World,
-        initialBlockNumber: options.networkConfig.initialBlockNumber ?? 0,
-        disableCache: options.networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
-        fetchSystemCalls: options?.fetchSystemCalls,
+        initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
+        disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
+        fetchSystemCalls,
       },
     });
   }
 
   const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$);
 
-  const encoders = options.networkConfig.encoders
+  const encoders = networkConfig.encoders
     ? createEncoders(world, ComponentsRegistry, signerOrProvider)
     : new Promise((resolve) => resolve({}));
 
@@ -160,6 +174,13 @@ export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>
     ecsEvent$: ecsEvents$.pipe(concatMap((updates) => from(updates))),
     mappings,
     registerComponent,
+    networkConfig,
+    mudConfig,
+    world,
     components,
+    singletonEntityId: SingletonID,
+    singletonEntity,
+    playerEntityId,
+    playerEntity,
   };
 }
