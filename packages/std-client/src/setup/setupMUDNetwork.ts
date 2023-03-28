@@ -7,9 +7,10 @@ import {
   createSystemExecutor,
   Ack,
   InputType,
+  SingletonID,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { defineComponent, Type, World } from "@latticexyz/recs";
+import { defineComponent, Type, World, EntityID } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256 } from "@latticexyz/utils";
 import { Contract, ContractInterface } from "ethers";
@@ -93,6 +94,13 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   const network = await createNetwork(networkConfig);
   world.registerDisposer(network.dispose);
 
+  // For LoadingState updates
+  const singletonEntity = world.registerEntity({ id: SingletonID });
+  // Register player entity
+  const address = network.connectedAddress.get();
+  const playerEntityId = address ? (address as EntityID) : undefined;
+  const playerEntity = playerEntityId ? world.registerEntity({ id: playerEntityId }) : undefined;
+
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
   const { contracts, config: contractsConfig } = await createContracts<{ World: WorldContract }>({
@@ -173,6 +181,10 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     registerComponent,
     registerSystem,
     components,
+    singletonEntityId: SingletonID,
+    singletonEntity,
+    playerEntityId,
+    playerEntity,
   };
 }
 
