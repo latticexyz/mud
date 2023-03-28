@@ -61,8 +61,8 @@ export interface WorldUserConfig {
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
    */
   postDeployScript?: string;
-  /** Directory to write the deployment info to (Default ".") */
-  deploymentInfoDirectory?: string;
+  /** Directory to write the deployment info to (Default "./deploys") */
+  deploysDirectory?: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
