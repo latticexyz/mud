@@ -11,7 +11,7 @@ import {
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
 import { defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
-import { keccak256, TableId } from "@latticexyz/utils";
+import { keccak256 } from "@latticexyz/utils";
 import { Contract, ContractInterface } from "ethers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
@@ -24,9 +24,6 @@ import {
   createEncoders,
   createSystemCallStreams,
 } from "./utils";
-import { defineStoreComponents } from "@latticexyz/recs";
-import storeMudConfig from "@latticexyz/store/mud.config.mjs";
-import worldMudConfig from "@latticexyz/world/mud.config.mjs";
 
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
@@ -68,25 +65,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     )
   );
 
-  const storeSchemaTableId = new TableId("mudstore", "schema");
-  const storeSchemaComponent = defineComponent(
-    world,
-    { schema: Type.T },
-    {
-      metadata: {
-        contractId: storeSchemaTableId.toHexString(),
-        tableId: storeSchemaTableId.toString(),
-      },
-    }
-  );
-
-  const storeComponents = defineStoreComponents(world, storeMudConfig);
-  const worldComponents = defineStoreComponents(world, worldMudConfig);
-
   const components: NetworkComponents<C> = {
-    storeSchemaComponent,
-    ...storeComponents,
-    ...worldComponents,
     ...contractComponents,
     SystemsRegistry,
     ComponentsRegistry,
