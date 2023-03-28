@@ -13,6 +13,10 @@ type Options = {
 
 const BACKUP_FILE = ".mudbackup";
 
+function getGitUrl(pkg: string, branch: string) {
+  return `https://gitpkg.now.sh/latticexyz/mud/packages/${pkg}?${branch}`;
+}
+
 const commandModule: CommandModule<Options, Options> = {
   command: "set-version",
 
@@ -111,9 +115,7 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   for (const key in packageJson.dependencies) {
     if (key.startsWith("@latticexyz")) {
       packageJson.dependencies[key] =
-        restore && backupJson
-          ? backupJson.dependencies[key]
-          : updatedPackageVersion(packageJson.dependencies[key], options);
+        restore && backupJson ? backupJson.dependencies[key] : updatedPackageVersion(key, options);
     }
   }
 
@@ -150,9 +152,10 @@ function readPackageJson(path: string): {
   }
 }
 
-function updatedPackageVersion(currentValue: string, { npm }: Options) {
+function updatedPackageVersion(pkg: string, { npm, github }: Options) {
   if (npm) return npm;
-  return currentValue;
+  if (github) return getGitUrl(pkg.replace("@latticexyz/", ""), github);
+  return "";
 }
 
 export default commandModule;
