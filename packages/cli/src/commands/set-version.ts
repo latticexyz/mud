@@ -1,34 +1,48 @@
-import { readFileSync, rmSync, writeFileSync } from "fs";
+import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
 import { logError, MUDError } from "../utils/errors.js";
 
 type Options = {
-  branch?: string;
+  github?: string;
   backup?: boolean;
+  force?: boolean;
   restore?: boolean;
+  npm?: string;
 };
 
-const BACKUP_FILE = ".mudinstall";
+const BACKUP_FILE = ".mudbackup";
 
 const commandModule: CommandModule<Options, Options> = {
-  command: "install",
+  command: "set-version",
 
   describe: "Install a custom MUD version (local or GitHub) and backup the previous version",
 
   builder(yargs) {
     return yargs.options({
-      branch: { type: "string" },
+      github: { type: "string", description: "The MUD GitHub branch to install from" },
+      npm: { type: "string", description: "The MUD NPM version to install" },
       backup: { type: "boolean", description: "Back up the current MUD versions to `.mudinstall`" },
+      force: {
+        type: "boolean",
+        description: "Backup fails if a .mudinstall file is found, unless --force is provided",
+      },
       restore: { type: "boolean", description: "Restore the previous MUD versions from `.mudinstall`" },
     });
   },
 
   async handler(options) {
-    const { branch } = options;
+    const { github, npm, restore } = options;
 
     try {
-      console.log("Installing on", branch);
+      const sources = { github, npm };
+      const numSources = Object.values(sources).filter((x) => x).length;
+      if (numSources > 1) {
+        throw new MUDError(`Options ${Object.keys(sources).join(", ")} are mutually exclusive`);
+      }
+      if (!restore && numSources === 0) {
+        throw new MUDError(`No source provided. Choose one of (${Object.keys(sources).join(", ")}).`);
+      }
 
       // Read the current package.json
       const rootPath = "./package.json";
@@ -49,10 +63,19 @@ const commandModule: CommandModule<Options, Options> = {
   },
 };
 
-function updatePackageJson(filePath: string, { backup, restore }: Options): { workspaces?: string[] } {
+function updatePackageJson(filePath: string, options: Options): { workspaces?: string[] } {
+  const { backup, restore, force } = options;
+  const backupFilePath = path.join(path.dirname(filePath), BACKUP_FILE);
+
+  // If `backup` is true and force not set, check if a backup file already exists and throw an error if it does
+  if (backup && !force && existsSync(backupFilePath)) {
+    throw new MUDError(
+      `A backup file already exists at ${backupFilePath}.\nUse --force to overwrite it or --restore to restore it.`
+    );
+  }
+
   console.log("Updating", filePath);
   const packageJson = readPackageJson(filePath);
-  const backupFilePath = path.join(path.dirname(filePath), BACKUP_FILE);
 
   // Load .mudinstall if `restore` is true
   const backupJson = restore ? readPackageJson(backupFilePath) : undefined;
@@ -88,7 +111,9 @@ function updatePackageJson(filePath: string, { backup, restore }: Options): { wo
   for (const key in packageJson.dependencies) {
     if (key.startsWith("@latticexyz")) {
       packageJson.dependencies[key] =
-        restore && backupJson ? backupJson.dependencies[key] : packageJson.dependencies[key];
+        restore && backupJson
+          ? backupJson.dependencies[key]
+          : updatedPackageVersion(packageJson.dependencies[key], options);
     }
   }
 
@@ -96,7 +121,9 @@ function updatePackageJson(filePath: string, { backup, restore }: Options): { wo
   for (const key in packageJson.devDependencies) {
     if (key.startsWith("@latticexyz")) {
       packageJson.devDependencies[key] =
-        restore && backupJson ? backupJson.devDependencies[key] : packageJson.devDependencies[key];
+        restore && backupJson
+          ? backupJson.devDependencies[key]
+          : updatedPackageVersion(packageJson.devDependencies[key], options);
     }
   }
 
@@ -121,6 +148,11 @@ function readPackageJson(path: string): {
   } catch {
     throw new MUDError("Could not read JSON at " + path);
   }
+}
+
+function updatedPackageVersion(currentValue: string, { npm }: Options) {
+  if (npm) return npm;
+  return currentValue;
 }
 
 export default commandModule;
