@@ -305,7 +305,7 @@ library StoreCore {
     uint256 tableId,
     bytes32[] memory key,
     uint8 schemaIndex,
-    uint256 startIndex,
+    uint256 startByteIndex,
     bytes memory dataToSet
   ) internal {
     Schema schema = getSchema(tableId);
@@ -315,8 +315,8 @@ library StoreCore {
     }
     // index must be checked because it could be arbitrarily large
     // (but dataToSet.length can be unchecked - it won't overflow into another slot due to gas costs and hashed slots)
-    if (startIndex > type(uint16).max) {
-      revert StoreCore_DataIndexOverflow(type(uint16).max, startIndex);
+    if (startByteIndex > type(uint16).max) {
+      revert StoreCore_DataIndexOverflow(type(uint16).max, startByteIndex);
     }
 
     // TODO add setItem-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
@@ -324,9 +324,9 @@ library StoreCore {
     {
       bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, schema);
       fullData = abi.encodePacked(
-        SliceLib.getSubslice(oldData, 0, startIndex).toBytes(),
+        SliceLib.getSubslice(oldData, 0, startByteIndex).toBytes(),
         dataToSet,
-        SliceLib.getSubslice(oldData, startIndex + dataToSet.length, oldData.length).toBytes()
+        SliceLib.getSubslice(oldData, startByteIndex + dataToSet.length, oldData.length).toBytes()
       );
     }
 
@@ -340,7 +340,7 @@ library StoreCore {
       hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
     }
 
-    StoreCoreInternal._setDynamicFieldItem(tableId, key, schema, schemaIndex, startIndex, dataToSet);
+    StoreCoreInternal._setDynamicFieldItem(tableId, key, schema, schemaIndex, startByteIndex, dataToSet);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
@@ -547,13 +547,13 @@ library StoreCoreInternal {
     bytes32[] memory key,
     Schema schema,
     uint8 schemaIndex,
-    uint256 startIndex,
+    uint256 startByteIndex,
     bytes memory dataToSet
   ) internal {
     uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
 
     // Set `dataToSet` at the given index
-    _setPartialDynamicData(tableId, key, dynamicSchemaIndex, startIndex, dataToSet);
+    _setPartialDynamicData(tableId, key, dynamicSchemaIndex, startByteIndex, dataToSet);
   }
 
   /************************************************************************
@@ -704,14 +704,14 @@ library StoreCoreInternal {
     uint256 tableId,
     bytes32[] memory key,
     uint8 dynamicSchemaIndex,
-    uint256 startIndex,
+    uint256 startByteIndex,
     bytes memory partialData
   ) internal {
     uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
     // start index is in bytes, whereas storage slots are in 32-byte words
-    dynamicDataLocation += startIndex / 32;
+    dynamicDataLocation += startByteIndex / 32;
     // partial storage slot offset (there is no inherent offset, as each dynamic field starts at its own storage slot)
-    uint256 offset = startIndex % 32;
+    uint256 offset = startByteIndex % 32;
     Storage.store({ storagePointer: dynamicDataLocation, offset: offset, data: partialData });
   }
 }

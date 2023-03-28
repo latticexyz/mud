@@ -94,13 +94,13 @@ library StoreSwitch {
     uint256 table,
     bytes32[] memory key,
     uint8 fieldIndex,
-    uint256 startIndex,
+    uint256 startByteIndex,
     bytes memory dataToSet
   ) internal {
     if (isDelegateCall()) {
-      StoreCore.updateInField(table, key, fieldIndex, startIndex, dataToSet);
+      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
     } else {
-      IStore(msg.sender).updateInField(table, key, fieldIndex, startIndex, dataToSet);
+      IStore(msg.sender).updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
     }
   }
 

@@ -84,7 +84,7 @@ interface IWorldCore {
   ) external;
 
   /**
-   * Update data at `startIndex` of a field in the table at the given namespace and file.
+   * Update data at `startByteIndex` of a field in the table at the given namespace and file.
    * Requires the caller to have access to the namespace or file.
    */
   function updateInField(
@@ -92,7 +92,7 @@ interface IWorldCore {
     bytes16 file,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    uint256 startIndex,
+    uint256 startByteIndex,
     bytes calldata dataToSet
   ) external;
 

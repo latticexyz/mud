@@ -51,10 +51,10 @@ contract StoreCoreTest is Test, StoreView {
     uint256 table,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    uint256 startIndex,
+    uint256 startByteIndex,
     bytes calldata dataToSet
   ) public override {
-    StoreCore.updateInField(table, key, schemaIndex, startIndex, dataToSet);
+    StoreCore.updateInField(table, key, schemaIndex, startByteIndex, dataToSet);
   }
 
   // Expose an external deleteRecord function for testing purposes of indexers (see testHooks)
@@ -774,7 +774,7 @@ contract StoreCoreTest is Test, StoreView {
     assertEq(bytes32(StoreCore.getField(table, key, 0)), firstDataBytes);
     assertEq(StoreCore.getField(table, key, 1), newSecondDataBytes);
 
-    // startIndex must not overflow
+    // startByteIndex must not overflow
     vm.expectRevert(
       abi.encodeWithSelector(StoreCore.StoreCore_DataIndexOverflow.selector, type(uint16).max, type(uint32).max)
     );

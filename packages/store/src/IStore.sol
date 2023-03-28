@@ -33,7 +33,7 @@ interface IStore {
     uint256 table,
     bytes32[] calldata key,
     uint8 schemaIndex,
-    uint256 startIndex,
+    uint256 startByteIndex,
     bytes calldata dataToSet
   ) external;
 
