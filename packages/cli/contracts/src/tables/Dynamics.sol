@@ -104,6 +104,14 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
+  /** Push an element to staticB32 */
+  function updateStaticB32(bytes32 key, uint256 _index, bytes32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 0, _index * 32, abi.encodePacked((_element)));
+  }
+
   /** Get staticI32 */
   function getStaticI32(bytes32 key) internal view returns (int32[2] memory staticI32) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -127,6 +135,14 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
+  }
+
+  /** Push an element to staticI32 */
+  function updateStaticI32(bytes32 key, uint256 _index, int32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 1, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Get staticU128 */
@@ -154,6 +170,14 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
+  /** Push an element to staticU128 */
+  function updateStaticU128(bytes32 key, uint256 _index, uint128 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 2, _index * 16, abi.encodePacked((_element)));
+  }
+
   /** Get staticAddrs */
   function getStaticAddrs(bytes32 key) internal view returns (address[4] memory staticAddrs) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -177,6 +201,14 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
+  }
+
+  /** Push an element to staticAddrs */
+  function updateStaticAddrs(bytes32 key, uint256 _index, address _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 3, _index * 20, abi.encodePacked((_element)));
   }
 
   /** Get staticBools */
@@ -204,6 +236,14 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 4, abi.encodePacked((_element)));
   }
 
+  /** Push an element to staticBools */
+  function updateStaticBools(bytes32 key, uint256 _index, bool _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 4, _index * 1, abi.encodePacked((_element)));
+  }
+
   /** Get u64 */
   function getU64(bytes32 key) internal view returns (uint64[] memory u64) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -227,6 +267,14 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.pushToField(_tableId, _primaryKeys, 5, abi.encodePacked((_element)));
+  }
+
+  /** Push an element to u64 */
+  function updateU64(bytes32 key, uint256 _index, uint64 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 5, _index * 8, abi.encodePacked((_element)));
   }
 
   /** Get str */
@@ -254,6 +302,14 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 6, bytes((_slice)));
   }
 
+  /** Push a slice to str */
+  function updateStr(bytes32 key, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 6, _index * 1, bytes((_slice)));
+  }
+
   /** Get b */
   function getB(bytes32 key) internal view returns (bytes memory b) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -277,6 +333,14 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.pushToField(_tableId, _primaryKeys, 7, bytes((_slice)));
+  }
+
+  /** Push a slice to b */
+  function updateB(bytes32 key, uint256 _index, bytes memory _slice) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 7, _index * 1, bytes((_slice)));
   }
 
   /** Get the full data */

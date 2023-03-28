@@ -116,6 +116,22 @@ library KeysWithValue {
     _store.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
+  /** Push an element to keysWithValue */
+  function update(uint256 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((valueHash));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 0, _index * 32, abi.encodePacked((_element)));
+  }
+
+  /** Push an element to keysWithValue (using the specified store) */
+  function update(IStore _store, uint256 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((valueHash));
+
+    _store.updateInField(_tableId, _primaryKeys, 0, _index * 32, abi.encodePacked((_element)));
+  }
+
   /** Tightly pack full data using this table's schema */
   function encode(bytes32[] memory keysWithValue) internal view returns (bytes memory) {
     uint16[] memory _counters = new uint16[](1);

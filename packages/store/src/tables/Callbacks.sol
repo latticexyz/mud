@@ -79,6 +79,14 @@ library Callbacks {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
+  /** Push an element to value */
+  function update(bytes32 key, uint256 _index, bytes24 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 0, _index * 24, abi.encodePacked((_element)));
+  }
+
   /** Tightly pack full data using this table's schema */
   function encode(bytes24[] memory value) internal view returns (bytes memory) {
     uint16[] memory _counters = new uint16[](1);

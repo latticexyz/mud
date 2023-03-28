@@ -126,6 +126,14 @@ library Mixed {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
+  /** Push an element to a32 */
+  function updateA32(bytes32 key, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 2, _index * 4, abi.encodePacked((_element)));
+  }
+
   /** Get s */
   function getS(bytes32 key) internal view returns (string memory s) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -149,6 +157,14 @@ library Mixed {
     _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.pushToField(_tableId, _primaryKeys, 3, bytes((_slice)));
+  }
+
+  /** Push a slice to s */
+  function updateS(bytes32 key, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 3, _index * 1, bytes((_slice)));
   }
 
   /** Get the full data */
