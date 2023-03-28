@@ -100,9 +100,6 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
     }
   }
 
-  console.log("Dependencies", mudDependencies);
-  console.log("Dev Dependencies", mudDevDependencies);
-
   // Back up the current dependencies if `backup` is true
   if (backup) {
     writeFileSync(
