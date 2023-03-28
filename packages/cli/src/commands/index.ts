@@ -17,7 +17,7 @@ import tablegen from "./tablegen.js";
 import tsgen from "./tsgen.js";
 import deployV2 from "./deploy-v2.js";
 import worldgen from "./worldgen.js";
-import install from "./install.js";
+import setVersion from "./set-version.js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each command has different options
 export const commands: CommandModule<any, any>[] = [
@@ -37,5 +37,5 @@ export const commands: CommandModule<any, any>[] = [
   trace,
   types,
   worldgen,
-  install,
+  setVersion,
 ];
