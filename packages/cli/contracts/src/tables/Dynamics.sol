@@ -104,7 +104,7 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
-  /** Push an element to staticB32 */
+  /** Update an element of staticB32 at `_index` */
   function updateStaticB32(bytes32 key, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -137,7 +137,7 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
   }
 
-  /** Push an element to staticI32 */
+  /** Update an element of staticI32 at `_index` */
   function updateStaticI32(bytes32 key, uint256 _index, int32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -170,7 +170,7 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
-  /** Push an element to staticU128 */
+  /** Update an element of staticU128 at `_index` */
   function updateStaticU128(bytes32 key, uint256 _index, uint128 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -203,7 +203,7 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
   }
 
-  /** Push an element to staticAddrs */
+  /** Update an element of staticAddrs at `_index` */
   function updateStaticAddrs(bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -236,7 +236,7 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 4, abi.encodePacked((_element)));
   }
 
-  /** Push an element to staticBools */
+  /** Update an element of staticBools at `_index` */
   function updateStaticBools(bytes32 key, uint256 _index, bool _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -269,7 +269,7 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 5, abi.encodePacked((_element)));
   }
 
-  /** Push an element to u64 */
+  /** Update an element of u64 at `_index` */
   function updateU64(bytes32 key, uint256 _index, uint64 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -302,7 +302,7 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 6, bytes((_slice)));
   }
 
-  /** Push a slice to str */
+  /** Update a slice of str at `_index` */
   function updateStr(bytes32 key, uint256 _index, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -335,7 +335,7 @@ library Dynamics {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 7, bytes((_slice)));
   }
 
-  /** Push a slice to b */
+  /** Update a slice of b at `_index` */
   function updateB(bytes32 key, uint256 _index, bytes memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));

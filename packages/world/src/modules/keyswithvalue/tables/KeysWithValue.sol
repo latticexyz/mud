@@ -116,7 +116,7 @@ library KeysWithValue {
     _store.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
-  /** Push an element to keysWithValue */
+  /** Update an element of keysWithValue at `_index` */
   function update(uint256 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((valueHash));
@@ -124,7 +124,7 @@ library KeysWithValue {
     StoreSwitch.updateInField(_tableId, _primaryKeys, 0, _index * 32, abi.encodePacked((_element)));
   }
 
-  /** Push an element to keysWithValue (using the specified store) */
+  /** Update an element of keysWithValue (using the specified store) at `_index` */
   function update(IStore _store, uint256 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((valueHash));

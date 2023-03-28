@@ -96,7 +96,7 @@ library Singleton {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
   }
 
-  /** Push an element to v2 */
+  /** Update an element of v2 at `_index` */
   function updateV2(uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
@@ -125,7 +125,7 @@ library Singleton {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
-  /** Push an element to v3 */
+  /** Update an element of v3 at `_index` */
   function updateV3(uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
@@ -154,7 +154,7 @@ library Singleton {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
   }
 
-  /** Push an element to v4 */
+  /** Update an element of v4 at `_index` */
   function updateV4(uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
