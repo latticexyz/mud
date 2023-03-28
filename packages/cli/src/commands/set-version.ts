@@ -123,9 +123,7 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   for (const key in packageJson.devDependencies) {
     if (key.startsWith("@latticexyz")) {
       packageJson.devDependencies[key] =
-        restore && backupJson
-          ? backupJson.devDependencies[key]
-          : updatedPackageVersion(packageJson.devDependencies[key], options);
+        restore && backupJson ? backupJson.devDependencies[key] : updatedPackageVersion(key, options);
     }
   }
 
