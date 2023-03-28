@@ -15,7 +15,8 @@
     "directory": "packages/cli"
   },
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
+    "postinstall": "yarn build",
+    "prepare": "chmod u+x git-install.sh",
     "codegen": "ts-node --esm --files ./scripts/codegen.ts",
     "lint": "eslint . --ext .ts",
     "dev": "tsup --watch",
