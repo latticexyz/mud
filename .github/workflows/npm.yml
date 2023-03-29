@@ -1,14 +1,17 @@
-name: Build
+name: NPM Release 📦
 
-# Verifies build artifacts in pull requests.
-# Note: this workflow does not trigger on pushes to main,
-# because the npm workflow includes a build+verify step.
+# Releases a canary release when new commits merge to main
+# Releases an official release when workflow dispactch is
+# manually triggered
 on:
-  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
-    name: Build and validate artifacts
+    name: Publish to NPM 📦
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -55,3 +58,16 @@ jobs:
             git --no-pager diff
             exit 1
           fi
+
+      - name: Set deployment token
+        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish canary release to NPM 📦
+        if: github.event_name != 'workflow_dispatch'
+        run: yarn release:canary --yes --no-verify-access
+
+      - name: Publish new release to NPM 📦
+        if: github.event_name == 'workflow_dispatch'
+        run: yarn release:ci
