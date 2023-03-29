@@ -1,3 +1,5 @@
+name: NPM Build 📦
+
 # Releases a canary release when new commits merge to main
 # Releases an official release when workflow dispactch is
 # manually triggered
@@ -6,8 +8,6 @@ on:
   push:
     branches:
       - main
-
-name: NPM Build 📦
 
 jobs:
   build:
@@ -59,7 +59,11 @@ jobs:
             exit 1
           fi
 
-      - name: Publishing canary releases to NPM 📦
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Publishing canary release to NPM 📦
         if: github.event_name != 'workflow_dispatch'
         run: yarn release:canary
         env:
