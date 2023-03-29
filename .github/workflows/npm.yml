@@ -1,4 +1,4 @@
-name: NPM Build 📦
+name: NPM Release 📦
 
 # Releases a canary release when new commits merge to main
 # Releases an official release when workflow dispactch is
@@ -60,10 +60,6 @@ jobs:
             exit 1
           fi
 
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       - name: Set deployment token
         run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
         env:
