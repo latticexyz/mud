@@ -1,52 +1,45 @@
+import chalk from "chalk";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
 import { logError, MUDError } from "../utils/errors.js";
 
 type Options = {
-  github?: string;
   backup?: boolean;
   force?: boolean;
   restore?: boolean;
-  npm?: string;
+  mudVersion?: string;
 };
 
 const BACKUP_FILE = ".mudbackup";
 
-function getGitUrl(pkg: string, branch: string) {
-  return `https://gitpkg.now.sh/latticexyz/mud/packages/${pkg}?${branch}`;
-}
-
 const commandModule: CommandModule<Options, Options> = {
-  command: "set-version",
+  command: "set-version <mudVersion>",
 
   describe: "Install a custom MUD version (local or GitHub) and backup the previous version",
 
   builder(yargs) {
-    return yargs.options({
-      github: { type: "string", description: "The MUD GitHub branch to install from" },
-      npm: { type: "string", description: "The MUD NPM version to install" },
-      backup: { type: "boolean", description: "Back up the current MUD versions to `.mudinstall`" },
-      force: {
-        type: "boolean",
-        description: "Backup fails if a .mudinstall file is found, unless --force is provided",
-      },
-      restore: { type: "boolean", description: "Restore the previous MUD versions from `.mudinstall`" },
-    });
+    return yargs
+      .options({
+        backup: { type: "boolean", description: "Back up the current MUD versions to `.mudinstall`" },
+        force: {
+          type: "boolean",
+          description: "Backup fails if a .mudinstall file is found, unless --force is provided",
+        },
+        restore: { type: "boolean", description: "Restore the previous MUD versions from `.mudinstall`" },
+      })
+      .positional("mudVersion", { type: "string", demandOption: true, description: "The MUD version to install" });
   },
 
   async handler(options) {
-    const { github, npm, restore } = options;
-
     try {
-      const sources = { github, npm };
-      const numSources = Object.values(sources).filter((x) => x).length;
-      if (numSources > 1) {
-        throw new MUDError(`Options ${Object.keys(sources).join(", ")} are mutually exclusive`);
+      if (!options.mudVersion && !options.restore) {
+        throw new MUDError(`Version parameter is required unless --restore is provided.`);
       }
-      if (!restore && numSources === 0) {
-        throw new MUDError(`No source provided. Choose one of (${Object.keys(sources).join(", ")}).`);
-      }
+
+      // Resolve the `canary` version number if needed
+      options.mudVersion =
+        options.mudVersion === "canary" ? await getCanaryVersion("@latticexyz/world") : options.mudVersion;
 
       // Read the current package.json
       const rootPath = "./package.json";
@@ -68,7 +61,7 @@ const commandModule: CommandModule<Options, Options> = {
 };
 
 function updatePackageJson(filePath: string, options: Options): { workspaces?: string[] } {
-  const { backup, restore, force } = options;
+  const { backup, restore, force, mudVersion } = options;
   const backupFilePath = path.join(path.dirname(filePath), BACKUP_FILE);
 
   // If `backup` is true and force not set, check if a backup file already exists and throw an error if it does
@@ -78,7 +71,6 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
     );
   }
 
-  console.log("Updating", filePath);
   const packageJson = readPackageJson(filePath);
 
   // Load .mudinstall if `restore` is true
@@ -106,13 +98,14 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
       backupFilePath,
       JSON.stringify({ dependencies: mudDependencies, devDependencies: mudDevDependencies }, null, 2)
     );
+    console.log(chalk.green(`Backed up MUD dependencies from ${filePath} to ${backupFilePath}`));
   }
 
   // Update the dependencies
   for (const key in packageJson.dependencies) {
     if (key.startsWith("@latticexyz")) {
       packageJson.dependencies[key] =
-        restore && backupJson ? backupJson.dependencies[key] : updatedPackageVersion(key, options);
+        restore && backupJson ? backupJson.dependencies[key] : mudVersion || packageJson.dependencies[key];
     }
   }
 
@@ -120,16 +113,23 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   for (const key in packageJson.devDependencies) {
     if (key.startsWith("@latticexyz")) {
       packageJson.devDependencies[key] =
-        restore && backupJson ? backupJson.devDependencies[key] : updatedPackageVersion(key, options);
+        restore && backupJson ? backupJson.devDependencies[key] : mudVersion || packageJson.devDependencies[key];
     }
   }
 
   // Write the updated package.json
   writeFileSync(filePath, JSON.stringify(packageJson, null, 2) + "\n");
 
+  console.log(`Updating ${filePath}`);
+  logComparison(mudDependencies, packageJson.dependencies);
+  logComparison(mudDevDependencies, packageJson.devDependencies);
+
   // Remove the backup file if `restore` is true and `backup` is false
   // because the old backup file is no longer needed
-  if (restore && !backup) rmSync(backupFilePath);
+  if (restore && !backup) {
+    rmSync(backupFilePath);
+    console.log(chalk.green(`Cleaned up ${backupFilePath}`));
+  }
 
   return packageJson;
 }
@@ -147,10 +147,24 @@ function readPackageJson(path: string): {
   }
 }
 
-function updatedPackageVersion(pkg: string, { npm, github }: Options) {
-  if (npm) return npm;
-  if (github) return getGitUrl(pkg.replace("@latticexyz/", ""), github);
-  return "";
+async function getCanaryVersion(pkg: string) {
+  try {
+    console.log(chalk.blue("fetching MUD canary version..."));
+    const result = await (await fetch(`https://registry.npmjs.org/${pkg}`)).json();
+    const canary = result["dist-tags"].canary;
+    console.log(chalk.green("MUD canary version:", canary));
+    return canary;
+  } catch (e) {
+    throw new MUDError(`Could not fetch canary version of ${pkg}`);
+  }
+}
+
+function logComparison(prev: Record<string, string>, curr: Record<string, string>) {
+  for (const key in prev) {
+    if (prev[key] !== curr[key]) {
+      console.log(`${key}: ${chalk.red(prev[key])} -> ${chalk.green(curr[key])}`);
+    }
+  }
 }
 
 export default commandModule;
