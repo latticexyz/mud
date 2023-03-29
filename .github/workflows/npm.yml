@@ -67,8 +67,8 @@ jobs:
 
       - name: Publish canary release to NPM 📦
         if: github.event_name != 'workflow_dispatch'
-        run: yarn release:canary --no-verify-access
+        run: yarn release:canary --yes --no-verify-access
 
       - name: Publish new release to NPM 📦
         if: github.event_name == 'workflow_dispatch'
-        run: yarn release --no-verify-access
+        run: yarn release:ci
