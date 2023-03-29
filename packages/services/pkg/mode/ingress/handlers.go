@@ -73,12 +73,12 @@ func (il *IngressLayer) handleSetRecordEvent(event *storecore.StorecoreStoreSetR
 	println("-------------------------------------------------------")
 
 	switch tableId {
-	case storecore.Internal__SchemaTableId():
+	case storecore.Mudstore__SchemaTableId():
 		println("----------------handleSchemaTableEvent-----------------")
 		println("-------------------------------------------------------")
 		println("-------------------------------------------------------")
 		il.handleSchemaTableEvent(event)
-	case storecore.Internal__MetadataTableId():
+	case storecore.Mudstore__MetadataTableId():
 		println("---------------handleMetadataTableEvent----------------")
 		println("-------------------------------------------------------")
 		println("-------------------------------------------------------")
@@ -318,6 +318,26 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 	})
 	il.wl.UpdateOrInsertRow(schemaTableSchema, row, filter)
 
+	// Now insert the record into the mudstore schema table. (This is a separate table from the internal schema table
+	// and is actually the one that the event table ID identifies).
+	mudstoreSchemaTableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), storecore.Mudstore__SchemaTableName())
+	if err != nil {
+		il.logger.Fatal("error getting mudstore schema table schema", zap.Error(err))
+		return
+	}
+	// Decode the data directly into the table row.
+	decodedFieldData := storecore.DecodeData(event.Data, *mudstoreSchemaTableSchema.StoreCoreSchemaTypeKV.Value)
+	// Build the decoded key data directly. This is because we save the table ID as a hex encoded string of uint256.
+	decodedKeyData := storecore.NewDecodedDataFromSchemaType([]storecore.SchemaType{storecore.STRING})
+	decodedKeyData.Set(storecore.STRING.String(), &storecore.DataSchemaTypePair{
+		Data:       tableId,
+		SchemaType: storecore.STRING,
+	})
+	// Create the row.
+	mudstoreSchemaTableRow := write.RowFromDecodedData(decodedKeyData, decodedFieldData, mudstoreSchemaTableSchema)
+	// Insert the row.
+	il.wl.InsertRow(mudstoreSchemaTableSchema, mudstoreSchemaTableRow)
+
 	il.logger.Info("schema table event handled", zap.String("world_address", event.WorldAddress()), zap.String("table_name", hexutil.Encode(event.Key[0][:])), zap.String("schema", string(tableSchemaJson)))
 }
 
@@ -340,7 +360,7 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	}
 
 	// Fetch the schema for the metadata table.
-	metadataTableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), schema.TableIdToTableName(storecore.Internal__MetadataTableId()))
+	metadataTableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), schema.TableIdToTableName(storecore.Mudstore__MetadataTableId()))
 	if err != nil {
 		il.logger.Error("failed to fetch schema for metadata table", zap.Error(err))
 		return
@@ -426,6 +446,25 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 
 	// Update the table field names based on the new metadata.
 	il.wl.RenameTableFields(tableSchema, oldTableFieldNames, tableSchema.FieldNames)
+
+	// Now insert the record into the mudstore metadata table.
+	mudstoreMetadataTableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), storecore.Mudstore__MetadataTableName())
+	if err != nil {
+		il.logger.Fatal("error getting mudstore metadata table schema", zap.Error(err))
+		return
+	}
+	// Decode the data directly into the table row.
+	decodedFieldData := storecore.DecodeData(event.Data, *mudstoreMetadataTableSchema.StoreCoreSchemaTypeKV.Value)
+	// Build the decoded key data directly. This is because we save the table ID as a hex encoded string of uint256.
+	decodedKeyData := storecore.NewDecodedDataFromSchemaType([]storecore.SchemaType{storecore.STRING})
+	decodedKeyData.Set(storecore.STRING.String(), &storecore.DataSchemaTypePair{
+		Data:       tableId,
+		SchemaType: storecore.STRING,
+	})
+	// Create the row.
+	mudstoreSchemaTableRow := write.RowFromDecodedData(decodedKeyData, decodedFieldData, mudstoreMetadataTableSchema)
+	// Insert the row.
+	il.wl.InsertRow(mudstoreMetadataTableSchema, mudstoreSchemaTableRow)
 
 	il.logger.Info("metadata table event handled (schema updated)", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId), zap.String("schema", string(tableSchemaJson)))
 }
