@@ -64,7 +64,7 @@
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
     "release": "yarn && lerna publish --no-private --force-publish && yarn retype:updateversion",
-    "release:canary": "yarn && lerna publish --canary --no-private --force-publish && yarn retype:updateversion",
+    "release:canary": "lerna publish --canary --no-private --force-publish",
     "release:manual": "node scripts/workspaceRun.mjs release",
     "release:yalc": "(yarn entry:dist && yarn lerna exec npx yalc push); yarn entry:src",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
