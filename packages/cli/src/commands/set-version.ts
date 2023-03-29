@@ -14,21 +14,20 @@ type Options = {
 const BACKUP_FILE = ".mudbackup";
 
 const commandModule: CommandModule<Options, Options> = {
-  command: "set-version <mudVersion>",
+  command: "set-version",
 
-  describe: "Install a custom MUD version (local or GitHub) and backup the previous version",
+  describe: "Install a custom MUD version and optionally backup the previously installed version",
 
   builder(yargs) {
-    return yargs
-      .options({
-        backup: { type: "boolean", description: "Back up the current MUD versions to `.mudinstall`" },
-        force: {
-          type: "boolean",
-          description: "Backup fails if a .mudinstall file is found, unless --force is provided",
-        },
-        restore: { type: "boolean", description: "Restore the previous MUD versions from `.mudinstall`" },
-      })
-      .positional("mudVersion", { type: "string", demandOption: true, description: "The MUD version to install" });
+    return yargs.options({
+      backup: { type: "boolean", description: "Back up the current MUD versions to `.mudinstall`" },
+      force: {
+        type: "boolean",
+        description: "Backup fails if a .mudinstall file is found, unless --force is provided",
+      },
+      restore: { type: "boolean", description: "Restore the previous MUD versions from `.mudinstall`" },
+      mudVersion: { alias: "v", type: "string", description: "The MUD version to install" },
+    });
   },
 
   async handler(options) {
