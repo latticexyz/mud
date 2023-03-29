@@ -14,6 +14,7 @@ import faucet from "./faucet.js";
 import gasReport from "./gas-report.js";
 import hello from "./hello.js";
 import tablegen from "./tablegen.js";
+import tsgen from "./tsgen.js";
 import deployV2 from "./deploy-v2.js";
 import worldgen from "./worldgen.js";
 
@@ -30,6 +31,7 @@ export const commands: CommandModule<any, any>[] = [
   hello,
   systemTypes,
   tablegen,
+  tsgen,
   test,
   trace,
   types,

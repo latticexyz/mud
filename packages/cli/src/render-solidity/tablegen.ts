@@ -4,7 +4,6 @@ import { getTableOptions } from "./tableOptions.js";
 import { renderTable } from "./renderTable.js";
 import { renderTypesFromConfig } from "./renderTypesFromConfig.js";
 import { formatAndWriteSolidity } from "../utils/formatAndWrite.js";
-import { tsgen } from "../render-ts/tsgen.js";
 
 export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {
   const allTableOptions = getTableOptions(config);
@@ -20,11 +19,5 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string)
     const fullOutputPath = path.join(outputBaseDirectory, `${config.userTypesPath}.sol`);
     const output = renderTypesFromConfig(config);
     formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
-  }
-
-  // TODO this should be a plugin
-  // generate typescript definitions
-  if (config.recsGenerate) {
-    tsgen(config);
   }
 }
