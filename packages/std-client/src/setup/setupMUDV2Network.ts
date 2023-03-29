@@ -12,8 +12,8 @@ import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
 import { Components, createWorld, defineComponent, Type } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256, TableId } from "@latticexyz/utils";
-import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
-import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
+import { World as WorldContract } from "@latticexyz/world/types/ethers-contracts/World";
+import { abi as WorldAbi } from "@latticexyz/world/abi/World.json";
 import { defineStringComponent } from "../components";
 import { ContractComponent, SetupContractConfig } from "./types";
 import { applyNetworkUpdates, createEncoders } from "./utils";
@@ -123,6 +123,7 @@ export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>
     initialGasPrice || Math.ceil((await signerOrProvider.get().getGasPrice()).toNumber() * 1.3)
   );
 
+  // TODO: make this v2 compatible
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, gasPriceInput$, {
     devMode: networkConfig.devMode,
   });
