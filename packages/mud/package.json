@@ -14,7 +14,7 @@
   "bin": "./packages/cli/dist/index.js",
   "scripts": {
     "TODO": "echo 'This subpackage is a workaround for the limitation of yarn requiring the root to be private. Revisit this when switchign to pnpm.'",
-    "prepare": "rimraf packages && cp -r node_modules/@latticexyz packages",
+    "prepare": "shx rm -rf packages && shx cp -r node_modules/@latticexyz packages",
     "release": "npm publish --access=public",
     "test": "echo 'nothing to test'"
   },
@@ -22,6 +22,6 @@
     "@latticexyz/cli": "^1.41.0"
   },
   "devDependencies": {
-    "rimraf": "^4.4.1"
+    "shx": "^0.3.4"
   }
 }
