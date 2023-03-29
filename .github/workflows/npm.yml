@@ -18,6 +18,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+          # The version number of a canary release comes from git describe, which counts the amount of commits from the last tag.
+          # Without fetch-depth: 0 only a single commit is fetched, for the ref/SHA that triggered the workflow, so the canary version is always 0.
+          # See https://github.com/actions/checkout
+          fetch-depth: 0
 
       - name: Setup node
         uses: actions/setup-node@v3
