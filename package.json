@@ -6,7 +6,10 @@
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git"
   },
-  "private": true,
+  "exports": {
+    "./cli": "./packages/cli/dist/index.js"
+  },
+  "bin": "./packages/cli/dist/mud.js",
   "workspaces": {
     "packages": [
       "packages/utils",
@@ -67,7 +70,7 @@
     "release:ci": "yarn && lerna publish --no-private --force-publish --yes --no-verify-access && yarn retype:updateversion",
     "release:canary": "lerna publish --canary --no-private --force-publish",
     "release:manual": "node scripts/workspaceRun.mjs release",
-    "release:yalc": "(yarn entry:dist && yarn lerna exec npx yalc push); yarn entry:src",
+    "release:yalc": "npx yalc push && (yarn entry:dist && yarn lerna exec npx yalc push); yarn entry:src",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "yarn lerna run link",
     "docs": "yarn docs:prepare && yarn retype build",

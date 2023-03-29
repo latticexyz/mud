@@ -6,9 +6,7 @@
   "types": "dist/index.d.ts",
   "type": "module",
   "license": "MIT",
-  "bin": {
-    "mud": "./dist/mud.js"
-  },
+  "bin": "./dist/mud.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
