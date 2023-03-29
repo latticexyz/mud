@@ -3,18 +3,17 @@
   "license": "MIT",
   "version": "1.41.1",
   "description": "Mud is the fabric of autonomous worlds",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/mud"
   },
-  "exports": {
-    "./cli": "./packages/cli/dist/index.js"
-  },
-  "bin": "./packages/cli/dist/index.js",
+  "bin": "./dist/mud.js",
   "scripts": {
     "TODO": "echo 'This subpackage is a workaround for the limitation of yarn requiring the root to be private. Revisit this when switchign to pnpm.'",
-    "prepare": "shx rm -rf packages && shx cp -r node_modules/@latticexyz packages",
+    "prepare": "yarn build",
+    "build": "tsup",
     "release": "npm publish --access=public",
     "test": "echo 'nothing to test'"
   },
@@ -22,6 +21,7 @@
     "@latticexyz/cli": "^1.41.0"
   },
   "devDependencies": {
-    "shx": "^0.3.4"
+    "shx": "^0.3.4",
+    "tsup": "^6.7.0"
   }
 }

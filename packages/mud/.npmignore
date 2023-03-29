@@ -1,4 +1,4 @@
 *
 
 !package.json
-!packages/cli/**
+!dist/**
