@@ -7,11 +7,12 @@ import {
   createSystemExecutor,
   Ack,
   InputType,
+  SingletonID,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { defineComponent, Type, World } from "@latticexyz/recs";
+import { defineComponent, Type, World, EntityID } from "@latticexyz/recs";
 import { computed } from "mobx";
-import { keccak256, TableId } from "@latticexyz/utils";
+import { keccak256 } from "@latticexyz/utils";
 import { Contract, ContractInterface } from "ethers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
@@ -24,8 +25,6 @@ import {
   createEncoders,
   createSystemCallStreams,
 } from "./utils";
-import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
-import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
@@ -67,25 +66,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     )
   );
 
-  const storeSchemaTableId = new TableId("mudstore", "schema");
-  const storeSchemaComponent = defineComponent(
-    world,
-    { schema: Type.T },
-    {
-      metadata: {
-        contractId: storeSchemaTableId.toHexString(),
-        tableId: storeSchemaTableId.toString(),
-      },
-    }
-  );
-
-  const storeComponents = defineStoreComponents(world);
-  const worldComponents = defineWorldComponents(world);
-
   const components: NetworkComponents<C> = {
-    storeSchemaComponent,
-    ...storeComponents,
-    ...worldComponents,
     ...contractComponents,
     SystemsRegistry,
     ComponentsRegistry,
@@ -112,6 +93,13 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
 
   const network = await createNetwork(networkConfig);
   world.registerDisposer(network.dispose);
+
+  // For LoadingState updates
+  const singletonEntity = world.registerEntity({ id: SingletonID });
+  // Register player entity
+  const address = network.connectedAddress.get();
+  const playerEntityId = address ? (address as EntityID) : undefined;
+  const playerEntity = playerEntityId ? world.registerEntity({ id: playerEntityId }) : undefined;
 
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
@@ -193,6 +181,10 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     registerComponent,
     registerSystem,
     components,
+    singletonEntityId: SingletonID,
+    singletonEntity,
+    playerEntityId,
+    playerEntity,
   };
 }
 
