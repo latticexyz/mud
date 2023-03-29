@@ -10,13 +10,7 @@ import { defineComponent, Type as RecsType, World } from "@latticexyz/recs";
 
 export function defineContractComponents(world: World) {
   return {
-    ${tables
-      .map(
-        (table) => `
-      ${table.tableName}: ${renderDefineComponent(table)},
-    `
-      )
-      .join("")}
+    ${tables.map((table) => `${table.tableName}: ${renderDefineComponent(table)},`).join("")}
   }
 }
 `;
