@@ -8,6 +8,7 @@ on:
   push:
     branches:
       - main
+      - willc/npm # TODO: only for testing purposes, remove before merging into main
 
 jobs:
   build:
