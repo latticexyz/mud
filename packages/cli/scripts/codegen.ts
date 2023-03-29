@@ -54,6 +54,8 @@ const config = storeConfig({
     Enum1: ["E1", "E2", "E3"],
     Enum2: ["E1"],
   },
+
+  recsGenerate: false,
 });
 
 // Aside from avoiding `mud.config.mts` in cli package (could cause issues),

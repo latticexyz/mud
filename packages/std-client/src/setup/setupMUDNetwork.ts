@@ -24,9 +24,8 @@ import {
   createEncoders,
   createSystemCallStreams,
 } from "./utils";
-import { defineStoreComponents } from "@latticexyz/recs";
-import storeMudConfig from "@latticexyz/store/mud.config.mjs";
-import worldMudConfig from "@latticexyz/world/mud.config.mjs";
+import { defineComponents as defineStoreComponents } from "../mud-definitions/store/tables";
+import { defineComponents as defineWorldComponents } from "../mud-definitions/world/tables";
 
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
@@ -80,8 +79,8 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     }
   );
 
-  const storeComponents = defineStoreComponents(world, storeMudConfig);
-  const worldComponents = defineStoreComponents(world, worldMudConfig);
+  const storeComponents = defineStoreComponents(world);
+  const worldComponents = defineWorldComponents(world);
 
   const components: NetworkComponents<C> = {
     storeSchemaComponent,

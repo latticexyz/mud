@@ -192,6 +192,12 @@ export type StoreUserConfig<
   tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
   /** Path to the file where common user types will be generated and imported from. Default is "Types" */
   userTypesPath?: string;
+
+  // TODO this should be a plugin
+  /** Whether to generate recs definitions. Default is true. */
+  recsGenerate?: boolean;
+  /** Directory to output recs definition files. Default is "ts-definitions". (relative to package root, not `src`) */
+  recsOut?: string;
 };
 
 /** Type helper for defining StoreUserConfig */
@@ -211,6 +217,9 @@ const StoreConfigUnrefined = z
     storeImportPath: z.string().default("@latticexyz/store/src/"),
     tables: zTablesConfig,
     userTypesPath: z.string().default("Types"),
+
+    recsGenerate: z.boolean().default(true),
+    recsOut: z.string().default("recs-definitions"),
   })
   .merge(zEnumsConfig);
 

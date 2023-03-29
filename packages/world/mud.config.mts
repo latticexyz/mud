@@ -108,4 +108,6 @@ export default mudConfig({
   enums: {
     Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
   },
+
+  recsGenerate: false,
 });

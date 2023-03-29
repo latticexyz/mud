@@ -8,6 +8,8 @@ export default defineConfig({
     "src/render-table/index.ts",
     "src/utils/index.ts",
     "src/utils/deprecated/index.ts",
+    "src/render-solidity/index.ts",
+    "src/render-ts/index.ts",
   ],
   outDir: "dist",
   platform: "node",

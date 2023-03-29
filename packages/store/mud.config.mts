@@ -31,4 +31,6 @@ export default storeConfig({
       },
     },
   },
+
+  recsGenerate: false,
 });
