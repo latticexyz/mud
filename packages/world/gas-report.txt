@@ -9,6 +9,7 @@
 (test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600319
 (test/KeysWithValueModule.t.sol) | set a field on a table with KeysWithValueModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1))]: 177731
 (test/KeysWithValueModule.t.sol) | change a field on a table with KeysWithValueModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2))]: 142076
+(test/World.t.sol) | Call an autonomous system [world.call("namespace", "testSystem", abi.encodeWithSelector(WorldTestSystem.emitCallType.selector))]: 8797746687694640000
 (test/World.t.sol) | Delete record [world.deleteRecord(namespace, file, singletonKey)]: 16115
 (test/World.t.sol) | Push data to the table [world.pushToField(namespace, file, keyTuple, 0, encodedData)]: 96477
 (test/World.t.sol) | Register a fallback system [bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, "", "")]: 81251

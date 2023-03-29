@@ -580,6 +580,7 @@ contract WorldTest is Test {
     // Call the sysyem
     vm.expectEmit(true, true, true, true);
     emit WorldTestSystemLog("call");
+    // !gasreport Call an autonomous system
     world.call("namespace", "testSystem", abi.encodeWithSelector(WorldTestSystem.emitCallType.selector));
   }
 
