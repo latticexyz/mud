@@ -1,15 +1,12 @@
 {
-  "name": "mud",
+  "name": "mud-monorepo",
   "version": "0.0.0",
   "description": "Mud is the fabric of autonomous worlds",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git"
   },
-  "exports": {
-    "./cli": "./packages/cli/dist/index.js"
-  },
-  "bin": "./packages/cli/dist/mud.js",
+  "private": true,
   "workspaces": {
     "packages": [
       "packages/utils",
@@ -27,8 +24,10 @@
       "packages/ecs-browser",
       "packages/services",
       "packages/noise",
-      "packages/create-mud"
-    ]
+      "packages/create-mud",
+      "packages/mud"
+    ],
+    "nohoist": ["mud/**"]
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
@@ -70,7 +69,7 @@
     "release:ci": "yarn && lerna publish --no-private --force-publish --yes --no-verify-access && yarn retype:updateversion",
     "release:canary": "lerna publish --canary --no-private --force-publish",
     "release:manual": "node scripts/workspaceRun.mjs release",
-    "release:yalc": "npx yalc push && (yarn entry:dist && yarn lerna exec npx yalc push); yarn entry:src",
+    "release:yalc": "(yarn entry:dist && yarn lerna exec npx yalc push); yarn entry:src",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "yarn lerna run link",
     "docs": "yarn docs:prepare && yarn retype build",
