@@ -63,14 +63,15 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - name: Publishing canary release to NPM 📦
-        if: github.event_name != 'workflow_dispatch'
-        run: yarn release:canary
+      - name: Set deployment token
+        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publishing new release to NPM 📦
+      - name: Publish canary release to NPM 📦
+        if: github.event_name != 'workflow_dispatch'
+        run: yarn release:canary
+
+      - name: Publish new release to NPM 📦
         if: github.event_name == 'workflow_dispatch'
         run: yarn release
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
