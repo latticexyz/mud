@@ -3,6 +3,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
 import { logError, MUDError } from "../utils/errors.js";
+import localPackageJson from "../../package.json";
 
 type Options = {
   backup?: boolean;
@@ -12,6 +13,7 @@ type Options = {
 };
 
 const BACKUP_FILE = ".mudbackup";
+const MUD_PREFIX = "@latticexyz";
 
 const commandModule: CommandModule<Options, Options> = {
   command: "set-version",
@@ -20,12 +22,12 @@ const commandModule: CommandModule<Options, Options> = {
 
   builder(yargs) {
     return yargs.options({
-      backup: { type: "boolean", description: "Back up the current MUD versions to `.mudinstall`" },
+      backup: { type: "boolean", description: `Back up the current MUD versions to "${BACKUP_FILE}"` },
       force: {
         type: "boolean",
-        description: "Backup fails if a .mudinstall file is found, unless --force is provided",
+        description: `Backup fails if a "${BACKUP_FILE}" file is found, unless --force is provided`,
       },
-      restore: { type: "boolean", description: "Restore the previous MUD versions from `.mudinstall`" },
+      restore: { type: "boolean", description: `Restore the previous MUD versions from "${BACKUP_FILE}"` },
       mudVersion: { alias: "v", type: "string", description: "The MUD version to install" },
     });
   },
@@ -38,7 +40,7 @@ const commandModule: CommandModule<Options, Options> = {
 
       // Resolve the `canary` version number if needed
       options.mudVersion =
-        options.mudVersion === "canary" ? await getCanaryVersion("@latticexyz/world") : options.mudVersion;
+        options.mudVersion === "canary" ? await getCanaryVersion(localPackageJson.name) : options.mudVersion;
 
       // Read the current package.json
       const rootPath = "./package.json";
@@ -72,21 +74,21 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
 
   const packageJson = readPackageJson(filePath);
 
-  // Load .mudinstall if `restore` is true
+  // Load .mudbackup if `restore` is true
   const backupJson = restore ? readPackageJson(backupFilePath) : undefined;
 
-  // Find all @latticexyz dependencies
+  // Find all MUD dependencies
   const mudDependencies: Record<string, string> = {};
   for (const key in packageJson.dependencies) {
-    if (key.startsWith("@latticexyz")) {
+    if (key.startsWith(MUD_PREFIX)) {
       mudDependencies[key] = packageJson.dependencies[key];
     }
   }
 
-  // Find all @latticexyz devDependencies
+  // Find all MUD devDependencies
   const mudDevDependencies: Record<string, string> = {};
   for (const key in packageJson.devDependencies) {
-    if (key.startsWith("@latticexyz")) {
+    if (key.startsWith(MUD_PREFIX)) {
       mudDevDependencies[key] = packageJson.devDependencies[key];
     }
   }
@@ -102,7 +104,7 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
 
   // Update the dependencies
   for (const key in packageJson.dependencies) {
-    if (key.startsWith("@latticexyz")) {
+    if (key.startsWith(MUD_PREFIX)) {
       packageJson.dependencies[key] =
         restore && backupJson ? backupJson.dependencies[key] : mudVersion || packageJson.dependencies[key];
     }
@@ -110,7 +112,7 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
 
   // Update the devDependencies
   for (const key in packageJson.devDependencies) {
-    if (key.startsWith("@latticexyz")) {
+    if (key.startsWith(MUD_PREFIX)) {
       packageJson.devDependencies[key] =
         restore && backupJson ? backupJson.devDependencies[key] : mudVersion || packageJson.devDependencies[key];
     }
