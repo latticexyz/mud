@@ -24,8 +24,8 @@ import {
   createEncoders,
   createSystemCallStreams,
 } from "./utils";
-import { defineComponents as defineStoreComponents } from "../mud-definitions/store/tables";
-import { defineComponents as defineWorldComponents } from "../mud-definitions/world/tables";
+import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
+import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 
 export async function setupMUDNetwork<C extends ContractComponents, SystemTypes extends { [key: string]: Contract }>(
   networkConfig: SetupContractConfig,
