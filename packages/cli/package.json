@@ -35,7 +35,7 @@
     "@types/yargs": "^17.0.10",
     "esbuild": "^0.15.16",
     "tsup": "^6.6.3",
-    "vitest": "^0.29.1"
+    "vitest": "^0.29.8"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",

@@ -9,36 +9,35 @@ import {
   SingletonID,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { Components, createWorld, defineComponent, Type } from "@latticexyz/recs";
+import { Components, defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256, TableId } from "@latticexyz/utils";
 import { World as WorldContract } from "@latticexyz/world/types/ethers-contracts/World";
 import { abi as WorldAbi } from "@latticexyz/world/abi/World.json";
 import { defineStringComponent } from "../components";
-import { ContractComponent, SetupContractConfig } from "./types";
+import { ContractComponent, ContractComponents, SetupContractConfig } from "./types";
 import { applyNetworkUpdates, createEncoders } from "./utils";
-import { defineStoreComponents, EntityID } from "@latticexyz/recs";
-import storeMudConfig from "@latticexyz/store/mud.config.mjs";
-import worldMudConfig from "@latticexyz/world/mud.config.mjs";
-import { MUDUserConfig } from "@latticexyz/cli";
+import { EntityID } from "@latticexyz/recs";
+import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
+import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 
-type SetupMUDV2NetworkOptions<M extends MUDUserConfig = MUDUserConfig> = {
-  mudConfig: M;
+type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
   networkConfig: SetupContractConfig;
+  world: World;
+  contractComponents: C;
   initialGasPrice?: number;
   fetchSystemCalls?: boolean;
   syncThread?: "main" | "worker";
 };
 
-export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>({
-  mudConfig,
+export async function setupMUDV2Network<C extends ContractComponents>({
   networkConfig,
+  world,
+  contractComponents,
   initialGasPrice,
   fetchSystemCalls,
   syncThread,
-}: SetupMUDV2NetworkOptions<M>) {
-  const world = createWorld();
-
+}: SetupMUDV2NetworkOptions<C>) {
   const SystemsRegistry = defineStringComponent(world, {
     id: "SystemsRegistry",
     metadata: { contractId: "world.component.systems" },
@@ -74,16 +73,15 @@ export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>
     }
   );
 
-  const storeComponents = defineStoreComponents(world, storeMudConfig);
-  const worldComponents = defineStoreComponents(world, worldMudConfig);
-  const userComponents = defineStoreComponents(world, mudConfig);
+  const storeComponents = defineStoreComponents(world);
+  const worldComponents = defineWorldComponents(world);
 
   const components = {
     // v2 components
     storeSchemaComponent,
     ...storeComponents,
     ...worldComponents,
-    ...userComponents,
+    ...contractComponents,
     // v1 components
     SystemsRegistry,
     ComponentsRegistry,
@@ -176,7 +174,6 @@ export async function setupMUDV2Network<M extends MUDUserConfig = MUDUserConfig>
     mappings,
     registerComponent,
     networkConfig,
-    mudConfig,
     world,
     components,
     singletonEntityId: SingletonID,
