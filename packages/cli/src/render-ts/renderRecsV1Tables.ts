@@ -8,7 +8,7 @@ export function renderRecsV1Tables(options: RecsV1TableOptions) {
 import { TableId } from "@latticexyz/utils";
 import { defineComponent, Type as RecsType, World } from "@latticexyz/recs";
 
-export function defineComponents(world: World) {
+export function defineContractComponents(world: World) {
   return {
     ${tables
       .map(

@@ -196,7 +196,7 @@ export type StoreUserConfig<
   // TODO this should be a plugin
   /** Whether to generate recs definitions. Default is true. */
   recsGenerate?: boolean;
-  /** Directory to output recs definition files. Default is "ts-definitions". (relative to package root, not `src`) */
+  /** Directory to output recs definition files. Default is "../client/src/mud". (relative to package root, not `src`) */
   recsOut?: string;
 };
 
@@ -219,7 +219,7 @@ const StoreConfigUnrefined = z
     userTypesPath: z.string().default("Types"),
 
     recsGenerate: z.boolean().default(true),
-    recsOut: z.string().default("recs-definitions"),
+    recsOut: z.string().default("../client/src/mud"),
   })
   .merge(zEnumsConfig);
 
