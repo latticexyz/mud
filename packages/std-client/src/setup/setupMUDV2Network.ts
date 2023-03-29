@@ -9,7 +9,7 @@ import {
   SingletonID,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { Components, createWorld, defineComponent, Type } from "@latticexyz/recs";
+import { Components, defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256, TableId } from "@latticexyz/utils";
 import { World as WorldContract } from "@latticexyz/world/types/ethers-contracts/World";
@@ -22,22 +22,22 @@ import { defineContractComponents as defineStoreComponents } from "../mud-defini
 import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 
 type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
-  contractComponents: C;
   networkConfig: SetupContractConfig;
+  world: World;
+  contractComponents: C;
   initialGasPrice?: number;
   fetchSystemCalls?: boolean;
   syncThread?: "main" | "worker";
 };
 
 export async function setupMUDV2Network<C extends ContractComponents>({
-  contractComponents,
   networkConfig,
+  world,
+  contractComponents,
   initialGasPrice,
   fetchSystemCalls,
   syncThread,
 }: SetupMUDV2NetworkOptions<C>) {
-  const world = createWorld();
-
   const SystemsRegistry = defineStringComponent(world, {
     id: "SystemsRegistry",
     metadata: { contractId: "world.component.systems" },
