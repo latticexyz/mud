@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 
 import { World } from "../src/World.sol";
-import { IWorld } from "../src/interfaces/IWorld.sol";
+import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
@@ -13,11 +13,11 @@ import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.so
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
 
 contract UniqueEntityModuleTest is Test {
-  IWorld world;
+  IBaseWorld world;
   UniqueEntityModule uniqueEntityModule = new UniqueEntityModule();
 
   function setUp() public {
-    world = IWorld(address(new World()));
+    world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     world.installRootModule(new RegistrationModule(), new bytes(0));
   }

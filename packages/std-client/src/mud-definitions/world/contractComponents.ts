@@ -113,5 +113,20 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    UniqueEntity: (() => {
+      const tableId = new TableId("", "UniqueEntity");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
   };
 }
