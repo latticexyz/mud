@@ -14,4 +14,4 @@ WORKDIR /root/app
 
 COPY . .
 
-CMD ["time", "yarn", "package", "--dry-run"]
+CMD ["time", "yarn", "pack", "--dry-run"]
