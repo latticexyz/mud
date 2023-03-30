@@ -5,7 +5,6 @@ import { MUDError } from "./errors.js";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld.js";
-import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
 import { resolveAbiOrUserType } from "../render-solidity/userType.js";
@@ -402,7 +401,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   async function fastTxExecute<C extends { estimateGas: any; [key: string]: any }, F extends keyof C>(
     contract: C,
     func: F,
-    args: ArgumentsType<C[F]>,
+    args: Parameters<C[F]>,
     retryCount = 0
   ): Promise<Awaited<ReturnType<C[F]>>> {
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
