@@ -5,6 +5,11 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 /**
  * Create a stateful util to execute transactions as fast as possible.
  * Internal state includes the current nonce and the current gas price.
+ *
+ * Note: since the signer's nonce is managed in the internal state of this
+ * function, using the same signer to send transactions outside of this function
+ * or creating multiple instances of this function with the same signer will result
+ * in nonce errors.
  */
 export async function createFastTxExecutor(
   signer: Signer & { provider: JsonRpcProvider },
