@@ -27,16 +27,12 @@ export async function syncTablesFromMode(
       worldAddress: world.address,
     },
   });
-  console.log("syncTablesFromMode response", response);
+  console.log("syncTablesFromMode", response);
 
   const blockNumber = getBlockNumberFromModeTable(response.chainTables["block_number"]);
-  console.log("block number for sync tables", blockNumber);
-  // TODO: mode should separate user tables from meta/internal tables
-  const userTables = Object.entries(response.worldTables).filter(([fullTableName]) => fullTableName.includes("__"));
-
   const registrationPromises: Promise<unknown>[] = [];
 
-  for (const [fullTableName, { rows, cols, types }] of userTables) {
+  for (const [fullTableName, { rows, cols, types }] of Object.entries(response.worldTables)) {
     const [tableNamespace, tableName] = fullTableName.split("__");
     const tableId = new TableId(tableNamespace, tableName);
 
@@ -44,7 +40,7 @@ export async function syncTablesFromMode(
 
     // TODO: separate keys and values/fields in MODE, but we'll infer for now
     const keyLength = cols.findIndex((col) => !col.startsWith("key_"));
-    const keyNames = cols.slice(0, keyLength);
+    const keyNames = cols.slice(0, keyLength); // TODO: key names are not currently included in the MetadataTable, so these are unused
     const keyTypes = types.slice(0, keyLength).map((abiType) => AbiTypeToSchemaType[abiType]);
     const fieldNames = cols.slice(keyLength);
     const fieldTypes = types.slice(keyLength).map((abiType) => AbiTypeToSchemaType[abiType]);
