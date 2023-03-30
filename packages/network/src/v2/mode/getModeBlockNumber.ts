@@ -9,6 +9,5 @@ export async function getModeBlockNumber(client: QueryLayerClient, chainId: numb
     },
   });
   const blockNumber = getBlockNumberFromModeTable(response.chainTables["block_number"]);
-  console.log("MODE block number", blockNumber);
   return blockNumber;
 }
