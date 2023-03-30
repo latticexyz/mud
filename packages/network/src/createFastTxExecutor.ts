@@ -1,11 +1,13 @@
 import { ArgumentsType } from "vitest";
 import { BigNumber, Overrides, Signer } from "ethers";
-import { Provider } from "@ethersproject/providers";
+import { JsonRpcProvider } from "@ethersproject/providers";
 
 export async function createFastTxExecutor(
-  signer: Signer & { provider: Provider },
+  signer: Signer & { provider: JsonRpcProvider },
   globalOptions: { priorityFeeMultiplier: number } = { priorityFeeMultiplier: 1.1 }
 ) {
+  const chainId = await signer.getChainId();
+
   const currentNonce = {
     nonce: await signer.getTransactionCount(),
   };
@@ -17,9 +19,12 @@ export async function createFastTxExecutor(
   updateFeePerGas(globalOptions.priorityFeeMultiplier);
 
   /**
-   * Only await gas estimation (for speed), only execute if gas estimation succeeds (for safety)
+   * TODO: docs
    */
-  async function fastTxExecute<C extends { estimateGas: any; [key: string]: any }, F extends keyof C>(
+  async function fastTxExecute<
+    C extends { estimateGas: any; populateTransaction: any; [key: string]: any },
+    F extends keyof C
+  >(
     contract: C,
     func: F,
     args: ArgumentsType<C[F]>,
@@ -27,22 +32,47 @@ export async function createFastTxExecutor(
       retryCount?: number;
       debug?: boolean;
     } = { retryCount: 0, debug: false }
-  ): Promise<Awaited<ReturnType<C[F]>>> {
+  ): Promise<{ hash: string; tx: ReturnType<C[F]> }> {
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
 
     try {
+      console.log(`executing transaction: ${functionName} with nonce ${currentNonce.nonce}`);
       const { argsWithoutOverrides, overrides } = separateOverridesFromArgs(args);
 
-      console.log(`executing transaction: ${functionName} with nonce ${currentNonce.nonce}`);
       const gasLimit = overrides.gasLimit ?? (await contract.estimateGas[func].apply(null, args));
       console.log(`gas limit: ${gasLimit}`);
 
-      const txPromise = contract[func].apply(null, [
-        ...argsWithoutOverrides,
-        // Overrides are applied last, so they can override all other options
-        { gasLimit, nonce: currentNonce.nonce++, ...gasConfig, ...overrides },
-      ]);
-      return txPromise;
+      const fullOverrides = { type: 2, gasLimit, nonce: currentNonce.nonce++, ...gasConfig, ...overrides };
+
+      // Populate the transaction
+      console.log("populate");
+      const populatedTx = await contract.populateTransaction[func](...argsWithoutOverrides, fullOverrides);
+      populatedTx.chainId = chainId;
+      console.log("done populate");
+
+      // Execute tx
+      let hash: string;
+      try {
+        // Attempt to sign the transaction and send it raw for higher performance
+        console.log("sign");
+        const signedTx = await signer.signTransaction(populatedTx);
+        console.log("done sign");
+        console.log("hash");
+        hash = await signer.provider.perform("sendTransaction", {
+          signedTransaction: signedTx,
+        });
+        console.log("done hash");
+      } catch (e) {
+        // Some signers don't support signing without sending (looking at you MetaMask),
+        // so sign+send using the signer as a fallback
+        console.warn("signing failed, falling back to sendTransaction", e);
+        const tx = await signer.sendTransaction(populatedTx);
+        hash = tx.hash;
+      }
+
+      // Return the transaction receipt
+      const tx = signer.provider.getTransaction(hash) as ReturnType<C[F]>;
+      return { hash, tx };
     } catch (error: any) {
       if (options.debug) console.error(error);
 
@@ -60,6 +90,13 @@ export async function createFastTxExecutor(
       throw error;
     }
   }
+
+  // const txPromise = contract[func].apply(null, [
+  //   ...argsWithoutOverrides,
+  //   // Overrides are applied last, so they can override all other options
+  // ]);
+
+  // return txPromise;
 
   /**
    * Set the maxFeePerGas and maxPriorityFeePerGas based on the current base fee and the given multiplier.
