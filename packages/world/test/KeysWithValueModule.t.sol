@@ -7,7 +7,7 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
-import { IWorld } from "../src/interfaces/IWorld.sol";
+import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 
@@ -21,7 +21,7 @@ import { getTargetTableSelector } from "../src/modules/keyswithvalue/getTargetTa
 
 contract KeysWithValueModuleTest is Test {
   using ResourceSelector for bytes32;
-  IWorld world;
+  IBaseWorld world;
   KeysWithValueModule keysWithValueModule = new KeysWithValueModule(); // Modules can be deployed once and installed multiple times
 
   bytes16 namespace = ROOT_NAMESPACE;
@@ -39,7 +39,7 @@ contract KeysWithValueModuleTest is Test {
   function setUp() public {
     sourceTableSchema = SchemaLib.encode(SchemaType.UINT256);
     sourceTableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
-    world = IWorld(address(new World()));
+    world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     world.installRootModule(new RegistrationModule(), new bytes(0));
     keyTuple1 = new bytes32[](1);

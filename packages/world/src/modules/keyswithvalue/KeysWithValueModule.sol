@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 
-import { IWorld } from "../../interfaces/IWorld.sol";
+import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 
 import { WorldContext } from "../../WorldContext.sol";
@@ -42,7 +42,7 @@ contract KeysWithValueModule is IModule, WorldContext {
     bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);
 
     // Register the target table
-    IWorld(_world()).registerTable(
+    IBaseWorld(_world()).registerTable(
       targetTableSelector.getNamespace(),
       targetTableSelector.getFile(),
       KeysWithValue.getSchema(),
@@ -51,7 +51,7 @@ contract KeysWithValueModule is IModule, WorldContext {
 
     // Register metadata for the target table
     (string memory tableName, string[] memory fieldNames) = KeysWithValue.getMetadata();
-    IWorld(_world()).setMetadata(
+    IBaseWorld(_world()).setMetadata(
       targetTableSelector.getNamespace(),
       targetTableSelector.getFile(),
       tableName,
@@ -59,7 +59,7 @@ contract KeysWithValueModule is IModule, WorldContext {
     );
 
     // Grant the hook access to the target table
-    IWorld(_world()).grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getFile(), address(hook));
+    IBaseWorld(_world()).grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getFile(), address(hook));
 
     // Register a hook that is called when a value is set in the source table
     StoreSwitch.registerStoreHook(sourceTableId, hook);

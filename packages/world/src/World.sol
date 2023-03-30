@@ -21,7 +21,7 @@ import { InstalledModules } from "./tables/InstalledModules.sol";
 
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
-import { IWorld } from "./interfaces/IWorld.sol";
+import { IBaseWorld } from "./interfaces/IBaseWorld.sol";
 import { IErrors } from "./interfaces/IErrors.sol";
 import { IRegistrationSystem } from "./interfaces/IRegistrationSystem.sol";
 
@@ -190,7 +190,7 @@ contract World is Store, IWorldCore, IErrors {
     bytes32 tableSelector = ResourceSelector.from(tableId);
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
-    // We can't call IWorld(this).registerSchema directly because it would be handled like
+    // We can't call IBaseWorld(this).registerSchema directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: msg.sender,
@@ -215,7 +215,7 @@ contract World is Store, IWorldCore, IErrors {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
-    // We can't call IWorld(this).setMetadata directly because it would be handled like
+    // We can't call IBaseWorld(this).setMetadata directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: msg.sender,
@@ -239,7 +239,7 @@ contract World is Store, IWorldCore, IErrors {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
-    // We can't call IWorld(this).registerStoreHook directly because it would be handled like
+    // We can't call IBaseWorld(this).registerStoreHook directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: msg.sender,

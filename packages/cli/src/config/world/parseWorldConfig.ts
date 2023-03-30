@@ -39,6 +39,7 @@ const zModuleConfig = z.object({
 export const zWorldConfig = z.object({
   namespace: zSelector.default(""),
   worldContractName: z.string().optional(),
+  worldInterfaceName: z.string().default("IWorld"),
   overrideSystems: z.record(zSystemName, zSystemConfig).default({}),
   excludeSystems: z.array(zSystemName).default([]),
   postDeployScript: z.string().default("PostDeploy"),

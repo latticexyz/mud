@@ -47,14 +47,13 @@ export async function worldgen(
   }
 
   // render IWorld
-  const worldInterfaceName = "IWorld";
   const output = renderWorld({
-    interfaceName: worldInterfaceName,
+    interfaceName: config.worldInterfaceName,
     imports: systemInterfaceImports,
     storeImportPath: config.storeImportPath,
     worldImportPath: config.worldImportPath,
   });
   // write to file
-  const fullOutputPath = path.join(worldgenBaseDirectory, worldInterfaceName + ".sol");
+  const fullOutputPath = path.join(worldgenBaseDirectory, config.worldInterfaceName + ".sol");
   await formatAndWriteSolidity(output, fullOutputPath, "Generated system interface");
 }
