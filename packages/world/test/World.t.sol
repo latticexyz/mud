@@ -28,6 +28,10 @@ import { RegistrationModule } from "../src/modules/registration/RegistrationModu
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IErrors } from "../src/interfaces/IErrors.sol";
 
+interface IWorldTestSystem {
+  function testNamespace_testSystem_err(string memory input) external pure;
+}
+
 struct WorldTestSystemReturn {
   address sender;
   bytes32 input;
@@ -603,6 +607,13 @@ contract WorldTest is Test {
 
     assertTrue(success, "call failed");
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
+
+    // Register a function selector to the error function
+    functionSelector = world.registerFunctionSelector(namespace, file, "err", "(string)");
+
+    // Expect errors to be passed through
+    vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
+    IWorldTestSystem(address(world)).testNamespace_testSystem_err("test error");
   }
 
   function testRegisterRootFunctionSelector() public {
@@ -626,6 +637,18 @@ contract WorldTest is Test {
 
     assertTrue(success, "call failed");
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
+
+    // Register a function selector to the error function
+    functionSelector = world.registerRootFunctionSelector(
+      namespace,
+      file,
+      WorldTestSystem.err.selector,
+      WorldTestSystem.err.selector
+    );
+
+    // Expect errors to be passed through
+    vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
+    WorldTestSystem(address(world)).err("test error");
   }
 
   function testRegisterFallbackSystem() public {
