@@ -26,8 +26,7 @@
   },
   "dependencies": {
     "debug": "^4.3.4",
-    "lodash": "^4.17.21",
-    "vitest": "^0.29.8"
+    "lodash": "^4.17.21"
   },
   "peerDependencies": {
     "@ethersproject/providers": "^5.6.1",

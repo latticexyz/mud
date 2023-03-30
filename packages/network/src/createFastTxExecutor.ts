@@ -1,6 +1,7 @@
-import { ArgumentsType } from "vitest";
 import { BigNumber, Contract, Overrides, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
+
+type ArgumentsType<T> = T extends (...args: infer U) => any ? U : never;
 
 /**
  * Create a stateful util to execute transactions as fast as possible.
