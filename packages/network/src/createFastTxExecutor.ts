@@ -4,7 +4,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 
 export async function createFastTxExecutor(
   signer: Signer & { provider: JsonRpcProvider },
-  globalOptions: { priorityFeeMultiplier: number } = { priorityFeeMultiplier: 1.1 }
+  globalOptions: { priorityFeeMultiplier: number } = { priorityFeeMultiplier: 1 }
 ) {
   const chainId = await signer.getChainId();
 
@@ -19,7 +19,7 @@ export async function createFastTxExecutor(
   updateFeePerGas(globalOptions.priorityFeeMultiplier);
 
   /**
-   * TODO: docs
+   * Execute a transaction as fast as possible by skipping a couple unnecessary RPC calls ethers does.
    */
   async function fastTxExecute<
     C extends { estimateGas: any; populateTransaction: any; [key: string]: any },
@@ -40,28 +40,21 @@ export async function createFastTxExecutor(
       const { argsWithoutOverrides, overrides } = separateOverridesFromArgs(args);
 
       const gasLimit = overrides.gasLimit ?? (await contract.estimateGas[func].apply(null, args));
-      console.log(`gas limit: ${gasLimit}`);
 
       const fullOverrides = { type: 2, gasLimit, nonce: currentNonce.nonce++, ...gasConfig, ...overrides };
 
       // Populate the transaction
-      console.log("populate");
       const populatedTx = await contract.populateTransaction[func](...argsWithoutOverrides, fullOverrides);
       populatedTx.chainId = chainId;
-      console.log("done populate");
 
       // Execute tx
       let hash: string;
       try {
         // Attempt to sign the transaction and send it raw for higher performance
-        console.log("sign");
         const signedTx = await signer.signTransaction(populatedTx);
-        console.log("done sign");
-        console.log("hash");
         hash = await signer.provider.perform("sendTransaction", {
           signedTransaction: signedTx,
         });
-        console.log("done hash");
       } catch (e) {
         // Some signers don't support signing without sending (looking at you MetaMask),
         // so sign+send using the signer as a fallback
