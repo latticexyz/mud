@@ -68,7 +68,6 @@ export function registerMetadata(
     }
     const decoded = decodeData(metadataSchema, metadataRecord);
     const tableName = decoded[0];
-    // TODO: decide if we still need table name in metadata since its part of the table ID now
     if (tableName !== table.name) {
       console.warn("Metadata table name does not match table ID", {
         tableName,
