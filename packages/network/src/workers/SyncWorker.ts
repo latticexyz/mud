@@ -130,6 +130,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     );
     const config = computedConfig.get();
     const {
+      modeUrl,
       snapshotServiceUrl,
       streamServiceUrl,
       chainId,
@@ -148,7 +149,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const { providers } = await createReconnectingProvider(computed(() => computedConfig.get().provider));
     const provider = providers.get().json;
     const snapshotClient = snapshotServiceUrl ? createSnapshotClient(snapshotServiceUrl) : undefined;
-    const modeClient = createModeClient("https://mode.testnet-mud-services.linfra.xyz");
+    const modeClient = modeUrl ? createModeClient(modeUrl) : undefined;
     const indexDbCache = await getIndexDbECSCache(chainId, worldContract.address);
     const decode = createDecode(worldContract, provider);
     const fetchWorldEvents = createFetchWorldEventsInBlockRange(
@@ -218,7 +219,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const cacheBlockNumber = !disableCache ? await getIndexDBCacheStoreBlockNumber(indexDbCache) : -1;
     this.setLoadingState({ percentage: 50 });
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
-    const modeBlockNumber = await getModeBlockNumber(modeClient, chainId);
+    const modeBlockNumber = modeClient ? await getModeBlockNumber(modeClient, chainId) : -1;
 
     this.setLoadingState({ percentage: 100 });
     debug(
@@ -229,17 +230,21 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
 
     let initialState = createCacheStore();
     if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber, modeBlockNumber)) {
+      // Skip initializing from cache/snapshot/mode if the initial block number is newer than all of them
       initialState.blockNumber = initialBlockNumber;
     } else {
-      // Load from cache if the snapshot is less than <cacheAgeThreshold> blocks newer than the cache
-      const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
-      const syncFromMode = true; // TODO: add conditional based on modeBlockNumber / snapshotBlockNumber
+      // Load from cache if the mode/snapshot is less than <cacheAgeThreshold> blocks newer than the cache
+      const syncFromMode = modeClient && modeBlockNumber > cacheBlockNumber + cacheAgeThreshold;
+      const syncFromSnapshot =
+        !syncFromMode && snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
+
       if (syncFromMode) {
         console.log("Initial sync from MODE");
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from MODE", percentage: 0 });
-        // TODO: pass in function to act as progress meter if we need it
-        // TODO: pass in optional tables to sync? block number to sync from?
-        initialState = await syncTablesFromMode(modeClient, chainId, storeContract);
+        initialState = await syncTablesFromMode(modeClient, chainId, storeContract, (percentage: number) =>
+          this.setLoadingState({ percentage })
+        );
+        this.setLoadingState({ percentage: 100 });
       } else if (syncFromSnapshot) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from snapshot", percentage: 0 });
         initialState = await fetchSnapshotChunked(

@@ -15,7 +15,8 @@ import { getBlockNumberFromModeTable } from "./getBlockNumberFromModeTable";
 export async function syncTablesFromMode(
   client: QueryLayerClient,
   chainId: number,
-  world: Contract
+  world: Contract,
+  setPercentage?: (progress: number) => void
 ): Promise<CacheStore> {
   const cacheStore = createCacheStore();
 
@@ -28,6 +29,9 @@ export async function syncTablesFromMode(
     },
   });
   console.log("syncTablesFromMode", response);
+
+  const numRowsTotal = Object.values(response.worldTables).reduce((sum, table) => sum + table.rows.length, 0);
+  let numRowsProcessed = 0;
 
   const blockNumber = getBlockNumberFromModeTable(response.chainTables["block_number"]);
   const registrationPromises: Promise<unknown>[] = [];
@@ -57,13 +61,13 @@ export async function syncTablesFromMode(
       const entity = keyTupleToEntityID(keyTuple);
       const value = Object.fromEntries(values.map((value, i) => [fieldNames[i], value])) as ComponentValue;
 
-      console.log("storing event from MODE", {
-        component,
-        entity,
-        value,
-        blockNumber,
-      });
       storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
+
+      numRowsProcessed++;
+      // Update progress every 100 rows
+      if (numRowsProcessed % 100 === 0 && setPercentage) {
+        setPercentage(Math.floor(numRowsProcessed / numRowsTotal));
+      }
     }
   }
 

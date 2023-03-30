@@ -135,6 +135,7 @@ export type SyncWorkerConfig = {
   worldContract: ContractConfig;
   disableCache?: boolean;
   chainId: number;
+  modeUrl?: string;
   snapshotServiceUrl?: string;
   streamServiceUrl?: string;
   fetchSystemCalls?: boolean;
