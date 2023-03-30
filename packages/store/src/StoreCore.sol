@@ -55,6 +55,12 @@ library StoreCore {
     StoreMetadata.registerSchema();
     Hooks.setMetadata();
     StoreMetadata.setMetadata();
+
+    // Set metadata for the schema table
+    string[] memory fieldNames = new string[](2);
+    fieldNames[0] = "valueSchema";
+    fieldNames[1] = "keySchema";
+    StoreMetadata.set(StoreCoreInternal.SCHEMA_TABLE, "schema", abi.encode(fieldNames));
   }
 
   /************************************************************************
