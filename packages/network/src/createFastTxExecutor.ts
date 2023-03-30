@@ -1,7 +1,11 @@
 import { ArgumentsType } from "vitest";
-import { BigNumber, Overrides, Signer } from "ethers";
+import { BigNumber, Contract, Overrides, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 
+/**
+ * Create a stateful util to execute transactions as fast as possible.
+ * Internal state includes the current nonce and the current gas price.
+ */
 export async function createFastTxExecutor(
   signer: Signer & { provider: JsonRpcProvider },
   globalOptions: { priorityFeeMultiplier: number } = { priorityFeeMultiplier: 1 }
@@ -12,42 +16,42 @@ export async function createFastTxExecutor(
     nonce: await signer.getTransactionCount(),
   };
 
+  // This gas config is updated
   const gasConfig: {
     maxPriorityFeePerGas?: number;
     maxFeePerGas?: BigNumber;
   } = {};
-  updateFeePerGas(globalOptions.priorityFeeMultiplier);
+  await updateFeePerGas(globalOptions.priorityFeeMultiplier);
 
   /**
    * Execute a transaction as fast as possible by skipping a couple unnecessary RPC calls ethers does.
    */
-  async function fastTxExecute<
-    C extends { estimateGas: any; populateTransaction: any; [key: string]: any },
-    F extends keyof C
-  >(
+  async function fastTxExecute<C extends Contract, F extends keyof C>(
     contract: C,
     func: F,
     args: ArgumentsType<C[F]>,
     options: {
       retryCount?: number;
-      debug?: boolean;
-    } = { retryCount: 0, debug: false }
+    } = { retryCount: 0 }
   ): Promise<{ hash: string; tx: ReturnType<C[F]> }> {
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
+    console.log(`executing transaction: ${functionName} with nonce ${currentNonce.nonce}`);
 
     try {
-      console.log(`executing transaction: ${functionName} with nonce ${currentNonce.nonce}`);
+      // Separate potential overrides from the args to extend the overrides below
       const { argsWithoutOverrides, overrides } = separateOverridesFromArgs(args);
 
-      const gasLimit = overrides.gasLimit ?? (await contract.estimateGas[func].apply(null, args));
+      // Estimate gas if no gas limit was provided
+      const gasLimit = overrides.gasLimit ?? (await contract.estimateGas[func as string].apply(null, args));
 
+      // Apply default overrides
       const fullOverrides = { type: 2, gasLimit, nonce: currentNonce.nonce++, ...gasConfig, ...overrides };
 
       // Populate the transaction
-      const populatedTx = await contract.populateTransaction[func](...argsWithoutOverrides, fullOverrides);
+      const populatedTx = await contract.populateTransaction[func as string](...argsWithoutOverrides, fullOverrides);
       populatedTx.chainId = chainId;
 
-      // Execute tx
+      // Execute the transaction
       let hash: string;
       try {
         // Attempt to sign the transaction and send it raw for higher performance
@@ -63,33 +67,27 @@ export async function createFastTxExecutor(
         hash = tx.hash;
       }
 
-      // Return the transaction receipt
+      // Return the transaction promise and transaction hash.
+      // The hash is available immediately, the full transaction is available as a promise
       const tx = signer.provider.getTransaction(hash) as ReturnType<C[F]>;
       return { hash, tx };
     } catch (error: any) {
-      if (options.debug) console.error(error);
-
       // Handle "transaction already imported" errors
       if (error?.message.includes("transaction already imported")) {
         if (options.retryCount === 0) {
-          // If the deployment failed because the transaction was already imported,
-          // retry with a higher priority fee
           updateFeePerGas(globalOptions.priorityFeeMultiplier * 1.1);
           return fastTxExecute(contract, func, args, { retryCount: options.retryCount++ });
         } else throw new Error(`Gas estimation error for ${functionName}: ${error?.reason}`);
       }
 
+      // TODO: potentially handle more transaction errors here, like:
+      // "insufficient funds for gas * price + value" -> request funds from faucet
+      // "invalid nonce" -> update nonce
+
       // Rethrow all other errors
       throw error;
     }
   }
-
-  // const txPromise = contract[func].apply(null, [
-  //   ...argsWithoutOverrides,
-  //   // Overrides are applied last, so they can override all other options
-  // ]);
-
-  // return txPromise;
 
   /**
    * Set the maxFeePerGas and maxPriorityFeePerGas based on the current base fee and the given multiplier.
