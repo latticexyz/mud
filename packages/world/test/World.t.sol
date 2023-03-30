@@ -25,7 +25,7 @@ import { AddressArray } from "../src/tables/AddressArray.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 
-import { IWorld } from "../src/interfaces/IWorld.sol";
+import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IErrors } from "../src/interfaces/IErrors.sol";
 
 struct WorldTestSystemReturn {
@@ -113,14 +113,14 @@ contract WorldTest is Test {
   event WorldTestSystemLog(string log);
 
   Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
-  IWorld world;
+  IBaseWorld world;
 
   bytes32 key;
   bytes32[] keyTuple;
   bytes32[] singletonKey;
 
   function setUp() public {
-    world = IWorld(address(new World()));
+    world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     world.installRootModule(new RegistrationModule(), new bytes(0));
 

@@ -46,6 +46,8 @@ export interface WorldUserConfig {
   namespace?: string;
   /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
   worldContractName?: string;
+  /** The name of the World interface to generate. (Default `IWorld`) */
+  worldInterfaceName?: string;
   /**
    * Contracts named *System will be deployed by default
    * as public systems at `namespace/ContractName`, unless overridden

@@ -10,9 +10,9 @@ import { IWorldCore } from "../interfaces/IWorldCore.sol";
 import { IRegistrationSystem } from "./IRegistrationSystem.sol";
 
 /**
- * The IWorld interface includes all systems dynamically added to the World
+ * The IBaseWorld interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface IWorld is IStore, IWorldCore, IRegistrationSystem {
+interface IBaseWorld is IStore, IWorldCore, IRegistrationSystem {
 
 }
