@@ -64,7 +64,7 @@ export async function setupMUDV2Network<C extends ContractComponents>({
   const storeSchemaTableId = new TableId("mudstore", "schema");
   const storeSchemaComponent = defineComponent(
     world,
-    { schema: Type.T },
+    { valueSchema: Type.String, keySchema: Type.String },
     {
       metadata: {
         contractId: storeSchemaTableId.toHexString(),
