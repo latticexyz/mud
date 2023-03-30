@@ -16,7 +16,7 @@ create("create-mud", {
   promptForEmail: false,
   promptForLicense: false,
   promptForTemplate: true,
-  caveat: ({ answers }) => `Done! Play in the MUD with \`cd ${answers.name}\` and \`yarn dev\``,
+  caveat: ({ answers }) => `Done!!!!! Play in the MUD with \`cd ${answers.name}\` and \`yarn dev\``,
   extra: {
     "mud-version": {
       type: "input",
