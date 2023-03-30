@@ -80,11 +80,7 @@ library SchemaLib {
     return encode(schema);
   }
 
-  function encode(
-    SchemaType a,
-    SchemaType b,
-    SchemaType c
-  ) internal pure returns (Schema) {
+  function encode(SchemaType a, SchemaType b, SchemaType c) internal pure returns (Schema) {
     SchemaType[] memory schema = new SchemaType[](3);
     schema[0] = a;
     schema[1] = b;
@@ -92,12 +88,7 @@ library SchemaLib {
     return encode(schema);
   }
 
-  function encode(
-    SchemaType a,
-    SchemaType b,
-    SchemaType c,
-    SchemaType d
-  ) internal pure returns (Schema) {
+  function encode(SchemaType a, SchemaType b, SchemaType c, SchemaType d) internal pure returns (Schema) {
     SchemaType[] memory schema = new SchemaType[](4);
     schema[0] = a;
     schema[1] = b;
@@ -106,13 +97,7 @@ library SchemaLib {
     return encode(schema);
   }
 
-  function encode(
-    SchemaType a,
-    SchemaType b,
-    SchemaType c,
-    SchemaType d,
-    SchemaType e
-  ) internal pure returns (Schema) {
+  function encode(SchemaType a, SchemaType b, SchemaType c, SchemaType d, SchemaType e) internal pure returns (Schema) {
     SchemaType[] memory schema = new SchemaType[](5);
     schema[0] = a;
     schema[1] = b;
@@ -188,9 +173,9 @@ library SchemaLib {
     return Schema.unwrap(schema) == bytes32(0);
   }
 
-  function validate(Schema schema) internal pure {
+  function validate(Schema schema, bool allowEmpty) internal pure {
     // Schema must not be empty
-    if (schema.isEmpty()) revert SchemaLib_InvalidLength(0);
+    if (!allowEmpty && schema.isEmpty()) revert SchemaLib_InvalidLength(0);
 
     // Schema must have no more than 14 dynamic fields
     uint256 _numDynamicFields = schema.numDynamicFields();

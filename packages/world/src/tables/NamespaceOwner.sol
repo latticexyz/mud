@@ -11,6 +11,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -47,18 +48,18 @@ library NamespaceOwner {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
-  /** Register the table's schema for the specified store */
-  function registerSchema(IStore _store) internal {
-    _store.registerSchema(_tableId, getSchema(), getKeySchema());
-  }
-
-  /** Set the table's metadata for the specified store */
+  /** Set the table's metadata (using the specified store) */
   function setMetadata(IStore _store) internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     _store.setMetadata(_tableId, _tableName, _fieldNames);
@@ -73,7 +74,7 @@ library NamespaceOwner {
     return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Get owner from the specified store */
+  /** Get owner (using the specified store) */
   function get(IStore _store, bytes16 namespace) internal view returns (address owner) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((namespace));
@@ -90,11 +91,32 @@ library NamespaceOwner {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((owner)));
   }
 
+  /** Set owner (using the specified store) */
+  function set(IStore _store, bytes16 namespace, address owner) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((namespace));
+
+    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((owner)));
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(address owner) internal view returns (bytes memory) {
+    return abi.encodePacked(owner);
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes16 namespace) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((namespace));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, bytes16 namespace) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((namespace));
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }

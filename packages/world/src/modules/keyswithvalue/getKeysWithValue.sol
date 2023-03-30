@@ -3,11 +3,8 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
-import { ResourceSelector } from "../../ResourceSelector.sol";
-import { MODULE_NAMESPACE } from "./constants.sol";
 import { getTargetTableSelector } from "./getTargetTableSelector.sol";
-
-import { ReverseMapping } from "./tables/ReverseMapping.sol";
+import { KeysWithValue } from "./tables/KeysWithValue.sol";
 
 /**
  * Get a list of keys with the given value.
@@ -17,10 +14,10 @@ import { ReverseMapping } from "./tables/ReverseMapping.sol";
  */
 function getKeysWithValue(uint256 tableId, bytes memory value) view returns (bytes32[] memory keysWithValue) {
   // Get the corresponding reverse mapping table
-  uint256 reverseMappingTableId = uint256(getTargetTableSelector(tableId));
+  uint256 keysWithValueTableId = uint256(getTargetTableSelector(tableId));
 
   // Get the keys with the given value
-  keysWithValue = ReverseMapping.get(reverseMappingTableId, keccak256(value));
+  keysWithValue = KeysWithValue.get(keysWithValueTableId, keccak256(value));
 }
 
 /**
@@ -32,8 +29,8 @@ function getKeysWithValue(
   bytes memory value
 ) view returns (bytes32[] memory keysWithValue) {
   // Get the corresponding reverse mapping table
-  uint256 reverseMappingTableId = uint256(getTargetTableSelector(tableId));
+  uint256 keysWithValueTableId = uint256(getTargetTableSelector(tableId));
 
   // Get the keys with the given value
-  keysWithValue = ReverseMapping.get(reverseMappingTableId, store, keccak256(value));
+  keysWithValue = KeysWithValue.get(store, keysWithValueTableId, keccak256(value));
 }

@@ -60,33 +60,19 @@ func (il *IngressLayer) handleLogs(logs []types.Log) {
 // - void.
 func (il *IngressLayer) handleSetRecordEvent(event *storecore.StorecoreStoreSetRecord) {
 	tableId := storecore.PaddedTableId(event.Table)
-	il.logger.Info("handling set record event", zap.String("table_id", tableId))
+	il.logger.Info("handling set record (StoreSetRecordEvent) event", zap.String("table_id", tableId))
 
 	// Handle the following scenarios:
 	// 1. The table is the schema table. This means that a new table should be created.
 	// 2. The table is the metadata table. This means we need to update a schema of an existing table.
 	// 3. The table is a generic table. This means we need to update rows of an existing table.
-	println("-------------------------------------------------------")
-	println("-------------------------------------------------------")
-	println("------------------StoreSetRecordEvent------------------")
-	println("-------------------------------------------------------")
-	println("-------------------------------------------------------")
 
 	switch tableId {
-	case storecore.Internal__SchemaTableId():
-		println("----------------handleSchemaTableEvent-----------------")
-		println("-------------------------------------------------------")
-		println("-------------------------------------------------------")
+	case storecore.Mudstore__SchemaTableId():
 		il.handleSchemaTableEvent(event)
-	case storecore.Internal__MetadataTableId():
-		println("---------------handleMetadataTableEvent----------------")
-		println("-------------------------------------------------------")
-		println("-------------------------------------------------------")
+	case storecore.Mudstore__MetadataTableId():
 		il.handleMetadataTableEvent(event)
 	default:
-		println("---------------handleGenericTableEvent-----------------")
-		println("-------------------------------------------------------")
-		println("-------------------------------------------------------")
 		il.handleGenericTableEvent(event)
 	}
 }
@@ -115,6 +101,8 @@ func (il *IngressLayer) handleSetFieldEventUpdateRow(event *storecore.StorecoreS
 	}
 	// Update the row.
 	il.wl.UpdateRow(tableSchema, partialRow, filter)
+
+	il.logger.Info("updated row for setField", zap.String("table_id", tableSchema.TableId), zap.String("field_name", fieldName), zap.String("field_value", fieldValue))
 }
 
 // handleSetFieldEventInsertRow handles the StoreSetField event by decoding the row record data (value) and key, creating a row object, and inserting the row into the table.
@@ -135,14 +123,10 @@ func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreS
 	// Create a row for the table from the decoded data.
 	row := write.RowFromDecodedData(decodedKeyData, decodedFieldData, tableSchema)
 
-	println("inserting new row for setField")
-	println("row being inserted:")
-	for k, v := range row {
-		println(k, v)
-	}
-
 	// Insert the row into the table.
 	il.wl.InsertRow(tableSchema, row)
+
+	il.logger.Info("inserted new row for setField", zap.String("table_id", tableSchema.TableId))
 }
 
 // handleSetFieldEvent handles the StoreSetField event, which is triggered when a field in a row of a table is updated or created.
@@ -156,14 +140,8 @@ func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreS
 // Returns:
 // - void.
 func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetField) {
-	println("-------------------------------------------------------")
-	println("-------------------------------------------------------")
-	println("------------------StoreSetFieldEvent------------------")
-	println("-------------------------------------------------------")
-	println("-------------------------------------------------------")
-
 	tableId := storecore.PaddedTableId(event.Table)
-	il.logger.Info("handling set field event", zap.String("table_id", tableId))
+	il.logger.Info("handling set field (StoreSetFieldEvent) event", zap.String("table_id", tableId))
 
 	// Fetch the schema for the target table.
 	tableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), schema.TableIdToTableName(tableId))
@@ -191,10 +169,8 @@ func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetFi
 
 	// Handle the two scenarios described above.
 	if rowExists {
-		println("ROW EXISTS")
 		il.handleSetFieldEventUpdateRow(event, tableSchema, filter)
 	} else {
-		println("ROW DOES NOT EXIST")
 		il.handleSetFieldEventInsertRow(event, tableSchema)
 	}
 }
@@ -237,15 +213,13 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 	il.logger.Info("handling schema table event", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId))
 
 	// Parse out the schema types (both static and dynamic) for the table.
-	valueStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(event.Data[:32])
+	keySchemaBytes32, valueSchemaBytes32 := event.Data[:32], event.Data[32:]
+	valueStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(keySchemaBytes32)
 	// The last 32 bytes are the table "key" schema.
-	keyStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(event.Data[32:])
+	keyStoreCoreSchemaTypePair := storecore.DecodeSchemaTypePair(valueSchemaBytes32)
 
 	// Merge the two schemas into one, since the table schema is a combination of the key schema and the value schema.
 	storeCoreSchemaTypeKV := storecore.SchemaTypeKVFromPairs(keyStoreCoreSchemaTypePair, valueStoreCoreSchemaTypePair)
-
-	println("length of data: ", len(event.Data))
-	println("merged schema: ", storecore.StringifySchemaTypes(storeCoreSchemaTypeKV.Flatten()))
 
 	// Create a schema table row for the table.
 	tableSchema := &mode.TableSchema{
@@ -306,6 +280,8 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 		"namespace":     tableSchema.Namespace,
 		"table_name":    tableSchema.TableName,
 		"schema":        string(tableSchemaJson),
+		"key_schema":    hexutil.Encode(keySchemaBytes32),
+		"value_schema":  hexutil.Encode(valueSchemaBytes32),
 	}
 	// Filter based on table name, world address, and namespace.
 	filter := schemaTableSchema.FilterFromMap(map[string]string{
@@ -314,6 +290,26 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 		"namespace":     tableSchema.Namespace,
 	})
 	il.wl.UpdateOrInsertRow(schemaTableSchema, row, filter)
+
+	// Now insert the record into the mudstore schema table. (This is a separate table from the internal schema table
+	// and is actually the one that the event table ID identifies).
+	mudstoreSchemaTableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), storecore.Mudstore__SchemaTableName())
+	if err != nil {
+		il.logger.Fatal("error getting mudstore schema table schema", zap.Error(err))
+		return
+	}
+	// Decode the data directly into the table row.
+	decodedFieldData := storecore.DecodeData(event.Data, *mudstoreSchemaTableSchema.StoreCoreSchemaTypeKV.Value)
+	// Build the decoded key data directly. This is because we save the table ID as a hex encoded string of uint256.
+	decodedKeyData := storecore.NewDecodedDataFromSchemaType([]storecore.SchemaType{storecore.STRING})
+	decodedKeyData.Set(storecore.STRING.String(), &storecore.DataSchemaTypePair{
+		Data:       tableId,
+		SchemaType: storecore.STRING,
+	})
+	// Create the row.
+	mudstoreSchemaTableRow := write.RowFromDecodedData(decodedKeyData, decodedFieldData, mudstoreSchemaTableSchema)
+	// Insert the row.
+	il.wl.InsertRow(mudstoreSchemaTableSchema, mudstoreSchemaTableRow)
 
 	il.logger.Info("schema table event handled", zap.String("world_address", event.WorldAddress()), zap.String("table_name", hexutil.Encode(event.Key[0][:])), zap.String("schema", string(tableSchemaJson)))
 }
@@ -337,7 +333,7 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	}
 
 	// Fetch the schema for the metadata table.
-	metadataTableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), schema.TableIdToTableName(storecore.Internal__MetadataTableId()))
+	metadataTableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), schema.TableIdToTableName(storecore.Mudstore__MetadataTableId()))
 	if err != nil {
 		il.logger.Error("failed to fetch schema for metadata table", zap.Error(err))
 		return
@@ -423,6 +419,25 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 
 	// Update the table field names based on the new metadata.
 	il.wl.RenameTableFields(tableSchema, oldTableFieldNames, tableSchema.FieldNames)
+
+	// Now insert the record into the mudstore metadata table.
+	mudstoreMetadataTableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), storecore.Mudstore__MetadataTableName())
+	if err != nil {
+		il.logger.Fatal("error getting mudstore metadata table schema", zap.Error(err))
+		return
+	}
+	// Decode the data directly into the table row.
+	decodedFieldData := storecore.DecodeData(event.Data, *mudstoreMetadataTableSchema.StoreCoreSchemaTypeKV.Value)
+	// Build the decoded key data directly. This is because we save the table ID as a hex encoded string of uint256.
+	decodedKeyData := storecore.NewDecodedDataFromSchemaType([]storecore.SchemaType{storecore.STRING})
+	decodedKeyData.Set(storecore.STRING.String(), &storecore.DataSchemaTypePair{
+		Data:       tableId,
+		SchemaType: storecore.STRING,
+	})
+	// Create the row.
+	mudstoreSchemaTableRow := write.RowFromDecodedData(decodedKeyData, decodedFieldData, mudstoreMetadataTableSchema)
+	// Insert the row.
+	il.wl.InsertRow(mudstoreMetadataTableSchema, mudstoreSchemaTableRow)
 
 	il.logger.Info("metadata table event handled (schema updated)", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId), zap.String("schema", string(tableSchemaJson)))
 }

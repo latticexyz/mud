@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { console } from "forge-std/console.sol";
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
@@ -8,7 +7,7 @@ import { IWorld } from "@latticexyz/world/src/interfaces/IWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
-import { ReverseMapping } from "./tables/ReverseMapping.sol";
+import { KeysWithValue } from "./tables/KeysWithValue.sol";
 import { ArrayLib } from "./ArrayLib.sol";
 import { getTargetTableSelector } from "./getTargetTableSelector.sol";
 
@@ -18,7 +17,7 @@ import { getTargetTableSelector } from "./getTargetTableSelector.sol";
  * and then replicate logic from solecs's Set.sol.
  * (See https://github.com/latticexyz/mud/issues/444)
  */
-contract ReverseMappingHook is IStoreHook {
+contract KeysWithValueHook is IStoreHook {
   using ArrayLib for bytes32[];
   using ResourceSelector for bytes32;
 
@@ -38,7 +37,7 @@ contract ReverseMappingHook is IStoreHook {
     _removeKeyFromList(targetTableId, key[0], previousValue);
 
     // Push the key to the list of keys with the new value
-    ReverseMapping.push(targetTableId, keccak256(data), key[0]);
+    KeysWithValue.push(targetTableId, keccak256(data), key[0]);
   }
 
   function onBeforeSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
@@ -56,7 +55,7 @@ contract ReverseMappingHook is IStoreHook {
     // Add the key to the list of keys with the new value
     bytes32 newValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
-    ReverseMapping.push(targetTableId, newValue, key[0]);
+    KeysWithValue.push(targetTableId, newValue, key[0]);
   }
 
   function onDeleteRecord(uint256 sourceTableId, bytes32[] memory key) public {
@@ -74,9 +73,9 @@ contract ReverseMappingHook is IStoreHook {
 
   function _removeKeyFromList(uint256 targetTableId, bytes32 key, bytes32 valueHash) internal {
     // Get the keys with the previous value excluding the current key
-    bytes32[] memory keysWithPreviousValue = ReverseMapping.get(targetTableId, valueHash).filter(key);
+    bytes32[] memory keysWithPreviousValue = KeysWithValue.get(targetTableId, valueHash).filter(key);
 
     // Set the keys with the previous value
-    ReverseMapping.set(targetTableId, valueHash, keysWithPreviousValue);
+    KeysWithValue.set(targetTableId, valueHash, keysWithPreviousValue);
   }
 }

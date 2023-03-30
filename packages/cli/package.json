@@ -35,7 +35,7 @@
     "@types/yargs": "^17.0.10",
     "esbuild": "^0.15.16",
     "tsup": "^6.6.3",
-    "vitest": "^0.29.1"
+    "vitest": "^0.29.8"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
@@ -44,6 +44,7 @@
     "@latticexyz/services": "^1.41.0",
     "@latticexyz/solecs": "^1.41.0",
     "@latticexyz/std-contracts": "^1.41.0",
+    "@solidity-parser/parser": "^0.16.0",
     "@typechain/ethers-v5": "^10.1.1",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
@@ -66,8 +67,8 @@
     "typechain": "^8.1.1",
     "typescript": "^4.9.5",
     "yargs": "^17.7.1",
-    "zod": "^3.20.6",
-    "zod-validation-error": "^0.3.2"
+    "zod": "^3.21.4",
+    "zod-validation-error": "^1.0.1"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

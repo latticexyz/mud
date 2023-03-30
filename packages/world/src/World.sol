@@ -8,7 +8,7 @@ import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
-import { Resource } from "./types.sol";
+import { Resource } from "./Types.sol";
 import { ROOT_NAMESPACE, ROOT_FILE, REGISTRATION_SYSTEM_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { Call } from "./Call.sol";
@@ -23,7 +23,7 @@ import { IModule } from "./interfaces/IModule.sol";
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { IWorld } from "./interfaces/IWorld.sol";
 import { IErrors } from "./interfaces/IErrors.sol";
-import { IRegistrationSystem } from "./interfaces/systems/IRegistrationSystem.sol";
+import { IRegistrationSystem } from "./interfaces/IRegistrationSystem.sol";
 
 contract World is Store, IWorldCore, IErrors {
   using ResourceSelector for bytes32;

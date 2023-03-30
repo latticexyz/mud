@@ -1,18 +1,21 @@
 import { existsSync, readFileSync } from "fs";
 import path from "path";
-import { MUDConfig } from "../config/index.js";
+import { MUDConfig, resolveWithContext } from "../config/index.js";
 import { MUDError } from "./errors.js";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IWorld } from "@latticexyz/world/types/ethers-contracts/IWorld.js";
-import { bytecode as WorldBytecode } from "@latticexyz/world/abi/World.json";
-import { abi as WorldABI } from "@latticexyz/world/abi/IWorld.json";
-import CoreModuleData from "@latticexyz/world/abi/CoreModule.json";
-import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json";
 import { ArgumentsType } from "vitest";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { resolveSchemaOrUserTypeSimple } from "../render-solidity/userType.js";
+import { resolveAbiOrUserType } from "../render-solidity/userType.js";
+import { defaultAbiCoder as abi, Fragment } from "ethers/lib/utils.js";
+
+import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" };
+import IWorldData from "@latticexyz/world/abi/IWorld.json" assert { type: "json" };
+import CoreModuleData from "@latticexyz/world/abi/CoreModule.json" assert { type: "json" };
+import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json" assert { type: "json" };
+import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
@@ -25,7 +28,6 @@ export interface DeployConfig {
 export interface DeploymentInfo {
   blockNumber: number;
   worldAddress: string;
-  rpc: string;
 }
 
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): Promise<DeploymentInfo> {
@@ -48,55 +50,83 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   setInternalFeePerGas(priorityFeeMultiplier);
 
   // Catch all to await any promises before exiting the script
-  const promises: Promise<unknown>[] = [];
+  let promises: Promise<unknown>[] = [];
 
   // Get block number before deploying
   const blockNumber = Number(await cast(["block-number", "--rpc-url", rpc], { profile }));
   console.log("Start deployment at block", blockNumber);
 
-  // Deploy all contracts (World and systems)
-  const contractPromises = Object.keys(mudConfig.systems).reduce<Record<string, Promise<string>>>(
-    (acc, systemName) => {
-      acc[systemName] = deployContractByName(systemName);
+  // Deploy World
+  const worldPromise = {
+    World: worldContractName
+      ? deployContractByName(worldContractName)
+      : deployContract(IWorldData.abi, WorldData.bytecode, "World"),
+  };
+
+  // Deploy Systems
+  const systemPromises = Object.keys(mudConfig.systems).reduce<Record<string, Promise<string>>>((acc, systemName) => {
+    acc[systemName] = deployContractByName(systemName);
+    return acc;
+  }, {});
+
+  // Deploy default World modules
+  const defaultModules: Record<string, Promise<string>> = {
+    // TODO: these only need to be deployed once per chain, add a check if they exist already
+    CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, "CoreModule"),
+    RegistrationModule: deployContract(
+      RegistrationModuleData.abi,
+      RegistrationModuleData.bytecode,
+      "RegistrationModule"
+    ),
+    KeysWithValueModule: deployContract(
+      KeysWithValueModuleData.abi,
+      KeysWithValueModuleData.bytecode,
+      "KeysWithValueModule"
+    ),
+  };
+
+  // Deploy user Modules
+  const modulePromises = mudConfig.modules
+    .filter((module) => !defaultModules[module.name]) // Only deploy user modules here, not default modules
+    .reduce<Record<string, Promise<string>>>((acc, module) => {
+      acc[module.name] = deployContractByName(module.name);
       return acc;
-    },
-    {
-      World: worldContractName
-        ? deployContractByName(worldContractName)
-        : deployContract(WorldABI, WorldBytecode, "World"),
-      CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, "CoreModule"),
-      RegistrationModule: deployContract(
-        RegistrationModuleData.abi,
-        RegistrationModuleData.bytecode,
-        "RegistrationModule"
-      ),
-    }
-  );
+    }, defaultModules);
+
+  // Combine all contracts into one object
+  const contractPromises: Record<string, Promise<string>> = { ...worldPromise, ...systemPromises, ...modulePromises };
 
   // Create World contract instance from deployed address
-  const WorldContract = new ethers.Contract(await contractPromises.World, WorldABI, signer) as IWorld;
+  const WorldContract = new ethers.Contract(await contractPromises.World, IWorldData.abi, signer) as IWorld;
 
   // Install core Modules
-  console.log(chalk.blue("Installing modules"));
-  await fastTxExecute(WorldContract, "installRootModule", [await contractPromises.CoreModule, "0x"]);
-  await fastTxExecute(WorldContract, "installRootModule", [await contractPromises.RegistrationModule, "0x"]);
-  console.log(chalk.green("Installed modules"));
+  console.log(chalk.blue("Installing core World modules"));
+  await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.CoreModule, "0x"]);
+  await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.RegistrationModule, "0x"]);
+  console.log(chalk.green("Installed core World modules"));
 
   // Register namespace
   if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)]);
 
   // Register tables
-  promises.push(
+  const tableIds: { [tableName: string]: Uint8Array } = {};
+  promises = [
+    ...promises,
     ...Object.entries(mudConfig.tables).map(async ([tableName, { fileSelector, schema, primaryKeys }]) => {
       console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${fileSelector}`));
 
+      // Store the tableId for later use
+      tableIds[tableName] = toResourceSelector(namespace, fileSelector);
+
       // Register table
-      const schemaTypes = Object.values(schema).map((schemaOrUserType) => {
-        return resolveSchemaOrUserTypeSimple(schemaOrUserType, mudConfig.userTypes);
+      const schemaTypes = Object.values(schema).map((abiOrUserType) => {
+        const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
+        return schemaType;
       });
 
-      const keyTypes = Object.values(primaryKeys).map((schemaOrUserType) => {
-        return resolveSchemaOrUserTypeSimple(schemaOrUserType, mudConfig.userTypes);
+      const keyTypes = Object.values(primaryKeys).map((abiOrUserType) => {
+        const { schemaType } = resolveAbiOrUserType(abiOrUserType, mudConfig);
+        return schemaType;
       });
 
       await fastTxExecute(WorldContract, "registerTable", [
@@ -115,28 +145,68 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       ]);
 
       console.log(chalk.green(`Registered table ${tableName} at ${fileSelector}`));
-    })
-  );
+    }),
+  ];
 
   // Register systems (using forEach instead of for..of to avoid blocking on async calls)
-  promises.push(
-    ...Object.entries(mudConfig.systems).map(async ([systemName, { fileSelector, openAccess }]) => {
-      console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${fileSelector}`));
+  promises = [
+    ...promises,
+    ...Object.entries(mudConfig.systems).map(
+      async ([systemName, { fileSelector, openAccess, registerFunctionSelectors }]) => {
+        // Register system at route
+        console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${fileSelector}`));
+        await fastTxExecute(WorldContract, "registerSystem", [
+          toBytes16(namespace),
+          toBytes16(fileSelector),
+          await contractPromises[systemName],
+          openAccess,
+        ]);
+        console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${fileSelector}`));
 
-      // Register system at route
-      await fastTxExecute(WorldContract, "registerSystem", [
-        toBytes16(namespace),
-        toBytes16(fileSelector),
-        await contractPromises[systemName],
-        openAccess,
-      ]);
+        // Register function selectors for the system
+        if (registerFunctionSelectors) {
+          const functionSignatures: FunctionSignature[] = await loadFunctionSignatures(systemName);
+          const isRoot = namespace === "";
+          // Using Promise.all to avoid blocking on async calls
+          await Promise.all(
+            functionSignatures.map(async ({ functionName, functionArgs }) => {
+              const functionSignature = isRoot
+                ? functionName + functionArgs
+                : `${namespace}_${fileSelector}_${functionName}${functionArgs}`;
 
-      console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${fileSelector}`));
-    })
-  );
+              console.log(chalk.blue(`Registering function "${functionSignature}"`));
+              if (isRoot) {
+                const worldFunctionSelector = toFunctionSelector(
+                  functionSignature === ""
+                    ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
+                    : { functionName, functionArgs }
+                );
+                const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
+                await fastTxExecute(WorldContract, "registerRootFunctionSelector", [
+                  toBytes16(namespace),
+                  toBytes16(fileSelector),
+                  worldFunctionSelector,
+                  systemFunctionSelector,
+                ]);
+              } else {
+                await fastTxExecute(WorldContract, "registerFunctionSelector", [
+                  toBytes16(namespace),
+                  toBytes16(fileSelector),
+                  functionName,
+                  functionArgs,
+                ]);
+              }
+              console.log(chalk.green(`Registered function "${functionSignature}"`));
+            })
+          );
+        }
+      }
+    ),
+  ];
 
   // Wait for resources to be registered before granting access to them
-  await Promise.all(promises);
+  await Promise.all(promises); // ----------------------------------------------------------------------------------------------
+  promises = [];
 
   // Grant access to systems
   for (const [systemName, { fileSelector, accessListAddresses, accessListSystems }] of Object.entries(
@@ -145,7 +215,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     const resourceSelector = `${namespace}/${fileSelector}`;
 
     // Grant access to addresses
-    promises.push(
+    promises = [
+      ...promises,
       ...accessListAddresses.map(async (address) => {
         console.log(chalk.blue(`Grant ${address} access to ${systemName} (${resourceSelector})`));
         await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
@@ -154,11 +225,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
           address,
         ]);
         console.log(chalk.green(`Granted ${address} access to ${systemName} (${namespace}/${fileSelector})`));
-      })
-    );
+      }),
+    ];
 
     // Grant access to other systems
-    promises.push(
+    promises = [
+      ...promises,
       ...accessListSystems.map(async (granteeSystem) => {
         console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${resourceSelector})`));
         await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
@@ -167,12 +239,41 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
           await contractPromises[granteeSystem],
         ]);
         console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${resourceSelector})`));
-      })
-    );
+      }),
+    ];
   }
 
-  // Await all promises
-  await Promise.all(promises);
+  // Wait for access to be granted before installing modules
+  await Promise.all(promises); // ----------------------------------------------------------------------------------------------
+  promises = [];
+
+  // Install modules
+  promises = [
+    ...promises,
+    ...mudConfig.modules.map(async (module) => {
+      console.log(chalk.blue(`Installing${module.root ? " root " : " "}module ${module.name}`));
+      // Resolve arguments
+      const resolvedArgs = await Promise.all(
+        module.args.map((arg) => resolveWithContext(arg, { tableIds, systemAddresses: contractPromises }))
+      );
+      const values = resolvedArgs.map((arg) => arg.value);
+      const types = resolvedArgs.map((arg) => arg.type);
+      const moduleAddress = await contractPromises[module.name];
+      if (!moduleAddress) throw new Error(`Module ${module.name} not found`);
+
+      // Send transaction to install module
+      await fastTxExecute(WorldContract, module.root ? "installRootModule" : "installModule", [
+        moduleAddress,
+        abi.encode(types, values),
+      ]);
+
+      console.log(chalk.green(`Installed${module.root ? " root " : " "}module ${module.name}`));
+    }),
+  ];
+
+  // Await all promises before executing PostDeploy script
+  await Promise.all(promises); // ----------------------------------------------------------------------------------------------
+  promises = [];
 
   // Execute postDeploy forge script
   const postDeployPath = path.join(await getScriptDirectory(), postDeployScript + ".s.sol");
@@ -200,7 +301,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
   console.log(chalk.green("Deployment completed in", (Date.now() - startTime) / 1000, "seconds"));
 
-  return { worldAddress: await contractPromises.World, blockNumber, rpc };
+  return { worldAddress: await contractPromises.World, blockNumber };
 
   // ------------------- INTERNAL FUNCTIONS -------------------
   // (Inlined to avoid having to pass around nonce, signer and forgeOutDir)
@@ -283,6 +384,18 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   //   return deployedTo;
   // }
 
+  async function loadFunctionSignatures(contractName: string): Promise<FunctionSignature[]> {
+    const { abi } = await getContractData(contractName);
+
+    return abi
+      .filter((item) => ["fallback", "function"].includes(item.type))
+      .map((item) => {
+        if (item.type === "fallback") return { functionName: "", functionArgs: "" };
+
+        return { functionName: item.name, functionArgs: `(${item.inputs.map((arg) => arg.type).join(",")})` };
+      });
+  }
+
   /**
    * Only await gas estimation (for speed), only execute if gas estimation succeeds (for safety)
    */
@@ -317,13 +430,13 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
    * Load the contract's abi and bytecode from the file system
    * @param contractName: Name of the contract to load
    */
-  async function getContractData(contractName: string): Promise<{ bytecode: string; abi: ContractInterface }> {
+  async function getContractData(contractName: string): Promise<{ bytecode: string; abi: Fragment[] }> {
     let data: any;
     const contractDataPath = path.join(forgeOutDirectory, contractName + ".sol", contractName + ".json");
     try {
       data = JSON.parse(readFileSync(contractDataPath, "utf8"));
     } catch (error: any) {
-      throw new MUDError(`Error reading file at ${contractDataPath}: ${error?.message}`);
+      throw new MUDError(`Error reading file at ${contractDataPath}`);
     }
 
     const bytecode = data?.bytecode?.object;
@@ -351,6 +464,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   }
 }
 
+// TODO: use stringToBytes16 from utils as soon as utils are usable inside cli
+// (see https://github.com/latticexyz/mud/issues/499)
 function toBytes16(input: string) {
   if (input.length > 16) throw new Error("String does not fit into 16 bytes");
 
@@ -364,4 +479,34 @@ function toBytes16(input: string) {
     result[i] = 0;
   }
   return result;
+}
+
+// TODO: use TableId from utils as soon as utils are usable inside cli
+// (see https://github.com/latticexyz/mud/issues/499)
+function toResourceSelector(namespace: string, file: string): Uint8Array {
+  const namespaceBytes = toBytes16(namespace);
+  const fileBytes = toBytes16(file);
+  const result = new Uint8Array(32);
+  result.set(namespaceBytes);
+  result.set(fileBytes, 16);
+  return result;
+}
+
+interface FunctionSignature {
+  functionName: string;
+  functionArgs: string;
+}
+
+// TODO: move this to utils as soon as utils are usable inside cli
+// (see https://github.com/latticexyz/mud/issues/499)
+function toFunctionSelector({ functionName, functionArgs }: FunctionSignature): string {
+  const functionSignature = functionName + functionArgs;
+  if (functionSignature === "") return "0x";
+  return sigHash(functionSignature);
+}
+
+// TODO: move this to utils as soon as utils are usable inside cli
+// (see https://github.com/latticexyz/mud/issues/499)
+function sigHash(signature: string) {
+  return ethers.utils.hexDataSlice(ethers.utils.keccak256(ethers.utils.toUtf8Bytes(signature)), 0, 4);
 }

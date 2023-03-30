@@ -18,3 +18,8 @@ type SchemaCache struct {
 type SchemaCacheResponse struct {
 	Schema string `json:"schema"`
 }
+
+type KeyValueSchemaCacheResponse struct {
+	KeySchema   string `db:"key_schema"`
+	ValueSchema string `db:"value_schema"`
+}

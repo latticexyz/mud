@@ -70,18 +70,24 @@ func Internal__SchemaTableSchema(chainId string) *mode.TableSchema {
 			"world_address",
 			"namespace",
 			"table_name",
+			"key_schema",
+			"value_schema",
 			"schema",
 		},
 		PostgresTypes: map[string]string{
 			"world_address": "text",
 			"namespace":     "text",
 			"table_name":    "text",
+			"key_schema":    "text",
+			"value_schema":  "text",
 			"schema":        "jsonb",
 		},
 		SolidityTypes: map[string]string{
 			"world_address": "address",
 			"namespace":     "string",
 			"table_name":    "string",
+			"key_schema":    "bytes32",
+			"value_schema":  "bytes32",
 			"schema":        "bytes",
 		},
 		Namespace: Namespace(chainId, ""),
@@ -225,6 +231,24 @@ func ValidateNamespace__State(namespace *pb_mode.Namespace) error {
 	}
 	if namespace.WorldAddress == "" {
 		return fmt.Errorf("worldAddress is empty")
+	}
+	return nil
+}
+
+// ValidateNamespace__State validates the given Namespace instance for state-related operations on
+// a single table.
+//
+// Parameters:
+// - namespace (*pb_mode.Namespace): A pointer to the Namespace instance to validate.
+//
+// Returns:
+// (error) - An error, if any occurred during the validation.
+func ValidateNamespace__SingleState(namespace *pb_mode.Namespace) error {
+	if err := ValidateNamespace(namespace); err != nil {
+		return err
+	}
+	if namespace.ChainId == "" {
+		return fmt.Errorf("chainId is empty")
 	}
 	return nil
 }

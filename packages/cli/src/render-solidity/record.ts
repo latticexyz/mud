@@ -1,71 +1,66 @@
-import { renderList, renderArguments, renderCommonData } from "./common.js";
-import { renderDecodeValueType, renderEncodeField } from "./field.js";
+import { renderList, renderArguments, renderCommonData, renderWithStore } from "./common.js";
+import { renderDecodeValueType } from "./field.js";
 import { RenderTableDynamicField, RenderTableOptions } from "./types.js";
 
 export function renderRecordMethods(options: RenderTableOptions) {
-  const { staticFields, dynamicFields, structName, storeArgument } = options;
+  const { structName, storeArgument } = options;
   const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
-  let result = `
-  /** Get the full data */
-  function get(${renderArguments([_typedTableId, _typedKeyArgs])}) internal view returns (${renderDecodedRecord(
-    options
-  )}) {
-    ${_primaryKeysDefinition}
-    bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
-    return decode(_blob);
-  }
-  `;
-
-  if (storeArgument) {
-    result += `
-    /** Get the full data from the specified store */
+  let result = renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix) => `
+    /** Get the full data${_commentSuffix} */
     function get(${renderArguments([
+      _typedStore,
       _typedTableId,
-      `IStore _store`,
       _typedKeyArgs,
     ])}) internal view returns (${renderDecodedRecord(options)}) {
       ${_primaryKeysDefinition}
-      bytes memory _blob = _store.getRecord(_tableId, _primaryKeys);
+      bytes memory _blob = ${_store}.getRecord(_tableId, _primaryKeys, getSchema());
       return decode(_blob);
     }
-    `;
-  }
+  `
+  );
 
-  result += `
-  /** Set the full data using individual values */
-  function set(${renderArguments([
-    _typedTableId,
-    _typedKeyArgs,
-    renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
-  ])}) internal {
-    ${renderEncodedLengths(dynamicFields)}
-    bytes memory _data = abi.encodePacked(${renderArguments([
-      renderArguments(staticFields.map(({ name }) => name)),
-      // TODO try gas optimization (preallocate for all, encodePacked statics, and direct encode dynamics)
-      // (see https://github.com/latticexyz/mud/issues/444)
-      ...(dynamicFields.length === 0
-        ? []
-        : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeField(field)))]),
-    ])});
+  result += renderWithStore(
+    storeArgument,
+    (_typedStore, _store, _commentSuffix) => `
+    /** Set the full data using individual values${_commentSuffix} */
+    function set(${renderArguments([
+      _typedStore,
+      _typedTableId,
+      _typedKeyArgs,
+      renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
+    ])}) internal {
+      bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
 
-    ${_primaryKeysDefinition}
+      ${_primaryKeysDefinition}
 
-    StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
-  }
-  `;
+      ${_store}.setRecord(_tableId, _primaryKeys, _data);
+    }
+  `
+  );
 
   if (structName !== undefined) {
-    result += `
-    /** Set the full data using the data struct */
-    function set(${renderArguments([_typedTableId, _typedKeyArgs, `${structName} memory _table`])}) internal {
-      set(${renderArguments([
-        _tableId,
-        _keyArgs,
-        renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
-      ])});
-    }
-    `;
+    result += renderWithStore(
+      storeArgument,
+      (_typedStore, _store, _commentSuffix, _untypedStore) => `
+      /** Set the full data using the data struct${_commentSuffix} */
+      function set(${renderArguments([
+        _typedStore,
+        _typedTableId,
+        _typedKeyArgs,
+        `${structName} memory _table`,
+      ])}) internal {
+        set(${renderArguments([
+          _untypedStore,
+          _tableId,
+          _keyArgs,
+          renderArguments(options.fields.map(({ name }) => `_table.${name}`)),
+        ])});
+      }
+    `
+    );
   }
 
   result += renderDecodeFunction(options);
@@ -142,30 +137,18 @@ function renderDecodedRecord({ structName, fields }: RenderTableOptions) {
 }
 
 function renderDecodeDynamicFieldPartial(field: RenderTableDynamicField) {
-  const { typeId, arrayElement } = field;
+  const { typeId, arrayElement, typeWrap } = field;
   if (arrayElement) {
     // arrays
-    return `SliceLib.getSubslice(_blob, _start, _end).decodeArray_${arrayElement.typeId}()`;
+    return `${typeWrap}(
+      SliceLib.getSubslice(_blob, _start, _end).decodeArray_${arrayElement.typeId}()
+    )`;
   } else {
     // bytes/string
-    return `${typeId}(SliceLib.getSubslice(_blob, _start, _end).toBytes())`;
-  }
-}
-
-function renderEncodedLengths(dynamicFields: RenderTableDynamicField[]) {
-  if (dynamicFields.length > 0) {
-    return `
-    uint16[] memory _counters = new uint16[](${dynamicFields.length});
-    ${renderList(dynamicFields, ({ name, arrayElement }, index) => {
-      if (arrayElement) {
-        return `_counters[${index}] = uint16(${name}.length * ${arrayElement.staticByteLength});`;
-      } else {
-        return `_counters[${index}] = uint16(bytes(${name}).length);`;
-      }
-    })}
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
-    `;
-  } else {
-    return "";
+    return `${typeWrap}(
+      ${typeId}(
+        SliceLib.getSubslice(_blob, _start, _end).toBytes()
+      )
+    )`;
   }
 }

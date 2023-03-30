@@ -290,17 +290,31 @@ type DecodedData struct {
 	schemaTypes []SchemaType
 }
 
-// NewDecodedData creates a new instance of DecodedData with the provided SchemaTypePair.
+// NewDecodedDataFromSchemaTypePair creates a new instance of DecodedData with the provided SchemaTypePair.
 //
 // Parameters:
 // - schemaTypePair (SchemaTypePair): The SchemaTypePair to use for the DecodedData instance.
 //
 // Returns:
 // (*DecodedData): The new DecodedData instance.
-func NewDecodedData(schemaTypePair SchemaTypePair) *DecodedData {
+func NewDecodedDataFromSchemaTypePair(schemaTypePair SchemaTypePair) *DecodedData {
 	return &DecodedData{
 		data:        map[string]*DataSchemaTypePair{},
 		schemaTypes: CombineSchemaTypePair(schemaTypePair),
+	}
+}
+
+// NewDecodedDataFromSchemaType creates a new instance of DecodedData with the provided list of SchemaType.
+//
+// Parameters:
+// - schemaType ([]SchemaType): The list of SchemaType to use for the DecodedData instance.
+//
+// Returns:
+// (*DecodedData): The new DecodedData instance.
+func NewDecodedDataFromSchemaType(schemaType []SchemaType) *DecodedData {
+	return &DecodedData{
+		data:        map[string]*DataSchemaTypePair{},
+		schemaTypes: schemaType,
 	}
 }
 
@@ -420,7 +434,7 @@ func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
 	var bytesOffset uint64 = 0
 
 	// Where the decoded data is stored.
-	data := NewDecodedData(schemaTypePair)
+	data := NewDecodedDataFromSchemaTypePair(schemaTypePair)
 
 	// Decode static fields.
 	for _, fieldType := range schemaTypePair.Static {

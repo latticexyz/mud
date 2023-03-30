@@ -281,7 +281,7 @@ func (ql *QueryLayer) StreamState(request *pb_mode.StateRequest, stateStream pb_
 // - (*pb_mode.QueryLayerStateResponse): The response containing the single table state.
 // - (error): An error encountered during validation, query building, or execution.
 func (ql *QueryLayer) Single__GetState(ctx context.Context, request *pb_mode.Single__StateRequest) (*pb_mode.QueryLayerStateResponse, error) {
-	if err := schema.ValidateNamespace__State(request.Namespace); err != nil {
+	if err := schema.ValidateNamespace__SingleState(request.Namespace); err != nil {
 		return nil, fmt.Errorf("invalid namespace for Single__GetState(): %v", err)
 	}
 

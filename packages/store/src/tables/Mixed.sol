@@ -11,6 +11,7 @@ import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { Bytes } from "../Bytes.sol";
+import { Memory } from "../Memory.sol";
 import { SliceLib } from "../Slice.sol";
 import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
@@ -122,9 +123,7 @@ library Mixed {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 2);
-    bytes memory _newBlob = abi.encodePacked(_blob, abi.encodePacked((_element)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 2, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
   /** Get s */
@@ -149,9 +148,7 @@ library Mixed {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 3);
-    bytes memory _newBlob = abi.encodePacked(_blob, bytes((_slice)));
-    StoreSwitch.setField(_tableId, _primaryKeys, 3, _newBlob);
+    StoreSwitch.pushToField(_tableId, _primaryKeys, 3, bytes((_slice)));
   }
 
   /** Get the full data */
@@ -165,12 +162,7 @@ library Mixed {
 
   /** Set the full data using individual values */
   function set(bytes32 key, uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal {
-    uint16[] memory _counters = new uint16[](2);
-    _counters[0] = uint16(a32.length * 4);
-    _counters[1] = uint16(bytes(s).length);
-    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
-
-    bytes memory _data = abi.encodePacked(u32, u128, _encodedLengths.unwrap(), EncodeArray.encode((a32)), bytes((s)));
+    bytes memory _data = encode(u32, u128, a32, s);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -197,11 +189,21 @@ library Mixed {
 
     _start = _end;
     _end += _encodedLengths.atIndex(0);
-    _table.a32 = SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32();
+    _table.a32 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
 
     _start = _end;
     _end += _encodedLengths.atIndex(1);
-    _table.s = string(SliceLib.getSubslice(_blob, _start, _end).toBytes());
+    _table.s = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(uint32 u32, uint128 u128, uint32[] memory a32, string memory s) internal view returns (bytes memory) {
+    uint16[] memory _counters = new uint16[](2);
+    _counters[0] = uint16(a32.length * 4);
+    _counters[1] = uint16(bytes(s).length);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+
+    return abi.encodePacked(u32, u128, _encodedLengths.unwrap(), EncodeArray.encode((a32)), bytes((s)));
   }
 
   /* Delete all data for given keys */

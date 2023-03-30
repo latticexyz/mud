@@ -1,9 +1,9 @@
 name: Build
 
+# Verifies build artifacts in pull requests.
+# Note: this workflow does not trigger on pushes to main,
+# because the npm workflow includes a build+verify step.
 on:
-  push:
-    branches:
-      - main
   pull_request:
 
 jobs:

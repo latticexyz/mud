@@ -11,6 +11,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -121,7 +122,7 @@ library FunctionSelectors {
 
   /** Set the full data using individual values */
   function set(bytes4 functionSelector, bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) internal {
-    bytes memory _data = abi.encodePacked(namespace, file, systemFunctionSelector);
+    bytes memory _data = encode(namespace, file, systemFunctionSelector);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
@@ -138,6 +139,11 @@ library FunctionSelectors {
     file = (Bytes.slice16(_blob, 16));
 
     systemFunctionSelector = (Bytes.slice4(_blob, 32));
+  }
+
+  /** Tightly pack full data using this table's schema */
+  function encode(bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) internal view returns (bytes memory) {
+    return abi.encodePacked(namespace, file, systemFunctionSelector);
   }
 
   /* Delete all data for given keys */

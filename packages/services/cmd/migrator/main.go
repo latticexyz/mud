@@ -76,7 +76,6 @@ func connectToDatabase(dsn string, schema string) (*sqlx.DB, error) {
 	_, err = db.Exec(schema)
 	if err != nil {
 		logger.GetLogger().Error("error executing schema", zap.String("schema", schema))
-		println(schema)
 		return nil, err
 	}
 
@@ -303,6 +302,5 @@ func main() {
 		logger.Fatal("error loading data into db", zap.Error(err))
 	}
 
-	println(db)
 	logger.Info("migration complete")
 }

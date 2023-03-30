@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Bytes } from "./Bytes.sol";
 import { Storage } from "./Storage.sol";
@@ -96,8 +95,8 @@ library StoreCore {
    */
   function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) internal {
     // Verify the schema is valid
-    valueSchema.validate();
-    keySchema.validate();
+    valueSchema.validate({ allowEmpty: false });
+    keySchema.validate({ allowEmpty: true });
 
     // Verify the schema doesn't exist yet
     if (hasTable(tableId)) {
@@ -219,6 +218,7 @@ library StoreCore {
 
     // Call onBeforeSetField hooks (before modifying the state)
     address[] memory hooks = Hooks.get(bytes32(tableId));
+
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onBeforeSetField(tableId, key, schemaIndex, data);

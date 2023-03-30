@@ -250,7 +250,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
           (percentage: number) => this.setLoadingState({ percentage }),
           config.pruneOptions
         );
-      } else {
+      } else if (!disableCache) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from cache", percentage: 0 });
         initialState = await loadIndexDbCacheStore(indexDbCache);
         this.setLoadingState({ percentage: 100 });

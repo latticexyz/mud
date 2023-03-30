@@ -1,14 +1,40 @@
 import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
-import { StoreConfig, StoreUserConfig } from "./parseStoreConfig.js";
+import { storeConfig, zStoreConfig, StoreUserConfig } from "./parseStoreConfig.js";
 
 describe("StoreUserConfig", () => {
   // Typecheck manual interfaces against zod
-  expectTypeOf<StoreUserConfig>().toEqualTypeOf<z.input<typeof StoreConfig>>();
+  expectTypeOf<StoreUserConfig>().toEqualTypeOf<z.input<typeof zStoreConfig>>();
   // type equality isn't deep for optionals
-  expectTypeOf<StoreUserConfig["tables"][string]>().toEqualTypeOf<z.input<typeof StoreConfig>["tables"][string]>();
-  expectTypeOf<NonNullable<NonNullable<StoreUserConfig["userTypes"]>["enums"]>[string]>().toEqualTypeOf<
-    NonNullable<NonNullable<z.input<typeof StoreConfig>["userTypes"]>["enums"]>[string]
+  expectTypeOf<StoreUserConfig["tables"][string]>().toEqualTypeOf<z.input<typeof zStoreConfig>["tables"][string]>();
+  expectTypeOf<NonNullable<StoreUserConfig["enums"]>[string]>().toEqualTypeOf<
+    NonNullable<NonNullable<z.input<typeof zStoreConfig>>["enums"]>[string]
   >();
   // TODO If more nested schemas are added, provide separate tests for them
+
+  // Test possible inference confusion.
+  // This would fail if you remove `AsDependent` from `StoreUserConfig`
+  expectTypeOf(
+    storeConfig({
+      tables: {
+        Table1: {
+          primaryKeys: {
+            a: "Enum1",
+          },
+          schema: {
+            b: "Enum2",
+          },
+        },
+        Table2: {
+          schema: {
+            a: "uint32",
+          },
+        },
+      },
+      enums: {
+        Enum1: ["E1"],
+        Enum2: ["E1"],
+      },
+    })
+  ).toEqualTypeOf<StoreUserConfig<"Enum1" | "Enum2", "Enum1" | "Enum2">>();
 });
