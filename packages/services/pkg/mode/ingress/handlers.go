@@ -60,33 +60,19 @@ func (il *IngressLayer) handleLogs(logs []types.Log) {
 // - void.
 func (il *IngressLayer) handleSetRecordEvent(event *storecore.StorecoreStoreSetRecord) {
 	tableId := storecore.PaddedTableId(event.Table)
-	il.logger.Info("handling set record event", zap.String("table_id", tableId))
+	il.logger.Info("handling set record (StoreSetRecordEvent) event", zap.String("table_id", tableId))
 
 	// Handle the following scenarios:
 	// 1. The table is the schema table. This means that a new table should be created.
 	// 2. The table is the metadata table. This means we need to update a schema of an existing table.
 	// 3. The table is a generic table. This means we need to update rows of an existing table.
-	println("-------------------------------------------------------")
-	println("-------------------------------------------------------")
-	println("------------------StoreSetRecordEvent------------------")
-	println("-------------------------------------------------------")
-	println("-------------------------------------------------------")
 
 	switch tableId {
 	case storecore.Mudstore__SchemaTableId():
-		println("----------------handleSchemaTableEvent-----------------")
-		println("-------------------------------------------------------")
-		println("-------------------------------------------------------")
 		il.handleSchemaTableEvent(event)
 	case storecore.Mudstore__MetadataTableId():
-		println("---------------handleMetadataTableEvent----------------")
-		println("-------------------------------------------------------")
-		println("-------------------------------------------------------")
 		il.handleMetadataTableEvent(event)
 	default:
-		println("---------------handleGenericTableEvent-----------------")
-		println("-------------------------------------------------------")
-		println("-------------------------------------------------------")
 		il.handleGenericTableEvent(event)
 	}
 }
@@ -115,6 +101,8 @@ func (il *IngressLayer) handleSetFieldEventUpdateRow(event *storecore.StorecoreS
 	}
 	// Update the row.
 	il.wl.UpdateRow(tableSchema, partialRow, filter)
+
+	il.logger.Info("updated row for setField", zap.String("table_id", tableSchema.TableId), zap.String("field_name", fieldName), zap.String("field_value", fieldValue))
 }
 
 // handleSetFieldEventInsertRow handles the StoreSetField event by decoding the row record data (value) and key, creating a row object, and inserting the row into the table.
@@ -135,14 +123,10 @@ func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreS
 	// Create a row for the table from the decoded data.
 	row := write.RowFromDecodedData(decodedKeyData, decodedFieldData, tableSchema)
 
-	println("inserting new row for setField")
-	println("row being inserted:")
-	for k, v := range row {
-		println(k, v)
-	}
-
 	// Insert the row into the table.
 	il.wl.InsertRow(tableSchema, row)
+
+	il.logger.Info("inserted new row for setField", zap.String("table_id", tableSchema.TableId))
 }
 
 // handleSetFieldEvent handles the StoreSetField event, which is triggered when a field in a row of a table is updated or created.
@@ -156,14 +140,8 @@ func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreS
 // Returns:
 // - void.
 func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetField) {
-	println("-------------------------------------------------------")
-	println("-------------------------------------------------------")
-	println("------------------StoreSetFieldEvent------------------")
-	println("-------------------------------------------------------")
-	println("-------------------------------------------------------")
-
 	tableId := storecore.PaddedTableId(event.Table)
-	il.logger.Info("handling set field event", zap.String("table_id", tableId))
+	il.logger.Info("handling set field (StoreSetFieldEvent) event", zap.String("table_id", tableId))
 
 	// Fetch the schema for the target table.
 	tableSchema, err := il.schemaCache.GetTableSchema(il.chainConfig.Id, event.WorldAddress(), schema.TableIdToTableName(tableId))
@@ -191,10 +169,8 @@ func (il *IngressLayer) handleSetFieldEvent(event *storecore.StorecoreStoreSetFi
 
 	// Handle the two scenarios described above.
 	if rowExists {
-		println("ROW EXISTS")
 		il.handleSetFieldEventUpdateRow(event, tableSchema, filter)
 	} else {
-		println("ROW DOES NOT EXIST")
 		il.handleSetFieldEventInsertRow(event, tableSchema)
 	}
 }
@@ -244,9 +220,6 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 
 	// Merge the two schemas into one, since the table schema is a combination of the key schema and the value schema.
 	storeCoreSchemaTypeKV := storecore.SchemaTypeKVFromPairs(keyStoreCoreSchemaTypePair, valueStoreCoreSchemaTypePair)
-
-	println("length of data: ", len(event.Data))
-	println("merged schema: ", storecore.StringifySchemaTypes(storeCoreSchemaTypeKV.Flatten()))
 
 	// Create a schema table row for the table.
 	tableSchema := &mode.TableSchema{
