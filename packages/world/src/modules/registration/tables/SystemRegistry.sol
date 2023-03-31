@@ -48,10 +48,21 @@ library SystemRegistry {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
+  /** Set the table's metadata (using the specified store) */
+  function setMetadata(IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get resourceSelector */
@@ -63,12 +74,29 @@ library SystemRegistry {
     return (Bytes.slice32(_blob, 0));
   }
 
+  /** Get resourceSelector (using the specified store) */
+  function get(IStore _store, address system) internal view returns (bytes32 resourceSelector) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32(bytes20((system)));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    return (Bytes.slice32(_blob, 0));
+  }
+
   /** Set resourceSelector */
   function set(address system, bytes32 resourceSelector) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32(bytes20((system)));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((resourceSelector)));
+  }
+
+  /** Set resourceSelector (using the specified store) */
+  function set(IStore _store, address system, bytes32 resourceSelector) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32(bytes20((system)));
+
+    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((resourceSelector)));
   }
 
   /** Tightly pack full data using this table's schema */
@@ -82,5 +110,13 @@ library SystemRegistry {
     _primaryKeys[0] = bytes32(bytes20((system)));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, address system) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32(bytes20((system)));
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }

@@ -14,7 +14,6 @@ export default storeConfig({
         tableName: "string",
         abiEncodedFieldNames: "bytes",
       },
-      storeArgument: true,
     },
     Mixed: {
       schema: {
