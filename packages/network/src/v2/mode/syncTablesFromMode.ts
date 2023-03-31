@@ -52,7 +52,6 @@ export async function syncTablesFromMode(
       .map((modeType) => modeType.match(/tuple\((.*)\[]\)/)?.[1] ?? modeType) // TODO: remove this hack once MODE is fixed (https://github.com/latticexyz/mud/issues/444)
       .map((abiType) => AbiTypeToSchemaType[abiType]);
 
-    console.log(fullTableName, types, keyLength, fieldTypes);
     const rawSchema = arrayToHex(encodeSchema(fieldTypes));
     // TODO: refactor registerSchema/registerMetadata to take chain+world address rather than Contract
     registrationPromises.push(registerSchema(world, tableId, rawSchema));
