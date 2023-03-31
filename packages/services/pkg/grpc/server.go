@@ -26,7 +26,7 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-func startRPCServer(grpcServer *grpc.Server, port int, logger *zap.Logger) {
+func StartRPCServer(grpcServer *grpc.Server, port int, logger *zap.Logger) {
 	listener, err := net.Listen("tcp", fmt.Sprintf("localhost:%d", port))
 	if err != nil {
 		logger.Fatal("failed to listen", zap.String("category", "gRPC server"), zap.Error(err))
@@ -42,7 +42,7 @@ func startRPCServer(grpcServer *grpc.Server, port int, logger *zap.Logger) {
 	}
 }
 
-func startHTTPServer(grpcWebServer *grpcweb.WrappedGrpcServer, port int, logger *zap.Logger) {
+func StartHTTPServer(grpcWebServer *grpcweb.WrappedGrpcServer, port int, logger *zap.Logger) {
 	// Create the HTTP server.
 	httpServer := &http.Server{
 		Handler: grpcWebServer,
@@ -59,7 +59,7 @@ func startHTTPServer(grpcWebServer *grpcweb.WrappedGrpcServer, port int, logger 
 	}
 }
 
-func startMetricsServer(port int, logger *zap.Logger) {
+func StartMetricsServer(port int, logger *zap.Logger) {
 	// Create the HTTP server.
 	metricServer := &http.Server{
 		Handler: promhttp.Handler(),
@@ -80,7 +80,7 @@ func startMetricsServer(port int, logger *zap.Logger) {
 	}
 }
 
-func createGrpcServer() *grpc.Server {
+func CreateGrpcServer() *grpc.Server {
 	grpcServer := grpc.NewServer(
 		grpc.StreamInterceptor(grpc_prometheus.StreamServerInterceptor),
 		grpc.UnaryInterceptor(grpc_prometheus.UnaryServerInterceptor),
@@ -98,7 +98,7 @@ func createGrpcServer() *grpc.Server {
 	return grpcServer
 }
 
-func createWebGrpcServer(grpcServer *grpc.Server) *grpcweb.WrappedGrpcServer {
+func CreateWebGrpcServer(grpcServer *grpc.Server) *grpcweb.WrappedGrpcServer {
 	// Wrap gRPC server into a gRPC-web HTTP server.
 	return grpcweb.WrapServer(
 		grpcServer,
@@ -108,7 +108,7 @@ func createWebGrpcServer(grpcServer *grpc.Server) *grpcweb.WrappedGrpcServer {
 	)
 }
 
-func createWebGrpcServerWithWebsockets(grpcServer *grpc.Server) *grpcweb.WrappedGrpcServer {
+func CreateWebGrpcServerWithWebsockets(grpcServer *grpc.Server) *grpcweb.WrappedGrpcServer {
 	// Wrap gRPC server into a gRPC-web HTTP server with websocket support.
 	return grpcweb.WrapServer(
 		grpcServer,
@@ -126,55 +126,55 @@ func createWebGrpcServerWithWebsockets(grpcServer *grpc.Server) *grpcweb.Wrapped
 // service. The gRPC server is started at port and HTTP server at port + 1.
 func StartStreamServer(grpcPort int, metricsPort int, ethclient *ethclient.Client, multiplexer *multiplexer.Multiplexer, logger *zap.Logger) {
 	// Create gRPC server.
-	grpcServer := createGrpcServer()
+	grpcServer := CreateGrpcServer()
 
 	// Create and register stream service server.
 	pb_stream.RegisterECSStreamServiceServer(grpcServer, createStreamServer(ethclient, multiplexer, logger))
 
 	// Start the RPC server at PORT.
-	go startRPCServer(grpcServer, grpcPort, logger)
+	go StartRPCServer(grpcServer, grpcPort, logger)
 
 	// Start a metric HTTP server.
-	go startMetricsServer(metricsPort, logger)
+	go StartMetricsServer(metricsPort, logger)
 
 	// Start the HTTP server at PORT+1.
-	go startHTTPServer(createWebGrpcServerWithWebsockets(grpcServer), grpcPort+1, logger)
+	go StartHTTPServer(CreateWebGrpcServerWithWebsockets(grpcServer), grpcPort+1, logger)
 }
 
 // StartStreamServer starts a gRPC server and a HTTP web-gRPC server wrapper for an ECS snapshot
 // service. The gRPC server is started at port and HTTP server at port + 1.
 func StartSnapshotServer(grpcPort int, metricsPort int, config *snapshot.SnapshotServerConfig, logger *zap.Logger) {
 	// Create gRPC server.
-	grpcServer := createGrpcServer()
+	grpcServer := CreateGrpcServer()
 
 	// Create and register the snapshot service server.
 	pb_snapshot.RegisterECSStateSnapshotServiceServer(grpcServer, createSnapshotServer(config))
 
 	// Start the RPC server at PORT.
-	go startRPCServer(grpcServer, grpcPort, logger)
+	go StartRPCServer(grpcServer, grpcPort, logger)
 
 	// Start a metric HTTP server.
-	go startMetricsServer(metricsPort, logger)
+	go StartMetricsServer(metricsPort, logger)
 
 	// Start the HTTP server at PORT+1.
-	go startHTTPServer(createWebGrpcServer(grpcServer), grpcPort+1, logger)
+	go StartHTTPServer(CreateWebGrpcServer(grpcServer), grpcPort+1, logger)
 }
 
 func StartRelayServer(grpcPort int, metricsPort int, ethClient *ethclient.Client, config *relay.RelayServerConfig, logger *zap.Logger) {
 	// Create gRPC server.
-	grpcServer := createGrpcServer()
+	grpcServer := CreateGrpcServer()
 
 	// Create and register relay service server.
 	pb_relay.RegisterECSRelayServiceServer(grpcServer, createRelayServer(logger, ethClient, config))
 
 	// Start the RPC server at PORT.
-	go startRPCServer(grpcServer, grpcPort, logger)
+	go StartRPCServer(grpcServer, grpcPort, logger)
 
 	// Start a metric HTTP server.
-	go startMetricsServer(metricsPort, logger)
+	go StartMetricsServer(metricsPort, logger)
 
 	// Start the HTTP server at PORT+1.
-	startHTTPServer(createWebGrpcServerWithWebsockets(grpcServer), grpcPort+1, logger)
+	StartHTTPServer(CreateWebGrpcServerWithWebsockets(grpcServer), grpcPort+1, logger)
 }
 
 func StartFaucetServer(
@@ -188,19 +188,19 @@ func StartFaucetServer(
 	logger *zap.Logger,
 ) {
 	// Create gRPC server.
-	grpcServer := createGrpcServer()
+	grpcServer := CreateGrpcServer()
 
 	// Create and register faucet service server.
 	pb_faucet.RegisterFaucetServiceServer(grpcServer, createFaucetServer(twitterClient, ethClient, privateKey, publicKey, dripConfig, logger))
 
 	// Start the RPC server at PORT.
-	go startRPCServer(grpcServer, grpcPort, logger)
+	go StartRPCServer(grpcServer, grpcPort, logger)
 
 	// Start a metric HTTP server.
-	go startMetricsServer(metricsPort, logger)
+	go StartMetricsServer(metricsPort, logger)
 
 	// Start the HTTP server at PORT+1.
-	startHTTPServer(createWebGrpcServer(grpcServer), grpcPort+1, logger)
+	StartHTTPServer(CreateWebGrpcServer(grpcServer), grpcPort+1, logger)
 }
 
 func createStreamServer(ethclient *ethclient.Client, multiplexer *multiplexer.Multiplexer, logger *zap.Logger) *ecsStreamServer {

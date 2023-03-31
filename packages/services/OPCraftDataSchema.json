@@ -1,0 +1,110 @@
+{
+    "component_keccak_mapping": {
+        "0x3bc99d5fe99b9be0112ce1d7a7a7360fb4696cc9ca15d60a116760c7f4432107": "component_Claim",
+        "0xee6335467814bca6e120dfa0a8125ce649e003559f84314882ca48e87e9bd3cc": "component_GameConfig",
+        "0xfba48a04766694c16713a414735f83be9cb20bbb29b5e18846cc8f1510640845": "component_Item",
+        "0x421c2138b319de1fc462b0733a8890cccddc786cf2f0706d7ffd416cb4ccdb08": "component_ItemPrototype",
+        "0x324f48c595e2765bf53def9edfa32615eff5bede15e9093f24e3939392ee7d3d": "component_Name",
+        "0xa7ccc284bc5995fb2c41263e6f3d83223a81df7d3dd09ee98ae16dc7094a2cf9": "component_Occurrence",
+        "0xaf90be6cd7aa92d6569a9ae629178b74e1b0fbdd1097c27ec1dfffd2dc4c7540": "component_OwnedBy",
+        "0x49a4584d9706380e35459e1f31e673445371b5bac20aa516f8ba8650b1843106": "component_Position",
+        "0x5d3a6297fbd0307cdec52dc250a76c96d6cbc418667abf59ee3ac38bf6689ac6": "component_Recipe",
+        "0xfb977f1d80dae73bb82924d509505b7c0f594919201fa938a4f3430d1ddd62b4": "component_Stake"
+    },
+    "component_value_schema": {
+        "component_claim": {
+            "stake": {
+                "solidity": "uint32",
+                "postgres": "integer"
+            },
+            "claimer": {
+                "solidity": "address",
+                "postgres": "text"
+            }
+        },
+        "component_gameconfig": {
+            "value": {
+                "solidity": "bool",
+                "postgres": "boolean"
+            }
+        },
+        "component_item": {
+            "value": {
+                "solidity": "uint256",
+                "postgres": "text"
+            }
+        },
+        "component_itemprototype": {
+            "value": {
+                "solidity": "bool",
+                "postgres": "boolean"
+            }
+        },
+        "component_name": {
+            "value": {
+                "solidity": "string",
+                "postgres": "text"
+            }
+        },
+        "component_occurrence": {
+            "contr": {
+                "solidity": "address",
+                "postgres": "text"
+            },
+            "func": {
+                "solidity": "bytes4",
+                "postgres": "bytea"
+            }
+        },
+        "component_ownedby": {
+            "value": {
+                "solidity": "uint256",
+                "postgres": "text"
+            }
+        },
+        "component_position": {
+            "x": {
+                "solidity": "uint32",
+                "postgres": "integer"
+            },
+            "y": {
+                "solidity": "uint32",
+                "postgres": "integer"
+            },
+            "z": {
+                "solidity": "uint32",
+                "postgres": "integer"
+            }
+        },
+        "component_recipe": {
+            "value": {
+                "solidity": "uint256",
+                "postgres": "text"
+            }
+        },
+        "component_stake": {
+            "value": {
+                "solidity": "uint32",
+                "postgres": "integer"
+            }
+        }
+    },
+    "component_solidity_type_mapping": {
+        "0x3bc99d5fe99b9be0112ce1d7a7a7360fb4696cc9ca15d60a116760c7f4432107": "tuple(uint32 stake, uint256 claimer)",
+        "0xee6335467814bca6e120dfa0a8125ce649e003559f84314882ca48e87e9bd3cc": "bool",
+        "0xfba48a04766694c16713a414735f83be9cb20bbb29b5e18846cc8f1510640845": "uint256",
+        "0x421c2138b319de1fc462b0733a8890cccddc786cf2f0706d7ffd416cb4ccdb08": "bool",
+        "0x324f48c595e2765bf53def9edfa32615eff5bede15e9093f24e3939392ee7d3d": "string",
+        "0xa7ccc284bc5995fb2c41263e6f3d83223a81df7d3dd09ee98ae16dc7094a2cf9": "tuple(address contr, bytes4 func)",
+        "0xaf90be6cd7aa92d6569a9ae629178b74e1b0fbdd1097c27ec1dfffd2dc4c7540": "uint256",
+        "0x49a4584d9706380e35459e1f31e673445371b5bac20aa516f8ba8650b1843106": "tuple(int32 x, int32 y, int32 z)",
+        "0x5d3a6297fbd0307cdec52dc250a76c96d6cbc418667abf59ee3ac38bf6689ac6": "uint256",
+        "0xfb977f1d80dae73bb82924d509505b7c0f594919201fa938a4f3430d1ddd62b4": "uint32"
+    },
+    "component_default_schema": {
+        "entityid": {
+            "solidity": "uint256",
+            "postgres": "text"
+        }
+    }
+}
