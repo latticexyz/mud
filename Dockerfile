@@ -17,4 +17,6 @@ WORKDIR /root/app
 
 COPY . .
 
-CMD ["time", "lerna", "exec", "--", "yarn", "pack", "--dry-run"]
+# Use lerna to generate the versions that would be published
+# Note: doesn't actually build and publish the project
+CMD ["lerna", "version", "--no-git-tag-version", "--no-push"]
