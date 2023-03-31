@@ -33,7 +33,7 @@ contract UniqueEntityModuleTest is Test {
     // !gasreport install unique entity module
     world.installModule(uniqueEntityModule, new bytes(0));
 
-    // !gasreport get a unique entity nonce
+    // !gasreport get a unique entity nonce (non-root module)
     bytes32 uniqueEntity = getUniqueEntity(world);
 
     // Table must have the same entity set
@@ -47,6 +47,7 @@ contract UniqueEntityModuleTest is Test {
     // !gasreport installRoot unique entity module
     world.installRootModule(uniqueEntityModule, new bytes(0));
 
+    // !gasreport get a unique entity nonce (root module)
     bytes32 uniqueEntity = getUniqueEntity(world);
 
     // Table must have the same entity set

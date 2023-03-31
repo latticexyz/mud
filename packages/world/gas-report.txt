@@ -10,8 +10,9 @@
 (test/KeysWithValueModule.t.sol) | set a field on a table with KeysWithValueModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1))]: 177731
 (test/KeysWithValueModule.t.sol) | change a field on a table with KeysWithValueModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2))]: 142076
 (test/UniqueEntityModule.t.sol) | install unique entity module [world.installModule(uniqueEntityModule, new bytes(0))]: 774137
-(test/UniqueEntityModule.t.sol) | get a unique entity nonce [bytes32 uniqueEntity = getUniqueEntity(world)]: 65969
+(test/UniqueEntityModule.t.sol) | get a unique entity nonce (non-root module) [bytes32 uniqueEntity = getUniqueEntity(world)]: 65969
 (test/UniqueEntityModule.t.sol) | installRoot unique entity module [world.installRootModule(uniqueEntityModule, new bytes(0))]: 780612
+(test/UniqueEntityModule.t.sol) | get a unique entity nonce (root module) [bytes32 uniqueEntity = getUniqueEntity(world)]: 65969
 (test/World.t.sol) | Delete record [world.deleteRecord(namespace, file, singletonKey)]: 16115
 (test/World.t.sol) | Push data to the table [world.pushToField(namespace, file, keyTuple, 0, encodedData)]: 96477
 (test/World.t.sol) | Register a fallback system [bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, "", "")]: 81251
