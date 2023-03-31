@@ -92,3 +92,12 @@ export async function cast(args: string[], options?: { profile?: string }): Prom
     env: { FOUNDRY_PROFILE: options?.profile },
   });
 }
+
+/**
+ * Start an anvil chain
+ * @param args The arguments to pass to anvil
+ * @returns Stdout of the command
+ */
+export async function anvil(args: string[]): Promise<string> {
+  return execLog("anvil", args);
+}
