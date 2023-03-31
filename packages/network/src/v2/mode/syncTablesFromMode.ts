@@ -49,7 +49,7 @@ export async function syncTablesFromMode(
     const fieldNames = cols.slice(keyLength);
     const fieldTypes = types
       .slice(keyLength)
-      .map((modeType) => modeType.match(/tuple\((.*)\[]\)/)?.[1] ?? modeType) // TODO: remove this hack once MODE is fixed
+      .map((modeType) => modeType.match(/tuple\((.*)\[]\)/)?.[1] ?? modeType) // TODO: remove this hack once MODE is fixed (https://github.com/latticexyz/mud/issues/444)
       .map((abiType) => AbiTypeToSchemaType[abiType]);
 
     console.log(fullTableName, types, keyLength, fieldTypes);
