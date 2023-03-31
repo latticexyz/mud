@@ -10,7 +10,7 @@ import { keyTupleToEntityID } from "../keyTupleToEntityID";
 import { registerMetadata } from "../schemas/tableMetadata";
 import { registerSchema } from "../schemas/tableSchemas";
 import { getBlockNumberFromModeTable } from "./getBlockNumberFromModeTable";
-import { decodeAbiParameters, toHex } from "viem";
+import { decodeAbiParameters } from "viem";
 
 export async function syncTablesFromMode(
   client: QueryLayerClient,
@@ -59,10 +59,10 @@ export async function syncTablesFromMode(
       console.log(tableName, keyAbiTypes, fieldAbiTypes, row.values);
       const keyTuple = row.values
         .slice(0, keyLength)
-        .map((bytes, i) => decodeAbiParameters([{ type: keyAbiTypes[i] }], toHex(bytes)));
+        .map((bytes, i) => decodeAbiParameters([{ type: keyAbiTypes[i] }], arrayToHex(bytes)));
       const values = row.values
         .slice(keyLength)
-        .map((bytes, i) => decodeAbiParameters([{ type: fieldAbiTypes[i] }], toHex(bytes)));
+        .map((bytes, i) => decodeAbiParameters([{ type: fieldAbiTypes[i] }], arrayToHex(bytes)));
 
       const entity = keyTupleToEntityID(keyTuple);
       const value = Object.fromEntries(values.map((value, i) => [fieldNames[i], value])) as ComponentValue;
