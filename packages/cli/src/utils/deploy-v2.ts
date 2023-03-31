@@ -108,6 +108,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   console.log(chalk.blue("Installing core World modules"));
   await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.CoreModule, "0x"]);
   await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.RegistrationModule, "0x"]);
+  await fastTxExecute(WorldContract, "installModule", [await modulePromises.UniqueEntityModule, "0x"]);
   console.log(chalk.green("Installed core World modules"));
 
   // Register namespace
