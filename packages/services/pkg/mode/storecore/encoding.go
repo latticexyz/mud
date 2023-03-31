@@ -416,6 +416,36 @@ func DecodeDataField(encoding []byte, schemaTypePair SchemaTypePair, index uint8
 	return ""
 }
 
+func DecodeDataField__DecodedData(encoding []byte, schemaTypePair SchemaTypePair, index uint8) *DecodedData {
+	data := NewDecodedDataFromSchemaTypePair(schemaTypePair)
+
+	// Try to decode either as a static or dynamic field.
+	for idx, fieldType := range schemaTypePair.Static {
+		if uint8(idx) == index {
+			value := DecodeStaticField(fieldType, encoding, 0)
+			data.Set(fieldType.String(), &DataSchemaTypePair{
+				Data:       value,
+				SchemaType: fieldType,
+			})
+			return data
+		}
+	}
+	for idx, fieldType := range schemaTypePair.Dynamic {
+		// Offset by the static data length.
+		if uint8(idx+len(schemaTypePair.Static)) == index {
+			value := DecodeDynamicField(fieldType, encoding)
+			data.Set(fieldType.String(), &DataSchemaTypePair{
+				Data:       value,
+				SchemaType: fieldType,
+			})
+			return data
+		}
+	}
+	logger.GetLogger().Fatal("could not decode data field at index", zap.Uint8("index", index))
+	return nil
+
+}
+
 // DecodeData decodes the given byte slice `encoding` into a `DecodedData` object
 // using the provided schema type pair `schemaTypePair`.
 //
@@ -486,8 +516,24 @@ func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
 	case STRING:
 		return string(encodingSlice)
 	default:
-		logger.GetLogger().Fatal("Unknown dynamic field type", zap.String("type", schemaType.String()))
-		return ""
+		// Try to decode as an array.
+		staticSchemaType := (schemaType - 98)
+
+		if staticSchemaType > 97 {
+			logger.GetLogger().Fatal("Unknown dynamic field type", zap.String("type", schemaType.String()))
+			return ""
+		}
+
+		// Allocate an array of the correct size.
+		fieldLength := getStaticByteLength(staticSchemaType)
+		arrayLength := len(encodingSlice) / int(fieldLength)
+		array := make([]string, arrayLength)
+		// Iterate and decode each element as a static field.
+		for i := 0; i < arrayLength; i++ {
+			array[i] = DecodeStaticField(staticSchemaType, encodingSlice, uint64(i)*fieldLength)
+		}
+
+		return strings.Join(array, ",")
 	}
 }
 

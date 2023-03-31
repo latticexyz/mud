@@ -50,7 +50,13 @@ func (builder *InsertBuilder) Validate() error {
 func (builder *InsertBuilder) BuildInsertRowFromKV(row map[string]string, fieldNames []string) string {
 	rowStr := ""
 	for idx, field := range fieldNames {
-		rowStr = rowStr + `'` + row[field] + `'`
+
+		// Handle array fields.
+		if strings.Contains(builder.TableSchema.PostgresTypes[field], "[]") {
+			rowStr = rowStr + `ARRAY['` + row[field] + `']`
+		} else {
+			rowStr = rowStr + `'` + row[field] + `'`
+		}
 		if idx != len(fieldNames)-1 {
 			rowStr = rowStr + `, `
 		}
