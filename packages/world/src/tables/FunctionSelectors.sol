@@ -52,10 +52,21 @@ library FunctionSelectors {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
+  /** Set the table's metadata (using the specified store) */
+  function setMetadata(IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get namespace */
@@ -67,12 +78,29 @@ library FunctionSelectors {
     return (Bytes.slice16(_blob, 0));
   }
 
+  /** Get namespace (using the specified store) */
+  function getNamespace(IStore _store, bytes4 functionSelector) internal view returns (bytes16 namespace) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    return (Bytes.slice16(_blob, 0));
+  }
+
   /** Set namespace */
   function setNamespace(bytes4 functionSelector, bytes16 namespace) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((namespace)));
+  }
+
+  /** Set namespace (using the specified store) */
+  function setNamespace(IStore _store, bytes4 functionSelector, bytes16 namespace) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((namespace)));
   }
 
   /** Get file */
@@ -84,12 +112,29 @@ library FunctionSelectors {
     return (Bytes.slice16(_blob, 0));
   }
 
+  /** Get file (using the specified store) */
+  function getFile(IStore _store, bytes4 functionSelector) internal view returns (bytes16 file) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 1);
+    return (Bytes.slice16(_blob, 0));
+  }
+
   /** Set file */
   function setFile(bytes4 functionSelector, bytes16 file) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked((file)));
+  }
+
+  /** Set file (using the specified store) */
+  function setFile(IStore _store, bytes4 functionSelector, bytes16 file) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    _store.setField(_tableId, _primaryKeys, 1, abi.encodePacked((file)));
   }
 
   /** Get systemFunctionSelector */
@@ -101,12 +146,32 @@ library FunctionSelectors {
     return (Bytes.slice4(_blob, 0));
   }
 
+  /** Get systemFunctionSelector (using the specified store) */
+  function getSystemFunctionSelector(
+    IStore _store,
+    bytes4 functionSelector
+  ) internal view returns (bytes4 systemFunctionSelector) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 2);
+    return (Bytes.slice4(_blob, 0));
+  }
+
   /** Set systemFunctionSelector */
   function setSystemFunctionSelector(bytes4 functionSelector, bytes4 systemFunctionSelector) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 2, abi.encodePacked((systemFunctionSelector)));
+  }
+
+  /** Set systemFunctionSelector (using the specified store) */
+  function setSystemFunctionSelector(IStore _store, bytes4 functionSelector, bytes4 systemFunctionSelector) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    _store.setField(_tableId, _primaryKeys, 2, abi.encodePacked((systemFunctionSelector)));
   }
 
   /** Get the full data */
@@ -120,6 +185,18 @@ library FunctionSelectors {
     return decode(_blob);
   }
 
+  /** Get the full data (using the specified store) */
+  function get(
+    IStore _store,
+    bytes4 functionSelector
+  ) internal view returns (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    bytes memory _blob = _store.getRecord(_tableId, _primaryKeys, getSchema());
+    return decode(_blob);
+  }
+
   /** Set the full data using individual values */
   function set(bytes4 functionSelector, bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) internal {
     bytes memory _data = encode(namespace, file, systemFunctionSelector);
@@ -128,6 +205,22 @@ library FunctionSelectors {
     _primaryKeys[0] = bytes32((functionSelector));
 
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
+  }
+
+  /** Set the full data using individual values (using the specified store) */
+  function set(
+    IStore _store,
+    bytes4 functionSelector,
+    bytes16 namespace,
+    bytes16 file,
+    bytes4 systemFunctionSelector
+  ) internal {
+    bytes memory _data = encode(namespace, file, systemFunctionSelector);
+
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    _store.setRecord(_tableId, _primaryKeys, _data);
   }
 
   /** Decode the tightly packed blob using this table's schema */
@@ -152,5 +245,13 @@ library FunctionSelectors {
     _primaryKeys[0] = bytes32((functionSelector));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, bytes4 functionSelector) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }

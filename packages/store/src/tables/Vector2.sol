@@ -55,10 +55,21 @@ library Vector2 {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
+  /** Set the table's metadata (using the specified store) */
+  function setMetadata(IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get x */
@@ -70,12 +81,29 @@ library Vector2 {
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
+  /** Get x (using the specified store) */
+  function getX(IStore _store, bytes32 key) internal view returns (uint32 x) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    return (uint32(Bytes.slice4(_blob, 0)));
+  }
+
   /** Set x */
   function setX(bytes32 key, uint32 x) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((x)));
+  }
+
+  /** Set x (using the specified store) */
+  function setX(IStore _store, bytes32 key, uint32 x) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((x)));
   }
 
   /** Get y */
@@ -87,6 +115,15 @@ library Vector2 {
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
+  /** Get y (using the specified store) */
+  function getY(IStore _store, bytes32 key) internal view returns (uint32 y) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 1);
+    return (uint32(Bytes.slice4(_blob, 0)));
+  }
+
   /** Set y */
   function setY(bytes32 key, uint32 y) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -95,12 +132,29 @@ library Vector2 {
     StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked((y)));
   }
 
+  /** Set y (using the specified store) */
+  function setY(IStore _store, bytes32 key, uint32 y) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.setField(_tableId, _primaryKeys, 1, abi.encodePacked((y)));
+  }
+
   /** Get the full data */
   function get(bytes32 key) internal view returns (Vector2Data memory _table) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
+    return decode(_blob);
+  }
+
+  /** Get the full data (using the specified store) */
+  function get(IStore _store, bytes32 key) internal view returns (Vector2Data memory _table) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getRecord(_tableId, _primaryKeys, getSchema());
     return decode(_blob);
   }
 
@@ -114,9 +168,24 @@ library Vector2 {
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
 
+  /** Set the full data using individual values (using the specified store) */
+  function set(IStore _store, bytes32 key, uint32 x, uint32 y) internal {
+    bytes memory _data = encode(x, y);
+
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.setRecord(_tableId, _primaryKeys, _data);
+  }
+
   /** Set the full data using the data struct */
   function set(bytes32 key, Vector2Data memory _table) internal {
     set(key, _table.x, _table.y);
+  }
+
+  /** Set the full data using the data struct (using the specified store) */
+  function set(IStore _store, bytes32 key, Vector2Data memory _table) internal {
+    set(_store, key, _table.x, _table.y);
   }
 
   /** Decode the tightly packed blob using this table's schema */
@@ -137,5 +206,13 @@ library Vector2 {
     _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }
