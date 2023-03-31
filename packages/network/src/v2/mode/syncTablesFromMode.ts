@@ -7,10 +7,10 @@ import { NetworkEvents } from "../../types";
 
 import { CacheStore, createCacheStore, storeEvent } from "../../workers";
 import { keyTupleToEntityID } from "../keyTupleToEntityID";
-import { decodeValue } from "../schemas/decodeValue";
 import { registerMetadata } from "../schemas/tableMetadata";
 import { registerSchema } from "../schemas/tableSchemas";
 import { getBlockNumberFromModeTable } from "./getBlockNumberFromModeTable";
+import { decodeAbiParameters, toHex } from "viem";
 
 export async function syncTablesFromMode(
   client: QueryLayerClient,
@@ -44,22 +44,25 @@ export async function syncTablesFromMode(
 
     // TODO: separate keys and values/fields in MODE, but we'll infer for now
     const keyLength = cols.findIndex((col) => !col.startsWith("key_"));
-    const keyNames = cols.slice(0, keyLength); // TODO: key names are not currently included in the MetadataTable, so these are unused
-    const keyTypes = types.slice(0, keyLength).map((abiType) => AbiTypeToSchemaType[abiType]);
+    const keyAbiTypes = types.slice(0, keyLength);
     const fieldNames = cols.slice(keyLength);
-    const fieldTypes = types
-      .slice(keyLength)
-      .map((modeType) => modeType.match(/tuple\((.*)\[]\)/)?.[1] ?? modeType) // TODO: remove this hack once MODE is fixed (https://github.com/latticexyz/mud/issues/444)
-      .map((abiType) => AbiTypeToSchemaType[abiType]);
+    // TODO: remove this hack once MODE is fixed (https://github.com/latticexyz/mud/issues/444)
+    const fieldAbiTypes = types.slice(keyLength).map((modeType) => modeType.match(/tuple\((.*)\[]\)/)?.[1] ?? modeType);
+    const fieldSchemaTypes = fieldAbiTypes.map((abiType) => AbiTypeToSchemaType[abiType]);
 
-    const rawSchema = arrayToHex(encodeSchema(fieldTypes));
+    const rawSchema = arrayToHex(encodeSchema(fieldSchemaTypes));
     // TODO: refactor registerSchema/registerMetadata to take chain+world address rather than Contract
     registrationPromises.push(registerSchema(world, tableId, rawSchema));
     registrationPromises.push(registerMetadata(world, tableId, { tableName, fieldNames }));
 
     for (const row of rows) {
-      const keyTuple = row.values.slice(0, keyLength).map((bytes, i) => decodeValue(keyTypes[i], bytes));
-      const values = row.values.slice(keyLength).map((bytes, i) => decodeValue(fieldTypes[i], bytes));
+      console.log(tableName, keyAbiTypes, fieldAbiTypes, row.values);
+      const keyTuple = row.values
+        .slice(0, keyLength)
+        .map((bytes, i) => decodeAbiParameters([{ type: keyAbiTypes[i] }], toHex(bytes)));
+      const values = row.values
+        .slice(keyLength)
+        .map((bytes, i) => decodeAbiParameters([{ type: fieldAbiTypes[i] }], toHex(bytes)));
 
       const entity = keyTupleToEntityID(keyTuple);
       const value = Object.fromEntries(values.map((value, i) => [fieldNames[i], value])) as ComponentValue;
