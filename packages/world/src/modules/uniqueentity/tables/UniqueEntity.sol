@@ -21,7 +21,7 @@ library UniqueEntity {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.UINT256;
+    _schema[0] = SchemaType.BYTES32;
 
     return SchemaLib.encode(_schema);
   }
@@ -62,37 +62,37 @@ library UniqueEntity {
   }
 
   /** Get value */
-  function get(uint256 _tableId) internal view returns (uint256 value) {
+  function get(uint256 _tableId) internal view returns (bytes32 value) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (Bytes.slice32(_blob, 0));
   }
 
   /** Get value (using the specified store) */
-  function get(IStore _store, uint256 _tableId) internal view returns (uint256 value) {
+  function get(IStore _store, uint256 _tableId) internal view returns (bytes32 value) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
-    return (uint256(Bytes.slice32(_blob, 0)));
+    return (Bytes.slice32(_blob, 0));
   }
 
   /** Set value */
-  function set(uint256 _tableId, uint256 value) internal {
+  function set(uint256 _tableId, bytes32 value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
 
   /** Set value (using the specified store) */
-  function set(IStore _store, uint256 _tableId, uint256 value) internal {
+  function set(IStore _store, uint256 _tableId, bytes32 value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(uint256 value) internal view returns (bytes memory) {
+  function encode(bytes32 value) internal view returns (bytes memory) {
     return abi.encodePacked(value);
   }
 

@@ -102,7 +102,7 @@ export default mudConfig({
     UniqueEntity: {
       directory: "/modules/uniqueentity/tables",
       primaryKeys: {},
-      schema: "uint256",
+      schema: "bytes32",
       tableIdArgument: true,
       storeArgument: true,
     },
