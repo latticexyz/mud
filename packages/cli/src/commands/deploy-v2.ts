@@ -18,6 +18,7 @@ export type DeployOptions = {
   clean?: boolean;
   debug?: boolean;
   saveDeployment?: boolean;
+  rpc?: string;
 };
 
 export const yDeployOptions = {
@@ -32,13 +33,14 @@ export const yDeployOptions = {
     default: 1,
   },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
+  rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
 } satisfies Record<keyof DeployOptions, Options>;
 
 export async function deployHandler(args: Parameters<(typeof commandModule)["handler"]>[0]) {
   args.profile = args.profile ?? process.env.FOUNDRY_PROFILE;
   const { configPath, printConfig, profile, clean } = args;
 
-  const rpc = await getRpcUrl(profile);
+  const rpc = args.rpc ?? (await getRpcUrl(profile));
   console.log(
     chalk.bgBlue(
       chalk.whiteBright(`\n Deploying MUD v2 contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
