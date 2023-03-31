@@ -122,22 +122,6 @@ library StoreMetadata {
     _store.pushToField(_tableId, _primaryKeys, 0, bytes((_slice)));
   }
 
-  /** Update a slice of tableName at `_index` */
-  function updateTableName(uint256 tableId, uint256 _index, string memory _slice) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((tableId)));
-
-    StoreSwitch.updateInField(_tableId, _primaryKeys, 0, _index * 1, bytes((_slice)));
-  }
-
-  /** Update a slice of tableName (using the specified store) at `_index` */
-  function updateTableName(IStore _store, uint256 tableId, uint256 _index, string memory _slice) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((tableId)));
-
-    _store.updateInField(_tableId, _primaryKeys, 0, _index * 1, bytes((_slice)));
-  }
-
   /** Get abiEncodedFieldNames */
   function getAbiEncodedFieldNames(uint256 tableId) internal view returns (bytes memory abiEncodedFieldNames) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -189,22 +173,6 @@ library StoreMetadata {
     _primaryKeys[0] = bytes32(uint256((tableId)));
 
     _store.pushToField(_tableId, _primaryKeys, 1, bytes((_slice)));
-  }
-
-  /** Update a slice of abiEncodedFieldNames at `_index` */
-  function updateAbiEncodedFieldNames(uint256 tableId, uint256 _index, bytes memory _slice) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((tableId)));
-
-    StoreSwitch.updateInField(_tableId, _primaryKeys, 1, _index * 1, bytes((_slice)));
-  }
-
-  /** Update a slice of abiEncodedFieldNames (using the specified store) at `_index` */
-  function updateAbiEncodedFieldNames(IStore _store, uint256 tableId, uint256 _index, bytes memory _slice) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(uint256((tableId)));
-
-    _store.updateInField(_tableId, _primaryKeys, 1, _index * 1, bytes((_slice)));
   }
 
   /** Get the full data */

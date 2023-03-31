@@ -48,10 +48,21 @@ library Callbacks {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
+  /** Set the table's metadata (using the specified store) */
+  function setMetadata(IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get value */
@@ -63,12 +74,29 @@ library Callbacks {
     return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
   }
 
+  /** Get value (using the specified store) */
+  function get(IStore _store, bytes32 key) internal view returns (bytes24[] memory value) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    return (SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_bytes24());
+  }
+
   /** Set value */
   function set(bytes32 key, bytes24[] memory value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, EncodeArray.encode((value)));
+  }
+
+  /** Set value (using the specified store) */
+  function set(IStore _store, bytes32 key, bytes24[] memory value) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.setField(_tableId, _primaryKeys, 0, EncodeArray.encode((value)));
   }
 
   /** Push an element to value */
@@ -79,12 +107,12 @@ library Callbacks {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
-  /** Update an element of value at `_index` */
-  function update(bytes32 key, uint256 _index, bytes24 _element) internal {
+  /** Push an element to value (using the specified store) */
+  function push(IStore _store, bytes32 key, bytes24 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    StoreSwitch.updateInField(_tableId, _primaryKeys, 0, _index * 24, abi.encodePacked((_element)));
+    _store.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
   /** Tightly pack full data using this table's schema */
@@ -102,5 +130,13 @@ library Callbacks {
     _primaryKeys[0] = bytes32((key));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }
