@@ -1,8 +1,6 @@
 import { BigNumber, Contract, Overrides, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 
-type ArgumentsType<T> = T extends (...args: infer U) => any ? U : never;
-
 /**
  * Create a stateful util to execute transactions as fast as possible.
  * Internal state includes the current nonce and the current gas price.
@@ -35,7 +33,7 @@ export async function createFastTxExecutor(
   async function fastTxExecute<C extends Contract, F extends keyof C>(
     contract: C,
     func: F,
-    args: ArgumentsType<C[F]>,
+    args: Parameters<C[F]>,
     options: {
       retryCount?: number;
     } = { retryCount: 0 }
