@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { IWorld } from "@latticexyz/world/src/interfaces/IWorld.sol";
+import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
@@ -28,7 +28,7 @@ contract KeysWithValueHook is IStoreHook {
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
 
     // Get the previous value
-    bytes32 previousValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
+    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
 
     // Return if the value hasn't changed
     if (previousValue == keccak256(data)) return;
@@ -44,7 +44,7 @@ contract KeysWithValueHook is IStoreHook {
     _requireSingleKey(key);
 
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
+    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
     _removeKeyFromList(targetTableId, key[0], previousValue);
   }
@@ -53,7 +53,7 @@ contract KeysWithValueHook is IStoreHook {
     _requireSingleKey(key);
 
     // Add the key to the list of keys with the new value
-    bytes32 newValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
+    bytes32 newValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
     KeysWithValue.push(targetTableId, newValue, key[0]);
   }
@@ -62,7 +62,7 @@ contract KeysWithValueHook is IStoreHook {
     _requireSingleKey(key);
 
     // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(IWorld(msg.sender).getRecord(sourceTableId, key));
+    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
     _removeKeyFromList(targetTableId, key[0], previousValue);
   }

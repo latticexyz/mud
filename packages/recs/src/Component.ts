@@ -1,6 +1,6 @@
 import { uuid } from "@latticexyz/utils";
 import { mapObject } from "@latticexyz/utils";
-import { filter, Subject } from "rxjs";
+import { filter, map, Subject } from "rxjs";
 import { OptionalTypes } from "./constants";
 import { createIndexer } from "./Indexer";
 import {
@@ -319,9 +319,6 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
     component: Component<S, Metadata, T>;
   }>();
 
-  // Channel through update events from the original component if there are no overrides
-  component.update$.pipe(filter((e) => !overriddenEntityValues.get(e.entity))).subscribe(update$);
-
   // Add a new override to some entity
   function addOverride(id: string, update: Override<S, T>) {
     overrides.set(id, { update, nonce: nonce++ });
@@ -415,6 +412,14 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
     else overriddenEntityValues.delete(entity);
     update$.next({ entity, value: [getOverriddenComponentValue(entity), prevValue], component: overriddenComponent });
   }
+
+  // Channel through update events from the original component if there are no overrides
+  component.update$
+    .pipe(
+      filter((e) => !overriddenEntityValues.get(e.entity)),
+      map((update) => ({ ...update, component: overriddenComponent }))
+    )
+    .subscribe(update$);
 
   return overriddenComponent;
 }

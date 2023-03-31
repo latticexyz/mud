@@ -25,8 +25,12 @@ import { AddressArray } from "../src/tables/AddressArray.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 
-import { IWorld } from "../src/interfaces/IWorld.sol";
+import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IErrors } from "../src/interfaces/IErrors.sol";
+
+interface IWorldTestSystem {
+  function testNamespace_testSystem_err(string memory input) external pure;
+}
 
 struct WorldTestSystemReturn {
   address sender;
@@ -113,14 +117,14 @@ contract WorldTest is Test {
   event WorldTestSystemLog(string log);
 
   Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
-  IWorld world;
+  IBaseWorld world;
 
   bytes32 key;
   bytes32[] keyTuple;
   bytes32[] singletonKey;
 
   function setUp() public {
-    world = IWorld(address(new World()));
+    world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     world.installRootModule(new RegistrationModule(), new bytes(0));
 
@@ -603,6 +607,13 @@ contract WorldTest is Test {
 
     assertTrue(success, "call failed");
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
+
+    // Register a function selector to the error function
+    functionSelector = world.registerFunctionSelector(namespace, file, "err", "(string)");
+
+    // Expect errors to be passed through
+    vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
+    IWorldTestSystem(address(world)).testNamespace_testSystem_err("test error");
   }
 
   function testRegisterRootFunctionSelector() public {
@@ -626,6 +637,18 @@ contract WorldTest is Test {
 
     assertTrue(success, "call failed");
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
+
+    // Register a function selector to the error function
+    functionSelector = world.registerRootFunctionSelector(
+      namespace,
+      file,
+      WorldTestSystem.err.selector,
+      WorldTestSystem.err.selector
+    );
+
+    // Expect errors to be passed through
+    vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
+    WorldTestSystem(address(world)).err("test error");
   }
 
   function testRegisterFallbackSystem() public {
