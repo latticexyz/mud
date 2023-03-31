@@ -86,13 +86,15 @@ export function setComponent<S extends Schema, T = undefined>(
         // Otherwise, we should let the user know we found undefined data.
         console.warn(
           "Component definition for",
-          component.metadata?.contractId ?? component.id,
+          component.metadata?.tableId ?? component.metadata?.contractId ?? component.id,
           "is missing key",
           key,
           ", ignoring value",
           val,
           "for entity",
-          entity
+          entity,
+          ". Existing keys: ",
+          Object.keys(component.values)
         );
       }
     }

@@ -44,7 +44,8 @@
     "nice-grpc-web": "^2.0.0",
     "observable-webworker": "^4.0.1",
     "rxjs": "^7.5.5",
-    "threads": "^1.7.0"
+    "threads": "^1.7.0",
+    "viem": "^0.1.25"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.6.0",
@@ -77,7 +78,8 @@
     "tslib": "^2.3.1",
     "typedoc": "0.23.21",
     "typedoc-plugin-markdown": "^3.13.6",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "viem": "^0.1.25"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

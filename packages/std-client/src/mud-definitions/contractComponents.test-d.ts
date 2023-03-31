@@ -12,7 +12,7 @@ describe("store/contractComponents", () => {
         y: RecsType.Number;
       },
       {
-        contractId: string;
+        contractId: `0x${string}`;
         tableId: string;
       },
       undefined

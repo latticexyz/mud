@@ -1,4 +1,4 @@
-import { SchemaType } from "@latticexyz/schema-type";
+import { SchemaType, SchemaTypeToPrimitive } from "@latticexyz/schema-type";
 import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 
@@ -103,8 +103,8 @@ export function decodeValue<T extends SchemaType>(schemaType: T, bytes: Uint8Arr
     case SchemaType.BYTES31:
     case SchemaType.BYTES32:
     case SchemaType.ADDRESS:
-      return decodeStaticField(schemaType, bytes, 0);
+      return decodeStaticField(schemaType, bytes, 0) as SchemaTypeToPrimitive[T];
     default:
-      return decodeDynamicField(schemaType, bytes);
+      return decodeDynamicField(schemaType, bytes) as SchemaTypeToPrimitive[T];
   }
 }

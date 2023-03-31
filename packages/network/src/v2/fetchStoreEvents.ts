@@ -6,18 +6,18 @@ import { storeEvents } from "./common";
 import { ecsEventFromLog } from "./ecsEventFromLog";
 
 export async function fetchStoreEvents(
-  contract: Contract,
+  store: Contract,
   fromBlock: number,
   toBlock: number
 ): Promise<NetworkComponentUpdate[]> {
-  const topicSets = storeEvents.map((eventName) => contract.filters[eventName]().topics).filter(isDefined);
+  const topicSets = storeEvents.map((eventName) => store.filters[eventName]().topics).filter(isDefined);
 
   const logSets = await Promise.all(
-    topicSets.map((topics) => contract.provider.getLogs({ address: contract.address, topics, fromBlock, toBlock }))
+    topicSets.map((topics) => store.provider.getLogs({ address: store.address, topics, fromBlock, toBlock }))
   );
 
   const logs = orderBy(
-    logSets.flatMap((logs) => logs.map((log) => ({ log, parsedLog: contract.interface.parseLog(log) }))),
+    logSets.flatMap((logs) => logs.map((log) => ({ log, parsedLog: store.interface.parseLog(log) }))),
     ["log.blockNumber", "log.logIndex"]
   );
 
@@ -29,7 +29,7 @@ export async function fetchStoreEvents(
   const ecsEvents = await Promise.all(
     logs.map(({ log, parsedLog }) => {
       const { transactionHash, logIndex } = log;
-      return ecsEventFromLog(contract, log, parsedLog, lastLogForTx[transactionHash] === logIndex);
+      return ecsEventFromLog(store, log, parsedLog, lastLogForTx[transactionHash] === logIndex);
     })
   );
 
