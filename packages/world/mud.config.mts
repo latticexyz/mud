@@ -103,10 +103,13 @@ export default mudConfig({
       directory: "/modules/uniqueentity/tables",
       primaryKeys: {},
       schema: "uint256",
+      tableIdArgument: true,
       storeArgument: true,
     },
   },
   enums: {
     Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
   },
+  // module systems with their own namespaces
+  excludeSystems: ["UniqueEntitySystem"],
 });

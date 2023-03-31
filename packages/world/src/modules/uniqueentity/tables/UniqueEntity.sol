@@ -17,9 +17,6 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("UniqueEntity"))));
-uint256 constant UniqueEntityTableId = _tableId;
-
 library UniqueEntity {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
@@ -43,29 +40,29 @@ library UniqueEntity {
   }
 
   /** Register the table's schema */
-  function registerSchema() internal {
+  function registerSchema(uint256 _tableId) internal {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Register the table's schema (using the specified store) */
-  function registerSchema(IStore _store) internal {
+  function registerSchema(IStore _store, uint256 _tableId) internal {
     _store.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */
-  function setMetadata() internal {
+  function setMetadata(uint256 _tableId) internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Set the table's metadata (using the specified store) */
-  function setMetadata(IStore _store) internal {
+  function setMetadata(IStore _store, uint256 _tableId) internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get value */
-  function get() internal view returns (uint256 value) {
+  function get(uint256 _tableId) internal view returns (uint256 value) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
@@ -73,7 +70,7 @@ library UniqueEntity {
   }
 
   /** Get value (using the specified store) */
-  function get(IStore _store) internal view returns (uint256 value) {
+  function get(IStore _store, uint256 _tableId) internal view returns (uint256 value) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
@@ -81,14 +78,14 @@ library UniqueEntity {
   }
 
   /** Set value */
-  function set(uint256 value) internal {
+  function set(uint256 _tableId, uint256 value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
 
   /** Set value (using the specified store) */
-  function set(IStore _store, uint256 value) internal {
+  function set(IStore _store, uint256 _tableId, uint256 value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
@@ -100,14 +97,14 @@ library UniqueEntity {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord() internal {
+  function deleteRecord(uint256 _tableId) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store) internal {
+  function deleteRecord(IStore _store, uint256 _tableId) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.deleteRecord(_tableId, _primaryKeys);
