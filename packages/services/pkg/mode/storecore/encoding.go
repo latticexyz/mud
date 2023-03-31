@@ -537,6 +537,76 @@ func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
 	}
 }
 
+// handleBytes handles the decoding of a bytes static field.
+//
+// Parameters:
+// - encoding ([]byte): The byte slice encoding of the bytes field.
+//
+// Returns:
+// - (string): The decoded value of the bytes field as a string.
+func handleBytes(encoding []byte) string {
+	return hexutil.Encode(encoding)
+}
+
+// handleUint handles the decoding of a uint static field.
+//
+// Parameters:
+// - encoding ([]byte): The byte slice encoding of the uint field.
+//
+// Returns:
+// - (string): The decoded value of the uint field as a string.
+func handleUint(encoding []byte) string {
+	return new(big.Int).SetBytes(encoding).String()
+}
+
+// handleInt handles the decoding of an int static field.
+//
+// Parameters:
+// - encoding ([]byte): The byte slice encoding of the int field.
+//
+// Returns:
+// - (string): The decoded value of the int field as a string.
+func handleInt(encoding []byte) string {
+	return new(big.Int).SetBytes(encoding).String()
+}
+
+// handleBool handles the decoding of a bool static field.
+//
+// Parameters:
+// - encoding (byte): The byte encoding of the bool field.
+//
+// Returns:
+// - (string): The decoded value of the bool field as a string.
+func handleBool(encoding byte) string {
+	if encoding == 1 {
+		return "true"
+	} else {
+		return "false"
+	}
+}
+
+// handleAddress handles the decoding of an address static field.
+//
+// Parameters:
+// - encoding ([]byte): The byte slice encoding of the address field.
+//
+// Returns:
+// - (string): The decoded value of the address field as a string.
+func handleAddress(encoding []byte) string {
+	return common.BytesToAddress(encoding).String()
+}
+
+// handleString handles the decoding of a string static field.
+//
+// Parameters:
+// - encoding ([]byte): The byte slice encoding of the string field.
+//
+// Returns:
+// - (string): The decoded value of the string field as a string.
+func handleString(encoding []byte) string {
+	return string(encoding)
+}
+
 // DecodeStaticField decodes a static field of a given schema type from a byte slice.
 //
 // Parameters:
@@ -547,36 +617,36 @@ func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
 // Returns:
 // - (string): The decoded field as a string.
 func DecodeStaticField(schemaType SchemaType, encoding []byte, bytesOffset uint64) string {
-	switch schemaType {
-	case UINT8:
-		return fmt.Sprint(new(big.Int).SetBytes(encoding[bytesOffset : bytesOffset+1]).Uint64())
-	case UINT16:
-		return fmt.Sprint(new(big.Int).SetBytes(encoding[bytesOffset : bytesOffset+2]).Uint64())
-	case UINT32:
-		return fmt.Sprint(new(big.Int).SetBytes(encoding[bytesOffset : bytesOffset+4]).Uint64())
-	case UINT64:
-		return fmt.Sprint(new(big.Int).SetBytes(encoding[bytesOffset : bytesOffset+8]).Uint64())
-	case UINT128:
-		return fmt.Sprint(new(big.Int).SetBytes(encoding[bytesOffset : bytesOffset+16]).Uint64())
-	case UINT256:
-		return fmt.Sprint(new(big.Int).SetBytes(encoding[bytesOffset : bytesOffset+32]).Uint64())
-	case BYTES4:
-		return hexutil.Encode(encoding[bytesOffset : bytesOffset+4])
-	case BYTES8:
-		return hexutil.Encode(encoding[bytesOffset : bytesOffset+8])
-	case BYTES16:
-		return hexutil.Encode(encoding[bytesOffset : bytesOffset+16])
-	case BYTES32:
-		return hexutil.Encode(encoding[bytesOffset : bytesOffset+32])
-	case BOOL:
-		if encoding[bytesOffset] == 1 {
-			return "true"
-		} else {
-			return "false"
-		}
-	case ADDRESS:
-		return common.BytesToAddress(encoding[bytesOffset : bytesOffset+20]).String()
-	default:
+	// To avoid a ton of duplicate handling code per each schema type, we handle
+	// using ranges, since the schema types are sequential in specific ranges.
+
+	// UINT8 - UINT256 is the first range. We add one to the schema type to get the
+	// number of bytes to read, since enums start from 0 and UINT8 is the first one.
+	if schemaType >= UINT8 && schemaType <= UINT256 {
+		return handleUint(encoding[bytesOffset : bytesOffset+uint64(schemaType)+1])
+	} else
+	// INT8 - INT256 is the second range. We subtract UINT256 from the schema type
+	// to account for the first range and re-set the bytes count to start from 1.
+	if schemaType >= INT8 && schemaType <= INT256 {
+		return handleInt(encoding[bytesOffset : bytesOffset+uint64(schemaType-UINT256)])
+	} else
+	// BYTES is the third range. We subtract INT256 from the schema type to account
+	// for the previous ranges and re-set the bytes count to start from 1.
+	if schemaType >= BYTES1 && schemaType <= BYTES32 {
+		return handleBytes(encoding[bytesOffset : bytesOffset+uint64(schemaType-INT256)])
+	} else
+	// BOOL is a standalone schema type.
+	if schemaType == BOOL {
+		return handleBool(encoding[bytesOffset])
+	} else
+	// ADDRESS is a standalone schema type.
+	if schemaType == ADDRESS {
+		return handleAddress(encoding[bytesOffset : bytesOffset+20])
+	} else
+	// STRING is a standalone schema type.
+	if schemaType == STRING {
+		return handleString(encoding[bytesOffset:])
+	} else {
 		logger.GetLogger().Fatal("Unknown static field type", zap.String("type", schemaType.String()))
 		return ""
 	}

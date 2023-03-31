@@ -103,7 +103,7 @@ func (schema *TableSchema) GetEncodingTypes(fieldNames []string, fieldProjection
 		// Create the Type object for the type. If the type is an array, we need to wrap it in a tuple.
 		var _type *abi.Type
 		if strings.Contains(solType, "[]") {
-			_type = abi.MustNewType("tuple(" + solType + "[] cols)")
+			_type = abi.MustNewType("tuple(" + solType + " cols)")
 		} else {
 			_type = abi.MustNewType(solType)
 		}
