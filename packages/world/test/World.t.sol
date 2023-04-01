@@ -704,6 +704,38 @@ contract WorldTest is Test {
     assertEq(address(world).balance, 0.5 ether, "world should still have 0.5 ether");
   }
 
+  function testPayableSystem() public {
+    // Register a root system with a payable function in the world
+    WorldTestSystem system = new WorldTestSystem();
+    bytes16 namespace = "noroot";
+    bytes16 file = "testSystem";
+    world.registerSystem(namespace, file, system, true);
+    world.registerRootFunctionSelector(
+      namespace,
+      file,
+      WorldTestSystem.receiveEther.selector,
+      WorldTestSystem.receiveEther.selector
+    );
+
+    // create new funded address and impersonate
+    address alice = makeAddr("alice");
+    startHoax(alice, 1 ether);
+
+    // Sanity check: alice has 1 eth, world has 0 eth, system has 0 eth
+    assertEq(alice.balance, 1 ether);
+    assertEq(address(world).balance, 0);
+    assertEq(address(system).balance, 0);
+
+    // Send 0.5 eth to the system's receiveEther function via the World
+    (bool success, ) = address(world).call{ value: 0.5 ether }(
+      abi.encodeWithSelector(WorldTestSystem.receiveEther.selector)
+    );
+    assertTrue(success, "transfer should succeed");
+    assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
+    assertEq(address(world).balance, 0 ether, "world should still have 0 ether");
+    assertEq(address(system).balance, 0.5 ether, "system should have 0.5 ether");
+  }
+
   function testPayableRootSystem() public {
     // Register a root system with a payable function in the world
     WorldTestSystem system = new WorldTestSystem();
@@ -721,9 +753,10 @@ contract WorldTest is Test {
     address alice = makeAddr("alice");
     startHoax(alice, 1 ether);
 
-    // Sanity check: alice has 1 eth, world has 0 eth
+    // Sanity check: alice has 1 eth, world has 0 eth, system has 0 eth
     assertEq(alice.balance, 1 ether);
     assertEq(address(world).balance, 0);
+    assertEq(address(system).balance, 0);
 
     // Send 0.5 eth to the system's receiveEther function via the World
     (bool success, ) = address(world).call{ value: 0.5 ether }(
@@ -731,8 +764,8 @@ contract WorldTest is Test {
     );
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
-    assertEq(address(world).balance, 0 ether, "world should still have 0 ether");
-    assertEq(address(system).balance, 0 ether, "system should have 0.5 ether");
+    assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
+    assertEq(address(system).balance, 0 ether, "system should have 0 ether (bc it was delegatecalled)");
   }
 
   // TODO: add a test for systems writing to tables via the World

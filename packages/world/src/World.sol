@@ -46,7 +46,8 @@ contract World is Store, IWorldCore, IErrors {
       msgSender: msg.sender,
       target: address(module),
       funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
-      delegate: false
+      delegate: false,
+      value: 0
     });
 
     // Register the module in the InstalledModules table
@@ -65,7 +66,8 @@ contract World is Store, IWorldCore, IErrors {
       msgSender: msg.sender,
       target: address(module),
       funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
-      delegate: true // The module is delegate called so it can edit any table
+      delegate: true, // The module is delegate called so it can edit any table
+      value: 0
     });
 
     // Register the module in the InstalledModules table
@@ -202,7 +204,8 @@ contract World is Store, IWorldCore, IErrors {
         valueSchema,
         keySchema
       ),
-      delegate: false
+      delegate: false,
+      value: 0
     });
   }
 
@@ -227,7 +230,8 @@ contract World is Store, IWorldCore, IErrors {
         tableName,
         fieldNames
       ),
-      delegate: false
+      delegate: false,
+      value: 0
     });
   }
 
@@ -250,7 +254,8 @@ contract World is Store, IWorldCore, IErrors {
         resourceSelector.getFile(),
         hook
       ),
-      delegate: false
+      delegate: false,
+      value: 0
     });
   }
 
@@ -318,7 +323,20 @@ contract World is Store, IWorldCore, IErrors {
     bytes16 namespace,
     bytes16 file,
     bytes memory funcSelectorAndArgs
-  ) public virtual returns (bytes memory) {
+  ) external payable virtual returns (bytes memory) {
+    return _call(namespace, file, funcSelectorAndArgs, msg.value);
+  }
+
+  /**
+   * Call the system at the given namespace and file and pass the given value.
+   * If the system is not public, the caller must have access to the namespace or file.
+   */
+  function _call(
+    bytes16 namespace,
+    bytes16 file,
+    bytes memory funcSelectorAndArgs,
+    uint256 value
+  ) internal virtual returns (bytes memory) {
     // Load the system data
     bytes32 resourceSelector = ResourceSelector.from(namespace, file);
     (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
@@ -335,7 +353,8 @@ contract World is Store, IWorldCore, IErrors {
         msgSender: msg.sender,
         target: systemAddress,
         funcSelectorAndArgs: funcSelectorAndArgs,
-        delegate: namespace == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
+        delegate: namespace == ROOT_NAMESPACE, // Use delegatecall for root systems (= registered in the root namespace)
+        value: value
       });
   }
 
@@ -346,7 +365,7 @@ contract World is Store, IWorldCore, IErrors {
    ************************************************************************/
 
   /**
-   * Allow the World to receive ether
+   * Allow the World to receive ETH
    */
   receive() external payable {}
 
@@ -361,7 +380,8 @@ contract World is Store, IWorldCore, IErrors {
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
-    bytes memory returnData = call(namespace, file, callData);
+    // Call the function and forward the call value
+    bytes memory returnData = _call(namespace, file, callData, msg.value);
     assembly {
       return(add(returnData, 0x20), mload(returnData))
     }
