@@ -51,6 +51,7 @@
     "dotenv": "^16.0.3",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ejs": "^3.1.8",
+    "esbuild": "^0.17.14",
     "ethers": "^5.7.2",
     "execa": "^7.0.0",
     "find-up": "^6.3.0",

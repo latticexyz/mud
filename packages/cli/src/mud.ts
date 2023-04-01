@@ -1,4 +1,4 @@
-#!/usr/bin/env -S TS_NODE_COMPILER_OPTIONS={\"module\":\"esnext\"} node --loader=ts-node/esm --no-warnings
+#!/usr/bin/env node
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
