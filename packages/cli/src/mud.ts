@@ -15,7 +15,7 @@ yargs(hideBin(process.argv))
   .scriptName("mud")
   // Use the commands directory to scaffold
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- command array overload isn't typed, see https://github.com/yargs/yargs/blob/main/docs/advanced.md#esm-hierarchy
-  .command({ ...v1, ...v2 } as any)
+  .command([...v1, ...v2] as any)
   // Enable strict mode.
   .strict()
   // Custom error handler
