@@ -346,9 +346,14 @@ contract World is Store, IWorldCore, IErrors {
    ************************************************************************/
 
   /**
+   * Allow the World to receive ether
+   */
+  receive() external payable {}
+
+  /**
    * Fallback function to call registered function selectors
    */
-  fallback() external {
+  fallback() external payable {
     (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) = FunctionSelectors.get(msg.sig);
 
     if (namespace == 0 && file == 0) revert FunctionSelectorNotFound(msg.sig);

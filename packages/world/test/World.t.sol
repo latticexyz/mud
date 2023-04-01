@@ -73,7 +73,7 @@ contract WorldTestSystem is System {
       uint256 tableId = uint256(ResourceSelector.from(namespace, file));
       StoreCore.setRecord(tableId, key, abi.encodePacked(data));
     } else {
-      World(msg.sender).setRecord(namespace, file, key, abi.encodePacked(data));
+      IBaseWorld(msg.sender).setRecord(namespace, file, key, abi.encodePacked(data));
     }
   }
 
@@ -84,6 +84,8 @@ contract WorldTestSystem is System {
       emit WorldTestSystemLog("call");
     }
   }
+
+  function receiveEther() public payable {}
 
   fallback() external {
     emit WorldTestSystemLog("fallback");
@@ -679,6 +681,58 @@ contract WorldTest is Test {
     emit WorldTestSystemLog("fallback");
     (success, data) = address(world).call(abi.encodeWithSelector(worldFunc));
     assertTrue(success, "call failed");
+  }
+
+  function testPayable() public {
+    address alice = makeAddr("alice");
+    startHoax(alice, 1 ether);
+
+    // Sanity check: alice has 1 eth, world has 0 eth
+    assertEq(alice.balance, 1 ether);
+    assertEq(address(world).balance, 0);
+
+    // Send 0.5 eth to the World (without calldata)
+    (bool success, ) = address(world).call{ value: 0.5 ether }("");
+    assertTrue(success, "transfer should succeed");
+    assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
+    assertEq(address(world).balance, 0.5 ether, "world should have 0.5 ether");
+
+    // Send 0.5 eth to an invalid function on the World
+    (success, ) = address(world).call{ value: 0.5 ether }(abi.encodeWithSignature("invalid()"));
+    assertFalse(success, "transfer should fail");
+    assertEq(alice.balance, 0.5 ether, "alice should still have 0.5 ether");
+    assertEq(address(world).balance, 0.5 ether, "world should still have 0.5 ether");
+  }
+
+  function testPayableRootSystem() public {
+    // Register a root system with a payable function in the world
+    WorldTestSystem system = new WorldTestSystem();
+    bytes16 namespace = "";
+    bytes16 file = "testSystem";
+    world.registerSystem(namespace, file, system, true);
+    world.registerRootFunctionSelector(
+      namespace,
+      file,
+      WorldTestSystem.receiveEther.selector,
+      WorldTestSystem.receiveEther.selector
+    );
+
+    // create new funded address and impersonate
+    address alice = makeAddr("alice");
+    startHoax(alice, 1 ether);
+
+    // Sanity check: alice has 1 eth, world has 0 eth
+    assertEq(alice.balance, 1 ether);
+    assertEq(address(world).balance, 0);
+
+    // Send 0.5 eth to the system's receiveEther function via the World
+    (bool success, ) = address(world).call{ value: 0.5 ether }(
+      abi.encodeWithSelector(WorldTestSystem.receiveEther.selector)
+    );
+    assertTrue(success, "transfer should succeed");
+    assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
+    assertEq(address(world).balance, 0 ether, "world should still have 0 ether");
+    assertEq(address(system).balance, 0 ether, "system should have 0.5 ether");
   }
 
   // TODO: add a test for systems writing to tables via the World
