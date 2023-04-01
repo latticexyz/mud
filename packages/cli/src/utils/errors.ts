@@ -16,11 +16,6 @@ export class NotInsideProjectError extends Error {
   message = "You are not inside a MUD project";
 }
 
-export class NotESMConfigError extends Error {
-  name = "NotESMConfigError";
-  message = "MUD config must be an ES module";
-}
-
 export class MUDError extends Error {
   name = "MUDError";
 }
@@ -46,12 +41,6 @@ export function logError(error: unknown) {
     // TODO add docs to the website and update the link to the specific page
     // (see https://github.com/latticexyz/mud/issues/445)
     console.log(chalk.blue(`To learn more about MUD's configuration, please go to https://mud.dev/packages/cli/`));
-  } else if (error instanceof NotESMConfigError) {
-    console.log(chalk.red(error.message));
-    console.log("");
-    console.log(
-      chalk.blue(`Please name your config file \`mud.config.mts\`, or use \`type: "module"\` in package.json`)
-    );
   } else if (error instanceof MUDError) {
     console.log(chalk.red(error));
   } else {
