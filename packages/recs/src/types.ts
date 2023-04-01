@@ -44,6 +44,7 @@ export type ValueType<T = undefined> = {
   [Type.Entity]: EntityID;
   [Type.EntityArray]: EntityID[];
   [Type.OptionalNumber]: number | undefined;
+  [Type.OptionalBigInt]: bigint | undefined;
   [Type.OptionalBigIntArray]: bigint[] | undefined;
   [Type.OptionalString]: string | undefined;
   [Type.OptionalNumberArray]: number[] | undefined;
