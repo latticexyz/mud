@@ -36,12 +36,15 @@ export type Metadata =
 export type ValueType<T = undefined> = {
   [Type.Boolean]: boolean;
   [Type.Number]: number;
+  [Type.BigInt]: bigint;
   [Type.String]: string;
   [Type.NumberArray]: number[];
+  [Type.BigIntArray]: bigint[];
   [Type.StringArray]: string[];
   [Type.Entity]: EntityID;
   [Type.EntityArray]: EntityID[];
   [Type.OptionalNumber]: number | undefined;
+  [Type.OptionalBigIntArray]: bigint[] | undefined;
   [Type.OptionalString]: string | undefined;
   [Type.OptionalNumberArray]: number[] | undefined;
   [Type.OptionalStringArray]: string[] | undefined;
@@ -197,19 +200,23 @@ export type OverridableComponent<S extends Schema = Schema, M extends Metadata =
 
 export type OptionalType =
   | Type.OptionalNumber
+  | Type.OptionalBigInt
   | Type.OptionalString
   | Type.OptionalEntity
   | Type.OptionalNumberArray
+  | Type.OptionalBigIntArray
   | Type.OptionalStringArray
   | Type.OptionalEntityArray;
 
 export function isOptionalType(t: Type): t is OptionalType {
   return [
     Type.OptionalNumber,
+    Type.OptionalBigInt,
     Type.OptionalString,
     Type.OptionalEntity,
     Type.OptionalEntityArray,
     Type.OptionalNumberArray,
+    Type.OptionalBigIntArray,
     Type.OptionalStringArray,
   ].includes(t);
 }
@@ -217,6 +224,8 @@ export function isOptionalType(t: Type): t is OptionalType {
 export type ArrayType =
   | Type.NumberArray
   | Type.OptionalNumberArray
+  | Type.BigIntArray
+  | Type.OptionalBigIntArray
   | Type.StringArray
   | Type.OptionalStringArray
   | Type.EntityArray
@@ -226,6 +235,8 @@ export function isArrayType(t: Type): t is ArrayType {
   return [
     Type.NumberArray,
     Type.OptionalNumberArray,
+    Type.BigIntArray,
+    Type.OptionalBigIntArray,
     Type.StringArray,
     Type.OptionalStringArray,
     Type.EntityArray,
