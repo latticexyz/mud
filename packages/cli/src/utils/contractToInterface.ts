@@ -105,9 +105,10 @@ function flattenTypeName(typeName: TypeName | null): { name: string; stateMutabi
       stateMutability: null,
     };
   } else if (typeName.type === "ArrayTypeName") {
+    const length = typeName.length?.type === "NumberLiteral" ? typeName.length.number : "";
     const { name, stateMutability } = flattenTypeName(typeName.baseTypeName);
     return {
-      name: `${name}[]`,
+      name: `${name}[${length}]`,
       stateMutability,
     };
   } else {
