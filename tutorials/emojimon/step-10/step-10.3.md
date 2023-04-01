@@ -1,3 +1,7 @@
+---
+order: -10.3
+---
+
 # 10.3. Random chance of encounter
 
 Now we can make our tall grass do something!
@@ -6,13 +10,11 @@ Now we can make our tall grass do something!
 
 Like obstructions, we'll need to query if there are any encounter triggers at a particular location.
 
-```sol !#3,9-14 packages/contracts/src/LibMap.sol
-import { ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
-import { ID as ObstructionComponentID } from "components/ObstructionComponent.sol";
-import { ID as EncounterTriggerComponentID } from "components/EncounterTriggerComponent.sol";
-import { QueryType } from "solecs/interfaces/Query.sol";
+```sol !#2,7-12 packages/contracts/src/LibMap.sol
 import { IWorld, WorldQueryFragment } from "solecs/World.sol";
-
+import { ID as EncounterTriggerComponentID } from "components/EncounterTriggerComponent.sol";
+import { ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
+…
 library LibMap {
   …
   function encounterTriggers(IWorld world, Coord memory coord) internal view returns (uint256[] memory) {
@@ -30,19 +32,15 @@ One important thing to note when building "chance" into smart contracts is that 
 
 To get something that is pseudorandom, we'll take a hash of a few sources of entropy: an incrementing nonce, the entity being moved, the position it's moving to, and the block difficulty (now mapped to the `PREVRANDAO` opcode post-merge, an on-chain and block-level source of entropy).
 
-```sol !#3,10,16-22,25-35 packages/contracts/src/systems/MoveSystem.sol
-import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
-import { MovableComponent, ID as MovableComponentID } from "components/MovableComponent.sol";
+```sol !#3,6,12-18,21-31 packages/contracts/src/systems/MoveSystem.sol
+import { getAddressById, addressToEntity } from "solecs/utils.sol";
 import { EncounterableComponent, ID as EncounterableComponentID } from "components/EncounterableComponent.sol";
-import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
-import { LibMap } from "../LibMap.sol";
-
-uint256 constant ID = uint256(keccak256("system.Move"));
-
+import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
+…
 contract MoveSystem is System {
   uint256 internal entropyNonce = 1;
   …
-  function execute(bytes memory args) public returns (bytes memory) {
+  function executeTyped(Coord memory coord) public returns (bytes memory) {
     …
     position.set(entityId, coord);
 
@@ -88,12 +86,10 @@ contract EncounterComponent is Uint256Component {
 
 Now we can fill in `startEncounter`.
 
-```sol !#3,12-15 packages/contracts/src/systems/MoveSystem.sol
-import { MovableComponent, ID as MovableComponentID } from "components/MovableComponent.sol";
-import { EncounterableComponent, ID as EncounterableComponentID } from "components/EncounterableComponent.sol";
+```sol !#2,10-13 packages/contracts/src/systems/MoveSystem.sol
+import { getAddressById, addressToEntity } from "solecs/utils.sol";
 import { EncounterComponent, ID as EncounterComponentID } from "components/EncounterComponent.sol";
-import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
-import { LibMap } from "../LibMap.sol";
+import { EncounterableComponent, ID as EncounterableComponentID } from "components/EncounterableComponent.sol";
 
 uint256 constant ID = uint256(keccak256("system.Move"));
 
@@ -110,7 +106,7 @@ contract MoveSystem is System {
 
 Did you remember to update `deploy.json`?
 
-```json !#3,12 packages/contracts/deploy.json
+```json !#3,13 packages/contracts/deploy.json
 {
   "components": [
     "EncounterComponent",
@@ -118,6 +114,7 @@ Did you remember to update `deploy.json`?
     "EncounterTriggerComponent",
     …
   ],
+  "initializers": ["MapConfigInitializer"],
   "systems": [
     …
     {
@@ -134,31 +131,20 @@ Since we're working with ECS where components are behaviors, one way to implemen
 
 To keep things simple and avoid juggling all that state, we'll add an extra check to our move system to prevent movement if you're in an encounter.
 
-```sol !#3,20-21 packages/contracts/src/systems/MoveSystem.sol
-import { MovableComponent, ID as MovableComponentID } from "components/MovableComponent.sol";
-import { EncounterableComponent, ID as EncounterableComponentID } from "components/EncounterableComponent.sol";
-import { EncounterComponent, ID as EncounterComponentID } from "components/EncounterComponent.sol";
-import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
-import { LibMap } from "../LibMap.sol";
-
-uint256 constant ID = uint256(keccak256("system.Move"));
-
+```sol !#8-9 packages/contracts/src/systems/MoveSystem.sol
 contract MoveSystem is System {
   …
-  function execute(bytes memory args) public returns (bytes memory) {
-    uint256 entityId = addressToEntity(msg.sender);
-
-    MovableComponent movable = MovableComponent(getAddressById(components, MovableComponentID));
-    require(movable.has(entityId), "cannot move");
-
+  function executeTyped(Coord memory coord) public returns (bytes memory) {
+    …
     PositionComponent position = PositionComponent(getAddressById(components, PositionComponentID));
     require(LibMap.distance(position.getValue(entityId), coord) == 1, "can only move to adjacent spaces");
 
     EncounterComponent encounter = EncounterComponent(getAddressById(components, EncounterComponentID));
     require(!encounter.has(entityId), "cannot move during an encounter");
-    …
-  }
-}
+
+    // Constrain position to map size, wrapping around if necessary
+    MapConfig memory mapConfig = MapConfigComponent(getAddressById(components, MapConfigComponentID)).getValue();
+
 ```
 
 We should add the same check to the client so that optimistic rendering can do its job.
@@ -172,7 +158,7 @@ import {
   defineStringComponent,
 } from "@latticexyz/std-client";
 …
-export const components = {
+export const contractComponents = {
   Encounter: defineStringComponent(world, {
     metadata: {
       contractId: "component.Encounter",
@@ -184,33 +170,24 @@ export const components = {
 
 We use a string component here to represent the encounter ID to make it easier to work with in JS.
 
-```ts !#3,10,21-24,27 packages/client/src/useMovement.ts
-export const useMovement = () => {
-  const {
-    components: { Encounter, Obstruction, Position },
-    systems,
-    playerEntity,
-  } = useMUD();
+```ts !#10-15 packages/client/src/mud/setup.ts
+export const setup = async () => {
+  …
+  const moveTo = async (x: number, y: number) => {
+    …
+    if (obstructed.size > 0) {
+      console.warn("cannot move to obstructed space");
+      return;
+    }
 
-  const { width, height } = useMapConfig();
-  const playerPosition = useComponentValueStream(Position, playerEntity);
-  const inEncounter =
-    useComponentValueStream(Encounter, playerEntity)?.value != null;
+    const inEncounter =
+      getComponentValue(components.Encounter, playerEntity)?.value != null;
+    if (inEncounter) {
+      console.warn("cannot move while in encounter");
+      return;
+    }
 
-  const moveTo = useCallback(
-    async (x: number, y: number) => {
-      …
-      if (obstructed.size > 0) {
-        console.warn("cannot move to obstructed space");
-        return;
-      }
-
-      if (inEncounter) {
-        console.warn("cannot move while in encounter");
-        return;
-      }
-      …
-    },
-    [Obstruction, Position, height, inEncounter, playerEntity, systems, width]
-  );
+    const positionId = uuid();
 ```
+
+After restarting `mud dev`, you can start moving around in the tall grass and notice that you'll get stuck. If you check your browser console, you'll see it's because you're in an encounter!

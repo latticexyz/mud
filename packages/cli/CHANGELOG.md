@@ -3,6 +3,43 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.41.0](https://github.com/latticexyz/mud/compare/v1.40.0...v1.41.0) (2023-03-09)
+
+### Bug Fixes
+
+- **cli:** add missing await ([#475](https://github.com/latticexyz/mud/issues/475)) ([efb5d76](https://github.com/latticexyz/mud/commit/efb5d76303093764c3bb8bd2d2a149bde0f4eb29))
+- **cli:** add missing await to tablegen, fix formatting ([#472](https://github.com/latticexyz/mud/issues/472)) ([4313c27](https://github.com/latticexyz/mud/commit/4313c277b10c0334716e5c3728ffeaef643c1e6b))
+- **cli:** avoid fs usage in utils, create deployment output directory if it doesn't exist ([#471](https://github.com/latticexyz/mud/issues/471)) ([cc8aa13](https://github.com/latticexyz/mud/commit/cc8aa132885e02e6db5658b19e82cc222676d724))
+- **services:** fix protobuf imports ([#477](https://github.com/latticexyz/mud/issues/477)) ([3eda547](https://github.com/latticexyz/mud/commit/3eda547b6799b9899a14d48d022f7ec6460308e0))
+
+### Features
+
+- **cli:** add setMetadata to autogen of table libraries ([#466](https://github.com/latticexyz/mud/issues/466)) ([1e129fe](https://github.com/latticexyz/mud/commit/1e129fe9ced354e838d3d9afc9839aba82fbf210))
+- **cli:** add v2 deployment script ([#450](https://github.com/latticexyz/mud/issues/450)) ([1db37a5](https://github.com/latticexyz/mud/commit/1db37a5c6b736fdc5f806653b78f76b02239f2bb))
+- **cli:** user types and route/path separation ([#454](https://github.com/latticexyz/mud/issues/454)) ([758bf03](https://github.com/latticexyz/mud/commit/758bf0388c9e282c58b2890cadb4a59e00978d26))
+
+# [1.40.0](https://github.com/latticexyz/mud/compare/v1.39.0...v1.40.0) (2023-03-03)
+
+### Features
+
+- **cli:** reorganize internal structure and add exports for all utilities ([#451](https://github.com/latticexyz/mud/issues/451)) ([e683904](https://github.com/latticexyz/mud/commit/e683904f8b5dcd23b69aef25275a0b3c8c3f9bb0))
+- v2 - add store, world and schema-type, cli table code generation ([#422](https://github.com/latticexyz/mud/issues/422)) ([cb731e0](https://github.com/latticexyz/mud/commit/cb731e0937e614bb316e6bc824813799559956c8))
+
+### BREAKING CHANGES
+
+- This commit removes the deprecated `mud deploy` CLI command. Use `mud deploy-contracts` instead.
+
+# [1.39.0](https://github.com/latticexyz/mud/compare/v1.38.0...v1.39.0) (2023-02-22)
+
+**Note:** Version bump only for package @latticexyz/cli
+
+# [1.38.0](https://github.com/latticexyz/mud/compare/v1.37.1...v1.38.0) (2023-02-22)
+
+### Features
+
+- **cli:** deprecate create command ([#424](https://github.com/latticexyz/mud/issues/424)) ([292119f](https://github.com/latticexyz/mud/commit/292119f4c0c40cbd3ad688ee567f4c05d957af7c))
+- **cli:** log client world URL ([#426](https://github.com/latticexyz/mud/issues/426)) ([f257467](https://github.com/latticexyz/mud/commit/f25746756ab4e93ef7a477b2b2c4948206f38f69))
+
 ## [1.37.1](https://github.com/latticexyz/mud/compare/v1.37.0...v1.37.1) (2023-02-17)
 
 **Note:** Version bump only for package @latticexyz/cli

@@ -1,4 +1,4 @@
-import { GodID as SingletonID, TxQueue } from "@latticexyz/network";
+import { SingletonID, TxQueue } from "@latticexyz/network";
 import { World } from "@latticexyz/recs";
 import { SystemTypes } from "contracts/types/SystemTypes";
 import { useComponentValue } from "@latticexyz/react";

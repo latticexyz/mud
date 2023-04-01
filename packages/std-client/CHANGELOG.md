@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.41.0](https://github.com/latticexyz/mud/compare/v1.40.0...v1.41.0) (2023-03-09)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [1.40.0](https://github.com/latticexyz/mud/compare/v1.39.0...v1.40.0) (2023-03-03)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [1.39.0](https://github.com/latticexyz/mud/compare/v1.38.0...v1.39.0) (2023-02-22)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
+# [1.38.0](https://github.com/latticexyz/mud/compare/v1.37.1...v1.38.0) (2023-02-22)
+
+**Note:** Version bump only for package @latticexyz/std-client
+
 ## [1.37.1](https://github.com/latticexyz/mud/compare/v1.37.0...v1.37.1) (2023-02-17)
 
 **Note:** Version bump only for package @latticexyz/std-client

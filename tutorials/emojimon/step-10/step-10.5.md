@@ -1,3 +1,7 @@
+---
+order: -10.5
+---
+
 # 10.5. Encounter screen
 
 We're ready to wire up the encounter on the client! We'll make a new encounter screen that we can transition to as you enter into an encounter. And we'll add a fun animation for it.
@@ -7,15 +11,15 @@ We're ready to wire up the encounter on the client! We'll make a new encounter s
 Let's start with a mostly empty encounter screen. We'll fill it in as we go.
 
 ```tsx packages/client/src/EncounterScreen.tsx
-import { EntityID } from "@latticexyz/recs";
 import { useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
+import { EntityID } from "@latticexyz/recs";
 
 type Props = {
   encounterId: EntityID;
 };
 
 export const EncounterScreen = ({ encounterId }: Props) => {
-  // TODO: better transition in
   const [appear, setAppear] = useState(false);
   useEffect(() => {
     setAppear(true);
@@ -23,9 +27,10 @@ export const EncounterScreen = ({ encounterId }: Props) => {
 
   return (
     <div
-      className={`flex flex-col gap-10 items-center justify-center bg-black text-white transition-opacity duration-1000 ${
+      className={twMerge(
+        "flex flex-col gap-10 items-center justify-center bg-black text-white transition-opacity duration-1000",
         appear ? "opacity-100" : "opacity-0"
-      }`}
+      )}
     >
       A wild emojimon appears!
     </div>
@@ -35,28 +40,34 @@ export const EncounterScreen = ({ encounterId }: Props) => {
 
 We'll need to know if we're in an encounter before we display the screen, so let's query for that.
 
-```tsx !#1,6,13-14 packages/client/src/GameBoard.tsx
+```tsx !#1,7,16-18 packages/client/src/GameBoard.tsx
 import { EntityID } from "@latticexyz/recs";
-import { useComponentValueStream } from "@latticexyz/std-client";
+import { useComponentValue } from "@latticexyz/react";
 …
 export const GameBoard = () => {
+  …
   const {
-    components: { Encounter, Position },
+    components: { Encounter, Position, Player },
+    api: { joinGame },
     playerEntity,
   } = useMUD();
-  …
-  const playerPosition = useComponentValueStream(Position, playerEntity);
-  useMovement();
 
-  const encounterId = useComponentValueStream(Encounter, playerEntity)
-    ?.value as EntityID | undefined;
+  useKeyboardMovement();
+
+  const playerPosition = useComponentValue(Position, playerEntity);
+  const canJoinGame = useComponentValue(Player, playerEntity)?.value !== true;
+  const encounterId = useComponentValue(Encounter, playerEntity)?.value as
+    | EntityID
+    | undefined;
+
+  return (
 ```
 
 Then conditionally render the encounter screen if we're in an encounter.
 
-```tsx !#3,14-26 packages/client/src/GameBoard.tsx
-import { useJoinGame } from "./useJoinGame";
-import { useMovement } from "./useMovement";
+```tsx !#3,15-27 packages/client/src/GameBoard.tsx
+import { useKeyboardMovement } from "./useKeyboardMovement";
+import { useMapConfig } from "./useMapConfig";
 import { EncounterScreen } from "./EncounterScreen";
 
 export const GameBoard = () => {
@@ -68,14 +79,15 @@ export const GameBoard = () => {
           …
         })
       )}
+
       {encounterId ? (
         <div
-          className="-m-2 bg-black text-white flex items-center justify-center"
+          className="relative z-10 -m-2 bg-black text-white flex items-center justify-center"
           style={{
             gridColumnStart: 1,
-            gridColumnEnd: mapConfig.width + 1,
+            gridColumnEnd: width + 1,
             gridRowStart: 1,
-            gridRowEnd: mapConfig.height + 1,
+            gridRowEnd: height + 1,
           }}
         >
           <EncounterScreen encounterId={encounterId} />
@@ -90,14 +102,15 @@ export const GameBoard = () => {
 
 Let's kick up the nostalgia with a fun battle animation. The repo started with this animation configured already (see `tailwind.config.cjs`), so we just need wire up the class names to the right elements in our game board.
 
-```tsx !#1,9-15,18,25,32-42,49,55 packages/client/src/GameBoard.tsx
+```tsx !#1,10-16,19,26,33-43,50,56 packages/client/src/GameBoard.tsx
 import { useEffect, useState } from "react";
 import { EntityID } from "@latticexyz/recs";
 …
 export const GameBoard = () => {
   …
-  const encounterId = useComponentValueStream(Encounter, playerEntity)
-    ?.value as EntityID | undefined;
+  const encounterId = useComponentValue(Encounter, playerEntity)?.value as
+    | EntityID
+    | undefined;
 
   const [showEncounter, setShowEncounter] = useState(false);
   // Reset show encounter when we leave encounter
@@ -147,7 +160,7 @@ export const GameBoard = () => {
       )}
       {encounterId && showEncounter ? (
         <div
-          className="-m-2 z-20 bg-black text-white flex items-center justify-center"
+          className="relative z-10 -m-2 bg-black text-white flex items-center justify-center"
 ```
 
 What we've done here is change the order that things render. Instead of immediately rendering the encounter, we render our battle animation near our player. The position of this element near our player helps the battle animation focus in on the player. Then, when the battle animation ends (`onAnimationEnd`), we show the encounter.
@@ -158,11 +171,12 @@ We also needed to add a `useEffect` to clear the `showEncounter` state when we l
 
 In the encounter screen, we can query for and render the monster that just appeared.
 
-```tsx !#1-5,12-28,42-43 packages/client/src/EncounterScreen.tsx
-import { EntityID, getComponentValueStrict, Has, HasValue } from "@latticexyz/recs";
-import { useEntityQuery } from "./useEntityQuery";
-import { useMUD } from "./MUDContext";
+```tsx !#3-6,13-29,43-44 packages/client/src/EncounterScreen.tsx
 import { useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
+import { EntityID, getComponentValueStrict, Has, HasValue } from "@latticexyz/recs";
+import { useEntityQuery } from "@latticexyz/react";
+import { useMUD } from "./MUDContext";
 import { MonsterType, monsterTypes } from "./monsterTypes";
 
 type Props = {
@@ -188,7 +202,6 @@ export const EncounterScreen = ({ encounterId }: Props) => {
     throw new Error("No monster found in encounter");
   }
 
-  // TODO: better transition in
   const [appear, setAppear] = useState(false);
   useEffect(() => {
     setAppear(true);
@@ -196,9 +209,10 @@ export const EncounterScreen = ({ encounterId }: Props) => {
 
   return (
     <div
-      className={`flex flex-col gap-10 items-center justify-center bg-black text-white transition-opacity duration-1000 ${
+      className={twMerge(
+        "flex flex-col gap-10 items-center justify-center bg-black text-white transition-opacity duration-1000",
         appear ? "opacity-100" : "opacity-0"
-      }`}
+      )}
     >
       <div className="text-8xl animate-bounce">{monster.monster.emoji}</div>
       <div>A wild {monster.monster.name} appears!</div>

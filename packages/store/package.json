@@ -1,0 +1,60 @@
+{
+  "name": "@latticexyz/store",
+  "license": "MIT",
+  "version": "1.41.0",
+  "description": "Store",
+  "types": "./types/ethers-contracts/",
+  "exports": {
+    "./mud.config.mjs": "./dist/mud.config.mjs",
+    "./*": "./*"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/store"
+  },
+  "scripts": {
+    "prepare": "yarn build && chmod u+x git-install.sh",
+    "git:install": "bash git-install.sh",
+    "codegen": "ts-node ./scripts/codegen.ts",
+    "tablegen": "../cli/dist/mud.js tablegen",
+    "test": "yarn codegen && forge test",
+    "build": "yarn codegen && rimraf out && forge build && yarn dist && yarn types && tsup",
+    "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && yarn rimraf abi/*.metadata.json",
+    "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
+    "prettier": "prettier --write 'src/**/*.sol'",
+    "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
+    "lint": "yarn prettier && yarn solhint",
+    "link": "yarn link",
+    "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
+    "release": "npm publish --access=public",
+    "gas-report": "mud gas-report --path test/** --save gas-report.txt"
+  },
+  "devDependencies": {
+    "@latticexyz/cli": "^1.41.0",
+    "@latticexyz/schema-type": "^1.41.0",
+    "@typechain/ethers-v5": "^9.0.0",
+    "@types/ejs": "^3.1.1",
+    "@types/mocha": "^9.1.1",
+    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
+    "ejs": "^3.1.8",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
+    "hardhat": "^2.10.1",
+    "prettier": "^2.8.4",
+    "prettier-plugin-solidity": "^1.1.2",
+    "rimraf": "^3.0.2",
+    "solhint": "^3.3.7",
+    "solidity-docgen": "^0.6.0-beta.22",
+    "ts-node": "^10.9.1",
+    "tsup": "^6.7.0",
+    "typechain": "^8.1.1",
+    "typedoc": "^0.23.10"
+  },
+  "peerDependencies": {
+    "@latticexyz/cli": "latest",
+    "@latticexyz/schema-type": "latest",
+    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3"
+  },
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+}

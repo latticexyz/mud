@@ -1,6 +1,6 @@
 import { uuid } from "@latticexyz/utils";
 import { mapObject } from "@latticexyz/utils";
-import { filter, Subject } from "rxjs";
+import { filter, map, Subject } from "rxjs";
 import { OptionalTypes } from "./constants";
 import { createIndexer } from "./Indexer";
 import {
@@ -75,7 +75,29 @@ export function setComponent<S extends Schema, T = undefined>(
 ) {
   const prevValue = getComponentValue(component, entity);
   for (const [key, val] of Object.entries(value)) {
-    component.values[key].set(entity, val);
+    if (component.values[key]) {
+      component.values[key].set(entity, val);
+    } else {
+      const isTableFieldIndex = component.metadata?.tableId && /^\d+$/.test(key);
+      if (!isTableFieldIndex) {
+        // If this key looks like a field index from `defineStoreComponents`,
+        // we can ignore this value without logging anything.
+        //
+        // Otherwise, we should let the user know we found undefined data.
+        console.warn(
+          "Component definition for",
+          component.metadata?.tableId ?? component.metadata?.contractId ?? component.id,
+          "is missing key",
+          key,
+          ", ignoring value",
+          val,
+          "for entity",
+          entity,
+          ". Existing keys: ",
+          Object.keys(component.values)
+        );
+      }
+    }
   }
   component.update$.next({ entity, value: [value, prevValue], component });
 }
@@ -297,9 +319,6 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
     component: Component<S, Metadata, T>;
   }>();
 
-  // Channel through update events from the original component if there are no overrides
-  component.update$.pipe(filter((e) => !overriddenEntityValues.get(e.entity))).subscribe(update$);
-
   // Add a new override to some entity
   function addOverride(id: string, update: Override<S, T>) {
     overrides.set(id, { update, nonce: nonce++ });
@@ -336,7 +355,7 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       : undefined;
   }
 
-  const valueProxyHandler: (key: keyof S) => ProxyHandler<typeof component.values[typeof key]> = (key: keyof S) => ({
+  const valueProxyHandler: (key: keyof S) => ProxyHandler<(typeof component.values)[typeof key]> = (key: keyof S) => ({
     get(target, prop) {
       // Intercept calls to component.value[key].get(entity)
       if (prop === "get") {
@@ -358,7 +377,8 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       if (prop === "keys") {
         return () => new Set([...target.keys(), ...overriddenEntityValues.keys()]).values();
       }
-      return Reflect.get(target, prop).bind(target);
+
+      return Reflect.get(target, prop, target);
     },
   });
 
@@ -392,6 +412,14 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
     else overriddenEntityValues.delete(entity);
     update$.next({ entity, value: [getOverriddenComponentValue(entity), prevValue], component: overriddenComponent });
   }
+
+  // Channel through update events from the original component if there are no overrides
+  component.update$
+    .pipe(
+      filter((e) => !overriddenEntityValues.get(e.entity)),
+      map((update) => ({ ...update, component: overriddenComponent }))
+    )
+    .subscribe(update$);
 
   return overriddenComponent;
 }

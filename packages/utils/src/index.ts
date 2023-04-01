@@ -23,6 +23,7 @@ export * from "./console";
 export * from "./distance";
 export * from "./math";
 export * from "./bytes";
+export * from "./v2";
 
 export type {
   Cached,

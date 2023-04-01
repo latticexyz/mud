@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/react",
-  "version": "1.37.1",
+  "version": "1.41.0",
   "description": "React tools for MUD client.",
   "license": "MIT",
   "source": "src/index.ts",
@@ -18,10 +18,10 @@
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "build": "rimraf dist && rollup -c rollup.config.js",
-    "release": "npm publish || echo 'version already published'"
+    "release": "npm publish --access=public"
   },
   "peerDependencies": {
-    "@latticexyz/recs": "^1.36.1",
+    "@latticexyz/recs": "latest",
     "mobx": "^6.4.2",
     "react": "^18.2.0",
     "rxjs": "^7.5.5"
@@ -30,10 +30,10 @@
     "fast-deep-equal": "^3.1.3"
   },
   "devDependencies": {
-    "@latticexyz/recs": "^1.37.1",
+    "@latticexyz/recs": "^1.41.0",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.1.3",
-    "@rollup/plugin-typescript": "^8.3.1",
+    "@rollup/plugin-typescript": "^11.0.0",
     "@testing-library/react-hooks": "^8.0.1",
     "@types/react": "^18.0.12",
     "eslint-plugin-react": "^7.31.11",
@@ -47,11 +47,11 @@
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rxjs": "^7.5.5",
-    "ts-jest": "^29.0.3",
-    "tslib": "^2.3.1",
+    "ts-jest": "^29.0.5",
+    "tslib": "^2.5.0",
     "typedoc": "0.23.21",
     "typedoc-plugin-markdown": "^3.13.6",
-    "typescript": "^4.5.5"
+    "typescript": "^4.9.5"
   },
-  "gitHead": "218f56893d268b0c5157a3e4c603b859e287a343"
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

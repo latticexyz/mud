@@ -46,8 +46,14 @@ import {
   fetchEventsInBlockRangeChunked,
 } from "./syncUtils";
 import { createBlockNumberStream } from "../createBlockNumberStream";
-import { GodID, SyncState } from "./constants";
+import { SingletonID, SyncState } from "./constants";
 import { debug as parentDebug } from "./debug";
+import { fetchStoreEvents } from "../v2/fetchStoreEvents";
+import { abi as IStoreAbi } from "@latticexyz/store/abi/IStore.json";
+import { Contract } from "ethers";
+import { createModeClient } from "../v2/mode/createModeClient";
+import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";
+import { getModeBlockNumber } from "../v2/mode/getModeBlockNumber";
 
 const debug = parentDebug.extend("SyncWorker");
 
@@ -90,7 +96,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       type: NetworkEvents.NetworkComponentUpdate,
       component: keccak256("component.LoadingState"),
       value: newLoadingState as unknown as ComponentValue<SchemaOf<C[keyof C]>>,
-      entity: GodID,
+      entity: SingletonID,
       txHash: "worker",
       lastEventInTx: false,
       blockNumber,
@@ -124,6 +130,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     );
     const config = computedConfig.get();
     const {
+      modeUrl,
       snapshotServiceUrl,
       streamServiceUrl,
       chainId,
@@ -142,6 +149,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const { providers } = await createReconnectingProvider(computed(() => computedConfig.get().provider));
     const provider = providers.get().json;
     const snapshotClient = snapshotServiceUrl ? createSnapshotClient(snapshotServiceUrl) : undefined;
+    const modeClient = modeUrl ? createModeClient(modeUrl) : undefined;
     const indexDbCache = await getIndexDbECSCache(chainId, worldContract.address);
     const decode = createDecode(worldContract, provider);
     const fetchWorldEvents = createFetchWorldEventsInBlockRange(
@@ -160,9 +168,15 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const cacheStore = { current: createCacheStore() };
     const { blockNumber$ } = createBlockNumberStream(providers);
     // The RPC is only queried if this stream is subscribed to
+
+    const storeContract = new Contract(worldContract.address, IStoreAbi, provider);
+    const boundFetchStoreEvents = (fromBlock: number, toBlock: number) =>
+      fetchStoreEvents(storeContract, fromBlock, toBlock);
+
     const latestEventRPC$ = createLatestEventStreamRPC(
       blockNumber$,
       fetchWorldEvents,
+      boundFetchStoreEvents,
       fetchSystemCalls ? createFetchSystemCallsFromEvents(provider) : undefined
     );
     const latestEvent$ = streamServiceUrl
@@ -205,6 +219,8 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const cacheBlockNumber = !disableCache ? await getIndexDBCacheStoreBlockNumber(indexDbCache) : -1;
     this.setLoadingState({ percentage: 50 });
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
+    const modeBlockNumber = modeClient ? await getModeBlockNumber(modeClient, chainId) : -1;
+
     this.setLoadingState({ percentage: 100 });
     debug(
       `cache block: ${cacheBlockNumber}, snapshot block: ${
@@ -213,13 +229,23 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     );
 
     let initialState = createCacheStore();
-    if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber)) {
+    if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber, modeBlockNumber)) {
+      // Skip initializing from cache/snapshot/mode if the initial block number is newer than all of them
       initialState.blockNumber = initialBlockNumber;
     } else {
-      // Load from cache if the snapshot is less than <cacheAgeThreshold> blocks newer than the cache
-      const syncFromSnapshot = snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
+      // Load from cache if the mode/snapshot is less than <cacheAgeThreshold> blocks newer than the cache
+      const syncFromMode = modeClient && modeBlockNumber > cacheBlockNumber + cacheAgeThreshold;
+      const syncFromSnapshot =
+        !syncFromMode && snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
 
-      if (syncFromSnapshot) {
+      if (syncFromMode) {
+        console.log("Initial sync from MODE");
+        this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from MODE", percentage: 0 });
+        initialState = await syncTablesFromMode(modeClient, chainId, storeContract, (percentage: number) =>
+          this.setLoadingState({ percentage })
+        );
+        this.setLoadingState({ percentage: 100 });
+      } else if (syncFromSnapshot) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from snapshot", percentage: 0 });
         initialState = await fetchSnapshotChunked(
           snapshotClient,
@@ -229,7 +255,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
           (percentage: number) => this.setLoadingState({ percentage }),
           config.pruneOptions
         );
-      } else {
+      } else if (!disableCache) {
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from cache", percentage: 0 });
         initialState = await loadIndexDbCacheStore(indexDbCache);
         this.setLoadingState({ percentage: 100 });
@@ -248,6 +274,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
 
     const gapStateEvents = await fetchEventsInBlockRangeChunked(
       fetchWorldEvents,
+      boundFetchStoreEvents,
       initialState.blockNumber,
       streamStartBlockNumber,
       50,

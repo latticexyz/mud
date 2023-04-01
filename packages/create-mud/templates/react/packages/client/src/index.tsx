@@ -6,7 +6,7 @@ import { SystemAbis } from "contracts/types/SystemAbis.mjs";
 import { defineNumberComponent } from "@latticexyz/std-client";
 import { config } from "./config";
 import { App } from "./App";
-import { GodID as SingletonID } from "@latticexyz/network";
+import { SingletonID } from "@latticexyz/network";
 
 const rootElement = document.getElementById("react-root");
 if (!rootElement) throw new Error("React root not found");
@@ -28,14 +28,11 @@ export const components = {
 };
 
 // This is where the magic happens
-setupMUDNetwork<typeof components, SystemTypes>(
-  config,
-  world,
-  components,
-  SystemAbis
-).then(({ startSync, systems }) => {
-  // After setting up the network, we can tell MUD to start the synchronization process.
-  startSync();
+setupMUDNetwork<typeof components, SystemTypes>(config, world, components, SystemAbis).then(
+  ({ startSync, systems }) => {
+    // After setting up the network, we can tell MUD to start the synchronization process.
+    startSync();
 
-  root.render(<App world={world} systems={systems} components={components} />);
-});
+    root.render(<App world={world} systems={systems} components={components} />);
+  }
+);

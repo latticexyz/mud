@@ -86,7 +86,7 @@ describe("CacheStore", () => {
 
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00001" as EntityID,
+        entity: "0x0001" as EntityID,
         component: "Position",
         value: { x: 1, y: 3 },
         lastEventInTx: true,

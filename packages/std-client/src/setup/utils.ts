@@ -22,13 +22,15 @@ import {
   getComponentEntities,
   getComponentValueStrict,
   Component,
+  updateComponent,
 } from "@latticexyz/recs";
 import { toEthAddress } from "@latticexyz/utils";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
 import { Contract, BigNumber, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { toLower, compact } from "lodash";
+import toLower from "lodash/toLower";
+import compact from "lodash/compact";
 import { IComputedValue } from "mobx";
 import { filter, map, Observable, Subject, timer } from "rxjs";
 import { DecodedNetworkComponentUpdate, DecodedSystemCall } from "./types";
@@ -162,12 +164,24 @@ export function applyNetworkUpdates<C extends Components>(
           console.warn("Unknown component:", update);
           continue;
         }
+        const component = components[componentKey] as Component<Schema>;
 
-        if (update.value === undefined) {
+        // keep this logic aligned with CacheStore's storeEvent
+        if (update.partialValue !== undefined) {
+          if (!getComponentValue(component, entityIndex)) {
+            console.warn("Can't make partial update on unset component value. Ignoring update.", {
+              componentMetadata: component.metadata,
+              entityIndex,
+              update,
+            });
+          } else {
+            updateComponent(component, entityIndex, update.partialValue);
+          }
+        } else if (update.value === undefined) {
           // undefined value means component removed
-          removeComponent(components[componentKey] as Component<Schema>, entityIndex);
+          removeComponent(component, entityIndex);
         } else {
-          setComponent(components[componentKey] as Component<Schema>, entityIndex, update.value);
+          setComponent(component, entityIndex, update.value);
         }
       } else if (decodeAndEmitSystemCall && isSystemCallEvent(update)) {
         decodeAndEmitSystemCall(update);

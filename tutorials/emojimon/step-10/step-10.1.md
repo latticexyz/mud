@@ -26,7 +26,7 @@ contract EncounterTriggerComponent is BoolComponent {
 ```
 
 ```ts !#2-6 packages/client/src/mud/components.ts
-export const components = {
+export const contractComponents = {
   EncounterTrigger: defineBoolComponent(world, {
     metadata: {
       contractId: "component.EncounterTrigger",
@@ -40,20 +40,19 @@ export const components = {
 
 Like obstructions, we'll make an entity for each tall grass tile and give it a position and encounter trigger.
 
-```sol !#4,12-14,23-27 packages/contracts/src/systems/InitSystem.sol
+```sol !#3,11-13,22-26 packages/contracts/src/libraries/MapConfigInitializer.sol
 import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
 import { ObstructionComponent, ID as ObstructionComponentID } from "components/ObstructionComponent.sol";
 import { EncounterTriggerComponent, ID as EncounterTriggerComponentID } from "components/EncounterTriggerComponent.sol";
 import { TerrainType } from "../TerrainType.sol";
-…
-contract InitSystem is System {
-  …
-  function execute(bytes memory data) public returns (bytes memory) {
+
+library MapConfigInitializer {
+  function init(IWorld world) internal {
     …
-    PositionComponent position = PositionComponent(getAddressById(components, PositionComponentID));
-    ObstructionComponent obstruction = ObstructionComponent(getAddressById(components, ObstructionComponentID));
+    PositionComponent position = PositionComponent(world.getComponent(PositionComponentID));
+    ObstructionComponent obstruction = ObstructionComponent(world.getComponent(ObstructionComponentID));
     EncounterTriggerComponent encounterTrigger = EncounterTriggerComponent(
-      getAddressById(components, EncounterTriggerComponentID)
+      world.getComponent(EncounterTriggerComponentID)
     );
     …
     for (uint32 y = 0; y < height; y++) {
@@ -73,18 +72,10 @@ contract InitSystem is System {
 
 And deploy it.
 
-```json !#3,11 packages/contracts/deploy.json
+```json !#3 packages/contracts/deploy.json
 {
   "components": [
     "EncounterTriggerComponent",
     "MapConfigComponent",
     "MovableComponent",
-    …
-  ],
-  "systems": [
-    {
-      "name": "InitSystem",
-      "writeAccess": ["EncounterTriggerComponent", "MapConfigComponent", "ObstructionComponent", "PositionComponent"],
-      "initialize": "new bytes(0)"
-    },
 ```

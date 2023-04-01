@@ -1,3 +1,7 @@
+---
+order: -10.6
+---
+
 # 10.6. Throw emojiball
 
 What would an Emojimon battle be without throwing emojiballs?
@@ -24,7 +28,7 @@ contract OwnedByComponent is Uint256Component {
 ```
 
 ```ts !#3-7 packages/client/src/mud/components.ts
-export const components = {
+export const contractComponents = {
   …
   OwnedBy: defineStringComponent(world, {
     metadata: {
@@ -83,7 +87,7 @@ contract EncounterThrowSystem is System {
 
 ```
 
-```json !#5,10-13 packages/contracts/deploy.json
+```json !#5,11-14 packages/contracts/deploy.json
 {
   "components": [
     …
@@ -92,11 +96,14 @@ contract EncounterThrowSystem is System {
     "PlayerComponent",
     …
   ],
+  "initializers": ["MapConfigInitializer"],
   "systems": [
     {
       "name": "EncounterThrowSystem",
       "writeAccess": ["EncounterComponent", "OwnedByComponent"]
     },
+    {
+      "name": "JoinGameSystem",
 ```
 
 ## Monster escapes
@@ -119,7 +126,7 @@ contract CounterComponent is Uint256Component {
 ```
 
 ```ts !#2-6 packages/client/src/mud/components.ts
-export const components = {
+export const contractComponents = {
   Counter: defineNumberComponent(world, {
     metadata: {
       contractId: "component.Counter",
@@ -132,9 +139,9 @@ export const components = {
 Now we can wire up an action counter for the throw system.
 
 ```sol !#2,14-16,18,25-28 packages/contracts/src/systems/EncounterThrowSystem.sol
-import { EncounterComponent, ID as EncounterComponentID } from "components/EncounterComponent.sol";
+import { getAddressById, addressToEntity } from "solecs/utils.sol";
 import { CounterComponent, ID as CounterComponentID } from "components/CounterComponent.sol";
-import { ID as MonsterTypeComponentID } from "components/MonsterTypeComponent.sol";
+import { EncounterComponent, ID as EncounterComponentID } from "components/EncounterComponent.sol";
 …
 contract EncounterThrowSystem is System {
   …
@@ -168,13 +175,14 @@ contract EncounterThrowSystem is System {
 
 ```
 
-```json !#3,10 packages/contracts/deploy.json
+```json !#3,11 packages/contracts/deploy.json
 {
   "components": [
     "CounterComponent",
     "EncounterComponent",
     …
   ],
+  "initializers": ["MapConfigInitializer"],
   "systems": [
     {
       "name": "EncounterThrowSystem",
@@ -190,10 +198,10 @@ To use the system call stream, we'll need to enable it first. It's off by defaul
 
 ```ts !#7-9 packages/client/src/mud/setup.ts
 export const setup = async () => {
-  const result = await setupMUDNetwork<typeof components, SystemTypes>(
+  const result = await setupMUDNetwork<typeof contractComponents, SystemTypes>(
     config,
     world,
-    components,
+    contractComponents,
     SystemAbis,
     {
       fetchSystemCalls: true,
@@ -203,82 +211,117 @@ export const setup = async () => {
 
 ## Add throw button
 
-The encounter screen is ready for a "throw" button. We'll create a "toast" using [react-toastify](https://github.com/fkhadra/react-toastify) to help us communicate to the user that there's a pending action and the result of that action.
+The encounter screen is ready for a "throw" button. We'll create a new helper method using the system call stream and then we'll create a "toast" using [react-toastify](https://github.com/fkhadra/react-toastify) to help us communicate to the user that there's a pending action and the result of that action.
 
-```tsx !#2,8-9,20-78 packages/client/src/EncounterScreen.tsx
+```ts !#3,7-41,49 packages/client/src/mud/setup.ts
+import { uuid } from "@latticexyz/utils";
+import { Has, HasValue, runQuery } from "@latticexyz/recs";
+import { filter, first } from "rxjs";
+…
+export const setup = async () => {
+  …
+  const throwBall = async (encounterId: EntityID, monsterId: EntityID) => {
+    const tx = await result.systems["system.EncounterThrow"].executeTyped(
+      encounterId,
+      monsterId
+    );
+
+    return new Promise<{ status: "caught" | "fled" | "missed"; tx: typeof tx }>(
+      (resolve) => {
+        result.systemCallStreams["system.EncounterThrow"]
+          .pipe(filter((systemCall) => systemCall.tx.hash === tx.hash))
+          .pipe(first())
+          .subscribe((systemCall) => {
+            const isCaught = systemCall.updates.some(
+              (update) =>
+                update.component.metadata?.contractId === "component.OwnedBy"
+            );
+            if (isCaught) {
+              resolve({ status: "caught", tx });
+              return;
+            }
+
+            const hasFled = systemCall.updates.some(
+              (update) =>
+                update.component.metadata?.contractId === "component.Encounter"
+            );
+            if (hasFled) {
+              resolve({ status: "fled", tx });
+              return;
+            }
+
+            resolve({ status: "missed", tx });
+          });
+      }
+    );
+  };
+
+  return {
+    …
+    api: {
+      moveTo,
+      moveBy,
+      joinGame,
+      throwBall,
+    },
+  };
+}
+```
+
+```tsx !#3,9,22-58 packages/client/src/EncounterScreen.tsx
 import { useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 import { toast } from "react-toastify";
 …
 export const EncounterScreen = ({ encounterId }: Props) => {
   const {
     world,
     components: { Encounter, MonsterType },
-    systems,
-    systemCallStreams,
+    api: { throwBall },
   } = useMUD();
   …
   return (
     <div
-      className={`flex flex-col gap-10 items-center justify-center bg-black text-white transition-opacity duration-1000 ${
+      className={twMerge(
+        "flex flex-col gap-10 items-center justify-center bg-black text-white transition-opacity duration-1000",
         appear ? "opacity-100" : "opacity-0"
-      }`}
+      )}
     >
       <div className="text-8xl animate-bounce">{monster.monster.emoji}</div>
       <div>A wild {monster.monster.name} appears!</div>
+
       <div className="flex gap-2">
         <button
           type="button"
           className="bg-stone-600 hover:ring rounded-lg px-4 py-2"
           onClick={async () => {
             const toastId = toast.loading("Throwing emojiball…");
-            const tx = await systems["system.EncounterThrow"].executeTyped(
-              encounterId,
-              monster.entityId
-            );
-            systemCallStreams["system.EncounterThrow"].subscribe(
-              (systemCall) => {
-                if (systemCall.tx.hash !== tx.hash) return;
-
-                const isCaught = systemCall.updates.some(
-                  (update) =>
-                    update.component.metadata?.contractId ===
-                    "component.OwnedBy"
-                );
-                const hasFled =
-                  !isCaught &&
-                  systemCall.updates.some(
-                    (update) =>
-                      update.component.metadata?.contractId ===
-                      "component.Encounter"
-                  );
-
-                if (isCaught) {
-                  toast.update(toastId, {
-                    isLoading: false,
-                    type: "success",
-                    render: `You caught the ${monster.monster.name}!`,
-                    autoClose: 5000,
-                    closeButton: true,
-                  });
-                } else if (hasFled) {
-                  toast.update(toastId, {
-                    isLoading: false,
-                    type: "error",
-                    render: `Oh no, the ${monster.monster.name} fled!`,
-                    autoClose: 5000,
-                    closeButton: true,
-                  });
-                } else {
-                  toast.update(toastId, {
-                    isLoading: false,
-                    type: "error",
-                    render: "You missed!",
-                    autoClose: 5000,
-                    closeButton: true,
-                  });
-                }
-              }
-            );
+            const { status } = await throwBall(encounterId, monster.entityId);
+            if (status === "caught") {
+              toast.update(toastId, {
+                isLoading: false,
+                type: "success",
+                render: `You caught the ${monster.monster.name}!`,
+                autoClose: 5000,
+                closeButton: true,
+              });
+            } else if (status === "fled") {
+              toast.update(toastId, {
+                isLoading: false,
+                type: "error",
+                render: `Oh no, the ${monster.monster.name} fled!`,
+                autoClose: 5000,
+                closeButton: true,
+              });
+            } else {
+              toast.update(toastId, {
+                isLoading: false,
+                type: "error",
+                render: "You missed!",
+                autoClose: 5000,
+                closeButton: true,
+              });
+            }
           }}
         >
           ☄️ Throw
@@ -292,5 +335,3 @@ export const EncounterScreen = ({ encounterId }: Props) => {
 When you click the button, we create a toast and call the throw system. We use the transaction hash from the system call to find the same transaction in the system call stream. We subscribe to the call stream, wait for the correct transaction, then determine the outcome of the system call by looking at the different component updates.
 
 If the owned by component changes, we'll assume the monster was caught. If the encounter component changes (i.e. something was removed from the encounter), we'll assume the monster fled. Otherwise, we probably missed.
-
-This code feels a little messy, but we'll revisit this later with better MUD patterns.

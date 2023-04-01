@@ -12,21 +12,17 @@ Since MUD handles all the networking for us, and because we're using a common ba
 
 We're currently only rendering our own player. To make the game multiplayer, we just need to query for other players and render them too!
 
-```tsx !#2,5,9,16-24,33,47-52 packages/client/src/GameBoard.tsx
+```tsx #2-3,12-20,31-33,47-52 packages/client/src/GameBoard.tsx
 import { useEffect, useState } from "react";
-import { EntityID, getComponentValueStrict, Has } from "@latticexyz/recs";
+import { EntityID, Has, getComponentValueStrict } from "@latticexyz/recs";
+import { useComponentValue, useEntityQuery } from "@latticexyz/react";
+import { twMerge } from "tailwind-merge";
 …
-import { EncounterScreen } from "./EncounterScreen";
-import { useEntityQuery } from "./useEntityQuery";
-
 export const GameBoard = () => {
-  const {
-    components: { Encounter, Player, Position },
-    playerEntity,
-  } = useMUD();
   …
-  const playerPosition = useComponentValueStream(Position, playerEntity);
-  useMovement();
+  const encounterId = useComponentValue(Encounter, playerEntity)?.value as
+  | EntityID
+  | undefined;
 
   const otherPlayers = useEntityQuery([Has(Player), Has(Position)])
     .filter((entity) => entity !== playerEntity)
@@ -42,10 +38,14 @@ export const GameBoard = () => {
     <div className="inline-grid p-2 bg-lime-500 relative overflow-hidden">
       {rows.map((y) =>
         columns.map((x) => {
-          const terrain = mapConfig.terrainValues.find((t) => t.x === x && t.y === y)?.type;
+          const terrain = terrainValues.find(
+            (t) => t.x === x && t.y === y
+          )?.type;
 
           const hasPlayer = playerPosition?.x === x && playerPosition?.y === y;
-          const otherPlayersHere = otherPlayers.filter((p) => p.position.x === x && p.position.y === y);
+          const otherPlayersHere = otherPlayers.filter(
+            (p) => p.position.x === x && p.position.y === y
+          );
 
           return (
             <div
@@ -66,13 +66,7 @@ export const GameBoard = () => {
                   ))}
                 </div>
               </div>
-            </div>
-          );
-        })
-      )}
-    </div>
-  );
-};
+
 ```
 
 Don't you wish all games were this easy to make multiplayer?
