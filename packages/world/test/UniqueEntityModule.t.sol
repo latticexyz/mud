@@ -34,13 +34,13 @@ contract UniqueEntityModuleTest is Test {
     world.installModule(uniqueEntityModule, new bytes(0));
 
     // !gasreport get a unique entity nonce (non-root module)
-    bytes32 uniqueEntity = getUniqueEntity(world);
+    uint256 uniqueEntity = uint256(getUniqueEntity(world));
 
     // Table must have the same entity set
     assertEq(UniqueEntity.get(world, tableId), uniqueEntity);
     // The next entity must be incremented
-    assertEq(getUniqueEntity(world), bytes32(uint256(uniqueEntity) + 1));
-    assertEq(UniqueEntity.get(world, tableId), bytes32(uint256(uniqueEntity) + 1));
+    assertEq(uint256(getUniqueEntity(world)), uniqueEntity + 1);
+    assertEq(UniqueEntity.get(world, tableId), uniqueEntity + 1);
   }
 
   function testInstallRoot() public {
@@ -48,13 +48,13 @@ contract UniqueEntityModuleTest is Test {
     world.installRootModule(uniqueEntityModule, new bytes(0));
 
     // !gasreport get a unique entity nonce (root module)
-    bytes32 uniqueEntity = getUniqueEntity(world);
+    uint256 uniqueEntity = uint256(getUniqueEntity(world));
 
     // Table must have the same entity set
     assertEq(UniqueEntity.get(world, tableId), uniqueEntity);
     // The next entity must be incremented
-    assertEq(getUniqueEntity(world), bytes32(uint256(uniqueEntity) + 1));
-    assertEq(UniqueEntity.get(world, tableId), bytes32(uint256(uniqueEntity) + 1));
+    assertEq(uint256(getUniqueEntity(world)), uniqueEntity + 1);
+    assertEq(UniqueEntity.get(world, tableId), uniqueEntity + 1);
   }
 
   function testPublicAccess() public {
@@ -63,13 +63,13 @@ contract UniqueEntityModuleTest is Test {
     // Anyone should be able to call `getUniqueEntity`
     address alice = address(bytes20(keccak256("alice")));
     vm.startPrank(alice);
-    bytes32 uniqueEntity = getUniqueEntity(world);
+    uint256 uniqueEntity = uint256(getUniqueEntity(world));
 
     // Table must have the same entity set
     assertEq(UniqueEntity.get(world, tableId), uniqueEntity);
     // The next entity must be incremented
-    assertEq(getUniqueEntity(world), bytes32(uint256(uniqueEntity) + 1));
-    assertEq(UniqueEntity.get(world, tableId), bytes32(uint256(uniqueEntity) + 1));
+    assertEq(uint256(getUniqueEntity(world)), uniqueEntity + 1);
+    assertEq(UniqueEntity.get(world, tableId), uniqueEntity + 1);
 
     // But changing the table directly isn't allowed
     vm.expectRevert(
@@ -79,6 +79,6 @@ contract UniqueEntityModuleTest is Test {
         alice
       )
     );
-    UniqueEntity.set(world, tableId, bytes32(uint256(123)));
+    UniqueEntity.set(world, tableId, 123);
   }
 }
