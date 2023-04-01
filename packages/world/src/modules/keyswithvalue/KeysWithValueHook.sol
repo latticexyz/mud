@@ -16,15 +16,14 @@ import { getTargetTableSelector } from "./getTargetTableSelector.sol";
  * We can optimize this by adding support for `setIndexOfField` in Store
  * and then replicate logic from solecs's Set.sol.
  * (See https://github.com/latticexyz/mud/issues/444)
+ *
+ * Note: if a table with composite keys is used, only the first key is indexed
  */
 contract KeysWithValueHook is IStoreHook {
   using ArrayLib for bytes32[];
   using ResourceSelector for bytes32;
 
-  error MultipleKeysNotSupported();
-
   function onSetRecord(uint256 sourceTableId, bytes32[] memory key, bytes memory data) public {
-    _requireSingleKey(key);
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
 
     // Get the previous value
@@ -41,8 +40,6 @@ contract KeysWithValueHook is IStoreHook {
   }
 
   function onBeforeSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
-    _requireSingleKey(key);
-
     // Remove the key from the list of keys with the previous value
     bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
@@ -50,8 +47,6 @@ contract KeysWithValueHook is IStoreHook {
   }
 
   function onAfterSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
-    _requireSingleKey(key);
-
     // Add the key to the list of keys with the new value
     bytes32 newValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
@@ -59,16 +54,10 @@ contract KeysWithValueHook is IStoreHook {
   }
 
   function onDeleteRecord(uint256 sourceTableId, bytes32[] memory key) public {
-    _requireSingleKey(key);
-
     // Remove the key from the list of keys with the previous value
     bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
     uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
     _removeKeyFromList(targetTableId, key[0], previousValue);
-  }
-
-  function _requireSingleKey(bytes32[] memory key) internal pure {
-    if (key.length > 1) revert MultipleKeysNotSupported();
   }
 
   function _removeKeyFromList(uint256 targetTableId, bytes32 key, bytes32 valueHash) internal {
