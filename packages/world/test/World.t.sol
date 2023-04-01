@@ -92,6 +92,10 @@ contract WorldTestSystem is System {
   }
 }
 
+contract PayableFallbackSystem is System {
+  fallback() external payable {}
+}
+
 contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
@@ -733,6 +737,98 @@ contract WorldTest is Test {
     assertTrue(success, "transfer should succeed");
     assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
     assertEq(address(world).balance, 0 ether, "world should still have 0 ether");
+    assertEq(address(system).balance, 0.5 ether, "system should have 0.5 ether");
+  }
+
+  function testNonPayableSystem() public {
+    // Register a root system with a non-payable function in the world
+    WorldTestSystem system = new WorldTestSystem();
+    bytes16 namespace = "noroot";
+    bytes16 file = "testSystem";
+    world.registerSystem(namespace, file, system, true);
+    world.registerRootFunctionSelector(
+      namespace,
+      file,
+      WorldTestSystem.msgSender.selector,
+      WorldTestSystem.msgSender.selector
+    );
+
+    // create new funded address and impersonate
+    address alice = makeAddr("alice");
+    startHoax(alice, 1 ether);
+
+    // Sanity check: alice has 1 eth, world has 0 eth, system has 0 eth
+    assertEq(alice.balance, 1 ether);
+    assertEq(address(world).balance, 0);
+    assertEq(address(system).balance, 0);
+
+    // Send 0.5 eth to the system's msgSender function (non-payable) via the World
+    (bool success, ) = address(world).call{ value: 0.5 ether }(
+      abi.encodeWithSelector(WorldTestSystem.msgSender.selector)
+    );
+    assertFalse(success, "transfer should fail");
+    assertEq(alice.balance, 1 ether, "alice should have 1 ether");
+    assertEq(address(world).balance, 0 ether, "world should have 0 ether");
+    assertEq(address(system).balance, 0 ether, "system should have 0 ether");
+  }
+
+  function testNonPayableFallbackSystem() public {
+    // Register a root system with a non-payable function in the world
+    WorldTestSystem system = new WorldTestSystem();
+    bytes16 namespace = "noroot";
+    bytes16 file = "testSystem";
+    world.registerSystem(namespace, file, system, true);
+    world.registerRootFunctionSelector(
+      namespace,
+      file,
+      bytes4(abi.encodeWithSignature("systemFallback()")),
+      bytes4("")
+    );
+
+    // create new funded address and impersonate
+    address alice = makeAddr("alice");
+    startHoax(alice, 1 ether);
+
+    // Sanity check: alice has 1 eth, world has 0 eth, system has 0 eth
+    assertEq(alice.balance, 1 ether);
+    assertEq(address(world).balance, 0);
+    assertEq(address(system).balance, 0);
+
+    // Send 0.5 eth to the system's fallback function (non-payable) via the World
+    (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeWithSignature("systemFallback()"));
+    assertFalse(success, "transfer should fail");
+    assertEq(alice.balance, 1 ether, "alice should have 1 ether");
+    assertEq(address(world).balance, 0 ether, "world should have 0 ether");
+    assertEq(address(system).balance, 0 ether, "system should have 0 ether");
+  }
+
+  function testPayableFallbackSystem() public {
+    // Register a root system with a non-payable function in the world
+    PayableFallbackSystem system = new PayableFallbackSystem();
+    bytes16 namespace = "noroot";
+    bytes16 file = "testSystem";
+    world.registerSystem(namespace, file, system, true);
+    world.registerRootFunctionSelector(
+      namespace,
+      file,
+      bytes4(abi.encodeWithSignature("systemFallback()")),
+      bytes4("")
+    );
+
+    // create new funded address and impersonate
+    address alice = makeAddr("alice");
+    startHoax(alice, 1 ether);
+
+    // Sanity check: alice has 1 eth, world has 0 eth, system has 0 eth
+    assertEq(alice.balance, 1 ether);
+    assertEq(address(world).balance, 0);
+    assertEq(address(system).balance, 0);
+
+    // Send 0.5 eth to the system's fallback function (non-payable) via the World
+    (bool success, ) = address(world).call{ value: 0.5 ether }(abi.encodeWithSignature("systemFallback()"));
+    assertTrue(success, "transfer should fail");
+    assertEq(alice.balance, 0.5 ether, "alice should have 0.5 ether");
+    assertEq(address(world).balance, 0 ether, "world should have 0 ether");
     assertEq(address(system).balance, 0.5 ether, "system should have 0.5 ether");
   }
 
