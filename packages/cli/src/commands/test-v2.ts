@@ -1,14 +1,34 @@
 import type { CommandModule } from "yargs";
+import readline from "readline";
 import { deployHandler, DeployOptions } from "./deploy-v2.js";
 import { yDeployOptions } from "./deploy-v2.js";
 import { anvil, forge, getRpcUrl, getTestDirectory } from "../utils/foundry.js";
 import chalk from "chalk";
 import { rmSync, writeFileSync } from "fs";
-import path from "path";
+import { CommandFailedError } from "../utils/errors.js";
 
 type Options = DeployOptions & { port?: number; worldAddress?: string; forgeOptions?: string };
 
 const WORLD_ADDRESS_FILE = ".mudtest";
+
+const listenForKeyPresses = (keys: string[], exit: string) => {
+  return new Promise<string>((res, rej) => {
+    readline.emitKeypressEvents(process.stdin);
+    if (process.stdin.isTTY) {
+      process.stdin.setRawMode(true);
+    }
+    process.stdin.on("keypress", (str, key) => {
+      if (key.name === exit) {
+        rej();
+      } else if (keys.includes(key.name)) {
+        if (process.stdin.isTTY) {
+          process.stdin.setRawMode(false);
+        }
+        res(key.name);
+      }
+    });
+  });
+};
 
 const commandModule: CommandModule<Options, Options> = {
   command: "test-v2",
@@ -36,35 +56,56 @@ const commandModule: CommandModule<Options, Options> = {
     }
 
     const forkRpc = args.worldAddress ? await getRpcUrl(args.profile) : `http://127.0.0.1:${args.port}`;
-
-    const worldAddress =
-      args.worldAddress ??
-      (
-        await deployHandler({
-          ...args,
-          saveDeployment: false,
-          rpc: forkRpc,
-        })
-      ).worldAddress;
-
-    console.log(chalk.blue("World address", worldAddress));
-
-    // Create a temporary file to pass the world address to the tests
-    writeFileSync(WORLD_ADDRESS_FILE, worldAddress);
-
     const userOptions = args.forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
+
     try {
-      const testResult = await forge(["test", "--fork-url", forkRpc, ...userOptions], {
-        profile: args.profile,
-      });
-      console.log(testResult);
-    } catch (e) {
-      console.error(e);
+      while ([].length === 0) {
+        const worldAddress =
+          args.worldAddress ??
+          (
+            await deployHandler({
+              ...args,
+              saveDeployment: false,
+              rpc: forkRpc,
+            })
+          ).worldAddress;
+        console.log(chalk.blue("World address", worldAddress));
+
+        // Create a temporary file to pass the world address to the tests
+        writeFileSync(WORLD_ADDRESS_FILE, worldAddress);
+        while ([].length === 0) {
+          try {
+            await forge(["test", "--fork-url", forkRpc, ...userOptions], {
+              profile: args.profile,
+            });
+          } catch (e) {
+            if (e instanceof CommandFailedError) {
+              console.error(chalk.red("Test failed"));
+            } else {
+              console.error(e);
+              break;
+            }
+          }
+          console.log(
+            chalk.gray(
+              chalk.green("[r]"),
+              " to restart, ",
+              chalk.blue("[d]"),
+              " to redeploy, and",
+              chalk.red("[q]"),
+              " to quit."
+            )
+          );
+          const keyPressed = await listenForKeyPresses(["r", "d"], "q");
+          if (keyPressed === "d") {
+            break;
+          }
+        }
+      }
+    } finally {
+      rmSync(WORLD_ADDRESS_FILE);
+      process.exit(0);
     }
-
-    rmSync(WORLD_ADDRESS_FILE);
-
-    process.exit(0);
   },
 };
 
