@@ -6,6 +6,7 @@ import { anvil, forge, getRpcUrl, getTestDirectory } from "../utils/foundry.js";
 import chalk from "chalk";
 import { rmSync, writeFileSync } from "fs";
 import { CommandFailedError } from "../utils/errors.js";
+import { execLog } from "../utils/execLog.js";
 
 type Options = DeployOptions & { port?: number; worldAddress?: string; forgeOptions?: string };
 
@@ -57,6 +58,16 @@ const commandModule: CommandModule<Options, Options> = {
 
     const forkRpc = args.worldAddress ? await getRpcUrl(args.profile) : `http://127.0.0.1:${args.port}`;
     const userOptions = args.forgeOptions?.replaceAll("\\", "").split(" ") ?? [];
+    const { verbosity } = JSON.parse(await execLog("forge", ["config", "--json"]));
+    if (verbosity < 2) {
+      console.log(
+        chalk.redBright(
+          chalk.bold(`Your Foundry config has low verbosity (${verbosity}), you won't see why your tests fail.`)
+        )
+      );
+    } else if (verbosity < 3) {
+      console.log(chalk.blueBright(`Your Foundry config has low verbosity (${verbosity}), you won't see traces.`));
+    }
 
     try {
       while ([].length === 0) {
@@ -80,7 +91,14 @@ const commandModule: CommandModule<Options, Options> = {
             });
           } catch (e) {
             if (e instanceof CommandFailedError) {
-              console.error(chalk.red("Test failed"));
+              console.error(chalk.red(chalk.bold("Tests failed")));
+              if (verbosity < 3) {
+                console.log(
+                  chalk.greenBright(
+                    chalk.bold('To get additional traces for your tests, set "verbosity" in your foundry.toml to "3"')
+                  )
+                );
+              }
             } else {
               console.error(e);
               break;
@@ -89,11 +107,11 @@ const commandModule: CommandModule<Options, Options> = {
           console.log(
             chalk.gray(
               chalk.green("[r]"),
-              " to restart, ",
+              "to rerun tests, ",
               chalk.blue("[d]"),
-              " to redeploy, and",
+              "to re-run the deployer, and",
               chalk.red("[q]"),
-              " to quit."
+              "to quit."
             )
           );
           const keyPressed = await listenForKeyPresses(["r", "d"], "q");
