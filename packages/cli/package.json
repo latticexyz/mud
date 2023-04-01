@@ -7,7 +7,8 @@
   "type": "module",
   "license": "MIT",
   "bin": {
-    "mud": "./dist/mud.js"
+    "mud": "./dist/mud.js",
+    "mud2": "./dist/mud2.js"
   },
   "repository": {
     "type": "git",
