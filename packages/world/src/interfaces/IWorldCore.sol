@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
+import { IErrors } from "./IErrors.sol";
 import { ISystemHook } from "./ISystemHook.sol";
 import { IModule } from "./IModule.sol";
 
@@ -11,7 +12,7 @@ import { IModule } from "./IModule.sol";
  * Consumers should use the `IBaseWorld` interface instead, which includes
  * dynamically registered function selectors (e.g. IRegistrationSystem)
  */
-interface IWorldCore {
+interface IWorldCore is IErrors {
   /**
    * Install the given module at the given namespace in the World.
    */

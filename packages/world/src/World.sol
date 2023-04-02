@@ -22,10 +22,9 @@ import { InstalledModules } from "./tables/InstalledModules.sol";
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
 import { IBaseWorld } from "./interfaces/IBaseWorld.sol";
-import { IErrors } from "./interfaces/IErrors.sol";
 import { IRegistrationSystem } from "./interfaces/IRegistrationSystem.sol";
 
-contract World is Store, IWorldCore, IErrors {
+contract World is Store, IWorldCore {
   using ResourceSelector for bytes32;
 
   constructor() {
