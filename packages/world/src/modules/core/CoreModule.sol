@@ -35,6 +35,7 @@ contract CoreModule is IModule, WorldContext {
     ResourceAccess.registerSchema();
     ResourceAccess.setMetadata();
     ResourceAccess.set(ROOT_NAMESPACE, _msgSender(), true);
+    ResourceAccess.set(ROOT_NAMESPACE, address(this), true);
 
     Systems.registerSchema();
     Systems.setMetadata();
