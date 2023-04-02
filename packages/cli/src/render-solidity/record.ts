@@ -99,16 +99,20 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
         ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
         `
       )}
-      uint256 _start;
-      uint256 _end = ${totalStaticLength + 32};
-      ${renderList(
-        dynamicFields,
-        (field, index) => `
-        _start = _end;
-        _end += _encodedLengths.atIndex(${index});
-        ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-        `
-      )}
+      // Store trims the blob if dynamic fields are all empty
+      if (_blob.length > ${totalStaticLength}) {
+        uint256 _start;
+        // skip static data length + dynamic lengths word
+        uint256 _end = ${totalStaticLength + 32};
+        ${renderList(
+          dynamicFields,
+          (field, index) => `
+          _start = _end;
+          _end += _encodedLengths.atIndex(${index});
+          ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+          `
+        )}
+      }
     }
   `;
   } else {
