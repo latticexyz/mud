@@ -9,10 +9,10 @@
 (test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600424
 (test/KeysWithValueModule.t.sol) | set a field on a table with KeysWithValueModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1))]: 177615
 (test/KeysWithValueModule.t.sol) | change a field on a table with KeysWithValueModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2))]: 141960
-(test/UniqueEntityModule.t.sol) | install unique entity module [world.installModule(uniqueEntityModule, new bytes(0))]: 774137
-(test/UniqueEntityModule.t.sol) | get a unique entity nonce (non-root module) [bytes32 uniqueEntity = getUniqueEntity(world)]: 65969
-(test/UniqueEntityModule.t.sol) | installRoot unique entity module [world.installRootModule(uniqueEntityModule, new bytes(0))]: 780612
-(test/UniqueEntityModule.t.sol) | get a unique entity nonce (root module) [bytes32 uniqueEntity = getUniqueEntity(world)]: 65969
+(test/UniqueEntityModule.t.sol) | install unique entity module [world.installModule(uniqueEntityModule, new bytes(0))]: 773893
+(test/UniqueEntityModule.t.sol) | get a unique entity nonce (non-root module) [uint256 uniqueEntity = uint256(getUniqueEntity(world))]: 65733
+(test/UniqueEntityModule.t.sol) | installRoot unique entity module [world.installRootModule(uniqueEntityModule, new bytes(0))]: 780368
+(test/UniqueEntityModule.t.sol) | get a unique entity nonce (root module) [uint256 uniqueEntity = uint256(getUniqueEntity(world))]: 65733
 (test/World.t.sol) | Delete record [world.deleteRecord(namespace, file, singletonKey)]: 16115
 (test/World.t.sol) | Push data to the table [world.pushToField(namespace, file, keyTuple, 0, encodedData)]: 96477
 (test/World.t.sol) | Register a fallback system [bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, "", "")]: 81251
