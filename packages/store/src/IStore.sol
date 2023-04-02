@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { IErrors } from "./IErrors.sol";
 import { Schema } from "./Schema.sol";
 
-interface IStore {
+interface IStore is IErrors {
   event StoreSetRecord(uint256 table, bytes32[] key, bytes data);
   event StoreSetField(uint256 table, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(uint256 table, bytes32[] key);

@@ -10,6 +10,7 @@ import { PackedCounter } from "./PackedCounter.sol";
 import { Slice } from "./Slice.sol";
 import { Hooks, HooksTableId } from "./tables/Hooks.sol";
 import { StoreMetadata } from "./tables/StoreMetadata.sol";
+import { IErrors } from "./IErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { Utils } from "./Utils.sol";
 import { TableId } from "./TableId.sol";
@@ -21,15 +22,6 @@ library StoreCore {
   event StoreSetRecord(uint256 tableId, bytes32[] key, bytes data);
   event StoreSetField(uint256 tableId, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(uint256 tableId, bytes32[] key);
-
-  // Errors include a stringified version of the tableId for easier debugging if cleartext tableIds are used
-  error StoreCore_TableAlreadyExists(uint256 tableId, string tableIdString);
-  error StoreCore_TableNotFound(uint256 tableId, string tableIdString);
-
-  error StoreCore_NotImplemented();
-  error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
-  error StoreCore_InvalidFieldNamesLength(uint256 expected, uint256 received);
-  error StoreCore_NotDynamicField();
 
   /**
    * Initialize internal tables.
@@ -75,7 +67,7 @@ library StoreCore {
   function getSchema(uint256 tableId) internal view returns (Schema schema) {
     schema = StoreCoreInternal._getSchema(tableId);
     if (schema.isEmpty()) {
-      revert StoreCore_TableNotFound(tableId, tableId.toString());
+      revert IErrors.StoreCore_TableNotFound(tableId, tableId.toString());
     }
   }
 
@@ -85,7 +77,7 @@ library StoreCore {
   function getKeySchema(uint256 tableId) internal view returns (Schema keySchema) {
     keySchema = StoreCoreInternal._getKeySchema(tableId);
     if (keySchema.isEmpty()) {
-      revert StoreCore_TableNotFound(tableId, tableId.toString());
+      revert IErrors.StoreCore_TableNotFound(tableId, tableId.toString());
     }
   }
 
@@ -106,7 +98,7 @@ library StoreCore {
 
     // Verify the schema doesn't exist yet
     if (hasTable(tableId)) {
-      revert StoreCore_TableAlreadyExists(tableId, tableId.toString());
+      revert IErrors.StoreCore_TableAlreadyExists(tableId, tableId.toString());
     }
 
     // Register the schema
@@ -121,7 +113,7 @@ library StoreCore {
 
     // Verify the number of field names corresponds to the schema length
     if (!(fieldNames.length == 0 || fieldNames.length == schema.numFields())) {
-      revert StoreCore_InvalidFieldNamesLength(schema.numFields(), fieldNames.length);
+      revert IErrors.StoreCore_InvalidFieldNamesLength(schema.numFields(), fieldNames.length);
     }
 
     // Set metadata
@@ -166,7 +158,7 @@ library StoreCore {
     }
 
     if (expectedLength != data.length) {
-      revert StoreCore_InvalidDataLength(expectedLength, data.length);
+      revert IErrors.StoreCore_InvalidDataLength(expectedLength, data.length);
     }
 
     // Emit event to notify indexers
@@ -272,7 +264,7 @@ library StoreCore {
     Schema schema = getSchema(tableId);
 
     if (schemaIndex < schema.numStaticFields()) {
-      revert StoreCore_NotDynamicField();
+      revert IErrors.StoreCore_NotDynamicField();
     }
 
     // TODO add push-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
@@ -442,7 +434,7 @@ library StoreCoreInternal {
     // verify the value has the correct length for the field
     SchemaType schemaType = schema.atIndex(schemaIndex);
     if (schemaType.getStaticByteLength() != data.length) {
-      revert StoreCore.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
+      revert IErrors.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
     }
 
     // Store the provided value in storage
