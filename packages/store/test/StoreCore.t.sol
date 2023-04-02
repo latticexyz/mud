@@ -11,6 +11,7 @@ import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreView } from "../src/StoreView.sol";
+import { IErrors } from "../src/IErrors.sol";
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { StoreMetadataData, StoreMetadata } from "../src/tables/StoreMetadata.sol";
@@ -139,7 +140,7 @@ contract StoreCoreTest is Test, StoreView {
     // Register table
     StoreCore.registerSchema(table, schema, keySchema);
 
-    vm.expectRevert(abi.encodeWithSelector(StoreCore.StoreCore_InvalidFieldNamesLength.selector, 1, 2));
+    vm.expectRevert(abi.encodeWithSelector(IErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 2));
     StoreCore.setMetadata(table, tableName, fieldNames);
   }
 
