@@ -59,6 +59,7 @@ contract RegistrationModule is IModule, WorldContext {
       msgSender: _msgSender(),
       target: registrationSystem,
       delegate: true,
+      value: 0,
       funcSelectorAndArgs: abi.encodeWithSelector(
         RegistrationSystem.registerSystem.selector,
         ROOT_NAMESPACE,
@@ -88,6 +89,7 @@ contract RegistrationModule is IModule, WorldContext {
         msgSender: _msgSender(),
         target: registrationSystem,
         delegate: true,
+        value: 0,
         funcSelectorAndArgs: abi.encodeWithSelector(
           RegistrationSystem.registerRootFunctionSelector.selector,
           ROOT_NAMESPACE,

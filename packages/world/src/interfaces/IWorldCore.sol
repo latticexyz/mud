@@ -100,5 +100,9 @@ interface IWorldCore is IErrors {
    * Call the system at the given namespace and file.
    * If the system is not public, the caller must have access to the namespace or file.
    */
-  function call(bytes16 namespace, bytes16 file, bytes memory funcSelectorAndArgs) external returns (bytes memory);
+  function call(
+    bytes16 namespace,
+    bytes16 file,
+    bytes memory funcSelectorAndArgs
+  ) external payable returns (bytes memory);
 }

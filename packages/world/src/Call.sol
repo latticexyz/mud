@@ -15,7 +15,8 @@ library Call {
     address msgSender,
     address target,
     bytes memory funcSelectorAndArgs,
-    bool delegate
+    bool delegate,
+    uint256 value
   ) internal returns (bytes memory) {
     // Append msg.sender to the calldata
     bytes memory callData = abi.encodePacked(funcSelectorAndArgs, msgSender);
@@ -23,7 +24,7 @@ library Call {
     // Call the target using `delegatecall` or `call`
     (bool success, bytes memory data) = delegate
       ? target.delegatecall(callData) // root system
-      : target.call(callData); // non-root system
+      : target.call{ value: value }(callData); // non-root system
 
     // Forward returned data if the call succeeded
     if (success) return data;
