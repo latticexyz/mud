@@ -303,16 +303,20 @@ library Mixed {
 
     _table.u128 = (uint128(Bytes.slice16(_blob, 4)));
 
-    uint256 _start;
-    uint256 _end = 52;
+    // Store trims the blob if dynamic fields are all empty
+    if (_blob.length > 20) {
+      uint256 _start;
+      // skip static data length + dynamic lengths word
+      uint256 _end = 52;
 
-    _start = _end;
-    _end += _encodedLengths.atIndex(0);
-    _table.a32 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+      _start = _end;
+      _end += _encodedLengths.atIndex(0);
+      _table.a32 = (SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
 
-    _start = _end;
-    _end += _encodedLengths.atIndex(1);
-    _table.s = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+      _start = _end;
+      _end += _encodedLengths.atIndex(1);
+      _table.s = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+    }
   }
 
   /** Tightly pack full data using this table's schema */
