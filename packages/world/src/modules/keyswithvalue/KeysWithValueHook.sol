@@ -7,9 +7,10 @@ import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
+import { MODULE_NAMESPACE } from "./constants.sol";
 import { KeysWithValue } from "./tables/KeysWithValue.sol";
-import { ArrayLib } from "./ArrayLib.sol";
-import { getTargetTableSelector } from "./getTargetTableSelector.sol";
+import { ArrayLib } from "../utils/ArrayLib.sol";
+import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
 /**
  * This is a very naive and inefficient implementation for now.
@@ -24,7 +25,7 @@ contract KeysWithValueHook is IStoreHook {
   using ResourceSelector for bytes32;
 
   function onSetRecord(uint256 sourceTableId, bytes32[] memory key, bytes memory data) public {
-    uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
+    uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
 
     // Get the previous value
     bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
@@ -42,21 +43,21 @@ contract KeysWithValueHook is IStoreHook {
   function onBeforeSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
     // Remove the key from the list of keys with the previous value
     bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
-    uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
+    uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
     _removeKeyFromList(targetTableId, key[0], previousValue);
   }
 
   function onAfterSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
     // Add the key to the list of keys with the new value
     bytes32 newValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
-    uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
+    uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
     KeysWithValue.push(targetTableId, newValue, key[0]);
   }
 
   function onDeleteRecord(uint256 sourceTableId, bytes32[] memory key) public {
     // Remove the key from the list of keys with the previous value
     bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
-    uint256 targetTableId = getTargetTableSelector(sourceTableId).toTableId();
+    uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
     _removeKeyFromList(targetTableId, key[0], previousValue);
   }
 

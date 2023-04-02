@@ -17,7 +17,7 @@ import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueM
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
-import { getTargetTableSelector } from "../src/modules/keyswithvalue/getTargetTableSelector.sol";
+import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelector.sol";
 
 contract KeysWithValueModuleTest is Test {
   using ResourceSelector for bytes32;
@@ -47,7 +47,7 @@ contract KeysWithValueModuleTest is Test {
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
     sourceTableId = ResourceSelector.from(namespace, sourceFile).toTableId();
-    targetTableId = getTargetTableSelector(sourceTableId).toTableId();
+    targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
   }
 
   function _installKeysWithValueModule() internal {
@@ -172,7 +172,7 @@ contract KeysWithValueModuleTest is Test {
 
   function testGetTargetTableSelector() public {
     // !gasreport compute the target table selector
-    bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);
+    bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // The first 8 bytes are the module namespace
     assertEq(bytes8(targetTableSelector), MODULE_NAMESPACE);
