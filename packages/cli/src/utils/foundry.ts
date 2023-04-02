@@ -1,6 +1,12 @@
 import { execa, Options } from "execa";
 import { execLog } from "./execLog.js";
 
+export const IGNORED_ERROR_CODES = [2018 /** state mutability can be restricted to pure */];
+export const FOUNDRY_OPTIONS_IGNORE_CODES = IGNORED_ERROR_CODES.flatMap((errorCode) => [
+  "--ignored-error-codes",
+  errorCode.toString(),
+]);
+
 export interface ForgeConfig {
   // project
   src: string;

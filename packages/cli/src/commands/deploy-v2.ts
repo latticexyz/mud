@@ -6,7 +6,7 @@ import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/config";
 import { deploy } from "../utils/deploy-v2.js";
 import { logError } from "../utils/errors.js";
-import { forge, getRpcUrl, getSrcDirectory } from "../utils/foundry.js";
+import { forge, getRpcUrl, getSrcDirectory, FOUNDRY_OPTIONS_IGNORE_CODES } from "../utils/foundry.js";
 import { mkdirSync, writeFileSync } from "fs";
 import { getChainId } from "../utils/getChainId.js";
 
@@ -54,7 +54,7 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
   if (clean) await forge(["clean"], { profile });
 
   // Run forge build
-  await forge(["build"], { profile });
+  await forge(["build", "--silent", ...FOUNDRY_OPTIONS_IGNORE_CODES], { profile });
 
   // Get a list of all contract names
   const srcDir = args?.srcDir ?? (await getSrcDirectory());
