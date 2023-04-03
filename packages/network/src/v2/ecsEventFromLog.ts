@@ -41,23 +41,13 @@ export const ecsEventFromLog = async (
   }
 
   if (name === "StoreSetField") {
-    const { schema, value } = await decodeStoreSetField(contract, tableId, args.key, args.schemaIndex, args.data);
+    const { value, initialValue } = await decodeStoreSetField(contract, tableId, args.key, args.schemaIndex, args.data);
     console.log("StoreSetField:", { table: tableId.toString(), component, entity, value });
-
-    // workaround for https://github.com/latticexyz/mud/issues/479
-    // TODO: figure out if this is the approach we want to take
-    const keysToUpdate = Object.keys(value);
-    const expectedKeys = [...schema.staticFields, ...schema.dynamicFields].map((type, index) => `${index}`);
-    if (expectedKeys.every((key) => keysToUpdate.includes(key))) {
-      return {
-        ...ecsEvent,
-        value,
-      };
-    }
 
     return {
       ...ecsEvent,
       partialValue: value,
+      initialValue,
     };
   }
 
