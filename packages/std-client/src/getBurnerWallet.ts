@@ -1,16 +1,16 @@
-import { Wallet } from "ethers";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { isHex, Hex } from "viem";
 import { BehaviorSubject } from "rxjs";
 
-export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<string> {
+export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<Hex> {
   const cachedPrivateKey = localStorage.getItem(cacheKey);
-  const subject = cachedPrivateKey
+  const subject = isHex(cachedPrivateKey)
     ? new BehaviorSubject(cachedPrivateKey)
     : (() => {
-        // TODO: move to viem wallet
-        const wallet = Wallet.createRandom();
-        console.log("New burner wallet created:", wallet.address);
-        localStorage.setItem(cacheKey, wallet.privateKey);
-        return new BehaviorSubject(wallet.privateKey);
+        const privateKey = generatePrivateKey();
+        console.log("New burner wallet created:", privateKeyToAccount(privateKey));
+        localStorage.setItem(cacheKey, privateKey);
+        return new BehaviorSubject(privateKey);
       })();
 
   window.addEventListener("storage", function listener(event) {
@@ -28,6 +28,10 @@ export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<
       // loop issues, and just warn the user. A refresh will go through the logic above to
       // create a new burner wallet.
       console.warn("Burner wallet removed from cache! You may need to reload to create a new wallet.");
+      return;
+    }
+    if (!isHex(event.newValue)) {
+      console.warn("Invalid burner wallet added to cache! You may need to reload to create a new wallet.");
       return;
     }
 
