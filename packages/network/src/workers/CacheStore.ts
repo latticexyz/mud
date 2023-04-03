@@ -29,14 +29,7 @@ export function createCacheStore() {
 
 export function storeEvent<Cm extends Components>(
   cacheStore: CacheStore,
-  {
-    component,
-    entity,
-    value,
-    partialValue,
-    initialValue,
-    blockNumber,
-  }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
+  { component, entity, value, partialValue, blockNumber }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
   const entityId = normalizeEntityID(entity);
 
@@ -62,7 +55,16 @@ export function storeEvent<Cm extends Components>(
   // keep this logic aligned with applyNetworkUpdates
   if (partialValue !== undefined) {
     const currentValue = state.get(key);
-    state.set(key, { ...initialValue, ...currentValue, ...partialValue });
+    if (currentValue === undefined) {
+      console.warn("Can't make partial update on unset component value. Ignoring update.", {
+        component,
+        entity,
+        entityIndex,
+        partialValue,
+      });
+    } else {
+      state.set(key, { ...currentValue, ...partialValue });
+    }
   } else if (value === undefined) {
     console.log("deleting key", key);
     state.delete(key);

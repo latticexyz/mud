@@ -168,7 +168,15 @@ export function applyNetworkUpdates<C extends Components>(
 
         // keep this logic aligned with CacheStore's storeEvent
         if (update.partialValue !== undefined) {
-          updateComponent(component, entityIndex, update.partialValue, update.initialValue);
+          if (!getComponentValue(component, entityIndex)) {
+            console.warn("Can't make partial update on unset component value. Ignoring update.", {
+              componentMetadata: component.metadata,
+              entityIndex,
+              update,
+            });
+          } else {
+            updateComponent(component, entityIndex, update.partialValue);
+          }
         } else if (update.value === undefined) {
           // undefined value means component removed
           removeComponent(component, entityIndex);

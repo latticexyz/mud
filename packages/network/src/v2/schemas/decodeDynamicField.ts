@@ -1,5 +1,5 @@
 import { SchemaType, DynamicSchemaType, SchemaTypeArrayToElement, getStaticByteLength } from "@latticexyz/schema-type";
-import { toHex, bytesToString } from "viem";
+import { arrayToHex } from "@latticexyz/utils";
 import { decodeStaticField } from "./decodeStaticField";
 
 // TODO: figure out how to switch back to `fieldType: never` for exhaustiveness check
@@ -10,10 +10,10 @@ const unsupportedDynamicField = (fieldType: SchemaType): never => {
 // TODO: figure out how to use with SchemaTypeToPrimitive<T> return type to ensure correctness here
 export const decodeDynamicField = <T extends DynamicSchemaType>(fieldType: T, bytes: Uint8Array) => {
   if (fieldType === SchemaType.BYTES) {
-    return toHex(bytes);
+    return arrayToHex(bytes);
   }
   if (fieldType === SchemaType.STRING) {
-    return bytesToString(bytes);
+    return new TextDecoder().decode(bytes);
   }
 
   const staticType = SchemaTypeArrayToElement[fieldType];

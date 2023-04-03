@@ -87,7 +87,6 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
     component: key & string;
     value: ComponentValue<SchemaOf<C[key]>> | undefined;
     partialValue?: Partial<ComponentValue<SchemaOf<C[key]>>>;
-    initialValue?: ComponentValue<SchemaOf<C[key]>>;
   };
 }[keyof C] & {
   entity: EntityID;
