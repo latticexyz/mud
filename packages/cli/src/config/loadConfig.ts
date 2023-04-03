@@ -1,20 +1,21 @@
 import { findUp } from "find-up";
 import path from "path";
-import { NotESMConfigError, NotInsideProjectError } from "../utils/errors.js";
+import { NotInsideProjectError } from "../utils/errors.js";
+import esbuild from "esbuild";
+import { rmSync } from "fs";
 
 // In order of preference files are checked
-const configFiles = ["mud.config.ts", "mud.config.mts"];
+const configFiles = ["mud.config.js", "mud.config.mjs", "mud.config.ts", "mud.config.mts"];
+const TEMP_CONFIG = "mud.config.temp.mjs";
 
 export async function loadConfig(configPath?: string): Promise<unknown> {
   configPath = await resolveConfigPath(configPath);
   try {
+    await esbuild.build({ entryPoints: [configPath], format: "esm", outfile: TEMP_CONFIG });
+    configPath = await resolveConfigPath(TEMP_CONFIG);
     return (await import(configPath)).default;
-  } catch (error) {
-    if (error instanceof SyntaxError && error.message === "Cannot use import statement outside a module") {
-      throw new NotESMConfigError();
-    } else {
-      throw error;
-    }
+  } finally {
+    rmSync(TEMP_CONFIG);
   }
 }
 

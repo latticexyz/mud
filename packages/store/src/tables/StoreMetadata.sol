@@ -228,16 +228,20 @@ library StoreMetadata {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
 
-    uint256 _start;
-    uint256 _end = 32;
+    // Store trims the blob if dynamic fields are all empty
+    if (_blob.length > 0) {
+      uint256 _start;
+      // skip static data length + dynamic lengths word
+      uint256 _end = 32;
 
-    _start = _end;
-    _end += _encodedLengths.atIndex(0);
-    _table.tableName = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+      _start = _end;
+      _end += _encodedLengths.atIndex(0);
+      _table.tableName = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
 
-    _start = _end;
-    _end += _encodedLengths.atIndex(1);
-    _table.abiEncodedFieldNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+      _start = _end;
+      _end += _encodedLengths.atIndex(1);
+      _table.abiEncodedFieldNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+    }
   }
 
   /** Tightly pack full data using this table's schema */

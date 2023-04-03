@@ -4,6 +4,7 @@ export default defineConfig({
   entry: [
     "src/index.ts",
     "src/mud.ts",
+    "src/mud2.ts",
     "src/config/index.ts",
     "src/render-table/index.ts",
     "src/utils/index.ts",

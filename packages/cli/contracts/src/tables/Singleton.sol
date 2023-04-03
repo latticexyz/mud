@@ -53,10 +53,21 @@ library Singleton {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
+  /** Set the table's metadata (using the specified store) */
+  function setMetadata(IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get v1 */
@@ -67,11 +78,26 @@ library Singleton {
     return (int256(uint256(Bytes.slice32(_blob, 0))));
   }
 
+  /** Get v1 (using the specified store) */
+  function getV1(IStore _store) internal view returns (int256 v1) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    return (int256(uint256(Bytes.slice32(_blob, 0))));
+  }
+
   /** Set v1 */
   function setV1(int256 v1) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((v1)));
+  }
+
+  /** Set v1 (using the specified store) */
+  function setV1(IStore _store, int256 v1) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((v1)));
   }
 
   /** Get v2 */
@@ -82,11 +108,26 @@ library Singleton {
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
+  /** Get v2 (using the specified store) */
+  function getV2(IStore _store) internal view returns (uint32[2] memory v2) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 1);
+    return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
   /** Set v2 */
   function setV2(uint32[2] memory v2) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.setField(_tableId, _primaryKeys, 1, EncodeArray.encode(fromStaticArray_uint32_2(v2)));
+  }
+
+  /** Set v2 (using the specified store) */
+  function setV2(IStore _store, uint32[2] memory v2) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.setField(_tableId, _primaryKeys, 1, EncodeArray.encode(fromStaticArray_uint32_2(v2)));
   }
 
   /** Push an element to v2 */
@@ -96,11 +137,25 @@ library Singleton {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
   }
 
+  /** Push an element to v2 (using the specified store) */
+  function pushV2(IStore _store, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
+  }
+
   /** Update an element of v2 at `_index` */
   function updateV2(uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.updateInField(_tableId, _primaryKeys, 1, _index * 4, abi.encodePacked((_element)));
+  }
+
+  /** Update an element of v2 (using the specified store) at `_index` */
+  function updateV2(IStore _store, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.updateInField(_tableId, _primaryKeys, 1, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Get v3 */
@@ -111,11 +166,26 @@ library Singleton {
     return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
+  /** Get v3 (using the specified store) */
+  function getV3(IStore _store) internal view returns (uint32[2] memory v3) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 2);
+    return toStaticArray_uint32_2(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
   /** Set v3 */
   function setV3(uint32[2] memory v3) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.setField(_tableId, _primaryKeys, 2, EncodeArray.encode(fromStaticArray_uint32_2(v3)));
+  }
+
+  /** Set v3 (using the specified store) */
+  function setV3(IStore _store, uint32[2] memory v3) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.setField(_tableId, _primaryKeys, 2, EncodeArray.encode(fromStaticArray_uint32_2(v3)));
   }
 
   /** Push an element to v3 */
@@ -125,11 +195,25 @@ library Singleton {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
+  /** Push an element to v3 (using the specified store) */
+  function pushV3(IStore _store, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
+  }
+
   /** Update an element of v3 at `_index` */
   function updateV3(uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.updateInField(_tableId, _primaryKeys, 2, _index * 4, abi.encodePacked((_element)));
+  }
+
+  /** Update an element of v3 (using the specified store) at `_index` */
+  function updateV3(IStore _store, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.updateInField(_tableId, _primaryKeys, 2, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Get v4 */
@@ -140,11 +224,26 @@ library Singleton {
     return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
   }
 
+  /** Get v4 (using the specified store) */
+  function getV4(IStore _store) internal view returns (uint32[1] memory v4) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 3);
+    return toStaticArray_uint32_1(SliceLib.getSubslice(_blob, 0, _blob.length).decodeArray_uint32());
+  }
+
   /** Set v4 */
   function setV4(uint32[1] memory v4) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.setField(_tableId, _primaryKeys, 3, EncodeArray.encode(fromStaticArray_uint32_1(v4)));
+  }
+
+  /** Set v4 (using the specified store) */
+  function setV4(IStore _store, uint32[1] memory v4) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.setField(_tableId, _primaryKeys, 3, EncodeArray.encode(fromStaticArray_uint32_1(v4)));
   }
 
   /** Push an element to v4 */
@@ -154,6 +253,13 @@ library Singleton {
     StoreSwitch.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
   }
 
+  /** Push an element to v4 (using the specified store) */
+  function pushV4(IStore _store, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
+  }
+
   /** Update an element of v4 at `_index` */
   function updateV4(uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
@@ -161,11 +267,28 @@ library Singleton {
     StoreSwitch.updateInField(_tableId, _primaryKeys, 3, _index * 4, abi.encodePacked((_element)));
   }
 
+  /** Update an element of v4 (using the specified store) at `_index` */
+  function updateV4(IStore _store, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.updateInField(_tableId, _primaryKeys, 3, _index * 4, abi.encodePacked((_element)));
+  }
+
   /** Get the full data */
   function get() internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
+    return decode(_blob);
+  }
+
+  /** Get the full data (using the specified store) */
+  function get(
+    IStore _store
+  ) internal view returns (int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = _store.getRecord(_tableId, _primaryKeys, getSchema());
     return decode(_blob);
   }
 
@@ -178,6 +301,15 @@ library Singleton {
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
 
+  /** Set the full data using individual values (using the specified store) */
+  function set(IStore _store, int256 v1, uint32[2] memory v2, uint32[2] memory v3, uint32[1] memory v4) internal {
+    bytes memory _data = encode(v1, v2, v3, v4);
+
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.setRecord(_tableId, _primaryKeys, _data);
+  }
+
   /** Decode the tightly packed blob using this table's schema */
   function decode(
     bytes memory _blob
@@ -187,20 +319,24 @@ library Singleton {
 
     v1 = (int256(uint256(Bytes.slice32(_blob, 0))));
 
-    uint256 _start;
-    uint256 _end = 64;
+    // Store trims the blob if dynamic fields are all empty
+    if (_blob.length > 32) {
+      uint256 _start;
+      // skip static data length + dynamic lengths word
+      uint256 _end = 64;
 
-    _start = _end;
-    _end += _encodedLengths.atIndex(0);
-    v2 = toStaticArray_uint32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+      _start = _end;
+      _end += _encodedLengths.atIndex(0);
+      v2 = toStaticArray_uint32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
 
-    _start = _end;
-    _end += _encodedLengths.atIndex(1);
-    v3 = toStaticArray_uint32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+      _start = _end;
+      _end += _encodedLengths.atIndex(1);
+      v3 = toStaticArray_uint32_2(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
 
-    _start = _end;
-    _end += _encodedLengths.atIndex(2);
-    v4 = toStaticArray_uint32_1(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+      _start = _end;
+      _end += _encodedLengths.atIndex(2);
+      v4 = toStaticArray_uint32_1(SliceLib.getSubslice(_blob, _start, _end).decodeArray_uint32());
+    }
   }
 
   /** Tightly pack full data using this table's schema */
@@ -231,6 +367,13 @@ library Singleton {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }
 

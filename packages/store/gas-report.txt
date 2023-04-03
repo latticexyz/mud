@@ -17,7 +17,7 @@
 (test/Mixed.t.sol) | store Mixed struct in storage (native solidity) [testMixed = mixed]: 92050
 (test/Mixed.t.sol) | register Mixed schema [Mixed.registerSchema()]: 61195
 (test/Mixed.t.sol) | set record in Mixed [Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })]: 112057
-(test/Mixed.t.sol) | get record from Mixed [MixedData memory mixed = Mixed.get(key)]: 13396
+(test/Mixed.t.sol) | get record from Mixed [MixedData memory mixed = Mixed.get(key)]: 13422
 (test/PackedCounter.t.sol) | get value at index of PackedCounter [packedCounter.atIndex(3)]: 261
 (test/PackedCounter.t.sol) | set value at index of PackedCounter [packedCounter = packedCounter.setAtIndex(2, 5)]: 799
 (test/PackedCounter.t.sol) | pack uint16 array into PackedCounter [PackedCounter packedCounter = PackedCounterLib.pack(counters)]: 2152
@@ -87,7 +87,7 @@
 (test/StoreCore.t.sol) | update in field (1 slot, 1 uint32 item) [StoreCore.updateInField(table, key, 1, 4 * 1, secondDataForUpdate)]: 16544
 (test/StoreCore.t.sol) | push to field (2 slots, 6 uint64 items) [StoreCore.updateInField(table, key, 2, 8 * 1, thirdDataForUpdate)]: 17646
 (test/StoreMetadata.t.sol) | set record in StoreMetadataTable [StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) })]: 250220
-(test/StoreMetadata.t.sol) | get record from StoreMetadataTable [StoreMetadataData memory metadata = StoreMetadata.get(tableId)]: 12132
+(test/StoreMetadata.t.sol) | get record from StoreMetadataTable [StoreMetadataData memory metadata = StoreMetadata.get(tableId)]: 12155
 (test/StoreSwitch.t.sol) | check if delegatecall [isDelegate = StoreSwitch.isDelegateCall()]: 671
 (test/StoreSwitch.t.sol) | check if delegatecall [isDelegate = StoreSwitch.isDelegateCall()]: 627
 (test/Vector2.t.sol) | register Vector2 schema [Vector2.registerSchema()]: 57971
