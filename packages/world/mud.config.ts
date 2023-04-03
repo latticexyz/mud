@@ -122,6 +122,11 @@ export default mudConfig({
     AddressArray: {
       directory: "../test/tables",
       schema: "address[]",
+    },
+    KeysWithTable: {
+      directory: "/modules/keyswithtable/tables",
+      primaryKeys: {},
+      schema: "bytes32[]", // For now only supports 1 key per value,
       tableIdArgument: true,
     },
   },
