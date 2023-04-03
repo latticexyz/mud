@@ -11,10 +11,10 @@ ${renderImports(imports)}
 interface ${name} {
   ${renderList(
     functions,
-    ({ name, parameters, returnParameters }) => `
-    function ${functionPrefix}${name}(${renderArguments(parameters)}) external ${renderReturnParameters(
-      returnParameters
-    )};
+    ({ name, parameters, stateMutability, returnParameters }) => `
+    function ${functionPrefix}${name}(
+      ${renderArguments(parameters)}
+    ) external ${stateMutability} ${renderReturnParameters(returnParameters)};
   `
   )}
 }

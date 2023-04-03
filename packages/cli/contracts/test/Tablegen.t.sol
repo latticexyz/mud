@@ -33,6 +33,11 @@ contract TablegenTest is Test, StoreView {
 
     bytes32 key = keccak256("key");
 
+    // using `get` before setting any data should return default empty values
+    DynamicsData memory emptyData;
+    assertEq(abi.encode(Dynamics.get(key)), abi.encode(emptyData));
+
+    // initialize values
     bool[5] memory staticBools = [true, false, true, true, false];
     uint64[] memory u64 = new uint64[](5);
     u64[0] = 0;
@@ -42,7 +47,7 @@ contract TablegenTest is Test, StoreView {
     u64[4] = type(uint64).max;
     string memory str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit,";
     bytes memory b = hex"ff";
-
+    // combine them into a struct
     DynamicsData memory data = DynamicsData(
       [keccak256("value")],
       [int32(-123), 123],
@@ -54,9 +59,11 @@ contract TablegenTest is Test, StoreView {
       b
     );
 
+    // test that the record is set correctly
     Dynamics.set(key, data);
     assertEq(abi.encode(Dynamics.get(key)), abi.encode(data));
 
+    // test setting single fields
     Dynamics.setStaticBools(key, staticBools);
     assertEq(abi.encode(Dynamics.getStaticBools(key)), abi.encode(staticBools));
 

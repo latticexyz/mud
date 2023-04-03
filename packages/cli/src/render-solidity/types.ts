@@ -95,6 +95,7 @@ export interface RenderSystemInterfaceOptions {
 export interface RenderSystemInterfaceFunction {
   name: string;
   parameters: string[];
+  stateMutability: string;
   returnParameters: string[];
 }
 

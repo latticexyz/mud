@@ -24,7 +24,7 @@ export function contractToInterface(data: string, contractName: string) {
       }
     },
     FunctionDefinition(
-      { name, visibility, parameters, returnParameters, isConstructor, isFallback, isReceiveEther },
+      { name, visibility, parameters, stateMutability, returnParameters, isConstructor, isFallback, isReceiveEther },
       parent
     ) {
       if (parent !== undefined && parent.type === "ContractDefinition" && parent.name === contractName) {
@@ -38,6 +38,7 @@ export function contractToInterface(data: string, contractName: string) {
             functions.push({
               name: name === null ? "" : name,
               parameters: parameters.map(parseParameter),
+              stateMutability: stateMutability || "",
               returnParameters: returnParameters === null ? [] : returnParameters.map(parseParameter),
             });
 

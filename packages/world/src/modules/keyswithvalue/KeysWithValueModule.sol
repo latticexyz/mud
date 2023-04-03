@@ -9,9 +9,10 @@ import { IModule } from "../../interfaces/IModule.sol";
 import { WorldContext } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
+import { MODULE_NAMESPACE } from "./constants.sol";
 import { KeysWithValueHook } from "./KeysWithValueHook.sol";
 import { KeysWithValue } from "./tables/KeysWithValue.sol";
-import { getTargetTableSelector } from "./getTargetTableSelector.sol";
+import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
@@ -38,7 +39,7 @@ contract KeysWithValueModule is IModule, WorldContext {
   function install(bytes memory args) public override {
     // Extract source table id from args
     uint256 sourceTableId = abi.decode(args, (uint256));
-    bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);
+    bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Register the target table
     IBaseWorld(_world()).registerTable(
