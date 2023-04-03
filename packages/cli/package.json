@@ -63,6 +63,7 @@
     "path": "^0.12.7",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
+    "solmate": "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
     "table": "^6.8.1",
     "ts-node": "^10.9.1",
     "typechain": "^8.1.1",

@@ -1,3 +1,7 @@
 ds-test/=../../node_modules/ds-test/src/
 forge-std/=../../node_modules/forge-std/src/
+solmate/=../../node_modules/@rari-capital/solmate/src
+std-contracts/=../../node_modules/@latticexyz/std-contracts/src/
+solecs/=../../node_modules/@latticexyz/solecs/src/
+@solidstate/=../../node_modules/@solidstate/
 @latticexyz/=../../node_modules/@latticexyz/
