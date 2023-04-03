@@ -7,8 +7,7 @@
   "type": "module",
   "license": "MIT",
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
-    "git:install": "bash git-install.sh",
+    "prepare": "yarn build",
     "test:forge": "forge test",
     "test:hardhat": "NODE_OPTIONS='--loader ts-node/esm --experimental-specifier-resolution=node' yarn hardhat test",
     "// Hardhat skipped in GH action until hardhat officially supports TS/ESM": "https://github.com/NomicFoundation/hardhat/pull/3156",
