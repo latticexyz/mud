@@ -62,7 +62,7 @@
     }
   },
   "scripts": {
-    "prepare": "husky install && (forge --version || foundryup) && pnpm recursive run prepare",
+    "prepare": "husky install && (forge --version || foundryup) && pnpm --sequential recursive run prepare",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
