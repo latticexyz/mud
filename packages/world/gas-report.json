@@ -1,5 +1,11 @@
 [
   {
+    "source": "test/KeysWithTableModule.t.sol",
+    "name": "compute the target table selector",
+    "functionCall": "bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId)",
+    "gasUsed": 2240
+  },
+  {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
