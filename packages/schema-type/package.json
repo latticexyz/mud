@@ -12,8 +12,7 @@
     "directory": "packages/schema-type"
   },
   "scripts": {
-    "prepare": "pnpm build && chmod u+x git-install.sh",
-    "git:install": "bash git-install.sh",
+    "prepare": "pnpm build",
     "test": "pnpm test:solidity && pnpm test:typescript",
     "test:solidity": "forge test",
     "test:typescript": "tsc --noEmit",

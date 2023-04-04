@@ -6,16 +6,16 @@ export const metadataTableId = new TableId("mudstore", "StoreMetadata");
 
 export const storeEvents = ["StoreSetRecord", "StoreSetField", "StoreDeleteRecord"] as const;
 
-export type TableSchema = {
+export type TableSchema = Readonly<{
   staticDataLength: number;
   staticFields: SchemaType[];
   dynamicFields: SchemaType[];
   rawSchema: string;
   abi: string;
   isEmpty: boolean;
-};
+}>;
 
-export type TableMetadata = {
+export type TableMetadata = Readonly<{
   tableName: string;
   fieldNames: string[];
-};
+}>;

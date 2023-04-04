@@ -7,9 +7,10 @@ import { Storage } from "./Storage.sol";
 import { Memory } from "./Memory.sol";
 import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
-import { Slice } from "./Slice.sol";
+import { Slice, SliceLib } from "./Slice.sol";
 import { Hooks, HooksTableId } from "./tables/Hooks.sol";
 import { StoreMetadata } from "./tables/StoreMetadata.sol";
+import { IErrors } from "./IErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { Utils } from "./Utils.sol";
 import { TableId } from "./TableId.sol";
@@ -21,15 +22,6 @@ library StoreCore {
   event StoreSetRecord(uint256 tableId, bytes32[] key, bytes data);
   event StoreSetField(uint256 tableId, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(uint256 tableId, bytes32[] key);
-
-  // Errors include a stringified version of the tableId for easier debugging if cleartext tableIds are used
-  error StoreCore_TableAlreadyExists(uint256 tableId, string tableIdString);
-  error StoreCore_TableNotFound(uint256 tableId, string tableIdString);
-
-  error StoreCore_NotImplemented();
-  error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
-  error StoreCore_InvalidFieldNamesLength(uint256 expected, uint256 received);
-  error StoreCore_NotDynamicField();
 
   /**
    * Initialize internal tables.
@@ -55,6 +47,12 @@ library StoreCore {
     StoreMetadata.registerSchema();
     Hooks.setMetadata();
     StoreMetadata.setMetadata();
+
+    // Set metadata for the schema table
+    string[] memory fieldNames = new string[](2);
+    fieldNames[0] = "valueSchema";
+    fieldNames[1] = "keySchema";
+    StoreMetadata.set(StoreCoreInternal.SCHEMA_TABLE, "schema", abi.encode(fieldNames));
   }
 
   /************************************************************************
@@ -69,7 +67,7 @@ library StoreCore {
   function getSchema(uint256 tableId) internal view returns (Schema schema) {
     schema = StoreCoreInternal._getSchema(tableId);
     if (schema.isEmpty()) {
-      revert StoreCore_TableNotFound(tableId, tableId.toString());
+      revert IErrors.StoreCore_TableNotFound(tableId, tableId.toString());
     }
   }
 
@@ -79,7 +77,7 @@ library StoreCore {
   function getKeySchema(uint256 tableId) internal view returns (Schema keySchema) {
     keySchema = StoreCoreInternal._getKeySchema(tableId);
     if (keySchema.isEmpty()) {
-      revert StoreCore_TableNotFound(tableId, tableId.toString());
+      revert IErrors.StoreCore_TableNotFound(tableId, tableId.toString());
     }
   }
 
@@ -100,7 +98,7 @@ library StoreCore {
 
     // Verify the schema doesn't exist yet
     if (hasTable(tableId)) {
-      revert StoreCore_TableAlreadyExists(tableId, tableId.toString());
+      revert IErrors.StoreCore_TableAlreadyExists(tableId, tableId.toString());
     }
 
     // Register the schema
@@ -115,7 +113,7 @@ library StoreCore {
 
     // Verify the number of field names corresponds to the schema length
     if (!(fieldNames.length == 0 || fieldNames.length == schema.numFields())) {
-      revert StoreCore_InvalidFieldNamesLength(schema.numFields(), fieldNames.length);
+      revert IErrors.StoreCore_InvalidFieldNamesLength(schema.numFields(), fieldNames.length);
     }
 
     // Set metadata
@@ -160,7 +158,7 @@ library StoreCore {
     }
 
     if (expectedLength != data.length) {
-      revert StoreCore_InvalidDataLength(expectedLength, data.length);
+      revert IErrors.StoreCore_InvalidDataLength(expectedLength, data.length);
     }
 
     // Emit event to notify indexers
@@ -266,7 +264,7 @@ library StoreCore {
     Schema schema = getSchema(tableId);
 
     if (schemaIndex < schema.numStaticFields()) {
-      revert StoreCore_NotDynamicField();
+      revert IErrors.StoreCore_NotDynamicField();
     }
 
     // TODO add push-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
@@ -286,6 +284,54 @@ library StoreCore {
     }
 
     StoreCoreInternal._pushToDynamicField(tableId, key, schema, schemaIndex, dataToPush);
+
+    // Call onAfterSetField hooks (after modifying the state)
+    for (uint256 i; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.onAfterSetField(tableId, key, schemaIndex, fullData);
+    }
+  }
+
+  function updateInField(
+    uint256 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    uint256 startByteIndex,
+    bytes memory dataToSet
+  ) internal {
+    Schema schema = getSchema(tableId);
+
+    if (schemaIndex < schema.numStaticFields()) {
+      revert IErrors.StoreCore_NotDynamicField();
+    }
+    // index must be checked because it could be arbitrarily large
+    // (but dataToSet.length can be unchecked - it won't overflow into another slot due to gas costs and hashed slots)
+    if (startByteIndex > type(uint16).max) {
+      revert IErrors.StoreCore_DataIndexOverflow(type(uint16).max, startByteIndex);
+    }
+
+    // TODO add setItem-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
+    bytes memory fullData;
+    {
+      bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, schema);
+      fullData = abi.encodePacked(
+        SliceLib.getSubslice(oldData, 0, startByteIndex).toBytes(),
+        dataToSet,
+        SliceLib.getSubslice(oldData, startByteIndex + dataToSet.length, oldData.length).toBytes()
+      );
+    }
+
+    // Emit event to notify indexers
+    emit StoreSetField(tableId, key, schemaIndex, fullData);
+
+    // Call onBeforeSetField hooks (before modifying the state)
+    address[] memory hooks = Hooks.get(bytes32(tableId));
+    for (uint256 i; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
+    }
+
+    StoreCoreInternal._setDynamicFieldItem(tableId, key, schema, schemaIndex, startByteIndex, dataToSet);
 
     // Call onAfterSetField hooks (after modifying the state)
     for (uint256 i; i < hooks.length; i++) {
@@ -436,7 +482,7 @@ library StoreCoreInternal {
     // verify the value has the correct length for the field
     SchemaType schemaType = schema.atIndex(schemaIndex);
     if (schemaType.getStaticByteLength() != data.length) {
-      revert StoreCore.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
+      revert IErrors.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
     }
 
     // Store the provided value in storage
@@ -483,11 +529,22 @@ library StoreCoreInternal {
     Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
 
     // Append `dataToPush` to the end of the data in storage
-    uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
-    dynamicDataLocation += oldFieldLength / 32;
-    // offset for new data (old data never has an offset because each dynamic field starts at a different storage slot)
-    uint256 offset = oldFieldLength % 32;
-    Storage.store({ storagePointer: dynamicDataLocation, offset: offset, data: dataToPush });
+    _setPartialDynamicData(tableId, key, dynamicSchemaIndex, oldFieldLength, dataToPush);
+  }
+
+  // startOffset is measured in bytes
+  function _setDynamicFieldItem(
+    uint256 tableId,
+    bytes32[] memory key,
+    Schema schema,
+    uint8 schemaIndex,
+    uint256 startByteIndex,
+    bytes memory dataToSet
+  ) internal {
+    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
+
+    // Set `dataToSet` at the given index
+    _setPartialDynamicData(tableId, key, dynamicSchemaIndex, startByteIndex, dataToSet);
   }
 
   /************************************************************************
@@ -629,6 +686,24 @@ library StoreCoreInternal {
 
     // Set the new lengths
     Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
+  }
+
+  /**
+   * Modify a part of the dynamic field's data (without changing the field's length)
+   */
+  function _setPartialDynamicData(
+    uint256 tableId,
+    bytes32[] memory key,
+    uint8 dynamicSchemaIndex,
+    uint256 startByteIndex,
+    bytes memory partialData
+  ) internal {
+    uint256 dynamicDataLocation = _getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
+    // start index is in bytes, whereas storage slots are in 32-byte words
+    dynamicDataLocation += startByteIndex / 32;
+    // partial storage slot offset (there is no inherent offset, as each dynamic field starts at its own storage slot)
+    uint256 offset = startByteIndex % 32;
+    Storage.store({ storagePointer: dynamicDataLocation, offset: offset, data: partialData });
   }
 }
 

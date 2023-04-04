@@ -1,6 +1,6 @@
 import { uuid } from "@latticexyz/utils";
 import { mapObject } from "@latticexyz/utils";
-import { filter, Subject } from "rxjs";
+import { filter, map, Subject } from "rxjs";
 import { OptionalTypes } from "./constants";
 import { createIndexer } from "./Indexer";
 import {
@@ -86,13 +86,15 @@ export function setComponent<S extends Schema, T = undefined>(
         // Otherwise, we should let the user know we found undefined data.
         console.warn(
           "Component definition for",
-          component.metadata?.contractId ?? component.id,
+          component.metadata?.tableId ?? component.metadata?.contractId ?? component.id,
           "is missing key",
           key,
           ", ignoring value",
           val,
           "for entity",
-          entity
+          entity,
+          ". Existing keys: ",
+          Object.keys(component.values)
         );
       }
     }
@@ -119,10 +121,18 @@ export function setComponent<S extends Schema, T = undefined>(
 export function updateComponent<S extends Schema, T = undefined>(
   component: Component<S, Metadata, T>,
   entity: EntityIndex,
-  value: Partial<ComponentValue<S, T>>
+  value: Partial<ComponentValue<S, T>>,
+  initialValue?: ComponentValue<S, T>
 ) {
-  const currentValue = getComponentValueStrict(component, entity);
-  setComponent(component, entity, { ...currentValue, ...value });
+  const currentValue = getComponentValue(component, entity);
+  if (currentValue === undefined) {
+    if (initialValue === undefined) {
+      throw new Error("Can't update component without a current value or initial value");
+    }
+    setComponent(component, entity, { ...initialValue, ...value });
+  } else {
+    setComponent(component, entity, { ...currentValue, ...value });
+  }
 }
 
 /**
@@ -317,9 +327,6 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
     component: Component<S, Metadata, T>;
   }>();
 
-  // Channel through update events from the original component if there are no overrides
-  component.update$.pipe(filter((e) => !overriddenEntityValues.get(e.entity))).subscribe(update$);
-
   // Add a new override to some entity
   function addOverride(id: string, update: Override<S, T>) {
     overrides.set(id, { update, nonce: nonce++ });
@@ -413,6 +420,14 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
     else overriddenEntityValues.delete(entity);
     update$.next({ entity, value: [getOverriddenComponentValue(entity), prevValue], component: overriddenComponent });
   }
+
+  // Channel through update events from the original component if there are no overrides
+  component.update$
+    .pipe(
+      filter((e) => !overriddenEntityValues.get(e.entity)),
+      map((update) => ({ ...update, component: overriddenComponent }))
+    )
+    .subscribe(update$);
 
   return overriddenComponent;
 }

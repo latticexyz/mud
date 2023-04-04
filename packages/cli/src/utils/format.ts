@@ -31,3 +31,9 @@ export async function formatSolidity(content: string, prettierConfigPath?: strin
     return content;
   }
 }
+
+export async function formatTypescript(content: string) {
+  return prettier.format(content, {
+    parser: "typescript",
+  });
+}

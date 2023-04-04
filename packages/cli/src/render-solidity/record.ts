@@ -99,16 +99,20 @@ function renderDecodeFunction({ structName, fields, staticFields, dynamicFields 
         ${fieldNamePrefix}${field.name} = ${renderDecodeValueType(field, staticOffsets[index])};
         `
       )}
-      uint256 _start;
-      uint256 _end = ${totalStaticLength + 32};
-      ${renderList(
-        dynamicFields,
-        (field, index) => `
-        _start = _end;
-        _end += _encodedLengths.atIndex(${index});
-        ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
-        `
-      )}
+      // Store trims the blob if dynamic fields are all empty
+      if (_blob.length > ${totalStaticLength}) {
+        uint256 _start;
+        // skip static data length + dynamic lengths word
+        uint256 _end = ${totalStaticLength + 32};
+        ${renderList(
+          dynamicFields,
+          (field, index) => `
+          _start = _end;
+          _end += _encodedLengths.atIndex(${index});
+          ${fieldNamePrefix}${field.name} = ${renderDecodeDynamicFieldPartial(field)};
+          `
+        )}
+      }
     }
   `;
   } else {
@@ -137,12 +141,18 @@ function renderDecodedRecord({ structName, fields }: RenderTableOptions) {
 }
 
 function renderDecodeDynamicFieldPartial(field: RenderTableDynamicField) {
-  const { typeId, arrayElement } = field;
+  const { typeId, arrayElement, typeWrap } = field;
   if (arrayElement) {
     // arrays
-    return `SliceLib.getSubslice(_blob, _start, _end).decodeArray_${arrayElement.typeId}()`;
+    return `${typeWrap}(
+      SliceLib.getSubslice(_blob, _start, _end).decodeArray_${arrayElement.typeId}()
+    )`;
   } else {
     // bytes/string
-    return `${typeId}(SliceLib.getSubslice(_blob, _start, _end).toBytes())`;
+    return `${typeWrap}(
+      ${typeId}(
+        SliceLib.getSubslice(_blob, _start, _end).toBytes()
+      )
+    )`;
   }
 }

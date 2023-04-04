@@ -3,15 +3,16 @@ pragma solidity >=0.8.0;
 
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
+import { IErrors } from "./IErrors.sol";
 import { ISystemHook } from "./ISystemHook.sol";
 import { IModule } from "./IModule.sol";
 
 /**
  * The IWorldCore interfaces includes all World methods with a static function selector.
- * Consumers should use the `IWorld` interface instead, which includes
+ * Consumers should use the `IBaseWorld` interface instead, which includes
  * dynamically registered function selectors (e.g. IRegistrationSystem)
  */
-interface IWorldCore {
+interface IWorldCore is IErrors {
   /**
    * Install the given module at the given namespace in the World.
    */
@@ -84,6 +85,19 @@ interface IWorldCore {
   ) external;
 
   /**
+   * Update data at `startByteIndex` of a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function updateInField(
+    bytes16 namespace,
+    bytes16 file,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 startByteIndex,
+    bytes calldata dataToSet
+  ) external;
+
+  /**
    * Delete a record in the table at the given namespace and file.
    * Requires the caller to have access to the namespace or file.
    */
@@ -99,5 +113,9 @@ interface IWorldCore {
    * Call the system at the given namespace and file.
    * If the system is not public, the caller must have access to the namespace or file.
    */
-  function call(bytes16 namespace, bytes16 file, bytes memory funcSelectorAndArgs) external returns (bytes memory);
+  function call(
+    bytes16 namespace,
+    bytes16 file,
+    bytes memory funcSelectorAndArgs
+  ) external payable returns (bytes memory);
 }

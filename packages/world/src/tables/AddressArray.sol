@@ -11,6 +11,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -111,8 +112,24 @@ library AddressArray {
     _store.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
+  /** Update an element of value at `_index` */
+  function update(uint256 _tableId, bytes32 key, uint256 _index, address _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 0, _index * 20, abi.encodePacked((_element)));
+  }
+
+  /** Update an element of value (using the specified store) at `_index` */
+  function update(IStore _store, uint256 _tableId, bytes32 key, uint256 _index, address _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.updateInField(_tableId, _primaryKeys, 0, _index * 20, abi.encodePacked((_element)));
+  }
+
   /** Tightly pack full data using this table's schema */
-  function encode(address[] memory value) internal pure returns (bytes memory) {
+  function encode(address[] memory value) internal view returns (bytes memory) {
     uint16[] memory _counters = new uint16[](1);
     _counters[0] = uint16(value.length * 20);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);

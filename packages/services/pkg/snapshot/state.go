@@ -64,7 +64,7 @@ func getInitialState(worldAddress string) (ECSState, uint64) {
 	}
 
 	stateSnapshot := decodeSnapshot(readStateLatest(worldAddress))
-	return snapshotToState(stateSnapshot), uint64(stateSnapshot.EndBlockNumber)
+	return SnapshotToState(stateSnapshot), uint64(stateSnapshot.EndBlockNumber)
 }
 
 func createStateValue(state ECSState, componentId string) ECSState {

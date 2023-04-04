@@ -1,8 +1,9 @@
-#!/usr/bin/env -S TS_NODE_COMPILER_OPTIONS={\"module\":\"esnext\"} node --loader=ts-node/esm --no-warnings
+#!/usr/bin/env node
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { commands } from "./commands/index.js";
+import { commands as v2 } from "./commands/index.js";
+import { commands as v1 } from "./commands/deprecated/index.js";
 import { logError } from "./utils/errors.js";
 
 // Load .env file into process.env
@@ -14,7 +15,7 @@ yargs(hideBin(process.argv))
   .scriptName("mud")
   // Use the commands directory to scaffold
   // eslint-disable-next-line @typescript-eslint/no-explicit-any -- command array overload isn't typed, see https://github.com/yargs/yargs/blob/main/docs/advanced.md#esm-hierarchy
-  .command(commands as any)
+  .command([...v1, ...v2] as any)
   // Enable strict mode.
   .strict()
   // Custom error handler

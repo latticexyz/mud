@@ -1,15 +1,16 @@
 import { z } from "zod";
-import { EthereumAddress, ObjectName, Selector } from "../commonSchemas.js";
+import { zEthereumAddress, zObjectName, zSelector } from "../commonSchemas.js";
 import { DynamicResolutionType } from "../dynamicResolution.js";
 
-const SystemName = ObjectName;
-const ModuleName = ObjectName;
-const SystemAccessList = z.array(SystemName.or(EthereumAddress)).default([]);
+const zSystemName = zObjectName;
+const zModuleName = zObjectName;
+const zSystemAccessList = z.array(zSystemName.or(zEthereumAddress)).default([]);
 
 // The system config is a combination of a fileSelector config and access config
-const SystemConfig = z.intersection(
+const zSystemConfig = z.intersection(
   z.object({
-    fileSelector: Selector,
+    fileSelector: zSelector,
+    registerFunctionSelectors: z.boolean().default(true),
   }),
   z.discriminatedUnion("openAccess", [
     z.object({
@@ -17,38 +18,39 @@ const SystemConfig = z.intersection(
     }),
     z.object({
       openAccess: z.literal(false),
-      accessList: SystemAccessList,
+      accessList: zSystemAccessList,
     }),
   ])
 );
 
-const ValueWithType = z.object({
+const zValueWithType = z.object({
   value: z.union([z.string(), z.number(), z.instanceof(Uint8Array)]),
   type: z.string(),
 });
-const DynamicResolution = z.object({ type: z.nativeEnum(DynamicResolutionType), input: z.string() });
+const zDynamicResolution = z.object({ type: z.nativeEnum(DynamicResolutionType), input: z.string() });
 
-const ModuleConfig = z.object({
-  name: ModuleName,
+const zModuleConfig = z.object({
+  name: zModuleName,
   root: z.boolean().default(false),
-  args: z.array(z.union([ValueWithType, DynamicResolution])).default([]),
+  args: z.array(z.union([zValueWithType, zDynamicResolution])).default([]),
 });
 
 // The parsed world config is the result of parsing the user config
-export const WorldConfig = z.object({
-  namespace: Selector.default(""),
+export const zWorldConfig = z.object({
+  namespace: zSelector.default(""),
   worldContractName: z.string().optional(),
-  overrideSystems: z.record(SystemName, SystemConfig).default({}),
-  excludeSystems: z.array(SystemName).default([]),
+  worldInterfaceName: z.string().default("IWorld"),
+  overrideSystems: z.record(zSystemName, zSystemConfig).default({}),
+  excludeSystems: z.array(zSystemName).default([]),
   postDeployScript: z.string().default("PostDeploy"),
-  deploymentInfoDirectory: z.string().default("."),
+  deploysDirectory: z.string().default("./deploys"),
   worldgenDirectory: z.string().default("world"),
   worldImportPath: z.string().default("@latticexyz/world/src/"),
-  modules: z.array(ModuleConfig).default([]),
+  modules: z.array(zModuleConfig).default([]),
 });
 
 export async function parseWorldConfig(config: unknown) {
-  return WorldConfig.parse(config);
+  return zWorldConfig.parse(config);
 }
 
-export type ParsedWorldConfig = z.output<typeof WorldConfig>;
+export type ParsedWorldConfig = z.output<typeof zWorldConfig>;

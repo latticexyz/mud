@@ -11,6 +11,7 @@ import { IStore } from "../IStore.sol";
 import { StoreSwitch } from "../StoreSwitch.sol";
 import { StoreCore } from "../StoreCore.sol";
 import { Bytes } from "../Bytes.sol";
+import { Memory } from "../Memory.sol";
 import { SliceLib } from "../Slice.sol";
 import { EncodeArray } from "../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../Schema.sol";
@@ -121,6 +122,22 @@ library StoreMetadata {
     _store.pushToField(_tableId, _primaryKeys, 0, bytes((_slice)));
   }
 
+  /** Update a slice of tableName at `_index` */
+  function updateTableName(uint256 tableId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32(uint256((tableId)));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 0, _index * 1, bytes((_slice)));
+  }
+
+  /** Update a slice of tableName (using the specified store) at `_index` */
+  function updateTableName(IStore _store, uint256 tableId, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32(uint256((tableId)));
+
+    _store.updateInField(_tableId, _primaryKeys, 0, _index * 1, bytes((_slice)));
+  }
+
   /** Get abiEncodedFieldNames */
   function getAbiEncodedFieldNames(uint256 tableId) internal view returns (bytes memory abiEncodedFieldNames) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -172,6 +189,22 @@ library StoreMetadata {
     _primaryKeys[0] = bytes32(uint256((tableId)));
 
     _store.pushToField(_tableId, _primaryKeys, 1, bytes((_slice)));
+  }
+
+  /** Update a slice of abiEncodedFieldNames at `_index` */
+  function updateAbiEncodedFieldNames(uint256 tableId, uint256 _index, bytes memory _slice) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32(uint256((tableId)));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 1, _index * 1, bytes((_slice)));
+  }
+
+  /** Update a slice of abiEncodedFieldNames (using the specified store) at `_index` */
+  function updateAbiEncodedFieldNames(IStore _store, uint256 tableId, uint256 _index, bytes memory _slice) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32(uint256((tableId)));
+
+    _store.updateInField(_tableId, _primaryKeys, 1, _index * 1, bytes((_slice)));
   }
 
   /** Get the full data */
@@ -227,20 +260,24 @@ library StoreMetadata {
     // 0 is the total byte length of static data
     PackedCounter _encodedLengths = PackedCounter.wrap(Bytes.slice32(_blob, 0));
 
-    uint256 _start;
-    uint256 _end = 32;
+    // Store trims the blob if dynamic fields are all empty
+    if (_blob.length > 0) {
+      uint256 _start;
+      // skip static data length + dynamic lengths word
+      uint256 _end = 32;
 
-    _start = _end;
-    _end += _encodedLengths.atIndex(0);
-    _table.tableName = string(SliceLib.getSubslice(_blob, _start, _end).toBytes());
+      _start = _end;
+      _end += _encodedLengths.atIndex(0);
+      _table.tableName = (string(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
 
-    _start = _end;
-    _end += _encodedLengths.atIndex(1);
-    _table.abiEncodedFieldNames = bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes());
+      _start = _end;
+      _end += _encodedLengths.atIndex(1);
+      _table.abiEncodedFieldNames = (bytes(SliceLib.getSubslice(_blob, _start, _end).toBytes()));
+    }
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(string memory tableName, bytes memory abiEncodedFieldNames) internal pure returns (bytes memory) {
+  function encode(string memory tableName, bytes memory abiEncodedFieldNames) internal view returns (bytes memory) {
     uint16[] memory _counters = new uint16[](2);
     _counters[0] = uint16(bytes(tableName).length);
     _counters[1] = uint16(bytes(abiEncodedFieldNames).length);

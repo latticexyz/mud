@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { IErrors } from "./IErrors.sol";
 import { Schema } from "./Schema.sol";
 
-interface IStore {
+interface IStore is IErrors {
   event StoreSetRecord(uint256 table, bytes32[] key, bytes data);
   event StoreSetField(uint256 table, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(uint256 table, bytes32[] key);
@@ -27,6 +28,15 @@ interface IStore {
 
   // Push encoded items to the dynamic field at schema index
   function pushToField(uint256 table, bytes32[] calldata key, uint8 schemaIndex, bytes calldata dataToPush) external;
+
+  // Change encoded items within the dynamic field at schema index
+  function updateInField(
+    uint256 table,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 startByteIndex,
+    bytes calldata dataToSet
+  ) external;
 
   // Set full record (including full dynamic data)
   function deleteRecord(uint256 table, bytes32[] memory key) external;

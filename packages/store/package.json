@@ -4,18 +4,21 @@
   "version": "1.41.0",
   "description": "Store",
   "types": "./types/ethers-contracts/",
+  "exports": {
+    "./mud.config.mjs": "./dist/mud.config.mjs",
+    "./*": "./*"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/store"
   },
   "scripts": {
-    "prepare": "pnpm build && chmod u+x git-install.sh",
-    "git:install": "bash git-install.sh",
+    "prepare": "pnpm build",
     "codegen": "ts-node ./scripts/codegen.ts",
     "tablegen": "../cli/dist/mud.js tablegen",
     "test": "pnpm codegen && forge test",
-    "build": "pnpm codegen && rimraf out && forge build && pnpm dist && pnpm types",
+    "build": "pnpm codegen && rimraf out && forge build && pnpm dist && pnpm types && tsup",
     "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && pnpm rimraf abi/*.metadata.json",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
     "prettier": "prettier --write 'src/**/*.sol'",
@@ -42,6 +45,7 @@
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
     "ts-node": "^10.9.1",
+    "tsup": "^6.7.0",
     "typechain": "^8.1.1",
     "typedoc": "^0.23.10"
   },

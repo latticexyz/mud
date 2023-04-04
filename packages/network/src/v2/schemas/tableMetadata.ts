@@ -1,4 +1,4 @@
-import { arrayToHex, TableId } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/utils";
 import { Contract, utils } from "ethers";
 import { metadataTableId, schemaTableId, TableMetadata } from "../common";
 import { decodeData } from "./decodeData";
@@ -68,6 +68,13 @@ export function registerMetadata(
     }
     const decoded = decodeData(metadataSchema, metadataRecord);
     const tableName = decoded[0];
+    if (tableName !== table.name) {
+      console.warn("Metadata table name does not match table ID", {
+        tableName,
+        tableId: table.toString(),
+        world: world.address,
+      });
+    }
     const [fieldNames] = utils.defaultAbiCoder.decode(["string[]"], decoded[1]);
     return { tableName, fieldNames };
   });

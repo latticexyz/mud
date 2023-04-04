@@ -7,20 +7,21 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 import { World } from "../src/World.sol";
-import { IWorld } from "../src/interfaces/IWorld.sol";
+import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { KeysWithValueModule, MODULE_NAMESPACE } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
+import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
+import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
-import { getTargetTableSelector } from "../src/modules/keyswithvalue/getTargetTableSelector.sol";
+import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelector.sol";
 
 contract KeysWithValueModuleTest is Test {
   using ResourceSelector for bytes32;
-  IWorld world;
+  IBaseWorld world;
   KeysWithValueModule keysWithValueModule = new KeysWithValueModule(); // Modules can be deployed once and installed multiple times
 
   bytes16 namespace = ROOT_NAMESPACE;
@@ -38,7 +39,7 @@ contract KeysWithValueModuleTest is Test {
   function setUp() public {
     sourceTableSchema = SchemaLib.encode(SchemaType.UINT256);
     sourceTableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
-    world = IWorld(address(new World()));
+    world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     world.installRootModule(new RegistrationModule(), new bytes(0));
     keyTuple1 = new bytes32[](1);
@@ -46,7 +47,7 @@ contract KeysWithValueModuleTest is Test {
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
     sourceTableId = ResourceSelector.from(namespace, sourceFile).toTableId();
-    targetTableId = getTargetTableSelector(sourceTableId).toTableId();
+    targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
   }
 
   function _installKeysWithValueModule() internal {
@@ -171,7 +172,7 @@ contract KeysWithValueModuleTest is Test {
 
   function testGetTargetTableSelector() public {
     // !gasreport compute the target table selector
-    bytes32 targetTableSelector = getTargetTableSelector(sourceTableId);
+    bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // The first 8 bytes are the module namespace
     assertEq(bytes8(targetTableSelector), MODULE_NAMESPACE);

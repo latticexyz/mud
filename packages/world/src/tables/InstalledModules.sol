@@ -11,6 +11,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -52,10 +53,21 @@ library InstalledModules {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
+  /** Set the table's metadata (using the specified store) */
+  function setMetadata(IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get moduleAddress */
@@ -68,6 +80,20 @@ library InstalledModules {
     return (address(Bytes.slice20(_blob, 0)));
   }
 
+  /** Get moduleAddress (using the specified store) */
+  function getModuleAddress(
+    IStore _store,
+    bytes16 moduleName,
+    bytes32 argumentsHash
+  ) internal view returns (address moduleAddress) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((argumentsHash));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    return (address(Bytes.slice20(_blob, 0)));
+  }
+
   /** Set moduleAddress */
   function setModuleAddress(bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
@@ -77,6 +103,15 @@ library InstalledModules {
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((moduleAddress)));
   }
 
+  /** Set moduleAddress (using the specified store) */
+  function setModuleAddress(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((argumentsHash));
+
+    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((moduleAddress)));
+  }
+
   /** Get the full data */
   function get(bytes16 moduleName, bytes32 argumentsHash) internal view returns (InstalledModulesData memory _table) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
@@ -84,6 +119,20 @@ library InstalledModules {
     _primaryKeys[1] = bytes32((argumentsHash));
 
     bytes memory _blob = StoreSwitch.getRecord(_tableId, _primaryKeys, getSchema());
+    return decode(_blob);
+  }
+
+  /** Get the full data (using the specified store) */
+  function get(
+    IStore _store,
+    bytes16 moduleName,
+    bytes32 argumentsHash
+  ) internal view returns (InstalledModulesData memory _table) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((argumentsHash));
+
+    bytes memory _blob = _store.getRecord(_tableId, _primaryKeys, getSchema());
     return decode(_blob);
   }
 
@@ -98,9 +147,25 @@ library InstalledModules {
     StoreSwitch.setRecord(_tableId, _primaryKeys, _data);
   }
 
+  /** Set the full data using individual values (using the specified store) */
+  function set(IStore _store, bytes16 moduleName, bytes32 argumentsHash, address moduleAddress) internal {
+    bytes memory _data = encode(moduleAddress);
+
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((argumentsHash));
+
+    _store.setRecord(_tableId, _primaryKeys, _data);
+  }
+
   /** Set the full data using the data struct */
   function set(bytes16 moduleName, bytes32 argumentsHash, InstalledModulesData memory _table) internal {
     set(moduleName, argumentsHash, _table.moduleAddress);
+  }
+
+  /** Set the full data using the data struct (using the specified store) */
+  function set(IStore _store, bytes16 moduleName, bytes32 argumentsHash, InstalledModulesData memory _table) internal {
+    set(_store, moduleName, argumentsHash, _table.moduleAddress);
   }
 
   /** Decode the tightly packed blob using this table's schema */
@@ -109,7 +174,7 @@ library InstalledModules {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(address moduleAddress) internal pure returns (bytes memory) {
+  function encode(address moduleAddress) internal view returns (bytes memory) {
     return abi.encodePacked(moduleAddress);
   }
 
@@ -120,5 +185,14 @@ library InstalledModules {
     _primaryKeys[1] = bytes32((argumentsHash));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, bytes16 moduleName, bytes32 argumentsHash) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((argumentsHash));
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }

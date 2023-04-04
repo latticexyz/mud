@@ -7,7 +7,8 @@
   "type": "module",
   "license": "MIT",
   "bin": {
-    "mud": "./dist/mud.js"
+    "mud": "./dist/mud.js",
+    "mud2": "./dist/mud2.js"
   },
   "repository": {
     "type": "git",
@@ -15,7 +16,7 @@
     "directory": "packages/cli"
   },
   "scripts": {
-    "prepare": "pnpm build && chmod u+x git-install.sh",
+    "prepare": "pnpm build",
     "codegen": "ts-node --esm --files ./scripts/codegen.ts",
     "lint": "eslint . --ext .ts",
     "dev": "tsup --watch",
@@ -23,7 +24,6 @@
     "link": "pnpm link",
     "test": "vitest typecheck --run && pnpm test:contracts",
     "test:contracts": "pnpm codegen && forge test",
-    "git:install": "bash git-install.sh",
     "release": "npm publish --access=public"
   },
   "devDependencies": {
@@ -35,7 +35,7 @@
     "@types/yargs": "^17.0.10",
     "esbuild": "^0.15.16",
     "tsup": "^6.6.3",
-    "vitest": "^0.29.1"
+    "vitest": "^0.29.8"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
@@ -51,6 +51,7 @@
     "dotenv": "^16.0.3",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ejs": "^3.1.8",
+    "esbuild": "^0.17.14",
     "ethers": "^5.7.2",
     "execa": "^7.0.0",
     "find-up": "^6.3.0",
@@ -61,7 +62,6 @@
     "path": "^0.12.7",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
-    "solmate": "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
     "table": "^6.8.1",
     "ts-node": "^10.9.1",
     "typechain": "^8.1.1",

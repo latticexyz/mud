@@ -13,6 +13,9 @@ export function messagePayload(msg: Message) {
 // For composite-key v2 entities (hex strings concatenated with `:`), leave the ID as is
 // See `keyTupleToEntityID`
 export function normalizeEntityID(entityID: string | EntityID | BigNumber): EntityID {
+  if (entityID === "") {
+    throw new Error("Can't normalize an empty entity ID");
+  }
   if (BigNumber.isBigNumber(entityID)) {
     return entityID.toHexString() as EntityID;
   }
@@ -25,6 +28,9 @@ export function normalizeEntityID(entityID: string | EntityID | BigNumber): Enti
 // For v1 components (BigNumber or hex strings), strip zero padding
 // For v2 components using TableId format, leave the ID as is
 export function normalizeComponentID(componentID: string | BigNumber): string {
+  if (componentID === "") {
+    throw new Error("Can't normalize an empty component ID");
+  }
   if (BigNumber.isBigNumber(componentID)) {
     return componentID.toHexString();
   }

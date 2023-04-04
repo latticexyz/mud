@@ -5,3 +5,4 @@
 !types/**
 !package.json
 !README.md
+!dist/**

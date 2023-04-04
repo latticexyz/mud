@@ -11,6 +11,7 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
 import { SliceLib } from "@latticexyz/store/src/Slice.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
@@ -50,10 +51,21 @@ library ResourceType {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
+  /** Register the table's schema (using the specified store) */
+  function registerSchema(IStore _store) internal {
+    _store.registerSchema(_tableId, getSchema(), getKeySchema());
+  }
+
   /** Set the table's metadata */
   function setMetadata() internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
+  }
+
+  /** Set the table's metadata (using the specified store) */
+  function setMetadata(IStore _store) internal {
+    (string memory _tableName, string[] memory _fieldNames) = getMetadata();
+    _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get resourceType */
@@ -65,16 +77,33 @@ library ResourceType {
     return Resource(uint8(Bytes.slice1(_blob, 0)));
   }
 
+  /** Get resourceType (using the specified store) */
+  function get(IStore _store, bytes32 resourceSelector) internal view returns (Resource resourceType) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+
+    bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
+    return Resource(uint8(Bytes.slice1(_blob, 0)));
+  }
+
   /** Set resourceType */
   function set(bytes32 resourceSelector, Resource resourceType) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((resourceSelector));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(Resource(resourceType)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(uint8(resourceType)));
+  }
+
+  /** Set resourceType (using the specified store) */
+  function set(IStore _store, bytes32 resourceSelector, Resource resourceType) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+
+    _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked(uint8(resourceType)));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(Resource resourceType) internal pure returns (bytes memory) {
+  function encode(Resource resourceType) internal view returns (bytes memory) {
     return abi.encodePacked(resourceType);
   }
 
@@ -84,5 +113,13 @@ library ResourceType {
     _primaryKeys[0] = bytes32((resourceSelector));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
+  }
+
+  /* Delete all data for given keys (using the specified store) */
+  function deleteRecord(IStore _store, bytes32 resourceSelector) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+
+    _store.deleteRecord(_tableId, _primaryKeys);
   }
 }

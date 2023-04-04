@@ -21,11 +21,10 @@ import { InstalledModules } from "./tables/InstalledModules.sol";
 
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
-import { IWorld } from "./interfaces/IWorld.sol";
-import { IErrors } from "./interfaces/IErrors.sol";
+import { IBaseWorld } from "./interfaces/IBaseWorld.sol";
 import { IRegistrationSystem } from "./interfaces/IRegistrationSystem.sol";
 
-contract World is Store, IWorldCore, IErrors {
+contract World is Store, IWorldCore {
   using ResourceSelector for bytes32;
 
   constructor() {
@@ -46,7 +45,8 @@ contract World is Store, IWorldCore, IErrors {
       msgSender: msg.sender,
       target: address(module),
       funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
-      delegate: false
+      delegate: false,
+      value: 0
     });
 
     // Register the module in the InstalledModules table
@@ -65,7 +65,8 @@ contract World is Store, IWorldCore, IErrors {
       msgSender: msg.sender,
       target: address(module),
       funcSelectorAndArgs: abi.encodeWithSelector(IModule.install.selector, args),
-      delegate: true // The module is delegate called so it can edit any table
+      delegate: true, // The module is delegate called so it can edit any table
+      value: 0
     });
 
     // Register the module in the InstalledModules table
@@ -164,6 +165,25 @@ contract World is Store, IWorldCore, IErrors {
   }
 
   /**
+   * Update data at `startByteIndex` of a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function updateInField(
+    bytes16 namespace,
+    bytes16 file,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 startByteIndex,
+    bytes calldata dataToSet
+  ) public virtual {
+    // Require access to namespace or file
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
+
+    // Update data in the field
+    StoreCore.updateInField(resourceSelector.toTableId(), key, schemaIndex, startByteIndex, dataToSet);
+  }
+
+  /**
    * Delete a record in the table at the given namespace and file.
    * Requires the caller to have access to the namespace or file.
    */
@@ -190,7 +210,7 @@ contract World is Store, IWorldCore, IErrors {
     bytes32 tableSelector = ResourceSelector.from(tableId);
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
-    // We can't call IWorld(this).registerSchema directly because it would be handled like
+    // We can't call IBaseWorld(this).registerSchema directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: msg.sender,
@@ -202,7 +222,8 @@ contract World is Store, IWorldCore, IErrors {
         valueSchema,
         keySchema
       ),
-      delegate: false
+      delegate: false,
+      value: 0
     });
   }
 
@@ -215,7 +236,7 @@ contract World is Store, IWorldCore, IErrors {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
-    // We can't call IWorld(this).setMetadata directly because it would be handled like
+    // We can't call IBaseWorld(this).setMetadata directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: msg.sender,
@@ -227,7 +248,8 @@ contract World is Store, IWorldCore, IErrors {
         tableName,
         fieldNames
       ),
-      delegate: false
+      delegate: false,
+      value: 0
     });
   }
 
@@ -239,7 +261,7 @@ contract World is Store, IWorldCore, IErrors {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
-    // We can't call IWorld(this).registerStoreHook directly because it would be handled like
+    // We can't call IBaseWorld(this).registerStoreHook directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
       msgSender: msg.sender,
@@ -250,7 +272,8 @@ contract World is Store, IWorldCore, IErrors {
         resourceSelector.getFile(),
         hook
       ),
-      delegate: false
+      delegate: false,
+      value: 0
     });
   }
 
@@ -295,6 +318,29 @@ contract World is Store, IWorldCore, IErrors {
   }
 
   /**
+   * Update data at `startByteIndex` of a field in the table at the given tableId.
+   * This overload exists to conform with the `IStore` interface.
+   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
+   */
+  function updateInField(
+    uint256 tableId,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 startByteIndex,
+    bytes calldata dataToSet
+  ) public virtual {
+    bytes32 resourceSelector = ResourceSelector.from(tableId);
+    updateInField(
+      resourceSelector.getNamespace(),
+      resourceSelector.getFile(),
+      key,
+      schemaIndex,
+      startByteIndex,
+      dataToSet
+    );
+  }
+
+  /**
    * Delete a record in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
    * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
@@ -318,7 +364,20 @@ contract World is Store, IWorldCore, IErrors {
     bytes16 namespace,
     bytes16 file,
     bytes memory funcSelectorAndArgs
-  ) public virtual returns (bytes memory) {
+  ) external payable virtual returns (bytes memory) {
+    return _call(namespace, file, funcSelectorAndArgs, msg.value);
+  }
+
+  /**
+   * Call the system at the given namespace and file and pass the given value.
+   * If the system is not public, the caller must have access to the namespace or file.
+   */
+  function _call(
+    bytes16 namespace,
+    bytes16 file,
+    bytes memory funcSelectorAndArgs,
+    uint256 value
+  ) internal virtual returns (bytes memory) {
     // Load the system data
     bytes32 resourceSelector = ResourceSelector.from(namespace, file);
     (address systemAddress, bool publicAccess) = Systems.get(resourceSelector);
@@ -335,7 +394,8 @@ contract World is Store, IWorldCore, IErrors {
         msgSender: msg.sender,
         target: systemAddress,
         funcSelectorAndArgs: funcSelectorAndArgs,
-        delegate: namespace == ROOT_NAMESPACE // Use delegatecall for root systems (= registered in the root namespace)
+        delegate: namespace == ROOT_NAMESPACE, // Use delegatecall for root systems (= registered in the root namespace)
+        value: value
       });
   }
 
@@ -346,9 +406,14 @@ contract World is Store, IWorldCore, IErrors {
    ************************************************************************/
 
   /**
+   * Allow the World to receive ETH
+   */
+  receive() external payable {}
+
+  /**
    * Fallback function to call registered function selectors
    */
-  fallback() external {
+  fallback() external payable {
     (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) = FunctionSelectors.get(msg.sig);
 
     if (namespace == 0 && file == 0) revert FunctionSelectorNotFound(msg.sig);
@@ -356,7 +421,8 @@ contract World is Store, IWorldCore, IErrors {
     // Replace function selector in the calldata with the system function selector
     bytes memory callData = Bytes.setBytes4(msg.data, 0, systemFunctionSelector);
 
-    bytes memory returnData = call(namespace, file, callData);
+    // Call the function and forward the call value
+    bytes memory returnData = _call(namespace, file, callData, msg.value);
     assembly {
       return(add(returnData, 0x20), mload(returnData))
     }

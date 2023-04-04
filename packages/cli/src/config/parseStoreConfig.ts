@@ -1,24 +1,24 @@
 import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { ExtractUserTypes, RequireKeys, StringForUnion } from "../utils/typeUtils.js";
-import { ObjectName, Selector, UserEnum, ValueName } from "./commonSchemas.js";
+import { AsDependent, ExtractUserTypes, RequireKeys, StaticArray, StringForUnion } from "../utils/typeUtils.js";
+import { zObjectName, zSelector, zUserEnum, zValueName } from "./commonSchemas.js";
 import { getDuplicates, parseStaticArray } from "./validation.js";
 
-const TableName = ObjectName;
-const KeyName = ValueName;
-const ColumnName = ValueName;
-const UserEnumName = ObjectName;
+const zTableName = zObjectName;
+const zKeyName = zValueName;
+const zColumnName = zValueName;
+const zUserEnumName = zObjectName;
 
 // Fields can use AbiType or one of user-defined wrapper types
 // (user types are refined later, based on the appropriate config options)
 const zFieldData = z.string();
 
-type FieldData<UserTypes extends StringForUnion> = AbiType | UserTypes;
+type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray | UserTypes;
 
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
 const zPrimaryKey = z.string();
-const zPrimaryKeys = z.record(KeyName, zPrimaryKey).default({ key: "bytes32" });
+const zPrimaryKeys = z.record(zKeyName, zPrimaryKey).default({ key: "bytes32" });
 
 type PrimaryKey<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;
 
@@ -35,7 +35,7 @@ export type SchemaConfig<UserTypes extends StringForUnion = StringForUnion> =
   | ShorthandSchemaConfig<UserTypes>;
 
 const zFullSchemaConfig = z
-  .record(ColumnName, zFieldData)
+  .record(zColumnName, zFieldData)
   .refine((arg) => Object.keys(arg).length > 0, "Table schema may not be empty");
 
 const zShorthandSchemaConfig = zFieldData.transform((fieldData) => {
@@ -66,7 +66,7 @@ export interface TableConfig<
   fileSelector?: string;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
   tableIdArgument?: boolean;
-  /** Include methods that accept a manual `IStore` argument. Default is false. */
+  /** Include methods that accept a manual `IStore` argument. Default is true. */
   storeArgument?: boolean;
   /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
   dataStruct?: boolean;
@@ -79,9 +79,9 @@ export interface TableConfig<
 const zFullTableConfig = z
   .object({
     directory: z.string().default("tables"),
-    fileSelector: Selector.optional(),
+    fileSelector: zSelector.optional(),
     tableIdArgument: z.boolean().default(false),
-    storeArgument: z.boolean().default(false),
+    storeArgument: z.boolean().default(true),
     primaryKeys: zPrimaryKeys,
     schema: zSchemaConfig,
     dataStruct: z.boolean().optional(),
@@ -117,7 +117,7 @@ export type TablesConfig<
   StaticUserTypes extends StringForUnion = StringForUnion
 > = Record<string, TableConfig<UserTypes, StaticUserTypes> | FieldData<UserTypes>>;
 
-export const zTablesConfig = z.record(TableName, zTableConfig).transform((tables) => {
+export const zTablesConfig = z.record(zTableName, zTableConfig).transform((tables) => {
   // default fileSelector depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
@@ -162,7 +162,7 @@ export type EnumsConfig<EnumNames extends StringForUnion> = never extends EnumNa
     };
 
 export const zEnumsConfig = z.object({
-  enums: z.record(UserEnumName, UserEnum).default({}),
+  enums: z.record(zUserEnumName, zUserEnum).default({}),
 });
 
 /************************************************************************
@@ -186,10 +186,10 @@ export type StoreUserConfig<
    * The key is the table name (capitalized).
    *
    * The value:
-   *  - abi or user type for a single-value table (aka ECS component).
+   *  - abi or user type for a single-value table.
    *  - FullTableConfig object for multi-value tables (or for customizable options).
    */
-  tables: TablesConfig<StaticUserTypes, StaticUserTypes>;
+  tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
   /** Path to the file where common user types will be generated and imported from. Default is "Types" */
   userTypesPath?: string;
 };
@@ -203,11 +203,11 @@ export function storeConfig<
   return config;
 }
 
-export type StoreConfig = z.output<typeof StoreConfig>;
+export type StoreConfig = z.output<typeof zStoreConfig>;
 
 const StoreConfigUnrefined = z
   .object({
-    namespace: Selector.default(""),
+    namespace: zSelector.default(""),
     storeImportPath: z.string().default("@latticexyz/store/src/"),
     tables: zTablesConfig,
     userTypesPath: z.string().default("Types"),
@@ -215,10 +215,10 @@ const StoreConfigUnrefined = z
   .merge(zEnumsConfig);
 
 // finally validate global conditions
-export const StoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
+export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
 
 export function parseStoreConfig(config: unknown) {
-  return StoreConfig.parse(config);
+  return zStoreConfig.parse(config);
 }
 
 /************************************************************************
@@ -309,12 +309,6 @@ function validateStaticArray(
     ctx.addIssue({
       code: ZodIssueCode.custom,
       message: `Static array length must be less than 2**16`,
-    });
-  } else {
-    // TODO add static array support to tablegen
-    ctx.addIssue({
-      code: ZodIssueCode.custom,
-      message: `Static arrays are not yet supported`,
     });
   }
 }

@@ -3,6 +3,7 @@ import { mudConfig } from "@latticexyz/cli";
 export default mudConfig({
   worldImportPath: "../",
   worldgenDirectory: "interfaces",
+  worldInterfaceName: "IBaseWorld",
   tables: {
     NamespaceOwner: {
       primaryKeys: {
@@ -11,7 +12,6 @@ export default mudConfig({
       schema: {
         owner: "address",
       },
-      storeArgument: true,
     },
     ResourceAccess: {
       primaryKeys: {
@@ -21,7 +21,6 @@ export default mudConfig({
       schema: {
         access: "bool",
       },
-      storeArgument: true,
     },
     Systems: {
       primaryKeys: {
@@ -31,7 +30,6 @@ export default mudConfig({
         system: "address",
         publicAccess: "bool",
       },
-      storeArgument: true,
       dataStruct: false,
     },
     SystemRegistry: {
@@ -70,13 +68,11 @@ export default mudConfig({
       schema: {
         value: "bool",
       },
-      storeArgument: true,
       tableIdArgument: true,
     },
     AddressArray: {
       // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
       schema: "address[]",
-      storeArgument: true,
       tableIdArgument: true,
     },
     InstalledModules: {
@@ -102,10 +98,18 @@ export default mudConfig({
         keysWithValue: "bytes32[]", // For now only supports 1 key per value
       },
       tableIdArgument: true,
+    },
+    UniqueEntity: {
+      directory: "/modules/uniqueentity/tables",
+      primaryKeys: {},
+      schema: "uint256",
+      tableIdArgument: true,
       storeArgument: true,
     },
   },
   enums: {
     Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
   },
+  // module systems with their own namespaces
+  excludeSystems: ["UniqueEntitySystem"],
 });

@@ -1,9 +1,9 @@
 name: Build
 
+# Verifies build artifacts in pull requests.
+# Note: this workflow does not trigger on pushes to main,
+# because the npm workflow includes a build+verify step.
 on:
-  push:
-    branches:
-      - main
   pull_request:
 
 jobs:
@@ -16,17 +16,28 @@ jobs:
         with:
           submodules: recursive
 
-      - name: 'Setup'
-        uses: ./.github/actions/setup
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: "yarn"
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: yarn install --network-concurrency 1
 
       - name: Build and install CLI
         working-directory: packages/cli
-        run: pnpm build && pnpm link
+        run: yarn build && yarn link
 
       - name: Generate tables
-        run: pnpm tablegen
+        run: yarn tablegen
 
-      - name: Outdated files detected, run `pnpm tablegen` and commit them
+      - name: Outdated files detected, run `yarn tablegen` and commit them
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
             git status
@@ -35,9 +46,9 @@ jobs:
           fi
 
       - name: Generate gas reports
-        run: pnpm gas-report
+        run: yarn gas-report
 
-      - name: Outdated files detected, run `pnpm gas-report` and commit them
+      - name: Outdated files detected, run `yarn gas-report` and commit them
         run: |
           if [[ -n "$(git status --porcelain)" ]]; then
             git status

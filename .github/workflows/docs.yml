@@ -19,15 +19,24 @@ jobs:
 
       - name: Setup gomarkdoc
         run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest && export PATH=${PATH}:`go env GOPATH`/bin
-        
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+
       - name: git-checkout
         uses: actions/checkout@v2
 
-      - name: 'Setup'
-        uses: ./.github/actions/setup
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
+      - name: Install dependencies
+        run: yarn install --network-concurrency 1
 
       - name: Prepare docs
-        run: pnpm docs:prepare
+        run: yarn docs:prepare
 
       - name: Build docs
         uses: retypeapp/action-build@v2
