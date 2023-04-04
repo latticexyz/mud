@@ -1,14 +1,18 @@
-(test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600305
+(test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600410
 (test/KeysWithValueModule.t.sol) | Get list of keys with a given value [bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1))]: 7693
 (test/KeysWithValueModule.t.sol) | compute the target table selector [bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId)]: 2240
-(test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600305
+(test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600410
 (test/KeysWithValueModule.t.sol) | set a record on a table with KeysWithValueModule installed [world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value))]: 169442
-(test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600305
+(test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600410
 (test/KeysWithValueModule.t.sol) | change a record on a table with KeysWithValueModule installed [world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2))]: 135440
 (test/KeysWithValueModule.t.sol) | delete a record on a table with KeysWithValueModule installed [world.deleteRecord(namespace, sourceFile, keyTuple1)]: 57935
-(test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600305
+(test/KeysWithValueModule.t.sol) | install keys with value module [world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))]: 600410
 (test/KeysWithValueModule.t.sol) | set a field on a table with KeysWithValueModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1))]: 177588
 (test/KeysWithValueModule.t.sol) | change a field on a table with KeysWithValueModule installed [world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2))]: 141933
+(test/UniqueEntityModule.t.sol) | install unique entity module [world.installModule(uniqueEntityModule, new bytes(0))]: 773726
+(test/UniqueEntityModule.t.sol) | get a unique entity nonce (non-root module) [uint256 uniqueEntity = uint256(getUniqueEntity(world))]: 65723
+(test/UniqueEntityModule.t.sol) | installRoot unique entity module [world.installRootModule(uniqueEntityModule, new bytes(0))]: 780192
+(test/UniqueEntityModule.t.sol) | get a unique entity nonce (root module) [uint256 uniqueEntity = uint256(getUniqueEntity(world))]: 65723
 (test/World.t.sol) | Delete record [world.deleteRecord(namespace, file, singletonKey)]: 16137
 (test/World.t.sol) | Push data to the table [world.pushToField(namespace, file, keyTuple, 0, encodedData)]: 96529
 (test/World.t.sol) | Register a fallback system [bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, "", "")]: 81204

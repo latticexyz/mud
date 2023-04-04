@@ -15,6 +15,7 @@ import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.json" assert { type
 import CoreModuleData from "@latticexyz/world/abi/CoreModule.json" assert { type: "json" };
 import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.json" assert { type: "json" };
+import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
@@ -81,6 +82,11 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       KeysWithValueModuleData.abi,
       KeysWithValueModuleData.bytecode,
       "KeysWithValueModule"
+    ),
+    UniqueEntityModule: deployContract(
+      UniqueEntityModuleData.abi,
+      UniqueEntityModuleData.bytecode,
+      "UniqueEntityModule"
     ),
   };
 

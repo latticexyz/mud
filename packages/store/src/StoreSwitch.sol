@@ -34,6 +34,10 @@ library StoreSwitch {
     }
   }
 
+  function inferStoreAddress() internal view returns (address) {
+    return isDelegateCall() ? address(this) : msg.sender;
+  }
+
   function registerStoreHook(uint256 table, IStoreHook hook) internal {
     if (isDelegateCall()) {
       StoreCore.registerStoreHook(table, hook);
