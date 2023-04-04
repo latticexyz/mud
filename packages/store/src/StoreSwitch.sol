@@ -90,6 +90,20 @@ library StoreSwitch {
     }
   }
 
+  function updateInField(
+    uint256 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    uint256 startByteIndex,
+    bytes memory dataToSet
+  ) internal {
+    if (isDelegateCall()) {
+      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+    } else {
+      IStore(msg.sender).updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+    }
+  }
+
   function deleteRecord(uint256 table, bytes32[] memory key) internal {
     if (isDelegateCall()) {
       StoreCore.deleteRecord(table, key);

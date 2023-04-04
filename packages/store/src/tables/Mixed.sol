@@ -196,6 +196,22 @@ library Mixed {
     _store.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
+  /** Update an element of a32 at `_index` */
+  function updateA32(bytes32 key, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 2, _index * 4, abi.encodePacked((_element)));
+  }
+
+  /** Update an element of a32 (using the specified store) at `_index` */
+  function updateA32(IStore _store, bytes32 key, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.updateInField(_tableId, _primaryKeys, 2, _index * 4, abi.encodePacked((_element)));
+  }
+
   /** Get s */
   function getS(bytes32 key) internal view returns (string memory s) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -244,6 +260,22 @@ library Mixed {
     _primaryKeys[0] = bytes32((key));
 
     _store.pushToField(_tableId, _primaryKeys, 3, bytes((_slice)));
+  }
+
+  /** Update a slice of s at `_index` */
+  function updateS(bytes32 key, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 3, _index * 1, bytes((_slice)));
+  }
+
+  /** Update a slice of s (using the specified store) at `_index` */
+  function updateS(IStore _store, bytes32 key, uint256 _index, string memory _slice) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.updateInField(_tableId, _primaryKeys, 3, _index * 1, bytes((_slice)));
   }
 
   /** Get the full data */
