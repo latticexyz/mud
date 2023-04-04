@@ -22,6 +22,7 @@ export interface DeployConfig {
   privateKey: string;
   priorityFeeMultiplier: number;
   debug?: boolean;
+  worldAddress?: string;
 }
 
 export interface DeploymentInfo {
@@ -32,7 +33,7 @@ export interface DeploymentInfo {
 export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): Promise<DeploymentInfo> {
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
-  const { profile, rpc, privateKey, priorityFeeMultiplier, debug } = deployConfig;
+  const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
@@ -57,7 +58,9 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
   // Deploy World
   const worldPromise = {
-    World: worldContractName
+    World: worldAddress
+      ? Promise.resolve(worldAddress)
+      : worldContractName
       ? deployContractByName(worldContractName)
       : deployContract(IBaseWorldData.abi, WorldData.bytecode, "World"),
   };
@@ -99,10 +102,12 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   const WorldContract = new ethers.Contract(await contractPromises.World, IBaseWorldData.abi, signer) as IBaseWorld;
 
   // Install core Modules
-  console.log(chalk.blue("Installing core World modules"));
-  await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.CoreModule, "0x"]);
-  await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.RegistrationModule, "0x"]);
-  console.log(chalk.green("Installed core World modules"));
+  if (!worldAddress) {
+    console.log(chalk.blue("Installing core World modules"));
+    await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.CoreModule, "0x"]);
+    await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.RegistrationModule, "0x"]);
+    console.log(chalk.green("Installed core World modules"));
+  }
 
   // Register namespace
   if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)]);
