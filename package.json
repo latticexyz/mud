@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "mud",
   "version": "0.0.0",
   "description": "MUD is the fabric of autonomous worlds",
@@ -6,7 +7,11 @@
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git"
   },
-  "private": true,
+  "engines": {
+    "node": "18.x",
+    "pnpm": "8.x",
+    "yarn": "1.x"
+  },
   "workspaces": {
     "packages": [
       "packages/utils",

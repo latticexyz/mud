@@ -34,6 +34,10 @@ library StoreSwitch {
     }
   }
 
+  function inferStoreAddress() internal view returns (address) {
+    return isDelegateCall() ? address(this) : msg.sender;
+  }
+
   function registerStoreHook(uint256 table, IStoreHook hook) internal {
     if (isDelegateCall()) {
       StoreCore.registerStoreHook(table, hook);
@@ -87,6 +91,20 @@ library StoreSwitch {
       StoreCore.pushToField(table, key, fieldIndex, dataToPush);
     } else {
       IStore(msg.sender).pushToField(table, key, fieldIndex, dataToPush);
+    }
+  }
+
+  function updateInField(
+    uint256 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    uint256 startByteIndex,
+    bytes memory dataToSet
+  ) internal {
+    if (isDelegateCall()) {
+      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+    } else {
+      IStore(msg.sender).updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
     }
   }
 

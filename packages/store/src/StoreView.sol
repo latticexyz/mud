@@ -48,6 +48,13 @@ contract StoreView is Store {
   /**
    * Not implemented in StoreView
    */
+  function updateInField(uint256, bytes32[] calldata, uint8, uint256, bytes calldata) public virtual {
+    revert StoreView_NotImplemented();
+  }
+
+  /**
+   * Not implemented in StoreView
+   */
   function registerStoreHook(uint256, IStoreHook) public virtual {
     revert StoreView_NotImplemented();
   }

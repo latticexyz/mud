@@ -401,6 +401,51 @@ contract WorldTest is Test {
     world.pushToField(tableId, keyTuple, 0, encodedData);
   }
 
+  function testUpdateInField() public {
+    bytes16 namespace = "testUpdInField";
+    bytes16 file = "testTable";
+
+    // Register a new table
+    bytes32 resourceSelector = world.registerTable(namespace, file, AddressArray.getSchema(), defaultKeySchema);
+    uint256 tableId = uint256(resourceSelector);
+
+    // Create data
+    address[] memory initData = new address[](3);
+    initData[0] = address(0x01);
+    initData[1] = address(bytes20(keccak256("some address")));
+    initData[2] = address(bytes20(keccak256("another address")));
+    bytes memory encodedData = EncodeArray.encode(initData);
+
+    world.setField(namespace, file, keyTuple, 0, encodedData);
+
+    // Expect the data to be written
+    assertEq(AddressArray.get(world, tableId, key), initData);
+
+    // Update index 0
+    address[] memory dataForUpdate = new address[](1);
+    dataForUpdate[0] = address(bytes20(keccak256("address for update")));
+    world.updateInField(namespace, file, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+
+    // Expect the data to be updated
+    initData[0] = dataForUpdate[0];
+    assertEq(AddressArray.get(world, tableId, key), initData);
+
+    // Update index 1 via direct access
+    world.updateInField(tableId, keyTuple, 0, 20 * 1, EncodeArray.encode(dataForUpdate));
+
+    // Expect the data to be updated
+    initData[1] = dataForUpdate[0];
+    assertEq(AddressArray.get(world, tableId, key), initData);
+
+    // Expect an error when trying to write from an address that doesn't have access (via namespace/file)
+    _expectAccessDenied(address(0x01), namespace, file);
+    world.updateInField(namespace, file, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+
+    // Expect an error when trying to write from an address that doesn't have access (via tableId)
+    _expectAccessDenied(address(0x01), namespace, file);
+    world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+  }
+
   function testDeleteRecord() public {
     bytes16 namespace = "testDeleteRecord";
     bytes16 file = "testTable";
