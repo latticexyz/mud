@@ -85,6 +85,19 @@ interface IWorldCore is IErrors {
   ) external;
 
   /**
+   * Update data at `startByteIndex` of a field in the table at the given namespace and file.
+   * Requires the caller to have access to the namespace or file.
+   */
+  function updateInField(
+    bytes16 namespace,
+    bytes16 file,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 startByteIndex,
+    bytes calldata dataToSet
+  ) external;
+
+  /**
    * Delete a record in the table at the given namespace and file.
    * Requires the caller to have access to the namespace or file.
    */

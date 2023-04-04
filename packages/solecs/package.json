@@ -10,8 +10,7 @@
     "directory": "packages/solecs"
   },
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
-    "git:install": "bash git-install.sh",
+    "prepare": "yarn build",
     "test": "forge test",
     "build": "rimraf out && forge build --out out && yarn dist && yarn types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh && rimraf abi/*.metadata.json",

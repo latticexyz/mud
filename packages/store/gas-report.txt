@@ -15,9 +15,9 @@
 (test/Gas.t.sol) | pass abi encoded bytes to external contract [someContract.doSomethingWithBytes(abiEncoded)]: 6554
 (test/Gas.t.sol) | pass custom encoded bytes to external contract [someContract.doSomethingWithBytes(customEncoded)]: 1381
 (test/Mixed.t.sol) | store Mixed struct in storage (native solidity) [testMixed = mixed]: 92050
-(test/Mixed.t.sol) | register Mixed schema [Mixed.registerSchema()]: 61173
-(test/Mixed.t.sol) | set record in Mixed [Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })]: 112013
-(test/Mixed.t.sol) | get record from Mixed [MixedData memory mixed = Mixed.get(key)]: 13400
+(test/Mixed.t.sol) | register Mixed schema [Mixed.registerSchema()]: 61195
+(test/Mixed.t.sol) | set record in Mixed [Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })]: 112057
+(test/Mixed.t.sol) | get record from Mixed [MixedData memory mixed = Mixed.get(key)]: 13422
 (test/PackedCounter.t.sol) | get value at index of PackedCounter [packedCounter.atIndex(3)]: 261
 (test/PackedCounter.t.sol) | set value at index of PackedCounter [packedCounter = packedCounter.setAtIndex(2, 5)]: 799
 (test/PackedCounter.t.sol) | pack uint16 array into PackedCounter [PackedCounter packedCounter = PackedCounterLib.pack(counters)]: 2152
@@ -51,16 +51,16 @@
 (test/StoreCore.t.sol) | delete record (complex data, 3 slots) [StoreCore.deleteRecord(table, key)]: 10963
 (test/StoreCore.t.sol) | Check for existence of table (existent) [StoreCore.hasTable(table)]: 1117
 (test/StoreCore.t.sol) | check for existence of table (non-existent) [StoreCore.hasTable(table2)]: 3143
-(test/StoreCore.t.sol) | register subscriber [StoreCore.registerStoreHook(table, subscriber)]: 65439
+(test/StoreCore.t.sol) | register subscriber [StoreCore.registerStoreHook(table, subscriber)]: 65488
 (test/StoreCore.t.sol) | set record on table with subscriber [StoreCore.setRecord(table, key, data)]: 73772
 (test/StoreCore.t.sol) | set static field on table with subscriber [StoreCore.setField(table, key, 0, data)]: 31929
 (test/StoreCore.t.sol) | delete record on table with subscriber [StoreCore.deleteRecord(table, key)]: 24371
-(test/StoreCore.t.sol) | register subscriber [StoreCore.registerStoreHook(table, subscriber)]: 65439
+(test/StoreCore.t.sol) | register subscriber [StoreCore.registerStoreHook(table, subscriber)]: 65488
 (test/StoreCore.t.sol) | set (dynamic) record on table with subscriber [StoreCore.setRecord(table, key, data)]: 167179
 (test/StoreCore.t.sol) | set (dynamic) field on table with subscriber [StoreCore.setField(table, key, 1, arrayDataBytes)]: 35031
 (test/StoreCore.t.sol) | delete (dynamic) record on table with subscriber [StoreCore.deleteRecord(table, key)]: 25851
-(test/StoreCore.t.sol) | push to field (1 slot, 1 uint32 item) [StoreCore.pushToField(table, key, 1, secondDataToPush)]: 16958
-(test/StoreCore.t.sol) | push to field (2 slots, 10 uint32 items) [StoreCore.pushToField(table, key, 2, thirdDataToPush)]: 39680
+(test/StoreCore.t.sol) | push to field (1 slot, 1 uint32 item) [StoreCore.pushToField(table, key, 1, secondDataToPush)]: 17007
+(test/StoreCore.t.sol) | push to field (2 slots, 10 uint32 items) [StoreCore.pushToField(table, key, 2, thirdDataToPush)]: 39729
 (test/StoreCore.t.sol) | StoreCore: register schema [StoreCore.registerSchema(table, schema, keySchema)]: 54866
 (test/StoreCore.t.sol) | StoreCore: get schema (warm) [Schema loadedSchema = StoreCore.getSchema(table)]: 1145
 (test/StoreCore.t.sol) | StoreCore: get key schema (warm) [Schema loadedKeySchema = StoreCore.getKeySchema(table)]: 1213
@@ -83,9 +83,11 @@
 (test/StoreCore.t.sol) | get static record (1 slot) [bytes memory loadedData = StoreCore.getRecord(table, key, schema)]: 1335
 (test/StoreCore.t.sol) | set static record (2 slots) [StoreCore.setRecord(table, key, data)]: 59833
 (test/StoreCore.t.sol) | get static record (2 slots) [bytes memory loadedData = StoreCore.getRecord(table, key, schema)]: 1580
-(test/StoreCore.t.sol) | StoreCore: set table metadata [StoreCore.setMetadata(table, tableName, fieldNames)]: 251710
-(test/StoreMetadata.t.sol) | set record in StoreMetadataTable [StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) })]: 250184
-(test/StoreMetadata.t.sol) | get record from StoreMetadataTable [StoreMetadataData memory metadata = StoreMetadata.get(tableId)]: 12133
+(test/StoreCore.t.sol) | StoreCore: set table metadata [StoreCore.setMetadata(table, tableName, fieldNames)]: 251702
+(test/StoreCore.t.sol) | update in field (1 slot, 1 uint32 item) [StoreCore.updateInField(table, key, 1, 4 * 1, secondDataForUpdate)]: 16544
+(test/StoreCore.t.sol) | push to field (2 slots, 6 uint64 items) [StoreCore.updateInField(table, key, 2, 8 * 1, thirdDataForUpdate)]: 17646
+(test/StoreMetadata.t.sol) | set record in StoreMetadataTable [StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) })]: 250220
+(test/StoreMetadata.t.sol) | get record from StoreMetadataTable [StoreMetadataData memory metadata = StoreMetadata.get(tableId)]: 12155
 (test/StoreSwitch.t.sol) | check if delegatecall [isDelegate = StoreSwitch.isDelegateCall()]: 671
 (test/StoreSwitch.t.sol) | check if delegatecall [isDelegate = StoreSwitch.isDelegateCall()]: 627
 (test/Vector2.t.sol) | register Vector2 schema [Vector2.registerSchema()]: 57971

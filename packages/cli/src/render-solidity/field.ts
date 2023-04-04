@@ -41,8 +41,6 @@ export function renderFieldMethods(options: RenderTableOptions) {
     `
     );
 
-    // TODO: this is super inefficient right now, need to add support for pushing to arrays to the store core library to avoid reading/writing the entire array
-    // (see https://github.com/latticexyz/mud/issues/438)
     if (field.isDynamic) {
       const portionData = fieldPortionData(field);
 
@@ -58,6 +56,29 @@ export function renderFieldMethods(options: RenderTableOptions) {
         ])}) internal {
           ${_primaryKeysDefinition}
           ${_store}.pushToField(_tableId, _primaryKeys, ${index}, ${portionData.encoded});
+        }
+      `
+      );
+
+      result += renderWithStore(
+        storeArgument,
+        (_typedStore, _store, _commentSuffix) => `
+        /** Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\` */
+        function update${field.methodNameSuffix}(${renderArguments([
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+          "uint256 _index",
+          `${portionData.typeWithLocation} ${portionData.name}`,
+        ])}) internal {
+          ${_primaryKeysDefinition}
+          ${_store}.updateInField(
+            _tableId,
+            _primaryKeys,
+            ${index},
+            _index * ${portionData.elementLength},
+            ${portionData.encoded}
+          );
         }
       `
       );
@@ -109,6 +130,7 @@ function fieldPortionData(field: RenderTableField) {
       name: "_element",
       encoded: renderEncodeField({ ...field.arrayElement, arrayElement: undefined, name, methodNameSuffix }),
       title: "an element",
+      elementLength: field.arrayElement.staticByteLength,
     };
   } else {
     const name = "_slice";
@@ -117,6 +139,7 @@ function fieldPortionData(field: RenderTableField) {
       name,
       encoded: renderEncodeField({ ...field, name, methodNameSuffix }),
       title: "a slice",
+      elementLength: 1,
     };
   }
 }
