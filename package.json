@@ -47,7 +47,7 @@
     "eslint": "^8.15.0",
     "husky": ">=6",
     "jq-cli-wrapper": "^1.6.1",
-    "lerna": "^4.0.0",
+    "lerna": "^6.6.1",
     "lint-staged": ">=10",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
