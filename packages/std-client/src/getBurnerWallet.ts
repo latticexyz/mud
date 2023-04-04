@@ -2,16 +2,32 @@ import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 import { isHex, Hex } from "viem";
 import { BehaviorSubject } from "rxjs";
 
+function assertPrivateKey(privateKey: string, cacheKey: string): asserts privateKey is Hex {
+  if (!isHex(privateKey)) {
+    console.error("Private key found in cache is not valid hex", { privateKey, cacheKey });
+    throw new Error(`Private key found in cache (${cacheKey}) is not valid hex`);
+  }
+  // ensure we can extract address from private key
+  // this should throw on bad private keys
+  privateKeyToAccount(privateKey);
+}
+
 export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<Hex> {
   const cachedPrivateKey = localStorage.getItem(cacheKey);
-  const subject = isHex(cachedPrivateKey)
-    ? new BehaviorSubject(cachedPrivateKey)
-    : (() => {
-        const privateKey = generatePrivateKey();
-        console.log("New burner wallet created:", privateKeyToAccount(privateKey));
-        localStorage.setItem(cacheKey, privateKey);
-        return new BehaviorSubject(privateKey);
-      })();
+
+  if (cachedPrivateKey != null) {
+    assertPrivateKey(cachedPrivateKey, cacheKey);
+  }
+
+  const subject =
+    cachedPrivateKey != null
+      ? new BehaviorSubject(cachedPrivateKey)
+      : (() => {
+          const privateKey = generatePrivateKey();
+          console.log("New burner wallet created:", privateKeyToAccount(privateKey));
+          localStorage.setItem(cacheKey, privateKey);
+          return new BehaviorSubject(privateKey);
+        })();
 
   window.addEventListener("storage", function listener(event) {
     // Clean up
@@ -30,11 +46,8 @@ export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<
       console.warn("Burner wallet removed from cache! You may need to reload to create a new wallet.");
       return;
     }
-    if (!isHex(event.newValue)) {
-      console.warn("Invalid burner wallet added to cache! You may need to reload to create a new wallet.");
-      return;
-    }
 
+    assertPrivateKey(event.newValue, cacheKey);
     subject.next(event.newValue);
   });
 
