@@ -23,7 +23,6 @@
     "@latticexyz/cli": "{{mud-version}}",
     "@latticexyz/solecs": "{{mud-version}}",
     "@latticexyz/std-contracts": "{{mud-version}}",
-    "@rari-capital/solmate": "https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
     "@solidstate/contracts": "^0.0.52",
     "@typechain/ethers-v5": "^10.1.1",
     "@types/node": "^18.11.9",
