@@ -144,6 +144,20 @@ library Singleton {
     _store.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
   }
 
+  /** Update an element of v2 at `_index` */
+  function updateV2(uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 1, _index * 4, abi.encodePacked((_element)));
+  }
+
+  /** Update an element of v2 (using the specified store) at `_index` */
+  function updateV2(IStore _store, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.updateInField(_tableId, _primaryKeys, 1, _index * 4, abi.encodePacked((_element)));
+  }
+
   /** Get v3 */
   function getV3() internal view returns (uint32[2] memory v3) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
@@ -188,6 +202,20 @@ library Singleton {
     _store.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
+  /** Update an element of v3 at `_index` */
+  function updateV3(uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 2, _index * 4, abi.encodePacked((_element)));
+  }
+
+  /** Update an element of v3 (using the specified store) at `_index` */
+  function updateV3(IStore _store, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.updateInField(_tableId, _primaryKeys, 2, _index * 4, abi.encodePacked((_element)));
+  }
+
   /** Get v4 */
   function getV4() internal view returns (uint32[1] memory v4) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
@@ -230,6 +258,20 @@ library Singleton {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
+  }
+
+  /** Update an element of v4 at `_index` */
+  function updateV4(uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    StoreSwitch.updateInField(_tableId, _primaryKeys, 3, _index * 4, abi.encodePacked((_element)));
+  }
+
+  /** Update an element of v4 (using the specified store) at `_index` */
+  function updateV4(IStore _store, uint256 _index, uint32 _element) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.updateInField(_tableId, _primaryKeys, 3, _index * 4, abi.encodePacked((_element)));
   }
 
   /** Get the full data */

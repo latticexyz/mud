@@ -7,7 +7,8 @@ interface IErrors {
   error StoreCore_TableNotFound(uint256 tableId, string tableIdString);
 
   error StoreCore_NotImplemented();
+  error StoreCore_NotDynamicField();
   error StoreCore_InvalidDataLength(uint256 expected, uint256 received);
   error StoreCore_InvalidFieldNamesLength(uint256 expected, uint256 received);
-  error StoreCore_NotDynamicField();
+  error StoreCore_DataIndexOverflow(uint256 length, uint256 received);
 }
