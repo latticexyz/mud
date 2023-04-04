@@ -6,3 +6,4 @@ node_modules
 lerna-debug.log
 .retype
 .env
+yarn-error.log
