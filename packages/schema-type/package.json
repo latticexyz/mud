@@ -12,8 +12,7 @@
     "directory": "packages/schema-type"
   },
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
-    "git:install": "bash git-install.sh",
+    "prepare": "yarn build",
     "test": "yarn test:solidity && yarn test:typescript",
     "test:solidity": "forge test",
     "test:typescript": "tsc --noEmit",

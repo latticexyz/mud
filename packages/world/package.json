@@ -14,8 +14,7 @@
     "directory": "packages/world"
   },
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
-    "git:install": "bash git-install.sh",
+    "prepare": "yarn build",
     "tablegen": "../cli/dist/mud.js tablegen",
     "worldgen": "../cli/dist/mud.js worldgen",
     "test": "forge test",
