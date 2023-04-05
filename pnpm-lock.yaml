@@ -76,6 +76,12 @@ importers:
 
   packages/cli:
     dependencies:
+      '@ethersproject/abi':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/providers':
+        specifier: ^5.7.2
+        version: 5.7.2
       '@improbable-eng/grpc-web':
         specifier: ^0.15.0
         version: 0.15.0(google-protobuf@3.21.0)
@@ -308,6 +314,12 @@ importers:
         specifier: ^4.0.1
         version: 4.0.1(rxjs@7.5.6)
     devDependencies:
+      '@ethersproject/abi':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/providers':
+        specifier: ^5.7.2
+        version: 5.7.2
       '@improbable-eng/grpc-web':
         specifier: ^0.15.0
         version: 0.15.0(google-protobuf@3.21.0)
@@ -707,17 +719,13 @@ importers:
         version: 1.126.1
 
   packages/solecs:
-    dependencies:
+    devDependencies:
       '@ethersproject/abi':
         specifier: ^5.7.0
         version: 5.7.0
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
-    devDependencies:
       '@rari-capital/solmate':
         specifier: git://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
         version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
@@ -733,6 +741,9 @@ importers:
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
+      ethers:
+        specifier: ^5.7.2
+        version: 5.7.2
       forge-std:
         specifier: https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
         version: github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
@@ -769,6 +780,12 @@ importers:
 
   packages/std-client:
     devDependencies:
+      '@ethersproject/abi':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/providers':
+        specifier: ^5.7.2
+        version: 5.7.2
       '@latticexyz/cli':
         specifier: workspace:*
         version: link:../cli
@@ -919,6 +936,12 @@ importers:
 
   packages/store:
     devDependencies:
+      '@ethersproject/abi':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/providers':
+        specifier: ^5.7.2
+        version: 5.7.2
       '@latticexyz/cli':
         specifier: workspace:*
         version: link:../cli
@@ -940,6 +963,9 @@ importers:
       ejs:
         specifier: ^3.1.8
         version: 3.1.8
+      ethers:
+        specifier: ^5.7.2
+        version: 5.7.2
       forge-std:
         specifier: https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
         version: github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
@@ -1037,6 +1063,12 @@ importers:
 
   packages/world:
     devDependencies:
+      '@ethersproject/abi':
+        specifier: ^5.7.0
+        version: 5.7.0
+      '@ethersproject/providers':
+        specifier: ^5.7.2
+        version: 5.7.2
       '@latticexyz/cli':
         specifier: workspace:*
         version: link:../cli
@@ -1055,6 +1087,9 @@ importers:
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
+      ethers:
+        specifier: ^5.7.2
+        version: 5.7.2
       forge-std:
         specifier: https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
         version: github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
@@ -4909,10 +4944,10 @@ packages:
   /@typechain/ethers-v5@10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5):
     resolution: {integrity: sha512-ikaq0N/w9fABM+G01OFmU3U3dNnyRwEahkdvi9mqy1a3XwKiPZaF/lu54OcNaEWnpvEYyhhS0N7buCtLQqC92w==}
     peerDependencies:
-      '@ethersproject/abi': ^5.0.0
+      '@ethersproject/abi': ^5.7.0
       '@ethersproject/bytes': ^5.0.0
-      '@ethersproject/providers': ^5.0.0
-      ethers: ^5.1.3
+      '@ethersproject/providers': ^5.7.2
+      ethers: ^5.7.2
       typechain: ^8.1.1
       typescript: '>=4.3.0'
     dependencies:

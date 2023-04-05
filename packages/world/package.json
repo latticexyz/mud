@@ -30,6 +30,9 @@
     "gas-report": "mud gas-report --path test/** --save gas-report.txt"
   },
   "devDependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/abi": "^5.7.0",
+    "ethers": "^5.7.2",
     "@latticexyz/cli": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
@@ -49,6 +52,9 @@
     "typedoc": "^0.23.10"
   },
   "peerDependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/abi": "^5.7.0",
+    "ethers": "^5.7.2",
     "@latticexyz/cli": "latest",
     "@latticexyz/schema-type": "latest",
     "@latticexyz/store": "latest",

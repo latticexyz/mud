@@ -22,6 +22,8 @@
     "release": "npm publish --access=public"
   },
   "devDependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/abi": "^5.7.0",
     "@latticexyz/cli": "workspace:*",
     "@latticexyz/network": "workspace:*",
     "@latticexyz/recs": "workspace:*",
@@ -57,6 +59,8 @@
     "vitest": "^0.29.8"
   },
   "peerDependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/abi": "^5.7.0",
     "@latticexyz/network": "latest",
     "@latticexyz/recs": "latest",
     "@latticexyz/solecs": "latest",
