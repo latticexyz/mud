@@ -16,6 +16,11 @@ jobs:
         with:
           submodules: recursive
 
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
+
       - uses: pnpm/action-setup@v2
         with:
           version: 8.x
@@ -25,13 +30,8 @@ jobs:
           node-version: 18.x
           cache: pnpm
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build and install CLI
         working-directory: packages/cli

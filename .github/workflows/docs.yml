@@ -12,6 +12,9 @@ jobs:
     runs-on: ubuntu-22.04
     name: Generate docs
     steps:
+      - name: git-checkout
+        uses: actions/checkout@v2
+
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
@@ -19,6 +22,11 @@ jobs:
 
       - name: Setup gomarkdoc
         run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest && export PATH=${PATH}:`go env GOPATH`/bin
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly
 
       - uses: pnpm/action-setup@v2
         with:
@@ -28,16 +36,8 @@ jobs:
           node-version: 18.x
           cache: pnpm
 
-      - name: git-checkout
-        uses: actions/checkout@v2
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Prepare docs
         run: pnpm docs:prepare

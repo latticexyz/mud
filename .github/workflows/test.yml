@@ -13,14 +13,6 @@ jobs:
     runs-on: ubuntu-22.04
     name: Run tests
     steps:
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8.x
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-          cache: pnpm
-
       - name: git-checkout
         uses: actions/checkout@v2
 
@@ -29,8 +21,16 @@ jobs:
         with:
           version: nightly
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.x
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: pnpm
+
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Run tests
         run: pnpm test
