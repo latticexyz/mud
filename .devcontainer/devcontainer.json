@@ -1,3 +1,3 @@
 {
-  "onCreateCommand": "curl -L https://foundry.paradigm.xyz | bash && /home/codespace/.foundry/bin/foundryup && pnpm i"
+  "onCreateCommand": "curl -L https://foundry.paradigm.xyz | bash && /home/codespace/.foundry/bin/foundryup && pnpm install"
 }
