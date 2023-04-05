@@ -3,3 +3,4 @@ export * from "./foundry.js";
 export * from "./format.js";
 export * from "./formatAndWrite.js";
 export * from "./deploy-v2.js";
+export * from "./codegen.js";
