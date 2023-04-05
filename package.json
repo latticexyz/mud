@@ -50,7 +50,7 @@
     "release": "pnpm install && lerna publish --no-private --force-publish && pnpm retype:updateversion",
     "release:ci": "pnpm && lerna publish --no-private --force-publish --yes --no-verify-access && pnpm retype:updateversion",
     "release:canary": "lerna publish premajor --canary --no-private --force-publish",
-    "release:manual": "node scripts/workspaceRun.mjs release",
+    "release:manual": "pnpm --recursive --no-bail run release",
     "release:yalc": "(pnpm entry:dist && lerna exec npx yalc push); pnpm entry:src",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "link:packages": "lerna run link",
