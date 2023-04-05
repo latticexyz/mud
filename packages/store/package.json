@@ -30,8 +30,8 @@
     "gas-report": "mud gas-report --path test/** --save gas-report.txt"
   },
   "devDependencies": {
-    "@latticexyz/cli": "^1.41.0",
-    "@latticexyz/schema-type": "^1.41.0",
+    "@latticexyz/cli": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
     "@typechain/ethers-v5": "^9.0.0",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",

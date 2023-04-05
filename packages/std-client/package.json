@@ -22,12 +22,12 @@
     "release": "npm publish --access=public"
   },
   "devDependencies": {
-    "@latticexyz/network": "^1.41.0",
-    "@latticexyz/recs": "^1.41.0",
-    "@latticexyz/solecs": "^1.41.0",
-    "@latticexyz/store": "^1.41.0",
-    "@latticexyz/utils": "^1.41.0",
-    "@latticexyz/world": "^1.41.0",
+    "@latticexyz/network": "workspace:*",
+    "@latticexyz/recs": "workspace:*",
+    "@latticexyz/solecs": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@latticexyz/utils": "workspace:*",
+    "@latticexyz/world": "workspace:*",
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^11.0.0",

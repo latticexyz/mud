@@ -21,7 +21,7 @@
     "release": "npm publish --access=public"
   },
   "devDependencies": {
-    "@latticexyz/utils": "^1.41.0",
+    "@latticexyz/utils": "workspace:*",
     "@rollup/plugin-commonjs": "^21.0.2",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^11.0.0",

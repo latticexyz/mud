@@ -11,26 +11,6 @@
     "node": "18.x",
     "pnpm": "8.x"
   },
-  "workspaces": {
-    "packages": [
-      "packages/utils",
-      "packages/schema-type",
-      "packages/solecs",
-      "packages/store",
-      "packages/world",
-      "packages/cli",
-      "packages/recs",
-      "packages/react",
-      "packages/phaserx",
-      "packages/network",
-      "packages/std-contracts",
-      "packages/std-client",
-      "packages/ecs-browser",
-      "packages/services",
-      "packages/noise",
-      "packages/create-mud"
-    ]
-  },
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
     "@commitlint/config-conventional": "^16.2.4",
