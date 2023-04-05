@@ -16,6 +16,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
+          cache: pnpm
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.x
 
       - name: git-checkout
         uses: actions/checkout@v2
@@ -26,7 +30,7 @@ jobs:
           version: nightly
 
       - name: Install dependencies
-        run: yarn install --network-concurrency 1
+        run: pnpm install
 
       - name: Run tests
-        run: yarn test
+        run: pnpm test
