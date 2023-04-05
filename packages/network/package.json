@@ -29,7 +29,7 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "@ethersproject/providers": "^5.6.1",
+    "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/recs": "latest",
     "@latticexyz/schema-type": "latest",
@@ -39,7 +39,7 @@
     "@latticexyz/utils": "latest",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "async-mutex": "^0.3.2",
-    "ethers": "^5.7.1",
+    "ethers": "^5.7.2",
     "mobx": "^6.5.0",
     "nice-grpc-web": "^2.0.0",
     "observable-webworker": "^4.0.1",
@@ -48,8 +48,8 @@
     "viem": "^0.2.0"
   },
   "devDependencies": {
-    "@ethersproject/abi": "^5.6.0",
-    "@ethersproject/providers": "^5.6.1",
+    "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
@@ -63,7 +63,7 @@
     "@types/jest": "^27.4.1",
     "@types/node": "^17.0.21",
     "async-mutex": "^0.3.2",
-    "ethers": "^5.7.1",
+    "ethers": "^5.7.2",
     "fake-indexeddb": "^4.0.0",
     "google-protobuf": "^3.21.0",
     "jest": "^27.5.1",
