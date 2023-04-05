@@ -712,8 +712,8 @@ importers:
   packages/solecs:
     devDependencies:
       '@rari-capital/solmate':
-        specifier: https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
-        version: github.com/Rari-Capital/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
+        specifier: git://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
+        version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
       '@solidstate/contracts':
         specifier: ^0.0.52
         version: 0.0.52
@@ -868,8 +868,8 @@ importers:
         specifier: workspace:*
         version: link:../solecs
       '@rari-capital/solmate':
-        specifier: https://github.com/Rari-Capital/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
-        version: github.com/Rari-Capital/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
+        specifier: git://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
+        version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
       '@solidstate/contracts':
         specifier: ^0.0.52
         version: 0.0.52
@@ -18286,12 +18286,6 @@ packages:
     resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
     dev: false
 
-  github.com/Rari-Capital/solmate/9cf1428245074e39090dceacb0c28b1f684f584c:
-    resolution: {commit: 9cf1428245074e39090dceacb0c28b1f684f584c, repo: git+ssh://git@github.com/Rari-Capital/solmate.git, type: git}
-    name: solmate
-    version: 6.5.0
-    dev: true
-
   github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084:
     resolution: {tarball: https://codeload.github.com/dapphub/ds-test/tar.gz/c9ce3f25bde29fc5eb9901842bf02850dfd2d084}
     name: ds-test
@@ -18330,3 +18324,9 @@ packages:
     transitivePeerDependencies:
       - encoding
     dev: false
+
+  github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c:
+    resolution: {tarball: https://codeload.github.com/transmissions11/solmate/tar.gz/9cf1428245074e39090dceacb0c28b1f684f584c}
+    name: solmate
+    version: 6.5.0
+    dev: true
