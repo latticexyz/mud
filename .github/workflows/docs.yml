@@ -23,6 +23,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 18.x
+          cache: pnpm
 
       - name: git-checkout
         uses: actions/checkout@v2
@@ -33,10 +34,10 @@ jobs:
           version: nightly
 
       - name: Install dependencies
-        run: yarn install --network-concurrency 1
+        run: pnpm install
 
       - name: Prepare docs
-        run: yarn docs:prepare
+        run: pnpm docs:prepare
 
       - name: Build docs
         uses: retypeapp/action-build@v2
