@@ -69,7 +69,7 @@
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
     "release": "yarn && lerna publish --no-private --force-publish && yarn retype:updateversion",
-    "release:ci": "yarn && lerna publish --no-private --force-publish --yes --no-verify-access && yarn retype:updateversion",
+    "release:ci": "lerna publish --no-private --force-publish --yes",
     "release:canary": "lerna publish premajor --canary --no-private --force-publish",
     "release:manual": "node scripts/workspaceRun.mjs release",
     "release:yalc": "(yarn entry:dist && yarn lerna exec npx yalc push); yarn entry:src",
@@ -83,7 +83,9 @@
     "entry:dist": "yarn lerna run prepack",
     "entry:src": "yarn lerna run postpack",
     "gas-report": "yarn workspace @latticexyz/store run gas-report && yarn workspace @latticexyz/world run gas-report",
-    "tablegen": "yarn workspace @latticexyz/store run tablegen && yarn workspace @latticexyz/world run tablegen"
+    "codegen": "yarn codegen:tablegen && yarn codegen:worldgen",
+    "codegen:tablegen": "yarn workspace @latticexyz/store run tablegen && yarn workspace @latticexyz/world run tablegen",
+    "codegen:worldgen": "yarn workspace @latticexyz/world run worldgen"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
