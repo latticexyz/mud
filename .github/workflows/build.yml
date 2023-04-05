@@ -16,14 +16,14 @@ jobs:
         with:
           submodules: recursive
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8.x
       - name: Setup node
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
           cache: pnpm
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8.x
 
       - name: Install Foundry
         uses: foundry-rs/foundry-toolchain@v1
