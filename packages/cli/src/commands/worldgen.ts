@@ -6,7 +6,6 @@ import glob from "glob";
 import path, { basename } from "path";
 import { worldgen } from "../render-solidity/worldgen.js";
 import { rmSync } from "fs";
-import { getCodegenDirectory } from "../utils/codegen.js";
 
 type Options = {
   configPath?: string;
@@ -28,7 +27,6 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(args) {
     const { configPath, clean } = args;
     const srcDir = await getSrcDirectory();
-    const codegenDir = await getCodegenDirectory();
 
     // Get a list of all contract names
     const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({
@@ -44,11 +42,13 @@ const commandModule: CommandModule<Options, Options> = {
     const storeConfig = await loadStoreConfig(configPath);
     const mudConfig = { ...worldConfig, ...storeConfig };
 
+    const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
+
     // clear the worldgen directory
-    if (clean) rmSync(path.join(codegenDir, worldConfig.worldgenDirectory), { recursive: true, force: true });
+    if (clean) rmSync(path.join(outputBaseDirectory, mudConfig.worldgenDirectory), { recursive: true, force: true });
 
     // generate new interfaces
-    await worldgen(mudConfig, existingContracts, codegenDir);
+    await worldgen(mudConfig, existingContracts, outputBaseDirectory);
 
     process.exit(0);
   },
