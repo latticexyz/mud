@@ -22,6 +22,7 @@
     "release": "npm publish --access=public"
   },
   "devDependencies": {
+    "@latticexyz/cli": "workspace:*",
     "@latticexyz/network": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/solecs": "workspace:*",

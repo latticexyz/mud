@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
-import { IBaseWorld } from "@latticexyz/world/src/interfaces/IBaseWorld.sol";
+import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
 

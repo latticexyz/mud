@@ -762,6 +762,9 @@ importers:
 
   packages/std-client:
     devDependencies:
+      '@latticexyz/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@latticexyz/network':
         specifier: workspace:*
         version: link:../network
