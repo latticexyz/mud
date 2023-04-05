@@ -4,9 +4,9 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 import { StoreView } from "@latticexyz/store/src/StoreView.sol";
 
-import { Statics, StaticsData, Dynamics, DynamicsData, Singleton } from "../src/Tables.sol";
+import { Statics, StaticsData, Dynamics, DynamicsData, Singleton } from "../src/codegen/Tables.sol";
 
-import { Enum1, Enum2 } from "../src/Types.sol";
+import { Enum1, Enum2 } from "../src/codegen/Types.sol";
 
 contract TablegenTest is Test, StoreView {
   function testStaticsSetAndGet() public {
