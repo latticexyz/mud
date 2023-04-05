@@ -22,9 +22,11 @@
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish --access=public"
   },
-  "devDependencies": {
+  "dependencies": {
     "@ethersproject/providers": "^5.7.2",
-    "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/abi": "^5.7.0"
+  },
+  "devDependencies": {
     "@rari-capital/solmate": "git://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
     "@solidstate/contracts": "^0.0.52",
     "@typechain/ethers-v5": "^9.0.0",
@@ -44,8 +46,6 @@
     "typedoc": "^0.23.10"
   },
   "peerDependencies": {
-    "@ethersproject/providers": "^5.7.2",
-    "@ethersproject/abi": "^5.7.0",
     "@solidstate/contracts": "^0.0.52",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ethers": "^5.7.2",

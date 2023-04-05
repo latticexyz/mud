@@ -1,7 +1,6 @@
-import { Provider } from "@ethersproject/providers";
 import { Component, EntityIndex, getComponentEntities, getComponentValue, Type, World } from "@latticexyz/recs";
 import { deferred, keccak256, toEthAddress } from "@latticexyz/utils";
-import { Contract, ContractInterface, Signer } from "ethers";
+import { Contract, ContractInterface, Signer, providers } from "ethers";
 import { observable, runInAction } from "mobx";
 import { createTxQueue } from "./createTxQueue";
 import { Network } from "./createNetwork";
@@ -77,7 +76,7 @@ export function createSystemExecutor<T extends { [key: string]: Contract }>(
 
   function createSystemContract<C extends Contract>(
     entity: EntityIndex,
-    signerOrProvider?: Signer | Provider
+    signerOrProvider?: Signer | providers.Provider
   ): { id: string; contract: C } | undefined {
     const { value: hashedSystemId } = getComponentValue(systems, entity) || {};
     if (!hashedSystemId) throw new Error("System entity not found");

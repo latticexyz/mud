@@ -1,5 +1,4 @@
-import { BigNumber, Contract, Overrides, Signer } from "ethers";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { BigNumber, Contract, Overrides, Signer, providers } from "ethers";
 
 /**
  * Create a stateful util to execute transactions as fast as possible.
@@ -11,7 +10,7 @@ import { JsonRpcProvider } from "@ethersproject/providers";
  * in nonce errors.
  */
 export async function createFastTxExecutor(
-  signer: Signer & { provider: JsonRpcProvider },
+  signer: Signer & { provider: providers.JsonRpcProvider },
   globalOptions: { priorityFeeMultiplier: number } = { priorityFeeMultiplier: 1 }
 ) {
   const chainId = await signer.getChainId();

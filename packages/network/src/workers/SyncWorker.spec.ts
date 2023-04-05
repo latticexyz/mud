@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { providers } from "ethers";
 import { keccak256, sleep } from "@latticexyz/utils";
 import { computed } from "mobx";
 import { ack, Input, InputType, SyncWorker } from "./SyncWorker";
@@ -55,7 +55,7 @@ jest.mock("../createProvider", () => ({
   ...jest.requireActual("../createProvider"),
   createReconnectingProvider: () => ({
     providers: computed(() => ({
-      json: new JsonRpcProvider(""),
+      json: new providers.JsonRpcProvider(""),
     })),
   }),
 }));

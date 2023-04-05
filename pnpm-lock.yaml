@@ -94,6 +94,12 @@ importers:
       '@latticexyz/std-contracts':
         specifier: workspace:*
         version: link:../std-contracts
+      '@latticexyz/store':
+        specifier: workspace:*
+        version: link:../store
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
       '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
@@ -170,12 +176,6 @@ importers:
         specifier: ^1.0.1
         version: 1.0.1(zod@3.21.4)
     devDependencies:
-      '@latticexyz/store':
-        specifier: workspace:*
-        version: link:../store
-      '@latticexyz/world':
-        specifier: workspace:*
-        version: link:../world
       '@types/ejs':
         specifier: ^3.1.1
         version: 3.1.1
@@ -347,6 +347,9 @@ importers:
       '@types/jest':
         specifier: ^27.4.1
         version: 27.4.1
+      '@types/lodash':
+        specifier: ^4.14.182
+        version: 4.14.182
       '@types/node':
         specifier: ^17.0.21
         version: 17.0.34
@@ -710,13 +713,14 @@ importers:
         version: 1.126.1
 
   packages/solecs:
-    devDependencies:
+    dependencies:
       '@ethersproject/abi':
         specifier: ^5.7.0
         version: 5.7.0
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
+    devDependencies:
       '@rari-capital/solmate':
         specifier: git://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
         version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c

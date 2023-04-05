@@ -1,9 +1,7 @@
-import { Result } from "@ethersproject/abi";
-import { ExternalProvider } from "@ethersproject/providers";
 import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
 import { TxMetadata } from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
 import { Cached } from "@latticexyz/utils";
-import { BaseContract, BigNumber, ContractInterface } from "ethers";
+import { BaseContract, BigNumber, ContractInterface, providers, utils } from "ethers";
 import { Observable } from "rxjs";
 import { SyncState } from "./workers";
 
@@ -40,7 +38,7 @@ export interface ProviderConfig {
   chainId: number;
   jsonRpcUrl: string;
   wsRpcUrl?: string;
-  externalProvider?: ExternalProvider;
+  externalProvider?: providers.ExternalProvider;
   options?: { batch?: boolean; pollingInterval?: number; skipNetworkCheck?: boolean };
 }
 
@@ -67,7 +65,7 @@ export type ContractTopics = {
 export type ContractEvent<C extends Contracts> = {
   contractKey: keyof C;
   eventKey: string;
-  args: Result;
+  args: utils.Result;
   txHash: string;
   lastEventInTx: boolean;
   blockNumber: number;

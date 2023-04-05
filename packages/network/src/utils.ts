@@ -1,12 +1,11 @@
 import { EntityID } from "@latticexyz/recs";
 import { Message } from "@latticexyz/services/protobuf/ts/ecs-relay/ecs-relay";
 import { isHex } from "@latticexyz/utils";
-import { BigNumber } from "ethers";
-import { keccak256 } from "ethers/lib/utils";
+import { BigNumber, utils } from "ethers";
 
 // Message payload to sign and use to recover signer
 export function messagePayload(msg: Message) {
-  return `(${msg.version},${msg.id},${keccak256(msg.data)},${msg.timestamp})`;
+  return `(${msg.version},${msg.id},${utils.keccak256(msg.data)},${msg.timestamp})`;
 }
 
 // For v1 entities (BigNumber or hex strings) and single-key v2 entities (hex strings), strip zero padding

@@ -29,8 +29,8 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "@ethersproject/providers": "^5.7.2",
     "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/recs": "latest",
     "@latticexyz/schema-type": "latest",
@@ -62,6 +62,7 @@
     "@types/debug": "^4.1.7",
     "@types/google-protobuf": "^3.15.6",
     "@types/jest": "^27.4.1",
+    "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.21",
     "async-mutex": "^0.3.2",
     "ethers": "^5.7.2",

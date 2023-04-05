@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BaseContract, BigNumberish, CallOverrides, Overrides } from "ethers";
+import { BaseContract, BigNumberish, CallOverrides, Overrides, providers } from "ethers";
 import { autorun, computed, IComputedValue, IObservableValue, observable, runInAction } from "mobx";
 import { mapObject, deferred, uuid, awaitValue, cacheUntilReady } from "@latticexyz/utils";
 import { Mutex } from "async-mutex";
-import { JsonRpcProvider, TransactionReceipt } from "@ethersproject/providers";
 import { Contracts, TxQueue } from "./types";
 import { ConnectionState } from "./createProvider";
 import { Network } from "./createNetwork";
@@ -33,7 +32,7 @@ export function createTxQueue<C extends Contracts>(
     execute: (
       nonce: number,
       gasLimit: BigNumberish
-    ) => Promise<{ hash: string; wait: () => Promise<TransactionReceipt> }>;
+    ) => Promise<{ hash: string; wait: () => Promise<providers.TransactionReceipt> }>;
     estimateGas: () => BigNumberish | Promise<BigNumberish>;
     cancel: (error: any) => void;
     stateMutability?: string;
@@ -79,13 +78,13 @@ export function createTxQueue<C extends Contracts>(
     args: unknown[]
   ): Promise<{
     hash: string;
-    wait: () => Promise<TransactionReceipt>;
-    response: Promise<ReturnTypeStrict<typeof target[typeof prop]>>;
+    wait: () => Promise<providers.TransactionReceipt>;
+    response: Promise<ReturnTypeStrict<(typeof target)[typeof prop]>>;
   }> {
     const [resolve, reject, promise] = deferred<{
       hash: string;
-      wait: () => Promise<TransactionReceipt>;
-      response: Promise<ReturnTypeStrict<typeof target[typeof prop]>>;
+      wait: () => Promise<providers.TransactionReceipt>;
+      response: Promise<ReturnTypeStrict<(typeof target)[typeof prop]>>;
     }>();
 
     // Extract existing overrides from function call
@@ -136,7 +135,7 @@ export function createTxQueue<C extends Contracts>(
         try {
           // Attempt to sign the transaction and send it raw for higher performance
           const signedTx = await target.signer.signTransaction(populatedTx);
-          hash = await (target.provider as JsonRpcProvider).perform("sendTransaction", {
+          hash = await (target.provider as providers.JsonRpcProvider).perform("sendTransaction", {
             signedTransaction: signedTx,
           });
         } catch (e) {
@@ -145,7 +144,9 @@ export function createTxQueue<C extends Contracts>(
           const tx = await target.signer.sendTransaction(populatedTx);
           hash = tx.hash;
         }
-        const response = target.provider.getTransaction(hash) as Promise<ReturnTypeStrict<typeof target[typeof prop]>>;
+        const response = target.provider.getTransaction(hash) as Promise<
+          ReturnTypeStrict<(typeof target)[typeof prop]>
+        >;
         // This promise is awaited asynchronously in the tx queue and the action queue to catch errors
         const wait = async () => (await response).wait();
 

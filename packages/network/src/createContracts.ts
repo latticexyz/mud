@@ -1,6 +1,5 @@
 import { Contracts, ContractsConfig } from "./types";
-import { Contract, Signer } from "ethers";
-import { Provider } from "@ethersproject/providers";
+import { Contract, Signer, providers } from "ethers";
 import { computed, IComputedValue } from "mobx";
 import { mapObject } from "@latticexyz/utils";
 
@@ -17,7 +16,7 @@ export async function createContracts<C extends Contracts>({
 }: {
   config: Partial<ContractsConfig<C>>;
   asyncConfig?: (contracts: C) => Promise<Partial<ContractsConfig<C>>>;
-  signerOrProvider: IComputedValue<Signer | Provider>;
+  signerOrProvider: IComputedValue<Signer | providers.Provider>;
 }): Promise<{ contracts: IComputedValue<C>; config: ContractsConfig<C> }> {
   const contracts = computed(() =>
     mapObject<Partial<ContractsConfig<C>>, C>(

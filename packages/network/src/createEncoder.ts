@@ -1,5 +1,5 @@
 import { ContractSchemaValue, ContractSchemaValueId } from "./types";
-import { defaultAbiCoder as abi } from "ethers/lib/utils";
+import { utils } from "ethers";
 
 /**
  * Creates a function to automatically encode component values given a contract component schema.
@@ -21,6 +21,6 @@ export function createEncoder<D extends { [key: string]: unknown }>(
       contractArgTypes.push(ContractSchemaValueId[valueTypes[index] as ContractSchemaValue]);
     }
 
-    return abi.encode(contractArgTypes, contractArgs);
+    return utils.defaultAbiCoder.encode(contractArgTypes, contractArgs);
   };
 }

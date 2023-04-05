@@ -1,7 +1,6 @@
-import { JsonRpcProvider, Network } from "@ethersproject/providers";
 import { EntityID, ComponentValue, Components } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range, Uint8ArrayToHexString } from "@latticexyz/utils";
-import { BytesLike, Contract, BigNumber } from "ethers";
+import { BytesLike, Contract, BigNumber, providers } from "ethers";
 import { Observable, map, concatMap, of, from } from "rxjs";
 import { createDecoder } from "../createDecoder";
 import { createTopics } from "../createTopics";
@@ -364,7 +363,7 @@ export async function fetchStateInBlockRange(
  * @param provider ethers JsonRpcProvider
  * @returns Function to decode raw component values using their contract component id
  */
-export function createDecode(worldConfig: ContractConfig, provider: JsonRpcProvider) {
+export function createDecode(worldConfig: ContractConfig, provider: providers.JsonRpcProvider) {
   const decoders: { [key: string]: (data: BytesLike) => ComponentValue } = {};
   const world = new Contract(worldConfig.address, worldConfig.abi, provider) as World;
 
@@ -404,7 +403,7 @@ export function createWorldTopics() {
  * @returns Function to fetch World contract events in a given block range.
  */
 export function createFetchWorldEventsInBlockRange<C extends Components>(
-  provider: JsonRpcProvider,
+  provider: providers.JsonRpcProvider,
   worldConfig: ContractConfig,
   batch: boolean | undefined,
   decode: ReturnType<typeof createDecode>
@@ -548,7 +547,7 @@ export function parseSystemCallsFromStreamEvents(events: NetworkComponentUpdate[
   return systemCalls;
 }
 
-export function createFetchSystemCallsFromEvents(provider: JsonRpcProvider) {
+export function createFetchSystemCallsFromEvents(provider: providers.JsonRpcProvider) {
   const { fetchBlock, clearBlock } = createBlockCache(provider);
   const fetchSystemCallData = createFetchSystemCallData(fetchBlock);
 
@@ -591,7 +590,7 @@ function createFetchSystemCallData(fetchBlock: ReturnType<typeof createBlockCach
   };
 }
 
-function createBlockCache(provider: JsonRpcProvider) {
+function createBlockCache(provider: providers.JsonRpcProvider) {
   const blocks: Record<number, Awaited<ReturnType<typeof provider.getBlockWithTransactions>>> = {};
 
   return {
