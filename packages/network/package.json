@@ -29,6 +29,8 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "@ethersproject/abi": "^5.7.0",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/recs": "latest",
     "@latticexyz/schema-type": "latest",
