@@ -29,8 +29,6 @@
     "lodash": "^4.17.21"
   },
   "peerDependencies": {
-    "@ethersproject/abi": "^5.7.0",
-    "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/recs": "latest",
     "@latticexyz/schema-type": "latest",
@@ -49,8 +47,6 @@
     "viem": "^0.2.0"
   },
   "devDependencies": {
-    "@ethersproject/abi": "^5.7.0",
-    "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",

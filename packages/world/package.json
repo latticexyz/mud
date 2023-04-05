@@ -33,7 +33,7 @@
     "@latticexyz/cli": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@typechain/ethers-v5": "^9.0.0",
+    "@typechain/ethers-v5": "^10.2.0",
     "@types/mocha": "^9.1.1",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
