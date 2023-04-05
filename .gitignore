@@ -10,3 +10,4 @@ yarn.lock
 lerna-debug.log
 .retype
 .env
+yarn-error.log
