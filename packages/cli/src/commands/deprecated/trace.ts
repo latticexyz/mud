@@ -1,8 +1,7 @@
 import type { CommandModule } from "yargs";
 import { execLog, extractIdFromFile, keccak256 } from "../../utils/deprecated/index.js";
 import { readFileSync } from "fs";
-import { Contract } from "ethers";
-import { JsonRpcProvider } from "@ethersproject/providers";
+import { Contract, providers } from "ethers";
 import WorldAbi from "@latticexyz/solecs/abi/World.json" assert { type: "json" };
 import { getSrcDirectory } from "../../utils/foundry.js";
 import path from "path";
@@ -37,7 +36,7 @@ const commandModule: CommandModule<Options, Options> = {
     const labels = [];
 
     const rpcUrl = rpc || "http://localhost:8545";
-    const provider = new JsonRpcProvider(rpcUrl);
+    const provider = new providers.StaticJsonRpcProvider(rpcUrl);
     const World = new Contract(world, WorldAbi.abi, provider);
 
     if (deployData) {

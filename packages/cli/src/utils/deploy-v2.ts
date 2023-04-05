@@ -102,7 +102,11 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   const contractPromises: Record<string, Promise<string>> = { ...worldPromise, ...systemPromises, ...modulePromises };
 
   // Create World contract instance from deployed address
-  const WorldContract = new ethers.Contract(await contractPromises.World, IBaseWorldData.abi, signer) as IBaseWorld;
+  const WorldContract = new ethers.Contract(
+    await contractPromises.World,
+    IBaseWorldData.abi,
+    signer
+  ) as any as IBaseWorld;
 
   // Install core Modules
   console.log(chalk.blue("Installing core World modules"));

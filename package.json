@@ -42,7 +42,7 @@
     }
   },
   "scripts": {
-    "prepare": "husky install && (forge --version || foundryup) && pnpm --sequential recursive run prepare",
+    "prepare": "husky install && (forge --version || foundryup) && pnpm --workspace-concurrency=1 --recursive run prepare",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
