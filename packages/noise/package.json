@@ -1,6 +1,7 @@
 {
   "name": "@latticexyz/noise",
   "version": "1.41.0",
+  "type": "module",
   "source": "ts/index.ts",
   "main": "ts/index.ts",
   "types": "dist/types.d.ts",
@@ -16,10 +17,10 @@
     "asbuild": "pnpm asbuild:debug && pnpm asbuild:release",
     "start": "npx serve .",
     "link": "pnpm link",
-    "prepack:cjs": "mv package.json package.json.bak && jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp && jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && jq \"del(\".type\")\" package.json.tmp2 > package.json",
-    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
-    "postpack": "(mv package.json.bak package.json || true) && (rm package.json.tmp || true) && (rm package.json.tmp2 || true)",
-    "build": "pnpm asbuild:release && pnpm parcel build",
+    "prepack:cjs": "mv package.json package.json.bak; jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp; jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2; jq \"del(\".type\")\" package.json.tmp2 > package.json",
+    "prepack": "mv package.json package.json.bak; jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
+    "postpack": "mv package.json.bak package.json; rm package.json.tmp; rm package.json.tmp2",
+    "build": "pnpm asbuild:release; pnpm prepack:cjs; pnpm parcel build; pnpm postpack",
     "release": "npm publish --access=public"
   },
   "dependencies": {
