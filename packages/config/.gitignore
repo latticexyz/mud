@@ -1,0 +1,12 @@
+cache
+abi
+out
+dist
+types/ethers-contracts
+docs
+_docs
+DOCS.md
+artifacts
+yarn-error.log
+API
+tsconfig.tsbuildinfo
