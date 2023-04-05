@@ -106,7 +106,7 @@ git clone https://github.com/latticexyz/mud
 5. Install MUD dependencies and setup local environment
 
 ```
-cd mud && pnpm i 
+cd mud && pnpm install
 ```
 
 ### Pull requests
