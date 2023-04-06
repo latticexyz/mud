@@ -5,6 +5,6 @@ pragma solidity >=0.8.0;
 
 import { Hooks, HooksTableId } from "./tables/Hooks.sol";
 import { Callbacks, CallbacksTableId } from "./tables/Callbacks.sol";
-import { StoreMetadata, StoreMetadataTableId, StoreMetadataData } from "./tables/StoreMetadata.sol";
-import { Mixed, MixedTableId, MixedData } from "./tables/Mixed.sol";
-import { Vector2, Vector2TableId, Vector2Data } from "./tables/Vector2.sol";
+import { StoreMetadata, StoreMetadataData, StoreMetadataTableId } from "./tables/StoreMetadata.sol";
+import { Mixed, MixedData, MixedTableId } from "./tables/Mixed.sol";
+import { Vector2, Vector2Data, Vector2TableId } from "./tables/Vector2.sol";
