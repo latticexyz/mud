@@ -45,7 +45,6 @@ export const zWorldConfig = z.object({
   postDeployScript: z.string().default("PostDeploy"),
   deploysDirectory: z.string().default("./deploys"),
   worldgenDirectory: z.string().default("world"),
-  worldImportPath: z.string().default("@latticexyz/world/src/"),
   modules: z.array(zModuleConfig).default([]),
 });
 

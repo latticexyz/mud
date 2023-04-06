@@ -67,8 +67,6 @@ export interface WorldUserConfig {
   deploysDirectory?: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   worldgenDirectory?: string;
-  /** Path for world package imports. Default is "@latticexyz/world/src/" */
-  worldImportPath?: string;
   /** Modules to in the World */
   modules?: ModuleConfig[];
 }

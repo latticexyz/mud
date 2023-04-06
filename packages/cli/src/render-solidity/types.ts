@@ -102,6 +102,4 @@ export interface RenderWorldOptions {
   imports: ImportDatum[];
   /** Name of the interface to render */
   interfaceName: string;
-  /** Path for world package imports */
-  worldImportPath: string;
 }

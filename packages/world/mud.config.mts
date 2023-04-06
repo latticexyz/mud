@@ -1,7 +1,6 @@
 import { mudConfig } from "@latticexyz/cli";
 
 export default mudConfig({
-  worldImportPath: "../",
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
   codegenDirectory: "",

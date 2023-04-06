@@ -50,7 +50,6 @@ export async function worldgen(
   const output = renderWorld({
     interfaceName: config.worldInterfaceName,
     imports: systemInterfaceImports,
-    worldImportPath: config.worldImportPath,
   });
   // write to file
   const fullOutputPath = path.join(worldgenBaseDirectory, config.worldInterfaceName + ".sol");

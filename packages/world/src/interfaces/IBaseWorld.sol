@@ -5,7 +5,7 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
-import { IWorldCore } from "../interfaces/IWorldCore.sol";
+import { IWorldCore } from "@latticexyz/world/src/interfaces/IWorldCore.sol";
 
 import { IRegistrationSystem } from "./IRegistrationSystem.sol";
 
