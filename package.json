@@ -19,6 +19,7 @@
       "packages/solecs",
       "packages/store",
       "packages/world",
+      "packages/config",
       "packages/cli",
       "packages/recs",
       "packages/react",
