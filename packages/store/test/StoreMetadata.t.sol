@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { StoreMetadata, StoreMetadataData } from "../src/tables/StoreMetadata.sol";
+import { StoreMetadata, StoreMetadataData } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
 import { StoreView } from "../src/StoreView.sol";
 import { Schema } from "../src/Schema.sol";

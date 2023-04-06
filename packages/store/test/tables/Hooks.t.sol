@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { StoreView } from "../../src/StoreView.sol";
-import { Hooks } from "../../src/tables/Hooks.sol";
+import { Hooks } from "../../src/codegen/Tables.sol";
 
 contract HooksTest is Test, StoreView {
   function testSetAndGet() public {

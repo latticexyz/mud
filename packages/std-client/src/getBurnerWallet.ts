@@ -1,17 +1,33 @@
-import { Wallet } from "ethers";
+import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
+import { isHex, Hex } from "viem";
 import { BehaviorSubject } from "rxjs";
 
-export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<string> {
+function assertPrivateKey(privateKey: string, cacheKey: string): asserts privateKey is Hex {
+  if (!isHex(privateKey)) {
+    console.error("Private key found in cache is not valid hex", { privateKey, cacheKey });
+    throw new Error(`Private key found in cache (${cacheKey}) is not valid hex`);
+  }
+  // ensure we can extract address from private key
+  // this should throw on bad private keys
+  privateKeyToAccount(privateKey);
+}
+
+export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<Hex> {
   const cachedPrivateKey = localStorage.getItem(cacheKey);
-  const subject = cachedPrivateKey
-    ? new BehaviorSubject(cachedPrivateKey)
-    : (() => {
-        // TODO: move to viem wallet
-        const wallet = Wallet.createRandom();
-        console.log("New burner wallet created:", wallet.address);
-        localStorage.setItem(cacheKey, wallet.privateKey);
-        return new BehaviorSubject(wallet.privateKey);
-      })();
+
+  if (cachedPrivateKey != null) {
+    assertPrivateKey(cachedPrivateKey, cacheKey);
+  }
+
+  const subject =
+    cachedPrivateKey != null
+      ? new BehaviorSubject(cachedPrivateKey)
+      : (() => {
+          const privateKey = generatePrivateKey();
+          console.log("New burner wallet created:", privateKeyToAccount(privateKey));
+          localStorage.setItem(cacheKey, privateKey);
+          return new BehaviorSubject(privateKey);
+        })();
 
   window.addEventListener("storage", function listener(event) {
     // Clean up
@@ -31,6 +47,7 @@ export function getBurnerWallet(cacheKey = "mud:burnerWallet"): BehaviorSubject<
       return;
     }
 
+    assertPrivateKey(event.newValue, cacheKey);
     subject.next(event.newValue);
   });
 

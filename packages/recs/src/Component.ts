@@ -121,10 +121,18 @@ export function setComponent<S extends Schema, T = undefined>(
 export function updateComponent<S extends Schema, T = undefined>(
   component: Component<S, Metadata, T>,
   entity: EntityIndex,
-  value: Partial<ComponentValue<S, T>>
+  value: Partial<ComponentValue<S, T>>,
+  initialValue?: ComponentValue<S, T>
 ) {
-  const currentValue = getComponentValueStrict(component, entity);
-  setComponent(component, entity, { ...currentValue, ...value });
+  const currentValue = getComponentValue(component, entity);
+  if (currentValue === undefined) {
+    if (initialValue === undefined) {
+      throw new Error("Can't update component without a current value or initial value");
+    }
+    setComponent(component, entity, { ...initialValue, ...value });
+  } else {
+    setComponent(component, entity, { ...currentValue, ...value });
+  }
 }
 
 /**

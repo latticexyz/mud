@@ -1,7 +1,8 @@
+import path from "path";
 import type { CommandModule } from "yargs";
 import { loadStoreConfig } from "../config/loadStoreConfig.js";
-import { getSrcDirectory } from "../utils/foundry.js";
 import { tablegen } from "../render-solidity/tablegen.js";
+import { getSrcDirectory } from "../utils/index.js";
 
 type Options = {
   configPath?: string;
@@ -19,11 +20,10 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler({ configPath }) {
-    const srcDirectory = await getSrcDirectory();
-
     const config = await loadStoreConfig(configPath);
+    const srcDir = await getSrcDirectory();
 
-    await tablegen(config, srcDirectory);
+    await tablegen(config, path.join(srcDir, config.codegenDirectory));
 
     process.exit(0);
   },

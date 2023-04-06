@@ -42,11 +42,13 @@ const commandModule: CommandModule<Options, Options> = {
     const storeConfig = await loadStoreConfig(configPath);
     const mudConfig = { ...worldConfig, ...storeConfig };
 
+    const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
+
     // clear the worldgen directory
-    if (clean) rmSync(path.join(srcDir, worldConfig.worldgenDirectory), { recursive: true, force: true });
+    if (clean) rmSync(path.join(outputBaseDirectory, mudConfig.worldgenDirectory), { recursive: true, force: true });
 
     // generate new interfaces
-    await worldgen(mudConfig, existingContracts, srcDir);
+    await worldgen(mudConfig, existingContracts, outputBaseDirectory);
 
     process.exit(0);
   },

@@ -1,4 +1,5 @@
 {
+  "private": true,
   "name": "mud",
   "version": "0.0.0",
   "description": "MUD is the fabric of autonomous worlds",
@@ -6,7 +7,11 @@
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git"
   },
-  "private": true,
+  "engines": {
+    "node": "18.x",
+    "pnpm": "8.x",
+    "yarn": "1.x"
+  },
   "workspaces": {
     "packages": [
       "packages/utils",
@@ -15,6 +20,7 @@
       "packages/store",
       "packages/world",
       "packages/world-plugins",
+      "packages/config",
       "packages/cli",
       "packages/recs",
       "packages/react",
@@ -43,7 +49,7 @@
     "eslint": "^8.15.0",
     "husky": ">=6",
     "jq-cli-wrapper": "^1.6.1",
-    "lerna": "^4.0.0",
+    "lerna": "^6.6.1",
     "lint-staged": ">=10",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
