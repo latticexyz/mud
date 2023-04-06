@@ -18,7 +18,6 @@ export function renderTable(options: RenderTableOptions) {
     libraryName,
     structName,
     staticResourceData,
-    storeImportPath,
     fields,
     staticFields,
     dynamicFields,
@@ -35,15 +34,15 @@ export function renderTable(options: RenderTableOptions) {
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 // Import store internals
-import { IStore } from "${storeImportPath}IStore.sol";
-import { StoreSwitch } from "${storeImportPath}StoreSwitch.sol";
-import { StoreCore } from "${storeImportPath}StoreCore.sol";
-import { Bytes } from "${storeImportPath}Bytes.sol";
-import { Memory } from "${storeImportPath}Memory.sol";
-import { SliceLib } from "${storeImportPath}Slice.sol";
-import { EncodeArray } from "${storeImportPath}tightcoder/EncodeArray.sol";
-import { Schema, SchemaLib } from "${storeImportPath}Schema.sol";
-import { PackedCounter, PackedCounterLib } from "${storeImportPath}PackedCounter.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
+import { SliceLib } from "@latticexyz/store/src/Slice.sol";
+import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
+import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 ${
   imports.length > 0

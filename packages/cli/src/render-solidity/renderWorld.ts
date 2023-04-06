@@ -2,11 +2,11 @@ import { renderArguments, renderedSolidityHeader, renderImports } from "./common
 import { RenderWorldOptions } from "./types.js";
 
 export function renderWorld(options: RenderWorldOptions) {
-  const { interfaceName, storeImportPath, worldImportPath, imports } = options;
+  const { interfaceName, worldImportPath, imports } = options;
 
   return `${renderedSolidityHeader}
 
-import { IStore } from "${storeImportPath}IStore.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
 
 import { IWorldCore } from "${worldImportPath}interfaces/IWorldCore.sol";
 

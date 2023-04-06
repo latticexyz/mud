@@ -18,8 +18,6 @@ export interface TableOptions {
 }
 
 export function getTableOptions(config: StoreConfig): TableOptions[] {
-  const storeImportPath = config.storeImportPath;
-
   const options = [];
   for (const tableName of Object.keys(config.tables)) {
     const tableData = config.tables[tableName];
@@ -93,7 +91,6 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         libraryName: tableName,
         structName: withStruct ? tableName + "Data" : undefined,
         staticResourceData,
-        storeImportPath,
         primaryKeys,
         fields,
         staticFields,

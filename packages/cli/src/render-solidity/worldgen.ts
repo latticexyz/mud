@@ -50,7 +50,6 @@ export async function worldgen(
   const output = renderWorld({
     interfaceName: config.worldInterfaceName,
     imports: systemInterfaceImports,
-    storeImportPath: config.storeImportPath,
     worldImportPath: config.worldImportPath,
   });
   // write to file

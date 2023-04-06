@@ -7,15 +7,15 @@ pragma solidity >=0.8.0;
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
 // Import store internals
-import { IStore } from "../../IStore.sol";
-import { StoreSwitch } from "../../StoreSwitch.sol";
-import { StoreCore } from "../../StoreCore.sol";
-import { Bytes } from "../../Bytes.sol";
-import { Memory } from "../../Memory.sol";
-import { SliceLib } from "../../Slice.sol";
-import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
-import { Schema, SchemaLib } from "../../Schema.sol";
-import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
+import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
+import { Bytes } from "@latticexyz/store/src/Bytes.sol";
+import { Memory } from "@latticexyz/store/src/Memory.sol";
+import { SliceLib } from "@latticexyz/store/src/Slice.sol";
+import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
+import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Hooks"))));
 uint256 constant HooksTableId = _tableId;

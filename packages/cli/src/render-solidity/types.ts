@@ -7,8 +7,6 @@ export interface RenderTableOptions {
   structName?: string;
   /** Data used to statically registed the table. If undefined, all methods receive `_tableId` as an argument. */
   staticResourceData?: StaticResourceData;
-  /** Path for store package imports */
-  storeImportPath: string;
   primaryKeys: RenderTablePrimaryKey[];
   fields: RenderTableField[];
   staticFields: RenderTableStaticField[];
@@ -104,8 +102,6 @@ export interface RenderWorldOptions {
   imports: ImportDatum[];
   /** Name of the interface to render */
   interfaceName: string;
-  /** Path for store package imports */
-  storeImportPath: string;
   /** Path for world package imports */
   worldImportPath: string;
 }

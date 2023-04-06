@@ -178,8 +178,6 @@ export type StoreUserConfig<
 > = EnumsConfig<EnumNames> & {
   /** The namespace for table ids. Default is "" (empty string) */
   namespace?: string;
-  /** Path for store package imports. Default is "@latticexyz/store/src/" */
-  storeImportPath?: string;
   /**
    * Configuration for each table.
    *
@@ -210,7 +208,6 @@ export type StoreConfig = z.output<typeof zStoreConfig>;
 const StoreConfigUnrefined = z
   .object({
     namespace: zSelector.default(""),
-    storeImportPath: z.string().default("@latticexyz/store/src/"),
     tables: zTablesConfig,
     userTypesPath: z.string().default("Types"),
     codegenDirectory: z.string().default("codegen"),
