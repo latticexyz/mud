@@ -32,7 +32,7 @@ One important thing to note when building "chance" into smart contracts is that 
 
 To get something that is pseudorandom, we'll take a hash of a few sources of entropy: an incrementing nonce, the entity being moved, the position it's moving to, and the block difficulty (now mapped to the `PREVRANDAO` opcode post-merge, an on-chain and block-level source of entropy).
 
-```sol !#3,6,12-18,21-31 packages/contracts/src/systems/MoveSystem.sol
+```sol !#3-4,6,12-18,21-31 packages/contracts/src/systems/MoveSystem.sol
 import { getAddressById, addressToEntity } from "solecs/utils.sol";
 import { EncounterableComponent, ID as EncounterableComponentID } from "components/EncounterableComponent.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
