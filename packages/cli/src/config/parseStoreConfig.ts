@@ -192,6 +192,8 @@ export type StoreUserConfig<
   tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
   /** Path to the file where common user types will be generated and imported from. Default is "Types" */
   userTypesPath?: string;
+  /** Path to the directory where generated files will be placed. (Default is "codegen") */
+  codegenDirectory?: string;
 };
 
 /** Type helper for defining StoreUserConfig */
@@ -211,6 +213,7 @@ const StoreConfigUnrefined = z
     storeImportPath: z.string().default("@latticexyz/store/src/"),
     tables: zTablesConfig,
     userTypesPath: z.string().default("Types"),
+    codegenDirectory: z.string().default("codegen"),
   })
   .merge(zEnumsConfig);
 

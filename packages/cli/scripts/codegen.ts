@@ -1,3 +1,4 @@
+import path from "path";
 import { storeConfig, parseStoreConfig } from "../src/config/index.js";
 import { tablegen } from "../src/render-solidity/tablegen.js";
 import { logError } from "../src/utils/errors.js";
@@ -67,8 +68,9 @@ const parsedConfig = await (async () => {
 })();
 
 const srcDirectory = await getSrcDirectory();
+
 if (parsedConfig !== undefined) {
-  tablegen(parsedConfig, srcDirectory);
+  tablegen(parsedConfig, path.join(srcDirectory, parsedConfig.codegenDirectory));
 } else {
   process.exit(1);
 }

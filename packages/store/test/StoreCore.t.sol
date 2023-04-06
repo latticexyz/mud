@@ -14,7 +14,7 @@ import { StoreView } from "../src/StoreView.sol";
 import { IErrors } from "../src/IErrors.sol";
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { StoreMetadataData, StoreMetadata } from "../src/tables/StoreMetadata.sol";
+import { StoreMetadataData, StoreMetadata } from "../src/codegen/Tables.sol";
 
 struct TestStruct {
   uint128 firstData;

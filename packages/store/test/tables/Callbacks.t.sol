@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { StoreView } from "../../src/StoreView.sol";
-import { Callbacks } from "../../src/tables/Callbacks.sol";
+import { Callbacks } from "../../src/codegen/Tables.sol";
 
 contract CallbacksTest is Test, StoreView {
   function testSetAndGet() public {

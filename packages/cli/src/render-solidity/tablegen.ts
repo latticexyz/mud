@@ -4,9 +4,17 @@ import { getTableOptions } from "./tableOptions.js";
 import { renderTable } from "./renderTable.js";
 import { renderTypesFromConfig } from "./renderTypesFromConfig.js";
 import { formatAndWriteSolidity } from "../utils/formatAndWrite.js";
+import { renderTableIndex } from "./renderTableIndex.js";
+import { rmSync } from "fs";
 
 export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {
   const allTableOptions = getTableOptions(config);
+
+  const uniqueTableDirectories = new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath)));
+  for (const tableDir of uniqueTableDirectories) {
+    rmSync(path.join(outputBaseDirectory, tableDir), { recursive: true, force: true });
+  }
+
   // write tables to files
   for (const { outputPath, renderOptions } of allTableOptions) {
     const fullOutputPath = path.join(outputBaseDirectory, outputPath);
@@ -20,4 +28,8 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string)
     const output = renderTypesFromConfig(config);
     formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }
+
+  const fullOutputPath = path.join(outputBaseDirectory, `Tables.sol`);
+  const output = renderTableIndex(allTableOptions);
+  formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
 }
