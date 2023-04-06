@@ -1,5 +1,6 @@
 {
   "name": "@latticexyz/world-plugins",
+  "private": true,
   "license": "MIT",
   "version": "1.41.0",
   "description": "Standard plugins for World",
