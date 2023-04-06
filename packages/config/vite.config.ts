@@ -15,6 +15,9 @@ export default defineConfig({
     minify: false,
     sourcemap: true,
   },
+  /**
+   * @see https://vitest.dev/config/
+   */
   test: {
     environment: "node",
     globals: true,
