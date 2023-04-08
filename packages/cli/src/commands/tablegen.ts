@@ -1,6 +1,6 @@
 import path from "path";
 import type { CommandModule } from "yargs";
-import { loadStoreConfig } from "../config/loadStoreConfig.js";
+import { loadStoreConfig } from "@latticexyz/config";
 import { tablegen } from "../render-solidity/tablegen.js";
 import { getSrcDirectory } from "../utils/index.js";
 

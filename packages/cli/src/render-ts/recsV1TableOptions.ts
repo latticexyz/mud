@@ -1,4 +1,4 @@
-import { StoreConfig } from "../config/parseStoreConfig.js";
+import { StoreConfig } from "@latticexyz/config";
 import { resolveAbiOrUserType } from "../render-solidity/userType.js";
 import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings.js";
 import { RecsV1TableOptions } from "./types.js";

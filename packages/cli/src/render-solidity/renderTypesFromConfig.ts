@@ -1,4 +1,4 @@
-import { StoreConfig } from "../config/parseStoreConfig.js";
+import { StoreConfig } from "@latticexyz/config";
 import { renderTypes } from "./renderTypes.js";
 
 export function renderTypesFromConfig(config: StoreConfig) {

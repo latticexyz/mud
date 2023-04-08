@@ -17,12 +17,12 @@
   },
   "scripts": {
     "prepare": "yarn build",
-    "codegen": "ts-node --esm --files ./scripts/codegen.ts",
+    "codegen": "tsx ./scripts/codegen.ts",
     "lint": "eslint . --ext .ts",
     "dev": "tsup --watch",
     "build": "tsup",
     "link": "yarn link",
-    "test": "vitest typecheck --run && yarn test:contracts",
+    "test": "tsc --noEmit && yarn test:contracts",
     "test:contracts": "yarn codegen && forge test",
     "release": "npm publish --access=public"
   },
@@ -33,13 +33,14 @@
     "@types/node": "^17.0.34",
     "@types/openurl": "^1.0.0",
     "@types/yargs": "^17.0.10",
-    "esbuild": "^0.15.16",
     "tsup": "^6.6.3",
+    "tsx": "^3.12.6",
     "vitest": "^0.29.8"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
+    "@latticexyz/config": "^1.41.0",
     "@latticexyz/schema-type": "^1.41.0",
     "@latticexyz/services": "^1.41.0",
     "@latticexyz/solecs": "^1.41.0",
@@ -51,10 +52,8 @@
     "dotenv": "^16.0.3",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ejs": "^3.1.8",
-    "esbuild": "^0.17.14",
     "ethers": "^5.7.2",
     "execa": "^7.0.0",
-    "find-up": "^6.3.0",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "glob": "^8.0.3",
     "nice-grpc-web": "^2.0.1",
@@ -63,12 +62,11 @@
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
     "table": "^6.8.1",
-    "ts-node": "^10.9.1",
     "typechain": "^8.1.1",
     "typescript": "^4.9.5",
     "yargs": "^17.7.1",
     "zod": "^3.21.4",
-    "zod-validation-error": "^1.0.1"
+    "zod-validation-error": "^1.3.0"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

@@ -7,6 +7,7 @@ import peerDepsExternal from "rollup-plugin-peer-deps-external";
  */
 export default defineConfig({
   build: {
+    ssr: true,
     lib: {
       entry: "src/index.ts",
       formats: ["cjs", "es"],

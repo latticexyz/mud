@@ -2,12 +2,12 @@ import chalk from "chalk";
 import glob from "glob";
 import path, { basename } from "path";
 import type { CommandModule, Options } from "yargs";
-import { loadWorldConfig } from "../config/world/index.js";
+import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/config";
 import { deploy } from "../utils/deploy-v2.js";
-import { logError, MUDError } from "../utils/errors.js";
+import { logError } from "../utils/errors.js";
 import { forge, getRpcUrl, getSrcDirectory } from "../utils/foundry.js";
 import { mkdirSync, writeFileSync } from "fs";
-import { loadStoreConfig } from "../config/loadStoreConfig.js";
 import { getChainId } from "../utils/getChainId.js";
 
 export type DeployOptions = {

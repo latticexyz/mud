@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "fs";
 import path from "path";
-import { MUDConfig, resolveWithContext } from "../config/index.js";
-import { MUDError } from "./errors.js";
+import { MUDConfig, resolveWithContext } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/config";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld.js";
