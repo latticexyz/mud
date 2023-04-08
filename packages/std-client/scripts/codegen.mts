@@ -1,4 +1,4 @@
-import { parseStoreConfig } from "@latticexyz/cli";
+import { parseStoreConfig } from "@latticexyz/config";
 import { tsgen } from "@latticexyz/cli/dist/render-ts";
 
 import storeMudConfig from "@latticexyz/store/mud.config.mjs";

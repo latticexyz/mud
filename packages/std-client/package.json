@@ -22,6 +22,7 @@
     "release": "npm publish --access=public"
   },
   "devDependencies": {
+    "@latticexyz/config": "^1.41.0",
     "@latticexyz/network": "^1.41.0",
     "@latticexyz/recs": "^1.41.0",
     "@latticexyz/solecs": "^1.41.0",
@@ -71,5 +72,6 @@
     "rxjs": "^7.5.5",
     "viem": "^0.2.0"
   },
-  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f",
+  "dependencies": {}
 }
