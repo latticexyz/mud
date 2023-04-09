@@ -35,7 +35,7 @@ jobs:
 
       - name: Build and install CLI
         working-directory: packages/cli
-        run: pnpm build && pnpm link
+        run: pnpm build && pnpm link .
 
       - name: Generate tables
         run: pnpm tablegen
