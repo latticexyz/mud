@@ -28,7 +28,7 @@
     "link": "pnpm link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish --access=public",
-    "gas-report": "mud gas-report --path test/** --save gas-report.txt"
+    "gas-report": "../cli/dist/mud.js gas-report --path test/** --save gas-report.txt"
   },
   "devDependencies": {
     "@ethersproject/providers": "^5.7.2",
