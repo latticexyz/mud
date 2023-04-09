@@ -25,6 +25,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@ethersproject/abi": "^5.7.0",
     "@latticexyz/cli": "workspace:*",
+    "@latticexyz/config": "workspace:*",
     "@latticexyz/network": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/solecs": "workspace:*",
@@ -76,5 +77,6 @@
     "rxjs": "^7.5.5",
     "viem": "^0.2.0"
   },
-  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f",
+  "dependencies": {}
 }

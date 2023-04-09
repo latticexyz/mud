@@ -1,5 +1,5 @@
-import { ExtractUserTypes, StringForUnion } from "../utils/typeUtils.js";
-import { StoreUserConfig, StoreConfig } from "./parseStoreConfig.js";
+import { ExtractUserTypes, StringForUnion } from "./typeUtils.js";
+import { StoreUserConfig, StoreConfig } from "./store/parseStoreConfig.js";
 import { WorldUserConfig, ResolvedWorldConfig } from "./world/index.js";
 
 export type MUDUserConfig<
@@ -17,8 +17,9 @@ export function mudConfig<
 
 export * from "./commonSchemas.js";
 export * from "./loadConfig.js";
-export * from "./loadStoreConfig.js";
-export * from "./parseStoreConfig.js";
+export * from "./store/loadStoreConfig.js";
+export * from "./store/parseStoreConfig.js";
 export * from "./world/index.js";
 export * from "./validation.js";
 export * from "./dynamicResolution.js";
+export * from "./errors.js";

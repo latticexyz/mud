@@ -1,5 +1,5 @@
 import { ZodError } from "zod";
-import { fromZodErrorCustom } from "../../utils/errors.js";
+import { fromZodErrorCustom } from "../errors.js";
 import { loadConfig } from "../loadConfig.js";
 import { zWorldConfig } from "./parseWorldConfig.js";
 import { resolveWorldConfig } from "./resolveWorldConfig.js";

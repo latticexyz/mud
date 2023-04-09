@@ -4,18 +4,13 @@
     "target": "es2021",
     "module": "esnext",
     "moduleResolution": "node",
-    "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true,
-    "rootDir": ".",
+    "rootDir": "./src",
     "outDir": "dist",
-    "importHelpers": false,
     "isolatedModules": true,
-    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true
-  },
-  "include": ["src", "scripts", "modules.d.ts"]
+  }
 }

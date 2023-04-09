@@ -1,7 +1,6 @@
 import { AbiTypeToSchemaType, getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
-import { StoreConfig } from "../config/index.js";
+import { StoreConfig, parseStaticArray } from "@latticexyz/config";
 import { ImportDatum, RenderTableType } from "./types.js";
-import { parseStaticArray } from "../config/validation.js";
 
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 

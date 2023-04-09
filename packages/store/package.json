@@ -34,7 +34,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@ethersproject/abi": "^5.7.0",
     "ethers": "^5.7.2",
-    "@latticexyz/cli": "workspace:*",
+    "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@typechain/ethers-v5": "^10.2.0",
     "@types/ejs": "^3.1.1",
@@ -57,7 +57,6 @@
     "@ethersproject/providers": "^5.7.2",
     "@ethersproject/abi": "^5.7.0",
     "ethers": "^5.7.2",
-    "@latticexyz/cli": "latest",
     "@latticexyz/schema-type": "latest",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3"

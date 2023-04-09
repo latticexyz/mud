@@ -1,6 +1,6 @@
 import { readFileSync } from "fs";
 import path from "path";
-import { MUDConfig } from "../config/index.js";
+import { MUDConfig } from "@latticexyz/config";
 import { contractToInterface } from "../utils/contractToInterface.js";
 import { formatAndWriteSolidity } from "../utils/formatAndWrite.js";
 import { renderSystemInterface } from "./renderSystemInterface.js";

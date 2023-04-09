@@ -1,6 +1,6 @@
 import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
-import { StoreConfig } from "../config/parseStoreConfig.js";
+import { StoreConfig } from "@latticexyz/config";
 import {
   ImportDatum,
   RenderTableDynamicField,

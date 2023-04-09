@@ -1,4 +1,4 @@
-import { UnrecognizedSystemErrorFactory } from "../../utils/errors.js";
+import { UnrecognizedSystemErrorFactory } from "../errors.js";
 import { ParsedWorldConfig } from "./parseWorldConfig.js";
 import { SystemUserConfig } from "./userTypes.js";
 
