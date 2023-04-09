@@ -979,6 +979,9 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
+      '@latticexyz/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
@@ -1106,6 +1109,9 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
+      '@latticexyz/cli':
+        specifier: workspace:*
+        version: link:../cli
       '@latticexyz/config':
         specifier: workspace:*
         version: link:../config
