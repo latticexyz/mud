@@ -1,5 +1,5 @@
 import path from "path";
-import { StoreConfig } from "../config/index.js";
+import { StoreConfig } from "@latticexyz/config";
 import { getRecsV1TableOptions } from "../render-ts/recsV1TableOptions.js";
 import { renderRecsV1Tables } from "../render-ts/renderRecsV1Tables.js";
 import { formatAndWriteTypescript } from "../utils/formatAndWrite.js";

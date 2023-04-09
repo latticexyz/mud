@@ -3,9 +3,12 @@
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
     "target": "es2021",
     "module": "esnext",
-    "moduleResolution": "nodenext",
+    "moduleResolution": "node",
     "resolveJsonModule": true,
-    "outDir": "./dist",
+    "declaration": true,
+    "sourceMap": true,
+    "rootDir": ".",
+    "outDir": "dist",
     "importHelpers": false,
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
@@ -13,5 +16,6 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "skipLibCheck": true
-  }
+  },
+  "include": ["src", "scripts", "modules.d.ts"]
 }

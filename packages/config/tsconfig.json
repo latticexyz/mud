@@ -4,7 +4,6 @@
     "target": "es2021",
     "module": "esnext",
     "moduleResolution": "node",
-    "types": [],
     "declaration": true,
     "sourceMap": true,
     "rootDir": "./src",

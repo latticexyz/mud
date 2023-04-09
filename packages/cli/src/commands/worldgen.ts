@@ -1,6 +1,5 @@
 import type { CommandModule } from "yargs";
-import { loadStoreConfig } from "../config/loadStoreConfig.js";
-import { loadWorldConfig } from "../config/index.js";
+import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
 import { getSrcDirectory } from "../utils/foundry.js";
 import glob from "glob";
 import path, { basename } from "path";

@@ -1,5 +1,5 @@
 import path from "path";
-import { StoreConfig } from "../config/index.js";
+import { StoreConfig } from "@latticexyz/config";
 import { getTableOptions } from "./tableOptions.js";
 import { renderTable } from "./renderTable.js";
 import { renderTypesFromConfig } from "./renderTypesFromConfig.js";
