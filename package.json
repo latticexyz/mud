@@ -61,8 +61,8 @@
     "test": "pnpm recursive run test",
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",
-    "gas-report": "workspace @latticexyz/store run gas-report && pnpm recursive run --filter @latticexyz/world run gas-report",
-    "tablegen": "pnpm recursive run --filter @latticexyz/store run tablegen && pnpm recursive run --filter @latticexyz/world run tablegen"
+    "gas-report": "pnpm recursive run gas-report",
+    "tablegen": "pnpm recursive run tablegen"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
