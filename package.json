@@ -57,7 +57,7 @@
     "docs": "pnpm docs:prepare && retype build",
     "docs:prepare": "lerna run docs && pnpm retype:updateversion",
     "docs:dev": "retype watch .",
-    "retype:updateversion": "sed \"s/label: .*/label: $(pnpm list --filter @latticexyz/solecs | grep -e @latticexyz | sed \"s/.*@//\")/\" retype.yml > retype.yml.tmp && mv retype.yml.tmp retype.yml",
+    "retype:updateversion": "sed \"s/label: .*/label: $(cat packages/cli/package.json | jq -r '.version')/\" retype.yml > retype.yml.tmp && mv retype.yml.tmp retype.yml",
     "test": "pnpm recursive run test",
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",
