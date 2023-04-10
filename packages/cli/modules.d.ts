@@ -1,6 +1,4 @@
 declare module "prettier-plugin-solidity";
-// long isn't esm-friendly
-declare module "long";
 // adding .js to minimal would break clients down the line because it probably won't get a synthetic default import
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare module "protobufjs/minimal" {
