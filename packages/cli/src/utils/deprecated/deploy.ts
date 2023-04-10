@@ -77,6 +77,8 @@ export type DeployOptions = {
   reuseComponents?: boolean;
   clear?: boolean;
   gasPrice?: number;
+  generate?: boolean;
+  keepDeploy?: boolean;
 };
 
 export async function generateAndDeploy(args: DeployOptions) {
@@ -85,11 +87,13 @@ export async function generateAndDeploy(args: DeployOptions) {
   let initialBlockNumber: string | undefined;
 
   try {
-    // Generate LibDeploy
-    libDeployPath = await generateLibDeploy(args.config, contractsDirectory, args.systems);
+    if (args.generate) {
+      // Generate LibDeploy
+      libDeployPath = await generateLibDeploy(args.config, contractsDirectory, args.systems);
 
-    // Build and generate fresh types
-    await generateTypes(undefined, "./types", { clear: args.clear });
+      // Build and generate fresh types
+      await generateTypes(undefined, "./types", { clear: args.clear });
+    }
 
     // Call deploy script
     const result = await deploy(
@@ -104,7 +108,7 @@ export async function generateAndDeploy(args: DeployOptions) {
   } finally {
     // Remove generated LibDeploy
     console.log("Cleaning up deployment script");
-    if (libDeployPath) await resetLibDeploy(contractsDirectory);
+    if (!args.keepDeploy && libDeployPath) await resetLibDeploy(contractsDirectory);
   }
 
   return { deployedWorldAddress, initialBlockNumber };

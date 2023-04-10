@@ -30,6 +30,8 @@ const commandModule: CommandModule<Options, Options> = {
         desc: "Opens a browser at the provided url with the worldAddress url param prefilled",
       },
       gasPrice: { type: "number", desc: "Gas price to set for deploy transactions" },
+      generate: { type: "boolean", desc: "Whether or not it should regenerate LibDeploy", default: true },
+      keepDeploy: { type: "boolean", desc: "Whether or not to remove LibDeploy when done", default: false },
     });
   },
 
@@ -44,6 +46,8 @@ const commandModule: CommandModule<Options, Options> = {
     dev,
     openUrl,
     gasPrice,
+    generate,
+    keepDeploy,
   }) {
     if (systems != null && !worldAddress) {
       console.error("Error: Upgrading systems requires a World address.");
@@ -68,6 +72,8 @@ const commandModule: CommandModule<Options, Options> = {
         reuseComponents,
         clear: true,
         gasPrice,
+        generate,
+        keepDeploy,
       });
     } catch (e: any) {
       if (!e.stderr) {
