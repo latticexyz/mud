@@ -8,8 +8,8 @@ import { ISystemHook } from "./ISystemHook.sol";
 import { IModule } from "./IModule.sol";
 
 /**
- * The IWorldCore interfaces includes all World methods with a static function selector.
- * Consumers should use the `IBaseWorld` interface instead, which includes
+ * The IWorldCore interface only includes core World methods with a static function selector.
+ * Consumers should use the `IBaseWorld` interface instead, which includes other static and
  * dynamically registered function selectors (e.g. IRegistrationSystem)
  */
 interface IWorldCore is IErrors {
@@ -70,31 +70,6 @@ interface IWorldCore is IErrors {
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
-  ) external;
-
-  /**
-   * Push data to the end of a field in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
-   */
-  function pushToField(
-    bytes16 namespace,
-    bytes16 file,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    bytes calldata dataToPush
-  ) external;
-
-  /**
-   * Update data at `startByteIndex` of a field in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
-   */
-  function updateInField(
-    bytes16 namespace,
-    bytes16 file,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet
   ) external;
 
   /**

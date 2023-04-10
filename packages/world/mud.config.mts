@@ -111,6 +111,10 @@ export default mudConfig({
   enums: {
     Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
   },
-  // module systems with their own namespaces
-  excludeSystems: ["UniqueEntitySystem"],
+  excludeSystems: [
+    // module systems with their own namespaces
+    "UniqueEntitySystem",
+    // module systems with a custom interface
+    "DynamicPartialSystem"
+  ],
 });

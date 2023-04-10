@@ -80,23 +80,28 @@ export function renderImports(imports: ImportDatum[]) {
   return renderedImports.join("\n");
 }
 
-export function renderWithStore(
-  storeArgument: boolean,
-  callback: (
-    _typedStore: string | undefined,
-    _store: string,
-    _commentSuffix: string,
-    _untypedStore: string | undefined
-  ) => string
-) {
-  let result = "";
-  result += callback(undefined, "StoreSwitch", "", undefined);
+export const renderWithStore = _renderWithStoreFactory("IStore");
+export const renderWithStoreDynamicPartial = _renderWithStoreFactory("IStoreDynamicPartial");
 
-  if (storeArgument) {
-    result += "\n" + callback("IStore _store", "_store", " (using the specified store)", "_store");
-  }
+function _renderWithStoreFactory(storeInterfaceName: string) {
+  return (
+    storeArgument: boolean,
+    callback: (
+      _typedStore: string | undefined,
+      _store: string,
+      _commentSuffix: string,
+      _untypedStore: string | undefined
+    ) => string
+  ) => {
+    let result = "";
+    result += callback(undefined, "StoreSwitch", "", undefined);
 
-  return result;
+    if (storeArgument) {
+      result += "\n" + callback(`${storeInterfaceName} _store`, "_store", " (using the specified store)", "_store");
+    }
+
+    return result;
+  };
 }
 
 export function renderTableId(staticResourceData: StaticResourceData) {

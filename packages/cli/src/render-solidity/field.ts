@@ -1,4 +1,4 @@
-import { renderArguments, renderCommonData, renderWithStore } from "./common.js";
+import { renderArguments, renderCommonData, renderWithStore, renderWithStoreDynamicPartial } from "./common.js";
 import { RenderTableField, RenderTableOptions, RenderTableType } from "./types.js";
 
 export function renderFieldMethods(options: RenderTableOptions) {
@@ -44,7 +44,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
     if (field.isDynamic) {
       const portionData = fieldPortionData(field);
 
-      result += renderWithStore(
+      result += renderWithStoreDynamicPartial(
         storeArgument,
         (_typedStore, _store, _commentSuffix) => `
         /** Push ${portionData.title} to ${field.name}${_commentSuffix} */
@@ -60,7 +60,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
       `
       );
 
-      result += renderWithStore(
+      result += renderWithStoreDynamicPartial(
         storeArgument,
         (_typedStore, _store, _commentSuffix) => `
         /** Update ${portionData.title} of ${field.name}${_commentSuffix} at \`_index\` */

@@ -21,7 +21,6 @@ import { InstalledModules } from "./tables/InstalledModules.sol";
 
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldCore } from "./interfaces/IWorldCore.sol";
-import { IBaseWorld } from "./interfaces/IBaseWorld.sol";
 import { IRegistrationSystem } from "./interfaces/IRegistrationSystem.sol";
 
 contract World is Store, IWorldCore {
@@ -147,43 +146,6 @@ contract World is Store, IWorldCore {
   }
 
   /**
-   * Push data to the end of a field in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
-   */
-  function pushToField(
-    bytes16 namespace,
-    bytes16 file,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    bytes calldata dataToPush
-  ) public virtual {
-    // Require access to namespace or file
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
-
-    // Push to the field
-    StoreCore.pushToField(resourceSelector.toTableId(), key, schemaIndex, dataToPush);
-  }
-
-  /**
-   * Update data at `startByteIndex` of a field in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
-   */
-  function updateInField(
-    bytes16 namespace,
-    bytes16 file,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet
-  ) public virtual {
-    // Require access to namespace or file
-    bytes32 resourceSelector = AccessControl.requireAccess(namespace, file, msg.sender);
-
-    // Update data in the field
-    StoreCore.updateInField(resourceSelector.toTableId(), key, schemaIndex, startByteIndex, dataToSet);
-  }
-
-  /**
    * Delete a record in the table at the given namespace and file.
    * Requires the caller to have access to the namespace or file.
    */
@@ -300,44 +262,6 @@ contract World is Store, IWorldCore {
   ) public virtual override {
     bytes32 resourceSelector = ResourceSelector.from(tableId);
     setField(resourceSelector.getNamespace(), resourceSelector.getFile(), key, schemaIndex, data);
-  }
-
-  /**
-   * Push data to the end of a field in the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
-   */
-  function pushToField(
-    uint256 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    bytes calldata dataToPush
-  ) public override {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
-    pushToField(resourceSelector.getNamespace(), resourceSelector.getFile(), key, schemaIndex, dataToPush);
-  }
-
-  /**
-   * Update data at `startByteIndex` of a field in the table at the given tableId.
-   * This overload exists to conform with the `IStore` interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or file.
-   */
-  function updateInField(
-    uint256 tableId,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet
-  ) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
-    updateInField(
-      resourceSelector.getNamespace(),
-      resourceSelector.getFile(),
-      key,
-      schemaIndex,
-      startByteIndex,
-      dataToSet
-    );
   }
 
   /**

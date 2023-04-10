@@ -8,6 +8,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 // Import store internals
 import { IStore } from "../../IStore.sol";
+import { IStoreDynamicPartial } from "../../IStoreDynamicPartial.sol";
 import { StoreSwitch } from "../../StoreSwitch.sol";
 import { StoreCore } from "../../StoreCore.sol";
 import { Bytes } from "../../Bytes.sol";
@@ -115,7 +116,7 @@ library StoreMetadata {
   }
 
   /** Push a slice to tableName (using the specified store) */
-  function pushTableName(IStore _store, uint256 tableId, string memory _slice) internal {
+  function pushTableName(IStoreDynamicPartial _store, uint256 tableId, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32(uint256((tableId)));
 
@@ -131,7 +132,12 @@ library StoreMetadata {
   }
 
   /** Update a slice of tableName (using the specified store) at `_index` */
-  function updateTableName(IStore _store, uint256 tableId, uint256 _index, string memory _slice) internal {
+  function updateTableName(
+    IStoreDynamicPartial _store,
+    uint256 tableId,
+    uint256 _index,
+    string memory _slice
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32(uint256((tableId)));
 
@@ -184,7 +190,7 @@ library StoreMetadata {
   }
 
   /** Push a slice to abiEncodedFieldNames (using the specified store) */
-  function pushAbiEncodedFieldNames(IStore _store, uint256 tableId, bytes memory _slice) internal {
+  function pushAbiEncodedFieldNames(IStoreDynamicPartial _store, uint256 tableId, bytes memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32(uint256((tableId)));
 
@@ -200,7 +206,12 @@ library StoreMetadata {
   }
 
   /** Update a slice of abiEncodedFieldNames (using the specified store) at `_index` */
-  function updateAbiEncodedFieldNames(IStore _store, uint256 tableId, uint256 _index, bytes memory _slice) internal {
+  function updateAbiEncodedFieldNames(
+    IStoreDynamicPartial _store,
+    uint256 tableId,
+    uint256 _index,
+    bytes memory _slice
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32(uint256((tableId)));
 

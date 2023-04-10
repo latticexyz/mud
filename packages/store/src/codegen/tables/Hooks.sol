@@ -8,6 +8,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 // Import store internals
 import { IStore } from "../../IStore.sol";
+import { IStoreDynamicPartial } from "../../IStoreDynamicPartial.sol";
 import { StoreSwitch } from "../../StoreSwitch.sol";
 import { StoreCore } from "../../StoreCore.sol";
 import { Bytes } from "../../Bytes.sol";
@@ -108,7 +109,7 @@ library Hooks {
   }
 
   /** Push an element to value (using the specified store) */
-  function push(IStore _store, bytes32 key, address _element) internal {
+  function push(IStoreDynamicPartial _store, bytes32 key, address _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -124,7 +125,7 @@ library Hooks {
   }
 
   /** Update an element of value (using the specified store) at `_index` */
-  function update(IStore _store, bytes32 key, uint256 _index, address _element) internal {
+  function update(IStoreDynamicPartial _store, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 

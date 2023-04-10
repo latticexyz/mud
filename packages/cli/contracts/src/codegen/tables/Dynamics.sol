@@ -8,6 +8,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 // Import store internals
 import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { IStoreDynamicPartial } from "@latticexyz/store/src/IStoreDynamicPartial.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
@@ -133,7 +134,7 @@ library Dynamics {
   }
 
   /** Push an element to staticB32 (using the specified store) */
-  function pushStaticB32(IStore _store, bytes32 key, bytes32 _element) internal {
+  function pushStaticB32(IStoreDynamicPartial _store, bytes32 key, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -149,7 +150,7 @@ library Dynamics {
   }
 
   /** Update an element of staticB32 (using the specified store) at `_index` */
-  function updateStaticB32(IStore _store, bytes32 key, uint256 _index, bytes32 _element) internal {
+  function updateStaticB32(IStoreDynamicPartial _store, bytes32 key, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -199,7 +200,7 @@ library Dynamics {
   }
 
   /** Push an element to staticI32 (using the specified store) */
-  function pushStaticI32(IStore _store, bytes32 key, int32 _element) internal {
+  function pushStaticI32(IStoreDynamicPartial _store, bytes32 key, int32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -215,7 +216,7 @@ library Dynamics {
   }
 
   /** Update an element of staticI32 (using the specified store) at `_index` */
-  function updateStaticI32(IStore _store, bytes32 key, uint256 _index, int32 _element) internal {
+  function updateStaticI32(IStoreDynamicPartial _store, bytes32 key, uint256 _index, int32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -265,7 +266,7 @@ library Dynamics {
   }
 
   /** Push an element to staticU128 (using the specified store) */
-  function pushStaticU128(IStore _store, bytes32 key, uint128 _element) internal {
+  function pushStaticU128(IStoreDynamicPartial _store, bytes32 key, uint128 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -281,7 +282,7 @@ library Dynamics {
   }
 
   /** Update an element of staticU128 (using the specified store) at `_index` */
-  function updateStaticU128(IStore _store, bytes32 key, uint256 _index, uint128 _element) internal {
+  function updateStaticU128(IStoreDynamicPartial _store, bytes32 key, uint256 _index, uint128 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -331,7 +332,7 @@ library Dynamics {
   }
 
   /** Push an element to staticAddrs (using the specified store) */
-  function pushStaticAddrs(IStore _store, bytes32 key, address _element) internal {
+  function pushStaticAddrs(IStoreDynamicPartial _store, bytes32 key, address _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -347,7 +348,7 @@ library Dynamics {
   }
 
   /** Update an element of staticAddrs (using the specified store) at `_index` */
-  function updateStaticAddrs(IStore _store, bytes32 key, uint256 _index, address _element) internal {
+  function updateStaticAddrs(IStoreDynamicPartial _store, bytes32 key, uint256 _index, address _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -397,7 +398,7 @@ library Dynamics {
   }
 
   /** Push an element to staticBools (using the specified store) */
-  function pushStaticBools(IStore _store, bytes32 key, bool _element) internal {
+  function pushStaticBools(IStoreDynamicPartial _store, bytes32 key, bool _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -413,7 +414,7 @@ library Dynamics {
   }
 
   /** Update an element of staticBools (using the specified store) at `_index` */
-  function updateStaticBools(IStore _store, bytes32 key, uint256 _index, bool _element) internal {
+  function updateStaticBools(IStoreDynamicPartial _store, bytes32 key, uint256 _index, bool _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -463,7 +464,7 @@ library Dynamics {
   }
 
   /** Push an element to u64 (using the specified store) */
-  function pushU64(IStore _store, bytes32 key, uint64 _element) internal {
+  function pushU64(IStoreDynamicPartial _store, bytes32 key, uint64 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -479,7 +480,7 @@ library Dynamics {
   }
 
   /** Update an element of u64 (using the specified store) at `_index` */
-  function updateU64(IStore _store, bytes32 key, uint256 _index, uint64 _element) internal {
+  function updateU64(IStoreDynamicPartial _store, bytes32 key, uint256 _index, uint64 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -529,7 +530,7 @@ library Dynamics {
   }
 
   /** Push a slice to str (using the specified store) */
-  function pushStr(IStore _store, bytes32 key, string memory _slice) internal {
+  function pushStr(IStoreDynamicPartial _store, bytes32 key, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -545,7 +546,7 @@ library Dynamics {
   }
 
   /** Update a slice of str (using the specified store) at `_index` */
-  function updateStr(IStore _store, bytes32 key, uint256 _index, string memory _slice) internal {
+  function updateStr(IStoreDynamicPartial _store, bytes32 key, uint256 _index, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -595,7 +596,7 @@ library Dynamics {
   }
 
   /** Push a slice to b (using the specified store) */
-  function pushB(IStore _store, bytes32 key, bytes memory _slice) internal {
+  function pushB(IStoreDynamicPartial _store, bytes32 key, bytes memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -611,7 +612,7 @@ library Dynamics {
   }
 
   /** Update a slice of b (using the specified store) at `_index` */
-  function updateB(IStore _store, bytes32 key, uint256 _index, bytes memory _slice) internal {
+  function updateB(IStoreDynamicPartial _store, bytes32 key, uint256 _index, bytes memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 

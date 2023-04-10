@@ -8,6 +8,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 // Import store internals
 import { IStore } from "../../IStore.sol";
+import { IStoreDynamicPartial } from "../../IStoreDynamicPartial.sol";
 import { StoreSwitch } from "../../StoreSwitch.sol";
 import { StoreCore } from "../../StoreCore.sol";
 import { Bytes } from "../../Bytes.sol";
@@ -189,7 +190,7 @@ library Mixed {
   }
 
   /** Push an element to a32 (using the specified store) */
-  function pushA32(IStore _store, bytes32 key, uint32 _element) internal {
+  function pushA32(IStoreDynamicPartial _store, bytes32 key, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -205,7 +206,7 @@ library Mixed {
   }
 
   /** Update an element of a32 (using the specified store) at `_index` */
-  function updateA32(IStore _store, bytes32 key, uint256 _index, uint32 _element) internal {
+  function updateA32(IStoreDynamicPartial _store, bytes32 key, uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -255,7 +256,7 @@ library Mixed {
   }
 
   /** Push a slice to s (using the specified store) */
-  function pushS(IStore _store, bytes32 key, string memory _slice) internal {
+  function pushS(IStoreDynamicPartial _store, bytes32 key, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -271,7 +272,7 @@ library Mixed {
   }
 
   /** Update a slice of s (using the specified store) at `_index` */
-  function updateS(IStore _store, bytes32 key, uint256 _index, string memory _slice) internal {
+  function updateS(IStoreDynamicPartial _store, bytes32 key, uint256 _index, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 

@@ -36,6 +36,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 // Import store internals
 import { IStore } from "${storeImportPath}IStore.sol";
+import { IStoreDynamicPartial } from "${storeImportPath}IStoreDynamicPartial.sol";
 import { StoreSwitch } from "${storeImportPath}StoreSwitch.sol";
 import { StoreCore } from "${storeImportPath}StoreCore.sol";
 import { Bytes } from "${storeImportPath}Bytes.sol";

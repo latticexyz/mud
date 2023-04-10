@@ -3,7 +3,9 @@ pragma solidity >=0.8.0;
 
 import { console } from "forge-std/console.sol";
 import { IStore, IStoreHook } from "./IStore.sol";
+import { IStoreDynamicPartial } from "./IStoreDynamicPartial.sol";
 import { StoreCore } from "./StoreCore.sol";
+import { StoreCoreDynamicPartial } from "./StoreCoreDynamicPartial.sol";
 import { Schema } from "./Schema.sol";
 
 /**
@@ -86,28 +88,6 @@ library StoreSwitch {
     }
   }
 
-  function pushToField(uint256 table, bytes32[] memory key, uint8 fieldIndex, bytes memory dataToPush) internal {
-    if (isDelegateCall()) {
-      StoreCore.pushToField(table, key, fieldIndex, dataToPush);
-    } else {
-      IStore(msg.sender).pushToField(table, key, fieldIndex, dataToPush);
-    }
-  }
-
-  function updateInField(
-    uint256 table,
-    bytes32[] memory key,
-    uint8 fieldIndex,
-    uint256 startByteIndex,
-    bytes memory dataToSet
-  ) internal {
-    if (isDelegateCall()) {
-      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
-    } else {
-      IStore(msg.sender).updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
-    }
-  }
-
   function deleteRecord(uint256 table, bytes32[] memory key) internal {
     if (isDelegateCall()) {
       StoreCore.deleteRecord(table, key);
@@ -137,6 +117,34 @@ library StoreSwitch {
       return StoreCore.getField(table, key, fieldIndex);
     } else {
       return IStore(msg.sender).getField(table, key, fieldIndex);
+    }
+  }
+
+  /************************************************************************
+   *
+   *    DynamicPartial
+   *
+   ************************************************************************/
+
+  function pushToField(uint256 table, bytes32[] memory key, uint8 fieldIndex, bytes memory dataToPush) internal {
+    if (isDelegateCall()) {
+      StoreCoreDynamicPartial.pushToField(table, key, fieldIndex, dataToPush);
+    } else {
+      IStoreDynamicPartial(msg.sender).pushToField(table, key, fieldIndex, dataToPush);
+    }
+  }
+
+  function updateInField(
+    uint256 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    uint256 startByteIndex,
+    bytes memory dataToSet
+  ) internal {
+    if (isDelegateCall()) {
+      StoreCoreDynamicPartial.updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+    } else {
+      IStoreDynamicPartial(msg.sender).updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
     }
   }
 }

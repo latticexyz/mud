@@ -14,6 +14,7 @@ import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" }
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/abi/CoreModule.json" assert { type: "json" };
 import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json" assert { type: "json" };
+import DynamicPartialModuleData from "@latticexyz/world/abi/DynamicPartialModule.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.json" assert { type: "json" };
 import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.json" assert { type: "json" };
 
@@ -78,6 +79,11 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       RegistrationModuleData.bytecode,
       "RegistrationModule"
     ),
+    DynamicPartialModule: deployContract(
+      DynamicPartialModuleData.abi,
+      DynamicPartialModuleData.bytecode,
+      "DynamicPartialModule"
+    ),
     KeysWithValueModule: deployContract(
       KeysWithValueModuleData.abi,
       KeysWithValueModuleData.bytecode,
@@ -108,6 +114,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   console.log(chalk.blue("Installing core World modules"));
   await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.CoreModule, "0x"]);
   await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.RegistrationModule, "0x"]);
+  await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.DynamicPartialModule, "0x"]);
   console.log(chalk.green("Installed core World modules"));
 
   // Register namespace

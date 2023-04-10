@@ -8,6 +8,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 
 // Import store internals
 import { IStore } from "@latticexyz/store/src/IStore.sol";
+import { IStoreDynamicPartial } from "@latticexyz/store/src/IStoreDynamicPartial.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
@@ -138,7 +139,7 @@ library Singleton {
   }
 
   /** Push an element to v2 (using the specified store) */
-  function pushV2(IStore _store, uint32 _element) internal {
+  function pushV2(IStoreDynamicPartial _store, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
@@ -152,7 +153,7 @@ library Singleton {
   }
 
   /** Update an element of v2 (using the specified store) at `_index` */
-  function updateV2(IStore _store, uint256 _index, uint32 _element) internal {
+  function updateV2(IStoreDynamicPartial _store, uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.updateInField(_tableId, _primaryKeys, 1, _index * 4, abi.encodePacked((_element)));
@@ -196,7 +197,7 @@ library Singleton {
   }
 
   /** Push an element to v3 (using the specified store) */
-  function pushV3(IStore _store, uint32 _element) internal {
+  function pushV3(IStoreDynamicPartial _store, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
@@ -210,7 +211,7 @@ library Singleton {
   }
 
   /** Update an element of v3 (using the specified store) at `_index` */
-  function updateV3(IStore _store, uint256 _index, uint32 _element) internal {
+  function updateV3(IStoreDynamicPartial _store, uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.updateInField(_tableId, _primaryKeys, 2, _index * 4, abi.encodePacked((_element)));
@@ -254,7 +255,7 @@ library Singleton {
   }
 
   /** Push an element to v4 (using the specified store) */
-  function pushV4(IStore _store, uint32 _element) internal {
+  function pushV4(IStoreDynamicPartial _store, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
@@ -268,7 +269,7 @@ library Singleton {
   }
 
   /** Update an element of v4 (using the specified store) at `_index` */
-  function updateV4(IStore _store, uint256 _index, uint32 _element) internal {
+  function updateV4(IStoreDynamicPartial _store, uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.updateInField(_tableId, _primaryKeys, 3, _index * 4, abi.encodePacked((_element)));
