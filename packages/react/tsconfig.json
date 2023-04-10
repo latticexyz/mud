@@ -15,5 +15,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "exclude": ["dist", "**/*.test.ts"]
+  "exclude": ["dist"]
 }
