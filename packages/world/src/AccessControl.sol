@@ -44,7 +44,7 @@ library AccessControl {
   ) internal view returns (bytes32 resourceSelector) {
     resourceSelector = ResourceSelector.from(namespace, file);
 
-    if (NamespaceOwner.get(namespace) != caller) {
+    if (NamespaceOwner.get(namespace) != caller && caller != address(this)) {
       revert IErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
