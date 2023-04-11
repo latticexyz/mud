@@ -58,6 +58,11 @@ const commandModule: CommandModule<Options, Options> = {
     const validFiles = files.filter((file) => file.endsWith(".t.sol"));
     const tempFiles = await Promise.all(validFiles.map((file) => createGasReport(file)));
 
+    process.once("SIGINT", () => {
+      console.log("caught sigint, deleting temp files");
+      tempFiles.forEach((file) => rmSync(file));
+    });
+
     let gasReport: GasReport;
     try {
       gasReport = await runGasReport();
@@ -75,7 +80,6 @@ const commandModule: CommandModule<Options, Options> = {
         const compareGasReport: GasReport = JSON.parse(readFileSync(compare, "utf8"));
         // Merge the previous gas report with the new one
         gasReport = gasReport.map((entry) => {
-          console.log("looking for prev value");
           const prevEntry = compareGasReport.find(
             (e) => e.name === entry.name && e.functionCall === entry.functionCall
           );
