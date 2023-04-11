@@ -60,8 +60,8 @@
     "vitest": "^0.29.8"
   },
   "peerDependencies": {
-    "@ethersproject/providers": "^5.7.2",
     "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
     "@latticexyz/network": "latest",
     "@latticexyz/recs": "latest",
     "@latticexyz/solecs": "latest",

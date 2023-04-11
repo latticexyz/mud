@@ -742,11 +742,11 @@ importers:
         specifier: ^5.2.1
         version: 5.2.1
       nice-grpc-common:
-        specifier: ^2.0.0
-        version: 2.0.0
+        specifier: ^2.0.2
+        version: 2.0.2
       protobufjs:
-        specifier: ^7.1.2
-        version: 7.1.2
+        specifier: ^7.2.3
+        version: 7.2.3
     devDependencies:
       rimraf:
         specifier: ^3.0.2
@@ -764,7 +764,7 @@ importers:
         specifier: ^5.7.2
         version: 5.7.2
       '@rari-capital/solmate':
-        specifier: git://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
+        specifier: https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
         version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
       '@solidstate/contracts':
         specifier: ^0.0.52
@@ -932,7 +932,7 @@ importers:
         specifier: workspace:*
         version: link:../solecs
       '@rari-capital/solmate':
-        specifier: git://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
+        specifier: https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
         version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
       '@solidstate/contracts':
         specifier: ^0.0.52
@@ -14012,6 +14012,12 @@ packages:
     dependencies:
       ts-error: 1.0.6
 
+  /nice-grpc-common@2.0.2:
+    resolution: {integrity: sha512-7RNWbls5kAL1QVUOXvBsv1uO0wPQK3lHv+cY1gwkTzirnG1Nop4cBJZubpgziNbaVc/bl9QJcyvsf/NQxa3rjQ==}
+    dependencies:
+      ts-error: 1.0.6
+    dev: false
+
   /nice-grpc-web@2.0.1(google-protobuf@3.21.0):
     resolution: {integrity: sha512-r8jy0TJY6ZO9qWtujiqmtRkqgItAChoJxJyYv+CHacP9G5kRIH03M+sQqtieXNNDUAKfFT/z5yroSy1cPFX0sA==}
     dependencies:
@@ -15348,8 +15354,8 @@ packages:
       long: 4.0.0
     dev: true
 
-  /protobufjs@7.1.2:
-    resolution: {integrity: sha512-4ZPTPkXCdel3+L81yw3dG6+Kq3umdWKh7Dc7GW/CpNk4SX3hK58iPCWeCyhVTDrbkNeKrYNZ7EojM5WDaEWTLQ==}
+  /protobufjs@7.2.3:
+    resolution: {integrity: sha512-TtpvOqwB5Gdz/PQmOjgsrGH1nHjAQVCN7JG4A6r1sXRWESL5rNMAiRcBQlCAdKxZcAbstExQePYG8xof/JVRgg==}
     engines: {node: '>=12.0.0'}
     requiresBuild: true
     dependencies:

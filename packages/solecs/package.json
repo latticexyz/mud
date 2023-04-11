@@ -23,14 +23,14 @@
     "release": "npm publish --access=public"
   },
   "devDependencies": {
-    "@ethersproject/providers": "^5.7.2",
     "@ethersproject/abi": "^5.7.0",
-    "ethers": "^5.7.2",
-    "@rari-capital/solmate": "git://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
+    "@ethersproject/providers": "^5.7.2",
+    "@rari-capital/solmate": "https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
     "@solidstate/contracts": "^0.0.52",
     "@typechain/ethers-v5": "^10.2.0",
     "@types/mocha": "^9.1.1",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
+    "ethers": "^5.7.2",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "hardhat": "^2.10.1",
     "memmove": "https://github.com/dk1a/memmove.git#ffd71cd77b1708574ef46a667b23ca3a5cc9fa27",
@@ -44,11 +44,11 @@
     "typedoc": "^0.23.10"
   },
   "peerDependencies": {
-    "@ethersproject/providers": "^5.7.2",
     "@ethersproject/abi": "^5.7.0",
-    "ethers": "^5.7.2",
+    "@ethersproject/providers": "^5.7.2",
     "@solidstate/contracts": "^0.0.52",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
+    "ethers": "^5.7.2",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "memmove": "https://github.com/dk1a/memmove.git#ffd71cd77b1708574ef46a667b23ca3a5cc9fa27"
   },

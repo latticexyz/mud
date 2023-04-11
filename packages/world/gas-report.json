@@ -1,0 +1,158 @@
+[
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "install keys with value module",
+    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
+    "gasUsed": 591892
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "Get list of keys with a given value",
+    "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1))",
+    "gasUsed": 7692
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "compute the target table selector",
+    "functionCall": "bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId)",
+    "gasUsed": 2240
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "install keys with value module",
+    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
+    "gasUsed": 591892
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "set a record on a table with KeysWithValueModule installed",
+    "functionCall": "world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value))",
+    "gasUsed": 169574
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "install keys with value module",
+    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
+    "gasUsed": 591892
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "change a record on a table with KeysWithValueModule installed",
+    "functionCall": "world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2))",
+    "gasUsed": 135571
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "delete a record on a table with KeysWithValueModule installed",
+    "functionCall": "world.deleteRecord(namespace, sourceFile, keyTuple1)",
+    "gasUsed": 58023
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "install keys with value module",
+    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
+    "gasUsed": 591892
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "set a field on a table with KeysWithValueModule installed",
+    "functionCall": "world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1))",
+    "gasUsed": 177719
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "change a field on a table with KeysWithValueModule installed",
+    "functionCall": "world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2))",
+    "gasUsed": 142065
+  },
+  {
+    "source": "test/UniqueEntityModule.t.sol",
+    "name": "install unique entity module",
+    "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",
+    "gasUsed": 773861
+  },
+  {
+    "source": "test/UniqueEntityModule.t.sol",
+    "name": "get a unique entity nonce (non-root module)",
+    "functionCall": "uint256 uniqueEntity = uint256(getUniqueEntity(world))",
+    "gasUsed": 65767
+  },
+  {
+    "source": "test/UniqueEntityModule.t.sol",
+    "name": "installRoot unique entity module",
+    "functionCall": "world.installRootModule(uniqueEntityModule, new bytes(0))",
+    "gasUsed": 767409
+  },
+  {
+    "source": "test/UniqueEntityModule.t.sol",
+    "name": "get a unique entity nonce (root module)",
+    "functionCall": "uint256 uniqueEntity = uint256(getUniqueEntity(world))",
+    "gasUsed": 65767
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Delete record",
+    "functionCall": "world.deleteRecord(namespace, file, singletonKey)",
+    "gasUsed": 16187
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Push data to the table",
+    "functionCall": "world.pushToField(namespace, file, keyTuple, 0, encodedData)",
+    "gasUsed": 96573
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Register a fallback system",
+    "functionCall": "bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, \"\", \"\")",
+    "gasUsed": 81249
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Register a root fallback system",
+    "functionCall": "bytes4 funcSelector2 = world.registerRootFunctionSelector(namespace, file, worldFunc, 0)",
+    "gasUsed": 72482
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Register a function selector",
+    "functionCall": "bytes4 functionSelector = world.registerFunctionSelector(namespace, file, \"msgSender\", \"()\")",
+    "gasUsed": 101846
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Register a new namespace",
+    "functionCall": "world.registerNamespace(\"test\")",
+    "gasUsed": 152067
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Register a root function selector",
+    "functionCall": "bytes4 functionSelector = world.registerRootFunctionSelector(namespace, file, worldFunc, sysFunc)",
+    "gasUsed": 88388
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Register a new table in the namespace",
+    "functionCall": "bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema)",
+    "gasUsed": 252853
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Write data to a table field",
+    "functionCall": "world.setField(namespace, file, singletonKey, 0, abi.encodePacked(true))",
+    "gasUsed": 44866
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Set metadata",
+    "functionCall": "world.setMetadata(namespace, file, tableName, fieldNames)",
+    "gasUsed": 277483
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "Write data to the table",
+    "functionCall": "Bool.set(world, tableId, true)",
+    "gasUsed": 42741
+  }
+]

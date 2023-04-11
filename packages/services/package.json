@@ -25,7 +25,7 @@
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f",
   "dependencies": {
     "long": "^5.2.1",
-    "nice-grpc-common": "^2.0.0",
-    "protobufjs": "^7.1.2"
+    "nice-grpc-common": "^2.0.2",
+    "protobufjs": "^7.2.3"
   }
 }

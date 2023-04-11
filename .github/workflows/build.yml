@@ -2,7 +2,7 @@ name: Build
 
 # Verifies build artifacts in pull requests.
 # Note: this workflow does not trigger on pushes to main,
-# because the npm workflow includes a build+verify step.
+# because the release workflow includes a build+verify step.
 on:
   pull_request:
 
@@ -16,45 +16,21 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
+      - name: Setup
+        uses: ./.github/actions/setup
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8.x
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Build and install CLI
+      - name: Build and link CLI
         working-directory: packages/cli
         run: pnpm build && pnpm link .
 
-      - name: Generate tables
-        run: pnpm tablegen
+      - name: Run codegen
+        run: pnpm codegen
 
-      - name: Outdated files detected, run `pnpm tablegen` and commit them
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git status
-            git --no-pager diff
-            exit 1
-          fi
+      - name: Outdated files, run `pnpm codegen` and commit them
+        uses: ./.github/actions/require-empty-diff
 
       - name: Generate gas reports
         run: pnpm gas-report
 
-      - name: Outdated files detected, run `pnpm gas-report` and commit them
-        run: |
-          if [[ -n "$(git status --porcelain)" ]]; then
-            git status
-            git --no-pager diff
-            exit 1
-          fi
+      - name: Outdated files, run `pnpm gas-report` and commit them
+        uses: ./.github/actions/require-empty-diff

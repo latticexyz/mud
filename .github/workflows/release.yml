@@ -1,0 +1,93 @@
+name: Release
+
+# Releases a canary release when new commits merge to main
+# Releases an official release when workflow dispactch is
+# manually triggered
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    name: Publish new release to npm
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          # The version number of a canary release comes from git describe, which counts the amount of commits from the last tag.
+          # Without fetch-depth: 0 only a single commit is fetched, for the ref/SHA that triggered the workflow, so the canary version is always 0.
+          # See https://github.com/actions/checkout
+          fetch-depth: 0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build and link CLI
+        working-directory: packages/cli
+        run: pnpm build && pnpm link .
+
+      - name: Run codegen
+        run: pnpm codegen
+
+      - name: Outdated files, run `pnpm codegen` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Generate gas reports
+        run: pnpm gas-report
+
+      - name: Outdated files, run `pnpm gas-report` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Set deployment token
+        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Release
+        run: pnpm release:ci
+
+  release-canary:
+    name: Publish canary release to npm
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_dispatch'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+          # The version number of a canary release comes from git describe, which counts the amount of commits from the last tag.
+          # Without fetch-depth: 0 only a single commit is fetched, for the ref/SHA that triggered the workflow, so the canary version is always 0.
+          # See https://github.com/actions/checkout
+          fetch-depth: 0
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Build and link CLI
+        working-directory: packages/cli
+        run: pnpm build && pnpm link .
+
+      - name: Run codegen
+        run: pnpm codegen
+
+      - name: Outdated files, run `pnpm codegen` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Generate gas reports
+        run: pnpm gas-report
+
+      - name: Outdated files, run `pnpm gas-report` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Set deployment token
+        run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Release
+        run: pnpm release:canary --yes
