@@ -5,6 +5,9 @@
   "source": "src/index.ts",
   "main": "src/index.ts",
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
