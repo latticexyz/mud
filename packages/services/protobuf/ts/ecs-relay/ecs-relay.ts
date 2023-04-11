@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import { CallContext, CallOptions } from "nice-grpc-common";
+import type { CallContext, CallOptions } from "nice-grpc-common";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "ecsrelay";
@@ -71,21 +71,30 @@ export const Identity = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Identity {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIdentity();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.name = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<Identity>): Identity {
+    return Identity.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<Identity>): Identity {
@@ -108,21 +117,30 @@ export const Signature = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Signature {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignature();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.signature = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<Signature>): Signature {
+    return Signature.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<Signature>): Signature {
@@ -157,33 +175,58 @@ export const Message = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Message {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMessage();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 8) {
+            break;
+          }
+
           message.version = reader.uint32();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.id = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.data = reader.bytes();
-          break;
+          continue;
         case 4:
+          if (tag != 32) {
+            break;
+          }
+
           message.timestamp = longToNumber(reader.int64() as Long);
-          break;
+          continue;
         case 5:
+          if (tag != 42) {
+            break;
+          }
+
           message.signature = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<Message>): Message {
+    return Message.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<Message>): Message {
@@ -213,24 +256,37 @@ export const SubscriptionRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): SubscriptionRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSubscriptionRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.signature = Signature.decode(reader, reader.uint32());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.subscription = Subscription.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<SubscriptionRequest>): SubscriptionRequest {
+    return SubscriptionRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<SubscriptionRequest>): SubscriptionRequest {
@@ -258,21 +314,30 @@ export const Subscription = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Subscription {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSubscription();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.label = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<Subscription>): Subscription {
+    return Subscription.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<Subscription>): Subscription {
@@ -298,24 +363,37 @@ export const PushRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): PushRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePushRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.label = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.message = Message.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<PushRequest>): PushRequest {
+    return PushRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<PushRequest>): PushRequest {
@@ -346,27 +424,44 @@ export const PushManyRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): PushManyRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePushManyRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.signature = Signature.decode(reader, reader.uint32());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.label = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.messages.push(Message.decode(reader, reader.uint32()));
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<PushManyRequest>): PushManyRequest {
+    return PushManyRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<PushManyRequest>): PushManyRequest {
@@ -389,18 +484,23 @@ export const PushResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): PushResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePushResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<PushResponse>): PushResponse {
+    return PushResponse.fromPartial(base ?? {});
   },
 
   fromPartial(_: DeepPartial<PushResponse>): PushResponse {
@@ -419,18 +519,23 @@ export const CountIdentitiesRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): CountIdentitiesRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCountIdentitiesRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<CountIdentitiesRequest>): CountIdentitiesRequest {
+    return CountIdentitiesRequest.fromPartial(base ?? {});
   },
 
   fromPartial(_: DeepPartial<CountIdentitiesRequest>): CountIdentitiesRequest {
@@ -452,21 +557,30 @@ export const CountIdentitiesResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): CountIdentitiesResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCountIdentitiesResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 8) {
+            break;
+          }
+
           message.count = reader.uint32();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<CountIdentitiesResponse>): CountIdentitiesResponse {
+    return CountIdentitiesResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<CountIdentitiesResponse>): CountIdentitiesResponse {
@@ -486,18 +600,23 @@ export const BalanceRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): BalanceRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBalanceRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<BalanceRequest>): BalanceRequest {
+    return BalanceRequest.fromPartial(base ?? {});
   },
 
   fromPartial(_: DeepPartial<BalanceRequest>): BalanceRequest {
@@ -522,24 +641,37 @@ export const BalanceResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): BalanceResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBalanceResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 8) {
+            break;
+          }
+
           message.wei = longToNumber(reader.uint64() as Long);
-          break;
+          continue;
         case 2:
+          if (tag != 17) {
+            break;
+          }
+
           message.ether = reader.double();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<BalanceResponse>): BalanceResponse {
+    return BalanceResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<BalanceResponse>): BalanceResponse {
@@ -650,7 +782,7 @@ export const ECSRelayServiceDefinition = {
   },
 } as const;
 
-export interface ECSRelayServiceServiceImplementation<CallContextExt = {}> {
+export interface ECSRelayServiceImplementation<CallContextExt = {}> {
   authenticate(request: Signature, context: CallContext & CallContextExt): Promise<DeepPartial<Identity>>;
   revoke(request: Signature, context: CallContext & CallContextExt): Promise<DeepPartial<Identity>>;
   ping(request: Signature, context: CallContext & CallContextExt): Promise<DeepPartial<Identity>>;
@@ -714,7 +846,7 @@ export interface ECSRelayServiceClient<CallOptionsExt = {}> {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
   if (typeof globalThis !== "undefined") {
     return globalThis;
   }
@@ -744,7 +876,7 @@ export type DeepPartial<T> = T extends Builtin
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
   return long.toNumber();
 }

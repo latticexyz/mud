@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { CallContext, CallOptions } from "nice-grpc-common";
+import type { CallContext, CallOptions } from "nice-grpc-common";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "mode";
@@ -169,21 +169,30 @@ export const Row = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Row {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRow();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.values.push(reader.bytes());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<Row>): Row {
+    return Row.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<Row>): Row {
@@ -212,27 +221,44 @@ export const GenericTable = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GenericTable {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenericTable();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.cols.push(reader.string());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.rows.push(Row.decode(reader, reader.uint32()));
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.types.push(reader.string());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<GenericTable>): GenericTable {
+    return GenericTable.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<GenericTable>): GenericTable {
@@ -257,24 +283,33 @@ export const QueryLayerResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLayerResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           const entry1 = QueryLayerResponse_TablesEntry.decode(reader, reader.uint32());
           if (entry1.value !== undefined) {
             message.tables[entry1.key] = entry1.value;
           }
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<QueryLayerResponse>): QueryLayerResponse {
+    return QueryLayerResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<QueryLayerResponse>): QueryLayerResponse {
@@ -308,24 +343,37 @@ export const QueryLayerResponse_TablesEntry = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerResponse_TablesEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLayerResponse_TablesEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.key = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.value = GenericTable.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<QueryLayerResponse_TablesEntry>): QueryLayerResponse_TablesEntry {
+    return QueryLayerResponse_TablesEntry.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<QueryLayerResponse_TablesEntry>): QueryLayerResponse_TablesEntry {
@@ -353,30 +401,43 @@ export const QueryLayerStateResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerStateResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLayerStateResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           const entry1 = QueryLayerStateResponse_ChainTablesEntry.decode(reader, reader.uint32());
           if (entry1.value !== undefined) {
             message.chainTables[entry1.key] = entry1.value;
           }
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           const entry2 = QueryLayerStateResponse_WorldTablesEntry.decode(reader, reader.uint32());
           if (entry2.value !== undefined) {
             message.worldTables[entry2.key] = entry2.value;
           }
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<QueryLayerStateResponse>): QueryLayerStateResponse {
+    return QueryLayerStateResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<QueryLayerStateResponse>): QueryLayerStateResponse {
@@ -419,24 +480,37 @@ export const QueryLayerStateResponse_ChainTablesEntry = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerStateResponse_ChainTablesEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLayerStateResponse_ChainTablesEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.key = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.value = GenericTable.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<QueryLayerStateResponse_ChainTablesEntry>): QueryLayerStateResponse_ChainTablesEntry {
+    return QueryLayerStateResponse_ChainTablesEntry.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<QueryLayerStateResponse_ChainTablesEntry>): QueryLayerStateResponse_ChainTablesEntry {
@@ -464,24 +538,37 @@ export const QueryLayerStateResponse_WorldTablesEntry = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerStateResponse_WorldTablesEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLayerStateResponse_WorldTablesEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.key = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.value = GenericTable.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<QueryLayerStateResponse_WorldTablesEntry>): QueryLayerStateResponse_WorldTablesEntry {
+    return QueryLayerStateResponse_WorldTablesEntry.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<QueryLayerStateResponse_WorldTablesEntry>): QueryLayerStateResponse_WorldTablesEntry {
@@ -512,27 +599,44 @@ export const QueryLayerStateStreamResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): QueryLayerStateStreamResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryLayerStateStreamResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.inserted = QueryLayerStateResponse.decode(reader, reader.uint32());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.updated = QueryLayerStateResponse.decode(reader, reader.uint32());
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.deleted = QueryLayerStateResponse.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<QueryLayerStateStreamResponse>): QueryLayerStateStreamResponse {
+    return QueryLayerStateStreamResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<QueryLayerStateStreamResponse>): QueryLayerStateStreamResponse {
@@ -569,24 +673,37 @@ export const Namespace = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Namespace {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNamespace();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.chainId = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.worldAddress = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<Namespace>): Namespace {
+    return Namespace.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<Namespace>): Namespace {
@@ -616,27 +733,44 @@ export const StateRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): StateRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.namespace = Namespace.decode(reader, reader.uint32());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.worldTables.push(reader.string());
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.chainTables.push(reader.string());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<StateRequest>): StateRequest {
+    return StateRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<StateRequest>): StateRequest {
@@ -671,30 +805,51 @@ export const SingleStateRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): SingleStateRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSingleStateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.namespace = Namespace.decode(reader, reader.uint32());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.table = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.filter.push(Filter.decode(reader, reader.uint32()));
-          break;
+          continue;
         case 4:
+          if (tag != 34) {
+            break;
+          }
+
           message.project.push(ProjectedField.decode(reader, reader.uint32()));
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<SingleStateRequest>): SingleStateRequest {
+    return SingleStateRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<SingleStateRequest>): SingleStateRequest {
@@ -733,33 +888,58 @@ export const FindRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): FindRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFindRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.from = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.filter.push(Filter.decode(reader, reader.uint32()));
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.project.push(ProjectedField.decode(reader, reader.uint32()));
-          break;
+          continue;
         case 4:
+          if (tag != 34) {
+            break;
+          }
+
           message.namespace = Namespace.decode(reader, reader.uint32());
-          break;
+          continue;
         case 5:
+          if (tag != 42) {
+            break;
+          }
+
           message.options = FindRequestOptions.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<FindRequest>): FindRequest {
+    return FindRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<FindRequest>): FindRequest {
@@ -796,27 +976,44 @@ export const FindAllRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): FindAllRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFindAllRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.tables.push(reader.string());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.namespace = Namespace.decode(reader, reader.uint32());
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.options = FindRequestOptions.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<FindAllRequest>): FindAllRequest {
+    return FindAllRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<FindAllRequest>): FindAllRequest {
@@ -851,27 +1048,44 @@ export const JoinRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): JoinRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseJoinRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.on = FieldPair.decode(reader, reader.uint32());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.children.push(FindRequest.decode(reader, reader.uint32()));
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.namespace = Namespace.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<JoinRequest>): JoinRequest {
+    return JoinRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<JoinRequest>): JoinRequest {
@@ -900,24 +1114,37 @@ export const DeleteRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): DeleteRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeleteRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.from = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.filter.push(Filter.decode(reader, reader.uint32()));
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<DeleteRequest>): DeleteRequest {
+    return DeleteRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<DeleteRequest>): DeleteRequest {
@@ -947,30 +1174,47 @@ export const UpdateRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): UpdateRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.target = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.filter.push(Filter.decode(reader, reader.uint32()));
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           const entry3 = UpdateRequest_RowEntry.decode(reader, reader.uint32());
           if (entry3.value !== undefined) {
             message.row[entry3.key] = entry3.value;
           }
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<UpdateRequest>): UpdateRequest {
+    return UpdateRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<UpdateRequest>): UpdateRequest {
@@ -1003,24 +1247,37 @@ export const UpdateRequest_RowEntry = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): UpdateRequest_RowEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateRequest_RowEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.key = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.value = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<UpdateRequest_RowEntry>): UpdateRequest_RowEntry {
+    return UpdateRequest_RowEntry.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<UpdateRequest_RowEntry>): UpdateRequest_RowEntry {
@@ -1047,27 +1304,40 @@ export const InsertRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): InsertRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInsertRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.into = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           const entry3 = InsertRequest_RowEntry.decode(reader, reader.uint32());
           if (entry3.value !== undefined) {
             message.row[entry3.key] = entry3.value;
           }
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<InsertRequest>): InsertRequest {
+    return InsertRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<InsertRequest>): InsertRequest {
@@ -1099,24 +1369,37 @@ export const InsertRequest_RowEntry = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): InsertRequest_RowEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInsertRequest_RowEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.key = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.value = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<InsertRequest_RowEntry>): InsertRequest_RowEntry {
+    return InsertRequest_RowEntry.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<InsertRequest_RowEntry>): InsertRequest_RowEntry {
@@ -1140,21 +1423,30 @@ export const CreateRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): CreateRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.name = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<CreateRequest>): CreateRequest {
+    return CreateRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<CreateRequest>): CreateRequest {
@@ -1183,27 +1475,44 @@ export const FindRequestOptions = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): FindRequestOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFindRequestOptions();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 8) {
+            break;
+          }
+
           message.compressed = reader.bool();
-          break;
+          continue;
         case 2:
+          if (tag != 16) {
+            break;
+          }
+
           message.group = reader.bool();
-          break;
+          continue;
         case 3:
+          if (tag != 24) {
+            break;
+          }
+
           message.negate = reader.bool();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<FindRequestOptions>): FindRequestOptions {
+    return FindRequestOptions.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<FindRequestOptions>): FindRequestOptions {
@@ -1231,24 +1540,37 @@ export const Field = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Field {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseField();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.tableName = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.tableField = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<Field>): Field {
+    return Field.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<Field>): Field {
@@ -1275,24 +1597,37 @@ export const FieldPair = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): FieldPair {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFieldPair();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.field1 = Field.decode(reader, reader.uint32());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.field2 = Field.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<FieldPair>): FieldPair {
+    return FieldPair.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<FieldPair>): FieldPair {
@@ -1321,24 +1656,37 @@ export const ProjectedField = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ProjectedField {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProjectedField();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.field = Field.decode(reader, reader.uint32());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.rename = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ProjectedField>): ProjectedField {
+    return ProjectedField.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ProjectedField>): ProjectedField {
@@ -1371,30 +1719,51 @@ export const Filter = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Filter {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFilter();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.field = Field.decode(reader, reader.uint32());
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.operator = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.value = reader.string();
-          break;
+          continue;
         case 4:
+          if (tag != 34) {
+            break;
+          }
+
           message.function = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<Filter>): Filter {
+    return Filter.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<Filter>): Filter {
