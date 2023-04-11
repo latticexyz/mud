@@ -39,6 +39,8 @@ type GasReportEntry = {
 
 type GasReport = GasReportEntry[];
 
+const tempFileSuffix = "MudGasReport";
+
 const commandModule: CommandModule<Options, Options> = {
   command: "gas-report",
 
@@ -52,42 +54,42 @@ const commandModule: CommandModule<Options, Options> = {
     });
   },
 
-  async handler({ path, save, compare }) {
-    let gasReport: GasReport = [];
+  async handler({ path: files, save, compare }) {
+    const validFiles = files.filter((file) => file.endsWith(".t.sol"));
+    const tempFiles = await Promise.all(validFiles.map((file) => createGasReport(file)));
 
-    // Iterate through all files provided in the path
-    for (const file of path) {
-      gasReport = gasReport.concat(await runGasReport(file));
+    process.once("SIGINT", () => {
+      console.log("caught sigint, deleting temp files");
+      tempFiles.forEach((file) => rmSync(file));
+    });
+
+    let gasReport: GasReport;
+    try {
+      gasReport = await runGasReport();
+    } catch {
+      setTimeout(() => process.exit());
+      return;
+    } finally {
+      // Delete the temporary files
+      tempFiles.forEach((file) => rmSync(file));
     }
 
     // If this gas report should be compared to an existing one, load the existing one
-    const compareGasReport: GasReport = [];
     if (compare) {
       try {
-        const compareFileContents = readFileSync(compare, "utf8");
-        // Create a regex to extract the name, function call and gas used
-        const compareGasReportRegex = new RegExp(/\((.*)\) \| (.*) \[(.*)\]: (.*)/g);
-        // Loop through the matches and add the resuls to the compareGasReport
-        let compareGasReportMatch;
-        while ((compareGasReportMatch = compareGasReportRegex.exec(compareFileContents)) !== null) {
-          const source = compareGasReportMatch[1];
-          const name = compareGasReportMatch[2];
-          const functionCall = compareGasReportMatch[3];
-          const gasUsed = compareGasReportMatch[4];
-
-          compareGasReport.push({ source, name, functionCall, gasUsed: parseInt(gasUsed) });
-        }
+        const compareGasReport: GasReport = JSON.parse(readFileSync(compare, "utf8"));
+        // Merge the previous gas report with the new one
+        gasReport = gasReport.map((entry) => {
+          const prevEntry = compareGasReport.find(
+            (e) => e.name === entry.name && e.functionCall === entry.functionCall
+          );
+          return { ...entry, prevGasUsed: prevEntry?.gasUsed };
+        });
       } catch {
         console.log(chalk.red(`Gas report to compare not found: ${compare}`));
         compare = undefined;
       }
     }
-
-    // Merge the previous gas report with the new one
-    gasReport = gasReport.map((entry) => {
-      const prevEntry = compareGasReport.find((e) => e.name === entry.name && e.functionCall === entry.functionCall);
-      return { ...entry, prevGasUsed: prevEntry?.gasUsed };
-    });
 
     // Print gas report
     printGasReport(gasReport, compare);
@@ -101,16 +103,11 @@ const commandModule: CommandModule<Options, Options> = {
 
 export default commandModule;
 
-async function runGasReport(path: string): Promise<GasReport> {
-  if (!path.endsWith(".t.sol")) {
-    console.log("Skipping gas report for", chalk.bold(path), "(not a test file)");
-    return [];
-  }
-  console.log("Running gas report for", chalk.bold(path));
-  const gasReport: GasReport = [];
+async function createGasReport(filename: string): Promise<string> {
+  console.log("Creating gas report for", chalk.bold(filename));
 
   // Parse the given test file, and add gas reporting wherever requested by a `// !gasreport` comment
-  const fileContents = readFileSync(path, "utf8");
+  const fileContents = readFileSync(filename, "utf8");
   let newFile = fileContents;
 
   // Use a regex to find first line of each function
@@ -139,7 +136,7 @@ async function runGasReport(path: string): Promise<GasReport> {
 _gasreport = gasleft();
 ${functionCall}
 _gasreport = _gasreport - gasleft();
-console.log("GAS REPORT: ${name} [${functionCall.replaceAll('"', '\\"')}]:", _gasreport);`
+console.log("GAS REPORT(${filename}): ${name} [${functionCall.replaceAll('"', '\\"')}]:", _gasreport);`
     );
   }
 
@@ -148,40 +145,46 @@ console.log("GAS REPORT: ${name} [${functionCall.replaceAll('"', '\\"')}]:", _ga
 
   // Write the new file to disk (temporarily)
   // Create the temp file by replacing the previous file name with MudGasReport
-  const tempFileName = path.replace(/\.t\.sol$/, "MudGasReport.t.sol");
+  const tempFileName = filename.replace(/\.t\.sol$/, `${tempFileSuffix}.t.sol`);
   writeFileSync(tempFileName, newFile);
 
-  // Run the generated file using forge
-  const child = execa("forge", ["test", "--match-path", tempFileName, "-vvv"], {
-    stdio: ["inherit", "pipe", "inherit"],
-  });
+  return tempFileName;
+}
+
+async function runGasReport(): Promise<GasReport> {
+  console.log("Running gas report");
+  const gasReport: GasReport = [];
 
   // Extract the logs from the child process
   let logs = "";
   try {
+    // Run the generated file using forge
+    const child = execa("forge", ["test", "--match-path", `*${tempFileSuffix}*`, "-vvv"], {
+      stdio: ["inherit", "pipe", "inherit"],
+    });
     logs = (await child).stdout;
-    rmSync(tempFileName);
-  } catch (e: any) {
-    console.log(e.stdout ?? e);
+  } catch (error: any) {
+    console.log(error.stdout ?? error);
     console.log(chalk.red("\n-----------\nError while running the gas report (see above)"));
-    rmSync(tempFileName);
-    process.exit();
+    throw error;
   }
 
   // Extract the gas reports from the logs
 
   // Create a regex to find all lines starting with `GAS REPORT:` and extract the name, function call and gas used
-  const gasReportRegex = new RegExp(/GAS REPORT: (.*) \[(.*)\]: (.*)/g);
+  const gasReportRegex = new RegExp(/GAS REPORT\((.*)\): (.*) \[(.*)\]: (.*)/g);
 
   // Loop through the matches and print the gas report
   let gasReportMatch;
   while ((gasReportMatch = gasReportRegex.exec(logs)) !== null) {
-    const name = gasReportMatch[1];
-    const functionCall = gasReportMatch[2].replace(";", "");
-    const gasUsed = gasReportMatch[3];
-
-    gasReport.push({ source: path, name, functionCall, gasUsed: parseInt(gasUsed) });
+    const source = gasReportMatch[1];
+    const name = gasReportMatch[2];
+    const functionCall = gasReportMatch[3].replace(";", "");
+    const gasUsed = parseInt(gasReportMatch[4]);
+    gasReport.push({ source, name, functionCall, gasUsed });
   }
+
+  gasReport.sort((a, b) => a.source.localeCompare(b.source));
 
   return gasReport;
 }
@@ -212,9 +215,5 @@ function printGasReport(gasReport: GasReport, compare?: string) {
 
 function saveGasReport(gasReport: GasReport, path: string) {
   console.log(chalk.bold(`Saving gas report to ${path}`));
-  const serializedGasReport = gasReport
-    .map((entry) => `(${entry.source}) | ${entry.name} [${entry.functionCall}]: ${entry.gasUsed}`)
-    .join("\n");
-
-  writeFileSync(path, serializedGasReport);
+  writeFileSync(path, `${JSON.stringify(gasReport, null, 2)}\n`);
 }
