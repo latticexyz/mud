@@ -15,7 +15,8 @@ library AccessControl {
    */
   function hasAccess(bytes16 namespace, bytes16 file, address caller) internal view returns (bool) {
     return
-      ResourceAccess.get(ResourceSelector.from(namespace, 0), caller) || // First check access based on the namespace
+      address(this) == caller || // First check if the World is calling itself
+      ResourceAccess.get(ResourceSelector.from(namespace, 0), caller) || // Then check access based on the namespace
       ResourceAccess.get(ResourceSelector.from(namespace, file), caller); // If caller has no namespace access, check access on the file
   }
 
@@ -37,14 +38,14 @@ library AccessControl {
     }
   }
 
-  function requireOwner(
+  function requireOwnerOrSelf(
     bytes16 namespace,
     bytes16 file,
     address caller
   ) internal view returns (bytes32 resourceSelector) {
     resourceSelector = ResourceSelector.from(namespace, file);
 
-    if (NamespaceOwner.get(namespace) != caller && caller != address(this)) {
+    if (address(this) != caller && NamespaceOwner.get(namespace) != caller) {
       revert IErrors.AccessDenied(resourceSelector.toString(), caller);
     }
   }
