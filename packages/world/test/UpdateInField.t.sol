@@ -42,6 +42,7 @@ contract UpdateInFieldTest is Test {
   bytes32[] singletonKey;
 
   uint256 tableId;
+  address[] initData;
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
@@ -64,7 +65,7 @@ contract UpdateInFieldTest is Test {
     tableId = uint256(resourceSelector);
 
     // Create data
-    address[] memory initData = new address[](3);
+    initData = new address[](3);
     initData[0] = address(0x01);
     initData[1] = address(bytes20(keccak256("some address")));
     initData[2] = address(bytes20(keccak256("another address")));
@@ -84,13 +85,6 @@ contract UpdateInFieldTest is Test {
   function testUpdateInField() public {
     bytes16 namespace = "testUpdInField";
     bytes16 file = "testTable";
-
-    // Create data
-    address[] memory initData = new address[](3);
-    initData[0] = address(0x01);
-    initData[1] = address(bytes20(keccak256("some address")));
-    initData[2] = address(bytes20(keccak256("another address")));
-    bytes memory encodedData = EncodeArray.encode(initData);
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), initData);
