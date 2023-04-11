@@ -13,7 +13,6 @@
   },
   "scripts": {
     "prepare": "pnpm build",
-    "link": "pnpm link .",
     "test": "tsc && echo 'todo: add tests'",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",

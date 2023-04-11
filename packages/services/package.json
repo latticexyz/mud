@@ -15,7 +15,6 @@
     "docs": "rimraf API && mkdir -p _docs/pkg && find pkg -type f -name '*.go' -exec bash -c 'gomarkdoc {} > \"$(dirname _docs/{})\".md' \\; && mv _docs/pkg API && rimraf _docs",
     "test": "tsc --noEmit && echo 'todo: add tests'",
     "protoc-ts": "make protoc-ts",
-    "link": "pnpm link .",
     "release": "npm publish --access=public"
   },
   "devDependencies": {

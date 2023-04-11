@@ -53,7 +53,7 @@
     "release:manual": "pnpm --recursive --no-bail run release",
     "release:yalc": "(pnpm entry:dist && lerna exec npx yalc push); pnpm entry:src",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
-    "link:packages": "lerna run link",
+    "link:packages": "lerna exec 'pnpm link --global'",
     "docs": "pnpm docs:prepare && retype build",
     "docs:prepare": "lerna run docs && pnpm retype:updateversion",
     "docs:dev": "retype watch .",

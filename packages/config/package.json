@@ -16,7 +16,6 @@
     "prepare": "pnpm build",
     "test": "vitest typecheck --run",
     "build": "vite build",
-    "link": "pnpm link .",
     "release": "npm publish --access=public"
   },
   "devDependencies": {

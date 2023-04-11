@@ -19,7 +19,6 @@
     "build": "pnpm build:solidity && pnpm build:typescript",
     "build:solidity": "echo 'removing previous output' && rimraf out && echo 'build solidity' && forge build",
     "build:typescript": "echo 'build typescript' && tsc",
-    "link": "pnpm link .",
     "release": "npm publish --access=public"
   },
   "devDependencies": {

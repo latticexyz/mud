@@ -18,7 +18,6 @@
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "lint": "pnpm prettier && pnpm solhint",
-    "link": "pnpm link .",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish --access=public"
   },

@@ -16,7 +16,6 @@
     "asbuild:release": "asc assembly/index.ts --target release",
     "asbuild": "pnpm asbuild:debug && pnpm asbuild:release",
     "start": "npx serve .",
-    "link": "pnpm link .",
     "prepack:cjs": "mv package.json package.json.bak && jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp && jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && jq \"del(\".type\")\" package.json.tmp2 > package.json",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
     "postpack": "(mv package.json.bak package.json || true) && (rm package.json.tmp || true) && (rm package.json.tmp2 || true)",
