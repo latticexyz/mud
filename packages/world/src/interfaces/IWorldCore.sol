@@ -9,7 +9,7 @@ import { IModule } from "./IModule.sol";
 
 /**
  * The IWorldCore interface only includes core World methods with a static function selector.
- * Consumers should use the `IBaseWorld` interface instead, which includes other static and
+ * Consumers should use the `IBaseWorld` interface instead, which includes
  * dynamically registered function selectors (e.g. IRegistrationSystem)
  */
 interface IWorldCore is IErrors {
