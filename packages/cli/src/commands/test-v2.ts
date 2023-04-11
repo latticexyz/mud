@@ -21,39 +21,44 @@ import { execLog } from "../utils/execLog.js";
 
 type Options = DeployOptions & {
   port?: number;
-  worldAddress?: string;
   interactive?: boolean;
-  configPath?: string;
   forgeOptions?: string;
 };
 
 const WORLD_ADDRESS_FILE = ".mudtest";
 
-const TESTS_CHANGED = "TESTS_CHANGED";
-const SOURCES_CHANGED = "SOURCES_CHANGED";
-const CONFIG_CHANGED = "CONFIG_CHANGED";
+enum Events {
+  TESTS_CHANGED = "TESTS_CHANGED",
+  SOURCES_CHANGED = "SOURCES_CHANGED",
+  CONFIG_CHANGED = "CONFIG_CHANGED",
+}
 
 const listenForKeyPressesOrEvents = (keys: string[], exit: string, events: EventEmitter) => {
-  return new Promise<[string | undefined, string[]]>((res, rej) => {
-    const resolve = (returnValue: [string | undefined, string[]]) => {
+  return new Promise<{ keyPressed?: string; filesChanged: string[] }>((resolve, reject) => {
+    const removeListenersAndResolve = (returnValue: { keyPressed?: string; filesChanged: string[] }) => {
       events.removeAllListeners();
-      res(returnValue);
+      resolve(returnValue);
     };
-    events.on(TESTS_CHANGED, (tests) => resolve([undefined, tests]));
-    events.on(SOURCES_CHANGED, (sources) => resolve([undefined, sources]));
-    events.on(CONFIG_CHANGED, (config) => resolve([undefined, [config]]));
+
+    events.on(Events.TESTS_CHANGED, (filesChanged) => removeListenersAndResolve({ filesChanged }));
+    events.on(Events.SOURCES_CHANGED, (filesChanged) => removeListenersAndResolve({ filesChanged }));
+    events.on(Events.CONFIG_CHANGED, (filesChanged) => removeListenersAndResolve({ filesChanged }));
+
+    // Emit keypress events for stdin
     readline.emitKeypressEvents(process.stdin);
+
     if (process.stdin.isTTY) {
       process.stdin.setRawMode(true);
     }
-    process.stdin.on("keypress", (str, key) => {
-      if (key.name === exit) {
-        rej();
+
+    process.stdin.on("keypress", (_, key) => {
+      if (key.name === exit || (key.name === "c" && key.ctrl)) {
+        reject();
       } else if (keys.includes(key.name)) {
         if (process.stdin.isTTY) {
           process.stdin.setRawMode(false);
         }
-        resolve([key.name, []]);
+        resolve({ keyPressed: key.name, filesChanged: [] });
       }
     });
   });
@@ -110,7 +115,7 @@ const commandModule: CommandModule<Options, Options> = {
     }
 
     async function runCodegen() {
-      console.log("TODO: re-run all codegen if stale detected");
+      console.log("TODO: rerun all codegen if stale detected");
     }
 
     if (process.env.CI || !args.interactive) {
@@ -167,29 +172,32 @@ const commandModule: CommandModule<Options, Options> = {
 
     const signalEvents = new EventEmitter();
 
-    chokidar.watch([configPath, testDir, srcDir]).on("all", async (event, path) => {
+    chokidar.watch([configPath, testDir, srcDir]).on("all", async (_, path) => {
       if (path.includes(testDir)) {
         signals.testsChanged.push(path);
-        signalEvents.emit(TESTS_CHANGED, signals.testsChanged);
+        signalEvents.emit(Events.TESTS_CHANGED, signals.testsChanged);
       } else if (path.includes(srcDir)) {
         signals.sourceChanged.push(path);
-        signalEvents.emit(SOURCES_CHANGED, signals.sourceChanged);
+        signalEvents.emit(Events.SOURCES_CHANGED, signals.sourceChanged);
       } else if (path.includes(configPath)) {
         signals.configChanged = true;
-        signalEvents.emit(CONFIG_CHANGED, path);
+        signalEvents.emit(Events.CONFIG_CHANGED, path);
       }
     });
-    await new Promise((res, rej) => setTimeout(res, 100));
+    await new Promise((resolve) => setTimeout(resolve, 100));
     resetSignals();
 
     try {
-      while ([].length === 0) {
+      // eslint-disable-next-line no-constant-condition
+      while (true) {
         await runCodegen();
         const worldAddress = await deployWorld();
         console.log(chalk.blue("World address", worldAddress));
         // Create a temporary file to pass the world address to the tests
         writeFileSync(WORLD_ADDRESS_FILE, worldAddress);
-        while ([].length === 0) {
+
+        // eslint-disable-next-line no-constant-condition
+        while (true) {
           try {
             await runTests();
           } catch (e) {
@@ -207,6 +215,7 @@ const commandModule: CommandModule<Options, Options> = {
               break;
             }
           }
+
           if (signals.configChanged || signals.sourceChanged.length > 0 || signals.testsChanged.length > 0) {
             if (signals.configChanged) {
               console.log(chalk.green("Config changed. redeploying world"));
@@ -220,7 +229,7 @@ const commandModule: CommandModule<Options, Options> = {
               resetSignals();
               break;
             } else {
-              console.log(chalk.green("Tests changed. re-running forge tests."));
+              console.log(chalk.green("Tests changed. rerunning forge tests."));
               for (const filesChanged of signals.testsChanged) {
                 console.log(chalk.gray("changed: ", filesChanged));
               }
@@ -233,30 +242,35 @@ const commandModule: CommandModule<Options, Options> = {
                 chalk.green("[r]"),
                 "to rerun tests, ",
                 chalk.blue("[d]"),
-                "to re-run the deployer, and",
+                "to rerun the deployer, and",
                 chalk.red("[q]"),
                 "to quit."
               )
             );
             console.log(
-              chalk.dim(chalk.blue("Changes to your systems, MUD config, or tests will re-run tests and/or deployer."))
+              chalk.dim(chalk.blue("Changes to your systems, MUD config, or tests will rerun tests and/or deployer."))
             );
-            const [keyPressed, filesChanged] = await listenForKeyPressesOrEvents(["r", "d"], "q", signalEvents);
+
+            const { keyPressed, filesChanged } = await listenForKeyPressesOrEvents(
+              ["r", "return", "d"],
+              "q",
+              signalEvents
+            );
             if (filesChanged.length > 0) {
               const file = filesChanged[0];
               if (file.includes(configPath)) {
-                console.log(chalk.green("Config changed. redeploying world"));
+                console.log(chalk.green("Config changed, redeploying world"));
                 resetSignals();
                 break;
               } else if (file.includes(srcDir)) {
-                console.log(chalk.green("System changed. redeploying world"));
+                console.log(chalk.green("System changed, redeploying world"));
                 for (const filesChanged of signals.sourceChanged) {
                   console.log(chalk.gray("changed: ", filesChanged));
                 }
                 resetSignals();
                 break;
               } else {
-                console.log(chalk.green("Tests changed. re-running forge tests."));
+                console.log(chalk.green("Tests changed, rerunning forge tests."));
                 for (const filesChanged of signals.testsChanged) {
                   console.log(chalk.gray("changed: ", filesChanged));
                 }
@@ -264,7 +278,7 @@ const commandModule: CommandModule<Options, Options> = {
                 continue;
               }
             } else {
-              if (keyPressed == "r") {
+              if (keyPressed === "r" || keyPressed === "return") {
                 continue;
               } else if (keyPressed === "d") {
                 break;

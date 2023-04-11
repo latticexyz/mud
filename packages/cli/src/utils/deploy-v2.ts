@@ -288,7 +288,6 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       [
         "script",
         postDeployScript,
-        "--silent",
         ...FOUNDRY_OPTIONS_IGNORE_CODES,
         "--sig",
         "run(address)",
