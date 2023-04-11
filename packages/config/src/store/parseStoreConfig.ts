@@ -59,11 +59,11 @@ export interface TableConfig<
   /** Output directory path for the file. Default is "tables" */
   directory?: string;
   /**
-   * The fileSelector is used with the namespace to register the table and construct its id.
-   * The table id will be uint256(bytes32(abi.encodePacked(bytes16(namespace), bytes16(fileSelector)))).
+   * The name is used with the namespace to register the table and construct its id.
+   * The table id will be uint256(bytes32(abi.encodePacked(bytes16(namespace), bytes16(name)))).
    * Default is "<tableName>"
    * */
-  fileSelector?: string;
+  name?: string;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
   tableIdArgument?: boolean;
   /** Include methods that accept a manual `IStore` argument. Default is true. */
@@ -79,7 +79,7 @@ export interface TableConfig<
 const zFullTableConfig = z
   .object({
     directory: z.string().default("tables"),
-    fileSelector: zSelector.optional(),
+    name: zSelector.optional(),
     tableIdArgument: z.boolean().default(false),
     storeArgument: z.boolean().default(true),
     primaryKeys: zPrimaryKeys,
@@ -118,14 +118,14 @@ export type TablesConfig<
 > = Record<string, TableConfig<UserTypes, StaticUserTypes> | FieldData<UserTypes>>;
 
 export const zTablesConfig = z.record(zTableName, zTableConfig).transform((tables) => {
-  // default fileSelector depends on tableName
+  // default name depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
-    table.fileSelector ??= tableName;
+    table.name ??= tableName;
 
     tables[tableName] = table;
   }
-  return tables as Record<string, RequireKeys<(typeof tables)[string], "fileSelector">>;
+  return tables as Record<string, RequireKeys<(typeof tables)[string], "name">>;
 });
 
 /************************************************************************

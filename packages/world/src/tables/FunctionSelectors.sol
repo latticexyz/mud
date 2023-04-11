@@ -42,7 +42,7 @@ library FunctionSelectors {
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](3);
     _fieldNames[0] = "namespace";
-    _fieldNames[1] = "file";
+    _fieldNames[1] = "name";
     _fieldNames[2] = "systemFunctionSelector";
     return ("FunctionSelectors", _fieldNames);
   }
@@ -103,8 +103,8 @@ library FunctionSelectors {
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((namespace)));
   }
 
-  /** Get file */
-  function getFile(bytes4 functionSelector) internal view returns (bytes16 file) {
+  /** Get name */
+  function getName(bytes4 functionSelector) internal view returns (bytes16 name) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
 
@@ -112,8 +112,8 @@ library FunctionSelectors {
     return (Bytes.slice16(_blob, 0));
   }
 
-  /** Get file (using the specified store) */
-  function getFile(IStore _store, bytes4 functionSelector) internal view returns (bytes16 file) {
+  /** Get name (using the specified store) */
+  function getName(IStore _store, bytes4 functionSelector) internal view returns (bytes16 name) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
 
@@ -121,20 +121,20 @@ library FunctionSelectors {
     return (Bytes.slice16(_blob, 0));
   }
 
-  /** Set file */
-  function setFile(bytes4 functionSelector, bytes16 file) internal {
+  /** Set name */
+  function setName(bytes4 functionSelector, bytes16 name) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
 
-    StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked((file)));
+    StoreSwitch.setField(_tableId, _primaryKeys, 1, abi.encodePacked((name)));
   }
 
-  /** Set file (using the specified store) */
-  function setFile(IStore _store, bytes4 functionSelector, bytes16 file) internal {
+  /** Set name (using the specified store) */
+  function setName(IStore _store, bytes4 functionSelector, bytes16 name) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
 
-    _store.setField(_tableId, _primaryKeys, 1, abi.encodePacked((file)));
+    _store.setField(_tableId, _primaryKeys, 1, abi.encodePacked((name)));
   }
 
   /** Get systemFunctionSelector */
@@ -177,7 +177,7 @@ library FunctionSelectors {
   /** Get the full data */
   function get(
     bytes4 functionSelector
-  ) internal view returns (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) {
+  ) internal view returns (bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
 
@@ -189,7 +189,7 @@ library FunctionSelectors {
   function get(
     IStore _store,
     bytes4 functionSelector
-  ) internal view returns (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) {
+  ) internal view returns (bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
 
@@ -198,8 +198,8 @@ library FunctionSelectors {
   }
 
   /** Set the full data using individual values */
-  function set(bytes4 functionSelector, bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) internal {
-    bytes memory _data = encode(namespace, file, systemFunctionSelector);
+  function set(bytes4 functionSelector, bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) internal {
+    bytes memory _data = encode(namespace, name, systemFunctionSelector);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
@@ -212,10 +212,10 @@ library FunctionSelectors {
     IStore _store,
     bytes4 functionSelector,
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     bytes4 systemFunctionSelector
   ) internal {
-    bytes memory _data = encode(namespace, file, systemFunctionSelector);
+    bytes memory _data = encode(namespace, name, systemFunctionSelector);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
@@ -226,17 +226,17 @@ library FunctionSelectors {
   /** Decode the tightly packed blob using this table's schema */
   function decode(
     bytes memory _blob
-  ) internal pure returns (bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) {
+  ) internal pure returns (bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) {
     namespace = (Bytes.slice16(_blob, 0));
 
-    file = (Bytes.slice16(_blob, 16));
+    name = (Bytes.slice16(_blob, 16));
 
     systemFunctionSelector = (Bytes.slice4(_blob, 32));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bytes16 namespace, bytes16 file, bytes4 systemFunctionSelector) internal view returns (bytes memory) {
-    return abi.encodePacked(namespace, file, systemFunctionSelector);
+  function encode(bytes16 namespace, bytes16 name, bytes4 systemFunctionSelector) internal view returns (bytes memory) {
+    return abi.encodePacked(namespace, name, systemFunctionSelector);
   }
 
   /* Delete all data for given keys */

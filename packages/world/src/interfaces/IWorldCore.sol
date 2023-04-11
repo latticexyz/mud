@@ -38,15 +38,15 @@ interface IWorldCore is IErrors {
   function grantAccess(bytes16 namespace, address grantee) external;
 
   /**
-   * Grant access to the resource at the given namespace and file.
+   * Grant access to the resource at the given namespace and name.
    * Requires the caller to own the namespace.
    */
-  function grantAccess(bytes16 namespace, bytes16 file, address grantee) external;
+  function grantAccess(bytes16 namespace, bytes16 name, address grantee) external;
 
   /**
-   * Retract access from the resource at the given namespace and file.
+   * Retract access from the resource at the given namespace and name.
    */
-  function retractAccess(bytes16 namespace, bytes16 file, address grantee) external;
+  function retractAccess(bytes16 namespace, bytes16 name, address grantee) external;
 
   /************************************************************************
    *
@@ -55,42 +55,42 @@ interface IWorldCore is IErrors {
    ************************************************************************/
 
   /**
-   * Write a record in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
+   * Write a record in the table at the given namespace and name.
+   * Requires the caller to have access to the namespace or name.
    */
-  function setRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key, bytes calldata data) external;
+  function setRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key, bytes calldata data) external;
 
   /**
-   * Write a field in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
+   * Write a field in the table at the given namespace and name.
+   * Requires the caller to have access to the namespace or name.
    */
   function setField(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
   ) external;
 
   /**
-   * Push data to the end of a field in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
+   * Push data to the end of a field in the table at the given namespace and name.
+   * Requires the caller to have access to the namespace or name.
    */
   function pushToField(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush
   ) external;
 
   /**
-   * Update data at `startByteIndex` of a field in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
+   * Update data at `startByteIndex` of a field in the table at the given namespace and name.
+   * Requires the caller to have access to the namespace or name.
    */
   function updateInField(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 startByteIndex,
@@ -98,10 +98,10 @@ interface IWorldCore is IErrors {
   ) external;
 
   /**
-   * Delete a record in the table at the given namespace and file.
-   * Requires the caller to have access to the namespace or file.
+   * Delete a record in the table at the given namespace and name.
+   * Requires the caller to have access to the namespace or name.
    */
-  function deleteRecord(bytes16 namespace, bytes16 file, bytes32[] calldata key) external;
+  function deleteRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key) external;
 
   /************************************************************************
    *
@@ -110,12 +110,12 @@ interface IWorldCore is IErrors {
    ************************************************************************/
 
   /**
-   * Call the system at the given namespace and file.
-   * If the system is not public, the caller must have access to the namespace or file.
+   * Call the system at the given namespace and name.
+   * If the system is not public, the caller must have access to the namespace or name.
    */
   function call(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     bytes memory funcSelectorAndArgs
   ) external payable returns (bytes memory);
 }

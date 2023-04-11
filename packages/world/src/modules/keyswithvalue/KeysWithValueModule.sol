@@ -44,7 +44,7 @@ contract KeysWithValueModule is IModule, WorldContext {
     // Register the target table
     IBaseWorld(_world()).registerTable(
       targetTableSelector.getNamespace(),
-      targetTableSelector.getFile(),
+      targetTableSelector.getName(),
       KeysWithValue.getSchema(),
       KeysWithValue.getKeySchema()
     );
@@ -53,13 +53,13 @@ contract KeysWithValueModule is IModule, WorldContext {
     (string memory tableName, string[] memory fieldNames) = KeysWithValue.getMetadata();
     IBaseWorld(_world()).setMetadata(
       targetTableSelector.getNamespace(),
-      targetTableSelector.getFile(),
+      targetTableSelector.getName(),
       tableName,
       fieldNames
     );
 
     // Grant the hook access to the target table
-    IBaseWorld(_world()).grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getFile(), address(hook));
+    IBaseWorld(_world()).grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getName(), address(hook));
 
     // Register a hook that is called when a value is set in the source table
     StoreSwitch.registerStoreHook(sourceTableId, hook);

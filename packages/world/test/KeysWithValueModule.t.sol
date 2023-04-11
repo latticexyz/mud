@@ -25,7 +25,7 @@ contract KeysWithValueModuleTest is Test {
   KeysWithValueModule keysWithValueModule = new KeysWithValueModule(); // Modules can be deployed once and installed multiple times
 
   bytes16 namespace = ROOT_NAMESPACE;
-  bytes16 sourceFile = bytes16("source");
+  bytes16 sourceName = bytes16("source");
   bytes32 key1 = keccak256("test");
   bytes32[] keyTuple1;
   bytes32 key2 = keccak256("test2");
@@ -46,13 +46,13 @@ contract KeysWithValueModuleTest is Test {
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
-    sourceTableId = ResourceSelector.from(namespace, sourceFile).toTableId();
+    sourceTableId = ResourceSelector.from(namespace, sourceName).toTableId();
     targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
   }
 
   function _installKeysWithValueModule() internal {
     // Register source table
-    sourceTableId = uint256(world.registerTable(namespace, sourceFile, sourceTableSchema, sourceTableKeySchema));
+    sourceTableId = uint256(world.registerTable(namespace, sourceName, sourceTableSchema, sourceTableKeySchema));
 
     // Install the index module
     // TODO: add support for installing this via installModule
@@ -67,7 +67,7 @@ contract KeysWithValueModuleTest is Test {
     uint256 value = 1;
 
     // !gasreport set a record on a table with KeysWithValueModule installed
-    world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value));
+    world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value));
 
     // Get the list of entities with this value from the target table
     bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value)));
@@ -83,7 +83,7 @@ contract KeysWithValueModuleTest is Test {
     // Set a value in the source table
     uint256 value1 = 1;
 
-    world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
+    world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value1));
 
     // Get the list of entities with value1 from the target table
     bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -93,7 +93,7 @@ contract KeysWithValueModuleTest is Test {
     assertEq(keysWithValue[0], key1, "2");
 
     // Set a another key with the same value
-    world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value1));
+    world.setRecord(namespace, sourceName, keyTuple2, abi.encodePacked(value1));
 
     // Get the list of entities with value2 from the target table
     keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -107,7 +107,7 @@ contract KeysWithValueModuleTest is Test {
     uint256 value2 = 2;
 
     // !gasreport change a record on a table with KeysWithValueModule installed
-    world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2));
+    world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value2));
 
     // Get the list of entities with value1 from the target table
     keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -125,7 +125,7 @@ contract KeysWithValueModuleTest is Test {
 
     // Delete the first key
     // !gasreport delete a record on a table with KeysWithValueModule installed
-    world.deleteRecord(namespace, sourceFile, keyTuple1);
+    world.deleteRecord(namespace, sourceName, keyTuple1);
 
     // Get the list of entities with value2 from the target table
     keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value2)));
@@ -141,7 +141,7 @@ contract KeysWithValueModuleTest is Test {
     uint256 value1 = 1;
 
     // !gasreport set a field on a table with KeysWithValueModule installed
-    world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1));
+    world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value1));
 
     // Get the list of entities with value1 from the target table
     bytes32[] memory keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -154,7 +154,7 @@ contract KeysWithValueModuleTest is Test {
 
     // Change the value using setField
     // !gasreport change a field on a table with KeysWithValueModule installed
-    world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2));
+    world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value2));
 
     // Get the list of entities with value1 from the target table
     keysWithValue = KeysWithValue.get(world, targetTableId, keccak256(abi.encode(value1)));
@@ -180,8 +180,8 @@ contract KeysWithValueModuleTest is Test {
     // followed by the first 4 bytes of the source table namespace
     assertEq(bytes8(targetTableSelector << 64), bytes8(namespace));
 
-    // The last 16 bytes are the source file
-    assertEq(targetTableSelector.getFile(), sourceFile);
+    // The last 16 bytes are the source name
+    assertEq(targetTableSelector.getName(), sourceName);
   }
 
   function testGetKeysWithValue() public {
@@ -190,7 +190,7 @@ contract KeysWithValueModuleTest is Test {
     // Set a value in the source table
     uint256 value1 = 1;
 
-    world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
+    world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value1));
 
     // !gasreport Get list of keys with a given value
     bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1));
@@ -200,7 +200,7 @@ contract KeysWithValueModuleTest is Test {
     assertEq(keysWithValue[0], key1);
 
     // Set a another key with the same value
-    world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value1));
+    world.setRecord(namespace, sourceName, keyTuple2, abi.encodePacked(value1));
 
     // Get the list of keys with value2 from the target table
     keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1));

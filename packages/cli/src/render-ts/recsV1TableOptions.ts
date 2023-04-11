@@ -24,7 +24,7 @@ export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
     if (tableData.tableIdArgument) continue;
     const staticResourceData = {
       namespace: config.namespace,
-      fileSelector: tableData.fileSelector,
+      name: tableData.name,
     };
 
     tableOptions.push({
