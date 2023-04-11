@@ -54,7 +54,7 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
   if (clean) await forge(["clean"], { profile });
 
   // Run forge build
-  await forge(["build", "--silent", ...FOUNDRY_OPTIONS_IGNORE_CODES], { profile });
+  await forge(["build", ...FOUNDRY_OPTIONS_IGNORE_CODES], { profile });
 
   // Get a list of all contract names
   const srcDir = args?.srcDir ?? (await getSrcDirectory());
