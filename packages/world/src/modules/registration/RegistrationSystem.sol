@@ -61,7 +61,7 @@ contract RegistrationSystem is System, IErrors {
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwner(namespace, ROOT_FILE, _msgSender());
+    else AccessControl.requireOwnerOrSelf(namespace, ROOT_FILE, _msgSender());
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -86,7 +86,7 @@ contract RegistrationSystem is System, IErrors {
     string[] calldata fieldNames
   ) public virtual {
     // Require caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, _msgSender());
+    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, file, _msgSender());
 
     // Set the metadata
     StoreCore.setMetadata(resourceSelector.toTableId(), tableName, fieldNames);
@@ -117,7 +117,7 @@ contract RegistrationSystem is System, IErrors {
    */
   function registerTableHook(bytes16 namespace, bytes16 file, IStoreHook hook) public virtual {
     // Require caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, _msgSender());
+    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, file, _msgSender());
 
     // Register the hook
     StoreCore.registerStoreHook(resourceSelector.toTableId(), hook);
@@ -153,7 +153,7 @@ contract RegistrationSystem is System, IErrors {
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwner(namespace, ROOT_FILE, _msgSender());
+    else AccessControl.requireOwnerOrSelf(namespace, ROOT_FILE, _msgSender());
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -186,7 +186,7 @@ contract RegistrationSystem is System, IErrors {
     string memory systemFunctionArguments
   ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the namespace
-    AccessControl.requireOwner(namespace, file, _msgSender());
+    AccessControl.requireOwnerOrSelf(namespace, file, _msgSender());
 
     // Compute global function selector
     string memory namespaceString = ResourceSelector.toTrimmedString(namespace);
@@ -223,7 +223,7 @@ contract RegistrationSystem is System, IErrors {
     bytes4 systemFunctionSelector
   ) public returns (bytes4) {
     // Require the caller to own the root namespace
-    AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, _msgSender());
+    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, ROOT_FILE, _msgSender());
 
     // Require the function selector to be globally unique
     bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
