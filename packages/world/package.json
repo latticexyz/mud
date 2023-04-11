@@ -27,7 +27,7 @@
     "link": "yarn link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish --access=public",
-    "gas-report": "mud gas-report --path test/** --save gas-report.txt"
+    "gas-report": "mud gas-report --path test/* --path test/**/* --save gas-report.json"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
