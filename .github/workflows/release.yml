@@ -27,8 +27,21 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build
-        uses: ./.github/actions/build
+      - name: Build and link CLI
+        working-directory: packages/cli
+        run: yarn build && yarn link
+
+      - name: Run codegen
+        run: yarn codegen
+
+      - name: Outdated files, run `yarn codegen` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Generate gas reports
+        run: yarn gas-report
+
+      - name: Outdated files, run `yarn gas-report` and commit them
+        uses: ./.github/actions/require-empty-diff
 
       - name: Set deployment token
         run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"
@@ -55,8 +68,21 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build
-        uses: ./.github/actions/build
+      - name: Build and link CLI
+        working-directory: packages/cli
+        run: yarn build && yarn link
+
+      - name: Run codegen
+        run: yarn codegen
+
+      - name: Outdated files, run `yarn codegen` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Generate gas reports
+        run: yarn gas-report
+
+      - name: Outdated files, run `yarn gas-report` and commit them
+        uses: ./.github/actions/require-empty-diff
 
       - name: Set deployment token
         run: npm config set '//registry.npmjs.org/:_authToken' "${NPM_TOKEN}"

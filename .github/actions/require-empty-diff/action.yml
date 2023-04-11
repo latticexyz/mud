@@ -1,0 +1,13 @@
+name: Require empty diff
+description: Ensure build steps produce the same file output as what is checked into the repo
+runs:
+  using: composite
+  steps:
+    - name: Ensure no checked-in files changed
+      shell: bash
+      run: |
+        if [[ -n "$(git status --porcelain)" ]]; then
+          git status
+          git --no-pager diff
+          exit 1
+        fi
