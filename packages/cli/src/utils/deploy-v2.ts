@@ -415,16 +415,16 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
     contract: C,
     func: F,
     args: Parameters<C[F]>,
-    retryCount = 0
-  ): Promise<Awaited<ReturnType<C[F]>>> {
+    retryCount = 0,
+    confirmations = 1
+  ): Promise<Awaited<ReturnType<Awaited<ReturnType<C[F]>>["wait"]>>> {
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
     try {
       const gasLimit = await contract.estimateGas[func].apply(null, args);
       console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
-      const txPromise = contract[func].apply(null, [
-        ...args,
-        { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas },
-      ]);
+      const txPromise = contract[func]
+        .apply(null, [...args, { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas }])
+        .then((tx: any) => tx.wait(confirmations));
       promises.push(txPromise);
       return txPromise;
     } catch (error: any) {
@@ -433,7 +433,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
         // If the deployment failed because the transaction was already imported,
         // retry with a higher priority fee
         setInternalFeePerGas(priorityFeeMultiplier * 1.1);
-        return fastTxExecute(contract, func, args, retryCount++);
+        return fastTxExecute(contract, func, args, retryCount++, confirmations);
       } else throw new MUDError(`Gas estimation error for ${functionName}: ${error?.reason}`);
     }
   }
