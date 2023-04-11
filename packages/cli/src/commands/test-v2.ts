@@ -1,6 +1,11 @@
 import type { CommandModule } from "yargs";
 import readline from "readline";
 import chokidar from "chokidar";
+import { resolveConfigPath } from "@latticexyz/config";
+import chalk from "chalk";
+import { rmSync, writeFileSync } from "fs";
+import EventEmitter from "events";
+
 import { deployHandler, DeployOptions } from "./deploy-v2.js";
 import { yDeployOptions } from "./deploy-v2.js";
 import {
@@ -11,12 +16,8 @@ import {
   getSrcDirectory,
   getTestDirectory,
 } from "../utils/foundry.js";
-import chalk from "chalk";
-import { rmSync, writeFileSync } from "fs";
 import { CommandFailedError } from "../utils/errors.js";
 import { execLog } from "../utils/execLog.js";
-import { resolveConfigPath } from "../config/loadConfig.js";
-import EventEmitter from "events";
 
 type Options = DeployOptions & {
   port?: number;
