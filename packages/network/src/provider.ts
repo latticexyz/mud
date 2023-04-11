@@ -1,10 +1,11 @@
-import { providers, utils } from "ethers";
+import { JsonRpcBatchProvider, JsonRpcProvider, Network, Networkish } from "@ethersproject/providers";
+import { ConnectionInfo } from "ethers/lib/utils";
 
-export class MUDJsonRpcProvider extends providers.JsonRpcProvider {
-  constructor(url: string | utils.ConnectionInfo | undefined, network: providers.Networkish) {
+export class MUDJsonRpcProvider extends JsonRpcProvider {
+  constructor(url: string | ConnectionInfo | undefined, network: Networkish) {
     super(url, network);
   }
-  async detectNetwork(): Promise<providers.Network> {
+  async detectNetwork(): Promise<Network> {
     const network = this.network;
     if (network == null) {
       throw new Error("No network");
@@ -13,11 +14,11 @@ export class MUDJsonRpcProvider extends providers.JsonRpcProvider {
   }
 }
 
-export class MUDJsonRpcBatchProvider extends providers.JsonRpcBatchProvider {
-  constructor(url?: string | utils.ConnectionInfo | undefined, network?: providers.Networkish | undefined) {
+export class MUDJsonRpcBatchProvider extends JsonRpcBatchProvider {
+  constructor(url?: string | ConnectionInfo | undefined, network?: Networkish | undefined) {
     super(url, network);
   }
-  async detectNetwork(): Promise<providers.Network> {
+  async detectNetwork(): Promise<Network> {
     const network = this.network;
     if (network == null) {
       throw new Error("No network");

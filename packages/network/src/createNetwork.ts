@@ -8,9 +8,6 @@ import { fetchBlock } from "./networkUtils";
 import { createBlockNumberStream } from "./createBlockNumberStream";
 import { Signer, Wallet } from "ethers";
 import { computedToStream } from "@latticexyz/utils";
-// Fixes the following TS error:
-// The inferred type of 'createNetwork' cannot be named without a reference to '.pnpm/@ethersproject+providers@5.7.2/node_modules/@ethersproject/providers'. This is likely not portable. A type annotation is necessary.
-import type {} from "@ethersproject/providers";
 
 export type Network = Awaited<ReturnType<typeof createNetwork>>;
 

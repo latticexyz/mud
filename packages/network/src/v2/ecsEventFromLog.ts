@@ -1,4 +1,6 @@
-import { Contract, utils, providers } from "ethers";
+import { Contract, utils } from "ethers";
+import { Log } from "@ethersproject/providers";
+import { LogDescription } from "@ethersproject/abi";
 import { TableId } from "@latticexyz/utils";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
@@ -7,8 +9,8 @@ import { keyTupleToEntityID } from "./keyTupleToEntityID";
 
 export const ecsEventFromLog = async (
   contract: Contract,
-  log: providers.Log,
-  parsedLog: utils.LogDescription,
+  log: Log,
+  parsedLog: LogDescription,
   lastEventInTx: boolean
 ): Promise<NetworkComponentUpdate | undefined> => {
   const { blockNumber, transactionHash, logIndex } = log;
