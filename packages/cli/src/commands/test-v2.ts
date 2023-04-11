@@ -21,7 +21,7 @@ import { execLog } from "../utils/execLog.js";
 
 type Options = DeployOptions & {
   port?: number;
-  interactive?: boolean;
+  watch?: boolean;
   forgeOptions?: string;
 };
 
@@ -78,7 +78,7 @@ const commandModule: CommandModule<Options, Options> = {
         description:
           "Address of an existing world contract. If provided, deployment is skipped and the RPC provided in the foundry.toml is used for fork testing.",
       },
-      interactive: { type: "boolean", alias: "i" },
+      watch: { type: "boolean", alias: "w" },
       configPath: { type: "string", desc: "Path to the config file" },
       forgeOptions: { type: "string", description: "Options to pass to forge test" },
     });
@@ -118,7 +118,7 @@ const commandModule: CommandModule<Options, Options> = {
       console.log("TODO: rerun all codegen if stale detected");
     }
 
-    if (process.env.CI || !args.interactive) {
+    if (process.env.CI || !args.watch) {
       await runCodegen();
       const worldAddress = await deployWorld();
       writeFileSync(WORLD_ADDRESS_FILE, worldAddress);
