@@ -200,6 +200,10 @@ contract WorldTest is Test {
     // Expect an error when registering a table in a namespace that is not owned by the caller
     _expectAccessDenied(address(0x01), namespace, "");
     world.registerTable(namespace, "otherTable", schema, defaultKeySchema);
+
+    // Expect the World to be allowed to call registerTable
+    vm.prank(address(world));
+    world.registerTable(namespace, "otherTable", schema, defaultKeySchema);
   }
 
   function testSetMetadata() public {
@@ -237,6 +241,10 @@ contract WorldTest is Test {
 
     // Expect an error when setting metadata on a route that is not owned by the caller
     _expectAccessDenied(address(1), namespace, file);
+    world.setMetadata(namespace, file, tableName, fieldNames);
+
+    // Expect the World to be allowed to set metadata
+    vm.prank(address(world));
     world.setMetadata(namespace, file, tableName, fieldNames);
   }
 
@@ -288,6 +296,10 @@ contract WorldTest is Test {
     System yetAnotherSystem = new System();
     _expectAccessDenied(address(0x01), "", "");
     world.registerSystem("", "rootSystem", yetAnotherSystem, true);
+
+    // Expect the registration to succeed when coming from the World
+    vm.prank(address(world));
+    world.registerSystem("", "rootSystem", yetAnotherSystem, true);
   }
 
   function testDuplicateSelectors() public {
@@ -331,6 +343,10 @@ contract WorldTest is Test {
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), "testSetRecord", "testTable");
     Bool.set(world, tableId, true);
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    Bool.set(world, tableId, true);
   }
 
   function testSetField() public {
@@ -360,6 +376,10 @@ contract WorldTest is Test {
     // Expect an error when trying to write from an address that doesn't have access when calling via the tableId
     _expectAccessDenied(address(0x01), "testSetField", "testTable");
     world.setField(uint256(resourceSelector), singletonKey, 0, abi.encodePacked(true));
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.setField("testSetField", "testTable", singletonKey, 0, abi.encodePacked(true));
   }
 
   function testPushToField() public {
@@ -399,6 +419,10 @@ contract WorldTest is Test {
     // Expect an error when trying to write from an address that doesn't have access (via tableId)
     _expectAccessDenied(address(0x01), namespace, file);
     world.pushToField(tableId, keyTuple, 0, encodedData);
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.pushToField(namespace, file, keyTuple, 0, encodedData);
   }
 
   function testUpdateInField() public {
@@ -444,6 +468,10 @@ contract WorldTest is Test {
     // Expect an error when trying to write from an address that doesn't have access (via tableId)
     _expectAccessDenied(address(0x01), namespace, file);
     world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.updateInField(namespace, file, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
   }
 
   function testDeleteRecord() public {
@@ -483,6 +511,10 @@ contract WorldTest is Test {
     // Expect an error when trying to delete from an address that doesn't have access when calling via the tableId
     _expectAccessDenied(address(0x02), "testDeleteRecord", "testTable");
     world.deleteRecord(tableId, singletonKey);
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.deleteRecord("testDeleteRecord", "testTable", singletonKey);
   }
 
   function testCall() public {
@@ -519,6 +551,10 @@ contract WorldTest is Test {
 
     // Expect an error when trying to call a private system from an address that doesn't have access
     _expectAccessDenied(address(0x01), "namespace", "testSystem");
+    world.call("namespace", "testSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+
+    // Expect the World to have access
+    vm.prank(address(world));
     world.call("namespace", "testSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
 
     // Expect errors from the system to be forwarded
@@ -677,6 +713,14 @@ contract WorldTest is Test {
 
     bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
     bytes4 sysFunc = WorldTestSystem.msgSender.selector;
+
+    // Expect an error when trying to register a root function selector from an account without access
+    _expectAccessDenied(address(0x01), "", "");
+    world.registerRootFunctionSelector(namespace, file, worldFunc, sysFunc);
+
+    // Expect the World to be able to register a root function selector
+    vm.prank(address(world));
+    world.registerRootFunctionSelector(namespace, file, "smth", "smth");
 
     // !gasreport Register a root function selector
     bytes4 functionSelector = world.registerRootFunctionSelector(namespace, file, worldFunc, sysFunc);
