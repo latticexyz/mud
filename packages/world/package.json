@@ -55,7 +55,7 @@
   "peerDependencies": {
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
-    "@latticexyz/config": "workspace:*",
+    "@latticexyz/config": "latest",
     "@latticexyz/schema-type": "latest",
     "@latticexyz/store": "latest",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
