@@ -17,8 +17,8 @@
     "test:solidity": "forge test",
     "test:typescript": "tsc --noEmit",
     "build": "pnpm build:solidity && pnpm build:typescript",
-    "build:solidity": "rimraf out && forge build",
-    "build:typescript": "tsc",
+    "build:solidity": "echo 'removing previous output' && rimraf out && echo 'build solidity' && forge build",
+    "build:typescript": "echo 'build typescript' && tsc",
     "link": "pnpm link",
     "release": "npm publish --access=public"
   },
