@@ -39,6 +39,8 @@ type GasReportEntry = {
 
 type GasReport = GasReportEntry[];
 
+const tempFileSuffix = "MudGasReport.t.sol";
+
 const commandModule: CommandModule<Options, Options> = {
   command: "gas-report",
 
@@ -61,33 +63,22 @@ const commandModule: CommandModule<Options, Options> = {
     }
 
     // If this gas report should be compared to an existing one, load the existing one
-    const compareGasReport: GasReport = [];
     if (compare) {
       try {
-        const compareFileContents = readFileSync(compare, "utf8");
-        // Create a regex to extract the name, function call and gas used
-        const compareGasReportRegex = new RegExp(/\((.*)\) \| (.*) \[(.*)\]: (.*)/g);
-        // Loop through the matches and add the resuls to the compareGasReport
-        let compareGasReportMatch;
-        while ((compareGasReportMatch = compareGasReportRegex.exec(compareFileContents)) !== null) {
-          const source = compareGasReportMatch[1];
-          const name = compareGasReportMatch[2];
-          const functionCall = compareGasReportMatch[3];
-          const gasUsed = compareGasReportMatch[4];
-
-          compareGasReport.push({ source, name, functionCall, gasUsed: parseInt(gasUsed) });
-        }
+        const compareGasReport: GasReport = JSON.parse(readFileSync(compare, "utf8"));
+        // Merge the previous gas report with the new one
+        gasReport = gasReport.map((entry) => {
+          console.log("looking for prev value");
+          const prevEntry = compareGasReport.find(
+            (e) => e.name === entry.name && e.functionCall === entry.functionCall
+          );
+          return { ...entry, prevGasUsed: prevEntry?.gasUsed };
+        });
       } catch {
         console.log(chalk.red(`Gas report to compare not found: ${compare}`));
         compare = undefined;
       }
     }
-
-    // Merge the previous gas report with the new one
-    gasReport = gasReport.map((entry) => {
-      const prevEntry = compareGasReport.find((e) => e.name === entry.name && e.functionCall === entry.functionCall);
-      return { ...entry, prevGasUsed: prevEntry?.gasUsed };
-    });
 
     // Print gas report
     printGasReport(gasReport, compare);
@@ -102,7 +93,7 @@ const commandModule: CommandModule<Options, Options> = {
 export default commandModule;
 
 async function runGasReport(path: string): Promise<GasReport> {
-  if (!path.endsWith(".t.sol")) {
+  if (!path.endsWith(".t.sol") || path.endsWith(tempFileSuffix)) {
     console.log("Skipping gas report for", chalk.bold(path), "(not a test file)");
     return [];
   }
@@ -148,17 +139,16 @@ console.log("GAS REPORT: ${name} [${functionCall.replaceAll('"', '\\"')}]:", _ga
 
   // Write the new file to disk (temporarily)
   // Create the temp file by replacing the previous file name with MudGasReport
-  const tempFileName = path.replace(/\.t\.sol$/, "MudGasReport.t.sol");
+  const tempFileName = path.replace(/\.t\.sol$/, tempFileSuffix);
   writeFileSync(tempFileName, newFile);
-
-  // Run the generated file using forge
-  const child = execa("forge", ["test", "--match-path", tempFileName, "-vvv"], {
-    stdio: ["inherit", "pipe", "inherit"],
-  });
 
   // Extract the logs from the child process
   let logs = "";
   try {
+    // Run the generated file using forge
+    const child = execa("forge", ["test", "--match-path", tempFileName, "-vvv"], {
+      stdio: ["inherit", "pipe", "inherit"],
+    });
     logs = (await child).stdout;
     rmSync(tempFileName);
   } catch (e: any) {
@@ -212,9 +202,5 @@ function printGasReport(gasReport: GasReport, compare?: string) {
 
 function saveGasReport(gasReport: GasReport, path: string) {
   console.log(chalk.bold(`Saving gas report to ${path}`));
-  const serializedGasReport = gasReport
-    .map((entry) => `(${entry.source}) | ${entry.name} [${entry.functionCall}]: ${entry.gasUsed}`)
-    .join("\n");
-
-  writeFileSync(path, serializedGasReport);
+  writeFileSync(path, `${JSON.stringify(gasReport, null, 2)}\n`);
 }
