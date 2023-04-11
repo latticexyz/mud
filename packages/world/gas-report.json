@@ -9,7 +9,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of keys with a given value",
     "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1))",
-    "gasUsed": 7693
+    "gasUsed": 7692
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -39,7 +39,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "change a record on a table with KeysWithValueModule installed",
     "functionCall": "world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2))",
-    "gasUsed": 135440
+    "gasUsed": 135439
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -57,7 +57,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "set a field on a table with KeysWithValueModule installed",
     "functionCall": "world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1))",
-    "gasUsed": 177588
+    "gasUsed": 177587
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
