@@ -62,7 +62,7 @@
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",
     "gas-report": "pnpm recursive run gas-report",
-    "codegen": "yarn codegen:tablegen && yarn codegen:worldgen",
+    "codegen": "pnpm codegen:tablegen && pnpm codegen:worldgen",
     "codegen:tablegen": "pnpm recursive run tablegen",
     "codegen:worldgen": "pnpm recursive run worldgen"
   },
