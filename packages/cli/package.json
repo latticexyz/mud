@@ -21,7 +21,7 @@
     "lint": "eslint . --ext .ts",
     "dev": "tsup --watch",
     "build": "tsup",
-    "link": "pnpm link",
+    "link": "pnpm link .",
     "test": "tsc --noEmit && pnpm test:contracts",
     "test:contracts": "pnpm codegen && forge test",
     "release": "npm publish --access=public"
