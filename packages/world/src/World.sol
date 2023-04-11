@@ -58,7 +58,7 @@ contract World is Store, IWorldCore {
    * The module is delegatecalled and installed in the root namespace.
    */
   function installRootModule(IModule module, bytes memory args) public {
-    AccessControl.requireOwner(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
+    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, ROOT_FILE, msg.sender);
 
     Call.withSender({
       msgSender: msg.sender,
@@ -92,7 +92,7 @@ contract World is Store, IWorldCore {
    */
   function grantAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
     // Require the caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, msg.sender);
+    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, file, msg.sender);
 
     // Grant access to the given resource
     ResourceAccess.set(resourceSelector, grantee, true);
@@ -103,7 +103,7 @@ contract World is Store, IWorldCore {
    */
   function retractAccess(bytes16 namespace, bytes16 file, address grantee) public virtual {
     // Require the caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwner(namespace, file, msg.sender);
+    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, file, msg.sender);
 
     // Retract access from the given resource
     ResourceAccess.deleteRecord(resourceSelector, grantee);

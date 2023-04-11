@@ -121,5 +121,9 @@ contract UpdateInFieldTest is Test {
     // Expect an error when trying to write from an address that doesn't have access (via tableId)
     _expectAccessDenied(address(0x01), namespace, file);
     world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.updateInField(namespace, file, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
   }
 }
