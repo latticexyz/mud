@@ -14,7 +14,6 @@
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
     "@commitlint/config-conventional": "^16.2.4",
-    "@latticexyz/cli": "workspace:*",
     "@parcel/optimizer-data-url": "2.8.3",
     "@parcel/packager-ts": "2.8.3",
     "@parcel/transformer-inline-string": "2.8.3",
@@ -63,7 +62,7 @@
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",
     "gas-report": "pnpm recursive run gas-report",
-    "codegen": "pnpm codegen:tablegen && pnpm codegen:worldgen",
+    "codegen": "yarn codegen:tablegen && yarn codegen:worldgen",
     "codegen:tablegen": "pnpm recursive run tablegen",
     "codegen:worldgen": "pnpm recursive run worldgen"
   },

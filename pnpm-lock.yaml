@@ -10,9 +10,6 @@ importers:
       '@commitlint/config-conventional':
         specifier: ^16.2.4
         version: 16.2.4
-      '@latticexyz/cli':
-        specifier: workspace:*
-        version: link:packages/cli
       '@parcel/optimizer-data-url':
         specifier: 2.8.3
         version: 2.8.3(@parcel/core@2.8.3)
