@@ -93,7 +93,7 @@
     "source": "test/UpdateInField.t.sol",
     "name": "updateInField 1 item (cold)",
     "functionCall": "world.updateInField(namespace, file, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate))",
-    "gasUsed": 63145
+    "gasUsed": 63144
   },
   {
     "source": "test/UpdateInField.t.sol",
