@@ -16,8 +16,8 @@
   },
   "scripts": {
     "prepare": "pnpm build",
-    "tablegen": "../cli/dist/mud.js tablegen",
-    "worldgen": "../cli/dist/mud.js worldgen",
+    "tablegen": "mud tablegen",
+    "worldgen": "mud worldgen",
     "test": "forge test",
     "build": "rimraf out && forge build && pnpm dist && pnpm types && tsup",
     "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && pnpm rimraf abi/*.metadata.json",
@@ -28,7 +28,7 @@
     "link": "pnpm link",
     "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
     "release": "npm publish --access=public",
-    "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json"
+    "gas-report": "mud gas-report --path test/* --path test/**/* --save gas-report.json"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",

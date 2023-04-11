@@ -19,10 +19,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Build and link CLI
-        working-directory: packages/cli
-        run: pnpm build && pnpm link .
-
       - name: Run codegen
         run: pnpm codegen
 
