@@ -1,0 +1,35 @@
+name: Build
+description: Common build steps used by our workflows
+runs:
+  using: composite
+  steps:
+    - name: Build and install CLI
+      shell: bash
+      working-directory: packages/cli
+      run: yarn build && yarn link
+
+    - name: Run codegen
+      shell: bash
+      run: yarn codegen
+
+    - name: Outdated files detected, run `yarn codegen` and commit them
+      shell: bash
+      run: |
+        if [[ -n "$(git status --porcelain)" ]]; then
+          git status
+          git --no-pager diff
+          exit 1
+        fi
+
+    - name: Generate gas reports
+      shell: bash
+      run: yarn gas-report
+
+    - name: Outdated files detected, run `yarn gas-report` and commit them
+      shell: bash
+      run: |
+        if [[ -n "$(git status --porcelain)" ]]; then
+          git status
+          git --no-pager diff
+          exit 1
+        fi
