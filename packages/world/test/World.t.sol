@@ -379,12 +379,17 @@ contract WorldTest is Test {
     dataToPush[2] = address(bytes20(keccak256("another address")));
     bytes memory encodedData = EncodeArray.encode(dataToPush);
 
-    // !gasreport Push data to the table
+    // !gasreport Push 3 items to the table (cold)
     world.pushToField(namespace, file, keyTuple, 0, encodedData);
-
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
+    // Delete the data
+    world.deleteRecord(namespace, file, keyTuple);
 
+    // !gasreport Push 3 items to the table (warm)
+    world.pushToField(namespace, file, keyTuple, 0, encodedData);
+    // Expect the data to be written
+    assertEq(AddressArray.get(world, tableId, key), dataToPush);
     // Delete the data
     world.deleteRecord(namespace, file, keyTuple);
 
@@ -426,6 +431,9 @@ contract WorldTest is Test {
     // Update index 0
     address[] memory dataForUpdate = new address[](1);
     dataForUpdate[0] = address(bytes20(keccak256("address for update")));
+    // !gasreport updateInField 1 item (cold)
+    world.updateInField(namespace, file, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+    // !gasreport updateInField 1 item (warm)
     world.updateInField(namespace, file, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
 
     // Expect the data to be updated
