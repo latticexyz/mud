@@ -1,15 +1,15 @@
 {
   "private": true,
-  "name": "{{kebab name}}",
-  "workspaces": [
-    "packages/*"
-  ],
+  "name": "mud-template-react",
+  "engines": {
+    "node": "18.x",
+    "pnpm": "8.x"
+  },
   "scripts": {
-    "prepare": "yarn workspace contracts prepare",
-    "dev": "run-pty % yarn dev:node % yarn dev:client % yarn dev:contracts",
-    "dev:client": "yarn workspace client run dev",
-    "dev:node": "yarn workspace contracts run devnode",
-    "dev:contracts": "yarn workspace contracts run dev"
+    "dev": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
+    "dev:client": "pnpm --filter 'client' run dev",
+    "dev:node": "pnpm --filter 'contracts' devnode",
+    "dev:contracts": "pnpm --filter 'contracts' dev"
   },
   "devDependencies": {
     "run-pty": "^4.0.3"
