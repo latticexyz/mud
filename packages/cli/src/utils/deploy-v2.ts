@@ -122,11 +122,11 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   const tableIds: { [tableName: string]: Uint8Array } = {};
   promises = [
     ...promises,
-    ...Object.entries(mudConfig.tables).map(async ([tableName, { fileSelector, schema, primaryKeys }]) => {
-      console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${fileSelector}`));
+    ...Object.entries(mudConfig.tables).map(async ([tableName, { name, schema, primaryKeys }]) => {
+      console.log(chalk.blue(`Registering table ${tableName} at ${namespace}/${name}`));
 
       // Store the tableId for later use
-      tableIds[tableName] = toResourceSelector(namespace, fileSelector);
+      tableIds[tableName] = toResourceSelector(namespace, name);
 
       // Register table
       const schemaTypes = Object.values(schema).map((abiOrUserType) => {
@@ -141,7 +141,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
 
       await fastTxExecute(WorldContract, "registerTable", [
         toBytes16(namespace),
-        toBytes16(fileSelector),
+        toBytes16(name),
         encodeSchema(schemaTypes),
         encodeSchema(keyTypes),
       ]);
@@ -149,69 +149,67 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       // Register table metadata
       await fastTxExecute(WorldContract, "setMetadata(bytes16,bytes16,string,string[])", [
         toBytes16(namespace),
-        toBytes16(fileSelector),
+        toBytes16(name),
         tableName,
         Object.keys(schema),
       ]);
 
-      console.log(chalk.green(`Registered table ${tableName} at ${fileSelector}`));
+      console.log(chalk.green(`Registered table ${tableName} at ${name}`));
     }),
   ];
 
   // Register systems (using forEach instead of for..of to avoid blocking on async calls)
   promises = [
     ...promises,
-    ...Object.entries(mudConfig.systems).map(
-      async ([systemName, { fileSelector, openAccess, registerFunctionSelectors }]) => {
-        // Register system at route
-        console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${fileSelector}`));
-        await fastTxExecute(WorldContract, "registerSystem", [
-          toBytes16(namespace),
-          toBytes16(fileSelector),
-          await contractPromises[systemName],
-          openAccess,
-        ]);
-        console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${fileSelector}`));
+    ...Object.entries(mudConfig.systems).map(async ([systemName, { name, openAccess, registerFunctionSelectors }]) => {
+      // Register system at route
+      console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${name}`));
+      await fastTxExecute(WorldContract, "registerSystem", [
+        toBytes16(namespace),
+        toBytes16(name),
+        await contractPromises[systemName],
+        openAccess,
+      ]);
+      console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${name}`));
 
-        // Register function selectors for the system
-        if (registerFunctionSelectors) {
-          const functionSignatures: FunctionSignature[] = await loadFunctionSignatures(systemName);
-          const isRoot = namespace === "";
-          // Using Promise.all to avoid blocking on async calls
-          await Promise.all(
-            functionSignatures.map(async ({ functionName, functionArgs }) => {
-              const functionSignature = isRoot
-                ? functionName + functionArgs
-                : `${namespace}_${fileSelector}_${functionName}${functionArgs}`;
+      // Register function selectors for the system
+      if (registerFunctionSelectors) {
+        const functionSignatures: FunctionSignature[] = await loadFunctionSignatures(systemName);
+        const isRoot = namespace === "";
+        // Using Promise.all to avoid blocking on async calls
+        await Promise.all(
+          functionSignatures.map(async ({ functionName, functionArgs }) => {
+            const functionSignature = isRoot
+              ? functionName + functionArgs
+              : `${namespace}_${name}_${functionName}${functionArgs}`;
 
-              console.log(chalk.blue(`Registering function "${functionSignature}"`));
-              if (isRoot) {
-                const worldFunctionSelector = toFunctionSelector(
-                  functionSignature === ""
-                    ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
-                    : { functionName, functionArgs }
-                );
-                const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
-                await fastTxExecute(WorldContract, "registerRootFunctionSelector", [
-                  toBytes16(namespace),
-                  toBytes16(fileSelector),
-                  worldFunctionSelector,
-                  systemFunctionSelector,
-                ]);
-              } else {
-                await fastTxExecute(WorldContract, "registerFunctionSelector", [
-                  toBytes16(namespace),
-                  toBytes16(fileSelector),
-                  functionName,
-                  functionArgs,
-                ]);
-              }
-              console.log(chalk.green(`Registered function "${functionSignature}"`));
-            })
-          );
-        }
+            console.log(chalk.blue(`Registering function "${functionSignature}"`));
+            if (isRoot) {
+              const worldFunctionSelector = toFunctionSelector(
+                functionSignature === ""
+                  ? { functionName: systemName, functionArgs } // Register the system's fallback function as `<systemName>(<args>)`
+                  : { functionName, functionArgs }
+              );
+              const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
+              await fastTxExecute(WorldContract, "registerRootFunctionSelector", [
+                toBytes16(namespace),
+                toBytes16(name),
+                worldFunctionSelector,
+                systemFunctionSelector,
+              ]);
+            } else {
+              await fastTxExecute(WorldContract, "registerFunctionSelector", [
+                toBytes16(namespace),
+                toBytes16(name),
+                functionName,
+                functionArgs,
+              ]);
+            }
+            console.log(chalk.green(`Registered function "${functionSignature}"`));
+          })
+        );
       }
-    ),
+    }),
   ];
 
   // Wait for resources to be registered before granting access to them
@@ -219,10 +217,8 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   promises = [];
 
   // Grant access to systems
-  for (const [systemName, { fileSelector, accessListAddresses, accessListSystems }] of Object.entries(
-    mudConfig.systems
-  )) {
-    const resourceSelector = `${namespace}/${fileSelector}`;
+  for (const [systemName, { name, accessListAddresses, accessListSystems }] of Object.entries(mudConfig.systems)) {
+    const resourceSelector = `${namespace}/${name}`;
 
     // Grant access to addresses
     promises = [
@@ -231,10 +227,10 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
         console.log(chalk.blue(`Grant ${address} access to ${systemName} (${resourceSelector})`));
         await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
           toBytes16(namespace),
-          toBytes16(fileSelector),
+          toBytes16(name),
           address,
         ]);
-        console.log(chalk.green(`Granted ${address} access to ${systemName} (${namespace}/${fileSelector})`));
+        console.log(chalk.green(`Granted ${address} access to ${systemName} (${namespace}/${name})`));
       }),
     ];
 
@@ -245,7 +241,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
         console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${resourceSelector})`));
         await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
           toBytes16(namespace),
-          toBytes16(fileSelector),
+          toBytes16(name),
           await contractPromises[granteeSystem],
         ]);
         console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${resourceSelector})`));

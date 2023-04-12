@@ -10,41 +10,41 @@ interface IRegistrationSystem {
 
   function registerTable(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     Schema valueSchema,
     Schema keySchema
   ) external returns (bytes32 resourceSelector);
 
   function setMetadata(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     string calldata tableName,
     string[] calldata fieldNames
   ) external;
 
-  function registerHook(bytes16 namespace, bytes16 file, address hook) external;
+  function registerHook(bytes16 namespace, bytes16 name, address hook) external;
 
-  function registerTableHook(bytes16 namespace, bytes16 file, IStoreHook hook) external;
+  function registerTableHook(bytes16 namespace, bytes16 name, IStoreHook hook) external;
 
-  function registerSystemHook(bytes16 namespace, bytes16 file, ISystemHook hook) external;
+  function registerSystemHook(bytes16 namespace, bytes16 name, ISystemHook hook) external;
 
   function registerSystem(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     System system,
     bool publicAccess
   ) external returns (bytes32 resourceSelector);
 
   function registerFunctionSelector(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     string memory systemFunctionName,
     string memory systemFunctionArguments
   ) external returns (bytes4 worldFunctionSelector);
 
   function registerRootFunctionSelector(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
   ) external returns (bytes4);

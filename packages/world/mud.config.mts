@@ -52,13 +52,13 @@ export default mudConfig({
       },
     },
     FunctionSelectors: {
-      fileSelector: "funcSelectors",
+      name: "funcSelectors",
       primaryKeys: {
         functionSelector: "bytes4",
       },
       schema: {
         namespace: "bytes16",
-        file: "bytes16",
+        name: "bytes16",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,

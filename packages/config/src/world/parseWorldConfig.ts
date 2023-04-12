@@ -6,10 +6,10 @@ const zSystemName = zObjectName;
 const zModuleName = zObjectName;
 const zSystemAccessList = z.array(zSystemName.or(zEthereumAddress)).default([]);
 
-// The system config is a combination of a fileSelector config and access config
+// The system config is a combination of a name config and access config
 const zSystemConfig = z.intersection(
   z.object({
-    fileSelector: zSelector,
+    name: zSelector,
     registerFunctionSelectors: z.boolean().default(true),
   }),
   z.discriminatedUnion("openAccess", [

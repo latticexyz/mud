@@ -12,7 +12,7 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
  *  - The last 16 bytes are the source table name
  */
 function getTargetTableSelector(bytes8 moduleNamespace, uint256 sourceTableId) pure returns (bytes32) {
-  bytes16 tableName = ResourceSelector.getFile(bytes32(sourceTableId));
+  bytes16 tableName = ResourceSelector.getName(bytes32(sourceTableId));
   bytes8 sourceTableNamespace = bytes8(bytes32(sourceTableId));
   return bytes32(moduleNamespace) | (bytes32(sourceTableNamespace) >> 64) | (bytes32(tableName) >> 128);
 }

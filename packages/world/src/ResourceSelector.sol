@@ -1,24 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { ROOT_NAMESPACE, ROOT_FILE } from "./constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
 bytes16 constant ROOT_NAMESPACE_STRING = bytes16("ROOT_NAMESPACE");
-bytes16 constant ROOT_FILE_STRING = bytes16("ROOT_FILE");
+bytes16 constant ROOT_NAME_STRING = bytes16("ROOT_NAME");
 
 library ResourceSelector {
   /**
-   * Create a 32-byte resource selector from a namespace and a file.
+   * Create a 32-byte resource selector from a namespace and a name.
    *
    * A ResourceSelector is a 32-byte value that uniquely identifies a resource.
-   * The first 16 bytes represent the namespace, the last 16 bytes represent the file.
+   * The first 16 bytes represent the namespace, the last 16 bytes represent the name.
    */
-  function from(bytes16 namespace, bytes16 file) internal pure returns (bytes32) {
-    return bytes32(namespace) | (bytes32(file) >> 128);
+  function from(bytes16 namespace, bytes16 name) internal pure returns (bytes32) {
+    return bytes32(namespace) | (bytes32(name) >> 128);
   }
 
   /**
-   * Create a 32-byte resource selector from a namespace. The selector points to the namespace's root file.
+   * Create a 32-byte resource selector from a namespace. The selector points to the namespace's root name.
    */
   function from(bytes16 namespace) internal pure returns (bytes32) {
     return bytes32(namespace);
@@ -39,9 +39,9 @@ library ResourceSelector {
   }
 
   /**
-   * Get the file of a ResourceSelector.
+   * Get the name of a ResourceSelector.
    */
-  function getFile(bytes32 resourceSelector) internal pure returns (bytes16) {
+  function getName(bytes32 resourceSelector) internal pure returns (bytes16) {
     return bytes16(resourceSelector << 128);
   }
 
@@ -50,13 +50,13 @@ library ResourceSelector {
    */
   function toString(bytes32 resourceSelector) internal pure returns (string memory) {
     bytes16 namespace = getNamespace(resourceSelector);
-    bytes16 file = getFile(resourceSelector);
+    bytes16 name = getName(resourceSelector);
     return
       string(
         abi.encodePacked(
           namespace == ROOT_NAMESPACE ? ROOT_NAMESPACE_STRING : namespace,
           "/",
-          file == ROOT_FILE ? ROOT_FILE_STRING : file
+          name == ROOT_NAME ? ROOT_NAME_STRING : name
         )
       );
   }
