@@ -42,7 +42,7 @@
     }
   },
   "scripts": {
-    "prepare": "husky install && (forge --version || foundryup)",
+    "prepare": "husky install && (forge --version || pnpm foundryup)",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
