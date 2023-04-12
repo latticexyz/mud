@@ -3,7 +3,6 @@
     "target": "es2020",
     "module": "esnext",
     "moduleResolution": "node",
-    "types": ["mocha"],
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true

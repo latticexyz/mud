@@ -12,14 +12,13 @@
     "directory": "packages/schema-type"
   },
   "scripts": {
-    "prepare": "yarn build",
-    "test": "yarn test:solidity && yarn test:typescript",
+    "prepare": "pnpm build",
+    "test": "pnpm test:solidity && pnpm test:typescript",
     "test:solidity": "forge test",
     "test:typescript": "tsc --noEmit",
-    "build": "yarn build:solidity && yarn build:typescript",
-    "build:solidity": "rimraf out && forge build",
-    "build:typescript": "tsc",
-    "link": "yarn link",
+    "build": "pnpm build:solidity && pnpm build:typescript",
+    "build:solidity": "echo 'removing previous output' && rimraf out && echo 'build solidity' && forge build",
+    "build:typescript": "echo 'build typescript' && tsc",
     "release": "npm publish --access=public"
   },
   "devDependencies": {

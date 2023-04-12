@@ -3,12 +3,17 @@ description: Common setup steps used by our workflows
 runs:
   using: composite
   steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8.x
+
     - name: Setup node
       uses: actions/setup-node@v3
       with:
         node-version-file: .nvmrc
         registry-url: https://registry.npmjs.org
-        cache: yarn
+        cache: pnpm
 
     - name: Setup foundry
       uses: foundry-rs/foundry-toolchain@v1
@@ -17,4 +22,5 @@ runs:
 
     - name: Install node dependencies
       shell: bash
-      run: yarn install --network-concurrency 1
+      # We use `--child-concurrency=1` for now because our install step calls `prepare` on each package, which often does a `forge build` and forge has a hard time running these things in parallel (resulting in `Text file busy (os error 26)` errors in CI)
+      run: pnpm install --frozen-lockfile --child-concurrency=1

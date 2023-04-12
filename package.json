@@ -9,29 +9,7 @@
   },
   "engines": {
     "node": "18.x",
-    "pnpm": "8.x",
-    "yarn": "1.x"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/utils",
-      "packages/schema-type",
-      "packages/solecs",
-      "packages/store",
-      "packages/world",
-      "packages/config",
-      "packages/cli",
-      "packages/recs",
-      "packages/react",
-      "packages/phaserx",
-      "packages/network",
-      "packages/std-contracts",
-      "packages/std-client",
-      "packages/ecs-browser",
-      "packages/services",
-      "packages/noise",
-      "packages/create-mud"
-    ]
+    "pnpm": "8.x"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.2.4",
@@ -64,29 +42,29 @@
     }
   },
   "scripts": {
-    "prepare": "husky install && (forge --version || yarn foundryup) && yarn workspaces run prepare",
+    "prepare": "husky install && (forge --version || pnpm foundryup)",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
-    "release": "yarn && lerna publish --no-private --force-publish && yarn retype:updateversion",
+    "release": "pnpm install && lerna publish --no-private --force-publish && pnpm retype:updateversion",
     "release:ci": "lerna publish --no-private --force-publish --yes",
     "release:canary": "lerna publish premajor --canary --no-private --force-publish",
-    "release:manual": "node scripts/workspaceRun.mjs release",
-    "release:yalc": "(yarn entry:dist && yarn lerna exec npx yalc push); yarn entry:src",
+    "release:manual": "pnpm --recursive --no-bail run release",
+    "release:yalc": "(pnpm entry:dist && lerna exec npx yalc push); pnpm entry:src",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
-    "link:packages": "yarn lerna run link",
-    "docs": "yarn docs:prepare && yarn retype build",
-    "docs:prepare": "yarn lerna run docs && yarn retype:updateversion",
-    "docs:dev": "yarn retype watch .",
-    "retype:updateversion": "sed \"s/label: .*/label: $(yarn list --pattern @latticexyz/solecs | grep -e @latticexyz | sed \"s/.*@//\")/\" retype.yml > retype.yml.tmp && mv retype.yml.tmp retype.yml",
-    "test": "yarn workspaces run test",
-    "entry:dist": "yarn lerna run prepack",
-    "entry:src": "yarn lerna run postpack",
-    "gas-report": "yarn workspace @latticexyz/store run gas-report && yarn workspace @latticexyz/world run gas-report",
-    "codegen": "yarn codegen:tablegen && yarn codegen:worldgen",
-    "codegen:tablegen": "yarn workspace @latticexyz/store run tablegen && yarn workspace @latticexyz/world run tablegen",
-    "codegen:worldgen": "yarn workspace @latticexyz/world run worldgen"
+    "link:packages": "lerna exec 'pnpm link --global'",
+    "docs": "pnpm docs:prepare && retype build",
+    "docs:prepare": "lerna run docs && pnpm retype:updateversion",
+    "docs:dev": "retype watch .",
+    "retype:updateversion": "sed \"s/label: .*/label: $(cat packages/cli/package.json | jq -r '.version')/\" retype.yml > retype.yml.tmp && mv retype.yml.tmp retype.yml",
+    "test": "pnpm recursive run test",
+    "entry:dist": "lerna run prepack",
+    "entry:src": "lerna run postpack",
+    "gas-report": "pnpm recursive run gas-report",
+    "codegen": "pnpm codegen:tablegen && pnpm codegen:worldgen",
+    "codegen:tablegen": "pnpm recursive run tablegen",
+    "codegen:worldgen": "pnpm recursive run worldgen"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",

@@ -13,10 +13,9 @@
     "directory": "packages/config"
   },
   "scripts": {
-    "prepare": "yarn build",
+    "prepare": "pnpm build",
     "test": "vitest typecheck --run",
     "build": "vite build",
-    "link": "yarn link",
     "release": "npm publish --access=public"
   },
   "devDependencies": {

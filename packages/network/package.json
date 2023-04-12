@@ -4,24 +4,23 @@
   "version": "1.41.0",
   "source": "src/index.ts",
   "main": "src/index.ts",
-  "engines": {
-    "node": ">=16"
-  },
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/network"
   },
   "scripts": {
-    "prepare": "yarn build",
+    "prepare": "pnpm build",
     "lint": "eslint . --ext .ts",
     "test": "tsc --noEmit && jest --forceExit",
-    "link": "yarn link",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
-    "build": "(rimraf dist && rimraf ./.parcel-cache && yarn prepack && parcel build && tsc --emitDeclarationOnly || true) && yarn postpack",
+    "build": "(rimraf dist && rimraf ./.parcel-cache && pnpm prepack && parcel build && tsc --emitDeclarationOnly || true) && pnpm postpack",
     "release": "npm publish --access=public"
   },
   "dependencies": {
@@ -52,16 +51,17 @@
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
-    "@latticexyz/recs": "^1.41.0",
-    "@latticexyz/schema-type": "^1.41.0",
-    "@latticexyz/services": "^1.41.0",
-    "@latticexyz/solecs": "^1.41.0",
-    "@latticexyz/store": "^1.41.0",
-    "@latticexyz/utils": "^1.41.0",
+    "@latticexyz/recs": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/services": "workspace:*",
+    "@latticexyz/solecs": "workspace:*",
+    "@latticexyz/store": "workspace:*",
+    "@latticexyz/utils": "workspace:*",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "@types/debug": "^4.1.7",
     "@types/google-protobuf": "^3.15.6",
     "@types/jest": "^27.4.1",
+    "@types/lodash": "^4.14.182",
     "@types/node": "^17.0.21",
     "async-mutex": "^0.3.2",
     "ethers": "^5.7.2",

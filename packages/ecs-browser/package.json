@@ -12,8 +12,7 @@
     "directory": "packages/ecs-browser"
   },
   "scripts": {
-    "prepare": "yarn build",
-    "link": "yarn link",
+    "prepare": "pnpm build",
     "test": "tsc && echo 'todo: add tests'",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
@@ -21,9 +20,9 @@
     "release": "npm publish --access=public"
   },
   "devDependencies": {
-    "@latticexyz/recs": "^1.41.0",
-    "@latticexyz/std-client": "^1.41.0",
-    "@latticexyz/utils": "^1.41.0",
+    "@latticexyz/recs": "workspace:*",
+    "@latticexyz/std-client": "workspace:*",
+    "@latticexyz/utils": "workspace:*",
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/jest": "^27.4.1",

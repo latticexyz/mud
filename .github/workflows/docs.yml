@@ -26,7 +26,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Prepare docs
-        run: yarn docs:prepare
+        run: pnpm docs:prepare
 
       - name: Build docs
         uses: retypeapp/action-build@v2

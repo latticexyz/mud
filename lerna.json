@@ -3,7 +3,7 @@
     "packages/*"
   ],
   "version": "1.41.0",
-  "npmClient": "yarn",
+  "npmClient": "pnpm",
   "useWorkspaces": true,
   "conventionalCommits": true,
   "command": {
