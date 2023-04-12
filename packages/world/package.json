@@ -3,11 +3,10 @@
   "license": "MIT",
   "version": "1.41.0",
   "description": "World framework",
+  "types": "./types/ethers-contracts/",
   "exports": {
     "./mud.config.mjs": "./dist/mud.config.mjs",
-    "./abi/*": "./abi/*",
-    "./types/*": "./types/*",
-    "./src/*": "./src/*"
+    "./*": "./*"
   },
   "repository": {
     "type": "git",
