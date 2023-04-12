@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import {Script} from "forge-std/Script.sol";
-import {console} from "forge-std/console.sol";
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
 
-import {BulkSetStateSystem, ID as BulkSetStateSystemID, ECSEvent} from "std-contracts/systems/BulkSetStateSystem.sol";
-import {World} from "solecs/World.sol";
-import {System} from "solecs/System.sol";
-import {getAddressById} from "solecs/utils.sol";
-import {Set} from "solecs/Set.sol";
+import { BulkSetStateSystem, ID as BulkSetStateSystemID, ECSEvent } from "std-contracts/systems/BulkSetStateSystem.sol";
+import { World } from "solecs/World.sol";
+import { System } from "solecs/System.sol";
+import { getAddressById } from "solecs/utils.sol";
+import { Set } from "solecs/Set.sol";
 
 struct ParsedState {
   string[] componentIds;
@@ -33,11 +33,7 @@ struct State {
  * forge script --sig "run(string, address)" --rpc-url http://localhost:8545 src/contracts/BulkUpload.sol:BulkUpload path/to/ecs-map-test.json <WORLD_ADDRESS>
  */
 contract BulkUpload is Script {
-  function run(
-    string memory path,
-    address worldAddress,
-    uint256 eventsPerTx
-  ) public {
+  function run(string memory path, address worldAddress, uint256 eventsPerTx) public {
     vmSafe.startBroadcast();
 
     // Read JSON
@@ -108,9 +104,10 @@ contract BulkUpload is Script {
   }
 }
 
-function transformEventsToOnlyUseNeededEntities(uint256[] memory entities, ECSEvent[] memory events)
-  returns (uint256[] memory, ECSEvent[] memory)
-{
+function transformEventsToOnlyUseNeededEntities(
+  uint256[] memory entities,
+  ECSEvent[] memory events
+) returns (uint256[] memory, ECSEvent[] memory) {
   Set uniqueEntityIndices = new Set();
 
   // Find unique entity indices
@@ -167,11 +164,7 @@ function hexToBytes(string memory s) pure returns (bytes memory) {
   return r;
 }
 
-function substring(
-  string memory str,
-  uint256 start,
-  uint256 end
-) pure returns (string memory) {
+function substring(string memory str, uint256 start, uint256 end) pure returns (string memory) {
   bytes memory strBytes = bytes(str);
   bytes memory result = new bytes(end - start);
   for (uint256 i = start; i < end; i++) {

@@ -44,9 +44,9 @@
   "scripts": {
     "prepare": "husky install && (forge --version || pnpm foundryup)",
     "commit": "cz",
-    "prettier:check": "prettier --check 'packages/**/*.ts'",
-    "prettier": "prettier --write 'packages/**/*.ts'",
-    "lint": "eslint . --ext .ts",
+    "prettier:check": "prettier --check 'packages/**/*.{ts,css,md,sol}'",
+    "prettier": "prettier --write 'packages/**/*.{ts,css,md,sol}'",
+    "lint": "pnpm prettier:check && eslint . --ext .ts",
     "release": "pnpm install && lerna publish --no-private --force-publish && pnpm retype:updateversion",
     "release:ci": "lerna publish --no-private --force-publish --yes",
     "release:canary": "lerna publish premajor --canary --no-private --force-publish",

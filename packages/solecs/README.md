@@ -32,11 +32,7 @@ interface IWorld {
 
   function registerSystem(address systemAddr, uint256 id) external;
 
-  function registerComponentValueSet(
-    address component,
-    uint256 entity,
-    bytes calldata data
-  ) external;
+  function registerComponentValueSet(address component, uint256 entity, bytes calldata data) external;
 
   function registerComponentValueRemoved(address component, uint256 entity) external;
 
@@ -52,7 +48,6 @@ interface IWorld {
 
   function query(WorldQueryFragment[] calldata worldQueryFragments) external view returns (uint256[] memory);
 }
-
 ```
 
 ## Entities
@@ -95,7 +90,6 @@ interface IComponent is IOwnableWritable {
 
   function registerIndexer(address indexer) external;
 }
-
 ```
 
 To have a common interface, the base component contract stores values as raw bytes.
@@ -131,7 +125,6 @@ contract PositionComponent is Component {
     return getEntitiesWithValue(abi.encode(value));
   }
 }
-
 ```
 
 To allow clients to automatically create a decoder for the abi-encoded raw component value, add an optional `getSchema` method:
@@ -167,7 +160,6 @@ import "./IERC173.sol";
 interface ISystem is IERC173 {
   function execute(bytes memory arguments) external returns (bytes memory);
 }
-
 ```
 
 For convenience adding a typed `executeTyped` method taking care of abi-encoding the arguments is recommended.
@@ -207,7 +199,6 @@ contract MoveSystem is System {
     return execute(abi.encode(entity, targetPosition));
   }
 }
-
 ```
 
 ## Queries
@@ -222,7 +213,6 @@ struct QueryFragment {
   IComponent component;
   bytes value;
 }
-
 ```
 
 Available query fragments are:

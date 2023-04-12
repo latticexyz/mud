@@ -55,11 +55,7 @@ library PackedCounterLib {
     return pack(counters);
   }
 
-  function pack(
-    uint16 a,
-    uint16 b,
-    uint16 c
-  ) internal pure returns (PackedCounter) {
+  function pack(uint16 a, uint16 b, uint16 c) internal pure returns (PackedCounter) {
     uint16[] memory counters = new uint16[](3);
     counters[0] = a;
     counters[1] = b;
@@ -67,12 +63,7 @@ library PackedCounterLib {
     return pack(counters);
   }
 
-  function pack(
-    uint16 a,
-    uint16 b,
-    uint16 c,
-    uint16 d
-  ) internal pure returns (PackedCounter) {
+  function pack(uint16 a, uint16 b, uint16 c, uint16 d) internal pure returns (PackedCounter) {
     uint16[] memory counters = new uint16[](4);
     counters[0] = a;
     counters[1] = b;
