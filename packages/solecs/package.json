@@ -34,7 +34,6 @@
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
     "solmate": "https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
-    "ts-node": "10.7",
     "typechain": "^8.1.1",
     "typedoc": "^0.23.10"
   },
