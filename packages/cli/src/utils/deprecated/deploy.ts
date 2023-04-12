@@ -1,8 +1,9 @@
-import { constants, Wallet, providers } from "ethers";
+import { constants, Wallet } from "ethers";
 import { generateLibDeploy, resetLibDeploy } from "./codegen.js";
 import { findLog } from "./findLog.js";
 import { generateTypes } from "./typegen.js";
 import { execa } from "execa";
+import { StaticJsonRpcProvider } from "@ethersproject/providers";
 import path from "path";
 
 const contractsDirectory = new URL("../src/contracts", import.meta.url).pathname;
@@ -27,7 +28,7 @@ export async function deploy(
   if (gasPrice == null) {
     try {
       console.log("Fetching gas price...");
-      const provider = new providers.StaticJsonRpcProvider(rpc, { name: "AnyNetwork", chainId: 1234 });
+      const provider = new StaticJsonRpcProvider(rpc, { name: "AnyNetwork", chainId: 1234 });
       gasPrice = (await provider.getGasPrice()).toNumber() * 1.3; // 30% multiplier for faster inclusion
       console.log("Gas price:", gasPrice);
     } catch (e) {
