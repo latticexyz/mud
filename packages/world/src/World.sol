@@ -125,7 +125,7 @@ contract World is Store, IWorldCore {
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Set the record
-    StoreCore.setRecord(resourceSelector.toTableId(), key, data);
+    StoreCore.setRecord(resourceSelector, key, data);
   }
 
   /**
@@ -143,7 +143,7 @@ contract World is Store, IWorldCore {
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Set the field
-    StoreCore.setField(resourceSelector.toTableId(), key, schemaIndex, data);
+    StoreCore.setField(resourceSelector, key, schemaIndex, data);
   }
 
   /**
@@ -161,7 +161,7 @@ contract World is Store, IWorldCore {
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Push to the field
-    StoreCore.pushToField(resourceSelector.toTableId(), key, schemaIndex, dataToPush);
+    StoreCore.pushToField(resourceSelector, key, schemaIndex, dataToPush);
   }
 
   /**
@@ -180,7 +180,7 @@ contract World is Store, IWorldCore {
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Update data in the field
-    StoreCore.updateInField(resourceSelector.toTableId(), key, schemaIndex, startByteIndex, dataToSet);
+    StoreCore.updateInField(resourceSelector, key, schemaIndex, startByteIndex, dataToSet);
   }
 
   /**
@@ -192,7 +192,7 @@ contract World is Store, IWorldCore {
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Delete the record
-    StoreCore.deleteRecord(resourceSelector.toTableId(), key);
+    StoreCore.deleteRecord(resourceSelector, key);
   }
 
   /************************************************************************
@@ -204,10 +204,9 @@ contract World is Store, IWorldCore {
   /**
    * Register the given schema for the given table id.
    * This overload exists to conform with the IStore interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or name.
+   * Access is checked based on the namespace or name (encoded in the tableId).
    */
-  function registerSchema(uint256 tableId, Schema valueSchema, Schema keySchema) public virtual {
-    bytes32 tableSelector = ResourceSelector.from(tableId);
+  function registerSchema(bytes32 tableId, Schema valueSchema, Schema keySchema) public virtual {
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
     // We can't call IBaseWorld(this).registerSchema directly because it would be handled like
@@ -217,8 +216,8 @@ contract World is Store, IWorldCore {
       target: systemAddress,
       funcSelectorAndArgs: abi.encodeWithSelector(
         IRegistrationSystem.registerTable.selector,
-        tableSelector.getNamespace(),
-        tableSelector.getName(),
+        tableId.getNamespace(),
+        tableId.getName(),
         valueSchema,
         keySchema
       ),
@@ -230,10 +229,9 @@ contract World is Store, IWorldCore {
   /**
    * Register metadata (tableName, fieldNames) for the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or name.
+   * Access is checked based on the namespace or name (encoded in the tableId).
    */
-  function setMetadata(uint256 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
+  function setMetadata(bytes32 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
     // We can't call IBaseWorld(this).setMetadata directly because it would be handled like
@@ -243,8 +241,8 @@ contract World is Store, IWorldCore {
       target: systemAddress,
       funcSelectorAndArgs: abi.encodeWithSelector(
         IRegistrationSystem.setMetadata.selector,
-        resourceSelector.getNamespace(),
-        resourceSelector.getName(),
+        tableId.getNamespace(),
+        tableId.getName(),
         tableName,
         fieldNames
       ),
@@ -256,9 +254,9 @@ contract World is Store, IWorldCore {
   /**
    * Register a hook for the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
+   * Access is checked based on the namespace or name (encoded in the tableId).
    */
-  function registerStoreHook(uint256 tableId, IStoreHook hook) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
+  function registerStoreHook(bytes32 tableId, IStoreHook hook) public virtual {
     (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
 
     // We can't call IBaseWorld(this).registerStoreHook directly because it would be handled like
@@ -268,8 +266,8 @@ contract World is Store, IWorldCore {
       target: systemAddress,
       funcSelectorAndArgs: abi.encodeWithSelector(
         IRegistrationSystem.registerTableHook.selector,
-        resourceSelector.getNamespace(),
-        resourceSelector.getName(),
+        tableId.getNamespace(),
+        tableId.getName(),
         hook
       ),
       delegate: false,
@@ -280,74 +278,62 @@ contract World is Store, IWorldCore {
   /**
    * Write a record in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or name.
+   * Access is checked based on the namespace or name (encoded in the tableId).
    */
-  function setRecord(uint256 tableId, bytes32[] calldata key, bytes calldata data) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
-    setRecord(resourceSelector.getNamespace(), resourceSelector.getName(), key, data);
+  function setRecord(bytes32 tableId, bytes32[] calldata key, bytes calldata data) public virtual {
+    setRecord(tableId.getNamespace(), tableId.getName(), key, data);
   }
 
   /**
    * Write a field in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or name.
+   * Access is checked based on the namespace or name (encoded in the tableId).
    */
   function setField(
-    uint256 tableId,
+    bytes32 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata data
   ) public virtual override {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
-    setField(resourceSelector.getNamespace(), resourceSelector.getName(), key, schemaIndex, data);
+    setField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, data);
   }
 
   /**
    * Push data to the end of a field in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or name.
+   * Access is checked based on the namespace or name (encoded in the tableId).
    */
   function pushToField(
-    uint256 tableId,
+    bytes32 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush
   ) public override {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
-    pushToField(resourceSelector.getNamespace(), resourceSelector.getName(), key, schemaIndex, dataToPush);
+    pushToField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, dataToPush);
   }
 
   /**
    * Update data at `startByteIndex` of a field in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or name.
+   * Access is checked based on the namespace or name (encoded in the tableId).
    */
   function updateInField(
-    uint256 tableId,
+    bytes32 tableId,
     bytes32[] calldata key,
     uint8 schemaIndex,
     uint256 startByteIndex,
     bytes calldata dataToSet
   ) public virtual {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
-    updateInField(
-      resourceSelector.getNamespace(),
-      resourceSelector.getName(),
-      key,
-      schemaIndex,
-      startByteIndex,
-      dataToSet
-    );
+    updateInField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, startByteIndex, dataToSet);
   }
 
   /**
    * Delete a record in the table at the given tableId.
    * This overload exists to conform with the `IStore` interface.
-   * The tableId is converted to a resourceSelector, and access is checked based on the namespace or name.
+   * Access is checked based on the namespace or name (encoded in the tableId).
    */
-  function deleteRecord(uint256 tableId, bytes32[] calldata key) public virtual override {
-    bytes32 resourceSelector = ResourceSelector.from(tableId);
-    deleteRecord(resourceSelector.getNamespace(), resourceSelector.getName(), key);
+  function deleteRecord(bytes32 tableId, bytes32[] calldata key) public virtual override {
+    deleteRecord(tableId.getNamespace(), tableId.getName(), key);
   }
 
   /************************************************************************

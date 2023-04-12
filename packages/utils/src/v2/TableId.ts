@@ -35,6 +35,7 @@ export class TableId {
     // assumes tableId is a 32-byte hex string, otherwise it left-pads with zeros (for numbers)
     // this is scary, since zero padding is different depending on the type (bytes types vs number types)
     // TODO: fix this after we move tableIds to bytes32 instead of uint256
+    // TODO: check if this is still relevant
     const tableIdBytes = new Uint8Array(32);
     tableIdBytes.set(tableId.slice().reverse());
     tableIdBytes.reverse();

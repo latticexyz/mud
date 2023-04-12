@@ -9,7 +9,7 @@ import { Schema } from "../src/Schema.sol";
 
 contract StoreMetadataTest is Test, StoreView {
   function testSetAndGet() public {
-    uint256 tableId = 1;
+    bytes32 tableId = "1";
     string memory tableName = "firstTable";
     string[] memory fieldNames = new string[](2);
     fieldNames[0] = "firstField";

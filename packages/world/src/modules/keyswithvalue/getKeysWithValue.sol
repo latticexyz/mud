@@ -13,9 +13,9 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  * Note: this util can only be called within the context of a Store (e.g. from a System or Module).
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
-function getKeysWithValue(uint256 tableId, bytes memory value) view returns (bytes32[] memory keysWithValue) {
+function getKeysWithValue(bytes32 tableId, bytes memory value) view returns (bytes32[] memory keysWithValue) {
   // Get the corresponding reverse mapping table
-  uint256 keysWithValueTableId = uint256(getTargetTableSelector(MODULE_NAMESPACE, tableId));
+  bytes32 keysWithValueTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
 
   // Get the keys with the given value
   keysWithValue = KeysWithValue.get(keysWithValueTableId, keccak256(value));
@@ -26,11 +26,11 @@ function getKeysWithValue(uint256 tableId, bytes memory value) view returns (byt
  */
 function getKeysWithValue(
   IStore store,
-  uint256 tableId,
+  bytes32 tableId,
   bytes memory value
 ) view returns (bytes32[] memory keysWithValue) {
   // Get the corresponding reverse mapping table
-  uint256 keysWithValueTableId = uint256(getTargetTableSelector(MODULE_NAMESPACE, tableId));
+  bytes32 keysWithValueTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
 
   // Get the keys with the given value
   keysWithValue = KeysWithValue.get(store, keysWithValueTableId, keccak256(value));

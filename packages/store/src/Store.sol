@@ -10,22 +10,22 @@ abstract contract Store is IStore {
     StoreCore.initialize();
   }
 
-  function getSchema(uint256 table) public view virtual returns (Schema schema) {
+  function getSchema(bytes32 table) public view virtual returns (Schema schema) {
     schema = StoreCore.getSchema(table);
   }
 
-  function getKeySchema(uint256 table) public view virtual returns (Schema schema) {
+  function getKeySchema(bytes32 table) public view virtual returns (Schema schema) {
     schema = StoreCore.getKeySchema(table);
   }
 
   // Get full record (static and dynamic data, load schema from storage)
-  function getRecord(uint256 table, bytes32[] calldata key) public view virtual returns (bytes memory data) {
+  function getRecord(bytes32 table, bytes32[] calldata key) public view virtual returns (bytes memory data) {
     data = StoreCore.getRecord(table, key);
   }
 
   // Get full record (static and dynamic data)
   function getRecord(
-    uint256 table,
+    bytes32 table,
     bytes32[] calldata key,
     Schema schema
   ) public view virtual returns (bytes memory data) {
@@ -34,7 +34,7 @@ abstract contract Store is IStore {
 
   // Get partial data at schema index
   function getField(
-    uint256 table,
+    bytes32 table,
     bytes32[] calldata key,
     uint8 schemaIndex
   ) public view virtual returns (bytes memory data) {

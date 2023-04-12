@@ -25,13 +25,6 @@ library ResourceSelector {
   }
 
   /**
-   * Create a 32-byte resource selector from a uint256 tableId
-   */
-  function from(uint256 tableId) internal pure returns (bytes32) {
-    return bytes32(tableId);
-  }
-
-  /**
    * Get the namespace of a ResourceSelector.
    */
   function getNamespace(bytes32 resourceSelector) internal pure returns (bytes16) {
@@ -69,12 +62,5 @@ library ResourceSelector {
     for (; length < 16; length++) if (Bytes.slice1(selector, length) == 0) break;
     bytes memory packedSelector = abi.encodePacked(selector);
     return string(Bytes.setLength(packedSelector, length));
-  }
-
-  /**
-   * Convert a resource selector to a tableId
-   */
-  function toTableId(bytes32 resourceSelector) internal pure returns (uint256) {
-    return uint256(resourceSelector);
   }
 }

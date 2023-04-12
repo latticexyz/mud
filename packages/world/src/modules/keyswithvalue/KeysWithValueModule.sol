@@ -38,7 +38,7 @@ contract KeysWithValueModule is IModule, WorldContext {
 
   function install(bytes memory args) public override {
     // Extract source table id from args
-    uint256 sourceTableId = abi.decode(args, (uint256));
+    bytes32 sourceTableId = abi.decode(args, (bytes32));
     bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
 
     // Register the target table
