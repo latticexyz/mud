@@ -17,8 +17,8 @@ import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Hooks"))));
-uint256 constant HooksTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Hooks")));
+bytes32 constant HooksTableId = _tableId;
 
 library Hooks {
   /** Get the table's schema */

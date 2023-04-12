@@ -8,7 +8,7 @@ export default storeConfig({
     Callbacks: "bytes24[]",
     StoreMetadata: {
       primaryKeys: {
-        tableId: "uint256",
+        tableId: "bytes32",
       },
       schema: {
         tableName: "string",

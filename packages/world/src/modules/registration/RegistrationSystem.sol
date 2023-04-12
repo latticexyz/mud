@@ -72,7 +72,7 @@ contract RegistrationSystem is System, IErrors {
     ResourceType.set(resourceSelector, Resource.TABLE);
 
     // Register the table's schema
-    StoreCore.registerSchema(resourceSelector.toTableId(), valueSchema, keySchema);
+    StoreCore.registerSchema(resourceSelector, valueSchema, keySchema);
   }
 
   /**
@@ -86,10 +86,10 @@ contract RegistrationSystem is System, IErrors {
     string[] calldata fieldNames
   ) public virtual {
     // Require caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
+    bytes32 tableId = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
 
     // Set the metadata
-    StoreCore.setMetadata(resourceSelector.toTableId(), tableName, fieldNames);
+    StoreCore.setMetadata(tableId, tableName, fieldNames);
   }
 
   /**
@@ -120,7 +120,7 @@ contract RegistrationSystem is System, IErrors {
     bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
 
     // Register the hook
-    StoreCore.registerStoreHook(resourceSelector.toTableId(), hook);
+    StoreCore.registerStoreHook(resourceSelector, hook);
   }
 
   /**

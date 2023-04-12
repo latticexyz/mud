@@ -21,7 +21,7 @@ contract UniqueEntityModuleTest is Test {
 
   IBaseWorld world;
   UniqueEntityModule uniqueEntityModule = new UniqueEntityModule();
-  uint256 tableId = uint256(ResourceSelector.from(NAMESPACE, TABLE_NAME));
+  bytes32 tableId = ResourceSelector.from(NAMESPACE, TABLE_NAME);
 
   function setUp() public {
     world = IBaseWorld(address(new World()));

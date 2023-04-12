@@ -33,8 +33,8 @@ contract KeysWithValueModuleTest is Test {
 
   Schema sourceTableSchema;
   Schema sourceTableKeySchema;
-  uint256 sourceTableId;
-  uint256 targetTableId;
+  bytes32 sourceTableId;
+  bytes32 targetTableId;
 
   function setUp() public {
     sourceTableSchema = SchemaLib.encode(SchemaType.UINT256);
@@ -46,13 +46,13 @@ contract KeysWithValueModuleTest is Test {
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
-    sourceTableId = ResourceSelector.from(namespace, sourceName).toTableId();
-    targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
+    sourceTableId = ResourceSelector.from(namespace, sourceName);
+    targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
   }
 
   function _installKeysWithValueModule() internal {
     // Register source table
-    sourceTableId = uint256(world.registerTable(namespace, sourceName, sourceTableSchema, sourceTableKeySchema));
+    sourceTableId = world.registerTable(namespace, sourceName, sourceTableSchema, sourceTableKeySchema);
 
     // Install the index module
     // TODO: add support for installing this via installModule

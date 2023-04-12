@@ -13,7 +13,7 @@ contract UniqueEntitySystem is System {
    * Increment and get an entity nonce.
    */
   function getUniqueEntity() public virtual returns (bytes32) {
-    uint256 tableId = uint256(ResourceSelector.from(NAMESPACE, TABLE_NAME));
+    bytes32 tableId = ResourceSelector.from(NAMESPACE, TABLE_NAME);
     uint256 uniqueEntity = UniqueEntity.get(tableId) + 1;
     UniqueEntity.set(tableId, uniqueEntity);
 
