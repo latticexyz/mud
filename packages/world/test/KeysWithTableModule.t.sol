@@ -108,14 +108,14 @@ contract KeysWithTableModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(keysWithTable.length, 2, "5");
-    assertEq(keysWithTable[0], key2, "6");
+    assertEq(keysWithTable[1], key2, "6");
 
     // Get the list of keys in the target table
     keysWithTable = KeysWithTable.get(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysWithTable.length, 2, "7");
-    assertEq(keysWithTable[1], key1, "8");
+    assertEq(keysWithTable[0], key1, "8");
 
     // Delete the first key
     // !gasreport delete a record on a table with keysWithTableModule installed

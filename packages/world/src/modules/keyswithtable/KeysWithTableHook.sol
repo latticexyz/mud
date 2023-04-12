@@ -5,8 +5,9 @@ import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
-import { MODULE_NAMESPACE } from "./constants.sol";
+import { MODULE_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
 import { KeysWithTable } from "./tables/KeysWithTable.sol";
+import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 import { ArrayLib } from "../utils/ArrayLib.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
@@ -24,37 +25,42 @@ contract KeysWithTableHook is IStoreHook {
 
   function onSetRecord(uint256 sourceTableId, bytes32[] memory key, bytes memory) public {
     uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
+    uint256 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, sourceTableId).toTableId();
 
-    // Remove the key from the list of keys in this table
-    _removeKeyFromList(targetTableId, key[0]);
+    bytes32 keysHash = keccak256(abi.encode(key));
 
-    // Push the key to the list of keys in this table
-    KeysWithTable.push(targetTableId, key[0]);
+    if (!UsedKeysIndex.get(targetTableIdUsed, keysHash)) {
+      KeysWithTable.push(targetTableId, key[0]);
+
+      UsedKeysIndex.set(targetTableIdUsed, keysHash, true);
+    }
   }
 
-  function onBeforeSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
-    // Remove the key from the list of keys in this table
-    uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
-    _removeKeyFromList(targetTableId, key[0]);
-  }
+  function onBeforeSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {}
 
   function onAfterSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
-    // Add the key to the list of keys in this table
     uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
-    KeysWithTable.push(targetTableId, key[0]);
+    uint256 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, sourceTableId).toTableId();
+
+    bytes32 keysHash = keccak256(abi.encode(key));
+
+    if (!UsedKeysIndex.get(targetTableIdUsed, keysHash)) {
+      KeysWithTable.push(targetTableId, key[0]);
+
+      UsedKeysIndex.set(targetTableIdUsed, keysHash, true);
+    }
   }
 
   function onDeleteRecord(uint256 sourceTableId, bytes32[] memory key) public {
     // Remove the key from the list of keys in this table
     uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
-    _removeKeyFromList(targetTableId, key[0]);
-  }
+    uint256 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, sourceTableId).toTableId();
 
-  function _removeKeyFromList(uint256 targetTableId, bytes32 key) internal {
-    // Get the keys in this table excluding the current key
-    bytes32[] memory keysWithTable = KeysWithTable.get(targetTableId).filter(key);
+    bytes32[] memory keysWithTable = KeysWithTable.get(targetTableId);
 
-    // Set the keys in this table
-    KeysWithTable.set(targetTableId, keysWithTable);
+    KeysWithTable.set(targetTableId, keysWithTable.filter(key[0]));
+
+    bytes32 keysHash = keccak256(abi.encode(key));
+    UsedKeysIndex.set(targetTableIdUsed, keysHash, false);
   }
 }

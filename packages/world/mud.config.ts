@@ -129,6 +129,14 @@ export default mudConfig({
       schema: "bytes32[]", // For now only supports 1 key per value,
       tableIdArgument: true,
     },
+    UsedKeysIndex: {
+      directory: "/modules/keyswithtable/tables",
+      primaryKeys: {
+        keysHash: "bytes32",
+      },
+      schema: "bool",
+      tableIdArgument: true,
+    },
   },
   enums: {
     Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
