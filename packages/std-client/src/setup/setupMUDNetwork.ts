@@ -155,7 +155,8 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
         provider: providerConfig,
         worldContract: contractsConfig.World,
         initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
-        disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
+        // TODO: `networkConfig.devMode` is deprecated, only use `networkConfig.disableCache`
+        disableCache: networkConfig.devMode || networkConfig.disableCache,
         fetchSystemCalls: options?.fetchSystemCalls,
       },
     });

@@ -121,7 +121,7 @@ export async function setupMUDV2Network<C extends ContractComponents>({
     initialGasPrice || Math.ceil((await signerOrProvider.get().getGasPrice()).toNumber() * 1.3)
   );
 
-  // TODO: make this v2 compatible
+  // TODO: replace this with `fastTxExecutor`
   const { txQueue, dispose: disposeTxQueue } = createTxQueue(contracts, network, gasPriceInput$, {
     devMode: networkConfig.devMode,
   });
@@ -151,7 +151,7 @@ export async function setupMUDV2Network<C extends ContractComponents>({
         provider: providerConfig,
         worldContract: contractsConfig.World,
         initialBlockNumber: networkConfig.initialBlockNumber ?? 0,
-        disableCache: networkConfig.devMode, // Disable cache on local networks (hardhat / anvil)
+        disableCache: networkConfig.disableCache, // Disable cache on local networks (hardhat / anvil)
         fetchSystemCalls,
       },
     });
