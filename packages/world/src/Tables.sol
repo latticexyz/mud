@@ -15,3 +15,4 @@ import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
 import { Bool } from "./../test/tables/Bool.sol";
 import { AddressArray } from "./../test/tables/AddressArray.sol";
 import { KeysWithTable } from ".//modules/keyswithtable/tables/KeysWithTable.sol";
+import { UsedKeysIndex } from ".//modules/keyswithtable/tables/UsedKeysIndex.sol";
