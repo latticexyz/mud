@@ -15,7 +15,7 @@
   },
   "scripts": {
     "prepare": "pnpm build",
-    "codegen": "ts-node ./scripts/codegen.ts && prettier --write '**/*.sol'",
+    "codegen": "tsx ./scripts/codegen.ts && prettier --write '**/*.sol'",
     "tablegen": "../cli/dist/mud.js tablegen",
     "test": "pnpm codegen && forge test",
     "build": "pnpm codegen && rimraf out && forge build && pnpm dist && pnpm types && tsup",
@@ -42,8 +42,8 @@
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
-    "ts-node": "^10.9.1",
     "tsup": "^6.7.0",
+    "tsx": "^3.12.6",
     "typechain": "^8.1.1",
     "typedoc": "^0.23.10"
   },
