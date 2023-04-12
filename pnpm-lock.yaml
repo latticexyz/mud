@@ -763,9 +763,6 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
-      '@rari-capital/solmate':
-        specifier: https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
-        version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
       '@solidstate/contracts':
         specifier: ^0.0.52
         version: 0.0.52
@@ -805,6 +802,9 @@ importers:
       solidity-docgen:
         specifier: ^0.6.0-beta.22
         version: 0.6.0-beta.22(hardhat@2.10.2)
+      solmate:
+        specifier: https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
+        version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
       ts-node:
         specifier: '10.7'
         version: 10.7.0(@types/node@17.0.34)(typescript@4.9.5)
@@ -931,9 +931,6 @@ importers:
       '@latticexyz/solecs':
         specifier: workspace:*
         version: link:../solecs
-      '@rari-capital/solmate':
-        specifier: https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
-        version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
       '@solidstate/contracts':
         specifier: ^0.0.52
         version: 0.0.52
@@ -967,6 +964,9 @@ importers:
       solidity-docgen:
         specifier: ^0.6.0-beta.22
         version: 0.6.0-beta.22(hardhat@2.10.2)
+      solmate:
+        specifier: https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
+        version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
       typechain:
         specifier: ^8.1.1
         version: 8.1.1(typescript@4.9.5)
