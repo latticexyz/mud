@@ -11,7 +11,7 @@ import { SystemRegistry } from "./tables/SystemRegistry.sol";
 import { System } from "../../System.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 import { Resource } from "../../Types.sol";
-import { ROOT_NAMESPACE, ROOT_FILE } from "../../constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAME } from "../../constants.sol";
 import { AccessControl } from "../../AccessControl.sol";
 
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
@@ -49,19 +49,19 @@ contract RegistrationSystem is System, IErrors {
    */
   function registerTable(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     Schema valueSchema,
     Schema keySchema
   ) public virtual returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, file);
+    resourceSelector = ResourceSelector.from(namespace, name);
 
-    // Require the file selector to not be the namespace's root file
-    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
+    // Require the name to not be the namespace's root name
+    if (name == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
 
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwnerOrSelf(namespace, ROOT_FILE, _msgSender());
+    else AccessControl.requireOwnerOrSelf(namespace, ROOT_NAME, _msgSender());
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -72,61 +72,61 @@ contract RegistrationSystem is System, IErrors {
     ResourceType.set(resourceSelector, Resource.TABLE);
 
     // Register the table's schema
-    StoreCore.registerSchema(resourceSelector.toTableId(), valueSchema, keySchema);
+    StoreCore.registerSchema(resourceSelector, valueSchema, keySchema);
   }
 
   /**
-   * Register metadata (tableName, fieldNames) for the table at the given namespace and file.
+   * Register metadata (tableName, fieldNames) for the table at the given namespace and name.
    * Requires the caller to own the namespace.
    */
   function setMetadata(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     string calldata tableName,
     string[] calldata fieldNames
   ) public virtual {
     // Require caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, file, _msgSender());
+    bytes32 tableId = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
 
     // Set the metadata
-    StoreCore.setMetadata(resourceSelector.toTableId(), tableName, fieldNames);
+    StoreCore.setMetadata(tableId, tableName, fieldNames);
   }
 
   /**
-   * Register the given store hook for the table at the given namespace and file.
-   * Hooks on table files must implement the IStoreHook interface,
-   * and hooks on system files must implement the ISystemHook interface.
+   * Register the given store hook for the table at the given namespace and name.
+   * Hooks on table names must implement the IStoreHook interface,
+   * and hooks on system names must implement the ISystemHook interface.
    */
-  function registerHook(bytes16 namespace, bytes16 file, address hook) public virtual {
-    Resource resourceType = ResourceType.get(ResourceSelector.from(namespace, file));
+  function registerHook(bytes16 namespace, bytes16 name, address hook) public virtual {
+    Resource resourceType = ResourceType.get(ResourceSelector.from(namespace, name));
 
     if (resourceType == Resource.TABLE) {
-      return registerTableHook(namespace, file, IStoreHook(hook));
+      return registerTableHook(namespace, name, IStoreHook(hook));
     }
 
     if (resourceType == Resource.SYSTEM) {
-      return registerSystemHook(namespace, file, ISystemHook(hook));
+      return registerSystemHook(namespace, name, ISystemHook(hook));
     }
 
-    revert InvalidSelector(ResourceSelector.from(namespace, file).toString());
+    revert InvalidSelector(ResourceSelector.from(namespace, name).toString());
   }
 
   /**
-   * Register a hook for the table at the given namepace and file.
+   * Register a hook for the table at the given namepace and name.
    * Requires the caller to own the namespace.
    */
-  function registerTableHook(bytes16 namespace, bytes16 file, IStoreHook hook) public virtual {
+  function registerTableHook(bytes16 namespace, bytes16 name, IStoreHook hook) public virtual {
     // Require caller to own the namespace
-    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, file, _msgSender());
+    bytes32 resourceSelector = AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
 
     // Register the hook
-    StoreCore.registerStoreHook(resourceSelector.toTableId(), hook);
+    StoreCore.registerStoreHook(resourceSelector, hook);
   }
 
   /**
-   * Register a hook for the system at the given namespace and file
+   * Register a hook for the system at the given namespace and name
    */
-  function registerSystemHook(bytes16 namespace, bytes16 file, ISystemHook hook) public virtual {
+  function registerSystemHook(bytes16 namespace, bytes16 name, ISystemHook hook) public virtual {
     // TODO implement (see https://github.com/latticexyz/mud/issues/444)
   }
 
@@ -138,14 +138,14 @@ contract RegistrationSystem is System, IErrors {
    */
   function registerSystem(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     System system,
     bool publicAccess
   ) public virtual returns (bytes32 resourceSelector) {
-    resourceSelector = ResourceSelector.from(namespace, file);
+    resourceSelector = ResourceSelector.from(namespace, name);
 
-    // Require the file selector to not be the namespace's root file
-    if (file == ROOT_FILE) revert InvalidSelector(resourceSelector.toString());
+    // Require the name to not be the namespace's root name
+    if (name == ROOT_NAME) revert InvalidSelector(resourceSelector.toString());
 
     // Require the system to not exist yet
     if (SystemRegistry.get(address(system)) != 0) revert SystemExists(address(system));
@@ -153,7 +153,7 @@ contract RegistrationSystem is System, IErrors {
     // If the namespace doesn't exist yet, register it
     // otherwise require caller to own the namespace
     if (ResourceType.get(namespace) == Resource.NONE) registerNamespace(namespace);
-    else AccessControl.requireOwnerOrSelf(namespace, ROOT_FILE, _msgSender());
+    else AccessControl.requireOwnerOrSelf(namespace, ROOT_NAME, _msgSender());
 
     // Require no resource to exist at this selector yet
     if (ResourceType.get(resourceSelector) != Resource.NONE) {
@@ -174,43 +174,43 @@ contract RegistrationSystem is System, IErrors {
   }
 
   /**
-   * Register a World function selector for the given namespace, file and system function.
+   * Register a World function selector for the given namespace, name and system function.
    * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
    * which would save one sload per call, but add some complexity to upgrading systems. TBD.
    * (see https://github.com/latticexyz/mud/issues/444)
    */
   function registerFunctionSelector(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     string memory systemFunctionName,
     string memory systemFunctionArguments
   ) public returns (bytes4 worldFunctionSelector) {
     // Require the caller to own the namespace
-    AccessControl.requireOwnerOrSelf(namespace, file, _msgSender());
+    AccessControl.requireOwnerOrSelf(namespace, name, _msgSender());
 
     // Compute global function selector
     string memory namespaceString = ResourceSelector.toTrimmedString(namespace);
-    string memory fileString = ResourceSelector.toTrimmedString(file);
+    string memory nameString = ResourceSelector.toTrimmedString(name);
     worldFunctionSelector = bytes4(
-      keccak256(abi.encodePacked(namespaceString, "_", fileString, "_", systemFunctionName, systemFunctionArguments))
+      keccak256(abi.encodePacked(namespaceString, "_", nameString, "_", systemFunctionName, systemFunctionArguments))
     );
 
     // Require the function selector to be globally unique
     bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
-    bytes16 existingFile = FunctionSelectors.getFile(worldFunctionSelector);
+    bytes16 existingName = FunctionSelectors.getName(worldFunctionSelector);
 
-    if (existingNamespace != 0 || existingFile != 0) revert FunctionSelectorExists(worldFunctionSelector);
+    if (existingNamespace != 0 || existingName != 0) revert FunctionSelectorExists(worldFunctionSelector);
 
     // Register the function selector
     bytes memory systemFunctionSignature = abi.encodePacked(systemFunctionName, systemFunctionArguments);
     bytes4 systemFunctionSelector = systemFunctionSignature.length == 0
       ? bytes4(0) // Save gas by storing 0x0 for empty function signatures (= fallback function)
       : bytes4(keccak256(systemFunctionSignature));
-    FunctionSelectors.set(worldFunctionSelector, namespace, file, systemFunctionSelector);
+    FunctionSelectors.set(worldFunctionSelector, namespace, name, systemFunctionSelector);
   }
 
   /**
-   * Register a root World function selector (without namespace / file prefix).
+   * Register a root World function selector (without namespace / name prefix).
    * Requires the caller to own the root namespace.
    * TODO: instead of mapping to a resource, the function selector could map direcly to a system function,
    * which would save one sload per call, but add some complexity to upgrading systems. TBD.
@@ -218,21 +218,21 @@ contract RegistrationSystem is System, IErrors {
    */
   function registerRootFunctionSelector(
     bytes16 namespace,
-    bytes16 file,
+    bytes16 name,
     bytes4 worldFunctionSelector,
     bytes4 systemFunctionSelector
   ) public returns (bytes4) {
     // Require the caller to own the root namespace
-    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, ROOT_FILE, _msgSender());
+    AccessControl.requireOwnerOrSelf(ROOT_NAMESPACE, ROOT_NAME, _msgSender());
 
     // Require the function selector to be globally unique
     bytes16 existingNamespace = FunctionSelectors.getNamespace(worldFunctionSelector);
-    bytes16 existingFile = FunctionSelectors.getFile(worldFunctionSelector);
+    bytes16 existingName = FunctionSelectors.getName(worldFunctionSelector);
 
-    if (!(existingNamespace == 0 && existingFile == 0)) revert FunctionSelectorExists(worldFunctionSelector);
+    if (!(existingNamespace == 0 && existingName == 0)) revert FunctionSelectorExists(worldFunctionSelector);
 
     // Register the function selector
-    FunctionSelectors.set(worldFunctionSelector, namespace, file, systemFunctionSelector);
+    FunctionSelectors.set(worldFunctionSelector, namespace, name, systemFunctionSelector);
 
     return worldFunctionSelector;
   }

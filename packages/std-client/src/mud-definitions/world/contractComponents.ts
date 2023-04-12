@@ -87,7 +87,7 @@ export function defineContractComponents(world: World) {
         world,
         {
           namespace: RecsType.String,
-          file: RecsType.String,
+          name: RecsType.String,
           systemFunctionSelector: RecsType.String,
         },
         {

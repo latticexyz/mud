@@ -20,8 +20,8 @@ import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCou
 // Import user types
 import { Resource } from "./../../../Types.sol";
 
-uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("ResourceType"))));
-uint256 constant ResourceTypeTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("ResourceType")));
+bytes32 constant ResourceTypeTableId = _tableId;
 
 library ResourceType {
   /** Get the table's schema */

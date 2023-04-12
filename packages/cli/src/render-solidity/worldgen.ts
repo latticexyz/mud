@@ -27,10 +27,10 @@ export async function worldgen(
     }));
     const systemInterfaceName = `I${system.basename}`;
     // create an interface using the external functions and imports
-    const { fileSelector } = config.systems[system.basename];
+    const { name } = config.systems[system.basename];
     const output = renderSystemInterface({
       name: systemInterfaceName,
-      functionPrefix: config.namespace === "" ? "" : `${config.namespace}_${fileSelector}_`,
+      functionPrefix: config.namespace === "" ? "" : `${config.namespace}_${name}_`,
       functions,
       imports,
     });

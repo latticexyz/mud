@@ -255,7 +255,7 @@ type StorecoreStoreDeleteRecord struct {
 
 // FilterStoreDeleteRecord is a free log retrieval operation binding the contract event 0xfd36aacc4303ae7315a10b19412d3c2df14f76c9687ef14bf499d0b87373f6e2.
 //
-// Solidity: event StoreDeleteRecord(uint256 table, bytes32[] key)
+// Solidity: event StoreDeleteRecord(bytes32 table, bytes32[] key)
 func (_Storecore *StorecoreFilterer) FilterStoreDeleteRecord(opts *bind.FilterOpts) (*StorecoreStoreDeleteRecordIterator, error) {
 
 	logs, sub, err := _Storecore.contract.FilterLogs(opts, "StoreDeleteRecord")
@@ -267,7 +267,7 @@ func (_Storecore *StorecoreFilterer) FilterStoreDeleteRecord(opts *bind.FilterOp
 
 // WatchStoreDeleteRecord is a free log subscription operation binding the contract event 0xfd36aacc4303ae7315a10b19412d3c2df14f76c9687ef14bf499d0b87373f6e2.
 //
-// Solidity: event StoreDeleteRecord(uint256 table, bytes32[] key)
+// Solidity: event StoreDeleteRecord(bytes32 table, bytes32[] key)
 func (_Storecore *StorecoreFilterer) WatchStoreDeleteRecord(opts *bind.WatchOpts, sink chan<- *StorecoreStoreDeleteRecord) (event.Subscription, error) {
 
 	logs, sub, err := _Storecore.contract.WatchLogs(opts, "StoreDeleteRecord")
@@ -304,7 +304,7 @@ func (_Storecore *StorecoreFilterer) WatchStoreDeleteRecord(opts *bind.WatchOpts
 
 // ParseStoreDeleteRecord is a log parse operation binding the contract event 0xfd36aacc4303ae7315a10b19412d3c2df14f76c9687ef14bf499d0b87373f6e2.
 //
-// Solidity: event StoreDeleteRecord(uint256 table, bytes32[] key)
+// Solidity: event StoreDeleteRecord(bytes32 table, bytes32[] key)
 func (_Storecore *StorecoreFilterer) ParseStoreDeleteRecord(log types.Log) (*StorecoreStoreDeleteRecord, error) {
 	event := new(StorecoreStoreDeleteRecord)
 	if err := _Storecore.contract.UnpackLog(event, "StoreDeleteRecord", log); err != nil {
@@ -392,7 +392,7 @@ type StorecoreStoreSetField struct {
 
 // FilterStoreSetField is a free log retrieval operation binding the contract event 0x69ed0315cadd84320a7846d07030f3f22e49893b69216566c8e95d35c34512ce.
 //
-// Solidity: event StoreSetField(uint256 table, bytes32[] key, uint8 schemaIndex, bytes data)
+// Solidity: event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data)
 func (_Storecore *StorecoreFilterer) FilterStoreSetField(opts *bind.FilterOpts) (*StorecoreStoreSetFieldIterator, error) {
 
 	logs, sub, err := _Storecore.contract.FilterLogs(opts, "StoreSetField")
@@ -404,7 +404,7 @@ func (_Storecore *StorecoreFilterer) FilterStoreSetField(opts *bind.FilterOpts) 
 
 // WatchStoreSetField is a free log subscription operation binding the contract event 0x69ed0315cadd84320a7846d07030f3f22e49893b69216566c8e95d35c34512ce.
 //
-// Solidity: event StoreSetField(uint256 table, bytes32[] key, uint8 schemaIndex, bytes data)
+// Solidity: event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data)
 func (_Storecore *StorecoreFilterer) WatchStoreSetField(opts *bind.WatchOpts, sink chan<- *StorecoreStoreSetField) (event.Subscription, error) {
 
 	logs, sub, err := _Storecore.contract.WatchLogs(opts, "StoreSetField")
@@ -441,7 +441,7 @@ func (_Storecore *StorecoreFilterer) WatchStoreSetField(opts *bind.WatchOpts, si
 
 // ParseStoreSetField is a log parse operation binding the contract event 0x69ed0315cadd84320a7846d07030f3f22e49893b69216566c8e95d35c34512ce.
 //
-// Solidity: event StoreSetField(uint256 table, bytes32[] key, uint8 schemaIndex, bytes data)
+// Solidity: event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data)
 func (_Storecore *StorecoreFilterer) ParseStoreSetField(log types.Log) (*StorecoreStoreSetField, error) {
 	event := new(StorecoreStoreSetField)
 	if err := _Storecore.contract.UnpackLog(event, "StoreSetField", log); err != nil {
@@ -528,7 +528,7 @@ type StorecoreStoreSetRecord struct {
 
 // FilterStoreSetRecord is a free log retrieval operation binding the contract event 0x89c69f1332d0769f7fc2e4abeff42a2e0fcbfe7116617ad379b620bf0e08879f.
 //
-// Solidity: event StoreSetRecord(uint256 table, bytes32[] key, bytes data)
+// Solidity: event StoreSetRecord(bytes32 table, bytes32[] key, bytes data)
 func (_Storecore *StorecoreFilterer) FilterStoreSetRecord(opts *bind.FilterOpts) (*StorecoreStoreSetRecordIterator, error) {
 
 	logs, sub, err := _Storecore.contract.FilterLogs(opts, "StoreSetRecord")
@@ -540,7 +540,7 @@ func (_Storecore *StorecoreFilterer) FilterStoreSetRecord(opts *bind.FilterOpts)
 
 // WatchStoreSetRecord is a free log subscription operation binding the contract event 0x89c69f1332d0769f7fc2e4abeff42a2e0fcbfe7116617ad379b620bf0e08879f.
 //
-// Solidity: event StoreSetRecord(uint256 table, bytes32[] key, bytes data)
+// Solidity: event StoreSetRecord(bytes32 table, bytes32[] key, bytes data)
 func (_Storecore *StorecoreFilterer) WatchStoreSetRecord(opts *bind.WatchOpts, sink chan<- *StorecoreStoreSetRecord) (event.Subscription, error) {
 
 	logs, sub, err := _Storecore.contract.WatchLogs(opts, "StoreSetRecord")
@@ -577,7 +577,7 @@ func (_Storecore *StorecoreFilterer) WatchStoreSetRecord(opts *bind.WatchOpts, s
 
 // ParseStoreSetRecord is a log parse operation binding the contract event 0x89c69f1332d0769f7fc2e4abeff42a2e0fcbfe7116617ad379b620bf0e08879f.
 //
-// Solidity: event StoreSetRecord(uint256 table, bytes32[] key, bytes data)
+// Solidity: event StoreSetRecord(bytes32 table, bytes32[] key, bytes data)
 func (_Storecore *StorecoreFilterer) ParseStoreSetRecord(log types.Log) (*StorecoreStoreSetRecord, error) {
 	event := new(StorecoreStoreSetRecord)
 	if err := _Storecore.contract.UnpackLog(event, "StoreSetRecord", log); err != nil {

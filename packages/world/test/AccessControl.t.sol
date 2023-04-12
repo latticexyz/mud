@@ -13,7 +13,7 @@ import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 
 contract AccessControlTest is Test, StoreView {
   bytes16 namespace = "namespace";
-  bytes16 file = "file";
+  bytes16 name = "name";
   address caller = address(0x01);
 
   function setUp() public {
@@ -25,31 +25,31 @@ contract AccessControlTest is Test, StoreView {
   }
 
   function testAccessControl() public {
-    // Check that the caller has no access to the namespace or file
-    assertFalse(AccessControl.hasAccess(namespace, file, caller));
+    // Check that the caller has no access to the namespace or name
+    assertFalse(AccessControl.hasAccess(namespace, name, caller));
 
     // Grant access to the namespace
     ResourceAccess.set(ResourceSelector.from(namespace, 0), caller, true);
 
-    // Check that the caller has access to the namespace or file
-    assertTrue(AccessControl.hasAccess(namespace, file, caller));
+    // Check that the caller has access to the namespace or name
+    assertTrue(AccessControl.hasAccess(namespace, name, caller));
 
     // Revoke access to the namespace
     ResourceAccess.set(ResourceSelector.from(namespace, 0), caller, false);
 
-    // Check that the caller has no access to the namespace or file
-    assertFalse(AccessControl.hasAccess(namespace, file, caller));
+    // Check that the caller has no access to the namespace or name
+    assertFalse(AccessControl.hasAccess(namespace, name, caller));
 
-    // Grant access to the file
-    ResourceAccess.set(ResourceSelector.from(namespace, file), caller, true);
+    // Grant access to the name
+    ResourceAccess.set(ResourceSelector.from(namespace, name), caller, true);
 
-    // Check that the caller has access to the file
-    assertTrue(AccessControl.hasAccess(namespace, file, caller));
+    // Check that the caller has access to the name
+    assertTrue(AccessControl.hasAccess(namespace, name, caller));
 
-    // Revoke access to the file
-    ResourceAccess.set(ResourceSelector.from(namespace, file), caller, false);
+    // Revoke access to the name
+    ResourceAccess.set(ResourceSelector.from(namespace, name), caller, false);
 
-    // Check that the caller has no access to the namespace or file
-    assertFalse(AccessControl.hasAccess(namespace, file, caller));
+    // Check that the caller has no access to the namespace or name
+    assertFalse(AccessControl.hasAccess(namespace, name, caller));
   }
 }

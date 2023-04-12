@@ -29,7 +29,7 @@ export interface StaticResourceData {
   /** Name of the table id constant to render. */
   tableIdName: string;
   namespace: string;
-  fileSelector: string;
+  name: string;
 }
 
 export interface RenderTableType {

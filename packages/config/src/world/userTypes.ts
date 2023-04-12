@@ -3,8 +3,8 @@ import { DynamicResolution } from "../dynamicResolution.js";
 // zod doesn't preserve doc comments
 export type SystemUserConfig =
   | {
-      /** The full resource selector consists of namespace and fileSelector */
-      fileSelector?: string;
+      /** The full resource selector consists of namespace and name */
+      name?: string;
       /**
        * Register function selectors for the system in the World.
        * Defaults to true.
