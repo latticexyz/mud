@@ -29,7 +29,9 @@ contract KeysWithTableHook is IStoreHook {
 
     bytes32 keysHash = keccak256(abi.encode(key));
 
+    // If the key not has yet been set in the table...
     if (!UsedKeysIndex.get(targetTableIdUsed, keysHash)) {
+      // Push the key to the list of keys in this table
       KeysWithTable.push(targetTableId, key[0]);
 
       UsedKeysIndex.set(targetTableIdUsed, keysHash, true);
@@ -44,7 +46,9 @@ contract KeysWithTableHook is IStoreHook {
 
     bytes32 keysHash = keccak256(abi.encode(key));
 
+    // If the key not has yet been set in the table...
     if (!UsedKeysIndex.get(targetTableIdUsed, keysHash)) {
+      // Push the key to the list of keys in this table
       KeysWithTable.push(targetTableId, key[0]);
 
       UsedKeysIndex.set(targetTableIdUsed, keysHash, true);
