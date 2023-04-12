@@ -112,10 +112,10 @@ contract World is IWorld {
    * Register a component value update.
    * Emits the `ComponentValueSet` event for clients to reconstruct the state.
    */
-  function registerComponentValueSet(uint256 entity, bytes calldata data)
-    public
-    requireComponentRegistered(msg.sender)
-  {
+  function registerComponentValueSet(
+    uint256 entity,
+    bytes calldata data
+  ) public requireComponentRegistered(msg.sender) {
     Set(entities).add(entity);
     emit ComponentValueSet(getIdByAddress(_components, msg.sender), msg.sender, entity, data);
   }
@@ -125,10 +125,10 @@ contract World is IWorld {
    * Register a component value removal.
    * Emits the `ComponentValueRemoved` event for clients to reconstruct the state.
    */
-  function registerComponentValueRemoved(address component, uint256 entity)
-    public
-    requireComponentRegistered(component)
-  {
+  function registerComponentValueRemoved(
+    address component,
+    uint256 entity
+  ) public requireComponentRegistered(component) {
     require(msg.sender == component);
     emit ComponentValueRemoved(getIdByAddress(_components, component), component, entity);
   }

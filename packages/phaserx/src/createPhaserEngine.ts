@@ -95,7 +95,7 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
       if (!tileset) {
         console.error(`Adding tileset ${tilesetKey} failed.`);
         continue;
-      };
+      }
       partialTilesets[tilesetKey] = tileset;
     }
     const tilesets = partialTilesets as Tilesets<keyof S[typeof key]["tilesets"]>;
@@ -127,7 +127,7 @@ export async function createPhaserEngine<S extends ScenesConfig>(options: Phaser
         }
       }
 
-      partialMaps[mapKey as keyof typeof sceneConfig[typeof key]["maps"]] = map;
+      partialMaps[mapKey as keyof (typeof sceneConfig)[typeof key]["maps"]] = map;
     }
     const maps = partialMaps as Maps<keyof S[typeof key]["maps"]>;
 

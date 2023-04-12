@@ -26,11 +26,7 @@ interface IWorld {
 
   function registerSystem(address systemAddr, uint256 id) external;
 
-  function registerComponentValueSet(
-    address component,
-    uint256 entity,
-    bytes calldata data
-  ) external;
+  function registerComponentValueSet(address component, uint256 entity, bytes calldata data) external;
 
   function registerComponentValueSet(uint256 entity, bytes calldata data) external;
 

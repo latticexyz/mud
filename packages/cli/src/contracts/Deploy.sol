@@ -2,11 +2,11 @@
 pragma solidity >=0.8.0;
 
 // Foundry
-import {Script} from "forge-std/Script.sol";
-import {console} from "forge-std/console.sol";
+import { Script } from "forge-std/Script.sol";
+import { console } from "forge-std/console.sol";
 
 // Libraries
-import {LibDeploy, DeployResult} from "./LibDeploy.sol";
+import { LibDeploy, DeployResult } from "./LibDeploy.sol";
 
 contract Deploy is Script {
   function broadcastDeploy(

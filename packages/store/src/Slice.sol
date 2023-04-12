@@ -46,11 +46,7 @@ library SliceLib {
    * @dev Subslice a bytes array using the given indexes (without copying data)
    * The start index is inclusive, the end index is exclusive
    */
-  function getSubslice(
-    bytes memory data,
-    uint256 start,
-    uint256 end
-  ) internal pure returns (Slice) {
+  function getSubslice(bytes memory data, uint256 start, uint256 end) internal pure returns (Slice) {
     // TODO this check helps catch bugs and can eventually be removed
     if (!(start <= end && end <= data.length)) revert Slice_OutOfBounds(data, start, end);
 
