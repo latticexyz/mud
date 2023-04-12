@@ -47,7 +47,7 @@
     "prettier:check": "prettier --check 'packages/**/*.ts'",
     "prettier": "prettier --write 'packages/**/*.ts'",
     "lint": "eslint . --ext .ts",
-    "release": "pnpm && lerna publish --no-private --force-publish && pnpm retype:updateversion",
+    "release": "pnpm install && lerna publish --no-private --force-publish && pnpm retype:updateversion",
     "release:ci": "lerna publish --no-private --force-publish --yes",
     "release:canary": "lerna publish premajor --canary --no-private --force-publish",
     "release:manual": "pnpm --recursive --no-bail run release",
