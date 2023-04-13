@@ -15,8 +15,8 @@
     "dev": "tsup src/cli.ts --watch",
     "prepublishOnly": "npm run clean && npm run build",
     "test": "pnpm test:minimal && pnpm test:react",
-    "test:minimal": "(dist/cli.js test-project --template minimal || true) && rimraf test-project",
-    "test:react": "(dist/cli.js test-project --template react || true) && rimraf test-project",
+    "test:minimal": "dist/cli.js test-project --template minimal && rimraf test-project",
+    "test:react": "dist/cli.js test-project --template react && rimraf test-project",
     "release": "npm publish --access=public"
   },
   "dependencies": {
