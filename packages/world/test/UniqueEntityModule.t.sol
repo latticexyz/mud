@@ -9,7 +9,6 @@ import { IErrors } from "../src/interfaces/IErrors.sol";
 
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { ColdMethodsModule } from "../src/modules/coldmethods/ColdMethodsModule.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
 import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.sol";
 import { getUniqueEntity } from "../src/modules/uniqueentity/getUniqueEntity.sol";
@@ -28,7 +27,6 @@ contract UniqueEntityModuleTest is Test {
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     world.installRootModule(new RegistrationModule(), new bytes(0));
-    world.installRootModule(new ColdMethodsModule(), new bytes(0));
   }
 
   function testInstall() public {

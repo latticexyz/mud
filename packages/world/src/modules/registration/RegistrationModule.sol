@@ -1,14 +1,19 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
+import { IStoreCold } from "@latticexyz/store/src/IStore.sol";
+import { IWorldCold, IWorldCold_grantAccessWithName } from "../../interfaces/IWorldCold.sol";
+
 import { RegistrationSystem } from "./RegistrationSystem.sol";
+import { ColdMethodsSystem } from "./ColdMethodsSystem.sol";
 
 import { Call } from "../../Call.sol";
-import { ROOT_NAMESPACE, REGISTRATION_MODULE_NAME, CORE_MODULE_NAME, REGISTRATION_SYSTEM_NAME } from "../../constants.sol";
+import { ROOT_NAMESPACE, REGISTRATION_MODULE_NAME, CORE_MODULE_NAME, REGISTRATION_SYSTEM_NAME, COLD_METHODS_SYSTEM_NAME } from "../../constants.sol";
 import { WorldContext } from "../../WorldContext.sol";
 import { Resource } from "../../Types.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
+import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 
 import { InstalledModules } from "../../tables/InstalledModules.sol";
@@ -17,7 +22,7 @@ import { ResourceType } from "./tables/ResourceType.sol";
 import { SystemRegistry } from "./tables/SystemRegistry.sol";
 
 /**
- * The RegistrationModule installs the RegistrationSystem
+ * The RegistrationModule installs the RegistrationSystem, ColdMethodsSystem
  * and all required tables and function selectors in the World.
 
  * Note:
@@ -29,9 +34,10 @@ import { SystemRegistry } from "./tables/SystemRegistry.sol";
 contract RegistrationModule is IModule, WorldContext {
   using ResourceSelector for bytes32;
 
-  // Since the RegistrationSystem only exists once per World and writes to
+  // Since RegistrationSystem and ColdMethodsSystem only exists once per World and writes to
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable registrationSystem = address(new RegistrationSystem());
+  ColdMethodsSystem immutable coldMethodsSystem = new ColdMethodsSystem();
 
   function getName() public pure returns (bytes16) {
     return REGISTRATION_MODULE_NAME;
@@ -43,6 +49,12 @@ contract RegistrationModule is IModule, WorldContext {
       revert RequiredModuleNotFound(ResourceSelector.from(ROOT_NAMESPACE, CORE_MODULE_NAME).toString());
     }
 
+    _installRegistrationMethods();
+
+    _installColdMethods();
+  }
+
+  function _installRegistrationMethods() internal {
     // Register tables required by RegistrationSystem
     SystemRegistry.registerSchema();
     SystemRegistry.setMetadata();
@@ -97,6 +109,32 @@ contract RegistrationModule is IModule, WorldContext {
           rootFunctionSelectors[i]
         )
       });
+    }
+  }
+
+  function _installColdMethods() internal {
+    IBaseWorld world = IBaseWorld(_world());
+
+    world.registerSystem(ROOT_NAMESPACE, COLD_METHODS_SYSTEM_NAME, coldMethodsSystem, true);
+
+    // Register root function selectors for the ColdMethodsModule in the World
+    bytes4[7] memory rootFunctionSelectors = [
+      IStoreCold.registerSchema.selector,
+      IStoreCold.setMetadata.selector,
+      IStoreCold.registerStoreHook.selector,
+      IWorldCold.installModule.selector,
+      IWorldCold.grantAccess.selector,
+      IWorldCold_grantAccessWithName.grantAccess.selector,
+      IWorldCold.retractAccess.selector
+    ];
+
+    for (uint256 i = 0; i < rootFunctionSelectors.length; i++) {
+      world.registerRootFunctionSelector(
+        ROOT_NAMESPACE,
+        COLD_METHODS_SYSTEM_NAME,
+        rootFunctionSelectors[i], // Use the same function selector for the World as in ColdMethodsSystem
+        rootFunctionSelectors[i]
+      );
     }
   }
 }

@@ -147,7 +147,7 @@
     "source": "test/World.t.sol",
     "name": "Set metadata",
     "functionCall": "world.setMetadata(namespace, name, tableName, fieldNames)",
-    "gasUsed": 277358
+    "gasUsed": 277342
   },
   {
     "source": "test/World.t.sol",

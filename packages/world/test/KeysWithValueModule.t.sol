@@ -13,7 +13,6 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { ColdMethodsModule } from "../src/modules/coldmethods/ColdMethodsModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
@@ -43,7 +42,6 @@ contract KeysWithValueModuleTest is Test {
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     world.installRootModule(new RegistrationModule(), new bytes(0));
-    world.installRootModule(new ColdMethodsModule(), new bytes(0));
     keyTuple1 = new bytes32[](1);
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);

@@ -24,7 +24,6 @@ import { AddressArray } from "../src/tables/AddressArray.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
-import { ColdMethodsModule } from "../src/modules/coldmethods/ColdMethodsModule.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IErrors } from "../src/interfaces/IErrors.sol";
@@ -134,7 +133,6 @@ contract WorldTest is Test {
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
     world.installRootModule(new RegistrationModule(), new bytes(0));
-    world.installRootModule(new ColdMethodsModule(), new bytes(0));
 
     key = "testKey";
     keyTuple = new bytes32[](1);
