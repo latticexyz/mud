@@ -9,7 +9,6 @@
     "dist"
   ],
   "scripts": {
-    "prepare": "pnpm build",
     "build": "tsup src/cli.ts --minify && ./scripts/copy-templates.sh",
     "clean": "rimraf dist",
     "dev": "tsup src/cli.ts --watch",

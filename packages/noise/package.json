@@ -7,7 +7,6 @@
   "types": "dist/types.d.ts",
   "license": "MIT",
   "scripts": {
-    "prepare": "pnpm build",
     "test:forge": "forge test",
     "test:hardhat": "hardhat test",
     "// Hardhat skipped in GH action until hardhat officially supports TS/ESM": "https://github.com/NomicFoundation/hardhat/pull/3156",

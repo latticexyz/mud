@@ -16,7 +16,6 @@
     "directory": "packages/cli"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "codegen": "tsx ./scripts/codegen.ts",
     "lint": "eslint . --ext .ts",
     "dev": "tsup --watch",
