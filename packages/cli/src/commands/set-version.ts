@@ -31,7 +31,7 @@ const commandModule: CommandModule<Options, Options> = {
       },
       restore: { type: "boolean", description: `Restore the previous MUD versions from "${BACKUP_FILE}"` },
       mudVersion: { alias: "v", type: "string", description: "The MUD version to install" },
-      link: { alias: "l", type: "string", description: "The local MUD clone to link" },
+      link: { alias: "l", type: "string", description: "Relative path to the local MUD root directory to link" },
     });
   },
 
