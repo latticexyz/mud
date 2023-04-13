@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { IStoreRegistration, IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
-import { IWorldCold } from "../../interfaces/IWorldCold.sol";
+import { IWorldAccess } from "../../interfaces/IWorldAccess.sol";
 import { IModule } from "../../interfaces/IModule.sol";
 import { IRegistrationSystem } from "../../interfaces/IRegistrationSystem.sol";
 
@@ -19,9 +19,9 @@ import { Systems } from "../../tables/Systems.sol";
 import { InstalledModules } from "../../tables/InstalledModules.sol";
 
 /**
- * World extension to interact with parts of dynamic fields (like pushing to an array).
+ * World methods that aren't hot code paths.
  */
-contract ColdMethodsSystem is System, IStoreRegistration, IWorldCold {
+contract ColdMethodsSystem is System, IStoreRegistration, IWorldAccess {
   using ResourceSelector for bytes32;
 
   /**

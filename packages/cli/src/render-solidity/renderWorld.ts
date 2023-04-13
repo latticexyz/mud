@@ -9,7 +9,7 @@ export function renderWorld(options: RenderWorldOptions) {
 import { IStore } from "${storeImportPath}IStore.sol";
 
 import { IWorldData } from "${worldImportPath}interfaces/IWorldData.sol";
-import { IWorldCold } from "${worldImportPath}interfaces/IWorldCold.sol";
+import { IWorldAccess } from "${worldImportPath}interfaces/IWorldAccess.sol";
 
 ${renderImports(imports)}
 
@@ -20,7 +20,7 @@ ${renderImports(imports)}
 interface ${interfaceName} is ${renderArguments([
     "IStore",
     "IWorldData",
-    "IWorldCold",
+    "IWorldAccess",
     ...imports.map(({ symbol }) => symbol),
   ])} {
 

@@ -7,7 +7,7 @@ import { IModule } from "./IModule.sol";
 
 // Need 2 interfaces for 2 methods with the same name to extract their selectors without hardcode
 // TODO remove this if solidity implements https://github.com/ethereum/solidity/issues/3556
-interface IWorldCold_grantAccessWithName {
+interface IWorldAccess_grantAccessWithName {
   /**
    * Grant access to the resource at the given namespace and name.
    * Requires the caller to own the namespace.
@@ -23,7 +23,7 @@ interface IWorldCold_grantAccessWithName {
  * static function selectors (IWorldData) and
  * other dynamically registered function selectors (e.g. IRegistrationSystem)
  */
-interface IWorldCold is IErrors, IWorldCold_grantAccessWithName {
+interface IWorldAccess is IErrors, IWorldAccess_grantAccessWithName {
   /**
    * Install the given module at the given namespace in the World.
    */
