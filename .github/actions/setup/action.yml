@@ -30,6 +30,13 @@ runs:
       shell: bash
       run: pnpm install --frozen-lockfile
 
+    # Workaround for circular dependencies that keep us from using cli as a proper dep
+    # In store and world packages, we refer to the cli bin using a relative path, so it needs to be built before we get there
+    - name: Build mud binaries
+      working-directory: packages/cli
+      shell: bash
+      run: pnpm build
+
     # Uncomment these to turn on the remote cache on ci
     # - name: Derive appropriate SHAs for base and head for `nx affected` commands
     #  uses: nrwl/nx-set-shas@v3
