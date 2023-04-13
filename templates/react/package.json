@@ -6,6 +6,7 @@
     "pnpm": "8.x"
   },
   "scripts": {
+    "build": "pnpm recursive run build",
     "dev": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
     "dev:client": "pnpm --filter 'client' run dev",
     "dev:node": "pnpm --filter 'contracts' devnode",

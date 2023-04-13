@@ -1,0 +1,35 @@
+name: Templates
+
+# Verifies build artifacts in pull requests.
+# Note: this workflow does not trigger on pushes to main,
+# because the release workflow includes a build+verify step.
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    name: Build template
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        template: [minimal, react]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install template dependencies
+        working-directory: ./templates/${{ matrix.template }}
+        run: pnpm install
+
+      - name: Build template
+        working-directory: ./templates/${{ matrix.template }}
+        run: pnpm build

@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "----- EXTERNAL -----": "---------------------------",
-    "prepare": "mud types",
+    "build": "mud types",
     "devnode": "mud devnode",
     "test": "mud test",
     "types": "mud types",
