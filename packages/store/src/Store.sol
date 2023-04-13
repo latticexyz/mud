@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreHot, IStoreHook } from "./IStore.sol";
+import { IStoreData, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
 // It doesn't implement the full `IStore` to allow cold paths to be registered via an external system
-abstract contract Store is IStoreHot {
+abstract contract Store is IStoreData {
   constructor() {
     StoreCore.initialize();
   }

@@ -5,7 +5,7 @@ import { IErrors } from "./IErrors.sol";
 import { Schema } from "./Schema.sol";
 
 // hot code paths (need gas optimizations)
-interface IStoreHot is IErrors {
+interface IStoreData is IErrors {
   event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
   event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
@@ -51,7 +51,7 @@ interface IStoreHot is IErrors {
 }
 
 // cold code paths (don't need gas optimizations)
-interface IStoreCold {
+interface IStoreRegistration {
   function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
 
   function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
@@ -60,7 +60,7 @@ interface IStoreCold {
   function registerStoreHook(bytes32 table, IStoreHook hook) external;
 }
 
-interface IStore is IStoreHot, IStoreCold {}
+interface IStore is IStoreData, IStoreRegistration {}
 
 interface IStoreHook {
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external;

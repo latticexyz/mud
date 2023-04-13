@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreCold, IStoreHook } from "@latticexyz/store/src/IStore.sol";
+import { IStoreRegistration, IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
 import { IWorldCold } from "../../interfaces/IWorldCold.sol";
@@ -21,7 +21,7 @@ import { InstalledModules } from "../../tables/InstalledModules.sol";
 /**
  * World extension to interact with parts of dynamic fields (like pushing to an array).
  */
-contract ColdMethodsSystem is System, IStoreCold, IWorldCold {
+contract ColdMethodsSystem is System, IStoreRegistration, IWorldCold {
   using ResourceSelector for bytes32;
 
   /**

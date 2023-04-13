@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreCold } from "@latticexyz/store/src/IStore.sol";
+import { IStoreRegistration } from "@latticexyz/store/src/IStore.sol";
 import { IWorldCold, IWorldCold_grantAccessWithName } from "../../interfaces/IWorldCold.sol";
 
 import { RegistrationSystem } from "./RegistrationSystem.sol";
@@ -119,9 +119,9 @@ contract RegistrationModule is IModule, WorldContext {
 
     // Register root function selectors for the ColdMethodsModule in the World
     bytes4[7] memory rootFunctionSelectors = [
-      IStoreCold.registerSchema.selector,
-      IStoreCold.setMetadata.selector,
-      IStoreCold.registerStoreHook.selector,
+      IStoreRegistration.registerSchema.selector,
+      IStoreRegistration.setMetadata.selector,
+      IStoreRegistration.registerStoreHook.selector,
       IWorldCold.installModule.selector,
       IWorldCold.grantAccess.selector,
       IWorldCold_grantAccessWithName.grantAccess.selector,
