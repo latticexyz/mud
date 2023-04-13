@@ -20,6 +20,12 @@ runs:
       with:
         version: nightly
 
+    # Workaround for parallel building with forge:
+    # https://github.com/foundry-rs/foundry/issues/4736
+    - name: Install solc
+      shell: bash
+      run: cargo install svm-rs && svm install 0.8.13
+
     - name: Install node dependencies
       shell: bash
       run: pnpm install --frozen-lockfile

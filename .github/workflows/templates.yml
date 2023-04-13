@@ -6,9 +6,6 @@ on:
       - main
   pull_request:
 
-env:
-  NX_RUNNER: ci
-
 jobs:
   build:
     name: Build template

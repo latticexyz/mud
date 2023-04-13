@@ -12,13 +12,6 @@
       "options": {
         "cacheableOperations": ["lint", "build", "test", "test:contracts", "prettier", "solhint"]
       }
-    },
-    "ci": {
-      "runner": "@nrwl/nx-cloud",
-      "options": {
-        "parallel": false,
-        "cacheableOperations": ["lint", "build", "test", "test:contracts", "prettier", "solhint"]
-      }
     }
   },
   "targetDefaults": {
