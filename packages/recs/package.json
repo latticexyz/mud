@@ -11,7 +11,6 @@
     "directory": "packages/recs"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "lint": "eslint . --ext .ts",
     "test": "tsc && jest",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
