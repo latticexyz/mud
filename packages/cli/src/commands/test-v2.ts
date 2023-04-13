@@ -130,9 +130,7 @@ const commandModule: CommandModule<Options, Options> = {
           console.error(chalk.red(chalk.bold("Tests failed")));
           if (verbosity < 3) {
             console.log(
-              chalk.greenBright(
-                chalk.bold('To get additional traces for your tests, set "verbosity" in your foundry.toml to "3"')
-              )
+              chalk.yellow('To get additional traces for your tests, set "verbosity" in your foundry.toml to "3"')
             );
           }
         } else {
@@ -146,12 +144,10 @@ const commandModule: CommandModule<Options, Options> = {
 
     if (verbosity < 2) {
       console.log(
-        chalk.redBright(
-          chalk.bold(`Your Foundry config has low verbosity (${verbosity}), you won't see why your tests fail.`)
-        )
+        chalk.yellow(`Your Foundry config has low verbosity (${verbosity}), you won't see why your tests fail.`)
       );
     } else if (verbosity < 3) {
-      console.log(chalk.blueBright(`Your Foundry config has low verbosity (${verbosity}), you won't see traces.`));
+      console.log(chalk.yellow(`Your Foundry config has low verbosity (${verbosity}), you won't see traces.`));
     }
 
     const testDir = await getTestDirectory();
@@ -205,9 +201,7 @@ const commandModule: CommandModule<Options, Options> = {
               console.error(chalk.red(chalk.bold("Tests failed")));
               if (verbosity < 3) {
                 console.log(
-                  chalk.greenBright(
-                    chalk.bold('To get additional traces for your tests, set "verbosity" in your foundry.toml to "3"')
-                  )
+                  chalk.yellow('To get additional traces for your tests, set "verbosity" in your foundry.toml to "3"')
                 );
               }
             } else {
