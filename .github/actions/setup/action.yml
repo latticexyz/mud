@@ -35,7 +35,7 @@ runs:
     - name: Build mud binaries
       working-directory: packages/cli
       shell: bash
-      run: pnpm build
+      run: pnpm nx run build
 
     # Uncomment these to turn on the remote cache on ci
     # - name: Derive appropriate SHAs for base and head for `nx affected` commands
