@@ -1,8 +1,5 @@
 name: Templates
 
-# Verifies build artifacts in pull requests.
-# Note: this workflow does not trigger on pushes to main,
-# because the release workflow includes a build+verify step.
 on:
   push:
     branches:
