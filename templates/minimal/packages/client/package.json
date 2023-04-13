@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build",
     "preview": "vite preview"
   },
   "devDependencies": {
@@ -14,16 +14,18 @@
     "@typescript-eslint/parser": "^5.46.1",
     "eslint": "^8.29.0",
     "typescript": "^4.9.5",
-    "vite": "^3.2.3"
+    "vite": "^4.2.1"
   },
   "dependencies": {
     "@improbable-eng/grpc-web": "^0.15.0",
-    "@latticexyz/network": "{{mud-version}}",
-    "@latticexyz/recs": "{{mud-version}}",
-    "@latticexyz/services": "{{mud-version}}",
-    "@latticexyz/std-client": "{{mud-version}}",
-    "@latticexyz/utils": "{{mud-version}}",
+    "@latticexyz/network": "link:../../../../packages/network",
+    "@latticexyz/react": "link:../../../../packages/react",
+    "@latticexyz/recs": "link:../../../../packages/recs",
+    "@latticexyz/services": "link:../../../../packages/services",
+    "@latticexyz/std-client": "link:../../../../packages/std-client",
+    "@latticexyz/utils": "link:../../../../packages/utils",
     "async-mutex": "^0.4.0",
+    "contracts": "workspace:*",
     "ethers": "^5.7.2",
     "mobx": "^6.7.0",
     "nice-grpc": "^2.0.1",
