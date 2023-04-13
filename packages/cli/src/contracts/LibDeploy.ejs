@@ -60,9 +60,9 @@ library LibDeploy {
     if (!_reuseComponents) {
       IComponent comp;
 <% components.forEach(component => { -%>
-
-      console.log("Deploying <%= component %>");
-      comp = new <%= component %>(address(result.world));
+      <% const componentName=component.split("/").pop(); %>
+      console.log("Deploying <%= componentName %>");
+      comp = new <%= componentName %>(address(result.world));
       console.log(address(comp));
 <% });-%>
     } 
@@ -76,7 +76,8 @@ library LibDeploy {
       SystemStorage.init(result.world, result.world.components());
 
 <% initializers.forEach((name) => { -%>
-      <%= name -%>.init(result.world);
+      <% const initializerName=name.split("/").pop(); %>
+      <%= initializerName -%>.init(result.world);
 <% }); -%>
     }
   }
@@ -102,17 +103,19 @@ library LibDeploy {
     ISystem system; 
     IUint256Component components = world.components();
 <% systems.forEach(system => { -%>
-
-    console.log("Deploying <%= system.name %>");
-    system = new <%= system.name %>(world, address(components));
-    world.registerSystem(address(system), <%= system.name %>ID);
+    <% const systemName=system.name.split("/").pop(); %>
+    console.log("Deploying <%= systemName %>");
+    system = new <%= systemName %>(world, address(components));
+    world.registerSystem(address(system), <%= systemName %>ID);
 <% system.writeAccess?.forEach(component => { -%>
-<% if (component === "*") { -%>
+<% const componentName=component.split("/").pop(); %>
+<% if (componentName === "*") { -%>
 <% components.forEach(comp=> { -%>
-    authorizeWriter(components, <%= comp %>ID, address(system));
+    <% const compName=comp.split("/").pop(); %>
+    authorizeWriter(components, <%= compName %>ID, address(system));
 <% });-%>
 <% } else { -%>
-    authorizeWriter(components, <%= component %>ID, address(system));
+    authorizeWriter(components, <%= componentName %>ID, address(system));
 <% } -%>
 <% });-%>
 <% if (system.initialize) { -%>
