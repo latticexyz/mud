@@ -107,7 +107,11 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   for (const key in packageJson.dependencies) {
     if (key.startsWith(MUD_PREFIX)) {
       packageJson.dependencies[key] =
-        restore && backupJson ? backupJson.dependencies[key] : mudVersion || packageJson.dependencies[key];
+        restore && backupJson
+          ? backupJson.dependencies[key]
+          : mudVersion
+          ? updateVersion(mudVersion, key, filePath)
+          : packageJson.dependencies[key];
     }
   }
 
@@ -115,7 +119,11 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   for (const key in packageJson.devDependencies) {
     if (key.startsWith(MUD_PREFIX)) {
       packageJson.devDependencies[key] =
-        restore && backupJson ? backupJson.devDependencies[key] : mudVersion || packageJson.devDependencies[key];
+        restore && backupJson
+          ? backupJson.devDependencies[key]
+          : mudVersion
+          ? updateVersion(mudVersion, key, filePath)
+          : packageJson.devDependencies[key];
     }
   }
 
@@ -167,6 +175,18 @@ function logComparison(prev: Record<string, string>, curr: Record<string, string
       console.log(`${key}: ${chalk.red(prev[key])} -> ${chalk.green(curr[key])}`);
     }
   }
+}
+
+function updateVersion(mudVersion: string, pkg: string, packageJsonPath: string) {
+  // Append the package name if linking to a local MUD clone
+  if (mudVersion.includes("link:")) {
+    const linkPathFromCWD = mudVersion.replace("link:", "");
+    const packagePathToCWD = path.relative(path.dirname(packageJsonPath), process.cwd());
+    const relativeLinkPath = path.join(packagePathToCWD, linkPathFromCWD);
+    const packageLinkPath = path.join(relativeLinkPath, pkg.replace(MUD_PREFIX, ""));
+    return "link:" + packageLinkPath;
+  }
+  return mudVersion;
 }
 
 export default commandModule;
