@@ -512,7 +512,7 @@ func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
 func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
 	switch schemaType {
 	case BYTES:
-		return hexutil.Encode(encodingSlice)
+		return postgresHexEncode(encodingSlice)
 	case STRING:
 		return string(encodingSlice)
 	default:
@@ -537,6 +537,10 @@ func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
 	}
 }
 
+func postgresHexEncode(data []byte) string {
+	return hexutil.Encode(data)
+}
+
 // handleBytes handles the decoding of a bytes static field.
 //
 // Parameters:
@@ -545,7 +549,7 @@ func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
 // Returns:
 // - (string): The decoded value of the bytes field as a string.
 func handleBytes(encoding []byte) string {
-	return hexutil.Encode(encoding)
+	return postgresHexEncode(encoding)
 }
 
 // handleUint handles the decoding of a uint static field.

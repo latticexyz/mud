@@ -56,6 +56,10 @@ func (builder *UpdateBuilder) BuildUpdateRowFromKV(row map[string]string, fieldN
 		// Handle array fields.
 		if strings.Contains(builder.TableSchema.PostgresTypes[field], "[]") {
 			rowStr = rowStr + field + ` = ` + `ARRAY['` + row[field] + `']`
+		} else
+		// Handle bytea raw byte fields.
+		if builder.TableSchema.PostgresTypes[field] == "bytea" {
+			rowStr = rowStr + field + ` = ` + "'\\" + row[field][1:] + `'`
 		} else {
 			rowStr = rowStr + field + ` = ` + `'` + row[field] + `'`
 		}
