@@ -3,6 +3,7 @@
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
+        "parallel": false,
         "cacheableOperations": [
           "lint",
           "build",
