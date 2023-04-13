@@ -8,7 +8,7 @@ export function renderWorld(options: RenderWorldOptions) {
 
 import { IStore } from "${storeImportPath}IStore.sol";
 
-import { IWorldHot } from "${worldImportPath}interfaces/IWorldHot.sol";
+import { IWorldData } from "${worldImportPath}interfaces/IWorldData.sol";
 import { IWorldCold } from "${worldImportPath}interfaces/IWorldCold.sol";
 
 ${renderImports(imports)}
@@ -19,7 +19,7 @@ ${renderImports(imports)}
  */
 interface ${interfaceName} is ${renderArguments([
     "IStore",
-    "IWorldHot",
+    "IWorldData",
     "IWorldCold",
     ...imports.map(({ symbol }) => symbol),
   ])} {

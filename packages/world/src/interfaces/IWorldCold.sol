@@ -20,7 +20,7 @@ interface IWorldCold_grantAccessWithName {
  * and can be registered dynamically to reduce World's contract size.
  *
  * Consumers should use the `IBaseWorld` interface instead, which includes
- * static function selectors (IWorldHot) and
+ * static function selectors (IWorldData) and
  * other dynamically registered function selectors (e.g. IRegistrationSystem)
  */
 interface IWorldCold is IErrors, IWorldCold_grantAccessWithName {

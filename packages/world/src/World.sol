@@ -17,9 +17,9 @@ import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
 
 import { IModule } from "./interfaces/IModule.sol";
-import { IWorldHot } from "./interfaces/IWorldHot.sol";
+import { IWorldData } from "./interfaces/IWorldData.sol";
 
-contract World is Store, IWorldHot {
+contract World is Store, IWorldData {
   using ResourceSelector for bytes32;
 
   constructor() {

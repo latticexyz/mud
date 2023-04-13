@@ -6,12 +6,12 @@ import { IModule } from "./IModule.sol";
 
 /**
  * World methods which are hot code paths that need a static function selector to optimize gas.
- * (`installRootModule` isn't a hot path, but is needed to install `ColdMethodsModule`)
+ * (`installRootModule` isn't a hot path, but is needed to install the module with other methods)
  *
  * Consumers should use the `IBaseWorld` interface instead, which includes
- * dynamically registered function selectors (e.g. IWorldCold, IRegistrationSystem)
+ * dynamically registered function selectors (e.g. IWorldRegistration, IRegistrationSystem)
  */
-interface IWorldHot is IErrors {
+interface IWorldData is IErrors {
   /**
    * Install the given root module in the World.
    * Requires the caller to own the root namespace.
