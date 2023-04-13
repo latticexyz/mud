@@ -13,7 +13,6 @@
     "directory": "packages/config"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "test": "vitest typecheck --run",
     "build": "vite build",
     "release": "npm publish --access=public"

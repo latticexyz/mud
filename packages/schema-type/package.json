@@ -12,7 +12,6 @@
     "directory": "packages/schema-type"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "test": "pnpm test:solidity && pnpm test:typescript",
     "test:solidity": "forge test",
     "test:typescript": "tsc --noEmit",

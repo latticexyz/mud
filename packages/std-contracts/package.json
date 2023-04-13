@@ -10,7 +10,6 @@
     "directory": "packages/std-contracts"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "test": "forge test",
     "build": "rimraf out && forge build && pnpm dist && pnpm types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh && rimraf abi/*.metadata.json",
