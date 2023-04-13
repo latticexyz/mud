@@ -24,3 +24,12 @@ runs:
       shell: bash
       # We use `--child-concurrency=1` for now because our install step calls `prepare` on each package, which often does a `forge build` and forge has a hard time running these things in parallel (resulting in `Text file busy (os error 26)` errors in CI)
       run: pnpm install --frozen-lockfile --child-concurrency=1
+
+    - name: Derive appropriate SHAs for base and head for `nx affected` commands
+      uses: nrwl/nx-set-shas@v3
+
+    - run: |
+        echo "nx using following shas:"
+        echo "BASE: ${{ env.NX_BASE }}"
+        echo "HEAD: ${{ env.NX_HEAD }}"
+      shell: bash
