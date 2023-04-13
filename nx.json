@@ -12,6 +12,13 @@
       "options": {
         "cacheableOperations": ["lint", "build", "test", "test:contracts", "prettier", "solhint"]
       }
+    },
+    "ci": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "parallel": false,
+        "cacheableOperations": ["lint", "build", "test", "test:contracts", "prettier", "solhint"]
+      }
     }
   },
   "targetDefaults": {
@@ -41,6 +48,18 @@
       "dependsOn": ["^build", "build"]
     },
     "test:typescript": {
+      "dependsOn": ["^build", "build"]
+    },
+    "gas-report": {
+      "dependsOn": ["^build", "build"]
+    },
+    "codegen": {
+      "dependsOn": ["^build", "build"]
+    },
+    "tablegen": {
+      "dependsOn": ["^build", "build"]
+    },
+    "worldgen": {
       "dependsOn": ["^build", "build"]
     }
   }

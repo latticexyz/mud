@@ -6,9 +6,12 @@ on:
       - main
   pull_request:
 
+env:
+  NX_RUNNER: ci
+
 jobs:
   test:
-    name: Run tests
+    name: Run test, lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,8 +20,5 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Run tests
-        run: pnpm nx run-many --target=test
-
-      - name: Lint
-        run: pnpm nx run-many --target=lint
+      - name: Run test, lint
+        run: pnpm nx run-many --target=test,lint

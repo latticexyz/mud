@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+env:
+  NX_RUNNER: ci
+
 jobs:
   release:
     name: Publish new release to npm

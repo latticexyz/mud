@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
 
+env:
+  NX_RUNNER: ci
+
 jobs:
   build:
     name: Build template
@@ -22,6 +25,11 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
+
+      # TODO: move template builds to nx targets, with root build as a dependency
+      - name: Build
+        # `--parallel=false` because forge has a hard time building in parallel (resulting in `Text file busy (os error 26)` errors in CI)
+        run: pnpm nx run-many --target=build --parallel=false
 
       - name: Install template dependencies
         working-directory: ./templates/${{ matrix.template }}

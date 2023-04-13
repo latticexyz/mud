@@ -6,6 +6,9 @@ on:
       - main
   pull_request:
 
+env:
+  NX_RUNNER: ci
+
 jobs:
   docs:
     name: Generate docs
@@ -24,6 +27,12 @@ jobs:
 
       - name: Setup
         uses: ./.github/actions/setup
+
+      # TODO: build and codegen before docs?
+      # TODO: move docs to nx target?
+      - name: Build
+        # `--parallel=false` because forge has a hard time building in parallel (resulting in `Text file busy (os error 26)` errors in CI)
+        run: pnpm nx run-many --target=build --parallel=false
 
       - name: Prepare docs
         run: pnpm docs:prepare
