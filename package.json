@@ -45,7 +45,7 @@
   },
   "scripts": {
     "prepare": "husky install && (forge --version || pnpm foundryup)",
-    "build": "pnpm nx run-many --target=build",
+    "build": "nx run-many --target=build",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.{ts,css,md,sol}'",
     "prettier": "prettier --write 'packages/**/*.{ts,css,md,sol}'",
@@ -61,13 +61,13 @@
     "docs:prepare": "lerna run docs && pnpm retype:updateversion",
     "docs:dev": "retype watch .",
     "retype:updateversion": "sed \"s/label: .*/label: $(cat packages/cli/package.json | jq -r '.version')/\" retype.yml > retype.yml.tmp && mv retype.yml.tmp retype.yml",
-    "test": "pnpm nx run-many --target=test",
+    "test": "nx run-many --target=test",
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",
-    "gas-report": "pnpm nx run-many --target=gas-report",
+    "gas-report": "nx run-many --target=gas-report",
     "codegen": "pnpm codegen:tablegen && pnpm codegen:worldgen",
-    "codegen:tablegen": "pnpm nx run-many --target=tablegen",
-    "codegen:worldgen": "pnpm nx run-many --target=worldgen"
+    "codegen:tablegen": "nx run-many --target=tablegen",
+    "codegen:worldgen": "nx run-many --target=worldgen"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
