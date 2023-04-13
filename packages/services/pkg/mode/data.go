@@ -7,6 +7,8 @@ import (
 	"latticexyz/mud/packages/services/protobuf/go/mode"
 	"time"
 
+	abi_geth "github.com/ethereum/go-ethereum/accounts/abi"
+
 	"github.com/umbracle/ethgo/abi"
 
 	"github.com/jmoiron/sqlx"
@@ -30,6 +32,22 @@ func PrepareForScan(rows *sqlx.Rows) (colNames []string, row []interface{}, rowI
 		rowInterface[i] = &row[i]
 	}
 	return
+}
+
+func EncodeParameters(parameters []string, data []interface{}) ([]byte, error) {
+	args := make(abi_geth.Arguments, 0)
+
+	for _, p := range parameters {
+		arg := abi_geth.Argument{}
+		var err error
+		arg.Type, err = abi_geth.NewType(p, "", nil)
+		if err != nil {
+			return nil, err
+		}
+		args = append(args, arg)
+	}
+
+	return args.Pack(data...)
 }
 
 // SerializeRow serializes a single row with all fields encoded and returns it as a mode.Row.
@@ -64,6 +82,16 @@ func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.
 				}
 				encodedField, err = colEncodingType.Encode(_mapStr)
 				if err != nil {
+					return nil, err
+				}
+			} else if colEncodingTypes[i].String() == "bytes" || colEncodingTypes[i].String() == "string" {
+				// Handle bytes / string specially to avoid the offset missing issue.
+				encodedField, err = EncodeParameters(
+					[]string{colEncodingType.String()},
+					[]interface{}{row[i]},
+				)
+				if err != nil {
+					logger.GetLogger().Error("error while serializing with EncodeParameters", zap.Error(err))
 					return nil, err
 				}
 			} else {
