@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStoreHook } from "./IStore.sol";
+import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 import { Store } from "./Store.sol";
 
 // Not abstract, so that it can be used as a base contract for testing and wherever write access is not needed
-contract StoreView is Store {
+contract StoreView is IStore, Store {
   error StoreView_NotImplemented();
 
   /**

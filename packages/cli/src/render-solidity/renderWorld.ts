@@ -8,7 +8,8 @@ export function renderWorld(options: RenderWorldOptions) {
 
 import { IStore } from "${storeImportPath}IStore.sol";
 
-import { IWorldCore } from "${worldImportPath}interfaces/IWorldCore.sol";
+import { IWorldHot } from "${worldImportPath}interfaces/IWorldHot.sol";
+import { IWorldCold } from "${worldImportPath}interfaces/IWorldCold.sol";
 
 ${renderImports(imports)}
 
@@ -16,7 +17,12 @@ ${renderImports(imports)}
  * The ${interfaceName} interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface ${interfaceName} is ${renderArguments(["IStore", "IWorldCore", ...imports.map(({ symbol }) => symbol)])} {
+interface ${interfaceName} is ${renderArguments([
+    "IStore",
+    "IWorldHot",
+    "IWorldCold",
+    ...imports.map(({ symbol }) => symbol),
+  ])} {
 
 }
 

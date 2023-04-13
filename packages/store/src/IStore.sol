@@ -4,21 +4,15 @@ pragma solidity >=0.8.0;
 import { IErrors } from "./IErrors.sol";
 import { Schema } from "./Schema.sol";
 
-interface IStore is IErrors {
+// hot code paths (need gas optimizations)
+interface IStoreHot is IErrors {
   event StoreSetRecord(bytes32 table, bytes32[] key, bytes data);
   event StoreSetField(bytes32 table, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(bytes32 table, bytes32[] key);
 
-  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
-
   function getSchema(bytes32 table) external view returns (Schema schema);
 
   function getKeySchema(bytes32 table) external view returns (Schema schema);
-
-  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
-
-  // Register hook to be called when a record or field is set or deleted
-  function registerStoreHook(bytes32 table, IStoreHook hook) external;
 
   // Set full record (including full dynamic data)
   function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) external;
@@ -55,6 +49,18 @@ interface IStore is IErrors {
   // (see https://github.com/latticexyz/mud/issues/444)
   function isStore() external view;
 }
+
+// cold code paths (don't need gas optimizations)
+interface IStoreCold {
+  function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
+
+  function setMetadata(bytes32 table, string calldata tableName, string[] calldata fieldNames) external;
+
+  // Register hook to be called when a record or field is set or deleted
+  function registerStoreHook(bytes32 table, IStoreHook hook) external;
+}
+
+interface IStore is IStoreHot, IStoreCold {}
 
 interface IStoreHook {
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external;

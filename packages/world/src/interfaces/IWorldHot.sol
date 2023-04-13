@@ -1,52 +1,23 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Schema } from "@latticexyz/store/src/Schema.sol";
-
 import { IErrors } from "./IErrors.sol";
-import { ISystemHook } from "./ISystemHook.sol";
 import { IModule } from "./IModule.sol";
 
 /**
- * The IWorldCore interfaces includes all World methods with a static function selector.
+ * World methods which are hot code paths that need a static function selector to optimize gas.
+ * (`installRootModule` isn't a hot path, but is needed to install `ColdMethodsModule`)
+ *
  * Consumers should use the `IBaseWorld` interface instead, which includes
- * dynamically registered function selectors (e.g. IRegistrationSystem)
+ * dynamically registered function selectors (e.g. IWorldCold, IRegistrationSystem)
  */
-interface IWorldCore is IErrors {
-  /**
-   * Install the given module at the given namespace in the World.
-   */
-  function installModule(IModule module, bytes memory args) external;
-
+interface IWorldHot is IErrors {
   /**
    * Install the given root module in the World.
    * Requires the caller to own the root namespace.
    * The module is delegatecalled and installed in the root namespace.
    */
   function installRootModule(IModule module, bytes memory args) external;
-
-  /************************************************************************
-   *
-   *    ACCESS METHODS
-   *
-   ************************************************************************/
-
-  /**
-   * Grant access to the given namespace.
-   * Requires the caller to own the namespace.
-   */
-  function grantAccess(bytes16 namespace, address grantee) external;
-
-  /**
-   * Grant access to the resource at the given namespace and name.
-   * Requires the caller to own the namespace.
-   */
-  function grantAccess(bytes16 namespace, bytes16 name, address grantee) external;
-
-  /**
-   * Retract access from the resource at the given namespace and name.
-   */
-  function retractAccess(bytes16 namespace, bytes16 name, address grantee) external;
 
   /************************************************************************
    *

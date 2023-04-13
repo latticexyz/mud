@@ -5,7 +5,8 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
-import { IWorldCore } from "../interfaces/IWorldCore.sol";
+import { IWorldHot } from "../interfaces/IWorldHot.sol";
+import { IWorldCold } from "../interfaces/IWorldCold.sol";
 
 import { IRegistrationSystem } from "./IRegistrationSystem.sol";
 
@@ -13,6 +14,6 @@ import { IRegistrationSystem } from "./IRegistrationSystem.sol";
  * The IBaseWorld interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface IBaseWorld is IStore, IWorldCore, IRegistrationSystem {
+interface IBaseWorld is IStore, IWorldHot, IWorldCold, IRegistrationSystem {
 
 }
