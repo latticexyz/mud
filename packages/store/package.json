@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/store",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "Store",
   "types": "./types/ethers-contracts/",
   "exports": {

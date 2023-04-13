@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/config",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "Config for Store and World",
   "type": "module",
   "types": "dist/index.d.ts",
@@ -26,7 +26,7 @@
     "vitest": "^0.29.8"
   },
   "dependencies": {
-    "@latticexyz/schema-type": "^1.41.0",
+    "@latticexyz/schema-type": "^1.42.0",
     "chalk": "^5.2.0",
     "esbuild": "^0.17.15",
     "ethers": "^6.3.0",

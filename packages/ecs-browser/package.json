@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/ecs-browser",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "Component Browser for RECS",
   "license": "MIT",
   "main": "src/index.ts",
