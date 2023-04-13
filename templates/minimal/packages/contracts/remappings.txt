@@ -6,3 +6,4 @@ solecs/=node_modules/@latticexyz/solecs/src/
 memmove/=node_modules/memmove/src/
 ds-test/=node_modules/ds-test/src/
 forge-std/=node_modules/forge-std/src/
+@solidstate/=node_modules/@solidstate/

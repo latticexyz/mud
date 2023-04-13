@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.42.0](https://github.com/latticexyz/mud/compare/v1.41.0...v1.42.0) (2023-04-13)
+
+### Bug Fixes
+
+- **recs,cli:** fix bigint in recs and tsgen ([#563](https://github.com/latticexyz/mud/issues/563)) ([29fefae](https://github.com/latticexyz/mud/commit/29fefae43d96b107a66b9fd365b566cb8c466f8b))
+- **std-client:** export getBurnerWallet ([#547](https://github.com/latticexyz/mud/issues/547)) ([5b5a71a](https://github.com/latticexyz/mud/commit/5b5a71ad5b49c2dfb736832de42f879f8437b1be))
+
+### Features
+
+- **cli/recs/std-client:** add ts definitions generator ([#536](https://github.com/latticexyz/mud/issues/536)) ([dd1efa6](https://github.com/latticexyz/mud/commit/dd1efa6a1ebd2b3c62080d1b191633d7b0072916))
+- **config:** separate config from cli ([#600](https://github.com/latticexyz/mud/issues/600)) ([cd224a5](https://github.com/latticexyz/mud/commit/cd224a5244ee55316d4b95a21007a8076adefe6e))
+- **network,recs,std-client:** support StoreSetField before StoreSetRecord ([#581](https://github.com/latticexyz/mud/issues/581)) ([f259f90](https://github.com/latticexyz/mud/commit/f259f90e1c561163a6675f4ec51b1659681d880b)), closes [#479](https://github.com/latticexyz/mud/issues/479) [#523](https://github.com/latticexyz/mud/issues/523)
+- **network:** add option to sync in main thread instead of worker ([#522](https://github.com/latticexyz/mud/issues/522)) ([4e8e7d7](https://github.com/latticexyz/mud/commit/4e8e7d774c574de5d08c03f02ef1811bade2ce7c))
+- **network:** integrate initial sync from MODE ([#493](https://github.com/latticexyz/mud/issues/493)) ([7d06c1b](https://github.com/latticexyz/mud/commit/7d06c1b5cf00df627000c907e78f60d3cd2415cd))
+- **std-client:** add getBurnerWallet util ([#546](https://github.com/latticexyz/mud/issues/546)) ([f427b50](https://github.com/latticexyz/mud/commit/f427b50a01457550624eed280d73c69141deaa3d))
+- **std-client:** move v2 setup to its own function/file ([#526](https://github.com/latticexyz/mud/issues/526)) ([ef5b4c2](https://github.com/latticexyz/mud/commit/ef5b4c2ceedc74b94a76f3ed47748fc24028fdb4))
+- use viem when creating burner wallet ([#576](https://github.com/latticexyz/mud/issues/576)) ([d5d22e0](https://github.com/latticexyz/mud/commit/d5d22e0b855cc9a606aa6e1380449a0840ea7343))
+- v2 event decoding ([#415](https://github.com/latticexyz/mud/issues/415)) ([374ed54](https://github.com/latticexyz/mud/commit/374ed542c3387a4ec2b36ab68ae534419aa58763))
+
 # [1.41.0](https://github.com/latticexyz/mud/compare/v1.40.0...v1.41.0) (2023-03-09)
 
 **Note:** Version bump only for package @latticexyz/std-client

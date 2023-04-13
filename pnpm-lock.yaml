@@ -12,7 +12,7 @@ importers:
         version: 16.2.4
       '@nrwl/nx-cloud':
         specifier: latest
-        version: 15.3.2
+        version: 15.3.5
       '@parcel/optimizer-data-url':
         specifier: 2.8.3
         version: 2.8.3(@parcel/core@2.8.3)
@@ -210,7 +210,7 @@ importers:
   packages/config:
     dependencies:
       '@latticexyz/schema-type':
-        specifier: ^1.41.0
+        specifier: ^1.42.0
         version: link:../schema-type
       chalk:
         specifier: ^5.2.0
@@ -250,15 +250,12 @@ importers:
   packages/create-mud:
     dependencies:
       create-create-app:
-        specifier: git+https://github.com/holic/create-create-app#e5c8bb449033418ad8518fc73f72c1a07eab2577
-        version: github.com/holic/create-create-app/e5c8bb449033418ad8518fc73f72c1a07eab2577
+        specifier: git+https://github.com/holic/create-create-app#74376c59b48a04aabbe94d9cacfe9cb1cecccd63
+        version: github.com/holic/create-create-app/74376c59b48a04aabbe94d9cacfe9cb1cecccd63
     devDependencies:
       '@types/node':
         specifier: ^17.0.29
         version: 17.0.34
-      shx:
-        specifier: ^0.3.4
-        version: 0.3.4
       tsup:
         specifier: ^5.12.1
         version: 5.12.1(typescript@4.9.5)
@@ -3826,8 +3823,8 @@ packages:
       tslib: 2.5.0
     dev: true
 
-  /@nrwl/nx-cloud@15.3.2:
-    resolution: {integrity: sha512-fga4duqcrkyT3djQpyRp8god3trb18hb+Tv0CYRrCcdNDHhzb6LOrxnenrFsjPjt38hyCdyu/ZYmHI/lQXyhAw==}
+  /@nrwl/nx-cloud@15.3.5:
+    resolution: {integrity: sha512-JMKLY0HhdzQ/6jEvfL/EecPPdsdBIM0SyFrWAjikSJAh5MqhpFJWnr6FfTc5P57PJZ+IUNLkJ21VMuoTrA4+4w==}
     hasBin: true
     dependencies:
       axios: 0.21.4
@@ -16159,15 +16156,6 @@ packages:
       vscode-oniguruma: 1.7.0
       vscode-textmate: 6.0.0
 
-  /shx@0.3.4:
-    resolution: {integrity: sha512-N6A9MLVqjxZYcVn8hLmtneQWIJtp8IKzMP4eMnx+nqkvXoqinUPCbUFLp2UcWTEIUONhlk0ewxr/jaVGlc+J+g==}
-    engines: {node: '>=6'}
-    hasBin: true
-    dependencies:
-      minimist: 1.2.7
-      shelljs: 0.8.5
-    dev: true
-
   /side-channel@1.0.4:
     resolution: {integrity: sha512-q5XPytqFEIKHkGdiMIrY10mvLRvnQh42/+GoBlFW3b2LXLE2xxJpZFdm94we0BaoV3RwJyGqg5wS7epxTv0Zvw==}
     dependencies:
@@ -18575,8 +18563,8 @@ packages:
     name: forge-std
     version: 1.2.0
 
-  github.com/holic/create-create-app/e5c8bb449033418ad8518fc73f72c1a07eab2577:
-    resolution: {tarball: https://codeload.github.com/holic/create-create-app/tar.gz/e5c8bb449033418ad8518fc73f72c1a07eab2577}
+  github.com/holic/create-create-app/74376c59b48a04aabbe94d9cacfe9cb1cecccd63:
+    resolution: {tarball: https://codeload.github.com/holic/create-create-app/tar.gz/74376c59b48a04aabbe94d9cacfe9cb1cecccd63}
     name: create-create-app
     version: 7.3.0
     hasBin: true

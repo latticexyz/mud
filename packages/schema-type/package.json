@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/schema-type",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "SchemaType enum for various languages",
   "main": "src/typescript/index.ts",
   "source": "src/typescript/index.ts",

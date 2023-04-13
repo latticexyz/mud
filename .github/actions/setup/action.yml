@@ -22,8 +22,12 @@ runs:
 
     - name: Install node dependencies
       shell: bash
-      # We use `--child-concurrency=1` for now because our install step calls `prepare` on each package, which often does a `forge build` and forge has a hard time running these things in parallel (resulting in `Text file busy (os error 26)` errors in CI)
-      run: pnpm install --frozen-lockfile --child-concurrency=1
+      run: pnpm install --frozen-lockfile
+
+    - name: Build
+      shell: bash
+      # `--parallel=false` because forge has a hard time building in parallel (resulting in `Text file busy (os error 26)` errors in CI)
+      run: pnpm nx run-many --target=build --parallel=false
 
     # Uncomment these to turn on the remote cache on ci
     # - name: Derive appropriate SHAs for base and head for `nx affected` commands

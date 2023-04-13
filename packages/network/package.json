@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/network",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "source": "src/index.ts",
   "main": "src/index.ts",
   "type": "module",

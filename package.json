@@ -44,8 +44,8 @@
     }
   },
   "scripts": {
-    "build": "pnpm nx run-many --target=build",
     "prepare": "husky install && (forge --version || pnpm foundryup)",
+    "build": "pnpm nx run-many --target=build",
     "commit": "cz",
     "prettier:check": "prettier --check 'packages/**/*.{ts,css,md,sol}'",
     "prettier": "prettier --write 'packages/**/*.{ts,css,md,sol}'",
