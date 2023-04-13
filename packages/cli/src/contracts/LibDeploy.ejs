@@ -17,18 +17,21 @@ import { SystemStorage } from "solecs/SystemStorage.sol";
 
 // Components (requires 'components=...' remapping in project's remappings.txt)
 <% components.forEach(component => { -%>
-import { <%= component %>, ID as <%= component %>ID } from "components/<%- component %>.sol";
+<% const componentName = component.split("/").pop(); %>
+import { <%= componentName %>, ID as <%= componentName %>ID } from "components/<%- component %>.sol";
 <% }); -%>
 
 // Systems (requires 'systems=...' remapping in project's remappings.txt)
 <% systems.forEach(system => { -%>
-import { <%= system.name %>, ID as <%= system.name %>ID } from "systems/<%- system.name %>.sol";
+<% const systemName=system.name.split("/").pop(); %>
+import { <%= systemName %>, ID as <%= systemName %>ID } from "systems/<%- system.name %>.sol";
 <% }); -%>
 
 <% if (initializers.length > 0) { -%>
 // Initializer libraries (requires 'libraries=...' remapping in project's remappings.txt)
 <% initializers.forEach((initializer) => { -%>
-import { <%= initializer %> } from "libraries/<%- initializer %>.sol";
+<% const initializerName=initializer.name.split("/").pop(); %>
+import { <%= initializerName %> } from "libraries/<%- initializer %>.sol";
 <% }); -%>
 <% } -%>
 
