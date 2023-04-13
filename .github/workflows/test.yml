@@ -18,7 +18,7 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run tests
-        run: pnpm test
+        run: pnpm nx run-many --target=test --parallel
 
       - name: Lint
-        run: pnpm lint
+        run: pnpm nx run-many --target=lint --parallel

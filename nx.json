@@ -1,0 +1,54 @@
+{
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "@nrwl/nx-cloud",
+      "options": {
+        "cacheableOperations": [
+          "lint",
+          "build",
+          "test",
+          "test:contracts",
+          "prettier",
+          "solhint",
+          "test:forge",
+          "test:hardhat",
+          "test:solidity",
+          "test:typescript",
+          "build:solidity",
+          "build:typescript"
+        ]
+      }
+    }
+  },
+  "targetDefaults": {
+    "dev": {
+      "dependsOn": ["^build"]
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/dist"]
+    },
+    "release": {
+      "dependsOn": ["^build", "build", "^release"]
+    },
+    "test": {
+      "dependsOn": ["^build", "build"]
+    },
+    "test:contracts": {
+      "dependsOn": ["^build", "build"]
+    },
+    "test:forge": {
+      "dependsOn": ["^build", "build"]
+    },
+    "test:hardhat": {
+      "dependsOn": ["^build", "build"]
+    },
+    "test:solidity": {
+      "dependsOn": ["^build", "build"]
+    },
+    "test:typescript": {
+      "dependsOn": ["^build", "build"]
+    }
+  },
+  "defaultBase": "main"
+}

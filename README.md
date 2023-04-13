@@ -103,10 +103,16 @@ npm install pnpm --global
 git clone https://github.com/latticexyz/mud
 ```
 
-5. Install MUD dependencies and setup local environment
+5. Install MUD dependencies
 
 ```
 cd mud && pnpm install
+```
+
+6. Setup the local environment
+
+```
+pnpm build
 ```
 
 ### Pull requests
