@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/solecs",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "Solidity Entity Component System",
   "types": "./types/ethers-contracts/",
   "repository": {
@@ -10,7 +10,6 @@
     "directory": "packages/solecs"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "test": "forge test",
     "build": "rimraf out && forge build --out out && pnpm dist && pnpm types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh && rimraf abi/*.metadata.json",

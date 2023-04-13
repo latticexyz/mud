@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/ecs-browser",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "Component Browser for RECS",
   "license": "MIT",
   "main": "src/index.ts",
@@ -12,7 +12,6 @@
     "directory": "packages/ecs-browser"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "test": "tsc && echo 'todo: add tests'",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",

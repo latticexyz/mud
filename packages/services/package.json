@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/services",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "MUD services for enhanced interactions with on-chain ECS state",
   "main": "protobuf/ts/index.ts",
   "type": "module",
@@ -11,7 +11,7 @@
     "directory": "packages/services"
   },
   "scripts": {
-    "prepare": "make build",
+    "build": "make build",
     "docs": "rimraf API && mkdir -p _docs/pkg && find pkg -type f -name '*.go' -exec bash -c 'gomarkdoc {} > \"$(dirname _docs/{})\".md' \\; && mv _docs/pkg API && rimraf _docs",
     "test": "tsc --noEmit && echo 'todo: add tests'",
     "protoc-ts": "make protoc-ts",

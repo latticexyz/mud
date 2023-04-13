@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/phaserx",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "source": "src/index.ts",
   "main": "src/index.ts",
   "repository": {
@@ -10,7 +10,6 @@
     "directory": "packages/phaserx"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "lint": "eslint . --ext .ts",
     "test": "tsc && jest --passWithNoTests",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",

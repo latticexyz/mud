@@ -1,6 +1,6 @@
 {
   "name": "@latticexyz/react",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "React tools for MUD client.",
   "license": "MIT",
   "source": "src/index.ts",
@@ -11,7 +11,6 @@
     "directory": "packages/react"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
     "test": "tsc --noEmit && jest",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",

@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/world",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "World framework",
   "types": "./types/ethers-contracts/",
   "exports": {
@@ -14,7 +14,6 @@
     "directory": "packages/world"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "tablegen": "../cli/dist/mud.js tablegen",
     "worldgen": "../cli/dist/mud.js worldgen",
     "test": "forge test",

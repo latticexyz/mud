@@ -1,8 +1,6 @@
 {
-  "packages": [
-    "packages/*"
-  ],
-  "version": "1.41.0",
+  "packages": ["packages/*"],
+  "version": "1.42.0",
   "npmClient": "pnpm",
   "useWorkspaces": true,
   "conventionalCommits": true,

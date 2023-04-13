@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/schema-type",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "SchemaType enum for various languages",
   "main": "src/typescript/index.ts",
   "source": "src/typescript/index.ts",
@@ -12,7 +12,6 @@
     "directory": "packages/schema-type"
   },
   "scripts": {
-    "prepare": "pnpm build",
     "test": "pnpm test:solidity && pnpm test:typescript",
     "test:solidity": "forge test",
     "test:typescript": "tsc --noEmit",
