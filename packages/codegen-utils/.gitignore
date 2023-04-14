@@ -7,3 +7,4 @@ artifacts
 yarn-error.log
 API
 tsconfig.tsbuildinfo
+tsconfig.vitest-temp.json
