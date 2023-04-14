@@ -34,7 +34,11 @@ library StoreSwitch {
     }
   }
 
-  function registerStoreHook(uint256 table, IStoreHook hook) internal {
+  function inferStoreAddress() internal view returns (address) {
+    return isDelegateCall() ? address(this) : msg.sender;
+  }
+
+  function registerStoreHook(bytes32 table, IStoreHook hook) internal {
     if (isDelegateCall()) {
       StoreCore.registerStoreHook(table, hook);
     } else {
@@ -42,7 +46,7 @@ library StoreSwitch {
     }
   }
 
-  function getSchema(uint256 table) internal view returns (Schema schema) {
+  function getSchema(bytes32 table) internal view returns (Schema schema) {
     if (isDelegateCall()) {
       schema = StoreCore.getSchema(table);
     } else {
@@ -50,7 +54,7 @@ library StoreSwitch {
     }
   }
 
-  function setMetadata(uint256 table, string memory tableName, string[] memory fieldNames) internal {
+  function setMetadata(bytes32 table, string memory tableName, string[] memory fieldNames) internal {
     if (isDelegateCall()) {
       StoreCore.setMetadata(table, tableName, fieldNames);
     } else {
@@ -58,7 +62,7 @@ library StoreSwitch {
     }
   }
 
-  function registerSchema(uint256 table, Schema schema, Schema keySchema) internal {
+  function registerSchema(bytes32 table, Schema schema, Schema keySchema) internal {
     if (isDelegateCall()) {
       StoreCore.registerSchema(table, schema, keySchema);
     } else {
@@ -66,7 +70,7 @@ library StoreSwitch {
     }
   }
 
-  function setRecord(uint256 table, bytes32[] memory key, bytes memory data) internal {
+  function setRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
     if (isDelegateCall()) {
       StoreCore.setRecord(table, key, data);
     } else {
@@ -74,7 +78,7 @@ library StoreSwitch {
     }
   }
 
-  function setField(uint256 table, bytes32[] memory key, uint8 fieldIndex, bytes memory data) internal {
+  function setField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, bytes memory data) internal {
     if (isDelegateCall()) {
       StoreCore.setField(table, key, fieldIndex, data);
     } else {
@@ -82,7 +86,7 @@ library StoreSwitch {
     }
   }
 
-  function pushToField(uint256 table, bytes32[] memory key, uint8 fieldIndex, bytes memory dataToPush) internal {
+  function pushToField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, bytes memory dataToPush) internal {
     if (isDelegateCall()) {
       StoreCore.pushToField(table, key, fieldIndex, dataToPush);
     } else {
@@ -90,7 +94,21 @@ library StoreSwitch {
     }
   }
 
-  function deleteRecord(uint256 table, bytes32[] memory key) internal {
+  function updateInField(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    uint256 startByteIndex,
+    bytes memory dataToSet
+  ) internal {
+    if (isDelegateCall()) {
+      StoreCore.updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+    } else {
+      IStore(msg.sender).updateInField(table, key, fieldIndex, startByteIndex, dataToSet);
+    }
+  }
+
+  function deleteRecord(bytes32 table, bytes32[] memory key) internal {
     if (isDelegateCall()) {
       StoreCore.deleteRecord(table, key);
     } else {
@@ -98,7 +116,7 @@ library StoreSwitch {
     }
   }
 
-  function getRecord(uint256 table, bytes32[] memory key) internal view returns (bytes memory) {
+  function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     if (isDelegateCall()) {
       return StoreCore.getRecord(table, key);
     } else {
@@ -106,7 +124,7 @@ library StoreSwitch {
     }
   }
 
-  function getRecord(uint256 table, bytes32[] memory key, Schema schema) internal view returns (bytes memory) {
+  function getRecord(bytes32 table, bytes32[] memory key, Schema schema) internal view returns (bytes memory) {
     if (isDelegateCall()) {
       return StoreCore.getRecord(table, key, schema);
     } else {
@@ -114,7 +132,7 @@ library StoreSwitch {
     }
   }
 
-  function getField(uint256 table, bytes32[] memory key, uint8 fieldIndex) internal view returns (bytes memory) {
+  function getField(bytes32 table, bytes32[] memory key, uint8 fieldIndex) internal view returns (bytes memory) {
     if (isDelegateCall()) {
       return StoreCore.getField(table, key, fieldIndex);
     } else {

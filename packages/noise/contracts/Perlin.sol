@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {ABDKMath64x64 as Math} from "abdk-libraries-solidity/ABDKMath64x64.sol";
+import { ABDKMath64x64 as Math } from "abdk-libraries-solidity/ABDKMath64x64.sol";
 
 // Commonly used numbers as 64.64 fixed point
-int128 constant _1 = 2**64;
-int128 constant _2 = 2 * 2**64;
-int128 constant _6 = 6 * 2**64;
-int128 constant _10 = 10 * 2**64;
-int128 constant _15 = 15 * 2**64;
+int128 constant _1 = 2 ** 64;
+int128 constant _2 = 2 * 2 ** 64;
+int128 constant _6 = 6 * 2 ** 64;
+int128 constant _10 = 10 * 2 ** 64;
+int128 constant _15 = 15 * 2 ** 64;
 
 struct H {
   int16 X;
@@ -58,12 +58,7 @@ struct H2 {
 /// @author alvarius
 /// @notice Ported from perlin reference implementation (https://cs.nyu.edu/~perlin/noise/)
 library Perlin {
-  function noise2d(
-    int256 _x,
-    int256 _y,
-    int256 denom,
-    uint8 precision
-  ) public pure returns (int128) {
+  function noise2d(int256 _x, int256 _y, int256 denom, uint8 precision) public pure returns (int128) {
     H2 memory h = H2(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Convert fraction into 64.64 fixed point number
@@ -103,13 +98,7 @@ library Perlin {
     return Math.div(Math.add(h.r, _1), _2) >> (64 - precision);
   }
 
-  function noise(
-    int256 _x,
-    int256 _y,
-    int256 _z,
-    int256 denom,
-    uint8 precision
-  ) public pure returns (int128) {
+  function noise(int256 _x, int256 _y, int256 _z, int256 denom, uint8 precision) public pure returns (int128) {
     H memory h = H(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     // Convert fraction into 64.64 fixed point number
@@ -184,23 +173,14 @@ library Perlin {
   /**
    * Computes a + t * (b - a)
    **/
-  function lerp(
-    int128 t,
-    int128 a,
-    int128 b
-  ) public pure returns (int128) {
+  function lerp(int128 t, int128 a, int128 b) public pure returns (int128) {
     return Math.add(a, Math.mul(t, (Math.sub(b, a))));
   }
 
   /**
    * Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
    **/
-  function grad(
-    int16 _hash,
-    int128 x,
-    int128 y,
-    int128 z
-  ) public pure returns (int128) {
+  function grad(int16 _hash, int128 x, int128 y, int128 z) public pure returns (int128) {
     // Convert lower 4 bits to hash code into 12 gradient directions
     int16 h = _hash & 0xF;
 
@@ -246,11 +226,7 @@ library Perlin {
   /**
    * Modified from original perlin paper based on http://riven8192.blogspot.com/2010/08/calculate-perlinnoise-twice-as-fast.html
    **/
-  function grad2d(
-    int16 _hash,
-    int128 x,
-    int128 y
-  ) public pure returns (int128) {
+  function grad2d(int16 _hash, int128 x, int128 y) public pure returns (int128) {
     // Convert lower 4 bits to hash code into 12 gradient directions
     int16 h = _hash & 0xF;
     if (h <= 0x7) {

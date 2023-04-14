@@ -1,6 +1,6 @@
 import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
-import { StoreConfig } from "../config/parseStoreConfig.js";
+import { StoreConfig } from "@latticexyz/config";
 import {
   ImportDatum,
   RenderTableDynamicField,
@@ -80,7 +80,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         return {
           tableIdName: tableName + "TableId",
           namespace: config.namespace,
-          fileSelector: tableData.fileSelector,
+          name: tableData.name,
         };
       }
     })();

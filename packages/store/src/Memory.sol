@@ -34,11 +34,7 @@ library Memory {
     }
   }
 
-  function copy(
-    uint256 fromPointer,
-    uint256 toPointer,
-    uint256 length
-  ) internal view {
+  function copy(uint256 fromPointer, uint256 toPointer, uint256 length) internal view {
     if (length > 32) {
       assembly {
         pop(

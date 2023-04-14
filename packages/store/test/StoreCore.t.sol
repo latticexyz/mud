@@ -14,7 +14,7 @@ import { StoreView } from "../src/StoreView.sol";
 import { IErrors } from "../src/IErrors.sol";
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
-import { StoreMetadataData, StoreMetadata } from "../src/tables/StoreMetadata.sol";
+import { StoreMetadataData, StoreMetadata } from "../src/codegen/Tables.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -28,18 +28,18 @@ contract StoreCoreTest is Test, StoreView {
   Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
 
   // Expose an external setRecord function for testing purposes of indexers (see testHooks)
-  function setRecord(uint256 table, bytes32[] calldata key, bytes calldata data) public override {
+  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) public override {
     StoreCore.setRecord(table, key, data);
   }
 
   // Expose an external setField function for testing purposes of indexers (see testHooks)
-  function setField(uint256 table, bytes32[] calldata key, uint8 schemaIndex, bytes calldata data) public override {
+  function setField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex, bytes calldata data) public override {
     StoreCore.setField(table, key, schemaIndex, data);
   }
 
   // Expose an external pushToField function for testing purposes of indexers (see testHooks)
   function pushToField(
-    uint256 table,
+    bytes32 table,
     bytes32[] calldata key,
     uint8 schemaIndex,
     bytes calldata dataToPush
@@ -47,13 +47,24 @@ contract StoreCoreTest is Test, StoreView {
     StoreCore.pushToField(table, key, schemaIndex, dataToPush);
   }
 
+  // Expose an external updateInField function for testing purposes of indexers (see testHooks)
+  function updateInField(
+    bytes32 table,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 startByteIndex,
+    bytes calldata dataToSet
+  ) public override {
+    StoreCore.updateInField(table, key, schemaIndex, startByteIndex, dataToSet);
+  }
+
   // Expose an external deleteRecord function for testing purposes of indexers (see testHooks)
-  function deleteRecord(uint256 table, bytes32[] calldata key) public override {
+  function deleteRecord(bytes32 table, bytes32[] calldata key) public override {
     StoreCore.deleteRecord(table, key);
   }
 
   // Expose an external registerSchema function for testing purposes of indexers (see testHooks)
-  function registerSchema(uint256 table, Schema schema, Schema keySchema) public override {
+  function registerSchema(bytes32 table, Schema schema, Schema keySchema) public override {
     StoreCore.registerSchema(table, schema, keySchema);
   }
 
@@ -61,7 +72,7 @@ contract StoreCoreTest is Test, StoreView {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
 
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
 
     // Expect a StoreSetRecord event to be emitted
     bytes32[] memory key = new bytes32[](1);
@@ -84,7 +95,7 @@ contract StoreCoreTest is Test, StoreView {
 
   function testFailRegisterInvalidSchema() public {
     StoreCore.registerSchema(
-      uint256(keccak256("table")),
+      keccak256("table"),
       Schema.wrap(keccak256("random bytes as schema")),
       Schema.wrap(keccak256("random bytes as key schema"))
     );
@@ -92,8 +103,8 @@ contract StoreCoreTest is Test, StoreView {
 
   function testHasSchema() public {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
-    uint256 table = uint256(keccak256("some.table"));
-    uint256 table2 = uint256(keccak256("other.table"));
+    bytes32 table = keccak256("some.table");
+    bytes32 table2 = keccak256("other.table");
     StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // !gasreport Check for existence of table (existent)
@@ -107,7 +118,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testSetMetadata() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16);
     Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
@@ -129,7 +140,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testlSetMetadataRevert() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
     Schema schema = SchemaLib.encode(SchemaType.UINT8);
     Schema keySchema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     string memory tableName = "someTable";
@@ -145,7 +156,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testSetAndGetDynamicDataLength() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
 
     Schema schema = SchemaLib.encode(
       SchemaType.UINT8,
@@ -194,7 +205,7 @@ contract StoreCoreTest is Test, StoreView {
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
 
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Set data
@@ -220,7 +231,7 @@ contract StoreCoreTest is Test, StoreView {
   function testFailSetAndGetStaticData() public {
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Set data
@@ -236,7 +247,7 @@ contract StoreCoreTest is Test, StoreView {
   function testSetAndGetStaticDataSpanningWords() public {
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT256);
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
     StoreCore.registerSchema(table, schema, defaultKeySchema);
 
     // Set data
@@ -263,7 +274,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testSetAndGetDynamicData() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
 
     {
       // Register table's schema
@@ -342,7 +353,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testSetAndGetField() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
 
     {
       // Register table's schema
@@ -486,7 +497,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testDeleteData() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
 
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
@@ -554,7 +565,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testPushToField() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
 
     {
       // Register table's schema
@@ -658,8 +669,121 @@ contract StoreCoreTest is Test, StoreView {
     assertEq(StoreCore.getField(table, key, 1), newSecondDataBytes);
   }
 
+  function testUpdateInField() public {
+    bytes32 table = keccak256("some.table");
+
+    {
+      // Register table's schema
+      Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT64_ARRAY);
+      StoreCore.registerSchema(table, schema, defaultKeySchema);
+    }
+
+    // Create key
+    bytes32[] memory key = new bytes32[](1);
+    key[0] = bytes32("some.key");
+
+    // Create data
+    bytes32 firstDataBytes = keccak256("some data");
+    uint32[] memory secondData = new uint32[](2);
+    secondData[0] = 0x11121314;
+    secondData[1] = 0x15161718;
+    bytes memory secondDataBytes = EncodeArray.encode(secondData);
+
+    uint64[] memory thirdData = new uint64[](6);
+    thirdData[0] = 0x1111111111111111;
+    thirdData[1] = 0x2222222222222222;
+    thirdData[2] = 0x3333333333333333;
+    thirdData[3] = 0x4444444444444444;
+    thirdData[4] = 0x5555555555555555;
+    thirdData[5] = 0x6666666666666666;
+    bytes memory thirdDataBytes = EncodeArray.encode(thirdData);
+
+    // Set fields
+    StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes));
+    StoreCore.setField(table, key, 1, secondDataBytes);
+    StoreCore.setField(table, key, 2, thirdDataBytes);
+
+    // Create data to use for the update
+    bytes memory secondDataForUpdate;
+    bytes memory newSecondDataBytes;
+    {
+      uint32[] memory _secondDataForUpdate = new uint32[](1);
+      _secondDataForUpdate[0] = 0x25262728;
+      secondDataForUpdate = EncodeArray.encode(_secondDataForUpdate);
+
+      newSecondDataBytes = abi.encodePacked(secondData[0], _secondDataForUpdate[0]);
+    }
+
+    // Expect a StoreSetField event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit StoreSetField(table, key, 1, newSecondDataBytes);
+
+    // Update index 1 in second field (4 = byte length of uint32)
+    // !gasreport update in field (1 slot, 1 uint32 item)
+    StoreCore.updateInField(table, key, 1, 4 * 1, secondDataForUpdate);
+
+    // Get second field
+    bytes memory loadedData = StoreCore.getField(table, key, 1);
+
+    // Verify loaded data is correct
+    assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint32().length, secondData.length);
+    assertEq(loadedData.length, newSecondDataBytes.length);
+    assertEq(loadedData, newSecondDataBytes);
+
+    // Verify none of the other fields were impacted
+    assertEq(bytes32(StoreCore.getField(table, key, 0)), firstDataBytes);
+    assertEq(StoreCore.getField(table, key, 2), thirdDataBytes);
+
+    // Create data for update
+    bytes memory thirdDataForUpdate;
+    bytes memory newThirdDataBytes;
+    {
+      uint64[] memory _thirdDataForUpdate = new uint64[](4);
+      _thirdDataForUpdate[0] = 0x7777777777777777;
+      _thirdDataForUpdate[1] = 0x8888888888888888;
+      _thirdDataForUpdate[2] = 0x9999999999999999;
+      _thirdDataForUpdate[3] = 0x0;
+      thirdDataForUpdate = EncodeArray.encode(_thirdDataForUpdate);
+
+      newThirdDataBytes = abi.encodePacked(
+        thirdData[0],
+        _thirdDataForUpdate[0],
+        _thirdDataForUpdate[1],
+        _thirdDataForUpdate[2],
+        _thirdDataForUpdate[3],
+        thirdData[5]
+      );
+    }
+
+    // Expect a StoreSetField event to be emitted
+    vm.expectEmit(true, true, true, true);
+    emit StoreSetField(table, key, 2, newThirdDataBytes);
+
+    // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
+    // !gasreport push to field (2 slots, 6 uint64 items)
+    StoreCore.updateInField(table, key, 2, 8 * 1, thirdDataForUpdate);
+
+    // Get third field
+    loadedData = StoreCore.getField(table, key, 2);
+
+    // Verify loaded data is correct
+    assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint64().length, thirdData.length);
+    assertEq(loadedData.length, newThirdDataBytes.length);
+    assertEq(loadedData, newThirdDataBytes);
+
+    // Verify none of the other fields were impacted
+    assertEq(bytes32(StoreCore.getField(table, key, 0)), firstDataBytes);
+    assertEq(StoreCore.getField(table, key, 1), newSecondDataBytes);
+
+    // startByteIndex must not overflow
+    vm.expectRevert(
+      abi.encodeWithSelector(IErrors.StoreCore_DataIndexOverflow.selector, type(uint16).max, type(uint32).max)
+    );
+    StoreCore.updateInField(table, key, 2, type(uint32).max, thirdDataForUpdate);
+  }
+
   function testAccessEmptyData() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
     Schema schema = SchemaLib.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
     StoreCore.registerSchema(table, schema, defaultKeySchema);
@@ -682,7 +806,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testHooks() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
 
@@ -723,7 +847,7 @@ contract StoreCoreTest is Test, StoreView {
   }
 
   function testHooksDynamicData() public {
-    uint256 table = uint256(keccak256("some.table"));
+    bytes32 table = keccak256("some.table");
     bytes32[] memory key = new bytes32[](1);
     key[0] = keccak256("some key");
 
@@ -774,29 +898,29 @@ contract StoreCoreTest is Test, StoreView {
   }
 }
 
-uint256 constant indexerTableId = uint256(keccak256("indexer.table"));
+bytes32 constant indexerTableId = keccak256("indexer.table");
 
 contract MirrorSubscriber is IStoreHook {
-  uint256 _table;
+  bytes32 _table;
 
-  constructor(uint256 table, Schema schema, Schema keySchema) {
+  constructor(bytes32 table, Schema schema, Schema keySchema) {
     IStore(msg.sender).registerSchema(indexerTableId, schema, keySchema);
     _table = table;
   }
 
-  function onSetRecord(uint256 table, bytes32[] memory key, bytes memory data) public {
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) public {
     if (table != table) revert("invalid table");
     StoreSwitch.setRecord(indexerTableId, key, data);
   }
 
-  function onBeforeSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     if (table != table) revert("invalid table");
     StoreSwitch.setField(indexerTableId, key, schemaIndex, data);
   }
 
-  function onAfterSetField(uint256, bytes32[] memory, uint8, bytes memory) public {}
+  function onAfterSetField(bytes32, bytes32[] memory, uint8, bytes memory) public {}
 
-  function onDeleteRecord(uint256 table, bytes32[] memory key) public {
+  function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
     if (table != table) revert("invalid table");
     StoreSwitch.deleteRecord(indexerTableId, key);
   }

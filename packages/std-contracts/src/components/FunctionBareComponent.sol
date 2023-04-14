@@ -30,9 +30,9 @@ contract FunctionBareComponent is BareComponent {
   }
 }
 
-function staticcallFunctionSelector(FunctionSelector memory functionSelector, bytes memory args)
-  view
-  returns (bool, bytes memory)
-{
+function staticcallFunctionSelector(
+  FunctionSelector memory functionSelector,
+  bytes memory args
+) view returns (bool, bytes memory) {
   return functionSelector.contr.staticcall(bytes.concat(functionSelector.func, args));
 }

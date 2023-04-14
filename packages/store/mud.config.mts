@@ -1,14 +1,14 @@
-import { storeConfig } from "@latticexyz/cli";
+import { storeConfig } from "@latticexyz/config";
 
 export default storeConfig({
-  storeImportPath: "../",
+  storeImportPath: "../../",
   namespace: "mudstore",
   tables: {
     Hooks: "address[]",
     Callbacks: "bytes24[]",
     StoreMetadata: {
       primaryKeys: {
-        tableId: "uint256",
+        tableId: "bytes32",
       },
       schema: {
         tableName: "string",

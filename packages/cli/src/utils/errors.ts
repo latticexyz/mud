@@ -1,28 +1,8 @@
 import chalk from "chalk";
-import { z, ZodError, ZodIssueCode } from "zod";
+import { ZodError } from "zod";
 import { fromZodError, ValidationError } from "zod-validation-error";
-
-// Wrapper with preset styles, only requires a `prefix`
-export function fromZodErrorCustom(error: ZodError, prefix: string) {
-  return fromZodError(error, {
-    prefix: chalk.red(prefix),
-    prefixSeparator: "\n- ",
-    issueSeparator: "\n- ",
-  });
-}
-
-export class NotInsideProjectError extends Error {
-  name = "NotInsideProjectError";
-  message = "You are not inside a MUD project";
-}
-
-export class MUDError extends Error {
-  name = "MUDError";
-}
-
-export function UnrecognizedSystemErrorFactory(path: string[], systemName: string) {
-  return new z.ZodError([{ code: ZodIssueCode.custom, path: path, message: `Unrecognized system: "${systemName}"` }]);
-}
+import { NotInsideProjectError } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/config";
 
 export function logError(error: unknown) {
   if (error instanceof ValidationError) {

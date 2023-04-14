@@ -8,13 +8,13 @@ import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
-import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/tables/StoreMetadata.sol";
+import { StoreMetadataData, StoreMetadata } from "@latticexyz/store/src/codegen/Tables.sol";
 import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 
 import { World } from "../src/World.sol";
 import { System } from "../src/System.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
-import { ROOT_NAMESPACE, ROOT_FILE } from "../src/constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAME } from "../src/constants.sol";
 
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
@@ -66,14 +66,14 @@ contract WorldTestSystem is System {
     return returndata;
   }
 
-  function writeData(bytes16 namespace, bytes16 file, bool data) public {
+  function writeData(bytes16 namespace, bytes16 name, bool data) public {
     bytes32[] memory key = new bytes32[](0);
 
     if (StoreSwitch.isDelegateCall()) {
-      uint256 tableId = uint256(ResourceSelector.from(namespace, file));
+      bytes32 tableId = ResourceSelector.from(namespace, name);
       StoreCore.setRecord(tableId, key, abi.encodePacked(data));
     } else {
-      IBaseWorld(msg.sender).setRecord(namespace, file, key, abi.encodePacked(data));
+      IBaseWorld(msg.sender).setRecord(namespace, name, key, abi.encodePacked(data));
     }
   }
 
@@ -99,19 +99,19 @@ contract PayableFallbackSystem is System {
 contract WorldTestTableHook is IStoreHook {
   event HookCalled(bytes data);
 
-  function onSetRecord(uint256 table, bytes32[] memory key, bytes memory data) public {
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, data));
   }
 
-  function onBeforeSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, schemaIndex, data));
   }
 
-  function onAfterSetField(uint256 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
+  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8 schemaIndex, bytes memory data) public {
     emit HookCalled(abi.encode(table, key, schemaIndex, data));
   }
 
-  function onDeleteRecord(uint256 table, bytes32[] memory key) public {
+  function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
     emit HookCalled(abi.encode(table, key));
   }
 }
@@ -141,10 +141,10 @@ contract WorldTest is Test {
   }
 
   // Expect an error when trying to write from an address that doesn't have access
-  function _expectAccessDenied(address caller, bytes16 namespace, bytes16 file) internal {
+  function _expectAccessDenied(address caller, bytes16 namespace, bytes16 name) internal {
     vm.prank(caller);
     vm.expectRevert(
-      abi.encodeWithSelector(IErrors.AccessDenied.selector, ResourceSelector.from(namespace, file).toString(), caller)
+      abi.encodeWithSelector(IErrors.AccessDenied.selector, ResourceSelector.from(namespace, name).toString(), caller)
     );
   }
 
@@ -191,7 +191,7 @@ contract WorldTest is Test {
 
     // Expect the table to be registered
 
-    assertEq(world.getSchema(uint256(tableSelector)).unwrap(), schema.unwrap(), "schema should be registered");
+    assertEq(world.getSchema(tableSelector).unwrap(), schema.unwrap(), "schema should be registered");
 
     // Expect an error when registering an existing table
     vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, tableSelector.toString()));
@@ -200,14 +200,17 @@ contract WorldTest is Test {
     // Expect an error when registering a table in a namespace that is not owned by the caller
     _expectAccessDenied(address(0x01), namespace, "");
     world.registerTable(namespace, "otherTable", schema, defaultKeySchema);
+
+    // Expect the World to be allowed to call registerTable
+    vm.prank(address(world));
+    world.registerTable(namespace, "otherTable", schema, defaultKeySchema);
   }
 
   function testSetMetadata() public {
     string memory tableName = "testTable";
     bytes16 namespace = "testNamespace";
-    bytes16 file = "tableName";
-    bytes32 resourceSelector = ResourceSelector.from(namespace, file);
-    uint256 tableId = uint256(resourceSelector);
+    bytes16 name = "tableName";
+    bytes32 tableId = ResourceSelector.from(namespace, name);
 
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT8);
     string[] memory fieldNames = new string[](2);
@@ -219,10 +222,10 @@ contract WorldTest is Test {
     world.setMetadata("invalid", "invalid", tableName, fieldNames);
 
     // Register a table
-    world.registerTable(namespace, file, schema, defaultKeySchema);
+    world.registerTable(namespace, name, schema, defaultKeySchema);
 
     // !gasreport Set metadata
-    world.setMetadata(namespace, file, tableName, fieldNames);
+    world.setMetadata(namespace, name, tableName, fieldNames);
 
     // Expect the metadata to be set
     StoreMetadataData memory metadata = StoreMetadata.get(world, tableId);
@@ -230,23 +233,27 @@ contract WorldTest is Test {
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
 
     // Expect it to be possible to change metadata
-    world.setMetadata(namespace, file, "newTableName", fieldNames);
+    world.setMetadata(namespace, name, "newTableName", fieldNames);
     metadata = StoreMetadata.get(world, tableId);
     assertEq(metadata.tableName, "newTableName");
     assertEq(metadata.abiEncodedFieldNames, abi.encode(fieldNames));
 
     // Expect an error when setting metadata on a route that is not owned by the caller
-    _expectAccessDenied(address(1), namespace, file);
-    world.setMetadata(namespace, file, tableName, fieldNames);
+    _expectAccessDenied(address(1), namespace, name);
+    world.setMetadata(namespace, name, tableName, fieldNames);
+
+    // Expect the World to be allowed to set metadata
+    vm.prank(address(world));
+    world.setMetadata(namespace, name, tableName, fieldNames);
   }
 
   function testRegisterSystem() public {
     System system = new System();
     bytes16 namespace = "";
-    bytes16 file = "testSystem";
+    bytes16 name = "testSystem";
 
     // !gasrepot Register a new system
-    bytes32 resourceSelector = world.registerSystem(namespace, file, system, false);
+    bytes32 resourceSelector = world.registerSystem(namespace, name, system, false);
 
     // Expect the system to be registered
     (address registeredAddress, bool publicAccess) = Systems.get(world, resourceSelector);
@@ -288,25 +295,29 @@ contract WorldTest is Test {
     System yetAnotherSystem = new System();
     _expectAccessDenied(address(0x01), "", "");
     world.registerSystem("", "rootSystem", yetAnotherSystem, true);
+
+    // Expect the registration to succeed when coming from the World
+    vm.prank(address(world));
+    world.registerSystem("", "rootSystem", yetAnotherSystem, true);
   }
 
   function testDuplicateSelectors() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("namespace", "file", Bool.getSchema(), defaultKeySchema);
+    bytes32 resourceSelector = world.registerTable("namespace", "name", Bool.getSchema(), defaultKeySchema);
 
     // Deploy a new system
     System system = new System();
 
     // Expect an error when trying to register a system at the same selector
     vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, resourceSelector.toString()));
-    world.registerSystem("namespace", "file", system, false);
+    world.registerSystem("namespace", "name", system, false);
 
     // Register a new system
-    resourceSelector = world.registerSystem("namespace2", "file", new System(), false);
+    resourceSelector = world.registerSystem("namespace2", "name", new System(), false);
 
     // Expect an error when trying to register a table at the same selector
     vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, resourceSelector.toString()));
-    world.registerTable("namespace2", "file", Bool.getSchema(), defaultKeySchema);
+    world.registerTable("namespace2", "name", Bool.getSchema(), defaultKeySchema);
   }
 
   function testGrantAccess() public {
@@ -319,8 +330,7 @@ contract WorldTest is Test {
 
   function testSetRecord() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("testSetRecord", "testTable", Bool.getSchema(), defaultKeySchema);
-    uint256 tableId = uint256(resourceSelector);
+    bytes32 tableId = world.registerTable("testSetRecord", "testTable", Bool.getSchema(), defaultKeySchema);
 
     // !gasreport Write data to the table
     Bool.set(world, tableId, true);
@@ -331,24 +341,27 @@ contract WorldTest is Test {
     // Expect an error when trying to write from an address that doesn't have access
     _expectAccessDenied(address(0x01), "testSetRecord", "testTable");
     Bool.set(world, tableId, true);
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    Bool.set(world, tableId, true);
   }
 
   function testSetField() public {
     bytes16 namespace = "testSetField";
-    bytes16 file = "testTable";
+    bytes16 name = "testTable";
 
     // Register a new table
-    bytes32 resourceSelector = world.registerTable(namespace, file, Bool.getSchema(), defaultKeySchema);
-    uint256 tableId = uint256(resourceSelector);
+    bytes32 tableId = world.registerTable(namespace, name, Bool.getSchema(), defaultKeySchema);
 
     // !gasreport Write data to a table field
-    world.setField(namespace, file, singletonKey, 0, abi.encodePacked(true));
+    world.setField(namespace, name, singletonKey, 0, abi.encodePacked(true));
 
     // Expect the data to be written
     assertTrue(Bool.get(world, tableId));
 
     // Write data to the table via its tableId
-    world.setField(uint256(resourceSelector), singletonKey, 0, abi.encodePacked(false));
+    world.setField(tableId, singletonKey, 0, abi.encodePacked(false));
 
     // Expect the data to be written
     assertFalse(Bool.get(world, tableId));
@@ -359,16 +372,19 @@ contract WorldTest is Test {
 
     // Expect an error when trying to write from an address that doesn't have access when calling via the tableId
     _expectAccessDenied(address(0x01), "testSetField", "testTable");
-    world.setField(uint256(resourceSelector), singletonKey, 0, abi.encodePacked(true));
+    world.setField(tableId, singletonKey, 0, abi.encodePacked(true));
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.setField("testSetField", "testTable", singletonKey, 0, abi.encodePacked(true));
   }
 
   function testPushToField() public {
     bytes16 namespace = "testPushToField";
-    bytes16 file = "testTable";
+    bytes16 name = "testTable";
 
     // Register a new table
-    bytes32 resourceSelector = world.registerTable(namespace, file, AddressArray.getSchema(), defaultKeySchema);
-    uint256 tableId = uint256(resourceSelector);
+    bytes32 tableId = world.registerTable(namespace, name, AddressArray.getSchema(), defaultKeySchema);
 
     // Create data
     address[] memory dataToPush = new address[](3);
@@ -378,13 +394,13 @@ contract WorldTest is Test {
     bytes memory encodedData = EncodeArray.encode(dataToPush);
 
     // !gasreport Push data to the table
-    world.pushToField(namespace, file, keyTuple, 0, encodedData);
+    world.pushToField(namespace, name, keyTuple, 0, encodedData);
 
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
     // Delete the data
-    world.deleteRecord(namespace, file, keyTuple);
+    world.deleteRecord(namespace, name, keyTuple);
 
     // Push data to the table via direct access
     world.pushToField(tableId, keyTuple, 0, encodedData);
@@ -392,29 +408,80 @@ contract WorldTest is Test {
     // Expect the data to be written
     assertEq(AddressArray.get(world, tableId, key), dataToPush);
 
-    // Expect an error when trying to write from an address that doesn't have access (via namespace/file)
-    _expectAccessDenied(address(0x01), namespace, file);
-    world.pushToField(namespace, file, keyTuple, 0, encodedData);
+    // Expect an error when trying to write from an address that doesn't have access (via namespace/name)
+    _expectAccessDenied(address(0x01), namespace, name);
+    world.pushToField(namespace, name, keyTuple, 0, encodedData);
 
     // Expect an error when trying to write from an address that doesn't have access (via tableId)
-    _expectAccessDenied(address(0x01), namespace, file);
+    _expectAccessDenied(address(0x01), namespace, name);
     world.pushToField(tableId, keyTuple, 0, encodedData);
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.pushToField(namespace, name, keyTuple, 0, encodedData);
+  }
+
+  function testUpdateInField() public {
+    bytes16 namespace = "testUpdInField";
+    bytes16 name = "testTable";
+
+    // Register a new table
+    bytes32 tableId = world.registerTable(namespace, name, AddressArray.getSchema(), defaultKeySchema);
+
+    // Create data
+    address[] memory initData = new address[](3);
+    initData[0] = address(0x01);
+    initData[1] = address(bytes20(keccak256("some address")));
+    initData[2] = address(bytes20(keccak256("another address")));
+    bytes memory encodedData = EncodeArray.encode(initData);
+
+    world.setField(namespace, name, keyTuple, 0, encodedData);
+
+    // Expect the data to be written
+    assertEq(AddressArray.get(world, tableId, key), initData);
+
+    // Update index 0
+    address[] memory dataForUpdate = new address[](1);
+    dataForUpdate[0] = address(bytes20(keccak256("address for update")));
+    world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+
+    // Expect the data to be updated
+    initData[0] = dataForUpdate[0];
+    assertEq(AddressArray.get(world, tableId, key), initData);
+
+    // Update index 1 via direct access
+    world.updateInField(tableId, keyTuple, 0, 20 * 1, EncodeArray.encode(dataForUpdate));
+
+    // Expect the data to be updated
+    initData[1] = dataForUpdate[0];
+    assertEq(AddressArray.get(world, tableId, key), initData);
+
+    // Expect an error when trying to write from an address that doesn't have access (via namespace/name)
+    _expectAccessDenied(address(0x01), namespace, name);
+    world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+
+    // Expect an error when trying to write from an address that doesn't have access (via tableId)
+    _expectAccessDenied(address(0x01), namespace, name);
+    world.updateInField(tableId, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate));
   }
 
   function testDeleteRecord() public {
     bytes16 namespace = "testDeleteRecord";
-    bytes16 file = "testTable";
+    bytes16 name = "testTable";
 
     // Register a new table
-    bytes32 resourceSelector = world.registerTable(namespace, file, Bool.getSchema(), defaultKeySchema);
-    uint256 tableId = uint256(resourceSelector);
+    bytes32 tableId = world.registerTable(namespace, name, Bool.getSchema(), defaultKeySchema);
 
     // Write data to the table via the namespace and expect it to be written
-    world.setRecord(namespace, file, singletonKey, abi.encodePacked(true));
+    world.setRecord(namespace, name, singletonKey, abi.encodePacked(true));
     assertTrue(Bool.get(world, tableId));
 
     // !gasreport Delete record
-    world.deleteRecord(namespace, file, singletonKey);
+    world.deleteRecord(namespace, name, singletonKey);
 
     // expect it to be deleted
     assertFalse(Bool.get(world, tableId));
@@ -438,6 +505,10 @@ contract WorldTest is Test {
     // Expect an error when trying to delete from an address that doesn't have access when calling via the tableId
     _expectAccessDenied(address(0x02), "testDeleteRecord", "testTable");
     world.deleteRecord(tableId, singletonKey);
+
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.deleteRecord("testDeleteRecord", "testTable", singletonKey);
   }
 
   function testCall() public {
@@ -476,6 +547,10 @@ contract WorldTest is Test {
     _expectAccessDenied(address(0x01), "namespace", "testSystem");
     world.call("namespace", "testSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
 
+    // Expect the World to have access
+    vm.prank(address(world));
+    world.call("namespace", "testSystem", abi.encodeWithSelector(WorldTestSystem.msgSender.selector));
+
     // Expect errors from the system to be forwarded
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
     world.call("namespace", "testSystem", abi.encodeWithSelector(WorldTestSystem.err.selector, "test error"));
@@ -509,8 +584,7 @@ contract WorldTest is Test {
 
   function testRegisterTableHook() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("", "testTable", Bool.getSchema(), defaultKeySchema);
-    uint256 tableId = uint256(resourceSelector);
+    bytes32 tableId = world.registerTable("", "testTable", Bool.getSchema(), defaultKeySchema);
 
     // Register a new hook
     IStoreHook tableHook = new WorldTestTableHook();
@@ -534,8 +608,7 @@ contract WorldTest is Test {
 
   function testWriteRootSystem() public {
     // Register a new table
-    bytes32 resourceSelector = world.registerTable("namespace", "testTable", Bool.getSchema(), defaultKeySchema);
-    uint256 tableId = uint256(resourceSelector);
+    bytes32 tableId = world.registerTable("namespace", "testTable", Bool.getSchema(), defaultKeySchema);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
@@ -554,7 +627,7 @@ contract WorldTest is Test {
 
   function testWriteAutonomousSystem() public {
     // Register a new table
-    uint256 tableId = uint256(world.registerTable("namespace", "testTable", Bool.getSchema(), defaultKeySchema));
+    bytes32 tableId = world.registerTable("namespace", "testTable", Bool.getSchema(), defaultKeySchema);
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
@@ -595,14 +668,14 @@ contract WorldTest is Test {
 
   function testRegisterFunctionSelector() public {
     bytes16 namespace = "testNamespace";
-    bytes16 file = "testSystem";
+    bytes16 name = "testSystem";
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(namespace, file, system, true);
+    world.registerSystem(namespace, name, system, true);
 
     // !gasreport Register a function selector
-    bytes4 functionSelector = world.registerFunctionSelector(namespace, file, "msgSender", "()");
+    bytes4 functionSelector = world.registerFunctionSelector(namespace, name, "msgSender", "()");
 
     string memory expectedWorldFunctionSignature = "testNamespace_testSystem_msgSender()";
     bytes4 expectedWorldFunctionSelector = bytes4(keccak256(abi.encodePacked(expectedWorldFunctionSignature)));
@@ -615,7 +688,7 @@ contract WorldTest is Test {
     assertEq(abi.decode(data, (address)), address(this), "wrong address returned");
 
     // Register a function selector to the error function
-    functionSelector = world.registerFunctionSelector(namespace, file, "err", "(string)");
+    functionSelector = world.registerFunctionSelector(namespace, name, "err", "(string)");
 
     // Expect errors to be passed through
     vm.expectRevert(abi.encodeWithSelector(WorldTestSystem.WorldTestSystemError.selector, "test error"));
@@ -624,17 +697,25 @@ contract WorldTest is Test {
 
   function testRegisterRootFunctionSelector() public {
     bytes16 namespace = "testNamespace";
-    bytes16 file = "testSystem";
+    bytes16 name = "testSystem";
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(namespace, file, system, true);
+    world.registerSystem(namespace, name, system, true);
 
     bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
     bytes4 sysFunc = WorldTestSystem.msgSender.selector;
 
+    // Expect an error when trying to register a root function selector from an account without access
+    _expectAccessDenied(address(0x01), "", "");
+    world.registerRootFunctionSelector(namespace, name, worldFunc, sysFunc);
+
+    // Expect the World to be able to register a root function selector
+    vm.prank(address(world));
+    world.registerRootFunctionSelector(namespace, name, "smth", "smth");
+
     // !gasreport Register a root function selector
-    bytes4 functionSelector = world.registerRootFunctionSelector(namespace, file, worldFunc, sysFunc);
+    bytes4 functionSelector = world.registerRootFunctionSelector(namespace, name, worldFunc, sysFunc);
 
     assertEq(functionSelector, worldFunc, "wrong function selector returned");
 
@@ -647,7 +728,7 @@ contract WorldTest is Test {
     // Register a function selector to the error function
     functionSelector = world.registerRootFunctionSelector(
       namespace,
-      file,
+      name,
       WorldTestSystem.err.selector,
       WorldTestSystem.err.selector
     );
@@ -659,14 +740,14 @@ contract WorldTest is Test {
 
   function testRegisterFallbackSystem() public {
     bytes16 namespace = "testNamespace";
-    bytes16 file = "testSystem";
+    bytes16 name = "testSystem";
 
     // Register a new system
     WorldTestSystem system = new WorldTestSystem();
-    world.registerSystem(namespace, file, system, true);
+    world.registerSystem(namespace, name, system, true);
 
     // !gasreport Register a fallback system
-    bytes4 funcSelector1 = world.registerFunctionSelector(namespace, file, "", "");
+    bytes4 funcSelector1 = world.registerFunctionSelector(namespace, name, "", "");
 
     // Call the system's fallback function
     vm.expectEmit(true, true, true, true);
@@ -677,7 +758,7 @@ contract WorldTest is Test {
     bytes4 worldFunc = bytes4(abi.encodeWithSignature("testSelector()"));
 
     // !gasreport Register a root fallback system
-    bytes4 funcSelector2 = world.registerRootFunctionSelector(namespace, file, worldFunc, 0);
+    bytes4 funcSelector2 = world.registerRootFunctionSelector(namespace, name, worldFunc, 0);
     assertEq(funcSelector2, worldFunc, "wrong function selector returned");
 
     // Call the system's fallback function
@@ -712,11 +793,11 @@ contract WorldTest is Test {
     // Register a root system with a payable function in the world
     WorldTestSystem system = new WorldTestSystem();
     bytes16 namespace = "noroot";
-    bytes16 file = "testSystem";
-    world.registerSystem(namespace, file, system, true);
+    bytes16 name = "testSystem";
+    world.registerSystem(namespace, name, system, true);
     world.registerRootFunctionSelector(
       namespace,
-      file,
+      name,
       WorldTestSystem.receiveEther.selector,
       WorldTestSystem.receiveEther.selector
     );
@@ -744,11 +825,11 @@ contract WorldTest is Test {
     // Register a root system with a non-payable function in the world
     WorldTestSystem system = new WorldTestSystem();
     bytes16 namespace = "noroot";
-    bytes16 file = "testSystem";
-    world.registerSystem(namespace, file, system, true);
+    bytes16 name = "testSystem";
+    world.registerSystem(namespace, name, system, true);
     world.registerRootFunctionSelector(
       namespace,
-      file,
+      name,
       WorldTestSystem.msgSender.selector,
       WorldTestSystem.msgSender.selector
     );
@@ -776,11 +857,11 @@ contract WorldTest is Test {
     // Register a root system with a non-payable function in the world
     WorldTestSystem system = new WorldTestSystem();
     bytes16 namespace = "noroot";
-    bytes16 file = "testSystem";
-    world.registerSystem(namespace, file, system, true);
+    bytes16 name = "testSystem";
+    world.registerSystem(namespace, name, system, true);
     world.registerRootFunctionSelector(
       namespace,
-      file,
+      name,
       bytes4(abi.encodeWithSignature("systemFallback()")),
       bytes4("")
     );
@@ -806,11 +887,11 @@ contract WorldTest is Test {
     // Register a root system with a non-payable function in the world
     PayableFallbackSystem system = new PayableFallbackSystem();
     bytes16 namespace = "noroot";
-    bytes16 file = "testSystem";
-    world.registerSystem(namespace, file, system, true);
+    bytes16 name = "testSystem";
+    world.registerSystem(namespace, name, system, true);
     world.registerRootFunctionSelector(
       namespace,
-      file,
+      name,
       bytes4(abi.encodeWithSignature("systemFallback()")),
       bytes4("")
     );
@@ -836,11 +917,11 @@ contract WorldTest is Test {
     // Register a root system with a payable function in the world
     WorldTestSystem system = new WorldTestSystem();
     bytes16 namespace = "";
-    bytes16 file = "testSystem";
-    world.registerSystem(namespace, file, system, true);
+    bytes16 name = "testSystem";
+    world.registerSystem(namespace, name, system, true);
     world.registerRootFunctionSelector(
       namespace,
-      file,
+      name,
       WorldTestSystem.receiveEther.selector,
       WorldTestSystem.receiveEther.selector
     );
@@ -866,10 +947,4 @@ contract WorldTest is Test {
 
   // TODO: add a test for systems writing to tables via the World
   // (see https://github.com/latticexyz/mud/issues/444)
-
-  function testHashEquality() public {
-    // bytes32 h1 = uint256(keccak256("testHashEquality"));
-    // bytes32 h2 = uint256(keccak256(abi.encodePacked(bytes32("testHashEquality"))));
-    // assertEq(h1, h2);
-  }
 }

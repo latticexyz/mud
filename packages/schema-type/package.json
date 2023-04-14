@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/schema-type",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "description": "SchemaType enum for various languages",
   "main": "src/typescript/index.ts",
   "source": "src/typescript/index.ts",
@@ -12,15 +12,12 @@
     "directory": "packages/schema-type"
   },
   "scripts": {
-    "prepare": "yarn build && chmod u+x git-install.sh",
-    "git:install": "bash git-install.sh",
-    "test": "yarn test:solidity && yarn test:typescript",
+    "test": "pnpm test:solidity && pnpm test:typescript",
     "test:solidity": "forge test",
     "test:typescript": "tsc --noEmit",
-    "build": "yarn build:solidity && yarn build:typescript",
-    "build:solidity": "rimraf out && forge build",
-    "build:typescript": "tsc",
-    "link": "yarn link",
+    "build": "pnpm build:solidity && pnpm build:typescript",
+    "build:solidity": "echo 'removing previous output' && rimraf out && echo 'build solidity' && forge build",
+    "build:typescript": "echo 'build typescript' && tsc",
     "release": "npm publish --access=public"
   },
   "devDependencies": {

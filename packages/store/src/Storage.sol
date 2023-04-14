@@ -19,11 +19,7 @@ library Storage {
     }
   }
 
-  function store(
-    uint256 storagePointer,
-    uint256 offset,
-    bytes memory data
-  ) internal {
+  function store(uint256 storagePointer, uint256 offset, bytes memory data) internal {
     uint256 memoryPointer;
     assembly {
       memoryPointer := add(data, 0x20)
@@ -34,12 +30,7 @@ library Storage {
   /**
    * @notice Stores raw bytes to storage at the given storagePointer and offset (keeping the rest of the word intact)
    */
-  function store(
-    uint256 storagePointer,
-    uint256 offset,
-    uint256 memoryPointer,
-    uint256 length
-  ) internal {
+  function store(uint256 storagePointer, uint256 offset, uint256 memoryPointer, uint256 length) internal {
     // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
     unchecked {
       storagePointer += offset / 32;
@@ -130,11 +121,7 @@ library Storage {
   /**
    * @notice Load raw bytes from storage at the given storagePointer, offset, and length
    */
-  function load(
-    uint256 storagePointer,
-    uint256 length,
-    uint256 offset
-  ) internal view returns (bytes memory result) {
+  function load(uint256 storagePointer, uint256 length, uint256 offset) internal view returns (bytes memory result) {
     // TODO this will probably use less gas via manual memory allocation
     // (see https://github.com/latticexyz/mud/issues/444)
     result = new bytes(length);
@@ -149,12 +136,7 @@ library Storage {
   /**
    * @notice Append raw bytes from storage at the given storagePointer, offset, and length to the given memoryPointer
    */
-  function load(
-    uint256 storagePointer,
-    uint256 length,
-    uint256 offset,
-    uint256 memoryPointer
-  ) internal view {
+  function load(uint256 storagePointer, uint256 length, uint256 offset, uint256 memoryPointer) internal view {
     // Support offsets that are greater than 32 bytes by incrementing the storagePointer and decrementing the offset
     unchecked {
       storagePointer += offset / 32;

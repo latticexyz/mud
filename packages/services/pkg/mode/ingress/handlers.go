@@ -87,6 +87,7 @@ func (il *IngressLayer) handleSetRecordEvent(event *storecore.StorecoreStoreSetR
 // Returns:
 // - void.
 func (il *IngressLayer) handleSetFieldEventUpdateRow(event *storecore.StorecoreStoreSetField, tableSchema *mode.TableSchema, filter []*pb_mode.Filter) {
+	il.logger.Info("row exists, updating row for setField", zap.String("table_id", tableSchema.TableId), zap.String("field_name", tableSchema.FieldNames[event.SchemaIndex]))
 	// Decode the field.
 	fieldValue := storecore.DecodeDataField(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value, event.SchemaIndex)
 
@@ -114,8 +115,9 @@ func (il *IngressLayer) handleSetFieldEventUpdateRow(event *storecore.StorecoreS
 // Returns:
 // - void.
 func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreStoreSetField, tableSchema *mode.TableSchema) {
-	// Decode the row record data (value).
-	decodedFieldData := storecore.DecodeData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value)
+	il.logger.Info("row does not exist, inserting new row for setField", zap.String("table_id", tableSchema.TableId))
+	// Decode the row field data (value).
+	decodedFieldData := storecore.DecodeDataField__DecodedData(event.Data, *tableSchema.StoreCoreSchemaTypeKV.Value, event.SchemaIndex)
 	// Decode the row key.
 	aggregateKey := mode.AggregateKey(event.Key)
 	decodedKeyData := storecore.DecodeData(aggregateKey, *tableSchema.StoreCoreSchemaTypeKV.Key)

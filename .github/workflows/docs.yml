@@ -5,13 +5,15 @@ on:
     branches:
       - main
   pull_request:
-  merge_group:
 
 jobs:
   docs:
-    runs-on: ubuntu-22.04
     name: Generate docs
+    runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Setup Go
         uses: actions/setup-go@v3
         with:
@@ -20,23 +22,11 @@ jobs:
       - name: Setup gomarkdoc
         run: go install github.com/princjef/gomarkdoc/cmd/gomarkdoc@latest && export PATH=${PATH}:`go env GOPATH`/bin
 
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 16
-
-      - name: git-checkout
-        uses: actions/checkout@v2
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
-      - name: Install dependencies
-        run: yarn install --network-concurrency 1
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Prepare docs
-        run: yarn docs:prepare
+        run: pnpm docs:prepare
 
       - name: Build docs
         uses: retypeapp/action-build@v2

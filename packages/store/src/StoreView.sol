@@ -13,49 +13,56 @@ contract StoreView is Store {
   /**
    * Not implemented in StoreView
    */
-  function registerSchema(uint256, Schema, Schema) public virtual {
+  function registerSchema(bytes32, Schema, Schema) public virtual {
     revert StoreView_NotImplemented();
   }
 
   /**
    * Not implemented in StoreView
    */
-  function setMetadata(uint256, string calldata, string[] calldata) public virtual {
+  function setMetadata(bytes32, string calldata, string[] calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 
   /**
    * Not implemented in StoreView
    */
-  function setRecord(uint256, bytes32[] calldata, bytes calldata) public virtual {
+  function setRecord(bytes32, bytes32[] calldata, bytes calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 
   /**
    * Not implemented in StoreView
    */
-  function setField(uint256, bytes32[] calldata, uint8, bytes calldata) public virtual {
+  function setField(bytes32, bytes32[] calldata, uint8, bytes calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 
   /**
    * Not implemented in StoreView
    */
-  function pushToField(uint256, bytes32[] calldata, uint8, bytes calldata) public virtual {
+  function pushToField(bytes32, bytes32[] calldata, uint8, bytes calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 
   /**
    * Not implemented in StoreView
    */
-  function registerStoreHook(uint256, IStoreHook) public virtual {
+  function updateInField(bytes32, bytes32[] calldata, uint8, uint256, bytes calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 
   /**
    * Not implemented in StoreView
    */
-  function deleteRecord(uint256, bytes32[] calldata) public virtual {
+  function registerStoreHook(bytes32, IStoreHook) public virtual {
+    revert StoreView_NotImplemented();
+  }
+
+  /**
+   * Not implemented in StoreView
+   */
+  function deleteRecord(bytes32, bytes32[] calldata) public virtual {
     revert StoreView_NotImplemented();
   }
 }

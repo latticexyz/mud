@@ -28,11 +28,7 @@ contract TestSystem is System {
     return "";
   }
 
-  function executeTyped(
-    uint256 componentId,
-    uint256[] memory entities,
-    bytes[] memory newValues
-  ) public {
+  function executeTyped(uint256 componentId, uint256[] memory entities, bytes[] memory newValues) public {
     execute(abi.encode(componentId, entities, newValues));
   }
 }

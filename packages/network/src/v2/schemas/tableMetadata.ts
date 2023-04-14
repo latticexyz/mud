@@ -3,6 +3,7 @@ import { Contract, utils } from "ethers";
 import { metadataTableId, schemaTableId, TableMetadata } from "../common";
 import { decodeData } from "./decodeData";
 import { registerSchema } from "./tableSchemas";
+import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore";
 
 // worldAddress:tableId => metadata
 // TODO: add chain ID to namespace?
@@ -58,7 +59,7 @@ export function registerMetadata(
     registerSchema(world, metadataTableId),
     // TODO: figure out how to pass in rawSchema, it was giving me "incorrect length" errors before
     //       we still have to do both calls though, and this is a getter, so this should be fine
-    world["getRecord(uint256,bytes32[])"](metadataTableId.toHexString(), [table.toHexString()]),
+    (world as IStore)["getRecord(bytes32,bytes32[])"](metadataTableId.toHexString(), [table.toHexString()]),
   ]).then(([metadataSchema, metadataRecord]) => {
     if (metadataSchema.isEmpty) {
       console.warn("Metadata schema not found", { table: metadataTableId.toString(), world: world.address });

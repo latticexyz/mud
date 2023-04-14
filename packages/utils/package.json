@@ -1,7 +1,7 @@
 {
   "name": "@latticexyz/utils",
   "license": "MIT",
-  "version": "1.41.0",
+  "version": "1.42.0",
   "type": "module",
   "source": "src/index.ts",
   "main": "src/index.ts",
@@ -11,10 +11,8 @@
     "directory": "packages/utils"
   },
   "scripts": {
-    "prepare": "yarn build",
     "lint": "eslint . --ext .ts",
     "test": "tsc && jest",
-    "link": "yarn link",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
@@ -26,7 +24,7 @@
     "@rollup/plugin-typescript": "^11.0.0",
     "@types/jest": "^27.4.1",
     "buffer-lite": "^1.0.0",
-    "ethers": "^5.6.6",
+    "ethers": "^5.7.2",
     "jest": "^27.5.1",
     "mobx": "^6.5.0",
     "proxy-deep": "^3.1.1",
@@ -42,7 +40,7 @@
     "web3-utils": "^1.8.0"
   },
   "peerDependencies": {
-    "ethers": "^5.6.6",
+    "ethers": "^5.7.2",
     "mobx": "^6.5.0",
     "proxy-deep": "^3.1.1",
     "rxjs": "^7.5.5",

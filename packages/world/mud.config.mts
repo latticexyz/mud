@@ -1,9 +1,10 @@
-import { mudConfig } from "@latticexyz/cli";
+import { mudConfig } from "@latticexyz/config";
 
 export default mudConfig({
   worldImportPath: "../",
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
+  codegenDirectory: "",
   tables: {
     NamespaceOwner: {
       primaryKeys: {
@@ -33,7 +34,7 @@ export default mudConfig({
       dataStruct: false,
     },
     SystemRegistry: {
-      directory: "/modules/registration/tables",
+      directory: "modules/registration/tables",
       primaryKeys: {
         system: "address",
       },
@@ -42,7 +43,7 @@ export default mudConfig({
       },
     },
     ResourceType: {
-      directory: "/modules/registration/tables",
+      directory: "modules/registration/tables",
       primaryKeys: {
         resourceSelector: "bytes32",
       },
@@ -51,13 +52,13 @@ export default mudConfig({
       },
     },
     FunctionSelectors: {
-      fileSelector: "funcSelectors",
+      name: "funcSelectors",
       primaryKeys: {
         functionSelector: "bytes4",
       },
       schema: {
         namespace: "bytes16",
-        file: "bytes16",
+        name: "bytes16",
         systemFunctionSelector: "bytes4",
       },
       dataStruct: false,
@@ -90,7 +91,7 @@ export default mudConfig({
       dataStruct: true,
     },
     KeysWithValue: {
-      directory: "/modules/keyswithvalue/tables",
+      directory: "modules/keyswithvalue/tables",
       primaryKeys: {
         valueHash: "bytes32",
       },
@@ -99,8 +100,17 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
+    UniqueEntity: {
+      directory: "modules/uniqueentity/tables",
+      primaryKeys: {},
+      schema: "uint256",
+      tableIdArgument: true,
+      storeArgument: true,
+    },
   },
   enums: {
     Resource: ["NONE", "NAMESPACE", "TABLE", "SYSTEM"],
   },
+  // module systems with their own namespaces
+  excludeSystems: ["UniqueEntitySystem"],
 });

@@ -3,7 +3,7 @@ type Method<F> = F extends (...args: any[]) => any ? F : never;
 
 type Mock = Partial<{
   [K in keyof typeof Phaser.GameObjects.Sprite.prototype]: Parameters<
-    Method<typeof Phaser.GameObjects.Sprite.prototype[K]>
+    Method<(typeof Phaser.GameObjects.Sprite.prototype)[K]>
   >;
 }>;
 

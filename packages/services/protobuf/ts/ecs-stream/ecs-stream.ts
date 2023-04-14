@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Long from "long";
-import { CallContext, CallOptions } from "nice-grpc-common";
+import type { CallContext, CallOptions } from "nice-grpc-common";
 import _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "ecsstream";
@@ -65,27 +65,44 @@ export const TxMetadata = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): TxMetadata {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTxMetadata();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.to = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.data = reader.bytes();
-          break;
+          continue;
         case 4:
+          if (tag != 32) {
+            break;
+          }
+
           message.value = longToNumber(reader.uint64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<TxMetadata>): TxMetadata {
+    return TxMetadata.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<TxMetadata>): TxMetadata {
@@ -125,36 +142,65 @@ export const ECSEvent = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSEvent {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSEvent();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.eventType = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.componentId = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.entityId = reader.string();
-          break;
+          continue;
         case 4:
+          if (tag != 34) {
+            break;
+          }
+
           message.value = reader.bytes();
-          break;
+          continue;
         case 5:
+          if (tag != 42) {
+            break;
+          }
+
           message.txHash = reader.string();
-          break;
+          continue;
         case 6:
+          if (tag != 50) {
+            break;
+          }
+
           message.txMetadata = TxMetadata.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSEvent>): ECSEvent {
+    return ECSEvent.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSEvent>): ECSEvent {
@@ -211,39 +257,72 @@ export const ECSStreamBlockBundleRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStreamBlockBundleRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStreamBlockBundleRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.worldAddress = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 16) {
+            break;
+          }
+
           message.blockNumber = reader.bool();
-          break;
+          continue;
         case 3:
+          if (tag != 24) {
+            break;
+          }
+
           message.blockHash = reader.bool();
-          break;
+          continue;
         case 4:
+          if (tag != 32) {
+            break;
+          }
+
           message.blockTimestamp = reader.bool();
-          break;
+          continue;
         case 5:
+          if (tag != 40) {
+            break;
+          }
+
           message.transactionsConfirmed = reader.bool();
-          break;
+          continue;
         case 6:
+          if (tag != 48) {
+            break;
+          }
+
           message.ecsEvents = reader.bool();
-          break;
+          continue;
         case 7:
+          if (tag != 56) {
+            break;
+          }
+
           message.ecsEventsIncludeTxMetadata = reader.bool();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStreamBlockBundleRequest>): ECSStreamBlockBundleRequest {
+    return ECSStreamBlockBundleRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStreamBlockBundleRequest>): ECSStreamBlockBundleRequest {
@@ -284,33 +363,58 @@ export const ECSStreamBlockBundleReply = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStreamBlockBundleReply {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStreamBlockBundleReply();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 8) {
+            break;
+          }
+
           message.blockNumber = reader.uint32();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.blockHash = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 24) {
+            break;
+          }
+
           message.blockTimestamp = reader.uint32();
-          break;
+          continue;
         case 4:
+          if (tag != 34) {
+            break;
+          }
+
           message.transactionsConfirmed.push(reader.string());
-          break;
+          continue;
         case 5:
+          if (tag != 42) {
+            break;
+          }
+
           message.ecsEvents.push(ECSEvent.decode(reader, reader.uint32()));
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStreamBlockBundleReply>): ECSStreamBlockBundleReply {
+    return ECSStreamBlockBundleReply.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStreamBlockBundleReply>): ECSStreamBlockBundleReply {
@@ -342,7 +446,7 @@ export const ECSStreamServiceDefinition = {
   },
 } as const;
 
-export interface ECSStreamServiceServiceImplementation<CallContextExt = {}> {
+export interface ECSStreamServiceImplementation<CallContextExt = {}> {
   /** Opens a cursor to receive the latest ECS events and additional data specified via request. */
   subscribeToStreamLatest(
     request: ECSStreamBlockBundleRequest,
@@ -361,7 +465,7 @@ export interface ECSStreamServiceClient<CallOptionsExt = {}> {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
   if (typeof globalThis !== "undefined") {
     return globalThis;
   }
@@ -391,7 +495,7 @@ export type DeepPartial<T> = T extends Builtin
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
   return long.toNumber();
 }

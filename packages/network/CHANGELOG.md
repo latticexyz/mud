@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.42.0](https://github.com/latticexyz/mud/compare/v1.41.0...v1.42.0) (2023-04-13)
+
+### Bug Fixes
+
+- **network:** fall back to RPC sync if MODE is not available ([#555](https://github.com/latticexyz/mud/issues/555)) ([4de4b6d](https://github.com/latticexyz/mud/commit/4de4b6d5ab4f8b27873af6d298ba3e6e1c1fd02f))
+- **network:** fix mode decoding ([#562](https://github.com/latticexyz/mud/issues/562)) ([fb82313](https://github.com/latticexyz/mud/commit/fb823131fc8f7bcbdcbfa57de59a8a5dbca2f8b6))
+- **network:** handle singleton/empty keys ([#541](https://github.com/latticexyz/mud/issues/541)) ([1e0ddb9](https://github.com/latticexyz/mud/commit/1e0ddb9adaf2376ee6b578e3fb1d1eb0b3e22206))
+- **network:** skip sync from cache in dev mode ([#521](https://github.com/latticexyz/mud/issues/521)) ([818c1e2](https://github.com/latticexyz/mud/commit/818c1e2e6e7acb45f4d65d47f5395cb2d3811a57))
+
+### Features
+
+- **create-mud:** use pnpm in templates, move to root so they can be installed/run ([#599](https://github.com/latticexyz/mud/issues/599)) ([010740d](https://github.com/latticexyz/mud/commit/010740d09d40d4ff6d95538d498a513fbb65ca45))
+- **network,recs,std-client:** support StoreSetField before StoreSetRecord ([#581](https://github.com/latticexyz/mud/issues/581)) ([f259f90](https://github.com/latticexyz/mud/commit/f259f90e1c561163a6675f4ec51b1659681d880b)), closes [#479](https://github.com/latticexyz/mud/issues/479) [#523](https://github.com/latticexyz/mud/issues/523)
+- **network:** add fastTxExecute util ([#543](https://github.com/latticexyz/mud/issues/543)) ([f05a70a](https://github.com/latticexyz/mud/commit/f05a70a2e4be077af44c6d6a0b9c8da8d0c18bc5))
+- **network:** add option to sync in main thread instead of worker ([#522](https://github.com/latticexyz/mud/issues/522)) ([4e8e7d7](https://github.com/latticexyz/mud/commit/4e8e7d774c574de5d08c03f02ef1811bade2ce7c))
+- **network:** integrate initial sync from MODE ([#493](https://github.com/latticexyz/mud/issues/493)) ([7d06c1b](https://github.com/latticexyz/mud/commit/7d06c1b5cf00df627000c907e78f60d3cd2415cd))
+- use viem when creating burner wallet ([#576](https://github.com/latticexyz/mud/issues/576)) ([d5d22e0](https://github.com/latticexyz/mud/commit/d5d22e0b855cc9a606aa6e1380449a0840ea7343))
+- v2 event decoding ([#415](https://github.com/latticexyz/mud/issues/415)) ([374ed54](https://github.com/latticexyz/mud/commit/374ed542c3387a4ec2b36ab68ae534419aa58763))
+
 # [1.41.0](https://github.com/latticexyz/mud/compare/v1.40.0...v1.41.0) (2023-03-09)
 
 **Note:** Version bump only for package @latticexyz/network
