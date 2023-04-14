@@ -5,11 +5,10 @@ import { IErrors } from "./IErrors.sol";
 import { IModule } from "./IModule.sol";
 
 /**
-* The IWorldData interface includes methods for reading and writing table values.
-* These methods are frequently invoked during runtime, so it is essential to prioritize
-* optimizing their gas cost, and they are part of the World contract's internal bytecode.
-*
-*/
+ * The IWorldData interface includes methods for reading and writing table values.
+ * These methods are frequently invoked during runtime, so it is essential to prioritize
+ * optimizing their gas cost, and they are part of the World contract's internal bytecode.
+ *
  * Consumers should use the `IBaseWorld` interface instead, which includes
  * dynamically registered function selectors (e.g. IWorldRegistration, IRegistrationSystem)
  */

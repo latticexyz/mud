@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import { IStoreRegistration } from "@latticexyz/store/src/IStore.sol";
-import { IWorldAccess, IWorldAccess_grantAccessWithName } from "../../interfaces/IWorldAccess.sol";
+import { IWorldAccess } from "../../interfaces/IWorldAccess.sol";
 
 import { RegistrationSystem } from "./RegistrationSystem.sol";
 import { ColdMethodsSystem } from "./ColdMethodsSystem.sol";
@@ -118,13 +118,12 @@ contract RegistrationModule is IModule, WorldContext {
     world.registerSystem(ROOT_NAMESPACE, COLD_METHODS_SYSTEM_NAME, coldMethodsSystem, true);
 
     // Register root function selectors for the ColdMethodsModule in the World
-    bytes4[7] memory rootFunctionSelectors = [
+    bytes4[6] memory rootFunctionSelectors = [
       IStoreRegistration.registerSchema.selector,
       IStoreRegistration.setMetadata.selector,
       IStoreRegistration.registerStoreHook.selector,
       IWorldAccess.installModule.selector,
       IWorldAccess.grantAccess.selector,
-      IWorldAccess_grantAccessWithName.grantAccess.selector,
       IWorldAccess.retractAccess.selector
     ];
 

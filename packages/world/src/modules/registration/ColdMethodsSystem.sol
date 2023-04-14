@@ -47,14 +47,6 @@ contract ColdMethodsSystem is System, IStoreRegistration, IWorldAccess {
    ************************************************************************/
 
   /**
-   * Grant access to the given namespace.
-   * Requires the caller to own the namespace.
-   */
-  function grantAccess(bytes16 namespace, address grantee) public virtual {
-    grantAccess(namespace, ROOT_NAME, grantee);
-  }
-
-  /**
    * Grant access to the resource at the given namespace and name.
    * Requires the caller to own the namespace.
    */
