@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Store } from "@latticexyz/store/src/Store.sol";
+import { StoreData } from "@latticexyz/store/src/StoreData.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
@@ -19,7 +19,7 @@ import { InstalledModules } from "./tables/InstalledModules.sol";
 import { IModule } from "./interfaces/IModule.sol";
 import { IWorldData } from "./interfaces/IWorldData.sol";
 
-contract World is Store, IWorldData {
+contract World is StoreData, IWorldData {
   using ResourceSelector for bytes32;
 
   constructor() {

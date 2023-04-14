@@ -5,8 +5,7 @@ import { IStoreData, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
-// It doesn't implement the full `IStore` to allow cold paths to be registered via an external system
-abstract contract Store is IStoreData {
+abstract contract StoreData is IStoreData {
   constructor() {
     StoreCore.initialize();
   }
