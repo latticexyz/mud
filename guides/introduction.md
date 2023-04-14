@@ -94,7 +94,6 @@ interface IComponent is IERC173 {
 
   function world() external view returns (address);
 }
-
 ```
 
 The base component implementation is extended by the typed component contracts, adding typed functions to set and get component values, for a more streamlined development process.
@@ -112,7 +111,6 @@ interface IUint256Component is IComponent {
 
   function getEntitiesWithValue(uint256 value) external view returns (uint256[] memory);
 }
-
 ```
 
 Components don't contain any logic besides the logic required to store and load component values.

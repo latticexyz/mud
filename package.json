@@ -45,8 +45,8 @@
     "prepare": "husky install && (forge --version || pnpm foundryup)",
     "build": "pnpm recursive run build",
     "commit": "cz",
-    "prettier:check": "prettier --check 'packages/**/*.{ts,css,md,sol}'",
-    "prettier": "prettier --write 'packages/**/*.{ts,css,md,sol}'",
+    "prettier:check": "prettier --check '**/*.{ts,css,md,sol,yaml}'",
+    "prettier": "prettier --write '**/*.{ts,css,md,sol,yaml}'",
     "lint": "pnpm prettier:check && eslint . --ext .ts",
     "release": "pnpm install && lerna publish --no-private --force-publish && pnpm retype:updateversion",
     "release:ci": "lerna publish --no-private --force-publish --yes",
@@ -69,6 +69,6 @@
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",
-    "*.{ts,css,md,sol}": "prettier --write"
+    "*.{ts,css,md,sol,yaml}": "prettier --write"
   }
 }

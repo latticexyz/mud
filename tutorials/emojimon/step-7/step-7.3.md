@@ -18,7 +18,6 @@ library LibMap {
     return deltaX + deltaY;
   }
 }
-
 ```
 
 ## Check distance in move system
