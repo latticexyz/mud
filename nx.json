@@ -10,7 +10,7 @@
     "default": {
       "runner": "@nrwl/nx-cloud",
       "options": {
-        "cacheableOperations": ["lint", "build", "test", "test:contracts", "prettier", "solhint"]
+        "cacheableOperations": ["lint", "build", "test", "test:contracts", "prettier", "solhint", "codegen"]
       }
     }
   },
@@ -20,7 +20,13 @@
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["{projectRoot}/dist", "{projectRoot}/out", "{projectRoot}/abi", "{projectRoot}/types"]
+      "outputs": [
+        "{projectRoot}/dist",
+        "{projectRoot}/out",
+        "{projectRoot}/abi",
+        "{projectRoot}/types",
+        "{projectRoot}/.parcel-cache"
+      ]
     },
     "release": {
       "dependsOn": ["^build", "build", "^release"]

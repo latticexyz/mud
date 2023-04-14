@@ -16,7 +16,7 @@
   "scripts": {
     "codegen": "../cli/dist/mud.js tablegen && ../cli/dist/mud.js worldgen",
     "test": "forge test",
-    "build": "pnpm run codegen && rimraf out && forge build && pnpm dist && pnpm types && tsup",
+    "build": "rimraf out && forge build && pnpm dist && pnpm types && tsup",
     "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && pnpm rimraf abi/*.metadata.json",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
