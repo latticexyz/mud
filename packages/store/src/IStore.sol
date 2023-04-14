@@ -50,7 +50,11 @@ interface IStoreData is IErrors {
   function isStore() external view;
 }
 
-// cold code paths (don't need gas optimizations)
+/**
+* The IStoreRegistration interface includes methods for managing table schemas,
+* metadata, and hooks, which are usually called once in the setup phase of an application,
+* making them less performance critical than the IStoreData methods.
+*/
 interface IStoreRegistration {
   function registerSchema(bytes32 table, Schema schema, Schema keySchema) external;
 
