@@ -6,8 +6,8 @@ bytes16 constant ROOT_NAME = 0;
 
 // World modules
 bytes16 constant CORE_MODULE_NAME = bytes16("core.m");
-bytes16 constant REGISTRATION_MODULE_NAME = bytes16("registration.m");
 
 // Core systems
 bytes16 constant REGISTRATION_SYSTEM_NAME = bytes16("registration");
+bytes16 constant STORE_REGISTRATION_SYSTEM_NAME = bytes16("storeregistrat-n");
 bytes16 constant COLD_METHODS_SYSTEM_NAME = bytes16("coldmethods");

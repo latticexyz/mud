@@ -2,19 +2,19 @@
 pragma solidity >=0.8.0;
 
 import { IStoreRegistration } from "@latticexyz/store/src/IStore.sol";
-import { IWorldAccess } from "../../interfaces/IWorldAccess.sol";
-
-import { RegistrationSystem } from "./RegistrationSystem.sol";
-import { ColdMethodsSystem } from "./ColdMethodsSystem.sol";
-
-import { Call } from "../../Call.sol";
-import { ROOT_NAMESPACE, CORE_MODULE_NAME, REGISTRATION_SYSTEM_NAME, COLD_METHODS_SYSTEM_NAME } from "../../constants.sol";
-import { WorldContext } from "../../WorldContext.sol";
-import { Resource } from "../../Types.sol";
-import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
+
+import { RegistrationSystem } from "./RegistrationSystem.sol";
+import { StoreRegistrationSystem } from "./StoreRegistrationSystem.sol";
+import { ColdMethodsSystem } from "./ColdMethodsSystem.sol";
+
+import { Call } from "../../Call.sol";
+import { ROOT_NAMESPACE, CORE_MODULE_NAME, REGISTRATION_SYSTEM_NAME, STORE_REGISTRATION_SYSTEM_NAME, COLD_METHODS_SYSTEM_NAME } from "../../constants.sol";
+import { WorldContext } from "../../WorldContext.sol";
+import { Resource } from "../../Types.sol";
+import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../tables/ResourceAccess.sol";
@@ -38,6 +38,7 @@ contract CoreModule is IModule, WorldContext {
   // known tables, we can deploy it once and register it in multiple Worlds.
   address immutable registrationSystem = address(new RegistrationSystem());
   ColdMethodsSystem immutable coldMethodsSystem = new ColdMethodsSystem();
+  StoreRegistrationSystem immutable storeRegistrationSystem = new StoreRegistrationSystem();
 
   function getName() public pure returns (bytes16) {
     return CORE_MODULE_NAME;
@@ -45,7 +46,8 @@ contract CoreModule is IModule, WorldContext {
 
   function install(bytes memory) public override {
     _installCoreTables();
-    _installRegistrationMethods();
+    _installWorldRegistration();
+    _installStoreRegistration();
     _installColdMethods();
   }
 
@@ -66,7 +68,7 @@ contract CoreModule is IModule, WorldContext {
     FunctionSelectors.setMetadata();
   }
 
-  function _installRegistrationMethods() internal {
+  function _installWorldRegistration() internal {
     // Register tables required by RegistrationSystem
     SystemRegistry.registerSchema();
     SystemRegistry.setMetadata();
@@ -124,19 +126,38 @@ contract CoreModule is IModule, WorldContext {
     }
   }
 
+  function _installStoreRegistration() internal {
+    IBaseWorld world = IBaseWorld(_world());
+
+    world.registerSystem(ROOT_NAMESPACE, STORE_REGISTRATION_SYSTEM_NAME, storeRegistrationSystem, true);
+
+    // Register root function selectors for IStoreRegistration in the World
+    bytes4[3] memory rootFunctionSelectors = [
+      IStoreRegistration.registerSchema.selector,
+      IStoreRegistration.setMetadata.selector,
+      IStoreRegistration.registerStoreHook.selector
+    ];
+
+    for (uint256 i = 0; i < rootFunctionSelectors.length; i++) {
+      world.registerRootFunctionSelector(
+        ROOT_NAMESPACE,
+        STORE_REGISTRATION_SYSTEM_NAME,
+        rootFunctionSelectors[i], // Use the same function selector for the World as in StoreRegistrationSystem
+        rootFunctionSelectors[i]
+      );
+    }
+  }
+
   function _installColdMethods() internal {
     IBaseWorld world = IBaseWorld(_world());
 
     world.registerSystem(ROOT_NAMESPACE, COLD_METHODS_SYSTEM_NAME, coldMethodsSystem, true);
 
     // Register root function selectors for the ColdMethodsModule in the World
-    bytes4[6] memory rootFunctionSelectors = [
-      IStoreRegistration.registerSchema.selector,
-      IStoreRegistration.setMetadata.selector,
-      IStoreRegistration.registerStoreHook.selector,
-      IWorldAccess.installModule.selector,
-      IWorldAccess.grantAccess.selector,
-      IWorldAccess.retractAccess.selector
+    bytes4[3] memory rootFunctionSelectors = [
+      ColdMethodsSystem.installModule.selector,
+      ColdMethodsSystem.grantAccess.selector,
+      ColdMethodsSystem.retractAccess.selector
     ];
 
     for (uint256 i = 0; i < rootFunctionSelectors.length; i++) {

@@ -115,7 +115,7 @@ export default mudConfig({
   excludeSystems: [
     // module systems with their own namespaces
     "UniqueEntitySystem",
-    // module systems with a custom interface
-    "ColdMethodsSystem",
+    // this system must be excluded from worldgen to avoid interface conflicts with IStore
+    "StoreRegistrationSystem",
   ],
 });
