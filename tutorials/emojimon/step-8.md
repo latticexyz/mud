@@ -227,14 +227,15 @@ export const useMapConfig = () => {
 
 The last step is to draw the terrain emojis on the game board.
 
-```tsx !#7-9,29-40 packages/client/src/GameBoard.tsx
+```tsx !#2,7-9,29-40 packages/client/src/GameBoard.tsx
 export const GameBoard = () => {
+  const { width, height, terrainValues } = useMapConfig();
   …
   return (
     <div className="inline-grid p-2 bg-lime-500">
       {rows.map((y) =>
         columns.map((x) => {
-          const terrain = mapConfig.terrainValues.find(
+          const terrain = terrainValues.find(
             (t) => t.x === x && t.y === y
           )?.type;
 
