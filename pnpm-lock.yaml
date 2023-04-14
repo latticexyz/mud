@@ -201,7 +201,7 @@ importers:
         specifier: ^0.29.8
         version: 0.29.8
 
-  packages/codegen-utils:
+  packages/common-codegen:
     dependencies:
       '@latticexyz/schema-type':
         specifier: ^1.42.0

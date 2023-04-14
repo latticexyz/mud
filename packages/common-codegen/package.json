@@ -1,9 +1,9 @@
 {
-  "name": "@latticexyz/codegen-utils",
+  "name": "@latticexyz/common-codegen",
   "private": true,
   "license": "MIT",
   "version": "1.42.0",
-  "description": "Codegen utilities",
+  "description": "Common files for codegen",
   "type": "module",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
@@ -11,7 +11,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/codegen-utils"
+    "directory": "packages/common-codegen"
   },
   "scripts": {
     "test": "vitest typecheck --run --passWithNoTests",
