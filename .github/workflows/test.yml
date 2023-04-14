@@ -24,4 +24,4 @@ jobs:
         run: pnpm lint
 
       - name: Lint package.json
-        run: yarn lint:package-json && git diff --exit-code
+        run: pnpm sort-package-json && git diff --exit-code
