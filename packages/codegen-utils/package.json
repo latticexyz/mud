@@ -1,0 +1,32 @@
+{
+  "name": "@latticexyz/codegen-utils",
+  "private": true,
+  "license": "MIT",
+  "version": "1.42.0",
+  "description": "Codegen utilities",
+  "type": "module",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/latticexyz/mud.git",
+    "directory": "packages/codegen-utils"
+  },
+  "scripts": {
+    "test": "vitest typecheck --run --passWithNoTests",
+    "build": "vite build",
+    "release": "npm publish --access=public"
+  },
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.0",
+    "@types/rollup-plugin-peer-deps-external": "^2.2.1",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "vite": "^4.2.1",
+    "vitest": "^0.30.1"
+  },
+  "dependencies": {
+    "@latticexyz/schema-type": "^1.42.0"
+  },
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+}
