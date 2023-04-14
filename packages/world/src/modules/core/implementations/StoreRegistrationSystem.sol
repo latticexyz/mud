@@ -4,22 +4,22 @@ pragma solidity >=0.8.0;
 import { IStoreRegistration, IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
-import { IRegistrationSystem } from "../../interfaces/IRegistrationSystem.sol";
+import { System } from "../../../System.sol";
+import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
+import { ResourceSelector } from "../../../ResourceSelector.sol";
+import { Call } from "../../../Call.sol";
 
-import { System } from "../../System.sol";
-import { ResourceSelector } from "../../ResourceSelector.sol";
-import { ROOT_NAMESPACE, ROOT_NAME, REGISTRATION_SYSTEM_NAME } from "../../constants.sol";
-import { AccessControl } from "../../AccessControl.sol";
-import { Call } from "../../Call.sol";
+import { Systems } from "../tables/Systems.sol";
+import { CORE_SYSTEM_NAME } from "../constants.sol";
 
-import { Systems } from "../../tables/Systems.sol";
+import { WorldRegistrationSystem } from "./WorldRegistrationSystem.sol";
 
 /**
- * World-specific implementation of IStoreRegistration
+ * World framework implementation of IStoreRegistration.
  *
- * Note: this system must be excluded from worldgen to avoid interface conflicts with IStore
+ * See {IStoreRegistration}
  */
-contract StoreRegistrationSystem is System, IStoreRegistration {
+contract StoreRegistrationSystem is IStoreRegistration, System {
   using ResourceSelector for bytes32;
 
   /**
@@ -28,21 +28,21 @@ contract StoreRegistrationSystem is System, IStoreRegistration {
    * Access is checked based on the namespace or name (encoded in the tableId).
    */
   function registerSchema(bytes32 tableId, Schema valueSchema, Schema keySchema) public virtual {
-    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
 
     // We can't call IBaseWorld(this).registerSchema directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
-      msgSender: msg.sender,
+      msgSender: _msgSender(),
       target: systemAddress,
       funcSelectorAndArgs: abi.encodeWithSelector(
-        IRegistrationSystem.registerTable.selector,
+        WorldRegistrationSystem.registerTable.selector,
         tableId.getNamespace(),
         tableId.getName(),
         valueSchema,
         keySchema
       ),
-      delegate: false,
+      delegate: true,
       value: 0
     });
   }
@@ -53,21 +53,21 @@ contract StoreRegistrationSystem is System, IStoreRegistration {
    * Access is checked based on the namespace or name (encoded in the tableId).
    */
   function setMetadata(bytes32 tableId, string calldata tableName, string[] calldata fieldNames) public virtual {
-    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
 
     // We can't call IBaseWorld(this).setMetadata directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
-      msgSender: msg.sender,
+      msgSender: _msgSender(),
       target: systemAddress,
       funcSelectorAndArgs: abi.encodeWithSelector(
-        IRegistrationSystem.setMetadata.selector,
+        WorldRegistrationSystem.setMetadata.selector,
         tableId.getNamespace(),
         tableId.getName(),
         tableName,
         fieldNames
       ),
-      delegate: false,
+      delegate: true,
       value: 0
     });
   }
@@ -78,20 +78,20 @@ contract StoreRegistrationSystem is System, IStoreRegistration {
    * Access is checked based on the namespace or name (encoded in the tableId).
    */
   function registerStoreHook(bytes32 tableId, IStoreHook hook) public virtual {
-    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, REGISTRATION_SYSTEM_NAME));
+    (address systemAddress, ) = Systems.get(ResourceSelector.from(ROOT_NAMESPACE, CORE_SYSTEM_NAME));
 
     // We can't call IBaseWorld(this).registerStoreHook directly because it would be handled like
     // an external call, so msg.sender would be the address of the World contract
     Call.withSender({
-      msgSender: msg.sender,
+      msgSender: _msgSender(),
       target: systemAddress,
       funcSelectorAndArgs: abi.encodeWithSelector(
-        IRegistrationSystem.registerTableHook.selector,
+        WorldRegistrationSystem.registerTableHook.selector,
         tableId.getNamespace(),
         tableId.getName(),
         hook
       ),
-      delegate: false,
+      delegate: true,
       value: 0
     });
   }

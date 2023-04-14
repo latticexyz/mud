@@ -1,25 +1,27 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { StoreData } from "@latticexyz/store/src/StoreData.sol";
+import { StoreRead } from "@latticexyz/store/src/StoreRead.sol";
+import { IStoreData } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 
 import { System } from "./System.sol";
 import { ResourceSelector } from "./ResourceSelector.sol";
-import { ROOT_NAMESPACE, ROOT_NAME, REGISTRATION_SYSTEM_NAME } from "./constants.sol";
+import { ROOT_NAMESPACE, ROOT_NAME } from "./constants.sol";
 import { AccessControl } from "./AccessControl.sol";
 import { Call } from "./Call.sol";
 
 import { NamespaceOwner } from "./tables/NamespaceOwner.sol";
-import { Systems } from "./tables/Systems.sol";
-import { FunctionSelectors } from "./tables/FunctionSelectors.sol";
 import { InstalledModules } from "./tables/InstalledModules.sol";
 
 import { IModule } from "./interfaces/IModule.sol";
-import { IWorldData } from "./interfaces/IWorldData.sol";
+import { IWorldKernel } from "./interfaces/IWorldKernel.sol";
 
-contract World is StoreData, IWorldData {
+import { Systems } from "./modules/core/tables/Systems.sol";
+import { FunctionSelectors } from "./modules/core/tables/FunctionSelectors.sol";
+
+contract World is StoreRead, IStoreData, IWorldKernel {
   using ResourceSelector for bytes32;
 
   constructor() {

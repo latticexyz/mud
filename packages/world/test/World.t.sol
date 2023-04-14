@@ -18,11 +18,11 @@ import { ROOT_NAMESPACE, ROOT_NAME } from "../src/constants.sol";
 
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
-import { Systems } from "../src/tables/Systems.sol";
 import { Bool } from "../src/tables/Bool.sol";
 import { AddressArray } from "../src/tables/AddressArray.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
+import { Systems } from "../src/modules/core/tables/Systems.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IErrors } from "../src/interfaces/IErrors.sol";

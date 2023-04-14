@@ -5,15 +5,25 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
-import { IWorldData } from "../interfaces/IWorldData.sol";
+import { IWorldKernel } from "../interfaces/IWorldKernel.sol";
 
-import { IColdMethodsSystem } from "./IColdMethodsSystem.sol";
-import { IRegistrationSystem } from "./IRegistrationSystem.sol";
+import { ICoreSystem } from "./ICoreSystem.sol";
+import { IAccessManagementSystem } from "./IAccessManagementSystem.sol";
+import { IModuleInstallationSystem } from "./IModuleInstallationSystem.sol";
+import { IStoreRegistrationSystem } from "./IStoreRegistrationSystem.sol";
+import { IWorldRegistrationSystem } from "./IWorldRegistrationSystem.sol";
 
 /**
  * The IBaseWorld interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface IBaseWorld is IStore, IWorldData, IColdMethodsSystem, IRegistrationSystem {
+interface IBaseWorld is
+  IStore,
+  IWorldKernel,
+  ICoreSystem,
+  IAccessManagementSystem,
+  IModuleInstallationSystem,
+  IWorldRegistrationSystem
+{
 
 }

@@ -4,10 +4,16 @@ pragma solidity >=0.8.0;
 import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
-import { StoreData } from "./StoreData.sol";
+import { StoreRead } from "./StoreRead.sol";
 
-// Not abstract, so that it can be used as a base contract for testing and wherever write access is not needed
-contract StoreView is IStore, StoreData {
+// TODO: is this still needed with StoreRead?
+
+/**
+ * StoreView is not abstract and has signatures for all IStore methods,
+ * but only implements read methods (inheriting from StoreRead),
+ * so it can be used as IStore mock for testing or when write methods are not needed.
+ */
+contract StoreView is IStore, StoreRead {
   error StoreView_NotImplemented();
 
   /**

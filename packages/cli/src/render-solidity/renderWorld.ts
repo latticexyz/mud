@@ -6,7 +6,7 @@ export function renderWorld(options: RenderWorldOptions) {
 
   return `${renderedSolidityHeader}
 
-import { IStore } from "${storeImportPath}IStore.sol";
+import { IStoreRead } from "${storeImportPath}IStore.sol";
 
 import { IWorldData } from "${worldImportPath}interfaces/IWorldData.sol";
 
@@ -16,7 +16,7 @@ ${renderImports(imports)}
  * The ${interfaceName} interface includes all systems dynamically added to the World
  * during the deploy process.
  */
-interface ${interfaceName} is ${renderArguments(["IStore", "IWorldData", ...imports.map(({ symbol }) => symbol)])} {
+interface ${interfaceName} is ${renderArguments(["IStoreRead", ...imports.map(({ symbol }) => symbol)])} {
 
 }
 
