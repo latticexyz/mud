@@ -22,3 +22,6 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      - name: Lint package.json
+        run: yarn lint:package-json && git diff --exit-code

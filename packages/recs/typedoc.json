@@ -1,9 +1,11 @@
 {
   "cleanOutputDir": true,
-  "hideGenerator": true,
   "darkHighlightTheme": "nord",
+  "hideGenerator": true,
   "lightHighlightTheme": "nord",
-  "plugin": ["typedoc-plugin-markdown"],
   "out": "API",
+  "plugin": [
+    "typedoc-plugin-markdown"
+  ],
   "readme": "none"
 }
