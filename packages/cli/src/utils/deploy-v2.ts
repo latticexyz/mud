@@ -13,7 +13,6 @@ import { defaultAbiCoder as abi, Fragment } from "ethers/lib/utils.js";
 import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.json" assert { type: "json" };
 import CoreModuleData from "@latticexyz/world/abi/CoreModule.json" assert { type: "json" };
-import RegistrationModuleData from "@latticexyz/world/abi/RegistrationModule.json" assert { type: "json" };
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.json" assert { type: "json" };
 import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.json" assert { type: "json" };
 
@@ -76,11 +75,6 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   const defaultModules: Record<string, Promise<string>> = {
     // TODO: these only need to be deployed once per chain, add a check if they exist already
     CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, "CoreModule"),
-    RegistrationModule: deployContract(
-      RegistrationModuleData.abi,
-      RegistrationModuleData.bytecode,
-      "RegistrationModule"
-    ),
     KeysWithValueModule: deployContract(
       KeysWithValueModuleData.abi,
       KeysWithValueModuleData.bytecode,
@@ -111,7 +105,6 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
   if (!worldAddress) {
     console.log(chalk.blue("Installing core World modules"));
     await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.CoreModule, "0x"]);
-    await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.RegistrationModule, "0x"]);
     console.log(chalk.green("Installed core World modules"));
   }
 

@@ -23,7 +23,6 @@ import { Bool } from "../src/tables/Bool.sol";
 import { AddressArray } from "../src/tables/AddressArray.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IErrors } from "../src/interfaces/IErrors.sol";
@@ -132,7 +131,6 @@ contract WorldTest is Test {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
-    world.installRootModule(new RegistrationModule(), new bytes(0));
 
     key = "testKey";
     keyTuple = new bytes32[](1);

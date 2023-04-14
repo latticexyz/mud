@@ -34,7 +34,7 @@ export default mudConfig({
       dataStruct: false,
     },
     SystemRegistry: {
-      directory: "modules/registration/tables",
+      directory: "modules/core/tables",
       primaryKeys: {
         system: "address",
       },
@@ -43,7 +43,7 @@ export default mudConfig({
       },
     },
     ResourceType: {
-      directory: "modules/registration/tables",
+      directory: "modules/core/tables",
       primaryKeys: {
         resourceSelector: "bytes32",
       },
