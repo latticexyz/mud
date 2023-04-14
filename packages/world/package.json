@@ -14,10 +14,11 @@
     "directory": "packages/world"
   },
   "scripts": {
+    "clean": "rimraf out && rimraf abi && rimraf cache && rimraf dist",
     "tablegen": "../cli/dist/mud.js tablegen",
     "worldgen": "../cli/dist/mud.js worldgen",
     "test": "forge test",
-    "build": "rimraf out && forge build && pnpm dist && pnpm types && tsup",
+    "build": "forge build && pnpm dist && pnpm types && tsup",
     "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && pnpm rimraf abi/*.metadata.json",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",

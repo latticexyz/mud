@@ -14,10 +14,11 @@
     "directory": "packages/store"
   },
   "scripts": {
+    "clean": "rimraf out && rimraf abi && rimraf cache && rimraf dist",
     "codegen": "tsx ./scripts/codegen.ts && prettier --write '**/*.sol'",
     "tablegen": "../cli/dist/mud.js tablegen",
     "test": "pnpm codegen && forge test",
-    "build": "pnpm codegen && rimraf out && forge build && pnpm dist && pnpm types && tsup",
+    "build": "pnpm codegen && forge build && pnpm dist && pnpm types && tsup",
     "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && pnpm rimraf abi/*.metadata.json",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
