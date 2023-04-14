@@ -65,9 +65,7 @@
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",
     "gas-report": "nx run-many --target=gas-report",
-    "codegen": "pnpm codegen:tablegen && pnpm codegen:worldgen",
-    "codegen:tablegen": "nx run-many --target=tablegen",
-    "codegen:worldgen": "nx run-many --target=worldgen"
+    "codegen": "nx run-many --target=codegen"
   },
   "lint-staged": {
     "*.ts": "eslint --cache --fix",

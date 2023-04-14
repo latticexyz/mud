@@ -44,16 +44,12 @@
       "dependsOn": ["^build", "build"]
     },
     "gas-report": {
-      "dependsOn": ["^build", "build"]
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/gas-report.json"]
     },
     "codegen": {
-      "dependsOn": ["^build", "build"]
-    },
-    "tablegen": {
-      "dependsOn": ["^build", "build"]
-    },
-    "worldgen": {
-      "dependsOn": ["^build", "build"]
+      "dependsOn": ["^build"],
+      "outputs": ["{projectRoot}/src", "{projectRoot}/test"]
     }
   }
 }

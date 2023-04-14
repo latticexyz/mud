@@ -14,10 +14,9 @@
     "directory": "packages/store"
   },
   "scripts": {
-    "codegen": "tsx ./scripts/codegen.ts && prettier --write '**/*.sol'",
-    "tablegen": "../cli/dist/mud.js tablegen",
-    "test": "pnpm codegen && forge test",
-    "build": "pnpm codegen && rimraf out && forge build && pnpm dist && pnpm types && tsup",
+    "codegen": "../cli/dist/mud.js tablegen && tsx ./scripts/codegen.ts && prettier --write '**/*.sol'",
+    "test": "pnpm run codegen && forge test",
+    "build": "pnpm run codegen && rimraf out && forge build && pnpm dist && pnpm types && tsup",
     "dist": "rimraf abi && mkdir abi && cp -rf out/*.sol/*.json abi/ && pnpm rimraf abi/*.metadata.json",
     "types": "rimraf types && typechain --target=ethers-v5 abi/*.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
