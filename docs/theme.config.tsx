@@ -1,17 +1,19 @@
 import { DocsThemeConfig } from "nextra-theme-docs";
+import Logo from "./components/Logo";
 
 const config: DocsThemeConfig = {
-  logo: <span>My Project</span>,
+  logo: Logo,
   project: {
-    link: "https://github.com/shuding/nextra-docs-template",
+    link: "https://github.com/latticexyz/mud",
   },
   chat: {
-    link: "https://discord.com",
+    link: "https://lattice.xyz/discord",
   },
-  docsRepositoryBase: "https://github.com/shuding/nextra-docs-template",
+  docsRepositoryBase: "https://github.com/latticexyz/mud/blob/core/docs/pages'",
   footer: {
-    text: "Nextra Docs Template",
+    text: "MUD - Engine for Autonomous Worlds",
   },
+  primaryHue: 28,
 };
 
 export default config;
