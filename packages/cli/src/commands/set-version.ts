@@ -11,6 +11,7 @@ type Options = {
   force?: boolean;
   restore?: boolean;
   mudVersion?: string;
+  link?: string;
 };
 
 const BACKUP_FILE = ".mudbackup";
@@ -30,13 +31,19 @@ const commandModule: CommandModule<Options, Options> = {
       },
       restore: { type: "boolean", description: `Restore the previous MUD versions from "${BACKUP_FILE}"` },
       mudVersion: { alias: "v", type: "string", description: "The MUD version to install" },
+      link: { alias: "l", type: "string", description: "Relative path to the local MUD root directory to link" },
     });
   },
 
   async handler(options) {
     try {
-      if (!options.mudVersion && !options.restore) {
-        throw new MUDError(`Version parameter is required unless --restore is provided.`);
+      if (!options.mudVersion && !options.link && !options.restore) {
+        throw new MUDError("`--mudVersion` or `--link` is required unless --restore is provided.");
+      }
+
+      // `link` and `mudVersion` are mutually exclusive
+      if (options.link && options.mudVersion) {
+        throw new MUDError("Options `--link` and `--mudVersion` are mutually exclusive");
       }
 
       // Resolve the `canary` version number if needed
@@ -63,11 +70,17 @@ const commandModule: CommandModule<Options, Options> = {
 };
 
 function updatePackageJson(filePath: string, options: Options): { workspaces?: string[] } {
-  const { backup, restore, force, mudVersion } = options;
+  const { restore, force, link } = options;
+  let { backup, mudVersion } = options;
+
   const backupFilePath = path.join(path.dirname(filePath), BACKUP_FILE);
+  const backupFileExists = existsSync(backupFilePath);
+
+  // Create a backup file for previous MUD versions by default if linking to local MUD
+  if (link && !backupFileExists) backup = true;
 
   // If `backup` is true and force not set, check if a backup file already exists and throw an error if it does
-  if (backup && !force && existsSync(backupFilePath)) {
+  if (backup && !force && backupFileExists) {
     throw new MUDError(
       `A backup file already exists at ${backupFilePath}.\nUse --force to overwrite it or --restore to restore it.`
     );
@@ -106,16 +119,14 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   // Update the dependencies
   for (const key in packageJson.dependencies) {
     if (key.startsWith(MUD_PREFIX)) {
-      packageJson.dependencies[key] =
-        restore && backupJson ? backupJson.dependencies[key] : mudVersion || packageJson.dependencies[key];
+      packageJson.dependencies[key] = resolveMudVersion(key, "dependencies");
     }
   }
 
   // Update the devDependencies
   for (const key in packageJson.devDependencies) {
     if (key.startsWith(MUD_PREFIX)) {
-      packageJson.devDependencies[key] =
-        restore && backupJson ? backupJson.devDependencies[key] : mudVersion || packageJson.devDependencies[key];
+      packageJson.devDependencies[key] = resolveMudVersion(key, "devDependencies");
     }
   }
 
@@ -134,6 +145,13 @@ function updatePackageJson(filePath: string, options: Options): { workspaces?: s
   }
 
   return packageJson;
+
+  function resolveMudVersion(key: string, type: "dependencies" | "devDependencies") {
+    if (restore && backupJson) return backupJson[type][key];
+    if (link) mudVersion = resolveLinkPath(filePath, link, key);
+    if (!mudVersion) return packageJson[type][key];
+    return mudVersion;
+  }
 }
 
 function readPackageJson(path: string): {
@@ -167,6 +185,16 @@ function logComparison(prev: Record<string, string>, curr: Record<string, string
       console.log(`${key}: ${chalk.red(prev[key])} -> ${chalk.green(curr[key])}`);
     }
   }
+}
+
+/**
+ * Returns path of the package to link, given a path to a local MUD clone and a package
+ */
+function resolveLinkPath(packageJsonPath: string, mudLinkPath: string, pkg: string) {
+  const pkgName = pkg.replace(MUD_PREFIX, "");
+  const packageJsonToRootPath = path.relative(path.dirname(packageJsonPath), process.cwd());
+  const linkPath = path.join(packageJsonToRootPath, mudLinkPath, "packages", pkgName);
+  return "link:" + linkPath;
 }
 
 export default commandModule;
