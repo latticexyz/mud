@@ -33,7 +33,7 @@ contract WorldRegistrationSystem is System, IErrors {
     bytes32 resourceSelector = ResourceSelector.from(namespace);
 
     // Require namespace to not exist yet
-    if (ResourceType.get(namespace) != Resource.NONE) revert IErrors.ResourceExists(resourceSelector.toString());
+    if (ResourceType.get(namespace) != Resource.NONE) revert ResourceExists(resourceSelector.toString());
 
     // Register namespace resource
     ResourceType.set(namespace, Resource.NAMESPACE);
