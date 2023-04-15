@@ -3,7 +3,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 613104
+    "gasUsed": 609138
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -21,7 +21,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 613104
+    "gasUsed": 609138
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -33,7 +33,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 613104
+    "gasUsed": 609138
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -51,7 +51,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 613104
+    "gasUsed": 609138
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -69,7 +69,7 @@
     "source": "test/UniqueEntityModule.t.sol",
     "name": "install unique entity module",
     "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 794575
+    "gasUsed": 791018
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
@@ -81,7 +81,7 @@
     "source": "test/UniqueEntityModule.t.sol",
     "name": "installRoot unique entity module",
     "functionCall": "world.installRootModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 766330
+    "gasUsed": 766819
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
@@ -105,37 +105,37 @@
     "source": "test/World.t.sol",
     "name": "Register a fallback system",
     "functionCall": "bytes4 funcSelector1 = world.registerFunctionSelector(namespace, name, \"\", \"\")",
-    "gasUsed": 81065
+    "gasUsed": 81175
   },
   {
     "source": "test/World.t.sol",
     "name": "Register a root fallback system",
     "functionCall": "bytes4 funcSelector2 = world.registerRootFunctionSelector(namespace, name, worldFunc, 0)",
-    "gasUsed": 72276
+    "gasUsed": 72404
   },
   {
     "source": "test/World.t.sol",
     "name": "Register a function selector",
     "functionCall": "bytes4 functionSelector = world.registerFunctionSelector(namespace, name, \"msgSender\", \"()\")",
-    "gasUsed": 101662
+    "gasUsed": 101772
   },
   {
     "source": "test/World.t.sol",
     "name": "Register a new namespace",
     "functionCall": "world.registerNamespace(\"test\")",
-    "gasUsed": 151827
+    "gasUsed": 151950
   },
   {
     "source": "test/World.t.sol",
     "name": "Register a root function selector",
     "functionCall": "bytes4 functionSelector = world.registerRootFunctionSelector(namespace, name, worldFunc, sysFunc)",
-    "gasUsed": 88182
+    "gasUsed": 88310
   },
   {
     "source": "test/World.t.sol",
     "name": "Register a new table in the namespace",
     "functionCall": "bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema)",
-    "gasUsed": 252489
+    "gasUsed": 252654
   },
   {
     "source": "test/World.t.sol",
@@ -147,7 +147,7 @@
     "source": "test/World.t.sol",
     "name": "Set metadata",
     "functionCall": "world.setMetadata(namespace, name, tableName, fieldNames)",
-    "gasUsed": 277358
+    "gasUsed": 277557
   },
   {
     "source": "test/World.t.sol",

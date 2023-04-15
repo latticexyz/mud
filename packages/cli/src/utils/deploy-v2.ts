@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync, readFileSync } from "fs";
 import path from "path";
 import { MUDConfig, resolveWithContext } from "@latticexyz/config";
@@ -218,11 +219,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       ...promises,
       ...accessListAddresses.map(async (address) => {
         console.log(chalk.blue(`Grant ${address} access to ${systemName} (${resourceSelector})`));
-        await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
-          toBytes16(namespace),
-          toBytes16(name),
-          address,
-        ]);
+        await fastTxExecute(WorldContract, "grantAccess", [toBytes16(namespace), toBytes16(name), address]);
         console.log(chalk.green(`Granted ${address} access to ${systemName} (${namespace}/${name})`));
       }),
     ];
@@ -232,7 +229,7 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       ...promises,
       ...accessListSystems.map(async (granteeSystem) => {
         console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${resourceSelector})`));
-        await fastTxExecute(WorldContract, "grantAccess(bytes16,bytes16,address)", [
+        await fastTxExecute(WorldContract, "grantAccess", [
           toBytes16(namespace),
           toBytes16(name),
           await contractPromises[granteeSystem],
