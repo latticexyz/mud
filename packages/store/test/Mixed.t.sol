@@ -5,10 +5,10 @@ import "forge-std/Test.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 import { Mixed, MixedData, MixedTableId } from "../src/codegen/Tables.sol";
 import { StoreCore } from "../src/StoreCore.sol";
-import { StoreView } from "../src/StoreView.sol";
+import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { Schema } from "../src/Schema.sol";
 
-contract MixedTest is Test, StoreView {
+contract MixedTest is Test, StoreReadWithStubs {
   MixedData private testMixed;
 
   function testRegisterAndGetSchema() public {
