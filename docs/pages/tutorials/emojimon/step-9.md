@@ -1,7 +1,3 @@
----
-order: -9
----
-
 # 9. Obstructions
 
 We can make player movement more interesting by turning the boulders into actual obstructions, so players can't walk through them.

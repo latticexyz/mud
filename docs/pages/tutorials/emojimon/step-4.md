@@ -1,7 +1,3 @@
----
-order: -4
----
-
 # 4. Optimistic rendering
 
 Now that we can move with the keyboard, our player feels a little laggy. We can add optimistic rendering to improve the perceived performance.

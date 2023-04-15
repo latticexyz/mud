@@ -1,7 +1,3 @@
----
-order: -8
----
-
 # 8. Add terrain
 
 Let's make the world a bit more interesting with terrain!

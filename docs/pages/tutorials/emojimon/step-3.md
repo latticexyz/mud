@@ -1,7 +1,3 @@
----
-order: -3
----
-
 # 3. Move player with arrow keys
 
 Let's wire up the keyboard to control the player position. We'll listen for `keydown` events on the `window` and move the player based on which arrow key is pressed.

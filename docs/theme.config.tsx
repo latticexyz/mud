@@ -9,9 +9,9 @@ const config: DocsThemeConfig = {
   chat: {
     link: "https://lattice.xyz/discord",
   },
-  docsRepositoryBase: "https://github.com/latticexyz/mud/blob/core/docs/pages'",
+  docsRepositoryBase: "https://github.com/latticexyz/mud/blob/core/docs/pages",
   footer: {
-    text: "MUD - Engine for Autonomous Worlds",
+    text: "MIT 2023 © MUD",
   },
   primaryHue: 28,
 };

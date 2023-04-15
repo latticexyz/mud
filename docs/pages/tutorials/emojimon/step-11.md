@@ -1,7 +1,3 @@
----
-order: -11
----
-
 # 11. Make it massively multiplayer
 
 We've come so far! Wouldn't it be great if we could play Emojimon with our friends?

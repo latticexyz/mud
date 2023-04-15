@@ -1,7 +1,3 @@
----
-order: -12
----
-
 # 12. Deploy to the testnet
 
 Lattice provides a testnet you can deploy to with one-second block times (compared to the ~12 seconds of Ethereum mainnet). This is a great way to share your game with others.

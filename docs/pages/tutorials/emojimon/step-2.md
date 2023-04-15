@@ -1,7 +1,3 @@
----
-order: -2
----
-
 # 2. Show player at position, click to move
 
 The component and system we just created will become much more real once we can see them in action. Let's set up the client to use them.

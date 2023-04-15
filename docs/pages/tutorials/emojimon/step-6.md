@@ -1,7 +1,3 @@
----
-order: -6
----
-
 # 6. Loading screen
 
 MUD's networking stack comes with a client-side `LoadingState` component to track the client's progress in booting up the world: connecting to the network, downloading ECS state, etc.
