@@ -1,7 +1,3 @@
----
-order: 5
----
-
 # Deployment
 
 You can use the MUD CLI to deploy your MUD app to any EVM compatible chain. Just run the following command from your contracts' project directory:

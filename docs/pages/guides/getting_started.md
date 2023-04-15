@@ -1,7 +1,3 @@
----
-order: 10
----
-
 # Getting started
 
 ## Quickstart
@@ -33,7 +29,7 @@ Next, run `yarn dev` in the root directory of your new project to start the deve
 yarn dev
 ```
 
-![Starting a new MUD project with the MUD cli](../public/docs/mud-create.gif)
+![Starting a new MUD project with the MUD cli](/mud-create.gif)
 
 The minimal MUD project template is organized as a yarn monorepo.
 You can find the contract code in `packages/contracts` and then minimal client setup in `packages/client`.
@@ -194,7 +190,3 @@ For more information about anvil, head over to the [anvil documentation](https:/
 
 To deploy the contracts to the local node, run `yarn dev` from the root of the contracts directory (which calls `mud deploy-contracts --dev --watch` under the hood).
 After deploying, it will set up a watcher to detect file changes in system files or libraries and automatically redeploy impacted systems.
-
-## Client
-
-## Demo
