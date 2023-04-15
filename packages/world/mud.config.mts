@@ -141,7 +141,8 @@ export default mudConfig({
     // System too to be included in the IBaseWorld interface.
     // However, IStoreRegistrationSystem overlaps with IStore if
     // included in IBaseWorld, so it needs to be excluded from worldgen.
-    // TODO: open issue about this
+    // TODO: add support for inheritance to worldgen
+    // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
   ],
 });
