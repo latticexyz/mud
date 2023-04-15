@@ -322,7 +322,7 @@ contract WorldTest is Test {
     // TODO
   }
 
-  function testRetractAccess() public {
+  function testRevoketAccess() public {
     // TODO
   }
 

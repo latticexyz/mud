@@ -122,12 +122,21 @@ contract CoreModule is IModule, WorldContext {
     ];
 
     for (uint256 i = 0; i < functionSelectors.length; i++) {
-      IBaseWorld(_world()).registerRootFunctionSelector(
-        ROOT_NAMESPACE,
-        CORE_SYSTEM_NAME,
-        functionSelectors[i], // Use the same function selector for the World as in StoreRegistrationSystemSystem
-        functionSelectors[i]
-      );
+      // Use the CoreSystem's `registerRootFunctionSelector` to register the
+      // root function selectors in the World.
+      Call.withSender({
+        msgSender: _msgSender(),
+        target: coreSystem,
+        delegate: true,
+        value: 0,
+        funcSelectorAndArgs: abi.encodeWithSelector(
+          WorldRegistrationSystem.registerRootFunctionSelector.selector,
+          ROOT_NAMESPACE,
+          CORE_SYSTEM_NAME,
+          functionSelectors[i],
+          functionSelectors[i]
+        )
+      });
     }
   }
 }
