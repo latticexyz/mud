@@ -1,6 +1,6 @@
 export interface RenderTableOptions {
   /** List of symbols to import, and their file paths */
-  imports: ImportDatum[];
+  imports: RelativeImportDatum[];
   /** Name of the library to render. */
   libraryName: string;
   /** Name of the struct to render. If undefined, struct and its methods aren't rendered. */
@@ -19,10 +19,15 @@ export interface RenderTableOptions {
   storeArgument: boolean;
 }
 
-export interface ImportDatum {
+export interface RelativeImportDatum {
   symbol: string;
   fromPath: string;
   usedInPath: string;
+}
+
+export interface ImportDatum {
+  symbol: string;
+  path: string;
 }
 
 export interface StaticResourceData {
@@ -86,7 +91,7 @@ export interface RenderTypesEnum {
 
 export interface RenderSystemInterfaceOptions {
   /** List of symbols to import, and their file paths */
-  imports: ImportDatum[];
+  imports: RelativeImportDatum[];
   name: string;
   functionPrefix: string;
   functions: RenderSystemInterfaceFunction[];
@@ -101,7 +106,7 @@ export interface RenderSystemInterfaceFunction {
 
 export interface RenderWorldOptions {
   /** List of symbols to import, and their file paths */
-  imports: ImportDatum[];
+  imports: RelativeImportDatum[];
   /** Name of the interface to render */
   interfaceName: string;
   /** Path for store package imports */

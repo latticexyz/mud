@@ -3,7 +3,7 @@ import {
   renderCommonData,
   renderList,
   renderedSolidityHeader,
-  renderImports,
+  renderRelativeImports,
   renderTableId,
   renderWithStore,
 } from "./common.js";
@@ -49,7 +49,7 @@ ${
   imports.length > 0
     ? `
       // Import user types
-      ${renderImports(imports)}
+      ${renderRelativeImports(imports)}
     `
     : ""
 }

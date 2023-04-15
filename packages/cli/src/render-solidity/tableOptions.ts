@@ -2,7 +2,7 @@ import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
 import { StoreConfig } from "@latticexyz/config";
 import {
-  ImportDatum,
+  RelativeImportDatum,
   RenderTableDynamicField,
   RenderTableField,
   RenderTableOptions,
@@ -31,7 +31,7 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
     // field methods can be simply get/set if there's only 1 field and no record methods
     const noFieldMethodSuffix = !withRecordMethods && Object.keys(tableData.schema).length === 1;
     // list of any symbols that need to be imported
-    const imports: ImportDatum[] = [];
+    const imports: RelativeImportDatum[] = [];
 
     const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
       const abiOrUserType = tableData.primaryKeys[name];
