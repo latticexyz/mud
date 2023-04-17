@@ -1,22 +1,25 @@
 {
   "name": "@latticexyz/common-codegen",
-  "private": true,
-  "license": "MIT",
   "version": "1.42.0",
+  "private": true,
   "description": "Common files for codegen",
-  "type": "module",
-  "types": "dist/index.d.ts",
-  "main": "dist/index.js",
-  "module": "dist/index.mjs",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/common-codegen"
   },
+  "license": "MIT",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
   "scripts": {
-    "test": "vitest typecheck --run --passWithNoTests",
     "build": "vite build",
-    "release": "npm publish --access=public"
+    "release": "npm publish --access=public",
+    "test": "vitest typecheck --run --passWithNoTests"
+  },
+  "dependencies": {
+    "@latticexyz/schema-type": "^1.42.0"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.0",
@@ -24,9 +27,6 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "vite": "^4.2.1",
     "vitest": "^0.30.1"
-  },
-  "dependencies": {
-    "@latticexyz/schema-type": "^1.42.0"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

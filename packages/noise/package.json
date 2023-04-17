@@ -1,25 +1,25 @@
 {
   "name": "@latticexyz/noise",
   "version": "1.42.0",
-  "type": "module",
-  "source": "ts/index.ts",
-  "main": "ts/index.ts",
-  "types": "dist/types.d.ts",
   "license": "MIT",
+  "type": "module",
+  "main": "ts/index.ts",
+  "source": "ts/index.ts",
+  "types": "dist/types.d.ts",
   "scripts": {
-    "test:forge": "forge test",
-    "test:hardhat": "hardhat test",
     "// Hardhat skipped in GH action until hardhat officially supports TS/ESM": "https://github.com/NomicFoundation/hardhat/pull/3156",
-    "test": "pnpm test:forge",
+    "asbuild": "pnpm asbuild:debug && pnpm asbuild:release",
     "asbuild:debug": "asc assembly/index.ts --target debug",
     "asbuild:release": "asc assembly/index.ts --target release",
-    "asbuild": "pnpm asbuild:debug && pnpm asbuild:release",
-    "start": "npx serve .",
-    "prepack:cjs": "mv package.json package.json.bak && jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp && jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && jq \"del(\".type\")\" package.json.tmp2 > package.json",
+    "build": "rimraf dist && pnpm asbuild:release && (pnpm prepack:cjs && (pnpm parcel build || true) && pnpm postpack)",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
     "postpack": "(mv package.json.bak package.json || true) && (rm package.json.tmp || true) && (rm package.json.tmp2 || true)",
-    "build": "rimraf dist && pnpm asbuild:release && (pnpm prepack:cjs && (pnpm parcel build || true) && pnpm postpack)",
-    "release": "npm publish --access=public"
+    "prepack:cjs": "mv package.json package.json.bak && jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp && jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && jq \"del(\".type\")\" package.json.tmp2 > package.json",
+    "release": "npm publish --access=public",
+    "start": "npx serve .",
+    "test": "pnpm test:forge",
+    "test:forge": "forge test",
+    "test:hardhat": "hardhat test"
   },
   "dependencies": {
     "@types/big-integer": "^0.0.31"

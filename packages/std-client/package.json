@@ -2,22 +2,22 @@
   "name": "@latticexyz/std-client",
   "version": "1.42.0",
   "description": "Standard library for MUD client.",
-  "license": "MIT",
-  "source": "src/index.ts",
-  "main": "src/index.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/std-client"
   },
+  "license": "MIT",
+  "main": "src/index.ts",
+  "source": "src/index.ts",
   "scripts": {
-    "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
+    "build": "pnpm codegen && rimraf dist && rollup -c rollup.config.js",
     "codegen": "tsx ./scripts/codegen.mts",
-    "test": "pnpm codegen && vitest typecheck --run && echo 'todo: add tests'",
+    "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
-    "build": "pnpm codegen && rimraf dist && rollup -c rollup.config.js",
-    "release": "npm publish --access=public"
+    "release": "npm publish --access=public",
+    "test": "pnpm codegen && vitest typecheck --run && echo 'todo: add tests'"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
