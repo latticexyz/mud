@@ -112,7 +112,7 @@ export default mudConfig({
      *
      ************************************************************************/
     Bool: {
-      // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
+      directory: "../test/tables",
       primaryKeys: {},
       schema: {
         value: "bool",
@@ -120,7 +120,7 @@ export default mudConfig({
       tableIdArgument: true,
     },
     AddressArray: {
-      // TODO: This table is only used for testing, move it to `test/tables` via the directory config once supported
+      directory: "../test/tables",
       schema: "address[]",
       tableIdArgument: true,
     },
