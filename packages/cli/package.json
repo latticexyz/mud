@@ -16,13 +16,15 @@
     "mud2": "./dist/mud2.js"
   },
   "scripts": {
-    "build": "tsup",
-    "codegen": "tsx ./scripts/codegen.ts",
+    "build:js": "tsup",
+    "clean:js": "rimraf dist",
+    "build": "pnpm run build:js",
+    "clean": "pnpm run clean:js",
+    "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
     "release": "npm publish --access=public",
-    "test": "tsc --noEmit && pnpm test:contracts",
-    "test:contracts": "pnpm codegen && forge test"
+    "test": "tsc --noEmit && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
