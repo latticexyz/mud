@@ -12,13 +12,14 @@
   "main": "src/typescript/index.ts",
   "source": "src/typescript/index.ts",
   "scripts": {
-    "build": "pnpm build:solidity && pnpm build:typescript",
-    "build:solidity": "echo 'removing previous output' && rimraf out && echo 'build solidity' && forge build",
-    "build:typescript": "echo 'build typescript' && tsc",
+    "build:abi": "forge build",
+    "clean:abi": "rimraf out/solidity",
+    "build:js": "tsc",
+    "clean:js": "rimraf dist/typescript",
+    "build": "pnpm run build:abi && pnpm run build:js",
+    "clean": "pnpm run clean:abi && pnpm run clean:js",
     "release": "npm publish --access=public",
-    "test": "pnpm test:solidity && pnpm test:typescript",
-    "test:solidity": "forge test",
-    "test:typescript": "tsc --noEmit"
+    "test": "tsc --noEmit && forge test"
   },
   "devDependencies": {
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
