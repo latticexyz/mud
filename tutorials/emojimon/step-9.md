@@ -20,7 +20,6 @@ uint256 constant ID = uint256(keccak256("component.Obstruction"));
 contract ObstructionComponent is BoolComponent {
   constructor(address world) BoolComponent(world, ID) {}
 }
-
 ```
 
 ```ts !#4-8 packages/client/src/mud/components.ts
@@ -114,7 +113,6 @@ library LibMap {
     return world.query(fragments);
   }
 }
-
 ```
 
 ## Prevent moving through obstructions
