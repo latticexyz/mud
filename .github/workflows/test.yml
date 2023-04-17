@@ -23,5 +23,8 @@ jobs:
       - name: Lint
         run: pnpm lint
 
-      - name: Lint package.json
-        run: pnpm sort-package-json && git diff --exit-code
+      - name: Sort package.json
+        run: pnpm sort-package-json
+
+      - name: Outdated files, run `sort-package-json` and commit them
+        uses: ./.github/actions/require-empty-diff
