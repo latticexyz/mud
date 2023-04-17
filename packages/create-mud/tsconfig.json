@@ -1,4 +1,5 @@
 {
+  "exclude": ["dist"],
   "compilerOptions": {
     "target": "es2018",
     "module": "commonjs",
@@ -8,8 +9,5 @@
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true
-  },
-  "exclude": [
-    "dist"
-  ]
+  }
 }

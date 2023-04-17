@@ -1,11 +1,9 @@
 {
   "cleanOutputDir": true,
-  "hideBreadcrumbs": true,
   "hideGenerator": true,
-  "hideInPageTOC": true,
+  "plugin": ["typedoc-plugin-markdown"],
   "out": "API",
-  "plugin": [
-    "typedoc-plugin-markdown"
-  ],
+  "hideBreadcrumbs": true,
+  "hideInPageTOC": true,
   "readme": "none"
 }
