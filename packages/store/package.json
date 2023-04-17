@@ -14,10 +14,10 @@
   },
   "types": "./types/ethers-contracts/",
   "scripts": {
-    "build": "pnpm run build:codegen && pnpm run build:mudcodegen && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
+    "build": "pnpm run build:codegen && pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain && pnpm run clean:js",
-    "build:codegen": "tsx ./scripts/codegen.ts && prettier --write '**/*.sol'",
-    "build:mudcodegen": "../cli/dist/mud.js tablegen",
+    "generate-tightcoder": "tsx ./scripts/generate-tightcoder.ts && prettier --write '**/tightcoder/*.sol'",
+    "build:mud": "../cli/dist/mud.js tablegen",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
     "clean:abi": "rimraf abi",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
@@ -28,7 +28,7 @@
     "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "release": "npm publish --access=public",
-    "test": "pnpm run build:codegen && forge test"
+    "test": "forge test"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
