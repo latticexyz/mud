@@ -1,59 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Schema } from "@latticexyz/store/src/Schema.sol";
-
 import { IErrors } from "./IErrors.sol";
-import { ISystemHook } from "./ISystemHook.sol";
 import { IModule } from "./IModule.sol";
 
 /**
- * The IWorldCore interfaces includes all World methods with a static function selector.
- * Consumers should use the `IBaseWorld` interface instead, which includes
- * dynamically registered function selectors (e.g. IRegistrationSystem)
+ * The IWorldData interface includes methods for reading and writing table values.
+ * These methods are frequently invoked during runtime, so it is essential to prioritize
+ * optimizing their gas cost, and they are part of the World contract's internal bytecode.
  */
-interface IWorldCore is IErrors {
-  /**
-   * Install the given module at the given namespace in the World.
-   */
-  function installModule(IModule module, bytes memory args) external;
-
-  /**
-   * Install the given root module in the World.
-   * Requires the caller to own the root namespace.
-   * The module is delegatecalled and installed in the root namespace.
-   */
-  function installRootModule(IModule module, bytes memory args) external;
-
-  /************************************************************************
-   *
-   *    ACCESS METHODS
-   *
-   ************************************************************************/
-
-  /**
-   * Grant access to the given namespace.
-   * Requires the caller to own the namespace.
-   */
-  function grantAccess(bytes16 namespace, address grantee) external;
-
-  /**
-   * Grant access to the resource at the given namespace and name.
-   * Requires the caller to own the namespace.
-   */
-  function grantAccess(bytes16 namespace, bytes16 name, address grantee) external;
-
-  /**
-   * Retract access from the resource at the given namespace and name.
-   */
-  function retractAccess(bytes16 namespace, bytes16 name, address grantee) external;
-
-  /************************************************************************
-   *
-   *    STORE METHODS
-   *
-   ************************************************************************/
-
+interface IWorldData {
   /**
    * Write a record in the table at the given namespace and name.
    * Requires the caller to have access to the namespace or name.
@@ -102,13 +58,18 @@ interface IWorldCore is IErrors {
    * Requires the caller to have access to the namespace or name.
    */
   function deleteRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key) external;
+}
 
-  /************************************************************************
-   *
-   *    SYSTEM CALLS
-   *
-   ************************************************************************/
+interface IWorldModuleInstallation {
+  /**
+   * Install the given root module in the World.
+   * Requires the caller to own the root namespace.
+   * The module is delegatecalled and installed in the root namespace.
+   */
+  function installRootModule(IModule module, bytes memory args) external;
+}
 
+interface IWorldCall {
   /**
    * Call the system at the given namespace and name.
    * If the system is not public, the caller must have access to the namespace or name.
@@ -118,4 +79,15 @@ interface IWorldCore is IErrors {
     bytes16 name,
     bytes memory funcSelectorAndArgs
   ) external payable returns (bytes memory);
+}
+
+/**
+ * The IWorldKernel interface includes all methods that are part of the World contract's
+ * internal bytecode.
+ *
+ * Consumers should use the `IBaseWorld` interface instead, which includes dynamically
+ * registered functions selectors from the `CoreModule`.
+ */
+interface IWorldKernel is IWorldData, IWorldModuleInstallation, IWorldCall, IErrors {
+
 }

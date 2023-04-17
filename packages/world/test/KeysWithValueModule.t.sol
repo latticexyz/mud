@@ -11,7 +11,6 @@ import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 
-import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
 import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
@@ -41,7 +40,6 @@ contract KeysWithValueModuleTest is Test {
     sourceTableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
-    world.installRootModule(new RegistrationModule(), new bytes(0));
     keyTuple1 = new bytes32[](1);
     keyTuple1[0] = key1;
     keyTuple2 = new bytes32[](1);

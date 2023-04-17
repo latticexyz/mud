@@ -2,10 +2,10 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { StoreView } from "../../src/StoreView.sol";
+import { StoreReadWithStubs } from "../../src/StoreReadWithStubs.sol";
 import { Callbacks } from "../../src/codegen/Tables.sol";
 
-contract CallbacksTest is Test, StoreView {
+contract CallbacksTest is Test, StoreReadWithStubs {
   function testSetAndGet() public {
     Callbacks.registerSchema();
     bytes32 key = keccak256("somekey");

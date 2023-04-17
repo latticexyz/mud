@@ -10,7 +10,7 @@ import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
-import { StoreView } from "../src/StoreView.sol";
+import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 import { IErrors } from "../src/IErrors.sol";
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
@@ -22,7 +22,7 @@ struct TestStruct {
   uint32[] thirdData;
 }
 
-contract StoreCoreTest is Test, StoreView {
+contract StoreCoreTest is Test, StoreReadWithStubs {
   TestStruct private testStruct;
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);

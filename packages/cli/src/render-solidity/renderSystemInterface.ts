@@ -1,4 +1,4 @@
-import { renderArguments, renderList, renderedSolidityHeader, renderImports } from "./common.js";
+import { renderArguments, renderList, renderedSolidityHeader, renderRelativeImports } from "./common.js";
 import { RenderSystemInterfaceOptions } from "./types.js";
 
 export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
@@ -6,7 +6,7 @@ export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
 
   return `${renderedSolidityHeader}
 
-${renderImports(imports)}
+${renderRelativeImports(imports)}
 
 interface ${name} {
   ${renderList(
