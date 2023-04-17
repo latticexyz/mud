@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IStore, IStoreHook } from "./IStore.sol";
+import { IStoreRead, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
 
-abstract contract Store is IStore {
+contract StoreRead is IStoreRead {
   constructor() {
     StoreCore.initialize();
   }

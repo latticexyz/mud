@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { IWorldCore } from "./IWorldCore.sol";
 
 interface IModule {
   error RequiredModuleNotFound(string resourceSelector);

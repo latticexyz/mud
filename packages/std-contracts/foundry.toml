@@ -5,6 +5,6 @@ fuzz_runs = 256
 optimizer = true
 optimizer_runs = 1000000
 verbosity = 1
-libs = ["../../node_modules", "../solecs"]
+allow_paths = ["../../node_modules", "../solecs"]
 src = "src"
 out = "out"

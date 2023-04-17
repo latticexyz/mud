@@ -18,15 +18,15 @@ import { ROOT_NAMESPACE, ROOT_NAME } from "../src/constants.sol";
 
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
-import { Systems } from "../src/tables/Systems.sol";
-import { Bool } from "../src/tables/Bool.sol";
-import { AddressArray } from "../src/tables/AddressArray.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
+import { Systems } from "../src/modules/core/tables/Systems.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IErrors } from "../src/interfaces/IErrors.sol";
+
+import { Bool } from "./tables/Bool.sol";
+import { AddressArray } from "./tables/AddressArray.sol";
 
 interface IWorldTestSystem {
   function testNamespace_testSystem_err(string memory input) external pure;
@@ -132,7 +132,6 @@ contract WorldTest is Test {
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
-    world.installRootModule(new RegistrationModule(), new bytes(0));
 
     key = "testKey";
     keyTuple = new bytes32[](1);
@@ -324,7 +323,7 @@ contract WorldTest is Test {
     // TODO
   }
 
-  function testRetractAccess() public {
+  function testRevokeAccess() public {
     // TODO
   }
 

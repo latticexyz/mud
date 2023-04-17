@@ -1,28 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { Store, IStoreHook } from "@latticexyz/store/src/Store.sol";
+import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 
-import { ResourceType } from "./tables/ResourceType.sol";
-import { SystemRegistry } from "./tables/SystemRegistry.sol";
+import { System } from "../../../System.sol";
+import { ResourceSelector } from "../../../ResourceSelector.sol";
+import { Resource } from "../../../Types.sol";
+import { ROOT_NAMESPACE, ROOT_NAME } from "../../../constants.sol";
+import { AccessControl } from "../../../AccessControl.sol";
+import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
+import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
+import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
+import { IErrors } from "../../../interfaces/IErrors.sol";
 
-import { System } from "../../System.sol";
-import { ResourceSelector } from "../../ResourceSelector.sol";
-import { Resource } from "../../Types.sol";
-import { ROOT_NAMESPACE, ROOT_NAME } from "../../constants.sol";
-import { AccessControl } from "../../AccessControl.sol";
+import { ResourceType } from "../tables/ResourceType.sol";
+import { SystemRegistry } from "../tables/SystemRegistry.sol";
+import { Systems } from "../tables/Systems.sol";
+import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
 
-import { NamespaceOwner } from "../../tables/NamespaceOwner.sol";
-import { ResourceAccess } from "../../tables/ResourceAccess.sol";
-import { Systems } from "../../tables/Systems.sol";
-import { FunctionSelectors } from "../../tables/FunctionSelectors.sol";
-
-import { ISystemHook } from "../../interfaces/ISystemHook.sol";
-import { IErrors } from "../../interfaces/IErrors.sol";
-
-contract RegistrationSystem is System, IErrors {
+/**
+ * Functions related to registering resources in the World.
+ */
+contract WorldRegistrationSystem is System, IErrors {
   using ResourceSelector for bytes32;
 
   /**

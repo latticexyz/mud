@@ -1,6 +1,6 @@
 import { AbiTypeToSchemaType, getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
 import { StoreConfig, parseStaticArray } from "@latticexyz/config";
-import { ImportDatum, RenderTableType } from "./types.js";
+import { RelativeImportDatum, RenderTableType } from "./types.js";
 
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 
@@ -42,7 +42,7 @@ export function importForAbiOrUserType(
   abiOrUserType: string,
   usedInDirectory: string,
   config: StoreConfig
-): ImportDatum | undefined {
+): RelativeImportDatum | undefined {
   // abi types which directly mirror a SchemaType
   if (abiOrUserType in AbiTypeToSchemaType) {
     return undefined;

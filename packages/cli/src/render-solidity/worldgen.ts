@@ -5,7 +5,7 @@ import { contractToInterface } from "../utils/contractToInterface.js";
 import { formatAndWriteSolidity } from "../utils/formatAndWrite.js";
 import { renderSystemInterface } from "./renderSystemInterface.js";
 import { renderWorld } from "./renderWorld.js";
-import { ImportDatum } from "./types.js";
+import { RelativeImportDatum } from "./types.js";
 
 export async function worldgen(
   config: MUDConfig,
@@ -15,7 +15,7 @@ export async function worldgen(
   const worldgenBaseDirectory = path.join(outputBaseDirectory, config.worldgenDirectory);
   const systems = existingContracts.filter(({ basename }) => Object.keys(config.systems).includes(basename));
 
-  const systemInterfaceImports: ImportDatum[] = [];
+  const systemInterfaceImports: RelativeImportDatum[] = [];
   for (const system of systems) {
     const data = readFileSync(system.path, "utf8");
     // get external funcions from a contract

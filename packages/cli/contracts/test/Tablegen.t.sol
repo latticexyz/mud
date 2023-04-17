@@ -2,13 +2,13 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { StoreView } from "@latticexyz/store/src/StoreView.sol";
+import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
 
 import { Statics, StaticsData, Dynamics, DynamicsData, Singleton } from "../src/codegen/Tables.sol";
 
 import { Enum1, Enum2 } from "../src/codegen/Types.sol";
 
-contract TablegenTest is Test, StoreView {
+contract TablegenTest is Test, StoreReadWithStubs {
   function testStaticsSetAndGet() public {
     Statics.registerSchema();
 

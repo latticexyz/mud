@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { StoreView } from "@latticexyz/store/src/StoreView.sol";
+import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
 
 import { World } from "../src/World.sol";
 import { AccessControl } from "../src/AccessControl.sol";
@@ -11,7 +11,7 @@ import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ResourceAccess } from "../src/tables/ResourceAccess.sol";
 import { NamespaceOwner } from "../src/tables/NamespaceOwner.sol";
 
-contract AccessControlTest is Test, StoreView {
+contract AccessControlTest is Test, StoreReadWithStubs {
   bytes16 namespace = "namespace";
   bytes16 name = "name";
   address caller = address(0x01);

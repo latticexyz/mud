@@ -1,5 +1,5 @@
 import path from "path";
-import { ImportDatum, RenderTableOptions, RenderTableType, StaticResourceData } from "./types.js";
+import { ImportDatum, RelativeImportDatum, RenderTableOptions, RenderTableType, StaticResourceData } from "./types.js";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -61,11 +61,23 @@ export function solidityRelativeImportPath(fromPath: string, usedInPath: string)
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
+export function renderRelativeImports(imports: RelativeImportDatum[]) {
+  return renderImports(
+    imports.map(({ symbol, fromPath, usedInPath }) => ({
+      symbol,
+      path: solidityRelativeImportPath(fromPath, usedInPath),
+    }))
+  );
+}
+
+/**
+ * Aggregates, deduplicates and renders imports for symbols per path.
+ * Identical symbols from different paths are NOT handled, they should be checked before rendering.
+ */
 export function renderImports(imports: ImportDatum[]) {
   // Aggregate symbols by import path, also deduplicating them
   const aggregatedImports = new Map<string, Set<string>>();
-  for (const { symbol, fromPath, usedInPath } of imports) {
-    const path = solidityRelativeImportPath(fromPath, usedInPath);
+  for (const { symbol, path } of imports) {
     if (!aggregatedImports.has(path)) {
       aggregatedImports.set(path, new Set());
     }
