@@ -14,9 +14,9 @@
   },
   "types": "./types/ethers-contracts/",
   "scripts": {
-    "build": "pnpm run build:mudcodegen && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain && pnpm run clean:js",
-    "build:mudcodegen": "../cli/dist/mud.js tablegen && ../cli/dist/mud.js tablegen",
+    "build:mud": "../cli/dist/mud.js tablegen && ../cli/dist/mud.js tablegen",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
     "clean:abi": "rimraf abi",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
