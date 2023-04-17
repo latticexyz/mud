@@ -19,7 +19,6 @@ enum TerrainType {
   TallGrass,
   Boulder
 }
-
 ```
 
 We can go ahead and add these types to the client too. Starting the TypeScript enum index at `1` allows us to sort of "ignore" the `None` (or zero) value from Solidity, which will make downstream types a little easier to work with.
@@ -105,7 +104,6 @@ library MapConfigInitializer {
     mapConfig.set(MapConfig({ width: 20, height: 20 }));
   }
 }
-
 ```
 
 Note that we haven't set our map config with new values yet. We still need to update our map config component to support the new terrain map, so let's do that next. Don't forget to update the schema!
@@ -147,7 +145,6 @@ contract MapConfigComponent is BareComponent {
     return MapConfig(width, height, terrain);
   }
 }
-
 ```
 
 You may have noticed that we're using the `STRING` schema value type. The MUD client currently has some issues decoding `BYTES` schema types, so this is a quick workaround. At the moment, schemas are only used in the client for decoding, so we can continue to use `bytes` in the map config struct and init system.
