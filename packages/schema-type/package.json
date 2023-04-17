@@ -12,12 +12,10 @@
   "main": "src/typescript/index.ts",
   "source": "src/typescript/index.ts",
   "scripts": {
-    "build:abi": "forge build",
-    "clean:abi": "rimraf out/solidity",
     "build:js": "tsc",
     "clean:js": "rimraf dist/typescript",
-    "build": "pnpm run build:abi && pnpm run build:js",
-    "clean": "pnpm run clean:abi && pnpm run clean:js",
+    "build": "pnpm run build:js",
+    "clean": "pnpm run clean:js",
     "release": "npm publish --access=public",
     "test": "tsc --noEmit && forge test"
   },
