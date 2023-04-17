@@ -68,7 +68,6 @@ library LibMath {
     component.set(entity, current + 2);
   }
 }
-
 ```
 
 After saving, the `dev:contracts` service will detect the contract change and redeploy all dependent system contracts and update the client automatically. Once the client reloads, click the “increment” button and watch the counter value jump by 2 instead of 1. The live reloading of contracts will make it much quicker to iterate on our project.

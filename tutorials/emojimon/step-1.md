@@ -20,7 +20,6 @@ uint256 constant ID = uint256(keccak256("component.Position"));
 contract PositionComponent is CoordComponent {
   constructor(address world) CoordComponent(world, ID) {}
 }
-
 ```
 
 ## Move system
@@ -52,7 +51,6 @@ contract MoveSystem is System {
     position.set(entityId, coord);
   }
 }
-
 ```
 
 ## Deploy config

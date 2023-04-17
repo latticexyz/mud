@@ -20,7 +20,6 @@ enum MonsterType {
   Rat,
   Caterpillar
 }
-
 ```
 
 ```ts packages/client/src/monsterTypes.ts
@@ -76,7 +75,6 @@ contract MonsterTypeComponent is Uint32Component {
     return abi.decode(getRawValue(entity), (MonsterType));
   }
 }
-
 ```
 
 ```ts !#4,10-14 packages/client/src/mud/components.ts

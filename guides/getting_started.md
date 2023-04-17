@@ -9,13 +9,14 @@ order: 10
 Let's create our first MUD project!
 
 You will need:
+
 - git ([download](https://git-scm.com/downloads))
 - foundry (forge, anvil, cast) ([download](https://book.getfoundry.sh/getting-started/installation), make sure to `foundryup` at least once)
 - node.js (v16+) ([download](https://nodejs.org/en/download/))
 - yarn (after installing node: `npm install yarn --global`)
 
 !!!
-If you are running Windows, you will need to setup WSL and configure it properly. The libraries and tools listed above need to be installed in the WSL. All commands below also need to be executed in the WSL. 
+If you are running Windows, you will need to setup WSL and configure it properly. The libraries and tools listed above need to be installed in the WSL. All commands below also need to be executed in the WSL.
 
 We recommend reading the [WSL guide from Microsoft](https://learn.microsoft.com/en-us/training/modules/wsl/wsl-introduction/introduction) to get started.
 !!!
@@ -77,7 +78,6 @@ uint256 constant ID = uint256(keccak256("component.Counter"));
 contract CounterComponent is Uint32Component {
   constructor(address world) Uint32Component(world, ID) {}
 }
-
 ```
 
 ### Systems
@@ -109,7 +109,6 @@ contract IncrementSystem is System {
     LibMath.increment(c, entity);
   }
 }
-
 ```
 
 ### Libraries
@@ -132,7 +131,6 @@ library LibMath {
     component.set(entity, current + 10);
   }
 }
-
 ```
 
 ### Deployment configuration
@@ -186,7 +184,6 @@ contract DeployTest is MudTest {
     console.log(deployer);
   }
 }
-
 ```
 
 ### Development

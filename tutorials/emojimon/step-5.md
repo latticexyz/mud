@@ -20,7 +20,6 @@ uint256 constant ID = uint256(keccak256("component.Player"));
 contract PlayerComponent is BoolComponent {
   constructor(address world) BoolComponent(world, ID) {}
 }
-
 ```
 
 ```sol packages/contracts/src/components/MovableComponent.sol
@@ -33,7 +32,6 @@ uint256 constant ID = uint256(keccak256("component.Movable"));
 contract MovableComponent is BoolComponent {
   constructor(address world) BoolComponent(world, ID) {}
 }
-
 ```
 
 And tell MUD we want to deploy these new components, so we can start using them in the next step.
@@ -113,7 +111,6 @@ contract JoinGameSystem is System {
     MovableComponent(getAddressById(components, MovableComponentID)).set(entityId);
   }
 }
-
 ```
 
 Just like the move system, we need to extend `deploy.json` to include our new join system and the components it needs to write to.
