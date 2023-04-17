@@ -45,7 +45,6 @@ contract MapConfigComponent is BareComponent {
     return MapConfig(width, height);
   }
 }
-
 ```
 
 ## Initialize map config
@@ -63,7 +62,6 @@ library MapConfigInitializer {
     MapConfigComponent(world.getComponent(MapConfigComponentID)).set(MapConfig({ width: 20, height: 20 }));
   }
 }
-
 ```
 
 Now we can add our new map config component and initializer to the `deploy.json` config. You may need to restart your `dev:contracts` service to redeploy contracts with the initializer.

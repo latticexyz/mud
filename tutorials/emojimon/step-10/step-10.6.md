@@ -24,7 +24,6 @@ uint256 constant ID = uint256(keccak256("component.OwnedBy"));
 contract OwnedByComponent is Uint256Component {
   constructor(address world) Uint256Component(world, ID) {}
 }
-
 ```
 
 ```ts !#3-7 packages/client/src/mud/components.ts
@@ -84,7 +83,6 @@ contract EncounterThrowSystem is System {
     }
   }
 }
-
 ```
 
 ```json !#5,11-14 packages/contracts/deploy.json
@@ -122,7 +120,6 @@ uint256 constant ID = uint256(keccak256("component.Counter"));
 contract CounterComponent is Uint256Component {
   constructor(address world) Uint256Component(world, ID) {}
 }
-
 ```
 
 ```ts !#2-6 packages/client/src/mud/components.ts

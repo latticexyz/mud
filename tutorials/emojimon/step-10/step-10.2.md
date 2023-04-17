@@ -20,7 +20,6 @@ uint256 constant ID = uint256(keccak256("component.Encounterable"));
 contract EncounterableComponent is BoolComponent {
   constructor(address world) BoolComponent(world, ID) {}
 }
-
 ```
 
 ```ts !#2-6 packages/client/src/mud/components.ts

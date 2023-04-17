@@ -81,7 +81,6 @@ uint256 constant ID = uint256(keccak256("component.Encounter"));
 contract EncounterComponent is Uint256Component {
   constructor(address world) Uint256Component(world, ID) {}
 }
-
 ```
 
 Now we can fill in `startEncounter`.

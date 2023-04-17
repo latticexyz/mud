@@ -36,7 +36,6 @@ contract EncounterFleeSystem is System {
     encounter.remove(entityId);
   }
 }
-
 ```
 
 ```json !#4-7 packages/contracts/deploy.json

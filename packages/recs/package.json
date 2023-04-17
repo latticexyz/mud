@@ -1,23 +1,23 @@
 {
   "name": "@latticexyz/recs",
-  "license": "MIT",
   "version": "1.42.0",
-  "source": "src/index.ts",
-  "main": "src/index.ts",
-  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/recs"
   },
+  "license": "MIT",
+  "type": "module",
+  "main": "src/index.ts",
+  "source": "src/index.ts",
   "scripts": {
-    "lint": "eslint . --ext .ts",
-    "test": "tsc && jest",
+    "build": "rimraf dist && rollup -c rollup.config.js",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
+    "lint": "eslint . --ext .ts",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
-    "build": "rimraf dist && rollup -c rollup.config.js",
-    "release": "npm publish --access=public"
+    "release": "npm publish --access=public",
+    "test": "tsc && jest"
   },
   "devDependencies": {
     "@latticexyz/schema-type": "workspace:*",
