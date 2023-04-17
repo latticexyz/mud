@@ -14,7 +14,10 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "vite build",
+    "build:js": "vite build",
+    "clean:js": "rimraf dist",
+    "build": "pnpm run build:js",
+    "clean": "pnpm run clean:js",
     "release": "npm publish --access=public",
     "test": "vitest typecheck --run --passWithNoTests"
   },
