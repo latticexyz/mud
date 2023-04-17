@@ -9,12 +9,14 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/cli.ts --minify && ./scripts/copy-templates.sh",
-    "clean": "rimraf dist",
+    "build:js": "tsup src/cli.ts --minify && ./scripts/copy-templates.sh",
+    "clean:js": "rimraf dist",
+    "build": "pnpm run build:js",
+    "clean": "pnpm run clean:js",
     "dev": "tsup src/cli.ts --watch",
     "prepublishOnly": "npm run clean && npm run build",
     "release": "npm publish --access=public",
-    "test": "pnpm test:minimal && pnpm test:react",
+    "test": "pnpm run test:minimal && pnpm run test:react",
     "test:minimal": "dist/cli.js test-project --template minimal && rimraf test-project",
     "test:react": "dist/cli.js test-project --template react && rimraf test-project"
   },
