@@ -45,7 +45,7 @@
     "prepare": "husky install && (forge --version || pnpm foundryup)",
     "build": "pnpm recursive run build",
     "commit": "cz",
-    "prettier:check": "prettier --check '**/*.{ts,css,md,sol,yaml}'",
+    "prettier:check": "prettier --check '**/*.{ts,css,md,sol}'",
     "prettier": "prettier --write '**/*.{ts,css,md,sol}'",
     "lint": "pnpm prettier:check && eslint . --ext .ts",
     "release": "pnpm install && lerna publish --no-private --force-publish && pnpm retype:updateversion",
