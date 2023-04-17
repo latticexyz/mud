@@ -14,7 +14,7 @@
   },
   "types": "./types/ethers-contracts/",
   "scripts": {
-    "build": "pnpm run build:codegen && pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain && pnpm run clean:js",
     "generate-tightcoder": "tsx ./scripts/generate-tightcoder.ts && prettier --write '**/tightcoder/*.sol'",
     "build:mud": "../cli/dist/mud.js tablegen",
