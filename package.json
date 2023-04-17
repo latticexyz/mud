@@ -31,7 +31,7 @@
     "release:manual": "pnpm --recursive --no-bail run release",
     "release:yalc": "(pnpm entry:dist && lerna exec npx yalc push); pnpm entry:src",
     "retype:updateversion": "sed \"s/label: .*/label: $(cat packages/cli/package.json | jq -r '.version')/\" retype.yml > retype.yml.tmp && mv retype.yml.tmp retype.yml",
-    "sort-package-json": "npx sort-package-json package.json 'packages/*/package.json'",
+    "sort-package-json": "npx sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json'",
     "test": "pnpm recursive run test"
   },
   "lint-staged": {
