@@ -11,10 +11,10 @@
   "main": "src/index.ts",
   "source": "src/index.ts",
   "scripts": {
-    "build:js": "rollup -c rollup.config.js",
     "build": "pnpm run build:js",
-    "clean:js": "rimraf dist",
+    "build:js": "rollup -c rollup.config.js",
     "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
     "lint": "eslint . --ext .ts",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",

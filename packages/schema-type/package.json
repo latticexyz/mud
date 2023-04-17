@@ -12,10 +12,10 @@
   "main": "src/typescript/index.ts",
   "source": "src/typescript/index.ts",
   "scripts": {
-    "build:js": "tsc",
-    "clean:js": "rimraf dist/typescript",
     "build": "pnpm run build:js",
+    "build:js": "tsc",
     "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist/typescript",
     "release": "npm publish --access=public",
     "test": "tsc --noEmit && forge test"
   },

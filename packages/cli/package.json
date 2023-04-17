@@ -16,12 +16,12 @@
     "mud2": "./dist/mud2.js"
   },
   "scripts": {
-    "build:js": "tsup",
-    "clean:js": "rimraf dist",
     "build": "pnpm run build:js",
+    "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
+    "clean:js": "rimraf dist",
     "dev": "tsup --watch",
+    "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "lint": "eslint . --ext .ts",
     "release": "npm publish --access=public",
     "test": "tsc --noEmit && forge test"
