@@ -1,20 +1,18 @@
 {
   "name": "contracts",
-  "license": "MIT",
   "version": "0.0.0",
   "private": true,
+  "license": "MIT",
   "scripts": {
-    "----- EXTERNAL -----": "---------------------------",
     "build": "mud types",
-    "devnode": "mud devnode",
-    "test": "mud test",
-    "types": "mud types",
-    "dev": "mud deploy-contracts --dev --watch --openUrl http://localhost:3000?dev=true",
     "deploy": "mud deploy-contracts",
+    "dev": "mud deploy-contracts --dev --watch --openUrl http://localhost:3000?dev=true",
+    "devnode": "mud devnode",
     "lint": "prettier && solhint",
-    "----- INTERNAL -----": "---------------------------",
     "prettier": "prettier --write 'src/**/*.sol'",
-    "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix"
+    "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
+    "test": "mud test",
+    "types": "mud types"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
