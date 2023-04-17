@@ -11,7 +11,10 @@
   "main": "src/index.ts",
   "source": "src/index.ts",
   "scripts": {
-    "build": "(rimraf dist && rimraf ./.parcel-cache && pnpm prepack && parcel build && tsc --emitDeclarationOnly || true) && pnpm postpack",
+    "build:js": "pnpm run prepack && (parcel build || true) && pnpm run postpack && tsc --emitDeclarationOnly",
+    "clean:js": "rimraf dist",
+    "build": "pnpm run build:js",
+    "clean": "pnpm run clean:js",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\; && echo 'label: API' > API/index.yml",
     "lint": "eslint . --ext .ts",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
