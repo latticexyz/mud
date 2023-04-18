@@ -1,4 +1,0 @@
-order: -10
-# dot needs escaping, because retype doesn't render it properly
-# https://github.com/retypeapp/retype/issues/207
-label: 10\. Tall grass encounters

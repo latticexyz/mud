@@ -1,0 +1,16 @@
+export default {
+  "step-0": "0. Set up MUD project",
+  "step-1": "1. Create your first component and system",
+  "step-2": "2. Show player at position, click to move",
+  "step-3": "3. Move player with arrow keys",
+  "step-4": "4. Optimistic rendering",
+  "step-5": "5. Denoting behavior with components",
+  "step-6": "6. Loading screen",
+  "step-7": "7. Set up map",
+  "step-8": "8. Add terrain",
+  "step-9": "9. Obstructions",
+  "step-10": "10. Tall grass encounters",
+  "step-11": "11. Make it massively multiplayer",
+  "step-12": "12. Deploy to the testnet",
+  "step-13": "13. Make it your own",
+};
