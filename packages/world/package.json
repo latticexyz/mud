@@ -13,10 +13,10 @@
   "module": "dist/index.js",
   "types": "dist/src/render-solidity/index.d.ts",
   "scripts": {
-    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
+    "build": "pnpm run build:js && pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --out abi --skip test script",
     "build:js": "vite build",
-    "build:mud": "tsx ./scripts/tablegen.ts && tsx ./scripts/worldgen.ts",
+    "build:mud": "tsx ./scripts/tablegen.ts && node ./dist/worldgen.js",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain && pnpm run clean:js",
     "clean:abi": "rimraf abi",

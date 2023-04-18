@@ -9,12 +9,13 @@ export default defineConfig({
   build: {
     ssr: true,
     lib: {
-      entry: ["src/render-solidity/index.ts", "mud.config.mts"],
-      formats: ["cjs", "es"],
+      entry: ["src/render-solidity/index.ts", "mud.config.mts", "scripts/worldgen.ts"],
+      formats: ["es"],
     },
     outDir: "dist",
     minify: false,
     sourcemap: true,
+    target: "esnext",
   },
   plugins: [typescript() as any, peerDepsExternal()],
 });
