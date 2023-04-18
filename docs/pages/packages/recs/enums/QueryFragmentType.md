@@ -21,7 +21,7 @@
 
 #### Defined in
 
-[types.ts:123](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L123)
+[types.ts:123](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L123)
 
 ---
 
@@ -31,7 +31,7 @@
 
 #### Defined in
 
-[types.ts:124](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L124)
+[types.ts:124](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L124)
 
 ---
 
@@ -41,7 +41,7 @@
 
 #### Defined in
 
-[types.ts:125](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L125)
+[types.ts:125](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L125)
 
 ---
 
@@ -51,7 +51,7 @@
 
 #### Defined in
 
-[types.ts:126](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L126)
+[types.ts:126](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L126)
 
 ---
 
@@ -61,7 +61,7 @@
 
 #### Defined in
 
-[types.ts:128](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L128)
+[types.ts:128](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L128)
 
 ---
 
@@ -71,4 +71,4 @@
 
 #### Defined in
 
-[types.ts:127](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L127)
+[types.ts:127](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L127)

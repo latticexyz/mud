@@ -18,7 +18,7 @@
 
 #### Defined in
 
-[createProvider.ts:43](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createProvider.ts#L43)
+[createProvider.ts:43](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createProvider.ts#L43)
 
 ---
 
@@ -28,7 +28,7 @@
 
 #### Defined in
 
-[createProvider.ts:42](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createProvider.ts#L42)
+[createProvider.ts:42](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createProvider.ts#L42)
 
 ---
 
@@ -38,4 +38,4 @@
 
 #### Defined in
 
-[createProvider.ts:41](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createProvider.ts#L41)
+[createProvider.ts:41](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createProvider.ts#L41)

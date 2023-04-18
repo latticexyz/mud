@@ -26,7 +26,7 @@
 
 #### Defined in
 
-[useComponentValue.ts:14](https://github.com/latticexyz/mud/blob/28a579f35/packages/react/src/useComponentValue.ts#L14)
+[useComponentValue.ts:14](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/react/src/useComponentValue.ts#L14)
 
 ▸ **useComponentValue**<`S`\>(`component`, `entityIndex`): `ComponentValue`<`S`\> \| `undefined`
 
@@ -49,7 +49,7 @@
 
 #### Defined in
 
-[useComponentValue.ts:20](https://github.com/latticexyz/mud/blob/28a579f35/packages/react/src/useComponentValue.ts#L20)
+[useComponentValue.ts:20](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/react/src/useComponentValue.ts#L20)
 
 ---
 
@@ -79,7 +79,7 @@ See https://github.com/latticexyz/mud/issues/339
 
 #### Defined in
 
-[useDeprecatedComputedValue.ts:5](https://github.com/latticexyz/mud/blob/28a579f35/packages/react/src/useDeprecatedComputedValue.ts#L5)
+[useDeprecatedComputedValue.ts:5](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/react/src/useDeprecatedComputedValue.ts#L5)
 
 ---
 
@@ -106,7 +106,7 @@ Set of entities matching the query fragments.
 
 #### Defined in
 
-[useEntityQuery.ts:18](https://github.com/latticexyz/mud/blob/28a579f35/packages/react/src/useEntityQuery.ts#L18)
+[useEntityQuery.ts:18](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/react/src/useEntityQuery.ts#L18)
 
 ---
 
@@ -133,7 +133,7 @@ Set of entities matching the query fragments.
 
 #### Defined in
 
-[useObservableValue.ts:4](https://github.com/latticexyz/mud/blob/28a579f35/packages/react/src/useObservableValue.ts#L4)
+[useObservableValue.ts:4](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/react/src/useObservableValue.ts#L4)
 
 ▸ **useObservableValue**<`T`\>(`observable`): `T` \| `undefined`
 
@@ -155,4 +155,4 @@ Set of entities matching the query fragments.
 
 #### Defined in
 
-[useObservableValue.ts:6](https://github.com/latticexyz/mud/blob/28a579f35/packages/react/src/useObservableValue.ts#L6)
+[useObservableValue.ts:6](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/react/src/useObservableValue.ts#L6)

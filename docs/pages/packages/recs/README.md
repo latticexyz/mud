@@ -111,7 +111,7 @@
 
 #### Defined in
 
-[types.ts:105](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L105)
+[types.ts:105](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L105)
 
 ---
 
@@ -121,7 +121,7 @@
 
 #### Defined in
 
-[types.ts:103](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L103)
+[types.ts:103](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L103)
 
 ---
 
@@ -131,7 +131,7 @@
 
 #### Defined in
 
-[types.ts:225](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L225)
+[types.ts:225](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L225)
 
 ---
 
@@ -158,7 +158,7 @@ Type of a component update corresponding to a given [Schema](README.md#schema).
 
 #### Defined in
 
-[types.ts:68](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L68)
+[types.ts:68](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L68)
 
 ---
 
@@ -177,7 +177,7 @@ Used to infer the TypeScript type of a component value corresponding to a given 
 
 #### Defined in
 
-[types.ts:61](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L61)
+[types.ts:61](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L61)
 
 ---
 
@@ -191,7 +191,7 @@ Used to infer the TypeScript type of a component value corresponding to a given 
 
 #### Defined in
 
-[types.ts:95](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L95)
+[types.ts:95](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L95)
 
 ---
 
@@ -203,7 +203,7 @@ Used to refer to the string id of an entity (independent from a [World](README.m
 
 #### Defined in
 
-[types.ts:13](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L13)
+[types.ts:13](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L13)
 
 ---
 
@@ -215,7 +215,7 @@ Used to refer to the index of an entity in a [World](README.md#world).
 
 #### Defined in
 
-[types.ts:8](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L8)
+[types.ts:8](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L8)
 
 ---
 
@@ -231,7 +231,7 @@ Used to refer to the index of an entity in a [World](README.md#world).
 
 #### Defined in
 
-[types.ts:173](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L173)
+[types.ts:173](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L173)
 
 ---
 
@@ -241,7 +241,7 @@ Used to refer to the index of an entity in a [World](README.md#world).
 
 #### Defined in
 
-[types.ts:253](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L253)
+[types.ts:253](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L253)
 
 ---
 
@@ -264,7 +264,7 @@ Used to refer to the index of an entity in a [World](README.md#world).
 
 #### Defined in
 
-[types.ts:131](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L131)
+[types.ts:131](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L131)
 
 ---
 
@@ -288,7 +288,7 @@ Used to refer to the index of an entity in a [World](README.md#world).
 
 #### Defined in
 
-[types.ts:136](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L136)
+[types.ts:136](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L136)
 
 ---
 
@@ -308,7 +308,7 @@ Type of indexer returned by [createIndexer](README.md#createindexer).
 
 #### Defined in
 
-[types.ts:91](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L91)
+[types.ts:91](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L91)
 
 ---
 
@@ -325,7 +325,7 @@ Type of indexer returned by [createIndexer](README.md#createindexer).
 
 #### Defined in
 
-[types.ts:258](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L258)
+[types.ts:258](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L258)
 
 ---
 
@@ -335,7 +335,7 @@ Type of indexer returned by [createIndexer](README.md#createindexer).
 
 #### Defined in
 
-[types.ts:263](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L263)
+[types.ts:263](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L263)
 
 ---
 
@@ -348,7 +348,7 @@ Used to add arbitrary metadata to components.
 
 #### Defined in
 
-[types.ts:27](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L27)
+[types.ts:27](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L27)
 
 ---
 
@@ -371,7 +371,7 @@ Used to add arbitrary metadata to components.
 
 #### Defined in
 
-[types.ts:142](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L142)
+[types.ts:142](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L142)
 
 ---
 
@@ -395,7 +395,7 @@ Used to add arbitrary metadata to components.
 
 #### Defined in
 
-[types.ts:147](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L147)
+[types.ts:147](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L147)
 
 ---
 
@@ -405,7 +405,7 @@ Used to add arbitrary metadata to components.
 
 #### Defined in
 
-[types.ts:248](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L248)
+[types.ts:248](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L248)
 
 ---
 
@@ -415,7 +415,7 @@ Used to add arbitrary metadata to components.
 
 #### Defined in
 
-[types.ts:202](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L202)
+[types.ts:202](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L202)
 
 ---
 
@@ -435,7 +435,7 @@ Type of overridable component returned by [overridableComponent](README.md#overr
 
 #### Defined in
 
-[types.ts:193](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L193)
+[types.ts:193](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L193)
 
 ---
 
@@ -459,7 +459,7 @@ Type of overridable component returned by [overridableComponent](README.md#overr
 
 #### Defined in
 
-[types.ts:185](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L185)
+[types.ts:185](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L185)
 
 ---
 
@@ -477,7 +477,7 @@ Type of overridable component returned by [overridableComponent](README.md#overr
 
 #### Defined in
 
-[types.ts:159](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L159)
+[types.ts:159](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L159)
 
 ---
 
@@ -495,7 +495,7 @@ Type of overridable component returned by [overridableComponent](README.md#overr
 
 #### Defined in
 
-[types.ts:153](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L153)
+[types.ts:153](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L153)
 
 ---
 
@@ -511,7 +511,7 @@ Type of overridable component returned by [overridableComponent](README.md#overr
 
 #### Defined in
 
-[types.ts:165](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L165)
+[types.ts:165](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L165)
 
 ---
 
@@ -521,7 +521,7 @@ Type of overridable component returned by [overridableComponent](README.md#overr
 
 #### Defined in
 
-[types.ts:181](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L181)
+[types.ts:181](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L181)
 
 ---
 
@@ -538,7 +538,7 @@ Uses [Type](enums/Type.md) enum to be able to access the component type in JavaS
 
 #### Defined in
 
-[types.ts:19](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L19)
+[types.ts:19](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L19)
 
 ---
 
@@ -554,7 +554,7 @@ Uses [Type](enums/Type.md) enum to be able to access the component type in JavaS
 
 #### Defined in
 
-[types.ts:183](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L183)
+[types.ts:183](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L183)
 
 ---
 
@@ -564,7 +564,7 @@ Uses [Type](enums/Type.md) enum to be able to access the component type in JavaS
 
 #### Defined in
 
-[types.ts:179](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L179)
+[types.ts:179](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L179)
 
 ---
 
@@ -606,7 +606,7 @@ Mapping between JavaScript [Type](enums/Type.md) enum and corresponding TypeScri
 
 #### Defined in
 
-[types.ts:36](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L36)
+[types.ts:36](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L36)
 
 ---
 
@@ -632,7 +632,7 @@ Type of World returned by [createWorld](README.md#createworld).
 
 #### Defined in
 
-[types.ts:110](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L110)
+[types.ts:110](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L110)
 
 ## Variables
 
@@ -644,7 +644,7 @@ Helper constant with all optional [Type](enums/Type.md)s.
 
 #### Defined in
 
-[constants.ts:44](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L44)
+[constants.ts:44](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L44)
 
 ## Functions
 
@@ -687,7 +687,7 @@ query fragment to be used in [runQuery](README.md#runquery) or [defineQuery](REA
 
 #### Defined in
 
-[Query.ts:47](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L47)
+[Query.ts:47](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L47)
 
 ---
 
@@ -731,7 +731,7 @@ query fragment to be used in [runQuery](README.md#runquery) or [defineQuery](REA
 
 #### Defined in
 
-[Query.ts:88](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L88)
+[Query.ts:88](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L88)
 
 ---
 
@@ -774,7 +774,7 @@ query fragment to be used in [runQuery](README.md#runquery) or [defineQuery](REA
 
 #### Defined in
 
-[Query.ts:67](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L67)
+[Query.ts:67](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L67)
 
 ---
 
@@ -818,7 +818,7 @@ query fragment to be used in [runQuery](README.md#runquery) or [defineQuery](REA
 
 #### Defined in
 
-[Query.ts:112](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L112)
+[Query.ts:112](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L112)
 
 ---
 
@@ -857,7 +857,7 @@ query fragment to be used in [runQuery](README.md#runquery) or [defineQuery](REA
 
 #### Defined in
 
-[Query.ts:159](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L159)
+[Query.ts:159](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L159)
 
 ---
 
@@ -896,7 +896,7 @@ query fragment to be used in [runQuery](README.md#runquery) or [defineQuery](REA
 
 #### Defined in
 
-[Query.ts:137](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L137)
+[Query.ts:137](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L137)
 
 ---
 
@@ -917,7 +917,7 @@ query fragment to be used in [runQuery](README.md#runquery) or [defineQuery](REA
 
 #### Defined in
 
-[Component.ts:439](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L439)
+[Component.ts:439](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L439)
 
 ---
 
@@ -957,7 +957,7 @@ True if `a` equals `b` in the keys present in a or neither `a` nor `b` are defin
 
 #### Defined in
 
-[Component.ts:229](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L229)
+[Component.ts:229](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L229)
 
 ---
 
@@ -984,7 +984,7 @@ index of this entity in the [World](README.md#world). This [EntityIndex](README.
 
 #### Defined in
 
-[Entity.ts:17](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Entity.ts#L17)
+[Entity.ts:17](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Entity.ts#L17)
 
 ---
 
@@ -1027,7 +1027,7 @@ Indexed version of the component.
 
 #### Defined in
 
-[Indexer.ts:18](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Indexer.ts#L18)
+[Indexer.ts:18](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Indexer.ts#L18)
 
 ---
 
@@ -1056,7 +1056,7 @@ Indexed version of the component.
 
 #### Defined in
 
-[Component.ts:444](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L444)
+[Component.ts:444](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L444)
 
 ---
 
@@ -1091,7 +1091,7 @@ A new World
 
 #### Defined in
 
-[World.ts:13](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/World.ts#L13)
+[World.ts:13](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/World.ts#L13)
 
 ---
 
@@ -1140,7 +1140,7 @@ Component object linked to the provided World
 
 #### Defined in
 
-[Component.ts:42](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L42)
+[Component.ts:42](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L42)
 
 ---
 
@@ -1172,7 +1172,7 @@ Create a system that is called every time the given component is updated.
 
 #### Defined in
 
-[System.ts:115](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/System.ts#L115)
+[System.ts:115](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/System.ts#L115)
 
 ---
 
@@ -1199,7 +1199,7 @@ Stream of component updates of entities matching the query for the first time
 
 #### Defined in
 
-[Query.ts:550](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L550)
+[Query.ts:550](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L550)
 
 ---
 
@@ -1225,7 +1225,7 @@ Create a system that is called on every event of the given [enter query](README.
 
 #### Defined in
 
-[System.ts:55](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/System.ts#L55)
+[System.ts:55](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/System.ts#L55)
 
 ---
 
@@ -1252,7 +1252,7 @@ Stream of component updates of entities not matching the query anymore for the f
 
 #### Defined in
 
-[Query.ts:564](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L564)
+[Query.ts:564](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L564)
 
 ---
 
@@ -1278,7 +1278,7 @@ Create a system that is called on every event of the given [exit query](README.m
 
 #### Defined in
 
-[System.ts:75](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/System.ts#L75)
+[System.ts:75](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/System.ts#L75)
 
 ---
 
@@ -1331,7 +1331,7 @@ matching: Mobx observable set of entities currently matching the query.
 
 #### Defined in
 
-[Query.ts:418](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L418)
+[Query.ts:418](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L418)
 
 ---
 
@@ -1366,7 +1366,7 @@ disposed when the `world` is disposed (eg. during a hot reload in development).
 
 #### Defined in
 
-[System.ts:19](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/System.ts#L19)
+[System.ts:19](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/System.ts#L19)
 
 ---
 
@@ -1400,7 +1400,7 @@ Create a system to synchronize updates to one component with another component.
 
 #### Defined in
 
-[System.ts:133](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/System.ts#L133)
+[System.ts:133](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/System.ts#L133)
 
 ---
 
@@ -1426,7 +1426,7 @@ Create a system that is called on every event of the given [query](README.md#def
 
 #### Defined in
 
-[System.ts:95](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/System.ts#L95)
+[System.ts:95](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/System.ts#L95)
 
 ---
 
@@ -1453,7 +1453,7 @@ Stream of component updates of entities that had already matched the query
 
 #### Defined in
 
-[Query.ts:536](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L536)
+[Query.ts:536](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L536)
 
 ---
 
@@ -1479,7 +1479,7 @@ Create a system that is called on every event of the given [update query](README
 
 #### Defined in
 
-[System.ts:35](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/System.ts#L35)
+[System.ts:35](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/System.ts#L35)
 
 ---
 
@@ -1506,7 +1506,7 @@ Set of entities that are child entities of the given entity via the given compon
 
 #### Defined in
 
-[Query.ts:288](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L288)
+[Query.ts:288](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L288)
 
 ---
 
@@ -1537,7 +1537,7 @@ Set of all entities in the given component.
 
 #### Defined in
 
-[Component.ts:292](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L292)
+[Component.ts:292](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L292)
 
 ---
 
@@ -1570,7 +1570,7 @@ Value of the given entity in the given component or undefined if no value exists
 
 #### Defined in
 
-[Component.ts:178](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L178)
+[Component.ts:178](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L178)
 
 ---
 
@@ -1607,7 +1607,7 @@ Value of the given entity in the given component.
 
 #### Defined in
 
-[Component.ts:206](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L206)
+[Component.ts:206](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L206)
 
 ---
 
@@ -1638,7 +1638,7 @@ Set with [EntityIndices](README.md#entityindex) of the entities with the given c
 
 #### Defined in
 
-[Component.ts:266](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L266)
+[Component.ts:266](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L266)
 
 ---
 
@@ -1668,7 +1668,7 @@ Array of components that have a value for the given entity.
 
 #### Defined in
 
-[World.ts:96](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/World.ts#L96)
+[World.ts:96](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/World.ts#L96)
 
 ---
 
@@ -1700,7 +1700,7 @@ true if the component contains a value for the given entity, else false.
 
 #### Defined in
 
-[Component.ts:162](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L162)
+[Component.ts:162](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L162)
 
 ---
 
@@ -1720,7 +1720,7 @@ t is ArrayType
 
 #### Defined in
 
-[types.ts:235](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L235)
+[types.ts:235](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L235)
 
 ---
 
@@ -1751,7 +1751,7 @@ True (+ infered type for `update`) if `update` belongs to `component`. Else fals
 
 #### Defined in
 
-[utils.ts:13](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/utils.ts#L13)
+[utils.ts:13](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/utils.ts#L13)
 
 ---
 
@@ -1771,7 +1771,7 @@ t is EntityType
 
 #### Defined in
 
-[types.ts:254](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L254)
+[types.ts:254](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L254)
 
 ---
 
@@ -1800,7 +1800,7 @@ value is ComponentValue<S, undefined\>
 
 #### Defined in
 
-[utils.ts:63](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/utils.ts#L63)
+[utils.ts:63](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/utils.ts#L63)
 
 ---
 
@@ -1828,7 +1828,7 @@ c is Indexer<S, Metadata, undefined\>
 
 #### Defined in
 
-[utils.ts:53](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/utils.ts#L53)
+[utils.ts:53](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/utils.ts#L53)
 
 ---
 
@@ -1848,7 +1848,7 @@ t is NumberType
 
 #### Defined in
 
-[types.ts:249](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L249)
+[types.ts:249](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L249)
 
 ---
 
@@ -1868,7 +1868,7 @@ t is OptionalType
 
 #### Defined in
 
-[types.ts:212](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L212)
+[types.ts:212](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L212)
 
 ---
 
@@ -1915,7 +1915,7 @@ World with a new namespace.
 
 #### Defined in
 
-[World.ts:78](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/World.ts#L78)
+[World.ts:78](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/World.ts#L78)
 
 ---
 
@@ -1955,7 +1955,7 @@ overridable component
 
 #### Defined in
 
-[Component.ts:312](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L312)
+[Component.ts:312](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L312)
 
 ---
 
@@ -1986,7 +1986,7 @@ Remove a given entity from a given component.
 
 #### Defined in
 
-[Component.ts:144](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L144)
+[Component.ts:144](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L144)
 
 ---
 
@@ -2020,7 +2020,7 @@ Set of entities matching the query fragments.
 
 #### Defined in
 
-[Query.ts:321](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Query.ts#L321)
+[Query.ts:321](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Query.ts#L321)
 
 ---
 
@@ -2057,7 +2057,7 @@ setComponent(Position, entity, { x: 1, y: 2 });
 
 #### Defined in
 
-[Component.ts:71](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L71)
+[Component.ts:71](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L71)
 
 ---
 
@@ -2088,7 +2088,7 @@ Component update corresponding to the given entity, the given component and the 
 
 #### Defined in
 
-[utils.ts:27](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/utils.ts#L27)
+[utils.ts:27](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/utils.ts#L27)
 
 ---
 
@@ -2118,7 +2118,7 @@ Unary function to be used with RxJS that turns stream of [EntityIndices](README.
 
 #### Defined in
 
-[utils.ts:44](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/utils.ts#L44)
+[utils.ts:44](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/utils.ts#L44)
 
 ---
 
@@ -2161,7 +2161,7 @@ updateComponent(Position, entity, { x: 1 });
 
 #### Defined in
 
-[Component.ts:121](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L121)
+[Component.ts:121](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L121)
 
 ---
 
@@ -2194,4 +2194,4 @@ Tuple `[component, value]`
 
 #### Defined in
 
-[Component.ts:252](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/Component.ts#L252)
+[Component.ts:252](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/Component.ts#L252)

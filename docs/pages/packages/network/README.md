@@ -127,7 +127,7 @@
 
 #### Defined in
 
-[workers/SyncWorker.ts:65](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L65)
+[workers/SyncWorker.ts:65](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L65)
 
 ---
 
@@ -137,7 +137,7 @@
 
 #### Defined in
 
-[workers/CacheStore.ts:12](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L12)
+[workers/CacheStore.ts:12](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L12)
 
 ---
 
@@ -157,7 +157,7 @@
 
 #### Defined in
 
-[types.ts:31](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L31)
+[types.ts:31](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L31)
 
 ---
 
@@ -174,7 +174,7 @@
 
 #### Defined in
 
-[workers/SyncWorker.ts:64](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L64)
+[workers/SyncWorker.ts:64](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L64)
 
 ---
 
@@ -191,7 +191,7 @@
 
 #### Defined in
 
-[types.ts:51](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L51)
+[types.ts:51](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L51)
 
 ---
 
@@ -219,7 +219,7 @@
 
 #### Defined in
 
-[types.ts:67](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L67)
+[types.ts:67](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L67)
 
 ---
 
@@ -268,7 +268,7 @@
 
 #### Defined in
 
-[types.ts:242](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L242)
+[types.ts:242](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L242)
 
 ---
 
@@ -285,7 +285,7 @@
 
 #### Defined in
 
-[types.ts:62](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L62)
+[types.ts:62](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L62)
 
 ---
 
@@ -299,7 +299,7 @@
 
 #### Defined in
 
-[types.ts:47](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L47)
+[types.ts:47](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L47)
 
 ---
 
@@ -315,7 +315,7 @@
 
 #### Defined in
 
-[types.ts:56](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L56)
+[types.ts:56](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L56)
 
 ---
 
@@ -325,7 +325,7 @@
 
 #### Defined in
 
-[workers/CacheStore.ts:13](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L13)
+[workers/CacheStore.ts:13](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L13)
 
 ---
 
@@ -335,7 +335,7 @@
 
 #### Defined in
 
-[workers/SyncWorker.ts:67](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L67)
+[workers/SyncWorker.ts:67](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L67)
 
 ---
 
@@ -355,7 +355,7 @@
 
 #### Defined in
 
-[types.ts:80](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L80)
+[types.ts:80](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L80)
 
 ---
 
@@ -365,7 +365,7 @@
 
 #### Defined in
 
-[createNetwork.ts:12](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createNetwork.ts#L12)
+[createNetwork.ts:12](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createNetwork.ts#L12)
 
 ---
 
@@ -381,7 +381,7 @@
 
 #### Defined in
 
-[types.ts:84](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L84)
+[types.ts:84](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L84)
 
 ---
 
@@ -397,7 +397,7 @@
 
 #### Defined in
 
-[types.ts:121](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L121)
+[types.ts:121](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L121)
 
 ---
 
@@ -407,7 +407,7 @@
 
 #### Defined in
 
-[createProvider.ts:8](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createProvider.ts#L8)
+[createProvider.ts:8](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createProvider.ts#L8)
 
 ---
 
@@ -417,7 +417,7 @@
 
 #### Defined in
 
-[workers/CacheStore.ts:11](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L11)
+[workers/CacheStore.ts:11](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L11)
 
 ---
 
@@ -435,7 +435,7 @@
 
 #### Defined in
 
-[types.ts:279](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L279)
+[types.ts:279](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L279)
 
 ---
 
@@ -465,7 +465,7 @@
 
 #### Defined in
 
-[types.ts:133](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L133)
+[types.ts:133](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L133)
 
 ---
 
@@ -489,7 +489,7 @@
 
 #### Defined in
 
-[types.ts:110](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L110)
+[types.ts:110](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L110)
 
 ---
 
@@ -508,7 +508,7 @@
 
 #### Defined in
 
-[types.ts:103](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L103)
+[types.ts:103](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L103)
 
 ---
 
@@ -524,7 +524,7 @@
 
 #### Defined in
 
-[createTopics.ts:5](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createTopics.ts#L5)
+[createTopics.ts:5](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createTopics.ts#L5)
 
 ---
 
@@ -540,7 +540,7 @@
 
 #### Defined in
 
-[types.ts:60](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L60)
+[types.ts:60](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L60)
 
 ## Variables
 
@@ -589,7 +589,7 @@
 
 #### Defined in
 
-[types.ts:223](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L223)
+[types.ts:223](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L223)
 
 ---
 
@@ -599,7 +599,7 @@
 
 #### Defined in
 
-[types.ts:186](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L186)
+[types.ts:186](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L186)
 
 ---
 
@@ -613,7 +613,7 @@ Import SingletonID instead
 
 #### Defined in
 
-[workers/constants.ts:12](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/constants.ts#L12)
+[workers/constants.ts:12](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/constants.ts#L12)
 
 ---
 
@@ -623,7 +623,7 @@ Import SingletonID instead
 
 #### Defined in
 
-[workers/constants.ts:9](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/constants.ts#L9)
+[workers/constants.ts:9](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/constants.ts#L9)
 
 ---
 
@@ -639,7 +639,7 @@ Import SingletonID instead
 
 #### Defined in
 
-[workers/SyncWorker.ts:66](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L66)
+[workers/SyncWorker.ts:66](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L66)
 
 ## Functions
 
@@ -673,7 +673,7 @@ Stream of block numbers based on connected provider's `block` event.
 
 #### Defined in
 
-[createBlockNumberStream.ts:15](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createBlockNumberStream.ts#L15)
+[createBlockNumberStream.ts:15](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createBlockNumberStream.ts#L15)
 
 ---
 
@@ -696,7 +696,7 @@ Stream of block numbers based on connected provider's `block` event.
 
 #### Defined in
 
-[workers/CacheStore.ts:19](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L19)
+[workers/CacheStore.ts:19](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L19)
 
 ---
 
@@ -729,7 +729,7 @@ Object with contracts connected to the currently connected provider.
 
 #### Defined in
 
-[createContracts.ts:13](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createContracts.ts#L13)
+[createContracts.ts:13](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createContracts.ts#L13)
 
 ---
 
@@ -769,7 +769,7 @@ Function to decode raw component values using their contract component id
 
 #### Defined in
 
-[workers/syncUtils.ts:367](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L367)
+[workers/syncUtils.ts:367](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L367)
 
 ---
 
@@ -813,7 +813,7 @@ Function to decode encoded hex value to component value.
 
 #### Defined in
 
-[createDecoder.ts:74](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createDecoder.ts#L74)
+[createDecoder.ts:74](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createDecoder.ts#L74)
 
 ---
 
@@ -856,7 +856,7 @@ Function to encode component values
 
 #### Defined in
 
-[createEncoder.ts:11](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createEncoder.ts#L11)
+[createEncoder.ts:11](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createEncoder.ts#L11)
 
 ---
 
@@ -886,7 +886,7 @@ in nonce errors.
 
 #### Defined in
 
-[createFastTxExecutor.ts:13](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createFastTxExecutor.ts#L13)
+[createFastTxExecutor.ts:13](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createFastTxExecutor.ts#L13)
 
 ---
 
@@ -910,7 +910,7 @@ FaucetServiceClient
 
 #### Defined in
 
-[createFaucetService.ts:10](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createFaucetService.ts#L10)
+[createFaucetService.ts:10](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createFaucetService.ts#L10)
 
 ---
 
@@ -943,7 +943,7 @@ FaucetServiceClient
 
 #### Defined in
 
-[workers/syncUtils.ts:551](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L551)
+[workers/syncUtils.ts:551](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L551)
 
 ---
 
@@ -989,7 +989,7 @@ Function to fetch World contract events in a given block range.
 
 #### Defined in
 
-[workers/syncUtils.ts:406](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L406)
+[workers/syncUtils.ts:406](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L406)
 
 ---
 
@@ -1022,7 +1022,7 @@ Stream of [NetworkComponentUpdate](README.md#networkcomponentupdate)s.
 
 #### Defined in
 
-[workers/syncUtils.ts:256](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L256)
+[workers/syncUtils.ts:256](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L256)
 
 ---
 
@@ -1050,7 +1050,7 @@ Stream of [NetworkComponentUpdate](README.md#networkcomponentupdate)s.
 
 #### Defined in
 
-[workers/syncUtils.ts:210](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L210)
+[workers/syncUtils.ts:210](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L210)
 
 ---
 
@@ -1074,7 +1074,7 @@ Network object
 
 #### Defined in
 
-[createNetwork.ts:20](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createNetwork.ts#L20)
+[createNetwork.ts:20](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createNetwork.ts#L20)
 
 ---
 
@@ -1106,7 +1106,7 @@ ws: WebSocketProvider
 
 #### Defined in
 
-[createProvider.ts:19](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createProvider.ts#L19)
+[createProvider.ts:19](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createProvider.ts#L19)
 
 ---
 
@@ -1131,7 +1131,7 @@ Automatically reconnecting [provider pair](README.md#createprovider) that update
 
 #### Defined in
 
-[createProvider.ts:54](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createProvider.ts#L54)
+[createProvider.ts:54](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createProvider.ts#L54)
 
 ---
 
@@ -1157,7 +1157,7 @@ RelayService connection
 
 #### Defined in
 
-[createRelayStream.ts:16](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createRelayStream.ts#L16)
+[createRelayStream.ts:16](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createRelayStream.ts#L16)
 
 ---
 
@@ -1180,7 +1180,7 @@ RelayService connection
 
 #### Defined in
 
-[createSigner.ts:4](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createSigner.ts#L4)
+[createSigner.ts:4](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createSigner.ts#L4)
 
 ---
 
@@ -1204,7 +1204,7 @@ ECSStateSnapshotServiceClient
 
 #### Defined in
 
-[workers/syncUtils.ts:46](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L46)
+[workers/syncUtils.ts:46](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L46)
 
 ---
 
@@ -1228,7 +1228,7 @@ ECSStreamServiceClient
 
 #### Defined in
 
-[workers/syncUtils.ts:55](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L55)
+[workers/syncUtils.ts:55](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L55)
 
 ---
 
@@ -1271,7 +1271,7 @@ dispose: function to dispose of the sync worker
 
 #### Defined in
 
-[createSyncWorker.ts:17](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createSyncWorker.ts#L17)
+[createSyncWorker.ts:17](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createSyncWorker.ts#L17)
 
 ---
 
@@ -1325,7 +1325,7 @@ Systems object to call system contracts.
 
 #### Defined in
 
-[createSystemExecutor.ts:22](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createSystemExecutor.ts#L22)
+[createSystemExecutor.ts:22](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createSystemExecutor.ts#L22)
 
 ---
 
@@ -1351,7 +1351,7 @@ Systems object to call system contracts.
 
 #### Defined in
 
-[createTopics.ts:12](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createTopics.ts#L12)
+[createTopics.ts:12](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createTopics.ts#L12)
 
 ---
 
@@ -1387,7 +1387,7 @@ Function to transform World contract events from a stream service.
 
 #### Defined in
 
-[workers/syncUtils.ts:467](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L467)
+[workers/syncUtils.ts:467](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L467)
 
 ---
 
@@ -1438,7 +1438,7 @@ TxQueue object
 
 #### Defined in
 
-[createTxQueue.ts:24](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createTxQueue.ts#L24)
+[createTxQueue.ts:24](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createTxQueue.ts#L24)
 
 ---
 
@@ -1456,7 +1456,7 @@ World contract topics for the `ComponentValueSet` and `ComponentValueRemoved` ev
 
 #### Defined in
 
-[workers/syncUtils.ts:392](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L392)
+[workers/syncUtils.ts:392](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L392)
 
 ---
 
@@ -1481,7 +1481,7 @@ Promise resolving once the network is reachable
 
 #### Defined in
 
-[networkUtils.ts:22](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/networkUtils.ts#L22)
+[networkUtils.ts:22](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/networkUtils.ts#L22)
 
 ---
 
@@ -1506,7 +1506,7 @@ Promise resolving with the latest Ethereum block
 
 #### Defined in
 
-[networkUtils.ts:38](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/networkUtils.ts#L38)
+[networkUtils.ts:38](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/networkUtils.ts#L38)
 
 ---
 
@@ -1541,7 +1541,7 @@ Promise resolving with an array of ContractEvents
 
 #### Defined in
 
-[networkUtils.ts:143](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/networkUtils.ts#L143)
+[networkUtils.ts:143](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/networkUtils.ts#L143)
 
 ---
 
@@ -1570,7 +1570,7 @@ Promise resolving with array containing the contract ECS events in the given blo
 
 #### Defined in
 
-[workers/syncUtils.ts:298](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L298)
+[workers/syncUtils.ts:298](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L298)
 
 ---
 
@@ -1605,7 +1605,7 @@ Promise resolving with an array of logs from the specified block range and topic
 
 #### Defined in
 
-[networkUtils.ts:70](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/networkUtils.ts#L70)
+[networkUtils.ts:70](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/networkUtils.ts#L70)
 
 ---
 
@@ -1635,7 +1635,7 @@ Promise resolving with [CacheStore](README.md#cachestore) containing the snapsho
 
 #### Defined in
 
-[workers/syncUtils.ts:90](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L90)
+[workers/syncUtils.ts:90](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L90)
 
 ---
 
@@ -1666,7 +1666,7 @@ Promise resolving with [CacheStore](README.md#cachestore) containing the snapsho
 
 #### Defined in
 
-[workers/syncUtils.ts:115](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L115)
+[workers/syncUtils.ts:115](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L115)
 
 ---
 
@@ -1695,7 +1695,7 @@ Promise resolving with [CacheStore](README.md#cachestore) containing the contrac
 
 #### Defined in
 
-[workers/syncUtils.ts:334](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L334)
+[workers/syncUtils.ts:334](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L334)
 
 ---
 
@@ -1722,7 +1722,7 @@ Promise resolving with [CacheStore](README.md#cachestore) containing the contrac
 
 #### Defined in
 
-[createDecoder.ts:10](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/createDecoder.ts#L10)
+[createDecoder.ts:10](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/createDecoder.ts#L10)
 
 ---
 
@@ -1744,7 +1744,7 @@ Promise resolving with [CacheStore](README.md#cachestore) containing the contrac
 
 #### Defined in
 
-[workers/CacheStore.ts:15](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L15)
+[workers/CacheStore.ts:15](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L15)
 
 ---
 
@@ -1776,7 +1776,7 @@ Promise resolving with [CacheStore](README.md#cachestore) containing the contrac
 
 #### Defined in
 
-[workers/CacheStore.ts:88](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L88)
+[workers/CacheStore.ts:88](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L88)
 
 ---
 
@@ -1803,7 +1803,7 @@ Promise resolving with [CacheStore](README.md#cachestore) containing the contrac
 
 #### Defined in
 
-[workers/CacheStore.ts:164](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L164)
+[workers/CacheStore.ts:164](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L164)
 
 ---
 
@@ -1826,7 +1826,7 @@ Promise resolving with [CacheStore](README.md#cachestore) containing the contrac
 
 #### Defined in
 
-[workers/CacheStore.ts:168](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L168)
+[workers/CacheStore.ts:168](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L168)
 
 ---
 
@@ -1851,7 +1851,7 @@ Promise resolving with revert reason string
 
 #### Defined in
 
-[networkUtils.ts:230](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/networkUtils.ts#L230)
+[networkUtils.ts:230](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/networkUtils.ts#L230)
 
 ---
 
@@ -1876,7 +1876,7 @@ Snapsot block number
 
 #### Defined in
 
-[workers/syncUtils.ts:66](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L66)
+[workers/syncUtils.ts:66](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L66)
 
 ---
 
@@ -1902,7 +1902,7 @@ e is NetworkComponentUpdate<C\>
 
 #### Defined in
 
-[types.ts:127](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L127)
+[types.ts:127](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L127)
 
 ---
 
@@ -1928,7 +1928,7 @@ e is SystemCall<C\>
 
 #### Defined in
 
-[types.ts:123](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L123)
+[types.ts:123](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L123)
 
 ---
 
@@ -1955,7 +1955,7 @@ e is SystemCall<C\>
 
 #### Defined in
 
-[workers/CacheStore.ts:143](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L143)
+[workers/CacheStore.ts:143](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L143)
 
 ---
 
@@ -1975,7 +1975,7 @@ e is SystemCall<C\>
 
 #### Defined in
 
-[workers/CacheStore.ts:117](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L117)
+[workers/CacheStore.ts:117](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L117)
 
 ---
 
@@ -1995,7 +1995,7 @@ e is SystemCall<C\>
 
 #### Defined in
 
-[utils.ts:8](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/utils.ts#L8)
+[utils.ts:8](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/utils.ts#L8)
 
 ---
 
@@ -2015,7 +2015,7 @@ e is SystemCall<C\>
 
 #### Defined in
 
-[utils.ts:30](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/utils.ts#L30)
+[utils.ts:30](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/utils.ts#L30)
 
 ---
 
@@ -2035,7 +2035,7 @@ e is SystemCall<C\>
 
 #### Defined in
 
-[utils.ts:15](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/utils.ts#L15)
+[utils.ts:15](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/utils.ts#L15)
 
 ---
 
@@ -2055,7 +2055,7 @@ e is SystemCall<C\>
 
 #### Defined in
 
-[workers/syncUtils.ts:531](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L531)
+[workers/syncUtils.ts:531](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L531)
 
 ---
 
@@ -2091,7 +2091,7 @@ Promise resolving once state is reduced into [CacheStore](README.md#cachestore).
 
 #### Defined in
 
-[workers/syncUtils.ts:160](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L160)
+[workers/syncUtils.ts:160](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L160)
 
 ---
 
@@ -2123,7 +2123,7 @@ Promise resolving once state is reduced into [CacheStore](README.md#cachestore).
 
 #### Defined in
 
-[workers/syncUtils.ts:183](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/syncUtils.ts#L183)
+[workers/syncUtils.ts:183](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/syncUtils.ts#L183)
 
 ---
 
@@ -2157,7 +2157,7 @@ Promise resolving once state is reduced into [CacheStore](README.md#cachestore).
 
 #### Defined in
 
-[workers/CacheStore.ts:135](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L135)
+[workers/CacheStore.ts:135](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L135)
 
 ---
 
@@ -2190,7 +2190,7 @@ Promise resolving once state is reduced into [CacheStore](README.md#cachestore).
 
 #### Defined in
 
-[workers/CacheStore.ts:30](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L30)
+[workers/CacheStore.ts:30](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L30)
 
 ---
 
@@ -2223,4 +2223,4 @@ Promise resolving once state is reduced into [CacheStore](README.md#cachestore).
 
 #### Defined in
 
-[workers/CacheStore.ts:79](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/CacheStore.ts#L79)
+[workers/CacheStore.ts:79](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/CacheStore.ts#L79)

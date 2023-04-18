@@ -26,7 +26,7 @@ Used to specify type of [ComponentUpdate](../README.md#componentupdate).
 
 #### Defined in
 
-[constants.ts:35](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L35)
+[constants.ts:35](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L35)
 
 ---
 
@@ -36,7 +36,7 @@ Used to specify type of [ComponentUpdate](../README.md#componentupdate).
 
 #### Defined in
 
-[constants.ts:36](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L36)
+[constants.ts:36](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L36)
 
 ---
 
@@ -46,7 +46,7 @@ Used to specify type of [ComponentUpdate](../README.md#componentupdate).
 
 #### Defined in
 
-[constants.ts:38](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L38)
+[constants.ts:38](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L38)
 
 ---
 
@@ -56,4 +56,4 @@ Used to specify type of [ComponentUpdate](../README.md#componentupdate).
 
 #### Defined in
 
-[constants.ts:37](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L37)
+[constants.ts:37](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L37)

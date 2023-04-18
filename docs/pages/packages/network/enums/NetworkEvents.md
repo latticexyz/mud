@@ -17,7 +17,7 @@
 
 #### Defined in
 
-[types.ts:118](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L118)
+[types.ts:118](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L118)
 
 ---
 
@@ -27,4 +27,4 @@
 
 #### Defined in
 
-[types.ts:117](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L117)
+[types.ts:117](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L117)

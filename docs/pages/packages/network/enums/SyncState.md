@@ -18,7 +18,7 @@
 
 #### Defined in
 
-[workers/constants.ts:4](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/constants.ts#L4)
+[workers/constants.ts:4](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/constants.ts#L4)
 
 ---
 
@@ -28,7 +28,7 @@
 
 #### Defined in
 
-[workers/constants.ts:5](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/constants.ts#L5)
+[workers/constants.ts:5](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/constants.ts#L5)
 
 ---
 
@@ -38,4 +38,4 @@
 
 #### Defined in
 
-[workers/constants.ts:6](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/constants.ts#L6)
+[workers/constants.ts:6](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/constants.ts#L6)

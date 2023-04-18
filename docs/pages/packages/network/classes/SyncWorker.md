@@ -44,7 +44,7 @@
 
 #### Defined in
 
-[workers/SyncWorker.ts:74](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L74)
+[workers/SyncWorker.ts:74](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L74)
 
 ## Properties
 
@@ -54,7 +54,7 @@
 
 #### Defined in
 
-[workers/SyncWorker.ts:70](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L70)
+[workers/SyncWorker.ts:70](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L70)
 
 ---
 
@@ -64,7 +64,7 @@
 
 #### Defined in
 
-[workers/SyncWorker.ts:71](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L71)
+[workers/SyncWorker.ts:71](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L71)
 
 ---
 
@@ -74,7 +74,7 @@
 
 #### Defined in
 
-[workers/SyncWorker.ts:72](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L72)
+[workers/SyncWorker.ts:72](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L72)
 
 ## Methods
 
@@ -100,7 +100,7 @@ Start the sync process.
 
 #### Defined in
 
-[workers/SyncWorker.ts:121](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L121)
+[workers/SyncWorker.ts:121](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L121)
 
 ---
 
@@ -124,7 +124,7 @@ Can be used to indicate the initial loading state on a loading screen.
 
 #### Defined in
 
-[workers/SyncWorker.ts:89](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L89)
+[workers/SyncWorker.ts:89](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L89)
 
 ---
 
@@ -148,4 +148,4 @@ DoWork.work
 
 #### Defined in
 
-[workers/SyncWorker.ts:321](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L321)
+[workers/SyncWorker.ts:321](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L321)

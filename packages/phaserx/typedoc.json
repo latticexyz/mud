@@ -5,5 +5,6 @@
   "lightHighlightTheme": "nord",
   "plugin": ["typedoc-plugin-markdown"],
   "out": "API",
-  "readme": "none"
+  "readme": "none",
+  "githubPages": false
 }

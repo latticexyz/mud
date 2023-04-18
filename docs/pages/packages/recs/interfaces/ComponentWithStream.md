@@ -50,7 +50,7 @@ Type of component returned by [defineComponent](../README.md#definecomponent).
 
 #### Defined in
 
-[types.ts:82](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L82)
+[types.ts:82](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L82)
 
 ---
 
@@ -64,7 +64,7 @@ Type of component returned by [defineComponent](../README.md#definecomponent).
 
 #### Defined in
 
-[types.ts:78](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L78)
+[types.ts:78](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L78)
 
 ---
 
@@ -78,7 +78,7 @@ Type of component returned by [defineComponent](../README.md#definecomponent).
 
 #### Defined in
 
-[types.ts:81](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L81)
+[types.ts:81](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L81)
 
 ---
 
@@ -92,7 +92,7 @@ Type of component returned by [defineComponent](../README.md#definecomponent).
 
 #### Defined in
 
-[types.ts:80](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L80)
+[types.ts:80](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L80)
 
 ---
 
@@ -102,7 +102,7 @@ Type of component returned by [defineComponent](../README.md#definecomponent).
 
 #### Defined in
 
-[types.ts:100](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L100)
+[types.ts:100](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L100)
 
 ---
 
@@ -116,7 +116,7 @@ Type of component returned by [defineComponent](../README.md#definecomponent).
 
 #### Defined in
 
-[types.ts:85](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L85)
+[types.ts:85](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L85)
 
 ---
 
@@ -130,7 +130,7 @@ Type of component returned by [defineComponent](../README.md#definecomponent).
 
 #### Defined in
 
-[types.ts:79](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L79)
+[types.ts:79](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L79)
 
 ---
 
@@ -144,4 +144,4 @@ Type of component returned by [defineComponent](../README.md#definecomponent).
 
 #### Defined in
 
-[types.ts:83](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/types.ts#L83)
+[types.ts:83](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/types.ts#L83)

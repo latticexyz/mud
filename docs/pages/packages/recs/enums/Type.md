@@ -37,7 +37,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:9](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L9)
+[constants.ts:9](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L9)
 
 ---
 
@@ -47,7 +47,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:15](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L15)
+[constants.ts:15](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L15)
 
 ---
 
@@ -57,7 +57,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:6](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L6)
+[constants.ts:6](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L6)
 
 ---
 
@@ -67,7 +67,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:19](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L19)
+[constants.ts:19](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L19)
 
 ---
 
@@ -77,7 +77,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:21](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L21)
+[constants.ts:21](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L21)
 
 ---
 
@@ -87,7 +87,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:7](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L7)
+[constants.ts:7](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L7)
 
 ---
 
@@ -97,7 +97,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:13](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L13)
+[constants.ts:13](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L13)
 
 ---
 
@@ -107,7 +107,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:10](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L10)
+[constants.ts:10](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L10)
 
 ---
 
@@ -117,7 +117,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:16](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L16)
+[constants.ts:16](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L16)
 
 ---
 
@@ -127,7 +127,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:20](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L20)
+[constants.ts:20](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L20)
 
 ---
 
@@ -137,7 +137,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:22](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L22)
+[constants.ts:22](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L22)
 
 ---
 
@@ -147,7 +147,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:8](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L8)
+[constants.ts:8](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L8)
 
 ---
 
@@ -157,7 +157,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:14](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L14)
+[constants.ts:14](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L14)
 
 ---
 
@@ -167,7 +167,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:12](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L12)
+[constants.ts:12](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L12)
 
 ---
 
@@ -177,7 +177,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:18](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L18)
+[constants.ts:18](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L18)
 
 ---
 
@@ -187,7 +187,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:24](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L24)
+[constants.ts:24](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L24)
 
 ---
 
@@ -197,7 +197,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:11](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L11)
+[constants.ts:11](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L11)
 
 ---
 
@@ -207,7 +207,7 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:17](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L17)
+[constants.ts:17](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L17)
 
 ---
 
@@ -217,4 +217,4 @@ to access type values in JavaScript in addition to TypeScript type checks.
 
 #### Defined in
 
-[constants.ts:23](https://github.com/latticexyz/mud/blob/28a579f35/packages/recs/src/constants.ts#L23)
+[constants.ts:23](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/recs/src/constants.ts#L23)

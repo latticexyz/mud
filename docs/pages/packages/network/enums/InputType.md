@@ -17,7 +17,7 @@
 
 #### Defined in
 
-[workers/SyncWorker.ts:61](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L61)
+[workers/SyncWorker.ts:61](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L61)
 
 ---
 
@@ -27,4 +27,4 @@
 
 #### Defined in
 
-[workers/SyncWorker.ts:62](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/workers/SyncWorker.ts#L62)
+[workers/SyncWorker.ts:62](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/workers/SyncWorker.ts#L62)

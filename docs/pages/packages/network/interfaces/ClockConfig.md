@@ -18,7 +18,7 @@
 
 #### Defined in
 
-[types.ts:27](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L27)
+[types.ts:27](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L27)
 
 ---
 
@@ -28,7 +28,7 @@
 
 #### Defined in
 
-[types.ts:26](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L26)
+[types.ts:26](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L26)
 
 ---
 
@@ -38,4 +38,4 @@
 
 #### Defined in
 
-[types.ts:28](https://github.com/latticexyz/mud/blob/28a579f35/packages/network/src/types.ts#L28)
+[types.ts:28](https://github.com/latticexyz/mud/blob/edf9adc1e/packages/network/src/types.ts#L28)
