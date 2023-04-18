@@ -25,22 +25,8 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Prepare docs
-        run: pnpm docs:prepare
-
       - name: Build docs
-        uses: retypeapp/action-build@v2
-        with:
-          license: ${{ secrets.RETYPE_SECRET }}
-        id: builddocs
+        run: pnpm build:docs
 
-      - name: Publish to Cloudflare Pages
-        if: github.ref == 'refs/heads/main' || github.event.pull_request.head.repo.full_name == github.repository
-        id: cloudflare_publish
-        uses: cloudflare/pages-action@13c6a2f35417aaf1906cdbb1f6faf6c72c697b08
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: mud-dev
-          directory: ${{ steps.builddocs.outputs.retype-output-path }}
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+      - name: Outdated files, run `pnpm build:docs` and commit them
+        uses: ./.github/actions/require-empty-diff
