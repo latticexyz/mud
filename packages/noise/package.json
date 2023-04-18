@@ -38,16 +38,16 @@
     "big-integer": "^1.6.51",
     "chai": "^4.3.6",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
-    "ethers": "^5.7.0",
+    "ethers": "^5.7.2",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "hardhat": "^2.10.2",
     "keccak-wasm": "^0.10.3",
     "mocha": "^10.0.0",
     "parcel": "2.8.3",
-    "ts-jest": "^28.0.8",
+    "ts-jest": "^29.0.5",
     "ttypescript": "^1.5.13",
     "typescript": "^4.9.5",
-    "web3-utils": "^1.7.5"
+    "web3-utils": "^1.8.0"
   },
   "peerDependencies": {
     "@flatten-js/interval-tree": "^1.0.19"
