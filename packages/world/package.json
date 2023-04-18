@@ -28,8 +28,7 @@
     "release": "npm publish --access=public",
     "test": "pnpm run test:solidity && pnpm run test:typescript",
     "test:solidity": "forge test",
-    "test:typescript": "tsc --noEmit",
-    "types": "rimraf types && typechain --target=ethers-v5 abi/*.json"
+    "test:typescript": "tsc --noEmit"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
