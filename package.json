@@ -8,8 +8,8 @@
     "url": "https://github.com/latticexyz/mud.git"
   },
   "scripts": {
-    "build": "pnpm recursive run build",
-    "build:docs": "pnpm recursive run docs",
+    "build": "pnpm pnpm recursive run build",
+    "build:docs": "pnpm recursive run docs && pnpm run --filter docs build",
     "codegen": "pnpm codegen:tablegen && pnpm codegen:worldgen",
     "codegen:tablegen": "pnpm recursive run tablegen",
     "codegen:worldgen": "pnpm recursive run worldgen",

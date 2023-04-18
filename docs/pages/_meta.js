@@ -2,6 +2,7 @@ export default {
   index: "MUD",
   guides: "Guides",
   tutorials: "Tutorials",
+  packages: "Packages",
   community: {
     title: "Community",
     type: "page",
