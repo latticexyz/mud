@@ -50,6 +50,7 @@
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
     "tsup": "^6.7.0",
+    "tsx": "^3.12.6",
     "typechain": "^8.1.1",
     "typedoc": "^0.23.10",
     "vite": "^4.2.1",
