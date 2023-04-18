@@ -11,11 +11,11 @@ import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
 import { defaultAbiCoder as abi, Fragment } from "ethers/lib/utils.js";
 
-import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" };
-import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.json" assert { type: "json" };
-import CoreModuleData from "@latticexyz/world/abi/CoreModule.json" assert { type: "json" };
-import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.json" assert { type: "json" };
-import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.json" assert { type: "json" };
+import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
+import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
+import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
+import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
