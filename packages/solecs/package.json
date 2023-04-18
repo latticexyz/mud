@@ -12,7 +12,7 @@
   "scripts": {
     "build": "rimraf out && forge build --out out && pnpm dist && pnpm types",
     "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh && rimraf abi/*.metadata.json",
-    "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
+    "docs": "rimraf API && hardhat docgen",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "release": "npm publish --access=public",
     "test": "forge test",
