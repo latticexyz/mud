@@ -2,14 +2,16 @@ import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
 import { StoreConfig } from "@latticexyz/config";
 import {
+  getSchemaTypeInfo,
   RelativeImportDatum,
-  RenderTableDynamicField,
-  RenderTableField,
-  RenderTableOptions,
-  RenderTablePrimaryKey,
-  RenderTableStaticField,
-} from "./types.js";
-import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType.js";
+  importForAbiOrUserType,
+  RenderDynamicField,
+  RenderField,
+  RenderPrimaryKey,
+  RenderStaticField,
+  resolveAbiOrUserType,
+} from "@latticexyz/common-codegen";
+import { RenderTableOptions } from "./types.js";
 
 export interface TableOptions {
   outputPath: string;
@@ -35,16 +37,16 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     const primaryKeys = Object.keys(tableData.primaryKeys).map((name) => {
       const abiOrUserType = tableData.primaryKeys[name];
-      const { renderTableType } = resolveAbiOrUserType(abiOrUserType, config);
+      const { renderType } = resolveAbiOrUserType(abiOrUserType, config);
 
       const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
       if (importDatum) imports.push(importDatum);
 
-      if (renderTableType.isDynamic)
+      if (renderType.isDynamic)
         throw new Error(`Parsing error: found dynamic primary key ${name} in table ${tableName}`);
 
-      const primaryKey: RenderTablePrimaryKey = {
-        ...renderTableType,
+      const primaryKey: RenderPrimaryKey = {
+        ...renderType,
         name,
         isDynamic: false,
       };
@@ -53,14 +55,14 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
 
     const fields = Object.keys(tableData.schema).map((name) => {
       const abiOrUserType = tableData.schema[name];
-      const { renderTableType, schemaType } = resolveAbiOrUserType(abiOrUserType, config);
+      const { renderType, schemaType } = resolveAbiOrUserType(abiOrUserType, config);
 
       const importDatum = importForAbiOrUserType(abiOrUserType, tableData.directory, config);
       if (importDatum) imports.push(importDatum);
 
       const elementType = SchemaTypeArrayToElement[schemaType];
-      const field: RenderTableField = {
-        ...renderTableType,
+      const field: RenderField = {
+        ...renderType,
         arrayElement: elementType !== undefined ? getSchemaTypeInfo(elementType) : undefined,
         name,
         methodNameSuffix: noFieldMethodSuffix ? "" : `${name[0].toUpperCase()}${name.slice(1)}`,
@@ -68,8 +70,8 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
       return field;
     });
 
-    const staticFields = fields.filter(({ isDynamic }) => !isDynamic) as RenderTableStaticField[];
-    const dynamicFields = fields.filter(({ isDynamic }) => isDynamic) as RenderTableDynamicField[];
+    const staticFields = fields.filter(({ isDynamic }) => !isDynamic) as RenderStaticField[];
+    const dynamicFields = fields.filter(({ isDynamic }) => isDynamic) as RenderDynamicField[];
 
     // With tableIdArgument: tableId is a dynamic argument for each method
     // Without tableIdArgument: tableId is a file-level constant generated from `staticResourceData`

@@ -1,6 +1,6 @@
-import { RenderTableOptions, RenderTableType } from "./types.js";
+import { RenderField, RenderPrimaryKey, RenderType } from "./types";
 
-export function renderTypeHelpers(options: RenderTableOptions) {
+export function renderTypeHelpers(options: { fields: RenderField[]; primaryKeys: RenderPrimaryKey[] }) {
   const { fields, primaryKeys } = options;
 
   let result = "";
@@ -32,7 +32,7 @@ export function renderTypeHelpers(options: RenderTableOptions) {
   return result;
 }
 
-function getWrappingHelpers(array: RenderTableType[]) {
+function getWrappingHelpers(array: RenderType[]) {
   const wrappers = new Map();
   const unwrappers = new Map();
   for (const { typeWrappingData, typeWrap, typeUnwrap, internalTypeId } of array) {

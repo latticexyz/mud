@@ -1,5 +1,11 @@
-import { renderArguments, renderCommonData, renderWithStore } from "./common.js";
-import { RenderTableField, RenderTableOptions, RenderTableType } from "./types.js";
+import {
+  renderArguments,
+  renderCommonData,
+  RenderField,
+  RenderType,
+  renderWithStore,
+} from "@latticexyz/common-codegen";
+import { RenderTableOptions } from "./types.js";
 
 export function renderFieldMethods(options: RenderTableOptions) {
   const storeArgument = options.storeArgument;
@@ -87,7 +93,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
   return result;
 }
 
-export function renderEncodeField(field: RenderTableField) {
+export function renderEncodeField(field: RenderField) {
   let func;
   if (field.arrayElement) {
     func = "EncodeArray.encode";
@@ -99,7 +105,7 @@ export function renderEncodeField(field: RenderTableField) {
   return `${func}(${field.typeUnwrap}(${field.name}))`;
 }
 
-export function renderDecodeValueType(field: RenderTableType, offset: number) {
+export function renderDecodeValueType(field: RenderType, offset: number) {
   const { staticByteLength, internalTypeId } = field;
 
   const innerSlice = `Bytes.slice${staticByteLength}(_blob, ${offset})`;
@@ -121,7 +127,7 @@ export function renderDecodeValueType(field: RenderTableType, offset: number) {
 }
 
 /** bytes/string are dynamic, but aren't really arrays */
-function fieldPortionData(field: RenderTableField) {
+function fieldPortionData(field: RenderField) {
   const methodNameSuffix = "";
   if (field.arrayElement) {
     const name = "_element";
@@ -144,7 +150,7 @@ function fieldPortionData(field: RenderTableField) {
   }
 }
 
-function renderDecodeFieldSingle(field: RenderTableField) {
+function renderDecodeFieldSingle(field: RenderField) {
   const { isDynamic, arrayElement } = field;
   if (arrayElement) {
     // arrays

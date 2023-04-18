@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync, readFileSync } from "fs";
 import path from "path";
+import { resolveAbiOrUserType } from "@latticexyz/common-codegen";
 import { MUDConfig, resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/config";
 import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
@@ -8,7 +9,6 @@ import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld.js";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { resolveAbiOrUserType } from "../render-solidity/userType.js";
 import { defaultAbiCoder as abi, Fragment } from "ethers/lib/utils.js";
 
 import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" };

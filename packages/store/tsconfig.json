@@ -1,9 +1,18 @@
 {
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
-    "target": "es2019",
+    "target": "es2021",
+    "module": "esnext",
     "moduleResolution": "node",
-    "types": ["node", "mocha"],
-    "esModuleInterop": true
-  }
+    "declaration": true,
+    "sourceMap": true,
+    "rootDir": ".",
+    "outDir": "dist",
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+  },
+  "include": ["src", "scripts"]
 }

@@ -1,7 +1,6 @@
 {
   "name": "@latticexyz/common-codegen",
   "version": "1.42.0",
-  "private": true,
   "description": "Common files for codegen",
   "repository": {
     "type": "git",
@@ -11,7 +10,7 @@
   "license": "MIT",
   "type": "module",
   "main": "dist/index.js",
-  "module": "dist/index.mjs",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "vite build",
@@ -19,7 +18,12 @@
     "test": "vitest typecheck --run --passWithNoTests"
   },
   "dependencies": {
-    "@latticexyz/schema-type": "^1.42.0"
+    "@latticexyz/config": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
+    "@solidity-parser/parser": "^0.16.0",
+    "chalk": "^5.2.0",
+    "prettier": "^2.8.4",
+    "prettier-plugin-solidity": "^1.1.2"
   },
   "devDependencies": {
     "@rollup/plugin-typescript": "^11.1.0",

@@ -1,5 +1,5 @@
 import path from "path";
-import { ImportDatum, RelativeImportDatum, RenderTableOptions, RenderTableType, StaticResourceData } from "./types.js";
+import { ImportDatum, RelativeImportDatum, StaticResourceData, RenderPrimaryKey, RenderType } from "./types.js";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -24,7 +24,10 @@ export function renderArguments(args: (string | undefined)[]) {
 export function renderCommonData({
   staticResourceData,
   primaryKeys,
-}: Pick<RenderTableOptions, "staticResourceData" | "primaryKeys">) {
+}: {
+  staticResourceData?: StaticResourceData;
+  primaryKeys: RenderPrimaryKey[];
+}) {
   // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
   const _typedTableId = staticResourceData ? "" : "bytes32 _tableId";
@@ -124,7 +127,7 @@ export function renderTableId(staticResourceData: StaticResourceData) {
   };
 }
 
-function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderTableType) {
+function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderType) {
   const bits = staticByteLength * 8;
   const innerText = `${typeUnwrap}(${name})`;
 

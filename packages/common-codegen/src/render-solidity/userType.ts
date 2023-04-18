@@ -1,25 +1,25 @@
 import { AbiTypeToSchemaType, getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
 import { StoreConfig, parseStaticArray } from "@latticexyz/config";
-import { RelativeImportDatum, RenderTableType } from "./types.js";
+import { RelativeImportDatum, RenderType } from "./types.js";
 
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 
 /**
- * Resolve an abi or user type into a SchemaType
+ * Resolve an abi or user type into a SchemaType and RenderType
  */
 export function resolveAbiOrUserType(
   abiOrUserType: string,
   config: StoreConfig
 ): {
   schemaType: SchemaType;
-  renderTableType: RenderTableType;
+  renderType: RenderType;
 } {
   // abi types which directly mirror a SchemaType
   if (abiOrUserType in AbiTypeToSchemaType) {
     const schemaType = AbiTypeToSchemaType[abiOrUserType];
     return {
       schemaType,
-      renderTableType: getSchemaTypeInfo(schemaType),
+      renderType: getSchemaTypeInfo(schemaType),
     };
   }
   // static arrays
@@ -60,7 +60,7 @@ export function importForAbiOrUserType(
   };
 }
 
-export function getSchemaTypeInfo(schemaType: SchemaType): RenderTableType {
+export function getSchemaTypeInfo(schemaType: SchemaType): RenderType {
   const staticByteLength = getStaticByteLength(schemaType);
   const isDynamic = staticByteLength === 0;
   const typeId = SchemaTypeToAbiType[schemaType];
@@ -81,7 +81,7 @@ export function getUserTypeInfo(
   config: StoreConfig
 ): {
   schemaType: SchemaType;
-  renderTableType: RenderTableType;
+  renderType: RenderType;
 } {
   // enums
   if (userType in config.enums) {
@@ -91,7 +91,7 @@ export function getUserTypeInfo(
     const typeId = userType;
     return {
       schemaType,
-      renderTableType: {
+      renderType: {
         typeId,
         typeWithLocation: typeId,
         enumName: SchemaType[schemaType],
@@ -112,7 +112,7 @@ function getStaticArrayTypeInfo(abiType: string, elementType: string, staticLeng
   const schemaType = AbiTypeToSchemaType[internalTypeId];
   return {
     schemaType,
-    renderTableType: {
+    renderType: {
       typeId: abiType,
       typeWithLocation: `${abiType} memory`,
       enumName: SchemaType[schemaType],

@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "fs";
 import { dirname } from "path";
-import { formatSolidity, formatTypescript } from "./format.js";
+import { formatSolidity, formatTypescript } from "./format";
 
 export async function formatAndWriteSolidity(output: string, fullOutputPath: string, logPrefix: string) {
   const formattedOutput = await formatSolidity(output);

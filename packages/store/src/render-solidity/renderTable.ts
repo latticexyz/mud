@@ -6,11 +6,12 @@ import {
   renderRelativeImports,
   renderTableId,
   renderWithStore,
-} from "./common.js";
+  renderTypeHelpers,
+  RenderDynamicField,
+} from "@latticexyz/common-codegen";
 import { renderEncodeField, renderFieldMethods } from "./field.js";
 import { renderRecordMethods } from "./record.js";
-import { renderTypeHelpers } from "./renderTypeHelpers.js";
-import { RenderTableDynamicField, RenderTableOptions } from "./types.js";
+import { RenderTableOptions } from "./types.js";
 
 export function renderTable(options: RenderTableOptions) {
   const {
@@ -145,7 +146,7 @@ ${renderTypeHelpers(options)}
 `;
 }
 
-function renderEncodedLengths(dynamicFields: RenderTableDynamicField[]) {
+function renderEncodedLengths(dynamicFields: RenderDynamicField[]) {
   if (dynamicFields.length > 0) {
     return `
     uint16[] memory _counters = new uint16[](${dynamicFields.length});

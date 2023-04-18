@@ -3,7 +3,7 @@ import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
 import { getSrcDirectory } from "../utils/foundry.js";
 import glob from "glob";
 import path, { basename } from "path";
-import { worldgen } from "../render-solidity/worldgen.js";
+import { worldgen } from "@latticexyz/world";
 import { rmSync } from "fs";
 
 type Options = {

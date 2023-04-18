@@ -1,6 +1,11 @@
-import { renderImports } from "./common.js";
-import { renderArguments, renderedSolidityHeader, renderRelativeImports } from "./common.js";
-import { ImportDatum, RenderWorldOptions } from "./types.js";
+import {
+  renderArguments,
+  renderedSolidityHeader,
+  renderImports,
+  renderRelativeImports,
+  type ImportDatum,
+} from "@latticexyz/common-codegen";
+import type { RenderWorldOptions } from "./types";
 
 export function renderWorld(options: RenderWorldOptions) {
   const { interfaceName, storeImportPath, worldImportPath, imports } = options;

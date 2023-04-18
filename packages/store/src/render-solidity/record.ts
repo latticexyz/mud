@@ -1,6 +1,12 @@
-import { renderList, renderArguments, renderCommonData, renderWithStore } from "./common.js";
+import {
+  renderList,
+  renderArguments,
+  renderCommonData,
+  renderWithStore,
+  RenderDynamicField,
+} from "@latticexyz/common-codegen";
 import { renderDecodeValueType } from "./field.js";
-import { RenderTableDynamicField, RenderTableOptions } from "./types.js";
+import { RenderTableOptions } from "./types.js";
 
 export function renderRecordMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
@@ -140,7 +146,7 @@ function renderDecodedRecord({ structName, fields }: RenderTableOptions) {
   }
 }
 
-function renderDecodeDynamicFieldPartial(field: RenderTableDynamicField) {
+function renderDecodeDynamicFieldPartial(field: RenderDynamicField) {
   const { typeId, arrayElement, typeWrap } = field;
   if (arrayElement) {
     // arrays

@@ -1,6 +1,6 @@
 import path from "path";
 import { storeConfig, parseStoreConfig } from "@latticexyz/config";
-import { tablegen } from "../src/render-solidity/tablegen.js";
+import { tablegen } from "@latticexyz/store";
 import { logError } from "../src/utils/errors.js";
 import { getSrcDirectory } from "../src/utils/foundry.js";
 

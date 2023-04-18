@@ -1,7 +1,13 @@
 import { parse, visit } from "@solidity-parser/parser";
 import { TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/ast-types.js";
 import { MUDError } from "@latticexyz/config";
-import { RenderSystemInterfaceFunction } from "../render-solidity/types.js";
+
+export interface ContractInterfaceFunction {
+  name: string;
+  parameters: string[];
+  stateMutability: string;
+  returnParameters: string[];
+}
 
 /**
  * Parse the contract data to get the functions necessary to generate an interface,
@@ -15,7 +21,7 @@ export function contractToInterface(data: string, contractName: string) {
 
   let withContract = false;
   let symbols: string[] = [];
-  const functions: RenderSystemInterfaceFunction[] = [];
+  const functions: ContractInterfaceFunction[] = [];
 
   visit(ast, {
     ContractDefinition({ name }) {
