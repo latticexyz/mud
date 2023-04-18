@@ -9,6 +9,7 @@
     "rootDir": ".",
     "outDir": "dist",
     "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

@@ -9,8 +9,10 @@
     "rootDir": "./src",
     "outDir": "dist",
     "isolatedModules": true,
+    "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "skipLibCheck": true,
   }
 }
