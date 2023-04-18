@@ -34,7 +34,7 @@ MUD is MIT-licensed, open source and free to use.
 
 ## Features
 
-![MUD features](./docs/public/docs/features.png)
+![MUD features](./docs/public/features.png)
 
 ### Today
 
@@ -60,7 +60,7 @@ MUD is MIT-licensed, open source and free to use.
 pnpm create mud my-project
 ```
 
-![Scaffolding a new project with the MUD CLI.](./docs/public/docs/mud-create.gif)
+![Scaffolding a new project with the MUD CLI.](./docs/public/mud-create.gif)
 
 ## Packages
 
