@@ -37,14 +37,14 @@
     "ejs": "^3.1.8",
     "ethers": "^5.7.2",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
-    "hardhat": "^2.10.1",
+    "hardhat": "^2.10.2",
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "typechain": "^8.1.1",
-    "typedoc": "^0.23.10"
+    "typedoc": "0.23.21"
   },
   "peerDependencies": {
     "@ethersproject/abi": "^5.7.0",

@@ -8,8 +8,11 @@
     "url": "https://github.com/latticexyz/mud.git"
   },
   "scripts": {
-    "build": "pnpm pnpm recursive run build",
+    "build": "turbo run build",
     "build:docs": "pnpm recursive run docs && pnpm prettier --write '**/*.md' && pnpm run --filter docs build:prepare && pnpm run --filter docs build",
+    "dev": "turbo run dev --no-cache --continue",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "OLD-build": "pnpm recursive run build",
     "codegen": "pnpm codegen:tablegen && pnpm codegen:worldgen",
     "codegen:tablegen": "pnpm recursive run tablegen",
     "codegen:worldgen": "pnpm recursive run worldgen",
@@ -20,6 +23,7 @@
     "gas-report": "pnpm recursive run gas-report",
     "link:packages": "lerna exec 'pnpm link --global'",
     "lint": "pnpm prettier:check && eslint . --ext .ts",
+    "postinstall": "node postinstall.mjs",
     "prepare": "husky install && (forge --version || pnpm foundryup)",
     "prettier": "prettier --write '**/*.{ts,css,md,sol}'",
     "prettier:check": "prettier --check '**/*.{ts,css,md,sol}'",
@@ -41,6 +45,8 @@
     }
   },
   "devDependencies": {
+    "turbo": "latest",
+    "postinstall": "0.8.0",
     "@commitlint/cli": "^16.2.4",
     "@commitlint/config-conventional": "^16.2.4",
     "@parcel/optimizer-data-url": "2.8.3",
@@ -52,7 +58,7 @@
     "chalk": "^5.2.0",
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "3.3.0",
-    "eslint": "^8.15.0",
+    "eslint": "^8.29.0",
     "husky": ">=6",
     "jq-cli-wrapper": "^1.6.1",
     "lerna": "^6.6.1",
