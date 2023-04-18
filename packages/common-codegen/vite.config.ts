@@ -16,6 +16,9 @@ export default defineConfig({
     minify: false,
     sourcemap: true,
   },
+  ssr: {
+    external: ["@solidity-parser/parser"],
+  },
   /**
    * @see https://vitest.dev/config/
    */
