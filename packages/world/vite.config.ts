@@ -17,5 +17,8 @@ export default defineConfig({
     sourcemap: true,
     target: "esnext",
   },
+  ssr: {
+    external: ["@solidity-parser/parser"],
+  },
   plugins: [typescript() as any, peerDepsExternal()],
 });
