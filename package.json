@@ -26,7 +26,7 @@
     "prettier": "prettier --write '**/*.{ts,css,md,sol}'",
     "prettier:check": "prettier --check '**/*.{ts,css,md,sol}'",
     "release": "pnpm install && lerna publish --no-private --force-publish && pnpm retype:updateversion",
-    "release:canary": "lerna publish premajor --canary --no-private --force-publish",
+    "release:canary": "lerna publish premajor --preid alpha.1 --canary --no-private --force-publish",
     "release:ci": "lerna publish --no-private --force-publish --yes",
     "release:manual": "pnpm --recursive --no-bail run release",
     "release:yalc": "(pnpm entry:dist && lerna exec npx yalc push); pnpm entry:src",
