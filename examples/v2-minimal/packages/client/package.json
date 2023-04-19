@@ -5,9 +5,9 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "initialize": "yarn build",
-    "dev": "vite",
     "build": "vite build",
+    "dev": "vite",
+    "initialize": "yarn build",
     "preview": "vite preview"
   },
   "dependencies": {
