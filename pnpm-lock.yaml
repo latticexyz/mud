@@ -212,6 +212,9 @@ importers:
       rollup-plugin-peer-deps-external:
         specifier: ^2.2.4
         version: 2.2.4(rollup@2.79.1)
+      rollup-plugin-preserve-shebang:
+        specifier: ^1.0.1
+        version: 1.0.1
       tsup:
         specifier: ^6.6.3
         version: 6.6.3(ts-node@10.9.1)(typescript@4.9.5)
@@ -17851,6 +17854,12 @@ packages:
       rollup: '*'
     dependencies:
       rollup: 2.79.1
+    dev: true
+
+  /rollup-plugin-preserve-shebang@1.0.1:
+    resolution: {integrity: sha512-gk7ExGBqvUinhgrvldKHkAKXXwRkWMXMZymNkrtn50uBgHITlhRjhnKmbNGwAIc4Bzgl3yLv7/8Fhi/XeHhFKg==}
+    dependencies:
+      magic-string: 0.25.9
     dev: true
 
   /rollup-pluginutils@2.8.2:

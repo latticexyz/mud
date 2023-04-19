@@ -18,7 +18,7 @@
     "mud2": "./dist/mud2.js"
   },
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && chmod +x ./dist/mud.js",
     "codegen": "tsx ./scripts/codegen.ts",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
@@ -68,6 +68,7 @@
     "@types/rollup-plugin-peer-deps-external": "^2.2.1",
     "@types/yargs": "^17.0.10",
     "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-preserve-shebang": "^1.0.1",
     "tsup": "^6.6.3",
     "tsx": "^3.12.6",
     "vite": "^4.2.1",

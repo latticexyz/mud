@@ -8,3 +8,4 @@ declare module "protobufjs/minimal" {
   export const Writer: any;
   export type Writer = any;
 }
+declare module "rollup-plugin-preserve-shebang";
