@@ -6,9 +6,7 @@ const { components, worldSend } = await setup();
 components.CounterTable.update$.subscribe((update) => {
   const [nextValue, prevValue] = update.value;
   console.log("Counter updated", update, { nextValue, prevValue });
-  document.getElementById("counter")!.innerHTML = String(
-    nextValue?.value ?? "unset"
-  );
+  document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
 });
 
 // Just for demonstration purposes: we create a global function that can be
