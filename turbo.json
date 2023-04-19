@@ -5,6 +5,14 @@
       "outputs": ["dist/**", "storybook-static/**"],
       "dependsOn": ["^build"]
     },
+    "build:prepare": {
+      "cache": false,
+      "persistent": true
+    },
+    "docs": {
+      "cache": false,
+      "persistent": true
+    },
     "test": {
       "outputs": ["coverage/**"],
       "dependsOn": []
