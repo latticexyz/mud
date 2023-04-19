@@ -1,5 +1,5 @@
 {
-  "name": "mud-template-minimal",
+  "name": "mud-example-v2-minimal",
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
