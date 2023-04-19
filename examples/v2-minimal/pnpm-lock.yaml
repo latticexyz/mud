@@ -128,9 +128,6 @@ importers:
       '@latticexyz/world':
         specifier: link:../../../../packages/world
         version: link:../../../../packages/world
-      '@rari-capital/solmate':
-        specifier: https://github.com/rari-capital/solmate.git#851ea3baa4327f453da723df75b1093b58b964dc
-        version: github.com/rari-capital/solmate/851ea3baa4327f453da723df75b1093b58b964dc
       '@solidstate/contracts':
         specifier: ^0.0.52
         version: 0.0.52
@@ -141,8 +138,8 @@ importers:
         specifier: ^18.11.9
         version: 18.11.9
       ds-test:
-        specifier: https://github.com/dapphub/ds-test.git#c7a36fb236f298e04edf28e2fee385b80f53945f
-        version: github.com/dapphub/ds-test/c7a36fb236f298e04edf28e2fee385b80f53945f
+        specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
+        version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
       ethers:
         specifier: ^5.7.2
         version: 5.7.2
@@ -3395,20 +3392,14 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  github.com/dapphub/ds-test/c7a36fb236f298e04edf28e2fee385b80f53945f:
-    resolution: {tarball: https://codeload.github.com/dapphub/ds-test/tar.gz/c7a36fb236f298e04edf28e2fee385b80f53945f}
-    name: ds-test.git#c7a36fb236f298e04edf28e2fee385b80f53945f
-    version: 0.0.0
+  github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084:
+    resolution: {tarball: https://codeload.github.com/dapphub/ds-test/tar.gz/c9ce3f25bde29fc5eb9901842bf02850dfd2d084}
+    name: ds-test
+    version: 1.0.0
     dev: true
 
   github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3:
     resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3}
     name: forge-std
     version: 1.2.0
-    dev: true
-
-  github.com/rari-capital/solmate/851ea3baa4327f453da723df75b1093b58b964dc:
-    resolution: {commit: 851ea3baa4327f453da723df75b1093b58b964dc, repo: git+ssh://git@github.com/rari-capital/solmate.git, type: git}
-    name: '@rari-capital/solmate'
-    version: 6.3.0
     dev: true
