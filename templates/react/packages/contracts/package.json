@@ -6,7 +6,7 @@
   "scripts": {
     "build": "mud types",
     "deploy": "mud deploy-contracts",
-    "dev": "mud deploy-contracts --dev --watch --openUrl http://localhost:3000?dev=true",
+    "dev": "mud deploy-contracts --dev --watch --openUrl http://localhost:3000?cache=false",
     "devnode": "mud devnode",
     "lint": "prettier && solhint",
     "prettier": "prettier --write 'src/**/*.sol'",

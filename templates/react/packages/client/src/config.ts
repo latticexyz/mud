@@ -18,5 +18,5 @@ export const config: SetupContractConfig = {
   snapshotServiceUrl: params.get("snapshot") ?? undefined,
   initialBlockNumber: Number(params.get("initialBlockNumber")) || 0,
   worldAddress: params.get("worldAddress")!,
-  devMode: params.get("dev") === "true",
+  disableCache: params.get("cache") === "false",
 };
