@@ -17,14 +17,22 @@ const TABLE_PREFIX string = "mode"
 func Internal__BlockNumberTableSchema(chainId string) *mode.TableSchema {
 	return &mode.TableSchema{
 		TableName: "block_number",
+		KeyNames: []string{
+			"chain_id",
+		},
 		FieldNames: []string{
 			"block_number",
 		},
 		PostgresTypes: map[string]string{
 			"block_number": "text",
+			"chain_id":     "text",
 		},
 		SolidityTypes: map[string]string{
 			"block_number": "uint256",
+			"chain_id":     "string",
+		},
+		IsKey: map[string]bool{
+			"chain_id": true,
 		},
 		Namespace: Namespace(chainId, ""),
 	}
@@ -33,14 +41,22 @@ func Internal__BlockNumberTableSchema(chainId string) *mode.TableSchema {
 func Internal__SyncStatusTableSchema(chainId string) *mode.TableSchema {
 	return &mode.TableSchema{
 		TableName: "sync_status",
+		KeyNames: []string{
+			"chain_id",
+		},
 		FieldNames: []string{
 			"syncing",
 		},
 		PostgresTypes: map[string]string{
-			"syncing": "boolean",
+			"syncing":  "boolean",
+			"chain_id": "text",
 		},
 		SolidityTypes: map[string]string{
-			"syncing": "bool",
+			"syncing":  "bool",
+			"chain_id": "string",
+		},
+		IsKey: map[string]bool{
+			"chain_id": true,
 		},
 		Namespace: Namespace(chainId, ""),
 	}
@@ -66,10 +82,12 @@ func Internal__NamespacesTableSchema() *mode.TableSchema {
 func Internal__SchemaTableSchema(chainId string) *mode.TableSchema {
 	return &mode.TableSchema{
 		TableName: "schemas",
-		FieldNames: []string{
+		KeyNames: []string{
 			"world_address",
 			"namespace",
 			"table_name",
+		},
+		FieldNames: []string{
 			"key_schema",
 			"value_schema",
 			"schema",
@@ -89,6 +107,11 @@ func Internal__SchemaTableSchema(chainId string) *mode.TableSchema {
 			"key_schema":    "bytes32",
 			"value_schema":  "bytes32",
 			"schema":        "bytes",
+		},
+		IsKey: map[string]bool{
+			"world_address": true,
+			"namespace":     true,
+			"table_name":    true,
 		},
 		Namespace: Namespace(chainId, ""),
 	}

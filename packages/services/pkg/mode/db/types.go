@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jmoiron/sqlx"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 // WALConfig represents the configuration for the Write-Ahead Log (WAL) for PostgreSQL.
@@ -27,6 +28,9 @@ type WALConfig struct {
 type DatabaseLayer struct {
 	// db is the connection to the database.
 	db *sqlx.DB
+	// gorm__db is the connection to the database.
+	gorm__db *gorm.DB
+
 	// conn is the low-level connection to the database.
 	conn *pgconn.PgConn
 	// walConfig is the configuration for the Write-Ahead Log (WAL).

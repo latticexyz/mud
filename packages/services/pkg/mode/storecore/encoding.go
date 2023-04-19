@@ -1,6 +1,7 @@
 package storecore
 
 import (
+	"encoding/json"
 	"fmt"
 	"latticexyz/mud/packages/services/pkg/logger"
 	"math/big"
@@ -281,7 +282,7 @@ func CombineStringifySchemaTypes(schemaType []SchemaType) string {
 }
 
 type DataSchemaTypePair struct {
-	Data       string
+	Data       interface{}
 	SchemaType SchemaType
 }
 
@@ -367,7 +368,7 @@ func (d *DecodedData) At(index int) *DataSchemaTypePair {
 //
 // Returns:
 // (string): The data value at the given index in the DecodedData instance.
-func (d *DecodedData) DataAt(index int) string {
+func (d *DecodedData) DataAt(index int) interface{} {
 	return d.At(index).Data
 }
 
@@ -399,7 +400,7 @@ func (d *DecodedData) SchemaTypes() []SchemaType {
 //
 // Returns:
 // (string): The decoded value of the specified data field.
-func DecodeDataField(encoding []byte, schemaTypePair SchemaTypePair, index uint8) string {
+func DecodeDataField(encoding []byte, schemaTypePair SchemaTypePair, index uint8) interface{} {
 	// Try to decode either as a static or dynamic field.
 	for idx, fieldType := range schemaTypePair.Static {
 		if uint8(idx) == index {
@@ -509,12 +510,12 @@ func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
 //
 // Returns:
 // - (string): The decoded value of the dynamic field as a string.
-func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
+func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) interface{} {
 	switch schemaType {
 	case BYTES:
-		return postgresHexEncode(encodingSlice)
+		return handleBytes(encodingSlice)
 	case STRING:
-		return string(encodingSlice)
+		return handleString(encodingSlice)
 	default:
 		// Try to decode as an array.
 		staticSchemaType := (schemaType - 98)
@@ -527,13 +528,19 @@ func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) string {
 		// Allocate an array of the correct size.
 		fieldLength := getStaticByteLength(staticSchemaType)
 		arrayLength := len(encodingSlice) / int(fieldLength)
-		array := make([]string, arrayLength)
+		array := make([]interface{}, arrayLength)
 		// Iterate and decode each element as a static field.
 		for i := 0; i < arrayLength; i++ {
 			array[i] = DecodeStaticField(staticSchemaType, encodingSlice, uint64(i)*fieldLength)
 		}
 
-		return strings.Join(array, ",")
+		arr, err := json.Marshal(array)
+		if err != nil {
+			logger.GetLogger().Fatal("Could not marshal array", zap.Error(err))
+			return ""
+		}
+
+		return hexutil.Encode(arr)
 	}
 }
 
@@ -549,6 +556,7 @@ func postgresHexEncode(data []byte) string {
 // Returns:
 // - (string): The decoded value of the bytes field as a string.
 func handleBytes(encoding []byte) string {
+	// No-op.
 	return postgresHexEncode(encoding)
 }
 
@@ -581,12 +589,8 @@ func handleInt(encoding []byte) string {
 //
 // Returns:
 // - (string): The decoded value of the bool field as a string.
-func handleBool(encoding byte) string {
-	if encoding == 1 {
-		return "true"
-	} else {
-		return "false"
-	}
+func handleBool(encoding byte) bool {
+	return encoding == 1
 }
 
 // handleAddress handles the decoding of an address static field.
@@ -620,7 +624,7 @@ func handleString(encoding []byte) string {
 //
 // Returns:
 // - (string): The decoded field as a string.
-func DecodeStaticField(schemaType SchemaType, encoding []byte, bytesOffset uint64) string {
+func DecodeStaticField(schemaType SchemaType, encoding []byte, bytesOffset uint64) interface{} {
 	// To avoid a ton of duplicate handling code per each schema type, we handle
 	// using ranges, since the schema types are sequential in specific ranges.
 
@@ -731,19 +735,19 @@ func SchemaTypeToPostgresType(schemaType SchemaType) string {
 		return "text"
 	} else if (schemaType >= UINT8_ARRAY && schemaType <= UINT32_ARRAY) || (schemaType >= INT8_ARRAY && schemaType <= INT32_ARRAY) {
 		// Integer array.
-		return "integer[]"
+		return "text"
 	} else if (schemaType >= UINT64_ARRAY && schemaType <= UINT256_ARRAY) || (schemaType >= INT64_ARRAY && schemaType <= INT256_ARRAY) {
 		// Big integer array.
-		return "text[]"
+		return "text"
 	} else if schemaType >= BYTES1_ARRAY && schemaType <= BYTES32_ARRAY {
 		// Bytes array.
-		return "bytea[]"
+		return "text"
 	} else if schemaType == BOOL_ARRAY {
 		// Boolean array.
-		return "boolean[]"
+		return "text"
 	} else if schemaType == ADDRESS_ARRAY {
 		// Address array.
-		return "text[]"
+		return "text"
 	} else {
 		// Default to text.
 		return "text"

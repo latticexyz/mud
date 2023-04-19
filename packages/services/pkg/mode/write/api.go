@@ -1,10 +1,8 @@
 package write
 
 import (
-	"database/sql"
 	"latticexyz/mud/packages/services/pkg/mode"
 	"latticexyz/mud/packages/services/pkg/mode/ops/create"
-	"latticexyz/mud/packages/services/pkg/mode/ops/delete"
 	"latticexyz/mud/packages/services/pkg/mode/ops/insert"
 	"latticexyz/mud/packages/services/pkg/mode/ops/update"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
@@ -179,6 +177,13 @@ func (wl *WriteLayer) RenameTable(tableSchema *mode.TableSchema, oldTableName st
 //     returned as an error object. Otherwise, nil is returned to
 //     indicate success.
 func (wl *WriteLayer) RenameTableFields(tableSchema *mode.TableSchema, oldTableFieldNames []string, newTableFieldNames []string) error {
+	// for i := 0; i < len(oldTableFieldNames); i++ {
+	// 	err := wl.dl.RenameColumn(tableSchema.NamespacedTableName(), oldTableFieldNames[i], newTableFieldNames[i])
+	// 	if err != nil {
+	// 		wl.logger.Error("failed to rename table field", zap.Error(err))
+	// 		return err
+	// 	}
+	// }
 	// Build the SQL statement to rename the columns
 	var sqlStmt strings.Builder
 	for i := 0; i < len(oldTableFieldNames); i++ {
@@ -188,9 +193,11 @@ func (wl *WriteLayer) RenameTableFields(tableSchema *mode.TableSchema, oldTableF
 	// Execute the SQL statement
 	_, err := wl.dl.Exec(sqlStmt.String())
 	if err != nil {
-		wl.logger.Error("failed to rename table fields", zap.Error(err))
+		wl.logger.Error("failed to rename table fields", zap.String("query", sqlStmt.String()), zap.Error(err))
 		return err
 	}
+
+	wl.logger.Info("renamed table fields", zap.String("sql", sqlStmt.String()))
 
 	return nil
 }
@@ -214,19 +221,22 @@ func (wl *WriteLayer) RenameTableFields(tableSchema *mode.TableSchema, oldTableF
 //     indicate success.
 func (wl *WriteLayer) InsertRow(tableSchema *mode.TableSchema, row RowKV) error {
 	// Create an insert builder.
-	insertBuilder := insert.NewInsertBuilder(&pb_mode.InsertRequest{
+	insertBuilder := insert.Gorm__NewInsertBuilder(&insert.Gorm__InsertRequest{
 		Into: tableSchema.NamespacedTableName(),
 		Row:  row,
 	}, tableSchema)
-	insertRowQuery := insertBuilder.ToSQLQuery()
-
-	_, err := wl.dl.Exec(insertRowQuery)
+	// insertRowQuery := insertBuilder.ToSQLQuery()
+	recordToInsert, err := insertBuilder.BuildRecord()
 	if err != nil {
-		wl.logger.Error("failed to insert row", zap.Error(err), zap.String("query", insertRowQuery))
+		wl.logger.Error("failed to build record to insert", zap.Error(err))
 		return err
 	}
-
-	wl.logger.Info("inserted row", zap.String("table", tableSchema.NamespacedTableName()), zap.String("query", insertRowQuery))
+	err = wl.dl.Create(insertBuilder.Table(), recordToInsert)
+	if err != nil {
+		wl.logger.Error("failed to insert row", zap.String("table", insertBuilder.Table()), zap.Error(err))
+		return err
+	}
+	wl.logger.Info("inserted row", zap.String("table", insertBuilder.Table()), zap.Any("record", recordToInsert))
 
 	return nil
 }
@@ -256,25 +266,31 @@ func (wl *WriteLayer) InsertRow(tableSchema *mode.TableSchema, row RowKV) error 
 //   - (error): if any error occurs while executing the SQL statement, it is
 //     returned as an error object. Otherwise, nil is returned to
 //     indicate success.
-func (wl *WriteLayer) UpdateRow(tableSchema *mode.TableSchema, row RowKV, filter []*pb_mode.Filter) (sql.Result, error) {
+func (wl *WriteLayer) UpdateRow(tableSchema *mode.TableSchema, row RowKV, filter map[string]interface{}) (bool, error) {
 	// Create an update builder.
-	updateBuilder := update.NewUpdateBuilder(&pb_mode.UpdateRequest{
-		Target: tableSchema.NamespacedTableName(),
-		Filter: filter,
+	updateBuilder := update.Gorm__NewUpdateBuilder(&update.Gorm__UpdateRequest{
+		Table:  tableSchema.NamespacedTableName(),
 		Row:    row,
+		Filter: filter,
 	}, tableSchema)
 
-	updateRowQuery := updateBuilder.ToSQLQuery()
-
-	result, err := wl.dl.Exec(updateRowQuery)
+	recordToUpdate, err := updateBuilder.BuildRecord()
 	if err != nil {
-		wl.logger.Error("failed to update row", zap.Error(err), zap.String("query", updateRowQuery))
-		return nil, err
+		wl.logger.Error("failed to build record to update", zap.Error(err))
+		return false, err
 	}
-
-	wl.logger.Info("updated row", zap.String("table", tableSchema.NamespacedTableName()), zap.String("query", updateRowQuery))
-
-	return result, nil
+	updates, err := wl.dl.Updates(updateBuilder.Table(), recordToUpdate, filter)
+	if err != nil {
+		wl.logger.Error("failed to update row", zap.Error(err), zap.String("table", updateBuilder.Table()))
+		return false, err
+	}
+	updated := updates.RowsAffected > 0
+	if updated {
+		wl.logger.Info("updated row", zap.String("table", tableSchema.NamespacedTableName()), zap.Any("record", recordToUpdate))
+	} else {
+		wl.logger.Info("did not update row", zap.String("table", tableSchema.NamespacedTableName()), zap.Any("record", recordToUpdate))
+	}
+	return updated, nil
 }
 
 // UpdateOrInsertRow tries to update the row that satisfies the filter in the given table schema
@@ -288,20 +304,14 @@ func (wl *WriteLayer) UpdateRow(tableSchema *mode.TableSchema, row RowKV, filter
 //
 // Returns:
 // - (error): An error if the operation fails, or nil if the operation succeeds.
-func (wl *WriteLayer) UpdateOrInsertRow(tableSchema *mode.TableSchema, row RowKV, filter []*pb_mode.Filter) error {
+func (wl *WriteLayer) UpdateOrInsertRow(tableSchema *mode.TableSchema, row RowKV, filter map[string]interface{}) error {
 	// First try to update.
-	updateResult, err := wl.UpdateRow(tableSchema, row, filter)
+	updated, err := wl.UpdateRow(tableSchema, row, filter)
 	if err != nil {
 		wl.logger.Error("failed to update row", zap.Error(err))
 		return err
 	}
-
-	rowsAffected, err := updateResult.RowsAffected()
-	if err != nil {
-		wl.logger.Error("failed to get rows affected", zap.Error(err))
-		return err
-	}
-	if rowsAffected > 0 {
+	if updated {
 		wl.logger.Info("updated row", zap.String("table", tableSchema.NamespacedTableName()))
 		return nil
 	}
@@ -326,18 +336,18 @@ func (wl *WriteLayer) UpdateOrInsertRow(tableSchema *mode.TableSchema, row RowKV
 //
 // Returns:
 // - (error): An error if the deletion fails, otherwise nil.
-func (wl *WriteLayer) DeleteRow(tableSchema *mode.TableSchema, filter []*pb_mode.Filter) error {
+func (wl *WriteLayer) DeleteRow(tableSchema *mode.TableSchema, filter map[string]interface{}) error {
 	// Create a delete builder.
-	deleteBuilder := delete.NewDeleteBuilder(&pb_mode.DeleteRequest{
-		From:   tableSchema.NamespacedTableName(),
-		Filter: filter,
-	}, tableSchema)
+	// deleteBuilder := delete.NewDeleteBuilder(&pb_mode.DeleteRequest{
+	// 	From:   tableSchema.NamespacedTableName(),
+	// 	Filter: filter,
+	// }, tableSchema)
 
-	deleteRowQuery := deleteBuilder.ToSQLQuery()
+	// deleteRowQuery := deleteBuilder.ToSQLQuery()
 
-	_, err := wl.dl.Exec(deleteRowQuery)
+	_, err := wl.dl.Delete(tableSchema.NamespacedTableName(), filter)
 	if err != nil {
-		wl.logger.Error("failed to delete row", zap.Error(err), zap.String("query", deleteRowQuery))
+		wl.logger.Error("failed to delete row", zap.Error(err), zap.String("table", tableSchema.NamespacedTableName()))
 		return err
 	}
 	wl.logger.Info("deleted row", zap.String("table", tableSchema.NamespacedTableName()))

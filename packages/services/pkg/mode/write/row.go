@@ -19,6 +19,7 @@ func RowFromDecodedData(decodedKeyData *storecore.DecodedData, decodedFieldData 
 	row := RowKV{}
 	// Add the keys.
 	for idx, key_name := range tableSchema.KeyNames {
+		// Skip the key if it's not in the row.
 		row[key_name] = decodedKeyData.DataAt(idx)
 	}
 	// Add the fields.
