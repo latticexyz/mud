@@ -9,14 +9,16 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "bin": {
     "mud": "./dist/mud.js",
     "mud2": "./dist/mud2.js"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "vite build",
     "codegen": "tsx ./scripts/codegen.ts",
     "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
@@ -58,13 +60,17 @@
     "zod-validation-error": "^1.3.0"
   },
   "devDependencies": {
+    "@rollup/plugin-typescript": "^11.1.0",
     "@types/ejs": "^3.1.1",
     "@types/glob": "^7.2.0",
     "@types/node": "^17.0.34",
     "@types/openurl": "^1.0.0",
+    "@types/rollup-plugin-peer-deps-external": "^2.2.1",
     "@types/yargs": "^17.0.10",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
     "tsup": "^6.6.3",
     "tsx": "^3.12.6",
+    "vite": "^4.2.1",
     "vitest": "^0.29.8"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
