@@ -11,6 +11,7 @@
   "main": "./src/index.ts",
   "exports": {
     ".": "./dist/index.js",
+    "./*": "./dist/*",
     "./abi/*": "./abi/*"
   },
   "license": "MIT",

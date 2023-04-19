@@ -11,7 +11,9 @@
   "main": "./ts/index.ts",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./*": "./dist/*",
+    "./abi/*": "./abi/*"
   },
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:tightcoder && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain",
