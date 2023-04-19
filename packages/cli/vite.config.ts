@@ -1,5 +1,4 @@
 import { defineConfig } from "vitest/config";
-import typescript from "@rollup/plugin-typescript";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 import shebang from "rollup-plugin-preserve-shebang";
 
@@ -18,5 +17,5 @@ export default defineConfig({
     sourcemap: true,
     target: "esnext",
   },
-  plugins: [typescript() as any, peerDepsExternal(), shebang()],
+  plugins: [peerDepsExternal(), shebang()] as any,
 });

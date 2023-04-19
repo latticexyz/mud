@@ -9,12 +9,14 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "./src/index.ts",
   "exports": {
     ".": "./dist/index.js"
   },
+  "main": "./src/index.ts",
   "scripts": {
-    "build": "vite build",
+    "build": "pnpm run build:js && pnpm run build:dts",
+    "build:dts": "tsc --emitDeclarationOnly",
+    "build:js": "vite build",
     "release": "npm publish --access=public",
     "test": "vitest typecheck --run --passWithNoTests"
   },
@@ -27,7 +29,6 @@
     "prettier-plugin-solidity": "^1.1.2"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "^11.1.0",
     "@types/rollup-plugin-peer-deps-external": "^2.2.1",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "vite": "^4.2.1",

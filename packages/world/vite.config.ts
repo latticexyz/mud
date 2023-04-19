@@ -1,5 +1,4 @@
 import { defineConfig } from "vitest/config";
-import typescript from "@rollup/plugin-typescript";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 
 /**
@@ -9,7 +8,7 @@ export default defineConfig({
   build: {
     ssr: true,
     lib: {
-      entry: ["mud.config.ts", "ts/scripts/worldgen.ts", "ts/scripts/tablegen.ts", "ts/index.ts"],
+      entry: ["ts/scripts/worldgen.ts", "ts/scripts/tablegen.ts", "ts/index.ts", "mud.config.ts"],
       formats: ["es"],
     },
     outDir: "dist",
@@ -17,5 +16,5 @@ export default defineConfig({
     sourcemap: true,
     target: "esnext",
   },
-  plugins: [typescript() as any, peerDepsExternal()],
+  plugins: [peerDepsExternal()] as any,
 });

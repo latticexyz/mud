@@ -1,5 +1,4 @@
 import { defineConfig } from "vitest/config";
-import typescript from "@rollup/plugin-typescript";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 
 /**
@@ -23,5 +22,5 @@ export default defineConfig({
     environment: "node",
     globals: true,
   },
-  plugins: [(typescript as any)(), peerDepsExternal()],
+  plugins: [peerDepsExternal()] as any,
 });

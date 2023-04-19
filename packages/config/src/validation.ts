@@ -1,4 +1,4 @@
-import { isAddress } from "ethers";
+import { utils } from "ethers";
 import { ZodIssueCode, RefinementCtx } from "zod";
 
 export function validateName(name: string, ctx: RefinementCtx) {
@@ -117,7 +117,7 @@ export const validateBaseRoute = _factoryForValidateRoute(false, false);
 export const validateSingleLevelRoute = _factoryForValidateRoute(true, true);
 
 export function validateEthereumAddress(address: string, ctx: RefinementCtx) {
-  if (!isAddress(address)) {
+  if (!utils.isAddress(address)) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
       message: `Address must be a valid Ethereum address`,

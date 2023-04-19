@@ -7,7 +7,6 @@
     "moduleResolution": "node",
     "declaration": true,
     "sourceMap": true,
-    "rootDir": ".",
     "outDir": "dist",
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
@@ -16,5 +15,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["mud.config.ts", "ts"]
+  "include": ["ts"]
 }

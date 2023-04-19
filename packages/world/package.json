@@ -7,19 +7,20 @@
     "url": "https://github.com/latticexyz/mud.git",
     "directory": "packages/world"
   },
+  "license": "MIT",
   "type": "module",
-  "main": "./src/index.ts",
   "exports": {
     ".": "./dist/index.js",
-    "./*": "./dist/*",
+    "./mud.config.js": "./dist/mud.config.js",
     "./abi/*": "./abi/*"
   },
-  "license": "MIT",
+  "main": "./ts/index.ts",
   "scripts": {
-    "build": "pnpm run build:js && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain",
+    "build": "pnpm run build:js && pnpm run build:dts && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --out abi --skip test script",
-    "build:js": "vite build",
     "build:codegen": "node ./dist/tablegen.js && node ./dist/worldgen.js",
+    "build:dts": "tsc --emitDeclarationOnly",
+    "build:js": "vite build",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain && pnpm run clean:js",
     "clean:abi": "rimraf abi",
@@ -33,6 +34,9 @@
     "test:solidity": "forge test",
     "test:typescript": "tsc --noEmit"
   },
+  "dependencies": {
+    "@solidity-parser/parser": "^0.16.0"
+  },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
@@ -40,7 +44,6 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "@rollup/plugin-typescript": "^11.1.0",
     "@typechain/ethers-v5": "^10.2.0",
     "@types/ejs": "^3.1.1",
     "@types/glob": "^7.2.0",
@@ -74,8 +77,5 @@
     "ethers": "^5.7.2",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3"
   },
-  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f",
-  "dependencies": {
-    "@solidity-parser/parser": "^0.16.0"
-  }
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

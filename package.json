@@ -8,11 +8,9 @@
     "url": "https://github.com/latticexyz/mud.git"
   },
   "scripts": {
-    "build": "pnpm pnpm recursive run build",
+    "build": "pnpm recursive run build",
+    "build:codegen": "pnpm recursive run build:codegen",
     "build:docs": "pnpm recursive run docs && pnpm prettier --write '**/*.md' && pnpm run --filter docs build:prepare && pnpm run --filter docs build",
-    "codegen": "pnpm codegen:tablegen && pnpm codegen:worldgen",
-    "codegen:tablegen": "pnpm recursive run tablegen",
-    "codegen:worldgen": "pnpm recursive run worldgen",
     "commit": "cz",
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",
