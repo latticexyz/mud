@@ -1,22 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
-import { System, IWorld } from "solecs/System.sol";
-import { getAddressById } from "solecs/utils.sol";
-import { CounterComponent, ID as CounterComponentID } from "components/CounterComponent.sol";
-import { LibMath } from "libraries/LibMath.sol";
+import { console } from "forge-std/console.sol";
+import { System } from "@latticexyz/world/src/System.sol";
+import { CounterTable } from "../codegen/Tables.sol";
 
-uint256 constant ID = uint256(keccak256("system.Increment"));
+bytes32 constant SingletonKey = bytes32(uint256(0x060D));
 
 contract IncrementSystem is System {
-  constructor(IWorld _world, address _components) System(_world, _components) {}
-
-  function execute(bytes memory arguments) public returns (bytes memory) {
-    uint256 entity = abi.decode(arguments, (uint256));
-    CounterComponent c = CounterComponent(getAddressById(components, CounterComponentID));
-    LibMath.increment(c, entity);
-  }
-
-  function executeTyped(uint256 entity) public returns (bytes memory) {
-    return execute(abi.encode(entity));
+  function increment() public returns (uint32) {
+    bytes32 key = SingletonKey;
+    uint32 counter = CounterTable.get(key);
+    uint32 newValue = counter + 1;
+    CounterTable.set(key, newValue);
+    return newValue;
   }
 }
