@@ -5,7 +5,7 @@ import {
   RenderType,
   renderWithStore,
 } from "@latticexyz/common-codegen";
-import { RenderTableOptions } from "./types.js";
+import { RenderTableOptions } from "./types";
 
 export function renderFieldMethods(options: RenderTableOptions) {
   const storeArgument = options.storeArgument;

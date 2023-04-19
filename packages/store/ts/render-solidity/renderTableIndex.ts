@@ -1,5 +1,5 @@
 import { renderList, renderedSolidityHeader } from "@latticexyz/common-codegen";
-import { TableOptions } from "./tableOptions.js";
+import { TableOptions } from "./tableOptions";
 
 export function renderTableIndex(options: TableOptions[]) {
   return `${renderedSolidityHeader}

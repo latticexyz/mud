@@ -9,9 +9,10 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "scripts": {
     "build": "vite build",
     "release": "npm publish --access=public",
@@ -20,7 +21,7 @@
   "dependencies": {
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "@solidity-parser/parser": "^0.16.0",
+    "@latticexyz/solidity-parser": "^0.16.0",
     "chalk": "^5.2.0",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2"

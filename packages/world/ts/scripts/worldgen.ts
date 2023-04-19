@@ -2,7 +2,7 @@ import glob from "glob";
 import path, { basename } from "path";
 import { rmSync } from "fs";
 import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
-import { worldgen } from "../src/render-solidity/worldgen";
+import { worldgen } from "../render-solidity/worldgen";
 
 // TODO dedupe this and cli's worldgen command
 const configPath = undefined;

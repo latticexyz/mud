@@ -10,7 +10,7 @@ export default defineConfig({
     ssr: true,
     lib: {
       entry: "src/index.ts",
-      formats: ["cjs", "es"],
+      formats: ["es"],
     },
     outDir: "dist",
     minify: false,

@@ -9,9 +9,9 @@ import {
   renderTypeHelpers,
   RenderDynamicField,
 } from "@latticexyz/common-codegen";
-import { renderEncodeField, renderFieldMethods } from "./field.js";
-import { renderRecordMethods } from "./record.js";
-import { RenderTableOptions } from "./types.js";
+import { renderEncodeField, renderFieldMethods } from "./field";
+import { renderRecordMethods } from "./record";
+import { RenderTableOptions } from "./types";
 
 export function renderTable(options: RenderTableOptions) {
   const {

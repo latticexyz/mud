@@ -5,8 +5,8 @@ import {
   renderWithStore,
   RenderDynamicField,
 } from "@latticexyz/common-codegen";
-import { renderDecodeValueType } from "./field.js";
-import { RenderTableOptions } from "./types.js";
+import { renderDecodeValueType } from "./field";
+import { RenderTableOptions } from "./types";
 
 export function renderRecordMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;

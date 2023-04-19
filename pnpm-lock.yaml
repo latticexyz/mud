@@ -221,7 +221,7 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
-      '@solidity-parser/parser':
+      '@latticexyz/solidity-parser':
         specifier: ^0.16.0
         version: 0.16.0
       chalk:
@@ -1019,6 +1019,9 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
+      '@rollup/plugin-commonjs':
+        specifier: ^21.0.2
+        version: 21.0.2(rollup@2.79.1)
       '@rollup/plugin-typescript':
         specifier: ^11.1.0
         version: 11.1.0(rollup@2.79.1)(typescript@4.9.5)
@@ -1031,6 +1034,12 @@ importers:
       '@types/mocha':
         specifier: ^9.1.1
         version: 9.1.1
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.15.11
+      '@types/rollup-plugin-peer-deps-external':
+        specifier: ^2.2.1
+        version: 2.2.1
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
@@ -1069,7 +1078,7 @@ importers:
         version: 0.23.21(typescript@4.9.5)
       vite:
         specifier: ^4.2.1
-        version: 4.2.1(@types/node@17.0.34)
+        version: 4.2.1(@types/node@18.15.11)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
@@ -1136,6 +1145,10 @@ importers:
         version: 1.8.0
 
   packages/world:
+    dependencies:
+      '@solidity-parser/parser':
+        specifier: ^0.16.0
+        version: 0.16.0
     devDependencies:
       '@ethersproject/abi':
         specifier: ^5.7.0
@@ -1161,12 +1174,27 @@ importers:
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
+      '@types/ejs':
+        specifier: ^3.1.1
+        version: 3.1.1
+      '@types/glob':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@types/mocha':
         specifier: ^9.1.1
         version: 9.1.1
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.15.11
+      '@types/rollup-plugin-peer-deps-external':
+        specifier: ^2.2.1
+        version: 2.2.1
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
+      ejs:
+        specifier: ^3.1.8
+        version: 3.1.8
       ethers:
         specifier: ^5.7.2
         version: 5.7.2
@@ -1205,7 +1233,7 @@ importers:
         version: 0.23.21(typescript@4.9.5)
       vite:
         specifier: ^4.2.1
-        version: 4.2.1(@types/node@17.0.34)
+        version: 4.2.1(@types/node@18.15.11)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
@@ -3342,6 +3370,12 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.14
     dev: true
+
+  /@latticexyz/solidity-parser@0.16.0:
+    resolution: {integrity: sha512-e238MilrmTekLw6uQyBGu4El5PgmWU7ARd7oGUjRGhErFnIEiUabb6W5Ml+tE5sViu8Mr0okZ8qzGWS+HjYm8w==}
+    dependencies:
+      antlr4ts: 0.5.0-alpha.4
+    dev: false
 
   /@lerna/child-process@6.6.1:
     resolution: {integrity: sha512-yUCDCcRNNbI9UUsUB6FYEmDHpo5Tn/f0q5D7vhDP4i6Or8kBj82y7+e31hwfLvK2ykOYlDVs2MxAluH/+QUBOQ==}
@@ -5758,6 +5792,10 @@ packages:
 
   /@types/node@17.0.34:
     resolution: {integrity: sha512-XImEz7XwTvDBtzlTnm8YvMqGW/ErMWBsKZ+hMTvnDIjGCKxwK5Xpc+c/oQjOauwq8M4OS11hEkpjX8rrI/eEgA==}
+
+  /@types/node@18.15.11:
+    resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==}
+    dev: true
 
   /@types/normalize-package-data@2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -20182,6 +20220,40 @@ packages:
         optional: true
     dependencies:
       '@types/node': 17.0.34
+      esbuild: 0.17.15
+      postcss: 8.4.21
+      resolve: 1.22.1
+      rollup: 3.20.2
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /vite@4.2.1(@types/node@18.15.11):
+    resolution: {integrity: sha512-7MKhqdy0ISo4wnvwtqZkjke6XN4taqQ2TBaTccLIpOKv7Vp2h4Y+NpmWCnGDeSvvn45KxvWgGyb0MkHvY1vgbg==}
+    engines: {node: ^14.18.0 || >=16.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': '>= 14'
+      less: '*'
+      sass: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.4.0
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+    dependencies:
+      '@types/node': 18.15.11
       esbuild: 0.17.15
       postcss: 8.4.21
       resolve: 1.22.1

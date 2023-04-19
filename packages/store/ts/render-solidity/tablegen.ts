@@ -1,10 +1,10 @@
 import path from "path";
 import { StoreConfig } from "@latticexyz/config";
 import { formatAndWriteSolidity } from "@latticexyz/common-codegen";
-import { getTableOptions } from "./tableOptions.js";
-import { renderTable } from "./renderTable.js";
-import { renderTypesFromConfig } from "./renderTypesFromConfig.js";
-import { renderTableIndex } from "./renderTableIndex.js";
+import { getTableOptions } from "./tableOptions";
+import { renderTable } from "./renderTable";
+import { renderTypesFromConfig } from "./renderTypesFromConfig";
+import { renderTableIndex } from "./renderTableIndex";
 import { rmSync } from "fs";
 
 export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {

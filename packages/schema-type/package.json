@@ -9,8 +9,10 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "src/typescript/index.ts",
-  "source": "src/typescript/index.ts",
+  "main": "./src/typescript/index.ts",
+  "exports": {
+    ".": "./dist/typescript/index.js"
+  },
   "scripts": {
     "build": "pnpm build:solidity && pnpm build:typescript",
     "build:solidity": "echo 'removing previous output' && rimraf out && echo 'build solidity' && forge build",

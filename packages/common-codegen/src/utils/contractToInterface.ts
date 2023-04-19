@@ -1,5 +1,5 @@
-import { parse, visit } from "@solidity-parser/parser";
-import type { TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/ast-types";
+import { parse, visit } from "@latticexyz/solidity-parser";
+import type { TypeName, VariableDeclaration } from "@latticexyz/solidity-parser/dist/src/ast-types";
 import { MUDError } from "@latticexyz/config";
 
 export interface ContractInterfaceFunction {
