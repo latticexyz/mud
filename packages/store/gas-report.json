@@ -522,6 +522,30 @@
     "gasUsed": 17636
   },
   {
+    "source": "test/StoreCoreDynamicUpdate.t.sol",
+    "name": "pop from field (cold, 1 slot, 1 uint32 item)",
+    "functionCall": "StoreCore.popFromField(_table, _key, 1, byteLengthToPop)",
+    "gasUsed": 29270
+  },
+  {
+    "source": "test/StoreCoreDynamicUpdate.t.sol",
+    "name": "pop from field (warm, 1 slot, 1 uint32 item)",
+    "functionCall": "StoreCore.popFromField(_table, _key, 1, byteLengthToPop)",
+    "gasUsed": 19348
+  },
+  {
+    "source": "test/StoreCoreDynamicUpdate.t.sol",
+    "name": "pop from field (cold, 2 slots, 10 uint32 items)",
+    "functionCall": "StoreCore.popFromField(_table, _key, 2, byteLengthToPop)",
+    "gasUsed": 31149
+  },
+  {
+    "source": "test/StoreCoreDynamicUpdate.t.sol",
+    "name": "pop from field (warm, 2 slots, 10 uint32 items)",
+    "functionCall": "StoreCore.popFromField(_table, _key, 2, byteLengthToPop)",
+    "gasUsed": 19231
+  },
+  {
     "source": "test/StoreMetadata.t.sol",
     "name": "set record in StoreMetadataTable",
     "functionCall": "StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) })",
@@ -537,7 +561,7 @@
     "source": "test/StoreSwitch.t.sol",
     "name": "check if delegatecall",
     "functionCall": "isDelegate = StoreSwitch.isDelegateCall()",
-    "gasUsed": 716
+    "gasUsed": 738
   },
   {
     "source": "test/StoreSwitch.t.sol",
@@ -639,18 +663,18 @@
     "source": "test/Vector2.t.sol",
     "name": "register Vector2 schema",
     "functionCall": "Vector2.registerSchema()",
-    "gasUsed": 57982
+    "gasUsed": 57937
   },
   {
     "source": "test/Vector2.t.sol",
     "name": "set Vector2 record",
     "functionCall": "Vector2.set({ key: key, x: 1, y: 2 })",
-    "gasUsed": 38584
+    "gasUsed": 38494
   },
   {
     "source": "test/Vector2.t.sol",
     "name": "get Vector2 record",
     "functionCall": "Vector2Data memory vector = Vector2.get(key)",
-    "gasUsed": 5083
+    "gasUsed": 5038
   }
 ]
