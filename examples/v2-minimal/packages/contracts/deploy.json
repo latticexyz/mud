@@ -1,0 +1,4 @@
+{
+  "components": ["CounterComponent"],
+  "systems": [{ "name": "IncrementSystem", "writeAccess": ["CounterComponent"] }]
+}

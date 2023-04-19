@@ -1,0 +1,11 @@
+[profile.default]
+solc_version = "0.8.13"
+ffi = false
+fuzz_runs = 256
+optimizer = true
+optimizer_runs = 3000
+verbosity = 1
+src = "src"
+test = "src/test"
+out = "out"
+allow_paths = ["../../node_modules", "../../../../packages"]
