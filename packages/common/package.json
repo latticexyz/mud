@@ -15,11 +15,17 @@
   },
   "typesVersions": {
     "*": {
-      "codegen": ["./src/codegen/index.ts"],
-      "foundry": ["./src/foundry/index.ts"]
+      "codegen": [
+        "./src/codegen/index.ts"
+      ],
+      "foundry": [
+        "./src/foundry/index.ts"
+      ]
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "vite build",
     "release": "npm publish --access=public",
