@@ -9,9 +9,9 @@
   },
   "scripts": {
     "build": "pnpm recursive run build",
-    "build:codegen": "pnpm recursive run build:codegen",
-    "build:docs": "pnpm recursive run docs && pnpm prettier --write '**/*.md' && pnpm run --filter docs build:prepare && pnpm run --filter docs build",
+    "clean": "pnpm recursive run clean",
     "commit": "cz",
+    "docs": "pnpm recursive run docs && pnpm prettier --write '**/*.md' && pnpm run --filter docs build:prepare && pnpm run --filter docs build",
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
