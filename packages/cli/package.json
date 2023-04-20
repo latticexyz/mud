@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "vite build",
+    "build:js": "vite build && chmod +x ./dist/mud.js ./dist/mud2.js",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "vite build --watch",
