@@ -9,11 +9,11 @@ export default defineConfig({
   build: {
     ssr: true,
     lib: {
-      entry: ["ts/scripts/worldgen.ts", "ts/scripts/tablegen.ts", "ts/index.ts", "mud.config.ts"],
+      entry: ["ts/index.ts", "mud.config.ts"],
       formats: ["es"],
     },
     outDir: "dist",
-    minify: false,
+    minify: true,
     sourcemap: true,
     target: "esnext",
   },
