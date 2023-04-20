@@ -28,3 +28,6 @@ runs:
       shell: bash
       # We use `--workspace-concurrency=1` for now because forge has a hard time running in parallel (resulting in `Text file busy (os error 26)` errors in CI)
       run: pnpm recursive --workspace-concurrency=1 run build
+
+    - name: Outdated files, run `pnpm build` and commit them
+      uses: ./.github/actions/require-empty-diff
