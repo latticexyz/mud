@@ -1,5 +1,6 @@
 import { SetupContractConfig, getBurnerWallet } from "@latticexyz/std-client";
 
+import { Chain } from "@wagmi/chains";
 import latticeTestnet from "./supportedChains/latticeTestnet";
 import latestLatticeTestnetDeploy from "contracts/deploys/4242/latest.json";
 import localhost from "./supportedChains/localhost";
@@ -8,6 +9,7 @@ import latestLocalhostDeploy from "contracts/deploys/31337/latest.json";
 type NetworkConfig = SetupContractConfig & {
   privateKey: string;
   faucetServiceUrl?: string;
+  chain: Chain;
 };
 
 export async function getNetworkConfig(): Promise<NetworkConfig> {
@@ -45,6 +47,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
       wsRpcUrl: params.get("wsRpc") ?? chain.rpcUrls.default.webSocket?.[0],
     },
     privateKey: getBurnerWallet().value,
+    chain,
     chainId,
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,

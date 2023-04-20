@@ -7,12 +7,29 @@ import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
+import { watchStoreEvents } from "@latticexyz/network";
+import { createPublicClient, fallback, webSocket, http, Hex } from "viem";
+import mudlocal from "./supportedChains/mudlocal";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
 export async function setup() {
   const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
+
+  const client = createPublicClient({
+    chain: mudlocal,
+    transport: fallback([webSocket(), http()]),
+  });
+
+  const unwatch = watchStoreEvents({
+    client,
+    address: networkConfig.worldAddress as Hex,
+    onLogs: (logs) => {
+      console.log("got store logs", logs);
+    },
+  });
+
   const result = await setupMUDV2Network<typeof contractComponents>({
     networkConfig,
     world,
