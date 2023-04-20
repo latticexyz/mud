@@ -18,7 +18,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
   const supportedChains = [localhost, latticeTestnet];
   const deploys = [latestLocalhostDeploy, latestLatticeTestnetDeploy];
 
-  const chainId = Number(params.get("chainId") || import.meta.env.VITE_CHAIN_ID);
+  const chainId = Number(params.get("chainId")) || Number(import.meta.env.VITE_CHAIN_ID) || 31337;
   const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
   const chain = supportedChains[chainIndex];
   if (!chain) {
