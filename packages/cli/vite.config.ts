@@ -17,5 +17,5 @@ export default defineConfig({
     sourcemap: true,
     target: "esnext",
   },
-  plugins: [peerDepsExternal(), shebang()] as any,
+  plugins: [peerDepsExternal(), shebang()],
 });

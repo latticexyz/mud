@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { defineConfig } from "vitest/config";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 

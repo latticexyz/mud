@@ -5,6 +5,7 @@
     "types": ["node"],
     "module": "esnext",
     "moduleResolution": "node",
+    "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
@@ -13,8 +14,7 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
-    "skipLibCheck": true,
-    "resolveJsonModule": true
+    "skipLibCheck": true
   },
   "include": ["src"]
 }
