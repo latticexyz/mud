@@ -12,7 +12,7 @@
   "scripts": {
     "build": "pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
-    "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
+    "build:typechain": "rimraf abi/ownable && typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain",
     "clean:abi": "rimraf abi",
     "clean:typechain": "rimraf types",
