@@ -16,7 +16,7 @@
     "clean": "pnpm run clean:abi && pnpm run clean:typechain",
     "clean:abi": "rimraf abi",
     "clean:typechain": "rimraf types",
-    "docs": "rimraf API && hardhat docgen && echo 'label: API\norder: 50' > API/index.yml",
+    "docs": "rimraf API && hardhat docgen",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "release": "npm publish --access=public",
     "test": "forge test"

@@ -2,14 +2,13 @@
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
     "target": "es2021",
+    "types": ["node"],
     "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true,
-    "rootDir": ".",
     "outDir": "dist",
-    "importHelpers": false,
     "isolatedModules": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -17,5 +16,5 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src", "scripts", "modules.d.ts"]
+  "include": ["src"]
 }

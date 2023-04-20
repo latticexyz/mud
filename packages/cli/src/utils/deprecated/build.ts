@@ -1,7 +1,7 @@
 import { execa } from "execa";
 import { copyFileSync, mkdirSync, readdirSync, rmSync } from "fs";
 import path from "path";
-import { getOutDirectory } from "../foundry.js";
+import { getOutDirectory } from "@latticexyz/common/foundry";
 
 export async function forgeBuild(options?: { clear?: boolean }) {
   if (options?.clear) {

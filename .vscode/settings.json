@@ -1,16 +1,3 @@
 {
-  // Workaround for https://github.com/juanfranblanco/vscode-solidity/issues/335#issuecomment-1505564408
-  // This only works because we:
-  //   - use pnpm for dependencies rather than forge lib (submodules)
-  //   - have aligned all dependency versions across all packages
-  "solidity.remappings": [
-    "memmove/=node_modules/.pnpm/github.com+dk1a+memmove@ffd71cd77b1708574ef46a667b23ca3a5cc9fa27/node_modules/memmove/src/",
-    "ds-test/=node_modules/.pnpm/github.com+dapphub+ds-test@c9ce3f25bde29fc5eb9901842bf02850dfd2d084/node_modules/ds-test/src/",
-    "forge-std/=node_modules/.pnpm/github.com+foundry-rs+forge-std@b4f121555729b3afb3c5ffccb62ff4b6e2818fd3/node_modules/forge-std/src/",
-    "solmate/=node_modules/.pnpm/github.com+transmissions11+solmate@9cf1428245074e39090dceacb0c28b1f684f584c/node_modules/solmate/src",
-    "ds-test/=node_modules/.pnpm/github.com+dapphub+ds-test@c9ce3f25bde29fc5eb9901842bf02850dfd2d084/node_modules/ds-test/src/",
-    "@latticexyz/=packages/",
-    "std-contracts/=packages/std-contracts/src/",
-    "solecs/=packages/solecs/src/"
-  ]
+  "solidity.monoRepoSupport": true
 }

@@ -49,7 +49,7 @@ import { createBlockNumberStream } from "../createBlockNumberStream";
 import { SingletonID, SyncState } from "./constants";
 import { debug as parentDebug } from "./debug";
 import { fetchStoreEvents } from "../v2/fetchStoreEvents";
-import { abi as IStoreAbi } from "@latticexyz/store/abi/IStore.json";
+import { abi as IStoreAbi } from "@latticexyz/store/abi/IStore.sol/IStore.json";
 import { Contract } from "ethers";
 import { createModeClient } from "../v2/mode/createModeClient";
 import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";

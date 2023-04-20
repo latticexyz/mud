@@ -1,0 +1,45 @@
+{
+  "name": "client",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "build": "vite build",
+    "dev": "vite",
+    "initialize": "yarn build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@ethersproject/providers": "^5.7.2",
+    "@improbable-eng/grpc-web": "^0.15.0",
+    "@latticexyz/cli": "link:../../../../packages/cli",
+    "@latticexyz/network": "link:../../../../packages/network",
+    "@latticexyz/recs": "link:../../../../packages/recs",
+    "@latticexyz/schema-type": "link:../../../../packages/schema-type",
+    "@latticexyz/services": "link:../../../../packages/services",
+    "@latticexyz/std-client": "link:../../../../packages/std-client",
+    "@latticexyz/utils": "link:../../../../packages/utils",
+    "@latticexyz/world": "link:../../../../packages/world",
+    "@wagmi/chains": "^0.2.14",
+    "async-mutex": "^0.4.0",
+    "contracts": "workspace:*",
+    "ethers": "^5.7.2",
+    "lodash": "^4.17.21",
+    "mobx": "^6.7.0",
+    "nice-grpc": "^2.0.1",
+    "nice-grpc-web": "^2.0.1",
+    "proxy-deep": "^3.1.1",
+    "react": "^18.2.0",
+    "rxjs": "^7.5.5",
+    "threads": "^1.7.0",
+    "viem": "^0.2.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.46.1",
+    "@typescript-eslint/parser": "^5.46.1",
+    "eslint": "^8.29.0",
+    "typescript": "^4.9.5",
+    "vite": "^4.2.1"
+  }
+}

@@ -9,8 +9,10 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "src/typescript/index.ts",
-  "source": "src/typescript/index.ts",
+  "exports": {
+    ".": "./dist/typescript/index.js"
+  },
+  "types": "src/typescript/index.ts",
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsc",

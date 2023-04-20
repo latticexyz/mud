@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync, readFileSync } from "fs";
 import path from "path";
+import { resolveAbiOrUserType } from "@latticexyz/common/codegen";
+import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/common/foundry";
 import { MUDConfig, resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/config";
-import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld.js";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { resolveAbiOrUserType } from "../render-solidity/userType.js";
 import { defaultAbiCoder as abi, Fragment } from "ethers/lib/utils.js";
 
-import WorldData from "@latticexyz/world/abi/World.json" assert { type: "json" };
-import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.json" assert { type: "json" };
-import CoreModuleData from "@latticexyz/world/abi/CoreModule.json" assert { type: "json" };
-import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.json" assert { type: "json" };
-import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.json" assert { type: "json" };
+import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
+import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
+import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json" assert { type: "json" };
+import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
+import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;

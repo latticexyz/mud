@@ -1,11 +1,7 @@
----
-icon: public/logo512.png
----
-
 # MUD
 
 <div align="center">
-<img src="public/logo512.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
+<img src="docs/public/logo512-black.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
 <p>MUD - Engine for Autonomous Worlds</p>
 </div>
 
@@ -34,7 +30,7 @@ MUD is MIT-licensed, open source and free to use.
 
 ## Features
 
-![MUD features](./public/docs/features.png)
+![MUD features](./docs/public/features.png)
 
 ### Today
 
@@ -60,7 +56,7 @@ MUD is MIT-licensed, open source and free to use.
 pnpm create mud my-project
 ```
 
-![Scaffolding a new project with the MUD CLI.](./public/docs/mud-create.gif)
+![Scaffolding a new project with the MUD CLI.](./docs/public/mud-create.gif)
 
 ## Packages
 

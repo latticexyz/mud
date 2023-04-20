@@ -2,6 +2,7 @@
 
 !abi/**
 !src/**
+!ts/**
 !types/**
 !package.json
 !README.md
