@@ -1,8 +1,15 @@
 import { DocsThemeConfig } from "nextra-theme-docs";
 import NavLogo from "./components/NavLogo";
+import { useRouter } from "next/router";
 
 const config: DocsThemeConfig = {
   logo: NavLogo,
+  useNextSeoProps() {
+    const { asPath } = useRouter();
+    return {
+      titleTemplate: asPath === "/" ? "%s" : "%s – MUD",
+    };
+  },
   project: {
     link: "https://github.com/latticexyz/mud",
   },
