@@ -26,7 +26,7 @@
     "release:ci": "lerna publish --no-private --force-publish --yes",
     "release:manual": "pnpm --recursive --no-bail run release",
     "release:yalc": "(pnpm entry:dist && lerna exec npx yalc push); pnpm entry:src",
-    "sort-package-json": "npx sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json'",
+    "sort-package-json": "npx sort-package-json package.json 'packages/*/package.json' 'templates/*/package.json' 'templates/*/packages/*/package.json' 'examples/*/package.json' 'examples/*/packages/*/package.json'",
     "test": "pnpm recursive run test"
   },
   "lint-staged": {
