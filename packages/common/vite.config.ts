@@ -21,7 +21,7 @@ export default defineConfig({
     target: "esnext",
   },
   ssr: {
-    noExternal: ["execa", "is-stream", "npm-run-path"],
+    noExternal: ["execa", "is-stream", "npm-run-path", "@latticexyz/solidity-parser"],
   },
   /**
    * @see https://vitest.dev/config/
