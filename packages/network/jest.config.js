@@ -7,5 +7,7 @@ export default {
   moduleNameMapper: {
     // fix TS build issues
     "^(..?/.*).js$": "$1",
+    // jest can't handle esm imports, so we import the typescript source instead
+    "^@latticexyz/schema-type$": "<rootDir>/../schema-type/src/typescript/index.ts",
   },
 };

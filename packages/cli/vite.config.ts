@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { defineConfig } from "vitest/config";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 import shebang from "rollup-plugin-preserve-shebang";
@@ -17,5 +18,5 @@ export default defineConfig({
     sourcemap: true,
     target: "esnext",
   },
-  plugins: [peerDepsExternal(), shebang()],
+  plugins: [peerDepsExternal(), shebang()] as any,
 });
