@@ -19,6 +19,9 @@ export default defineConfig({
     minify: false,
     sourcemap: true,
   },
+  ssr: {
+    noExternal: ["execa", "is-stream", "npm-run-path"],
+  },
   /**
    * @see https://vitest.dev/config/
    */
