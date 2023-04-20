@@ -25,8 +25,8 @@ import {
 } from "@latticexyz/network";
 
 import { Component as SolecsComponent, World as WorldContract } from "@latticexyz/solecs";
-import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
-import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
+import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.sol/World.json";
+import ComponentAbi from "@latticexyz/solecs/abi/Component.sol/Component.json";
 
 import {
   Component,
