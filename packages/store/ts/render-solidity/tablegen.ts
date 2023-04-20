@@ -19,17 +19,17 @@ export async function tablegen(config: StoreConfig, outputBaseDirectory: string)
   for (const { outputPath, renderOptions } of allTableOptions) {
     const fullOutputPath = path.join(outputBaseDirectory, outputPath);
     const output = renderTable(renderOptions);
-    formatAndWriteSolidity(output, fullOutputPath, "Generated table");
+    await formatAndWriteSolidity(output, fullOutputPath, "Generated table");
   }
 
   // write types to file
   if (Object.keys(config.enums).length > 0) {
     const fullOutputPath = path.join(outputBaseDirectory, `${config.userTypesPath}.sol`);
     const output = renderTypesFromConfig(config);
-    formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
+    await formatAndWriteSolidity(output, fullOutputPath, "Generated types file");
   }
 
   const fullOutputPath = path.join(outputBaseDirectory, `Tables.sol`);
   const output = renderTableIndex(allTableOptions);
-  formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
+  await formatAndWriteSolidity(output, fullOutputPath, "Generated table index");
 }

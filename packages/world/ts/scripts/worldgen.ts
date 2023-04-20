@@ -31,5 +31,3 @@ if (clean) rmSync(path.join(outputBaseDirectory, mudConfig.worldgenDirectory), {
 
 // generate new interfaces
 await worldgen(mudConfig, existingContracts, outputBaseDirectory);
-
-process.exit(0);

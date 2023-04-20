@@ -6,4 +6,4 @@ import { tablegen } from "../render-solidity";
 const config = await loadStoreConfig();
 const srcDir = await getSrcDirectory();
 
-tablegen(config, path.join(srcDir, config.codegenDirectory));
+await tablegen(config, path.join(srcDir, config.codegenDirectory));
