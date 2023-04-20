@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { generateTypes } from "../../utils/deprecated/index.js";
+import { generateTypes } from "../../utils/deprecated/index";
 
 type Options = {
   abiDir?: string;

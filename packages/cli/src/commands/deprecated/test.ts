@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { execLog, generateLibDeploy, resetLibDeploy } from "../../utils/deprecated/index.js";
+import { execLog, generateLibDeploy, resetLibDeploy } from "../../utils/deprecated/index";
 import { getTestDirectory } from "@latticexyz/common/foundry";
 
 type Options = {

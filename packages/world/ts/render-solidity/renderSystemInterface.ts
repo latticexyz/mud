@@ -1,5 +1,5 @@
 import { renderArguments, renderList, renderedSolidityHeader, renderRelativeImports } from "@latticexyz/common/codegen";
-import { RenderSystemInterfaceOptions } from "./types.js";
+import { RenderSystemInterfaceOptions } from "./types";
 
 export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
   const { imports, name, functionPrefix, functions } = options;

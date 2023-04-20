@@ -9,7 +9,7 @@ import {
   validateSingleLevelRoute,
   validateUncapitalizedName,
   validateSelector,
-} from "./validation.js";
+} from "./validation";
 
 /** Capitalized names of objects, like tables and systems */
 export const zObjectName = z.string().superRefine(validateCapitalizedName);

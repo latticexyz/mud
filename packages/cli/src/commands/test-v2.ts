@@ -1,6 +1,6 @@
 import type { CommandModule } from "yargs";
-import { deployHandler, DeployOptions } from "./deploy-v2.js";
-import { yDeployOptions } from "./deploy-v2.js";
+import { deployHandler, DeployOptions } from "./deploy-v2";
+import { yDeployOptions } from "./deploy-v2";
 import { anvil, forge, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { rmSync, writeFileSync } from "fs";

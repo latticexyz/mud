@@ -1,11 +1,11 @@
 import { runTypeChain, glob as typechainGlob } from "typechain";
 import glob from "glob";
-import { extractIdFromFile } from "./ids.js";
+import { extractIdFromFile } from "./ids";
 import { rmSync, writeFileSync } from "fs";
 import path from "path";
-import { filterAbi, forgeBuild } from "./build.js";
+import { filterAbi, forgeBuild } from "./build";
 import { getOutDirectory, getSrcDirectory } from "@latticexyz/common/foundry";
-import { systemsDir } from "./constants.js";
+import { systemsDir } from "./constants";
 
 export async function generateAbiTypes(
   inputDir: string,

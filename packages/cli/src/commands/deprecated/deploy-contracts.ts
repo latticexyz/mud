@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { DeployOptions, generateAndDeploy, hsr } from "../../utils/deprecated/index.js";
+import { DeployOptions, generateAndDeploy, hsr } from "../../utils/deprecated/index";
 import openurl from "openurl";
 import chalk from "chalk";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
