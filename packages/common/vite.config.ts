@@ -16,8 +16,9 @@ export default defineConfig({
       formats: ["es"],
     },
     outDir: "dist",
-    minify: false,
+    minify: true,
     sourcemap: true,
+    target: "esnext",
   },
   ssr: {
     noExternal: ["execa", "is-stream", "npm-run-path"],

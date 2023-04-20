@@ -13,7 +13,7 @@ export default defineConfig({
       formats: ["es"],
     },
     outDir: "dist",
-    minify: false,
+    minify: true,
     sourcemap: true,
     target: "esnext",
   },
