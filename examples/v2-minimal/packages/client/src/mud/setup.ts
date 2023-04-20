@@ -1,5 +1,5 @@
 import { setupMUDV2Network } from "@latticexyz/std-client";
-import { createFastTxExecutor, createFaucetService } from "@latticexyz/network";
+import { createFastTxExecutor, createFaucetService, subscribeStoreEvents } from "@latticexyz/network";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { defineContractComponents } from "./contractComponents";
 import { clientComponents } from "./clientComponents";
@@ -19,10 +19,18 @@ export async function setup() {
 
   const client = createPublicClient({
     chain: mudlocal,
-    transport: fallback([webSocket(), http()]),
+    transport: webSocket(),
   });
 
-  const unwatch = watchStoreEvents({
+  // const unwatch = watchStoreEvents({
+  //   client,
+  //   address: networkConfig.worldAddress as Hex,
+  //   onLogs: (logs) => {
+  //     console.log("got store logs", logs);
+  //   },
+  // });
+
+  const unsubscribe = subscribeStoreEvents({
     client,
     address: networkConfig.worldAddress as Hex,
     onLogs: (logs) => {

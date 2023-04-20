@@ -497,8 +497,8 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
       viem:
-        specifier: 0.3.3
-        version: 0.3.3(typescript@4.9.5)
+        specifier: 0.3.1
+        version: 0.3.1(typescript@4.9.5)
 
   packages/noise:
     dependencies:
@@ -960,8 +960,8 @@ importers:
         specifier: ^4.9.5
         version: 4.9.5
       viem:
-        specifier: 0.3.3
-        version: 0.3.3(typescript@4.9.5)
+        specifier: 0.3.1
+        version: 0.3.1(typescript@4.9.5)
       vitest:
         specifier: ^0.29.8
         version: 0.29.8
@@ -20681,8 +20681,8 @@ packages:
       vfile-message: 3.1.4
     dev: false
 
-  /viem@0.3.3(typescript@4.9.5):
-    resolution: {integrity: sha512-w7PiRjMi9wwV7DmednDOTD0MGHtLp7W32wUUGko8vZWJvkplr3S3CHnRBK6zNKPWDmgFMe4V+65Btkrn4bw8wA==}
+  /viem@0.3.1(typescript@4.9.5):
+    resolution: {integrity: sha512-snWgwW3ZZzZts0fI4cqweOTzNV6vKTxTpktGxkOz4np31w6b7YUjczHU6SZ5JmWhNPWAw3PTckzj7e1V6DuPJA==}
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
       '@noble/curves': 0.9.0
