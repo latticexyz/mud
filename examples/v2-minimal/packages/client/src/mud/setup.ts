@@ -1,5 +1,5 @@
 import { setupMUDV2Network } from "@latticexyz/std-client";
-import { createFastTxExecutor, createFaucetService, subscribeStoreEvents } from "@latticexyz/network";
+import { createFastTxExecutor, createFaucetService, watchStoreEvents } from "@latticexyz/network";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { defineContractComponents } from "./contractComponents";
 import { clientComponents } from "./clientComponents";
@@ -7,7 +7,6 @@ import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import { watchStoreEvents } from "@latticexyz/network";
 import { createPublicClient, fallback, webSocket, http, Hex } from "viem";
 import mudlocal from "./supportedChains/mudlocal";
 
@@ -19,18 +18,10 @@ export async function setup() {
 
   const client = createPublicClient({
     chain: mudlocal,
-    transport: webSocket(),
+    transport: fallback([webSocket(), http()]),
   });
 
-  // const unwatch = watchStoreEvents({
-  //   client,
-  //   address: networkConfig.worldAddress as Hex,
-  //   onLogs: (logs) => {
-  //     console.log("got store logs", logs);
-  //   },
-  // });
-
-  const unsubscribe = subscribeStoreEvents({
+  const unwatch = watchStoreEvents({
     client,
     address: networkConfig.worldAddress as Hex,
     onLogs: (logs) => {
