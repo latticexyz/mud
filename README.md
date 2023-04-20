@@ -1,11 +1,7 @@
----
-icon: public/logo512.png
----
-
 # MUD
 
 <div align="center">
-<img src="public/logo512.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
+<img src="docs/public/logo512-black.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
 <p>MUD - Engine for Autonomous Worlds</p>
 </div>
 

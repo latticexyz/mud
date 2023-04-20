@@ -1,5 +1,10 @@
 export default {
   index: "MUD",
+  blog: {
+    title: "Blog",
+    type: "page",
+    display: "hidden",
+  },
   guides: "Guides",
   tutorials: "Tutorials",
   packages: "Packages",
@@ -13,6 +18,12 @@ export default {
     title: "Twitter",
     type: "page",
     href: "https://twitter.com/latticexyz",
+    newWindow: true,
+  },
+  discord: {
+    title: "Discord",
+    type: "page",
+    href: "https:/lattice.xyz/discord",
     newWindow: true,
   },
 };

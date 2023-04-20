@@ -142,7 +142,7 @@ Indexers are not strictly necessary for a client to mirror the contract state, b
 
 The `@latticexyz/services` packages contains general-purpose indexers that synchronize the on-chain state using the same approach as described above.
 If an indexer is provided, the `@latticexyz/network` will use it to load the initial client state faster and keep the local state up-to-date without calling an RPC node.
-[Setting up an indexer is easy and described here](https://mud.dev/packages/services/#getting-started).
+[Setting up an indexer is easy and described here](/packages/services/README#getting-started).
 
 ## RECS
 
