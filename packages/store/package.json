@@ -18,7 +18,7 @@
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:tightcoder && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --out abi --skip test script",
-    "build:codegen": "tsx ./ts/scripts/tablegen.ts",
+    "build:codegen": "node ./dist/tablegen.js",
     "build:js": "vite build",
     "build:tightcoder": "tsx ./ts/scripts/codegenTightcoder.ts && prettier --write '**/*.sol'",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",

@@ -1,6 +1,6 @@
 import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
-import { storeConfig, zStoreConfig, StoreUserConfig } from "./parseStoreConfig";
+import { storeConfig, zStoreConfig, StoreUserConfig } from "./parseStoreConfig.js";
 
 describe("StoreUserConfig", () => {
   // Typecheck manual interfaces against zod

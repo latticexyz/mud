@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { zEthereumAddress, zObjectName, zSelector } from "../commonSchemas";
-import { DynamicResolutionType } from "../dynamicResolution";
+import { zEthereumAddress, zObjectName, zSelector } from "../commonSchemas.js";
+import { DynamicResolutionType } from "../dynamicResolution.js";
 
 const zSystemName = zObjectName;
 const zModuleName = zObjectName;

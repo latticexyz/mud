@@ -1,5 +1,5 @@
-import { getStaticByteLength } from "./getStaticByteLength";
-import { SchemaType } from "./SchemaType";
+import { getStaticByteLength } from "./getStaticByteLength.js";
+import { SchemaType } from "./SchemaType.js";
 
 /**
  * Encode a table schema into a bytes32 hex string

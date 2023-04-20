@@ -3,7 +3,7 @@ import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
 import { MUDError } from "@latticexyz/config";
-import { logError } from "../utils/errors";
+import { logError } from "../utils/errors.js";
 import localPackageJson from "../../package.json" assert { type: "json" };
 
 type Options = {

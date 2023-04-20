@@ -1,4 +1,4 @@
-import { SchemaType } from "./SchemaType";
-import { DynamicSchemaType } from "./DynamicSchemaType";
+import { SchemaType } from "./SchemaType.js";
+import { DynamicSchemaType } from "./DynamicSchemaType.js";
 
 export type StaticSchemaType = Exclude<SchemaType, DynamicSchemaType>;

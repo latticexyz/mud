@@ -2,8 +2,8 @@ import { readFileSync } from "fs";
 import path from "path";
 import { MUDConfig } from "@latticexyz/config";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
-import { renderSystemInterface } from "./renderSystemInterface";
-import { renderWorld } from "./renderWorld";
+import { renderSystemInterface } from "./renderSystemInterface.js";
+import { renderWorld } from "./renderWorld.js";
 
 export async function worldgen(
   config: MUDConfig,

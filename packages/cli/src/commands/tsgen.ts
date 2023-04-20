@@ -1,6 +1,6 @@
 import type { CommandModule } from "yargs";
 import { loadStoreConfig } from "@latticexyz/config";
-import { tsgen } from "../render-ts/tsgen";
+import { tsgen } from "../render-ts/tsgen.js";
 
 type Options = {
   configPath: string;

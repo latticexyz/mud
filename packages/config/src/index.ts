@@ -1,6 +1,6 @@
-import { ExtractUserTypes, StringForUnion } from "./typeUtils";
-import { StoreUserConfig, StoreConfig } from "./store/parseStoreConfig";
-import { WorldUserConfig, ResolvedWorldConfig } from "./world/index";
+import { ExtractUserTypes, StringForUnion } from "./typeUtils.js";
+import { StoreUserConfig, StoreConfig } from "./store/parseStoreConfig.js";
+import { WorldUserConfig, ResolvedWorldConfig } from "./world/index.js";
 
 export type MUDUserConfig<
   EnumNames extends StringForUnion = StringForUnion,
@@ -15,11 +15,11 @@ export function mudConfig<
   return config;
 }
 
-export * from "./commonSchemas";
-export * from "./loadConfig";
-export * from "./store/loadStoreConfig";
-export * from "./store/parseStoreConfig";
-export * from "./world/index";
-export * from "./validation";
-export * from "./dynamicResolution";
-export * from "./errors";
+export * from "./commonSchemas.js";
+export * from "./loadConfig.js";
+export * from "./store/loadStoreConfig.js";
+export * from "./store/parseStoreConfig.js";
+export * from "./world/index.js";
+export * from "./validation.js";
+export * from "./dynamicResolution.js";
+export * from "./errors.js";

@@ -1,5 +1,5 @@
 import path from "path";
-import { ImportDatum, RelativeImportDatum, StaticResourceData, RenderPrimaryKey, RenderType } from "./types";
+import { ImportDatum, RelativeImportDatum, StaticResourceData, RenderPrimaryKey, RenderType } from "./types.js";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;

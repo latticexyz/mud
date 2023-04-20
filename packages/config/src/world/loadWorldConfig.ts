@@ -1,8 +1,8 @@
 import { ZodError } from "zod";
-import { fromZodErrorCustom } from "../errors";
-import { loadConfig } from "../loadConfig";
-import { zWorldConfig } from "./parseWorldConfig";
-import { resolveWorldConfig } from "./resolveWorldConfig";
+import { fromZodErrorCustom } from "../errors.js";
+import { loadConfig } from "../loadConfig.js";
+import { zWorldConfig } from "./parseWorldConfig.js";
+import { resolveWorldConfig } from "./resolveWorldConfig.js";
 
 /**
  * Loads and resolves the world config.

@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { generateLibDeploy } from "../../utils/deprecated/index";
+import { generateLibDeploy } from "../../utils/deprecated/index.js";
 
 type Options = {
   config: string;

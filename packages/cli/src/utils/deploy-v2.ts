@@ -6,10 +6,10 @@ import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/co
 import { MUDConfig, resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/config";
 import { BigNumber, ContractInterface, ethers } from "ethers";
-import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
+import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld.js";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { defaultAbiCoder as abi, Fragment } from "ethers/lib/utils";
+import { defaultAbiCoder as abi, Fragment } from "ethers/lib/utils.js";
 
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };

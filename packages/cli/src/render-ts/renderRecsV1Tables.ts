@@ -1,4 +1,4 @@
-import { RecsV1TableOptions } from "./types";
+import { RecsV1TableOptions } from "./types.js";
 
 export function renderRecsV1Tables(options: RecsV1TableOptions) {
   const { tables } = options;

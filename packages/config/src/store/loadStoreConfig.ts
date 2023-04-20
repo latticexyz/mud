@@ -1,7 +1,7 @@
 import { ZodError } from "zod";
-import { fromZodErrorCustom } from "../errors";
-import { loadConfig } from "../loadConfig";
-import { parseStoreConfig } from "./parseStoreConfig";
+import { fromZodErrorCustom } from "../errors.js";
+import { loadConfig } from "../loadConfig.js";
+import { parseStoreConfig } from "./parseStoreConfig.js";
 
 export async function loadStoreConfig(configPath?: string) {
   const config = await loadConfig(configPath);

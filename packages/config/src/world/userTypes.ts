@@ -1,4 +1,4 @@
-import { DynamicResolution } from "../dynamicResolution";
+import { DynamicResolution } from "../dynamicResolution.js";
 
 // zod doesn't preserve doc comments
 export type SystemUserConfig =

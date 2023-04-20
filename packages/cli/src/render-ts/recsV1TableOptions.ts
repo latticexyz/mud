@@ -1,7 +1,7 @@
 import { StoreConfig } from "@latticexyz/config";
 import { resolveAbiOrUserType } from "@latticexyz/common/codegen";
-import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings";
-import { RecsV1TableOptions } from "./types";
+import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings.js";
+import { RecsV1TableOptions } from "./types.js";
 
 export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
   const tableOptions = [];

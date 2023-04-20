@@ -1,7 +1,7 @@
 import path from "path";
 import { storeConfig, parseStoreConfig } from "@latticexyz/config";
 import { tablegen } from "@latticexyz/store";
-import { logError } from "../src/utils/errors";
+import { logError } from "../src/utils/errors.js";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 
 // This config is used only for tests

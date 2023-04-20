@@ -18,7 +18,7 @@
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --out abi --skip test script",
-    "build:codegen": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/worldgen.ts",
+    "build:codegen": "node ./dist/tablegen.js && node ./dist/worldgen.js",
     "build:js": "vite build",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain && pnpm run clean:js",

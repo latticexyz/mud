@@ -2,7 +2,7 @@ import { rmSync } from "fs";
 import { homedir } from "os";
 import path from "path";
 import type { CommandModule } from "yargs";
-import { execLog } from "../utils/deprecated/index";
+import { execLog } from "../utils/deprecated/index.js";
 
 type Options = {
   blocktime: number;

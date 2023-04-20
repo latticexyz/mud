@@ -1,6 +1,6 @@
-import { UnrecognizedSystemErrorFactory } from "../errors";
-import { ParsedWorldConfig } from "./parseWorldConfig";
-import { SystemUserConfig } from "./userTypes";
+import { UnrecognizedSystemErrorFactory } from "../errors.js";
+import { ParsedWorldConfig } from "./parseWorldConfig.js";
+import { SystemUserConfig } from "./userTypes.js";
 
 export type ResolvedSystemConfig = ReturnType<typeof resolveSystemConfig>;
 
