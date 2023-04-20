@@ -1,8 +1,8 @@
 import { DocsThemeConfig } from "nextra-theme-docs";
-import Logo from "./components/Logo";
+import NavLogo from "./components/NavLogo";
 
 const config: DocsThemeConfig = {
-  logo: Logo,
+  logo: NavLogo,
   project: {
     link: "https://github.com/latticexyz/mud",
   },
