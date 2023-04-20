@@ -4,7 +4,7 @@ import {
   renderImports,
   renderRelativeImports,
   type ImportDatum,
-} from "@latticexyz/common-codegen";
+} from "@latticexyz/common/codegen";
 import type { RenderWorldOptions } from "./types";
 
 export function renderWorld(options: RenderWorldOptions) {

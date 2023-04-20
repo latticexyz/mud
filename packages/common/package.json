@@ -1,22 +1,27 @@
 {
-  "name": "@latticexyz/common-codegen",
+  "name": "@latticexyz/common",
   "version": "1.42.0",
-  "description": "Common files for codegen",
+  "description": "Common low level logic shared between packages",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/common-codegen"
+    "directory": "packages/common"
   },
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    "./codegen": "./dist/codegen/index.js",
+    "./foundry": "./dist/foundry/index.js"
   },
-  "main": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "codegen": ["./src/codegen/index.ts"],
+      "foundry": ["./src/foundry/index.ts"]
+    }
+  },
+  "files": ["dist"],
   "scripts": {
-    "build": "pnpm run build:js && pnpm run build:dts",
-    "build:dts": "tsc --emitDeclarationOnly",
-    "build:js": "vite build",
+    "build": "vite build",
     "release": "npm publish --access=public",
     "test": "vitest typecheck --run --passWithNoTests"
   },
@@ -25,6 +30,7 @@
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/solidity-parser": "^0.16.0",
     "chalk": "^5.2.0",
+    "execa": "^7.0.0",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2"
   },

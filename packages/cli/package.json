@@ -12,14 +12,13 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "main": "src/index.ts",
+  "types": "src/index.ts",
   "bin": {
     "mud": "./dist/mud.js",
     "mud2": "./dist/mud2.js"
   },
   "scripts": {
-    "build": "pnpm run build:js && pnpm run build:dts && chmod +x ./dist/mud.js",
-    "build:dts": "tsc --emitDeclarationOnly",
+    "build": "pnpm run build:js && chmod +x ./dist/mud.js",
     "build:js": "vite build",
     "codegen": "tsx ./scripts/codegen.ts",
     "dev": "vite build --help",
@@ -34,7 +33,7 @@
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
-    "@latticexyz/common-codegen": "workspace:*",
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/services": "workspace:*",

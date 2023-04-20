@@ -12,7 +12,7 @@
   "exports": {
     ".": "./dist/typescript/index.js"
   },
-  "main": "src/typescript/index.ts",
+  "types": "src/typescript/index.ts",
   "scripts": {
     "build": "pnpm build:solidity && pnpm build:typescript",
     "build:solidity": "echo 'removing previous output' && rimraf out && echo 'build solidity' && forge build",

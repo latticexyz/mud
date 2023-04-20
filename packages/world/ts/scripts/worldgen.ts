@@ -3,12 +3,12 @@ import path, { basename } from "path";
 import { rmSync } from "fs";
 import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
 import { worldgen } from "../render-solidity/worldgen";
+import { getSrcDirectory } from "@latticexyz/common/foundry";
 
 // TODO dedupe this and cli's worldgen command
 const configPath = undefined;
 const clean = false;
-// TODO extract `foundry.ts` from the cli package and use its `getSrcDirectory` here
-const srcDir = "./src";
+const srcDir = await getSrcDirectory();
 
 // Get a list of all contract names
 const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({

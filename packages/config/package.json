@@ -12,11 +12,9 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
-    "build": "pnpm run build:js && pnpm run build:dts",
-    "build:dts": "tsc --emitDeclarationOnly",
-    "build:js": "vite build",
+    "build": "vite build",
     "release": "npm publish --access=public",
     "test": "vitest typecheck --run"
   },

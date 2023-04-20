@@ -1,6 +1,6 @@
 import path from "path";
 import { StoreConfig } from "@latticexyz/config";
-import { formatAndWriteTypescript } from "@latticexyz/common-codegen";
+import { formatAndWriteTypescript } from "@latticexyz/common/codegen";
 import { getRecsV1TableOptions } from "../render-ts/recsV1TableOptions.js";
 import { renderRecsV1Tables } from "../render-ts/renderRecsV1Tables.js";
 

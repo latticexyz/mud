@@ -8,7 +8,7 @@ import {
   renderWithStore,
   renderTypeHelpers,
   RenderDynamicField,
-} from "@latticexyz/common-codegen";
+} from "@latticexyz/common/codegen";
 import { renderEncodeField, renderFieldMethods } from "./field";
 import { renderRecordMethods } from "./record";
 import { RenderTableOptions } from "./types";

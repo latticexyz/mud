@@ -4,7 +4,7 @@ import {
   RenderField,
   RenderType,
   renderWithStore,
-} from "@latticexyz/common-codegen";
+} from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 
 export function renderFieldMethods(options: RenderTableOptions) {

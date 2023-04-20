@@ -1,4 +1,4 @@
-import { renderList, renderedSolidityHeader } from "@latticexyz/common-codegen";
+import { renderList, renderedSolidityHeader } from "@latticexyz/common/codegen";
 import { TableOptions } from "./tableOptions";
 
 export function renderTableIndex(options: TableOptions[]) {

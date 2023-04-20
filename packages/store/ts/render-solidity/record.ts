@@ -4,7 +4,7 @@ import {
   renderCommonData,
   renderWithStore,
   RenderDynamicField,
-} from "@latticexyz/common-codegen";
+} from "@latticexyz/common/codegen";
 import { renderDecodeValueType } from "./field";
 import { RenderTableOptions } from "./types";
 

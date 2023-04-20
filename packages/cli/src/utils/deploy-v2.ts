@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync, readFileSync } from "fs";
 import path from "path";
-import { resolveAbiOrUserType } from "@latticexyz/common-codegen";
+import { resolveAbiOrUserType } from "@latticexyz/common/codegen";
+import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/common/foundry";
 import { MUDConfig, resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/config";
-import { getOutDirectory, getScriptDirectory, cast, forge } from "./foundry.js";
 import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld.js";
 import chalk from "chalk";

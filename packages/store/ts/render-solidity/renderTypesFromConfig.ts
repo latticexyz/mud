@@ -1,5 +1,5 @@
 import { StoreConfig } from "@latticexyz/config";
-import { renderEnums } from "@latticexyz/common-codegen";
+import { renderEnums } from "@latticexyz/common/codegen";
 
 export function renderTypesFromConfig(config: StoreConfig) {
   const enums = Object.keys(config.enums).map((name) => ({

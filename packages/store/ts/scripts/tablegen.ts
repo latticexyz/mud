@@ -1,9 +1,9 @@
 import path from "path";
 import { loadStoreConfig } from "@latticexyz/config";
+import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { tablegen } from "../render-solidity";
 
 const config = await loadStoreConfig();
-// TODO extract `foundry.ts` from the cli package and use its `getSrcDirectory` here
-const srcDir = "./src";
+const srcDir = await getSrcDirectory();
 
 tablegen(config, path.join(srcDir, config.codegenDirectory));

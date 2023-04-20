@@ -5,7 +5,7 @@ import {
   RenderPrimaryKey,
   RenderStaticField,
   StaticResourceData,
-} from "@latticexyz/common-codegen";
+} from "@latticexyz/common/codegen";
 
 export interface RenderTableOptions {
   /** List of symbols to import, and their file paths */

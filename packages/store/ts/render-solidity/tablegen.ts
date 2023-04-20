@@ -1,6 +1,6 @@
 import path from "path";
 import { StoreConfig } from "@latticexyz/config";
-import { formatAndWriteSolidity } from "@latticexyz/common-codegen";
+import { formatAndWriteSolidity } from "@latticexyz/common/codegen";
 import { getTableOptions } from "./tableOptions";
 import { renderTable } from "./renderTable";
 import { renderTypesFromConfig } from "./renderTypesFromConfig";

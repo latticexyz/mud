@@ -1,5 +1,5 @@
 import { execa, Options } from "execa";
-import { execLog } from "./execLog.js";
+import chalk from "chalk";
 
 export interface ForgeConfig {
   // project
@@ -100,4 +100,25 @@ export async function cast(args: string[], options?: { profile?: string }): Prom
  */
 export async function anvil(args: string[]): Promise<string> {
   return execLog("anvil", args);
+}
+
+/**
+ * Executes the given command, returns the stdout, and logs the command to the console.
+ * Throws an error if the command fails.
+ * @param command The command to execute
+ * @param args The arguments to pass to the command
+ * @returns The stdout of the command
+ */
+async function execLog(command: string, args: string[], options?: Options<string>): Promise<string> {
+  const commandString = `${command} ${args.join(" ")}`;
+  try {
+    console.log(chalk.gray(`running "${commandString}"`));
+    const { stdout } = await execa(command, args, { stdout: "pipe", stderr: "pipe", ...options });
+    return stdout;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    let errorMessage = error?.stderr || error?.message || "";
+    errorMessage += chalk.red(`\nError running "${commandString}"`);
+    throw new Error(errorMessage);
+  }
 }

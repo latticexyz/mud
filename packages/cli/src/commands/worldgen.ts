@@ -1,7 +1,7 @@
 import type { CommandModule } from "yargs";
 import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
 import { worldgen } from "@latticexyz/world";
-import { getSrcDirectory } from "../utils/foundry.js";
+import { getSrcDirectory } from "@latticexyz/common/foundry";
 import glob from "glob";
 import path, { basename } from "path";
 import { rmSync } from "fs";

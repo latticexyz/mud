@@ -10,7 +10,7 @@ import {
   RenderPrimaryKey,
   RenderStaticField,
   resolveAbiOrUserType,
-} from "@latticexyz/common-codegen";
+} from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
 
 export interface TableOptions {

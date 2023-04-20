@@ -14,12 +14,11 @@
     "./*": "./dist/*",
     "./abi/*": "./abi/*"
   },
-  "main": "ts/index.ts",
+  "types": "ts/index.ts",
   "scripts": {
-    "build": "pnpm run build:js && pnpm run build:dts && pnpm run build:tightcoder && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain",
+    "build": "pnpm run build:js && pnpm run build:tightcoder && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --out abi --skip test script",
     "build:codegen": "node ./dist/tablegen.js",
-    "build:dts": "tsc --emitDeclarationOnly",
     "build:js": "vite build",
     "build:tightcoder": "tsx ./ts/scripts/codegenTightcoder.ts && prettier --write '**/*.sol'",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
@@ -38,7 +37,7 @@
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
-    "@latticexyz/common-codegen": "workspace:*",
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@typechain/ethers-v5": "^10.2.0",
