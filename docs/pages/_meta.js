@@ -1,5 +1,10 @@
 export default {
   index: "MUD",
+  blog: {
+    title: "Blog",
+    type: "page",
+    display: "hidden",
+  },
   guides: "Guides",
   tutorials: "Tutorials",
   packages: "Packages",

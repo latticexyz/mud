@@ -1,12 +1,3 @@
----
-author:
-  name: alvarius
-  link: https://twitter.com/_alvarius
-  avatar: ./avatars/alvarius.jpeg
-category: introduction
-date: 2022-10-01
----
-
 # Introduction to the Entity Component System (ECS) pattern
 
 This article outlines the basics of the ECS pattern (or the ECS variant we use in MUD).
