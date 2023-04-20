@@ -6,9 +6,6 @@ const config: DocsThemeConfig = {
   project: {
     link: "https://github.com/latticexyz/mud",
   },
-  chat: {
-    link: "https://lattice.xyz/discord",
-  },
   docsRepositoryBase: "https://github.com/latticexyz/mud/blob/core/docs/pages",
   head: (
     <>

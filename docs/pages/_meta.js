@@ -20,4 +20,10 @@ export default {
     href: "https://twitter.com/latticexyz",
     newWindow: true,
   },
+  discord: {
+    title: "Discord",
+    type: "page",
+    href: "https:/lattice.xyz/discord",
+    newWindow: true,
+  },
 };
