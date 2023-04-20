@@ -14,7 +14,7 @@
     "./*": "./dist/*",
     "./abi/*": "./abi/*"
   },
-  "main": "./ts/index.ts",
+  "main": "ts/index.ts",
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:dts && pnpm run build:tightcoder && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --out abi --skip test script",
@@ -41,7 +41,6 @@
     "@latticexyz/common-codegen": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "@rollup/plugin-commonjs": "^21.0.2",
     "@typechain/ethers-v5": "^10.2.0",
     "@types/ejs": "^3.1.1",
     "@types/mocha": "^9.1.1",

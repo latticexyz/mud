@@ -12,7 +12,7 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "main": "./src/index.ts",
+  "main": "src/index.ts",
   "bin": {
     "mud": "./dist/mud.js",
     "mud2": "./dist/mud2.js"
@@ -22,7 +22,7 @@
     "build:dts": "tsc --emitDeclarationOnly",
     "build:js": "vite build",
     "codegen": "tsx ./scripts/codegen.ts",
-    "dev": "tsup --watch",
+    "dev": "vite build --help",
     "lint": "eslint . --ext .ts",
     "release": "npm publish --access=public",
     "test": "pnpm test:typescript && pnpm test:contracts",
@@ -71,7 +71,6 @@
     "@types/yargs": "^17.0.10",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-preserve-shebang": "^1.0.1",
-    "tsup": "^6.6.3",
     "tsx": "^3.12.6",
     "vite": "^4.3.0",
     "vitest": "^0.29.8"

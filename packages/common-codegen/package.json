@@ -12,7 +12,7 @@
   "exports": {
     ".": "./dist/index.js"
   },
-  "main": "./src/index.ts",
+  "main": "src/index.ts",
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:dts",
     "build:dts": "tsc --emitDeclarationOnly",

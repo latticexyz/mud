@@ -14,7 +14,7 @@
     "./mud.config.js": "./dist/mud.config.js",
     "./abi/*": "./abi/*"
   },
-  "main": "./ts/index.ts",
+  "main": "ts/index.ts",
   "scripts": {
     "build": "pnpm run build:js && pnpm run build:dts && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --out abi --skip test script",
@@ -60,7 +60,6 @@
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
-    "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "typechain": "^8.1.1",
     "typedoc": "^0.23.10",
