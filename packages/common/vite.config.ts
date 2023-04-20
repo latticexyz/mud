@@ -10,8 +10,8 @@ export default defineConfig({
     ssr: true,
     lib: {
       entry: {
-        "codegen/index.js": "src/codegen/index.ts",
-        "foundry/index.js": "src/foundry/index.ts",
+        "codegen/index": "src/codegen/index.ts",
+        "foundry/index": "src/foundry/index.ts",
       },
       formats: ["es"],
     },
