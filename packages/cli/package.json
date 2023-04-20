@@ -9,26 +9,31 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "src/index.ts",
   "bin": {
     "mud": "./dist/mud.js",
     "mud2": "./dist/mud2.js"
   },
   "scripts": {
-    "build": "tsup",
+    "build": "pnpm run build:js && chmod +x ./dist/mud.js",
+    "build:js": "vite build",
     "codegen": "tsx ./scripts/codegen.ts",
-    "dev": "tsup --watch",
+    "dev": "vite build --watch",
     "lint": "eslint . --ext .ts",
     "release": "npm publish --access=public",
-    "test": "tsc --noEmit && pnpm test:contracts",
-    "test:contracts": "pnpm codegen && forge test"
+    "test": "pnpm test:typescript && pnpm test:contracts",
+    "test:contracts": "pnpm codegen && forge test",
+    "test:typescript": "tsc --noEmit"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
     "@improbable-eng/grpc-web-node-http-transport": "^0.15.0",
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/services": "workspace:*",
@@ -36,7 +41,6 @@
     "@latticexyz/std-contracts": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/world": "workspace:*",
-    "@solidity-parser/parser": "^0.16.0",
     "@typechain/ethers-v5": "^10.2.0",
     "chalk": "^5.0.1",
     "chokidar": "^3.5.3",
@@ -50,8 +54,6 @@
     "nice-grpc-web": "^2.0.1",
     "openurl": "^1.1.1",
     "path": "^0.12.7",
-    "prettier": "^2.8.4",
-    "prettier-plugin-solidity": "^1.1.2",
     "table": "^6.8.1",
     "typechain": "^8.1.1",
     "typescript": "^4.9.5",
@@ -64,9 +66,12 @@
     "@types/glob": "^7.2.0",
     "@types/node": "^17.0.34",
     "@types/openurl": "^1.0.0",
+    "@types/rollup-plugin-peer-deps-external": "^2.2.1",
     "@types/yargs": "^17.0.10",
-    "tsup": "^6.6.3",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-preserve-shebang": "^1.0.1",
     "tsx": "^3.12.6",
+    "vite": "^4.3.0",
     "vitest": "^0.29.8"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"

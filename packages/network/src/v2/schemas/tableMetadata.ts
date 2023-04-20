@@ -3,7 +3,7 @@ import { Contract, utils } from "ethers";
 import { metadataTableId, schemaTableId, TableMetadata } from "../common";
 import { decodeData } from "./decodeData";
 import { registerSchema } from "./tableSchemas";
-import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore";
+import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore.sol/IStore";
 
 // worldAddress:tableId => metadata
 // TODO: add chain ID to namespace?

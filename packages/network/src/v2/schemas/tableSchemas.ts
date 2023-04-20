@@ -2,7 +2,7 @@ import { Contract } from "ethers";
 import { TableId } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 import { decodeSchema } from "./decodeSchema";
-import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore";
+import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore.sol/IStore";
 
 // worldAddress:tableId => schema
 // TODO: add chain ID to namespace?

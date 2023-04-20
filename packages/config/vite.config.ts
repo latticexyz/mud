@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { defineConfig } from "vitest/config";
-import typescript from "@rollup/plugin-typescript";
 import peerDepsExternal from "rollup-plugin-peer-deps-external";
 
 /**
@@ -10,7 +10,7 @@ export default defineConfig({
     ssr: true,
     lib: {
       entry: "src/index.ts",
-      formats: ["cjs", "es"],
+      formats: ["es"],
     },
     outDir: "dist",
     minify: false,
@@ -23,5 +23,5 @@ export default defineConfig({
     environment: "node",
     globals: true,
   },
-  plugins: [(typescript as any)(), peerDepsExternal()],
+  plugins: [peerDepsExternal()] as any,
 });
