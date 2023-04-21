@@ -9,11 +9,34 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "protobuf/ts/index.ts",
+  "exports": {
+    "/*": "./dist/*"
+  },
+  "typesVersions": {
+    "*": {
+      "ecs-relay": [
+        "./protobuf/ts/ecs-relay/ecs-relay.ts"
+      ],
+      "ecs-snapshot": [
+        "./protobuf/ts/ecs-snapshot/ecs-snapshot.ts"
+      ],
+      "ecs-stream": [
+        "./protobuf/ts/ecs-stream/ecs-stream.ts"
+      ],
+      "faucet": [
+        "./protobuf/ts/faucet/faucet.ts"
+      ],
+      "mode": [
+        "./protobuf/ts/mode/mode.ts"
+      ]
+    }
+  },
   "scripts": {
-    "build": "make build",
+    "build": "pnpm run build:go && pnpm run build:protoc && pnpm run build:js",
+    "build:js": "tsup",
+    "build:go": "make build",
+    "build:protoc": "make protoc-ts",
     "docs": "rimraf API && mkdir -p _docs/pkg && find pkg -type f -name '*.go' -exec bash -c 'gomarkdoc {} > \"$(dirname _docs/{})\".md' \\; && mv _docs/pkg API && rimraf _docs",
-    "protoc-ts": "make protoc-ts",
     "release": "npm publish --access=public",
     "test": "tsc --noEmit && echo 'todo: add tests'"
   },
@@ -24,7 +47,8 @@
   },
   "devDependencies": {
     "rimraf": "^3.0.2",
-    "ts-proto": "^1.146.0"
+    "ts-proto": "^1.146.0",
+    "tsup": "^6.7.0"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }
