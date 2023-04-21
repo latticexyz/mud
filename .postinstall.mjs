@@ -24,7 +24,6 @@ async function createPackageSymlink(mud_package, node_module) {
       __dirname + `/packages/${mud_package}/node_modules/${node_module}`,
       "dir"
     );
-    fs.realpathSync(__dirname + `./packages/${mud_package}/node_modules/${node_module}`);
   } catch (e) {
     // console.log(e);
   }
