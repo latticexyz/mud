@@ -388,21 +388,19 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       .map((item) => {
         if (item.type === "fallback") return { functionName: "", functionArgs: "" };
 
-        // Helper to recursively parse structs
-        const parseFunctionComponentsRec = (components: ParamType[]): string =>
-          `(${components.map((param) => {
-            const paramType = param.type;
-            if (paramType === "tuple") {
-              return parseFunctionComponentsRec(param.components);
-            }
-            return paramType;
-          })})`;
-
         return {
           functionName: item.name,
-          functionArgs: parseFunctionComponentsRec(item.inputs),
+          functionArgs: parseComponents(item.inputs),
         };
       });
+  }
+
+  /**
+   * Recursively turn (nested) structs in signatures into tuples
+   */
+  function parseComponents(params: ParamType[]): string {
+    const components = params.map((param) => (param.type === "tuple" ? parseComponents(param.components) : param.type));
+    return `(${components})`;
   }
 
   /**
