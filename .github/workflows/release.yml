@@ -28,9 +28,9 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run codegen
-        run: pnpm codegen
+        run: pnpm build:codegen
 
-      - name: Outdated files, run `pnpm codegen` and commit them
+      - name: Outdated files, run `pnpm build:codegen` and commit them
         uses: ./.github/actions/require-empty-diff
 
       - name: Generate gas reports
@@ -65,9 +65,9 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Run codegen
-        run: pnpm codegen
+        run: pnpm build:codegen
 
-      - name: Outdated files, run `pnpm codegen` and commit them
+      - name: Outdated files, run `pnpm build:codegen` and commit them
         uses: ./.github/actions/require-empty-diff
 
       - name: Generate gas reports

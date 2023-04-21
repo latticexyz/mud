@@ -6,7 +6,7 @@ import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/config";
 import { deploy } from "../utils/deploy-v2.js";
 import { logError } from "../utils/errors.js";
-import { forge, getRpcUrl, getSrcDirectory } from "../utils/foundry.js";
+import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { mkdirSync, writeFileSync } from "fs";
 import { getChainId } from "../utils/getChainId.js";
 

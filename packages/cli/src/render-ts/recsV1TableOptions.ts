@@ -1,5 +1,5 @@
 import { StoreConfig } from "@latticexyz/config";
-import { resolveAbiOrUserType } from "../render-solidity/userType.js";
+import { resolveAbiOrUserType } from "@latticexyz/common/codegen";
 import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings.js";
 import { RecsV1TableOptions } from "./types.js";
 

@@ -1,0 +1,32 @@
+name: Examples
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    name: Build examples
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        example: [v2-minimal]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install example dependencies
+        working-directory: ./examples/${{ matrix.example }}
+        run: pnpm install
+
+      - name: Build example
+        working-directory: ./examples/${{ matrix.example }}
+        run: pnpm build

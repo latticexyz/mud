@@ -13,6 +13,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true
-  },
-  "include": ["src/typescript"]
+  }
 }
