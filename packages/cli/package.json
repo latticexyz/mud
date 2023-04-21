@@ -21,7 +21,7 @@
     "build": "pnpm run build:js && chmod +x ./dist/mud.js",
     "build:js": "tsup",
     "codegen": "tsx ./scripts/codegen.ts",
-    "dev": "vite build --watch",
+    "dev": "tsup --watch",
     "lint": "eslint . --ext .ts",
     "release": "npm publish --access=public",
     "test": "pnpm test:typescript && pnpm test:contracts",
