@@ -1,4 +1,4 @@
-import { Message } from "@latticexyz/services/protobuf/ts/ecs-relay/ecs-relay";
+import { Message } from "@latticexyz/services/ecs-relay";
 import { expose } from "threads/worker";
 import { verifyMessage } from "ethers/lib/utils";
 import { messagePayload } from "../utils";

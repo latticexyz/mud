@@ -1,4 +1,4 @@
-import { GenericTable } from "@latticexyz/services/protobuf/ts/mode/mode";
+import { GenericTable } from "@latticexyz/services/mode";
 import { SchemaType } from "@latticexyz/schema-type";
 import { decodeValue } from "../schemas/decodeValue";
 
