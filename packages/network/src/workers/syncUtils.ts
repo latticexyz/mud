@@ -23,7 +23,7 @@ import {
 import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
 import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
-import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
+import { Component, World } from "@latticexyz/solecs";
 import {
   ECSStreamBlockBundleReply,
   ECSStreamServiceClient,
