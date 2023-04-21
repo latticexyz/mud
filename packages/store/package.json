@@ -10,7 +10,7 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
+    ".": "./dist/ts/index.js",
     "./*": "./dist/*",
     "./abi/*": "./abi/*"
   },
