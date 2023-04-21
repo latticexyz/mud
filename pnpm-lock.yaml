@@ -221,7 +221,7 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
-      '@latticexyz/solidity-parser':
+      '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
       chalk:
@@ -1033,7 +1033,7 @@ importers:
         version: github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
       hardhat:
         specifier: ^2.10.1
-        version: 2.10.2(typescript@4.9.5)
+        version: 2.10.2(ts-node@10.9.1)(typescript@4.9.5)
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -1045,7 +1045,7 @@ importers:
         version: 0.6.0-beta.22(hardhat@2.10.2)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(typescript@4.9.5)
+        version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -3844,12 +3844,6 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
-
-  /@latticexyz/solidity-parser@0.16.0:
-    resolution: {integrity: sha512-e238MilrmTekLw6uQyBGu4El5PgmWU7ARd7oGUjRGhErFnIEiUabb6W5Ml+tE5sViu8Mr0okZ8qzGWS+HjYm8w==}
-    dependencies:
-      antlr4ts: 0.5.0-alpha.4
-    dev: false
 
   /@lerna/child-process@6.6.1:
     resolution: {integrity: sha512-yUCDCcRNNbI9UUsUB6FYEmDHpo5Tn/f0q5D7vhDP4i6Or8kBj82y7+e31hwfLvK2ykOYlDVs2MxAluH/+QUBOQ==}
@@ -11481,74 +11475,6 @@ packages:
       - utf-8-validate
     dev: true
 
-  /hardhat@2.10.2(typescript@4.9.5):
-    resolution: {integrity: sha512-L/KvDDT/MA6332uAtYTqdcHoSABljw4pPjHQe5SHdIJ+xKfaSc6vDKw03CmrQ5Xup0gHs8XnVSBpZo1AbbIW7g==}
-    engines: {node: ^14.0.0 || ^16.0.0 || ^18.0.0}
-    hasBin: true
-    peerDependencies:
-      ts-node: '*'
-      typescript: '*'
-    peerDependenciesMeta:
-      ts-node:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      '@ethereumjs/block': 3.6.3
-      '@ethereumjs/blockchain': 5.5.3
-      '@ethereumjs/common': 2.6.5
-      '@ethereumjs/tx': 3.5.2
-      '@ethereumjs/vm': 5.9.3
-      '@ethersproject/abi': 5.7.0
-      '@metamask/eth-sig-util': 4.0.1
-      '@sentry/node': 5.30.0
-      '@solidity-parser/parser': 0.14.5
-      '@types/bn.js': 5.1.1
-      '@types/lru-cache': 5.1.1
-      abort-controller: 3.0.0
-      adm-zip: 0.4.16
-      aggregate-error: 3.1.0
-      ansi-escapes: 4.3.2
-      chalk: 2.4.2
-      chokidar: 3.5.3
-      ci-info: 2.0.0
-      debug: 4.3.4(supports-color@8.1.1)
-      enquirer: 2.3.6
-      env-paths: 2.2.1
-      ethereum-cryptography: 1.2.0
-      ethereumjs-abi: 0.6.8
-      ethereumjs-util: 7.1.5
-      find-up: 2.1.0
-      fp-ts: 1.19.3
-      fs-extra: 7.0.1
-      glob: 7.2.0
-      immutable: 4.3.0
-      io-ts: 1.10.4
-      lodash: 4.17.21
-      merkle-patricia-tree: 4.2.4
-      mnemonist: 0.38.5
-      mocha: 10.0.0
-      p-map: 4.0.0
-      qs: 6.11.0
-      raw-body: 2.5.2
-      resolve: 1.17.0
-      semver: 6.3.0
-      slash: 3.0.0
-      solc: 0.7.3(debug@4.3.4)
-      source-map-support: 0.5.21
-      stacktrace-parser: 0.1.10
-      true-case-path: 2.2.1
-      tsort: 0.0.1
-      typescript: 4.9.5
-      undici: 5.21.0
-      uuid: 8.3.2
-      ws: 7.5.9
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-    dev: true
-
   /has-ansi@2.0.0:
     resolution: {integrity: sha512-C8vBJ8DwUCx19vhm7urhTuUsr4/IyP6l4VzNQDv+ryHQObW3TTTp9yB68WpYgRe2bbaGuZ/se74IqFeVnMnLZg==}
     engines: {node: '>=0.10.0'}
@@ -17543,22 +17469,6 @@ packages:
       semver-compare: 1.0.0
     dev: true
 
-  /postcss-load-config@3.1.4:
-    resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
-    engines: {node: '>= 10'}
-    peerDependencies:
-      postcss: '>=8.0.9'
-      ts-node: '>=9.0.0'
-    peerDependenciesMeta:
-      postcss:
-        optional: true
-      ts-node:
-        optional: true
-    dependencies:
-      lilconfig: 2.0.5
-      yaml: 1.10.2
-    dev: true
-
   /postcss-load-config@3.1.4(ts-node@10.9.1):
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
     engines: {node: '>= 10'}
@@ -19011,7 +18921,7 @@ packages:
       hardhat: ^2.8.0
     dependencies:
       handlebars: 4.7.7
-      hardhat: 2.10.2(typescript@4.9.5)
+      hardhat: 2.10.2(ts-node@10.9.1)(typescript@4.9.5)
       solidity-ast: 0.4.46
     dev: true
 
@@ -20269,42 +20179,6 @@ packages:
       globby: 11.1.0
       joycon: 3.1.1
       postcss-load-config: 3.1.4(ts-node@10.9.1)
-      resolve-from: 5.0.0
-      rollup: 3.20.6
-      source-map: 0.8.0-beta.0
-      sucrase: 3.31.0
-      tree-kill: 1.2.2
-      typescript: 4.9.5
-    transitivePeerDependencies:
-      - supports-color
-      - ts-node
-    dev: true
-
-  /tsup@6.7.0(typescript@4.9.5):
-    resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
-    engines: {node: '>=14.18'}
-    hasBin: true
-    peerDependencies:
-      '@swc/core': ^1
-      postcss: ^8.4.12
-      typescript: '>=4.1.0'
-    peerDependenciesMeta:
-      '@swc/core':
-        optional: true
-      postcss:
-        optional: true
-      typescript:
-        optional: true
-    dependencies:
-      bundle-require: 4.0.1(esbuild@0.17.17)
-      cac: 6.7.14
-      chokidar: 3.5.3
-      debug: 4.3.4(supports-color@8.1.1)
-      esbuild: 0.17.17
-      execa: 5.1.1
-      globby: 11.1.0
-      joycon: 3.1.1
-      postcss-load-config: 3.1.4
       resolve-from: 5.0.0
       rollup: 3.20.6
       source-map: 0.8.0-beta.0
