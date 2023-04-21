@@ -37,8 +37,8 @@
   },
   "scripts": {
     "build": "pnpm run build:go && pnpm run build:protoc && pnpm run build:js",
-    "build:js": "tsup",
     "build:go": "make build",
+    "build:js": "tsup",
     "build:protoc": "make protoc-ts",
     "docs": "rimraf API && mkdir -p _docs/pkg && find pkg -type f -name '*.go' -exec bash -c 'gomarkdoc {} > \"$(dirname _docs/{})\".md' \\; && mv _docs/pkg API && rimraf _docs",
     "release": "npm publish --access=public",
