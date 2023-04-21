@@ -10,7 +10,11 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    "/*": "./dist/*"
+    "./ecs-relay": "./dist/ecs-relay.js",
+    "./ecs-snapshot": "./dist/ecs-snapshot.js",
+    "./ecs-stream": "./dist/ecs-stream.js",
+    "./faucet": "./dist/faucet.js",
+    "./mode": "./dist/mode.js"
   },
   "typesVersions": {
     "*": {

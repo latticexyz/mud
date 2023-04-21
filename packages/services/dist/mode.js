@@ -1,5 +1,5 @@
 // protobuf/ts/mode/mode.ts
-import _m0 from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal.js";
 var protobufPackage = "mode";
 function createBaseRow() {
   return { values: [] };

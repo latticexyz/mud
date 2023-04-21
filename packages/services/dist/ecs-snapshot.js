@@ -1,6 +1,6 @@
 // protobuf/ts/ecs-snapshot/ecs-snapshot.ts
 import Long from "long";
-import _m0 from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal.js";
 var protobufPackage = "ecssnapshot";
 function createBaseECSState() {
   return { componentIdIdx: 0, entityIdIdx: 0, value: new Uint8Array() };

@@ -1,6 +1,6 @@
 // protobuf/ts/faucet/faucet.ts
 import Long from "long";
-import _m0 from "protobufjs/minimal";
+import _m0 from "protobufjs/minimal.js";
 var protobufPackage = "faucet";
 function createBaseLinkedTwitterPair() {
   return { username: "", address: "" };
