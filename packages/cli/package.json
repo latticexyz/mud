@@ -19,7 +19,7 @@
   },
   "scripts": {
     "build": "pnpm run build:js && chmod +x ./dist/mud.js",
-    "build:js": "vite build",
+    "build:js": "tsup",
     "codegen": "tsx ./scripts/codegen.ts",
     "dev": "vite build --watch",
     "lint": "eslint . --ext .ts",
@@ -70,6 +70,7 @@
     "@types/yargs": "^17.0.10",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-preserve-shebang": "^1.0.1",
+    "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "vite": "^4.3.0",
     "vitest": "^0.29.8"

@@ -20,6 +20,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler({ configPath }) {
+    console.log("tablegen");
     const config = await loadStoreConfig(configPath);
     const srcDir = await getSrcDirectory();
 
