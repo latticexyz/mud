@@ -24,6 +24,10 @@
     },
     "clean": {
       "cache": false
-    }
+    },
+    "tablegen": {},
+    "worldgen": {},
+    "gas-report": {},
+    "release:manual": {}
   }
 }
