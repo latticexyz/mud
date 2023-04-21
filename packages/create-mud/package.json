@@ -9,7 +9,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup src/cli.ts --minify && ./scripts/copy-templates.sh",
+    "build": "tsup && ./scripts/copy-templates.sh",
     "clean": "rimraf dist",
     "dev": "tsup src/cli.ts --watch",
     "prepublishOnly": "npm run clean && npm run build",
