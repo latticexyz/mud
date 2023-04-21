@@ -9,7 +9,7 @@ import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld.js";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { defaultAbiCoder as abi, Fragment } from "ethers/lib/utils.js";
+import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils.js";
 
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
@@ -388,7 +388,20 @@ export async function deploy(mudConfig: MUDConfig, deployConfig: DeployConfig): 
       .map((item) => {
         if (item.type === "fallback") return { functionName: "", functionArgs: "" };
 
-        return { functionName: item.name, functionArgs: `(${item.inputs.map((arg) => arg.type).join(",")})` };
+        // Helper to recursively parse structs
+        const parseFunctionComponentsRec = (components: ParamType[]): string =>
+          `(${components.map((param) => {
+            const paramType = param.type;
+            if (paramType === "tuple") {
+              return parseFunctionComponentsRec(param.components);
+            }
+            return paramType;
+          })})`;
+
+        return {
+          functionName: item.name,
+          functionArgs: parseFunctionComponentsRec(item.inputs),
+        };
       });
   }
 
