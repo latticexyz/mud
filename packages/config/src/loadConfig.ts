@@ -10,10 +10,13 @@ const TEMP_CONFIG = "mud.config.temp.mjs";
 
 export async function loadConfig(configPath?: string): Promise<unknown> {
   configPath = await resolveConfigPath(configPath);
+  console.log("loading config from", configPath);
   try {
     await esbuild.build({ entryPoints: [configPath], format: "esm", outfile: TEMP_CONFIG });
     configPath = await resolveConfigPath(TEMP_CONFIG);
     return (await import(configPath)).default;
+  } catch (e) {
+    console.log(e);
   } finally {
     rmSync(TEMP_CONFIG);
   }

@@ -17,6 +17,15 @@ export default defineConfig({
     sourcemap: true,
     target: "esnext",
   },
+  ssr: {
+    // Include everything but node dependencies
+    noExternal: /^(?!node).*$/,
+    // optimizeDeps: { disabled: false },
+  },
+  // ssr: {
+  //   noExternal: ["esbuild", "zod", "chalk", "zod-validation-error", "ethers"],
+  //   optimizeDeps: { include: ["esbuild"], disabled: false },
+  // },
   /**
    * @see https://vitest.dev/config/
    */

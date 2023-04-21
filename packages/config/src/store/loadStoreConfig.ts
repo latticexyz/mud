@@ -4,6 +4,7 @@ import { loadConfig } from "../loadConfig.js";
 import { parseStoreConfig } from "./parseStoreConfig.js";
 
 export async function loadStoreConfig(configPath?: string) {
+  console.log("load store config");
   const config = await loadConfig(configPath);
 
   try {
