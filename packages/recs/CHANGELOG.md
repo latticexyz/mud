@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.43.0](https://github.com/latticexyz/mud/compare/v1.39.0...v1.43.0) (2023-04-23)
+
+### Bug Fixes
+
+- **recs:** overridden component update stream should return the overridden component ([#544](https://github.com/latticexyz/mud/issues/544)) ([6b94637](https://github.com/latticexyz/mud/commit/6b94637a0e696b10b7cbf1b7c26435e60a1e4264))
+
 # [1.39.0](https://github.com/latticexyz/mud/compare/v1.38.0...v1.39.0) (2023-02-22)
 
 **Note:** Version bump only for package @latticexyz/recs

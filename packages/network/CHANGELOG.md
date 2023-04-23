@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.43.0](https://github.com/latticexyz/mud/compare/v1.39.0...v1.43.0) (2023-04-23)
+
+**Note:** Version bump only for package @latticexyz/network
+
 # [1.39.0](https://github.com/latticexyz/mud/compare/v1.38.0...v1.39.0) (2023-02-22)
 
 **Note:** Version bump only for package @latticexyz/network

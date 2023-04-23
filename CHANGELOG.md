@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.43.0](https://github.com/latticexyz/mud/compare/v1.39.0...v1.43.0) (2023-04-23)
+
+### Bug Fixes
+
+- **ecs-browser:** fix some errors in ecs-browser ([#420](https://github.com/latticexyz/mud/issues/420)) ([fae61e6](https://github.com/latticexyz/mud/commit/fae61e6439a8ce1d0571eea90116c6b6d275f054))
+- **recs:** overridden component update stream should return the overridden component ([#544](https://github.com/latticexyz/mud/issues/544)) ([6b94637](https://github.com/latticexyz/mud/commit/6b94637a0e696b10b7cbf1b7c26435e60a1e4264))
+
+### Features
+
+- **phaserx:** tag native phaser game objects with object pool id ([#453](https://github.com/latticexyz/mud/issues/453)) ([bdce479](https://github.com/latticexyz/mud/commit/bdce479e7676986c64c2f0c7780015c3ef0bfe0d))
+- **react:** option for useEntityQuery to re-render on value changes ([#460](https://github.com/latticexyz/mud/issues/460)) ([0d9e937](https://github.com/latticexyz/mud/commit/0d9e937cff72fd94ab770f193b140331a1957641))
+
 # [1.39.0](https://github.com/latticexyz/mud/compare/v1.38.0...v1.39.0) (2023-02-22)
 
 ### Features

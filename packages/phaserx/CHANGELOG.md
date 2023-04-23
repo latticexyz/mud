@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.43.0](https://github.com/latticexyz/mud/compare/v1.39.0...v1.43.0) (2023-04-23)
+
+### Features
+
+- **phaserx:** tag native phaser game objects with object pool id ([#453](https://github.com/latticexyz/mud/issues/453)) ([bdce479](https://github.com/latticexyz/mud/commit/bdce479e7676986c64c2f0c7780015c3ef0bfe0d))
+
 # [1.39.0](https://github.com/latticexyz/mud/compare/v1.38.0...v1.39.0) (2023-02-22)
 
 **Note:** Version bump only for package @latticexyz/phaserx
