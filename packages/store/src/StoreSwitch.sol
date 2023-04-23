@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { console } from "forge-std/console.sol";
 import { IStore, IStoreHook } from "./IStore.sol";
 import { StoreCore } from "./StoreCore.sol";
 import { Schema } from "./Schema.sol";
@@ -91,6 +90,14 @@ library StoreSwitch {
       StoreCore.pushToField(table, key, fieldIndex, dataToPush);
     } else {
       IStore(msg.sender).pushToField(table, key, fieldIndex, dataToPush);
+    }
+  }
+
+  function popFromField(bytes32 table, bytes32[] calldata key, uint8 fieldIndex, uint256 byteLengthToPop) internal {
+    if (isDelegateCall()) {
+      StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop);
+    } else {
+      IStore(msg.sender).popFromField(table, key, fieldIndex, byteLengthToPop);
     }
   }
 

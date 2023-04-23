@@ -291,6 +291,39 @@ library StoreCore {
     }
   }
 
+  function popFromField(bytes32 tableId, bytes32[] memory key, uint8 schemaIndex, uint256 byteLengthToPop) internal {
+    Schema schema = getSchema(tableId);
+
+    if (schemaIndex < schema.numStaticFields()) {
+      revert IErrors.StoreCore_NotDynamicField();
+    }
+
+    // TODO add pop-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
+    bytes memory fullData;
+    {
+      bytes memory oldData = StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, schema);
+      fullData = SliceLib.getSubslice(oldData, 0, oldData.length - byteLengthToPop).toBytes();
+    }
+
+    // Emit event to notify indexers
+    emit StoreSetField(tableId, key, schemaIndex, fullData);
+
+    // Call onBeforeSetField hooks (before modifying the state)
+    address[] memory hooks = Hooks.get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.onBeforeSetField(tableId, key, schemaIndex, fullData);
+    }
+
+    StoreCoreInternal._popFromDynamicField(tableId, key, schema, schemaIndex, byteLengthToPop);
+
+    // Call onAfterSetField hooks (after modifying the state)
+    for (uint256 i; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.onAfterSetField(tableId, key, schemaIndex, fullData);
+    }
+  }
+
   function updateInField(
     bytes32 tableId,
     bytes32[] memory key,
@@ -529,6 +562,29 @@ library StoreCoreInternal {
 
     // Append `dataToPush` to the end of the data in storage
     _setPartialDynamicData(tableId, key, dynamicSchemaIndex, oldFieldLength, dataToPush);
+  }
+
+  function _popFromDynamicField(
+    bytes32 tableId,
+    bytes32[] memory key,
+    Schema schema,
+    uint8 schemaIndex,
+    uint256 byteLengthToPop
+  ) internal {
+    uint8 dynamicSchemaIndex = schemaIndex - schema.numStaticFields();
+
+    // Load dynamic data length from storage
+    uint256 dynamicSchemaLengthSlot = _getDynamicDataLengthLocation(tableId, key);
+    PackedCounter encodedLengths = PackedCounter.wrap(Storage.load({ storagePointer: dynamicSchemaLengthSlot }));
+
+    // Update the encoded length
+    uint256 oldFieldLength = encodedLengths.atIndex(dynamicSchemaIndex);
+    encodedLengths = encodedLengths.setAtIndex(dynamicSchemaIndex, oldFieldLength - byteLengthToPop);
+
+    // Set the new length
+    Storage.store({ storagePointer: dynamicSchemaLengthSlot, data: encodedLengths.unwrap() });
+
+    // Data can be left unchanged, push/set do not assume storage to be 0s
   }
 
   // startOffset is measured in bytes
