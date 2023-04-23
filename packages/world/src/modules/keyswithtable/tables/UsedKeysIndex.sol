@@ -41,29 +41,29 @@ library UsedKeysIndex {
   }
 
   /** Register the table's schema */
-  function registerSchema(uint256 _tableId) internal {
+  function registerSchema(bytes32 _tableId) internal {
     StoreSwitch.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Register the table's schema (using the specified store) */
-  function registerSchema(IStore _store, uint256 _tableId) internal {
+  function registerSchema(IStore _store, bytes32 _tableId) internal {
     _store.registerSchema(_tableId, getSchema(), getKeySchema());
   }
 
   /** Set the table's metadata */
-  function setMetadata(uint256 _tableId) internal {
+  function setMetadata(bytes32 _tableId) internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     StoreSwitch.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Set the table's metadata (using the specified store) */
-  function setMetadata(IStore _store, uint256 _tableId) internal {
+  function setMetadata(IStore _store, bytes32 _tableId) internal {
     (string memory _tableName, string[] memory _fieldNames) = getMetadata();
     _store.setMetadata(_tableId, _tableName, _fieldNames);
   }
 
   /** Get value */
-  function get(uint256 _tableId, bytes32 keysHash) internal view returns (bool value) {
+  function get(bytes32 _tableId, bytes32 keysHash) internal view returns (bool value) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((keysHash));
 
@@ -72,7 +72,7 @@ library UsedKeysIndex {
   }
 
   /** Get value (using the specified store) */
-  function get(IStore _store, uint256 _tableId, bytes32 keysHash) internal view returns (bool value) {
+  function get(IStore _store, bytes32 _tableId, bytes32 keysHash) internal view returns (bool value) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((keysHash));
 
@@ -81,7 +81,7 @@ library UsedKeysIndex {
   }
 
   /** Set value */
-  function set(uint256 _tableId, bytes32 keysHash, bool value) internal {
+  function set(bytes32 _tableId, bytes32 keysHash, bool value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((keysHash));
 
@@ -89,7 +89,7 @@ library UsedKeysIndex {
   }
 
   /** Set value (using the specified store) */
-  function set(IStore _store, uint256 _tableId, bytes32 keysHash, bool value) internal {
+  function set(IStore _store, bytes32 _tableId, bytes32 keysHash, bool value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((keysHash));
 
@@ -102,7 +102,7 @@ library UsedKeysIndex {
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(uint256 _tableId, bytes32 keysHash) internal {
+  function deleteRecord(bytes32 _tableId, bytes32 keysHash) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((keysHash));
 
@@ -110,7 +110,7 @@ library UsedKeysIndex {
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, uint256 _tableId, bytes32 keysHash) internal {
+  function deleteRecord(IStore _store, bytes32 _tableId, bytes32 keysHash) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((keysHash));
 
