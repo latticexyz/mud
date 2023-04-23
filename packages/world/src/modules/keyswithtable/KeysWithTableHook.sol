@@ -23,9 +23,9 @@ contract KeysWithTableHook is IStoreHook {
   using ArrayLib for bytes32[];
   using ResourceSelector for bytes32;
 
-  function onSetRecord(uint256 sourceTableId, bytes32[] memory key, bytes memory) public {
-    uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
-    uint256 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, sourceTableId).toTableId();
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) public {
+    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
+    bytes32 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
 
     bytes32 keysHash = keccak256(abi.encode(key));
 
@@ -38,11 +38,11 @@ contract KeysWithTableHook is IStoreHook {
     }
   }
 
-  function onBeforeSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {}
+  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {}
 
-  function onAfterSetField(uint256 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
-    uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
-    uint256 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, sourceTableId).toTableId();
+  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {
+    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
+    bytes32 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
 
     bytes32 keysHash = keccak256(abi.encode(key));
 
@@ -55,10 +55,10 @@ contract KeysWithTableHook is IStoreHook {
     }
   }
 
-  function onDeleteRecord(uint256 sourceTableId, bytes32[] memory key) public {
+  function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
     // Remove the key from the list of keys in this table
-    uint256 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId).toTableId();
-    uint256 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, sourceTableId).toTableId();
+    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
+    bytes32 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
 
     bytes32[] memory keysWithTable = KeysWithTable.get(targetTableId);
 

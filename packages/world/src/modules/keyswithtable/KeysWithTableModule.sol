@@ -37,28 +37,30 @@ contract KeysWithTableModule is IModule, WorldContext {
     return bytes16("index");
   }
 
-  function setupNamespace(bytes8 moduleNamespace, uint256 sourceTableId) internal {
+  function setupNamespace(bytes8 moduleNamespace, bytes32 sourceTableId) internal {
     bytes32 targetTableSelector = getTargetTableSelector(moduleNamespace, sourceTableId);
-
-    bytes16 namespace = targetTableSelector.getNamespace();
-    bytes16 fileName = targetTableSelector.getFile();
 
     IBaseWorld world = IBaseWorld(_world());
 
     // Register the target table
-    world.registerTable(namespace, fileName, KeysWithTable.getSchema(), KeysWithTable.getKeySchema());
+    world.registerTable(
+      targetTableSelector.getNamespace(),
+      targetTableSelector.getName(),
+      KeysWithTable.getSchema(),
+      KeysWithTable.getKeySchema()
+    );
 
     // Register metadata for the target table
     (string memory tableName, string[] memory fieldNames) = KeysWithTable.getMetadata();
-    world.setMetadata(namespace, fileName, tableName, fieldNames);
+    world.setMetadata(targetTableSelector.getNamespace(), targetTableSelector.getName(), tableName, fieldNames);
 
     // Grant the hook access to the target table
-    world.grantAccess(namespace, fileName, address(hook));
+    world.grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getName(), address(hook));
   }
 
   function install(bytes memory args) public override {
     // Extract source table id from args
-    uint256 sourceTableId = abi.decode(args, (uint256));
+    bytes32 sourceTableId = abi.decode(args, (bytes32));
 
     setupNamespace(MODULE_NAMESPACE, sourceTableId);
     setupNamespace(USED_KEYS_NAMESPACE, sourceTableId);

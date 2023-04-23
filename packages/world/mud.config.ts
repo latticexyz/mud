@@ -122,6 +122,7 @@ export default mudConfig({
     AddressArray: {
       directory: "../test/tables",
       schema: "address[]",
+      tableIdArgument: true,
     },
     KeysWithTable: {
       directory: "/modules/keyswithtable/tables",
