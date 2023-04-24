@@ -200,24 +200,15 @@ importers:
       '@types/openurl':
         specifier: ^1.0.0
         version: 1.0.0
-      '@types/rollup-plugin-peer-deps-external':
-        specifier: ^2.2.1
-        version: 2.2.1
       '@types/yargs':
         specifier: ^17.0.10
         version: 17.0.23
-      rollup-plugin-peer-deps-external:
-        specifier: ^2.2.4
-        version: 2.2.4(rollup@2.79.1)
-      rollup-plugin-preserve-shebang:
-        specifier: ^1.0.1
-        version: 1.0.1
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
-      vite:
-        specifier: ^4.3.0
-        version: 4.3.0(@types/node@17.0.34)
       vitest:
         specifier: ^0.29.8
         version: 0.29.8
@@ -230,7 +221,7 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
-      '@latticexyz/solidity-parser':
+      '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
       chalk:
@@ -246,15 +237,9 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(prettier@2.8.4)
     devDependencies:
-      '@types/rollup-plugin-peer-deps-external':
-        specifier: ^2.2.1
-        version: 2.2.1
-      rollup-plugin-peer-deps-external:
-        specifier: ^2.2.4
-        version: 2.2.4(rollup@2.79.1)
-      vite:
-        specifier: ^4.3.0
-        version: 4.3.0(@types/node@17.0.34)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
       vitest:
         specifier: ^0.30.1
         version: 0.30.1
@@ -283,15 +268,9 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0(zod@3.21.4)
     devDependencies:
-      '@types/rollup-plugin-peer-deps-external':
-        specifier: ^2.2.1
-        version: 2.2.1
-      rollup-plugin-peer-deps-external:
-        specifier: ^2.2.4
-        version: 2.2.4(rollup@2.79.1)
-      vite:
-        specifier: ^4.3.0
-        version: 4.3.0(@types/node@17.0.34)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
       vitest:
         specifier: ^0.29.8
         version: 0.29.8
@@ -803,6 +782,9 @@ importers:
       ts-proto:
         specifier: ^1.146.0
         version: 1.146.0
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
 
   packages/solecs:
     devDependencies:
@@ -1009,7 +991,7 @@ importers:
         version: 0.23.21(typescript@4.9.5)
 
   packages/store:
-    devDependencies:
+    dependencies:
       '@ethersproject/abi':
         specifier: ^5.7.0
         version: 5.7.0
@@ -1025,6 +1007,10 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
+      ethers:
+        specifier: ^5.7.2
+        version: 5.7.2
+    devDependencies:
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
@@ -1037,18 +1023,12 @@ importers:
       '@types/node':
         specifier: ^18.15.11
         version: 18.15.11
-      '@types/rollup-plugin-peer-deps-external':
-        specifier: ^2.2.1
-        version: 2.2.1
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
       ejs:
         specifier: ^3.1.8
         version: 3.1.8
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
       forge-std:
         specifier: https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
         version: github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
@@ -1058,15 +1038,15 @@ importers:
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
-      rollup-plugin-peer-deps-external:
-        specifier: ^2.2.4
-        version: 2.2.4(rollup@2.79.1)
       solhint:
         specifier: ^3.3.7
         version: 3.3.7
       solidity-docgen:
         specifier: ^0.6.0-beta.22
         version: 0.6.0-beta.22(hardhat@2.10.2)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -1076,12 +1056,6 @@ importers:
       typedoc:
         specifier: ^0.23.10
         version: 0.23.21(typescript@4.9.5)
-      vite:
-        specifier: ^4.3.0
-        version: 4.3.0(@types/node@18.15.11)
-      vitest:
-        specifier: ^0.30.1
-        version: 0.30.1
 
   packages/utils:
     dependencies:
@@ -1146,10 +1120,6 @@ importers:
 
   packages/world:
     dependencies:
-      '@solidity-parser/parser':
-        specifier: ^0.16.0
-        version: 0.16.0
-    devDependencies:
       '@ethersproject/abi':
         specifier: ^5.7.0
         version: 5.7.0
@@ -1168,6 +1138,10 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      ethers:
+        specifier: ^5.7.2
+        version: 5.7.2
+    devDependencies:
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
@@ -1183,18 +1157,12 @@ importers:
       '@types/node':
         specifier: ^18.15.11
         version: 18.15.11
-      '@types/rollup-plugin-peer-deps-external':
-        specifier: ^2.2.1
-        version: 2.2.1
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
       ejs:
         specifier: ^3.1.8
         version: 3.1.8
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
       forge-std:
         specifier: https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
         version: github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
@@ -1207,15 +1175,15 @@ importers:
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
-      rollup-plugin-peer-deps-external:
-        specifier: ^2.2.4
-        version: 2.2.4(rollup@2.79.1)
       solhint:
         specifier: ^3.3.7
         version: 3.3.7
       solidity-docgen:
         specifier: ^0.6.0-beta.22
         version: 0.6.0-beta.22(hardhat@2.10.2)
+      tsup:
+        specifier: ^6.7.0
+        version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -1225,12 +1193,6 @@ importers:
       typedoc:
         specifier: ^0.23.10
         version: 0.23.21(typescript@4.9.5)
-      vite:
-        specifier: ^4.3.0
-        version: 4.3.0(@types/node@18.15.11)
-      vitest:
-        specifier: ^0.30.1
-        version: 0.30.1
 
 packages:
 
@@ -2672,7 +2634,7 @@ packages:
       debug: 4.3.4(supports-color@8.1.1)
       espree: 9.3.3
       globals: 13.17.0
-      ignore: 5.2.0
+      ignore: 5.2.4
       import-fresh: 3.3.0
       js-yaml: 4.1.0
       minimatch: 3.1.2
@@ -3856,12 +3818,6 @@ packages:
       '@jridgewell/resolve-uri': 3.1.0
       '@jridgewell/sourcemap-codec': 1.4.15
     dev: true
-
-  /@latticexyz/solidity-parser@0.16.0:
-    resolution: {integrity: sha512-e238MilrmTekLw6uQyBGu4El5PgmWU7ARd7oGUjRGhErFnIEiUabb6W5Ml+tE5sViu8Mr0okZ8qzGWS+HjYm8w==}
-    dependencies:
-      antlr4ts: 0.5.0-alpha.4
-    dev: false
 
   /@lerna/child-process@6.6.1:
     resolution: {integrity: sha512-yUCDCcRNNbI9UUsUB6FYEmDHpo5Tn/f0q5D7vhDP4i6Or8kBj82y7+e31hwfLvK2ykOYlDVs2MxAluH/+QUBOQ==}
@@ -6324,13 +6280,6 @@ packages:
       '@types/node': 17.0.34
     dev: true
 
-  /@types/rollup-plugin-peer-deps-external@2.2.1:
-    resolution: {integrity: sha512-CUK4Mi3M3A/0coRUeo4McvUFOxR5H6UYd6Wt3D+K4c4fJupolMSoIxsZaBG1g/BJQOaujf78Pf7KhgfhrX1FZA==}
-    dependencies:
-      '@types/node': 17.0.34
-      rollup: 0.63.5
-    dev: true
-
   /@types/scheduler@0.16.3:
     resolution: {integrity: sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==}
 
@@ -7681,6 +7630,16 @@ packages:
       esbuild: '>=0.17'
     dependencies:
       esbuild: 0.17.14
+      load-tsconfig: 0.2.5
+    dev: true
+
+  /bundle-require@4.0.1(esbuild@0.17.17):
+    resolution: {integrity: sha512-9NQkRHlNdNpDBGmLpngF3EFDcwodhMUuLz9PaWYciVcQF9SE4LFjM2DB/xV1Li5JiuDMv7ZUWuC3rGbqR0MAXQ==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
+    peerDependencies:
+      esbuild: '>=0.17'
+    dependencies:
+      esbuild: 0.17.17
       load-tsconfig: 0.2.5
     dev: true
 
@@ -18430,24 +18389,10 @@ packages:
       rollup: 2.79.1
     dev: true
 
-  /rollup-plugin-preserve-shebang@1.0.1:
-    resolution: {integrity: sha512-gk7ExGBqvUinhgrvldKHkAKXXwRkWMXMZymNkrtn50uBgHITlhRjhnKmbNGwAIc4Bzgl3yLv7/8Fhi/XeHhFKg==}
-    dependencies:
-      magic-string: 0.25.9
-    dev: true
-
   /rollup-pluginutils@2.8.2:
     resolution: {integrity: sha512-EEp9NhnUkwY8aif6bxgovPHMoMoNr2FulJziTndpt5H9RdwC47GSGuII9XxpSdzVGM0GWrNPHV6ie1LTNJPaLQ==}
     dependencies:
       estree-walker: 0.6.1
-    dev: true
-
-  /rollup@0.63.5:
-    resolution: {integrity: sha512-dFf8LpUNzIj3oE0vCvobX6rqOzHzLBoblyFp+3znPbjiSmSvOoK2kMKx+Fv9jYduG1rvcCfCveSgEaQHjWRF6g==}
-    hasBin: true
-    dependencies:
-      '@types/estree': 0.0.39
-      '@types/node': 17.0.34
     dev: true
 
   /rollup@2.79.1:
@@ -20113,6 +20058,42 @@ packages:
       - ts-node
     dev: true
 
+  /tsup@6.7.0(ts-node@10.9.1)(typescript@4.9.5):
+    resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
+    engines: {node: '>=14.18'}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': ^1
+      postcss: ^8.4.12
+      typescript: '>=4.1.0'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      postcss:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      bundle-require: 4.0.1(esbuild@0.17.17)
+      cac: 6.7.14
+      chokidar: 3.5.3
+      debug: 4.3.4(supports-color@8.1.1)
+      esbuild: 0.17.17
+      execa: 5.1.1
+      globby: 11.1.0
+      joycon: 3.1.1
+      postcss-load-config: 3.1.4(ts-node@10.9.1)
+      resolve-from: 5.0.0
+      rollup: 3.20.6
+      source-map: 0.8.0-beta.0
+      sucrase: 3.31.0
+      tree-kill: 1.2.2
+      typescript: 4.9.5
+    transitivePeerDependencies:
+      - supports-color
+      - ts-node
+    dev: true
+
   /tsutils@3.21.0(typescript@4.9.5):
     resolution: {integrity: sha512-mHKK3iUXL+3UF6xL5k0PEhKRUBKPBCv/+RkEOpjRWxxx27KKRBmmA60A9pgOUvMi8GKhRMPEmjBRPzs2W7O1OA==}
     engines: {node: '>= 6'}
@@ -20825,39 +20806,6 @@ packages:
         optional: true
     dependencies:
       '@types/node': 17.0.34
-      esbuild: 0.17.17
-      postcss: 8.4.23
-      rollup: 3.20.6
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
-
-  /vite@4.3.0(@types/node@18.15.11):
-    resolution: {integrity: sha512-JTGFgDh3dVxeGBpuQX04Up+JZmuG6wu9414Ei36vQzaEruY/M4K0AgwtuB2b4HaBgB7R8l+LHxjB0jcgz4d2qQ==}
-    engines: {node: ^14.18.0 || >=16.0.0}
-    hasBin: true
-    peerDependencies:
-      '@types/node': '>= 14'
-      less: '*'
-      sass: '*'
-      stylus: '*'
-      sugarss: '*'
-      terser: ^5.4.0
-    peerDependenciesMeta:
-      '@types/node':
-        optional: true
-      less:
-        optional: true
-      sass:
-        optional: true
-      stylus:
-        optional: true
-      sugarss:
-        optional: true
-      terser:
-        optional: true
-    dependencies:
-      '@types/node': 18.15.11
       esbuild: 0.17.17
       postcss: 8.4.23
       rollup: 3.20.6

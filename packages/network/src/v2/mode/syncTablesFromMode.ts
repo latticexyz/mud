@@ -1,6 +1,6 @@
 import { ComponentValue } from "@latticexyz/recs";
 import { AbiTypeToSchemaType, encodeSchema } from "@latticexyz/schema-type";
-import { QueryLayerClient } from "@latticexyz/services/protobuf/ts/mode/mode";
+import { QueryLayerClient } from "@latticexyz/services/mode";
 import { arrayToHex, TableId } from "@latticexyz/utils";
 import { Contract } from "ethers";
 import { NetworkEvents } from "../../types";

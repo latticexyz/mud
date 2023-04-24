@@ -109,6 +109,24 @@ contract World is StoreRead, IStoreData, IWorldKernel {
   }
 
   /**
+   * Pop data from the end of a field in the table at the given namespace and name.
+   * Requires the caller to have access to the namespace or name.
+   */
+  function popFromField(
+    bytes16 namespace,
+    bytes16 name,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 byteLengthToPop
+  ) public virtual {
+    // Require access to namespace or name
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+
+    // Push to the field
+    StoreCore.popFromField(resourceSelector, key, schemaIndex, byteLengthToPop);
+  }
+
+  /**
    * Update data at `startByteIndex` of a field in the table at the given namespace and name.
    * Requires the caller to have access to the namespace or name.
    */
@@ -180,6 +198,20 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     bytes calldata dataToPush
   ) public override {
     pushToField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, dataToPush);
+  }
+
+  /**
+   * Pop data from the end of a field in the table at the given tableId.
+   * This overload exists to conform with the `IStore` interface.
+   * Access is checked based on the namespace or name (encoded in the tableId).
+   */
+  function popFromField(
+    bytes32 tableId,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 byteLengthToPop
+  ) public override {
+    popFromField(tableId.getNamespace(), tableId.getName(), key, schemaIndex, byteLengthToPop);
   }
 
   /**
