@@ -56,7 +56,6 @@
     "jq-cli-wrapper": "^1.6.1",
     "lerna": "^6.6.1",
     "lint-staged": ">=10",
-    "postinstall": "0.8.0",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2",
     "retypeapp": "^2.4.0",
