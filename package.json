@@ -50,7 +50,7 @@
     "chalk": "^5.2.0",
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "3.3.0",
-    "eslint": "^8.15.0",
+    "eslint": "^8.29.0",
     "husky": ">=6",
     "jq-cli-wrapper": "^1.6.1",
     "lerna": "^6.6.1",
