@@ -32,7 +32,7 @@
     "@types/jest": "^27.4.1",
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
-    "mobx": "^6.5.0",
+    "mobx": "^6.7.0",
     "phaser": "3.60.0-beta.14",
     "rimraf": "^3.0.2",
     "rollup": "^2.70.0",
@@ -46,7 +46,7 @@
   },
   "peerDependencies": {
     "@latticexyz/utils": "latest",
-    "mobx": "^6.5.0",
+    "mobx": "^6.7.0",
     "phaser": "3.60.0-beta.14",
     "rxjs": "^7.5.5"
   },
