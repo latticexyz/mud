@@ -16,6 +16,7 @@
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
+    "dev": "tsup --watch",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "release": "npm publish --access=public",
