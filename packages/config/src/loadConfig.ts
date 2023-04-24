@@ -1,4 +1,4 @@
-import findUp from "find-up";
+import { findUp } from "find-up";
 import path from "path";
 import { NotInsideProjectError } from "./errors.js";
 import esbuild from "esbuild";
