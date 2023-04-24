@@ -3,62 +3,6 @@
   "pipeline": {
     "build": {
       "dependsOn": ["^build"]
-    },
-    "build:go": {
-      "dependsOn": [],
-      "outputs": ["bin/**"]
-    },
-    "build:protobuf": {
-      "dependsOn": ["build:go"],
-      "outputs": ["protoc/**", "protobuf/**"]
-    },
-    "build:mud": {
-      "dependsOn": ["^build:mud", "@latticexyz/cli#build:js"]
-    },
-    "build:abi": {
-      "dependsOn": ["^build:mud", "build:mud"],
-      "outputs": ["abi/**"]
-    },
-    "build:typechain": {
-      "dependsOn": ["^build:abi", "build:abi"],
-      "outputs": ["types/**"]
-    },
-    "build:wasm": {
-      "dependsOn": [],
-      "outputs": ["build/**"]
-    },
-    "build:js": {
-      "dependsOn": ["^build:js", "build:protobuf", "build:mud", "build:typechain"],
-      "outputs": ["dist/**"]
-    },
-
-    "@latticexyz/cli#build:js": {
-      "dependsOn": ["@latticexyz/config#build:js"],
-      "outputs": ["dist/**"]
-    },
-    "@latticexyz/config#build:js": {
-      "dependsOn": ["^build:js"],
-      "outputs": ["dist/**"]
-    },
-    "@latticexyz/common#build:js": {
-      "dependsOn": ["^build:js"],
-      "outputs": ["dist/**"]
-    },
-    "@latticexyz/schema-type#build:js": {
-      "dependsOn": [],
-      "outputs": ["dist/**"]
-    },
-    "@latticexyz/store#build:js": {
-      "dependsOn": ["^build:js"],
-      "outputs": ["dist/**"]
-    },
-    "@latticexyz/std-client#build:mud": {
-      "dependsOn": ["@latticexyz/cli#build:js", "@latticexyz/world#build:js", "@latticexyz/store#build:js"],
-      "outputs": ["dist/**"]
-    },
-    "@latticexyz/network#build:js": {
-      "dependsOn": ["^build:js", "^build:typechain"],
-      "outputs": ["dist/**"]
     }
   }
 }
