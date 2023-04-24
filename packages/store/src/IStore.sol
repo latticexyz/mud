@@ -54,12 +54,19 @@ interface IStoreWrite {
   function deleteRecord(bytes32 table, bytes32[] memory key) external;
 }
 
+interface IStoreEphemeral {
+  event StoreEphemeralSetRecord(bytes32 table, bytes32[] key, bytes data);
+
+  // Emit the ephemeral event without modifying storage
+  function setEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) external;
+}
+
 /**
  * The IStoreData interface includes methods for reading and writing table values.
  * These methods are frequently invoked during runtime, so it is essential to prioritize
  * optimizing their gas cost
  */
-interface IStoreData is IStoreRead, IStoreWrite {
+interface IStoreData is IStoreRead, IStoreWrite, IStoreEphemeral {
 
 }
 

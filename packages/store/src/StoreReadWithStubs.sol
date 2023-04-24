@@ -76,4 +76,11 @@ contract StoreReadWithStubs is IStore, StoreRead {
   function deleteRecord(bytes32, bytes32[] calldata) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }
+
+  /**
+   * Not implemented in StoreReadWithStubs
+   */
+  function setEphemeralRecord(bytes32, bytes32[] calldata, bytes calldata) public virtual {
+    revert StoreReadWithStubs_NotImplemented();
+  }
 }
