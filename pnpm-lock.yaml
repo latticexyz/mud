@@ -195,7 +195,7 @@ importers:
         specifier: ^3.12.6
         version: 3.12.6
       vitest:
-        specifier: ^0.30.1
+        specifier: 0.30.1
         version: 0.30.1
 
   packages/common:
@@ -226,7 +226,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
       vitest:
-        specifier: ^0.30.1
+        specifier: 0.30.1
         version: 0.30.1
 
   packages/config:
@@ -257,7 +257,7 @@ importers:
         specifier: ^6.7.0
         version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
       vitest:
-        specifier: ^0.30.1
+        specifier: 0.30.1
         version: 0.30.1
 
   packages/create-mud:
@@ -320,10 +320,10 @@ importers:
         version: 4.17.21
       mobx:
         specifier: ^6.7.0
-        version: 6.7.0
+        version: 6.9.0
       mobx-react-lite:
         specifier: ^3.4.0
-        version: 3.4.0(mobx@6.7.0)(react-dom@18.2.0)(react@18.2.0)
+        version: 3.4.0(mobx@6.9.0)(react-dom@18.2.0)(react@18.2.0)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -432,7 +432,7 @@ importers:
         version: 29.3.1
       mobx:
         specifier: ^6.7.0
-        version: 6.7.0
+        version: 6.9.0
       nice-grpc-web:
         specifier: ^2.0.1
         version: 2.0.1(google-protobuf@3.21.0)
@@ -575,7 +575,7 @@ importers:
         version: 29.3.1
       mobx:
         specifier: ^6.7.0
-        version: 6.7.0
+        version: 6.9.0
       phaser:
         specifier: 3.60.0-beta.14
         version: 3.60.0-beta.14
@@ -648,7 +648,7 @@ importers:
         version: 29.3.1
       mobx:
         specifier: ^6.7.0
-        version: 6.7.0
+        version: 6.9.0
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -711,7 +711,7 @@ importers:
         version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       mobx:
         specifier: ^6.7.0
-        version: 6.7.0
+        version: 6.9.0
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -895,7 +895,7 @@ importers:
         version: 4.17.21
       mobx:
         specifier: ^6.7.0
-        version: 6.7.0
+        version: 6.9.0
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -939,7 +939,7 @@ importers:
         specifier: ^0.2.0
         version: 0.2.0(typescript@4.9.5)
       vitest:
-        specifier: ^0.30.1
+        specifier: 0.30.1
         version: 0.30.1
 
   packages/std-contracts:
@@ -1077,7 +1077,7 @@ importers:
         version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       mobx:
         specifier: ^6.7.0
-        version: 6.7.0
+        version: 6.9.0
       proxy-deep:
         specifier: ^3.1.1
         version: 3.1.1
@@ -1220,11 +1220,6 @@ packages:
       '@babel/highlight': 7.18.6
     dev: true
 
-  /@babel/compat-data@7.21.0:
-    resolution: {integrity: sha512-gMuZsmsgxk/ENC3O/fRw5QY8A9/uxQbbCEypnLIiYYc/qVJtEV7ouxC3EllIIwNzMqAQee5tanFabWsUOutS7g==}
-    engines: {node: '>=6.9.0'}
-    dev: true
-
   /@babel/compat-data@7.21.4:
     resolution: {integrity: sha512-/DYyDpeCfaVinT40FPGdkkb+lYSKvsVuMjDAG7jPOWWiM1ibOaB9CXJAlc4d1QpP/U2q2P9jbrSlClKSErd55g==}
     engines: {node: '>=6.9.0'}
@@ -1302,7 +1297,7 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0
     dependencies:
-      '@babel/compat-data': 7.21.0
+      '@babel/compat-data': 7.21.4
       '@babel/core': 7.21.3
       '@babel/helper-validator-option': 7.21.0
       browserslist: 4.21.5
@@ -3126,7 +3121,7 @@ packages:
   /@jridgewell/source-map@0.3.2:
     resolution: {integrity: sha512-m7O9o2uR8k2ObDysZYzdfhb08VuEml5oWGiosa1VdaPZ/A6QyPkAJuwN0Q1lhULOf6B7MtQmHENS743hWtCrgw==}
     dependencies:
-      '@jridgewell/gen-mapping': 0.3.2
+      '@jridgewell/gen-mapping': 0.3.3
       '@jridgewell/trace-mapping': 0.3.18
     dev: true
 
@@ -9155,7 +9150,7 @@ packages:
     resolution: {integrity: sha512-oRXApq54ETRj4eMiFzGnHWGy+zo5raudjuxN0b8H7s/RU2oW0Wvsx9O0ACRN/kRq9E8Vu/ReskGB5o3ji+FzHQ==}
     engines: {node: '>=12'}
     dependencies:
-      graceful-fs: 4.2.11
+      graceful-fs: 4.2.10
       jsonfile: 6.1.0
       universalify: 2.0.0
     dev: true
@@ -9173,7 +9168,7 @@ packages:
     resolution: {integrity: sha512-YJDaCJZEnBmcbw13fvdAM9AwNOJwOzrE4pqMqBq5nFiEqXUqHwlK4B+3pUw6JNvfSPtX05xFHtYy/1ni01eGCw==}
     engines: {node: '>=6 <7 || >=8'}
     dependencies:
-      graceful-fs: 4.2.11
+      graceful-fs: 4.2.10
       jsonfile: 4.0.0
       universalify: 0.1.2
 
@@ -9658,7 +9653,6 @@ packages:
 
   /graceful-fs@4.2.10:
     resolution: {integrity: sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==}
-    dev: true
 
   /graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
@@ -12809,7 +12803,7 @@ packages:
       obliterator: 2.0.4
     dev: true
 
-  /mobx-react-lite@3.4.0(mobx@6.7.0)(react-dom@18.2.0)(react@18.2.0):
+  /mobx-react-lite@3.4.0(mobx@6.9.0)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-bRuZp3C0itgLKHu/VNxi66DN/XVkQG7xtoBVWxpvC5FhAqbOCP21+nPhULjnzEqd7xBMybp6KwytdUpZKEgpIQ==}
     peerDependencies:
       mobx: ^6.1.0
@@ -12822,13 +12816,13 @@ packages:
       react-native:
         optional: true
     dependencies:
-      mobx: 6.7.0
+      mobx: 6.9.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: true
 
-  /mobx@6.7.0:
-    resolution: {integrity: sha512-1kBLBdSNG2bA522HQdbsTvwAwYf9hq9FWxmlhX7wTsJUAI54907J+ozfGW+LoYUo06vjit748g6QH1AAGLNebw==}
+  /mobx@6.9.0:
+    resolution: {integrity: sha512-HdKewQEREEJgsWnErClfbFoVebze6rGazxFLU/XUyrII8dORfVszN1V0BMRnQSzcgsNNtkX8DHj3nC6cdWE9YQ==}
     dev: true
 
   /mocha@10.0.0:
@@ -17689,7 +17683,7 @@ packages:
     dev: true
 
   github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3:
-    resolution: {commit: b4f121555729b3afb3c5ffccb62ff4b6e2818fd3, repo: git+ssh://git@github.com/foundry-rs/forge-std.git, type: git}
+    resolution: {tarball: https://codeload.github.com/foundry-rs/forge-std/tar.gz/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3}
     name: forge-std
     version: 1.2.0
 
