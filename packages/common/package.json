@@ -27,7 +27,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
     "release": "npm publish --access=public",
     "test": "vitest typecheck --run --passWithNoTests"
   },
