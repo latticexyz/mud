@@ -26,7 +26,7 @@
     "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "lint": "eslint . --ext .ts",
     "release": "npm publish --access=public",
-    "test": "tsc --noEmit && forge test"
+    "test": "tsc --noEmit && pnpm run generate-test-tables && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
