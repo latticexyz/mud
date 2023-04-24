@@ -159,6 +159,29 @@ contract World is StoreRead, IStoreData, IWorldKernel {
 
   /************************************************************************
    *
+   *    WORLD EPHEMERAL METHODS
+   *
+   ************************************************************************/
+
+  /**
+   * Emit the ephemeral event without modifying storage at the given namespace and name.
+   * Requires the caller to have access to the namespace or name.
+   */
+  function setEphemeralRecord(
+    bytes16 namespace,
+    bytes16 name,
+    bytes32[] calldata key,
+    bytes calldata data
+  ) public virtual {
+    // Require access to the namespace or name
+    bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
+
+    // Set the record
+    StoreCore.setEphemeralRecord(resourceSelector, key, data);
+  }
+
+  /************************************************************************
+   *
    *    STORE OVERRIDE METHODS
    *
    ************************************************************************/
@@ -236,6 +259,21 @@ contract World is StoreRead, IStoreData, IWorldKernel {
    */
   function deleteRecord(bytes32 tableId, bytes32[] calldata key) public virtual override {
     deleteRecord(tableId.getNamespace(), tableId.getName(), key);
+  }
+
+  /************************************************************************
+   *
+   *    STORE EPHEMERAL OVERRIDE METHODS
+   *
+   ************************************************************************/
+
+  /**
+   * Emit the ephemeral event without modifying storage at the given tableId.
+   * This overload exists to conform with the `IStore` interface.
+   * Access is checked based on the namespace or name (encoded in the tableId).
+   */
+  function setEphemeralRecord(bytes32 tableId, bytes32[] calldata key, bytes calldata data) public virtual {
+    setEphemeralRecord(tableId.getNamespace(), tableId.getName(), key, data);
   }
 
   /************************************************************************
