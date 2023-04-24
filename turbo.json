@@ -2,8 +2,34 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "outputs": ["dist/**"],
       "dependsOn": ["^build"]
+    },
+    "build:go": {
+      "outputs": ["bin/**"],
+      "dependsOn": ["^build"]
+    },
+    "build:protobuf": {
+      "outputs": ["protoc/**", "protobuf/**"],
+      "dependsOn": ["^build", "build:go"]
+    },
+    "build:mud": {
+      "dependsOn": ["^build"]
+    },
+    "build:abi": {
+      "outputs": ["abi/**"],
+      "dependsOn": ["^build", "build:mud"]
+    },
+    "build:typechain": {
+      "outputs": ["types/**"],
+      "dependsOn": ["^build", "build:abi"]
+    },
+    "build:wasm": {
+      "outputs": ["build/**"],
+      "dependsOn": ["^build"]
+    },
+    "build:js": {
+      "outputs": ["dist/**"],
+      "dependsOn": ["^build", "build:protobuf", "build:mud", "build:typechain"]
     }
   }
 }
