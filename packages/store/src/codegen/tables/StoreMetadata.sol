@@ -122,6 +122,22 @@ library StoreMetadata {
     _store.pushToField(_tableId, _primaryKeys, 0, bytes((_slice)));
   }
 
+  /** Pop a slice from tableName */
+  function popTableName(bytes32 tableId) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 0, 1);
+  }
+
+  /** Pop a slice from tableName (using the specified store) */
+  function popTableName(IStore _store, bytes32 tableId) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    _store.popFromField(_tableId, _primaryKeys, 0, 1);
+  }
+
   /** Update a slice of tableName at `_index` */
   function updateTableName(bytes32 tableId, uint256 _index, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -189,6 +205,22 @@ library StoreMetadata {
     _primaryKeys[0] = bytes32((tableId));
 
     _store.pushToField(_tableId, _primaryKeys, 1, bytes((_slice)));
+  }
+
+  /** Pop a slice from abiEncodedFieldNames */
+  function popAbiEncodedFieldNames(bytes32 tableId) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 1, 1);
+  }
+
+  /** Pop a slice from abiEncodedFieldNames (using the specified store) */
+  function popAbiEncodedFieldNames(IStore _store, bytes32 tableId) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    _store.popFromField(_tableId, _primaryKeys, 1, 1);
   }
 
   /** Update a slice of abiEncodedFieldNames at `_index` */

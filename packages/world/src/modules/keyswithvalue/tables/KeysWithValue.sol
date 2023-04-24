@@ -116,6 +116,22 @@ library KeysWithValue {
     _store.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
+  /** Pop an element from keysWithValue */
+  function pop(bytes32 _tableId, bytes32 valueHash) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((valueHash));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 0, 32);
+  }
+
+  /** Pop an element from keysWithValue (using the specified store) */
+  function pop(IStore _store, bytes32 _tableId, bytes32 valueHash) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((valueHash));
+
+    _store.popFromField(_tableId, _primaryKeys, 0, 32);
+  }
+
   /** Update an element of keysWithValue at `_index` */
   function update(bytes32 _tableId, bytes32 valueHash, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

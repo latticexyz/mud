@@ -196,6 +196,22 @@ library Mixed {
     _store.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
+  /** Pop an element from a32 */
+  function popA32(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 2, 4);
+  }
+
+  /** Pop an element from a32 (using the specified store) */
+  function popA32(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 2, 4);
+  }
+
   /** Update an element of a32 at `_index` */
   function updateA32(bytes32 key, uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -260,6 +276,22 @@ library Mixed {
     _primaryKeys[0] = bytes32((key));
 
     _store.pushToField(_tableId, _primaryKeys, 3, bytes((_slice)));
+  }
+
+  /** Pop a slice from s */
+  function popS(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 3, 1);
+  }
+
+  /** Pop a slice from s (using the specified store) */
+  function popS(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 3, 1);
   }
 
   /** Update a slice of s at `_index` */
