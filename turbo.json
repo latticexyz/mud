@@ -2,33 +2,8 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "outputs": [
-        "dist/**"
-      ],
-      "dependsOn": [
-        "^build"
-      ]
-    },
-    "build:codegen": {},
-    "build:prepare": {},
-    "docs": {},
-    "test": {
-      "outputs": [
-        "coverage/**"
-      ],
-      "dependsOn": []
-    },
-    "lint": {},
-    "dev": {
-      "cache": false,
-      "persistent": true
-    },
-    "clean": {
-      "cache": false
-    },
-    "tablegen": {},
-    "worldgen": {},
-    "gas-report": {},
-    "release:manual": {}
+      "outputs": ["dist/**"],
+      "dependsOn": ["^build"]
+    }
   }
 }
