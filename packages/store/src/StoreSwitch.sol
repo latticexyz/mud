@@ -93,7 +93,7 @@ library StoreSwitch {
     }
   }
 
-  function popFromField(bytes32 table, bytes32[] calldata key, uint8 fieldIndex, uint256 byteLengthToPop) internal {
+  function popFromField(bytes32 table, bytes32[] memory key, uint8 fieldIndex, uint256 byteLengthToPop) internal {
     if (isDelegateCall()) {
       StoreCore.popFromField(table, key, fieldIndex, byteLengthToPop);
     } else {
