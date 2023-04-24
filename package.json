@@ -28,8 +28,6 @@
     "entry:src": "lerna run postpack",
     "foundryup": "curl -L https://foundry.paradigm.xyz | bash && bash ~/.foundry/bin/foundryup",
     "gas-report": "turbo run gas-report",
-    "preinstall": "node .preinstall.mjs",
-    "postinstall": "node .postinstall.mjs",
     "link:packages": "lerna exec 'pnpm link --global'",
     "lint": "pnpm prettier:check && eslint . --ext .ts",
     "prepare": "husky install && (forge --version || pnpm foundryup)",
