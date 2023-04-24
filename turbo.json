@@ -11,7 +11,8 @@
         "bin/**",
         "protoc/**",
         "protobuf/**",
-        "src/mud-definitions/**"
+        "src/mud-definitions/**",
+        ".parcel-cache/**"
       ]
     },
     "dev": {
