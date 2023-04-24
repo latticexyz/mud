@@ -19,10 +19,10 @@
   },
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "vite build && chmod +x ./dist/mud.js ./dist/mud2.js",
+    "build:js": "tsup && chmod +x ./dist/mud.js ./dist/mud2.js",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
-    "dev": "vite build --watch",
+    "dev": "tsup --watch",
     "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "lint": "eslint . --ext .ts",
     "release": "npm publish --access=public",
@@ -66,12 +66,9 @@
     "@types/glob": "^7.2.0",
     "@types/node": "^17.0.34",
     "@types/openurl": "^1.0.0",
-    "@types/rollup-plugin-peer-deps-external": "^2.2.1",
     "@types/yargs": "^17.0.10",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "rollup-plugin-preserve-shebang": "^1.0.1",
+    "tsup": "^6.7.0",
     "tsx": "^3.12.6",
-    "vite": "^4.3.0",
     "vitest": "^0.29.8"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"

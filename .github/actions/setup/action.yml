@@ -20,6 +20,9 @@ runs:
       with:
         version: nightly
 
+    - name: Setup protoc
+      uses: arduino/setup-protoc@v1
+
     - name: Install node dependencies
       shell: bash
       run: pnpm install --frozen-lockfile

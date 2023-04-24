@@ -1,5 +1,5 @@
 import { EntityID } from "@latticexyz/recs";
-import { Message } from "@latticexyz/services/protobuf/ts/ecs-relay/ecs-relay";
+import { Message } from "@latticexyz/services/ecs-relay";
 import { isHex } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
 import { keccak256 } from "ethers/lib/utils";
