@@ -52,6 +52,13 @@ contract StoreReadWithStubs is IStore, StoreRead {
   /**
    * Not implemented in StoreReadWithStubs
    */
+  function popFromField(bytes32, bytes32[] calldata, uint8, uint256) public virtual {
+    revert StoreReadWithStubs_NotImplemented();
+  }
+
+  /**
+   * Not implemented in StoreReadWithStubs
+   */
   function updateInField(bytes32, bytes32[] calldata, uint8, uint256, bytes calldata) public virtual {
     revert StoreReadWithStubs_NotImplemented();
   }

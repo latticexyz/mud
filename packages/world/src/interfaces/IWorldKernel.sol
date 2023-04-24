@@ -41,6 +41,18 @@ interface IWorldData {
   ) external;
 
   /**
+   * Pop data from the end of a field in the table at the given namespace and name.
+   * Requires the caller to have access to the namespace or name.
+   */
+  function popFromField(
+    bytes16 namespace,
+    bytes16 name,
+    bytes32[] calldata key,
+    uint8 schemaIndex,
+    uint256 byteLengthToPop
+  ) external;
+
+  /**
    * Update data at `startByteIndex` of a field in the table at the given namespace and name.
    * Requires the caller to have access to the namespace or name.
    */

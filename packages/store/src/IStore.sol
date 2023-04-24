@@ -38,6 +38,9 @@ interface IStoreWrite {
   // Push encoded items to the dynamic field at schema index
   function pushToField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex, bytes calldata dataToPush) external;
 
+  // Pop byte length from the dynamic field at schema index
+  function popFromField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex, uint256 byteLengthToPop) external;
+
   // Change encoded items within the dynamic field at schema index
   function updateInField(
     bytes32 table,
