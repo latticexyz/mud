@@ -16,11 +16,10 @@
   },
   "types": "ts/index.ts",
   "scripts": {
-    "build": "pnpm run build:tightcoder && pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
-    "build:abi": "forge build --out abi --skip test script",
-    "build:codegen": "tsx ./ts/scripts/tablegen.ts",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
+    "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
     "build:js": "tsup",
-    "build:tightcoder": "tsx ./ts/scripts/codegenTightcoder.ts && prettier --write '**/*.sol'",
+    "build:mud": "tsx ./ts/scripts/tablegen.ts",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain && pnpm run clean:js",
     "clean:abi": "rimraf abi",
@@ -28,11 +27,10 @@
     "clean:typechain": "rimraf types",
     "docs": "rimraf API && hardhat docgen",
     "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
+    "generate-tightcoder": "tsx ./scripts/generate-tightcoder.ts && prettier --write '**/tightcoder/*.sol'",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "release": "npm publish --access=public",
-    "test": "pnpm run test:solidity && pnpm run test:typescript",
-    "test:solidity": "forge test",
-    "test:typescript": "tsc --noEmit"
+    "test": "tsc --noEmit && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

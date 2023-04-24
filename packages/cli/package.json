@@ -18,15 +18,15 @@
     "mud2": "./dist/mud2.js"
   },
   "scripts": {
-    "build": "pnpm run build:js && chmod +x ./dist/mud.js",
-    "build:js": "tsup",
-    "codegen": "tsx ./scripts/codegen.ts",
+    "build": "pnpm run build:js",
+    "build:js": "tsup && chmod +x ./dist/mud.js ./dist/mud2.js",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
     "dev": "tsup --watch",
+    "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "lint": "eslint . --ext .ts",
     "release": "npm publish --access=public",
-    "test": "pnpm test:typescript && pnpm test:contracts",
-    "test:contracts": "pnpm codegen && forge test",
-    "test:typescript": "tsc --noEmit"
+    "test": "tsc --noEmit && pnpm run generate-test-tables && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

@@ -11,13 +11,16 @@
   "main": "src/index.ts",
   "source": "src/index.ts",
   "scripts": {
-    "build": "rimraf dist && rollup -c rollup.config.js",
+    "build": "pnpm run build:js",
+    "build:js": "rollup -c rollup.config.js",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\;",
     "lint": "eslint . --ext .ts",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "release": "npm publish --access=public",
-    "test": "tsc && jest"
+    "test": "tsc --noEmit && jest"
   },
   "devDependencies": {
     "@latticexyz/schema-type": "workspace:*",

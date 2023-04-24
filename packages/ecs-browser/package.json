@@ -12,11 +12,14 @@
   "main": "src/index.ts",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsup",
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
     "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "release": "npm publish --access=public",
-    "test": "tsc && echo 'todo: add tests'"
+    "test": "tsc --noEmit && echo 'todo: add tests'"
   },
   "dependencies": {
     "goober": "^2.1.11",

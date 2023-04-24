@@ -10,13 +10,16 @@
   "license": "MIT",
   "types": "./types/ethers-contracts/",
   "scripts": {
-    "build": "rimraf out && forge build && pnpm dist && pnpm types",
-    "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh && rimraf abi/*.metadata.json",
+    "build": "pnpm run build:abi && pnpm run build:typechain",
+    "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
+    "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
+    "clean": "pnpm run clean:abi && pnpm run clean:typechain",
+    "clean:abi": "rimraf abi",
+    "clean:typechain": "rimraf types",
     "docs": "rimraf API && hardhat docgen",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "release": "npm publish --access=public",
-    "test": "forge test",
-    "types": "rimraf types && typechain --target=ethers-v5 abi/*.json"
+    "test": "forge test"
   },
   "devDependencies": {
     "@latticexyz/solecs": "workspace:*",
