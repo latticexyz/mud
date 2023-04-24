@@ -41,7 +41,7 @@
     "@types/google-protobuf": "^3.15.6",
     "@types/jest": "^27.4.1",
     "@types/lodash": "^4.14.182",
-    "@types/node": "^17.0.34",
+    "@types/node": "^18.15.11",
     "async-mutex": "^0.3.2",
     "ethers": "^5.7.2",
     "fake-indexeddb": "^4.0.0",
