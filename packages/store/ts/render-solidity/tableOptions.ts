@@ -100,7 +100,9 @@ export function getTableOptions(config: StoreConfig): TableOptions[] {
         fields,
         staticFields,
         dynamicFields,
-        withRecordMethods,
+        withFieldMethods: !tableData.ephemeral,
+        withRecordMethods: withRecordMethods && !tableData.ephemeral,
+        withEphemeralMethods: tableData.ephemeral,
         storeArgument: tableData.storeArgument,
       },
     });

@@ -9,6 +9,7 @@ import {
   renderTypeHelpers,
   RenderDynamicField,
 } from "@latticexyz/common/codegen";
+import { renderEphemeralMethods } from "./ephemeral";
 import { renderEncodeField, renderFieldMethods } from "./field";
 import { renderRecordMethods } from "./record";
 import { RenderTableOptions } from "./types";
@@ -23,7 +24,9 @@ export function renderTable(options: RenderTableOptions) {
     fields,
     staticFields,
     dynamicFields,
+    withFieldMethods,
     withRecordMethods,
+    withEphemeralMethods,
     storeArgument,
     primaryKeys,
   } = options;
@@ -110,9 +113,11 @@ library ${libraryName} {
   `
   )}
 
-  ${renderFieldMethods(options)}
+  ${withFieldMethods ? renderFieldMethods(options) : ""}
 
   ${withRecordMethods ? renderRecordMethods(options) : ""}
+
+  ${withEphemeralMethods ? renderEphemeralMethods(options) : ""}
 
   /** Tightly pack full data using this table's schema */
   function encode(${renderArguments(
