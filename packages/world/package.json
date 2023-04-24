@@ -40,9 +40,7 @@
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
-    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
-    "ethers": "^5.7.2",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3"
+    "ethers": "^5.7.2"
   },
   "devDependencies": {
     "@typechain/ethers-v5": "^10.2.0",
@@ -50,7 +48,9 @@
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",
+    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ejs": "^3.1.8",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "glob": "^8.0.3",
     "hardhat": "^2.10.1",
     "rimraf": "^3.0.2",
@@ -62,6 +62,5 @@
     "typedoc": "^0.23.10",
     "vitest": "^0.30.1"
   },
-  "peerDependencies": {},
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }
