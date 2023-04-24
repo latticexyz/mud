@@ -9,9 +9,9 @@
   },
   "scripts": {
     "build": "turbo run build",
-    "clean": "pnpm recursive run clean",
+    "clean": "turbo run clean",
     "commit": "cz",
-    "dev": "pnpm recursive run dev",
+    "dev": "turbo run dev --concurrency 20",
     "docs": "pnpm recursive run docs && pnpm prettier --write '**/*.md' && pnpm run --filter docs build:prepare && pnpm run --filter docs build",
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",

@@ -2,7 +2,25 @@
   "$schema": "https://turbo.build/schema.json",
   "pipeline": {
     "build": {
-      "dependsOn": ["^build"]
+      "dependsOn": ["^build"],
+      "outputs": [
+        "dist/**",
+        "abi/**",
+        "types/**",
+        "build/**",
+        "bin/**",
+        "protoc/**",
+        "protobuf/**",
+        "src/mud-definitions/**"
+      ]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
+    },
+    "clean": {
+      "cache": false
     }
   }
 }
