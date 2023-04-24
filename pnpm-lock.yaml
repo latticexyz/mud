@@ -1056,9 +1056,6 @@ importers:
       typedoc:
         specifier: ^0.23.10
         version: 0.23.21(typescript@4.9.5)
-      vitest:
-        specifier: ^0.30.1
-        version: 0.30.1
 
   packages/utils:
     dependencies:
@@ -1196,9 +1193,6 @@ importers:
       typedoc:
         specifier: ^0.23.10
         version: 0.23.21(typescript@4.9.5)
-      vitest:
-        specifier: ^0.30.1
-        version: 0.30.1
 
 packages:
 

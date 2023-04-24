@@ -1,7 +1,7 @@
 import { defineConfig } from "vitest/config";
 
 /**
- * @see https://vitejs.dev/config/
+ * @see https://vitest.dev/config/
  */
 export default defineConfig({
   test: {
