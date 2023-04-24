@@ -71,7 +71,7 @@ importers:
         specifier: ^0.8.5
         version: 0.8.5
       turbo:
-        specifier: latest
+        specifier: ^1.9.3
         version: 1.9.3
       typescript:
         specifier: ^4.9.5
