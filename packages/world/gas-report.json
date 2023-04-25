@@ -1,6 +1,6 @@
 [
   {
-    "source": "test/KeysWithTableModule.t.sol",
+    "source": "test/KeysInTableModule.t.sol",
     "name": "compute the target table selector",
     "functionCall": "bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId)",
     "gasUsed": 2240

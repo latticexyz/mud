@@ -17,7 +17,7 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-library KeysWithTable {
+library KeysInTable {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
@@ -36,7 +36,7 @@ library KeysWithTable {
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "value";
-    return ("KeysWithTable", _fieldNames);
+    return ("KeysInTable", _fieldNames);
   }
 
   /** Register the table's schema */

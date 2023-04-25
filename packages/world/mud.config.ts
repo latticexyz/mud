@@ -99,6 +99,20 @@ export default mudConfig({
       },
       tableIdArgument: true,
     },
+    KeysInTable: {
+      directory: "/modules/keysintable/tables",
+      primaryKeys: {},
+      schema: "bytes32[]", // For now only supports 1 key per value,
+      tableIdArgument: true,
+    },
+    UsedKeysIndex: {
+      directory: "/modules/keysintable/tables",
+      primaryKeys: {
+        keysHash: "bytes32",
+      },
+      schema: "bool",
+      tableIdArgument: true,
+    },
     UniqueEntity: {
       directory: "modules/uniqueentity/tables",
       primaryKeys: {},
@@ -122,20 +136,6 @@ export default mudConfig({
     AddressArray: {
       directory: "../test/tables",
       schema: "address[]",
-      tableIdArgument: true,
-    },
-    KeysWithTable: {
-      directory: "/modules/keyswithtable/tables",
-      primaryKeys: {},
-      schema: "bytes32[]", // For now only supports 1 key per value,
-      tableIdArgument: true,
-    },
-    UsedKeysIndex: {
-      directory: "/modules/keyswithtable/tables",
-      primaryKeys: {
-        keysHash: "bytes32",
-      },
-      schema: "bool",
       tableIdArgument: true,
     },
   },
