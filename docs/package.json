@@ -10,7 +10,7 @@
     "build": "next build",
     "build:prepare": "rm -rf pages/packages && mkdir pages/packages && for PKG in solecs network recs react services; do mv ../packages/$PKG/API ./pages/packages/$PKG; done"
   },
-  "private": "true",
+  "private": true,
   "license": "",
   "dependencies": {
     "next": "^13.3.0",
