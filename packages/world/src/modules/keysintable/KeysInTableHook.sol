@@ -23,41 +23,41 @@ contract KeysInTableHook is IStoreHook {
   using ArrayLib for bytes32[];
   using ResourceSelector for bytes32;
 
-  function blah(bytes32 table, bytes32[] memory key) internal {
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
-    bytes32 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
+  function handleSet(bytes32 tableId, bytes32[] memory key) internal {
+    bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
+    bytes32 usedIndexTableId = getTargetTableSelector(USED_KEYS_NAMESPACE, tableId);
 
     bytes32 keysHash = keccak256(abi.encode(key));
 
     // If the key not has yet been set in the table...
-    if (!UsedKeysIndex.get(targetTableIdUsed, keysHash)) {
+    if (!UsedKeysIndex.get(usedIndexTableId, keysHash)) {
       // Push the key to the list of keys in this table
-      KeysInTable.push(targetTableId, key[0]);
+      KeysInTable.push(keysInTableTableId, key[0]);
 
-      UsedKeysIndex.set(targetTableIdUsed, keysHash, true);
+      UsedKeysIndex.set(usedIndexTableId, keysHash, true);
     }
   }
 
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory) public {
-    blah(table, key);
+    handleSet(table, key);
   }
 
   function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {}
 
   function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {
-    blah(table, key);
+    handleSet(table, key);
   }
 
   function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
     // Remove the key from the list of keys in this table
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
-    bytes32 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
+    bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
+    bytes32 usedIndexTableId = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
 
-    bytes32[] memory keysInTable = KeysInTable.get(targetTableId);
+    bytes32[] memory keysInTable = KeysInTable.get(keysInTableTableId);
 
-    KeysInTable.set(targetTableId, keysInTable.filter(key[0]));
+    KeysInTable.set(keysInTableTableId, keysInTable.filter(key[0]));
 
     bytes32 keysHash = keccak256(abi.encode(key));
-    UsedKeysIndex.set(targetTableIdUsed, keysHash, false);
+    UsedKeysIndex.set(usedIndexTableId, keysHash, false);
   }
 }
