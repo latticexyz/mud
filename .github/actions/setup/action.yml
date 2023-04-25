@@ -43,7 +43,7 @@ runs:
 
     - name: Build
       shell: bash
-      run: pnpm turbo run build --cache-dir=.turbo
+      run: pnpm turbo run build --cache-dir=.turbo --concurrency 10
 
     - name: Outdated files, run `pnpm build` and commit them
       uses: ./.github/actions/require-empty-diff
