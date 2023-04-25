@@ -22,9 +22,13 @@ runs:
 
     # Workaround for parallel building with forge:
     # https://github.com/foundry-rs/foundry/issues/4736
+    - name: Install svm
+      uses: baptiste0928/cargo-install@v2
+      with:
+        crate: svm
     - name: Install solc
       shell: bash
-      run: cargo install svm-rs && svm install 0.8.13
+      run: svm install 0.8.13
 
     - name: Setup protoc
       uses: arduino/setup-protoc@v1
