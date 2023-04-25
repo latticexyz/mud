@@ -26,7 +26,7 @@ import {
 } from "@latticexyz/recs";
 import { toEthAddress } from "@latticexyz/utils";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
-import ComponentAbi from "@latticexyz/solecs/abi/Component.json";
+import ComponentAbi from "@latticexyz/solecs/abi/Component.sol/Component.json";
 import { Contract, BigNumber, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import toLower from "lodash/toLower";

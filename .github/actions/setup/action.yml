@@ -20,6 +20,12 @@ runs:
       with:
         version: nightly
 
+    # Workaround for parallel building with forge:
+    # https://github.com/foundry-rs/foundry/issues/4736
+    - name: Install solc
+      shell: bash
+      run: cargo install svm-rs && svm install 0.8.13
+
     - name: Setup protoc
       uses: arduino/setup-protoc@v1
 
@@ -27,7 +33,17 @@ runs:
       shell: bash
       run: pnpm install --frozen-lockfile
 
+    - name: Cache turbo build
+      uses: actions/cache@v3
+      with:
+        path: .turbo
+        key: ${{ runner.os }}-turbo-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-
+
     - name: Build
       shell: bash
-      # We use `--workspace-concurrency=1` for now because forge has a hard time running in parallel (resulting in `Text file busy (os error 26)` errors in CI)
-      run: pnpm recursive --workspace-concurrency=1 run build
+      run: pnpm turbo run build --cache-dir=.turbo --concurrency 10
+
+    - name: Outdated files, run `pnpm build` and commit them
+      uses: ./.github/actions/require-empty-diff

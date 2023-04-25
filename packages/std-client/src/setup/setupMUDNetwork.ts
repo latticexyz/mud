@@ -15,7 +15,7 @@ import { computed } from "mobx";
 import { keccak256 } from "@latticexyz/utils";
 import { Contract, ContractInterface } from "ethers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
-import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
+import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.sol/World.json";
 import { defineStringComponent } from "../components";
 import keys from "lodash/keys";
 import { ContractComponent, ContractComponents, NetworkComponents, SetupContractConfig } from "./types";

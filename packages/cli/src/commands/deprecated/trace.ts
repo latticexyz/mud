@@ -3,7 +3,7 @@ import { execLog, extractIdFromFile, keccak256 } from "../../utils/deprecated/in
 import { readFileSync } from "fs";
 import { Contract } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import WorldAbi from "@latticexyz/solecs/abi/World.json" assert { type: "json" };
+import WorldAbi from "@latticexyz/solecs/abi/World.sol/World.json" assert { type: "json" };
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import path from "path";
 import { componentsDir, systemsDir } from "../../utils/deprecated/constants.js";
