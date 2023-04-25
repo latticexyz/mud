@@ -12,6 +12,7 @@ import { ResourceType, ResourceTypeTableId } from "./modules/core/tables/Resourc
 import { FunctionSelectors, FunctionSelectorsTableId } from "./modules/core/tables/FunctionSelectors.sol";
 import { KeysWithValue } from "./modules/keyswithvalue/tables/KeysWithValue.sol";
 import { KeysInTable } from ".//modules/keysintable/tables/KeysInTable.sol";
+import { KeysInTableLength } from ".//modules/keysintable/tables/KeysInTableLength.sol";
 import { UsedKeysIndex } from ".//modules/keysintable/tables/UsedKeysIndex.sol";
 import { UniqueEntity } from "./modules/uniqueentity/tables/UniqueEntity.sol";
 import { Bool } from "./../test/tables/Bool.sol";

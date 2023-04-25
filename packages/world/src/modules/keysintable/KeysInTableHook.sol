@@ -5,8 +5,9 @@ import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
-import { MODULE_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
+import { MODULE_NAMESPACE, KEYS_LENGTH_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
 import { KeysInTable } from "./tables/KeysInTable.sol";
+import { KeysInTableLength } from "./tables/KeysInTableLength.sol";
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 import { ArrayLib } from "../utils/ArrayLib.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
@@ -25,6 +26,7 @@ contract KeysInTableHook is IStoreHook {
 
   function handleSet(bytes32 tableId, bytes32[] memory key) internal {
     bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
+    bytes32 keysInTableLengthTableId = getTargetTableSelector(KEYS_LENGTH_NAMESPACE, tableId);
     bytes32 usedIndexTableId = getTargetTableSelector(USED_KEYS_NAMESPACE, tableId);
 
     bytes32 keysHash = keccak256(abi.encode(key));
@@ -33,7 +35,9 @@ contract KeysInTableHook is IStoreHook {
     if (!UsedKeysIndex.get(usedIndexTableId, keysHash)) {
       // Push the key to the list of keys in this table
       KeysInTable.push(keysInTableTableId, key[0]);
+      KeysInTableLength.set(keysInTableLengthTableId, KeysInTableLength.get(keysInTableLengthTableId) + 1);
 
+      // Update the index to avoid duplicating this key in the array
       UsedKeysIndex.set(usedIndexTableId, keysHash, true);
     }
   }
@@ -48,16 +52,22 @@ contract KeysInTableHook is IStoreHook {
     handleSet(table, key);
   }
 
-  function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
+  // Now, add the index for each
+  function onDeleteRecord(bytes32 tableId, bytes32[] memory key) public {
     // Remove the key from the list of keys in this table
-    bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
-    bytes32 usedIndexTableId = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
-
-    bytes32[] memory keysInTable = KeysInTable.get(keysInTableTableId);
-
-    KeysInTable.set(keysInTableTableId, keysInTable.filter(key[0]));
+    bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
+    bytes32 keysInTableLengthTableId = getTargetTableSelector(KEYS_LENGTH_NAMESPACE, tableId);
+    bytes32 usedIndexTableId = getTargetTableSelector(USED_KEYS_NAMESPACE, tableId);
 
     bytes32 keysHash = keccak256(abi.encode(key));
-    UsedKeysIndex.set(usedIndexTableId, keysHash, false);
+
+    if (UsedKeysIndex.get(usedIndexTableId, keysHash)) {
+      bytes32[] memory keysInTable = KeysInTable.get(keysInTableTableId);
+
+      KeysInTable.set(keysInTableTableId, keysInTable.filter(key[0]));
+      KeysInTableLength.set(keysInTableLengthTableId, KeysInTableLength.get(keysInTableLengthTableId) - 1);
+
+      UsedKeysIndex.set(usedIndexTableId, keysHash, false);
+    }
   }
 }
