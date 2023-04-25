@@ -14,7 +14,7 @@
     "build": "pnpm run build:js",
     "build:js": "pnpm run prepack && (parcel build || true) && pnpm run postpack && tsc --emitDeclarationOnly",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist",
+    "clean:js": "rimraf dist .parcel-cache",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\;",
     "lint": "eslint . --ext .ts",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",

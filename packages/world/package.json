@@ -25,6 +25,7 @@
     "clean:abi": "rimraf abi",
     "clean:js": "rimraf dist",
     "clean:typechain": "rimraf types",
+    "dev": "tsup --watch",
     "docs": "rimraf API && hardhat docgen",
     "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
