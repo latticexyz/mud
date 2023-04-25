@@ -6,7 +6,7 @@ import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { MODULE_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
-import { KeysWithTable } from "./tables/KeysWithTable.sol";
+import { KeysInTable } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 import { ArrayLib } from "../utils/ArrayLib.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
@@ -19,11 +19,11 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  *
  * Note: if a table with composite keys is used, only the first key is indexed
  */
-contract KeysWithTableHook is IStoreHook {
+contract KeysInTableHook is IStoreHook {
   using ArrayLib for bytes32[];
   using ResourceSelector for bytes32;
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) public {
+  function blah(bytes32 table, bytes32[] memory key) internal {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
     bytes32 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
 
@@ -32,27 +32,20 @@ contract KeysWithTableHook is IStoreHook {
     // If the key not has yet been set in the table...
     if (!UsedKeysIndex.get(targetTableIdUsed, keysHash)) {
       // Push the key to the list of keys in this table
-      KeysWithTable.push(targetTableId, key[0]);
+      KeysInTable.push(targetTableId, key[0]);
 
       UsedKeysIndex.set(targetTableIdUsed, keysHash, true);
     }
   }
 
+  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory) public {
+    blah(table, key);
+  }
+
   function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {}
 
   function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
-    bytes32 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
-
-    bytes32 keysHash = keccak256(abi.encode(key));
-
-    // If the key not has yet been set in the table...
-    if (!UsedKeysIndex.get(targetTableIdUsed, keysHash)) {
-      // Push the key to the list of keys in this table
-      KeysWithTable.push(targetTableId, key[0]);
-
-      UsedKeysIndex.set(targetTableIdUsed, keysHash, true);
-    }
+    blah(table, key);
   }
 
   function onDeleteRecord(bytes32 table, bytes32[] memory key) public {
@@ -60,9 +53,9 @@ contract KeysWithTableHook is IStoreHook {
     bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, table);
     bytes32 targetTableIdUsed = getTargetTableSelector(USED_KEYS_NAMESPACE, table);
 
-    bytes32[] memory keysWithTable = KeysWithTable.get(targetTableId);
+    bytes32[] memory keysInTable = KeysInTable.get(targetTableId);
 
-    KeysWithTable.set(targetTableId, keysWithTable.filter(key[0]));
+    KeysInTable.set(targetTableId, keysInTable.filter(key[0]));
 
     bytes32 keysHash = keccak256(abi.encode(key));
     UsedKeysIndex.set(targetTableIdUsed, keysHash, false);

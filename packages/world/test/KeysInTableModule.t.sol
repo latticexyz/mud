@@ -12,16 +12,16 @@ import { ResourceSelector } from "../src/ResourceSelector.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { KeysWithTableModule } from "../src/modules/keyswithtable/KeysWithTableModule.sol";
-import { MODULE_NAMESPACE } from "../src/modules/keyswithtable/constants.sol";
-import { KeysWithTable } from "../src/modules/keyswithtable/tables/KeysWithTable.sol";
-import { getKeysWithTable } from "../src/modules/keyswithtable/getKeysWithTable.sol";
+import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
+import { MODULE_NAMESPACE } from "../src/modules/keysintable/constants.sol";
+import { KeysInTable } from "../src/modules/keysintable/tables/KeysInTable.sol";
+import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
 import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelector.sol";
 
-contract KeysWithTableModuleTest is Test {
+contract KeysInTableModuleTest is Test {
   using ResourceSelector for bytes32;
   IBaseWorld world;
-  KeysWithTableModule keysWithTableModule = new KeysWithTableModule(); // Modules can be deployed once and installed multiple times
+  KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
 
   bytes16 namespace = ROOT_NAMESPACE;
   bytes16 sourceFile = bytes16("source");
@@ -48,7 +48,7 @@ contract KeysWithTableModuleTest is Test {
     targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
   }
 
-  function _installkeysWithTableModule() internal {
+  function _installkeysInTableModule() internal {
     // Register source table
     sourceTableId = world.registerTable(namespace, sourceFile, sourceTableSchema, sourceTableKeySchema);
 
@@ -56,106 +56,106 @@ contract KeysWithTableModuleTest is Test {
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
     // !gasreport install keys with table module
-    world.installRootModule(keysWithTableModule, abi.encode(sourceTableId));
+    world.installRootModule(keysInTableModule, abi.encode(sourceTableId));
   }
 
   function testInstall(uint256 value) public {
-    _installkeysWithTableModule();
+    _installkeysInTableModule();
     // Set a value in the source table
-    // !gasreport set a record on a table with keysWithTableModule installed
+    // !gasreport set a record on a table with keysInTableModule installed
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value));
 
     // Get the list of keys in this target table
-    bytes32[] memory keysWithTable = KeysWithTable.get(world, targetTableId);
+    bytes32[] memory keysInTable = KeysInTable.get(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 1);
-    assertEq(keysWithTable[0], key1);
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0], key1);
   }
 
   function testSetAndDeleteRecordHook(uint256 value1, uint256 value2) public {
-    _installkeysWithTableModule();
+    _installkeysInTableModule();
 
     // Set a value in the source table
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    bytes32[] memory keysWithTable = KeysWithTable.get(world, targetTableId);
+    bytes32[] memory keysInTable = KeysInTable.get(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 1, "1");
-    assertEq(keysWithTable[0], key1, "2");
+    assertEq(keysInTable.length, 1, "1");
+    assertEq(keysInTable[0], key1, "2");
 
     // Set another key with the same value
     world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    keysWithTable = KeysWithTable.get(world, targetTableId);
+    keysInTable = KeysInTable.get(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 2);
-    assertEq(keysWithTable[0], key1, "3");
-    assertEq(keysWithTable[1], key2, "4");
+    assertEq(keysInTable.length, 2);
+    assertEq(keysInTable[0], key1, "3");
+    assertEq(keysInTable[1], key2, "4");
 
     // Change the value of the first key
-    // !gasreport change a record on a table with keysWithTableModule installed
+    // !gasreport change a record on a table with keysInTableModule installed
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2));
 
     // Get the list of keys in the target table
-    keysWithTable = KeysWithTable.get(world, targetTableId);
+    keysInTable = KeysInTable.get(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 2, "5");
-    assertEq(keysWithTable[1], key2, "6");
+    assertEq(keysInTable.length, 2, "5");
+    assertEq(keysInTable[1], key2, "6");
 
     // Get the list of keys in the target table
-    keysWithTable = KeysWithTable.get(world, targetTableId);
+    keysInTable = KeysInTable.get(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 2, "7");
-    assertEq(keysWithTable[0], key1, "8");
+    assertEq(keysInTable.length, 2, "7");
+    assertEq(keysInTable[0], key1, "8");
 
     // Delete the first key
-    // !gasreport delete a record on a table with keysWithTableModule installed
+    // !gasreport delete a record on a table with keysInTableModule installed
     world.deleteRecord(namespace, sourceFile, keyTuple1);
 
     // Get the list of keys in the target table
-    keysWithTable = KeysWithTable.get(world, targetTableId);
+    keysInTable = KeysInTable.get(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 1, "9");
+    assertEq(keysInTable.length, 1, "9");
   }
 
   function testSetField(uint256 value1, uint256 value2) public {
-    _installkeysWithTableModule();
+    _installkeysInTableModule();
 
     // Set a value in the source table
-    // !gasreport set a field on a table with keysWithTableModule installed
+    // !gasreport set a field on a table with keysInTableModule installed
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    bytes32[] memory keysWithTable = KeysWithTable.get(world, targetTableId);
+    bytes32[] memory keysInTable = KeysInTable.get(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 1);
-    assertEq(keysWithTable[0], key1);
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0], key1);
 
     // Change the value using setField
-    // !gasreport change a field on a table with keysWithTableModule installed
+    // !gasreport change a field on a table with keysInTableModule installed
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2));
 
     // Get the list of keys in the target table
-    keysWithTable = KeysWithTable.get(world, targetTableId);
+    keysInTable = KeysInTable.get(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 1);
+    assertEq(keysInTable.length, 1);
 
     // Get the list of keys in the target table
-    keysWithTable = KeysWithTable.get(world, targetTableId);
+    keysInTable = KeysInTable.get(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 1);
-    assertEq(keysWithTable[0], key1);
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0], key1);
   }
 
   function testGetTargetTableSelector() public {
@@ -172,28 +172,28 @@ contract KeysWithTableModuleTest is Test {
     assertEq(targetTableSelector.getName(), sourceFile);
   }
 
-  function testGetkeysWithTable(uint256 value1) public {
-    _installkeysWithTableModule();
+  function testGetkeysInTable(uint256 value1) public {
+    _installkeysInTableModule();
 
     // Set a value in the source table
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
 
     // !gasreport Get list of keys in a given table
-    bytes32[] memory keysWithTable = getKeysWithTable(world, sourceTableId);
+    bytes32[] memory keysInTable = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 1);
-    assertEq(keysWithTable[0], key1);
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0], key1);
 
     // Set another key with the same value
     world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    keysWithTable = getKeysWithTable(world, sourceTableId);
+    keysInTable = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
-    assertEq(keysWithTable.length, 2);
-    assertEq(keysWithTable[0], key1);
-    assertEq(keysWithTable[1], key2);
+    assertEq(keysInTable.length, 2);
+    assertEq(keysInTable[0], key1);
+    assertEq(keysInTable[1], key2);
   }
 }
