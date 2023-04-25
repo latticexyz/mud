@@ -59,7 +59,7 @@
     "typedoc": "0.23.21",
     "typedoc-plugin-markdown": "^3.13.6",
     "typescript": "^4.9.5",
-    "viem": "0.3.1"
+    "viem": "0.3.11"
   },
   "peerDependencies": {
     "@ethersproject/abi": "^5.7.0",
@@ -79,7 +79,7 @@
     "observable-webworker": "^4.0.1",
     "rxjs": "^7.5.5",
     "threads": "^1.7.0",
-    "viem": "0.3.1"
+    "viem": "0.3.11"
   },
   "engines": {
     "node": ">=18"

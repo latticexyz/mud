@@ -77,8 +77,8 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0
       viem:
-        specifier: 0.3.1
-        version: 0.3.1(typescript@4.9.5)
+        specifier: 0.3.11
+        version: 0.3.11(typescript@4.9.5)
     devDependencies:
       '@typescript-eslint/eslint-plugin':
         specifier: ^5.46.1
@@ -3093,8 +3093,8 @@ packages:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
     dev: true
 
-  /viem@0.3.1(typescript@4.9.5):
-    resolution: {integrity: sha512-snWgwW3ZZzZts0fI4cqweOTzNV6vKTxTpktGxkOz4np31w6b7YUjczHU6SZ5JmWhNPWAw3PTckzj7e1V6DuPJA==}
+  /viem@0.3.11(typescript@4.9.5):
+    resolution: {integrity: sha512-Z7AXS31B/hukJyrDD9GhdE9j2OtsoTdNNJgLNC3sNPMgBcF90y8u+t+uiHSxLivXia+JLCer5M+LC+edPXV6tw==}
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
       '@noble/curves': 0.9.0
