@@ -10,7 +10,7 @@
     "build": "next build",
     "build:prepare": "rm -rf pages/packages && mkdir pages/packages && for PKG in solecs network recs react services; do mv ../packages/$PKG/API ./pages/packages/$PKG; done"
   },
-  "private": "true",
+  "private": true,
   "license": "",
   "dependencies": {
     "next": "^13.3.0",
@@ -18,5 +18,9 @@
     "nextra-theme-docs": "^2.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.11.10",
+    "typescript": "^4.9.3"
   }
 }
