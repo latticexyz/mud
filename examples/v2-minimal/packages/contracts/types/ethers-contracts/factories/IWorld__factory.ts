@@ -447,6 +447,67 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes16",
+        name: "namespace",
+        type: "bytes16",
+      },
+      {
+        internalType: "bytes16",
+        name: "name",
+        type: "bytes16",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "uint8",
+        name: "schemaIndex",
+        type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "byteLengthToPop",
+        type: "uint256",
+      },
+    ],
+    name: "popFromField",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "uint8",
+        name: "schemaIndex",
+        type: "uint8",
+      },
+      {
+        internalType: "uint256",
+        name: "byteLengthToPop",
+        type: "uint256",
+      },
+    ],
+    name: "popFromField",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
