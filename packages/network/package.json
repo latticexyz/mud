@@ -23,6 +23,7 @@
     "test": "tsc --noEmit && jest --forceExit"
   },
   "dependencies": {
+    "@latticexyz/common": "workspace:*",
     "debug": "^4.3.4",
     "lodash": "^4.17.21"
   },
