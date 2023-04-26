@@ -1,4 +1,5 @@
 import { setup } from "./mud/setup";
+import { mount as mountDevUI } from "@latticexyz/dev-ui";
 
 const { components, worldSend } = await setup();
 
@@ -17,3 +18,5 @@ components.CounterTable.update$.subscribe((update) => {
   console.log("increment tx", tx);
   console.log("increment result", await tx.wait());
 };
+
+mountDevUI();
