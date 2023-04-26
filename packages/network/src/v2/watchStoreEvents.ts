@@ -16,17 +16,21 @@ export function watchStoreEvents({
   const unwatchPromise = (async () => {
     const filter = await createStoreFilter({ client, address });
 
-    const timer = setInterval(async () => {
+    const getLogs = async () => {
       const logs = await client.getFilterChanges({ filter });
       if (logs.length) {
         onLogs(logs as OnLogsParameter<StoreEvent>);
       }
-    }, 1000);
+    };
+
+    getLogs();
+    const timer = setInterval(getLogs, 1000);
 
     return async () => {
       clearInterval(timer);
       // TODO: replace with `uninstallFilter` once viem exposes it
-      await client.request({ method: "eth_uninstallFilter", params: [filter.id] });
+      // await client.request({ method: "eth_uninstallFilter", params: [filter.id] });
+      // don't uninstall because it costs rpc credits and will get cleaned up anyway
     };
   })();
 

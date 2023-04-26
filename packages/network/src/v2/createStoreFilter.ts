@@ -1,6 +1,6 @@
 import { parseAbiItem, Address, PublicClient, encodeEventTopics } from "viem";
 
-// TODO: it would be nice to import these abis from store, but we wouldn't get as strong of types
+// TODO: it would be nice to import these abis from store, but we wouldn't get as strong of types without `as const` (needs codegen or TS fix)
 // TODO: add tests to validate that these match store ABI and none are missing?
 export const storeEvents = [
   parseAbiItem("event StoreSetRecord(bytes32 table, bytes32[] key, bytes data)"),
