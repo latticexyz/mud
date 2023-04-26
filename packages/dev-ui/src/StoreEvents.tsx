@@ -5,7 +5,9 @@ export function StoreEvents() {
   return (
     <div>
       {storeEvents.map((storeEvent, i) => (
-        <div key={i}>{storeEvent.name}</div>
+        <div key={i}>
+          {storeEvent.table.namespace}:{storeEvent.table.name} {storeEvent.keyTuple}
+        </div>
       ))}
     </div>
   );

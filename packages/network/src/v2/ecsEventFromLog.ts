@@ -36,8 +36,14 @@ export const ecsEventFromLog = async (
     const value = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
     console.log("StoreSetRecord:", { table: tableId.toString(), component, entity, value });
     // TODO: figure out a better place for this emission?
-    // TODO: figure out how to get chainId here
-    devEmitter.emit("storeEvent", { chainId: 31337, worldAddress: contract.address, storeEvent: { name } });
+    devEmitter.emit("storeEvent", {
+      event: name,
+      // TODO: figure out how to get chainId here
+      chainId: 31337,
+      worldAddress: contract.address,
+      table: tableId,
+      keyTuple: args.key,
+    });
     return {
       ...ecsEvent,
       value,
@@ -48,8 +54,14 @@ export const ecsEventFromLog = async (
     const { value, initialValue } = await decodeStoreSetField(contract, tableId, args.key, args.schemaIndex, args.data);
     console.log("StoreSetField:", { table: tableId.toString(), component, entity, value });
     // TODO: figure out a better place for this emission?
-    // TODO: figure out how to get chainId here
-    devEmitter.emit("storeEvent", { chainId: 31337, worldAddress: contract.address, storeEvent: { name } });
+    devEmitter.emit("storeEvent", {
+      event: name,
+      // TODO: figure out how to get chainId here
+      chainId: 31337,
+      worldAddress: contract.address,
+      table: tableId,
+      keyTuple: args.key,
+    });
     return {
       ...ecsEvent,
       partialValue: value,
@@ -60,8 +72,14 @@ export const ecsEventFromLog = async (
   if (name === "StoreDeleteRecord") {
     console.log("StoreDeleteRecord:", { table: tableId.toString(), component, entity });
     // TODO: figure out a better place for this emission?
-    // TODO: figure out how to get chainId here
-    devEmitter.emit("storeEvent", { chainId: 31337, worldAddress: contract.address, storeEvent: { name } });
+    devEmitter.emit("storeEvent", {
+      event: name,
+      // TODO: figure out how to get chainId here
+      chainId: 31337,
+      worldAddress: contract.address,
+      table: tableId,
+      keyTuple: args.key,
+    });
     return ecsEvent;
   }
 };
