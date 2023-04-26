@@ -140,6 +140,22 @@ library Dynamics {
     _store.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
   }
 
+  /** Pop an element from staticB32 */
+  function popStaticB32(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 0, 32);
+  }
+
+  /** Pop an element from staticB32 (using the specified store) */
+  function popStaticB32(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 0, 32);
+  }
+
   /** Update an element of staticB32 at `_index` */
   function updateStaticB32(bytes32 key, uint256 _index, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -204,6 +220,22 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     _store.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
+  }
+
+  /** Pop an element from staticI32 */
+  function popStaticI32(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 1, 4);
+  }
+
+  /** Pop an element from staticI32 (using the specified store) */
+  function popStaticI32(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 1, 4);
   }
 
   /** Update an element of staticI32 at `_index` */
@@ -272,6 +304,22 @@ library Dynamics {
     _store.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
+  /** Pop an element from staticU128 */
+  function popStaticU128(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 2, 16);
+  }
+
+  /** Pop an element from staticU128 (using the specified store) */
+  function popStaticU128(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 2, 16);
+  }
+
   /** Update an element of staticU128 at `_index` */
   function updateStaticU128(bytes32 key, uint256 _index, uint128 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -336,6 +384,22 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     _store.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
+  }
+
+  /** Pop an element from staticAddrs */
+  function popStaticAddrs(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 3, 20);
+  }
+
+  /** Pop an element from staticAddrs (using the specified store) */
+  function popStaticAddrs(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 3, 20);
   }
 
   /** Update an element of staticAddrs at `_index` */
@@ -404,6 +468,22 @@ library Dynamics {
     _store.pushToField(_tableId, _primaryKeys, 4, abi.encodePacked((_element)));
   }
 
+  /** Pop an element from staticBools */
+  function popStaticBools(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 4, 1);
+  }
+
+  /** Pop an element from staticBools (using the specified store) */
+  function popStaticBools(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 4, 1);
+  }
+
   /** Update an element of staticBools at `_index` */
   function updateStaticBools(bytes32 key, uint256 _index, bool _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -468,6 +548,22 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     _store.pushToField(_tableId, _primaryKeys, 5, abi.encodePacked((_element)));
+  }
+
+  /** Pop an element from u64 */
+  function popU64(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 5, 8);
+  }
+
+  /** Pop an element from u64 (using the specified store) */
+  function popU64(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 5, 8);
   }
 
   /** Update an element of u64 at `_index` */
@@ -536,6 +632,22 @@ library Dynamics {
     _store.pushToField(_tableId, _primaryKeys, 6, bytes((_slice)));
   }
 
+  /** Pop a slice from str */
+  function popStr(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 6, 1);
+  }
+
+  /** Pop a slice from str (using the specified store) */
+  function popStr(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 6, 1);
+  }
+
   /** Update a slice of str at `_index` */
   function updateStr(bytes32 key, uint256 _index, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -600,6 +712,22 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     _store.pushToField(_tableId, _primaryKeys, 7, bytes((_slice)));
+  }
+
+  /** Pop a slice from b */
+  function popB(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 7, 1);
+  }
+
+  /** Pop a slice from b (using the specified store) */
+  function popB(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 7, 1);
   }
 
   /** Update a slice of b at `_index` */
