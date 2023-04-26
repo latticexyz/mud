@@ -6,6 +6,7 @@ import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
 import { decodeStoreSetField } from "./decodeStoreSetField";
 import { keyTupleToEntityID } from "./keyTupleToEntityID";
+import { emitter as devEmitter } from "@latticexyz/common/dev";
 
 export const ecsEventFromLog = async (
   contract: Contract,
@@ -34,6 +35,9 @@ export const ecsEventFromLog = async (
   if (name === "StoreSetRecord") {
     const value = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
     console.log("StoreSetRecord:", { table: tableId.toString(), component, entity, value });
+    // TODO: figure out a better place for this emission?
+    // TODO: figure out how to get chainId here
+    devEmitter.emit("storeEvent", { chainId: 31337, worldAddress: contract.address, storeEvent: { name } });
     return {
       ...ecsEvent,
       value,
@@ -43,7 +47,9 @@ export const ecsEventFromLog = async (
   if (name === "StoreSetField") {
     const { value, initialValue } = await decodeStoreSetField(contract, tableId, args.key, args.schemaIndex, args.data);
     console.log("StoreSetField:", { table: tableId.toString(), component, entity, value });
-
+    // TODO: figure out a better place for this emission?
+    // TODO: figure out how to get chainId here
+    devEmitter.emit("storeEvent", { chainId: 31337, worldAddress: contract.address, storeEvent: { name } });
     return {
       ...ecsEvent,
       partialValue: value,
@@ -53,6 +59,9 @@ export const ecsEventFromLog = async (
 
   if (name === "StoreDeleteRecord") {
     console.log("StoreDeleteRecord:", { table: tableId.toString(), component, entity });
+    // TODO: figure out a better place for this emission?
+    // TODO: figure out how to get chainId here
+    devEmitter.emit("storeEvent", { chainId: 31337, worldAddress: contract.address, storeEvent: { name } });
     return ecsEvent;
   }
 };
