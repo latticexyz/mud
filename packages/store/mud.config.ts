@@ -1,6 +1,6 @@
-import { storeConfig } from "@latticexyz/config";
+import { mudConfig, storePlugin } from "./ts/config/parseStoreConfig";
 
-export default storeConfig({
+export default mudConfig({
   storeImportPath: "../../",
   namespace: "mudstore",
   tables: {
@@ -30,4 +30,5 @@ export default storeConfig({
       },
     },
   },
+  plugins: [storePlugin],
 });

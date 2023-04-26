@@ -1,5 +1,4 @@
-import { MUDError } from "./errors.js";
-import { ValueWithType } from "./world/userTypes.js";
+import { MUDError } from "./errors";
 
 export enum DynamicResolutionType {
   TABLE_ID,
@@ -9,6 +8,11 @@ export enum DynamicResolutionType {
 export type DynamicResolution = {
   type: DynamicResolutionType;
   input: string;
+};
+
+export type ValueWithType = {
+  value: string | number | Uint8Array;
+  type: string;
 };
 
 /**

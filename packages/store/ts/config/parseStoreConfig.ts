@@ -1,8 +1,27 @@
 import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { AsDependent, ExtractUserTypes, RequireKeys, StaticArray, StringForUnion } from "../typeUtils.js";
-import { zObjectName, zSelector, zUserEnum, zValueName } from "../commonSchemas.js";
-import { getDuplicates, parseStaticArray } from "../validation.js";
+import {
+  // validation utils
+  getDuplicates,
+  parseStaticArray,
+  // type utils
+  AsDependent,
+  ExtractUserTypes,
+  RequireKeys,
+  StaticArray,
+  StringForUnion,
+  // config
+  MUDCoreUserConfig,
+  MUDCoreConfig,
+  // schemas
+  zObjectName,
+  zSelector,
+  zUserEnum,
+  zValueName,
+  mudCoreConfig,
+  MUDPlugin,
+  zMUDCoreUserConfig,
+} from "@latticexyz/config";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -76,6 +95,13 @@ export interface TableConfig<
   schema: SchemaConfig<UserTypes>;
 }
 
+export type FullTableConfig<
+  UserTypes extends StringForUnion = StringForUnion,
+  StaticUserTypes extends StringForUnion = StringForUnion
+> = Required<TableConfig<UserTypes, StaticUserTypes>> & {
+  schema: FullSchemaConfig<UserTypes>;
+};
+
 const zFullTableConfig = z
   .object({
     directory: z.string().default("tables"),
@@ -128,6 +154,11 @@ export const zTablesConfig = z.record(zTableName, zTableConfig).transform((table
   return tables as Record<string, RequireKeys<(typeof tables)[string], "name">>;
 });
 
+export type FullTablesConfig<
+  UserTypes extends StringForUnion = StringForUnion,
+  StaticUserTypes extends StringForUnion = StringForUnion
+> = Record<string, FullTableConfig<UserTypes, StaticUserTypes>>;
+
 /************************************************************************
  *
  *    USER TYPES
@@ -161,6 +192,10 @@ export type EnumsConfig<EnumNames extends StringForUnion> = never extends EnumNa
       enums: Record<EnumNames, string[]>;
     };
 
+export type FullEnumsConfig<EnumNames extends StringForUnion> = {
+  enums: Record<EnumNames, string[]>;
+};
+
 export const zEnumsConfig = z.object({
   enums: z.record(zUserEnumName, zUserEnum).default({}),
 });
@@ -170,45 +205,58 @@ export const zEnumsConfig = z.object({
  *    FINAL
  *
  ************************************************************************/
+// Manual *UserConfig is used instead of `z.input<typeof zStoreConfig>` because zod can't preserve doc comments
 
-// zod doesn't preserve doc comments
-export type StoreUserConfig<
-  EnumNames extends StringForUnion = StringForUnion,
-  StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
-> = EnumsConfig<EnumNames> & {
+/** Options without generics */
+export interface StoreSimpleOptions {
   /** The namespace for table ids. Default is "" (empty string) */
   namespace?: string;
   /** Path for store package imports. Default is "@latticexyz/store/src/" */
   storeImportPath?: string;
-  /**
-   * Configuration for each table.
-   *
-   * The key is the table name (capitalized).
-   *
-   * The value:
-   *  - abi or user type for a single-value table.
-   *  - FullTableConfig object for multi-value tables (or for customizable options).
-   */
-  tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
   /** Path to the file where common user types will be generated and imported from. Default is "Types" */
   userTypesPath?: string;
   /** Path to the directory where generated files will be placed. (Default is "codegen") */
   codegenDirectory?: string;
-};
+}
 
-/** Type helper for defining StoreUserConfig */
-export function storeConfig<
+/** MUDCoreUserConfig wrapper to use generics in some options for better type inference */
+export type MUDUserConfig<
+  EnumNames extends StringForUnion = StringForUnion,
+  StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
+> = MUDCoreUserConfig &
+  EnumsConfig<EnumNames> & {
+    /**
+     * Configuration for each table.
+     *
+     * The key is the table name (capitalized).
+     *
+     * The value:
+     *  - abi or user type for a single-value table.
+     *  - FullTableConfig object for multi-value tables (or for customizable options).
+     */
+    tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
+  };
+
+export type MUDConfig<
+  EnumNames extends StringForUnion = StringForUnion,
+  StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
+> = MUDCoreConfig &
+  FullEnumsConfig<EnumNames> & {
+    tables: Record<string, FullTablesConfig<StaticUserTypes, StaticUserTypes>>;
+  };
+
+/** mudCoreConfig wrapper to use generics in some options for better type inference */
+export function mudConfig<
   // (`never` is overridden by inference, so only the defined enums can be used by default)
   EnumNames extends StringForUnion = never,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
->(config: StoreUserConfig<EnumNames, StaticUserTypes>) {
-  return config;
+>(config: MUDUserConfig<EnumNames, StaticUserTypes>): MUDConfig<EnumNames, StaticUserTypes> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return mudCoreConfig(config) as any;
 }
 
-export type StoreConfig = z.output<typeof zStoreConfig>;
-
-const StoreConfigUnrefined = z
-  .object({
+const StoreConfigUnrefined = zMUDCoreUserConfig
+  .extend({
     namespace: zSelector.default(""),
     storeImportPath: z.string().default("@latticexyz/store/src/"),
     tables: zTablesConfig,
@@ -220,9 +268,10 @@ const StoreConfigUnrefined = z
 // finally validate global conditions
 export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
 
-export function parseStoreConfig(config: unknown) {
-  return zStoreConfig.parse(config);
-}
+export const storePlugin: MUDPlugin = (config: any) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return zStoreConfig.parse(config) as any;
+};
 
 /************************************************************************
  *

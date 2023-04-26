@@ -1004,6 +1004,9 @@ importers:
       ethers:
         specifier: ^5.7.2
         version: 5.7.2
+      zod:
+        specifier: ^3.21.4
+        version: 3.21.4
     devDependencies:
       '@typechain/ethers-v5':
         specifier: ^10.2.0
