@@ -10,70 +10,55 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js",
+    ".": "./dist/ts/index.js",
     "./mud.config.js": "./dist/mud.config.js",
     "./abi/*": "./abi/*"
   },
   "types": "ts/index.ts",
   "scripts": {
-    "build": "pnpm run build:codegen && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
-    "build:abi": "forge build --out abi --skip test script",
-    "build:codegen": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/worldgen.ts",
-    "build:js": "vite build",
+    "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
+    "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
+    "build:js": "tsup",
+    "build:mud": "tsx ./ts/scripts/tablegen.ts && tsx ./ts/scripts/worldgen.ts",
     "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain && pnpm run clean:js",
     "clean:abi": "rimraf abi",
     "clean:js": "rimraf dist",
     "clean:typechain": "rimraf types",
+    "dev": "tsup --watch",
     "docs": "rimraf API && hardhat docgen",
     "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "release": "npm publish --access=public",
-    "test": "pnpm run test:solidity && pnpm run test:typescript",
-    "test:solidity": "forge test",
-    "test:typescript": "tsc --noEmit"
+    "test": "tsc --noEmit && forge test"
   },
   "dependencies": {
-    "@solidity-parser/parser": "^0.16.0"
-  },
-  "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
+    "ethers": "^5.7.2"
+  },
+  "devDependencies": {
     "@typechain/ethers-v5": "^10.2.0",
     "@types/ejs": "^3.1.1",
     "@types/glob": "^7.2.0",
     "@types/mocha": "^9.1.1",
     "@types/node": "^18.15.11",
-    "@types/rollup-plugin-peer-deps-external": "^2.2.1",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ejs": "^3.1.8",
-    "ethers": "^5.7.2",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "glob": "^8.0.3",
-    "hardhat": "^2.10.1",
+    "hardhat": "^2.10.2",
     "rimraf": "^3.0.2",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
+    "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "typechain": "^8.1.1",
-    "typedoc": "^0.23.10",
-    "vite": "^4.3.0",
-    "vitest": "^0.30.1"
-  },
-  "peerDependencies": {
-    "@ethersproject/abi": "^5.7.0",
-    "@ethersproject/providers": "^5.7.2",
-    "@latticexyz/config": "latest",
-    "@latticexyz/schema-type": "latest",
-    "@latticexyz/store": "latest",
-    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
-    "ethers": "^5.7.2",
-    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3"
+    "typedoc": "0.23.10"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

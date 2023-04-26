@@ -11,7 +11,7 @@ import {
   ECSStateReplyV2,
   ECSStateSnapshotServiceClient,
   ECSStateSnapshotServiceDefinition,
-} from "@latticexyz/services/protobuf/ts/ecs-snapshot/ecs-snapshot";
+} from "@latticexyz/services/ecs-snapshot";
 import {
   NetworkComponentUpdate,
   ContractConfig,
@@ -21,14 +21,14 @@ import {
   NetworkEvent,
 } from "../types";
 import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
-import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
-import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.json";
+import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.sol/Component.json";
+import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.sol/World.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
 import {
   ECSStreamBlockBundleReply,
   ECSStreamServiceClient,
   ECSStreamServiceDefinition,
-} from "@latticexyz/services/protobuf/ts/ecs-stream/ecs-stream";
+} from "@latticexyz/services/ecs-stream";
 import { createChannel, createClient } from "nice-grpc-web";
 import { normalizeComponentID, normalizeEntityID } from "../utils";
 import { grpc } from "@improbable-eng/grpc-web";
