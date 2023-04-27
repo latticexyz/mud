@@ -25,7 +25,7 @@ export function StoreEvents() {
         hoveredRef.current = false;
       }}
     >
-      <table className="w-full table-fixed text-xs font-mono">
+      <table className="w-full table-fixed">
         <thead className="sticky top-0 z-10 bg-slate-800 text-white/40 text-left">
           <th className="px-1 pt-1.5 pb-0.5 w-2/12">block</th>
           <th className="px-1 pt-1.5 pb-0.5 w-2/12">table</th>
@@ -33,7 +33,7 @@ export function StoreEvents() {
           <th className="px-1 pt-1.5 pb-0.5 w-2/12">key</th>
           <th className="px-1 pt-1.5 pb-0.5">value</th>
         </thead>
-        <tbody>
+        <tbody className="font-mono text-xs">
           {storeEvents.map((storeEvent, i) => (
             <tr key={i} className="hover:bg-blue-800">
               <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis text-white/40">
