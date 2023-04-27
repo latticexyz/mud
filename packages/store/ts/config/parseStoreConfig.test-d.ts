@@ -1,11 +1,10 @@
-import { MUDCoreUserConfig, MUDPlugin } from "@latticexyz/config";
 import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
 import { mudConfig, zStoreConfig, MUDUserConfig, storePlugin, MUDConfig } from "./parseStoreConfig";
 
 describe("StoreUserConfig", () => {
   // Typecheck manual interfaces against zod
-  expectTypeOf<MUDUserConfig["plugins"]>().toEqualTypeOf<z.input<typeof zStoreConfig>["plugins"]>();
+  expectTypeOf<MUDUserConfig>().toEqualTypeOf<z.input<typeof zStoreConfig>>();
 
   // type equality isn't deep for optionals
   expectTypeOf<MUDUserConfig["tables"][string]>().toEqualTypeOf<z.input<typeof zStoreConfig>["tables"][string]>();

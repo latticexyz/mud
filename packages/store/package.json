@@ -31,7 +31,7 @@
     "generate-tightcoder": "tsx ./scripts/generate-tightcoder.ts && prettier --write '**/tightcoder/*.sol'",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "release": "npm publish --access=public",
-    "test": "tsc --noEmit && forge test"
+    "test": "vitest typecheck --run && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
@@ -57,7 +57,8 @@
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "typechain": "^8.1.1",
-    "typedoc": "^0.23.10"
+    "typedoc": "^0.23.10",
+    "vitest": "0.30.1"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

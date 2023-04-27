@@ -1,17 +1,15 @@
 import path from "path";
 import { SchemaTypeArrayToElement } from "@latticexyz/schema-type";
-import { StoreConfig } from "@latticexyz/config";
 import {
-  getSchemaTypeInfo,
   RelativeImportDatum,
-  importForAbiOrUserType,
   RenderDynamicField,
   RenderField,
   RenderPrimaryKey,
   RenderStaticField,
-  resolveAbiOrUserType,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
+import { MUDConfig } from "../config";
+import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType";
 
 export interface TableOptions {
   outputPath: string;
@@ -19,7 +17,7 @@ export interface TableOptions {
   renderOptions: RenderTableOptions;
 }
 
-export function getTableOptions(config: StoreConfig): TableOptions[] {
+export function getTableOptions(config: MUDConfig): TableOptions[] {
   const storeImportPath = config.storeImportPath;
 
   const options = [];

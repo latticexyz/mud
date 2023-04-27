@@ -5,3 +5,4 @@ export * from "./renderTypesFromConfig";
 export * from "./tablegen";
 export * from "./tableOptions";
 export * from "./types";
+export * from "./userType";

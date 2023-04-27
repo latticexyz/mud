@@ -242,7 +242,7 @@ export type MUDConfig<
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
 > = MUDCoreConfig &
   FullEnumsConfig<EnumNames> & {
-    tables: Record<string, FullTablesConfig<StaticUserTypes, StaticUserTypes>>;
+    tables: FullTablesConfig<StaticUserTypes, StaticUserTypes>;
   };
 
 /** mudCoreConfig wrapper to use generics in some options for better type inference */

@@ -1,4 +1,4 @@
-import { mudConfig, storePlugin } from "./ts/config/parseStoreConfig";
+import { mudConfig, storePlugin } from "./ts";
 
 export default mudConfig({
   storeImportPath: "../../",

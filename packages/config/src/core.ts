@@ -1,9 +1,9 @@
 import { z } from "zod";
 
-// TODO more specific types
-export type MUDPlugin = any;
+export type MUDPlugin = (config: MUDCoreUserConfig) => MUDCoreConfig;
 
-export const zMUDPlugin = z.any().array();
+// zod can't validate the config object as it's dynamically defined by the plugins themselves
+export const zMUDPlugin = z.function().args(z.any()).returns(z.any()).array();
 
 export interface MUDCoreUserConfig {
   plugins: MUDPlugin[];

@@ -1,13 +1,13 @@
 import path from "path";
-import { StoreConfig } from "@latticexyz/config";
 import { formatAndWriteSolidity } from "@latticexyz/common/codegen";
 import { getTableOptions } from "./tableOptions";
 import { renderTable } from "./renderTable";
 import { renderTypesFromConfig } from "./renderTypesFromConfig";
 import { renderTableIndex } from "./renderTableIndex";
 import { rmSync } from "fs";
+import { MUDConfig } from "../config";
 
-export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {
+export async function tablegen(config: MUDConfig, outputBaseDirectory: string) {
   const allTableOptions = getTableOptions(config);
 
   const uniqueTableDirectories = new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath)));
