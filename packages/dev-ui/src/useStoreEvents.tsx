@@ -1,7 +1,7 @@
-import { emitter as devEmitter, Events as DevEvents } from "@latticexyz/common/dev";
+import { emitter as networkEmitter, Events as NetworkEvents } from "@latticexyz/network";
 import { useEffect, useState } from "react";
 
-type StoreEvent = DevEvents["storeEvent"];
+type StoreEvent = NetworkEvents["storeEvent"];
 
 export function useStoreEvents() {
   const [storeEvents, setStoreEvents] = useState<StoreEvent[]>([]);
@@ -12,10 +12,10 @@ export function useStoreEvents() {
       setStoreEvents((storeEvents) => [...storeEvents, storeEvent]);
     };
 
-    devEmitter.on("storeEvent", listener);
+    networkEmitter.on("storeEvent", listener);
 
     return () => {
-      devEmitter.off("storeEvent", listener);
+      networkEmitter.off("storeEvent", listener);
     };
   }, []);
 
