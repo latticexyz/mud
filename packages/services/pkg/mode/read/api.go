@@ -236,12 +236,21 @@ func (rl *ReadLayer) GetSyncStatus(chainId string) (bool, error) {
 	}
 
 	// If there is a row, then the sync status exists.
-	var syncStatus bool
-	err = rows.Scan(&syncStatus)
+	query, err := rl.dl.Select(syncStatusTableSchema.TableName, map[string]interface{}{
+		"chain_id": chainId,
+	},
+	)
 	if err != nil {
-		rl.logger.Error("GetSyncStatus(): error while scanning row", zap.Error(err))
+		rl.logger.Error("GetSyncStatus(): error while building query", zap.Error(err))
 		return false, err
 	}
+	var syncStatus SyncStatus
+	query.Find(&syncStatus)
 
-	return syncStatus, nil
+	return syncStatus.Syncing, nil
+}
+
+type SyncStatus struct {
+	ChainId string `db:"chain_id"`
+	Syncing bool   `db:"syncing"`
 }

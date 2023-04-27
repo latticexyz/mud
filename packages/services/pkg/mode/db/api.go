@@ -104,3 +104,12 @@ func (dl *DatabaseLayer) RenameColumn(table string, old string, new string) erro
 	}
 	return nil
 }
+
+func (dl *DatabaseLayer) Select(table string, filter map[string]interface{}) (*gorm.DB, error) {
+	query := dl.gorm__db.Table(table).Where(filter)
+	if err := query.Error; err != nil {
+		panic(err)
+	}
+
+	return query, nil
+}
