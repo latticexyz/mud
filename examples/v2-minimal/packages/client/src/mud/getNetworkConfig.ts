@@ -51,5 +51,6 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     worldAddress,
     initialBlockNumber: Number(params.get("initialBlockNumber")) || deploy.blockNumber || 0,
     devMode: params.get("dev") === "true",
+    disableCache: params.get("cache") === "false",
   };
 }

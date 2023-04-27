@@ -33,50 +33,72 @@ export const ecsEventFromLog = async (
   };
 
   if (name === "StoreSetRecord") {
-    const value = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
-    console.log("StoreSetRecord:", { table: tableId.toString(), component, entity, value });
-    // TODO: figure out a better place for this emission?
+    const { indexedValues, namedValues } = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
+    console.log("StoreSetRecord:", { table: tableId.toString(), component, entity, indexedValues, namedValues });
+    // TODO: figure out a better place for this emission? maybe network should expose a global emitter that dev tools listen to rather than other way around?
     devEmitter.emit("storeEvent", {
       event: name,
       // TODO: figure out how to get chainId here
       chainId: 31337,
       worldAddress: contract.address,
+      blockNumber,
       table: tableId,
       keyTuple: args.key,
+      indexedValues,
+      namedValues,
     });
     return {
       ...ecsEvent,
-      value,
+      value: {
+        ...indexedValues,
+        ...namedValues,
+      },
     };
   }
 
   if (name === "StoreSetField") {
-    const { value, initialValue } = await decodeStoreSetField(contract, tableId, args.key, args.schemaIndex, args.data);
-    console.log("StoreSetField:", { table: tableId.toString(), component, entity, value });
-    // TODO: figure out a better place for this emission?
+    const { indexedValues, indexedInitialValues, namedValues, namedInitialValues } = await decodeStoreSetField(
+      contract,
+      tableId,
+      args.key,
+      args.schemaIndex,
+      args.data
+    );
+    console.log("StoreSetField:", { table: tableId.toString(), component, entity, indexedValues, namedValues });
+    // TODO: figure out a better place for this emission? maybe network should expose a global emitter that dev tools listen to rather than other way around?
     devEmitter.emit("storeEvent", {
       event: name,
       // TODO: figure out how to get chainId here
       chainId: 31337,
       worldAddress: contract.address,
+      blockNumber,
       table: tableId,
       keyTuple: args.key,
+      indexedValues,
+      namedValues,
     });
     return {
       ...ecsEvent,
-      partialValue: value,
-      initialValue,
+      partialValue: {
+        ...indexedValues,
+        ...namedValues,
+      },
+      initialValue: {
+        ...indexedInitialValues,
+        ...namedInitialValues,
+      },
     };
   }
 
   if (name === "StoreDeleteRecord") {
     console.log("StoreDeleteRecord:", { table: tableId.toString(), component, entity });
-    // TODO: figure out a better place for this emission?
+    // TODO: figure out a better place for this emission? maybe network should expose a global emitter that dev tools listen to rather than other way around?
     devEmitter.emit("storeEvent", {
       event: name,
       // TODO: figure out how to get chainId here
       chainId: 31337,
       worldAddress: contract.address,
+      blockNumber,
       table: tableId,
       keyTuple: args.key,
     });
