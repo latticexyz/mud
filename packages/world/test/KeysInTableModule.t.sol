@@ -124,6 +124,7 @@ contract KeysInTableModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1, "9");
+    assertEq(keysInTable[0], key2, "10");
   }
 
   function testSetField(uint256 value1, uint256 value2) public {

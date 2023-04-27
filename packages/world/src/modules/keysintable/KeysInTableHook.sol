@@ -8,7 +8,7 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 import { MODULE_NAMESPACE, KEYS_LENGTH_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
 import { KeysInTable } from "./tables/KeysInTable.sol";
 import { KeysInTableLength } from "./tables/KeysInTableLength.sol";
-import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
+import { UsedKeysIndex, UsedKeysIndexData } from "./tables/UsedKeysIndex.sol";
 import { ArrayLib } from "../utils/ArrayLib.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
@@ -32,13 +32,15 @@ contract KeysInTableHook is IStoreHook {
     bytes32 keysHash = keccak256(abi.encode(key));
 
     // If the key not has yet been set in the table...
-    if (!UsedKeysIndex.get(usedIndexTableId, keysHash)) {
+    if (!UsedKeysIndex.getHas(usedIndexTableId, keysHash)) {
+      uint256 len = KeysInTableLength.get(keysInTableLengthTableId);
+
       // Push the key to the list of keys in this table
       KeysInTable.push(keysInTableTableId, key[0]);
-      KeysInTableLength.set(keysInTableLengthTableId, KeysInTableLength.get(keysInTableLengthTableId) + 1);
+      KeysInTableLength.set(keysInTableLengthTableId, len + 1);
 
       // Update the index to avoid duplicating this key in the array
-      UsedKeysIndex.set(usedIndexTableId, keysHash, true);
+      UsedKeysIndex.set(usedIndexTableId, keysHash, UsedKeysIndexData(true, len));
     }
   }
 
@@ -52,22 +54,27 @@ contract KeysInTableHook is IStoreHook {
     handleSet(table, key);
   }
 
-  // Now, add the index for each
   function onDeleteRecord(bytes32 tableId, bytes32[] memory key) public {
-    // Remove the key from the list of keys in this table
     bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
     bytes32 keysInTableLengthTableId = getTargetTableSelector(KEYS_LENGTH_NAMESPACE, tableId);
     bytes32 usedIndexTableId = getTargetTableSelector(USED_KEYS_NAMESPACE, tableId);
 
     bytes32 keysHash = keccak256(abi.encode(key));
+    UsedKeysIndexData memory data = UsedKeysIndex.get(usedIndexTableId, keysHash);
 
-    if (UsedKeysIndex.get(usedIndexTableId, keysHash)) {
-      bytes32[] memory keysInTable = KeysInTable.get(keysInTableTableId);
+    // If the key not has yet been set in the table...
+    if (data.has) {
+      uint256 len = KeysInTableLength.get(keysInTableLengthTableId);
+      bytes32 lastKey = KeysInTable.get(keysInTableTableId)[len - 1];
 
-      KeysInTable.set(keysInTableTableId, keysInTable.filter(key[0]));
-      KeysInTableLength.set(keysInTableLengthTableId, KeysInTableLength.get(keysInTableLengthTableId) - 1);
+      // Remove the key from the list of keys in this table
+      KeysInTable.update(keysInTableTableId, data.index, lastKey);
+      KeysInTable.pop(keysInTableTableId);
 
-      UsedKeysIndex.set(usedIndexTableId, keysHash, false);
+      KeysInTableLength.set(keysInTableLengthTableId, len - 1);
+
+      // Delete the index as the key is not in the table
+      UsedKeysIndex.deleteRecord(usedIndexTableId, keysHash);
     }
   }
 }
