@@ -1,25 +1,20 @@
 import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
+import { AsDependent, ExtractUserTypes, RequireKeys, StaticArray, StringForUnion } from "@latticexyz/common/type-utils";
 import {
   // validation utils
   getDuplicates,
   parseStaticArray,
-  // type utils
-  AsDependent,
-  ExtractUserTypes,
-  RequireKeys,
-  StaticArray,
-  StringForUnion,
   // config
   MUDCoreUserConfig,
   MUDCoreConfig,
+  MUDPlugin,
+  mudCoreConfig,
   // schemas
   zObjectName,
   zSelector,
   zUserEnum,
   zValueName,
-  mudCoreConfig,
-  MUDPlugin,
   zMUDCoreUserConfig,
 } from "@latticexyz/config";
 
