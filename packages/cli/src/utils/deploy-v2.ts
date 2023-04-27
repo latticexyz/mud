@@ -9,7 +9,7 @@ import { BigNumber, ContractInterface, ethers } from "ethers";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils";
+import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils.js";
 
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };
