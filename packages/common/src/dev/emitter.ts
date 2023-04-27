@@ -10,10 +10,13 @@ export type Events = {
   storeEvent: {
     chainId: number;
     worldAddress: string;
+    blockNumber: number;
     // TODO: block number, log index, tx hash, etc.
     event: "StoreSetRecord" | "StoreSetField" | "StoreDeleteRecord";
     table: TableId;
     keyTuple: any; // TODO: refine
+    indexedValues?: Record<number, any>; // TODO: refine
+    namedValues?: Record<string, any>; // TODO: refine
     // TODO: unique ID for downstream ease of use (i.e. react keys)
     // TODO: flesh out, maybe from event abi using viem?
   };
