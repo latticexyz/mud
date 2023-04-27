@@ -1,38 +1,60 @@
+import { useRef, useEffect } from "react";
 import { useStoreEvents } from "./useStoreEvents";
 
 export function StoreEvents() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const hoveredRef = useRef(false);
   const { storeEvents } = useStoreEvents();
-  return (
-    <table className="w-full table-fixed text-xs font-mono">
-      <thead className="sticky top-0 bg-slate-800">
-        <th className="px-1 w-2/12 text-left text-slate-500">block</th>
-        <th className="px-1 w-1/4 text-left text-slate-500">table</th>
-        <th className="px-1 w-[1em]"></th>
-        <th className="px-1 w-1/4 text-left text-slate-500">key</th>
-        <th className="px-1 text-left text-slate-500">value</th>
-      </thead>
-      <tbody>
-        {storeEvents.map((storeEvent, i) => (
-          <tr key={i} className="hover:bg-slate-700">
-            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis text-slate-500">
-              {storeEvent.blockNumber}
-            </td>
 
-            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
-              {storeEvent.table.namespace}:{storeEvent.table.name}
-            </td>
-            <td className="px-1 whitespace-nowrap">
-              {storeEvent.event === "StoreSetRecord" ? <span className="text-green-500 font-bold">=</span> : null}
-              {storeEvent.event === "StoreSetField" ? <span className="text-green-500 font-bold">+</span> : null}
-              {storeEvent.event === "StoreDeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
-            </td>
-            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{storeEvent.keyTuple}</td>
-            <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
-              {JSON.stringify(storeEvent.namedValues)}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+  const lastBlockNumber = storeEvents[storeEvents.length - 1]?.blockNumber;
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    if (hoveredRef.current) return;
+    containerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [storeEvents]);
+
+  return (
+    <div
+      ref={containerRef}
+      className="px-1 pb-1"
+      onMouseEnter={() => {
+        hoveredRef.current = true;
+      }}
+      onMouseLeave={() => {
+        hoveredRef.current = false;
+      }}
+    >
+      <table className="w-full table-fixed text-xs font-mono">
+        <thead className="sticky top-0 z-10 bg-slate-800 text-white/40 text-left">
+          <th className="px-1 pt-1.5 pb-0.5 w-2/12">block</th>
+          <th className="px-1 pt-1.5 pb-0.5 w-2/12">table</th>
+          <th className="px-1 pt-1.5 pb-0.5 w-[1em]"></th>
+          <th className="px-1 pt-1.5 pb-0.5 w-2/12">key</th>
+          <th className="px-1 pt-1.5 pb-0.5">value</th>
+        </thead>
+        <tbody>
+          {storeEvents.map((storeEvent, i) => (
+            <tr key={i} className="hover:bg-blue-800">
+              <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis text-white/40">
+                {storeEvent.blockNumber}
+              </td>
+              <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                {storeEvent.table.namespace}:{storeEvent.table.name}
+              </td>
+              <td className="px-1 whitespace-nowrap">
+                {storeEvent.event === "StoreSetRecord" ? <span className="text-green-500 font-bold">=</span> : null}
+                {storeEvent.event === "StoreSetField" ? <span className="text-green-500 font-bold">+</span> : null}
+                {storeEvent.event === "StoreDeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
+              </td>
+              <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{storeEvent.keyTuple}</td>
+              <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
+                {JSON.stringify(storeEvent.namedValues)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
