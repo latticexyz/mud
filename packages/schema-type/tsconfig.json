@@ -3,12 +3,10 @@
     /* Visit https://aka.ms/tsconfig.json to read more about this file */
     "target": "es2020",
     "module": "esnext",
-    "rootDir": "./src/typescript",
     "moduleResolution": "node",
     "types": [],
     "declaration": true,
     "sourceMap": true,
-    "outDir": "dist/typescript",
     "isolatedModules": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,

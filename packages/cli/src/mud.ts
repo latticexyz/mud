@@ -2,9 +2,9 @@
 
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { commands as v2 } from "./commands/index.js";
-import { commands as v1 } from "./commands/deprecated/index.js";
-import { logError } from "./utils/errors.js";
+import { commands as v2 } from "./commands";
+import { commands as v1 } from "./commands/deprecated";
+import { logError } from "./utils/errors";
 
 // Load .env file into process.env
 import * as dotenv from "dotenv";

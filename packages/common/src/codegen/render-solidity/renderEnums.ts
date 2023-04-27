@@ -1,5 +1,5 @@
-import { renderArguments, renderList, renderedSolidityHeader } from "./common.js";
-import { RenderEnum } from "./types.js";
+import { renderArguments, renderList, renderedSolidityHeader } from "./common";
+import { RenderEnum } from "./types";
 
 export function renderEnums(enums: RenderEnum[]) {
   let result = renderedSolidityHeader;

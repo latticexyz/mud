@@ -21,8 +21,8 @@ import {
   NetworkEvent,
 } from "../types";
 import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
-import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.sol/Component.json";
-import { abi as WorldAbi } from "@latticexyz/solecs/abi/World.sol/World.json";
+import ComponentAbi from "@latticexyz/solecs/abi/Component.sol/Component.abi.json";
+import WorldAbi from "@latticexyz/solecs/abi/World.sol/World.abi.json";
 import { Component, World } from "@latticexyz/solecs/types/ethers-contracts";
 import {
   ECSStreamBlockBundleReply,

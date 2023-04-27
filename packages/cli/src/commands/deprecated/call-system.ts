@@ -2,7 +2,7 @@ import { getTestDirectory } from "@latticexyz/common/foundry";
 import { defaultAbiCoder as abi } from "ethers/lib/utils.js";
 import path from "path";
 import type { CommandModule } from "yargs";
-import { execLog } from "../../utils/deprecated/index.js";
+import { execLog } from "../../utils/deprecated";
 
 type Options = {
   rpc?: string;

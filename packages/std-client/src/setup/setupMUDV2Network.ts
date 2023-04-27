@@ -13,7 +13,7 @@ import { Components, defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256, TableId } from "@latticexyz/utils";
 import { World as WorldContract } from "@latticexyz/world/types/ethers-contracts/World";
-import { abi as WorldAbi } from "@latticexyz/world/abi/World.sol/World.json";
+import WorldAbi from "@latticexyz/world/abi/World.sol/World.abi.json";
 import { defineStringComponent } from "../components";
 import { ContractComponent, ContractComponents, SetupContractConfig } from "./types";
 import { applyNetworkUpdates, createEncoders } from "./utils";

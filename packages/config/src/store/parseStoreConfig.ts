@@ -1,8 +1,8 @@
 import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { AsDependent, ExtractUserTypes, RequireKeys, StaticArray, StringForUnion } from "../typeUtils.js";
-import { zObjectName, zSelector, zUserEnum, zValueName } from "../commonSchemas.js";
-import { getDuplicates, parseStaticArray } from "../validation.js";
+import { AsDependent, ExtractUserTypes, RequireKeys, StaticArray, StringForUnion } from "../typeUtils";
+import { zObjectName, zSelector, zUserEnum, zValueName } from "../commonSchemas";
+import { getDuplicates, parseStaticArray } from "../validation";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
