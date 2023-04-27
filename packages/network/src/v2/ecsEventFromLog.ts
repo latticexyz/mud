@@ -6,7 +6,7 @@ import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
 import { decodeStoreSetField } from "./decodeStoreSetField";
 import { keyTupleToEntityID } from "./keyTupleToEntityID";
-import { emitter as devEmitter } from "@latticexyz/common/dev";
+import { emitter as devEmitter } from "../dev/emitter";
 
 export const ecsEventFromLog = async (
   contract: Contract,
@@ -42,6 +42,8 @@ export const ecsEventFromLog = async (
       chainId: 31337,
       worldAddress: contract.address,
       blockNumber,
+      logIndex,
+      transactionHash,
       table: tableId,
       keyTuple: args.key,
       indexedValues,
@@ -72,6 +74,8 @@ export const ecsEventFromLog = async (
       chainId: 31337,
       worldAddress: contract.address,
       blockNumber,
+      logIndex,
+      transactionHash,
       table: tableId,
       keyTuple: args.key,
       indexedValues,
@@ -99,6 +103,8 @@ export const ecsEventFromLog = async (
       chainId: 31337,
       worldAddress: contract.address,
       blockNumber,
+      logIndex,
+      transactionHash,
       table: tableId,
       keyTuple: args.key,
     });

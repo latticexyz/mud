@@ -11,16 +11,12 @@
   "type": "module",
   "exports": {
     "./codegen": "./dist/codegen.js",
-    "./dev": "./dist/dev.js",
     "./foundry": "./dist/foundry.js"
   },
   "typesVersions": {
     "*": {
       "codegen": [
         "./src/codegen/index.ts"
-      ],
-      "dev": [
-        "./src/dev/index.ts"
       ],
       "foundry": [
         "./src/foundry/index.ts"

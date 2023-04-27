@@ -16,3 +16,6 @@ export * from "./createBlockNumberStream";
 export * from "./createFaucetService";
 export * from "./utils";
 export * from "./createFastTxExecutor";
+
+// split this into a separate bundle
+export * from "./dev";
