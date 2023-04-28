@@ -206,18 +206,12 @@ importers:
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
-      '@latticexyz/utils':
-        specifier: workspace:*
-        version: link:../utils
       '@solidity-parser/parser':
         specifier: ^0.16.0
         version: 0.16.0
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
-      emittery:
-        specifier: ^1.0.1
-        version: 1.0.1
       execa:
         specifier: ^7.0.0
         version: 7.0.0
