@@ -38,10 +38,8 @@
   "dependencies": {
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "@latticexyz/utils": "workspace:*",
     "@solidity-parser/parser": "^0.16.0",
     "chalk": "^5.2.0",
-    "emittery": "^1.0.1",
     "execa": "^7.0.0",
     "prettier": "^2.8.4",
     "prettier-plugin-solidity": "^1.1.2"
