@@ -28,6 +28,8 @@ runs:
 
     - name: Setup protoc
       uses: arduino/setup-protoc@v1
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Install node dependencies
       shell: bash
