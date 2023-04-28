@@ -31,6 +31,9 @@ importers:
       chalk:
         specifier: ^5.2.0
         version: 5.2.0
+      chokidar:
+        specifier: ^3.5.3
+        version: 3.5.3
       commitizen:
         specifier: ^4.2.4
         version: 4.2.4
@@ -64,6 +67,9 @@ importers:
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
+      roarr:
+        specifier: ^7.15.0
+        version: 7.15.0
       run-pty:
         specifier: ^3.0.0
         version: 3.0.0

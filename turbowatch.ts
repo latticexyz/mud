@@ -1,12 +1,14 @@
 import path from "path";
 import { ChangeEvent, Expression, watch } from "turbowatch";
+import { ChokidarWatcher } from "./chokidarWatcher";
 import { getPackageInfos, createPackageGraph, getWorkspaceRoot, PackageGraph } from "workspace-tools";
 
 const cwd = process.cwd();
+// console.log(cwd);
 
-console.log(cwd);
 const workspaceRoot = getWorkspaceRoot(cwd);
-console.log(workspaceRoot);
+
+/*
 const packageInfos = getPackageInfos(workspaceRoot!);
 // const targetWorkspace = process.argv[2];
 const targetWorkspace = "@latticexyz/cli";
@@ -17,7 +19,7 @@ if (!targetWorkspace || !(targetWorkspace in packageInfos)) {
   );
 }
 
-/** Gets all direct and transitive dependencies for a workspace */
+// Gets all direct and transitive dependencies for a workspace
 const getAllDependencies = (target: string, graph: PackageGraph) => {
   return Array.from(
     graph.dependencies.reduce((acc, dep) => {
@@ -31,11 +33,9 @@ const getAllDependencies = (target: string, graph: PackageGraph) => {
 };
 
 const graph = createPackageGraph(packageInfos);
-
 console.log(graph);
 
 const dependencies = getAllDependencies("@latticexyz/cli", graph);
-
 console.log(dependencies);
 
 // path names will be in the format "packages/foo", "apps/bar" - for use in turbowatch expressions
@@ -45,40 +45,59 @@ const depPaths = dependencies.map((dep) => {
 });
 
 console.log(depPaths);
+*/
 
 let previousPackage = "";
-const previousTime = new Date();
-
 const start = Date.now();
+const previousTimeMap = new Map<string, number>();
+previousTimeMap.set("world", start);
+previousTimeMap.set("common", start);
+previousTimeMap.set("config", start);
+previousTimeMap.set("schema-type", start);
+previousTimeMap.set("store", start);
+previousTimeMap.set("cli", start);
+previousTimeMap.set("std-client", start);
+previousTimeMap.set("network", start);
+previousTimeMap.set("recs", start);
+previousTimeMap.set("solecs", start);
+previousTimeMap.set("utils", start);
+previousTimeMap.set("ecs-browser", start);
+previousTimeMap.set("phaserx", start);
+previousTimeMap.set("react", start);
+previousTimeMap.set("services", start);
+previousTimeMap.set("std-contracts", start);
+previousTimeMap.set("noise", start);
+previousTimeMap.set("create-mud", start);
+
+const WATCH_DELAY_SECONDS = 10;
+
 watch({
   project: workspaceRoot!,
+  Watcher: ChokidarWatcher,
   triggers: [
     {
       expression: [
         "allof",
         [
-          "not",
-          [
-            "anyof",
-            ["dirname", "node_modules"],
-            ["dirname", ".turbo"],
-            ["dirname", "dist"],
-            ["dirname", "out"],
-            ["dirname", "abi"],
-            ["dirname", "types"],
-            ["dirname", "build"],
-            ["dirname", "bin"],
-            ["dirname", "protoc"],
-            ["dirname", "protobuf"],
-            ["dirname", "src/mud-definitions"],
-            ["dirname", ".parcel-cache"],
-          ],
+          "allof",
+          ["not", ["dirname", "node_modules"]],
+          ["not", ["dirname", ".turbo"]],
+          ["not", ["dirname", "dist"]],
+          ["not", ["dirname", "out"]],
+          ["not", ["dirname", "abi"]],
+          ["not", ["dirname", "types"]],
+          ["not", ["dirname", "build"]],
+          ["not", ["dirname", "bin"]],
+          ["not", ["dirname", "protoc"]],
+          ["not", ["dirname", "protobuf"]],
+          ["not", ["dirname", "src/mud-definitions"]],
+          ["not", ["dirname", ".parcel-cache"]],
         ],
         // ["anyof", ...depPaths.map((dir) => ["dirname", dir] satisfies Expression)],
         // ["anyof", ["dirname", "packages/store"]],
         ["anyof", ["match", "*.sol", "basename"]],
       ],
-      name: `${targetWorkspace}_deps`,
+      name: `turbowatch_sol`,
       interruptible: true,
       initialRun: true,
       persistent: true,
@@ -91,22 +110,20 @@ watch({
         console.log("Building workspace dependencies");
 
         const filenameTokens = files[0].name.split("/");
-
         const index = filenameTokens.lastIndexOf("packages");
         const changedWorkspace = filenameTokens[index + 1];
 
-        const endTime = new Date();
-        console.log(changedWorkspace);
-
-        // build all of the dependencies, relying on turbo's cache to do the minimum necessary
-        let timeDiff = endTime - previousTime; //in ms
-        timeDiff /= 1000;
-
+        const onChangeTime = new Date();
+        const timeDiff = (onChangeTime - previousTimeMap.get(changedWorkspace)) / 1000; //in ms
         const seconds = Math.round(timeDiff);
 
-        if (previousPackage != changedWorkspace || seconds > 5) {
-          await spawn`turbo build --filter=${changedWorkspace}^...`;
+        // console.log(previousPackage, changedWorkspace, seconds);
+        if (previousPackage != changedWorkspace || seconds > WATCH_DELAY_SECONDS) {
+          previousTimeMap.set(changedWorkspace, Date.now());
           previousPackage = changedWorkspace;
+
+          // await spawn`turbo build --filter=${changedWorkspace}^...`;
+          await spawn`turbo build --filter=${changedWorkspace}`;
         }
 
         // await spawn`turbo build --filter=store`;
