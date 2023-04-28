@@ -10,8 +10,8 @@ uint256 constant ID = uint256(keccak256("system.Increment"));
 contract IncrementSystem is System {
   constructor(IWorld _world, address _components) System(_world, _components) {}
 
-  function execute(bytes memory arguments) public returns (bytes memory) {
-    uint256 entity = abi.decode(arguments, (uint256));
+  function execute(bytes memory args) public returns (bytes memory) {
+    uint256 entity = abi.decode(args, (uint256));
     CounterComponent c = CounterComponent(getAddressById(components, CounterComponentID));
     LibMath.increment(c, entity);
   }
