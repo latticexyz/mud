@@ -3,19 +3,18 @@
   "version": "1.42.0",
   "license": "MIT",
   "type": "module",
-  "main": "ts/index.ts",
-  "source": "ts/index.ts",
-  "types": "dist/types.d.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "ts/index.ts",
   "scripts": {
     "build": "pnpm run build:wasm && pnpm run build:js",
-    "build:js": "pnpm run prepack:cjs && (parcel build || true) && pnpm run postpack",
+    "build:js": "tsup",
     "build:wasm": "asc assembly/index.ts --target release",
     "clean": "pnpm run clean:wasm && pnpm run clean:js",
-    "clean:js": "rimraf dist .parcel-cache",
+    "clean:js": "rimraf dist",
     "clean:wasm": "rimraf build",
-    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
-    "postpack": "(mv package.json.bak package.json || true) && (rm package.json.tmp || true) && (rm package.json.tmp2 || true)",
-    "prepack:cjs": "mv package.json package.json.bak && jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp && jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && jq \"del(\".type\")\" package.json.tmp2 > package.json",
+    "dev": "tsup --watch",
     "release": "npm publish --access=public",
     "start": "npx serve .",
     "test": "forge test"
@@ -45,6 +44,7 @@
     "mocha": "^10.0.0",
     "parcel": "2.8.3",
     "ts-jest": "^29.0.5",
+    "tsup": "^6.7.0",
     "ttypescript": "^1.5.13",
     "typescript": "^4.9.5",
     "web3-utils": "^1.8.0"
