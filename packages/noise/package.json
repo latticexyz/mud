@@ -42,7 +42,6 @@
     "hardhat": "^2.10.2",
     "keccak-wasm": "^0.10.3",
     "mocha": "^10.0.0",
-    "parcel": "2.8.3",
     "ts-jest": "^29.0.5",
     "tsup": "^6.7.0",
     "ttypescript": "^1.5.13",
