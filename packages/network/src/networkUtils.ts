@@ -230,6 +230,7 @@ export async function fetchEventsInBlockRange<C extends Contracts>(
 export async function getRevertReason(txHash: string, provider: BaseProvider): Promise<string> {
   // Decoding the revert reason: https://docs.soliditylang.org/en/latest/control-structures.html#revert
   const tx = await provider.getTransaction(txHash);
+  if (!tx) throw new Error("This transaction doesn't exist. Can't get the revert reason");
   tx.gasPrice = undefined; // tx object contains both gasPrice and maxFeePerGas
   const encodedRevertReason = await provider.call(tx as TransactionRequest);
   const decodedRevertReason = abi.decode(["string"], extractEncodedArguments(encodedRevertReason));

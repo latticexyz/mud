@@ -222,7 +222,12 @@ export function createTxQueue<C extends Contracts>(
         // If the error includes information about the transaction,
         // then the transaction was submitted and the nonce needs to be
         // increased regardless of the error
-        const isNonViewTransaction = error && "transaction" in error && txRequest.stateMutability !== "view";
+        const isNonViewTransaction =
+          error &&
+          "transaction" in error &&
+          !("insufficient funds" in error) &&
+          !("mispriced" in error) &&
+          txRequest.stateMutability !== "view";
         const shouldIncreaseNonce = (!error && stateMutability !== "view") || isNonViewTransaction;
 
         const shouldResetNonce =
@@ -249,9 +254,9 @@ export function createTxQueue<C extends Contracts>(
 
         // Decode and log the revert reason.
         // Use `then` instead of `await` to avoid letting consumers wait.
-        getRevertReason(txResult.hash, network.providers.get().json).then((reason) =>
-          console.warn("[TXQueue] Revert reason:", reason)
-        );
+        getRevertReason(txResult.hash, network.providers.get().json)
+          .then((reason) => console.warn("[TXQueue] Revert reason:", reason))
+          .catch((_) => "This transaction didn't make it into a block. Was it mispriced?");
 
         const params = new URLSearchParams(window.location.search);
         const worldAddress = params.get("worldAddress");
