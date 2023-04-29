@@ -1,0 +1,290 @@
+## World 101
+
+The World is a standard smart contract that can be deployed by anyone. Creating a new World is akin to creating a new community computer or installing a new Operating System: it’s a brand new space for state and logic to be deployed by anyone on-chain — although you will probably be the first one to create resources in your new World!
+
+When building with the MUD World framework, the first decision you need to make is whether your project requires a new World, or if you can build on an existing one. Here are some examples of situations you might find yourself in, and recommendations for which route to follow:
+
+- **I am building a standalone proof of concept**: start from a fresh World.
+- **I am building a project on a new chain that has no World yet**: start from a fresh World.
+- **I am building features on top of an existing project, like a marketplace for an on-chain game or an aggregator for two AMMs deployed on the same world**: build on the World with the application you would like to extend.
+- **I want features that can only be installed by the root user / DAO of a World, and no World out there includes them**: start from a fresh World.
+- **I want to add new features to an application I have built before**: build on the World where you initially deployed your application.
+
+## World Concepts
+### Resources and namespaces
+
+A World contains resources. Currently, there exists three types of resources. More of them can be added by the root user of the World (if there is one), and future versions of MUD might include new default resources.
+
+1. **Namespace**: a namespace is like a folder in a file system. They are used to group resources together for the purpose of making access-control less verbose. Currently, nested namespaces are not available in World framework. The filesystem is thus flat.
+2. **Table**: a [Store](store) table. Used to store and retrieve data. 
+3. **System**: a piece of logic, stored as EVM bytecode. Systems have no state, and instead read and write to Tables.
+
+Each resource is contained within a namespace. You can think of the resources within a World as a filesystem:
+
+```jsx
+root
+|-- mudswap <- Namespace
+   | Balance <- Table
+   | Pool <- Table
+   | Transfer <- System
+|-- tetris <- Namespace
+   | Board <- Table
+   | Move <- System
+   | Drop <- System
+   | Score <- Table
+   | Win <- System
+```
+
+The organization of resources within namespaces is used for two different features of MUD:
+
+1. **Access control:** resources in a namespace have “write” access to the other resources within their namespace. Currently, having write access only matters for systems interacting with tables: it means these systems can create and edit records within those tables.
+2. **Synchronization of state**: MUD clients can decide which namespaces they synchronize. Synchronization means different things depending on the resource type:
+    - **Synchronizing a Table** means downloading and keeping track of all changes to records found within the Table. As an example, synchronizing a `BalanceTable` would mean keeping track of the balances of all addresses within that table.
+    - **Synchronizing a System** means downloading its EVM bytecode from the chain, and in a future version of MUD, being able to execute these systems optimistically client side. As an example, this would allow clients to immediately predict the likely outcome of an on-chain action without relying on external nodes or services like Tenderly to simulate the outcome.
+
+**A note on managing namespaces and resources**: 
+In most basic cases, you don’t need to worry about namespaces and access control while building your application with World (regardless of whether you are deploying a new World or building on an existing one). If your project was generated from the MUD templates using `npm create mud`/`yarn create mud`/`mud create`, it will use the `tablegen` tool from the MUD CLI to generate libraries for tables, and the `deploy-v2` tool to deploy the resources into the World. Namespace access will be done for you: systems will be able to write to all your tables out-of-the-box. You just need to decide which namespace you will build your application in!
+
+### Systems
+This is WIP
+
+- Piece of code added to the world with logic
+- no state! use tables to read and write data
+- _msgSender
+- root systems
+- systems and namespaces
+- can be delegatacall from the world
+- can be called from the world
+- both handled transparently by the StoreSwitch in the generated table
+
+## Getting started with World
+
+In order to use World, you just need your project to have the right folder structure and have a `mud.config.mts` file at the root of your contract folder. It is recommended starting from one of the MUD template to get familiar with the structure, but it is also possible to roll out your own folder and file organization.
+
+1. **Start from the minimal template**
+
+Run `yarn create mud my-first-mud-project`; and `cd` into it. Open your favorite code editor. 
+
+2. **Let’s look at the MUD config**
+
+The MUD config for the vanilla template looks like this:
+
+```tsx
+import { mudConfig } from "@latticexyz/config";
+
+export default mudConfig({
+    namespace: "mud",
+    systems: {
+        IncrementSystem: {
+            name: "increment",
+            openAccess: true,
+        },
+        tables: {
+            CounterTable: {
+                name: "counter",
+                schema: {
+                    value: "uint32",
+                },
+            },
+        },
+    }
+});
+```
+
+Let’s break it down:
+
+```jsx
+namespace: "mud"
+```
+
+`namespace: "mud"`: we are deploying our systems and tables in the namespace called “mud”. This namespace will be registered on the World deployed in development and will be owned by the deployer address.
+
+```tsx
+systems: {
+    IncrementSystem: {
+        name: "increment",
+        openAccess: true,
+    },
+},
+```
+
+We are deploying one system named “IncrementSystem”. The deployer will find its code by looking for a file named `IncrementSystem.sol`. Its name is `increment`, so its full path  within the world will be `/mud/increment` (remember our namespace is `mud`). Its access is **open**, which means the World will let any address call this system.
+
+```tsx
+tables: {
+    CounterTable: {
+        name: "counter",
+        schema: {
+            value: "uint32",
+        },
+    },
+},
+```
+
+We are creating one table named “CounterTable”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
+
+The file system on the World looks like this now when deployed: 
+
+```bash
+root
+|-- mud
+    | counter <- Table
+    | increment <- System
+```
+
+Because `increment` is in the same namespace as `counter`, it can write records on that table using the libraries generated by `tablegen`.
+
+<aside>
+❓ If you are curious how the Increment System writes to the Counter Table, here is a short explanation:
+- The System uses the auto-generated library as if the Store storage existed in the contract:
+
+```solidity
+uint32 counter = CounterTable.get(bytes32("singleton"));
+uint32 newValue = counter + 1;
+CounterTable.set(bytes32("singleton"), newValue);
+```
+
+- The generated library detects that the Store is on the World — that routed the call to the system, it is `msg.sender` — instead of the system itself, and routes the write request (here `CounterTable.set(...)`) to the World.
+- The World checks that the system has access to the counter table. Here it does because it is in the same namespace.
+- The World writes to the appropriate record, and gives execution back to the system.
+</aside>
+
+3. **Adding another table**
+
+Let’s add a new table. It’s as simple as extending the config. For reference on how to create new tables and different options available, refer to the [Store documentation](https://www.notion.so/Store-930ed995c2b14782ae9a949e1e3c8fe9).
+
+```tsx
+import { mudConfig } from "@latticexyz/config";
+
+export default mudConfig({
+    namespace: "mud",
+    systems: {
+        IncrementSystem: {
+            name: "increment",
+            openAccess: true,
+        },
+        tables: {
+            CounterTable: {
+                name: "counter",
+                schema: {
+                    value: "uint32",
+                },
+            },
+            DogTable: {
+                name: "dog",
+                schema: {
+                    owner: "address",
+                    name: "string",
+                    color: "string"
+                }
+            }
+        },
+    }
+});
+```
+
+We can run `yarn mud tablegen` in the contract folder to recreate the libraries. 
+
+```bash
+> yarn mud tablegen
+Generated table: src/codegen/tables/CounterTable.sol
+Generated table: src/codegen/tables/DogTable.sol
+```
+
+We now have a library in `src/codegen/tables/DogTable.sol` that can be used to interact with the new table we created!
+
+The file system on the World looks like this at this stage: 
+
+```bash
+root
+|-- mud
+    | counter <- Table
+    | increment <- System
+    | mytable <- Table
+```
+
+4. **Adding another system**
+
+Let’s add a system that writes to our new table.
+
+We create a file in `src/systems` named `MySystem.sol`
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+
+contract MySystem is System {
+    function doStuff() public returns () {}
+}
+```
+
+And we edit our config
+
+```tsx
+import { mudConfig } from "@latticexyz/config";
+
+export default mudConfig({
+    namespace: "mud",
+    systems: {
+        IncrementSystem: {
+            name: "increment",
+            openAccess: true,
+        },
+        // let's add a new system
+        MySystem: {
+            name: "mysystem",
+            openAccess: true
+        }
+        tables: {
+            CounterTable: {
+                name: "counter",
+                schema: {
+                    value: "uint32",
+                },
+            },
+            DogTable: {
+                name: "dog",
+                schema: {
+                    owner: "address",
+                    name: "string",
+                    color: "string"
+                }
+            }
+        },
+    }
+});
+```
+
+Now we can import our new table, and write something to it. Let’s write a function that adds a new record to DogTable, and takes the color and the name as an argument. It will assign the `owner` column to the sender of the transaction:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { MyNewTable } from "../codegen/tables/DogTable.sol"; // import table we created
+contract MySystem is System {
+    function addEntry(string memory name, string memory color) public returns () {
+        bytes32 key = bytes32(abi.encodePacked(block.number, msg.sender, gasleft())) // creating a random key for the record
+        address owner = _msgSender() // IMPORTANT: always refer to the msg.sender using the _msgSender() function
+        DogTable.set(key, {owner: owner, name: name, color: color}) // creating our record!
+    }
+}
+```
+
+That’s it! MySystem, just like IncrementSystem, will have access to DogTable given they are in the same namespace.
+
+After this step, the filesystem of the World is like this:
+
+```bash
+root
+|-- mud
+    | counter <- Table
+    | increment <- System
+    | dog <- Table
+    | mysystem <- System
+```
+
+5. **Writing a test**
+
+WIP

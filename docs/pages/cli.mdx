@@ -1,0 +1,73 @@
+## The MUD CLI
+
+The MUD CLI is used for building and developing a MUD project.
+
+It comes with
+
+1. `tablegen`: code-generation tool that makes it easy to work with Store tables
+2. `create`: bootstrap a MUD project from one of the template.
+3. `deploy-v2`: deployer for MUD v2 projects that deploys an app using the [World](world) kernel onchain 
+4. `devnode`: a wrapper around Anvil with defaults needed to make MUD work properly in development. We recommend running `mud devnode` over `anvil`.
+5. `faucet`: a interface to the Lattice Testnet faucet. It makes it easy to fund addresses on the testnet
+
+## Installation
+
+We don’t recommend installing the CLI globally.
+
+Instead, you should add the CLI as a dev dependency to your project (done automatically if you start from a starter kit using `yarn create mud`), and use it with `yarn mud` inside your project directory.
+
+## Commands
+
+## `tablegen`
+
+Generates Store libraries from a `mud.config.mts` file. See the [Store Config and `tablegen` documentation](store/config) in the Store section for more details.
+
+## `create`
+
+Bootstrap a MUD project from a template. You can specify a template interactively when running the command without arguments, or pass it via `--template`
+
+The valid templates are:
+
+**`react`**: A MUD template with React client side that uses the MUD React hooks
+
+**`minimal`**: A minimal template with javascript for the frontend (no framework)
+
+## `deploy-v2`
+
+Deploy a MUD project with the World framework.
+
+This tool will use the `mud.config.mts` to detect all systems, tables, modules, and namespaces in the World and will deploy them to the chain specified in your Foundry profile.
+
+When using the deployer, you must set the private key of the deployer using the `PRIVATE_KEY` environment variable. You can make this easier by using `[dotenv](https://www.npmjs.com/package/dotenv)` before running `mud deploy-v2` in your deployment script.
+
+To set the profile used by the deployer, either set your `FOUNDRY_PROFILE` environment variable, or pass `--profile <profileName>` to the deployer (eg: `mud deploy-v2 --profile optimism-mainnet`).
+
+The RPC used by the deployer will be `[http://localhost:8545](http://localhost:8545)` if no profile is set, otherwise it will be read from the `eth_rpc_url` configuration field of the Foundry profile.
+
+Example profile:
+
+```toml
+# foundry.toml
+[profile.lattice-testnet]
+eth_rpc_url = "https://follower.testnet-chain.linfra.xyz"
+[profile.optimism-mainnet]
+eth_rpc_url = "https://infura[...]"
+```
+
+## `devnode`
+
+Runs Anvil with a block time of 1s, and no base fee (to make it possible for unfunded account to send transactions). 
+
+This command also wipes the Anvil cache. Anvil cache blow-up problems won’t happen to you anymore 🙂
+
+## `faucet`
+
+Connects to a MUD faucet service to fund an address.
+
+```bash
+mud faucet --faucetUrl <faucetService> --adress <address>
+```
+
+The default faucet service is the one running on the Lattice testnet.
+
+To fund an address on the testnet, run `mud faucet --address <address>`

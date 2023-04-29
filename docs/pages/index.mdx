@@ -6,118 +6,23 @@ import Logo from "../components/Logo";
   <div style={{ width: "200px", marginBottom: "20px" }}>
     <Logo />
   </div>
-  <p>MUD - Engine for Autonomous Worlds</p>
 </div>
 
-MUD is a framework for complex Ethereum applications.
+## Introduction
 
-It adds some conventions for organizing data and logic and abstracts away low-level complexities so you can focus on the features of your app.
+MUD is a framework for ambitious Ethereum applications. It compresses the complexity of building EVM apps with a tightly integrated software stack. 
 
-It standardizes the way data is stored on-chain.
-With this standard data model, MUD can provide all network code to synchronize contract and client state. This includes synchronizing state directly from an RPC node or a general-purpose MUD indexer.
+MUD comes with:
 
-MUD is MIT-licensed, open source and free to use.
+1. An [onchain database](store). No more bespoke data modeling for each app and gas-golfing events.
+2. An [entry-point kernel](world) that brings standardized access-control, upgrades, and modules.  
+3. Blazing fast development tools based on [Foundry](https://github.com/foundry-rs/foundry)
+4. Client-side data-stores that magically reflect onchain state. No need to use view functions and events to get your contract data. 
+5. [A Postgres database](mode) you can query with SQL that reflects your onchain state 1 to 1. Never write an indexer again.
 
-## Features
+The projects built with MUD speak for themselves: some of the most complex applications on Ethereum have been built with the framework in record time. OPCraft, a fully onchain voxel world, was built by Lattice in 1.5 months. While it didn’t have the security and auditing requirement of financial applications, it handled more transaction throughput than most apps on Mainnet ever did in their lifetime: in 10 days, OPCraft players made 3.5 million transactions, filling the MUD onchain database with billions of gas worth of storage; with the client seamlessly handling synchronizing that state back. OPCraft used MUD without any additional tricks: large onchain applications with minimal client headaches can be yours too! 
 
-![MUD features](/features.png)
-
-### Today
-
-- State synchronization between contracts and clients without custom networking code
-- General purpose indexers (without custom indexing code)
-- Seamless contract upgrades (+ automatic contract upgrades during development)
-- Shared contract state
-- Optimistic updates
-- Automatic type generation for contracts and systems
-- Query language to interact with contract state
-- Data explorer to inspect and modify contract and local state
-- Bitpacking utilities
-
-### Soon
-
-- Local simulation of transactions (including optimistic state)
-- Built-in support for account abstraction
-- Contract package manager
-
-## Quickstart
-
-```
-pnpm create mud my-project
-```
-
-![Scaffolding a new project with the MUD CLI.](/mud-create.gif)
-
-## Packages
-
-MUD consists of several libraries. They can be used independently, but are best used together.
-
-| Package                                                                                                                   | Version                                                                                                                               |
-| ------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| **[@latticexyz/solecs](/packages/solecs)** <br />Solidity Entity Component System library                                 | [![npm version](https://img.shields.io/npm/v/@latticexyz/solecs.svg)](https://www.npmjs.org/package/@latticexyz/solecs)               |
-| **[@latticexyz/network](/packages/network)** <br />TypeScript networking library for automatic contract/client state sync | [![npm version](https://img.shields.io/npm/v/@latticexyz/network.svg)](https://www.npmjs.org/package/@latticexyz/network)             |
-| **[@latticexyz/recs](/packages/recs)** <br />TypeScript Reactive Entity Component System library                          | [![npm version](https://img.shields.io/npm/v/@latticexyz/recs.svg)](https://www.npmjs.org/package/@latticexyz/recs)                   |
-| **[@latticexyz/services](/packages/services)** <br />Go services for indexer, faucet, message relay                       | [![npm version](https://img.shields.io/npm/v/@latticexyz/services.svg)](https://www.npmjs.org/package/@latticexyz/services)           |
-| **[@latticexyz/cli](/packages/cli)** <br />Command line interface for types, testing, faucet, deployment and more         | [![npm version](https://img.shields.io/npm/v/@latticexyz/cli.svg)](https://www.npmjs.org/package/@latticexyz/cli)                     |
-| **[@latticexyz/std-contracts](/packages/std-contracts)** <br />Solidity standard library                                  | [![npm version](https://img.shields.io/npm/v/@latticexyz/std-contracts.svg)](https://www.npmjs.org/package/@latticexyz/std-contracts) |
-| **[@latticexyz/std-client](/packages/std-client)** <br />Typescript standard library                                      | [![npm version](https://img.shields.io/npm/v/@latticexyz/std-client.svg)](https://www.npmjs.org/package/@latticexyz/std-client)       |
-| **[@latticexyz/noise](/packages/noise)** <br />Solidity and AssemblyScript implementations of Perlin noise                | [![npm version](https://img.shields.io/npm/v/@latticexyz/noise.svg)](https://www.npmjs.org/package/@latticexyz/noise)                 |
-
-## Contribute
-
-We'd love your support in improving MUD! This monorepo includes all of MUD's source code, and pull requests are always welcome. To discuss new features or changes [join our Discord](https://lattice.xyz/discord).
-
-### Local development setup
-
-!!!
-The following steps are only necessary if you want to contribute to MUD. To use MUD in your project, install the [packages](#packages) from npm or [set up a new project with the MUD cli](#quickstart).
-!!!
-
-1. Install go (required to build [packages/services](packages/services/)): [https://go.dev/doc/install](https://go.dev/doc/install)
-
-2. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
-
-3. Install pnpm
-
-```bash
-npm install pnpm --global
-```
-
-4. Clone the MUD monorepo
-
-```
-git clone https://github.com/latticexyz/mud
-```
-
-5. Install MUD dependencies and setup local environment
-
-```
-cd mud && pnpm install
-```
-
-### Pull requests
-
-MUD follows the [conventional commit specification](https://www.conventionalcommits.org/en/v1.0.0/) for commit messages and PR titles. Please keep the scope of your PR small (rather open multiple small PRs than one huge PR) and follow the conventional commit spec.
-
-## Library
-
-<iframe
-  src="https://www.youtube-nocookie.com/embed/j-_Zf8o5Wlo"
-  title="YouTube video player"
-  frameBorder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  allowFullScreen
-  style={{ width: "100%", maxWidth: "1000px", height: "400px", marginBottom: "50px" }}
-></iframe>
-
-<iframe
-  src="https://www.youtube-nocookie.com/embed/mv3jA4USZtg"
-  title="YouTube video player"
-  frameBorder="0"
-  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-  allowFullScreen
-  style={{ width: "100%", maxWidth: "1000px", height: "400px" }}
-></iframe>
+MUD is maximally onchain: the entire application state lives in the EVM, and the only requirement for clients and frontends is an Ethereum Node or a MODE — a MUD node. You can use all MUD libraries together as a framework and get super-powers, or only pick the parts you like. It’s up to you!
 
 ## Community support
 
