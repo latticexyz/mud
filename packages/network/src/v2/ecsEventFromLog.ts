@@ -13,7 +13,7 @@ export const ecsEventFromLog = async (
   log: Log,
   parsedLog: LogDescription,
   lastEventInTx: boolean
-): Promise<NetworkComponentUpdate | undefined> => {
+): Promise<(NetworkComponentUpdate & { devEmit: () => void }) | undefined> => {
   const { blockNumber, transactionHash, logIndex } = log;
   const { args, name } = parsedLog;
 
@@ -35,25 +35,26 @@ export const ecsEventFromLog = async (
   if (name === "StoreSetRecord") {
     const { indexedValues, namedValues } = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
     console.log("StoreSetRecord:", { table: tableId.toString(), component, entity, indexedValues, namedValues });
-    // TODO: figure out a better place for this emission? maybe network should expose a global emitter that dev tools listen to rather than other way around?
-    devEmitter.emit("storeEvent", {
-      event: name,
-      // TODO: figure out how to get chainId here
-      chainId: 31337,
-      worldAddress: contract.address,
-      blockNumber,
-      logIndex,
-      transactionHash,
-      table: tableId,
-      keyTuple: args.key,
-      indexedValues,
-      namedValues,
-    });
     return {
       ...ecsEvent,
       value: {
         ...indexedValues,
         ...namedValues,
+      },
+      devEmit: () => {
+        devEmitter.emit("storeEvent", {
+          event: name,
+          // TODO: figure out how to get chainId here
+          chainId: 31337,
+          worldAddress: contract.address,
+          blockNumber,
+          logIndex,
+          transactionHash,
+          table: tableId,
+          keyTuple: args.key,
+          indexedValues,
+          namedValues,
+        });
       },
     };
   }
@@ -67,20 +68,6 @@ export const ecsEventFromLog = async (
       args.data
     );
     console.log("StoreSetField:", { table: tableId.toString(), component, entity, indexedValues, namedValues });
-    // TODO: figure out a better place for this emission? maybe network should expose a global emitter that dev tools listen to rather than other way around?
-    devEmitter.emit("storeEvent", {
-      event: name,
-      // TODO: figure out how to get chainId here
-      chainId: 31337,
-      worldAddress: contract.address,
-      blockNumber,
-      logIndex,
-      transactionHash,
-      table: tableId,
-      keyTuple: args.key,
-      indexedValues,
-      namedValues,
-    });
     return {
       ...ecsEvent,
       partialValue: {
@@ -91,23 +78,41 @@ export const ecsEventFromLog = async (
         ...indexedInitialValues,
         ...namedInitialValues,
       },
+      devEmit: () => {
+        devEmitter.emit("storeEvent", {
+          event: name,
+          // TODO: figure out how to get chainId here
+          chainId: 31337,
+          worldAddress: contract.address,
+          blockNumber,
+          logIndex,
+          transactionHash,
+          table: tableId,
+          keyTuple: args.key,
+          indexedValues,
+          namedValues,
+        });
+      },
     };
   }
 
   if (name === "StoreDeleteRecord") {
     console.log("StoreDeleteRecord:", { table: tableId.toString(), component, entity });
-    // TODO: figure out a better place for this emission? maybe network should expose a global emitter that dev tools listen to rather than other way around?
-    devEmitter.emit("storeEvent", {
-      event: name,
-      // TODO: figure out how to get chainId here
-      chainId: 31337,
-      worldAddress: contract.address,
-      blockNumber,
-      logIndex,
-      transactionHash,
-      table: tableId,
-      keyTuple: args.key,
-    });
-    return ecsEvent;
+    return {
+      ...ecsEvent,
+      devEmit: () => {
+        devEmitter.emit("storeEvent", {
+          event: name,
+          // TODO: figure out how to get chainId here
+          chainId: 31337,
+          worldAddress: contract.address,
+          blockNumber,
+          logIndex,
+          transactionHash,
+          table: tableId,
+          keyTuple: args.key,
+        });
+      },
+    };
   }
 };
