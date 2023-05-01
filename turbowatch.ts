@@ -1,51 +1,9 @@
-import path from "path";
-import { ChangeEvent, Expression, watch } from "turbowatch";
+import { ChangeEvent, watch } from "turbowatch";
 import { ChokidarWatcher } from "./chokidarWatcher";
-import { getPackageInfos, createPackageGraph, getWorkspaceRoot, PackageGraph } from "workspace-tools";
+import { getWorkspaceRoot } from "workspace-tools";
 
 const cwd = process.cwd();
-// console.log(cwd);
-
 const workspaceRoot = getWorkspaceRoot(cwd);
-
-/*
-const packageInfos = getPackageInfos(workspaceRoot!);
-// const targetWorkspace = process.argv[2];
-const targetWorkspace = "@latticexyz/cli";
-
-if (!targetWorkspace || !(targetWorkspace in packageInfos)) {
-  throw new Error(
-    `${targetWorkspace}" is not a valid workspace. Must pass a valid workspace name as it appears in package.json.`
-  );
-}
-
-// Gets all direct and transitive dependencies for a workspace
-const getAllDependencies = (target: string, graph: PackageGraph) => {
-  return Array.from(
-    graph.dependencies.reduce((acc, dep) => {
-      if (dep.name === target) {
-        acc.add(dep.dependency);
-        getAllDependencies(dep.dependency, graph).forEach((val) => acc.add(val));
-      }
-      return acc;
-    }, new Set<string>())
-  );
-};
-
-const graph = createPackageGraph(packageInfos);
-console.log(graph);
-
-const dependencies = getAllDependencies("@latticexyz/cli", graph);
-console.log(dependencies);
-
-// path names will be in the format "packages/foo", "apps/bar" - for use in turbowatch expressions
-const depPaths = dependencies.map((dep) => {
-  const pkgInfo = packageInfos[dep];
-  return path.dirname(pkgInfo.packageJsonPath).replace(`${workspaceRoot}/`, "");
-});
-
-console.log(depPaths);
-*/
 
 let previousPackage = "";
 const start = Date.now();
@@ -72,7 +30,7 @@ previousTimeMap.set("create-mud", start);
 const WATCH_DELAY_SECONDS = 10;
 
 watch({
-  project: workspaceRoot!,
+  project: workspaceRoot || "",
   Watcher: ChokidarWatcher,
   triggers: [
     {
@@ -114,7 +72,7 @@ watch({
         const changedWorkspace = filenameTokens[index + 1];
 
         const onChangeTime = new Date();
-        const timeDiff = (onChangeTime - previousTimeMap.get(changedWorkspace)) / 1000; //in ms
+        const timeDiff = (onChangeTime.getTime() - (previousTimeMap.get(changedWorkspace) || Date.now())) / 1000; //in ms
         const seconds = Math.round(timeDiff);
 
         // console.log(previousPackage, changedWorkspace, seconds);
