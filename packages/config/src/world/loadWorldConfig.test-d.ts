@@ -1,6 +1,6 @@
 import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
-import { zWorldConfig, WorldUserConfig } from "./index.js";
+import { zWorldConfig, WorldUserConfig } from ".";
 
 describe("loadWorldConfig", () => {
   // Typecheck manual interfaces against zod

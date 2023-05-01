@@ -1,6 +1,6 @@
-import { ExtractUserTypes, StringForUnion } from "./typeUtils.js";
-import { StoreUserConfig, StoreConfig } from "./store/parseStoreConfig.js";
-import { WorldUserConfig, ResolvedWorldConfig } from "./world/index.js";
+import { ExtractUserTypes, StringForUnion } from "./typeUtils";
+import { StoreUserConfig, StoreConfig } from "./store/parseStoreConfig";
+import { WorldUserConfig, ResolvedWorldConfig } from "./world";
 
 export type MUDUserConfig<
   EnumNames extends StringForUnion = StringForUnion,

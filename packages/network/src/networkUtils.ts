@@ -9,7 +9,7 @@ import {
 } from "@ethersproject/providers";
 import { callWithRetry, extractEncodedArguments, range, sleep } from "@latticexyz/utils";
 import { BigNumber, Contract } from "ethers";
-import { resolveProperties, defaultAbiCoder as abi } from "ethers/lib/utils";
+import { resolveProperties, defaultAbiCoder as abi } from "ethers/lib/utils.js";
 import { Contracts, ContractTopics, ContractEvent, ContractsConfig } from "./types";
 
 /**

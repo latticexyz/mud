@@ -20,18 +20,21 @@ runs:
       with:
         version: nightly
 
-    # Workaround for parallel building with forge:
-    # https://github.com/foundry-rs/foundry/issues/4736
-    - name: Install solc
-      shell: bash
-      run: cargo install svm-rs && svm install 0.8.13
-
     - name: Setup protoc
       uses: arduino/setup-protoc@v1
+      with:
+        repo-token: ${{ github.token }}
 
     - name: Install node dependencies
       shell: bash
       run: pnpm install --frozen-lockfile
+
+    # Workaround for parallel building with forge:
+    # https://github.com/foundry-rs/foundry/issues/4736
+    - name: Setup forge
+      shell: bash
+      working-directory: packages/schema-type
+      run: forge build
 
     - name: Cache turbo build
       uses: actions/cache@v3

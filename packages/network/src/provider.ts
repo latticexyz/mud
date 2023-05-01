@@ -1,5 +1,5 @@
 import { JsonRpcBatchProvider, JsonRpcProvider, Network, Networkish } from "@ethersproject/providers";
-import { ConnectionInfo } from "ethers/lib/utils";
+import { ConnectionInfo } from "ethers/lib/utils.js";
 
 export class MUDJsonRpcProvider extends JsonRpcProvider {
   constructor(url: string | ConnectionInfo | undefined, network: Networkish) {

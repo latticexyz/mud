@@ -1,5 +1,5 @@
-import { MUDError } from "./errors.js";
-import { ValueWithType } from "./world/userTypes.js";
+import { MUDError } from "./errors";
+import { ValueWithType } from "./world/userTypes";
 
 export enum DynamicResolutionType {
   TABLE_ID,

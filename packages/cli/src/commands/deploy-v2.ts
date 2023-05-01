@@ -4,11 +4,11 @@ import path, { basename } from "path";
 import type { CommandModule, Options } from "yargs";
 import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/config";
-import { deploy } from "../utils/deploy-v2.js";
-import { logError } from "../utils/errors.js";
+import { deploy } from "../utils/deploy-v2";
+import { logError } from "../utils/errors";
 import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { mkdirSync, writeFileSync } from "fs";
-import { getChainId } from "../utils/getChainId.js";
+import { getChainId } from "../utils/getChainId";
 
 export type DeployOptions = {
   configPath?: string;

@@ -1,5 +1,5 @@
 import { BigNumber } from "ethers";
-import { BytesLike, defaultAbiCoder as abi } from "ethers/lib/utils";
+import { BytesLike, defaultAbiCoder as abi } from "ethers/lib/utils.js";
 import {
   ContractSchemaValue,
   ContractSchemaValueArrayToElement,
