@@ -55,7 +55,7 @@ export const zWorldConfig = z.object({
   modules: z.array(zModuleConfig).default([]),
 });
 
-// Catchall preserves other plguins' options
+// Catchall preserves other plugins' options
 export const zPluginWorldConfig = zWorldConfig.catchall(z.any());
 
 export const worldPlugin: MUDPlugin = (config) => {
