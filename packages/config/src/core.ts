@@ -17,7 +17,7 @@ export interface MUDCoreConfig {
   plugins: MUDPlugin[];
 }
 
-/** Type helper for defining StoreUserConfig */
+/** Resolver that sequentially passes the config through all the plugins */
 export function mudCoreConfig(config: MUDCoreUserConfig): MUDCoreConfig {
   const plugins = config.plugins;
   for (const plugin of plugins) {
