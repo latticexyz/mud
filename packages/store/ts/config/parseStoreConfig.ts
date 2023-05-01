@@ -15,7 +15,6 @@ import {
   zSelector,
   zUserEnum,
   zValueName,
-  zMUDCoreUserConfig,
 } from "@latticexyz/config";
 
 const zTableName = zObjectName;
@@ -250,8 +249,8 @@ export function mudConfig<
   return mudCoreConfig(config) as any;
 }
 
-const StoreConfigUnrefined = zMUDCoreUserConfig
-  .extend({
+const StoreConfigUnrefined = z
+  .object({
     namespace: zSelector.default(""),
     storeImportPath: z.string().default("@latticexyz/store/src/"),
     tables: zTablesConfig,
