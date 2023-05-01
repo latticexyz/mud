@@ -1,7 +1,7 @@
 import path from "path";
 import { mudConfig, storePlugin, tablegen } from "@latticexyz/store";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import { logError } from "../src/utils/errors.js";
+import { logError } from "../src/utils/errors";
 
 // This config is used only for tests.
 // Aside from avoiding `mud.config.mts` in cli package (could cause issues),
