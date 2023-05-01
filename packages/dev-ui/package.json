@@ -23,10 +23,13 @@
   },
   "dependencies": {
     "@latticexyz/network": "workspace:*",
+    "@latticexyz/react": "workspace:*",
+    "@latticexyz/std-client": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.11.0",
     "tailwind-merge": "^1.12.0",
+    "viem": "^0.3.16",
     "zustand": "^4.3.7"
   },
   "devDependencies": {

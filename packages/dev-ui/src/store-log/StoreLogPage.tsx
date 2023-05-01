@@ -1,10 +1,10 @@
 import { useRef, useEffect } from "react";
-import { useStoreEvents } from "./useStoreEvents";
+import { useNetworkStore } from "../useNetworkStore";
 
-export function StoreEvents() {
+export function StoreLogPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
-  const { storeEvents } = useStoreEvents();
+  const storeEvents = useNetworkStore((state) => state.storeEvents);
 
   const lastBlockNumber = storeEvents[storeEvents.length - 1]?.blockNumber;
 
