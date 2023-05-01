@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
+import { loadConfig, MUDCoreConfig } from "@latticexyz/config";
 import { worldgen } from "@latticexyz/world";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import glob from "glob";
@@ -33,13 +33,8 @@ const commandModule: CommandModule<Options, Options> = {
       basename: basename(path, ".sol"),
     }));
 
-    // Load and resolve the config
-    const worldConfig = await loadWorldConfig(
-      configPath,
-      existingContracts.map(({ basename }) => basename)
-    );
-    const storeConfig = await loadStoreConfig(configPath);
-    const mudConfig = { ...worldConfig, ...storeConfig };
+    // Load the config
+    const mudConfig = (await loadConfig(configPath)) as MUDCoreConfig;
 
     const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
 

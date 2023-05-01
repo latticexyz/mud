@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { loadStoreConfig } from "@latticexyz/config";
+import { loadConfig, MUDCoreConfig } from "@latticexyz/config";
 import { tsgen } from "../render-ts/tsgen.js";
 
 type Options = {
@@ -22,7 +22,7 @@ const commandModule: CommandModule<Options, Options> = {
   async handler(args) {
     const { configPath, out } = args;
 
-    const config = await loadStoreConfig(configPath);
+    const config = (await loadConfig(configPath)) as MUDCoreConfig;
 
     await tsgen(config, out);
 

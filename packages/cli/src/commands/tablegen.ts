@@ -1,6 +1,6 @@
 import path from "path";
 import type { CommandModule } from "yargs";
-import { loadStoreConfig } from "@latticexyz/config";
+import { loadConfig, MUDCoreConfig } from "@latticexyz/config";
 import { tablegen } from "@latticexyz/store";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 
@@ -20,7 +20,7 @@ const commandModule: CommandModule<Options, Options> = {
   },
 
   async handler({ configPath }) {
-    const config = await loadStoreConfig(configPath);
+    const config = (await loadConfig(configPath)) as MUDCoreConfig;
     const srcDir = await getSrcDirectory();
 
     await tablegen(config, path.join(srcDir, config.codegenDirectory));

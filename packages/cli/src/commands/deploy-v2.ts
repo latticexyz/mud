@@ -2,7 +2,7 @@ import chalk from "chalk";
 import glob from "glob";
 import path, { basename } from "path";
 import type { CommandModule, Options } from "yargs";
-import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
+import { loadConfig, MUDCoreConfig } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/config";
 import { deploy } from "../utils/deploy-v2.js";
 import { logError } from "../utils/errors.js";
@@ -63,17 +63,15 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
     // Get the basename of the file
     .map((path) => basename(path, ".sol"));
 
-  // Load and resolve the config
-  const worldConfig = await loadWorldConfig(configPath, existingContracts);
-  const storeConfig = await loadStoreConfig(configPath);
-  const mudConfig = { ...worldConfig, ...storeConfig };
+  // Load the config
+  const mudConfig = (await loadConfig(configPath)) as MUDCoreConfig;
 
   if (printConfig) console.log(chalk.green("\nResolved config:\n"), JSON.stringify(mudConfig, null, 2));
 
   try {
     const privateKey = process.env.PRIVATE_KEY;
     if (!privateKey) throw new MUDError("Missing PRIVATE_KEY environment variable");
-    const deploymentInfo = await deploy(mudConfig, { ...args, rpc, privateKey });
+    const deploymentInfo = await deploy(mudConfig, existingContracts, { ...args, rpc, privateKey });
 
     if (args.saveDeployment) {
       // Write deployment result to file (latest and timestamp)
