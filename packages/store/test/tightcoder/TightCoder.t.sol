@@ -47,11 +47,7 @@ contract TightCoderTest is Test {
    *
    ************************************************************************/
 
-  function testEncodeDecodeArray__address(
-    address val0,
-    address val1,
-    address val2
-  ) public {
+  function testEncodeDecodeArray__address(address val0, address val1, address val2) public {
     address[] memory input = new address[](3);
     input[0] = val0;
     input[1] = val1;
@@ -62,11 +58,7 @@ contract TightCoderTest is Test {
     assertEq(output, abi.encodePacked(val0, val1, val2));
   }
 
-  function testEncodeDecodeArray__bool(
-    bool val0,
-    bool val1,
-    bool val2
-  ) public {
+  function testEncodeDecodeArray__bool(bool val0, bool val1, bool val2) public {
     bool[] memory input = new bool[](3);
     input[0] = val0;
     input[1] = val1;

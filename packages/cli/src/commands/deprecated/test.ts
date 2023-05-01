@@ -1,6 +1,6 @@
 import type { CommandModule } from "yargs";
-import { execLog, generateLibDeploy, resetLibDeploy } from "../../utils/deprecated/index.js";
-import { getTestDirectory } from "../../utils/foundry.js";
+import { execLog, generateLibDeploy, resetLibDeploy } from "../../utils/deprecated";
+import { getTestDirectory } from "@latticexyz/common/foundry";
 
 type Options = {
   forgeOpts?: string;
@@ -43,7 +43,7 @@ const commandModule: CommandModule<Options, Options> = {
     });
 
     await child;
-    
+
     // Reset LibDeploy.sol
     console.log("Reset LibDeploy.sol");
     await resetLibDeploy(testDir);

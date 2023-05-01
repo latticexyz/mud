@@ -2,6 +2,7 @@ import { Contract } from "ethers";
 import { TableId } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 import { decodeSchema } from "./decodeSchema";
+import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore.sol/IStore";
 
 // worldAddress:tableId => schema
 // TODO: add chain ID to namespace?
@@ -9,7 +10,7 @@ const schemaCache: Partial<Record<`${string}:${string}`, Promise<TableSchema>>> 
 
 // the Contract arguments below assume that they're bound to a provider
 
-export function getSchema(world: Contract, table: TableId): Promise<TableSchema> | undefined {
+export function getSchema(world: IStore, table: TableId): Promise<TableSchema> | undefined {
   const cacheKey = `${world.address}:${table.toHexString()}` as const;
   return schemaCache[cacheKey];
 }
@@ -45,7 +46,7 @@ export function registerSchema(world: Contract, table: TableId, rawSchema?: stri
   // TODO: populate from ECS cache before fetching from RPC
 
   console.log("fetching schema for table", { table: table.toString(), world: world.address });
-  const schema = world.getSchema(table).then((rawSchema: string) => {
+  const schema = (world as IStore).getSchema(table.toHexString()).then((rawSchema: string) => {
     const decodedSchema = decodeSchema(rawSchema);
     if (decodedSchema.isEmpty) {
       console.warn("Schema not found for table", { table: table.toString(), world: world.address });

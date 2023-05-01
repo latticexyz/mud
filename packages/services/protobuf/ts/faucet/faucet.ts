@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
-import { CallContext, CallOptions } from "nice-grpc-common";
-import _m0 from "protobufjs/minimal";
+import type { CallContext, CallOptions } from "nice-grpc-common";
+import _m0 from "protobufjs/minimal.js";
 
 export const protobufPackage = "faucet";
 
@@ -103,24 +103,37 @@ export const LinkedTwitterPair = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): LinkedTwitterPair {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLinkedTwitterPair();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.username = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.address = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<LinkedTwitterPair>): LinkedTwitterPair {
+    return LinkedTwitterPair.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<LinkedTwitterPair>): LinkedTwitterPair {
@@ -153,39 +166,60 @@ export const FaucetStore = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): FaucetStore {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFaucetStore();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           const entry1 = FaucetStore_AddressToUsernameEntry.decode(reader, reader.uint32());
           if (entry1.value !== undefined) {
             message.addressToUsername[entry1.key] = entry1.value;
           }
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           const entry2 = FaucetStore_UsernameToAddressEntry.decode(reader, reader.uint32());
           if (entry2.value !== undefined) {
             message.usernameToAddress[entry2.key] = entry2.value;
           }
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           const entry3 = FaucetStore_LatestDripEntry.decode(reader, reader.uint32());
           if (entry3.value !== undefined) {
             message.latestDrip[entry3.key] = entry3.value;
           }
-          break;
+          continue;
         case 4:
+          if (tag != 33) {
+            break;
+          }
+
           message.totalDripCount = reader.double();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<FaucetStore>): FaucetStore {
+    return FaucetStore.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<FaucetStore>): FaucetStore {
@@ -238,24 +272,37 @@ export const FaucetStore_AddressToUsernameEntry = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): FaucetStore_AddressToUsernameEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFaucetStore_AddressToUsernameEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.key = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.value = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<FaucetStore_AddressToUsernameEntry>): FaucetStore_AddressToUsernameEntry {
+    return FaucetStore_AddressToUsernameEntry.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<FaucetStore_AddressToUsernameEntry>): FaucetStore_AddressToUsernameEntry {
@@ -282,24 +329,37 @@ export const FaucetStore_UsernameToAddressEntry = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): FaucetStore_UsernameToAddressEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFaucetStore_UsernameToAddressEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.key = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.value = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<FaucetStore_UsernameToAddressEntry>): FaucetStore_UsernameToAddressEntry {
+    return FaucetStore_UsernameToAddressEntry.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<FaucetStore_UsernameToAddressEntry>): FaucetStore_UsernameToAddressEntry {
@@ -326,24 +386,37 @@ export const FaucetStore_LatestDripEntry = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): FaucetStore_LatestDripEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFaucetStore_LatestDripEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.key = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 16) {
+            break;
+          }
+
           message.value = longToNumber(reader.int64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<FaucetStore_LatestDripEntry>): FaucetStore_LatestDripEntry {
+    return FaucetStore_LatestDripEntry.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<FaucetStore_LatestDripEntry>): FaucetStore_LatestDripEntry {
@@ -370,24 +443,37 @@ export const DripRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): DripRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDripRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.username = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.address = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<DripRequest>): DripRequest {
+    return DripRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<DripRequest>): DripRequest {
@@ -411,21 +497,30 @@ export const DripDevRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): DripDevRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDripDevRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.address = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<DripDevRequest>): DripDevRequest {
+    return DripDevRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<DripDevRequest>): DripDevRequest {
@@ -451,24 +546,37 @@ export const DripResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): DripResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDripResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.dripTxHash = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.ecsTxHash = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<DripResponse>): DripResponse {
+    return DripResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<DripResponse>): DripResponse {
@@ -495,24 +603,37 @@ export const TimeUntilDripResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): TimeUntilDripResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTimeUntilDripResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 9) {
+            break;
+          }
+
           message.timeUntilDripMinutes = reader.double();
-          break;
+          continue;
         case 2:
+          if (tag != 17) {
+            break;
+          }
+
           message.timeUntilDripSeconds = reader.double();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<TimeUntilDripResponse>): TimeUntilDripResponse {
+    return TimeUntilDripResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<TimeUntilDripResponse>): TimeUntilDripResponse {
@@ -533,18 +654,23 @@ export const GetLinkedTwittersRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetLinkedTwittersRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetLinkedTwittersRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<GetLinkedTwittersRequest>): GetLinkedTwittersRequest {
+    return GetLinkedTwittersRequest.fromPartial(base ?? {});
   },
 
   fromPartial(_: DeepPartial<GetLinkedTwittersRequest>): GetLinkedTwittersRequest {
@@ -566,21 +692,30 @@ export const GetLinkedTwittersResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): GetLinkedTwittersResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetLinkedTwittersResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.linkedTwitters.push(LinkedTwitterPair.decode(reader, reader.uint32()));
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<GetLinkedTwittersResponse>): GetLinkedTwittersResponse {
+    return GetLinkedTwittersResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<GetLinkedTwittersResponse>): GetLinkedTwittersResponse {
@@ -603,21 +738,30 @@ export const LinkedTwitterForAddressRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): LinkedTwitterForAddressRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLinkedTwitterForAddressRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.address = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<LinkedTwitterForAddressRequest>): LinkedTwitterForAddressRequest {
+    return LinkedTwitterForAddressRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<LinkedTwitterForAddressRequest>): LinkedTwitterForAddressRequest {
@@ -640,21 +784,30 @@ export const LinkedTwitterForAddressResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): LinkedTwitterForAddressResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLinkedTwitterForAddressResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.username = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<LinkedTwitterForAddressResponse>): LinkedTwitterForAddressResponse {
+    return LinkedTwitterForAddressResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<LinkedTwitterForAddressResponse>): LinkedTwitterForAddressResponse {
@@ -677,21 +830,30 @@ export const LinkedAddressForTwitterRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): LinkedAddressForTwitterRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLinkedAddressForTwitterRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.username = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<LinkedAddressForTwitterRequest>): LinkedAddressForTwitterRequest {
+    return LinkedAddressForTwitterRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<LinkedAddressForTwitterRequest>): LinkedAddressForTwitterRequest {
@@ -714,21 +876,30 @@ export const LinkedAddressForTwitterResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): LinkedAddressForTwitterResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLinkedAddressForTwitterResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.address = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<LinkedAddressForTwitterResponse>): LinkedAddressForTwitterResponse {
+    return LinkedAddressForTwitterResponse.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<LinkedAddressForTwitterResponse>): LinkedAddressForTwitterResponse {
@@ -757,27 +928,44 @@ export const SetLinkedTwitterRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): SetLinkedTwitterRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetLinkedTwitterRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.address = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.username = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.signature = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<SetLinkedTwitterRequest>): SetLinkedTwitterRequest {
+    return SetLinkedTwitterRequest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<SetLinkedTwitterRequest>): SetLinkedTwitterRequest {
@@ -799,18 +987,23 @@ export const SetLinkedTwitterResponse = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): SetLinkedTwitterResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetLinkedTwitterResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<SetLinkedTwitterResponse>): SetLinkedTwitterResponse {
+    return SetLinkedTwitterResponse.fromPartial(base ?? {});
   },
 
   fromPartial(_: DeepPartial<SetLinkedTwitterResponse>): SetLinkedTwitterResponse {
@@ -893,7 +1086,7 @@ export const FaucetServiceDefinition = {
   },
 } as const;
 
-export interface FaucetServiceServiceImplementation<CallContextExt = {}> {
+export interface FaucetServiceImplementation<CallContextExt = {}> {
   drip(request: DripRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DripResponse>>;
   dripDev(request: DripDevRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DripResponse>>;
   dripVerifyTweet(request: DripRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DripResponse>>;
@@ -950,7 +1143,7 @@ export interface FaucetServiceClient<CallOptionsExt = {}> {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
   if (typeof globalThis !== "undefined") {
     return globalThis;
   }
@@ -980,7 +1173,7 @@ export type DeepPartial<T> = T extends Builtin
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
   return long.toNumber();
 }

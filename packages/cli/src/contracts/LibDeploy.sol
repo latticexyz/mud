@@ -7,7 +7,7 @@ pragma solidity >=0.8.0;
 //        To manually generate the real LibDeploy.sol use
 //        `mud codegen-libdeploy`.
 
-import {IWorld} from "solecs/interfaces/IWorld.sol";
+import { IWorld } from "solecs/interfaces/IWorld.sol";
 
 struct DeployResult {
   IWorld world;

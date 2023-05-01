@@ -1,27 +1,24 @@
 {
   "name": "@latticexyz/noise",
-  "version": "1.41.0",
-  "source": "ts/index.ts",
-  "main": "ts/index.ts",
-  "types": "dist/types.d.ts",
-  "type": "module",
+  "version": "1.42.0",
   "license": "MIT",
+  "type": "module",
+  "main": "ts/index.ts",
+  "source": "ts/index.ts",
+  "types": "dist/types.d.ts",
   "scripts": {
-    "prepare": "yarn build",
-    "test:forge": "forge test",
-    "test:hardhat": "NODE_OPTIONS='--loader ts-node/esm --experimental-specifier-resolution=node' yarn hardhat test",
-    "// Hardhat skipped in GH action until hardhat officially supports TS/ESM": "https://github.com/NomicFoundation/hardhat/pull/3156",
-    "test": "yarn test:forge",
-    "asbuild:debug": "asc assembly/index.ts --target debug",
-    "asbuild:release": "asc assembly/index.ts --target release",
-    "asbuild": "yarn asbuild:debug && yarn asbuild:release",
-    "start": "npx serve .",
-    "link": "yarn link",
-    "prepack:cjs": "mv package.json package.json.bak && jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp && jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && jq \"del(\".type\")\" package.json.tmp2 > package.json",
+    "build": "pnpm run build:wasm && pnpm run build:js",
+    "build:js": "pnpm run prepack:cjs && (parcel build || true) && pnpm run postpack",
+    "build:wasm": "asc assembly/index.ts --target release",
+    "clean": "pnpm run clean:wasm && pnpm run clean:js",
+    "clean:js": "rimraf dist .parcel-cache",
+    "clean:wasm": "rimraf build",
     "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json",
     "postpack": "(mv package.json.bak package.json || true) && (rm package.json.tmp || true) && (rm package.json.tmp2 || true)",
-    "build": "rm -rf && yarn asbuild:release && yarn prepack:cjs && yarn parcel build && yarn postpack",
-    "release": "npm publish --access=public"
+    "prepack:cjs": "mv package.json package.json.bak && jq \".main = \\\"dist/cjs/index.cjs\\\"\" package.json.bak > package.json.tmp && jq \".module = \\\"dist/index.js\\\"\" package.json.tmp > package.json.tmp2 && jq \"del(\".type\")\" package.json.tmp2 > package.json",
+    "release": "npm publish --access=public",
+    "start": "npx serve .",
+    "test": "forge test"
   },
   "dependencies": {
     "@types/big-integer": "^0.0.31"
@@ -41,16 +38,16 @@
     "big-integer": "^1.6.51",
     "chai": "^4.3.6",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
-    "ethers": "^5.7.0",
+    "ethers": "^5.7.2",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
     "hardhat": "^2.10.2",
     "keccak-wasm": "^0.10.3",
     "mocha": "^10.0.0",
     "parcel": "2.8.3",
-    "ts-jest": "^28.0.8",
+    "ts-jest": "^29.0.5",
     "ttypescript": "^1.5.13",
     "typescript": "^4.9.5",
-    "web3-utils": "^1.7.5"
+    "web3-utils": "^1.8.0"
   },
   "peerDependencies": {
     "@flatten-js/interval-tree": "^1.0.19"

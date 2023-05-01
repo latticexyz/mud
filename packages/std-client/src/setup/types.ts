@@ -5,7 +5,11 @@ import { Contract } from "ethers";
 export type SetupContractConfig = NetworkConfig &
   Omit<SyncWorkerConfig, "worldContract" | "mappings"> & {
     worldAddress: string;
+    /**
+     * @deprecated: use `disableCache` to disable the cache, use `fastTxExecutor` to send tx with 0 gas on dev chains
+     */
     devMode?: boolean;
+    disableCache?: boolean;
   };
 
 export type DecodedNetworkComponentUpdate = Omit<Omit<NetworkComponentUpdate, "entity">, "component"> & {

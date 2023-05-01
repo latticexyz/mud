@@ -17,8 +17,8 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16(""), bytes16("Singleton"))));
-uint256 constant SingletonTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Singleton")));
+bytes32 constant SingletonTableId = _tableId;
 
 library Singleton {
   /** Get the table's schema */
@@ -144,6 +144,20 @@ library Singleton {
     _store.pushToField(_tableId, _primaryKeys, 1, abi.encodePacked((_element)));
   }
 
+  /** Pop an element from v2 */
+  function popV2() internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 1, 4);
+  }
+
+  /** Pop an element from v2 (using the specified store) */
+  function popV2(IStore _store) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.popFromField(_tableId, _primaryKeys, 1, 4);
+  }
+
   /** Update an element of v2 at `_index` */
   function updateV2(uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
@@ -202,6 +216,20 @@ library Singleton {
     _store.pushToField(_tableId, _primaryKeys, 2, abi.encodePacked((_element)));
   }
 
+  /** Pop an element from v3 */
+  function popV3() internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 2, 4);
+  }
+
+  /** Pop an element from v3 (using the specified store) */
+  function popV3(IStore _store) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.popFromField(_tableId, _primaryKeys, 2, 4);
+  }
+
   /** Update an element of v3 at `_index` */
   function updateV3(uint256 _index, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
@@ -258,6 +286,20 @@ library Singleton {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.pushToField(_tableId, _primaryKeys, 3, abi.encodePacked((_element)));
+  }
+
+  /** Pop an element from v4 */
+  function popV4() internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 3, 4);
+  }
+
+  /** Pop an element from v4 (using the specified store) */
+  function popV4(IStore _store) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    _store.popFromField(_tableId, _primaryKeys, 3, 4);
   }
 
   /** Update an element of v4 at `_index` */

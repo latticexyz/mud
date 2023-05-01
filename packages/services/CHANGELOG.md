@@ -3,6 +3,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.42.0](https://github.com/latticexyz/mud/compare/v1.41.0...v1.42.0) (2023-04-13)
+
+### Features
+
+- mode mvp ([#492](https://github.com/latticexyz/mud/issues/492)) ([08a7baf](https://github.com/latticexyz/mud/commit/08a7baf760f227f2f513ed7da2078e0a41b1e928))
+
 # [1.41.0](https://github.com/latticexyz/mud/compare/v1.40.0...v1.41.0) (2023-03-09)
 
 ### Bug Fixes

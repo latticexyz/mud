@@ -4,29 +4,27 @@ on:
   push:
     branches:
       - main
-      - v2
   pull_request:
-  merge_group:
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
     name: Run tests
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18.x
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: git-checkout
-        uses: actions/checkout@v2
-
-      - name: Install Foundry
-        uses: foundry-rs/foundry-toolchain@v1
-        with:
-          version: nightly
-
-      - name: Install dependencies
-        run: yarn install --network-concurrency 1
+      - name: Setup
+        uses: ./.github/actions/setup
 
       - name: Run tests
-        run: yarn test
+        run: pnpm test
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Sort package.json
+        run: pnpm sort-package-json
+
+      - name: Outdated files, run `sort-package-json` and commit them
+        uses: ./.github/actions/require-empty-diff

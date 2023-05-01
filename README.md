@@ -1,11 +1,7 @@
----
-icon: public/logo512.png
----
-
 # MUD
 
 <div align="center">
-<img src="public/logo512.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
+<img src="docs/public/logo512-black.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
 <p>MUD - Engine for Autonomous Worlds</p>
 </div>
 
@@ -34,7 +30,7 @@ MUD is MIT-licensed, open source and free to use.
 
 ## Features
 
-![MUD features](./public/docs/features.png)
+![MUD features](./docs/public/features.png)
 
 ### Today
 
@@ -57,10 +53,10 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-yarn create mud my-project
+pnpm create mud my-project
 ```
 
-![Scaffolding a new project with the MUD CLI.](./public/docs/mud-create.gif)
+![Scaffolding a new project with the MUD CLI.](./docs/public/mud-create.gif)
 
 ## Packages
 
@@ -91,16 +87,22 @@ The following steps are only necessary if you want to contribute to MUD. To use 
 
 2. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
 
-3. Clone the MUD monorepo
+3. Install pnpm
+
+```bash
+npm install pnpm --global
+```
+
+4. Clone the MUD monorepo
 
 ```
 git clone https://github.com/latticexyz/mud
 ```
 
-4. Install MUD dependencies and setup local environment
+5. Install MUD dependencies and setup local environment
 
 ```
-cd mud && yarn
+cd mud && pnpm install
 ```
 
 ### Pull requests

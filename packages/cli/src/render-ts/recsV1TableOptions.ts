@@ -1,7 +1,7 @@
-import { StoreConfig } from "../config/parseStoreConfig.js";
-import { resolveAbiOrUserType } from "../render-solidity/userType.js";
-import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings.js";
-import { RecsV1TableOptions } from "./types.js";
+import { StoreConfig } from "@latticexyz/config";
+import { resolveAbiOrUserType } from "@latticexyz/common/codegen";
+import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings";
+import { RecsV1TableOptions } from "./types";
 
 export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
   const tableOptions = [];
@@ -24,7 +24,7 @@ export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
     if (tableData.tableIdArgument) continue;
     const staticResourceData = {
       namespace: config.namespace,
-      fileSelector: tableData.fileSelector,
+      name: tableData.name,
     };
 
     tableOptions.push({

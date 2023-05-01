@@ -1,10 +1,8 @@
 import type { CommandModule } from "yargs";
-import { deployHandler, DeployOptions } from "./deploy-v2.js";
-import { yDeployOptions } from "./deploy-v2.js";
-import { anvil, forge, getRpcUrl, getTestDirectory } from "../utils/foundry.js";
+import { deployHandler, DeployOptions, yDeployOptions } from "./deploy-v2";
+import { anvil, forge, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { rmSync, writeFileSync } from "fs";
-import path from "path";
 
 type Options = DeployOptions & { port?: number; worldAddress?: string; forgeOptions?: string };
 

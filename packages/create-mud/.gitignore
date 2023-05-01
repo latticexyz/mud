@@ -99,3 +99,7 @@ public/
 .dynamodb/
 
 # End of https://www.gitignore.io/api/node
+
+
+# Created by `pnpm test`
+test-project

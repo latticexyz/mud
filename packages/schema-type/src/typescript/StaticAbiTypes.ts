@@ -1,8 +1,8 @@
-import { AbiTypes } from "./AbiTypes.js";
-import { AbiTypeToSchemaType } from "./AbiTypeToSchemaType.js";
-import { getStaticByteLength } from "./getStaticByteLength.js";
-import { SchemaTypeToAbiType } from "./SchemaTypeToAbiType.js";
-import { StaticSchemaType } from "./StaticSchemaType.js";
+import { AbiTypes } from "./AbiTypes";
+import { AbiTypeToSchemaType } from "./AbiTypeToSchemaType";
+import { getStaticByteLength } from "./getStaticByteLength";
+import { SchemaTypeToAbiType } from "./SchemaTypeToAbiType";
+import { StaticSchemaType } from "./StaticSchemaType";
 
 export type StaticAbiType = (typeof SchemaTypeToAbiType)[StaticSchemaType];
 export const StaticAbiTypes = AbiTypes.filter(

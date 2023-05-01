@@ -35,6 +35,21 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    InstalledModules: (() => {
+      const tableId = new TableId("", "InstalledModules");
+      return defineComponent(
+        world,
+        {
+          moduleAddress: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     Systems: (() => {
       const tableId = new TableId("", "Systems");
       return defineComponent(
@@ -87,23 +102,8 @@ export function defineContractComponents(world: World) {
         world,
         {
           namespace: RecsType.String,
-          file: RecsType.String,
+          name: RecsType.String,
           systemFunctionSelector: RecsType.String,
-        },
-        {
-          metadata: {
-            contractId: tableId.toHexString(),
-            tableId: tableId.toString(),
-          },
-        }
-      );
-    })(),
-    InstalledModules: (() => {
-      const tableId = new TableId("", "InstalledModules");
-      return defineComponent(
-        world,
-        {
-          moduleAddress: RecsType.String,
         },
         {
           metadata: {

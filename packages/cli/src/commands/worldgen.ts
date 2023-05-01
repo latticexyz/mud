@@ -1,10 +1,9 @@
 import type { CommandModule } from "yargs";
-import { loadStoreConfig } from "../config/loadStoreConfig.js";
-import { loadWorldConfig } from "../config/index.js";
-import { getSrcDirectory } from "../utils/foundry.js";
+import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
+import { worldgen } from "@latticexyz/world";
+import { getSrcDirectory } from "@latticexyz/common/foundry";
 import glob from "glob";
 import path, { basename } from "path";
-import { worldgen } from "../render-solidity/worldgen.js";
 import { rmSync } from "fs";
 
 type Options = {

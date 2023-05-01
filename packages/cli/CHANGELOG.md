@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.42.0](https://github.com/latticexyz/mud/compare/v1.41.0...v1.42.0) (2023-04-13)
+
+### Bug Fixes
+
+- **cli:** account for getRecord's trimming ([#574](https://github.com/latticexyz/mud/issues/574)) ([9c5317a](https://github.com/latticexyz/mud/commit/9c5317afb2c4a9ac2fbaca424f90f30575dba671))
+- **cli:** add back in resolveTableId export for use with mudConfig ([#518](https://github.com/latticexyz/mud/issues/518)) ([4906d77](https://github.com/latticexyz/mud/commit/4906d771645f9311b74b326ce551336a63e65eb9))
+- **cli:** handle static arrays in worldgen ([#566](https://github.com/latticexyz/mud/issues/566)) ([b6a09f2](https://github.com/latticexyz/mud/commit/b6a09f222db8fc6d32800671ba238bc1771eb917))
+- **cli:** remove node-dependent exports from base module ([#517](https://github.com/latticexyz/mud/issues/517)) ([abb34a6](https://github.com/latticexyz/mud/commit/abb34a63ffff0c0f7547c0c9ccf8133490ae1756))
+- **cli:** use esbuild to load mud config ([#565](https://github.com/latticexyz/mud/issues/565)) ([18a8c42](https://github.com/latticexyz/mud/commit/18a8c42aa26ce54ac1a1bf4ba35de249b7f55979))
+- **cli:** use fileSelector in worldgen ([#502](https://github.com/latticexyz/mud/issues/502)) ([fa021ed](https://github.com/latticexyz/mud/commit/fa021ed64800b533bc8995888edbc095e8e112dc))
+- **cli:** wait for tx confirmation on deploy txs ([#606](https://github.com/latticexyz/mud/issues/606)) ([b92be71](https://github.com/latticexyz/mud/commit/b92be71e944ce4547193375261ec99649321b17a))
+- **recs,cli:** fix bigint in recs and tsgen ([#563](https://github.com/latticexyz/mud/issues/563)) ([29fefae](https://github.com/latticexyz/mud/commit/29fefae43d96b107a66b9fd365b566cb8c466f8b))
+
+### Features
+
+- add support for key schemas ([#480](https://github.com/latticexyz/mud/issues/480)) ([37aec2e](https://github.com/latticexyz/mud/commit/37aec2e0a8adf378035fa5b54d752cc6888378d2))
+- align git dep versions ([#577](https://github.com/latticexyz/mud/issues/577)) ([2b5fb5e](https://github.com/latticexyz/mud/commit/2b5fb5e94ad3e7e1134608121fec6c7b6a64d539))
+- **cli/recs/std-client:** add ts definitions generator ([#536](https://github.com/latticexyz/mud/issues/536)) ([dd1efa6](https://github.com/latticexyz/mud/commit/dd1efa6a1ebd2b3c62080d1b191633d7b0072916))
+- **cli:** add `mud test-v2` command ([#554](https://github.com/latticexyz/mud/issues/554)) ([d6be8b0](https://github.com/latticexyz/mud/commit/d6be8b08d0eeae3b10eb9e7bffb6d4dd2fc58aa0))
+- **cli:** add `set-version` to upgrade all MUD dependencies in a project ([#527](https://github.com/latticexyz/mud/issues/527)) ([89731a6](https://github.com/latticexyz/mud/commit/89731a60e6a5643992ceb6996ed9d9894541fc72))
+- **cli:** add encode function to all tables ([#498](https://github.com/latticexyz/mud/issues/498)) ([564604c](https://github.com/latticexyz/mud/commit/564604c0c03d675e007d176ec735d8fb76976771))
+- **cli:** add module config to CLI ([#494](https://github.com/latticexyz/mud/issues/494)) ([263c828](https://github.com/latticexyz/mud/commit/263c828d3eb6f43d5e635c28026f4a68fbf7a19b))
+- **cli:** add mud2 cli entrypoint with only v2 commands ([#567](https://github.com/latticexyz/mud/issues/567)) ([785a324](https://github.com/latticexyz/mud/commit/785a324920c11e24399c5edf575a9099ee4077b6))
+- **cli:** add registerFunctionSelectors to deploy cli ([#501](https://github.com/latticexyz/mud/issues/501)) ([de3d459](https://github.com/latticexyz/mud/commit/de3d459c4c5817be8c947acb0131281f69b9133f))
+- **cli:** add worldgen ([#496](https://github.com/latticexyz/mud/issues/496)) ([e84c0c8](https://github.com/latticexyz/mud/commit/e84c0c8dbb42b94d5ac096ef7916665f510b5c23))
+- **cli:** allow customization of IWorld interface name via mud config, change `world/IWorld` to `world/IBaseWorld` ([#545](https://github.com/latticexyz/mud/issues/545)) ([38b355c](https://github.com/latticexyz/mud/commit/38b355c562a1e5c020deb6553a000a4d34d5fd86))
+- **cli:** allow passing world address and src dir to deploy cli ([#586](https://github.com/latticexyz/mud/issues/586)) ([4b532be](https://github.com/latticexyz/mud/commit/4b532bee7fb0445ed624bd456b97e86a8f41e665))
+- **cli:** allow static arrays as abi types in store config and tablegen ([#509](https://github.com/latticexyz/mud/issues/509)) ([588d037](https://github.com/latticexyz/mud/commit/588d0370d4c7d13667ff784ecb170edf59aa119e))
+- **cli:** improve store config typehints, prepare for static array support ([#508](https://github.com/latticexyz/mud/issues/508)) ([abb5eb2](https://github.com/latticexyz/mud/commit/abb5eb2a111f5f75a4211692e8fede9afd6b2aee))
+- **cli:** improve storeArgument, refactor cli ([#500](https://github.com/latticexyz/mud/issues/500)) ([bb68670](https://github.com/latticexyz/mud/commit/bb686702da75401d9ea4a8c8effcf3a15fa53b49))
+- **cli:** include stateMutability in worldgen ([#571](https://github.com/latticexyz/mud/issues/571)) ([3a91292](https://github.com/latticexyz/mud/commit/3a91292dffd93a4e40725fac0a4255daab450442))
+- **cli:** namespace deploy output by chain id ([#516](https://github.com/latticexyz/mud/issues/516)) ([7687349](https://github.com/latticexyz/mud/commit/768734967d5b8feaa06bb63d49feecce4c6fe3ee))
+- **cli:** rename deploymentInfoDirectory to deploysDirectory, default to ./deploys ([#519](https://github.com/latticexyz/mud/issues/519)) ([1dba0d3](https://github.com/latticexyz/mud/commit/1dba0d370ad5e23d20e93d92b5e2d477a194248f))
+- **cli:** set storeArgument to true by default ([#553](https://github.com/latticexyz/mud/issues/553)) ([cb1ecbc](https://github.com/latticexyz/mud/commit/cb1ecbcd036ead1b1ba0b717c7531d15beaeb106))
+- **cli:** use a central codegen dir for tablegen and worldgen ([#585](https://github.com/latticexyz/mud/issues/585)) ([7500b11](https://github.com/latticexyz/mud/commit/7500b119d727a7155fa1033b2fc3ca729a51d033))
+- **cli:** use abi types in store config ([#507](https://github.com/latticexyz/mud/issues/507)) ([12a739f](https://github.com/latticexyz/mud/commit/12a739f953d0929f7ffc8657fa22bc9e68201d75))
+- **cli:** use json for gas report output ([#607](https://github.com/latticexyz/mud/issues/607)) ([bea12ca](https://github.com/latticexyz/mud/commit/bea12cac16a2e0cdbb9623571cf0b02a5ed969a2))
+- **config:** separate config from cli ([#600](https://github.com/latticexyz/mud/issues/600)) ([cd224a5](https://github.com/latticexyz/mud/commit/cd224a5244ee55316d4b95a21007a8076adefe6e))
+- v2 event decoding ([#415](https://github.com/latticexyz/mud/issues/415)) ([374ed54](https://github.com/latticexyz/mud/commit/374ed542c3387a4ec2b36ab68ae534419aa58763))
+- **world,store:** add updateInField ([#525](https://github.com/latticexyz/mud/issues/525)) ([0ac76fd](https://github.com/latticexyz/mud/commit/0ac76fd57484f54860157b79678b8b9eb7a86997))
+- **world:** add naive ReverseMappingHook/Module ([#487](https://github.com/latticexyz/mud/issues/487)) ([36aaaef](https://github.com/latticexyz/mud/commit/36aaaef3a69914b962a3ef0847aa144134e89d28))
+- **world:** add support for modules, add RegistrationModule, add CoreModule ([#482](https://github.com/latticexyz/mud/issues/482)) ([624cbbc](https://github.com/latticexyz/mud/commit/624cbbc6722823e83594f3df38d72682a1cecd99))
+- **world:** add UniqueEntityModule ([#552](https://github.com/latticexyz/mud/issues/552)) ([983e26a](https://github.com/latticexyz/mud/commit/983e26a0ee0c0521e99d09dd25ebb9937e7c4ded))
+- **world:** allow registration of function selectors in the World, split out RegisterSystem from World ([#481](https://github.com/latticexyz/mud/issues/481)) ([ba0166f](https://github.com/latticexyz/mud/commit/ba0166fb6cd7de63ddc6f4f500ff90c05da67b09))
+- **world:** simplify access control to namespaces instead of routes ([#467](https://github.com/latticexyz/mud/issues/467)) ([945f2ef](https://github.com/latticexyz/mud/commit/945f2ef4a09c2fd1f9c4bb0418a1569fc31e0776))
+
 # [1.41.0](https://github.com/latticexyz/mud/compare/v1.40.0...v1.41.0) (2023-03-09)
 
 ### Bug Fixes

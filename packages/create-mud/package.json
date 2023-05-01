@@ -1,30 +1,31 @@
 {
   "name": "create-mud",
+  "version": "1.42.0",
   "description": "Create a new MUD project",
-  "version": "1.41.0",
-  "author": "Lattice <mud@lattice.xyz>",
   "license": "MIT",
+  "author": "Lattice <mud@lattice.xyz>",
   "bin": "dist/cli.js",
   "files": [
-    "dist",
-    "templates"
+    "dist"
   ],
   "scripts": {
-    "prepare": "yarn build",
-    "build": "tsup src/cli.ts --minify",
-    "clean": "shx rm -rf lib",
-    "dev": "tsup src/cli.ts --watch",
+    "build": "pnpm run build:js",
+    "build:js": "tsup && ./scripts/copy-templates.sh",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist",
+    "dev": "tsup --watch",
     "prepublishOnly": "npm run clean && npm run build",
-    "test": "echo \"TODO\"",
-    "release": "npm publish --access=public"
+    "release": "npm publish --access=public",
+    "test": "pnpm run test:minimal && pnpm run test:react",
+    "test:minimal": "dist/cli.js test-project --template minimal && rimraf test-project",
+    "test:react": "dist/cli.js test-project --template react && rimraf test-project"
   },
   "dependencies": {
-    "create-create-app": "git+https://github.com/holic/create-create-app#e5c8bb449033418ad8518fc73f72c1a07eab2577"
+    "create-create-app": "git+https://github.com/holic/create-create-app#74376c59b48a04aabbe94d9cacfe9cb1cecccd63"
   },
   "devDependencies": {
-    "@types/node": "^17.0.29",
-    "shx": "^0.3.4",
-    "tsup": "^5.12.1",
+    "@types/node": "^18.15.11",
+    "tsup": "^6.7.0",
     "typescript": "^4.9.5"
   },
   "publishConfig": {

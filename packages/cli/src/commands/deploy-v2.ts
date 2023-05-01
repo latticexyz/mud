@@ -2,13 +2,13 @@ import chalk from "chalk";
 import glob from "glob";
 import path, { basename } from "path";
 import type { CommandModule, Options } from "yargs";
-import { loadWorldConfig } from "../config/world/index.js";
-import { deploy } from "../utils/deploy-v2.js";
-import { logError, MUDError } from "../utils/errors.js";
-import { forge, getRpcUrl, getSrcDirectory } from "../utils/foundry.js";
+import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/config";
+import { deploy } from "../utils/deploy-v2";
+import { logError } from "../utils/errors";
+import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { mkdirSync, writeFileSync } from "fs";
-import { loadStoreConfig } from "../config/loadStoreConfig.js";
-import { getChainId } from "../utils/getChainId.js";
+import { getChainId } from "../utils/getChainId";
 
 export type DeployOptions = {
   configPath?: string;
@@ -19,6 +19,8 @@ export type DeployOptions = {
   debug?: boolean;
   saveDeployment?: boolean;
   rpc?: string;
+  worldAddress?: string;
+  srcDir?: string;
 };
 
 export const yDeployOptions = {
@@ -34,6 +36,8 @@ export const yDeployOptions = {
   },
   saveDeployment: { type: "boolean", desc: "Save the deployment info to a file", default: true },
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
+  worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
+  srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
 } satisfies Record<keyof DeployOptions, Options>;
 
 export async function deployHandler(args: Parameters<(typeof commandModule)["handler"]>[0]) {
@@ -53,7 +57,7 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
   await forge(["build"], { profile });
 
   // Get a list of all contract names
-  const srcDir = await getSrcDirectory();
+  const srcDir = args?.srcDir ?? (await getSrcDirectory());
   const existingContracts = glob
     .sync(`${srcDir}/**/*.sol`)
     // Get the basename of the file

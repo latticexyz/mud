@@ -1,0 +1,49 @@
+name: Setup
+description: Common setup steps used by our workflows
+runs:
+  using: composite
+  steps:
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 8.x
+
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: .nvmrc
+        registry-url: https://registry.npmjs.org
+        cache: pnpm
+
+    - name: Setup foundry
+      uses: foundry-rs/foundry-toolchain@v1
+      with:
+        version: nightly
+
+    # Workaround for parallel building with forge:
+    # https://github.com/foundry-rs/foundry/issues/4736
+    - name: Install solc
+      shell: bash
+      run: cargo install svm-rs && svm install 0.8.13
+
+    - name: Setup protoc
+      uses: arduino/setup-protoc@v1
+
+    - name: Install node dependencies
+      shell: bash
+      run: pnpm install --frozen-lockfile
+
+    - name: Cache turbo build
+      uses: actions/cache@v3
+      with:
+        path: .turbo
+        key: ${{ runner.os }}-turbo-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-turbo-
+
+    - name: Build
+      shell: bash
+      run: pnpm turbo run build --cache-dir=.turbo --concurrency 10
+
+    - name: Outdated files, run `pnpm build` and commit them
+      uses: ./.github/actions/require-empty-diff

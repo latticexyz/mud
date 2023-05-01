@@ -2,13 +2,13 @@
 pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
-import { StoreView } from "@latticexyz/store/src/StoreView.sol";
+import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
 
 import { Statics, StaticsData, Dynamics, DynamicsData, Singleton } from "../src/codegen/Tables.sol";
 
 import { Enum1, Enum2 } from "../src/codegen/Types.sol";
 
-contract TablegenTest is Test, StoreView {
+contract TablegenTest is Test, StoreReadWithStubs {
   function testStaticsSetAndGet() public {
     Statics.registerSchema();
 
@@ -69,6 +69,36 @@ contract TablegenTest is Test, StoreView {
 
     Dynamics.setU64(key, u64);
     assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64));
+  }
+
+  function testDynamicsPushAndPop() public {
+    Dynamics.registerSchema();
+
+    bytes32 key = keccak256("key");
+
+    uint64[] memory u64_1 = new uint64[](1);
+    u64_1[0] = 123;
+
+    uint64[] memory u64_2 = new uint64[](1);
+    u64_2[0] = 456;
+
+    uint64[] memory u64_full = new uint64[](2);
+    u64_full[0] = 123;
+    u64_full[1] = 456;
+
+    Dynamics.pushU64(key, 123);
+    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_1));
+    Dynamics.pushU64(key, 456);
+    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_full));
+
+    Dynamics.popU64(key);
+    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_1));
+    Dynamics.pushU64(key, 456);
+    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_full));
+    Dynamics.popU64(key);
+    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_1));
+    Dynamics.popU64(key);
+    assertEq(Dynamics.getU64(key).length, 0);
   }
 
   function testSingletonSetAndGet() public {

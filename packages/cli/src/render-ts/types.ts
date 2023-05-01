@@ -7,7 +7,7 @@ export interface RecsV1TableOptions {
     }[];
     staticResourceData: {
       namespace: string;
-      fileSelector: string;
+      name: string;
     };
   }[];
 }

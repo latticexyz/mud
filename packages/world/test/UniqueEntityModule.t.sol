@@ -7,7 +7,6 @@ import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { IErrors } from "../src/interfaces/IErrors.sol";
 
-import { RegistrationModule } from "../src/modules/registration/RegistrationModule.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
 import { UniqueEntity } from "../src/modules/uniqueentity/tables/UniqueEntity.sol";
@@ -21,12 +20,11 @@ contract UniqueEntityModuleTest is Test {
 
   IBaseWorld world;
   UniqueEntityModule uniqueEntityModule = new UniqueEntityModule();
-  uint256 tableId = uint256(ResourceSelector.from(NAMESPACE, TABLE_NAME));
+  bytes32 tableId = ResourceSelector.from(NAMESPACE, TABLE_NAME);
 
   function setUp() public {
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
-    world.installRootModule(new RegistrationModule(), new bytes(0));
   }
 
   function testInstall() public {

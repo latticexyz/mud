@@ -1,4 +1,4 @@
-import { RecsV1TableOptions } from "./types.js";
+import { RecsV1TableOptions } from "./types";
 
 export function renderRecsV1Tables(options: RecsV1TableOptions) {
   const { tables } = options;
@@ -17,10 +17,10 @@ export function defineContractComponents(world: World) {
 }
 
 function renderDefineComponent(table: RecsV1TableOptions["tables"][number]) {
-  const { namespace, fileSelector } = table.staticResourceData;
+  const { namespace, name } = table.staticResourceData;
   return `
     (() => {
-      const tableId = new TableId("${namespace}", "${fileSelector}");
+      const tableId = new TableId("${namespace}", "${name}");
       return defineComponent(world, {
         ${table.fields.map(({ name, recsTypeString }) => `${name}: ${recsTypeString},`).join("")}
       }, {

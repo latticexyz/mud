@@ -65,11 +65,7 @@ contract StorageTest is Test {
     assertEq(keccak256(data), keccak256(data1));
   }
 
-  function testStoreLoadFuzzy(
-    bytes memory data,
-    bytes32 storagePointer,
-    uint8 offset
-  ) public {
+  function testStoreLoadFuzzy(bytes memory data, bytes32 storagePointer, uint8 offset) public {
     // avoid clashes with DSTest, which uses a storage slot for `_failed` flag
     vm.assume(storagePointer > 0);
 

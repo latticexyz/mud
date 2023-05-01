@@ -17,8 +17,8 @@ import { EncodeArray } from "../../tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../../Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../../PackedCounter.sol";
 
-uint256 constant _tableId = uint256(bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Hooks"))));
-uint256 constant HooksTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16("mudstore"), bytes16("Hooks")));
+bytes32 constant HooksTableId = _tableId;
 
 library Hooks {
   /** Get the table's schema */
@@ -113,6 +113,22 @@ library Hooks {
     _primaryKeys[0] = bytes32((key));
 
     _store.pushToField(_tableId, _primaryKeys, 0, abi.encodePacked((_element)));
+  }
+
+  /** Pop an element from value */
+  function pop(bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    StoreSwitch.popFromField(_tableId, _primaryKeys, 0, 20);
+  }
+
+  /** Pop an element from value (using the specified store) */
+  function pop(IStore _store, bytes32 key) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    _store.popFromField(_tableId, _primaryKeys, 0, 20);
   }
 
   /** Update an element of value at `_index` */

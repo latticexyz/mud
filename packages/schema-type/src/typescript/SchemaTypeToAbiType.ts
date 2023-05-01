@@ -1,4 +1,4 @@
-import { SchemaType } from "./SchemaType.js";
+import { SchemaType } from "./SchemaType";
 
 export const SchemaTypeToAbiType = {
   [SchemaType.UINT8]: "uint8",

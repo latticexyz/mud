@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Long from "long";
-import { CallContext, CallOptions } from "nice-grpc-common";
-import _m0 from "protobufjs/minimal";
+import type { CallContext, CallOptions } from "nice-grpc-common";
+import _m0 from "protobufjs/minimal.js";
 
 export const protobufPackage = "ecssnapshot";
 
@@ -97,27 +97,44 @@ export const ECSState = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSState {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 8) {
+            break;
+          }
+
           message.componentIdIdx = reader.uint32();
-          break;
+          continue;
         case 2:
+          if (tag != 16) {
+            break;
+          }
+
           message.entityIdIdx = reader.uint32();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.value = reader.bytes();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSState>): ECSState {
+    return ECSState.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSState>): ECSState {
@@ -168,39 +185,72 @@ export const ECSStateSnapshot = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateSnapshot {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStateSnapshot();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.state.push(ECSState.decode(reader, reader.uint32()));
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.stateComponents.push(reader.string());
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.stateEntities.push(reader.string());
-          break;
+          continue;
         case 4:
+          if (tag != 34) {
+            break;
+          }
+
           message.stateHash = reader.string();
-          break;
+          continue;
         case 5:
+          if (tag != 40) {
+            break;
+          }
+
           message.startBlockNumber = reader.uint32();
-          break;
+          continue;
         case 6:
+          if (tag != 48) {
+            break;
+          }
+
           message.endBlockNumber = reader.uint32();
-          break;
+          continue;
         case 7:
+          if (tag != 58) {
+            break;
+          }
+
           message.worldAddress = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStateSnapshot>): ECSStateSnapshot {
+    return ECSStateSnapshot.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStateSnapshot>): ECSStateSnapshot {
@@ -229,21 +279,30 @@ export const Worlds = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Worlds {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWorlds();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.worldAddress.push(reader.string());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<Worlds>): Worlds {
+    return Worlds.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<Worlds>): Worlds {
@@ -266,21 +325,30 @@ export const ECSStateRequestLatest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateRequestLatest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStateRequestLatest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.worldAddress = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStateRequestLatest>): ECSStateRequestLatest {
+    return ECSStateRequestLatest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStateRequestLatest>): ECSStateRequestLatest {
@@ -312,30 +380,51 @@ export const ECSStateRequestLatestStreamPruned = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateRequestLatestStreamPruned {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStateRequestLatestStreamPruned();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.worldAddress = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.pruneAddress = reader.string();
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.pruneComponentId = reader.string();
-          break;
+          continue;
         case 4:
+          if (tag != 32) {
+            break;
+          }
+
           message.chunkPercentage = reader.uint32();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStateRequestLatestStreamPruned>): ECSStateRequestLatestStreamPruned {
+    return ECSStateRequestLatestStreamPruned.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStateRequestLatestStreamPruned>): ECSStateRequestLatestStreamPruned {
@@ -364,24 +453,37 @@ export const ECSStateRequestLatestStream = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateRequestLatestStream {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStateRequestLatestStream();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.worldAddress = reader.string();
-          break;
+          continue;
         case 2:
+          if (tag != 16) {
+            break;
+          }
+
           message.chunkPercentage = reader.uint32();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStateRequestLatestStream>): ECSStateRequestLatestStream {
+    return ECSStateRequestLatestStream.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStateRequestLatestStream>): ECSStateRequestLatestStream {
@@ -405,21 +507,30 @@ export const ECSStateBlockRequestLatest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateBlockRequestLatest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStateBlockRequestLatest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.worldAddress = reader.string();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStateBlockRequestLatest>): ECSStateBlockRequestLatest {
+    return ECSStateBlockRequestLatest.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStateBlockRequestLatest>): ECSStateBlockRequestLatest {
@@ -442,21 +553,30 @@ export const ECSStateRequestAtBlock = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateRequestAtBlock {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStateRequestAtBlock();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 8) {
+            break;
+          }
+
           message.blockNumber = longToNumber(reader.uint64() as Long);
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStateRequestAtBlock>): ECSStateRequestAtBlock {
+    return ECSStateRequestAtBlock.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStateRequestAtBlock>): ECSStateRequestAtBlock {
@@ -476,18 +596,23 @@ export const WorldsRequest = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): WorldsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWorldsRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        default:
-          reader.skipType(tag & 7);
-          break;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<WorldsRequest>): WorldsRequest {
+    return WorldsRequest.fromPartial(base ?? {});
   },
 
   fromPartial(_: DeepPartial<WorldsRequest>): WorldsRequest {
@@ -521,33 +646,58 @@ export const ECSStateReply = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateReply {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStateReply();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.state.push(ECSState.decode(reader, reader.uint32()));
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.stateComponents.push(reader.string());
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.stateEntities.push(reader.string());
-          break;
+          continue;
         case 4:
+          if (tag != 34) {
+            break;
+          }
+
           message.stateHash = reader.string();
-          break;
+          continue;
         case 5:
+          if (tag != 40) {
+            break;
+          }
+
           message.blockNumber = reader.uint32();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStateReply>): ECSStateReply {
+    return ECSStateReply.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStateReply>): ECSStateReply {
@@ -586,33 +736,58 @@ export const ECSStateReplyV2 = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateReplyV2 {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStateReplyV2();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 10) {
+            break;
+          }
+
           message.state.push(ECSState.decode(reader, reader.uint32()));
-          break;
+          continue;
         case 2:
+          if (tag != 18) {
+            break;
+          }
+
           message.stateComponents.push(reader.string());
-          break;
+          continue;
         case 3:
+          if (tag != 26) {
+            break;
+          }
+
           message.stateEntities.push(reader.bytes());
-          break;
+          continue;
         case 4:
+          if (tag != 34) {
+            break;
+          }
+
           message.stateHash = reader.string();
-          break;
+          continue;
         case 5:
+          if (tag != 40) {
+            break;
+          }
+
           message.blockNumber = reader.uint32();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStateReplyV2>): ECSStateReplyV2 {
+    return ECSStateReplyV2.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStateReplyV2>): ECSStateReplyV2 {
@@ -639,21 +814,30 @@ export const ECSStateBlockReply = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): ECSStateBlockReply {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseECSStateBlockReply();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
+          if (tag != 8) {
+            break;
+          }
+
           message.blockNumber = reader.uint32();
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
+          continue;
       }
+      if ((tag & 7) == 4 || tag == 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
     }
     return message;
+  },
+
+  create(base?: DeepPartial<ECSStateBlockReply>): ECSStateBlockReply {
+    return ECSStateBlockReply.fromPartial(base ?? {});
   },
 
   fromPartial(object: DeepPartial<ECSStateBlockReply>): ECSStateBlockReply {
@@ -752,7 +936,7 @@ export const ECSStateSnapshotServiceDefinition = {
   },
 } as const;
 
-export interface ECSStateSnapshotServiceServiceImplementation<CallContextExt = {}> {
+export interface ECSStateSnapshotServiceImplementation<CallContextExt = {}> {
   /** Requests the latest ECS state. */
   getStateLatest(
     request: ECSStateRequestLatest,
@@ -851,7 +1035,7 @@ export interface ECSStateSnapshotServiceClient<CallOptionsExt = {}> {
 declare var self: any | undefined;
 declare var window: any | undefined;
 declare var global: any | undefined;
-var globalThis: any = (() => {
+var tsProtoGlobalThis: any = (() => {
   if (typeof globalThis !== "undefined") {
     return globalThis;
   }
@@ -881,7 +1065,7 @@ export type DeepPartial<T> = T extends Builtin
 
 function longToNumber(long: Long): number {
   if (long.gt(Number.MAX_SAFE_INTEGER)) {
-    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
+    throw new tsProtoGlobalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
   return long.toNumber();
 }
