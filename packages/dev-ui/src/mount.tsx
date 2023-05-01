@@ -20,4 +20,6 @@ export async function mount() {
   );
 
   document.body.appendChild(rootElement);
+
+  // TODO: expose an unmount function?
 }

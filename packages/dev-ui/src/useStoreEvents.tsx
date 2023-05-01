@@ -1,23 +1,17 @@
 import { emitter as networkEmitter, Events as NetworkEvents } from "@latticexyz/network";
-import { useEffect, useState } from "react";
+import { create } from "zustand";
 
 type StoreEvent = NetworkEvents["storeEvent"];
 
+const useStore = create<{ storeEvents: StoreEvent[] }>(() => ({
+  storeEvents: [],
+}));
+
+networkEmitter.on("storeEvent", (storeEvent: StoreEvent) => {
+  // TODO: narrow down to the chain/world we care about?
+  useStore.setState((state) => ({ storeEvents: [...state.storeEvents, storeEvent] }));
+});
+
 export function useStoreEvents() {
-  const [storeEvents, setStoreEvents] = useState<StoreEvent[]>([]);
-
-  useEffect(() => {
-    const listener = (storeEvent: StoreEvent) => {
-      // TODO: narrow down to the chain/world we care about?
-      setStoreEvents((storeEvents) => [...storeEvents, storeEvent]);
-    };
-
-    networkEmitter.on("storeEvent", listener);
-
-    return () => {
-      networkEmitter.off("storeEvent", listener);
-    };
-  }, []);
-
-  return { storeEvents };
+  return useStore((state) => ({ storeEvents: state.storeEvents }));
 }
