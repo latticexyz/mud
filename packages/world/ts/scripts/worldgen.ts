@@ -1,7 +1,7 @@
 import glob from "glob";
 import path, { basename } from "path";
 import { rmSync } from "fs";
-import { loadStoreConfig, loadWorldConfig } from "@latticexyz/config";
+import { loadConfig, MUDCoreConfig } from "@latticexyz/config";
 import { worldgen } from "../render-solidity/worldgen";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 
@@ -17,12 +17,7 @@ const existingContracts = glob.sync(`${srcDir}/**/*.sol`).map((path) => ({
 }));
 
 // Load and resolve the config
-const worldConfig = await loadWorldConfig(
-  configPath,
-  existingContracts.map(({ basename }) => basename)
-);
-const storeConfig = await loadStoreConfig(configPath);
-const mudConfig = { ...worldConfig, ...storeConfig };
+const mudConfig = (await loadConfig(configPath)) as MUDCoreConfig;
 
 const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
 

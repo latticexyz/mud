@@ -1,17 +1,23 @@
 import { readFileSync } from "fs";
 import path from "path";
-import { MUDConfig } from "@latticexyz/config";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
-import { renderSystemInterface } from "./renderSystemInterface.js";
-import { renderWorld } from "./renderWorld.js";
+import { MUDCoreConfig } from "@latticexyz/config";
+import { renderSystemInterface } from "./renderSystemInterface";
+import { renderWorld } from "./renderWorld";
+import { resolveWorldConfig } from "../config/resolveWorldConfig.js";
 
 export async function worldgen(
-  config: MUDConfig,
+  config: MUDCoreConfig,
   existingContracts: { path: string; basename: string }[],
   outputBaseDirectory: string
 ) {
+  const resolvedConfig = resolveWorldConfig(
+    config,
+    existingContracts.map(({ basename }) => basename)
+  );
+
   const worldgenBaseDirectory = path.join(outputBaseDirectory, config.worldgenDirectory);
-  const systems = existingContracts.filter(({ basename }) => Object.keys(config.systems).includes(basename));
+  const systems = existingContracts.filter(({ basename }) => Object.keys(resolvedConfig.systems).includes(basename));
 
   const systemInterfaceImports: RelativeImportDatum[] = [];
   for (const system of systems) {
@@ -25,7 +31,7 @@ export async function worldgen(
     }));
     const systemInterfaceName = `I${system.basename}`;
     // create an interface using the external functions and imports
-    const { name } = config.systems[system.basename];
+    const { name } = resolvedConfig.systems[system.basename];
     const output = renderSystemInterface({
       name: systemInterfaceName,
       functionPrefix: config.namespace === "" ? "" : `${config.namespace}_${name}_`,

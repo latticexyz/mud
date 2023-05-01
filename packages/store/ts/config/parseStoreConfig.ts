@@ -263,9 +263,12 @@ const StoreConfigUnrefined = zMUDCoreUserConfig
 // finally validate global conditions
 export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
 
+// Catchall preserves other plguins' options
+export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRefine(validateStoreConfig);
+
 export const storePlugin: MUDPlugin = (config: any) => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return zStoreConfig.parse(config) as any;
+  return zPluginStoreConfig.parse(config) as any;
 };
 
 /************************************************************************

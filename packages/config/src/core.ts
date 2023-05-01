@@ -13,8 +13,9 @@ export const zMUDCoreUserConfig = z.object({
   plugins: zMUDPlugin,
 });
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface MUDCoreConfig extends Required<MUDCoreUserConfig> {}
+export interface MUDCoreConfig {
+  plugins: MUDPlugin[];
+}
 
 /** Type helper for defining StoreUserConfig */
 export function mudCoreConfig(config: MUDCoreUserConfig): MUDCoreConfig {

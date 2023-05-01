@@ -1,4 +1,5 @@
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig, storePlugin } from "@latticexyz/store";
+import { worldPlugin } from "./ts";
 
 export default mudConfig({
   worldImportPath: "../",
@@ -145,4 +146,6 @@ export default mudConfig({
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
   ],
+
+  plugins: [storePlugin, worldPlugin],
 });
