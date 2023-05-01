@@ -9,9 +9,20 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./dev": "./dist/dev/index.js"
   },
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "*": [
+        "src/index.ts"
+      ],
+      "dev": [
+        "./src/dev/index.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
@@ -62,7 +73,7 @@
     "typedoc": "0.23.21",
     "typedoc-plugin-markdown": "^3.13.6",
     "typescript": "^4.9.5",
-    "viem": "^0.2.0"
+    "viem": "^0.3.16"
   },
   "peerDependencies": {
     "@ethersproject/abi": "^5.7.0",
@@ -82,7 +93,7 @@
     "observable-webworker": "^4.0.1",
     "rxjs": "^7.5.5",
     "threads": "^1.7.0",
-    "viem": "^0.2.0"
+    "viem": "^0.3.16"
   },
   "engines": {
     "node": ">=18"

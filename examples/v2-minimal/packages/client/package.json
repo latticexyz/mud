@@ -22,7 +22,7 @@
     "@latticexyz/std-client": "link:../../../../packages/std-client",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
-    "@wagmi/chains": "^0.2.14",
+    "@wagmi/chains": "^0.2.20",
     "async-mutex": "^0.4.0",
     "contracts": "workspace:*",
     "ethers": "^5.7.2",
@@ -34,7 +34,7 @@
     "react": "^18.2.0",
     "rxjs": "^7.5.5",
     "threads": "^1.7.0",
-    "viem": "^0.2.0"
+    "viem": "^0.3.16"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.46.1",
