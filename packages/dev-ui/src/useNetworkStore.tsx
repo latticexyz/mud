@@ -1,7 +1,7 @@
 import { emitter, EmitterEvents } from "@latticexyz/network/dev";
 import { create } from "zustand";
 
-type StoreEvent = EmitterEvents["storeEvent"];
+export type StoreEvent = EmitterEvents["storeEvent"];
 
 export const useNetworkStore = create<{
   storeEvents: StoreEvent[];
