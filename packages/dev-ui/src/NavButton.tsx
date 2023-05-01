@@ -9,7 +9,7 @@ type ButtonProps = DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HT
 
 type Props = Omit<ButtonProps, "className"> & {
   to: To;
-  className?: (args: { isActive: boolean }) => string;
+  className?: string | ((args: { isActive: boolean }) => string);
 };
 
 export function NavButton({ to, className, type, onClick, ...buttonProps }: Props) {
@@ -28,7 +28,7 @@ export function NavButton({ to, className, type, onClick, ...buttonProps }: Prop
   return (
     <button
       type={type || "button"}
-      className={className?.({ isActive })}
+      className={typeof className === "function" ? className({ isActive }) : className}
       onClick={(event) => {
         navigate(to);
         onClick?.(event);
