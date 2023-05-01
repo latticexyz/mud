@@ -199,20 +199,8 @@ export const zEnumsConfig = z.object({
  *    FINAL
  *
  ************************************************************************/
-// Manual *UserConfig is used instead of `z.input<typeof zStoreConfig>` because zod can't preserve doc comments
 
-/** Options without generics */
-export interface StoreSimpleOptions {
-  /** The namespace for table ids. Default is "" (empty string) */
-  namespace?: string;
-  /** Path for store package imports. Default is "@latticexyz/store/src/" */
-  storeImportPath?: string;
-  /** Path to the file where common user types will be generated and imported from. Default is "Types" */
-  userTypesPath?: string;
-  /** Path to the directory where generated files will be placed. (Default is "codegen") */
-  codegenDirectory?: string;
-}
-
+// zod doesn't preserve doc comments
 /** MUDCoreUserConfig wrapper to use generics in some options for better type inference */
 export type MUDUserConfig<
   EnumNames extends StringForUnion = StringForUnion,
@@ -229,6 +217,14 @@ export type MUDUserConfig<
      *  - FullTableConfig object for multi-value tables (or for customizable options).
      */
     tables: TablesConfig<AsDependent<StaticUserTypes>, AsDependent<StaticUserTypes>>;
+    /** The namespace for table ids. Default is "" (empty string) */
+    namespace?: string;
+    /** Path for store package imports. Default is "@latticexyz/store/src/" */
+    storeImportPath?: string;
+    /** Path to the file where common user types will be generated and imported from. Default is "Types" */
+    userTypesPath?: string;
+    /** Path to the directory where generated files will be placed. (Default is "codegen") */
+    codegenDirectory?: string;
   };
 
 export type MUDConfig<

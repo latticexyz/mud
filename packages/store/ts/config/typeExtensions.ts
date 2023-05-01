@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { EnumsConfig, StoreSimpleOptions, TablesConfig, zStoreConfig } from "./parseStoreConfig";
+import { zStoreConfig } from "./parseStoreConfig";
 
 // Inject non-generic options into the core config.
 // Re-exporting an interface of an existing module merges them, adding new options to the interface.
@@ -7,9 +7,8 @@ import { EnumsConfig, StoreSimpleOptions, TablesConfig, zStoreConfig } from "./p
 declare module "@latticexyz/config" {
   // Extend the user config type, which represents the config as written by the users.
   // Most things are optional here.
-  export interface MUDCoreUserConfig extends StoreSimpleOptions, EnumsConfig<string> {
-    tables: TablesConfig<string, string>;
-  }
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface MUDCoreUserConfig extends z.input<typeof zStoreConfig> {}
 
   // Also extend the config type, which represents the configuration after it has been resolved.
   // It should not have any optional properties, with the default values applied instead.
