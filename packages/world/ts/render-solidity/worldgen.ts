@@ -4,7 +4,7 @@ import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum }
 import { MUDCoreConfig } from "@latticexyz/config";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorld } from "./renderWorld";
-import { resolveWorldConfig } from "../config/resolveWorldConfig.js";
+import { resolveWorldConfig } from "../config/resolveWorldConfig";
 
 export async function worldgen(
   config: MUDCoreConfig,

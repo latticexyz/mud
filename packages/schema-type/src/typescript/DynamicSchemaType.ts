@@ -1,4 +1,4 @@
-import { SchemaType } from "./SchemaType.js";
-import { ArraySchemaType } from "./ArraySchemaType.js";
+import { SchemaType } from "./SchemaType";
+import { ArraySchemaType } from "./ArraySchemaType";
 
 export type DynamicSchemaType = ArraySchemaType | SchemaType.BYTES | SchemaType.STRING;

@@ -11,7 +11,7 @@ import { MUDError } from "@latticexyz/config";
 import { encodeSchema } from "@latticexyz/schema-type";
 import { MUDConfig, resolveAbiOrUserType } from "@latticexyz/store";
 import { resolveWorldConfig } from "@latticexyz/world";
-import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld.js";
+import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
 import IBaseWorldData from "@latticexyz/world/abi/IBaseWorld.sol/IBaseWorld.json" assert { type: "json" };

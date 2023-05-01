@@ -1,6 +1,6 @@
 import type { CommandModule } from "yargs";
 import { loadConfig, MUDCoreConfig } from "@latticexyz/config";
-import { tsgen } from "../render-ts/tsgen.js";
+import { tsgen } from "../render-ts/tsgen";
 
 type Options = {
   configPath: string;
