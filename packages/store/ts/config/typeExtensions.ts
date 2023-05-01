@@ -13,7 +13,7 @@ declare module "@latticexyz/config" {
 
   // Also extend the config type, which represents the configuration after it has been resolved.
   // It should not have any optional properties, with the default values applied instead.
-  // Other plugins may receive this resolved config as their input.
+  // Other plugins receive this resolved config as their input.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface MUDCoreConfig extends z.output<typeof zStoreConfig> {}
 }
