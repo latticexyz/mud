@@ -29,7 +29,7 @@ export function createSyncWorker<C extends Components = Components>(
 
   // If thread option is "worker", create a new web worker to sync the state
   if (thread === "worker") {
-    const worker = new Worker(new URL("./workers/Sync.worker.ts", import.meta.url), { type: "module" });
+    const worker = new Worker(new URL("./workers/Sync.worker.js", import.meta.url), { type: "module" });
 
     // Pass in a "config stream", receive a stream of ECS events
     const subscription = fromWorker<Input, NetworkEvent<C>[]>(worker, input$).subscribe(ecsEvents$);
