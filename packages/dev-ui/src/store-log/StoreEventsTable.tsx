@@ -17,8 +17,11 @@ export function StoreEventsTable({ storeEvents }: Props) {
         </tr>
       </thead>
       <tbody className="font-mono text-xs">
-        {storeEvents.map((storeEvent, i) => (
-          <tr key={i} className="hover:bg-blue-800">
+        {storeEvents.map((storeEvent) => (
+          <tr
+            key={`${storeEvent.chainId}:${storeEvent.blockNumber}:${storeEvent.logIndex}`}
+            className="hover:bg-blue-800"
+          >
             <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis text-white/40">
               {storeEvent.blockNumber}
             </td>
