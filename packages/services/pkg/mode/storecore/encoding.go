@@ -540,7 +540,7 @@ func DecodeDynamicField(schemaType SchemaType, encodingSlice []byte) interface{}
 			return ""
 		}
 
-		return hexutil.Encode(arr)
+		return arr
 	}
 }
 
@@ -555,9 +555,9 @@ func postgresHexEncode(data []byte) string {
 //
 // Returns:
 // - (string): The decoded value of the bytes field as a string.
-func handleBytes(encoding []byte) string {
+func handleBytes(encoding []byte) []byte {
 	// No-op.
-	return postgresHexEncode(encoding)
+	return encoding
 }
 
 // handleUint handles the decoding of a uint static field.
@@ -735,19 +735,19 @@ func SchemaTypeToPostgresType(schemaType SchemaType) string {
 		return "text"
 	} else if (schemaType >= UINT8_ARRAY && schemaType <= UINT32_ARRAY) || (schemaType >= INT8_ARRAY && schemaType <= INT32_ARRAY) {
 		// Integer array.
-		return "text"
+		return "bytea"
 	} else if (schemaType >= UINT64_ARRAY && schemaType <= UINT256_ARRAY) || (schemaType >= INT64_ARRAY && schemaType <= INT256_ARRAY) {
 		// Big integer array.
-		return "text"
+		return "bytea"
 	} else if schemaType >= BYTES1_ARRAY && schemaType <= BYTES32_ARRAY {
 		// Bytes array.
-		return "text"
+		return "bytea"
 	} else if schemaType == BOOL_ARRAY {
 		// Boolean array.
-		return "text"
+		return "bytea"
 	} else if schemaType == ADDRESS_ARRAY {
 		// Address array.
-		return "text"
+		return "bytea"
 	} else {
 		// Default to text.
 		return "text"

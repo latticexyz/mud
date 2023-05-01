@@ -367,10 +367,8 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 
 	// Since we know the structure of the metadata, we decode it directly into types and handle.
 	tableReadableName := decodedMetadata.DataAt(0).(string)
-	tableColumnNamesHexString := decodedMetadata.DataAt(1).(string)
+	tableColumnNamesBytes := decodedMetadata.DataAt(1).([]byte)
 
-	// Extract the column names from the metadata.
-	tableColumnNamesBytes, _ := hexutil.Decode(tableColumnNamesHexString)
 	// For some reason just string[] doesn't work with abi decoding here, so we use a tuple.
 	_type := abi.MustNewType("tuple(string[] cols)")
 	outStruct := struct {
