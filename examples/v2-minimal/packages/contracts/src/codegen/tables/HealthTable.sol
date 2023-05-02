@@ -92,11 +92,7 @@ library HealthTable {
   }
 
   /** Set value (using the specified store) */
-  function set(
-    IStore _store,
-    bytes32 key,
-    uint32 value
-  ) internal {
+  function set(IStore _store, bytes32 key, uint32 value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 

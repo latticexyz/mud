@@ -33,8 +33,8 @@ contract CounterTest is MudV2Test {
     assertEq(records[0].length, 0);
 
     vm.startPrank(address(world));
-    HealthTable.set(world, "0",vals[0]);
-    HealthTable.set(world, "1",vals[1]);
+    HealthTable.set(world, "0", vals[0]);
+    HealthTable.set(world, "1", vals[1]);
     vm.stopPrank();
 
     records = world.sync();
@@ -46,7 +46,7 @@ contract CounterTest is MudV2Test {
     HealthTable.set(world, "2", vals[2]);
     NameTable.set(world, "0", "Tycho");
     vm.stopPrank();
-    
+
     records = world.sync();
 
     assertEq(records[0][0].value, HealthTable.encode(vals[0]));

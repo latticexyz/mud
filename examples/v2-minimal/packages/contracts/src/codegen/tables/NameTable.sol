@@ -92,11 +92,7 @@ library NameTable {
   }
 
   /** Set value (using the specified store) */
-  function set(
-    IStore _store,
-    bytes32 key,
-    string memory value
-  ) internal {
+  function set(IStore _store, bytes32 key, string memory value) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -112,11 +108,7 @@ library NameTable {
   }
 
   /** Push a slice to value (using the specified store) */
-  function push(
-    IStore _store,
-    bytes32 key,
-    string memory _slice
-  ) internal {
+  function push(IStore _store, bytes32 key, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -140,11 +132,7 @@ library NameTable {
   }
 
   /** Update a slice of value at `_index` */
-  function update(
-    bytes32 key,
-    uint256 _index,
-    string memory _slice
-  ) internal {
+  function update(bytes32 key, uint256 _index, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
@@ -152,12 +140,7 @@ library NameTable {
   }
 
   /** Update a slice of value (using the specified store) at `_index` */
-  function update(
-    IStore _store,
-    bytes32 key,
-    uint256 _index,
-    string memory _slice
-  ) internal {
+  function update(IStore _store, bytes32 key, uint256 _index, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
