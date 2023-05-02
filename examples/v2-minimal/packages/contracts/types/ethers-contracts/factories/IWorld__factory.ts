@@ -389,19 +389,6 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "increment",
-    outputs: [
-      {
-        internalType: "uint32",
-        name: "",
-        type: "uint32",
-      },
-    ],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
     inputs: [
       {
         internalType: "contract IModule",
@@ -1009,6 +996,36 @@ const _abi = [
     name: "setRecord",
     outputs: [],
     stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "sync",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "bytes32",
+            name: "table",
+            type: "bytes32",
+          },
+          {
+            internalType: "bytes32[]",
+            name: "key",
+            type: "bytes32[]",
+          },
+          {
+            internalType: "bytes",
+            name: "value",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct Record[][]",
+        name: "records",
+        type: "tuple[][]",
+      },
+    ],
+    stateMutability: "view",
     type: "function",
   },
   {

@@ -17,10 +17,10 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("counter")));
-bytes32 constant CounterTableTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("health")));
+bytes32 constant HealthTableTableId = _tableId;
 
-library CounterTable {
+library HealthTable {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
@@ -40,7 +40,7 @@ library CounterTable {
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "value";
-    return ("CounterTable", _fieldNames);
+    return ("HealthTable", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -92,7 +92,11 @@ library CounterTable {
   }
 
   /** Set value (using the specified store) */
-  function set(IStore _store, bytes32 key, uint32 value) internal {
+  function set(
+    IStore _store,
+    bytes32 key,
+    uint32 value
+  ) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
