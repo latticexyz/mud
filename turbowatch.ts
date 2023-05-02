@@ -51,8 +51,6 @@ watch({
           ["not", ["dirname", "src/mud-definitions"]],
           ["not", ["dirname", ".parcel-cache"]],
         ],
-        // ["anyof", ...depPaths.map((dir) => ["dirname", dir] satisfies Expression)],
-        // ["anyof", ["dirname", "packages/store"]],
         ["anyof", ["match", "*.sol", "basename"]],
       ],
       name: `turbowatch_sol`,
@@ -75,21 +73,14 @@ watch({
         const timeDiff = (onChangeTime.getTime() - (previousTimeMap.get(changedWorkspace) || Date.now())) / 1000; //in ms
         const seconds = Math.round(timeDiff);
 
-        // console.log(previousPackage, changedWorkspace, seconds);
         if (previousPackage != changedWorkspace || seconds > WATCH_DELAY_SECONDS) {
           previousTimeMap.set(changedWorkspace, Date.now());
           previousPackage = changedWorkspace;
 
-          // await spawn`turbo build --filter=${changedWorkspace}^...`;
           await spawn`turbo build --filter=${changedWorkspace}`;
         }
 
-        // await spawn`turbo build --filter=store`;
         if (abortSignal?.aborted) return;
-
-        // start the workspace watch script
-        // console.log("Starting watch task");
-        // await spawn`turbo run dev --only --filter ${targetWorkspace}`;
       },
     },
   ],
