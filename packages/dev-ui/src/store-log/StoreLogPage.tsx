@@ -6,11 +6,13 @@ export function StoreLogPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
   const storeEvents = useNetworkStore((state) => state.storeEvents);
+  const scrollBehaviorRef = useRef<ScrollBehavior>("auto");
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    if (hoveredRef.current) return;
-    containerRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
+    if (!hoveredRef.current) {
+      containerRef.current?.scrollIntoView({ behavior: scrollBehaviorRef.current, block: "end" });
+    }
+    scrollBehaviorRef.current = "smooth";
   }, [storeEvents]);
 
   return (
