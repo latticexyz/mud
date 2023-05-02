@@ -3,6 +3,7 @@ import {
   ack,
   createEncoder,
   isNetworkComponentUpdateEvent,
+  isNetworkEphemeralComponentUpdateEvent,
   isSystemCallEvent,
   Mappings,
   NetworkComponentUpdate,
@@ -155,7 +156,7 @@ export function applyNetworkUpdates<C extends Components>(
   const delayQueueSub = ecsEvents$.subscribe((updates) => {
     processing = true;
     for (const update of updates) {
-      if (isNetworkComponentUpdateEvent<C>(update)) {
+      if (isNetworkComponentUpdateEvent<C>(update) || isNetworkEphemeralComponentUpdateEvent<C>(update)) {
         if (update.lastEventInTx) txReduced$.next(update.txHash);
 
         const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
