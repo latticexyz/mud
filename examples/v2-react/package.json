@@ -1,0 +1,19 @@
+{
+  "name": "mud-example-v2-react",
+  "private": true,
+  "scripts": {
+    "build": "pnpm recursive run build",
+    "dev": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
+    "dev:client": "pnpm --filter 'client' run dev",
+    "dev:contracts": "pnpm --filter 'contracts' dev",
+    "dev:node": "pnpm --filter 'contracts' devnode",
+    "initialize": "pnpm recursive run initialize"
+  },
+  "devDependencies": {
+    "run-pty": "^4.0.3"
+  },
+  "engines": {
+    "node": "18.x",
+    "pnpm": "8.x"
+  }
+}
