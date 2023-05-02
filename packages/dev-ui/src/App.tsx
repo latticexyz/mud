@@ -11,7 +11,7 @@ import { NavButton } from "./NavButton";
 // TODO: fix tab index so that it's not possible to tab around in the UI when it's hidden
 
 export function App() {
-  const [shown, setShown] = useState(false);
+  const [shown, setShown] = useState(true);
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {

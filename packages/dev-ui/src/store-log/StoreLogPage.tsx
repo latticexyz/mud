@@ -1,11 +1,11 @@
 import { useRef, useEffect } from "react";
-import { useNetworkStore } from "../useNetworkStore";
+import { useStore } from "../useStore";
 import { StoreEventsTable } from "./StoreEventsTable";
 
 export function StoreLogPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
-  const storeEvents = useNetworkStore((state) => state.storeEvents);
+  const storeEvents = useStore((state) => state.storeEvents);
   const scrollBehaviorRef = useRef<ScrollBehavior>("auto");
 
   useEffect(() => {

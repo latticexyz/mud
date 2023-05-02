@@ -1,9 +1,9 @@
 import { StoreEventsTable } from "../store-log/StoreEventsTable";
-import { useNetworkStore } from "../useNetworkStore";
+import { useStore } from "../useStore";
 import { NavButton } from "../NavButton";
 
 export function StoreEventsSummary() {
-  const recentStoreEvents = useNetworkStore((state) => state.storeEvents.slice(-10).reverse());
+  const recentStoreEvents = useStore((state) => state.storeEvents.slice(-10).reverse());
 
   return (
     <>

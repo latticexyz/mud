@@ -20,6 +20,7 @@ import { applyNetworkUpdates, createEncoders } from "./utils";
 import { EntityID } from "@latticexyz/recs";
 import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
 import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
+import { worldAbiObservable } from "../dev/observables";
 
 type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
   networkConfig: SetupContractConfig;
@@ -28,6 +29,7 @@ type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
   initialGasPrice?: number;
   fetchSystemCalls?: boolean;
   syncThread?: "main" | "worker";
+  worldAbi?: any; // TODO: use Abi from abitype
 };
 
 export async function setupMUDV2Network<C extends ContractComponents>({
@@ -37,7 +39,10 @@ export async function setupMUDV2Network<C extends ContractComponents>({
   initialGasPrice,
   fetchSystemCalls,
   syncThread,
+  worldAbi = WorldAbi,
 }: SetupMUDV2NetworkOptions<C>) {
+  worldAbiObservable.next(worldAbi);
+
   const SystemsRegistry = defineStringComponent(world, {
     id: "SystemsRegistry",
     metadata: { contractId: "world.component.systems" },

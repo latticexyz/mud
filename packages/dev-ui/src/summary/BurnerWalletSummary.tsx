@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useNetworkStore } from "../useNetworkStore";
+import { useStore } from "../useStore";
 
 export function BurnerWalletSummary() {
-  const publicClient = useNetworkStore((state) => state.publicClient);
-  const walletClient = useNetworkStore((state) => state.walletClient);
+  const publicClient = useStore((state) => state.publicClient);
+  const walletClient = useStore((state) => state.walletClient);
 
   const [balance, setBalance] = useState<bigint | null>(null);
 
