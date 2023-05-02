@@ -15,6 +15,13 @@ export default mudConfig({
       },
       storeArgument: true,
     },
+    EventTable: {
+      name: "event",
+      schema: {
+        value: "bool",
+      },
+      ephemeral: true,
+    },
   },
   modules: [
     {

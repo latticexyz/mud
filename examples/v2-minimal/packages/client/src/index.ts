@@ -9,6 +9,13 @@ components.CounterTable.update$.subscribe((update) => {
   document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
 });
 
+components.EventTable.update$.subscribe((update) => {
+  console.log("Event updated", update);
+  const ele = document.getElementById("event")!;
+  const val = (parseInt(ele.innerHTML) ?? 0) + 1;
+  ele.innerHTML = String(val);
+});
+
 // Just for demonstration purposes: we create a global function that can be
 // called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
 (window as any).increment = async () => {
