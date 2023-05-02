@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { getKeysInTable } from "@latticexyz/world/src/modules/keysintable/getKeysInTable.sol";
-import { NameTableTableId, HealthTableTableId } from "../codegen/Tables.sol";
+import { NameTableTableId, CounterTableTableId } from "../codegen/Tables.sol";
 
 struct Record {
   bytes32 table;
@@ -15,7 +15,7 @@ contract SyncSystem is System {
   function sync() public view returns (Record[][] memory records) {
     // FIXME: how to dynamically fetch all registered tables?
     bytes32[2] memory tables;
-    tables[0] = HealthTableTableId;
+    tables[0] = CounterTableTableId;
     tables[1] = NameTableTableId;
 
     records = new Record[][](tables.length);

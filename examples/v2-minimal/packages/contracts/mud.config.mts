@@ -2,13 +2,17 @@ import { mudConfig, resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
   overrideSystems: {
+    IncrementSystem: {
+      name: "increment",
+      openAccess: true,
+    },
     SyncSystem: {
       name: "sync",
       openAccess: true,
     },
   },
   tables: {
-    HealthTable: {
+    CounterTable: {
       name: "health",
       schema: {
         value: "uint32",
@@ -25,7 +29,7 @@ export default mudConfig({
     {
       name: "KeysInTableModule",
       root: true,
-      args: [resolveTableId("HealthTable")],
+      args: [resolveTableId("CounterTable")],
     },
     {
       name: "KeysInTableModule",
