@@ -1,5 +1,6 @@
+import { TableId } from "@latticexyz/utils";
 import { setup } from "./mud/setup";
-import { ethers } from "ethers";
+import { utils } from "ethers";
 
 const { worldSend, worldContract } = await setup();
 
@@ -15,9 +16,9 @@ const { worldSend, worldContract } = await setup();
     document.getElementById("syncResult")!.innerHTML = String(
       syncResult.map((t) =>
         t.map((s) => {
-          const tableId = ethers.utils.parseBytes32String(s[0]);
+          const tableId = TableId.fromBytes32(utils.arrayify(s[0]));
 
-          return `tableId: ${tableId} | key: ${s[1]} | value: ${s[2]}`;
+          return `Table name: ${tableId.name} | Key: ${s[1]} | Value: ${s[2]}`;
         })
       )
     );

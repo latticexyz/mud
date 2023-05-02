@@ -6,7 +6,7 @@ import { defineComponent, Type as RecsType, World } from "@latticexyz/recs";
 export function defineContractComponents(world: World) {
   return {
     CounterTable: (() => {
-      const tableId = new TableId("", "health");
+      const tableId = new TableId("", "counter");
       return defineComponent(
         world,
         {
