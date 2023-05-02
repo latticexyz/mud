@@ -13,7 +13,7 @@ export default mudConfig({
   },
   tables: {
     CounterTable: {
-      name: "health",
+      name: "counter",
       schema: {
         value: "uint32",
       },
