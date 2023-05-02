@@ -8,7 +8,8 @@
     "dev:client-vanilla": "pnpm --filter 'client-vanilla' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
     "dev:node": "pnpm --filter 'contracts' devnode",
-    "initialize": "pnpm recursive run initialize"
+    "initialize": "pnpm recursive run initialize",
+    "test": "pnpm recursive run test"
   },
   "devDependencies": {
     "run-pty": "^4.0.3"
