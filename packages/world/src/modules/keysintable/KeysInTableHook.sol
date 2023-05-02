@@ -33,7 +33,7 @@ contract KeysInTableHook is IStoreHook {
 
     // If the key not has yet been set in the table...
     if (!UsedKeysIndex.getHas(usedIndexTableId, keysHash)) {
-      uint256 len = KeysInTableLength.get(keysInTableLengthTableId);
+      uint32 len = KeysInTableLength.get(keysInTableLengthTableId);
 
       // Push the key to the list of keys in this table
       KeysInTable.push(keysInTableTableId, key[0]);
@@ -64,7 +64,7 @@ contract KeysInTableHook is IStoreHook {
 
     // If the key has not been set in the table...
     if (data.has) {
-      uint256 len = KeysInTableLength.get(keysInTableLengthTableId);
+      uint32 len = KeysInTableLength.get(keysInTableLengthTableId);
       bytes32 lastKey = KeysInTable.get(keysInTableTableId)[len - 1];
 
       // Remove the key from the list of keys in this table
