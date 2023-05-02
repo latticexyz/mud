@@ -1,5 +1,12 @@
 import path from "path";
-import { ImportDatum, RelativeImportDatum, StaticResourceData, RenderPrimaryKey, RenderType } from "./types";
+import {
+  AbsoluteImportDatum,
+  RelativeImportDatum,
+  ImportDatum,
+  StaticResourceData,
+  RenderPrimaryKey,
+  RenderType,
+} from "./types";
 
 export const renderedSolidityHeader = `// SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
@@ -64,8 +71,27 @@ export function solidityRelativeImportPath(fromPath: string, usedInPath: string)
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
+export function renderImports(imports: ImportDatum[]) {
+  return renderAbsoluteImports(
+    imports.map((importDatum) => {
+      if ("path" in importDatum) {
+        return importDatum;
+      } else {
+        return {
+          symbol: importDatum.symbol,
+          path: solidityRelativeImportPath(importDatum.fromPath, importDatum.usedInPath),
+        };
+      }
+    })
+  );
+}
+
+/**
+ * Aggregates, deduplicates and renders imports for symbols per path.
+ * Identical symbols from different paths are NOT handled, they should be checked before rendering.
+ */
 export function renderRelativeImports(imports: RelativeImportDatum[]) {
-  return renderImports(
+  return renderAbsoluteImports(
     imports.map(({ symbol, fromPath, usedInPath }) => ({
       symbol,
       path: solidityRelativeImportPath(fromPath, usedInPath),
@@ -77,7 +103,7 @@ export function renderRelativeImports(imports: RelativeImportDatum[]) {
  * Aggregates, deduplicates and renders imports for symbols per path.
  * Identical symbols from different paths are NOT handled, they should be checked before rendering.
  */
-export function renderImports(imports: ImportDatum[]) {
+export function renderAbsoluteImports(imports: AbsoluteImportDatum[]) {
   // Aggregate symbols by import path, also deduplicating them
   const aggregatedImports = new Map<string, Set<string>>();
   for (const { symbol, path } of imports) {

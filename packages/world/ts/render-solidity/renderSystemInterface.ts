@@ -1,4 +1,4 @@
-import { renderArguments, renderList, renderedSolidityHeader, renderRelativeImports } from "@latticexyz/common/codegen";
+import { renderArguments, renderList, renderedSolidityHeader, renderImports } from "@latticexyz/common/codegen";
 import { RenderSystemInterfaceOptions } from "./types";
 
 export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
@@ -6,7 +6,7 @@ export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
 
   return `${renderedSolidityHeader}
 
-${renderRelativeImports(imports)}
+${renderImports(imports)}
 
 interface ${name} {
   ${renderList(

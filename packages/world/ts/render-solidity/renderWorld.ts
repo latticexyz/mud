@@ -1,15 +1,15 @@
 import {
   renderArguments,
   renderedSolidityHeader,
-  renderImports,
+  renderAbsoluteImports,
   renderRelativeImports,
-  type ImportDatum,
+  type AbsoluteImportDatum,
 } from "@latticexyz/common/codegen";
 import type { RenderWorldOptions } from "./types";
 
 export function renderWorld(options: RenderWorldOptions) {
   const { interfaceName, storeImportPath, worldImportPath, imports } = options;
-  const baseImports: ImportDatum[] =
+  const baseImports: AbsoluteImportDatum[] =
     interfaceName === "IBaseWorld"
       ? [
           { symbol: "IStore", path: `${storeImportPath}IStore.sol` },
@@ -25,7 +25,7 @@ export function renderWorld(options: RenderWorldOptions) {
 
   return `${renderedSolidityHeader}
 
-${renderImports(baseImports)}
+${renderAbsoluteImports(baseImports)}
 
 ${renderRelativeImports(imports)}
 
