@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  build:
-    name: Build examples
+  main:
+    name: Build/test examples
     runs-on: ubuntu-latest
     strategy:
       matrix:
