@@ -22,9 +22,6 @@ export const App = () => {
           event.preventDefault();
 
           // Create a World contract instance
-          const s = signer.get();
-          if (!s) throw new Error("No signer");
-
           const tx = await worldSend("increment", []);
 
           console.log("increment tx", tx);
