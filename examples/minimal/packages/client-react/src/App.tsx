@@ -21,7 +21,6 @@ export const App = () => {
         onClick={async (event) => {
           event.preventDefault();
 
-          // Create a World contract instance
           const tx = await worldSend("increment", []);
 
           console.log("increment tx", tx);
