@@ -1,4 +1,4 @@
-import { JsonRpcProvider, Network } from "@ethersproject/providers";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import { EntityID, ComponentValue, Components } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range, Uint8ArrayToHexString } from "@latticexyz/utils";
 import { BytesLike, Contract, BigNumber } from "ethers";
@@ -15,10 +15,12 @@ import {
 import {
   NetworkComponentUpdate,
   ContractConfig,
-  SystemCallTransaction,
   NetworkEvents,
-  SystemCall,
   NetworkEvent,
+  NetworkEphemeralComponentUpdate,
+  isNetworkComponentUpdateEvent,
+  SystemCallTransaction,
+  SystemCall,
 } from "../types";
 import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
 import { abi as ComponentAbi } from "@latticexyz/solecs/abi/Component.json";
@@ -35,6 +37,7 @@ import { grpc } from "@improbable-eng/grpc-web";
 import { debug as parentDebug } from "./debug";
 import { fetchStoreEvents } from "../v2/fetchStoreEvents";
 import orderBy from "lodash/orderBy";
+import { filter } from "lodash";
 
 const debug = parentDebug.extend("syncUtils");
 
@@ -302,8 +305,8 @@ export async function fetchEventsInBlockRangeChunked(
   toBlockNumber: number,
   interval = 50,
   setPercentage?: (percentage: number) => void
-): Promise<NetworkComponentUpdate<Components>[]> {
-  let events: NetworkComponentUpdate<Components>[] = [];
+): Promise<(NetworkComponentUpdate<Components> | NetworkEphemeralComponentUpdate<Components>)[]> {
+  let events: (NetworkComponentUpdate<Components> | NetworkEphemeralComponentUpdate<Components>)[] = [];
   const delta = toBlockNumber - fromBlockNumber;
   const numSteps = Math.ceil(delta / interval);
   const steps = [...range(numSteps, interval, fromBlockNumber)];
@@ -350,7 +353,10 @@ export async function fetchStateInBlockRange(
     setPercentage
   );
 
-  storeEvents(cacheStore, events);
+  storeEvents(
+    cacheStore,
+    filter(events, (e) => isNetworkComponentUpdateEvent(e)) as NetworkComponentUpdate<Components>[]
+  );
 
   return cacheStore;
 }

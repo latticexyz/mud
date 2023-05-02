@@ -5,6 +5,7 @@ export const schemaTableId = new TableId("mudstore", "schema");
 export const metadataTableId = new TableId("mudstore", "StoreMetadata");
 
 export const storeEvents = ["StoreSetRecord", "StoreSetField", "StoreDeleteRecord"] as const;
+export const ephemeralEvents = ["StoreEphemeralSetRecord"] as const;
 
 export type TableSchema = Readonly<{
   staticDataLength: number;
