@@ -10,13 +10,16 @@
   "license": "MIT",
   "types": "./types/ethers-contracts/",
   "scripts": {
-    "build": "rimraf out && forge build && pnpm dist && pnpm types",
-    "dist": "rimraf abi && mkdir abi && cat exports.txt | cut -d: -f7 | sort -n | uniq | xargs -n 1 sh -c 'cp out/\"$@\".sol/*.json abi/' sh && rimraf abi/*.metadata.json",
+    "build": "pnpm run build:abi && pnpm run build:typechain",
+    "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
+    "build:typechain": "typechain --target ethers-v5 'abi/**/*.sol/!(*.abi).json'",
+    "clean": "pnpm run clean:abi && pnpm run clean:typechain",
+    "clean:abi": "rimraf abi",
+    "clean:typechain": "rimraf types",
     "docs": "rimraf API && hardhat docgen",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "release": "npm publish --access=public",
-    "test": "forge test",
-    "types": "rimraf types && typechain --target=ethers-v5 abi/*.json"
+    "test": "forge test"
   },
   "devDependencies": {
     "@latticexyz/solecs": "workspace:*",
@@ -24,14 +27,14 @@
     "@typechain/ethers-v5": "^10.2.0",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
-    "hardhat": "^2.10.1",
+    "hardhat": "^2.10.2",
     "memmove": "https://github.com/dk1a/memmove.git#ffd71cd77b1708574ef46a667b23ca3a5cc9fa27",
     "rimraf": "^3.0.2",
     "solhint": "^3.3.7",
     "solidity-docgen": "^0.6.0-beta.22",
     "solmate": "https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c",
     "typechain": "^8.1.1",
-    "typedoc": "^0.23.10"
+    "typedoc": "0.23.21"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

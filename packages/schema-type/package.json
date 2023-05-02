@@ -14,18 +14,19 @@
   },
   "types": "src/typescript/index.ts",
   "scripts": {
-    "build": "pnpm build:solidity && pnpm build:typescript",
-    "build:solidity": "echo 'removing previous output' && rimraf out && echo 'build solidity' && forge build",
-    "build:typescript": "echo 'build typescript' && tsc",
+    "build": "pnpm run build:js",
+    "build:js": "tsup",
+    "clean": "pnpm run clean:js",
+    "clean:js": "rimraf dist/typescript",
+    "dev": "tsup --watch",
     "release": "npm publish --access=public",
-    "test": "pnpm test:solidity && pnpm test:typescript",
-    "test:solidity": "forge test",
-    "test:typescript": "tsc --noEmit"
+    "test": "tsc --noEmit && forge test"
   },
   "devDependencies": {
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "tsup": "^6.7.0"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

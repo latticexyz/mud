@@ -7,7 +7,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "initialize": "yarn build",
+    "initialize": "pnpm build",
     "preview": "vite preview"
   },
   "dependencies": {

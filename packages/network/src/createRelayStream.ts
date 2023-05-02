@@ -5,7 +5,7 @@ import { messagePayload } from "./utils";
 import { createChannel, createClient } from "nice-grpc-web";
 import { awaitPromise, awaitStreamValue } from "@latticexyz/utils";
 import { grpc } from "@improbable-eng/grpc-web";
-import { ECSRelayServiceDefinition, Message, PushRequest } from "@latticexyz/services/protobuf/ts/ecs-relay/ecs-relay";
+import { ECSRelayServiceDefinition, Message, PushRequest } from "@latticexyz/services/ecs-relay";
 
 /**
  * Create a RelayService connection, including event$ and utils
@@ -18,7 +18,7 @@ export async function createRelayStream(signer: Signer, url: string, id: string)
   const wsClient = createClient(ECSRelayServiceDefinition, createChannel(url, grpc.WebsocketTransport()));
 
   const recoverWorker = await spawn(
-    new Worker(new URL("./workers/Recover.worker.ts", import.meta.url), { type: "module" })
+    new Worker(new URL("./workers/Recover.worker.js", import.meta.url), { type: "module" })
   );
 
   // Signature that should be used to prove identity

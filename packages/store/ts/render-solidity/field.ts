@@ -12,7 +12,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
   const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
   let result = "";
-  for (const [index, field] of options.fields.entries()) {
+  for (const [schemaIndex, field] of options.fields.entries()) {
     const _typedFieldName = `${field.typeWithLocation} ${field.name}`;
 
     result += renderWithStore(
@@ -25,7 +25,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedKeyArgs,
       ])}) internal view returns (${_typedFieldName}) {
         ${_primaryKeysDefinition}
-        bytes memory _blob = ${_store}.getField(_tableId, _primaryKeys, ${index});
+        bytes memory _blob = ${_store}.getField(_tableId, _primaryKeys, ${schemaIndex});
         return ${renderDecodeFieldSingle(field)};
       }
     `
@@ -42,7 +42,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedFieldName,
       ])}) internal {
         ${_primaryKeysDefinition}
-        ${_store}.setField(_tableId, _primaryKeys, ${index}, ${renderEncodeField(field)});
+        ${_store}.setField(_tableId, _primaryKeys, ${schemaIndex}, ${renderEncodeField(field)});
       }
     `
     );
@@ -61,7 +61,22 @@ export function renderFieldMethods(options: RenderTableOptions) {
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
           ${_primaryKeysDefinition}
-          ${_store}.pushToField(_tableId, _primaryKeys, ${index}, ${portionData.encoded});
+          ${_store}.pushToField(_tableId, _primaryKeys, ${schemaIndex}, ${portionData.encoded});
+        }
+      `
+      );
+
+      result += renderWithStore(
+        storeArgument,
+        (_typedStore, _store, _commentSuffix) => `
+        /** Pop ${portionData.title} from ${field.name}${_commentSuffix} */
+        function pop${field.methodNameSuffix}(${renderArguments([
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+        ])}) internal {
+          ${_primaryKeysDefinition}
+          ${_store}.popFromField(_tableId, _primaryKeys, ${schemaIndex}, ${portionData.elementLength});
         }
       `
       );
@@ -81,7 +96,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           ${_store}.updateInField(
             _tableId,
             _primaryKeys,
-            ${index},
+            ${schemaIndex},
             _index * ${portionData.elementLength},
             ${portionData.encoded}
           );

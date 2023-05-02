@@ -1,6 +1,6 @@
 import { Component, Type as RecsType } from "@latticexyz/recs";
 import { describe, expectTypeOf } from "vitest";
-import { defineContractComponents } from "./store/contractComponents";
+import { defineContractComponents } from "./mud-definitions/store/contractComponents";
 
 type StoreContractComponents = ReturnType<typeof defineContractComponents>;
 

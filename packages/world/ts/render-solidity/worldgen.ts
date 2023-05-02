@@ -2,8 +2,8 @@ import { readFileSync } from "fs";
 import path from "path";
 import { MUDConfig } from "@latticexyz/config";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
-import { renderSystemInterface } from "./renderSystemInterface.js";
-import { renderWorld } from "./renderWorld.js";
+import { renderSystemInterface } from "./renderSystemInterface";
+import { renderWorld } from "./renderWorld";
 
 export async function worldgen(
   config: MUDConfig,
@@ -17,12 +17,23 @@ export async function worldgen(
   for (const system of systems) {
     const data = readFileSync(system.path, "utf8");
     // get external funcions from a contract
-    const { functions, symbols } = contractToInterface(data, system.basename);
-    const imports = symbols.map((symbol) => ({
-      symbol,
-      fromPath: system.path,
-      usedInPath: worldgenBaseDirectory,
-    }));
+    const { functions, symbolImports } = contractToInterface(data, system.basename);
+    const imports = symbolImports.map((symbolImport) => {
+      if (symbolImport.path[0] === ".") {
+        // relative import
+        return {
+          symbol: symbolImport.symbol,
+          fromPath: path.join(path.dirname(system.path), symbolImport.path),
+          usedInPath: worldgenBaseDirectory,
+        };
+      } else {
+        // absolute import
+        return {
+          symbol: symbolImport.symbol,
+          path: symbolImport.path,
+        };
+      }
+    });
     const systemInterfaceName = `I${system.basename}`;
     // create an interface using the external functions and imports
     const { name } = config.systems[system.basename];

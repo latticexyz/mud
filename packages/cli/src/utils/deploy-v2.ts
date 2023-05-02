@@ -6,7 +6,7 @@ import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/co
 import { MUDConfig, resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/config";
 import { BigNumber, ContractInterface, ethers } from "ethers";
-import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld.js";
+import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 import chalk from "chalk";
 import { encodeSchema } from "@latticexyz/schema-type";
 import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils.js";

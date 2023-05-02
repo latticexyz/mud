@@ -19,12 +19,6 @@ jobs:
       - name: Setup
         uses: ./.github/actions/setup
 
-      - name: Run codegen
-        run: pnpm build:codegen
-
-      - name: Outdated files, run `pnpm build:codegen` and commit them
-        uses: ./.github/actions/require-empty-diff
-
       - name: Generate gas reports
         run: pnpm gas-report
 

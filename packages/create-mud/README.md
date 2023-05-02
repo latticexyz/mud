@@ -7,5 +7,5 @@ Create a new MUD project
 ## Usage
 
 ```bash
-yarn create mud <name>
+npm create mud <name>
 ```
