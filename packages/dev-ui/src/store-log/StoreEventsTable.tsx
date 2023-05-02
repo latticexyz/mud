@@ -1,4 +1,4 @@
-import { StoreEvent } from "../useNetworkStore";
+import { StoreEvent } from "../useStore";
 
 type Props = {
   storeEvents: StoreEvent[];

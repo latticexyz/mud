@@ -16,8 +16,11 @@ export type EmitterEvents = {
     indexedValues?: Record<number, any>; // TODO: refine
     namedValues?: Record<string, any>; // TODO: refine
   };
-  // TODO: connection status
-  // TODO: sync status
+  transaction: {
+    hash: string;
+  };
+  // TODO: connection status?
+  // TODO: sync status (rpc vs mode vs cache)
   // TODO: user txs
 };
 

@@ -1,8 +1,8 @@
-import { useNetworkStore } from "../useNetworkStore";
+import { useStore } from "../useStore";
 
 export function NetworkSummary() {
-  const publicClient = useNetworkStore((state) => state.publicClient);
-  const blockNumber = useNetworkStore((state) => state.blockNumber);
+  const publicClient = useStore((state) => state.publicClient);
+  const blockNumber = useStore((state) => state.blockNumber);
 
   return (
     <dl className="grid grid-cols-[max-content,1fr] gap-x-4">
