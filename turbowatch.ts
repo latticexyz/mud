@@ -56,9 +56,9 @@ watch({
         ["anyof", ["match", "*.sol", "basename"]],
       ],
       name: `turbowatch_sol`,
-      interruptible: true,
+      interruptible: false,
       initialRun: true,
-      persistent: true,
+      persistent: false,
       onChange: async ({ spawn, files, first, abortSignal }: ChangeEvent) => {
         if (first) {
           console.log("Turbowatch started in", Date.now() - start, "ms");
