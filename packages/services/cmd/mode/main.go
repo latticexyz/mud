@@ -2,16 +2,11 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
-	"fmt"
 	"math/big"
-	"reflect"
-	"strings"
 
 	"latticexyz/mud/packages/services/pkg/grpc"
 	"latticexyz/mud/packages/services/pkg/logger"
-	"latticexyz/mud/packages/services/pkg/mode"
 	mode_config "latticexyz/mud/packages/services/pkg/mode/config"
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/ingress"
@@ -108,69 +103,4 @@ func main() {
 	// Run the MODE QueryLayer.
 	ql := query.NewQueryLayer(dl, rl, schemaCache, logger)
 	query.RunQueryLayer(ql, config.Ql.Port)
-
-	// dsn := "host=localhost dbname=mode_ephemeral port=5433 sslmode=disable"
-	// db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-	// if err != nil {
-	// 	logger.Fatal("failed to connect to db", zap.Error(err))
-	// }
-
-	// var dbName string
-	// db.Raw("SELECT current_database()").Scan(&dbName)
-	// logger.Info("connected to db", zap.String("name", dbName))
-
-	// table := "mode.test_table"
-
-	// dataRaw := make(map[string]interface{})
-	// dataRaw["A"] = "b"
-	// dataRaw["C"] = 10
-	// dataRaw["D"] = []byte("hello")
-
-	// record, err := buildRecord(dataRaw)
-	// if err != nil {
-	// 	logger.Fatal("failed to build record", zap.Error(err))
-	// }
-
-	// if err := db.Table(table).AutoMigrate(record); err != nil {
-	// 	panic(err)
-	// }
-
-	// if err := db.Table(table).Create(record).Error; err != nil {
-	// 	panic(err)
-	// }
-
-	// fmt.Printf("%#+v\n", record)
-}
-
-func buildType(recordRaw map[string]interface{}, tableSchema *mode.TableSchema) reflect.Type {
-	fields := make([]reflect.StructField, 0, len(recordRaw))
-
-	for key, value := range recordRaw {
-		fields = append(fields, reflect.StructField{
-			Name: key,
-			Type: reflect.TypeOf(value),
-			Tag:  reflect.StructTag(fmt.Sprintf(`gorm:"column:%s"`, strings.ToLower(key))),
-		})
-	}
-
-	return reflect.StructOf(fields)
-}
-
-func buildRecord(recordRaw map[string]interface{}) (interface{}, error) {
-	recordType := buildType(recordRaw, nil)
-	record := reflect.New(recordType).Interface()
-
-	if err := remarshal(&record, recordRaw); err != nil {
-		return nil, fmt.Errorf("updating struct: %s", err)
-	}
-
-	return record, nil
-}
-
-func remarshal(dst, src interface{}) error {
-	b, err := json.Marshal(src)
-	if err != nil {
-		return err
-	}
-	return json.Unmarshal(b, dst)
 }

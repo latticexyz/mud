@@ -121,16 +121,8 @@ func (il *IngressLayer) handleSetFieldEventInsertRow(event *storecore.StorecoreS
 	aggregateKey := mode.AggregateKey(event.Key)
 	decodedKeyData := storecore.DecodeData(aggregateKey, *tableSchema.StoreCoreSchemaTypeKV.Key)
 
-	println("aggregateKey:", hexutil.Encode(aggregateKey))
-	println("event.Data:", hexutil.Encode(event.Data))
-
 	// Create a row for the table from the decoded data.
 	row := write.RowFromDecodedData(decodedKeyData, decodedFieldData, tableSchema)
-
-	println("ROW TO SETFIELD")
-	for k, v := range row {
-		println(k, ",", v)
-	}
 
 	// Insert the row into the table.
 	il.wl.InsertRow(tableSchema, row)
@@ -240,8 +232,6 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 		// Keeping track of columns names as they are case sensitive coming from the chain.
 		OnChainColNames: map[string]string{},
 	}
-
-	println("TABLE NAME NEW: ", tableSchema.TableName)
 
 	// Populate the schema with default values. First populate values.
 	for idx, schemaType := range storeCoreSchemaTypeKV.Value.Flatten() {
@@ -380,11 +370,6 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	if err != nil {
 		il.logger.Error("failed to decode table column names", zap.Error(err))
 		return
-	}
-
-	println("column names:")
-	for _, col := range outStruct.Cols {
-		println(col)
 	}
 
 	// Add extracted metdata to the schema, essentially completing it.

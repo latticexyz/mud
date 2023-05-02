@@ -10,6 +10,11 @@ import (
 const CONNECTOR string = "__"
 const TABLE_PREFIX string = "mode"
 
+type SyncStatus struct {
+	ChainId string `db:"chain_id"`
+	Syncing bool   `db:"syncing"`
+}
+
 ////////////////////////////
 // Internal Table Schemas //
 ////////////////////////////

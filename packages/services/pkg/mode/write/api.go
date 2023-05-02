@@ -177,13 +177,6 @@ func (wl *WriteLayer) RenameTable(tableSchema *mode.TableSchema, oldTableName st
 //     returned as an error object. Otherwise, nil is returned to
 //     indicate success.
 func (wl *WriteLayer) RenameTableFields(tableSchema *mode.TableSchema, oldTableFieldNames []string, newTableFieldNames []string) error {
-	// for i := 0; i < len(oldTableFieldNames); i++ {
-	// 	err := wl.dl.RenameColumn(tableSchema.NamespacedTableName(), oldTableFieldNames[i], newTableFieldNames[i])
-	// 	if err != nil {
-	// 		wl.logger.Error("failed to rename table field", zap.Error(err))
-	// 		return err
-	// 	}
-	// }
 	// Build the SQL statement to rename the columns
 	var sqlStmt strings.Builder
 	for i := 0; i < len(oldTableFieldNames); i++ {
@@ -337,14 +330,7 @@ func (wl *WriteLayer) UpdateOrInsertRow(tableSchema *mode.TableSchema, row RowKV
 // Returns:
 // - (error): An error if the deletion fails, otherwise nil.
 func (wl *WriteLayer) DeleteRow(tableSchema *mode.TableSchema, filter map[string]interface{}) error {
-	// Create a delete builder.
-	// deleteBuilder := delete.NewDeleteBuilder(&pb_mode.DeleteRequest{
-	// 	From:   tableSchema.NamespacedTableName(),
-	// 	Filter: filter,
-	// }, tableSchema)
-
-	// deleteRowQuery := deleteBuilder.ToSQLQuery()
-
+	// Use the database layer to delete the row.
 	_, err := wl.dl.Delete(tableSchema.NamespacedTableName(), filter)
 	if err != nil {
 		wl.logger.Error("failed to delete row", zap.Error(err), zap.String("table", tableSchema.NamespacedTableName()))

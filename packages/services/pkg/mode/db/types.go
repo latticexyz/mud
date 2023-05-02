@@ -28,7 +28,7 @@ type WALConfig struct {
 type DatabaseLayer struct {
 	// db is the connection to the database.
 	db *sqlx.DB
-	// gorm__db is the connection to the database.
+	// gorm__db is the connection to the database via GORM.
 	gorm__db *gorm.DB
 
 	// conn is the low-level connection to the database.

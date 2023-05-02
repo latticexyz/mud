@@ -76,18 +76,7 @@ func (rl *ReadLayer) GetAllTables(namespace string) ([]string, error) {
 //   - (error): if any error occurs while executing the query, it is returned
 //     as an error object. Otherwise, nil is returned.
 func (rl *ReadLayer) DoesRowExist(tableSchema *mode.TableSchema, filter map[string]interface{}) (bool, error) {
-	// // Create a find builder.
-	// findBuilder := find.New__FromFindRequest(&pb_mode.FindRequest{
-	// 	From:   tableSchema.TableName,
-	// 	Filter: filter,
-	// }, tableSchema.Namespace)
-
-	// selectRowQuery, err := findBuilder.ToSQLQuery()
-	// if err != nil {
-	// 	rl.logger.Error("DoesRowExist(): error while building query", zap.Error(err))
-	// 	return false, err
-	// }
-
+	// Query the database layer to check if the row exists.
 	exists, err := rl.dl.Exists(tableSchema.Namespace+`."`+tableSchema.TableName+`"`, filter)
 
 	if err != nil {
@@ -95,22 +84,6 @@ func (rl *ReadLayer) DoesRowExist(tableSchema *mode.TableSchema, filter map[stri
 		return false, err
 	}
 	return exists, nil
-
-	// // Execute the query.
-	// rows, err := rl.dl.Query(selectRowQuery)
-	// if err != nil {
-	// 	rl.logger.Error("DoesRowExist(): error while executing query", zap.String("query", selectRowQuery), zap.Error(err))
-	// 	return false, err
-	// }
-	// defer rows.Close()
-
-	// // If there are no rows, then the row does not exist.
-	// if !rows.Next() {
-	// 	return false, nil
-	// }
-
-	// // If there is a row, then the row exists.
-	// return true, nil
 }
 
 // GetBlockNumber retrieves the block number for the specified chain ID
@@ -244,13 +217,8 @@ func (rl *ReadLayer) GetSyncStatus(chainId string) (bool, error) {
 		rl.logger.Error("GetSyncStatus(): error while building query", zap.Error(err))
 		return false, err
 	}
-	var syncStatus SyncStatus
+	var syncStatus schema.SyncStatus
 	query.Find(&syncStatus)
 
 	return syncStatus.Syncing, nil
-}
-
-type SyncStatus struct {
-	ChainId string `db:"chain_id"`
-	Syncing bool   `db:"syncing"`
 }

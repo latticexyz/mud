@@ -46,10 +46,12 @@ func (dl *DatabaseLayer) Stream() <-chan *StreamEvent {
 	return transformed
 }
 
+// TableExists returns true if the given table exists in the database.
 func (dl *DatabaseLayer) TableExists(table string) bool {
 	return dl.gorm__db.Migrator().HasTable(table)
 }
 
+// Exists returns true if a row exists in the specified table using the provided filter criteria.
 func (dl *DatabaseLayer) Exists(table string, filter map[string]interface{}) (bool, error) {
 	if !dl.TableExists(table) {
 		return false, nil
@@ -61,11 +63,8 @@ func (dl *DatabaseLayer) Exists(table string, filter map[string]interface{}) (bo
 	return find.RowsAffected > 0, nil
 }
 
+// Create inserts a new record into the specified table using the provided record struct.
 func (dl *DatabaseLayer) Create(table string, record interface{}) error {
-	// if err := dl.gorm__db.Table(table).AutoMigrate(record); err != nil {
-	// 	panic(err)
-	// }
-
 	if err := dl.gorm__db.Table(table).Create(record).Error; err != nil {
 		panic(err)
 	}
@@ -74,11 +73,8 @@ func (dl *DatabaseLayer) Create(table string, record interface{}) error {
 	return nil
 }
 
+// Updates updates a record in the specified table using the provided record struct and filter criteria.
 func (dl *DatabaseLayer) Updates(table string, record interface{}, filter map[string]interface{}) (*gorm.DB, error) {
-	// if err := dl.gorm__db.Table(table).AutoMigrate(record); err != nil {
-	// 	panic(err)
-	// }
-
 	updates := dl.gorm__db.Table(table).Where(filter).Updates(record)
 	if err := updates.Error; err != nil {
 		panic(err)
@@ -88,6 +84,7 @@ func (dl *DatabaseLayer) Updates(table string, record interface{}, filter map[st
 	return updates, nil
 }
 
+// Delete deletes a record from the specified table using the provided filter criteria.
 func (dl *DatabaseLayer) Delete(table string, filter map[string]interface{}) (*gorm.DB, error) {
 	deletes := dl.gorm__db.Table(table).Where(filter).Delete(nil)
 	if err := deletes.Error; err != nil {
@@ -97,6 +94,7 @@ func (dl *DatabaseLayer) Delete(table string, filter map[string]interface{}) (*g
 	return deletes, nil
 }
 
+// RenameColumn renames a column in the specified table.
 func (dl *DatabaseLayer) RenameColumn(table string, old string, new string) error {
 	err := dl.gorm__db.Migrator().RenameColumn(dl.gorm__db.Table(table), old, new)
 	if err != nil {
@@ -105,6 +103,8 @@ func (dl *DatabaseLayer) RenameColumn(table string, old string, new string) erro
 	return nil
 }
 
+// Select returns a query object that can be used to retrieve records from the specified table using the provided
+// filter criteria.
 func (dl *DatabaseLayer) Select(table string, filter map[string]interface{}) (*gorm.DB, error) {
 	query := dl.gorm__db.Table(table).Where(filter)
 	if err := query.Error; err != nil {

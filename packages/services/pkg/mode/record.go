@@ -9,6 +9,7 @@ import (
 	dynamicstruct "github.com/ompluscator/dynamic-struct"
 )
 
+// BuildTag builds a gorm tag for a given key.
 func BuildTag(key string, tableSchema *TableSchema) string {
 	isKey := tableSchema.IsKey[key]
 	var tag strings.Builder
@@ -17,13 +18,12 @@ func BuildTag(key string, tableSchema *TableSchema) string {
 	} else {
 		tag.WriteString(`gorm:"`)
 	}
-	// if strings.Contains(tableSchema.PostgresTypes[key], "[]") {
-	// 	tag.WriteString(`type:text[];`)
-	// }
 	tag.WriteString(fmt.Sprintf(`column:%s"`, strings.ToLower(key)))
 	return tag.String()
 }
 
+// BuildType builds a struct type for a given record, using the table schema for metadata
+// such as which key is a primary key.
 func BuildType(recordRaw map[string]interface{}, tableSchema *TableSchema) reflect.Type {
 	fields := make([]reflect.StructField, 0, len(recordRaw))
 
@@ -52,34 +52,10 @@ func BuildType(recordRaw map[string]interface{}, tableSchema *TableSchema) refle
 		})
 	}
 
-	// println("fields:")
-	// for _, field := range fields {
-	// 	println(field.Name)
-	// 	println(field.Type.String())
-	// }
-
-	// for key, value := range recordRaw {
-	// 	isKey := tableSchema.IsKey[key]
-	// 	var tag strings.Builder
-	// 	if isKey {
-	// 		tag.WriteString(`gorm:"primaryKey;`)
-	// 	} else {
-	// 		tag.WriteString(`gorm:"`)
-	// 	}
-	// 	if strings.Contains(tableSchema.PostgresTypes[key], "[]") {
-	// 		tag.WriteString(`type:text[];`)
-	// 	}
-	// 	tag.WriteString(fmt.Sprintf(`column:%s"`, strings.ToLower(key)))
-	// 	fields = append(fields, reflect.StructField{
-	// 		Name: strings.ToTitle(key),
-	// 		Type: reflect.TypeOf(value),
-	// 		Tag:  reflect.StructTag(tag.String()),
-	// 	})
-	// }
-
 	return reflect.StructOf(fields)
 }
 
+// BuildRecord builds a struct for a given record.
 func BuildRecord(recordRaw map[string]interface{}, tableSchema *TableSchema) (interface{}, error) {
 	recordType := BuildType(recordRaw, tableSchema)
 	record := reflect.New(recordType).Interface()
@@ -91,6 +67,7 @@ func BuildRecord(recordRaw map[string]interface{}, tableSchema *TableSchema) (in
 	return record, nil
 }
 
+// Remarshal remarshals a struct.
 func Remarshal(dst, src interface{}) error {
 	b, err := json.Marshal(src)
 	if err != nil {
@@ -99,6 +76,7 @@ func Remarshal(dst, src interface{}) error {
 	return json.Unmarshal(b, dst)
 }
 
+// BuildRecord__Instance builds a struct for a given record.
 func BuildRecord__Instance(recordRaw map[string]interface{}, tableSchema *TableSchema) (interface{}, error) {
 	instance := dynamicstruct.NewStruct()
 

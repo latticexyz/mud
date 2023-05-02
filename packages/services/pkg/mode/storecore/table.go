@@ -24,10 +24,6 @@ func RightPadId(id string) []byte {
 	return common.RightPadBytes([]byte(id), 16)
 }
 
-// func PaddedTableId(id *big.Int) string {
-// 	return "0x" + common.Bytes2Hex(common.LeftPadBytes(id.Bytes(), 32))
-// }
-
 func PaddedTableId(id [32]byte) string {
 	return "0x" + common.Bytes2Hex(id[:])
 }

@@ -2,15 +2,12 @@ package mode
 
 import (
 	"encoding/json"
-	"fmt"
 	"latticexyz/mud/packages/services/pkg/logger"
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/protobuf/go/mode"
 	"time"
 
 	abi_geth "github.com/ethereum/go-ethereum/accounts/abi"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/anypb"
 
 	"github.com/umbracle/ethgo/abi"
 
@@ -53,14 +50,6 @@ func EncodeParameters(parameters []string, data []interface{}) ([]byte, error) {
 	return args.Pack(data...)
 }
 
-func SerializeIntoAny(v interface{}) (*anypb.Any, error) {
-	pv, ok := v.(proto.Message)
-	if !ok {
-		return &anypb.Any{}, fmt.Errorf("%v is not proto.Message", pv)
-	}
-	return anypb.New(pv)
-}
-
 // SerializeRow serializes a single row with all fields encoded and returns it as a mode.Row.
 //
 // Parameters:
@@ -78,52 +67,11 @@ func SerializeRow(row []interface{}, colNames []string, colEncodingTypes []*abi.
 	for _, rowEntry := range row {
 		bytes, err := json.Marshal(rowEntry)
 		if err != nil {
-			println("error json.Marshal SerializeRow")
+			logger.GetLogger().Info("error json.Marshal SerializeRow")
 			return nil, err
 		}
 		values = append(values, bytes)
 	}
-
-	// // Iterate columns and serialize each field for this row.
-	// for i, _ := range colNames {
-	// 	colEncodingType := colEncodingTypes[i]
-
-	// 	var encodedField []byte
-	// 	var err error
-	// 	if row[i] == nil {
-	// 		// If the field is null, we just encode it as an empty string.
-	// 		encodedField = []byte("")
-	// 	} else {
-	// 		// If the field is a map, we need to marshal it to JSON first.
-	// 		if _map, ok := row[i].(map[string]interface{}); ok {
-	// 			_mapStr, err := json.Marshal(_map)
-	// 			if err != nil {
-	// 				return nil, err
-	// 			}
-	// 			encodedField, err = colEncodingType.Encode(_mapStr)
-	// 			if err != nil {
-	// 				return nil, err
-	// 			}
-	// 		} else if colEncodingTypes[i].String() == "bytes" || colEncodingTypes[i].String() == "string" {
-	// 			// Handle bytes / string specially to avoid the offset missing issue.
-	// 			encodedField, err = EncodeParameters(
-	// 				[]string{colEncodingType.String()},
-	// 				[]interface{}{row[i]},
-	// 			)
-	// 			if err != nil {
-	// 				logger.GetLogger().Error("error while serializing with EncodeParameters", zap.Error(err))
-	// 				return nil, err
-	// 			}
-	// 		} else {
-	// 			encodedField, err = colEncodingType.Encode(row[i])
-	// 		}
-	// 		if err != nil {
-	// 			return nil, err
-	// 		}
-	// 	}
-
-	// 	values = append(values, encodedField)
-	// }
 
 	return &mode.Row{
 		Values: values,

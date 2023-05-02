@@ -42,6 +42,15 @@ func connectToDatabase(dsn string) (*sqlx.DB, error) {
 	return db, nil
 }
 
+// gorm__connectToDatabase creates a connection to a PostgreSQL database using the specified DSN
+// via GORM.
+//
+// Parameters:
+//   - dsn (string): The Data Source Name to connect to the database.
+//
+// Returns:
+//   - (*gorm.DB): A pointer to the connected database instance via GORM.
+//   - (error): An error if any occurred during the connection process.
 func gorm__connectToDatabase(dsn string) (*gorm.DB, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
@@ -131,10 +140,6 @@ func NewDatabaseLayer(
 	// If running with wipe ON, wipe the database.
 	if wipe {
 		logger.Info("wiping the database")
-		// _db, err := db.DB()
-		// if err != nil {
-		// 	logger.Error("failed to wipe the database", zap.Error(err))
-		// }
 		err = wipeSchemas(db.DB, logger)
 		if err != nil {
 			logger.Error("failed to wipe the database", zap.Error(err))

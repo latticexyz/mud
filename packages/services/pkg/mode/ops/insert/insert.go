@@ -55,7 +55,6 @@ func hexFieldToBytea(hexField string) string {
 
 func hexArrayFieldToByteaArray(hexArrayField string) string {
 	hexArray := stringyfiedArrayToArray(hexArrayField)
-	println("hex array:", hexArrayField)
 	byteaArray := make([]string, len(hexArray))
 	for i, hex := range hexArray {
 		byteaArray[i] = hexFieldToBytea(hex)
