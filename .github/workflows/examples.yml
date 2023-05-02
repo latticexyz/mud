@@ -7,8 +7,8 @@ on:
   pull_request:
 
 jobs:
-  build:
-    name: Build examples
+  main:
+    name: Build/test examples
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,3 +33,7 @@ jobs:
 
       - name: Outdated files, run `pnpm gas-report` and commit them
         uses: ./.github/actions/require-empty-diff
+
+      - name: Run tests
+        working-directory: ./examples/${{ matrix.example }}
+        run: pnpm test
