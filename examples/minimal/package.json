@@ -1,10 +1,10 @@
 {
-  "name": "mud-example-v2-minimal",
+  "name": "mud-example-minimal",
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
-    "dev": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
-    "dev:client": "pnpm --filter 'client' run dev",
+    "dev": "run-pty % pnpm dev:node % pnpm dev:client-vanilla % pnpm dev:contracts",
+    "dev:client-vanilla": "pnpm --filter 'client-vanilla' run dev",
     "dev:contracts": "pnpm --filter 'contracts' dev",
     "dev:node": "pnpm --filter 'contracts' devnode",
     "initialize": "pnpm recursive run initialize"
