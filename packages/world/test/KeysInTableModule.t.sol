@@ -45,7 +45,7 @@ contract KeysInTableModuleTest is Test {
     sourceTableId = ResourceSelector.from(namespace, sourceFile);
   }
 
-  function _installkeysInTableModule() internal {
+  function _installKeysInTableModule() internal {
     // Register source table
     sourceTableId = world.registerTable(namespace, sourceFile, sourceTableSchema, sourceTableKeySchema);
 
@@ -57,7 +57,7 @@ contract KeysInTableModuleTest is Test {
   }
 
   function testInstall(uint256 value) public {
-    _installkeysInTableModule();
+    _installKeysInTableModule();
     // Set a value in the source table
     // !gasreport set a record on a table with keysInTableModule installed
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value));
@@ -70,16 +70,45 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable[0][0], key1);
   }
 
-  function testInstallTwice() public {
-    _installkeysInTableModule();
+  function testInstallTwice(bytes32 keyA, bytes32 keyB, uint256 value1, uint256 value2) public {
+    _installKeysInTableModule();
 
+    bytes32[] memory keyTuple = new bytes32[](1);
+    keyTuple[0] = keyA;
+
+    // Set a value in the source table
+    // !gasreport set a record on a table with keysInTableModule installed
+    world.setRecord(namespace, sourceFile, keyTuple, abi.encodePacked(value1));
+
+    // Get the list of keys in the first target table
+    bytes32[][] memory keysInTable = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0][0], keyA);
+
+    // Install the hook on the second table
     bytes16 sourceFile2 = bytes16("source2");
     bytes32 sourceTableId2 = world.registerTable(namespace, sourceFile2, sourceTableSchema, sourceTableKeySchema);
     world.installRootModule(keysInTableModule, abi.encode(sourceTableId2));
+
+    keyTuple = new bytes32[](1);
+    keyTuple[0] = keyB;
+
+    // Set a value in the source table
+    // !gasreport set a record on a table with keysInTableModule installed
+    world.setRecord(namespace, sourceFile2, keyTuple, abi.encodePacked(value2));
+
+    // Get the list of keys in the second target table
+    keysInTable = getKeysInTable(world, sourceTableId2);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0][0], keyB);
   }
 
   function testSetAndDeleteRecordHook(uint256 value1, uint256 value2) public {
-    _installkeysInTableModule();
+    _installKeysInTableModule();
 
     // Set a value in the source table
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
@@ -127,7 +156,7 @@ contract KeysInTableModuleTest is Test {
   }
 
   function testSetField(uint256 value1, uint256 value2) public {
-    _installkeysInTableModule();
+    _installKeysInTableModule();
 
     // Set a value in the source table
     // !gasreport set a field on a table with keysInTableModule installed
@@ -167,7 +196,7 @@ contract KeysInTableModuleTest is Test {
   }
 
   function testGetKeysInTable(uint256 value1, uint256 value2) public {
-    _installkeysInTableModule();
+    _installKeysInTableModule();
 
     // Set a value in the source table
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
@@ -194,7 +223,7 @@ contract KeysInTableModuleTest is Test {
   // The KeysInTable module does not support composite keys yet,
   // so this checks that the tuple returned only contains the first key
   function testGetKeysInTableDoesNotSupportCompositeKeys(bytes32 keyA, bytes32 keyB, uint256 value1) public {
-    _installkeysInTableModule();
+    _installKeysInTableModule();
 
     bytes32[] memory keyTuple = new bytes32[](2);
     keyTuple[0] = keyA;

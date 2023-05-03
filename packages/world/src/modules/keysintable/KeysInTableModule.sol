@@ -46,14 +46,13 @@ contract KeysInTableModule is IModule, WorldContext {
     bytes32 resourceSelector = ResourceSelector.from(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName());
 
     if (ResourceType.get(resourceSelector) == Resource.NONE) {
-      // Register the target table
+      // Register the tables
       world.registerTable(
         KeysInTableTableId.getNamespace(),
         KeysInTableTableId.getName(),
         KeysInTable.getSchema(),
         KeysInTable.getKeySchema()
       );
-
       world.registerTable(
         UsedKeysIndexTableId.getNamespace(),
         UsedKeysIndexTableId.getName(),
@@ -61,16 +60,16 @@ contract KeysInTableModule is IModule, WorldContext {
         UsedKeysIndex.getKeySchema()
       );
 
-      // Register metadata for the target table
+      // Register metadata for the tables
       (string memory tableName1, string[] memory fieldNames1) = KeysInTable.getMetadata();
       world.setMetadata(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), tableName1, fieldNames1);
       (string memory tableName2, string[] memory fieldNames2) = UsedKeysIndex.getMetadata();
       world.setMetadata(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), tableName2, fieldNames2);
-    }
 
-    // Grant the hook access to the target table
-    world.grantAccess(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), address(hook));
-    world.grantAccess(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), address(hook));
+      // Grant the hook access to the tables
+      world.grantAccess(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), address(hook));
+      world.grantAccess(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), address(hook));
+    }
 
     // Register a hook that is called when a value is set in the source table
     StoreSwitch.registerStoreHook(sourceTableId, hook);
