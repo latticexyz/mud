@@ -1,8 +1,8 @@
 import glob from "glob";
 import path, { basename } from "path";
 import { rmSync } from "fs";
-import { loadConfig, MUDCoreConfig } from "@latticexyz/config";
-import { worldgen } from "../render-solidity/worldgen";
+import { loadConfig, MUDCoreConfig } from "@latticexyz/config/library";
+import { worldgen } from "../library";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 
 // TODO dedupe this and cli's worldgen command

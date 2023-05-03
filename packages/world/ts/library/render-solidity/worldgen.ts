@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import path from "path";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
-import { MUDCoreConfig } from "@latticexyz/config";
+import { MUDCoreConfig } from "@latticexyz/config/library";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorld } from "./renderWorld";
 import { resolveWorldConfig } from "../config/resolveWorldConfig";

@@ -1,4 +1,4 @@
-import { mudConfig, storePlugin } from "./ts";
+import { mudConfig } from "./ts/register";
 
 export default mudConfig({
   storeImportPath: "../../",
@@ -30,5 +30,4 @@ export default mudConfig({
       },
     },
   },
-  plugins: [storePlugin],
 });

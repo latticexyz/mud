@@ -1,11 +1,10 @@
-import { MUDPlugin } from "@latticexyz/config";
 import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
-import { mudConfig, zStoreConfig, MUDUserConfig, storePlugin, MUDConfig } from "./parseStoreConfig";
+import { mudConfig, zStoreConfig, MUDUserConfig, MUDConfig } from "./parseStoreConfig";
 
 describe("StoreUserConfig", () => {
   // Typecheck manual interfaces against zod
-  expectTypeOf<MUDUserConfig>().toEqualTypeOf<z.input<typeof zStoreConfig> & { plugins: MUDPlugin[] }>();
+  expectTypeOf<MUDUserConfig>().toEqualTypeOf<z.input<typeof zStoreConfig>>();
 
   // type equality isn't deep for optionals
   expectTypeOf<MUDUserConfig["tables"][string]>().toEqualTypeOf<z.input<typeof zStoreConfig>["tables"][string]>();
@@ -37,7 +36,6 @@ describe("StoreUserConfig", () => {
         Enum1: ["E1"],
         Enum2: ["E1"],
       },
-      plugins: [storePlugin],
     })
   ).toEqualTypeOf<MUDConfig<"Enum1" | "Enum2", "Enum1" | "Enum2">>();
 });

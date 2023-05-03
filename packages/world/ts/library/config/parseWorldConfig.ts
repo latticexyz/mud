@@ -1,12 +1,5 @@
-import { z, ZodError } from "zod";
-import {
-  DynamicResolutionType,
-  fromZodErrorCustom,
-  MUDPlugin,
-  zEthereumAddress,
-  zObjectName,
-  zSelector,
-} from "@latticexyz/config";
+import { z } from "zod";
+import { DynamicResolutionType, zEthereumAddress, zObjectName, zSelector } from "@latticexyz/config/library";
 
 const zSystemName = zObjectName;
 const zModuleName = zObjectName;
@@ -57,16 +50,3 @@ export const zWorldConfig = z.object({
 
 // Catchall preserves other plugins' options
 export const zPluginWorldConfig = zWorldConfig.catchall(z.any());
-
-export const worldPlugin: MUDPlugin = (config) => {
-  try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return zPluginWorldConfig.parse(config) as any;
-  } catch (error) {
-    if (error instanceof ZodError) {
-      throw fromZodErrorCustom(error, "WorldConfig Validation Error");
-    } else {
-      throw error;
-    }
-  }
-};

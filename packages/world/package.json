@@ -10,11 +10,21 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/ts/index.js",
+    "./library": "./dist/ts/library/index.js",
+    "./register": "./dist/ts/register/index.js",
     "./mud.config.js": "./dist/mud.config.js",
     "./abi/*": "./abi/*"
   },
-  "types": "ts/index.ts",
+  "typesVersions": {
+    "*": {
+      "library": [
+        "./ts/library/index.ts"
+      ],
+      "register": [
+        "./ts/register/index.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain && pnpm run build:js",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script",

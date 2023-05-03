@@ -1,5 +1,5 @@
 import { AbiTypeToSchemaType, getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
-import { parseStaticArray } from "@latticexyz/config";
+import { parseStaticArray } from "@latticexyz/config/library";
 import { RelativeImportDatum, RenderType } from "@latticexyz/common/codegen";
 import { MUDConfig } from "../config";
 

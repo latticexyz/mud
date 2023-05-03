@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DynamicResolution, ValueWithType } from "@latticexyz/config";
+import { DynamicResolution, ValueWithType } from "@latticexyz/config/library";
 import { zWorldConfig } from "./parseWorldConfig";
 
 // zod doesn't preserve doc comments

@@ -1,6 +1,6 @@
 import { parse, visit } from "@solidity-parser/parser";
 import type { SourceUnit, TypeName, VariableDeclaration } from "@solidity-parser/parser/dist/src/ast-types";
-import { MUDError } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/config/library";
 
 export interface ContractInterfaceFunction {
   name: string;

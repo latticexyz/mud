@@ -6,6 +6,16 @@ export class MUDError extends Error {
   name = "MUDError";
 }
 
+export class MUDContextAlreadyCreatedError extends Error {
+  name = "MUDContextAlreadyCreatedError";
+  message = "MUD context was already created";
+}
+
+export class MUDContextNotCreatedError extends Error {
+  name = "MUDContextNotCreatedError";
+  message = "MUD context has not been created";
+}
+
 // Wrapper with preset styles, only requires a `prefix`
 export function fromZodErrorCustom(error: ZodError, prefix: string) {
   return fromZodError(error, {

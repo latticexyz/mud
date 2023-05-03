@@ -8,14 +8,13 @@ import {
   // config
   MUDCoreUserConfig,
   MUDCoreConfig,
-  MUDPlugin,
   mudCoreConfig,
   // schemas
   zObjectName,
   zSelector,
   zUserEnum,
   zValueName,
-} from "@latticexyz/config";
+} from "@latticexyz/config/library";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -260,11 +259,6 @@ export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig
 
 // Catchall preserves other plugins' options
 export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRefine(validateStoreConfig);
-
-export const storePlugin: MUDPlugin = (config) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return zPluginStoreConfig.parse(config) as any;
-};
 
 /************************************************************************
  *
