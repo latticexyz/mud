@@ -14,7 +14,6 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
 import { MODULE_NAMESPACE } from "../src/modules/keysintable/constants.sol";
-import { KeysInTable } from "../src/modules/keysintable/tables/KeysInTable.sol";
 import { getKeysInTable, hasKey } from "../src/modules/keysintable/getKeysInTable.sol";
 import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelector.sol";
 
@@ -33,7 +32,6 @@ contract KeysInTableModuleTest is Test {
   Schema sourceTableSchema;
   Schema sourceTableKeySchema;
   bytes32 sourceTableId;
-  bytes32 targetTableId;
 
   function setUp() public {
     sourceTableSchema = SchemaLib.encode(SchemaType.UINT256);
@@ -45,7 +43,6 @@ contract KeysInTableModuleTest is Test {
     keyTuple2 = new bytes32[](1);
     keyTuple2[0] = key2;
     sourceTableId = ResourceSelector.from(namespace, sourceFile);
-    targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
   }
 
   function _installkeysInTableModule() internal {

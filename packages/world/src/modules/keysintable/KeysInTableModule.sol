@@ -9,11 +9,9 @@ import { IModule } from "../../interfaces/IModule.sol";
 import { WorldContext } from "../../WorldContext.sol";
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
-import { MODULE_NAMESPACE, KEYS_LENGTH_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
 import { KeysInTableHook } from "./KeysInTableHook.sol";
 import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol";
-import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`

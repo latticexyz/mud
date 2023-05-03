@@ -3,19 +3,13 @@ pragma solidity >=0.8.0;
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 
-import { ResourceSelector } from "../../ResourceSelector.sol";
-
-import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
+import { KeysInTable } from "./tables/KeysInTable.sol";
 import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
-import { ArrayLib } from "../utils/ArrayLib.sol";
 
 /**
  * Note: if a table with composite keys is used, only the first key is indexed
  */
 contract KeysInTableHook is IStoreHook {
-  using ArrayLib for bytes32[];
-  using ResourceSelector for bytes32;
-
   function handleSet(bytes32 tableId, bytes32[] memory key) internal {
     bytes32 keysHash = keccak256(abi.encode(key));
 
