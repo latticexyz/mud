@@ -3,7 +3,6 @@ import {
   ack,
   createEncoder,
   isNetworkComponentUpdateEvent,
-  isNetworkEphemeralComponentUpdateEvent,
   isSystemCallEvent,
   Mappings,
   NetworkComponentUpdate,
