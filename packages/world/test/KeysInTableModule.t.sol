@@ -150,12 +150,6 @@ contract KeysInTableModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
-
-    // Get the list of keys in the target table
-    keysInTable = KeysInTable.getKeys(world, targetTableId);
-
-    // Assert that the list is correct
-    assertEq(keysInTable.length, 1);
     assertEq(keysInTable[0], key1);
   }
 
