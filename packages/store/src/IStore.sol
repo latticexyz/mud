@@ -66,7 +66,7 @@ interface IStoreEphemeral {
  * These methods are frequently invoked during runtime, so it is essential to prioritize
  * optimizing their gas cost
  */
-interface IStoreData is IStoreRead, IStoreWrite, IStoreEphemeral {
+interface IStoreData is IStoreRead, IStoreWrite {
 
 }
 
@@ -84,7 +84,7 @@ interface IStoreRegistration {
   function registerStoreHook(bytes32 table, IStoreHook hook) external;
 }
 
-interface IStore is IStoreData, IStoreRegistration {}
+interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral {}
 
 interface IStoreHook {
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external;

@@ -70,12 +70,6 @@ interface IWorldData {
    * Requires the caller to have access to the namespace or name.
    */
   function deleteRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key) external;
-
-  /**
-   * Emit the ephemeral event without modifying storage at the given namespace and name.
-   * Requires the caller to have access to the namespace or name.
-   */
-  function setEphemeralRecord(bytes16 namespace, bytes16 name, bytes32[] calldata key, bytes calldata data) external;
 }
 
 interface IWorldModuleInstallation {
