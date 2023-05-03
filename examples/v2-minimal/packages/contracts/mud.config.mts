@@ -15,10 +15,10 @@ export default mudConfig({
       },
       storeArgument: true,
     },
-    EventTable: {
+    MessageTable: {
       name: "event",
       schema: {
-        value: "bool",
+        value: "string",
       },
       ephemeral: true,
     },

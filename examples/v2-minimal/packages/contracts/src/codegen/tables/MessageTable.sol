@@ -18,13 +18,13 @@ import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
 bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("event")));
-bytes32 constant EventTableTableId = _tableId;
+bytes32 constant MessageTableTableId = _tableId;
 
-library EventTable {
+library MessageTable {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BOOL;
+    _schema[0] = SchemaType.STRING;
 
     return SchemaLib.encode(_schema);
   }
@@ -40,7 +40,7 @@ library EventTable {
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "value";
-    return ("EventTable", _fieldNames);
+    return ("MessageTable", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -66,7 +66,7 @@ library EventTable {
   }
 
   /** Emit the ephemeral event using individual values */
-  function setEphemeral(bytes32 key, bool value) internal {
+  function setEphemeral(bytes32 key, string memory value) internal {
     bytes memory _data = encode(value);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -76,7 +76,7 @@ library EventTable {
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
-  function setEphemeral(IStore _store, bytes32 key, bool value) internal {
+  function setEphemeral(IStore _store, bytes32 key, string memory value) internal {
     bytes memory _data = encode(value);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -86,8 +86,12 @@ library EventTable {
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bool value) internal view returns (bytes memory) {
-    return abi.encodePacked(value);
+  function encode(string memory value) internal view returns (bytes memory) {
+    uint16[] memory _counters = new uint16[](1);
+    _counters[0] = uint16(bytes(value).length);
+    PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
+
+    return abi.encodePacked(_encodedLengths.unwrap(), bytes((value)));
   }
 
   /* Delete all data for given keys */
@@ -104,11 +108,5 @@ library EventTable {
     _primaryKeys[0] = bytes32((key));
 
     _store.deleteRecord(_tableId, _primaryKeys);
-  }
-}
-
-function _toBool(uint8 value) pure returns (bool result) {
-  assembly {
-    result := value
   }
 }

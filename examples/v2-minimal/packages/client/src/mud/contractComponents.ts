@@ -20,12 +20,12 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    EventTable: (() => {
+    MessageTable: (() => {
       const tableId = new TableId("", "event");
       return defineComponent(
         world,
         {
-          value: RecsType.Boolean,
+          value: RecsType.String,
         },
         {
           metadata: {
