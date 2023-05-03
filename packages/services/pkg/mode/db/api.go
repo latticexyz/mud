@@ -46,6 +46,20 @@ func (dl *DatabaseLayer) Stream() <-chan *StreamEvent {
 	return transformed
 }
 
+// TableExists returns true if the given table exists in the database.
+func (dl *DatabaseLayer) TableExists(table string) bool {
+	var exists bool
+	err := dl.gorm__db.Table(table).
+		Select("count(*) > 0").
+		Find(&exists).
+		Error
+
+	if err != nil {
+		panic(fmt.Errorf("error checking if table exists: %w", err))
+	}
+	return exists
+}
+
 // Exists returns true if a row exists in the specified table using the provided filter criteria.
 func (dl *DatabaseLayer) Exists(table string, filter map[string]interface{}) (bool, error) {
 	var exists bool
