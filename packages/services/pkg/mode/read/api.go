@@ -209,7 +209,7 @@ func (rl *ReadLayer) GetSyncStatus(chainId string) (bool, error) {
 	}
 
 	// If there is a row, then the sync status exists.
-	query, err := rl.dl.Select(syncStatusTableSchema.TableName, map[string]interface{}{
+	query, err := rl.dl.Select(syncStatusTableSchema.NamespacedTableName(), map[string]interface{}{
 		"chain_id": chainId,
 	},
 	)
