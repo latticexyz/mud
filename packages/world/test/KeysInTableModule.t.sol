@@ -173,7 +173,7 @@ contract KeysInTableModuleTest is Test {
     assertEq(targetTableSelector.getName(), sourceFile);
   }
 
-  function testGetkeysInTable(uint256 value1) public {
+  function testGetKeysInTable(uint256 value1) public {
     _installkeysInTableModule();
 
     // Set a value in the source table
