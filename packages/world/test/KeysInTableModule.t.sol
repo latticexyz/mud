@@ -66,11 +66,11 @@ contract KeysInTableModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value));
 
     // Get the list of keys in this target table
-    bytes32[] memory keysInTable = KeysInTable.getKeys(world, targetTableId);
+    bytes32[][] memory keysInTable = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
-    assertEq(keysInTable[0], key1);
+    assertEq(keysInTable[0][0], key1);
   }
 
   function testSetAndDeleteRecordHook(uint256 value1, uint256 value2) public {
@@ -80,45 +80,45 @@ contract KeysInTableModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    bytes32[] memory keysInTable = KeysInTable.getKeys(world, targetTableId);
+    bytes32[][] memory keysInTable = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1, "1");
-    assertEq(keysInTable[0], key1, "2");
+    assertEq(keysInTable[0][0], key1, "2");
 
     // Set another key with the same value
     world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.getKeys(world, targetTableId);
+    keysInTable = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 2);
-    assertEq(keysInTable[0], key1, "3");
-    assertEq(keysInTable[1], key2, "4");
+    assertEq(keysInTable[0][0], key1, "3");
+    assertEq(keysInTable[1][0], key2, "4");
 
     // Change the value of the first key
     // !gasreport change a record on a table with keysInTableModule installed
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2));
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.getKeys(world, targetTableId);
+    keysInTable = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 2, "5");
-    assertEq(keysInTable[0], key1, "6");
-    assertEq(keysInTable[1], key2, "7");
+    assertEq(keysInTable[0][0], key1, "6");
+    assertEq(keysInTable[1][0], key2, "7");
 
     // Delete the first key
     // !gasreport delete a record on a table with keysInTableModule installed
     world.deleteRecord(namespace, sourceFile, keyTuple1);
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.getKeys(world, targetTableId);
+    keysInTable = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1, "8");
-    assertEq(keysInTable[0], key2, "9");
+    assertEq(keysInTable[0][0], key2, "9");
   }
 
   function testSetField(uint256 value1, uint256 value2) public {
@@ -129,22 +129,22 @@ contract KeysInTableModuleTest is Test {
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    bytes32[] memory keysInTable = KeysInTable.getKeys(world, targetTableId);
+    bytes32[][] memory keysInTable = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
-    assertEq(keysInTable[0], key1);
+    assertEq(keysInTable[0][0], key1);
 
     // Change the value using setField
     // !gasreport change a field on a table with keysInTableModule installed
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2));
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.getKeys(world, targetTableId);
+    keysInTable = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
-    assertEq(keysInTable[0], key1);
+    assertEq(keysInTable[0][0], key1);
   }
 
   function testGetTargetTableSelector() public {

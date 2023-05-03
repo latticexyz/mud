@@ -11,8 +11,8 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { MODULE_NAMESPACE, KEYS_LENGTH_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
 import { KeysInTableHook } from "./KeysInTableHook.sol";
-import { KeysInTable } from "./tables/KeysInTable.sol";
-import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
+import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
+import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
 /**
@@ -46,33 +46,30 @@ contract KeysInTableModule is IModule, WorldContext {
     // Extract source table id from args
     bytes32 sourceTableId = abi.decode(args, (bytes32));
 
-    bytes32 targetTableSelector1 = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
-    bytes32 targetTableSelector2 = getTargetTableSelector(USED_KEYS_NAMESPACE, sourceTableId);
-
     IBaseWorld world = IBaseWorld(_world());
 
     // Register the target table
     world.registerTable(
-      targetTableSelector1.getNamespace(),
-      targetTableSelector1.getName(),
+      KeysInTableTableId.getNamespace(),
+      KeysInTableTableId.getName(),
       KeysInTable.getSchema(),
       KeysInTable.getKeySchema()
     );
     world.registerTable(
-      targetTableSelector2.getNamespace(),
-      targetTableSelector2.getName(),
+      UsedKeysIndexTableId.getNamespace(),
+      UsedKeysIndexTableId.getName(),
       UsedKeysIndex.getSchema(),
       UsedKeysIndex.getKeySchema()
     );
 
     // Register metadata for the target table
     (string memory tableName1, string[] memory fieldNames1) = KeysInTable.getMetadata();
-    world.setMetadata(targetTableSelector1.getNamespace(), targetTableSelector1.getName(), tableName1, fieldNames1);
+    world.setMetadata(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), tableName1, fieldNames1);
     (string memory tableName2, string[] memory fieldNames2) = UsedKeysIndex.getMetadata();
-    world.setMetadata(targetTableSelector2.getNamespace(), targetTableSelector2.getName(), tableName2, fieldNames2);
+    world.setMetadata(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), tableName2, fieldNames2);
 
-    grantAccess(world, targetTableSelector1);
-    grantAccess(world, targetTableSelector2);
+    grantAccess(world, KeysInTableTableId);
+    grantAccess(world, UsedKeysIndexTableId);
 
     // Register a hook that is called when a value is set in the source table
     StoreSwitch.registerStoreHook(sourceTableId, hook);
