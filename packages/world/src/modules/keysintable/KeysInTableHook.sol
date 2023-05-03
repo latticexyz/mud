@@ -12,11 +12,6 @@ import { ArrayLib } from "../utils/ArrayLib.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
 /**
- * This is a very naive and inefficient implementation for now.
- * We can optimize this by adding support for `setIndexOfField` in Store
- * and then replicate logic from solecs's Set.sol.
- * (See https://github.com/latticexyz/mud/issues/444)
- *
  * Note: if a table with composite keys is used, only the first key is indexed
  */
 contract KeysInTableHook is IStoreHook {
@@ -62,11 +57,9 @@ contract KeysInTableHook is IStoreHook {
     // If the key has not been set in the table...
     if (data.has) {
       uint32 len = KeysInTable.getLength(keysInTableTableId);
-      bytes32 lastKey = KeysInTable.getKeys(keysInTableTableId)[len - 1];
-
       // Remove the key from the list of keys in this table
-      KeysInTable.updateKeys(keysInTableTableId, data.index, lastKey);
-      KeysInTable.popKeys(keysInTableTableId);
+      bytes32 lastKey = KeysInTable.pop(keysInTableTableId);
+      KeysInTable.update(keysInTableTableId, data.index, lastKey);
 
       KeysInTable.setLength(keysInTableTableId, len - 1);
 
