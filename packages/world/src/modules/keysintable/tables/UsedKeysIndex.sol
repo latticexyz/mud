@@ -17,11 +17,6 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-struct UsedKeysIndexData {
-  bool has;
-  uint32 index;
-}
-
 library UsedKeysIndex {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
@@ -138,7 +133,7 @@ library UsedKeysIndex {
   }
 
   /** Get the full data */
-  function get(bytes32 _tableId, bytes32 keysHash) internal view returns (UsedKeysIndexData memory _table) {
+  function get(bytes32 _tableId, bytes32 keysHash) internal view returns (bool has, uint32 index) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((keysHash));
 
@@ -147,11 +142,7 @@ library UsedKeysIndex {
   }
 
   /** Get the full data (using the specified store) */
-  function get(
-    IStore _store,
-    bytes32 _tableId,
-    bytes32 keysHash
-  ) internal view returns (UsedKeysIndexData memory _table) {
+  function get(IStore _store, bytes32 _tableId, bytes32 keysHash) internal view returns (bool has, uint32 index) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((keysHash));
 
@@ -179,21 +170,11 @@ library UsedKeysIndex {
     _store.setRecord(_tableId, _primaryKeys, _data);
   }
 
-  /** Set the full data using the data struct */
-  function set(bytes32 _tableId, bytes32 keysHash, UsedKeysIndexData memory _table) internal {
-    set(_tableId, keysHash, _table.has, _table.index);
-  }
-
-  /** Set the full data using the data struct (using the specified store) */
-  function set(IStore _store, bytes32 _tableId, bytes32 keysHash, UsedKeysIndexData memory _table) internal {
-    set(_store, _tableId, keysHash, _table.has, _table.index);
-  }
-
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal pure returns (UsedKeysIndexData memory _table) {
-    _table.has = (_toBool(uint8(Bytes.slice1(_blob, 0))));
+  function decode(bytes memory _blob) internal pure returns (bool has, uint32 index) {
+    has = (_toBool(uint8(Bytes.slice1(_blob, 0))));
 
-    _table.index = (uint32(Bytes.slice4(_blob, 1)));
+    index = (uint32(Bytes.slice4(_blob, 1)));
   }
 
   /** Tightly pack full data using this table's schema */

@@ -7,11 +7,16 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { MODULE_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
 import { KeysInTable } from "./tables/KeysInTable.sol";
-import { UsedKeysIndex, UsedKeysIndexData } from "./tables/UsedKeysIndex.sol";
+import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
 import { ArrayLib } from "../utils/ArrayLib.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
 /**
+ * This is a very naive and inefficient implementation for now.
+ * We can optimize this by adding support for `setIndexOfField` in Store
+ * and then replicate logic from solecs's Set.sol.
+ * (See https://github.com/latticexyz/mud/issues/444)
+ *
  * Note: if a table with composite keys is used, only the first key is indexed
  */
 contract KeysInTableHook is IStoreHook {
@@ -33,7 +38,7 @@ contract KeysInTableHook is IStoreHook {
       KeysInTable.setLength(keysInTableTableId, length + 1);
 
       // Update the index to avoid duplicating this key in the array
-      UsedKeysIndex.set(usedIndexTableId, keysHash, UsedKeysIndexData(true, length));
+      UsedKeysIndex.set(usedIndexTableId, keysHash, true, length);
     }
   }
 
@@ -52,14 +57,16 @@ contract KeysInTableHook is IStoreHook {
     bytes32 usedIndexTableId = getTargetTableSelector(USED_KEYS_NAMESPACE, tableId);
 
     bytes32 keysHash = keccak256(abi.encode(key));
-    UsedKeysIndexData memory data = UsedKeysIndex.get(usedIndexTableId, keysHash);
+    (bool has, uint32 index) = UsedKeysIndex.get(usedIndexTableId, keysHash);
 
     // If the key has not been set in the table...
-    if (data.has) {
+    if (has) {
       uint32 len = KeysInTable.getLength(keysInTableTableId);
+      bytes32 lastKey = KeysInTable.getKeys(keysInTableTableId)[len - 1];
+
       // Remove the key from the list of keys in this table
-      bytes32 lastKey = KeysInTable.pop(keysInTableTableId);
-      KeysInTable.update(keysInTableTableId, data.index, lastKey);
+      KeysInTable.updateKeys(keysInTableTableId, index, lastKey);
+      KeysInTable.popKeys(keysInTableTableId);
 
       KeysInTable.setLength(keysInTableTableId, len - 1);
 
