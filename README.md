@@ -85,21 +85,23 @@ The following steps are only necessary if you want to contribute to MUD. To use 
 
 1. Install go (required to build [packages/services](packages/services/)): [https://go.dev/doc/install](https://go.dev/doc/install)
 
-2. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
+2. Install protobuf (required to build [packages/services](packages/services/)): [https://grpc.io/docs/protoc-installation/](https://grpc.io/docs/protoc-installation/)
 
-3. Install pnpm
+3. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
+
+4. Install pnpm
 
 ```bash
 npm install pnpm --global
 ```
 
-4. Clone the MUD monorepo
+5. Clone the MUD monorepo
 
 ```
 git clone https://github.com/latticexyz/mud
 ```
 
-5. Install MUD dependencies and setup local environment
+6. Install MUD dependencies and setup local environment
 
 ```
 cd mud && pnpm install
