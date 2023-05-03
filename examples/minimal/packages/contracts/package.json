@@ -15,7 +15,7 @@
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
     "tablegen": "mud tablegen",
     "test": "mud test-v2",
-    "tsgen": "mud tsgen --configPath mud.config.mts --out ../client/src/mud",
+    "tsgen": "mud tsgen --configPath mud.config.mts --out ../client-vanilla/src/mud && mud tsgen --configPath mud.config.mts --out ../client-react/src/mud",
     "worldgen": "mud worldgen",
     "worldtypes": "rimraf types && typechain --target=ethers-v5 out/IWorld.sol/IWorld.json"
   },
