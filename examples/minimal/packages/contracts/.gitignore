@@ -5,7 +5,6 @@ bindings/
 artifacts/
 abi/
 broadcast/
-.env
 
 # Ignore all deploy artifacts
 deploys/**/*.json
