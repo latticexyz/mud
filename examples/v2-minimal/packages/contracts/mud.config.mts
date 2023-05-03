@@ -1,6 +1,4 @@
-import { resolveTableId } from "@latticexyz/config";
-import { mudConfig, storePlugin } from "@latticexyz/store";
-import { worldPlugin } from "@latticexyz/world";
+import { mudConfig, resolveTableId } from "@latticexyz/world/register";
 
 export default mudConfig({
   overrideSystems: {
@@ -25,5 +23,4 @@ export default mudConfig({
       args: [resolveTableId("CounterTable")],
     },
   ],
-  plugins: [storePlugin, worldPlugin],
 });
