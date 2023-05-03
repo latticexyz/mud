@@ -88,6 +88,7 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
     value: ComponentValue<SchemaOf<C[key]>> | undefined;
     partialValue?: Partial<ComponentValue<SchemaOf<C[key]>>>;
     initialValue?: ComponentValue<SchemaOf<C[key]>>;
+    ephemeral?: boolean;
   };
 }[keyof C] & {
   entity: EntityID;
@@ -113,36 +114,13 @@ export type SystemCall<C extends Components = Components> = {
   updates: NetworkComponentUpdate<C>[];
 };
 
-export type NetworkEphemeralComponentUpdate<C extends Components = Components> = {
-  [key in keyof C]: {
-    type: NetworkEvents.NetworkEphemeralComponentUpdate;
-    component: key & string;
-    value: ComponentValue<SchemaOf<C[key]>> | undefined;
-    partialValue?: Partial<ComponentValue<SchemaOf<C[key]>>>;
-    initialValue?: ComponentValue<SchemaOf<C[key]>>;
-  };
-}[keyof C] & {
-  entity: EntityID;
-  lastEventInTx: boolean;
-  txHash: string;
-  txMetadata?: TxMetadata;
-  blockNumber: number;
-  // TODO: make this required, so we can later sort by logIndex when concatenating event types
-  //       would require updating the ECS snapshot, though
-  logIndex?: number;
-};
-
 export enum NetworkEvents {
   SystemCall = "SystemCall",
   NetworkComponentUpdate = "NetworkComponentUpdate",
   NetworkEphemeralComponentUpdate = "NetworkEphemeralComponentUpdate",
 }
 
-export type NetworkEvent<C extends Components = Components> =
-  | SystemCall<C>
-  | NetworkComponentUpdate<C>
-  | NetworkEphemeralComponentUpdate<C>;
-
+export type NetworkEvent<C extends Components = Components> = SystemCall<C> | NetworkComponentUpdate<C>;
 export function isSystemCallEvent<C extends Components>(e: NetworkEvent<C>): e is SystemCall<C> {
   return e.type === NetworkEvents.SystemCall;
 }
@@ -151,12 +129,6 @@ export function isNetworkComponentUpdateEvent<C extends Components>(
   e: NetworkEvent<C>
 ): e is NetworkComponentUpdate<C> {
   return e.type === NetworkEvents.NetworkComponentUpdate;
-}
-
-export function isNetworkEphemeralComponentUpdateEvent<C extends Components>(
-  e: NetworkEvent<C>
-): e is NetworkEphemeralComponentUpdate<C> {
-  return e.type === NetworkEvents.NetworkEphemeralComponentUpdate;
 }
 
 export type SyncWorkerConfig = {

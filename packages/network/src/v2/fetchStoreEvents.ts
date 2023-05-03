@@ -1,5 +1,5 @@
 import { Contract } from "ethers";
-import { NetworkComponentUpdate, NetworkEphemeralComponentUpdate } from "../types";
+import { NetworkComponentUpdate } from "../types";
 import orderBy from "lodash/orderBy";
 import { isDefined } from "@latticexyz/utils";
 import { ephemeralEvents, storeEvents } from "./common";
@@ -9,7 +9,7 @@ export async function fetchStoreEvents(
   store: Contract,
   fromBlock: number,
   toBlock: number
-): Promise<(NetworkComponentUpdate | NetworkEphemeralComponentUpdate)[]> {
+): Promise<NetworkComponentUpdate[]> {
   const events = [...storeEvents, ...ephemeralEvents];
   const topicSets = events.map((eventName) => store.filters[eventName]().topics).filter(isDefined);
 

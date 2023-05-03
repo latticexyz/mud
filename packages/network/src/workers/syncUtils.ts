@@ -17,8 +17,6 @@ import {
   ContractConfig,
   NetworkEvents,
   NetworkEvent,
-  NetworkEphemeralComponentUpdate,
-  isNetworkComponentUpdateEvent,
   SystemCallTransaction,
   SystemCall,
 } from "../types";
@@ -37,7 +35,6 @@ import { grpc } from "@improbable-eng/grpc-web";
 import { debug as parentDebug } from "./debug";
 import { fetchStoreEvents } from "../v2/fetchStoreEvents";
 import orderBy from "lodash/orderBy";
-import { filter } from "lodash";
 
 const debug = parentDebug.extend("syncUtils");
 
@@ -305,8 +302,8 @@ export async function fetchEventsInBlockRangeChunked(
   toBlockNumber: number,
   interval = 50,
   setPercentage?: (percentage: number) => void
-): Promise<(NetworkComponentUpdate<Components> | NetworkEphemeralComponentUpdate<Components>)[]> {
-  let events: (NetworkComponentUpdate<Components> | NetworkEphemeralComponentUpdate<Components>)[] = [];
+): Promise<NetworkComponentUpdate<Components>[]> {
+  let events: NetworkComponentUpdate<Components>[] = [];
   const delta = toBlockNumber - fromBlockNumber;
   const numSteps = Math.ceil(delta / interval);
   const steps = [...range(numSteps, interval, fromBlockNumber)];
@@ -355,7 +352,7 @@ export async function fetchStateInBlockRange(
 
   storeEvents(
     cacheStore,
-    filter(events, (e) => isNetworkComponentUpdateEvent(e)) as NetworkComponentUpdate<Components>[]
+    events.filter((e) => !e.ephemeral)
   );
 
   return cacheStore;

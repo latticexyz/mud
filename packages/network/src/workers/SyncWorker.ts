@@ -286,7 +286,10 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     );
 
     // Merge initial state, gap state and live events since initial sync started
-    storeEvents(initialState, [...gapStateEvents, ...initialLiveEvents].filter(isNetworkComponentUpdateEvent));
+    storeEvents(
+      initialState,
+      [...gapStateEvents, ...initialLiveEvents].filter((e) => !e.ephemeral)
+    );
     cacheStore.current = initialState;
     debug(`initial sync state size: ${cacheStore.current.state.size}`);
 
