@@ -1,6 +1,7 @@
 import type { CommandModule } from "yargs";
-import { loadConfig, MUDCoreConfig } from "@latticexyz/config";
-import { worldgen } from "@latticexyz/world";
+import { loadConfig } from "@latticexyz/config/library";
+import { StoreConfig } from "@latticexyz/store/library";
+import { WorldConfig, worldgen } from "@latticexyz/world/library";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import glob from "glob";
 import path, { basename } from "path";
@@ -34,7 +35,7 @@ const commandModule: CommandModule<Options, Options> = {
     }));
 
     // Load the config
-    const mudConfig = (await loadConfig(configPath)) as MUDCoreConfig;
+    const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
     const outputBaseDirectory = path.join(srcDir, mudConfig.codegenDirectory);
 

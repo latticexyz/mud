@@ -1,13 +1,13 @@
 import { readFileSync } from "fs";
 import path from "path";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
-import { MUDCoreConfig } from "@latticexyz/config/library";
+import { StoreConfig } from "@latticexyz/store/library";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorld } from "./renderWorld";
-import { resolveWorldConfig } from "../config/resolveWorldConfig";
+import { resolveWorldConfig, WorldConfig } from "../config";
 
 export async function worldgen(
-  config: MUDCoreConfig,
+  config: StoreConfig & WorldConfig,
   existingContracts: { path: string; basename: string }[],
   outputBaseDirectory: string
 ) {

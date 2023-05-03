@@ -2,8 +2,10 @@ import chalk from "chalk";
 import glob from "glob";
 import path, { basename } from "path";
 import type { CommandModule, Options } from "yargs";
-import { loadConfig, MUDCoreConfig } from "@latticexyz/config";
-import { MUDError } from "@latticexyz/config";
+import { loadConfig } from "@latticexyz/config/library";
+import { MUDError } from "@latticexyz/config/library";
+import { StoreConfig } from "@latticexyz/store/library";
+import { WorldConfig } from "@latticexyz/world/library";
 import { deploy } from "../utils/deploy-v2";
 import { logError } from "../utils/errors";
 import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
@@ -64,7 +66,7 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
     .map((path) => basename(path, ".sol"));
 
   // Load the config
-  const mudConfig = (await loadConfig(configPath)) as MUDCoreConfig;
+  const mudConfig = (await loadConfig(configPath)) as StoreConfig & WorldConfig;
 
   if (printConfig) console.log(chalk.green("\nResolved config:\n"), JSON.stringify(mudConfig, null, 2));
 

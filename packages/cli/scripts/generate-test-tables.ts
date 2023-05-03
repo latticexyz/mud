@@ -1,5 +1,6 @@
 import path from "path";
-import { mudConfig, storePlugin, tablegen } from "@latticexyz/store";
+import { tablegen } from "@latticexyz/store/library";
+import { mudConfig } from "@latticexyz/world/register";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { logError } from "../src/utils/errors";
 
@@ -58,8 +59,6 @@ try {
       Enum1: ["E1", "E2", "E3"],
       Enum2: ["E1"],
     },
-
-    plugins: [storePlugin],
   });
 } catch (error: unknown) {
   logError(error);

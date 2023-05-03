@@ -6,11 +6,11 @@ import { BigNumber, ContractInterface, ethers } from "ethers";
 import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils.js";
 
 import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/common/foundry";
-import { resolveWithContext } from "@latticexyz/config";
-import { MUDError } from "@latticexyz/config";
+import { resolveWithContext } from "@latticexyz/config/library";
+import { MUDError } from "@latticexyz/config/library";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { MUDConfig, resolveAbiOrUserType } from "@latticexyz/store";
-import { resolveWorldConfig } from "@latticexyz/world";
+import { StoreConfig, resolveAbiOrUserType } from "@latticexyz/store/library";
+import { WorldConfig, resolveWorldConfig } from "@latticexyz/world/library";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
@@ -34,7 +34,7 @@ export interface DeploymentInfo {
 }
 
 export async function deploy(
-  mudConfig: MUDConfig,
+  mudConfig: StoreConfig & WorldConfig,
   existingContracts: string[],
   deployConfig: DeployConfig
 ): Promise<DeploymentInfo> {

@@ -1,9 +1,8 @@
-import { MUDCoreConfig } from "@latticexyz/config";
-import { resolveAbiOrUserType } from "@latticexyz/store";
+import { StoreConfig, resolveAbiOrUserType } from "@latticexyz/store/library";
 import { schemaTypesToRecsTypeStrings } from "./schemaTypesToRecsTypeStrings";
 import { RecsV1TableOptions } from "./types";
 
-export function getRecsV1TableOptions(config: MUDCoreConfig): RecsV1TableOptions {
+export function getRecsV1TableOptions(config: StoreConfig): RecsV1TableOptions {
   const tableOptions = [];
   for (const tableName of Object.keys(config.tables)) {
     const tableData = config.tables[tableName];
