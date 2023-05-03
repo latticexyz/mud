@@ -52,7 +52,7 @@ contract KeysInTableModuleTest is Test {
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    // !gasreport install keys with table module
+    // !gasreport install keys in table module
     world.installRootModule(keysInTableModule, abi.encode(sourceTableId));
   }
 

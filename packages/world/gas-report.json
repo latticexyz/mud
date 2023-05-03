@@ -6,6 +6,12 @@
     "gasUsed": 2240
   },
   {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "install keys in table module",
+    "functionCall": "world.installRootModule(keysInTableModule, abi.encode(sourceTableId))",
+    "gasUsed": 1007179
+  },
+  {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
