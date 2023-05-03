@@ -1082,6 +1082,13 @@ const _abi = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [],
+    name: "willRevert",
+    outputs: [],
+    stateMutability: "pure",
+    type: "function",
+  },
 ];
 
 export class IWorld__factory {

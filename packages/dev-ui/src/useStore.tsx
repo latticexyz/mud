@@ -4,20 +4,15 @@ import {
   publicClient as publicClientObservable,
   walletClient as walletClientObservable,
 } from "@latticexyz/network/dev";
-import { PublicClient, Transaction, WalletClient, Hex, TransactionReceipt } from "viem";
+import { PublicClient, WalletClient, Hex } from "viem";
 import { create } from "zustand";
 import { dev as stdClientDev } from "@latticexyz/std-client";
 
 export type StoreEvent = EmitterEvents["storeEvent"];
-export type TransactionInfo = {
-  hash: Hex;
-  transaction: Promise<Transaction>;
-  transactionReceipt: Promise<TransactionReceipt>;
-};
 
 export const useStore = create<{
   storeEvents: StoreEvent[];
-  transactions: TransactionInfo[];
+  transactions: Hex[];
   publicClient: PublicClient | null;
   walletClient: WalletClient | null;
   blockNumber: bigint | null;
@@ -48,11 +43,8 @@ emitter.on("transaction", ({ hash }) => {
     return;
   }
 
-  const transaction = publicClient.getTransaction({ hash: hash as Hex });
-  const transactionReceipt = publicClient.waitForTransactionReceipt({ hash: hash as Hex });
-  // TODO: handle replacements?
   useStore.setState((state) => ({
-    transactions: [...state.transactions, { hash: hash as Hex, transaction, transactionReceipt }],
+    transactions: [...state.transactions, hash as Hex],
   }));
 });
 

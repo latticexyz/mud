@@ -1,9 +1,8 @@
-import { from } from "rxjs";
-import { decodeEventLog, decodeFunctionData, toBytes } from "viem";
-import { useObservableValue } from "@latticexyz/react";
+import { decodeEventLog, decodeFunctionData, toBytes, Hex } from "viem";
 import { TableId } from "@latticexyz/utils";
-import { TransactionInfo, useStore } from "../useStore";
+import { useStore } from "../useStore";
 import { keyTupleToEntityID } from "@latticexyz/network/dev";
+import { useTransaction } from "../useTransaction";
 
 const serialize = (obj: any) =>
   JSON.stringify(obj, (key, value) => {
@@ -13,20 +12,21 @@ const serialize = (obj: any) =>
     return value;
   });
 
-type Props = TransactionInfo;
+type Props = {
+  hash: Hex;
+};
 
-export function TransactionSummary({ hash, transaction, transactionReceipt }: Props) {
-  const tx = useObservableValue(from(transaction));
-  const txReceipt = useObservableValue(from(transactionReceipt));
+export function TransactionSummary({ hash }: Props) {
+  const { transaction, transactionReceipt } = useTransaction(hash);
   const worldAbi = useStore((state) => state.worldAbi);
 
-  const functionData = worldAbi && tx?.input ? decodeFunctionData({ abi: worldAbi, data: tx.input }) : null;
-  const events = worldAbi && txReceipt?.logs?.map((log) => decodeEventLog({ abi: worldAbi, ...log }));
+  const functionData =
+    worldAbi && transaction?.input ? decodeFunctionData({ abi: worldAbi, data: transaction.input }) : null;
+  const events = worldAbi && transactionReceipt?.logs?.map((log) => decodeEventLog({ abi: worldAbi, ...log }));
 
-  console.log("got tx", tx, txReceipt, events, functionData);
   return (
     <div className="p-2 border border-white/10 rounded font-mono">
-      <div className="text-xs text-white/40">tx {hash}</div>
+      <div className="text-xs text-white/40 whitespace-nowrap overflow-hidden text-ellipsis">tx {hash}</div>
       <div className="text-blue-300">
         {functionData?.functionName}({functionData?.args?.map((value) => serialize(value))})
       </div>

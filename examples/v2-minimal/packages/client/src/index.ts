@@ -19,4 +19,11 @@ components.CounterTable.update$.subscribe((update) => {
   console.log("increment result", await tx.wait());
 };
 
+(window as any).willRevert = async () => {
+  const tx = await worldSend("willRevert", [{ gasLimit: 100000 }]);
+
+  console.log("willRevert tx", tx);
+  console.log("willRevert result", await tx.wait());
+};
+
 mountDevUI();

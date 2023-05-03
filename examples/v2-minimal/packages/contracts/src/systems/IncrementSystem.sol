@@ -14,4 +14,8 @@ contract IncrementSystem is System {
     CounterTable.set(key, newValue);
     return newValue;
   }
+
+  function willRevert() public pure {
+    revert("I told you it would revert");
+  }
 }
