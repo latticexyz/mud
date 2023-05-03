@@ -20,7 +20,7 @@ export const useStore = create<{
   worldAbi: any | null;
 }>(() => ({
   storeEvents: [],
-  transactions: [],
+  transactions: [], // TODO: populate from recent wallet txs?
   publicClient: null,
   walletClient: null,
   blockNumber: null,

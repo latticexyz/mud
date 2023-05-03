@@ -13,6 +13,8 @@ type Props = {
   hash: Hex;
 };
 
+// TODO: show block number or relative timestamp (e.g. 3s ago)
+
 export function TransactionSummary({ hash }: Props) {
   const { transactionPromise, transactionReceiptPromise } = useTransaction(hash);
   const transaction = usePromise(transactionPromise);
@@ -35,11 +37,11 @@ export function TransactionSummary({ hash }: Props) {
     transactionReceipt.value.logs.map((log) => decodeEventLog({ abi: worldAbi, ...log }));
 
   return (
-    <div>
-      <div
+    <details>
+      <summary
         className={twMerge(
-          "px-2 py-1 rounded flex items-center gap-2 -mx-[2px] border-2 border-transparent border-dashed",
-          isPending ? "border-white/20" : revertReason ? "bg-red-800" : "bg-slate-700"
+          "px-2 py-1 rounded flex items-center gap-2 border-2 border-transparent border-dashed cursor-pointer",
+          isPending ? "border-white/20 cursor-default" : revertReason ? "bg-red-800" : "bg-slate-700"
         )}
       >
         <div className="flex-1 font-mono text-white">
@@ -49,7 +51,7 @@ export function TransactionSummary({ hash }: Props) {
         <div className="flex-none inline-flex w-4 h-4 justify-center items-center font-bold">
           {isPending ? <PendingIcon /> : revertReason ? <>⚠</> : <>✓</>}
         </div>
-      </div>
+      </summary>
       {revertReason ? <div className="p-2">{revertReason}</div> : null}
       {events?.length ? (
         <div className="p-2">
@@ -84,6 +86,6 @@ export function TransactionSummary({ hash }: Props) {
           </table>
         </div>
       ) : null}
-    </div>
+    </details>
   );
 }

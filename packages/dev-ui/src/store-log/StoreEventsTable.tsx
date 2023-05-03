@@ -1,5 +1,7 @@
 import { StoreEvent } from "../useStore";
 
+// TODO: use react-table or similar for better perf with lots of logs
+
 type Props = {
   storeEvents: StoreEvent[];
 };

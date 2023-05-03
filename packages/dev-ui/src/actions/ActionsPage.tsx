@@ -26,9 +26,11 @@ export function ActionsPage() {
         hoveredRef.current = false;
       }}
     >
-      {transactions.map((hash) => (
-        <TransactionSummary key={hash} hash={hash} />
-      ))}
+      {transactions.length ? (
+        transactions.map((hash) => <TransactionSummary key={hash} hash={hash} />)
+      ) : (
+        <>Waiting for transactions…</>
+      )}
     </div>
   );
 }
