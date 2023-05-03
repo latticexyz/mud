@@ -19,6 +19,9 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../../packages/cli
         version: link:../../../../packages/cli
+      '@latticexyz/dev-ui':
+        specifier: link:../../../../packages/dev-ui
+        version: link:../../../../packages/dev-ui
       '@latticexyz/network':
         specifier: link:../../../../packages/network
         version: link:../../../../packages/network
