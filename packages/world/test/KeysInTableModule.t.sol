@@ -106,14 +106,8 @@ contract KeysInTableModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 2, "5");
-    assertEq(keysInTable[1], key2, "6");
-
-    // Get the list of keys in the target table
-    keysInTable = KeysInTable.getKeys(world, targetTableId);
-
-    // Assert that the list is correct
-    assertEq(keysInTable.length, 2, "7");
-    assertEq(keysInTable[0], key1, "8");
+    assertEq(keysInTable[0], key1, "6");
+    assertEq(keysInTable[1], key2, "7");
 
     // Delete the first key
     // !gasreport delete a record on a table with keysInTableModule installed
@@ -123,8 +117,8 @@ contract KeysInTableModuleTest is Test {
     keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
-    assertEq(keysInTable.length, 1, "9");
-    assertEq(keysInTable[0], key2, "10");
+    assertEq(keysInTable.length, 1, "8");
+    assertEq(keysInTable[0], key2, "9");
   }
 
   function testSetField(uint256 value1, uint256 value2) public {
@@ -167,7 +161,7 @@ contract KeysInTableModuleTest is Test {
     assertEq(targetTableSelector.getName(), sourceFile);
   }
 
-  function testGetKeysInTable(uint256 value1) public {
+  function testGetKeysInTable(uint256 value1, uint256 value2) public {
     _installkeysInTableModule();
 
     // Set a value in the source table
@@ -180,8 +174,8 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable.length, 1);
     assertEq(keysInTable[0], key1);
 
-    // Set another key with the same value
-    world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value1));
+    // Set another key with a different value
+    world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value2));
 
     // Get the list of keys in the target table
     keysInTable = getKeysInTable(world, sourceTableId);
@@ -190,5 +184,45 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable.length, 2);
     assertEq(keysInTable[0], key1);
     assertEq(keysInTable[1], key2);
+  }
+
+  function testGetKeysInTableComposite(uint256 value1) public {
+    _installkeysInTableModule();
+
+    bytes32 key = keccak256("test");
+
+    bytes32[] memory keyTuple = new bytes32[](2);
+    keyTuple[0] = key;
+
+    // Set a value in the source table
+    world.setRecord(namespace, sourceFile, keyTuple, abi.encodePacked(value1));
+
+    // !gasreport Get list of keys in a given table
+    bytes32[] memory keysInTable = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0], key);
+  }
+
+  function testGetKeysInTableCompositeBad(uint256 value1) public {
+    _installkeysInTableModule();
+
+    bytes32 key = keccak256("test");
+    bytes32 keyX = keccak256("test");
+
+    bytes32[] memory keyTuple = new bytes32[](2);
+    keyTuple[0] = key;
+    keyTuple[1] = keyX;
+
+    // Set a value in the source table
+    world.setRecord(namespace, sourceFile, keyTuple, abi.encodePacked(value1));
+
+    // !gasreport Get list of keys in a given table
+    bytes32[] memory keysInTable = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0], key);
   }
 }
