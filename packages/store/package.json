@@ -11,8 +11,8 @@
   "type": "module",
   "exports": {
     ".": "./dist/ts/index.js",
-    "./*": "./dist/*",
-    "./abi/*": "./abi/*"
+    "./abi/*": "./abi/*",
+    "./*": "./dist/*"
   },
   "types": "ts/index.ts",
   "scripts": {
