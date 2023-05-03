@@ -735,19 +735,19 @@ func SchemaTypeToPostgresType(schemaType SchemaType) string {
 		return "text"
 	} else if (schemaType >= UINT8_ARRAY && schemaType <= UINT32_ARRAY) || (schemaType >= INT8_ARRAY && schemaType <= INT32_ARRAY) {
 		// Integer array.
-		return "bytea"
+		return "jsonb"
 	} else if (schemaType >= UINT64_ARRAY && schemaType <= UINT256_ARRAY) || (schemaType >= INT64_ARRAY && schemaType <= INT256_ARRAY) {
 		// Big integer array.
-		return "bytea"
+		return "jsonb"
 	} else if schemaType >= BYTES1_ARRAY && schemaType <= BYTES32_ARRAY {
 		// Bytes array.
-		return "bytea"
+		return "jsonb"
 	} else if schemaType == BOOL_ARRAY {
 		// Boolean array.
-		return "bytea"
+		return "jsonb"
 	} else if schemaType == ADDRESS_ARRAY {
 		// Address array.
-		return "bytea"
+		return "jsonb"
 	} else {
 		// Default to text.
 		return "text"

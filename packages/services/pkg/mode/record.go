@@ -18,6 +18,7 @@ func BuildTag(key string, tableSchema *TableSchema) string {
 	} else {
 		tag.WriteString(`gorm:"`)
 	}
+	tag.WriteString(`type:` + tableSchema.PostgresTypes[key] + `;`)
 	tag.WriteString(fmt.Sprintf(`column:%s"`, strings.ToLower(key)))
 	return tag.String()
 }
