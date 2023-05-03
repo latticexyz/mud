@@ -2,6 +2,10 @@ import { SchemaType, SchemaTypeToPrimitive } from "@latticexyz/schema-type";
 import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 
+export function decodeValueV2(bytes: Uint8Array): any {
+  return JSON.parse(new TextDecoder().decode(bytes));
+}
+
 // TODO: figure out how to use with SchemaTypeToPrimitive<T> return type to ensure correctness here
 export function decodeValue<T extends SchemaType>(schemaType: T, bytes: Uint8Array) {
   switch (schemaType) {

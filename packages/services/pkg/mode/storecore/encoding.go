@@ -555,9 +555,9 @@ func postgresHexEncode(data []byte) string {
 //
 // Returns:
 // - (string): The decoded value of the bytes field as a string.
-func handleBytes(encoding []byte) []byte {
-	// No-op.
-	return encoding
+func handleBytes(encoding []byte) string {
+	// Hex-encode bytes for legibility.
+	return postgresHexEncode(encoding)
 }
 
 // handleUint handles the decoding of a uint static field.
@@ -723,7 +723,7 @@ func SchemaTypeToPostgresType(schemaType SchemaType) string {
 		return "text"
 	} else if (schemaType >= BYTES1 && schemaType <= BYTES32) || (schemaType == BYTES) {
 		// Bytes.
-		return "bytea"
+		return "text"
 	} else if schemaType == BOOL {
 		// Boolean.
 		return "boolean"

@@ -46,21 +46,19 @@ func (dl *DatabaseLayer) Stream() <-chan *StreamEvent {
 	return transformed
 }
 
-// TableExists returns true if the given table exists in the database.
-func (dl *DatabaseLayer) TableExists(table string) bool {
-	return dl.gorm__db.Migrator().HasTable(table)
-}
-
 // Exists returns true if a row exists in the specified table using the provided filter criteria.
 func (dl *DatabaseLayer) Exists(table string, filter map[string]interface{}) (bool, error) {
-	if !dl.TableExists(table) {
-		return false, nil
+	var exists bool
+	err := dl.gorm__db.Table(table).
+		Select("count(*) > 0").
+		Where(filter).
+		Find(&exists).
+		Error
+
+	if err != nil {
+		panic(fmt.Errorf("error checking if table exists: %w", err))
 	}
-	find := dl.gorm__db.Table(table).Where(filter)
-	if err := find.Error; err != nil {
-		return false, err
-	}
-	return find.RowsAffected > 0, nil
+	return exists, nil
 }
 
 // Create inserts a new record into the specified table using the provided record struct.

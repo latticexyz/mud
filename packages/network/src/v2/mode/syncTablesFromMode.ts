@@ -11,6 +11,7 @@ import { registerMetadata } from "../schemas/tableMetadata";
 import { registerSchema } from "../schemas/tableSchemas";
 import { getBlockNumberFromModeTable } from "./getBlockNumberFromModeTable";
 import { decodeAbiParameters } from "viem";
+import { decodeValueV2 } from "../schemas/decodeValue";
 
 export async function syncTablesFromMode(
   client: QueryLayerClient,
@@ -57,12 +58,8 @@ export async function syncTablesFromMode(
 
     for (const row of rows) {
       console.log(tableName, keyAbiTypes, fieldAbiTypes, row.values);
-      const keyTuple = row.values
-        .slice(0, keyLength)
-        .map((bytes, i) => decodeAbiParameters([{ type: keyAbiTypes[i] }], arrayToHex(bytes))[0]);
-      const values = row.values
-        .slice(keyLength)
-        .map((bytes, i) => decodeAbiParameters([{ type: fieldAbiTypes[i] }], arrayToHex(bytes))[0]);
+      const keyTuple = row.values.slice(0, keyLength).map((bytes, i) => decodeValueV2(bytes));
+      const values = row.values.slice(keyLength).map((bytes, i) => decodeValueV2(bytes));
 
       const entity = keyTupleToEntityID(keyTuple);
       const value = Object.fromEntries(values.map((value, i) => [fieldNames[i], value])) as ComponentValue;
@@ -75,7 +72,9 @@ export async function syncTablesFromMode(
         setPercentage(Math.floor(numRowsProcessed / numRowsTotal));
       }
     }
+    console.log("done syncing from mode table", tableName);
   }
+  console.log("done syncing from mode", numRowsProcessed, "rows processed");
 
   // make sure all schemas/metadata are registered before returning to avoid downstream lookup issues
   await Promise.all(registrationPromises);
