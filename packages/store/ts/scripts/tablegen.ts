@@ -1,9 +1,9 @@
 import path from "path";
-import { loadConfig, MUDCoreConfig } from "@latticexyz/config/library";
+import { loadConfig } from "@latticexyz/config/library";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import { tablegen } from "../library/render-solidity";
+import { tablegen, StoreConfig } from "../library";
 
-const config = (await loadConfig()) as MUDCoreConfig;
+const config = (await loadConfig()) as StoreConfig;
 const srcDir = await getSrcDirectory();
 
 await tablegen(config, path.join(srcDir, config.codegenDirectory));

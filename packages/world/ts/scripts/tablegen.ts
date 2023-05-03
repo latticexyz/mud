@@ -1,11 +1,9 @@
 import path from "path";
-import { loadConfig, MUDCoreConfig } from "@latticexyz/config/library";
+import { loadConfig } from "@latticexyz/config/library";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import { tablegen } from "@latticexyz/store/library";
-// register MUD config and its store extension to get store types
-import "@latticexyz/store/register";
+import { StoreConfig, tablegen } from "@latticexyz/store/library";
 
-const config = (await loadConfig()) as MUDCoreConfig;
+const config = (await loadConfig()) as StoreConfig;
 const srcDir = await getSrcDirectory();
 
 await tablegen(config, path.join(srcDir, config.codegenDirectory));

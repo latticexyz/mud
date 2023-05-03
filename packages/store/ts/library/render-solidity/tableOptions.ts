@@ -8,7 +8,7 @@ import {
   RenderStaticField,
 } from "@latticexyz/common/codegen";
 import { RenderTableOptions } from "./types";
-import { MUDConfig } from "../config";
+import { StoreConfig } from "../config";
 import { getSchemaTypeInfo, importForAbiOrUserType, resolveAbiOrUserType } from "./userType";
 
 export interface TableOptions {
@@ -17,7 +17,7 @@ export interface TableOptions {
   renderOptions: RenderTableOptions;
 }
 
-export function getTableOptions(config: MUDConfig): TableOptions[] {
+export function getTableOptions(config: StoreConfig): TableOptions[] {
   const storeImportPath = config.storeImportPath;
 
   const options = [];

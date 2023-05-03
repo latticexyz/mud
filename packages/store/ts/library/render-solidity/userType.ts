@@ -1,7 +1,7 @@
 import { AbiTypeToSchemaType, getStaticByteLength, SchemaType, SchemaTypeToAbiType } from "@latticexyz/schema-type";
 import { parseStaticArray } from "@latticexyz/config/library";
 import { RelativeImportDatum, RenderType } from "@latticexyz/common/codegen";
-import { MUDConfig } from "../config";
+import { StoreConfig } from "../config";
 
 export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
 
@@ -10,7 +10,7 @@ export type UserTypeInfo = ReturnType<typeof getUserTypeInfo>;
  */
 export function resolveAbiOrUserType(
   abiOrUserType: string,
-  config: MUDConfig
+  config: StoreConfig
 ): {
   schemaType: SchemaType;
   renderType: RenderType;
@@ -42,7 +42,7 @@ export function resolveAbiOrUserType(
 export function importForAbiOrUserType(
   abiOrUserType: string,
   usedInDirectory: string,
-  config: MUDConfig
+  config: StoreConfig
 ): RelativeImportDatum | undefined {
   // abi types which directly mirror a SchemaType
   if (abiOrUserType in AbiTypeToSchemaType) {
@@ -79,7 +79,7 @@ export function getSchemaTypeInfo(schemaType: SchemaType): RenderType {
 
 export function getUserTypeInfo(
   userType: string,
-  config: MUDConfig
+  config: StoreConfig
 ): {
   schemaType: SchemaType;
   renderType: RenderType;

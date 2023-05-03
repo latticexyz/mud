@@ -5,9 +5,9 @@ import { renderTable } from "./renderTable";
 import { renderTypesFromConfig } from "./renderTypesFromConfig";
 import { renderTableIndex } from "./renderTableIndex";
 import { rmSync } from "fs";
-import { MUDConfig } from "../config";
+import { StoreConfig } from "../config";
 
-export async function tablegen(config: MUDConfig, outputBaseDirectory: string) {
+export async function tablegen(config: StoreConfig, outputBaseDirectory: string) {
   const allTableOptions = getTableOptions(config);
 
   const uniqueTableDirectories = new Set(allTableOptions.map(({ outputPath }) => path.dirname(outputPath)));

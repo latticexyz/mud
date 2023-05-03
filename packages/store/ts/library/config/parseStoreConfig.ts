@@ -257,6 +257,9 @@ const StoreConfigUnrefined = z
 // finally validate global conditions
 export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig);
 
+export type StoreUserConfig = z.input<typeof zStoreConfig>;
+export type StoreConfig = z.output<typeof zStoreConfig>;
+
 // Catchall preserves other plugins' options
 export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRefine(validateStoreConfig);
 

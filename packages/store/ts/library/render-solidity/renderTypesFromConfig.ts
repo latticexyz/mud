@@ -1,7 +1,7 @@
 import { renderEnums } from "@latticexyz/common/codegen";
-import { MUDConfig } from "../config";
+import { StoreConfig } from "../config";
 
-export function renderTypesFromConfig(config: MUDConfig) {
+export function renderTypesFromConfig(config: StoreConfig) {
   const enums = Object.keys(config.enums).map((name) => ({
     name,
     memberNames: config.enums[name],
