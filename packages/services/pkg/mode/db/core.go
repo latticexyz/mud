@@ -16,6 +16,7 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	gorm_logger "gorm.io/gorm/logger"
 )
 
 // connectToDatabase creates a connection to a PostgreSQL database using the specified DSN.
@@ -52,7 +53,9 @@ func connectToDatabase(dsn string) (*sqlx.DB, error) {
 //   - (*gorm.DB): A pointer to the connected database instance via GORM.
 //   - (error): An error if any occurred during the connection process.
 func gorm__connectToDatabase(dsn string) (*gorm.DB, error) {
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: gorm_logger.Default.LogMode(gorm_logger.Info),
+	})
 	if err != nil {
 		return nil, err
 	}
