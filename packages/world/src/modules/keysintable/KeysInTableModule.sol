@@ -37,11 +37,6 @@ contract KeysInTableModule is IModule, WorldContext {
     return bytes16("index");
   }
 
-  function grantAccess(IBaseWorld world, bytes32 targetTableSelector) internal {
-    // Grant the hook access to the target table
-    world.grantAccess(targetTableSelector.getNamespace(), targetTableSelector.getName(), address(hook));
-  }
-
   function install(bytes memory args) public override {
     // Extract source table id from args
     bytes32 sourceTableId = abi.decode(args, (bytes32));
@@ -73,8 +68,9 @@ contract KeysInTableModule is IModule, WorldContext {
       world.setMetadata(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), tableName2, fieldNames2);
     }
 
-    grantAccess(world, KeysInTableTableId);
-    grantAccess(world, UsedKeysIndexTableId);
+    // Grant the hook access to the target table
+    world.grantAccess(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), address(hook));
+    world.grantAccess(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), address(hook));
 
     // Register a hook that is called when a value is set in the source table
     StoreSwitch.registerStoreHook(sourceTableId, hook);
