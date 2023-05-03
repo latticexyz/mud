@@ -70,6 +70,14 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable[0][0], key1);
   }
 
+  function testInstallTwice() public {
+    _installkeysInTableModule();
+
+    bytes16 sourceFile2 = bytes16("source2");
+    bytes32 sourceTableId2 = world.registerTable(namespace, sourceFile2, sourceTableSchema, sourceTableKeySchema);
+    world.installRootModule(keysInTableModule, abi.encode(sourceTableId2));
+  }
+
   function testSetAndDeleteRecordHook(uint256 value1, uint256 value2) public {
     _installkeysInTableModule();
 

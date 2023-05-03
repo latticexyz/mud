@@ -2,6 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
+import { ResourceType } from "../core/tables/ResourceType.sol";
+import { Resource } from "../../Types.sol";
 
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 import { IModule } from "../../interfaces/IModule.sol";
@@ -46,25 +48,30 @@ contract KeysInTableModule is IModule, WorldContext {
 
     IBaseWorld world = IBaseWorld(_world());
 
-    // Register the target table
-    world.registerTable(
-      KeysInTableTableId.getNamespace(),
-      KeysInTableTableId.getName(),
-      KeysInTable.getSchema(),
-      KeysInTable.getKeySchema()
-    );
-    world.registerTable(
-      UsedKeysIndexTableId.getNamespace(),
-      UsedKeysIndexTableId.getName(),
-      UsedKeysIndex.getSchema(),
-      UsedKeysIndex.getKeySchema()
-    );
+    bytes32 resourceSelector = ResourceSelector.from(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName());
 
-    // Register metadata for the target table
-    (string memory tableName1, string[] memory fieldNames1) = KeysInTable.getMetadata();
-    world.setMetadata(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), tableName1, fieldNames1);
-    (string memory tableName2, string[] memory fieldNames2) = UsedKeysIndex.getMetadata();
-    world.setMetadata(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), tableName2, fieldNames2);
+    if (ResourceType.get(resourceSelector) == Resource.NONE) {
+      // Register the target table
+      world.registerTable(
+        KeysInTableTableId.getNamespace(),
+        KeysInTableTableId.getName(),
+        KeysInTable.getSchema(),
+        KeysInTable.getKeySchema()
+      );
+
+      world.registerTable(
+        UsedKeysIndexTableId.getNamespace(),
+        UsedKeysIndexTableId.getName(),
+        UsedKeysIndex.getSchema(),
+        UsedKeysIndex.getKeySchema()
+      );
+
+      // Register metadata for the target table
+      (string memory tableName1, string[] memory fieldNames1) = KeysInTable.getMetadata();
+      world.setMetadata(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), tableName1, fieldNames1);
+      (string memory tableName2, string[] memory fieldNames2) = UsedKeysIndex.getMetadata();
+      world.setMetadata(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), tableName2, fieldNames2);
+    }
 
     grantAccess(world, KeysInTableTableId);
     grantAccess(world, UsedKeysIndexTableId);
