@@ -102,13 +102,7 @@ export default mudConfig({
     KeysInTable: {
       directory: "/modules/keysintable/tables",
       primaryKeys: {},
-      schema: "bytes32[]", // For now only supports 1 key per value,
-      tableIdArgument: true,
-    },
-    KeysInTableLength: {
-      directory: "/modules/keysintable/tables",
-      primaryKeys: {},
-      schema: "uint32",
+      schema: { length: "uint32", keys: "bytes32[]" }, // For now only supports 1 key per value,
       tableIdArgument: true,
     },
     UsedKeysIndex: {

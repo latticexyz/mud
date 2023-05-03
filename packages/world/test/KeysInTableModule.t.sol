@@ -66,7 +66,7 @@ contract KeysInTableModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value));
 
     // Get the list of keys in this target table
-    bytes32[] memory keysInTable = KeysInTable.get(world, targetTableId);
+    bytes32[] memory keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
@@ -80,7 +80,7 @@ contract KeysInTableModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    bytes32[] memory keysInTable = KeysInTable.get(world, targetTableId);
+    bytes32[] memory keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1, "1");
@@ -90,7 +90,7 @@ contract KeysInTableModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.get(world, targetTableId);
+    keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 2);
@@ -102,14 +102,14 @@ contract KeysInTableModuleTest is Test {
     world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(value2));
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.get(world, targetTableId);
+    keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 2, "5");
     assertEq(keysInTable[1], key2, "6");
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.get(world, targetTableId);
+    keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 2, "7");
@@ -120,7 +120,7 @@ contract KeysInTableModuleTest is Test {
     world.deleteRecord(namespace, sourceFile, keyTuple1);
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.get(world, targetTableId);
+    keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1, "9");
@@ -135,7 +135,7 @@ contract KeysInTableModuleTest is Test {
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value1));
 
     // Get the list of keys in the target table
-    bytes32[] memory keysInTable = KeysInTable.get(world, targetTableId);
+    bytes32[] memory keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
@@ -146,13 +146,13 @@ contract KeysInTableModuleTest is Test {
     world.setField(namespace, sourceFile, keyTuple1, 0, abi.encodePacked(value2));
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.get(world, targetTableId);
+    keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
 
     // Get the list of keys in the target table
-    keysInTable = KeysInTable.get(world, targetTableId);
+    keysInTable = KeysInTable.getKeys(world, targetTableId);
 
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);

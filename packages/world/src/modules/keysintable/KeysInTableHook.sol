@@ -5,9 +5,8 @@ import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 
 import { ResourceSelector } from "../../ResourceSelector.sol";
 
-import { MODULE_NAMESPACE, KEYS_LENGTH_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
+import { MODULE_NAMESPACE, USED_KEYS_NAMESPACE } from "./constants.sol";
 import { KeysInTable } from "./tables/KeysInTable.sol";
-import { KeysInTableLength } from "./tables/KeysInTableLength.sol";
 import { UsedKeysIndex, UsedKeysIndexData } from "./tables/UsedKeysIndex.sol";
 import { ArrayLib } from "../utils/ArrayLib.sol";
 import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
@@ -26,18 +25,17 @@ contract KeysInTableHook is IStoreHook {
 
   function handleSet(bytes32 tableId, bytes32[] memory key) internal {
     bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
-    bytes32 keysInTableLengthTableId = getTargetTableSelector(KEYS_LENGTH_NAMESPACE, tableId);
     bytes32 usedIndexTableId = getTargetTableSelector(USED_KEYS_NAMESPACE, tableId);
 
     bytes32 keysHash = keccak256(abi.encode(key));
 
     // If the key not has yet been set in the table...
     if (!UsedKeysIndex.getHas(usedIndexTableId, keysHash)) {
-      uint32 len = KeysInTableLength.get(keysInTableLengthTableId);
+      uint32 len = KeysInTable.getLength(keysInTableTableId);
 
       // Push the key to the list of keys in this table
-      KeysInTable.push(keysInTableTableId, key[0]);
-      KeysInTableLength.set(keysInTableLengthTableId, len + 1);
+      KeysInTable.pushKeys(keysInTableTableId, key[0]);
+      KeysInTable.setLength(keysInTableTableId, len + 1);
 
       // Update the index to avoid duplicating this key in the array
       UsedKeysIndex.set(usedIndexTableId, keysHash, UsedKeysIndexData(true, len));
@@ -56,7 +54,6 @@ contract KeysInTableHook is IStoreHook {
 
   function onDeleteRecord(bytes32 tableId, bytes32[] memory key) public {
     bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
-    bytes32 keysInTableLengthTableId = getTargetTableSelector(KEYS_LENGTH_NAMESPACE, tableId);
     bytes32 usedIndexTableId = getTargetTableSelector(USED_KEYS_NAMESPACE, tableId);
 
     bytes32 keysHash = keccak256(abi.encode(key));
@@ -64,14 +61,14 @@ contract KeysInTableHook is IStoreHook {
 
     // If the key has not been set in the table...
     if (data.has) {
-      uint32 len = KeysInTableLength.get(keysInTableLengthTableId);
-      bytes32 lastKey = KeysInTable.get(keysInTableTableId)[len - 1];
+      uint32 len = KeysInTable.getLength(keysInTableTableId);
+      bytes32 lastKey = KeysInTable.getKeys(keysInTableTableId)[len - 1];
 
       // Remove the key from the list of keys in this table
-      KeysInTable.update(keysInTableTableId, data.index, lastKey);
-      KeysInTable.pop(keysInTableTableId);
+      KeysInTable.updateKeys(keysInTableTableId, data.index, lastKey);
+      KeysInTable.popKeys(keysInTableTableId);
 
-      KeysInTableLength.set(keysInTableLengthTableId, len - 1);
+      KeysInTable.setLength(keysInTableTableId, len - 1);
 
       // Delete the index as the key is not in the table
       UsedKeysIndex.deleteRecord(usedIndexTableId, keysHash);

@@ -18,7 +18,7 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[] memory keysInTa
   bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
 
   // Get the keys with the given value
-  keysInTable = KeysInTable.get(keysInTableTableId);
+  keysInTable = KeysInTable.getKeys(keysInTableTableId);
 }
 
 /**
@@ -29,5 +29,5 @@ function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[] m
   bytes32 keysInTableTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
 
   // Get the keys with the given table
-  keysInTable = KeysInTable.get(store, keysInTableTableId);
+  keysInTable = KeysInTable.getKeys(store, keysInTableTableId);
 }
