@@ -31,14 +31,14 @@ contract KeysInTableHook is IStoreHook {
 
     // If the key not has yet been set in the table...
     if (!UsedKeysIndex.getHas(usedIndexTableId, keysHash)) {
-      uint32 len = KeysInTable.getLength(keysInTableTableId);
+      uint32 length = KeysInTable.getLength(keysInTableTableId);
 
       // Push the key to the list of keys in this table
       KeysInTable.pushKeys(keysInTableTableId, key[0]);
-      KeysInTable.setLength(keysInTableTableId, len + 1);
+      KeysInTable.setLength(keysInTableTableId, length + 1);
 
       // Update the index to avoid duplicating this key in the array
-      UsedKeysIndex.set(usedIndexTableId, keysHash, UsedKeysIndexData(true, len));
+      UsedKeysIndex.set(usedIndexTableId, keysHash, UsedKeysIndexData(true, length));
     }
   }
 
