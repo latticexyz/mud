@@ -72,6 +72,7 @@ export async function createFastTxExecutor(
         hash = tx.hash;
       }
 
+      // TODO: emit txs that fail gas estimation so we can display em in dev UI
       emitter.emit("transaction", { hash });
 
       // Return the transaction promise and transaction hash.

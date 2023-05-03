@@ -3,9 +3,9 @@ import { useStore } from "../useStore";
 import { StoreEventsTable } from "./StoreEventsTable";
 
 export function StoreLogPage() {
+  const storeEvents = useStore((state) => state.storeEvents);
   const containerRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
-  const storeEvents = useStore((state) => state.storeEvents);
   const scrollBehaviorRef = useRef<ScrollBehavior>("auto");
 
   useEffect(() => {

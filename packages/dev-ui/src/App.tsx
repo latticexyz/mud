@@ -47,7 +47,7 @@ export function App() {
         </div>
         <div
           className={twMerge(
-            "w-full h-full bg-slate-800 text-slate-300 text-sm flex flex-col",
+            "w-full h-full bg-slate-800 text-white/80 text-sm flex flex-col",
             "transition duration-500",
             shown ? "opacity-100" : "opacity-0"
           )}

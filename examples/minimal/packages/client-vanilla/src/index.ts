@@ -20,6 +20,7 @@ components.CounterTable.update$.subscribe((update) => {
 };
 
 (window as any).willRevert = async () => {
+  // set gas limit so we skip estimation and can test tx revert
   const tx = await worldSend("willRevert", [{ gasLimit: 100000 }]);
 
   console.log("willRevert tx", tx);
