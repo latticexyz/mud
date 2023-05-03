@@ -1,7 +1,7 @@
 ---
 chains:
   - name: "localhost"
-    id: "371337"
+    id: "31337"
     rpc:
       http: "http://localhost:8545"
       ws: "ws://localhost:8545"
