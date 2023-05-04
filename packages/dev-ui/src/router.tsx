@@ -3,6 +3,7 @@ import { App } from "./App";
 import { StoreLogPage } from "./store-log/StoreLogPage";
 import { SummaryPage } from "./summary/SummaryPage";
 import { ActionsPage } from "./actions/ActionsPage";
+import { StoreDataPage } from "./store-data/StoreDataPage";
 
 export const router = createMemoryRouter(
   createRoutesFromElements(
@@ -10,7 +11,7 @@ export const router = createMemoryRouter(
       <Route index element={<SummaryPage />} />
       <Route path="/actions" element={<ActionsPage />} />
       <Route path="/store-log" element={<StoreLogPage />} />
-      <Route path="/store-data" element={<>TODO</>} />
+      <Route path="/store-data" element={<StoreDataPage />} />
     </Route>
   )
 );

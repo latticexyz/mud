@@ -1,3 +1,4 @@
+import { serialize } from "../serialize";
 import { StoreEvent } from "../useStore";
 
 // TODO: use react-table or similar for better perf with lots of logs
@@ -37,7 +38,7 @@ export function StoreEventsTable({ storeEvents }: Props) {
             </td>
             <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">{storeEvent.keyTuple}</td>
             <td className="px-1 whitespace-nowrap overflow-hidden text-ellipsis">
-              {JSON.stringify(storeEvent.namedValues)}
+              {serialize(storeEvent.namedValues)}
             </td>
           </tr>
         ))}

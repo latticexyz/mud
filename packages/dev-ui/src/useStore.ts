@@ -3,16 +3,19 @@ import {
   EmitterEvents,
   publicClient as publicClientObservable,
   walletClient as walletClientObservable,
+  cacheStore as cacheStoreObservable,
 } from "@latticexyz/network/dev";
 import { PublicClient, WalletClient, Hex } from "viem";
 import { create } from "zustand";
 import { dev as stdClientDev } from "@latticexyz/std-client";
+import { CacheStore } from "@latticexyz/network";
 
 export type StoreEvent = EmitterEvents["storeEvent"];
 
 export const useStore = create<{
   storeEvents: StoreEvent[];
   transactions: Hex[];
+  cacheStore: CacheStore | null;
   publicClient: PublicClient | null;
   walletClient: WalletClient | null;
   blockNumber: bigint | null;
@@ -21,6 +24,7 @@ export const useStore = create<{
 }>(() => ({
   storeEvents: [],
   transactions: [], // TODO: populate from recent wallet txs?
+  cacheStore: null,
   publicClient: null,
   walletClient: null,
   blockNumber: null,
@@ -46,6 +50,10 @@ emitter.on("transaction", ({ hash }) => {
   useStore.setState((state) => ({
     transactions: [...state.transactions, hash as Hex],
   }));
+});
+
+cacheStoreObservable.subscribe((cacheStore) => {
+  useStore.setState({ cacheStore });
 });
 
 publicClientObservable.subscribe((publicClient) => {

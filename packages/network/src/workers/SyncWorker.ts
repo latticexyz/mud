@@ -54,6 +54,7 @@ import { Contract } from "ethers";
 import { createModeClient } from "../v2/mode/createModeClient";
 import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";
 import { getModeBlockNumber } from "../v2/mode/getModeBlockNumber";
+import * as devObservables from "../dev/observables";
 
 const debug = parentDebug.extend("SyncWorker");
 
@@ -166,6 +167,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     this.setLoadingState({ state: SyncState.INITIAL, msg: "Starting initial sync", percentage: 0 });
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
+    devObservables.cacheStore.next(cacheStore.current);
     const { blockNumber$ } = createBlockNumberStream(providers);
     // The RPC is only queried if this stream is subscribed to
 
@@ -288,6 +290,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     // Merge initial state, gap state and live events since initial sync started
     storeEvents(initialState, [...gapStateEvents, ...initialLiveEvents]);
     cacheStore.current = initialState;
+    devObservables.cacheStore.next(cacheStore.current);
     debug(`initial sync state size: ${cacheStore.current.state.size}`);
 
     this.setLoadingState({
