@@ -13,7 +13,8 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
-import { getKeysInTable, hasKey } from "../src/modules/keysintable/getKeysInTable.sol";
+import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
+import { hasKey } from "../src/modules/keysintable/hasKey.sol";
 
 contract KeysInTableModuleTest is Test {
   using ResourceSelector for bytes32;
