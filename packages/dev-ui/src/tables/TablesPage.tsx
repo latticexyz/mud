@@ -4,7 +4,7 @@ import { useTables } from "./useTables";
 import { useEffect, useRef } from "react";
 import { twMerge } from "tailwind-merge";
 
-export function StoreDataPage() {
+export function TablesPage() {
   const detailsRef = useRef<HTMLDetailsElement>(null);
   const tables = useTables();
   const { table: tableParam } = useParams();

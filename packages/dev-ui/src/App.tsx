@@ -70,7 +70,7 @@ export function App() {
               Actions
             </NavButton>
             <NavButton
-              to="/store-log"
+              to="/events"
               className={({ isActive }) =>
                 twMerge("py-1.5 px-3", isActive ? "bg-slate-800 text-white" : "hover:bg-blue-800 hover:text-white")
               }
@@ -78,7 +78,7 @@ export function App() {
               Store log
             </NavButton>
             <NavButton
-              to="/store-data"
+              to="/tables"
               className={({ isActive }) =>
                 twMerge("py-1.5 px-3", isActive ? "bg-slate-800 text-white" : "hover:bg-blue-800 hover:text-white")
               }

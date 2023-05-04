@@ -1,19 +1,19 @@
-import { createMemoryRouter, createRoutesFromElements, Route, Navigate } from "react-router-dom";
+import { createMemoryRouter, createRoutesFromElements, Route } from "react-router-dom";
 import { App } from "./App";
-import { StoreLogPage } from "./store-log/StoreLogPage";
+import { EventsPage } from "./events/EventsPage";
 import { SummaryPage } from "./summary/SummaryPage";
 import { ActionsPage } from "./actions/ActionsPage";
-import { StoreDataPage } from "./store-data/StoreDataPage";
-import { StoreTablePage } from "./store-data/StoreTablePage";
+import { TablesPage } from "./tables/TablesPage";
+import { Table } from "./tables/Table";
 
 export const router = createMemoryRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
       <Route index element={<SummaryPage />} />
       <Route path="actions" element={<ActionsPage />} />
-      <Route path="store-log" element={<StoreLogPage />} />
-      <Route path="store-data" element={<StoreDataPage />}>
-        <Route path=":table" element={<StoreTablePage />} />
+      <Route path="events" element={<EventsPage />} />
+      <Route path="tables" element={<TablesPage />}>
+        <Route path=":table" element={<Table />} />
       </Route>
     </Route>
   )

@@ -6,7 +6,7 @@ import { useStore } from "../useStore";
 // TODO: use react-table or similar for better perf with lots of logs
 // TODO: this will need refactoring once we have better v2 client code, for now we're leaning on v1 cache store (ECS based)
 
-export function StoreTablePage() {
+export function Table() {
   const cacheStore = useStore((state) => state.cacheStore);
   const { table } = useParams();
 
@@ -18,6 +18,8 @@ export function StoreTablePage() {
     const [component] = unpackTuple(key);
     return component === componentIndex;
   });
+
+  // TODO: get fields and turn into columns instead of a single json value
 
   return (
     <table className="w-full table-fixed -mx-1">

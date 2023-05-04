@@ -1,9 +1,9 @@
 import { useRef, useEffect } from "react";
 import { useStore } from "../useStore";
-import { StoreEventsTable } from "./StoreEventsTable";
+import { EventsTable } from "./EventsTable";
 
-export function StoreLogPage() {
-  const storeEvents = useStore((state) => state.storeEvents);
+export function EventsPage() {
+  const events = useStore((state) => state.storeEvents);
   const containerRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
   const scrollBehaviorRef = useRef<ScrollBehavior>("auto");
@@ -13,7 +13,7 @@ export function StoreLogPage() {
       containerRef.current?.scrollIntoView({ behavior: scrollBehaviorRef.current, block: "end" });
     }
     scrollBehaviorRef.current = "smooth";
-  }, [storeEvents]);
+  }, [events]);
 
   return (
     <div
@@ -26,7 +26,7 @@ export function StoreLogPage() {
         hoveredRef.current = false;
       }}
     >
-      <StoreEventsTable storeEvents={storeEvents} />
+      <EventsTable events={events} />
     </div>
   );
 }
