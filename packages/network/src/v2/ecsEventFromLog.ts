@@ -9,6 +9,7 @@ import { keyTupleToEntityID } from "./keyTupleToEntityID";
 import { emitter as devEmitter } from "../dev/emitter";
 
 export const ecsEventFromLog = async (
+  chainId: number,
   contract: Contract,
   log: Log,
   parsedLog: LogDescription,
@@ -44,8 +45,7 @@ export const ecsEventFromLog = async (
       devEmit: () => {
         devEmitter.emit("storeEvent", {
           event: name,
-          // TODO: figure out how to get chainId here
-          chainId: 31337,
+          chainId,
           worldAddress: contract.address,
           blockNumber,
           logIndex,
@@ -81,8 +81,7 @@ export const ecsEventFromLog = async (
       devEmit: () => {
         devEmitter.emit("storeEvent", {
           event: name,
-          // TODO: figure out how to get chainId here
-          chainId: 31337,
+          chainId,
           worldAddress: contract.address,
           blockNumber,
           logIndex,
@@ -103,8 +102,7 @@ export const ecsEventFromLog = async (
       devEmit: () => {
         devEmitter.emit("storeEvent", {
           event: name,
-          // TODO: figure out how to get chainId here
-          chainId: 31337,
+          chainId,
           worldAddress: contract.address,
           blockNumber,
           logIndex,

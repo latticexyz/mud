@@ -10,6 +10,9 @@ export async function fetchStoreEvents(
   fromBlock: number,
   toBlock: number
 ): Promise<NetworkComponentUpdate[]> {
+  // TODO: pass the chain ID as an argument
+  const { chainId } = await store.provider.getNetwork();
+
   const topicSets = storeEvents.map((eventName) => store.filters[eventName]().topics).filter(isDefined);
 
   const logSets = await Promise.all(
@@ -29,7 +32,7 @@ export async function fetchStoreEvents(
   const unsortedEvents = await Promise.all(
     logs.map(({ log, parsedLog }) => {
       const { transactionHash, logIndex } = log;
-      return ecsEventFromLog(store, log, parsedLog, lastLogForTx[transactionHash] === logIndex);
+      return ecsEventFromLog(chainId, store, log, parsedLog, lastLogForTx[transactionHash] === logIndex);
     })
   );
 
