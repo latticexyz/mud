@@ -17,8 +17,7 @@ import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol"
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
  * provided in the install methods arguments. The hook keeps track of the keys that are in a given table.
- * This mapping is stored in a table registered by the module at the `targetTableId` provided in the
- * install methods arguments.
+ * This mapping is stored in a global table that is registered when the module is first installed.
  *
  * Note: if a table with composite keys is used, only the first key is indexed
  *
