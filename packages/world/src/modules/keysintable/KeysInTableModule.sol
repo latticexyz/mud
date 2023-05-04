@@ -32,7 +32,7 @@ contract KeysInTableModule is IModule, WorldContext {
   KeysInTableHook immutable hook = new KeysInTableHook();
 
   function getName() public pure returns (bytes16) {
-    return bytes16("index");
+    return bytes16("keysInTable");
   }
 
   function install(bytes memory args) public override {
