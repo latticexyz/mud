@@ -13,6 +13,11 @@ import { KeysInTable } from "./tables/KeysInTable.sol";
  */
 function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keysInTable) {
   // Get the keys with the given table
+
+  /**
+   * Note: this module does not yet support composite keys.
+   * Therefore we create an array of key tuples but only fill the first entry.
+   */
   bytes32[] memory keysInTableRaw = KeysInTable.getKeys(tableId);
 
   keysInTable = new bytes32[][](keysInTableRaw.length);
