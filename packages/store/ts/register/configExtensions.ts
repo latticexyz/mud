@@ -10,7 +10,7 @@ extendMUDCoreConfig((config) => {
     return zPluginStoreConfig.parse(config);
   } catch (error) {
     if (error instanceof ZodError) {
-      throw fromZodErrorCustom(error, "WorldConfig Validation Error");
+      throw fromZodErrorCustom(error, "StoreConfig Validation Error");
     } else {
       throw error;
     }
