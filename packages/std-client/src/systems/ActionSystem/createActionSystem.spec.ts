@@ -24,7 +24,13 @@ import { ContractTransaction } from "ethers";
 describe("ActionSystem", () => {
   let world: World;
   let Resource: Component<{ amount: Type.Number }>;
-  let Action: Component<{ state: Type.Number; on: Type.OptionalEntity }>;
+  let Action: Component<{
+    state: Type.Number;
+    on: Type.OptionalEntity;
+    metadata: Type.OptionalT;
+    overrides: Type.OptionalStringArray;
+    txHash: Type.OptionalString;
+  }>;
   let actions: ReturnType<typeof createActionSystem>;
   let txReduced$: ReplaySubject<string>;
 
@@ -34,6 +40,8 @@ describe("ActionSystem", () => {
     world = createWorld();
     txReduced$ = new ReplaySubject<string>();
     actions = createActionSystem(world, txReduced$);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     Action = actions.Action;
     Resource = defineComponent(world, { amount: Type.Number });
   });
@@ -198,7 +206,7 @@ describe("ActionSystem", () => {
           value: { amount: getComponentValueStrict(Resource, player).amount - 1 },
         },
       ],
-      execute: async () => Promise.resolve({ hash: "tx1", wait: () => void 0 } as ContractTransaction),
+      execute: async () => Promise.resolve({ hash: "tx1", wait: () => void 0 } as any as ContractTransaction),
     }) as EntityIndex;
 
     const entity2 = actions.add({
