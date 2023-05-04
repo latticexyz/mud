@@ -1,6 +1,6 @@
 import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
-import { mudConfig, zStoreConfig, MUDUserConfig, MUDConfig } from "./parseStoreConfig";
+import { mudConfig, zStoreConfig, MUDUserConfig, MUDConfig } from ".";
 
 describe("StoreUserConfig", () => {
   // Typecheck manual interfaces against zod

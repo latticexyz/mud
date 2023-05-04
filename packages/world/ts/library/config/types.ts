@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { DynamicResolution, ValueWithType } from "@latticexyz/config/library";
-import { zWorldConfig } from "./parseWorldConfig";
+import { zWorldConfig } from "./worldConfig";
 
 // zod doesn't preserve doc comments
 export type SystemUserConfig =

@@ -1,6 +1,6 @@
 import { describe, expectTypeOf } from "vitest";
 import { z } from "zod";
-import { zWorldConfig } from "./parseWorldConfig";
+import { zWorldConfig } from "./worldConfig";
 import { WorldUserConfig } from "./types";
 
 describe("parseWorldConfig", () => {
