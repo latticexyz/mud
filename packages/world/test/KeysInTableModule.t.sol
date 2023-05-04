@@ -13,9 +13,7 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
-import { MODULE_NAMESPACE } from "../src/modules/keysintable/constants.sol";
 import { getKeysInTable, hasKey } from "../src/modules/keysintable/getKeysInTable.sol";
-import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelector.sol";
 
 contract KeysInTableModuleTest is Test {
   using ResourceSelector for bytes32;
@@ -179,20 +177,6 @@ contract KeysInTableModuleTest is Test {
     // Assert that the list is correct
     assertEq(keysInTable.length, 1);
     assertEq(keysInTable[0][0], key1);
-  }
-
-  function testGetTargetTableSelector() public {
-    // !gasreport compute the target table selector
-    bytes32 targetTableSelector = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
-
-    // The first 8 bytes are the module namespace
-    assertEq(bytes8(targetTableSelector), MODULE_NAMESPACE);
-
-    // followed by the first 4 bytes of the source table namespace
-    assertEq(bytes8(targetTableSelector << 64), bytes8(namespace));
-
-    // The last 16 bytes are the source file
-    assertEq(targetTableSelector.getName(), sourceFile);
   }
 
   function testGetKeysInTable(uint256 value1, uint256 value2) public {
