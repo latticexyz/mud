@@ -2,6 +2,7 @@ import { NetworkSummary } from "./NetworkSummary";
 import { BurnerWalletSummary } from "./BurnerWalletSummary";
 import { StoreEventsSummary } from "./StoreEventsSummary";
 import { ActionsSummary } from "./ActionsSummary";
+import { TablesSummary } from "./TablesSummary";
 
 export function SummaryPage() {
   return (
@@ -22,6 +23,10 @@ export function SummaryPage() {
         <div className="space-y-1">
           <h1 className="font-bold text-white/40 uppercase text-xs">Recent store events</h1>
           <StoreEventsSummary />
+        </div>
+        <div className="space-y-2">
+          <h1 className="font-bold text-white/40 uppercase text-xs">Tables</h1>
+          <TablesSummary />
         </div>
       </div>
     </>
