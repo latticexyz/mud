@@ -40,7 +40,7 @@ contract KeysInTableHook is IStoreHook {
     bytes32 keysHash = keccak256(abi.encode(key));
     (bool has, uint32 index) = UsedKeysIndex.get(tableId, keysHash);
 
-    // If the key has not been set in the table...
+    // If the key was part of the table...
     if (has) {
       uint32 length = KeysInTable.getLength(tableId);
       bytes32 lastKey = KeysInTable.getKeys(tableId)[length - 1];
