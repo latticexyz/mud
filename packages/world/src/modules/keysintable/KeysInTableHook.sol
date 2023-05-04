@@ -42,17 +42,23 @@ contract KeysInTableHook is IStoreHook {
 
     // If the key was part of the table...
     if (has) {
-      uint32 length = KeysInTable.getLength(tableId);
-      bytes32 lastKey = KeysInTable.getKeys(tableId)[length - 1];
-
-      // Remove the key from the list of keys in this table
-      KeysInTable.updateKeys(tableId, index, lastKey);
-      KeysInTable.popKeys(tableId);
-
-      KeysInTable.setLength(tableId, length - 1);
-
       // Delete the index as the key is not in the table
       UsedKeysIndex.deleteRecord(tableId, keysHash);
+
+      uint32 length = KeysInTable.getLength(tableId);
+
+      if (length == 1) {
+        // Delete the list of keys in this table
+        KeysInTable.deleteRecord(tableId);
+      } else {
+        bytes32 lastKey = KeysInTable.getKeys(tableId)[length - 1];
+
+        // Remove the key from the list of keys in this table
+        KeysInTable.updateKeys(tableId, index, lastKey);
+        KeysInTable.popKeys(tableId);
+
+        KeysInTable.setLength(tableId, length - 1);
+      }
     }
   }
 }
