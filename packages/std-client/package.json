@@ -21,8 +21,6 @@
     "clean:js": "rimraf dist",
     "clean:mud": "rimraf src/mud-definitions",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\;",
-    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
-    "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
     "release": "npm publish --access=public",
     "test": "pnpm run build:mud && tsc --noEmit && vitest typecheck --run"
   },
