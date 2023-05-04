@@ -9,7 +9,6 @@ yarn.lock
 .docs
 lerna-debug.log
 .retype
-.env
 yarn-error.log
 .turbo
 
