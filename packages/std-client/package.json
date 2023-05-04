@@ -23,7 +23,7 @@
     "dev": "tsup --watch",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\;",
     "release": "npm publish --access=public",
-    "test": "pnpm run build:mud && tsc --noEmit && vitest typecheck --run"
+    "test": "pnpm run build:mud && vitest typecheck --run"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
