@@ -9,8 +9,10 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "src/index.ts",
-  "source": "src/index.ts",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "types": "src/index.ts",
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:js",
     "build:js": "tsup",
