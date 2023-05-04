@@ -76,8 +76,7 @@ export async function createNetwork(initialConfig: NetworkConfig) {
   const publicClient = createPublicClient({
     chain,
     transport: fallback([webSocket(), http()]),
-    // TODO: configure this per chain using block times
-    pollingInterval: 1000,
+    pollingInterval: config.provider.options?.pollingInterval ?? config.clock.period ?? 1000,
   });
   const burnerAccount = config.privateKey ? privateKeyToAccount(config.privateKey as Address) : null;
   const burnerWalletClient = burnerAccount
@@ -85,8 +84,7 @@ export async function createNetwork(initialConfig: NetworkConfig) {
         account: burnerAccount,
         chain,
         transport: fallback([webSocket(), http()]),
-        // TODO: configure this per chain using block times
-        pollingInterval: 1000,
+        pollingInterval: config.provider.options?.pollingInterval ?? config.clock.period ?? 1000,
       })
     : null;
 
