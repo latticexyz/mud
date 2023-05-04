@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { ResourceType } from "../core/tables/ResourceType.sol";
 import { Resource } from "../../Types.sol";
 
@@ -70,6 +69,6 @@ contract KeysInTableModule is IModule, WorldContext {
     }
 
     // Register a hook that is called when a value is set in the source table
-    StoreSwitch.registerStoreHook(sourceTableId, hook);
+    world.registerStoreHook(sourceTableId, hook);
   }
 }
