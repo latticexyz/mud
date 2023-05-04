@@ -7,7 +7,7 @@ import {
 } from "@latticexyz/network/dev";
 import { PublicClient, WalletClient, Hex } from "viem";
 import { create } from "zustand";
-import { dev as stdClientDev } from "@latticexyz/std-client";
+import { worldAbiObservable } from "@latticexyz/std-client/dev";
 import { CacheStore } from "@latticexyz/network";
 
 export type StoreEvent = EmitterEvents["storeEvent"];
@@ -72,6 +72,6 @@ walletClientObservable.subscribe((walletClient) => {
   useStore.setState({ walletClient });
 });
 
-stdClientDev.worldAbiObservable.subscribe((worldAbi) => {
+worldAbiObservable.subscribe((worldAbi) => {
   useStore.setState({ worldAbi });
 });

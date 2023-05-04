@@ -12,7 +12,6 @@
     ".": "./dist/index.js",
     "./dev": "./dist/dev/index.js"
   },
-  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "*": [
