@@ -3,7 +3,7 @@ import { StoreConfig, StoreUserConfig } from "../library/config";
 // Inject non-generic options into the core config.
 // Re-exporting an interface of an existing module merges them, adding new options to the interface.
 // (typescript has no way to override types)
-declare module "@latticexyz/config/library" {
+declare module "@latticexyz/config" {
   // Extend the user config type, which represents the config as written by the users.
   // Most things are optional here.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface

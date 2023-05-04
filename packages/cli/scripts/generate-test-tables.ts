@@ -1,5 +1,5 @@
 import path from "path";
-import { tablegen } from "@latticexyz/store/library";
+import { tablegen } from "@latticexyz/store";
 import { mudConfig } from "@latticexyz/world/register";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { logError } from "../src/utils/errors";

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { DynamicResolutionType, zEthereumAddress, zObjectName, zSelector } from "@latticexyz/config/library";
+import { DynamicResolutionType, zEthereumAddress, zObjectName, zSelector } from "@latticexyz/config";
 
 const zSystemName = zObjectName;
 const zModuleName = zObjectName;

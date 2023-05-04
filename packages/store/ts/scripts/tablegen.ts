@@ -1,5 +1,5 @@
 import path from "path";
-import { loadConfig } from "@latticexyz/config/library";
+import { loadConfig } from "@latticexyz/config";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { tablegen, StoreConfig } from "../library";
 

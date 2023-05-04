@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import path from "path";
 import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum } from "@latticexyz/common/codegen";
-import { StoreConfig } from "@latticexyz/store/library";
+import { StoreConfig } from "@latticexyz/store";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorld } from "./renderWorld";
 import { resolveWorldConfig, WorldConfig } from "../config";

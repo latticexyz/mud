@@ -1,7 +1,7 @@
 import type { CommandModule } from "yargs";
-import { loadConfig } from "@latticexyz/config/library";
-import { StoreConfig } from "@latticexyz/store/library";
-import { WorldConfig, worldgen } from "@latticexyz/world/library";
+import { loadConfig } from "@latticexyz/config";
+import { StoreConfig } from "@latticexyz/store";
+import { WorldConfig, worldgen } from "@latticexyz/world";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import glob from "glob";
 import path, { basename } from "path";

@@ -14,7 +14,7 @@ import {
   zSelector,
   zUserEnum,
   zValueName,
-} from "@latticexyz/config/library";
+} from "@latticexyz/config";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;

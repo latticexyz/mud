@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { existsSync, readFileSync, rmSync, writeFileSync } from "fs";
 import path from "path";
 import type { CommandModule } from "yargs";
-import { MUDError } from "@latticexyz/config/library";
+import { MUDError } from "@latticexyz/config";
 import { logError } from "../utils/errors";
 import localPackageJson from "../../package.json" assert { type: "json" };
 

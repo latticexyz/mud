@@ -1,10 +1,10 @@
 import glob from "glob";
 import path, { basename } from "path";
 import { rmSync } from "fs";
-import { loadConfig } from "@latticexyz/config/library";
+import { loadConfig } from "@latticexyz/config";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { WorldConfig, worldgen } from "../library";
-import { StoreConfig } from "@latticexyz/store/library";
+import { StoreConfig } from "@latticexyz/store";
 
 // TODO dedupe this and cli's worldgen command
 const configPath = undefined;

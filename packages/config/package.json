@@ -10,12 +10,12 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    "./library": "./dist/library/index.js",
+    ".": "./dist/library/index.js",
     "./register": "./dist/register/index.js"
   },
   "typesVersions": {
     "*": {
-      "library": [
+      "index": [
         "./src/library/index.ts"
       ],
       "register": [

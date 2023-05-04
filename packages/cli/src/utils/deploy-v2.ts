@@ -6,11 +6,11 @@ import { BigNumber, ContractInterface, ethers } from "ethers";
 import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils.js";
 
 import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/common/foundry";
-import { resolveWithContext } from "@latticexyz/config/library";
-import { MUDError } from "@latticexyz/config/library";
+import { resolveWithContext } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/config";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { StoreConfig, resolveAbiOrUserType } from "@latticexyz/store/library";
-import { WorldConfig, resolveWorldConfig } from "@latticexyz/world/library";
+import { StoreConfig, resolveAbiOrUserType } from "@latticexyz/store";
+import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
