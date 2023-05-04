@@ -1,4 +1,4 @@
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "./ts/register";
 
 export default mudConfig({
   worldImportPath: "../",
