@@ -43,9 +43,7 @@ contract KeysInTableModule is IModule, WorldContext {
 
     IBaseWorld world = IBaseWorld(_world());
 
-    bytes32 resourceSelector = ResourceSelector.from(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName());
-
-    if (ResourceType.get(resourceSelector) == Resource.NONE) {
+    if (ResourceType.get(KeysInTableTableId) == Resource.NONE) {
       // Register the tables
       world.registerTable(
         KeysInTableTableId.getNamespace(),
