@@ -32,6 +32,9 @@ contract KeysInTableModuleTest is Test {
   Schema sourceTableKeySchema;
   bytes32 sourceTableId;
 
+  uint256 val1 = 123;
+  uint256 val2 = 42;
+
   function setUp() public {
     sourceTableSchema = SchemaLib.encode(SchemaType.UINT256);
     sourceTableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
@@ -55,7 +58,21 @@ contract KeysInTableModuleTest is Test {
     world.installRootModule(keysInTableModule, abi.encode(sourceTableId));
   }
 
-  function testInstall(uint256 value) public {
+  function testInstall() public {
+    _installKeysInTableModule();
+    // Set a value in the source table
+    // !gasreport set a record on a table with keysInTableModule installed
+    world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(val1));
+
+    // Get the list of keys in this target table
+    bytes32[][] memory keysInTable = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 1);
+    assertEq(keysInTable[0][0], key1);
+  }
+
+  function testInstallFuzz(uint256 value) public {
     _installKeysInTableModule();
     // Set a value in the source table
     // !gasreport set a record on a table with keysInTableModule installed
@@ -106,7 +123,55 @@ contract KeysInTableModuleTest is Test {
     assertEq(keysInTable[0][0], keyB);
   }
 
-  function testSetAndDeleteRecordHook(uint256 value1, uint256 value2) public {
+  function testSetAndDeleteRecordHook() public {
+    _installKeysInTableModule();
+
+    // Set a value in the source table
+    world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(val1));
+
+    // Get the list of keys in the target table
+    bytes32[][] memory keysInTable = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 1, "1");
+    assertEq(keysInTable[0][0], key1, "2");
+
+    // Set another key with the same value
+    world.setRecord(namespace, sourceFile, keyTuple2, abi.encodePacked(val1));
+
+    // Get the list of keys in the target table
+    keysInTable = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 2);
+    assertEq(keysInTable[0][0], key1, "3");
+    assertEq(keysInTable[1][0], key2, "4");
+
+    // Change the value of the first key
+    // !gasreport change a record on a table with keysInTableModule installed
+    world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(val2));
+
+    // Get the list of keys in the target table
+    keysInTable = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 2, "5");
+    assertEq(keysInTable[0][0], key1, "6");
+    assertEq(keysInTable[1][0], key2, "7");
+
+    // Delete the first key
+    // !gasreport delete a record on a table with keysInTableModule installed
+    world.deleteRecord(namespace, sourceFile, keyTuple1);
+
+    // Get the list of keys in the target table
+    keysInTable = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keysInTable.length, 1, "8");
+    assertEq(keysInTable[0][0], key2, "9");
+  }
+
+  function testSetAndDeleteRecordHookFuzz(uint256 value1, uint256 value2) public {
     _installKeysInTableModule();
 
     // Set a value in the source table
