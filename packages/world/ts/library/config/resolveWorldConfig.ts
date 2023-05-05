@@ -1,4 +1,5 @@
-import { UnrecognizedSystemErrorFactory } from "@latticexyz/config";
+import { getDuplicates, MUDError, UnrecognizedSystemErrorFactory } from "@latticexyz/config";
+import { StoreConfig } from "@latticexyz/store";
 import { SystemConfig, WorldConfig } from "./types";
 
 export type ResolvedSystemConfig = ReturnType<typeof resolveSystemConfig>;
@@ -10,7 +11,7 @@ export type ResolvedWorldConfig = ReturnType<typeof resolveWorldConfig>;
  * filtering out excluded systems, validate system names refer to existing contracts, and
  * splitting the access list into addresses and system names.
  */
-export function resolveWorldConfig(config: WorldConfig, existingContracts?: string[]) {
+export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingContracts?: string[]) {
   // Include contract names ending in "System", but not the base "System" contract, and not Interfaces
   const defaultSystemNames =
     existingContracts?.filter((name) => name.endsWith("System") && name !== "System" && !name.match(/^I[A-Z]/)) ?? [];
@@ -37,6 +38,14 @@ export function resolveWorldConfig(config: WorldConfig, existingContracts?: stri
       [systemName]: resolveSystemConfig(systemName, config.overrideSystems[systemName], existingContracts),
     };
   }, {});
+
+  // Table and system names must be unique (because they're both used for world selectors)
+  const tableNames = Object.values(config.tables).map(({ name }) => name);
+  const configuredSystemNames = Object.values(resolvedSystems).map(({ name }) => name);
+  const duplicateNames = getDuplicates([...tableNames, ...configuredSystemNames]);
+  if (duplicateNames.length > 0) {
+    throw new MUDError(`Table and system names must be unique: ${duplicateNames.join(", ")}`);
+  }
 
   return { systems: resolvedSystems };
 }
