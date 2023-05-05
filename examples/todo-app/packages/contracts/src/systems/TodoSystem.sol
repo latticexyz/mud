@@ -5,24 +5,22 @@ import { System } from "@latticexyz/world/src/System.sol";
 
 import { TodoItem, TodoItemData, Owned } from "../codegen/Tables.sol";
 
+import { getUniqueEntity } from "@latticexyz/world/src/modules/uniqueentity/getUniqueEntity.sol";
+
 function addressToEntity(address a) pure returns (bytes32) {
   return bytes32(uint256(uint160((a))));
 }
 
 contract TodoSystem is System {
-  uint256 totalTodos;
-
   function add(string memory body) public {
     bytes32 user = addressToEntity(_msgSender());
-    bytes32 todoKey = keccak256(abi.encodePacked(user, totalTodos++));
+    bytes32 todoKey = getUniqueEntity();
 
     TodoItem.set(todoKey, TodoItemData({ body: body, completed: false }));
     Owned.set(todoKey, user);
   }
 
   function modify(bytes32 key, string memory body) public onlyOwner(key) {
-    require(Owned.get(key) == addressToEntity(_msgSender()), "Only owner can modify todo");
-
     TodoItem.setBody(key, body);
   }
 

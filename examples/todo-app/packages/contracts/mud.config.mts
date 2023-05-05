@@ -14,4 +14,11 @@ export default mudConfig({
       },
     }
   },
+  modules: [
+    {
+      name: "UniqueEntityModule",
+      root: true,
+      args: [],
+    },
+  ],
 });
