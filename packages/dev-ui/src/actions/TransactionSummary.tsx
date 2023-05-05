@@ -56,16 +56,29 @@ export function TransactionSummary({ hash }: Props) {
     transactionReceipt.value.logs.map((log) => decodeEventLog({ abi: worldAbi, ...log }));
 
   return (
-    <details>
+    <details
+      onToggle={(event) => {
+        if (event.currentTarget.open) {
+          console.log("transaction", transaction);
+          console.log("transaction receipt", transactionReceipt);
+          console.log("transaction result", transactionResult);
+        }
+      }}
+    >
       <summary
         className={twMerge(
           "px-2 py-1 rounded flex items-center gap-2 border-2 border-transparent border-dashed cursor-pointer",
           isPending ? "border-white/20 cursor-default" : isRevert ? "bg-red-800" : "bg-slate-700"
         )}
       >
-        <div className="flex-1 font-mono text-white">
-          {functionData?.functionName}({functionData?.args?.map((value) => serialize(value))})
+        <div className="flex-1 font-mono text-white whitespace-nowrap overflow-hidden text-ellipsis">
+          {functionData?.functionName}({functionData?.args?.map((value) => serialize(value)).join(", ")})
         </div>
+        {transactionReceipt.status === "fulfilled" ? (
+          <div className="flex-none font-mono text-xs text-white/40">
+            block {transactionReceipt.value.blockNumber.toString()}
+          </div>
+        ) : null}
         <div className="flex-none font-mono text-xs text-white/40">tx {truncateHex(hash)}</div>
         <div className="flex-none inline-flex w-4 h-4 justify-center items-center font-bold">
           {isPending ? <PendingIcon /> : isRevert ? <>⚠</> : <>✓</>}
