@@ -35,7 +35,6 @@ export const ecsEventFromLog = async (
 
   if (name === "StoreSetRecord") {
     const { indexedValues, namedValues } = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
-    console.log("StoreSetRecord:", { table: tableId.toString(), component, entity, indexedValues, namedValues });
     return {
       ...ecsEvent,
       value: {
@@ -67,7 +66,6 @@ export const ecsEventFromLog = async (
       args.schemaIndex,
       args.data
     );
-    console.log("StoreSetField:", { table: tableId.toString(), component, entity, indexedValues, namedValues });
     return {
       ...ecsEvent,
       partialValue: {
@@ -96,7 +94,6 @@ export const ecsEventFromLog = async (
   }
 
   if (name === "StoreDeleteRecord") {
-    console.log("StoreDeleteRecord:", { table: tableId.toString(), component, entity });
     return {
       ...ecsEvent,
       devEmit: () => {

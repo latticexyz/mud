@@ -9,7 +9,11 @@ export function TablesSummary() {
         <>
           <div className="flex flex-col gap-1 items-start">
             {tables.map((table) => (
-              <NavButton to={`/tables/${table.component}`} className="font-mono text-xs hover:text-white">
+              <NavButton
+                key={table.component}
+                to={`/tables/${table.component}`}
+                className="font-mono text-xs hover:text-white"
+              >
                 {table.tableId.namespace}:{table.tableId.name}
               </NavButton>
             ))}
