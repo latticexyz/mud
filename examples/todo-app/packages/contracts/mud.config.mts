@@ -1,4 +1,4 @@
-import { mudConfig } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/world/register"
 
 export default mudConfig({
   tables: {
