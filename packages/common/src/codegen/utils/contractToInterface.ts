@@ -118,7 +118,13 @@ function flattenTypeName(typeName: TypeName | null): { name: string; stateMutabi
       stateMutability: null,
     };
   } else if (typeName.type === "ArrayTypeName") {
-    const length = typeName.length?.type === "NumberLiteral" ? typeName.length.number : "";
+    let length = "";
+    if (typeName.length?.type === "NumberLiteral") {
+      length = typeName.length.number;
+    } else if (typeName.length?.type === "Identifier") {
+      length = typeName.length.name;
+    }
+
     const { name, stateMutability } = flattenTypeName(typeName.baseTypeName);
     return {
       name: `${name}[${length}]`,
@@ -137,7 +143,13 @@ function typeNameToSymbols(typeName: TypeName | null): string[] {
     const symbol = typeName.namePath.split(".")[0];
     return [symbol];
   } else if (typeName?.type === "ArrayTypeName") {
-    return typeNameToSymbols(typeName.baseTypeName);
+    const symbols = typeNameToSymbols(typeName.baseTypeName);
+    // array types can also use symbols (constants) for length
+    if (typeName.length?.type === "Identifier") {
+      const innerTypeName = typeName.length.name;
+      symbols.push(innerTypeName.split(".")[0]);
+    }
+    return symbols;
   } else {
     return [];
   }

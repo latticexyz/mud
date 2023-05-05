@@ -11,7 +11,8 @@
   "type": "module",
   "exports": {
     "./codegen": "./dist/codegen.js",
-    "./foundry": "./dist/foundry.js"
+    "./foundry": "./dist/foundry.js",
+    "./type-utils": "./dist/type-utils.js"
   },
   "typesVersions": {
     "*": {
@@ -20,6 +21,9 @@
       ],
       "foundry": [
         "./src/foundry/index.ts"
+      ],
+      "type-utils": [
+        "./src/type-utils/index.ts"
       ]
     }
   },
