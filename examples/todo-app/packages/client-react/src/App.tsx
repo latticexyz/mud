@@ -3,7 +3,7 @@ import { useMUD } from "./MUDContext";
 import { useState } from "react";
 import { Has, HasValue, getComponentValueStrict } from "@latticexyz/recs";
 
-function toAddress(entityId: string) {
+function toKey(entityId: string) {
   return "0x" + entityId.replace("0x", "").padStart(64, "0");
 }
 
@@ -19,7 +19,7 @@ export const App = () => {
 
   if(!playerEntityId) return;
 
-  const allTodos = useEntityQuery([HasValue(Owned, { owner: toAddress(playerEntityId) }), Has(TodoItem)]);
+  const allTodos = useEntityQuery([HasValue(Owned, { owner: toKey(playerEntityId) }), Has(TodoItem)]);
 
   return (
     <>
@@ -27,7 +27,7 @@ export const App = () => {
       <ul>
         {allTodos.map((todo) => {
           const { body, completed } = getComponentValueStrict(TodoItem, todo);
-          const todoKey = world.entities[todo];
+          const todoKey = toKey(world.entities[todo]);
 
           return (
             <li key={todo}>

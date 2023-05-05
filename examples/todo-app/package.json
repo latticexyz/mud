@@ -1,5 +1,5 @@
 {
-  "name": "mud-example-minimal",
+  "name": "mud-example-todo-app",
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
