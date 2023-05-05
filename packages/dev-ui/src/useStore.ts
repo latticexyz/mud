@@ -5,7 +5,7 @@ import {
   walletClient as walletClientObservable,
   cacheStore as cacheStoreObservable,
 } from "@latticexyz/network/dev";
-import { PublicClient, WalletClient, Hex } from "viem";
+import { PublicClient, WalletClient, Hex, Chain } from "viem";
 import { create } from "zustand";
 import { worldAbiObservable } from "@latticexyz/std-client/dev";
 import { CacheStore } from "@latticexyz/network";
@@ -16,8 +16,8 @@ export const useStore = create<{
   storeEvents: StoreEvent[];
   transactions: Hex[];
   cacheStore: CacheStore | null;
-  publicClient: PublicClient | null;
-  walletClient: WalletClient | null;
+  publicClient: (PublicClient & { chain: Chain }) | null;
+  walletClient: (WalletClient & { chain: Chain }) | null;
   blockNumber: bigint | null;
   // TODO: use Abi from abitype
   worldAbi: any | null;

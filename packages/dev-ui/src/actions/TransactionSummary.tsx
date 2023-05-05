@@ -1,13 +1,15 @@
-import { decodeEventLog, decodeFunctionData, toBytes, Hex } from "viem";
+import { decodeEventLog, decodeFunctionData, decodeFunctionResult, toBytes, Hex } from "viem";
 import { twMerge } from "tailwind-merge";
 import { TableId } from "@latticexyz/utils";
 import { keyTupleToEntityID } from "@latticexyz/network/dev";
 import { useStore } from "../useStore";
-import { useTransaction } from "../useTransaction";
 import { PendingIcon } from "../icons/PendingIcon";
 import { usePromise } from "../usePromise";
 import { truncateHex } from "../truncateHex";
 import { serialize } from "../serialize";
+import { getTransaction } from "./getTransaction";
+import { getTransactionReceipt } from "./getTransactionReceipt";
+import { getTransactionResult } from "./getTransactionResult";
 
 type Props = {
   hash: Hex;
@@ -16,20 +18,37 @@ type Props = {
 // TODO: show block number or relative timestamp (e.g. 3s ago)
 
 export function TransactionSummary({ hash }: Props) {
-  const { transactionPromise, transactionReceiptPromise } = useTransaction(hash);
-  const transaction = usePromise(transactionPromise);
-  const transactionReceipt = usePromise(transactionReceiptPromise);
+  const publicClient = useStore((state) => state.publicClient);
   const worldAbi = useStore((state) => state.worldAbi);
 
-  const isPending = transactionReceipt.status === "pending";
-  const revertReason =
-    transactionReceipt.status === "fulfilled" && transactionReceipt.value.status === "reverted"
-      ? "Transaction failed" // TODO: get revert reason
-      : null;
+  if (!publicClient) {
+    throw new Error("Can't display transactions without a public client");
+  }
 
+  const transactionPromise = getTransaction(publicClient, hash);
+  const transactionReceiptPromise = getTransactionReceipt(publicClient, hash);
+  const transactionResultPromise = getTransactionResult(publicClient, hash);
+  const transaction = usePromise(transactionPromise);
+  const transactionReceipt = usePromise(transactionReceiptPromise);
+  const transactionResult = usePromise(transactionResultPromise);
+
+  const isPending = transactionReceipt.status === "pending";
+  const isRevert = transactionReceipt.status === "fulfilled" && transactionReceipt.value.status === "reverted";
+
+  // TODO: move all this into their getTransaction functions
   const functionData =
     worldAbi && transaction.status === "fulfilled" && transaction.value.input
       ? decodeFunctionData({ abi: worldAbi, data: transaction.value.input })
+      : null;
+  const returnData =
+    transactionResult.status === "fulfilled"
+      ? worldAbi && transactionResult.value.data && functionData
+        ? decodeFunctionResult({
+            abi: worldAbi,
+            functionName: functionData.functionName,
+            data: transactionResult.value.data,
+          })
+        : transactionResult.value.data
       : null;
   const events =
     worldAbi &&
@@ -41,7 +60,7 @@ export function TransactionSummary({ hash }: Props) {
       <summary
         className={twMerge(
           "px-2 py-1 rounded flex items-center gap-2 border-2 border-transparent border-dashed cursor-pointer",
-          isPending ? "border-white/20 cursor-default" : revertReason ? "bg-red-800" : "bg-slate-700"
+          isPending ? "border-white/20 cursor-default" : isRevert ? "bg-red-800" : "bg-slate-700"
         )}
       >
         <div className="flex-1 font-mono text-white">
@@ -49,12 +68,22 @@ export function TransactionSummary({ hash }: Props) {
         </div>
         <div className="flex-none font-mono text-xs text-white/40">tx {truncateHex(hash)}</div>
         <div className="flex-none inline-flex w-4 h-4 justify-center items-center font-bold">
-          {isPending ? <PendingIcon /> : revertReason ? <>⚠</> : <>✓</>}
+          {isPending ? <PendingIcon /> : isRevert ? <>⚠</> : <>✓</>}
         </div>
       </summary>
-      {revertReason ? <div className="p-2">{revertReason}</div> : null}
+      <div className="p-2 space-y-1">
+        <div className="font-bold text-white/40 uppercase text-xs">Result</div>
+        {transactionResult.status === "fulfilled" ? (
+          <div className="font-mono">{serialize(returnData)}</div>
+        ) : transactionResult.status === "rejected" ? (
+          <div className="font-mono whitespace-pre text-orange-200">{transactionResult.reason.message}</div>
+        ) : (
+          <PendingIcon />
+        )}
+      </div>
       {events?.length ? (
-        <div className="p-2">
+        <div className="p-2 space-y-1">
+          <div className="font-bold text-white/40 uppercase text-xs">Store events</div>
           <table className="w-full table-fixed">
             <thead className="bg-slate-800 text-amber-200/80 text-left">
               <tr>

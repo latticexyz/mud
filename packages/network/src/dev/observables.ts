@@ -1,7 +1,14 @@
 import { BehaviorSubject } from "rxjs";
-import { PublicClient, WalletClient } from "viem";
+import type { PublicClient, WalletClient, Chain } from "viem";
 import type { CacheStore } from "../workers";
 
-export const publicClient: BehaviorSubject<PublicClient | null> = new BehaviorSubject<PublicClient | null>(null);
-export const walletClient: BehaviorSubject<WalletClient | null> = new BehaviorSubject<WalletClient | null>(null);
+// require chain for now so we can use it downstream
+export const publicClient: BehaviorSubject<(PublicClient & { chain: Chain }) | null> = new BehaviorSubject<
+  (PublicClient & { chain: Chain }) | null
+>(null);
+// require chain for now so we can use it downstream
+export const walletClient: BehaviorSubject<(WalletClient & { chain: Chain }) | null> = new BehaviorSubject<
+  (WalletClient & { chain: Chain }) | null
+>(null);
+
 export const cacheStore = new BehaviorSubject<CacheStore | null>(null);
