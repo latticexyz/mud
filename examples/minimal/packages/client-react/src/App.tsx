@@ -53,6 +53,17 @@ export const App = () => {
           }}
         >
           <input value={myMessage} onChange={(event) => setMyMessage(event.target.value)} type="text" />
+          {" "}
+          <button
+            type="submit"
+            disabled={!myMessage}
+          >
+            <span role="img" aria-label="Send">
+              📤
+            </span>
+            {" "}
+            Send
+          </button>
         </form>
       </div>
     </>
