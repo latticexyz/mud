@@ -13,7 +13,6 @@ import {
   OverridableComponent,
   Override,
   Schema,
-  ValueType,
   World,
 } from "./types";
 import { isFullComponentValue, isIndexer } from "./utils";
