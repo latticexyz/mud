@@ -17,6 +17,7 @@ import { MODULE_NAMESPACE } from "../src/modules/keyswithvalue/constants.sol";
 import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
 import { getTargetTableSelector } from "../src/modules/utils/getTargetTableSelector.sol";
+import { getKeysInTable } from "../src/modules/keysintable/getKeysInTable.sol";
 
 contract KeysWithValueModuleTest is Test {
   using ResourceSelector for bytes32;
