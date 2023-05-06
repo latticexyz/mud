@@ -1,5 +1,5 @@
 import { transformIterator } from "@latticexyz/utils";
-import { hasComponent } from "./Component";
+import { hasComponent, removeComponent } from "./Component";
 import { getEntityString, getEntitySymbol } from "./Entity";
 import { Component, Entity, EntitySymbol, World } from "./types";
 
@@ -51,6 +51,13 @@ export function createWorld() {
     return entities.has(entitySymbol);
   }
 
+  function deleteEntity(entity: Entity) {
+    for (const component of components) {
+      if (hasComponent(component, entity)) removeComponent(component, entity);
+    }
+    entities.delete(getEntitySymbol(entity));
+  }
+
   return {
     registerEntity,
     components,
@@ -59,6 +66,7 @@ export function createWorld() {
     registerDisposer,
     hasEntity,
     getEntities,
+    deleteEntity,
   } satisfies World;
 }
 

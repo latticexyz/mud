@@ -113,6 +113,7 @@ export type World = {
   dispose: () => void;
   registerDisposer: (disposer: () => void) => void;
   hasEntity: (entity: Entity) => boolean;
+  deleteEntity: (entity: Entity) => void;
 };
 
 export enum QueryFragmentType {

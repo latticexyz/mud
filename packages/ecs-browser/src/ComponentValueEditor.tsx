@@ -1,5 +1,5 @@
 import React from "react";
-import { AnyComponent, ComponentValue, EntityIndex, Schema, Layers } from "@latticexyz/recs";
+import { AnyComponent, ComponentValue, Schema, Layers, Entity } from "@latticexyz/recs";
 import { SetContractComponentFunction } from "./types";
 import { ValueEditor } from "./ValueEditor";
 
@@ -10,7 +10,7 @@ export const ComponentValueEditor = ({
   layers,
   setContractComponentValue,
 }: {
-  entity: EntityIndex;
+  entity: Entity;
   component: AnyComponent;
   componentValue: ComponentValue<Schema>;
   layers: Layers;

@@ -32,9 +32,6 @@ import { getEntityString, getEntitySymbol } from "./Entity";
  * }
  * @returns Component object linked to the provided World
  *
- * @remarks
- * Components work with {@link EntityIndex}, not {@link EntityID}. Get the {@link EntityID} from a given {@link EntityIndex} via {@link World}.entities[EntityIndex].
- *
  * @example
  * ```
  * const Position = defineComponent(world, { x: Type.Number, y: Type.Number }, { id: "Position" });
@@ -62,7 +59,7 @@ export function defineComponent<S extends Schema, M extends Metadata, T = undefi
  * Set the value for a given entity in a given component.
  *
  * @param component {@link defineComponent Component} to be updated.
- * @param entity {@link EntityIndex} of the entity whose value in the given component should be set.
+ * @param entity {@link Entity} whose value in the given component should be set.
  * @param value Value to set, schema must match the component schema.
  *
  * @example
@@ -109,7 +106,7 @@ export function setComponent<S extends Schema, T = undefined>(
  * Update the value for a given entity in a given component while keeping the old value of keys not included in the update.
  *
  * @param component {@link defineComponent Component} to be updated.
- * @param entity {@link EntityIndex} of the entity whose value in the given component should be updated.
+ * @param entity {@link Entity} whose value in the given component should be updated.
  * @param value Partial value to be set, remaining keys will be taken from the existing component value.
  *
  * @remarks
@@ -142,7 +139,7 @@ export function updateComponent<S extends Schema, T = undefined>(
  * Remove a given entity from a given component.
  *
  * @param component {@link defineComponent Component} to be updated.
- * @param entity {@link EntityIndex} of the entity whose value should be removed from this component.
+ * @param entity {@link Entity} whose value should be removed from this component.
  */
 export function removeComponent<S extends Schema, M extends Metadata, T>(
   component: Component<S, M, T>,
@@ -160,7 +157,7 @@ export function removeComponent<S extends Schema, M extends Metadata, T>(
  * Check whether a component contains a value for a given entity.
  *
  * @param component {@link defineComponent Component} to check whether it has a value for the given entity.
- * @param entity {@link EntityIndex} of the entity to check whether it has a value in the given component.
+ * @param entity {@link Entity} to check whether it has a value in the given component.
  * @returns true if the component contains a value for the given entity, else false.
  */
 export function hasComponent<S extends Schema, T = undefined>(
@@ -177,7 +174,7 @@ export function hasComponent<S extends Schema, T = undefined>(
  * Returns undefined if no value or only a partial value is found.
  *
  * @param component {@link defineComponent Component} to get the value from for the given entity.
- * @param entity {@link EntityIndex} of the entity to get the value for from the given component.
+ * @param entity {@link Entity} to get the value for from the given component.
  * @returns Value of the given entity in the given component or undefined if no value exists.
  */
 export function getComponentValue<S extends Schema, T = undefined>(
@@ -203,7 +200,7 @@ export function getComponentValue<S extends Schema, T = undefined>(
  * Throws an error if no value exists for the given entity in the given component.
  *
  * @param component {@link defineComponent Component} to get the value from for the given entity.
- * @param entity {@link EntityIndex} of the entity to get the value for from the given component.
+ * @param entity {@link Entity} of the entity to get the value for from the given component.
  * @returns Value of the given entity in the given component.
  *
  * @remarks
@@ -267,7 +264,7 @@ export function withValue<S extends Schema, T = undefined>(
  *
  * @param component {@link defineComponent Component} to get entities with the given value from.
  * @param value look for entities with this {@link ComponentValue}.
- * @returns Set with {@link EntityIndex EntityIndices} of the entities with the given component value.
+ * @returns Set with {@link Entity Entities} with the given component value.
  */
 export function getEntitiesWithValue<S extends Schema>(
   component: Component<S> | Indexer<S>,

@@ -11,7 +11,7 @@ import { Component, ComponentValue, Entity, EntitySymbol, World } from "./types"
  *   id: {@link EntityID} for this entity. Use this for entities that were created outside of recs, eg. in the corresponding solecs contracts.
  *   idSuffix: string to be appended to the auto-generated id. Use this for improved readability. Do not use this if the `id` option is provided.
  * }
- * @returns index of this entity in the {@link World}. This {@link EntityIndex} is used to refer to this entity in other recs methods (eg {@link setComponent}).
+ * @returns index of this entity in the {@link World}. This {@link Entity} is used to refer to this entity in other recs methods (eg {@link setComponent}).
  * (This is to avoid having to store strings in every component.)
  */
 export function createEntity(
