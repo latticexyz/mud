@@ -1,4 +1,4 @@
-import { uuid } from "@latticexyz/utils";
+import { transformIterator, uuid } from "@latticexyz/utils";
 import { mapObject } from "@latticexyz/utils";
 import { filter, map, Subject } from "rxjs";
 import { OptionalTypes } from "./constants";
@@ -6,16 +6,18 @@ import { createIndexer } from "./Indexer";
 import {
   Component,
   ComponentValue,
-  EntityID,
-  EntityIndex,
+  Entity,
+  EntitySymbol,
   Indexer,
   Metadata,
   OverridableComponent,
   Override,
   Schema,
+  ValueType,
   World,
 } from "./types";
 import { isFullComponentValue, isIndexer } from "./utils";
+import { getEntityString, getEntitySymbol } from "./Entity";
 
 /**
  * Components contain state indexed by entities and are one of the fundamental building blocks in ECS.
@@ -49,7 +51,8 @@ export function defineComponent<S extends Schema, M extends Metadata, T = undefi
   const values = mapObject(schema, () => new Map());
   const update$ = new Subject();
   const metadata = options?.metadata;
-  const entities = () => (Object.values(values)[0] as Map<EntityIndex, unknown>).keys();
+  const entities = () =>
+    transformIterator((Object.values(values)[0] as Map<EntitySymbol, unknown>).keys(), getEntityString);
   let component = { values, schema, id, update$, metadata, entities, world } as Component<S, M, T>;
   if (options?.indexed) component = createIndexer(component);
   world.registerComponent(component as Component);
@@ -70,13 +73,14 @@ export function defineComponent<S extends Schema, M extends Metadata, T = undefi
  */
 export function setComponent<S extends Schema, T = undefined>(
   component: Component<S, Metadata, T>,
-  entity: EntityIndex,
+  entity: Entity,
   value: ComponentValue<S, T>
 ) {
+  const entitySymbol = getEntitySymbol(entity);
   const prevValue = getComponentValue(component, entity);
   for (const [key, val] of Object.entries(value)) {
     if (component.values[key]) {
-      component.values[key].set(entity, val);
+      component.values[key].set(entitySymbol, val);
     } else {
       const isTableFieldIndex = component.metadata?.tableId && /^\d+$/.test(key);
       if (!isTableFieldIndex) {
@@ -120,7 +124,7 @@ export function setComponent<S extends Schema, T = undefined>(
  */
 export function updateComponent<S extends Schema, T = undefined>(
   component: Component<S, Metadata, T>,
-  entity: EntityIndex,
+  entity: Entity,
   value: Partial<ComponentValue<S, T>>,
   initialValue?: ComponentValue<S, T>
 ) {
@@ -143,11 +147,12 @@ export function updateComponent<S extends Schema, T = undefined>(
  */
 export function removeComponent<S extends Schema, M extends Metadata, T>(
   component: Component<S, M, T>,
-  entity: EntityIndex
+  entity: Entity
 ) {
+  const entitySymbol = getEntitySymbol(entity);
   const prevValue = getComponentValue(component, entity);
   for (const key of Object.keys(component.values)) {
-    component.values[key].delete(entity);
+    component.values[key].delete(entitySymbol);
   }
   component.update$.next({ entity, value: [undefined, prevValue], component });
 }
@@ -161,10 +166,11 @@ export function removeComponent<S extends Schema, M extends Metadata, T>(
  */
 export function hasComponent<S extends Schema, T = undefined>(
   component: Component<S, Metadata, T>,
-  entity: EntityIndex
+  entity: Entity
 ): boolean {
+  const entitySymbol = getEntitySymbol(entity);
   const map = Object.values(component.values)[0];
-  return map.has(entity);
+  return map.has(entitySymbol);
 }
 
 /**
@@ -177,14 +183,15 @@ export function hasComponent<S extends Schema, T = undefined>(
  */
 export function getComponentValue<S extends Schema, T = undefined>(
   component: Component<S, Metadata, T>,
-  entity: EntityIndex
+  entity: Entity
 ): ComponentValue<S, T> | undefined {
   const value: Record<string, unknown> = {};
+  const entitySymbol = getEntitySymbol(entity);
 
   // Get the value of each schema key
   const schemaKeys = Object.keys(component.schema);
   for (const key of schemaKeys) {
-    const val = component.values[key].get(entity);
+    const val = component.values[key].get(entitySymbol);
     if (val === undefined && !OptionalTypes.includes(component.schema[key])) return undefined;
     value[key] = val;
   }
@@ -205,10 +212,10 @@ export function getComponentValue<S extends Schema, T = undefined>(
  */
 export function getComponentValueStrict<S extends Schema, T = undefined>(
   component: Component<S, Metadata, T>,
-  entity: EntityIndex
+  entity: Entity
 ): ComponentValue<S, T> {
   const value = getComponentValue(component, entity);
-  if (!value) throw new Error(`No value for component ${component.id} on entity ${component.world.entities[entity]}`);
+  if (!value) throw new Error(`No value for component ${component.id} on entity ${entity}`);
   return value;
 }
 
@@ -266,14 +273,14 @@ export function withValue<S extends Schema, T = undefined>(
 export function getEntitiesWithValue<S extends Schema>(
   component: Component<S> | Indexer<S>,
   value: Partial<ComponentValue<S>>
-): Set<EntityIndex> {
+): Set<Entity> {
   // Shortcut for indexers
   if (isIndexer(component) && isFullComponentValue(component, value)) {
     return component.getEntitiesWithValue(value);
   }
 
   // Trivial implementation for regular components
-  const entities = new Set<EntityIndex>();
+  const entities = new Set<Entity>();
   for (const entity of getComponentEntities(component)) {
     const val = getComponentValue(component, entity);
     if (componentValueEquals(value, val)) {
@@ -291,7 +298,7 @@ export function getEntitiesWithValue<S extends Schema>(
  */
 export function getComponentEntities<S extends Schema, T = undefined>(
   component: Component<S, Metadata, T>
-): IterableIterator<EntityIndex> {
+): IterableIterator<Entity> {
   return component.entities();
 }
 
@@ -317,12 +324,12 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
   // Map from OverrideId to Override (to be able to add multiple overrides to the same Entity)
   const overrides = new Map<string, { update: Override<S, T>; nonce: number }>();
 
-  // Map from EntityIndex to current overridden component value
-  const overriddenEntityValues = new Map<EntityIndex, Partial<ComponentValue<S, T>> | null>();
+  // Map from EntitySymbol to current overridden component value
+  const overriddenEntityValues = new Map<EntitySymbol, Partial<ComponentValue<S, T>> | null>();
 
   // Update event stream that takes into account overridden entity values
   const update$ = new Subject<{
-    entity: EntityIndex;
+    entity: Entity;
     value: [ComponentValue<S, T> | undefined, ComponentValue<S, T> | undefined];
     component: Component<S, Metadata, T>;
   }>();
@@ -355,9 +362,10 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
   }
 
   // Internal function to get the current overridden value or value of the source component
-  function getOverriddenComponentValue(entity: EntityIndex): ComponentValue<S, T> | undefined {
+  function getOverriddenComponentValue(entity: Entity): ComponentValue<S, T> | undefined {
     const originalValue = getComponentValue(component, entity);
-    const overriddenValue = overriddenEntityValues.get(entity);
+    const entitySymbol = getEntitySymbol(entity);
+    const overriddenValue = overriddenEntityValues.get(entitySymbol);
     return (originalValue || overriddenValue) && overriddenValue !== null // null is a valid override, in this case return undefined
       ? ({ ...originalValue, ...overriddenValue } as ComponentValue<S, T>)
       : undefined;
@@ -367,7 +375,7 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
     get(target, prop) {
       // Intercept calls to component.value[key].get(entity)
       if (prop === "get") {
-        return (entity: EntityIndex) => {
+        return (entity: EntitySymbol) => {
           const originalValue = target.get(entity);
           const overriddenValue = overriddenEntityValues.get(entity);
           return overriddenValue && overriddenValue[key] != null ? overriddenValue[key] : originalValue;
@@ -376,7 +384,7 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
 
       // Intercept calls to component.value[key].has(entity)
       if (prop === "has") {
-        return (entity: EntityIndex) => {
+        return (entity: EntitySymbol) => {
           return target.has(entity) || overriddenEntityValues.has(entity);
         };
       }
@@ -402,7 +410,12 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
       if (prop === "removeOverride") return removeOverride;
       if (prop === "values") return valuesProxy;
       if (prop === "update$") return update$;
-      if (prop === "entities") return () => new Set([...overriddenEntityValues.keys(), ...target.entities()]).values();
+      if (prop === "entities")
+        return () =>
+          new Set([
+            ...transformIterator(overriddenEntityValues.keys(), getEntityString),
+            ...target.entities(),
+          ]).values();
 
       return Reflect.get(target, prop);
     },
@@ -413,18 +426,19 @@ export function overridableComponent<S extends Schema, M extends Metadata, T = u
   }) as OverridableComponent<S, M, T>;
 
   // Internal function to set the current overridden component value and emit the update event
-  function setOverriddenComponentValue(entity: EntityIndex, value?: Partial<ComponentValue<S, T>> | null) {
+  function setOverriddenComponentValue(entity: Entity, value?: Partial<ComponentValue<S, T>> | null) {
+    const entitySymbol = getEntitySymbol(entity);
     // Check specifically for undefined - null is a valid override
     const prevValue = getOverriddenComponentValue(entity);
-    if (value !== undefined) overriddenEntityValues.set(entity, value);
-    else overriddenEntityValues.delete(entity);
+    if (value !== undefined) overriddenEntityValues.set(entitySymbol, value);
+    else overriddenEntityValues.delete(entitySymbol);
     update$.next({ entity, value: [getOverriddenComponentValue(entity), prevValue], component: overriddenComponent });
   }
 
   // Channel through update events from the original component if there are no overrides
   component.update$
     .pipe(
-      filter((e) => !overriddenEntityValues.get(e.entity)),
+      filter((e) => !overriddenEntityValues.get(getEntitySymbol(e.entity))),
       map((update) => ({ ...update, component: overriddenComponent }))
     )
     .subscribe(update$);
@@ -453,8 +467,8 @@ export function createLocalCache<S extends Schema, M extends Metadata, T = undef
   // On creation, check if this component has locally cached values
   const encodedCache = localStorage.getItem(cacheId);
   if (encodedCache) {
-    const cache = JSON.parse(encodedCache) as [string, [EntityIndex, unknown][]][];
-    const state: { [entity: number]: { [key: string]: unknown } } = {};
+    const cache = JSON.parse(encodedCache) as [string, [Entity, unknown][]][];
+    const state: { [entity: Entity]: { [key: string]: unknown } } = {};
 
     for (const [key, values] of cache) {
       for (const [entity, value] of values) {
@@ -464,8 +478,8 @@ export function createLocalCache<S extends Schema, M extends Metadata, T = undef
     }
 
     for (const [entityId, value] of Object.entries(state)) {
-      const entityIndex = world.registerEntity({ id: entityId as EntityID });
-      setComponent(component, entityIndex, value as ComponentValue<S, T>);
+      const entity = world.registerEntity({ id: entityId });
+      setComponent(component, entity, value as ComponentValue<S, T>);
     }
 
     console.info("Loading component", component.id, "from local cache.");
@@ -477,7 +491,7 @@ export function createLocalCache<S extends Schema, M extends Metadata, T = undef
   const updateSub = update$.subscribe(() => {
     numUpdates++;
     const encoded = JSON.stringify(
-      Object.entries(mapObject(values, (m) => [...m.entries()].map((e) => [world.entities[e[0]], e[1]])))
+      Object.entries(mapObject(values, (m) => [...m.entries()].map((e) => [getEntityString(e[0]), e[1]])))
     );
     localStorage.setItem(cacheId, encoded);
     if (numUpdates > 200) {

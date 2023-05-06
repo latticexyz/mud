@@ -1,5 +1,5 @@
 import { setComponent } from "./Component";
-import { Component, ComponentValue, EntityID, EntityIndex, World } from "./types";
+import { Component, ComponentValue, Entity, EntitySymbol, World } from "./types";
 
 /**
  * Register a new entity in the given {@link World} and initialize it with the given {@link ComponentValue}s.
@@ -17,8 +17,8 @@ import { Component, ComponentValue, EntityID, EntityIndex, World } from "./types
 export function createEntity(
   world: World,
   components?: [Component, ComponentValue][],
-  options?: { id?: EntityID } | { idSuffix?: string }
-): EntityIndex {
+  options?: { id?: string } | { idSuffix?: string }
+): Entity {
   const entity = world.registerEntity(options ?? {});
 
   if (components) {
@@ -28,4 +28,19 @@ export function createEntity(
   }
 
   return entity;
+}
+
+/*
+ * Get the symbol corresponding to an entity's string ID.
+ * Entities are represented as symbols internally for memory efficiency.
+ */
+export function getEntitySymbol(entityString: string): EntitySymbol {
+  return Symbol.for(entityString) as EntitySymbol;
+}
+
+/**
+ * Get the underlying entity string of an entity symbol.
+ */
+export function getEntityString(entity: EntitySymbol): Entity {
+  return Symbol.keyFor(entity) as Entity;
 }
