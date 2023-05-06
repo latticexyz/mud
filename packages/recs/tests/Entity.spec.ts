@@ -19,9 +19,9 @@ describe("Entity", () => {
     });
 
     it("should register the entity in the world", () => {
-      expect(world.entities.length).toEqual(0);
+      expect([...world.getEntities()].length).toEqual(0);
       createEntity(world);
-      expect(world.entities.length).toEqual(1);
+      expect([...world.getEntities()].length).toEqual(1);
     });
 
     it("should create an entity with given components and values", () => {
