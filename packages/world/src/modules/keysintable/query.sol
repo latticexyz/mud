@@ -16,7 +16,7 @@ function query(IStore store, bytes32[] memory tableIds) view returns (bytes32[][
 
   for (uint256 i = 1; i < tableIds.length; i++) {
     for (uint256 j; j < keys.length; j++) {
-      if (!hasKey(tableIds[i], keys[j])) {
+      if (!hasKey(store, tableIds[i], keys[j])) {
         // do something
       }
     }
