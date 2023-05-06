@@ -109,7 +109,7 @@ export type World = {
   registerEntity: (options?: { id?: string; idSuffix?: string }) => Entity;
   registerComponent: (component: Component) => void;
   components: Component[];
-  getEntities: () => Set<Entity>;
+  getEntities: () => IterableIterator<Entity>;
   dispose: () => void;
   registerDisposer: (disposer: () => void) => void;
   hasEntity: (entity: Entity) => boolean;
