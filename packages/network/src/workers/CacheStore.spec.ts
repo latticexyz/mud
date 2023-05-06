@@ -1,4 +1,4 @@
-import { EntityID } from "@latticexyz/recs";
+import { Entity } from "@latticexyz/recs";
 import { packTuple } from "@latticexyz/utils";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import {
@@ -30,7 +30,7 @@ describe("CacheStore", () => {
     it("should store events to the cacheStore", () => {
       const event: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
@@ -51,7 +51,7 @@ describe("CacheStore", () => {
 
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x01" as EntityID,
+        entity: "0x01" as Entity,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: true,
@@ -76,7 +76,7 @@ describe("CacheStore", () => {
     it("should normalize hex entity ids to the same padding", () => {
       const event1: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00000000000000000000000001" as EntityID,
+        entity: "0x00000000000000000000000001" as Entity,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: true,
@@ -86,7 +86,7 @@ describe("CacheStore", () => {
 
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x0001" as EntityID,
+        entity: "0x0001" as Entity,
         component: "Position",
         value: { x: 1, y: 3 },
         lastEventInTx: true,
@@ -102,7 +102,7 @@ describe("CacheStore", () => {
       expect(events.length).toBe(1);
       expect(events[0]).toEqual({
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x01" as EntityID,
+        entity: "0x01" as Entity,
         component: "Position",
         value: { x: 1, y: 3 },
         lastEventInTx: false,
@@ -114,7 +114,7 @@ describe("CacheStore", () => {
     it("should set block number to one less than the last received event", () => {
       const event: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
@@ -137,7 +137,7 @@ describe("CacheStore", () => {
 
       const event: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
@@ -161,7 +161,7 @@ describe("CacheStore", () => {
 
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Position",
         value: { x: 2, y: 2 },
         lastEventInTx: false,
@@ -185,7 +185,7 @@ describe("CacheStore", () => {
 
       const event3: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x01" as EntityID,
+        entity: "0x01" as Entity,
         component: "Position",
         value: { x: -1, y: 2 },
         lastEventInTx: false,
@@ -225,7 +225,7 @@ describe("CacheStore", () => {
 
       const event1: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
@@ -235,7 +235,7 @@ describe("CacheStore", () => {
 
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x01" as EntityID,
+        entity: "0x01" as Entity,
         component: "Health",
         value: { value: 1 },
         lastEventInTx: false,
@@ -248,7 +248,7 @@ describe("CacheStore", () => {
 
       const event3: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Position",
         value: { x: 3, y: 2 },
         lastEventInTx: false,
@@ -258,7 +258,7 @@ describe("CacheStore", () => {
 
       const event4: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Speed",
         value: { value: 10 },
         lastEventInTx: true,
@@ -313,7 +313,7 @@ describe("CacheStore", () => {
 
       storeEvent(cacheStore, {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Position",
         value: { x: 1, y: 2 },
         blockNumber: 1,
@@ -321,7 +321,7 @@ describe("CacheStore", () => {
 
       storeEvent(cacheStore, {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x01" as EntityID,
+        entity: "0x01" as Entity,
         component: "Health",
         value: { value: 1 },
         blockNumber: 2,
@@ -329,7 +329,7 @@ describe("CacheStore", () => {
 
       storeEvent(cacheStore, {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Position",
         value: { x: 3, y: 2 },
         blockNumber: 3,
@@ -337,7 +337,7 @@ describe("CacheStore", () => {
 
       storeEvent(cacheStore, {
         type: NetworkEvents.NetworkComponentUpdate,
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         component: "Speed",
         value: { value: 10 },
         blockNumber: 4,
