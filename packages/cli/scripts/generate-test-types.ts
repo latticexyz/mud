@@ -1,12 +1,12 @@
 import path from "path";
-import { tablegen } from "@latticexyz/store";
+import { configgen } from "@latticexyz/store";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import config from "./test-config";
 
 const srcDirectory = await getSrcDirectory();
 
 if (config !== undefined) {
-  tablegen(config, path.join(srcDirectory, config.codegenDirectory));
+  configgen(config, path.join(srcDirectory, config.codegenDirectory));
 } else {
   process.exit(1);
 }
