@@ -2,10 +2,6 @@ import chalk from "chalk";
 import { z, ZodError, ZodIssueCode } from "zod";
 import { fromZodError } from "zod-validation-error";
 
-export class MUDError extends Error {
-  name = "MUDError";
-}
-
 export class MUDContextAlreadyCreatedError extends Error {
   name = "MUDContextAlreadyCreatedError";
   message = "MUD context was already created";

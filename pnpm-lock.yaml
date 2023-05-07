@@ -200,9 +200,6 @@ importers:
 
   packages/common:
     dependencies:
-      '@latticexyz/config':
-        specifier: workspace:*
-        version: link:../config
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
@@ -231,6 +228,9 @@ importers:
 
   packages/config:
     dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
