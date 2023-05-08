@@ -42,11 +42,20 @@ export function renderCommonData({
   const _keyArgs = renderArguments(primaryKeys.map(({ name }) => name));
   const _typedKeyArgs = renderArguments(primaryKeys.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
 
+  const _primaryKeysDefinition = `
+    bytes32[] memory _primaryKeys = new bytes32[](${primaryKeys.length});
+    ${renderList(
+      primaryKeys,
+      (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
+    )}
+  `;
+
   return {
     _tableId,
     _typedTableId,
     _keyArgs,
     _typedKeyArgs,
+    _primaryKeysDefinition,
   };
 }
 

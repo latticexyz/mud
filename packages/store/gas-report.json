@@ -111,13 +111,13 @@
     "source": "test/Mixed.t.sol",
     "name": "set record in Mixed",
     "functionCall": "Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })",
-    "gasUsed": 111997
+    "gasUsed": 111957
   },
   {
     "source": "test/Mixed.t.sol",
     "name": "get record from Mixed",
     "functionCall": "MixedData memory mixed = Mixed.get(key)",
-    "gasUsed": 13403
+    "gasUsed": 13382
   },
   {
     "source": "test/PackedCounter.t.sol",
@@ -297,7 +297,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "delete record (complex data, 3 slots)",
     "functionCall": "StoreCore.deleteRecord(table, key)",
-    "gasUsed": 10975
+    "gasUsed": 10952
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -315,61 +315,61 @@
     "source": "test/StoreCore.t.sol",
     "name": "register subscriber",
     "functionCall": "StoreCore.registerStoreHook(table, subscriber)",
-    "gasUsed": 65530
+    "gasUsed": 65478
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "set record on table with subscriber",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 73839
+    "gasUsed": 73793
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "set static field on table with subscriber",
     "functionCall": "StoreCore.setField(table, key, 0, data)",
-    "gasUsed": 31939
+    "gasUsed": 31893
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "delete record on table with subscriber",
     "functionCall": "StoreCore.deleteRecord(table, key)",
-    "gasUsed": 24428
+    "gasUsed": 24382
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "register subscriber",
     "functionCall": "StoreCore.registerStoreHook(table, subscriber)",
-    "gasUsed": 65530
+    "gasUsed": 65478
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "set (dynamic) record on table with subscriber",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 167246
+    "gasUsed": 167200
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "set (dynamic) field on table with subscriber",
     "functionCall": "StoreCore.setField(table, key, 1, arrayDataBytes)",
-    "gasUsed": 35033
+    "gasUsed": 34987
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "delete (dynamic) record on table with subscriber",
     "functionCall": "StoreCore.deleteRecord(table, key)",
-    "gasUsed": 25907
+    "gasUsed": 25861
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "push to field (1 slot, 1 uint32 item)",
     "functionCall": "StoreCore.pushToField(table, key, 1, secondDataToPush)",
-    "gasUsed": 17019
+    "gasUsed": 16996
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "push to field (2 slots, 10 uint32 items)",
     "functionCall": "StoreCore.pushToField(table, key, 2, thirdDataToPush)",
-    "gasUsed": 39741
+    "gasUsed": 39718
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -393,7 +393,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set complex record with dynamic data (4 slots)",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 107590
+    "gasUsed": 107567
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -435,7 +435,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set static field (1 slot)",
     "functionCall": "StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes))",
-    "gasUsed": 38034
+    "gasUsed": 38011
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -447,7 +447,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set static field (overlap 2 slot)",
     "functionCall": "StoreCore.setField(table, key, 1, abi.encodePacked(secondDataBytes))",
-    "gasUsed": 33049
+    "gasUsed": 33026
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -459,7 +459,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set dynamic field (1 slot, first dynamic field)",
     "functionCall": "StoreCore.setField(table, key, 2, thirdDataBytes)",
-    "gasUsed": 55352
+    "gasUsed": 55329
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -471,7 +471,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set dynamic field (1 slot, second dynamic field)",
     "functionCall": "StoreCore.setField(table, key, 3, fourthDataBytes)",
-    "gasUsed": 35492
+    "gasUsed": 35469
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -483,7 +483,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set static record (1 slot)",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 37280
+    "gasUsed": 37257
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -495,7 +495,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set static record (2 slots)",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 59845
+    "gasUsed": 59822
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -507,55 +507,55 @@
     "source": "test/StoreCore.t.sol",
     "name": "StoreCore: set table metadata",
     "functionCall": "StoreCore.setMetadata(table, tableName, fieldNames)",
-    "gasUsed": 251734
+    "gasUsed": 251688
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "update in field (1 slot, 1 uint32 item)",
     "functionCall": "StoreCore.updateInField(table, key, 1, 4 * 1, secondDataForUpdate)",
-    "gasUsed": 16556
+    "gasUsed": 16533
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "push to field (2 slots, 6 uint64 items)",
     "functionCall": "StoreCore.updateInField(table, key, 2, 8 * 1, thirdDataForUpdate)",
-    "gasUsed": 17659
+    "gasUsed": 17636
   },
   {
     "source": "test/StoreCoreDynamicUpdate.t.sol",
     "name": "pop from field (cold, 1 slot, 1 uint32 item)",
     "functionCall": "StoreCore.popFromField(_table, _key, 1, byteLengthToPop)",
-    "gasUsed": 29293
+    "gasUsed": 29270
   },
   {
     "source": "test/StoreCoreDynamicUpdate.t.sol",
     "name": "pop from field (warm, 1 slot, 1 uint32 item)",
     "functionCall": "StoreCore.popFromField(_table, _key, 1, byteLengthToPop)",
-    "gasUsed": 19371
+    "gasUsed": 19348
   },
   {
     "source": "test/StoreCoreDynamicUpdate.t.sol",
     "name": "pop from field (cold, 2 slots, 10 uint32 items)",
     "functionCall": "StoreCore.popFromField(_table, _key, 2, byteLengthToPop)",
-    "gasUsed": 31172
+    "gasUsed": 31149
   },
   {
     "source": "test/StoreCoreDynamicUpdate.t.sol",
     "name": "pop from field (warm, 2 slots, 10 uint32 items)",
     "functionCall": "StoreCore.popFromField(_table, _key, 2, byteLengthToPop)",
-    "gasUsed": 19254
+    "gasUsed": 19231
   },
   {
     "source": "test/StoreMetadata.t.sol",
     "name": "set record in StoreMetadataTable",
     "functionCall": "StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) })",
-    "gasUsed": 250168
+    "gasUsed": 250122
   },
   {
     "source": "test/StoreMetadata.t.sol",
     "name": "get record from StoreMetadataTable",
     "functionCall": "StoreMetadataData memory metadata = StoreMetadata.get(tableId)",
-    "gasUsed": 12127
+    "gasUsed": 12106
   },
   {
     "source": "test/StoreSwitch.t.sol",
@@ -573,37 +573,37 @@
     "source": "test/tables/Callbacks.t.sol",
     "name": "set field in Callbacks",
     "functionCall": "Callbacks.set(key, callbacks)",
-    "gasUsed": 63241
+    "gasUsed": 63195
   },
   {
     "source": "test/tables/Callbacks.t.sol",
     "name": "get field from Callbacks (warm)",
     "functionCall": "bytes24[] memory returnedCallbacks = Callbacks.get(key)",
-    "gasUsed": 5808
+    "gasUsed": 5791
   },
   {
     "source": "test/tables/Callbacks.t.sol",
     "name": "push field to Callbacks",
     "functionCall": "Callbacks.push(key, callbacks[0])",
-    "gasUsed": 40930
+    "gasUsed": 40884
   },
   {
     "source": "test/tables/Hooks.t.sol",
     "name": "set field in Hooks",
     "functionCall": "Hooks.set(key, addresses)",
-    "gasUsed": 63416
+    "gasUsed": 63364
   },
   {
     "source": "test/tables/Hooks.t.sol",
     "name": "get field from Hooks (warm)",
     "functionCall": "address[] memory returnedAddresses = Hooks.get(key)",
-    "gasUsed": 5963
+    "gasUsed": 5940
   },
   {
     "source": "test/tables/Hooks.t.sol",
     "name": "push field to Hooks",
     "functionCall": "Hooks.push(key, addresses[0])",
-    "gasUsed": 40928
+    "gasUsed": 40876
   },
   {
     "source": "test/tightcoder/DecodeSlice.t.sol",
@@ -669,12 +669,12 @@
     "source": "test/Vector2.t.sol",
     "name": "set Vector2 record",
     "functionCall": "Vector2.set({ key: key, x: 1, y: 2 })",
-    "gasUsed": 38531
+    "gasUsed": 38494
   },
   {
     "source": "test/Vector2.t.sol",
     "name": "get Vector2 record",
     "functionCall": "Vector2Data memory vector = Vector2.get(key)",
-    "gasUsed": 5053
+    "gasUsed": 5038
   }
 ]

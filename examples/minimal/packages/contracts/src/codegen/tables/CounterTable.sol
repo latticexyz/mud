@@ -67,27 +67,35 @@ library CounterTable {
 
   /** Get value */
   function get(bytes32 key) internal view returns (uint32 value) {
-    bytes32[] memory _primaryKeys = encodeKey(key);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
   /** Get value (using the specified store) */
   function get(IStore _store, bytes32 key) internal view returns (uint32 value) {
-    bytes32[] memory _primaryKeys = encodeKey(key);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
   /** Set value */
   function set(bytes32 key, uint32 value) internal {
-    bytes32[] memory _primaryKeys = encodeKey(key);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
 
   /** Set value (using the specified store) */
   function set(IStore _store, bytes32 key, uint32 value) internal {
-    bytes32[] memory _primaryKeys = encodeKey(key);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
 
@@ -100,18 +108,21 @@ library CounterTable {
   function encodeKey(bytes32 key) internal pure returns (bytes32[] memory _primaryKeys) {
     _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
-    return _primaryKeys;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 key) internal {
-    bytes32[] memory _primaryKeys = encodeKey(key);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 key) internal {
-    bytes32[] memory _primaryKeys = encodeKey(key);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
     _store.deleteRecord(_tableId, _primaryKeys);
   }
 }

@@ -70,27 +70,35 @@ library ResourceType {
 
   /** Get resourceType */
   function get(bytes32 resourceSelector) internal view returns (Resource resourceType) {
-    bytes32[] memory _primaryKeys = encodeKey(resourceSelector);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return Resource(uint8(Bytes.slice1(_blob, 0)));
   }
 
   /** Get resourceType (using the specified store) */
   function get(IStore _store, bytes32 resourceSelector) internal view returns (Resource resourceType) {
-    bytes32[] memory _primaryKeys = encodeKey(resourceSelector);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
     return Resource(uint8(Bytes.slice1(_blob, 0)));
   }
 
   /** Set resourceType */
   function set(bytes32 resourceSelector, Resource resourceType) internal {
-    bytes32[] memory _primaryKeys = encodeKey(resourceSelector);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked(uint8(resourceType)));
   }
 
   /** Set resourceType (using the specified store) */
   function set(IStore _store, bytes32 resourceSelector, Resource resourceType) internal {
-    bytes32[] memory _primaryKeys = encodeKey(resourceSelector);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked(uint8(resourceType)));
   }
 
@@ -103,18 +111,21 @@ library ResourceType {
   function encodeKey(bytes32 resourceSelector) internal pure returns (bytes32[] memory _primaryKeys) {
     _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((resourceSelector));
-    return _primaryKeys;
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector) internal {
-    bytes32[] memory _primaryKeys = encodeKey(resourceSelector);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 resourceSelector) internal {
-    bytes32[] memory _primaryKeys = encodeKey(resourceSelector);
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+
     _store.deleteRecord(_tableId, _primaryKeys);
   }
 }

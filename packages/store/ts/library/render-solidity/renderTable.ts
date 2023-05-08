@@ -29,7 +29,7 @@ export function renderTable(options: RenderTableOptions) {
     primaryKeys,
   } = options;
 
-  const { _keyArgs, _typedTableId, _typedKeyArgs } = renderCommonData(options);
+  const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
 
   return `${renderedSolidityHeader}
 
@@ -137,7 +137,6 @@ library ${libraryName} {
       primaryKeys,
       (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
     )}
-    return _primaryKeys;
   }
 
   ${renderWithStore(
@@ -145,7 +144,7 @@ library ${libraryName} {
     (_typedStore, _store, _commentSuffix) => `
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
-      bytes32[] memory _primaryKeys = encodeKey(${renderArguments([_keyArgs])});
+      ${_primaryKeysDefinition}
       ${_store}.deleteRecord(_tableId, _primaryKeys);
     }
   `
