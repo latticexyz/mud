@@ -20,17 +20,13 @@ contract TodoSystem is System {
     Owned.set(todoKey, user);
   }
 
-  function modify(bytes32 key, string memory body) public onlyOwner(key) {
-    TodoItem.setBody(key, body);
+  function modify(bytes32 key, TodoItemData memory data) public onlyOwner(key) {
+    TodoItem.set(key, data);
   }
 
   function remove(bytes32 key) public onlyOwner(key) {
     Owned.deleteRecord(key);
     TodoItem.deleteRecord(key);
-  }
-
-  function toggleComplete(bytes32 key) public onlyOwner(key) {
-    TodoItem.setCompleted(key, !TodoItem.get(key).completed);
   }
 
   modifier onlyOwner(bytes32 key) {

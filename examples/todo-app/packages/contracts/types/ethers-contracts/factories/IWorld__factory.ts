@@ -452,9 +452,21 @@ const _abi = [
         type: "bytes32",
       },
       {
-        internalType: "string",
-        name: "body",
-        type: "string",
+        components: [
+          {
+            internalType: "bool",
+            name: "completed",
+            type: "bool",
+          },
+          {
+            internalType: "string",
+            name: "body",
+            type: "string",
+          },
+        ],
+        internalType: "struct TodoItemData",
+        name: "data",
+        type: "tuple",
       },
     ],
     name: "modify",
@@ -1038,19 +1050,6 @@ const _abi = [
       },
     ],
     name: "setRecord",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "bytes32",
-        name: "key",
-        type: "bytes32",
-      },
-    ],
-    name: "toggleComplete",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

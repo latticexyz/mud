@@ -35,7 +35,7 @@ export const App = () => {
                 type="checkbox"
                 checked={completed}
                 onChange={(e) => {
-                  worldSend("toggleComplete", [todoKey]);
+                  worldSend("modify", [todoKey, { body, completed: e.target.checked }]);
                 }}
               />
               {" "}

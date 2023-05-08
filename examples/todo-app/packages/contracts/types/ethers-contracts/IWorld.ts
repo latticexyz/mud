@@ -28,6 +28,16 @@ import type {
   PromiseOrValue,
 } from "./common";
 
+export type TodoItemDataStruct = {
+  completed: PromiseOrValue<boolean>;
+  body: PromiseOrValue<string>;
+};
+
+export type TodoItemDataStructOutput = [boolean, string] & {
+  completed: boolean;
+  body: string;
+};
+
 export interface IWorldInterface extends utils.Interface {
   functions: {
     "add(string)": FunctionFragment;
@@ -43,7 +53,7 @@ export interface IWorldInterface extends utils.Interface {
     "installModule(address,bytes)": FunctionFragment;
     "installRootModule(address,bytes)": FunctionFragment;
     "isStore()": FunctionFragment;
-    "modify(bytes32,string)": FunctionFragment;
+    "modify(bytes32,(bool,string))": FunctionFragment;
     "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)": FunctionFragment;
     "popFromField(bytes32,bytes32[],uint8,uint256)": FunctionFragment;
     "pushToField(bytes32,bytes32[],uint8,bytes)": FunctionFragment;
@@ -66,7 +76,6 @@ export interface IWorldInterface extends utils.Interface {
     "setMetadata(bytes32,string,string[])": FunctionFragment;
     "setRecord(bytes16,bytes16,bytes32[],bytes)": FunctionFragment;
     "setRecord(bytes32,bytes32[],bytes)": FunctionFragment;
-    "toggleComplete(bytes32)": FunctionFragment;
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)": FunctionFragment;
   };
@@ -109,7 +118,6 @@ export interface IWorldInterface extends utils.Interface {
       | "setMetadata(bytes32,string,string[])"
       | "setRecord(bytes16,bytes16,bytes32[],bytes)"
       | "setRecord(bytes32,bytes32[],bytes)"
-      | "toggleComplete"
       | "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"
       | "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)"
   ): FunctionFragment;
@@ -185,7 +193,7 @@ export interface IWorldInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "isStore", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "modify",
-    values: [PromiseOrValue<BytesLike>, PromiseOrValue<string>]
+    values: [PromiseOrValue<BytesLike>, TodoItemDataStruct]
   ): string;
   encodeFunctionData(
     functionFragment: "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)",
@@ -367,10 +375,6 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "toggleComplete",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "updateInField(bytes32,bytes32[],uint8,uint256,bytes)",
     values: [
       PromiseOrValue<BytesLike>,
@@ -513,10 +517,6 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setRecord(bytes32,bytes32[],bytes)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "toggleComplete",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -681,7 +681,7 @@ export interface IWorld extends BaseContract {
 
     modify(
       key: PromiseOrValue<BytesLike>,
-      body: PromiseOrValue<string>,
+      data: TodoItemDataStruct,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -849,11 +849,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    toggleComplete(
-      key: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -952,7 +947,7 @@ export interface IWorld extends BaseContract {
 
   modify(
     key: PromiseOrValue<BytesLike>,
-    body: PromiseOrValue<string>,
+    data: TodoItemDataStruct,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1120,11 +1115,6 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  toggleComplete(
-    key: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
@@ -1220,7 +1210,7 @@ export interface IWorld extends BaseContract {
 
     modify(
       key: PromiseOrValue<BytesLike>,
-      body: PromiseOrValue<string>,
+      data: TodoItemDataStruct,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1385,11 +1375,6 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    toggleComplete(
-      key: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1524,7 +1509,7 @@ export interface IWorld extends BaseContract {
 
     modify(
       key: PromiseOrValue<BytesLike>,
-      body: PromiseOrValue<string>,
+      data: TodoItemDataStruct,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1689,11 +1674,6 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    toggleComplete(
-      key: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1796,7 +1776,7 @@ export interface IWorld extends BaseContract {
 
     modify(
       key: PromiseOrValue<BytesLike>,
-      body: PromiseOrValue<string>,
+      data: TodoItemDataStruct,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1961,11 +1941,6 @@ export interface IWorld extends BaseContract {
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    toggleComplete(
-      key: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
