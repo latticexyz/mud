@@ -19,7 +19,7 @@ export type WorldConfig = {
    */
   overrideSystems?: Record<string, SystemConfig>;
   /** Systems to exclude from automatic deployment */
-  excludeSystems?: string[];
+  excludeSystems?: readonly string[];
   /**
    * Script to execute after the deployment is complete (Default "PostDeploy").
    * Script must be placed in the forge scripts directory (see foundry.toml) and have a ".s.sol" extension.
@@ -32,7 +32,7 @@ export type WorldConfig = {
   /** Path for world package imports. Default is "@latticexyz/world/src/" */
   worldImportPath?: string;
   /** Modules to in the World */
-  modules?: ModuleConfig[];
+  modules?: readonly ModuleConfig[];
 };
 
 export type ExpandedWorldConfig<C extends WorldConfig> = OrDefaults<C, typeof WORLD_DEFAULTS> &

@@ -1,6 +1,8 @@
-import { mudConfig } from "./ts/register";
+import { storePlugin } from "@latticexyz/store";
+import { defineConfig } from "@latticexyz/config";
+import { worldPlugin } from "./ts/library/config";
 
-export default mudConfig({
+const config = defineConfig({ storePlugin, worldPlugin }, {
   worldImportPath: "../",
   worldgenDirectory: "interfaces",
   worldInterfaceName: "IBaseWorld",
@@ -145,4 +147,6 @@ export default mudConfig({
     // (see: https://github.com/latticexyz/mud/issues/631)
     "StoreRegistrationSystem",
   ],
-});
+} as const);
+
+export default config;
