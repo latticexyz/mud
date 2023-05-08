@@ -78,7 +78,6 @@ export default mudConfig({
     },
     FunctionSelectors: {
       directory: "modules/core/tables",
-      name: "funcSelectors",
       primaryKeys: {
         functionSelector: "bytes4",
       },

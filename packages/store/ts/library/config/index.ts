@@ -5,6 +5,7 @@ import {
   // validation utils
   getDuplicates,
   parseStaticArray,
+  STORE_SELECTOR_MAX_LENGTH,
   // config
   MUDCoreUserConfig,
   MUDCoreConfig,
@@ -140,7 +141,7 @@ export const zTablesConfig = z.record(zTableName, zTableConfig).transform((table
   // default name depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
-    table.name ??= tableName;
+    table.name ??= tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
 
     tables[tableName] = table;
   }
@@ -284,15 +285,24 @@ function validateStoreConfig(config: z.output<typeof StoreConfigUnrefined>, ctx:
     }
   }
   // Global names must be unique
-  const tableNames = Object.keys(config.tables);
+  const tableLibraryNames = Object.keys(config.tables);
   const staticUserTypeNames = Object.keys(config.enums);
   const userTypeNames = staticUserTypeNames;
-  const globalNames = [...tableNames, ...userTypeNames];
+  const globalNames = [...tableLibraryNames, ...userTypeNames];
   const duplicateGlobalNames = getDuplicates(globalNames);
   if (duplicateGlobalNames.length > 0) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
-      message: `Table, enum names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
+      message: `Table library names, enum names must be globally unique: ${duplicateGlobalNames.join(", ")}`,
+    });
+  }
+  // Table names used for tableId must be unique
+  const tableNames = Object.values(config.tables).map(({ name }) => name);
+  const duplicateTableNames = getDuplicates(tableNames);
+  if (duplicateTableNames.length > 0) {
+    ctx.addIssue({
+      code: ZodIssueCode.custom,
+      message: `Table names must be unique: ${duplicateTableNames.join(", ")}`,
     });
   }
   // User types must exist
