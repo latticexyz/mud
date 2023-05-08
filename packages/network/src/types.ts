@@ -117,7 +117,6 @@ export type SystemCall<C extends Components = Components> = {
 export enum NetworkEvents {
   SystemCall = "SystemCall",
   NetworkComponentUpdate = "NetworkComponentUpdate",
-  NetworkEphemeralComponentUpdate = "NetworkEphemeralComponentUpdate",
 }
 
 export type NetworkEvent<C extends Components = Components> = SystemCall<C> | NetworkComponentUpdate<C>;
