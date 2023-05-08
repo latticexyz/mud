@@ -55,10 +55,10 @@ interface IStoreWrite {
 }
 
 interface IStoreEphemeral {
-  event StoreEphemeralSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
   // Emit the ephemeral event without modifying storage
-  function setEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) external;
+  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) external;
 }
 
 /**

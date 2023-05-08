@@ -17,7 +17,7 @@ contract EphemeralRecordSystem is System {
    * Emit the ephemeral event without modifying storage at the given namespace and name.
    * Requires the caller to have access to the namespace or name.
    */
-  function setEphemeralRecord(
+  function emitEphemeralRecord(
     bytes16 namespace,
     bytes16 name,
     bytes32[] calldata key,
@@ -27,6 +27,6 @@ contract EphemeralRecordSystem is System {
     bytes32 resourceSelector = AccessControl.requireAccess(namespace, name, msg.sender);
 
     // Set the record
-    StoreCore.setEphemeralRecord(resourceSelector, key, data);
+    StoreCore.emitEphemeralRecord(resourceSelector, key, data);
   }
 }

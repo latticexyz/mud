@@ -114,6 +114,6 @@ contract TablegenTest is Test, StoreReadWithStubs {
   function testEphemeral() public {
     Ephemeral.registerSchema();
 
-    Ephemeral.setEphemeral("key", 123);
+    Ephemeral.emitEphemeral("key", 123);
   }
 }

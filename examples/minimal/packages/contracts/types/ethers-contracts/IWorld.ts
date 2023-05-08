@@ -33,6 +33,8 @@ export interface IWorldInterface extends utils.Interface {
     "call(bytes16,bytes16,bytes)": FunctionFragment;
     "deleteRecord(bytes32,bytes32[])": FunctionFragment;
     "deleteRecord(bytes16,bytes16,bytes32[])": FunctionFragment;
+    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)": FunctionFragment;
+    "emitEphemeralRecord(bytes32,bytes32[],bytes)": FunctionFragment;
     "getField(bytes32,bytes32[],uint8)": FunctionFragment;
     "getKeySchema(bytes32)": FunctionFragment;
     "getRecord(bytes32,bytes32[],bytes32)": FunctionFragment;
@@ -59,8 +61,6 @@ export interface IWorldInterface extends utils.Interface {
     "registerTableHook(bytes16,bytes16,address)": FunctionFragment;
     "revokeAccess(bytes16,bytes16,address)": FunctionFragment;
     "sendMessage(string)": FunctionFragment;
-    "setEphemeralRecord(bytes32,bytes32[],bytes)": FunctionFragment;
-    "setEphemeralRecord(bytes16,bytes16,bytes32[],bytes)": FunctionFragment;
     "setField(bytes32,bytes32[],uint8,bytes)": FunctionFragment;
     "setField(bytes16,bytes16,bytes32[],uint8,bytes)": FunctionFragment;
     "setMetadata(bytes16,bytes16,string,string[])": FunctionFragment;
@@ -76,6 +76,8 @@ export interface IWorldInterface extends utils.Interface {
       | "call"
       | "deleteRecord(bytes32,bytes32[])"
       | "deleteRecord(bytes16,bytes16,bytes32[])"
+      | "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"
+      | "emitEphemeralRecord(bytes32,bytes32[],bytes)"
       | "getField"
       | "getKeySchema"
       | "getRecord(bytes32,bytes32[],bytes32)"
@@ -102,8 +104,6 @@ export interface IWorldInterface extends utils.Interface {
       | "registerTableHook"
       | "revokeAccess"
       | "sendMessage"
-      | "setEphemeralRecord(bytes32,bytes32[],bytes)"
-      | "setEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"
       | "setField(bytes32,bytes32[],uint8,bytes)"
       | "setField(bytes16,bytes16,bytes32[],uint8,bytes)"
       | "setMetadata(bytes16,bytes16,string,string[])"
@@ -132,6 +132,23 @@ export interface IWorldInterface extends utils.Interface {
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>,
       PromiseOrValue<BytesLike>[]
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>[],
+      PromiseOrValue<BytesLike>
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "emitEphemeralRecord(bytes32,bytes32[],bytes)",
+    values: [
+      PromiseOrValue<BytesLike>,
+      PromiseOrValue<BytesLike>[],
+      PromiseOrValue<BytesLike>
     ]
   ): string;
   encodeFunctionData(
@@ -307,23 +324,6 @@ export interface IWorldInterface extends utils.Interface {
     values: [PromiseOrValue<string>]
   ): string;
   encodeFunctionData(
-    functionFragment: "setEphemeralRecord(bytes32,bytes32[],bytes)",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>[],
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "setEphemeralRecord(bytes16,bytes16,bytes32[],bytes)",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>[],
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "setField(bytes32,bytes32[],uint8,bytes)",
     values: [
       PromiseOrValue<BytesLike>,
@@ -405,6 +405,14 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "deleteRecord(bytes16,bytes16,bytes32[])",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "emitEphemeralRecord(bytes32,bytes32[],bytes)",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getField", data: BytesLike): Result;
@@ -500,14 +508,6 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "setEphemeralRecord(bytes32,bytes32[],bytes)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "setEphemeralRecord(bytes16,bytes16,bytes32[],bytes)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "setField(bytes32,bytes32[],uint8,bytes)",
     data: BytesLike
   ): Result;
@@ -542,13 +542,13 @@ export interface IWorldInterface extends utils.Interface {
 
   events: {
     "StoreDeleteRecord(bytes32,bytes32[])": EventFragment;
-    "StoreEphemeralSetRecord(bytes32,bytes32[],bytes)": EventFragment;
+    "StoreEphemeralRecord(bytes32,bytes32[],bytes)": EventFragment;
     "StoreSetField(bytes32,bytes32[],uint8,bytes)": EventFragment;
     "StoreSetRecord(bytes32,bytes32[],bytes)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "StoreDeleteRecord"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "StoreEphemeralSetRecord"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "StoreEphemeralRecord"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreSetField"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreSetRecord"): EventFragment;
 }
@@ -565,18 +565,18 @@ export type StoreDeleteRecordEvent = TypedEvent<
 export type StoreDeleteRecordEventFilter =
   TypedEventFilter<StoreDeleteRecordEvent>;
 
-export interface StoreEphemeralSetRecordEventObject {
+export interface StoreEphemeralRecordEventObject {
   table: string;
   key: string[];
   data: string;
 }
-export type StoreEphemeralSetRecordEvent = TypedEvent<
+export type StoreEphemeralRecordEvent = TypedEvent<
   [string, string[], string],
-  StoreEphemeralSetRecordEventObject
+  StoreEphemeralRecordEventObject
 >;
 
-export type StoreEphemeralSetRecordEventFilter =
-  TypedEventFilter<StoreEphemeralSetRecordEvent>;
+export type StoreEphemeralRecordEventFilter =
+  TypedEventFilter<StoreEphemeralRecordEvent>;
 
 export interface StoreSetFieldEventObject {
   table: string;
@@ -647,6 +647,21 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
+      namespace: PromiseOrValue<BytesLike>,
+      name: PromiseOrValue<BytesLike>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
+    "emitEphemeralRecord(bytes32,bytes32[],bytes)"(
+      table: PromiseOrValue<BytesLike>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
@@ -822,21 +837,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    "setEphemeralRecord(bytes32,bytes32[],bytes)"(
-      table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    "setEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     "setField(bytes32,bytes32[],uint8,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -921,6 +921,21 @@ export interface IWorld extends BaseContract {
     namespace: PromiseOrValue<BytesLike>,
     name: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
+    namespace: PromiseOrValue<BytesLike>,
+    name: PromiseOrValue<BytesLike>,
+    key: PromiseOrValue<BytesLike>[],
+    data: PromiseOrValue<BytesLike>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
+  "emitEphemeralRecord(bytes32,bytes32[],bytes)"(
+    table: PromiseOrValue<BytesLike>,
+    key: PromiseOrValue<BytesLike>[],
+    data: PromiseOrValue<BytesLike>,
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
@@ -1096,21 +1111,6 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  "setEphemeralRecord(bytes32,bytes32[],bytes)"(
-    table: PromiseOrValue<BytesLike>,
-    key: PromiseOrValue<BytesLike>[],
-    data: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  "setEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
-    namespace: PromiseOrValue<BytesLike>,
-    name: PromiseOrValue<BytesLike>,
-    key: PromiseOrValue<BytesLike>[],
-    data: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   "setField(bytes32,bytes32[],uint8,bytes)"(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
@@ -1195,6 +1195,21 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
+      namespace: PromiseOrValue<BytesLike>,
+      name: PromiseOrValue<BytesLike>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    "emitEphemeralRecord(bytes32,bytes32[],bytes)"(
+      table: PromiseOrValue<BytesLike>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1366,21 +1381,6 @@ export interface IWorld extends BaseContract {
     sendMessage(
       message: PromiseOrValue<string>,
       overrides?: CallOverrides
-    ): Promise<number>;
-
-    "setEphemeralRecord(bytes32,bytes32[],bytes)"(
-      table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    "setEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
     ): Promise<void>;
 
     "setField(bytes32,bytes32[],uint8,bytes)"(
@@ -1457,16 +1457,16 @@ export interface IWorld extends BaseContract {
     ): StoreDeleteRecordEventFilter;
     StoreDeleteRecord(table?: null, key?: null): StoreDeleteRecordEventFilter;
 
-    "StoreEphemeralSetRecord(bytes32,bytes32[],bytes)"(
+    "StoreEphemeralRecord(bytes32,bytes32[],bytes)"(
       table?: null,
       key?: null,
       data?: null
-    ): StoreEphemeralSetRecordEventFilter;
-    StoreEphemeralSetRecord(
+    ): StoreEphemeralRecordEventFilter;
+    StoreEphemeralRecord(
       table?: null,
       key?: null,
       data?: null
-    ): StoreEphemeralSetRecordEventFilter;
+    ): StoreEphemeralRecordEventFilter;
 
     "StoreSetField(bytes32,bytes32[],uint8,bytes)"(
       table?: null,
@@ -1511,6 +1511,21 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
+      namespace: PromiseOrValue<BytesLike>,
+      name: PromiseOrValue<BytesLike>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
+    "emitEphemeralRecord(bytes32,bytes32[],bytes)"(
+      table: PromiseOrValue<BytesLike>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
@@ -1686,21 +1701,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    "setEphemeralRecord(bytes32,bytes32[],bytes)"(
-      table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    "setEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     "setField(bytes32,bytes32[],uint8,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1786,6 +1786,21 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "emitEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
+      namespace: PromiseOrValue<BytesLike>,
+      name: PromiseOrValue<BytesLike>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    "emitEphemeralRecord(bytes32,bytes32[],bytes)"(
+      table: PromiseOrValue<BytesLike>,
+      key: PromiseOrValue<BytesLike>[],
+      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -1958,21 +1973,6 @@ export interface IWorld extends BaseContract {
 
     sendMessage(
       message: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "setEphemeralRecord(bytes32,bytes32[],bytes)"(
-      table: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    "setEphemeralRecord(bytes16,bytes16,bytes32[],bytes)"(
-      namespace: PromiseOrValue<BytesLike>,
-      name: PromiseOrValue<BytesLike>,
-      key: PromiseOrValue<BytesLike>[],
-      data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 

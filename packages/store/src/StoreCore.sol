@@ -21,7 +21,7 @@ library StoreCore {
   event StoreSetRecord(bytes32 tableId, bytes32[] key, bytes data);
   event StoreSetField(bytes32 tableId, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(bytes32 tableId, bytes32[] key);
-  event StoreEphemeralSetRecord(bytes32 table, bytes32[] key, bytes data);
+  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
   /**
    * Initialize internal tables.
@@ -371,7 +371,7 @@ library StoreCore {
   /**
    * Emit the ephemeral event without modifying storage for the full data of the given tableId and key tuple
    */
-  function setEphemeralRecord(bytes32 tableId, bytes32[] memory key, bytes memory data) internal {
+  function emitEphemeralRecord(bytes32 tableId, bytes32[] memory key, bytes memory data) internal {
     // verify the value has the correct length for the tableId (based on the tableId's schema)
     // to prevent invalid data from being emitted
     Schema schema = getSchema(tableId);
@@ -380,7 +380,7 @@ library StoreCore {
     StoreCoreInternal._validateDataLength(schema, data);
 
     // Emit event to notify indexers
-    emit StoreEphemeralSetRecord(tableId, key, data);
+    emit StoreEphemeralRecord(tableId, key, data);
 
     // Call onSetRecord hooks
     address[] memory hooks = Hooks.get(tableId);

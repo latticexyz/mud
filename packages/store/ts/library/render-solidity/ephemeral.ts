@@ -9,7 +9,7 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
     /** Emit the ephemeral event using individual values${_commentSuffix} */
-    function setEphemeral(${renderArguments([
+    function emitEphemeral(${renderArguments([
       _typedStore,
       _typedTableId,
       _typedKeyArgs,
@@ -19,7 +19,7 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
 
       ${_primaryKeysDefinition}
 
-      ${_store}.setEphemeralRecord(_tableId, _primaryKeys, _data);
+      ${_store}.emitEphemeralRecord(_tableId, _primaryKeys, _data);
     }
   `
   );
@@ -29,13 +29,13 @@ export function renderEphemeralMethods(options: RenderTableOptions) {
       storeArgument,
       (_typedStore, _store, _commentSuffix, _untypedStore) => `
       /** Emit the ephemeral event using the data struct${_commentSuffix} */
-      function setEphemeral(${renderArguments([
+      function emitEphemeral(${renderArguments([
         _typedStore,
         _typedTableId,
         _typedKeyArgs,
         `${structName} memory _table`,
       ])}) internal {
-       setEphemeral(${renderArguments([
+       emitEphemeral(${renderArguments([
          _untypedStore,
          _tableId,
          _keyArgs,
