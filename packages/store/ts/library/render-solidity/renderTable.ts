@@ -130,6 +130,7 @@ library ${libraryName} {
     ])});
   }
 
+  /** Encode keys as a bytes32 array using this table's schema */
   function encodeKey(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _primaryKeys) {
     _primaryKeys = new bytes32[](${primaryKeys.length});
     ${renderList(

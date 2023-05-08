@@ -622,6 +622,7 @@ library Statics {
     return abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
   }
 
+  /** Encode keys as a bytes32 array using this table's schema */
   function encodeKey(
     uint256 k1,
     int32 k2,

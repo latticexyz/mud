@@ -137,6 +137,7 @@ library KeysWithValue {
     return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((keysWithValue)));
   }
 
+  /** Encode keys as a bytes32 array using this table's schema */
   function encodeKey(bytes32 valueHash) internal pure returns (bytes32[] memory _primaryKeys) {
     _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((valueHash));

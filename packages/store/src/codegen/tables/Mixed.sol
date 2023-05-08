@@ -331,6 +331,7 @@ library Mixed {
     return abi.encodePacked(u32, u128, _encodedLengths.unwrap(), EncodeArray.encode((a32)), bytes((s)));
   }
 
+  /** Encode keys as a bytes32 array using this table's schema */
   function encodeKey(bytes32 key) internal pure returns (bytes32[] memory _primaryKeys) {
     _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
