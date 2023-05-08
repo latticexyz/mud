@@ -157,6 +157,13 @@ library KeysWithValue {
     return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((keysWithValue)));
   }
 
+  function encodeKey(bytes32 valueHash) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((valueHash));
+
+    return _primaryKeys;
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 _tableId, bytes32 valueHash) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

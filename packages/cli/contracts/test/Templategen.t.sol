@@ -24,16 +24,32 @@ contract TemplateTest is Test, StoreReadWithStubs {
     // Assert that the template content was set correctly
     assertEq(TemplateContent.get(ExampleTemplateId, CounterTableId), Counter.encode(2));
 
-    // Create an instance
+    // Create a template instance
+    uint256 k1 = 1;
+    int32 k2 = -1;
+    bytes16 k3 = hex"02";
+    address k4 = address(123);
+    bool k5 = true;
+    Enum1 k6 = Enum1.E3;
+    Enum2 k7 = Enum2.E1;
+
     bytes32[][] memory keys = new bytes32[][](2);
-    keys[0] = new bytes32[](7);
-    keys[1] = new bytes32[](1);
+    keys[0] = Statics.encodeKey(k1, k2, k3, k4, k5, k6, k7);
+    keys[1] = Counter.encodeKey("test");
 
     createInstance(ExampleTemplateId, keys);
 
-    // Assert that the instance was create properly
+    // Assert that the instance was created properly
+    StaticsData memory data = StaticsData(
+      1,
+      1,
+      "wasd",
+      0x71C7656EC7ab88b098defB751B7401B5f6d8976F,
+      true,
+      Enum1.E1,
+      Enum2.E1
+    );
+    assertEq(abi.encode(Statics.get(k1, k2, k3, k4, k5, k6, k7)), abi.encode(data));
     assertEq(Counter.get(keys[1][0]), 2);
-
-    // TODO: how to test statics?
   }
 }

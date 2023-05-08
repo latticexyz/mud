@@ -318,6 +318,13 @@ library StoreMetadata {
     return abi.encodePacked(_encodedLengths.unwrap(), bytes((tableName)), bytes((abiEncodedFieldNames)));
   }
 
+  function encodeKey(bytes32 tableId) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    return _primaryKeys;
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 tableId) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

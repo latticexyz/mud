@@ -178,6 +178,14 @@ library InstalledModules {
     return abi.encodePacked(moduleAddress);
   }
 
+  function encodeKey(bytes16 moduleName, bytes32 argumentsHash) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((moduleName));
+    _primaryKeys[1] = bytes32((argumentsHash));
+
+    return _primaryKeys;
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes16 moduleName, bytes32 argumentsHash) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);

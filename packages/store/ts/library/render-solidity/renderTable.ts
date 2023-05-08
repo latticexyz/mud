@@ -129,6 +129,11 @@ library ${libraryName} {
     ])});
   }
 
+  function encodeKey(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory) {
+   ${_primaryKeysDefinition}
+   return _primaryKeys;
+  }
+
   ${renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `

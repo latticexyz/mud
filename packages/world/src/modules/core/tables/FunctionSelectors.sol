@@ -239,6 +239,13 @@ library FunctionSelectors {
     return abi.encodePacked(namespace, name, systemFunctionSelector);
   }
 
+  function encodeKey(bytes4 functionSelector) internal pure returns (bytes32[] memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((functionSelector));
+
+    return _primaryKeys;
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes4 functionSelector) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
