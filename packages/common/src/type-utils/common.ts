@@ -14,6 +14,6 @@ export type AsDependent<T> = T extends infer P ? P : never;
 export type OrDefault<T, Default> = T extends undefined ? Default : T;
 
 // For every key occuring in Defaults, map to `T[key] ?? Defaults[key]`
-export type OrDefaults<T extends Record<string, unknown>, Defaults> = {
+export type OrDefaults<T extends object, Defaults> = {
   [key in keyof Defaults]: key extends keyof T ? OrDefault<T[key], Defaults[key]> : Defaults[key];
 };

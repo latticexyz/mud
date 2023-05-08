@@ -234,7 +234,7 @@ export type MUDUserConfig<
   T extends MUDCoreUserConfig = MUDCoreUserConfig,
   EnumNames extends StringForUnion = StringForUnion,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
-> = Omit<T, keyof StoreConfig> &
+> = T &
   EnumsConfig<EnumNames> & {
     /**
      * Configuration for each table.
@@ -256,17 +256,19 @@ export type MUDUserConfig<
     codegenDirectory?: string;
   };
 
-export type ExpandMUDUserConfig<T extends MUDCoreUserConfig> = OrDefaults<
-  T,
-  {
-    enums: Record<string, never>;
-    tables: ExpandTablesConfig<T["tables"]>;
-    namespace: "";
-    storeImportPath: "@latticexyz/store/src/";
-    userTypesPath: "Types";
-    codegenDirectory: "codegen";
-  }
->;
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
+  extends OrDefaults<
+    T,
+    {
+      enums: Record<string, never>;
+      tables: ExpandTablesConfig<T["tables"]>;
+      namespace: "";
+      storeImportPath: "@latticexyz/store/src/";
+      userTypesPath: "Types";
+      codegenDirectory: "codegen";
+    }
+  > {}
 
 /** mudCoreConfig wrapper to use generics in some options for better type inference */
 export function mudConfig<
