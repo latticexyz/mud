@@ -1,6 +1,13 @@
 import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import { AsDependent, ExtractUserTypes, RequireKeys, StaticArray, StringForUnion } from "@latticexyz/common/type-utils";
+import {
+  AsDependent,
+  ExtractUserTypes,
+  OrDefaults,
+  RequireKeys,
+  StaticArray,
+  StringForUnion,
+} from "@latticexyz/common/type-utils";
 import {
   // validation utils
   getDuplicates,
@@ -8,7 +15,6 @@ import {
   STORE_SELECTOR_MAX_LENGTH,
   // config
   MUDCoreUserConfig,
-  MUDCoreConfig,
   mudCoreConfig,
   // schemas
   zObjectName,
@@ -46,6 +52,9 @@ export type ShorthandSchemaConfig<UserTypes extends StringForUnion = StringForUn
 export type SchemaConfig<UserTypes extends StringForUnion = StringForUnion> =
   | FullSchemaConfig<UserTypes>
   | ShorthandSchemaConfig<UserTypes>;
+
+export type ExpandSchemaConfig<TSchemaConfig extends SchemaConfig<string>> =
+  TSchemaConfig extends ShorthandSchemaConfig<string> ? { value: TSchemaConfig } : TSchemaConfig;
 
 const zFullSchemaConfig = z
   .record(zColumnName, zFieldData)
@@ -96,15 +105,26 @@ export type FullTableConfig<
   schema: FullSchemaConfig<UserTypes>;
 };
 
+export type ExpandTableConfig<TTableConfig extends TableConfig<string, string>, TableName extends string> = {
+  directory: TTableConfig["directory"] extends undefined ? "tables" : TTableConfig["directory"];
+  name: TTableConfig["name"] extends undefined ? TableName : TTableConfig["name"];
+  tableIdArgument: TTableConfig["tableIdArgument"] extends undefined ? false : TTableConfig["tableIdArgument"];
+  storeArgument: TTableConfig["storeArgument"] extends undefined ? false : TTableConfig["storeArgument"];
+  // TODO expand conditional dataStruct default
+  dataStruct: TTableConfig["dataStruct"] extends undefined ? unknown : TTableConfig["dataStruct"];
+  primaryKeys: TTableConfig["primaryKeys"] extends undefined ? { key: "bytes32" } : TTableConfig["primaryKeys"];
+  schema: ExpandSchemaConfig<TTableConfig["schema"]>;
+};
+
 const zFullTableConfig = z
   .object({
     directory: z.string().default("tables"),
     name: zSelector.optional(),
     tableIdArgument: z.boolean().default(false),
     storeArgument: z.boolean().default(true),
+    dataStruct: z.boolean().optional(),
     primaryKeys: zPrimaryKeys,
     schema: zSchemaConfig,
-    dataStruct: z.boolean().optional(),
   })
   .transform((arg) => {
     // default dataStruct value depends on schema's length
@@ -152,6 +172,14 @@ export type FullTablesConfig<
   UserTypes extends StringForUnion = StringForUnion,
   StaticUserTypes extends StringForUnion = StringForUnion
 > = Record<string, FullTableConfig<UserTypes, StaticUserTypes>>;
+
+export type ExpandTablesConfig<TTablesConfig extends TablesConfig<string, string>> = {
+  [TableName in keyof TTablesConfig]: TTablesConfig[TableName] extends FieldData<string>
+    ? ExpandTableConfig<{ schema: { value: TTablesConfig[TableName] } }, TableName extends string ? TableName : never>
+    : TTablesConfig[TableName] extends TableConfig<string, string>
+    ? ExpandTableConfig<TTablesConfig[TableName], TableName extends string ? TableName : never>
+    : never;
+};
 
 /************************************************************************
  *
@@ -203,9 +231,10 @@ export const zEnumsConfig = z.object({
 // zod doesn't preserve doc comments
 /** MUDCoreUserConfig wrapper to use generics in some options for better type inference */
 export type MUDUserConfig<
+  T extends MUDCoreUserConfig = MUDCoreUserConfig,
   EnumNames extends StringForUnion = StringForUnion,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
-> = MUDCoreUserConfig &
+> = Omit<T, keyof StoreConfig> &
   EnumsConfig<EnumNames> & {
     /**
      * Configuration for each table.
@@ -227,20 +256,25 @@ export type MUDUserConfig<
     codegenDirectory?: string;
   };
 
-export type MUDConfig<
-  EnumNames extends StringForUnion = StringForUnion,
-  StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
-> = MUDCoreConfig &
-  FullEnumsConfig<EnumNames> & {
-    tables: FullTablesConfig<StaticUserTypes, StaticUserTypes>;
-  };
+export type ExpandMUDUserConfig<T extends MUDCoreUserConfig> = OrDefaults<
+  T,
+  {
+    enums: Record<string, never>;
+    tables: ExpandTablesConfig<T["tables"]>;
+    namespace: "";
+    storeImportPath: "@latticexyz/store/src/";
+    userTypesPath: "Types";
+    codegenDirectory: "codegen";
+  }
+>;
 
 /** mudCoreConfig wrapper to use generics in some options for better type inference */
 export function mudConfig<
+  T extends MUDCoreUserConfig,
   // (`never` is overridden by inference, so only the defined enums can be used by default)
   EnumNames extends StringForUnion = never,
   StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
->(config: MUDUserConfig<EnumNames, StaticUserTypes>): MUDConfig<EnumNames, StaticUserTypes> {
+>(config: MUDUserConfig<T, EnumNames, StaticUserTypes>): ExpandMUDUserConfig<T> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return mudCoreConfig(config) as any;
 }
