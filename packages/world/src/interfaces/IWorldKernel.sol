@@ -101,5 +101,5 @@ interface IWorldCall {
  * registered functions selectors from the `CoreModule`.
  */
 interface IWorldKernel is IWorldData, IWorldModuleInstallation, IWorldCall, IErrors {
-
+  event HelloWorld();
 }

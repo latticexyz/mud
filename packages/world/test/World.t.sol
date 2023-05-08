@@ -119,6 +119,7 @@ contract WorldTestTableHook is IStoreHook {
 contract WorldTest is Test {
   using ResourceSelector for bytes32;
 
+  event HelloWorld();
   event HookCalled(bytes data);
   event WorldTestSystemLog(string log);
 
@@ -148,6 +149,12 @@ contract WorldTest is Test {
   }
 
   function testConstructor() public {
+    vm.expectEmit(true, true, true, true);
+    emit HelloWorld();
+    new World();
+  }
+
+  function testRootNamespace() public {
     // Owner of root route should be the creator of the World
     address rootOwner = NamespaceOwner.get(world, ROOT_NAMESPACE);
     assertEq(rootOwner, address(this));
