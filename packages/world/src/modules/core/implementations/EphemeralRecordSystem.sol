@@ -8,11 +8,8 @@ import { Call } from "../../../Call.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { InstalledModules } from "../../../tables/InstalledModules.sol";
 import { StoreCore } from "@latticexyz/store/src/StoreCore.sol";
-import { ResourceSelector } from "../../../ResourceSelector.sol";
 
 contract EphemeralRecordSystem is System {
-  using ResourceSelector for bytes32;
-
   /**
    * Emit the ephemeral event without modifying storage at the given namespace and name.
    * Requires the caller to have access to the namespace or name.
