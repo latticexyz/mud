@@ -9,8 +9,8 @@ import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/co
 import { resolveWithContext } from "@latticexyz/config";
 import { MUDError } from "@latticexyz/common/errors";
 import { encodeSchema } from "@latticexyz/schema-type";
-import { StoreConfig, resolveAbiOrUserType } from "@latticexyz/store";
-import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
+import { ExpandedStoreConfig, resolveAbiOrUserType } from "@latticexyz/store";
+import { ExpandedWorldConfig, resolveWorldConfig } from "@latticexyz/world";
 import { IBaseWorld } from "@latticexyz/world/types/ethers-contracts/IBaseWorld";
 
 import WorldData from "@latticexyz/world/abi/World.sol/World.json" assert { type: "json" };
@@ -34,7 +34,7 @@ export interface DeploymentInfo {
 }
 
 export async function deploy(
-  mudConfig: StoreConfig & WorldConfig,
+  mudConfig: ExpandedStoreConfig & ExpandedWorldConfig,
   existingContracts: string[],
   deployConfig: DeployConfig
 ): Promise<DeploymentInfo> {
@@ -262,9 +262,11 @@ export async function deploy(
     ...mudConfig.modules.map(async (module) => {
       console.log(chalk.blue(`Installing${module.root ? " root " : " "}module ${module.name}`));
       // Resolve arguments
-      const resolvedArgs = await Promise.all(
-        module.args.map((arg) => resolveWithContext(arg, { tableIds, systemAddresses: contractPromises }))
-      );
+      const resolvedArgs = module.args
+        ? await Promise.all(
+            module.args.map((arg) => resolveWithContext(arg, { tableIds, systemAddresses: contractPromises }))
+          )
+        : [];
       const values = resolvedArgs.map((arg) => arg.value);
       const types = resolvedArgs.map((arg) => arg.type);
       const moduleAddress = await contractPromises[module.name];

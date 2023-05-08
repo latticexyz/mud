@@ -35,5 +35,5 @@ export type WorldConfig = {
   modules?: readonly ModuleConfig[];
 };
 
-export type ExpandedWorldConfig<C extends WorldConfig> = OrDefaults<C, typeof WORLD_DEFAULTS> &
+export type ExpandedWorldConfig<C extends WorldConfig = WorldConfig> = OrDefaults<C, typeof WORLD_DEFAULTS> &
   Omit<C, keyof typeof WORLD_DEFAULTS>;

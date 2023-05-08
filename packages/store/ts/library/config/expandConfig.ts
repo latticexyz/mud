@@ -12,11 +12,11 @@ import {
   zUserEnum,
   zValueName,
 } from "@latticexyz/config";
-import { Config, Expanded } from "./types";
+import { StoreConfig, ExpandedStoreConfig } from "./types";
 import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 
-export function expandConfig<C extends Config>(config: C) {
-  return zStoreConfig.parse(config) as unknown as Expanded<C>;
+export function expandConfig<C extends StoreConfig>(config: C) {
+  return zStoreConfig.parse(config) as unknown as ExpandedStoreConfig<C>;
 }
 
 const zTableName = zObjectName;

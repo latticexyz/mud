@@ -1,3 +1,5 @@
+import { ModuleConfig } from "./types";
+
 export const SYSTEM_DEFAULTS = {
   registerFunctionSelector: true,
   openAccess: true,
@@ -15,4 +17,5 @@ export const WORLD_DEFAULTS = {
   worldImportPath: "@latticexyz/world/src/",
   overrideSystems: {} as Record<string, never>,
   excludeSystems: [] as string[],
+  modules: [] as ModuleConfig[],
 } as const;

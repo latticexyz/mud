@@ -53,7 +53,7 @@ export type ExpandedTableConfig<C extends TableConfig | FieldData, DefaultName =
       name: OrDefault<C["name"], DefaultName>;
       schema: ExpandedSchemaConfig<C["schema"]>;
     }
-  : typeof TABLE_DEFAULTS & { schema: { value: C } };
+  : typeof TABLE_DEFAULTS & { schema: { value: C }; name: DefaultName };
 
 // Expand a shorthand tables config to a full tables config with defaults
 export type ExpandedTablesConfig<C extends TablesConfig> = {

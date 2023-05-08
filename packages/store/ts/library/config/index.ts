@@ -1,4 +1,4 @@
-export type { Config, Expanded } from "./types";
+export type { StoreConfig, ExpandedStoreConfig } from "./types";
 
 export { defineStoreConfig } from "./defineStoreConfig";
 export { expandConfig } from "./expandConfig";
