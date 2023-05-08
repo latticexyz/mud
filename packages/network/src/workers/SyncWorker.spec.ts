@@ -4,8 +4,8 @@ import { keccak256, sleep } from "@latticexyz/utils";
 import { computed } from "mobx";
 import { ack, Input, InputType, SyncWorker } from "./SyncWorker";
 import { concatMap, from, map, Subject, Subscription, timer } from "rxjs";
-import { isNetworkComponentUpdateEvent, NetworkComponentUpdate, NetworkEvents, SyncWorkerConfig } from "../types";
-import { Components, EntityID } from "@latticexyz/recs";
+import { isNetworkComponentUpdateEvent, NetworkComponentUpdate, NetworkEvents } from "../types";
+import { Components, Entity } from "@latticexyz/recs";
 import { createCacheStore, storeEvent } from "./CacheStore";
 import * as syncUtils from "./syncUtils";
 import "fake-indexeddb/auto";
@@ -17,7 +17,7 @@ const cacheBlockNumber = 99;
 const cacheEvent = {
   type: NetworkEvents.NetworkComponentUpdate,
   component: "0x10",
-  entity: "0x11" as EntityID,
+  entity: "0x11" as Entity,
   value: {},
   txHash: "0x12",
   lastEventInTx: true,
@@ -28,7 +28,7 @@ const snapshotEvents = [
   {
     type: NetworkEvents.NetworkComponentUpdate,
     component: "0x42",
-    entity: "0x11" as EntityID,
+    entity: "0x11" as Entity,
     value: {},
     txHash: "0x12",
     lastEventInTx: true,
@@ -42,7 +42,7 @@ const gapStateEvents = [
   {
     type: NetworkEvents.NetworkComponentUpdate,
     component: "0x20",
-    entity: "0x21" as EntityID,
+    entity: "0x21" as Entity,
     value: {},
     txHash: "0x22",
     lastEventInTx: true,
@@ -208,7 +208,7 @@ describe("Sync.worker", () => {
     const event: NetworkComponentUpdate = {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x00",
-      entity: "0x01" as EntityID,
+      entity: "0x01" as Entity,
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
@@ -391,7 +391,7 @@ describe("Sync.worker", () => {
     const event1: NetworkComponentUpdate = {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x99",
-      entity: "0x01" as EntityID,
+      entity: "0x01" as Entity,
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
@@ -401,7 +401,7 @@ describe("Sync.worker", () => {
     const event2: NetworkComponentUpdate = {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x0999",
-      entity: "0x01" as EntityID,
+      entity: "0x01" as Entity,
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
@@ -411,7 +411,7 @@ describe("Sync.worker", () => {
     const event3: NetworkComponentUpdate = {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x9999",
-      entity: "0x01" as EntityID,
+      entity: "0x01" as Entity,
       value: {},
       txHash: "0x02",
       lastEventInTx: true,

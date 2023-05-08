@@ -1,4 +1,4 @@
-import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
+import { Components, ComponentValue, Entity, SchemaOf } from "@latticexyz/recs";
 import { packTuple, transformIterator, unpackTuple } from "@latticexyz/utils";
 import { initCache } from "../initCache";
 import { ECSStateReply } from "@latticexyz/services/ecs-snapshot";
@@ -103,7 +103,7 @@ export function getCacheStoreEntries<Cm extends Components>({
     const ecsEvent: NetworkComponentUpdate<Cm> = {
       type: NetworkEvents.NetworkComponentUpdate,
       component,
-      entity: entity as EntityID,
+      entity: entity as Entity,
       value: value as ComponentValue<SchemaOf<Cm[keyof Cm]>>,
       lastEventInTx: false,
       txHash: "cache",

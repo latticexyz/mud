@@ -7,12 +7,10 @@ import {
   Schema,
   overridableComponent,
   updateComponent,
-  EntityID,
-  EntityIndex,
   Component,
-  removeComponent,
   setComponent,
   Metadata,
+  Entity,
 } from "@latticexyz/recs";
 import { mapObject, awaitStreamValue, uuid } from "@latticexyz/utils";
 import { ActionState } from "./constants";
@@ -66,22 +64,22 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
    * @param actionRequest Action to be scheduled
    * @returns index of the entity created for the action
    */
-  function add<C extends Components, T>(actionRequest: ActionRequest<C, T, M>): EntityIndex {
+  function add<C extends Components, T>(actionRequest: ActionRequest<C, T, M>): Entity {
     // Prevent the same actions from being scheduled multiple times
-    const existingAction = world.entityToIndex.get(actionRequest.id);
+    const existingAction = world.hasEntity(actionRequest.id as Entity);
     if (existingAction != null) {
       console.warn(`Action with id ${actionRequest.id} is already requested.`);
-      return existingAction;
+      return actionRequest.id as Entity;
     }
 
     // Set the action component
-    const entityIndex = createEntity(world, undefined, {
+    const entity = createEntity(world, undefined, {
       id: actionRequest.id,
     });
 
-    setComponent(Action, entityIndex, {
+    setComponent(Action, entity, {
       state: ActionState.Requested,
-      on: actionRequest.on ? world.entities[actionRequest.on] : undefined,
+      on: actionRequest.on,
       metadata: actionRequest.metadata,
       overrides: undefined,
       txHash: undefined,
@@ -96,7 +94,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
     // Store relevant components with pending updates along the action's requirement and execution logic
     const action = {
       ...actionRequest,
-      entityIndex,
+      entity,
       componentsWithOptimisticUpdates: mapObject(actionRequest.components, (c) => withOptimisticUpdates(c)),
     } as unknown as ActionData;
     actionData.set(action.id, action);
@@ -109,7 +107,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
     checkRequirement(action);
     disposer.set(action.id, { dispose: () => subscription?.unsubscribe() });
 
-    return entityIndex;
+    return entity;
   }
 
   /**
@@ -119,7 +117,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
    */
   function checkRequirement(action: ActionData) {
     // Only check requirements of requested actions
-    if (getComponentValue(Action, action.entityIndex)?.state !== ActionState.Requested) return;
+    if (getComponentValue(Action, action.entity)?.state !== ActionState.Requested) return;
 
     // Check requirement on components including pending updates
     const requirementResult = action.requirement(action.componentsWithOptimisticUpdates);
@@ -136,10 +134,10 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
    */
   async function executeAction<T>(action: ActionData, requirementResult: T) {
     // Only execute actions that were requested before
-    if (getComponentValue(Action, action.entityIndex)?.state !== ActionState.Requested) return;
+    if (getComponentValue(Action, action.entity)?.state !== ActionState.Requested) return;
 
     // Update the action state
-    updateComponent(Action, action.entityIndex, { state: ActionState.Executing });
+    updateComponent(Action, action.entity, { state: ActionState.Executing });
 
     // Compute overrides
     const overrides = action
@@ -147,7 +145,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
       .map((o) => ({ ...o, id: uuid() }));
 
     // Store overrides on Action component to be able to remove when action is done
-    updateComponent(Action, action.entityIndex, { overrides: overrides.map((o) => `${o.id}/${o.component}`) });
+    updateComponent(Action, action.entity, { overrides: overrides.map((o) => `${o.id}/${o.component}`) });
 
     // Set all pending updates of this action
     for (const { component, value, entity, id } of overrides) {
@@ -161,14 +159,14 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
       // If the result includes a hash key (single tx) or hashes (multiple tx) key, wait for the transactions to complete before removing the pending actions
       if (tx) {
         // Wait for all tx events to be reduced
-        updateComponent(Action, action.entityIndex, { state: ActionState.WaitingForTxEvents, txHash: tx.hash });
+        updateComponent(Action, action.entity, { state: ActionState.WaitingForTxEvents, txHash: tx.hash });
         const txConfirmed = tx.wait().catch(() => handleError(action)); // Also catch the error if not awaiting
         await awaitStreamValue(txReduced$, (v) => v === tx.hash);
-        updateComponent(Action, action.entityIndex, { state: ActionState.TxReduced });
+        updateComponent(Action, action.entity, { state: ActionState.TxReduced });
         if (action.awaitConfirmation) await txConfirmed;
       }
 
-      updateComponent(Action, action.entityIndex, { state: ActionState.Complete });
+      updateComponent(Action, action.entity, { state: ActionState.Complete });
     } catch (e) {
       handleError(action);
     }
@@ -179,7 +177,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
 
   // Set the action's state to ActionState.Failed
   function handleError(action: ActionData) {
-    updateComponent(Action, action.entityIndex, { state: ActionState.Failed });
+    updateComponent(Action, action.entity, { state: ActionState.Failed });
     remove(action.id);
   }
 
@@ -188,13 +186,13 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
    * @param actionId ID of the action to be cancelled
    * @returns void
    */
-  function cancel(actionId: EntityID): boolean {
+  function cancel(actionId: string): boolean {
     const action = actionData.get(actionId);
-    if (!action || getComponentValue(Action, action.entityIndex)?.state !== ActionState.Requested) {
+    if (!action || getComponentValue(Action, action.entity)?.state !== ActionState.Requested) {
       console.warn(`Action ${actionId} was not found or is not in the "Requested" state.`);
       return false;
     }
-    updateComponent(Action, action.entityIndex, { state: ActionState.Cancelled });
+    updateComponent(Action, action.entity, { state: ActionState.Cancelled });
     remove(actionId);
     return true;
   }
@@ -203,13 +201,13 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
    * Removes actionData disposer of the action with the given ID and removes its pending updates.
    * @param actionId ID of the action to be removed
    */
-  function remove(actionId: EntityID) {
+  function remove(actionId: string) {
     const action = actionData.get(actionId);
     if (!action) throw new Error("Trying to remove an action that does not exist.");
 
     // Remove this action's pending updates
-    const actionEntityIndex = world.entityToIndex.get(actionId);
-    const overrides = (actionEntityIndex != null && getComponentValue(Action, actionEntityIndex)?.overrides) || [];
+    const actionEntity = actionId as Entity;
+    const overrides = (actionEntity != null && getComponentValue(Action, actionEntity)?.overrides) || [];
     for (const override of overrides) {
       const [id, componentKey] = override.split("/");
       const component = componentsWithOptimisticUpdates[componentKey];
@@ -224,10 +222,7 @@ export function createActionSystem<M = undefined>(world: World, txReduced$: Obse
     actionData.delete(actionId);
 
     // Remove the action entity after some time
-    const actionIndex = world.entityToIndex.get(actionId);
-    world.entityToIndex.delete(actionId);
-
-    actionIndex != null && setTimeout(() => removeComponent(Action, actionIndex), 5000);
+    actionEntity != null && setTimeout(() => world.deleteEntity(actionEntity), 5000);
   }
 
   return { add, cancel, withOptimisticUpdates, Action };
