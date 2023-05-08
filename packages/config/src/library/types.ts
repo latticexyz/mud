@@ -1,4 +1,3 @@
-import { UnionToIntersection } from "@latticexyz/common/type-utils";
 /*
  * Every plugin defines an `Input`, an `Expanded<T = Input>` type,
  * and a `expandConfig` function to map from `Input` to `Expanded`.

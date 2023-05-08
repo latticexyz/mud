@@ -7,3 +7,5 @@ export * from "./dynamicResolution";
 export * from "./errors";
 export * from "./loadConfig";
 export * from "./validation";
+
+export * from "./types";
