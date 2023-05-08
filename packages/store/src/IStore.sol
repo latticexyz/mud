@@ -77,7 +77,7 @@ interface IStoreRegistration {
   function registerStoreHook(bytes32 table, IStoreHook hook) external;
 }
 
-interface IStore is IStoreData, IStoreRegistration {}
+interface IStore is IStoreData, IStoreRegistration, IStoreErrors {}
 
 interface IStoreHook {
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external;
