@@ -1,6 +1,6 @@
 import { OrDefault, OrDefaults, StringForUnion } from "@latticexyz/common/type-utils";
-import { FieldData, SchemaConfig } from "./schema";
 import { StaticAbiType } from "@latticexyz/schema-type";
+import { ExpandedSchemaConfig, FieldData, SchemaConfig } from "./schema";
 import { TABLE_DEFAULTS, DEFAULTS } from "../defaults";
 
 type PrimaryKey<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;
@@ -48,10 +48,10 @@ export type TablesConfig<
 };
 
 // Expand a shorthand table config to a full table config with defaults
-export type ExpandedTableConfig<C extends TableConfig | FieldData> = C extends TableConfig
-  ? OrDefaults<Omit<C, "schema" | "primaryKeys">, typeof TABLE_DEFAULTS> & {
-      schema: C["schema"];
-      primaryKeys: C["primaryKeys"];
+export type ExpandedTableConfig<C extends TableConfig | FieldData, DefaultName = string> = C extends TableConfig
+  ? OrDefaults<Omit<C, "schema" | "name">, typeof TABLE_DEFAULTS> & {
+      name: OrDefault<C["name"], DefaultName>;
+      schema: ExpandedSchemaConfig<C["schema"]>;
     }
   : typeof TABLE_DEFAULTS & { schema: { value: C } };
 
@@ -60,6 +60,6 @@ export type ExpandedTablesConfig<C extends TablesConfig> = {
   namespace: OrDefault<C["namespace"], typeof DEFAULTS.namespace>;
   tables: {
     // Map every shorthand table config to a fully expanded table config
-    [key in keyof C["tables"]]: ExpandedTableConfig<C["tables"][key]>;
+    [key in keyof C["tables"]]: ExpandedTableConfig<C["tables"][key], key>;
   };
 };
