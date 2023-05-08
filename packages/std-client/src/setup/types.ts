@@ -1,5 +1,5 @@
 import { NetworkConfig, SyncWorkerConfig, NetworkComponentUpdate, SystemCall } from "@latticexyz/network";
-import { EntityIndex, Schema, Components, Type, Component } from "@latticexyz/recs";
+import { Schema, Components, Type, Component, Entity } from "@latticexyz/recs";
 import { Contract } from "ethers";
 
 export type SetupContractConfig = NetworkConfig &
@@ -13,7 +13,7 @@ export type SetupContractConfig = NetworkConfig &
   };
 
 export type DecodedNetworkComponentUpdate = Omit<Omit<NetworkComponentUpdate, "entity">, "component"> & {
-  entity: EntityIndex;
+  entity: Entity;
   component: Component<Schema>;
 };
 
