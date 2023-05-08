@@ -113,37 +113,5 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    KeysInTable: (() => {
-      const tableId = new TableId("", "KeysInTable");
-      return defineComponent(
-        world,
-        {
-          length: RecsType.Number,
-          keys: RecsType.BigIntArray,
-        },
-        {
-          metadata: {
-            contractId: tableId.toHexString(),
-            tableId: tableId.toString(),
-          },
-        }
-      );
-    })(),
-    UsedKeysIndex: (() => {
-      const tableId = new TableId("", "UsedKeysIndex");
-      return defineComponent(
-        world,
-        {
-          has: RecsType.Boolean,
-          index: RecsType.Number,
-        },
-        {
-          metadata: {
-            contractId: tableId.toHexString(),
-            tableId: tableId.toString(),
-          },
-        }
-      );
-    })(),
   };
 }
