@@ -41,7 +41,7 @@
     "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
     "release": "npm publish --access=public",
-    "test": "tsc --noEmit && forge test"
+    "test": "tsc --noEmit && vitest --run && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

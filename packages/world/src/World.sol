@@ -32,6 +32,8 @@ contract World is StoreRead, IStoreData, IWorldKernel {
     NamespaceOwner.set(ROOT_NAMESPACE, msg.sender);
 
     // Other internal tables are registered by the CoreModule to reduce World's bytecode size.
+
+    emit HelloWorld();
   }
 
   /**

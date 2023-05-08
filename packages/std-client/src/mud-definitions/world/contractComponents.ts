@@ -97,13 +97,45 @@ export function defineContractComponents(world: World) {
       );
     })(),
     FunctionSelectors: (() => {
-      const tableId = new TableId("", "funcSelectors");
+      const tableId = new TableId("", "FunctionSelector");
       return defineComponent(
         world,
         {
           namespace: RecsType.String,
           name: RecsType.String,
           systemFunctionSelector: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    KeysInTable: (() => {
+      const tableId = new TableId("", "KeysInTable");
+      return defineComponent(
+        world,
+        {
+          length: RecsType.Number,
+          keys: RecsType.BigIntArray,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    UsedKeysIndex: (() => {
+      const tableId = new TableId("", "UsedKeysIndex");
+      return defineComponent(
+        world,
+        {
+          has: RecsType.Boolean,
+          index: RecsType.Number,
         },
         {
           metadata: {

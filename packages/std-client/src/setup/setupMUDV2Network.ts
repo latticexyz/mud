@@ -17,7 +17,7 @@ import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/
 import { defineStringComponent } from "../components";
 import { ContractComponent, ContractComponents, SetupContractConfig } from "./types";
 import { applyNetworkUpdates, createEncoders } from "./utils";
-import { EntityID } from "@latticexyz/recs";
+import { Entity } from "@latticexyz/recs";
 import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
 import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 import { worldAbiObservable } from "../dev/observables";
@@ -137,7 +137,7 @@ export async function setupMUDV2Network<C extends ContractComponents>({
   const singletonEntity = world.registerEntity({ id: SingletonID });
   // Register player entity
   const address = network.connectedAddress.get();
-  const playerEntityId = address ? (address as EntityID) : undefined;
+  const playerEntityId = address;
   const playerEntity = playerEntityId ? world.registerEntity({ id: playerEntityId }) : undefined;
 
   // Create sync worker
@@ -184,6 +184,7 @@ export async function setupMUDV2Network<C extends ContractComponents>({
     components,
     singletonEntityId: SingletonID,
     singletonEntity,
+    /* @deprecated playerEntityId is equivalent to playerEntity */
     playerEntityId,
     playerEntity,
   };

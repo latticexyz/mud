@@ -1,5 +1,7 @@
-import { hasComponent } from "./Component";
-import { Component, EntityIndex, EntityID, World } from "./types";
+import { transformIterator } from "@latticexyz/utils";
+import { hasComponent, removeComponent } from "./Component";
+import { getEntityString, getEntitySymbol } from "./Entity";
+import { Component, Entity, EntitySymbol, World } from "./types";
 
 /**
  * Create a new World.
@@ -11,28 +13,22 @@ import { Component, EntityIndex, EntityID, World } from "./types";
  * @returns A new World
  */
 export function createWorld() {
-  const entityToIndex = new Map<EntityID, EntityIndex>();
-  const entities: EntityID[] = [];
+  const entitySymbols = new Set<EntitySymbol>();
   const components: Component[] = [];
   let disposers: [string, () => void][] = [];
 
-  function getEntityIndexStrict(entity: EntityID): EntityIndex {
-    const index = entityToIndex.get(entity);
-    if (index == null) throw new Error("entity does not exist");
-    return index;
-  }
-
-  function registerEntity({ id, idSuffix }: { id?: EntityID; idSuffix?: string } = {}) {
-    const entity = (id || entities.length + (idSuffix ? "-" + idSuffix : "")) as EntityID;
-
-    // Skip if entity already exists
-    let index = entityToIndex.get(entity);
-    if (index != null) return index;
+  function registerEntity({ id, idSuffix }: { id?: string; idSuffix?: string } = {}) {
+    const entity = (id || entitySymbols.size + (idSuffix ? "-" + idSuffix : "")) as Entity;
+    const entitySymbol = getEntitySymbol(entity);
 
     // Register entity
-    index = (entities.push(entity) - 1) as EntityIndex;
-    entityToIndex.set(entity, index);
-    return index;
+    entitySymbols.add(entitySymbol);
+
+    return entity;
+  }
+
+  function getEntities() {
+    return transformIterator(entitySymbols.values(), getEntityString);
   }
 
   function registerComponent(component: Component) {
@@ -50,21 +46,29 @@ export function createWorld() {
     disposers.push([namespace, disposer]);
   }
 
-  function hasEntity(entity: EntityID): boolean {
-    return entityToIndex.get(entity) != null;
+  function hasEntity(entity: Entity): boolean {
+    const entitySymbol = getEntitySymbol(entity);
+    return entitySymbols.has(entitySymbol);
+  }
+
+  function deleteEntity(entity: Entity) {
+    for (const component of components) {
+      if (hasComponent(component, entity)) removeComponent(component, entity);
+    }
+    entitySymbols.delete(getEntitySymbol(entity));
   }
 
   return {
-    entities,
-    entityToIndex,
     registerEntity,
     components,
     registerComponent,
     dispose,
     registerDisposer,
-    getEntityIndexStrict,
     hasEntity,
-  };
+    getEntities,
+    entitySymbols,
+    deleteEntity,
+  } satisfies World;
 }
 
 /**
@@ -90,9 +94,9 @@ export function namespaceWorld(world: ReturnType<typeof createWorld>, namespace:
  * because there are less components than entities and maintaining a list of components per entity is a large overhead.
  *
  * @param world World object the given entity is registered on.
- * @param entity {@link EntityIndex} of the entity to get the list of components for.
+ * @param entity {@link Entity} to get the list of components for.
  * @returns Array of components that have a value for the given entity.
  */
-export function getEntityComponents(world: World, entity: EntityIndex): Component[] {
+export function getEntityComponents(world: World, entity: Entity): Component[] {
   return world.components.filter((component) => hasComponent(component, entity));
 }

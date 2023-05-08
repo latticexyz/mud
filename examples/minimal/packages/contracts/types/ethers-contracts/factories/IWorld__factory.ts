@@ -192,6 +192,12 @@ const _abi = [
   },
   {
     anonymous: false,
+    inputs: [],
+    name: "HelloWorld",
+    type: "event",
+  },
+  {
+    anonymous: false,
     inputs: [
       {
         indexed: false,
