@@ -1,5 +1,5 @@
-import { OrDefaults } from "@latticexyz/common/type-utils";
-import { DEFAULTS } from "../defaults";
+import { OrDefault } from "@latticexyz/common/type-utils";
+import { PATH_DEFAULTS } from "../defaults";
 
 export type PathsConfig = {
   /** Path for store package imports. Default is "@latticexyz/store/src/" */
@@ -10,4 +10,8 @@ export type PathsConfig = {
   codegenDirectory?: string;
 };
 
-export type ExpandedPathsConfig<C extends PathsConfig> = OrDefaults<C, typeof DEFAULTS>;
+export type ExpandedPathsConfig<C extends PathsConfig> = {
+  storeImportPath: OrDefault<C["storeImportPath"], typeof PATH_DEFAULTS.storeImportPath>;
+  userTypesPath: OrDefault<C["userTypesPath"], typeof PATH_DEFAULTS.userTypesPath>;
+  codegenDirectory: OrDefault<C["codegenDirectory"], typeof PATH_DEFAULTS.codegenDirectory>;
+};

@@ -1,9 +1,11 @@
-export const DEFAULTS = {
-  namespace: "",
+export const PATH_DEFAULTS = {
   storeImportPath: "@latticexyz/store/src/",
   userTypesPath: "Types",
   codegenDirectory: "codegen",
-  enums: {},
+} as const;
+
+export const DEFAULTS = {
+  namespace: "",
 } as const;
 
 export const TABLE_DEFAULTS = {
