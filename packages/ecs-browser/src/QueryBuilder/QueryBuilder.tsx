@@ -5,10 +5,10 @@ import {
   Type,
   AnyComponent,
   Component,
-  EntityID,
   World,
   defineQuery,
   EntityQueryFragment,
+  Entity,
 } from "@latticexyz/recs";
 import { ComponentBrowserButton, ComponentBrowserInput, SyntaxHighlighterWrapper } from "../StyledComponents";
 import { QueryBuilderForm, QueryShortcutContainer } from "./StyledComponents";
@@ -45,8 +45,8 @@ export const QueryBuilder = ({
 }: {
   world: World;
   layers: Layers;
-  allEntities: EntityID[];
-  setFilteredEntities: (es: EntityID[]) => void;
+  allEntities: Entity[];
+  setFilteredEntities: (es: Entity[]) => void;
   devHighlightComponent: Component<{ value: Type.OptionalNumber }>;
   clearDevHighlights: () => void;
   setOverflow: (overflow: number) => void;
@@ -151,7 +151,7 @@ export const QueryBuilder = ({
           () => {
             const selectedEntities = [...queryResult.matching].slice(0, MAX_ENTITIES);
             setOverflow(queryResult.matching.size - selectedEntities.length);
-            setFilteredEntities(selectedEntities.map((idx) => world.entities[idx]));
+            setFilteredEntities(selectedEntities);
             clearDevHighlights();
             selectedEntities.forEach((idx) => setComponent(devHighlightComponent, idx, { value: 0x0000ff }));
           },

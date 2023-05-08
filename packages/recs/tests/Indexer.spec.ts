@@ -11,8 +11,8 @@ import {
 } from "../src/Component";
 import { createIndexer } from "../src/Indexer";
 import { Type } from "../src/constants";
-import { createEntity } from "../src/Entity";
-import { AnyComponent, EntityID, EntityIndex, World } from "../src/types";
+import { createEntity, getEntitySymbol } from "../src/Entity";
+import { AnyComponent, Entity, World } from "../src/types";
 import { createWorld } from "../src/World";
 
 describe("Indexer", () => {
@@ -58,7 +58,7 @@ describe("Indexer", () => {
 
   describe("setComponent", () => {
     let component: AnyComponent;
-    let entity: EntityIndex;
+    let entity: Entity;
     let value: number;
 
     beforeEach(() => {
@@ -69,7 +69,7 @@ describe("Indexer", () => {
     });
 
     it("should store the component value", () => {
-      expect(component.values.value.get(entity)).toBe(value);
+      expect(component.values.value.get(getEntitySymbol(entity))).toBe(value);
     });
 
     it("should store the entity", () => {
@@ -81,7 +81,7 @@ describe("Indexer", () => {
 
   describe("removeComponent", () => {
     let component: AnyComponent;
-    let entity: EntityIndex;
+    let entity: Entity;
     let value: number;
 
     beforeEach(() => {
@@ -93,7 +93,7 @@ describe("Indexer", () => {
     });
 
     it("should remove the component value", () => {
-      expect(component.values.value.get(entity)).toBe(undefined);
+      expect(component.values.value.get(getEntitySymbol(entity))).toBe(undefined);
     });
 
     it("should remove the entity", () => {
@@ -222,20 +222,20 @@ describe("Indexer", () => {
       setComponent(Position, entity2, { x: 5, y: 6 });
 
       const OverridableComponent = overridableComponent(Position);
-      OverridableComponent.addOverride("firstOverride" as EntityID, { entity: entity1, value: { x: 2, y: 3 } });
+      OverridableComponent.addOverride("firstOverride", { entity: entity1, value: { x: 2, y: 3 } });
       expect(getComponentValue(OverridableComponent, entity1)).toEqual({ x: 2, y: 3 });
       expect(getComponentValue(OverridableComponent, entity2)).toEqual({ x: 5, y: 6 });
 
-      OverridableComponent.addOverride("secondOverride" as EntityID, { entity: entity1, value: { x: 3, y: 3 } });
+      OverridableComponent.addOverride("secondOverride", { entity: entity1, value: { x: 3, y: 3 } });
       expect(getComponentValue(OverridableComponent, entity1)).toEqual({ x: 3, y: 3 });
 
-      OverridableComponent.removeOverride("secondOverride" as EntityID);
+      OverridableComponent.removeOverride("secondOverride");
       expect(getComponentValue(OverridableComponent, entity1)).toEqual({ x: 2, y: 3 });
 
       setComponent(Position, entity1, { x: 10, y: 20 });
       expect(getComponentValue(OverridableComponent, entity1)).toEqual({ x: 2, y: 3 });
 
-      OverridableComponent.removeOverride("firstOverride" as EntityID);
+      OverridableComponent.removeOverride("firstOverride");
       expect(getComponentValue(OverridableComponent, entity1)).toEqual({ x: 10, y: 20 });
     });
 
@@ -251,7 +251,7 @@ describe("Indexer", () => {
 
       expect(spy).toHaveBeenCalledTimes(0);
 
-      OverridablePosition.addOverride("firstOverride" as EntityID, { entity: entity1, value: { x: 3, y: 3 } });
+      OverridablePosition.addOverride("firstOverride", { entity: entity1, value: { x: 3, y: 3 } });
       expect(spy).toHaveBeenCalledTimes(1);
       expect(spy).toHaveBeenLastCalledWith({
         entity: entity1,
@@ -262,7 +262,7 @@ describe("Indexer", () => {
         ],
       });
 
-      OverridablePosition.removeOverride("firstOverride" as EntityID);
+      OverridablePosition.removeOverride("firstOverride");
       expect(spy).toHaveBeenCalledTimes(2);
       expect(spy).toHaveBeenLastCalledWith({
         entity: entity1,
@@ -273,12 +273,12 @@ describe("Indexer", () => {
         ],
       });
 
-      OverridablePosition.addOverride("secondOverride" as EntityID, {
-        entity: 42 as EntityIndex,
+      OverridablePosition.addOverride("secondOverride", {
+        entity: "42" as Entity,
         value: { x: 2, y: 3 },
       });
       expect(spy).toHaveBeenLastCalledWith({
-        entity: 42,
+        entity: "42" as Entity,
         component: OverridablePosition,
         value: [{ x: 2, y: 3 }, undefined],
       });

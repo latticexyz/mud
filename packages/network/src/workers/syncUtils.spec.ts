@@ -1,4 +1,4 @@
-import { EntityID } from "@latticexyz/recs";
+import { Entity } from "@latticexyz/recs";
 import { sleep } from "@latticexyz/utils";
 import { Subject } from "rxjs";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
@@ -32,7 +32,7 @@ describe("syncUtils", () => {
       const event: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         component: "0x1",
-        entity: "0x0" as EntityID,
+        entity: "0x0" as Entity,
         value: {},
         lastEventInTx: true,
         txHash: "0x2",
@@ -74,7 +74,7 @@ describe("syncUtils", () => {
       const event: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         component: "0x01",
-        entity: "0x00" as EntityID,
+        entity: "0x00" as Entity,
         value: {},
         lastEventInTx: true,
         txHash: "0x02",
@@ -96,7 +96,7 @@ describe("syncUtils", () => {
         {
           type: NetworkEvents.NetworkComponentUpdate,
           component: "0x01",
-          entity: "0x00" as EntityID,
+          entity: "0x00" as Entity,
           value: {},
           lastEventInTx: false,
           txHash: "cache",
