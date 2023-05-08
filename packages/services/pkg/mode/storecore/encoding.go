@@ -281,14 +281,14 @@ func CombineStringifySchemaTypes(schemaType []SchemaType) string {
 	return strings.Join(StringifySchemaTypes(schemaType), ",")
 }
 
-type DataSchemaTypePair struct {
+type DataSchemaType__Struct struct {
 	Data       interface{}
 	SchemaType SchemaType
 }
 
 type DecodedData struct {
-	data        map[string]*DataSchemaTypePair
-	schemaTypes []SchemaType
+	values []*DataSchemaType__Struct
+	types  []SchemaType
 }
 
 // NewDecodedDataFromSchemaTypePair creates a new instance of DecodedData with the provided SchemaTypePair.
@@ -300,8 +300,8 @@ type DecodedData struct {
 // (*DecodedData): The new DecodedData instance.
 func NewDecodedDataFromSchemaTypePair(schemaTypePair SchemaTypePair) *DecodedData {
 	return &DecodedData{
-		data:        map[string]*DataSchemaTypePair{},
-		schemaTypes: CombineSchemaTypePair(schemaTypePair),
+		values: []*DataSchemaType__Struct{},
+		types:  CombineSchemaTypePair(schemaTypePair),
 	}
 }
 
@@ -314,8 +314,8 @@ func NewDecodedDataFromSchemaTypePair(schemaTypePair SchemaTypePair) *DecodedDat
 // (*DecodedData): The new DecodedData instance.
 func NewDecodedDataFromSchemaType(schemaType []SchemaType) *DecodedData {
 	return &DecodedData{
-		data:        map[string]*DataSchemaTypePair{},
-		schemaTypes: schemaType,
+		values: []*DataSchemaType__Struct{},
+		types:  schemaType,
 	}
 }
 
@@ -324,71 +324,59 @@ func NewDecodedDataFromSchemaType(schemaType []SchemaType) *DecodedData {
 // Returns:
 // (int): The length of the schema types in the DecodedData instance.
 func (d *DecodedData) Length() int {
-	return len(d.schemaTypes)
+	return len(d.types)
 }
 
-// Set sets the value for the given key in the DecodedData instance.
+// Add adds a value to a DecodedData instance.
 //
 // Parameters:
-// - key (string): The key to set the value for.
-// - value (*DataSchemaTypePair): The value to set for the key.
+// - value (*DataSchemaTypePair): The value to add to the DecodedData instance.
 //
 // Returns:
 // - void.
-func (d *DecodedData) Set(key string, value *DataSchemaTypePair) {
-	d.data[key] = value
+func (d *DecodedData) Add(value *DataSchemaType__Struct) {
+	d.values = append(d.values, value)
 }
 
-// Get retrieves the value for the given key in the DecodedData instance.
+// Get returns the value at the given index in the DecodedData instance.
 //
 // Parameters:
-// - key (string): The key to retrieve the value for.
+// - index (int): The index to retrieve the value for.
 //
 // Returns:
-// (*DataSchemaTypePair): The value for the given key in the DecodedData instance.
-func (d *DecodedData) Get(key string) *DataSchemaTypePair {
-	return d.data[key]
+// - (*DataSchemaType__Struct): The value at the given index in the DecodedData instance.
+func (d *DecodedData) Get(index int) *DataSchemaType__Struct {
+	return d.values[index]
 }
 
-// At retrieves the DataSchemaTypePair at the given index in the DecodedData instance.
-//
-// Parameters:
-// - index (int): The index to retrieve the DataSchemaTypePair for.
-//
-// Returns:
-// (*DataSchemaTypePair): The DataSchemaTypePair at the given index in the DecodedData instance.
-func (d *DecodedData) At(index int) *DataSchemaTypePair {
-	return d.data[d.schemaTypes[index].String()]
-}
-
-// DataAt retrieves the data value at the given index in the DecodedData instance.
+// GetData retrieves the data value at the given index in the DecodedData instance.
 //
 // Parameters:
 // - index (int): The index to retrieve the data value for.
 //
 // Returns:
 // (string): The data value at the given index in the DecodedData instance.
-func (d *DecodedData) DataAt(index int) interface{} {
-	return d.At(index).Data
+func (d *DecodedData) GetData(index int) interface{} {
+	return d.Get(index).Data
 }
 
-// SchemaTypeAt retrieves the schema type at the given index in the DecodedData instance.
+// GetSchemaType retrieves the schema type at the given index in the DecodedData instance.
 //
 // Parameters:
 // - index (int): The index to retrieve the schema type for.
 //
 // Returns:
 // (SchemaType): The schema type at the given index in the DecodedData instance.
-func (d *DecodedData) SchemaTypeAt(index int) SchemaType {
-	return d.At(index).SchemaType
+func (d *DecodedData) GetSchemaType(index int) SchemaType {
+	return d.Get(index).SchemaType
 }
 
-// SchemaTypes retrieves a slice of all the schema types in the DecodedData instance.
+// Types retrieves a slice of all the schema types in the DecodedData instance.
 //
 // Returns:
 // ([]SchemaType): A slice of all the schema types in the DecodedData instance.
-func (d *DecodedData) SchemaTypes() []SchemaType {
-	return d.schemaTypes
+func (d *DecodedData) Types() []SchemaType {
+	return d.types
 }
 
 // DecodeDataField decodes the provided byte encoding using the provided SchemaTypePair and index.
@@ -424,7 +412,7 @@ func DecodeDataField__DecodedData(encoding []byte, schemaTypePair SchemaTypePair
 	for idx, fieldType := range schemaTypePair.Static {
 		if uint8(idx) == index {
 			value := DecodeStaticField(fieldType, encoding, 0)
-			data.Set(fieldType.String(), &DataSchemaTypePair{
+			data.Add(&DataSchemaType__Struct{
 				Data:       value,
 				SchemaType: fieldType,
 			})
@@ -435,7 +423,7 @@ func DecodeDataField__DecodedData(encoding []byte, schemaTypePair SchemaTypePair
 		// Offset by the static data length.
 		if uint8(idx+len(schemaTypePair.Static)) == index {
 			value := DecodeDynamicField(fieldType, encoding)
-			data.Set(fieldType.String(), &DataSchemaTypePair{
+			data.Add(&DataSchemaType__Struct{
 				Data:       value,
 				SchemaType: fieldType,
 			})
@@ -471,9 +459,7 @@ func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
 	for _, fieldType := range schemaTypePair.Static {
 		value := DecodeStaticField(fieldType, encoding, bytesOffset)
 		bytesOffset += getStaticByteLength(fieldType)
-
-		// Save a mapping of FIELD TYPE (string) -> (FIELD VALUE (interface{}), FIELD TYPE (SchemaType))
-		data.Set(fieldType.String(), &DataSchemaTypePair{
+		data.Add(&DataSchemaType__Struct{
 			Data:       value,
 			SchemaType: fieldType,
 		})
@@ -491,11 +477,10 @@ func DecodeData(encoding []byte, schemaTypePair SchemaTypePair) *DecodedData {
 			bytesOffset += dataLength
 
 			// Save a mapping of FIELD TYPE (string) -> (FIELD VALUE (interface{}), FIELD TYPE (SchemaType))
-			data.Set(fieldType.String(), &DataSchemaTypePair{
+			data.Add(&DataSchemaType__Struct{
 				Data:       value,
 				SchemaType: fieldType,
 			})
-
 		}
 	}
 

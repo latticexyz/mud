@@ -315,7 +315,7 @@ func (il *IngressLayer) handleSchemaTableEvent(event *storecore.StorecoreStoreSe
 	decodedFieldData := storecore.DecodeData(event.Data, *mudstoreSchemaTableSchema.StoreCoreSchemaTypeKV.Value)
 	// Build the decoded key data directly. This is because we save the table ID as a hex encoded string of uint256.
 	decodedKeyData := storecore.NewDecodedDataFromSchemaType([]storecore.SchemaType{storecore.STRING})
-	decodedKeyData.Set(storecore.STRING.String(), &storecore.DataSchemaTypePair{
+	decodedKeyData.Add(&storecore.DataSchemaType__Struct{
 		Data:       tableId,
 		SchemaType: storecore.STRING,
 	})
@@ -356,8 +356,8 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	decodedMetadata := storecore.DecodeData(event.Data, *metadataTableSchema.StoreCoreSchemaTypeKV.Value)
 
 	// Since we know the structure of the metadata, we decode it directly into types and handle.
-	tableReadableName := decodedMetadata.DataAt(0).(string)
-	tableColumnNamesHexString := decodedMetadata.DataAt(1).(string)
+	tableReadableName := decodedMetadata.GetData(0).(string)
+	tableColumnNamesHexString := decodedMetadata.GetData(1).(string)
 	tableColumnNamesBytes, _ := hexutil.Decode(tableColumnNamesHexString)
 
 	// For some reason just string[] doesn't work with abi decoding here, so we use a tuple.
@@ -442,7 +442,7 @@ func (il *IngressLayer) handleMetadataTableEvent(event *storecore.StorecoreStore
 	decodedFieldData := storecore.DecodeData(event.Data, *mudstoreMetadataTableSchema.StoreCoreSchemaTypeKV.Value)
 	// Build the decoded key data directly. This is because we save the table ID as a hex encoded string of uint256.
 	decodedKeyData := storecore.NewDecodedDataFromSchemaType([]storecore.SchemaType{storecore.STRING})
-	decodedKeyData.Set(storecore.STRING.String(), &storecore.DataSchemaTypePair{
+	decodedKeyData.Add(&storecore.DataSchemaType__Struct{
 		Data:       tableId,
 		SchemaType: storecore.STRING,
 	})

@@ -67,7 +67,7 @@ func KeyToFilter(tableSchema *TableSchema, key [][32]byte) map[string]interface{
 	filter := make(map[string]interface{})
 
 	for idx, key_name := range tableSchema.KeyNames {
-		filter[key_name] = decodedKeyData.DataAt(idx)
+		filter[key_name] = decodedKeyData.GetData(idx)
 	}
 	return filter
 }
