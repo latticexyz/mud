@@ -1,4 +1,4 @@
-import { getDuplicates, MUDError, UnrecognizedSystemErrorFactory } from "@latticexyz/config";
+import { getDuplicates, MUDError, STORE_SELECTOR_MAX_LENGTH, UnrecognizedSystemErrorFactory } from "@latticexyz/config";
 import { StoreConfig } from "@latticexyz/store";
 import { SystemConfig, WorldConfig } from "./types";
 
@@ -63,7 +63,7 @@ export function resolveWorldConfig(config: StoreConfig & WorldConfig, existingCo
  * Default value for accessListSystems is []
  */
 export function resolveSystemConfig(systemName: string, config?: SystemConfig, existingContracts?: string[]) {
-  const name = config?.name ?? systemName;
+  const name = config?.name ?? systemName.slice(0, STORE_SELECTOR_MAX_LENGTH);
   const registerFunctionSelectors = config?.registerFunctionSelectors ?? true;
   const openAccess = config?.openAccess ?? true;
   const accessListAddresses: string[] = [];

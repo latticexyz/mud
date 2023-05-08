@@ -5,6 +5,7 @@ import {
   // validation utils
   getDuplicates,
   parseStaticArray,
+  STORE_SELECTOR_MAX_LENGTH,
   // config
   MUDCoreUserConfig,
   MUDCoreConfig,
@@ -140,7 +141,7 @@ export const zTablesConfig = z.record(zTableName, zTableConfig).transform((table
   // default name depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
-    table.name ??= tableName;
+    table.name ??= tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
 
     tables[tableName] = table;
   }

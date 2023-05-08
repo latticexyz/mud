@@ -97,7 +97,7 @@ export function defineContractComponents(world: World) {
       );
     })(),
     FunctionSelectors: (() => {
-      const tableId = new TableId("", "funcSelectors");
+      const tableId = new TableId("", "FunctionSelector");
       return defineComponent(
         world,
         {
