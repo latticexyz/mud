@@ -22,6 +22,8 @@ import {
   zUserEnum,
   zValueName,
 } from "@latticexyz/config";
+// typeExtensions are necessary for `ExpandMUDUserConfig`, but configExtensions can be avoided
+import "../../register/typeExtensions";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
