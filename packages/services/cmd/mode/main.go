@@ -29,6 +29,7 @@ var (
 	chainRpcsHttp       = flag.String("chain-rpcs-http", "", "comma separated list of chain rpcs (http)")
 	chainRpcsWs         = flag.String("chain-rpcs-ws", "", "comma separated list of chain rpcs (ws)")
 	dbDsn               = flag.String("db-dsn", "", "database dsn")
+	dbDsnGorm           = flag.String("db-dsn-gorm", "", "database dsn for gorm")
 	dbWipe              = flag.Bool("db-wipe", false, "wipe database on launch")
 	syncEnabled         = flag.Bool("sync-enabled", false, "enable syncing")
 	syncStartBlock      = flag.Uint64("sync-start-block", 0, "start block for syncing")
@@ -60,6 +61,7 @@ func main() {
 			*chainRpcsHttp,
 			*chainRpcsWs,
 			*dbDsn,
+			*dbDsnGorm,
 			*dbWipe,
 			*syncEnabled,
 			*syncStartBlock,
@@ -76,7 +78,7 @@ func main() {
 	go grpc.StartMetricsServer(config.Metrics.Port, logger)
 
 	// Run the MODE DatabaseLayer.
-	dl := db.NewDatabaseLayer(context.Background(), config.Db.Dsn, "host=localhost dbname=mode_ephemeral port=5433 sslmode=disable", config.Db.Wipe, logger)
+	dl := db.NewDatabaseLayer(context.Background(), config.Db.Dsn, config.Db.DsnGorm, config.Db.Wipe, logger)
 	go dl.RunDatabaseLayer(context.Background())
 
 	// Create a MODE WriteLayer for modifying the database.
