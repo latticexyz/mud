@@ -178,11 +178,11 @@ export type FullTablesConfig<
   StaticUserTypes extends StringForUnion = StringForUnion
 > = Record<string, FullTableConfig<UserTypes, StaticUserTypes>>;
 
-export type ExpandTablesConfig<TTablesConfig extends TablesConfig<string, string>> = {
-  [TableName in keyof TTablesConfig]: TTablesConfig[TableName] extends FieldData<string>
-    ? ExpandTableConfig<{ schema: { value: TTablesConfig[TableName] } }, TableName extends string ? TableName : never>
-    : TTablesConfig[TableName] extends TableConfig<string, string>
-    ? ExpandTableConfig<TTablesConfig[TableName], TableName extends string ? TableName : never>
+export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
+  [TableName in keyof T]: T[TableName] extends FieldData<string>
+    ? ExpandTableConfig<{ schema: { value: T[TableName] } }, TableName extends string ? TableName : never>
+    : T[TableName] extends TableConfig<string, string>
+    ? ExpandTableConfig<T[TableName], TableName extends string ? TableName : never>
     : never;
 };
 
