@@ -1,5 +1,6 @@
 import { UnrecognizedSystemErrorFactory } from "@latticexyz/config";
-import { SystemConfig, WorldConfig } from "./types";
+import { SYSTEM_DEFAULTS } from "./defaults";
+import { Expanded, SystemConfig, WorldConfig } from "./types";
 
 export type ResolvedSystemConfig = ReturnType<typeof resolveSystemConfig>;
 
@@ -10,10 +11,11 @@ export type ResolvedWorldConfig = ReturnType<typeof resolveWorldConfig>;
  * filtering out excluded systems, validate system names refer to existing contracts, and
  * splitting the access list into addresses and system names.
  */
-export function resolveWorldConfig(config: WorldConfig, existingContracts?: string[]) {
+export function resolveWorldConfig(config: Expanded<WorldConfig>, existingContracts?: string[]) {
   // Include contract names ending in "System", but not the base "System" contract, and not Interfaces
   const defaultSystemNames =
     existingContracts?.filter((name) => name.endsWith("System") && name !== "System" && !name.match(/^I[A-Z]/)) ?? [];
+  config.overrideSystems;
   const overriddenSystemNames = Object.keys(config.overrideSystems);
 
   // Validate every key in overrideSystems refers to an existing system contract (and is not called "World")
@@ -55,11 +57,11 @@ export function resolveWorldConfig(config: WorldConfig, existingContracts?: stri
  */
 export function resolveSystemConfig(systemName: string, config?: SystemConfig, existingContracts?: string[]) {
   const name = config?.name ?? systemName;
-  const registerFunctionSelectors = config?.registerFunctionSelectors ?? true;
-  const openAccess = config?.openAccess ?? true;
+  const registerFunctionSelectors = config?.registerFunctionSelectors ?? SYSTEM_DEFAULTS.registerFunctionSelector;
+  const openAccess = config?.openAccess ?? SYSTEM_DEFAULTS.openAccess;
   const accessListAddresses: string[] = [];
   const accessListSystems: string[] = [];
-  const accessList = config && !config.openAccess ? config.accessList : [];
+  const accessList = config && !config.openAccess ? config.accessList : SYSTEM_DEFAULTS.accessList;
 
   // Split the access list into addresses and system names
   for (const accessListItem of accessList) {
