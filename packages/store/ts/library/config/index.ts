@@ -262,13 +262,14 @@ export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
     T,
     {
       enums: Record<string, never>;
-      tables: ExpandTablesConfig<T["tables"]>;
       namespace: "";
       storeImportPath: "@latticexyz/store/src/";
       userTypesPath: "Types";
       codegenDirectory: "codegen";
     }
-  > {}
+  > {
+  tables: ExpandTablesConfig<T["tables"]>;
+}
 
 /** mudCoreConfig wrapper to use generics in some options for better type inference */
 export function mudConfig<
