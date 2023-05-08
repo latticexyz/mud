@@ -1,6 +1,6 @@
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { MUDCoreUserConfig } from "@latticexyz/config";
-import { WorldConfig, WorldConfigDefaults, WorldUserConfig } from "../library";
+import { ExpandSystemsConfig, WorldConfig, WorldConfigDefaults, WorldUserConfig } from "../library";
 
 import "@latticexyz/store/register";
 
@@ -22,5 +22,9 @@ declare module "@latticexyz/config" {
 
 declare module "@latticexyz/store" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig> extends OrDefaults<T, WorldConfigDefaults> {}
+  export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig> extends OrDefaults<T, WorldConfigDefaults> {
+    overrideSystems: ExpandSystemsConfig<
+      T["overrideSystems"] extends Record<string, unknown> ? T["overrideSystems"] : Record<string, never>
+    >;
+  }
 }

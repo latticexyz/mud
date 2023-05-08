@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { DynamicResolution, ValueWithType } from "@latticexyz/config";
+import { OrDefaults } from "@latticexyz/common/type-utils";
 import { zWorldConfig } from "./worldConfig";
 
 // zod doesn't preserve doc comments
@@ -28,6 +29,24 @@ export type SystemUserConfig =
         }
     );
 
+export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName extends string>
+  extends OrDefaults<
+    T,
+    {
+      name: SystemName;
+      registerFunctionSelectors: true;
+    }
+  > {
+  openAccess: T["openAccess"];
+  accessList: T extends { accessList: string[] } ? T["accessList"] : undefined;
+}
+
+export type SystemsUserConfig = Record<string, SystemUserConfig>;
+
+export type ExpandSystemsConfig<T extends SystemsUserConfig> = {
+  [SystemName in keyof T]: ExpandSystemConfig<T[SystemName], SystemName extends string ? SystemName : never>;
+};
+
 export type ModuleConfig = {
   /** The name of the module */
   name: string;
@@ -50,7 +69,7 @@ export interface WorldUserConfig {
    * The key is the system name (capitalized).
    * The value is a SystemConfig object.
    */
-  overrideSystems?: Record<string, SystemUserConfig>;
+  overrideSystems?: SystemsUserConfig;
   /** Systems to exclude from automatic deployment */
   excludeSystems?: string[];
   /**

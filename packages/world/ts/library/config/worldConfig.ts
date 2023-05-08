@@ -50,7 +50,6 @@ export const zWorldConfig = z.object({
 export interface WorldConfigDefaults {
   worldContractName: undefined;
   worldInterfaceName: "IWorld";
-  overrideSystems: Record<string, never>;
   excludeSystems: [];
   postDeployScript: "PostDeploy";
   deploysDirectory: "./deploys";
