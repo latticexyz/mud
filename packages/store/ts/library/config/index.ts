@@ -105,16 +105,21 @@ export type FullTableConfig<
   schema: FullSchemaConfig<UserTypes>;
 };
 
-export type ExpandTableConfig<TTableConfig extends TableConfig<string, string>, TableName extends string> = {
-  directory: TTableConfig["directory"] extends undefined ? "tables" : TTableConfig["directory"];
-  name: TTableConfig["name"] extends undefined ? TableName : TTableConfig["name"];
-  tableIdArgument: TTableConfig["tableIdArgument"] extends undefined ? false : TTableConfig["tableIdArgument"];
-  storeArgument: TTableConfig["storeArgument"] extends undefined ? false : TTableConfig["storeArgument"];
-  // TODO expand conditional dataStruct default
-  dataStruct: TTableConfig["dataStruct"] extends undefined ? unknown : TTableConfig["dataStruct"];
-  primaryKeys: TTableConfig["primaryKeys"] extends undefined ? { key: "bytes32" } : TTableConfig["primaryKeys"];
-  schema: ExpandSchemaConfig<TTableConfig["schema"]>;
-};
+export interface ExpandTableConfig<T extends TableConfig<string, string>, TableName extends string>
+  extends OrDefaults<
+    T,
+    {
+      directory: "tables";
+      name: TableName;
+      tableIdArgument: false;
+      storeArgument: false;
+      // TODO expand conditional dataStruct default
+      dataStruct: unknown;
+      primaryKeys: { key: "bytes32" };
+    }
+  > {
+  schema: ExpandSchemaConfig<T["schema"]>;
+}
 
 const zFullTableConfig = z
   .object({
