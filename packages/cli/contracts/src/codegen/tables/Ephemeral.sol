@@ -66,23 +66,23 @@ library Ephemeral {
   }
 
   /** Emit the ephemeral event using individual values */
-  function setEphemeral(bytes32 key, uint256 value) internal {
+  function emitEphemeral(bytes32 key, uint256 value) internal {
     bytes memory _data = encode(value);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    StoreSwitch.setEphemeralRecord(_tableId, _primaryKeys, _data);
+    StoreSwitch.emitEphemeralRecord(_tableId, _primaryKeys, _data);
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
-  function setEphemeral(IStore _store, bytes32 key, uint256 value) internal {
+  function emitEphemeral(IStore _store, bytes32 key, uint256 value) internal {
     bytes memory _data = encode(value);
 
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
 
-    _store.setEphemeralRecord(_tableId, _primaryKeys, _data);
+    _store.emitEphemeralRecord(_tableId, _primaryKeys, _data);
   }
 
   /** Tightly pack full data using this table's schema */
