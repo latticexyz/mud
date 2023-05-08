@@ -7,7 +7,7 @@ export type EnumsConfig<EnumNames extends StringForUnion = StringForUnion> = nev
        *
        * (enums are inferred to be absent)
        */
-      enums?: Record<EnumNames, string[]>;
+      enums?: Record<EnumNames, readonly string[]>;
     }
   : StringForUnion extends EnumNames
   ? {
@@ -16,7 +16,7 @@ export type EnumsConfig<EnumNames extends StringForUnion = StringForUnion> = nev
        *
        * (enums aren't inferred - use `mudConfig` or `storeConfig` helper, and `as const` for variables)
        */
-      enums?: Record<EnumNames, string[]>;
+      enums?: Record<EnumNames, readonly string[]>;
     }
   : {
       /**
@@ -24,7 +24,7 @@ export type EnumsConfig<EnumNames extends StringForUnion = StringForUnion> = nev
        *
        * Enums defined here can be used as types in table schemas/keys
        */
-      enums: Record<EnumNames, string[]>;
+      enums: Record<EnumNames, readonly string[]>;
     };
 
 export type ExpandedEnumsConfig<C extends EnumsConfig> = {

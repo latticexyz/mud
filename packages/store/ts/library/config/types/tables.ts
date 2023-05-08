@@ -5,10 +5,10 @@ import { TABLE_DEFAULTS, DEFAULTS } from "../defaults";
 
 type PrimaryKey<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;
 
-export interface TableConfig<
+export type TableConfig<
   UserTypes extends StringForUnion = StringForUnion,
   StaticUserTypes extends StringForUnion = StringForUnion
-> {
+> = {
   /** Output directory path for the file. Default is "tables" */
   directory?: string;
   /**
@@ -27,7 +27,7 @@ export interface TableConfig<
   primaryKeys?: Record<string, PrimaryKey<StaticUserTypes>>;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
   schema: SchemaConfig<UserTypes>;
-}
+};
 
 export type TablesConfig<
   UserTypes extends StringForUnion = StringForUnion,
@@ -49,7 +49,7 @@ export type TablesConfig<
 
 // Expand a shorthand table config to a full table config with defaults
 export type ExpandedTableConfig<C extends TableConfig | FieldData, DefaultName = string> = C extends TableConfig
-  ? OrDefaults<Omit<C, "schema" | "name">, typeof TABLE_DEFAULTS> & {
+  ? OrDefaults<Omit<C, "name" | "schema">, typeof TABLE_DEFAULTS> & {
       name: OrDefault<C["name"], DefaultName>;
       schema: ExpandedSchemaConfig<C["schema"]>;
     }
