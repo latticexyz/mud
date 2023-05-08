@@ -1,4 +1,4 @@
-import { UnrecognizedSystemErrorFactory } from "@latticexyz/config";
+import { STORE_SELECTOR_MAX_LENGTH, UnrecognizedSystemErrorFactory } from "@latticexyz/config";
 import { SystemConfig, WorldConfig } from "./types";
 
 export type ResolvedSystemConfig = ReturnType<typeof resolveSystemConfig>;
@@ -54,7 +54,7 @@ export function resolveWorldConfig(config: WorldConfig, existingContracts?: stri
  * Default value for accessListSystems is []
  */
 export function resolveSystemConfig(systemName: string, config?: SystemConfig, existingContracts?: string[]) {
-  const name = config?.name ?? systemName;
+  const name = config?.name ?? systemName.slice(0, STORE_SELECTOR_MAX_LENGTH);
   const registerFunctionSelectors = config?.registerFunctionSelectors ?? true;
   const openAccess = config?.openAccess ?? true;
   const accessListAddresses: string[] = [];
