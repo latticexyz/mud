@@ -6,5 +6,5 @@ pragma solidity >=0.8.0;
 interface IIncrementSystem {
   function increment() external returns (uint32);
 
-  function willRevert() external pure;
+  function willRevert() external;
 }

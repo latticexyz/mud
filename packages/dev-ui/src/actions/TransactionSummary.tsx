@@ -40,16 +40,7 @@ export function TransactionSummary({ hash }: Props) {
     worldAbi && transaction.status === "fulfilled" && transaction.value.input
       ? decodeFunctionData({ abi: worldAbi, data: transaction.value.input })
       : null;
-  const returnData =
-    transactionResult.status === "fulfilled"
-      ? worldAbi && transactionResult.value.data && functionData
-        ? decodeFunctionResult({
-            abi: worldAbi,
-            functionName: functionData.functionName,
-            data: transactionResult.value.data,
-          })
-        : transactionResult.value.data
-      : null;
+  const returnData = transactionResult.status === "fulfilled" ? transactionResult.value.result : null;
   const events =
     worldAbi &&
     transactionReceipt.status === "fulfilled" &&

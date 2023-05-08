@@ -836,7 +836,9 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    willRevert(overrides?: CallOverrides): Promise<[void]>;
+    willRevert(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
   };
 
   call(
@@ -1092,7 +1094,9 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  willRevert(overrides?: CallOverrides): Promise<void>;
+  willRevert(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
 
   callStatic: {
     call(
@@ -1635,7 +1639,9 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    willRevert(overrides?: CallOverrides): Promise<BigNumber>;
+    willRevert(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -1892,6 +1898,8 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
-    willRevert(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    willRevert(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
   };
 }

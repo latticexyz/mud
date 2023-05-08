@@ -13,7 +13,7 @@ import { Components, defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256, TableId } from "@latticexyz/utils";
 import { World as WorldContract } from "@latticexyz/world/types/ethers-contracts/World";
-import WorldAbi from "@latticexyz/world/abi/World.sol/World.abi.json";
+import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/factories/IWorldKernel.sol/IWorldKernel__factory";
 import { defineStringComponent } from "../components";
 import { ContractComponent, ContractComponents, SetupContractConfig } from "./types";
 import { applyNetworkUpdates, createEncoders } from "./utils";
@@ -21,6 +21,7 @@ import { EntityID } from "@latticexyz/recs";
 import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
 import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
 import { worldAbiObservable } from "../dev/observables";
+import { Abi } from "abitype";
 
 type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
   networkConfig: SetupContractConfig;
@@ -29,7 +30,7 @@ type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
   initialGasPrice?: number;
   fetchSystemCalls?: boolean;
   syncThread?: "main" | "worker";
-  worldAbi?: any; // TODO: use Abi from abitype
+  worldAbi?: Abi; // TODO: should this extend IWorldKernel ABI or a subset of?
 };
 
 export async function setupMUDV2Network<C extends ContractComponents>({
@@ -39,7 +40,7 @@ export async function setupMUDV2Network<C extends ContractComponents>({
   initialGasPrice,
   fetchSystemCalls,
   syncThread,
-  worldAbi = WorldAbi,
+  worldAbi = IWorldKernel__factory.abi,
 }: SetupMUDV2NetworkOptions<C>) {
   worldAbiObservable.next(worldAbi);
 
@@ -117,7 +118,7 @@ export async function setupMUDV2Network<C extends ContractComponents>({
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
 
   const { contracts, config: contractsConfig } = await createContracts<{ World: WorldContract }>({
-    config: { World: { abi: WorldAbi, address: networkConfig.worldAddress } },
+    config: { World: { abi: IWorldKernel__factory.abi, address: networkConfig.worldAddress } },
     signerOrProvider,
   });
 

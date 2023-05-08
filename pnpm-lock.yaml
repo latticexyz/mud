@@ -190,7 +190,7 @@ importers:
         version: 17.0.23
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -224,7 +224,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       vitest:
         specifier: 0.30.1
         version: 0.30.1
@@ -255,7 +255,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
 
   packages/create-mud:
     dependencies:
@@ -268,7 +268,7 @@ importers:
         version: 18.15.11
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -287,6 +287,12 @@ importers:
       '@latticexyz/utils':
         specifier: workspace:*
         version: link:../utils
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
+      abitype:
+        specifier: ^0.8.2
+        version: 0.8.2(typescript@5.0.4)
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -303,8 +309,8 @@ importers:
         specifier: ^1.12.0
         version: 1.12.0
       viem:
-        specifier: ^0.3.16
-        version: 0.3.16(typescript@4.9.5)
+        specifier: ^0.3.18
+        version: 0.3.18(typescript@5.0.4)
       zustand:
         specifier: ^4.3.7
         version: 4.3.7(react@18.2.0)
@@ -326,7 +332,7 @@ importers:
         version: 3.3.2(ts-node@10.9.1)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       vitest:
         specifier: 0.30.1
         version: 0.30.1
@@ -405,7 +411,7 @@ importers:
         version: 2.5.0
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -427,6 +433,9 @@ importers:
       observable-webworker:
         specifier: ^4.0.1
         version: 4.0.1(rxjs@7.5.6)
+      viem:
+        specifier: ^0.3.18
+        version: 0.3.18(typescript@4.9.5)
     devDependencies:
       '@ethersproject/abi':
         specifier: ^5.7.0
@@ -514,7 +523,7 @@ importers:
         version: 2.5.0
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       typedoc:
         specifier: 0.23.21
         version: 0.23.21(typescript@4.9.5)
@@ -524,9 +533,6 @@ importers:
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
-      viem:
-        specifier: ^0.3.16
-        version: 0.3.16(typescript@4.9.5)
 
   packages/noise:
     dependencies:
@@ -596,7 +602,7 @@ importers:
         version: 29.0.5(@babel/core@7.21.3)(esbuild@0.17.17)(jest@29.5.0)(typescript@4.9.5)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       ttypescript:
         specifier: ^1.5.13
         version: 1.5.13(ts-node@10.9.1)(typescript@4.9.5)
@@ -820,7 +826,7 @@ importers:
         version: 3.0.2
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
 
   packages/services:
     dependencies:
@@ -842,7 +848,7 @@ importers:
         version: 1.146.0
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
 
   packages/solecs:
     devDependencies:
@@ -896,6 +902,13 @@ importers:
         version: 0.23.21(typescript@4.9.5)
 
   packages/std-client:
+    dependencies:
+      abitype:
+        specifier: ^0.8.2
+        version: 0.8.2(typescript@4.9.5)
+      viem:
+        specifier: ^0.3.18
+        version: 0.3.18(typescript@4.9.5)
     devDependencies:
       '@ethersproject/abi':
         specifier: ^5.7.0
@@ -971,7 +984,7 @@ importers:
         version: 2.5.0
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -984,9 +997,6 @@ importers:
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
-      viem:
-        specifier: ^0.3.16
-        version: 0.3.16(typescript@4.9.5)
       vitest:
         specifier: 0.30.1
         version: 0.30.1
@@ -1092,7 +1102,7 @@ importers:
         version: 0.6.0-beta.22(hardhat@2.10.2)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -1235,7 +1245,7 @@ importers:
         version: 0.6.0-beta.22(hardhat@2.10.2)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5)
+        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -1256,6 +1266,7 @@ packages:
 
   /@adraffy/ens-normalize@1.9.0:
     resolution: {integrity: sha512-iowxq3U30sghZotgl4s/oJRci6WPBfNO5YYgk2cIOMCHr3LeGPcsZjCEr+33Q4N+oV3OABDAtA+pyvWjbvBifQ==}
+    dev: false
 
   /@alloc/quick-lru@5.2.0:
     resolution: {integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==}
@@ -3441,15 +3452,11 @@ packages:
     dev: true
     optional: true
 
-  /@noble/curves@0.8.3:
-    resolution: {integrity: sha512-OqaOf4RWDaCRuBKJLDURrgVxjLmneGsiCXGuzYB5y95YithZMA6w4uk34DHSm0rKMrrYiaeZj48/81EvaAScLQ==}
+  /@noble/curves@1.0.0:
+    resolution: {integrity: sha512-2upgEu0iLiDVDZkNLeFV2+ht0BAVgQnEmCk6JsOch9Rp8xfkMCbvbAZlA2pBHQc73dbl+vFOXfqkf4uemdn0bw==}
     dependencies:
       '@noble/hashes': 1.3.0
-
-  /@noble/curves@0.9.0:
-    resolution: {integrity: sha512-OAdtHMXBp7Chl2lcTn/i7vnFX/q+hhTwDnek5NfYfZsY4LyaUuHCcoq2JlLY3BTFTLT+ZhYZalhF6ejlV7KnJQ==}
-    dependencies:
-      '@noble/hashes': 1.3.0
+    dev: false
 
   /@noble/hashes@1.2.0:
     resolution: {integrity: sha512-FZfhjEDbT5GRswV3C6uvLPHMiVD6lQBmpoX5+eSiPaMTXte/IKqI5dykDxzZB/WBeK/CDuQRBWarPdi3FNY2zQ==}
@@ -3457,6 +3464,7 @@ packages:
 
   /@noble/hashes@1.3.0:
     resolution: {integrity: sha512-ilHEACi9DwqJB0pw7kv+Apvh50jiiSyR/cQ3y4W7lOR5mhvn/50FLUfsnfJz0BDZtl/RR16kXvptiv6q1msYZg==}
+    dev: false
 
   /@noble/secp256k1@1.7.1:
     resolution: {integrity: sha512-hOUk6AyBFmqVrv7k5WAw/LpszxVbj9gGN4JRkIX52fdFAj1UA61KXmZDvqVEm+pOyec3+fIeZB02LYa/pWOArw==}
@@ -4413,12 +4421,13 @@ packages:
       '@scure/base': 1.1.1
     dev: true
 
-  /@scure/bip32@1.2.0:
-    resolution: {integrity: sha512-O+vT/hBVk+ag2i6j2CDemwd1E1MtGt+7O1KzrPNsaNvSsiEK55MyPIxJIMI2PS8Ijj464B2VbQlpRoQXxw1uHg==}
+  /@scure/bip32@1.3.0:
+    resolution: {integrity: sha512-bcKpo1oj54hGholplGLpqPHRbIsnbixFtc06nwuNM5/dwSXOq/AAYoIBRsBmnZJSdfeNW5rnff7NTAz3ZCqR9Q==}
     dependencies:
-      '@noble/curves': 0.8.3
+      '@noble/curves': 1.0.0
       '@noble/hashes': 1.3.0
       '@scure/base': 1.1.1
+    dev: false
 
   /@scure/bip39@1.1.1:
     resolution: {integrity: sha512-t+wDck2rVkh65Hmv280fYdVdY25J9YeEUIgn2LG1WM6gxFkGzcksoDiUkWVpVp3Oex9xGC68JU2dSbUfwZ2jPg==}
@@ -4432,6 +4441,7 @@ packages:
     dependencies:
       '@noble/hashes': 1.3.0
       '@scure/base': 1.1.1
+    dev: false
 
   /@sentry/core@5.30.0:
     resolution: {integrity: sha512-TmfrII8w1PQZSZgPpUESqjB+jC6MvZJZdLtE/0hZ+SrnKhW3x5WlYLvTXZpcWePYBku7rl2wn1RZu6uT0qCTeg==}
@@ -5123,6 +5133,18 @@ packages:
         optional: true
     dependencies:
       typescript: 4.9.5
+    dev: false
+
+  /@wagmi/chains@0.2.16(typescript@5.0.4):
+    resolution: {integrity: sha512-rkWaI2PxCnbD8G07ZZff5QXftnSkYL0h5f4DkHCG3fGYYr/ZDvmCL4bMae7j7A9sAif1csPPBmbCzHp3R5ogCQ==}
+    peerDependencies:
+      typescript: '>=4.9.4'
+    peerDependenciesMeta:
+      typescript:
+        optional: true
+    dependencies:
+      typescript: 5.0.4
+    dev: false
 
   /@yarnpkg/lockfile@1.1.0:
     resolution: {integrity: sha512-GpSwvyXOcOOlV70vbnzjj4fW5xW/FdUF6nQEt1ENy7m4ZCczi1+/buVUPAqmGfqznsORNFzUMjctTIp8a9tuCQ==}
@@ -5173,16 +5195,29 @@ packages:
     engines: {node: '>=6', npm: '>=3'}
     dev: false
 
-  /abitype@0.7.1(typescript@4.9.5):
-    resolution: {integrity: sha512-VBkRHTDZf9Myaek/dO3yMmOzB/y2s3Zo6nVU7yaw1G+TvCHAjwaJzNGN9yo4K5D8bU/VZXKP1EJpRhFr862PlQ==}
+  /abitype@0.8.2(typescript@4.9.5):
+    resolution: {integrity: sha512-B1ViNMGpfx/qjVQi0RTc2HEFHuR9uoCoTEkwELT5Y7pBPtBbctYijz9BK6+Kd0hQ3S70FhYTO2dWWk0QNUEXMA==}
     peerDependencies:
-      typescript: '>=4.9.4'
+      typescript: '>=5.0.4'
       zod: ^3 >=3.19.1
     peerDependenciesMeta:
       zod:
         optional: true
     dependencies:
       typescript: 4.9.5
+    dev: false
+
+  /abitype@0.8.2(typescript@5.0.4):
+    resolution: {integrity: sha512-B1ViNMGpfx/qjVQi0RTc2HEFHuR9uoCoTEkwELT5Y7pBPtBbctYijz9BK6+Kd0hQ3S70FhYTO2dWWk0QNUEXMA==}
+    peerDependencies:
+      typescript: '>=5.0.4'
+      zod: ^3 >=3.19.1
+    peerDependenciesMeta:
+      zod:
+        optional: true
+    dependencies:
+      typescript: 5.0.4
+    dev: false
 
   /abort-controller-x@0.4.1:
     resolution: {integrity: sha512-lJ2ssrl3FoTK3cX/g15lRCkXFWKiwRTRtBjfwounO2EM/Q65rI/MEZsfsch1juWU2pH2aLSaq0HGowlDP/imrw==}
@@ -10172,6 +10207,7 @@ packages:
       ws: '*'
     dependencies:
       ws: 8.12.0
+    dev: false
 
   /istanbul-lib-coverage@3.2.0:
     resolution: {integrity: sha512-eOeJ5BHCmHYvQK7xt9GkdHuzuCGS1Y6g9Gvnx3Ym33fz/HpLRYxiS0wHNr+m/MBC8B647Xt608vCDEvhl9c6Mw==}
@@ -15591,7 +15627,7 @@ packages:
     resolution: {integrity: sha512-Tyrf5mxF8Ofs1tNoxA13lFeZ2Zrbd6cKbuH3V+MQ5sb6DtBj5FjrXVsRWT8YvNAQTqNoz66dz1WsbigI22aEnw==}
     dev: true
 
-  /tsup@6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@4.9.5):
+  /tsup@6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4):
     resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
     engines: {node: '>=14.18'}
     hasBin: true
@@ -15622,7 +15658,7 @@ packages:
       source-map: 0.8.0-beta.0
       sucrase: 3.31.0
       tree-kill: 1.2.2
-      typescript: 4.9.5
+      typescript: 5.0.4
     transitivePeerDependencies:
       - supports-color
       - ts-node
@@ -15882,6 +15918,11 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
 
+  /typescript@5.0.4:
+    resolution: {integrity: sha512-cW9T5W9xY37cc+jfEnaUvX91foxtHkza3Nw3wkoF4sSlKn0MONdkdEndig/qPBWXNkmplh3NzayQzCiHM4/hqw==}
+    engines: {node: '>=12.20'}
+    hasBin: true
+
   /typeson-registry@1.0.0-alpha.39:
     resolution: {integrity: sha512-NeGDEquhw+yfwNhguLPcZ9Oj0fzbADiX4R0WxvoY8nGhy98IbzQy1sezjoEFWOywOboj/DWehI+/aUlRVrJnnw==}
     engines: {node: '>=10.0.0'}
@@ -16125,16 +16166,16 @@ packages:
       builtins: 5.0.1
     dev: true
 
-  /viem@0.3.16(typescript@4.9.5):
-    resolution: {integrity: sha512-Btfd6AfUbddM4hxl1LPtiaGcIJA8rG2WM1Q4VYf4AETvF8fTogDOJ08roRaOy+ep32+pKctyVOmeyE14Uhfylg==}
+  /viem@0.3.18(typescript@4.9.5):
+    resolution: {integrity: sha512-orgUHs4VblpNBAn7uoGk9sWXdrtaGHuwy6CqaA2nmLjjdoWPhgQnzaVbfxt6xmSDV6MiMAfigxu43DV1j05jmw==}
     dependencies:
       '@adraffy/ens-normalize': 1.9.0
-      '@noble/curves': 0.9.0
+      '@noble/curves': 1.0.0
       '@noble/hashes': 1.3.0
-      '@scure/bip32': 1.2.0
+      '@scure/bip32': 1.3.0
       '@scure/bip39': 1.2.0
       '@wagmi/chains': 0.2.16(typescript@4.9.5)
-      abitype: 0.7.1(typescript@4.9.5)
+      abitype: 0.8.2(typescript@4.9.5)
       isomorphic-ws: 5.0.0(ws@8.12.0)
       ws: 8.12.0
     transitivePeerDependencies:
@@ -16142,6 +16183,26 @@ packages:
       - typescript
       - utf-8-validate
       - zod
+    dev: false
+
+  /viem@0.3.18(typescript@5.0.4):
+    resolution: {integrity: sha512-orgUHs4VblpNBAn7uoGk9sWXdrtaGHuwy6CqaA2nmLjjdoWPhgQnzaVbfxt6xmSDV6MiMAfigxu43DV1j05jmw==}
+    dependencies:
+      '@adraffy/ens-normalize': 1.9.0
+      '@noble/curves': 1.0.0
+      '@noble/hashes': 1.3.0
+      '@scure/bip32': 1.3.0
+      '@scure/bip39': 1.2.0
+      '@wagmi/chains': 0.2.16(typescript@5.0.4)
+      abitype: 0.8.2(typescript@5.0.4)
+      isomorphic-ws: 5.0.0(ws@8.12.0)
+      ws: 8.12.0
+    transitivePeerDependencies:
+      - bufferutil
+      - typescript
+      - utf-8-validate
+      - zod
+    dev: false
 
   /vinyl-assign@1.2.1:
     resolution: {integrity: sha512-jUVK1MkXgsZDdyUAy0rnrcmPeuR/ZLwsaS377zaaciz9SoDRVPIjHlUcYVcUAzLD+AolsLxMMwSe/VP77lAvow==}
@@ -16641,6 +16702,7 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
+    dev: false
 
   /ws@8.13.0:
     resolution: {integrity: sha512-x9vcZYTrFPC7aSIbj7sRCYo7L/Xb8Iy+pW0ng0wt2vCJv7M9HOMy0UoN3rr+IFC7hb7vXoqS+P9ktyLLLhO+LA==}

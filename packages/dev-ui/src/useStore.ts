@@ -6,9 +6,11 @@ import {
   cacheStore as cacheStoreObservable,
 } from "@latticexyz/network/dev";
 import { PublicClient, WalletClient, Hex, Chain } from "viem";
+import { Abi } from "abitype";
 import { create } from "zustand";
 import { worldAbiObservable } from "@latticexyz/std-client/dev";
 import { CacheStore } from "@latticexyz/network";
+import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/factories/IWorldKernel.sol/IWorldKernel__factory";
 
 export type StoreEvent = EmitterEvents["storeEvent"];
 
@@ -19,8 +21,7 @@ export const useStore = create<{
   publicClient: (PublicClient & { chain: Chain }) | null;
   walletClient: (WalletClient & { chain: Chain }) | null;
   blockNumber: bigint | null;
-  // TODO: use Abi from abitype
-  worldAbi: any | null;
+  worldAbi: Abi;
 }>(() => ({
   storeEvents: [],
   transactions: [], // TODO: populate from recent wallet txs?
@@ -28,7 +29,7 @@ export const useStore = create<{
   publicClient: null,
   walletClient: null,
   blockNumber: null,
-  worldAbi: null,
+  worldAbi: IWorldKernel__factory.abi,
 }));
 
 // TODO: clean up listeners

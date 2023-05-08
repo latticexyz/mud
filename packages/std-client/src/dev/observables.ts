@@ -1,4 +1,4 @@
+import { Abi } from "abitype";
 import { BehaviorSubject } from "rxjs";
 
-// TODO: use Abi from abitype
-export const worldAbiObservable = new BehaviorSubject<any | null>(null);
+export const worldAbiObservable = new BehaviorSubject<Abi | null>(null);
