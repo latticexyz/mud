@@ -15,3 +15,17 @@ export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) ex
 
 // Helper type to extract and merge the return types of a given union of functions
 export type MergeReturnType<T extends (...args: any) => any> = UnionToIntersection<ReturnType<T>>;
+
+// If T is defined, return T, else Default
+export type OrDefault<T, Default> = T extends string
+  ? T
+  : T extends Record<string, unknown>
+  ? T
+  : T extends Array<unknown>
+  ? T
+  : Default;
+
+// For every key occuring Defaults, map to `T[key] ?? Defaults[key]`
+export type OrDefaults<T extends Record<string, unknown>, Defaults> = {
+  [key in keyof Defaults]: key extends keyof T ? OrDefault<T[key], Defaults[key]> : Defaults[key];
+};
