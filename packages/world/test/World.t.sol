@@ -144,7 +144,11 @@ contract WorldTest is Test {
   function _expectAccessDenied(address caller, bytes16 namespace, bytes16 name) internal {
     vm.prank(caller);
     vm.expectRevert(
-      abi.encodeWithSelector(IWorldErrors.AccessDenied.selector, ResourceSelector.from(namespace, name).toString(), caller)
+      abi.encodeWithSelector(
+        IWorldErrors.AccessDenied.selector,
+        ResourceSelector.from(namespace, name).toString(),
+        caller
+      )
     );
   }
 
