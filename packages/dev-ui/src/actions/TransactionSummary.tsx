@@ -10,6 +10,7 @@ import { serialize } from "../serialize";
 import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
 import { getTransactionResult } from "./getTransactionResult";
+import { ErrorTrace } from "../ErrorTrace";
 
 type Props = {
   hash: Hex;
@@ -80,7 +81,7 @@ export function TransactionSummary({ hash }: Props) {
         {transactionResult.status === "fulfilled" ? (
           <div className="font-mono">{serialize(returnData)}</div>
         ) : transactionResult.status === "rejected" ? (
-          <div className="font-mono whitespace-pre text-orange-200">{transactionResult.reason.message}</div>
+          <ErrorTrace error={transactionResult.reason} />
         ) : (
           <PendingIcon />
         )}

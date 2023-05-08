@@ -1,10 +1,11 @@
 import { useRouteError } from "react-router-dom";
+import { ErrorTrace } from "./ErrorTrace";
 
 export function RouteError() {
   const error = useRouteError();
   return (
-    <>
-      <div className="p-6">
+    <div className="p-6 space-y-6">
+      <p>
         Whoops, something broke! Please{" "}
         <a
           href={`https://github.com/latticexyz/mud/issues/new?${new URLSearchParams({
@@ -32,10 +33,8 @@ ${error instanceof Error ? error.stack : String(error)}
           report the issue
         </a>{" "}
         so we can look into it.
-      </div>
-      <div className="p-6 whitespace-pre overflow-auto font-mono bg-red-900/60 text-white">
-        {error instanceof Error ? error.stack : String(error)}
-      </div>
-    </>
+      </p>
+      <ErrorTrace error={error} />
+    </div>
   );
 }
