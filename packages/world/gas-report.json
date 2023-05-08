@@ -1,5 +1,35 @@
 [
   {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "install keys in table module",
+    "functionCall": "world.installRootModule(keysInTableModule, abi.encode(sourceTableId))",
+    "gasUsed": 1032191
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "set a record on a table with keysInTableModule installed",
+    "functionCall": "world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(val1))",
+    "gasUsed": 239738
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "install keys in table module",
+    "functionCall": "world.installRootModule(keysInTableModule, abi.encode(sourceTableId))",
+    "gasUsed": 1032191
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "change a record on a table with keysInTableModule installed",
+    "functionCall": "world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(val2))",
+    "gasUsed": 30761
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "delete a record on a table with keysInTableModule installed",
+    "functionCall": "world.deleteRecord(namespace, sourceFile, keyTuple1)",
+    "gasUsed": 146907
+  },
+  {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",

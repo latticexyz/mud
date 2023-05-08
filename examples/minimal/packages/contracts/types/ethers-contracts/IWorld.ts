@@ -541,17 +541,24 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
 
   events: {
+    "HelloWorld()": EventFragment;
     "StoreDeleteRecord(bytes32,bytes32[])": EventFragment;
     "StoreEphemeralRecord(bytes32,bytes32[],bytes)": EventFragment;
     "StoreSetField(bytes32,bytes32[],uint8,bytes)": EventFragment;
     "StoreSetRecord(bytes32,bytes32[],bytes)": EventFragment;
   };
 
+  getEvent(nameOrSignatureOrTopic: "HelloWorld"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreDeleteRecord"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreEphemeralRecord"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreSetField"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "StoreSetRecord"): EventFragment;
 }
+
+export interface HelloWorldEventObject {}
+export type HelloWorldEvent = TypedEvent<[], HelloWorldEventObject>;
+
+export type HelloWorldEventFilter = TypedEventFilter<HelloWorldEvent>;
 
 export interface StoreDeleteRecordEventObject {
   table: string;
@@ -1451,6 +1458,9 @@ export interface IWorld extends BaseContract {
   };
 
   filters: {
+    "HelloWorld()"(): HelloWorldEventFilter;
+    HelloWorld(): HelloWorldEventFilter;
+
     "StoreDeleteRecord(bytes32,bytes32[])"(
       table?: null,
       key?: null
