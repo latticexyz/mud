@@ -13,6 +13,7 @@ import {
   zValueName,
 } from "@latticexyz/config";
 import { Config, Expanded } from "./types";
+import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 
 export function expandConfig<C extends Config>(config: C) {
   return zStoreConfig.parse(config) as unknown as Expanded<C>;
@@ -30,7 +31,7 @@ const zFieldData = z.string();
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
 const zPrimaryKey = z.string();
-const zPrimaryKeys = z.record(zKeyName, zPrimaryKey).default({ key: "bytes32" });
+const zPrimaryKeys = z.record(zKeyName, zPrimaryKey).default(TABLE_DEFAULTS.primaryKeys);
 
 /************************************************************************
  *
@@ -58,10 +59,10 @@ const zSchemaConfig = zFullSchemaConfig.or(zShorthandSchemaConfig);
 
 const zFullTableConfig = z
   .object({
-    directory: z.string().default("tables"),
+    directory: z.string().default(TABLE_DEFAULTS.directory),
     name: zSelector.optional(),
-    tableIdArgument: z.boolean().default(false),
-    storeArgument: z.boolean().default(true),
+    tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
+    storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
     primaryKeys: zPrimaryKeys,
     schema: zSchemaConfig,
     dataStruct: z.boolean().optional(),
@@ -110,7 +111,7 @@ const zTablesConfig = z.record(zTableName, zTableConfig).transform((tables) => {
  ************************************************************************/
 
 const zEnumsConfig = z.object({
-  enums: z.record(zUserEnumName, zUserEnum).default({}),
+  enums: z.record(zUserEnumName, zUserEnum).default(DEFAULTS.enums),
 });
 
 /************************************************************************
@@ -121,11 +122,11 @@ const zEnumsConfig = z.object({
 
 const StoreConfigUnrefined = z
   .object({
-    namespace: zSelector.default(""),
-    storeImportPath: z.string().default("@latticexyz/store/src/"),
+    namespace: zSelector.default(DEFAULTS.namespace),
+    storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     tables: zTablesConfig,
-    userTypesPath: z.string().default("Types"),
-    codegenDirectory: z.string().default("codegen"),
+    userTypesPath: z.string().default(PATH_DEFAULTS.userTypesPath),
+    codegenDirectory: z.string().default(PATH_DEFAULTS.codegenDirectory),
   })
   .merge(zEnumsConfig);
 

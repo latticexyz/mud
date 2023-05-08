@@ -6,12 +6,13 @@ export const PATH_DEFAULTS = {
 
 export const DEFAULTS = {
   namespace: "",
+  enums: {},
 } as const;
 
 export const TABLE_DEFAULTS = {
   directory: "tables",
   primaryKeys: { key: "bytes32" },
   tableIdArgument: false,
-  storeArgument: false,
+  storeArgument: true,
   dataStruct: true,
 } as const;
