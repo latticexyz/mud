@@ -6,7 +6,7 @@ pragma solidity >=0.8.0;
 import { Schema } from "@latticexyz/store/src/Schema.sol";
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { ISystemHook } from "./ISystemHook.sol";
-import { System } from "../System.sol";
+import { System } from "./../System.sol";
 
 interface IWorldRegistrationSystem {
   function registerNamespace(bytes16 namespace) external;
