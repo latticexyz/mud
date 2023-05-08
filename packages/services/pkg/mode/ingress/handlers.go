@@ -482,8 +482,12 @@ func (il *IngressLayer) handleGenericTableEvent(event *storecore.StorecoreStoreS
 	// Create a row for the table from the decoded data.
 	row := write.RowFromDecodedData(decodedKeyData, decodedFieldData, tableSchema)
 
-	// Insert the row into the table.
-	il.wl.InsertRow(tableSchema, row)
+	// Build the "filter" from the deleteRecord key. This is used to find the actual row/record that
+	// we're deleting.
+	filter := mode.KeyToFilter(tableSchema, event.Key)
+
+	// Insert or update the row in the table.
+	il.wl.UpdateOrInsertRow(tableSchema, row, filter)
 
 	il.logger.Info("generic table event handled", zap.String("world_address", event.WorldAddress()), zap.String("table_id", tableId), zap.Any("row", row))
 }
