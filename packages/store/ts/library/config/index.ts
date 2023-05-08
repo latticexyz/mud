@@ -113,8 +113,8 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
       name: TableName;
       tableIdArgument: false;
       storeArgument: false;
-      // TODO expand conditional dataStruct default
-      dataStruct: unknown;
+      // TODO should dataStruct conditional default be expanded?
+      dataStruct: boolean;
       primaryKeys: { key: "bytes32" };
     }
   > {
