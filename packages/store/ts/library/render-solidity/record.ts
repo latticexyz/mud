@@ -10,7 +10,7 @@ import { RenderTableOptions } from "./types";
 
 export function renderRecordMethods(options: RenderTableOptions) {
   const { structName, storeArgument } = options;
-  const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
+  const { _tableId, _typedTableId, _keyArgs, _typedKeyArgs } = renderCommonData(options);
 
   let result = renderWithStore(
     storeArgument,
@@ -21,7 +21,8 @@ export function renderRecordMethods(options: RenderTableOptions) {
       _typedTableId,
       _typedKeyArgs,
     ])}) internal view returns (${renderDecodedRecord(options)}) {
-      ${_primaryKeysDefinition}
+      bytes32[] memory _primaryKeys = encodeKey(${renderArguments([_keyArgs])});
+
       bytes memory _blob = ${_store}.getRecord(_tableId, _primaryKeys, getSchema());
       return decode(_blob);
     }
@@ -39,8 +40,7 @@ export function renderRecordMethods(options: RenderTableOptions) {
       renderArguments(options.fields.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`)),
     ])}) internal {
       bytes memory _data = encode(${renderArguments(options.fields.map(({ name }) => name))});
-
-      ${_primaryKeysDefinition}
+      bytes32[] memory _primaryKeys = encodeKey(${renderArguments([_keyArgs])});
 
       ${_store}.setRecord(_tableId, _primaryKeys, _data);
     }

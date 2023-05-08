@@ -5,6 +5,7 @@ import {
   renderedSolidityHeader,
   renderRelativeImports,
   renderTableId,
+  renderValueTypeToBytes32,
   renderWithStore,
   renderTypeHelpers,
   RenderDynamicField,
@@ -28,7 +29,7 @@ export function renderTable(options: RenderTableOptions) {
     primaryKeys,
   } = options;
 
-  const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
+  const { _keyArgs, _typedTableId, _typedKeyArgs } = renderCommonData(options);
 
   return `${renderedSolidityHeader}
 
@@ -129,12 +130,21 @@ library ${libraryName} {
     ])});
   }
 
+  function encodeKey(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](${primaryKeys.length});
+    ${renderList(
+      primaryKeys,
+      (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
+    )}
+    return _primaryKeys;
+  }
+
   ${renderWithStore(
     storeArgument,
     (_typedStore, _store, _commentSuffix) => `
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
-      ${_primaryKeysDefinition}
+      bytes32[] memory _primaryKeys = encodeKey(${renderArguments([_keyArgs])});
       ${_store}.deleteRecord(_tableId, _primaryKeys);
     }
   `

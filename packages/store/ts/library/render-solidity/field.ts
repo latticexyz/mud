@@ -9,7 +9,7 @@ import { RenderTableOptions } from "./types";
 
 export function renderFieldMethods(options: RenderTableOptions) {
   const storeArgument = options.storeArgument;
-  const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
+  const { _keyArgs, _typedTableId, _typedKeyArgs } = renderCommonData(options);
 
   let result = "";
   for (const [schemaIndex, field] of options.fields.entries()) {
@@ -24,7 +24,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedTableId,
         _typedKeyArgs,
       ])}) internal view returns (${_typedFieldName}) {
-        ${_primaryKeysDefinition}
+        bytes32[] memory _primaryKeys = encodeKey(${renderArguments([_keyArgs])});
         bytes memory _blob = ${_store}.getField(_tableId, _primaryKeys, ${schemaIndex});
         return ${renderDecodeFieldSingle(field)};
       }
@@ -41,7 +41,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
         _typedKeyArgs,
         _typedFieldName,
       ])}) internal {
-        ${_primaryKeysDefinition}
+        bytes32[] memory _primaryKeys = encodeKey(${renderArguments([_keyArgs])});
         ${_store}.setField(_tableId, _primaryKeys, ${schemaIndex}, ${renderEncodeField(field)});
       }
     `
@@ -60,7 +60,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedKeyArgs,
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
-          ${_primaryKeysDefinition}
+          bytes32[] memory _primaryKeys = encodeKey(${renderArguments([_keyArgs])});
           ${_store}.pushToField(_tableId, _primaryKeys, ${schemaIndex}, ${portionData.encoded});
         }
       `
@@ -75,7 +75,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           _typedTableId,
           _typedKeyArgs,
         ])}) internal {
-          ${_primaryKeysDefinition}
+          bytes32[] memory _primaryKeys = encodeKey(${renderArguments([_keyArgs])});
           ${_store}.popFromField(_tableId, _primaryKeys, ${schemaIndex}, ${portionData.elementLength});
         }
       `
@@ -92,7 +92,7 @@ export function renderFieldMethods(options: RenderTableOptions) {
           "uint256 _index",
           `${portionData.typeWithLocation} ${portionData.name}`,
         ])}) internal {
-          ${_primaryKeysDefinition}
+          bytes32[] memory _primaryKeys = encodeKey(${renderArguments([_keyArgs])});
           ${_store}.updateInField(
             _tableId,
             _primaryKeys,

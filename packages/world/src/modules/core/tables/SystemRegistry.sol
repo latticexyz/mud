@@ -67,35 +67,27 @@ library SystemRegistry {
 
   /** Get resourceSelector */
   function get(address system) internal view returns (bytes32 resourceSelector) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(bytes20((system)));
-
+    bytes32[] memory _primaryKeys = encodeKey(system);
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return (Bytes.slice32(_blob, 0));
   }
 
   /** Get resourceSelector (using the specified store) */
   function get(IStore _store, address system) internal view returns (bytes32 resourceSelector) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(bytes20((system)));
-
+    bytes32[] memory _primaryKeys = encodeKey(system);
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
     return (Bytes.slice32(_blob, 0));
   }
 
   /** Set resourceSelector */
   function set(address system, bytes32 resourceSelector) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(bytes20((system)));
-
+    bytes32[] memory _primaryKeys = encodeKey(system);
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((resourceSelector)));
   }
 
   /** Set resourceSelector (using the specified store) */
   function set(IStore _store, address system, bytes32 resourceSelector) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(bytes20((system)));
-
+    bytes32[] memory _primaryKeys = encodeKey(system);
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((resourceSelector)));
   }
 
@@ -104,19 +96,21 @@ library SystemRegistry {
     return abi.encodePacked(resourceSelector);
   }
 
+  function encodeKey(address system) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32(bytes20((system)));
+    return _primaryKeys;
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(address system) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(bytes20((system)));
-
+    bytes32[] memory _primaryKeys = encodeKey(system);
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, address system) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(bytes20((system)));
-
+    bytes32[] memory _primaryKeys = encodeKey(system);
     _store.deleteRecord(_tableId, _primaryKeys);
   }
 }

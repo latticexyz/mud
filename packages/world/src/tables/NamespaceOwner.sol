@@ -67,35 +67,27 @@ library NamespaceOwner {
 
   /** Get owner */
   function get(bytes16 namespace) internal view returns (address owner) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
-
+    bytes32[] memory _primaryKeys = encodeKey(namespace);
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return (address(Bytes.slice20(_blob, 0)));
   }
 
   /** Get owner (using the specified store) */
   function get(IStore _store, bytes16 namespace) internal view returns (address owner) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
-
+    bytes32[] memory _primaryKeys = encodeKey(namespace);
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
     return (address(Bytes.slice20(_blob, 0)));
   }
 
   /** Set owner */
   function set(bytes16 namespace, address owner) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
-
+    bytes32[] memory _primaryKeys = encodeKey(namespace);
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((owner)));
   }
 
   /** Set owner (using the specified store) */
   function set(IStore _store, bytes16 namespace, address owner) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
-
+    bytes32[] memory _primaryKeys = encodeKey(namespace);
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((owner)));
   }
 
@@ -104,19 +96,21 @@ library NamespaceOwner {
     return abi.encodePacked(owner);
   }
 
+  function encodeKey(bytes16 namespace) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((namespace));
+    return _primaryKeys;
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes16 namespace) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
-
+    bytes32[] memory _primaryKeys = encodeKey(namespace);
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes16 namespace) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((namespace));
-
+    bytes32[] memory _primaryKeys = encodeKey(namespace);
     _store.deleteRecord(_tableId, _primaryKeys);
   }
 }

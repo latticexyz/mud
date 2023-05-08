@@ -63,31 +63,27 @@ library Bool {
 
   /** Get value */
   function get(bytes32 _tableId) internal view returns (bool value) {
-    bytes32[] memory _primaryKeys = new bytes32[](0);
-
+    bytes32[] memory _primaryKeys = encodeKey();
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
   /** Get value (using the specified store) */
   function get(IStore _store, bytes32 _tableId) internal view returns (bool value) {
-    bytes32[] memory _primaryKeys = new bytes32[](0);
-
+    bytes32[] memory _primaryKeys = encodeKey();
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
   /** Set value */
   function set(bytes32 _tableId, bool value) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](0);
-
+    bytes32[] memory _primaryKeys = encodeKey();
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
 
   /** Set value (using the specified store) */
   function set(IStore _store, bytes32 _tableId, bool value) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](0);
-
+    bytes32[] memory _primaryKeys = encodeKey();
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
 
@@ -96,17 +92,21 @@ library Bool {
     return abi.encodePacked(value);
   }
 
+  function encodeKey() internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](0);
+
+    return _primaryKeys;
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 _tableId) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](0);
-
+    bytes32[] memory _primaryKeys = encodeKey();
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
 
   /* Delete all data for given keys (using the specified store) */
   function deleteRecord(IStore _store, bytes32 _tableId) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](0);
-
+    bytes32[] memory _primaryKeys = encodeKey();
     _store.deleteRecord(_tableId, _primaryKeys);
   }
 }
