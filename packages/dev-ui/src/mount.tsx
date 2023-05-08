@@ -4,22 +4,25 @@ export async function mount() {
     return;
   }
 
-  const React = await import("react");
-  const ReactDOM = await import("react-dom/client");
-  const { router } = await import("./router");
-  const { RouterProvider } = await import("react-router-dom");
+  try {
+    const React = await import("react");
+    const ReactDOM = await import("react-dom/client");
+    const { App } = await import("./App");
 
-  const rootElement = document.createElement("div");
-  rootElement.id = "mud-dev-ui";
+    const rootElement = document.createElement("div");
+    rootElement.id = "mud-dev-ui";
 
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
-    <React.StrictMode>
-      <RouterProvider router={router} />
-    </React.StrictMode>
-  );
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
 
-  document.body.appendChild(rootElement);
+    document.body.appendChild(rootElement);
+  } catch (error) {
+    console.error("Failed to mount dev-ui", error);
+  }
 
   // TODO: expose an unmount function?
 }
