@@ -39,8 +39,6 @@ export type ModuleConfig = {
 
 // zod doesn't preserve doc comments
 export interface WorldUserConfig {
-  /** The namespace to register tables and systems at. Defaults to the root namespace (empty string) */
-  namespace?: string;
   /** The name of the World contract to deploy. If no name is provided, a vanilla World is deployed */
   worldContractName?: string;
   /** The name of the World interface to generate. (Default `IWorld`) */

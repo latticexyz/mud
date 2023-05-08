@@ -1,4 +1,8 @@
-import { WorldConfig, WorldUserConfig } from "../library";
+import { OrDefaults } from "@latticexyz/common/type-utils";
+import { MUDCoreUserConfig } from "@latticexyz/config";
+import { WorldConfig, WorldConfigDefaults, WorldUserConfig } from "../library";
+
+import "@latticexyz/store/register";
 
 // Inject the plugin options into the core config.
 // Re-exporting an interface of an existing module merges them, adding new options to the interface.
@@ -14,4 +18,9 @@ declare module "@latticexyz/config" {
   // Other plugins may receive this resolved config as their input.
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface MUDCoreConfig extends WorldConfig {}
+}
+
+declare module "@latticexyz/store" {
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig> extends OrDefaults<T, WorldConfigDefaults> {}
 }

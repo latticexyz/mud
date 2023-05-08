@@ -36,7 +36,6 @@ const zModuleConfig = z.object({
 
 // The parsed world config is the result of parsing the user config
 export const zWorldConfig = z.object({
-  namespace: zSelector.default(""),
   worldContractName: z.string().optional(),
   worldInterfaceName: z.string().default("IWorld"),
   overrideSystems: z.record(zSystemName, zSystemConfig).default({}),
@@ -47,6 +46,18 @@ export const zWorldConfig = z.object({
   worldImportPath: z.string().default("@latticexyz/world/src/"),
   modules: z.array(zModuleConfig).default([]),
 });
+
+export interface WorldConfigDefaults {
+  worldContractName: undefined;
+  worldInterfaceName: "IWorld";
+  overrideSystems: Record<string, never>;
+  excludeSystems: [];
+  postDeployScript: "PostDeploy";
+  deploysDirectory: "./deploys";
+  worldgenDirectory: "world";
+  worldImportPath: "@latticexyz/world/src/";
+  modules: [];
+}
 
 // Catchall preserves other plugins' options
 export const zPluginWorldConfig = zWorldConfig.catchall(z.any());
