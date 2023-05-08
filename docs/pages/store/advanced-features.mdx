@@ -32,6 +32,36 @@ uint256 value = CounterSingleton.get();
 
 Additional documentation on Table library generation can be found in the [`tablegen`](tablegen) section.
 
+### Ephemeral tables
+
+Tables with the `ephemeral` property do not write to on-chain storage.
+Instead, they simply emit events when records are set.
+They are useful for sending data to connected clients without the gas costs associated with a storage write.
+
+Defining them in the config looks like this:
+
+```tsx
+import { storeConfig } from "@latticexyz/cli";
+
+export default storeConfig({
+  tables: {
+    DamageTaken: {
+      schema: "uint32"
+      ephemeral: true,
+    },
+  },
+});
+```
+
+This will slightly change the generated code for the table. The `emitEphemeral` function is the main entrypoint:
+
+```solidity
+// Emitting an ephemeral record
+DamageTaken.emitEphemeral("0x1234", 10 );
+```
+
+`get`, `set`, and `delete` functions are not generated for ephemeral tables.
+
 ### Storage hooks
 
 It is possible to register hooks on tables, allowing additional logic to be executed when records or fields are updated. Use cases include: creating indices on another table (like the `ownerOf` mapping of the ERC-721 spec as an example), emitting events on a different contract, or simply additional access-control and checks by reverting in the hook.
