@@ -32,6 +32,7 @@ export function renderTable(options: RenderTableOptions) {
   } = options;
 
   const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
+  const shouldRenderDelete = !withEphemeralMethods;
 
   return `${renderedSolidityHeader}
 
@@ -134,16 +135,20 @@ library ${libraryName} {
     ])});
   }
 
-  ${renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+  ${
+    shouldRenderDelete
+      ? renderWithStore(
+          storeArgument,
+          (_typedStore, _store, _commentSuffix) => `
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
       ${_primaryKeysDefinition}
       ${_store}.deleteRecord(_tableId, _primaryKeys);
     }
   `
-  )}
+        )
+      : ""
+  }
 }
 
 ${renderTypeHelpers(options)}

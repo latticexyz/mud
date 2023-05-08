@@ -93,20 +93,4 @@ library MessageTable {
 
     return abi.encodePacked(_encodedLengths.unwrap(), bytes((value)));
   }
-
-  /* Delete all data for given keys */
-  function deleteRecord(bytes32 key) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
-
-    StoreSwitch.deleteRecord(_tableId, _primaryKeys);
-  }
-
-  /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 key) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
-
-    _store.deleteRecord(_tableId, _primaryKeys);
-  }
 }
