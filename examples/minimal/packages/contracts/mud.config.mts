@@ -16,7 +16,6 @@ export default mudConfig({
       storeArgument: true,
     },
     MessageTable: {
-      name: "event",
       schema: {
         value: "string",
       },
