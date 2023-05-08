@@ -7,6 +7,6 @@ bytes32 constant SingletonKey = bytes32(uint256(0x060D));
 
 contract ChatSystem is System {
   function sendMessage(string memory message) public {
-    MessageTable.emitEphemeral(SingletonKey, message);
+    MessageTable.emitEphemeral(message);
   }
 }

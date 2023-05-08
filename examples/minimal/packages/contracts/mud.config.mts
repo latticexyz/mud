@@ -16,6 +16,7 @@ export default mudConfig({
       storeArgument: true,
     },
     MessageTable: {
+      primaryKeys: {},
       schema: {
         value: "string",
       },

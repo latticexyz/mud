@@ -30,8 +30,7 @@ library MessageTable {
   }
 
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES32;
+    SchemaType[] memory _schema = new SchemaType[](0);
 
     return SchemaLib.encode(_schema);
   }
@@ -66,21 +65,19 @@ library MessageTable {
   }
 
   /** Emit the ephemeral event using individual values */
-  function emitEphemeral(bytes32 key, string memory value) internal {
+  function emitEphemeral(string memory value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.emitEphemeralRecord(_tableId, _primaryKeys, _data);
   }
 
   /** Emit the ephemeral event using individual values (using the specified store) */
-  function emitEphemeral(IStore _store, bytes32 key, string memory value) internal {
+  function emitEphemeral(IStore _store, string memory value) internal {
     bytes memory _data = encode(value);
 
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+    bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.emitEphemeralRecord(_tableId, _primaryKeys, _data);
   }
