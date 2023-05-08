@@ -3,25 +3,25 @@
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(sourceTableId))",
-    "gasUsed": 1032191
+    "gasUsed": 1032425
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "set a record on a table with keysInTableModule installed",
     "functionCall": "world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(val1))",
-    "gasUsed": 239738
+    "gasUsed": 239856
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(sourceTableId))",
-    "gasUsed": 1032191
+    "gasUsed": 1032425
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "change a record on a table with keysInTableModule installed",
     "functionCall": "world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(val2))",
-    "gasUsed": 30761
+    "gasUsed": 30820
   },
   {
     "source": "test/KeysInTableModule.t.sol",
@@ -99,7 +99,7 @@
     "source": "test/UniqueEntityModule.t.sol",
     "name": "install unique entity module",
     "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 791271
+    "gasUsed": 791204
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
@@ -111,7 +111,7 @@
     "source": "test/UniqueEntityModule.t.sol",
     "name": "installRoot unique entity module",
     "functionCall": "world.installRootModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 767094
+    "gasUsed": 767027
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
@@ -135,7 +135,7 @@
     "source": "test/World.t.sol",
     "name": "Register a fallback system",
     "functionCall": "bytes4 funcSelector1 = world.registerFunctionSelector(namespace, name, \"\", \"\")",
-    "gasUsed": 81301
+    "gasUsed": 81234
   },
   {
     "source": "test/World.t.sol",
@@ -147,7 +147,7 @@
     "source": "test/World.t.sol",
     "name": "Register a function selector",
     "functionCall": "bytes4 functionSelector = world.registerFunctionSelector(namespace, name, \"msgSender\", \"()\")",
-    "gasUsed": 101898
+    "gasUsed": 101831
   },
   {
     "source": "test/World.t.sol",
