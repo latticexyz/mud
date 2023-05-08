@@ -13,22 +13,22 @@ import { Component, Entity, EntitySymbol, World } from "./types";
  * @returns A new World
  */
 export function createWorld() {
-  const entities = new Set<EntitySymbol>();
+  const entitySymbols = new Set<EntitySymbol>();
   const components: Component[] = [];
   let disposers: [string, () => void][] = [];
 
   function registerEntity({ id, idSuffix }: { id?: string; idSuffix?: string } = {}) {
-    const entity = (id || entities.size + (idSuffix ? "-" + idSuffix : "")) as Entity;
+    const entity = (id || entitySymbols.size + (idSuffix ? "-" + idSuffix : "")) as Entity;
     const entitySymbol = getEntitySymbol(entity);
 
     // Register entity
-    entities.add(entitySymbol);
+    entitySymbols.add(entitySymbol);
 
     return entity;
   }
 
   function getEntities() {
-    return transformIterator(entities.values(), getEntityString);
+    return transformIterator(entitySymbols.values(), getEntityString);
   }
 
   function registerComponent(component: Component) {
@@ -48,14 +48,14 @@ export function createWorld() {
 
   function hasEntity(entity: Entity): boolean {
     const entitySymbol = getEntitySymbol(entity);
-    return entities.has(entitySymbol);
+    return entitySymbols.has(entitySymbol);
   }
 
   function deleteEntity(entity: Entity) {
     for (const component of components) {
       if (hasComponent(component, entity)) removeComponent(component, entity);
     }
-    entities.delete(getEntitySymbol(entity));
+    entitySymbols.delete(getEntitySymbol(entity));
   }
 
   return {
@@ -66,6 +66,7 @@ export function createWorld() {
     registerDisposer,
     hasEntity,
     getEntities,
+    entitySymbols,
     deleteEntity,
   } satisfies World;
 }

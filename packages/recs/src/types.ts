@@ -114,6 +114,7 @@ export type World = {
   registerDisposer: (disposer: () => void) => void;
   hasEntity: (entity: Entity) => boolean;
   deleteEntity: (entity: Entity) => void;
+  entitySymbols: Set<EntitySymbol>;
 };
 
 export enum QueryFragmentType {
