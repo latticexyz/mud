@@ -21,7 +21,7 @@ export function defineContractComponents(world: World) {
       );
     })(),
     MessageTable: (() => {
-      const tableId = new TableId("", "event");
+      const tableId = new TableId("", "MessageTable");
       return defineComponent(
         world,
         {

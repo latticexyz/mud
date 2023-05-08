@@ -17,7 +17,7 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("event")));
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("MessageTable")));
 bytes32 constant MessageTableTableId = _tableId;
 
 library MessageTable {
