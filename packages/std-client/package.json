@@ -52,7 +52,7 @@
     "@latticexyz/world": "workspace:*",
     "@types/jest": "^27.4.1",
     "@types/lodash": "^4.14.182",
-    "@types/react": "^18.0.12",
+    "@types/react": "^18.2.6",
     "@types/react-collapse": "^5.0.1",
     "@types/uuid": "^8.3.4",
     "ethers": "^5.7.2",

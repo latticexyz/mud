@@ -43,9 +43,9 @@ export function TransactionSummary({ hash }: Props) {
       : null;
   const returnData = transactionResult.status === "fulfilled" ? transactionResult.value.result : null;
   const events =
-    worldAbi &&
-    transactionReceipt.status === "fulfilled" &&
-    transactionReceipt.value.logs.map((log) => decodeEventLog({ abi: worldAbi, ...log }));
+    worldAbi && transactionReceipt.status === "fulfilled"
+      ? transactionReceipt.value.logs.map((log) => decodeEventLog({ abi: worldAbi, ...log }))
+      : null;
 
   return (
     <details
@@ -99,8 +99,8 @@ export function TransactionSummary({ hash }: Props) {
               </tr>
             </thead>
             <tbody className="font-mono text-xs">
-              {events?.map(({ eventName, args }, i) => {
-                const table = TableId.fromBytes32(toBytes(args.table));
+              {events.map(({ eventName, args }, i) => {
+                const table = TableId.fromBytes32(toBytes((args as any).table));
                 return (
                   <tr key={i}>
                     <td className="whitespace-nowrap overflow-hidden text-ellipsis">
@@ -111,8 +111,10 @@ export function TransactionSummary({ hash }: Props) {
                       {eventName === "StoreSetField" ? <span className="text-green-500 font-bold">+</span> : null}
                       {eventName === "StoreDeleteRecord" ? <span className="text-red-500 font-bold">-</span> : null}
                     </td>
-                    <td className="whitespace-nowrap overflow-hidden text-ellipsis">{keyTupleToEntityID(args.key)}</td>
-                    <td className="whitespace-nowrap overflow-hidden text-ellipsis">{args.data}</td>
+                    <td className="whitespace-nowrap overflow-hidden text-ellipsis">
+                      {keyTupleToEntityID((args as any).key)}
+                    </td>
+                    <td className="whitespace-nowrap overflow-hidden text-ellipsis">{(args as any).data}</td>
                   </tr>
                 );
               })}
