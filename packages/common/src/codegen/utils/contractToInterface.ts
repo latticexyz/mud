@@ -9,6 +9,11 @@ export interface ContractInterfaceFunction {
   returnParameters: string[];
 }
 
+export interface ContractInterfaceError {
+  name: string;
+  parameters: string[];
+}
+
 interface SymbolImport {
   symbol: string;
   path: string;
@@ -27,6 +32,7 @@ export function contractToInterface(data: string, contractName: string) {
   let withContract = false;
   let symbolImports: SymbolImport[] = [];
   const functions: ContractInterfaceFunction[] = [];
+  const errors: ContractInterfaceError[] = [];
 
   visit(ast, {
     ContractDefinition({ name }) {
@@ -66,6 +72,17 @@ export function contractToInterface(data: string, contractName: string) {
         }
       }
     },
+    CustomErrorDefinition({ name, parameters }) {
+      errors.push({
+        name: name === null ? "" : name,
+        parameters: parameters.map(parseParameter),
+      });
+
+      for (const parameter of parameters) {
+        const symbols = typeNameToSymbols(parameter.typeName);
+        symbolImports = symbolImports.concat(symbolsToImports(ast, symbols));
+      }
+    },
   });
 
   if (!withContract) {
@@ -74,6 +91,7 @@ export function contractToInterface(data: string, contractName: string) {
 
   return {
     functions,
+    errors,
     symbolImports,
   };
 }
