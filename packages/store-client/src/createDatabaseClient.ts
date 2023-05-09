@@ -9,7 +9,7 @@ export function createDatabaseClient<C extends StoreConfig>(database: TupleDatab
 
   for (const table in config.tables) {
     client[table] = {
-      upsert: (key: Key<C, typeof table>, value: Value<C, typeof table>) =>
+      set: (key: Key<C, typeof table>, value: Value<C, typeof table>) =>
         set(_tupleDatabaseClient, table, key, value, {
           defaultValue: getDefaultValue(config.tables?.[table].schema),
         }),
