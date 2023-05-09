@@ -60,7 +60,6 @@ export const App = () => {
       >
         Revert tx
       </button>
-
       <div>
         <h1>Chat</h1>
         <textarea value={messages.join("\n")} rows={10} cols={50} readOnly>
@@ -73,16 +72,11 @@ export const App = () => {
             setMyMessage("");
           }}
         >
-          <input value={myMessage} onChange={(event) => setMyMessage(event.target.value)} type="text" />
-          {" "}
-          <button
-            type="submit"
-            disabled={!myMessage}
-          >
+          <input value={myMessage} onChange={(event) => setMyMessage(event.target.value)} type="text" />{" "}
+          <button type="submit" disabled={!myMessage}>
             <span role="img" aria-label="Send">
               📤
-            </span>
-            {" "}
+            </span>{" "}
             Send
           </button>
         </form>

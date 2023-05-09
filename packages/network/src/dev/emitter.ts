@@ -1,5 +1,6 @@
 import Emittery from "emittery";
 import { TableId } from "@latticexyz/utils";
+import { StoreEvent, EphemeralEvent } from "../v2/common";
 
 // Expose a global emitter to ease in getting data from our internal packages to dev tools
 
@@ -10,7 +11,7 @@ export type EmitterEvents = {
     transactionHash: string;
     blockNumber: number;
     logIndex: number;
-    event: "StoreSetRecord" | "StoreSetField" | "StoreDeleteRecord";
+    event: StoreEvent | EphemeralEvent;
     table: TableId;
     keyTuple: any; // TODO: refine
     indexedValues?: Record<number, any>; // TODO: refine

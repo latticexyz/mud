@@ -59,12 +59,28 @@ export const ecsEventFromLog = async (
   }
 
   if (name === "StoreEphemeralRecord") {
-    const value = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
-    console.log("StoreEphemeralRecord:", { table: tableId.toString(), component, entity, value });
+    const { indexedValues, namedValues } = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
     return {
       ...ecsEvent,
       ephemeral: true,
-      value,
+      value: {
+        ...indexedValues,
+        ...namedValues,
+      },
+      devEmit: () => {
+        devEmitter.emit("storeEvent", {
+          event: name,
+          chainId,
+          worldAddress: contract.address,
+          blockNumber,
+          logIndex,
+          transactionHash,
+          table: tableId,
+          keyTuple: args.key,
+          indexedValues,
+          namedValues,
+        });
+      },
     };
   }
 
