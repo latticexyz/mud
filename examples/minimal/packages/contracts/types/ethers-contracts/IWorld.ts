@@ -28,6 +28,18 @@ import type {
   PromiseOrValue,
 } from "./common";
 
+export type RecordStruct = {
+  table: PromiseOrValue<BytesLike>;
+  key: PromiseOrValue<BytesLike>[];
+  value: PromiseOrValue<BytesLike>;
+};
+
+export type RecordStructOutput = [string, string[], string] & {
+  table: string;
+  key: string[];
+  value: string;
+};
+
 export interface IWorldInterface extends utils.Interface {
   functions: {
     "call(bytes16,bytes16,bytes)": FunctionFragment;
@@ -67,6 +79,7 @@ export interface IWorldInterface extends utils.Interface {
     "setMetadata(bytes32,string,string[])": FunctionFragment;
     "setRecord(bytes16,bytes16,bytes32[],bytes)": FunctionFragment;
     "setRecord(bytes32,bytes32[],bytes)": FunctionFragment;
+    "sync(bytes32[])": FunctionFragment;
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)": FunctionFragment;
   };
@@ -110,6 +123,7 @@ export interface IWorldInterface extends utils.Interface {
       | "setMetadata(bytes32,string,string[])"
       | "setRecord(bytes16,bytes16,bytes32[],bytes)"
       | "setRecord(bytes32,bytes32[],bytes)"
+      | "sync"
       | "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"
       | "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)"
   ): FunctionFragment;
@@ -377,6 +391,10 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
+    functionFragment: "sync",
+    values: [PromiseOrValue<BytesLike>[]]
+  ): string;
+  encodeFunctionData(
     functionFragment: "updateInField(bytes32,bytes32[],uint8,uint256,bytes)",
     values: [
       PromiseOrValue<BytesLike>,
@@ -531,6 +549,7 @@ export interface IWorldInterface extends utils.Interface {
     functionFragment: "setRecord(bytes32,bytes32[],bytes)",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "sync", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "updateInField(bytes32,bytes32[],uint8,uint256,bytes)",
     data: BytesLike
@@ -891,6 +910,11 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
+    sync(
+      tableIds: PromiseOrValue<BytesLike>[],
+      overrides?: CallOverrides
+    ): Promise<[RecordStructOutput[][]] & { records: RecordStructOutput[][] }>;
+
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1165,6 +1189,11 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  sync(
+    tableIds: PromiseOrValue<BytesLike>[],
+    overrides?: CallOverrides
+  ): Promise<RecordStructOutput[][]>;
+
   "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
@@ -1436,6 +1465,11 @@ export interface IWorld extends BaseContract {
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    sync(
+      tableIds: PromiseOrValue<BytesLike>[],
+      overrides?: CallOverrides
+    ): Promise<RecordStructOutput[][]>;
 
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
@@ -1758,6 +1792,11 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
+    sync(
+      tableIds: PromiseOrValue<BytesLike>[],
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -2031,6 +2070,11 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    sync(
+      tableIds: PromiseOrValue<BytesLike>[],
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(

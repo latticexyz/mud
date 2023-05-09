@@ -1,9 +1,13 @@
-import { mudConfig, resolveTableId } from "@latticexyz/world/register"
+import { mudConfig, resolveTableId } from "@latticexyz/world/register";
 
 export default mudConfig({
   overrideSystems: {
     IncrementSystem: {
       name: "increment",
+      openAccess: true,
+    },
+    SyncSystem: {
+      name: "sync",
       openAccess: true,
     },
   },
@@ -24,6 +28,11 @@ export default mudConfig({
     },
   },
   modules: [
+    {
+      name: "KeysInTableModule",
+      root: true,
+      args: [resolveTableId("CounterTable")],
+    },
     {
       name: "KeysWithValueModule",
       root: true,

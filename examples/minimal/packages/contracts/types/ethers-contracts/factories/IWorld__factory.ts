@@ -1109,6 +1109,42 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes32[]",
+        name: "tableIds",
+        type: "bytes32[]",
+      },
+    ],
+    name: "sync",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "bytes32",
+            name: "table",
+            type: "bytes32",
+          },
+          {
+            internalType: "bytes32[]",
+            name: "key",
+            type: "bytes32[]",
+          },
+          {
+            internalType: "bytes",
+            name: "value",
+            type: "bytes",
+          },
+        ],
+        internalType: "struct Record[][]",
+        name: "records",
+        type: "tuple[][]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
