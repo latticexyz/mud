@@ -63,11 +63,11 @@ contract KeysWithValueModuleTest is Test {
     world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value));
 
     // Get the list of entities with this value from the target table
-    bytes32[] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value));
+    bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
-    assertEq(keysWithValue[0], key1);
+    assertEq(keysWithValue[0][0], key1);
   }
 
   function testSetAndDeleteRecordHook() public {
@@ -79,11 +79,11 @@ contract KeysWithValueModuleTest is Test {
     world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value1));
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1));
+    bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "1");
-    assertEq(keysWithValue[0], key1, "2");
+    assertEq(keysWithValue[0][0], key1, "2");
 
     // Set a another key with the same value
     world.setRecord(namespace, sourceName, keyTuple2, abi.encodePacked(value1));
@@ -93,8 +93,8 @@ contract KeysWithValueModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 2);
-    assertEq(keysWithValue[0], key1, "3");
-    assertEq(keysWithValue[1], key2, "4");
+    assertEq(keysWithValue[0][0], key1, "3");
+    assertEq(keysWithValue[1][0], key2, "4");
 
     // Change the value of the first key
     uint256 value2 = 2;
@@ -107,14 +107,14 @@ contract KeysWithValueModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "5");
-    assertEq(keysWithValue[0], key2, "6");
+    assertEq(keysWithValue[0][0], key2, "6");
 
     // Get the list of entities with value2 from the target table
     keysWithValue = getKeysWithValue(world, tableId, abi.encode(value2));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1, "7");
-    assertEq(keysWithValue[0], key1, "8");
+    assertEq(keysWithValue[0][0], key1, "8");
 
     // Delete the first key
     // !gasreport delete a record on a table with KeysWithValueModule installed
@@ -137,11 +137,11 @@ contract KeysWithValueModuleTest is Test {
     world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value1));
 
     // Get the list of entities with value1 from the target table
-    bytes32[] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1));
+    bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
-    assertEq(keysWithValue[0], key1);
+    assertEq(keysWithValue[0][0], key1);
 
     uint256 value2 = 2;
 
@@ -160,7 +160,7 @@ contract KeysWithValueModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
-    assertEq(keysWithValue[0], key1);
+    assertEq(keysWithValue[0][0], key1);
   }
 
   function testGetKeysWithValue() public {
@@ -172,11 +172,11 @@ contract KeysWithValueModuleTest is Test {
     world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value1));
 
     // !gasreport Get list of keys with a given value
-    bytes32[] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1));
+    bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
-    assertEq(keysWithValue[0], key1);
+    assertEq(keysWithValue[0][0], key1);
 
     // Set a another key with the same value
     world.setRecord(namespace, sourceName, keyTuple2, abi.encodePacked(value1));
@@ -186,7 +186,7 @@ contract KeysWithValueModuleTest is Test {
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 2);
-    assertEq(keysWithValue[0], key1);
-    assertEq(keysWithValue[1], key2);
+    assertEq(keysWithValue[0][0], key1);
+    assertEq(keysWithValue[1][0], key2);
   }
 }

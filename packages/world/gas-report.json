@@ -38,8 +38,8 @@
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of keys with a given value",
-    "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1))",
-    "gasUsed": 8033
+    "functionCall": "bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1))",
+    "gasUsed": 8679
   },
   {
     "source": "test/KeysWithValueModule.t.sol",

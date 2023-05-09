@@ -16,27 +16,27 @@ import { KeysInTable } from "./tables/KeysInTable.sol";
  * Note: this util can only be called within the context of a Store (e.g. from a System or Module).
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
-function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keysInTable) {
-  bytes32[] memory keysInTableFlat = KeysInTable.getKeys(tableId);
+function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTuples) {
+  bytes32[] memory keyTuplesFlat = KeysInTable.getKeys(tableId);
 
-  keysInTable = new bytes32[][](keysInTableFlat.length);
+  keyTuples = new bytes32[][](keyTuplesFlat.length);
 
-  for (uint256 i; i < keysInTableFlat.length; i++) {
-    keysInTable[i] = new bytes32[](1);
-    keysInTable[i][0] = keysInTableFlat[i];
+  for (uint256 i; i < keyTuplesFlat.length; i++) {
+    keyTuples[i] = new bytes32[](1);
+    keyTuples[i][0] = keyTuplesFlat[i];
   }
 }
 
 /**
  * Get a list of keys in the given table for the given store.
  */
-function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[][] memory keysInTable) {
-  bytes32[] memory keysInTableFlat = KeysInTable.getKeys(store, tableId);
+function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[][] memory keyTuples) {
+  bytes32[] memory keyTuplesFlat = KeysInTable.getKeys(store, tableId);
 
-  keysInTable = new bytes32[][](keysInTableFlat.length);
+  keyTuples = new bytes32[][](keyTuplesFlat.length);
 
-  for (uint256 i; i < keysInTableFlat.length; i++) {
-    keysInTable[i] = new bytes32[](1);
-    keysInTable[i][0] = keysInTableFlat[i];
+  for (uint256 i; i < keyTuplesFlat.length; i++) {
+    keyTuples[i] = new bytes32[](1);
+    keyTuples[i][0] = keyTuplesFlat[i];
   }
 }
