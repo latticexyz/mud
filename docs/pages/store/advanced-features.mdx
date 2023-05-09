@@ -41,9 +41,9 @@ They are useful for sending data to connected clients without the gas costs asso
 Defining them in the config looks like this:
 
 ```tsx
-import { storeConfig } from "@latticexyz/cli";
+import { mudConfig } from "@latticexyz/config";
 
-export default storeConfig({
+export default mudConfig({
   tables: {
     DamageTaken: {
       schema: "uint32"
