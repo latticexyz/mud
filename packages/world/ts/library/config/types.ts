@@ -2,6 +2,7 @@ import { z } from "zod";
 import { DynamicResolution, ValueWithType } from "@latticexyz/config";
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { zWorldConfig } from "./worldConfig";
+import { SYSTEM_DEFAULTS } from "./defaults";
 
 // zod doesn't preserve doc comments
 export type SystemUserConfig =
@@ -34,11 +35,11 @@ export interface ExpandSystemConfig<T extends SystemUserConfig, SystemName exten
     T,
     {
       name: SystemName;
-      registerFunctionSelectors: true;
+      registerFunctionSelectors: typeof SYSTEM_DEFAULTS.registerFunctionSelector;
+      openAccess: typeof SYSTEM_DEFAULTS.openAccess;
     }
   > {
-  openAccess: T["openAccess"];
-  accessList: T extends { accessList: string[] } ? T["accessList"] : undefined;
+  accessList: T extends { accessList: string[] } ? T["accessList"] : typeof SYSTEM_DEFAULTS.accessList;
 }
 
 export type SystemsUserConfig = Record<string, SystemUserConfig>;
