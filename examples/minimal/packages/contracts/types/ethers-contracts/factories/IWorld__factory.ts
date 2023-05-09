@@ -102,6 +102,12 @@ const _abi = [
   },
   {
     anonymous: false,
+    inputs: [],
+    name: "HelloWorld",
+    type: "event",
+  },
+  {
+    anonymous: false,
     inputs: [
       {
         indexed: false,
@@ -117,6 +123,31 @@ const _abi = [
       },
     ],
     name: "StoreDeleteRecord",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "StoreEphemeralRecord",
     type: "event",
   },
   {
@@ -241,6 +272,57 @@ const _abi = [
       },
     ],
     name: "deleteRecord",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes16",
+        name: "namespace",
+        type: "bytes16",
+      },
+      {
+        internalType: "bytes16",
+        name: "name",
+        type: "bytes16",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "emitEphemeralRecord",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "emitEphemeralRecord",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -844,6 +926,19 @@ const _abi = [
       },
     ],
     name: "revokeAccess",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+    ],
+    name: "sendMessage",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

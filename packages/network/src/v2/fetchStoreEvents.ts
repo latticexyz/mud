@@ -2,7 +2,7 @@ import { Contract } from "ethers";
 import { NetworkComponentUpdate } from "../types";
 import orderBy from "lodash/orderBy";
 import { isDefined } from "@latticexyz/utils";
-import { storeEvents } from "./common";
+import { ephemeralEvents, storeEvents } from "./common";
 import { ecsEventFromLog } from "./ecsEventFromLog";
 
 export async function fetchStoreEvents(
@@ -10,7 +10,8 @@ export async function fetchStoreEvents(
   fromBlock: number,
   toBlock: number
 ): Promise<NetworkComponentUpdate[]> {
-  const topicSets = storeEvents.map((eventName) => store.filters[eventName]().topics).filter(isDefined);
+  const events = [...storeEvents, ...ephemeralEvents];
+  const topicSets = events.map((eventName) => store.filters[eventName]().topics).filter(isDefined);
 
   const logSets = await Promise.all(
     topicSets.map((topics) => store.provider.getLogs({ address: store.address, topics, fromBlock, toBlock }))
