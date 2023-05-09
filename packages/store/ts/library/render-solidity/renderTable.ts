@@ -5,6 +5,7 @@ import {
   renderedSolidityHeader,
   renderRelativeImports,
   renderTableId,
+  renderValueTypeToBytes32,
   renderWithStore,
   renderTypeHelpers,
   RenderDynamicField,
@@ -133,6 +134,15 @@ library ${libraryName} {
         ? []
         : ["_encodedLengths.unwrap()", renderArguments(dynamicFields.map((field) => renderEncodeField(field)))]),
     ])});
+  }
+  
+  /** Encode keys as a bytes32 array using this table's schema */
+  function encodeKeyTuple(${renderArguments([_typedKeyArgs])}) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](${primaryKeys.length});
+    ${renderList(
+      primaryKeys,
+      (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
+    )}
   }
 
   ${

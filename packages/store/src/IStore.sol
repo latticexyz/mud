@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IErrors } from "./IErrors.sol";
+import { IStoreErrors } from "./IStoreErrors.sol";
 import { Schema } from "./Schema.sol";
 
 interface IStoreRead {
@@ -84,7 +84,7 @@ interface IStoreRegistration {
   function registerStoreHook(bytes32 table, IStoreHook hook) external;
 }
 
-interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral {}
+interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
 
 interface IStoreHook {
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external;
