@@ -22,7 +22,7 @@ export const ecsEventFromLog = async (
   const component = tableId.toString();
   const entity = keyTupleToEntityID(args.key);
 
-  const ecsEvent: NetworkComponentUpdate = {
+  const ecsEvent = {
     type: NetworkEvents.NetworkComponentUpdate,
     component,
     entity,
@@ -31,7 +31,7 @@ export const ecsEventFromLog = async (
     txHash: transactionHash,
     logIndex,
     lastEventInTx,
-  };
+  } satisfies NetworkComponentUpdate;
 
   if (name === "StoreSetRecord") {
     const { indexedValues, namedValues } = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
@@ -55,6 +55,16 @@ export const ecsEventFromLog = async (
           namedValues,
         });
       },
+    };
+  }
+
+  if (name === "StoreEphemeralRecord") {
+    const value = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
+    console.log("StoreEphemeralRecord:", { table: tableId.toString(), component, entity, value });
+    return {
+      ...ecsEvent,
+      ephemeral: true,
+      value,
     };
   }
 

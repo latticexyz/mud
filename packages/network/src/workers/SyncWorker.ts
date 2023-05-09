@@ -240,6 +240,9 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       const syncFromSnapshot =
         !syncFromMode && snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
 
+      console.log("syncFromSnapshot", syncFromSnapshot);
+      console.log("syncFromMode", syncFromMode);
+
       if (syncFromMode) {
         console.log("Initial sync from MODE");
         this.setLoadingState({ state: SyncState.INITIAL, msg: "Fetching initial state from MODE", percentage: 0 });
@@ -288,7 +291,10 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     );
 
     // Merge initial state, gap state and live events since initial sync started
-    storeEvents(initialState, [...gapStateEvents, ...initialLiveEvents]);
+    storeEvents(
+      initialState,
+      [...gapStateEvents, ...initialLiveEvents].filter((e) => !e.ephemeral)
+    );
     cacheStore.current = initialState;
     devObservables.cacheStore.next(cacheStore.current);
     debug(`initial sync state size: ${cacheStore.current.state.size}`);

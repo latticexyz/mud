@@ -1,5 +1,3 @@
-import { JsonRpcProvider, Network } from "@ethersproject/providers";
-import { ComponentValue, Components, Entity } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range, Uint8ArrayToHexString } from "@latticexyz/utils";
 import { BytesLike, Contract, BigNumber } from "ethers";
 import { Observable, map, concatMap, of, from } from "rxjs";
@@ -15,10 +13,10 @@ import {
 import {
   NetworkComponentUpdate,
   ContractConfig,
-  SystemCallTransaction,
   NetworkEvents,
-  SystemCall,
   NetworkEvent,
+  SystemCallTransaction,
+  SystemCall,
 } from "../types";
 import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.sol/Component.abi.json";
@@ -35,6 +33,8 @@ import { grpc } from "@improbable-eng/grpc-web";
 import { debug as parentDebug } from "./debug";
 import { fetchStoreEvents } from "../v2/fetchStoreEvents";
 import orderBy from "lodash/orderBy";
+import { ComponentValue, Components, Entity } from "@latticexyz/recs";
+import { JsonRpcProvider } from "@ethersproject/providers";
 
 const debug = parentDebug.extend("syncUtils");
 
@@ -350,7 +350,10 @@ export async function fetchStateInBlockRange(
     setPercentage
   );
 
-  storeEvents(cacheStore, events);
+  storeEvents(
+    cacheStore,
+    events.filter((e) => !e.ephemeral)
+  );
 
   return cacheStore;
 }

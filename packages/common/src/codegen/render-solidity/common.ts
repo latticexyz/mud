@@ -153,7 +153,7 @@ export function renderTableId(staticResourceData: StaticResourceData) {
   };
 }
 
-function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderType) {
+export function renderValueTypeToBytes32(name: string, { staticByteLength, typeUnwrap, internalTypeId }: RenderType) {
   const bits = staticByteLength * 8;
   const innerText = `${typeUnwrap}(${name})`;
 

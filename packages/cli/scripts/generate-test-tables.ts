@@ -53,6 +53,10 @@ try {
         },
         dataStruct: false,
       },
+      Ephemeral: {
+        schema: "uint256",
+        ephemeral: true,
+      },
     },
 
     enums: {

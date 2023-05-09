@@ -2,7 +2,7 @@ import { Contract } from "ethers";
 import { NetworkComponentUpdate } from "../types";
 import orderBy from "lodash/orderBy";
 import { isDefined } from "@latticexyz/utils";
-import { storeEvents } from "./common";
+import { ephemeralEvents, storeEvents } from "./common";
 import { ecsEventFromLog } from "./ecsEventFromLog";
 
 export async function fetchStoreEvents(
@@ -13,7 +13,8 @@ export async function fetchStoreEvents(
   // TODO: pass the chain ID as an argument
   const { chainId } = await store.provider.getNetwork();
 
-  const topicSets = storeEvents.map((eventName) => store.filters[eventName]().topics).filter(isDefined);
+  const eventNames = [...storeEvents, ...ephemeralEvents];
+  const topicSets = eventNames.map((eventName) => store.filters[eventName]().topics).filter(isDefined);
 
   const logSets = await Promise.all(
     topicSets.map((topics) => store.provider.getLogs({ address: store.address, topics, fromBlock, toBlock }))
