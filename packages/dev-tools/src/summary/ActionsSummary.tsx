@@ -3,7 +3,7 @@ import { NavButton } from "../NavButton";
 import { TransactionSummary } from "../actions/TransactionSummary";
 
 export function ActionsSummary() {
-  const transactions = useStore((state) => state.transactions.slice(-3).reverse());
+  const transactions = useStore((state) => state.transactions.slice(-3));
 
   return (
     <>

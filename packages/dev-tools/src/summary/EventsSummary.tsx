@@ -3,7 +3,7 @@ import { useStore } from "../useStore";
 import { NavButton } from "../NavButton";
 
 export function EventsSummary() {
-  const events = useStore((state) => state.storeEvents.slice(-10).reverse());
+  const events = useStore((state) => state.storeEvents.slice(-10));
   return (
     <>
       <EventsTable events={events} />
