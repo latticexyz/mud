@@ -1,0 +1,39 @@
+name: Integration tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  main:
+    name: Build/test integration
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        integration: [misc]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install integration dependencies
+        working-directory: ./integration/${{ matrix.integration }}
+        run: pnpm install
+
+      - name: Build integration
+        working-directory: ./integration/${{ matrix.integration }}
+        run: pnpm run build
+
+      - name: Outdated files, run `pnpm run build` in `integration/${{ matrix.integration }}` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Run tests
+        working-directory: ./integration/${{ matrix.integration }}
+        run: pnpm test
