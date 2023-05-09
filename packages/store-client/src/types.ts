@@ -1,42 +1,43 @@
-import { StoreConfigShorthand, StoreConfigExpanded, FieldValue } from "@latticexyz/config";
 import { TupleDatabaseClient, TupleRootTransactionApi } from "tuple-database";
+import { MUDCoreUserConfig } from "@latticexyz/config";
+import { ExpandMUDUserConfig } from "@latticexyz/store/register";
+import { AbiType } from "@latticexyz/schema-type";
 
-export type ContractTables<Config extends StoreConfigShorthand> = StoreConfigExpanded<Config>["tables"];
-
-export type AbiTypeToPrimitiveType<T extends FieldValue> = AbiTypeToPrimitiveTypeLookup[T];
+export type AbiTypeToPrimitiveType<T extends AbiType> = AbiTypeToPrimitiveTypeLookup[T];
 
 // TODO: add mappings for remaining Solidity types
 export type AbiTypeToPrimitiveTypeLookup = {
   bytes32: string;
   uint256: bigint;
 } & {
-  [_ in FieldValue]: unknown;
+  [_ in AbiType]: unknown;
 };
 
-export type ClientTables<Config extends StoreConfigShorthand> = {
-  [table in keyof ContractTables<Config>]: {
-    primaryKeys: {
-      [key in keyof ContractTables<Config>[table]["primaryKeys"]]: ContractTables<Config>[table]["primaryKeys"][key] extends FieldValue
-        ? AbiTypeToPrimitiveType<ContractTables<Config>[table]["primaryKeys"][key]>
-        : never;
-    };
-    schema: {
-      [key in keyof ContractTables<Config>[table]["schema"]]: ContractTables<Config>[table]["schema"][key] extends FieldValue
-        ? AbiTypeToPrimitiveType<ContractTables<Config>[table]["schema"][key]>
-        : never;
-    };
-  };
-};
+export type ExpandedConfig = ExpandMUDUserConfig<any>;
 
-export type DatabaseClient<Config extends StoreConfigShorthand> = {
-  [table in keyof ClientTables<Config>]: {
-    upsert: (
-      key: ClientTables<Config>[table]["primaryKeys"],
-      value: Partial<ClientTables<Config>[table]["schema"]>
+export type DatabaseClient<Config extends ExpandedConfig> = {
+  [table in keyof Config["tables"]]: {
+    set: (
+      key: Config["tables"][table]["primaryKeys"],
+      value: Partial<Config["tables"][table]["schema"]>
     ) => TupleRootTransactionApi;
-    get: (key: ClientTables<Config>[table]["primaryKeys"]) => ClientTables<Config>[table]["schema"];
-    remove: (key: ClientTables<Config>[table]["primaryKeys"]) => TupleRootTransactionApi;
+    get: (key: Config["tables"][table]["primaryKeys"]) => Config["tables"][table]["schema"];
+    remove: (key: Config["tables"][table]["primaryKeys"]) => TupleRootTransactionApi;
   };
 } & {
   _tupleDatabaseClient: TupleDatabaseClient;
 };
+
+const testConfig = {
+  tables: {
+    TestTable: { schema: "uint256" },
+  },
+} as const satisfies MUDCoreUserConfig;
+
+const expandedConfig: ExpandMUDUserConfig<typeof testConfig> = {} as any;
+
+const client: DatabaseClient<typeof expandedConfig> = {} as any;
+
+const value = client.TestTable.get({ key: "bytes32" });
+client.TestTable.set({ key: "bytes32" }, { value: "uint256" });
+client.TestTable.remove({ key: "bytes32" });

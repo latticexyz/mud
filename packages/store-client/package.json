@@ -22,6 +22,7 @@
   "dependencies": {
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
+    "@latticexyz/store": "workspace:^",
     "abitype": "^0.8.0",
     "tuple-database": "^2.2.0"
   },

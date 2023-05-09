@@ -1,15 +1,15 @@
-import { FieldValue, StoreConfigShorthand } from "@latticexyz/config";
 import { TupleDatabaseClient, TupleRootTransactionApi } from "tuple-database";
-import { ClientTables } from "./types";
-import { SolidityDefaults } from "@latticexyz/schema-type";
+import { ExpandedConfig } from "./types";
+import { AbiType } from "@latticexyz/schema-type";
+import { AbiDefaults } from "./defaults";
 
 // Set a (partial) value
 // The value is merged with the existing value; missing fields are initialzied with the default Solidity value
-export function upsert<Config extends StoreConfigShorthand = StoreConfigShorthand>(
+export function set<C extends ExpandedConfig = ExpandedConfig>(
   client: TupleDatabaseClient,
-  table: keyof ClientTables<Config>,
-  key: ClientTables<Config>[typeof table]["primaryKeys"],
-  value: Partial<ClientTables<Config>[typeof table]["schema"]>,
+  table: keyof C["tables"],
+  key: C["tables"][typeof table]["primaryKeys"],
+  value: Partial<C["tables"][typeof table]["schema"]>,
   options?: {
     defaultValue?: Record<string, unknown>;
     appendToTransaction?: TupleRootTransactionApi;
@@ -25,19 +25,19 @@ export function upsert<Config extends StoreConfigShorthand = StoreConfigShorthan
 }
 
 // Get a value
-export function get<Config extends StoreConfigShorthand = StoreConfigShorthand>(
+export function get<C extends ExpandedConfig = ExpandedConfig>(
   client: TupleDatabaseClient,
-  table: keyof ClientTables<Config>,
-  key: ClientTables<Config>[typeof table]["primaryKeys"]
-): ClientTables<Config>[typeof table]["schema"] {
+  table: keyof C["tables"],
+  key: C["tables"][typeof table]["primaryKeys"]
+): C["tables"][typeof table]["schema"] {
   return client.get([String(table), ...toKeyTuple(key)]);
 }
 
 // Remove a value
-export function remove<Config extends StoreConfigShorthand = StoreConfigShorthand>(
+export function remove<C extends ExpandedConfig = ExpandedConfig>(
   client: TupleDatabaseClient,
-  table: keyof ClientTables<Config>,
-  key: ClientTables<Config>[typeof table]["primaryKeys"]
+  table: keyof C["tables"],
+  key: C["tables"][typeof table]["primaryKeys"]
 ) {
   const tx = client.transact();
   tx.remove([String(table), ...toKeyTuple(key)]);
@@ -45,21 +45,24 @@ export function remove<Config extends StoreConfigShorthand = StoreConfigShorthan
   return tx;
 }
 
-// TODO: refactor config export to avoid special case for shorthand (by expanding the config)
-export function getDefaultValue(table?: string | Record<string, FieldValue>) {
+/**
+ * Map a table schema to the corresponding default value
+ */
+export function getDefaultValue(table?: Record<string, AbiType>) {
   if (table == null) return undefined;
-
-  // Special case for table shorthand
-  if (typeof table === "string") return { value: SolidityDefaults[table] };
 
   // Map schema to its default values
   const defaultValue: Record<string, unknown> = {};
   for (const key in table) {
-    defaultValue[key] = SolidityDefaults[table[key]];
+    defaultValue[key] = AbiDefaults[table[key]];
   }
   return defaultValue;
 }
 
+/**
+ * Convert a record like `{ a: string, b: number }` to a record tuple like `[{ a: string }, { b: number }]`,
+ * as expected by tuple-database
+ */
 function toKeyTuple(record: Record<string, unknown>): Record<string, unknown>[] {
   const tuple = [];
   for (const [key, value] of Object.entries(record)) {
@@ -68,6 +71,9 @@ function toKeyTuple(record: Record<string, unknown>): Record<string, unknown>[] 
   return tuple;
 }
 
+/**
+ * Helper to serialize bigints
+ */
 function flatten(value: unknown) {
   if (typeof value === "bigint") return String(value);
   return value;
