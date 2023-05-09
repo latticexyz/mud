@@ -86,7 +86,9 @@ export async function createFastTxExecutor(
         if (options.retryCount === 0) {
           updateFeePerGas(globalOptions.priorityFeeMultiplier * 1.1);
           return fastTxExecute(contract, func, args, { retryCount: options.retryCount++ });
-        } else throw new Error(`Gas estimation error for ${functionName}: ${error?.reason}`);
+        } else {
+          throw new Error(`Gas estimation error for ${functionName}: ${error?.reason}`);
+        }
       }
 
       // TODO: potentially handle more transaction errors here, like:
