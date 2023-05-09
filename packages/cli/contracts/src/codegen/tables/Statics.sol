@@ -876,6 +876,26 @@ library Statics {
     return abi.encodePacked(v1, v2, v3, v4, v5, v6, v7);
   }
 
+  /** Encode keys as a bytes32 array using this table's schema */
+  function encodeKeyTuple(
+    uint256 k1,
+    int32 k2,
+    bytes16 k3,
+    address k4,
+    bool k5,
+    Enum1 k6,
+    Enum2 k7
+  ) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](7);
+    _primaryKeys[0] = bytes32(uint256((k1)));
+    _primaryKeys[1] = bytes32(uint256(uint32((k2))));
+    _primaryKeys[2] = bytes32((k3));
+    _primaryKeys[3] = bytes32(bytes20((k4)));
+    _primaryKeys[4] = _boolToBytes32((k5));
+    _primaryKeys[5] = bytes32(uint256(uint8(k6)));
+    _primaryKeys[6] = bytes32(uint256(uint8(k7)));
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(uint256 k1, int32 k2, bytes16 k3, address k4, bool k5, Enum1 k6, Enum2 k7) internal {
     bytes32[] memory _primaryKeys = new bytes32[](7);
