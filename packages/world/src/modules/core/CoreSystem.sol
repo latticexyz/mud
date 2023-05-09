@@ -7,6 +7,7 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
+import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
 
 /**
  * The CoreSystem includes all World functionality that is externalized
@@ -17,7 +18,8 @@ contract CoreSystem is
   WorldRegistrationSystem,
   StoreRegistrationSystem,
   ModuleInstallationSystem,
-  AccessManagementSystem
+  AccessManagementSystem,
+  EphemeralRecordSystem
 {
 
 }

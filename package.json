@@ -10,7 +10,6 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "commit": "cz",
     "dev": "turbo run dev --concurrency 20",
     "docs": "pnpm recursive run docs && pnpm prettier --write '**/*.md' && pnpm run --filter docs build:prepare && pnpm run --filter docs build",
     "entry:dist": "lerna run prepack",
@@ -34,14 +33,7 @@
     "*.ts": "eslint --cache --fix",
     "*.{ts,css,md,sol}": "prettier --write"
   },
-  "config": {
-    "commitizen": {
-      "path": "./node_modules/cz-conventional-changelog"
-    }
-  },
   "devDependencies": {
-    "@commitlint/cli": "^16.2.4",
-    "@commitlint/config-conventional": "^16.2.4",
     "@parcel/optimizer-data-url": "2.8.3",
     "@parcel/packager-ts": "2.8.3",
     "@parcel/transformer-inline-string": "2.8.3",
@@ -49,8 +41,6 @@
     "@typescript-eslint/eslint-plugin": "^5.46.1",
     "@typescript-eslint/parser": "^5.46.1",
     "chalk": "^5.2.0",
-    "commitizen": "^4.2.4",
-    "cz-conventional-changelog": "3.3.0",
     "eslint": "^8.29.0",
     "husky": ">=6",
     "jq-cli-wrapper": "^1.6.1",

@@ -264,6 +264,12 @@ library KeysInTable {
     return abi.encodePacked(length, _encodedLengths.unwrap(), EncodeArray.encode((keys)));
   }
 
+  /** Encode keys as a bytes32 array using this table's schema */
+  function encodeKeyTuple(bytes32 sourceTable) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((sourceTable));
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 sourceTable) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

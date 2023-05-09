@@ -8,6 +8,7 @@ import { IWorldKernel } from "../interfaces/IWorldKernel.sol";
 
 import { ICoreSystem } from "./ICoreSystem.sol";
 import { IAccessManagementSystem } from "./IAccessManagementSystem.sol";
+import { IEphemeralRecordSystem } from "./IEphemeralRecordSystem.sol";
 import { IModuleInstallationSystem } from "./IModuleInstallationSystem.sol";
 import { IWorldRegistrationSystem } from "./IWorldRegistrationSystem.sol";
 
@@ -20,6 +21,7 @@ interface IBaseWorld is
   IWorldKernel,
   ICoreSystem,
   IAccessManagementSystem,
+  IEphemeralRecordSystem,
   IModuleInstallationSystem,
   IWorldRegistrationSystem
 {

@@ -123,6 +123,14 @@ library StoreSwitch {
     }
   }
 
+  function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
+    if (isDelegateCall()) {
+      StoreCore.emitEphemeralRecord(table, key, data);
+    } else {
+      IStore(msg.sender).emitEphemeralRecord(table, key, data);
+    }
+  }
+
   function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     if (isDelegateCall()) {
       return StoreCore.getRecord(table, key);

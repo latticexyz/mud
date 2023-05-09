@@ -88,6 +88,7 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
     value: ComponentValue<SchemaOf<C[key]>> | undefined;
     partialValue?: Partial<ComponentValue<SchemaOf<C[key]>>>;
     initialValue?: ComponentValue<SchemaOf<C[key]>>;
+    ephemeral?: boolean;
   };
 }[keyof C] & {
   entity: Entity;
@@ -118,8 +119,7 @@ export enum NetworkEvents {
   NetworkComponentUpdate = "NetworkComponentUpdate",
 }
 
-export type NetworkEvent<C extends Components = Components> = NetworkComponentUpdate<C> | SystemCall<C>;
-
+export type NetworkEvent<C extends Components = Components> = SystemCall<C> | NetworkComponentUpdate<C>;
 export function isSystemCallEvent<C extends Components>(e: NetworkEvent<C>): e is SystemCall<C> {
   return e.type === NetworkEvents.SystemCall;
 }

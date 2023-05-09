@@ -111,7 +111,7 @@
     "source": "test/Mixed.t.sol",
     "name": "set record in Mixed",
     "functionCall": "Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })",
-    "gasUsed": 111957
+    "gasUsed": 112031
   },
   {
     "source": "test/Mixed.t.sol",
@@ -321,13 +321,13 @@
     "source": "test/StoreCore.t.sol",
     "name": "set record on table with subscriber",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 73793
+    "gasUsed": 73911
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "set static field on table with subscriber",
     "functionCall": "StoreCore.setField(table, key, 0, data)",
-    "gasUsed": 31893
+    "gasUsed": 31889
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -345,13 +345,13 @@
     "source": "test/StoreCore.t.sol",
     "name": "set (dynamic) record on table with subscriber",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 167200
+    "gasUsed": 167348
   },
   {
     "source": "test/StoreCore.t.sol",
     "name": "set (dynamic) field on table with subscriber",
     "functionCall": "StoreCore.setField(table, key, 1, arrayDataBytes)",
-    "gasUsed": 34987
+    "gasUsed": 34983
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -393,7 +393,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set complex record with dynamic data (4 slots)",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 107567
+    "gasUsed": 107641
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -483,7 +483,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set static record (1 slot)",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 37257
+    "gasUsed": 37316
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -495,7 +495,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set static record (2 slots)",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 59822
+    "gasUsed": 59881
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -507,7 +507,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "StoreCore: set table metadata",
     "functionCall": "StoreCore.setMetadata(table, tableName, fieldNames)",
-    "gasUsed": 251688
+    "gasUsed": 251762
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -549,7 +549,7 @@
     "source": "test/StoreMetadata.t.sol",
     "name": "set record in StoreMetadataTable",
     "functionCall": "StoreMetadata.set({ tableId: tableId, tableName: tableName, abiEncodedFieldNames: abi.encode(fieldNames) })",
-    "gasUsed": 250122
+    "gasUsed": 250196
   },
   {
     "source": "test/StoreMetadata.t.sol",
@@ -561,7 +561,7 @@
     "source": "test/StoreSwitch.t.sol",
     "name": "check if delegatecall",
     "functionCall": "isDelegate = StoreSwitch.isDelegateCall()",
-    "gasUsed": 738
+    "gasUsed": 716
   },
   {
     "source": "test/StoreSwitch.t.sol",
@@ -663,18 +663,18 @@
     "source": "test/Vector2.t.sol",
     "name": "register Vector2 schema",
     "functionCall": "Vector2.registerSchema()",
-    "gasUsed": 57937
+    "gasUsed": 57982
   },
   {
     "source": "test/Vector2.t.sol",
     "name": "set Vector2 record",
     "functionCall": "Vector2.set({ key: key, x: 1, y: 2 })",
-    "gasUsed": 38494
+    "gasUsed": 38643
   },
   {
     "source": "test/Vector2.t.sol",
     "name": "get Vector2 record",
     "functionCall": "Vector2Data memory vector = Vector2.get(key)",
-    "gasUsed": 5038
+    "gasUsed": 5083
   }
 ]
