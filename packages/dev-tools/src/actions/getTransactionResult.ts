@@ -27,26 +27,16 @@ export const getTransactionResult = (publicClient: PublicClient & { chain: Chain
     const transactionReceipt = getTransactionReceipt(publicClient, hash);
     cache[key] = Promise.all([transaction, transactionReceipt]).then(([tx, receipt]) => {
       const { functionName, args } = decodeFunctionData({ abi: worldAbi, data: tx.input });
-      try {
-        return publicClient.simulateContract({
-          account: tx.from,
-          address: tx.to!,
-          abi: worldAbi,
-          functionName,
-          args,
-          // value: tx.value,
-          blockNumber: receipt.blockNumber,
-          // TODO: do we need to include nonce, gas price, etc. to properly simulate?
-        });
-      } catch (error) {
-        throw getContractError(error as BaseError, {
-          abi: worldAbi,
-          address: tx.to!,
-          sender: tx.from,
-          functionName,
-          args,
-        });
-      }
+      return publicClient.simulateContract({
+        account: tx.from,
+        address: tx.to!,
+        abi: worldAbi,
+        functionName,
+        args,
+        // value: tx.value,
+        blockNumber: receipt.blockNumber,
+        // TODO: do we need to include nonce, gas price, etc. to properly simulate?
+      });
     });
   }
   return cache[key];

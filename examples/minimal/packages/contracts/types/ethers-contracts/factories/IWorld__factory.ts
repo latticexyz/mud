@@ -68,6 +68,11 @@ const _abi = [
     type: "error",
   },
   {
+    inputs: [],
+    name: "MyCustomError",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "string",
