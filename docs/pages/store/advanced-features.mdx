@@ -45,8 +45,11 @@ import { mudConfig } from "@latticexyz/config";
 
 export default mudConfig({
   tables: {
-    DamageTaken: {
-      schema: "uint32"
+    TradeExectuted: {
+      schema: {
+        amount: "uint32",
+        receiver: "bytes32",
+      }
       ephemeral: true,
     },
   },
@@ -57,7 +60,10 @@ This will slightly change the generated code for the table. The `emitEphemeral` 
 
 ```solidity
 // Emitting an ephemeral record
-DamageTaken.emitEphemeral("0x1234", 10);
+TradeExectuted.emitEphemeral("0x1234", TradeExecutedData({
+  amount: 10,
+  receiver: "0x5678",
+}));
 ```
 
 `get`, `set`, and `delete` functions are not generated for ephemeral tables.
