@@ -9,13 +9,15 @@
     "directory": "packages/store-cache"
   },
   "license": "MIT",
+  "type": "module",
   "exports": {
     ".": "./dist/index.js"
   },
   "types": "src/index.ts",
-  "type": "module",
   "scripts": {
     "build": "tsup",
+    "clean": "rimraf dist",
+    "dev": "tsup --watch",
     "release": "npm publish --access=public",
     "test": "vitest --run --passWithNoTests"
   },
