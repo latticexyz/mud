@@ -39,7 +39,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of keys with a given value",
     "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1))",
-    "gasUsed": 8045
+    "gasUsed": 8033
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -51,7 +51,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "set a record on a table with KeysWithValueModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value))",
-    "gasUsed": 255264
+    "gasUsed": 255273
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -63,13 +63,13 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "change a record on a table with KeysWithValueModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value2))",
-    "gasUsed": 340345
+    "gasUsed": 340354
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "delete a record on a table with KeysWithValueModule installed",
     "functionCall": "world.deleteRecord(namespace, sourceName, keyTuple1)",
-    "gasUsed": 84821
+    "gasUsed": 84834
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -81,13 +81,13 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "set a field on a table with KeysWithValueModule installed",
     "functionCall": "world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value1))",
-    "gasUsed": 263220
+    "gasUsed": 263242
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "change a field on a table with KeysWithValueModule installed",
     "functionCall": "world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value2))",
-    "gasUsed": 277860
+    "gasUsed": 277882
   },
   {
     "source": "test/UniqueEntityModule.t.sol",

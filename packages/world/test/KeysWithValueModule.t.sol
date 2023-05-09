@@ -13,7 +13,6 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
-import { KeysWithValue } from "../src/modules/keyswithvalue/tables/KeysWithValue.sol";
 import { getKeysWithValue } from "../src/modules/keyswithvalue/getKeysWithValue.sol";
 
 contract KeysWithValueModuleTest is Test {
@@ -64,7 +63,7 @@ contract KeysWithValueModuleTest is Test {
     world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value));
 
     // Get the list of entities with this value from the target table
-    bytes32[] memory keysWithValue = KeysWithValue.getKeys(world, tableId, keccak256(abi.encode(value)));
+    bytes32[] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value));
 
     // Assert that the list is correct
     assertEq(keysWithValue.length, 1);
@@ -182,7 +181,7 @@ contract KeysWithValueModuleTest is Test {
     // Set a another key with the same value
     world.setRecord(namespace, sourceName, keyTuple2, abi.encodePacked(value1));
 
-    // Get the list of keys with value2 from the target table
+    // Get the list of keys with value1 from the target table
     keysWithValue = getKeysWithValue(world, tableId, abi.encode(value1));
 
     // Assert that the list is correct
