@@ -1,7 +1,15 @@
-import { ScanArgs, Tuple, TupleDatabaseClient, TupleRootTransactionApi } from "tuple-database";
+import { ScanArgs, Tuple, TupleDatabaseClient } from "tuple-database";
 import { AbiDefaults } from "./defaults";
 import { StoreConfig } from "@latticexyz/store";
-import { Key, RemoveOptions, SetOptions, Update, Value } from "./types";
+import {
+  Key,
+  RemoveOptions,
+  SetOptions,
+  SubscriptionCallback,
+  SubscriptionFilterOptions,
+  Update,
+  Value,
+} from "./types";
 
 /**
  * Set the value for the given key
@@ -80,11 +88,8 @@ export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["t
  */
 export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
-  callback: (updates: Record<T, Update<C, T>>) => void,
-  filter?: {
-    table: T & string;
-    key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Partial<Key<C, T>> };
-  }
+  callback: SubscriptionCallback<C, T>,
+  filter?: SubscriptionFilterOptions<C, T>
 ) {
   const { table, key } = filter || {};
 

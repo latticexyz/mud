@@ -1,4 +1,4 @@
-import { TupleDatabaseClient, TupleRootTransactionApi } from "tuple-database";
+import { TupleDatabaseClient, TupleRootTransactionApi, Unsubscribe } from "tuple-database";
 import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
 
 // TODO: add mappings for remaining Solidity types
@@ -34,6 +34,11 @@ export type DatabaseClient<C extends StoreConfig> = {
     set: (key: Key<C, table>, value: Partial<Value<C, table>>, options?: SetOptions) => TupleRootTransactionApi;
     get: (key: Key<C, table>) => Value<C, table>;
     remove: (key: Key<C, table>, options?: RemoveOptions) => TupleRootTransactionApi;
+    subscribe: (
+      callback: SubscriptionCallback<C, table>,
+      // Omitting the table config option because the table is prefilled when calling subscribe via the client
+      filter?: Omit<SubscriptionFilterOptions<C, table>, "table">
+    ) => Unsubscribe;
   };
 } & {
   _tupleDatabaseClient: TupleDatabaseClient;
@@ -46,6 +51,19 @@ export type SetOptions = {
 
 export type RemoveOptions = {
   appendToTransaction?: TupleRootTransactionApi;
+};
+
+export type SubscriptionCallback<
+  C extends StoreConfig = StoreConfig,
+  T extends keyof C["tables"] = keyof C["tables"]
+> = (updates: Record<T, Update<C, T>>) => void;
+
+export type SubscriptionFilterOptions<
+  C extends StoreConfig = StoreConfig,
+  T extends keyof C["tables"] = keyof C["tables"]
+> = {
+  table: T & string;
+  key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Partial<Key<C, T>> };
 };
 
 // TODO: figure out how to turn this into a proper typed union (where typescript can infer the type of set/remove from the type of table)
