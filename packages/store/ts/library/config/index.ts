@@ -263,6 +263,9 @@ export const zStoreConfig = StoreConfigUnrefined.superRefine(validateStoreConfig
 
 export type StoreUserConfig = z.input<typeof zStoreConfig>;
 export type StoreConfig = z.output<typeof zStoreConfig>;
+export type FactoryConfig = {
+  templates: Record<string, any>;
+};
 
 // Catchall preserves other plugins' options
 export const zPluginStoreConfig = StoreConfigUnrefined.catchall(z.any()).superRefine(validateStoreConfig);

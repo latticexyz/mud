@@ -240,8 +240,6 @@ export async function configgen(config: StoreConfig, outputBaseDirectory: string
   
   export interface TemplateConfig {
     templates: Record<string, ConfigType>;
-    /** Path to the directory where generated files will be placed. */
-    codegenDirectory?: string;
   }
 
   export function templateConfig(config: TemplateConfig) {

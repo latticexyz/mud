@@ -9,12 +9,7 @@ const getTemplateImports = (mudConfig: StoreConfig, values: object) => {
       if (typeof schema === "object" && Object.keys(schema).length > 1) {
         return `import {${key}, ${key}TableId, ${key}Data} from "../tables/${key}.sol"`;
       } else {
-        if (schema.value in mudConfig.enums) {
-          return `import {${key}, ${key}TableId} from "../tables/${key}.sol";
-              import {${schema}} from "../Types.sol"`;
-        } else {
-          return `import {${key}, ${key}TableId} from "../tables/${key}.sol"`;
-        }
+        return `import {${key}, ${key}TableId} from "../tables/${key}.sol"`;
       }
     })
     .join(";");
@@ -45,10 +40,15 @@ export function renderTemplate(mudConfig: StoreConfig, templateConfig: { templat
   return `
   ${renderedSolidityHeader}
   
+  import { IStore } from "@latticexyz/store/src/IStore.sol";
   import { TemplateContent, TemplateIndex } from "../Tables.sol";
-  import { ${Object.keys(mudConfig.enums)
-    .map((e) => e)
-    .join(",")} } from "../Types.sol";
+  ${
+    Object.keys(mudConfig.enums).length > 0
+      ? `import { ${Object.keys(mudConfig.enums)
+          .map((e) => e)
+          .join(",")} } from "../Types.sol";`
+      : ""
+  }
   ${getTemplateImports(mudConfig, values)};
   
   bytes32 constant templateId = "${name}";
@@ -67,5 +67,24 @@ export function renderTemplate(mudConfig: StoreConfig, templateConfig: { templat
         return `TemplateContent.set(templateId, ${key}TableId, ${key}.encode(${getValue(mudConfig, key, value)}))`;
       })
       .join(";")};
-  }`;
+  }
+
+  function ${name}Template(IStore store) {
+    bytes32[] memory tableIds = new bytes32[](LENGTH);
+    ${Object.keys(values)
+      .map((key, i) => `tableIds[${i}] = ${key}TableId`)
+      .join(";")};
+    TemplateIndex.set(store, templateId, tableIds);
+
+    ${Object.entries(values)
+      .map(([key, value]) => {
+        return `TemplateContent.set(store, templateId, ${key}TableId, ${key}.encode(${getValue(
+          mudConfig,
+          key,
+          value
+        )}))`;
+      })
+      .join(";")};
+  }
+  `;
 }

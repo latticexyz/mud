@@ -1,4 +1,4 @@
-import { mudConfig, resolveTableId } from "@latticexyz/world/register"
+import { mudConfig, resolveTableId } from "@latticexyz/world/register";
 
 export default mudConfig({
   overrideSystems: {
@@ -21,6 +21,13 @@ export default mudConfig({
         value: "string",
       },
       ephemeral: true,
+    },
+    TemplateContent: {
+      primaryKeys: { templateId: "bytes32", tableId: "bytes32" },
+      schema: "bytes",
+    },
+    TemplateIndex: {
+      schema: "bytes32[]",
     },
   },
   modules: [

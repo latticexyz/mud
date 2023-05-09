@@ -14,6 +14,8 @@
     "prettier": "prettier --write 'src/**/*.sol'",
     "solhint": "solhint --config ./.solhint.json 'src/**/*.sol' --fix",
     "tablegen": "mud tablegen",
+    "templategen": "mud templategen",
+    "configgen": "mud configgen",
     "test": "mud test-v2",
     "tsgen": "mud tsgen --configPath mud.config.mts --out ../client-vanilla/src/mud && mud tsgen --configPath mud.config.mts --out ../client-react/src/mud",
     "worldgen": "mud worldgen",
