@@ -5,7 +5,6 @@ import { IStore } from "@latticexyz/store/src/IStore.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
 import { KeysWithValue } from "./tables/KeysWithValue.sol";
-import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
 
 /**
  * Get a list of keys with the given value.
@@ -14,11 +13,8 @@ import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
 function getKeysWithValue(bytes32 tableId, bytes memory value) view returns (bytes32[] memory keysWithValue) {
-  // Get the corresponding reverse mapping table
-  bytes32 keysWithValueTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
-
   // Get the keys with the given value
-  keysWithValue = KeysWithValue.get(keysWithValueTableId, keccak256(value));
+  keysWithValue = KeysWithValue.getKeys(tableId, keccak256(value));
 }
 
 /**
@@ -29,9 +25,6 @@ function getKeysWithValue(
   bytes32 tableId,
   bytes memory value
 ) view returns (bytes32[] memory keysWithValue) {
-  // Get the corresponding reverse mapping table
-  bytes32 keysWithValueTableId = getTargetTableSelector(MODULE_NAMESPACE, tableId);
-
   // Get the keys with the given value
-  keysWithValue = KeysWithValue.get(store, keysWithValueTableId, keccak256(value));
+  keysWithValue = KeysWithValue.getKeys(store, tableId, keccak256(value));
 }

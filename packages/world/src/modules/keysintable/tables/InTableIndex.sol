@@ -17,10 +17,10 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("UsedKeysIndex")));
-bytes32 constant UsedKeysIndexTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("InTableIndex")));
+bytes32 constant InTableIndexTableId = _tableId;
 
-library UsedKeysIndex {
+library InTableIndex {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
@@ -43,7 +43,7 @@ library UsedKeysIndex {
     string[] memory _fieldNames = new string[](2);
     _fieldNames[0] = "has";
     _fieldNames[1] = "index";
-    return ("UsedKeysIndex", _fieldNames);
+    return ("InTableIndex", _fieldNames);
   }
 
   /** Register the table's schema */

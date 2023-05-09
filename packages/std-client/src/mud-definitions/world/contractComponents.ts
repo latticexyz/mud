@@ -113,6 +113,38 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    KeysWithValue: (() => {
+      const tableId = new TableId("", "KeysWithValue");
+      return defineComponent(
+        world,
+        {
+          length: RecsType.Number,
+          keys: RecsType.BigIntArray,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    WithValueIndex: (() => {
+      const tableId = new TableId("", "WithValueIndex");
+      return defineComponent(
+        world,
+        {
+          has: RecsType.Boolean,
+          index: RecsType.Number,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
     KeysInTable: (() => {
       const tableId = new TableId("", "KeysInTable");
       return defineComponent(
@@ -129,8 +161,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    UsedKeysIndex: (() => {
-      const tableId = new TableId("", "UsedKeysIndex");
+    InTableIndex: (() => {
+      const tableId = new TableId("", "InTableIndex");
       return defineComponent(
         world,
         {

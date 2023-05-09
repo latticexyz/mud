@@ -2,75 +2,81 @@
 pragma solidity >=0.8.0;
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
-import { Bytes } from "@latticexyz/store/src/Bytes.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
-import { ResourceSelector } from "../../ResourceSelector.sol";
-
-import { MODULE_NAMESPACE } from "./constants.sol";
 import { KeysWithValue } from "./tables/KeysWithValue.sol";
-import { ArrayLib } from "../utils/ArrayLib.sol";
-import { getTargetTableSelector } from "../utils/getTargetTableSelector.sol";
+import { WithValueIndex } from "./tables/WithValueIndex.sol";
 
 /**
- * This is a very naive and inefficient implementation for now.
- * We can optimize this by adding support for `setIndexOfField` in Store
- * and then replicate logic from solecs's Set.sol.
- * (See https://github.com/latticexyz/mud/issues/444)
- *
  * Note: if a table with composite keys is used, only the first key is indexed
  */
 contract KeysWithValueHook is IStoreHook {
-  using ArrayLib for bytes32[];
-  using ResourceSelector for bytes32;
+  function handleDelete(bytes32 tableId, bytes32[] memory key, bytes32 valueHash) internal {
+    bytes32 keysHash = keccak256(abi.encode(key));
 
-  function onSetRecord(bytes32 sourceTableId, bytes32[] memory key, bytes memory data) public {
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
+    (bool has, uint32 index) = WithValueIndex.get(tableId, valueHash, keysHash);
 
-    // Get the previous value
-    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
+    // If the key was part of the table...
+    if (has) {
+      // Delete the index as the key is not in the table
+      WithValueIndex.deleteRecord(tableId, valueHash, keysHash);
 
-    // Return if the value hasn't changed
-    if (previousValue == keccak256(data)) return;
+      uint32 length = KeysWithValue.getLength(tableId, valueHash);
 
-    // Remove the key from the list of keys with the previous value
-    _removeKeyFromList(targetTableId, key[0], previousValue);
+      if (length == 1) {
+        // Delete the list of keys in this table
+        KeysWithValue.deleteRecord(tableId, valueHash);
+      } else {
+        bytes32 lastKey = KeysWithValue.getKeys(tableId, valueHash)[length - 1];
 
-    // Push the key to the list of keys with the new value
-    KeysWithValue.push(targetTableId, keccak256(data), key[0]);
-  }
+        // Remove the key from the list of keys in this table
+        KeysWithValue.updateKeys(tableId, valueHash, index, lastKey);
+        KeysWithValue.popKeys(tableId, valueHash);
 
-  function onBeforeSetField(bytes32 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
-    // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
-    _removeKeyFromList(targetTableId, key[0], previousValue);
-  }
-
-  function onAfterSetField(bytes32 sourceTableId, bytes32[] memory key, uint8, bytes memory) public {
-    // Add the key to the list of keys with the new value
-    bytes32 newValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
-    KeysWithValue.push(targetTableId, newValue, key[0]);
-  }
-
-  function onDeleteRecord(bytes32 sourceTableId, bytes32[] memory key) public {
-    // Remove the key from the list of keys with the previous value
-    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(sourceTableId, key));
-    bytes32 targetTableId = getTargetTableSelector(MODULE_NAMESPACE, sourceTableId);
-    _removeKeyFromList(targetTableId, key[0], previousValue);
-  }
-
-  function _removeKeyFromList(bytes32 targetTableId, bytes32 key, bytes32 valueHash) internal {
-    // Get the keys with the previous value excluding the current key
-    bytes32[] memory keysWithPreviousValue = KeysWithValue.get(targetTableId, valueHash).filter(key);
-
-    if (keysWithPreviousValue.length == 0) {
-      // Delete the list of keys in this table
-      KeysWithValue.deleteRecord(targetTableId, valueHash);
-    } else {
-      // Set the keys with the previous value
-      KeysWithValue.set(targetTableId, valueHash, keysWithPreviousValue);
+        KeysWithValue.setLength(tableId, valueHash, length - 1);
+      }
     }
+  }
+
+  function handleSet(bytes32 tableId, bytes32[] memory key, bytes32 valueHash) internal {
+    bytes32 keysHash = keccak256(abi.encode(key));
+
+    // If the key has not yet been set in the table...
+    if (!WithValueIndex.getHas(tableId, valueHash, keysHash)) {
+      uint32 length = KeysWithValue.getLength(tableId, valueHash);
+
+      // Push the key to the list of keys in this table
+      KeysWithValue.pushKeys(tableId, valueHash, key[0]);
+      KeysWithValue.setLength(tableId, valueHash, length + 1);
+
+      // Update the index to avoid duplicating this key in the array
+      WithValueIndex.set(tableId, valueHash, keysHash, true, length);
+    }
+  }
+
+  function onSetRecord(bytes32 tableId, bytes32[] memory key, bytes memory data) public {
+    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(tableId, key));
+    bytes32 newValue = keccak256(data);
+
+    handleDelete(tableId, key, previousValue);
+    handleSet(tableId, key, newValue);
+  }
+
+  function onBeforeSetField(bytes32 tableId, bytes32[] memory key, uint8, bytes memory) public {
+    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(tableId, key));
+
+    handleDelete(tableId, key, previousValue);
+  }
+
+  function onAfterSetField(bytes32 tableId, bytes32[] memory key, uint8, bytes memory) public {
+    bytes32 newValue = keccak256(IBaseWorld(msg.sender).getRecord(tableId, key));
+
+    handleSet(tableId, key, newValue);
+  }
+
+  function onDeleteRecord(bytes32 tableId, bytes32[] memory key) public {
+    bytes32 previousValue = keccak256(IBaseWorld(msg.sender).getRecord(tableId, key));
+
+    handleDelete(tableId, key, previousValue);
   }
 }

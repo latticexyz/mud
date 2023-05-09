@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 
 import { KeysInTable } from "./tables/KeysInTable.sol";
-import { UsedKeysIndex } from "./tables/UsedKeysIndex.sol";
+import { InTableIndex } from "./tables/InTableIndex.sol";
 
 /**
  * Note: if a table with composite keys is used, only the first key is indexed
@@ -14,7 +14,7 @@ contract KeysInTableHook is IStoreHook {
     bytes32 keysHash = keccak256(abi.encode(key));
 
     // If the key has not yet been set in the table...
-    if (!UsedKeysIndex.getHas(tableId, keysHash)) {
+    if (!InTableIndex.getHas(tableId, keysHash)) {
       uint32 length = KeysInTable.getLength(tableId);
 
       // Push the key to the list of keys in this table
@@ -22,28 +22,28 @@ contract KeysInTableHook is IStoreHook {
       KeysInTable.setLength(tableId, length + 1);
 
       // Update the index to avoid duplicating this key in the array
-      UsedKeysIndex.set(tableId, keysHash, true, length);
+      InTableIndex.set(tableId, keysHash, true, length);
     }
   }
 
-  function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory) public {
-    handleSet(table, key);
+  function onSetRecord(bytes32 tableId, bytes32[] memory key, bytes memory) public {
+    handleSet(tableId, key);
   }
 
-  function onBeforeSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {}
+  function onBeforeSetField(bytes32, bytes32[] memory, uint8, bytes memory) public {}
 
-  function onAfterSetField(bytes32 table, bytes32[] memory key, uint8, bytes memory) public {
-    handleSet(table, key);
+  function onAfterSetField(bytes32 tableId, bytes32[] memory key, uint8, bytes memory) public {
+    handleSet(tableId, key);
   }
 
   function onDeleteRecord(bytes32 tableId, bytes32[] memory key) public {
     bytes32 keysHash = keccak256(abi.encode(key));
-    (bool has, uint32 index) = UsedKeysIndex.get(tableId, keysHash);
+    (bool has, uint32 index) = InTableIndex.get(tableId, keysHash);
 
     // If the key was part of the table...
     if (has) {
       // Delete the index as the key is not in the table
-      UsedKeysIndex.deleteRecord(tableId, keysHash);
+      InTableIndex.deleteRecord(tableId, keysHash);
 
       uint32 length = KeysInTable.getLength(tableId);
 

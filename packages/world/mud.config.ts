@@ -91,19 +91,27 @@ export default mudConfig({
     KeysWithValue: {
       directory: "modules/keyswithvalue/tables",
       primaryKeys: {
+        sourceTable: "bytes32",
         valueHash: "bytes32",
       },
-      schema: {
-        keysWithValue: "bytes32[]", // For now only supports 1 key per value
+      schema: { length: "uint32", keys: "bytes32[]" }, // For now only indexes the first key of a primary key tuple
+    },
+    WithValueIndex: {
+      directory: "modules/keyswithvalue/tables",
+      primaryKeys: {
+        sourceTable: "bytes32",
+        valueHash: "bytes32",
+        keysHash: "bytes32",
       },
-      tableIdArgument: true,
+      schema: { has: "bool", index: "uint32" },
+      dataStruct: false,
     },
     KeysInTable: {
       directory: "modules/keysintable/tables",
       primaryKeys: { sourceTable: "bytes32" },
       schema: { length: "uint32", keys: "bytes32[]" }, // For now only indexes the first key of a primary key tuple
     },
-    UsedKeysIndex: {
+    InTableIndex: {
       directory: "modules/keysintable/tables",
       primaryKeys: {
         sourceTable: "bytes32",

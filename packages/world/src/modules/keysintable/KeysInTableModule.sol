@@ -12,7 +12,7 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { KeysInTableHook } from "./KeysInTableHook.sol";
 import { KeysInTable, KeysInTableTableId } from "./tables/KeysInTable.sol";
-import { UsedKeysIndex, UsedKeysIndexTableId } from "./tables/UsedKeysIndex.sol";
+import { InTableIndex, InTableIndexTableId } from "./tables/InTableIndex.sol";
 
 /**
  * This module deploys a hook that is called when a value is set in the `sourceTableId`
@@ -50,21 +50,21 @@ contract KeysInTableModule is IModule, WorldContext {
         KeysInTable.getKeySchema()
       );
       world.registerTable(
-        UsedKeysIndexTableId.getNamespace(),
-        UsedKeysIndexTableId.getName(),
-        UsedKeysIndex.getSchema(),
-        UsedKeysIndex.getKeySchema()
+        InTableIndexTableId.getNamespace(),
+        InTableIndexTableId.getName(),
+        InTableIndex.getSchema(),
+        InTableIndex.getKeySchema()
       );
 
       // Register metadata for the tables
       (string memory tableName1, string[] memory fieldNames1) = KeysInTable.getMetadata();
       world.setMetadata(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), tableName1, fieldNames1);
-      (string memory tableName2, string[] memory fieldNames2) = UsedKeysIndex.getMetadata();
-      world.setMetadata(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), tableName2, fieldNames2);
+      (string memory tableName2, string[] memory fieldNames2) = InTableIndex.getMetadata();
+      world.setMetadata(InTableIndexTableId.getNamespace(), InTableIndexTableId.getName(), tableName2, fieldNames2);
 
       // Grant the hook access to the tables
       world.grantAccess(KeysInTableTableId.getNamespace(), KeysInTableTableId.getName(), address(hook));
-      world.grantAccess(UsedKeysIndexTableId.getNamespace(), UsedKeysIndexTableId.getName(), address(hook));
+      world.grantAccess(InTableIndexTableId.getNamespace(), InTableIndexTableId.getName(), address(hook));
     }
 
     // Register a hook that is called when a value is set in the source table
