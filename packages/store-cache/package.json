@@ -15,14 +15,14 @@
   "types": "src/index.ts",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "tsup",
     "release": "npm publish --access=public",
     "test": "vitest --run --passWithNoTests"
   },
   "dependencies": {
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
-    "@latticexyz/store": "workspace:^",
+    "@latticexyz/store": "workspace:*",
     "abitype": "^0.8.0",
     "tsup": "^6.7.0",
     "tuple-database": "^2.2.0"
