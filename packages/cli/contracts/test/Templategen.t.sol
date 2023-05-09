@@ -34,8 +34,8 @@ contract TemplateTest is Test, StoreReadWithStubs {
     Enum2 k7 = Enum2.E1;
 
     bytes32[][] memory keys = new bytes32[][](2);
-    keys[0] = Statics.encodeKey(k1, k2, k3, k4, k5, k6, k7);
-    keys[1] = Counter.encodeKey("test");
+    keys[0] = Statics.encodeKeyTuple(k1, k2, k3, k4, k5, k6, k7);
+    keys[1] = Counter.encodeKeyTuple("test");
 
     createInstance(ExampleTemplateId, keys);
 

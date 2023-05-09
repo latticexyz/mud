@@ -21,6 +21,7 @@ interface ConfigType {
     b: string;
   };
   Singleton?: { v1: bigint; v2: number[]; v3: number[]; v4: number[] };
+  Ephemeral?: { value: bigint };
   Counter?: { value: bigint };
   TemplateContent?: { value: string };
   TemplateIndex?: { value: bigint[] };

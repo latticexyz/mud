@@ -1,6 +1,6 @@
 import { filterNullish } from "@latticexyz/utils";
 import { observable, ObservableSet } from "mobx";
-import { concat, concatMap, filter, from, map, merge, Observable, Observer, of, Subject } from "rxjs";
+import { concat, concatMap, filter, from, map, merge, Observable, of, Subject } from "rxjs";
 import {
   componentValueEquals,
   getComponentEntities,
@@ -13,8 +13,9 @@ import {
   Component,
   ComponentUpdate,
   ComponentValue,
-  EntityIndex,
+  Entity,
   EntityQueryFragment,
+  EntitySymbol,
   HasQueryFragment,
   HasValueQueryFragment,
   NotQueryFragment,
@@ -167,7 +168,7 @@ export function ProxyExpand(component: Component<{ value: Type.Entity }>, depth:
  * @param fragment Query fragment to check.
  * @returns True if the entity passes the query fragment, else false.
  */
-function passesQueryFragment<T extends Schema>(entity: EntityIndex, fragment: EntityQueryFragment<T>): boolean {
+function passesQueryFragment<T extends Schema>(entity: Entity, fragment: EntityQueryFragment<T>): boolean {
   if (fragment.type === QueryFragmentType.Has) {
     // Entity must have the given component
     return hasComponent(fragment.component, entity);
@@ -244,13 +245,13 @@ function isBreakingPassState(passes: boolean, fragment: EntityQueryFragment<Sche
 /**
  * Helper function to check whether an entity passes a query fragment when taking into account a {@link ProxyReadQueryFragment}.
  *
- * @param entity {@link EntityIndex} of the entity to check.
+ * @param entity {@link Entity} of the entity to check.
  * @param fragment Query fragment to check.
  * @param proxyRead {@link ProxyReadQueryFragment} to take into account.
  * @returns True if the entity passes the query fragment, else false.
  */
 function passesQueryFragmentProxy<T extends Schema>(
-  entity: EntityIndex,
+  entity: Entity,
   fragment: EntityQueryFragment<T>,
   proxyRead: ProxyReadQueryFragment
 ): boolean | null {
@@ -261,12 +262,11 @@ function passesQueryFragmentProxy<T extends Schema>(
     // If the current entity does not have the proxy component, abort
     if (!value) return null;
 
-    const entityId = value.value;
-    const entityIndex = proxyRead.component.world.entityToIndex.get(entityId);
-    if (entityIndex === undefined) return null;
+    const entity = value.value;
+    if (!entity) return null;
 
     // Move up the proxy chain
-    proxyEntity = entityIndex;
+    proxyEntity = entity;
     passes = passesQueryFragment(proxyEntity, fragment);
 
     if (isBreakingPassState(passes, fragment)) {
@@ -286,14 +286,13 @@ function passesQueryFragmentProxy<T extends Schema>(
  * @returns Set of entities that are child entities of the given entity via the given component.
  */
 export function getChildEntities(
-  entity: EntityIndex,
+  entity: Entity,
   component: Component<{ value: Type.Entity }>,
   depth: number
-): Set<EntityIndex> {
+): Set<Entity> {
   if (depth === 0) return new Set();
 
-  const entityId = component.world.entities[entity];
-  const directChildEntities = getEntitiesWithValue(component, { value: entityId });
+  const directChildEntities = getEntitiesWithValue(component, { value: entity });
   if (depth === 1) return directChildEntities;
 
   const indirectChildEntities = [...directChildEntities]
@@ -318,8 +317,8 @@ export function getChildEntities(
  * @param initialSet Optional: provide a Set of entities to execute the query on. If none is given, all existing entities are used for the query.
  * @returns Set of entities matching the query fragments.
  */
-export function runQuery(fragments: QueryFragment[], initialSet?: Set<EntityIndex>): Set<EntityIndex> {
-  let entities: Set<EntityIndex> | undefined = initialSet ? new Set([...initialSet]) : undefined; // Copy to a fresh set because it will be modified in place
+export function runQuery(fragments: QueryFragment[], initialSet?: Set<Entity>): Set<Entity> {
+  let entities: Set<Entity> | undefined = initialSet ? new Set([...initialSet]) : undefined; // Copy to a fresh set because it will be modified in place
   let proxyRead: ProxyReadQueryFragment | undefined = undefined;
   let proxyExpand: ProxyExpandQueryFragment | undefined = undefined;
 
@@ -382,7 +381,7 @@ export function runQuery(fragments: QueryFragment[], initialSet?: Set<EntityInde
     }
   }
 
-  return entities ?? new Set<EntityIndex>();
+  return entities ?? new Set<Entity>();
 }
 
 /**
@@ -417,13 +416,13 @@ export function runQuery(fragments: QueryFragment[], initialSet?: Set<EntityInde
  */
 export function defineQuery(
   fragments: QueryFragment[],
-  options?: { runOnInit?: boolean; initialSet?: Set<EntityIndex> }
+  options?: { runOnInit?: boolean; initialSet?: Set<Entity> }
 ): {
   update$: Observable<ComponentUpdate & { type: UpdateType }>;
-  matching: ObservableSet<EntityIndex>;
+  matching: ObservableSet<Entity>;
 } {
   const initialSet =
-    options?.runOnInit || options?.initialSet ? runQuery(fragments, options.initialSet) : new Set<EntityIndex>();
+    options?.runOnInit || options?.initialSet ? runQuery(fragments, options.initialSet) : new Set<Entity>();
 
   const matching = observable(initialSet);
   const initial$ = from(matching).pipe(toUpdateStream(fragments[0].component));

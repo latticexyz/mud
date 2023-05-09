@@ -1,4 +1,4 @@
-import { Component, defineQuery, EntityIndex, EntityQueryFragment, Schema, toUpdate } from "@latticexyz/recs";
+import { Component, defineQuery, Entity, EntityQueryFragment, Schema, toUpdate } from "@latticexyz/recs";
 import { ObservableSet } from "mobx";
 import { useEffect, useMemo, useState } from "react";
 import { filter, Observable } from "rxjs";
@@ -16,7 +16,7 @@ export function useStream<T>(stream: Observable<T>, defaultValue?: T) {
 }
 
 /** @deprecated Use hooks exported from @latticexyz/react package instead. */
-export function useComponentValueStream<T extends Schema>(component: Component<T>, entity?: EntityIndex) {
+export function useComponentValueStream<T extends Schema>(component: Component<T>, entity?: Entity) {
   const stream = useMemo(() => {
     if (entity != null) return component.update$.pipe(filter((update) => update.entity === entity));
     return component.update$.asObservable();
@@ -34,7 +34,7 @@ export function useComponentValueStream<T extends Schema>(component: Component<T
  * @deprecated Use hooks exported from @latticexyz/react package instead.
  */
 export function useQuery(queryFragments: EntityQueryFragment[]) {
-  const [matching, setMatching] = useState<ObservableSet<EntityIndex>>();
+  const [matching, setMatching] = useState<ObservableSet<Entity>>();
 
   useEffect(() => {
     const queryResult = defineQuery(queryFragments, { runOnInit: true });

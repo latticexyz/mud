@@ -6,6 +6,7 @@ pragma solidity >=0.8.0;
 import { Statics, StaticsData, StaticsTableId } from "./tables/Statics.sol";
 import { Dynamics, DynamicsData, DynamicsTableId } from "./tables/Dynamics.sol";
 import { Singleton, SingletonTableId } from "./tables/Singleton.sol";
+import { Ephemeral, EphemeralTableId } from "./tables/Ephemeral.sol";
 import { Counter, CounterTableId } from "./tables/Counter.sol";
 import { TemplateContent, TemplateContentTableId } from "./tables/TemplateContent.sol";
 import { TemplateIndex, TemplateIndexTableId } from "./tables/TemplateIndex.sol";

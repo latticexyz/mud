@@ -13,7 +13,7 @@ import { AccessControl } from "../../../AccessControl.sol";
 import { NamespaceOwner } from "../../../tables/NamespaceOwner.sol";
 import { ResourceAccess } from "../../../tables/ResourceAccess.sol";
 import { ISystemHook } from "../../../interfaces/ISystemHook.sol";
-import { IErrors } from "../../../interfaces/IErrors.sol";
+import { IWorldErrors } from "../../../interfaces/IWorldErrors.sol";
 
 import { ResourceType } from "../tables/ResourceType.sol";
 import { SystemRegistry } from "../tables/SystemRegistry.sol";
@@ -23,7 +23,7 @@ import { FunctionSelectors } from "../tables/FunctionSelectors.sol";
 /**
  * Functions related to registering resources in the World.
  */
-contract WorldRegistrationSystem is System, IErrors {
+contract WorldRegistrationSystem is System, IWorldErrors {
   using ResourceSelector for bytes32;
 
   /**

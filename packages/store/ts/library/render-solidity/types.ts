@@ -22,8 +22,12 @@ export interface RenderTableOptions {
   fields: RenderField[];
   staticFields: RenderStaticField[];
   dynamicFields: RenderDynamicField[];
+  /** Whether to render methods for individual fields (get/set, and more for dynamic elements) */
+  withFieldMethods: boolean;
   /** Whether to render get/set methods for the whole record */
   withRecordMethods: boolean;
+  /** Whether to render emitEphemeral methods */
+  withEphemeralMethods: boolean;
   /** Whether to render additional methods that accept a manual `IStore` argument */
   storeArgument: boolean;
 }

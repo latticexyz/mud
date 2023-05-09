@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IErrors } from "./IErrors.sol";
+import { IWorldErrors } from "./IWorldErrors.sol";
 import { IModule } from "./IModule.sol";
 
 /**
@@ -100,6 +100,6 @@ interface IWorldCall {
  * Consumers should use the `IBaseWorld` interface instead, which includes dynamically
  * registered functions selectors from the `CoreModule`.
  */
-interface IWorldKernel is IWorldData, IWorldModuleInstallation, IWorldCall, IErrors {
-
+interface IWorldKernel is IWorldData, IWorldModuleInstallation, IWorldCall, IWorldErrors {
+  event HelloWorld();
 }

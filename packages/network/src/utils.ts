@@ -1,4 +1,4 @@
-import { EntityID } from "@latticexyz/recs";
+import { Entity } from "@latticexyz/recs";
 import { Message } from "@latticexyz/services/ecs-relay";
 import { isHex } from "@latticexyz/utils";
 import { BigNumber } from "ethers";
@@ -12,17 +12,17 @@ export function messagePayload(msg: Message) {
 // For v1 entities (BigNumber or hex strings) and single-key v2 entities (hex strings), strip zero padding
 // For composite-key v2 entities (hex strings concatenated with `:`), leave the ID as is
 // See `keyTupleToEntityID`
-export function normalizeEntityID(entityID: string | EntityID | BigNumber): EntityID {
+export function normalizeEntityID(entityID: string | Entity | BigNumber): Entity {
   if (entityID === "") {
     throw new Error("Can't normalize an empty entity ID");
   }
   if (BigNumber.isBigNumber(entityID)) {
-    return entityID.toHexString() as EntityID;
+    return entityID.toHexString() as Entity;
   }
   if (isHex(entityID)) {
-    return BigNumber.from(entityID).toHexString() as EntityID;
+    return BigNumber.from(entityID).toHexString() as Entity;
   }
-  return entityID as EntityID;
+  return entityID as Entity;
 }
 
 // For v1 components (BigNumber or hex strings), strip zero padding

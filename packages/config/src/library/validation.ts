@@ -1,6 +1,8 @@
 import { utils } from "ethers";
 import { ZodIssueCode, RefinementCtx } from "zod";
 
+export const STORE_SELECTOR_MAX_LENGTH = 16;
+
 export function validateName(name: string, ctx: RefinementCtx) {
   if (!/^\w+$/.test(name)) {
     ctx.addIssue({
@@ -138,10 +140,10 @@ export function getDuplicates<T>(array: T[]) {
 }
 
 export function validateSelector(name: string, ctx: RefinementCtx) {
-  if (name.length > 16) {
+  if (name.length > STORE_SELECTOR_MAX_LENGTH) {
     ctx.addIssue({
       code: ZodIssueCode.custom,
-      message: `Selector must be <= 16 characters`,
+      message: `Selector must be <= ${STORE_SELECTOR_MAX_LENGTH} characters`,
     });
   }
   if (!/^\w*$/.test(name)) {

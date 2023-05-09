@@ -1,7 +1,7 @@
 import { map, pipe } from "rxjs";
 import { getComponentValue } from "./Component";
 import { UpdateType } from "./constants";
-import { Component, ComponentUpdate, ComponentValue, EntityIndex, Indexer, Schema } from "./types";
+import { Component, ComponentUpdate, ComponentValue, Entity, Indexer, Schema } from "./types";
 
 /**
  * Type guard to infer the TypeScript type of a given component update
@@ -24,7 +24,7 @@ export function isComponentUpdate<S extends Schema>(
  * @param component Component to create the component update for.
  * @returns Component update corresponding to the given entity, the given component and the entity's current component value.
  */
-export function toUpdate<S extends Schema>(entity: EntityIndex, component: Component<S>) {
+export function toUpdate<S extends Schema>(entity: Entity, component: Component<S>) {
   const value = getComponentValue(component, entity);
   return {
     entity,
@@ -37,12 +37,12 @@ export function toUpdate<S extends Schema>(entity: EntityIndex, component: Compo
 }
 
 /**
- * Helper function to turn a stream of {@link EntityIndex EntityIndices} into a stream of component updates of the given component.
+ * Helper function to turn a stream of {@link Entity Entities} into a stream of component updates of the given component.
  * @param component Component to create update stream for.
- * @returns Unary function to be used with RxJS that turns stream of {@link EntityIndex EntityIndices} into stream of component updates.
+ * @returns Unary function to be used with RxJS that turns stream of {@link Entity Entities} into stream of component updates.
  */
 export function toUpdateStream<S extends Schema>(component: Component<S>) {
-  return pipe(map((entity: EntityIndex) => toUpdate(entity, component)));
+  return pipe(map((entity: Entity) => toUpdate(entity, component)));
 }
 
 /**
