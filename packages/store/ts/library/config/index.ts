@@ -21,6 +21,7 @@ import {
   zUserEnum,
   zValueName,
 } from "@latticexyz/config";
+import { DEFAULTS, PATH_DEFAULTS, TABLE_DEFAULTS } from "./defaults";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -36,7 +37,7 @@ type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray | UserT
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
 const zPrimaryKey = z.string();
-const zPrimaryKeys = z.record(zKeyName, zPrimaryKey).default({ key: "bytes32" });
+const zPrimaryKeys = z.record(zKeyName, zPrimaryKey).default(TABLE_DEFAULTS.primaryKeys);
 
 type PrimaryKey<StaticUserTypes extends StringForUnion> = StaticAbiType | StaticUserTypes;
 
@@ -110,13 +111,14 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
   extends OrDefaults<
     T,
     {
-      directory: "tables";
+      directory: typeof TABLE_DEFAULTS.directory;
       name: TableName;
-      tableIdArgument: false;
-      storeArgument: false;
+      tableIdArgument: typeof TABLE_DEFAULTS.tableIdArgument;
+      storeArgument: typeof TABLE_DEFAULTS.storeArgument;
       // dataStruct isn't expanded, because its value is conditional on the number of schema fields
       dataStruct: boolean;
-      primaryKeys: { key: "bytes32" };
+      primaryKeys: typeof TABLE_DEFAULTS.primaryKeys;
+      ephemeral: typeof TABLE_DEFAULTS.ephemeral;
     }
   > {
   schema: ExpandSchemaConfig<T["schema"]>;
@@ -124,14 +126,14 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
 
 const zFullTableConfig = z
   .object({
-    directory: z.string().default("tables"),
+    directory: z.string().default(TABLE_DEFAULTS.directory),
     name: zSelector.optional(),
-    tableIdArgument: z.boolean().default(false),
-    storeArgument: z.boolean().default(true),
+    tableIdArgument: z.boolean().default(TABLE_DEFAULTS.tableIdArgument),
+    storeArgument: z.boolean().default(TABLE_DEFAULTS.storeArgument),
     dataStruct: z.boolean().optional(),
     primaryKeys: zPrimaryKeys,
     schema: zSchemaConfig,
-    ephemeral: z.boolean().default(false),
+    ephemeral: z.boolean().default(TABLE_DEFAULTS.ephemeral),
   })
   .transform((arg) => {
     // default dataStruct value depends on schema's length
@@ -226,7 +228,7 @@ export type FullEnumsConfig<EnumNames extends StringForUnion> = {
 };
 
 export const zEnumsConfig = z.object({
-  enums: z.record(zUserEnumName, zUserEnum).default({}),
+  enums: z.record(zUserEnumName, zUserEnum).default(DEFAULTS.enums),
 });
 
 /************************************************************************
@@ -265,11 +267,11 @@ export type MUDUserConfig<
 
 const StoreConfigUnrefined = z
   .object({
-    namespace: zSelector.default(""),
-    storeImportPath: z.string().default("@latticexyz/store/src/"),
+    namespace: zSelector.default(DEFAULTS.namespace),
+    storeImportPath: z.string().default(PATH_DEFAULTS.storeImportPath),
     tables: zTablesConfig,
-    userTypesPath: z.string().default("Types"),
-    codegenDirectory: z.string().default("codegen"),
+    userTypesPath: z.string().default(PATH_DEFAULTS.userTypesPath),
+    codegenDirectory: z.string().default(PATH_DEFAULTS.codegenDirectory),
   })
   .merge(zEnumsConfig);
 

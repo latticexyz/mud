@@ -1,6 +1,7 @@
 import { OrDefaults } from "@latticexyz/common/type-utils";
 import { MUDCoreUserConfig } from "@latticexyz/config";
 import { ExpandTablesConfig, StoreConfig, StoreUserConfig } from "../library/config";
+import { DEFAULTS, PATH_DEFAULTS } from "../library/config/defaults";
 
 // Inject non-generic options into the core config.
 // Re-exporting an interface of an existing module merges them, adding new options to the interface.
@@ -23,11 +24,11 @@ export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
   extends OrDefaults<
     T,
     {
-      enums: Record<string, never>;
-      namespace: "";
-      storeImportPath: "@latticexyz/store/src/";
-      userTypesPath: "Types";
-      codegenDirectory: "codegen";
+      enums: typeof DEFAULTS.enums;
+      namespace: typeof DEFAULTS.namespace;
+      storeImportPath: typeof PATH_DEFAULTS.storeImportPath;
+      userTypesPath: typeof PATH_DEFAULTS.userTypesPath;
+      codegenDirectory: typeof PATH_DEFAULTS.codegenDirectory;
     }
   > {
   tables: ExpandTablesConfig<T["tables"]>;
