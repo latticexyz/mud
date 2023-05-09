@@ -1120,12 +1120,12 @@ const _abi = [
         components: [
           {
             internalType: "bytes32",
-            name: "table",
+            name: "tableId",
             type: "bytes32",
           },
           {
             internalType: "bytes32[]",
-            name: "key",
+            name: "keyTuple",
             type: "bytes32[]",
           },
           {

@@ -29,14 +29,14 @@ import type {
 } from "./common";
 
 export type RecordStruct = {
-  table: PromiseOrValue<BytesLike>;
-  key: PromiseOrValue<BytesLike>[];
+  tableId: PromiseOrValue<BytesLike>;
+  keyTuple: PromiseOrValue<BytesLike>[];
   value: PromiseOrValue<BytesLike>;
 };
 
 export type RecordStructOutput = [string, string[], string] & {
-  table: string;
-  key: string[];
+  tableId: string;
+  keyTuple: string[];
   value: string;
 };
 
