@@ -2,13 +2,15 @@ import { renderArguments, renderList, renderedSolidityHeader, renderImports } fr
 import { RenderSystemInterfaceOptions } from "./types";
 
 export function renderSystemInterface(options: RenderSystemInterfaceOptions) {
-  const { imports, name, functionPrefix, functions } = options;
+  const { imports, name, functionPrefix, functions, errors } = options;
 
   return `${renderedSolidityHeader}
 
 ${renderImports(imports)}
 
 interface ${name} {
+  ${renderList(errors, ({ name, parameters }) => `error ${name}(${renderArguments(parameters)});`)}
+
   ${renderList(
     functions,
     ({ name, parameters, stateMutability, returnParameters }) => `
