@@ -23,7 +23,7 @@ export async function worldgen(
   for (const system of systems) {
     const data = readFileSync(system.path, "utf8");
     // get external funcions from a contract
-    const { functions, symbolImports } = contractToInterface(data, system.basename);
+    const { functions, errors, symbolImports } = contractToInterface(data, system.basename);
     const imports = symbolImports.map((symbolImport) => {
       if (symbolImport.path[0] === ".") {
         // relative import
@@ -47,6 +47,7 @@ export async function worldgen(
       name: systemInterfaceName,
       functionPrefix: config.namespace === "" ? "" : `${config.namespace}_${name}_`,
       functions,
+      errors,
       imports,
     });
     // write to file
