@@ -2,32 +2,28 @@ lockfileVersion: '6.0'
 
 importers:
 
-  .:
-    devDependencies:
-      run-pty:
-        specifier: ^4.0.3
-        version: 4.0.3
+  .: {}
 
   packages/contracts:
     devDependencies:
       '@latticexyz/cli':
-        specifier: link:../../../../packages/cli
-        version: link:../../../../packages/cli
+        specifier: link:../../../packages/cli
+        version: link:../../../packages/cli
       '@latticexyz/config':
-        specifier: link:../../../../packages/config
-        version: link:../../../../packages/config
+        specifier: link:../../../packages/config
+        version: link:../../../packages/config
       '@latticexyz/schema-type':
-        specifier: link:../../../../packages/schema-type
-        version: link:../../../../packages/schema-type
+        specifier: link:../../../packages/schema-type
+        version: link:../../../packages/schema-type
       '@latticexyz/std-contracts':
-        specifier: link:../../../../packages/std-contracts
-        version: link:../../../../packages/std-contracts
+        specifier: link:../../../packages/std-contracts
+        version: link:../../../packages/std-contracts
       '@latticexyz/store':
-        specifier: link:../../../../packages/store
-        version: link:../../../../packages/store
+        specifier: link:../../../packages/store
+        version: link:../../../packages/store
       '@latticexyz/world':
-        specifier: link:../../../../packages/world
-        version: link:../../../../packages/world
+        specifier: link:../../../packages/world
+        version: link:../../../packages/world
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
@@ -721,17 +717,6 @@ packages:
     resolution: {integrity: sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==}
     dev: true
 
-  /nan@2.17.0:
-    resolution: {integrity: sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==}
-    dev: true
-
-  /node-pty@0.10.1:
-    resolution: {integrity: sha512-JTdtUS0Im/yRsWJSx7yiW9rtpfmxqxolrtnyKwPLI+6XqTAPW/O2MjS8FYL4I5TsMbH2lVgDb2VMjp+9LoQGNg==}
-    requiresBuild: true
-    dependencies:
-      nan: 2.17.0
-    dev: true
-
   /once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
     dependencies:
@@ -759,14 +744,6 @@ packages:
     hasBin: true
     dependencies:
       glob: 7.2.3
-    dev: true
-
-  /run-pty@4.0.3:
-    resolution: {integrity: sha512-O8IWhjhChwLq7psyZZDY+Pv/CSEM7DLBXqUqEVWKMXGR18s2o2ma4IEanKWSSLBULNCpHn3n9RYvybc+7IaBig==}
-    hasBin: true
-    dependencies:
-      node-pty: 0.10.1
-      tiny-decoders: 7.0.1
     dev: true
 
   /scrypt-js@3.0.1:
@@ -799,10 +776,6 @@ packages:
       deep-extend: 0.6.0
       typical: 5.2.0
       wordwrapjs: 4.0.1
-    dev: true
-
-  /tiny-decoders@7.0.1:
-    resolution: {integrity: sha512-P1LaHTLASl/lCrdtwgAAVwxt4bEAPmxpf9HMQrlCkAseaT8oH8oxm8ndy4nx5rLTcL5U/Qxp1a+FDoQfS/ZgQQ==}
     dev: true
 
   /ts-command-line-args@2.5.0(typescript@4.9.5):

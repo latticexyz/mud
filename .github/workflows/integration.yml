@@ -10,9 +10,6 @@ jobs:
   main:
     name: Build/test integration
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        integration: [misc]
 
     steps:
       - name: Checkout
@@ -24,20 +21,20 @@ jobs:
         uses: ./.github/actions/setup
 
       - name: Install integration dependencies
-        working-directory: ./integration/${{ matrix.integration }}
+        working-directory: ./integration
         run: pnpm install
 
       - name: Clean integration
-        working-directory: ./integration/${{ matrix.integration }}
+        working-directory: ./integration
         run: pnpm run clean
 
       - name: Build integration
-        working-directory: ./integration/${{ matrix.integration }}
+        working-directory: ./integration
         run: pnpm run build
 
-      - name: Outdated files, run `pnpm run build` in `integration/${{ matrix.integration }}` and commit them
+      - name: Outdated files, run `pnpm run build` in `integration` and commit them
         uses: ./.github/actions/require-empty-diff
 
       - name: Run tests
-        working-directory: ./integration/${{ matrix.integration }}
+        working-directory: ./integration
         run: pnpm test

@@ -14,12 +14,12 @@
     "test": "mud test-v2"
   },
   "devDependencies": {
-    "@latticexyz/cli": "link:../../../../packages/cli",
-    "@latticexyz/config": "link:../../../../packages/config",
-    "@latticexyz/schema-type": "link:../../../../packages/schema-type",
-    "@latticexyz/std-contracts": "link:../../../../packages/std-contracts",
-    "@latticexyz/store": "link:../../../../packages/store",
-    "@latticexyz/world": "link:../../../../packages/world",
+    "@latticexyz/cli": "link:../../../packages/cli",
+    "@latticexyz/config": "link:../../../packages/config",
+    "@latticexyz/schema-type": "link:../../../packages/schema-type",
+    "@latticexyz/std-contracts": "link:../../../packages/std-contracts",
+    "@latticexyz/store": "link:../../../packages/store",
+    "@latticexyz/world": "link:../../../packages/world",
     "@typechain/ethers-v5": "^10.2.0",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ethers": "^5.7.2",
