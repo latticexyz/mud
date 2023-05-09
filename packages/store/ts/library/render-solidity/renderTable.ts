@@ -9,6 +9,7 @@ import {
   renderTypeHelpers,
   RenderDynamicField,
 } from "@latticexyz/common/codegen";
+import { renderEphemeralMethods } from "./ephemeral";
 import { renderEncodeField, renderFieldMethods } from "./field";
 import { renderRecordMethods } from "./record";
 import { RenderTableOptions } from "./types";
@@ -23,12 +24,15 @@ export function renderTable(options: RenderTableOptions) {
     fields,
     staticFields,
     dynamicFields,
+    withFieldMethods,
     withRecordMethods,
+    withEphemeralMethods,
     storeArgument,
     primaryKeys,
   } = options;
 
   const { _typedTableId, _typedKeyArgs, _primaryKeysDefinition } = renderCommonData(options);
+  const shouldRenderDelete = !withEphemeralMethods;
 
   return `${renderedSolidityHeader}
 
@@ -110,9 +114,11 @@ library ${libraryName} {
   `
   )}
 
-  ${renderFieldMethods(options)}
+  ${withFieldMethods ? renderFieldMethods(options) : ""}
 
   ${withRecordMethods ? renderRecordMethods(options) : ""}
+
+  ${withEphemeralMethods ? renderEphemeralMethods(options) : ""}
 
   /** Tightly pack full data using this table's schema */
   function encode(${renderArguments(
@@ -129,16 +135,20 @@ library ${libraryName} {
     ])});
   }
 
-  ${renderWithStore(
-    storeArgument,
-    (_typedStore, _store, _commentSuffix) => `
+  ${
+    shouldRenderDelete
+      ? renderWithStore(
+          storeArgument,
+          (_typedStore, _store, _commentSuffix) => `
     /* Delete all data for given keys${_commentSuffix} */
     function deleteRecord(${renderArguments([_typedStore, _typedTableId, _typedKeyArgs])}) internal {
       ${_primaryKeysDefinition}
       ${_store}.deleteRecord(_tableId, _primaryKeys);
     }
   `
-  )}
+        )
+      : ""
+  }
 }
 
 ${renderTypeHelpers(options)}
