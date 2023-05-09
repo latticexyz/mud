@@ -1,10 +1,10 @@
 import { TupleDatabaseClient, TupleRootTransactionApi } from "tuple-database";
-import { mudConfig } from "@latticexyz/store/register";
 import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
 
 type Config = StoreConfig;
 
 // TODO: add mappings for remaining Solidity types
+// TODO: move to schema-type
 type AbiTypeToPrimitiveTypeLookup = {
   bytes32: `0x${string}`;
   uint256: bigint;
@@ -35,16 +35,3 @@ export type DatabaseClient<C extends Config> = {
 } & {
   _tupleDatabaseClient: TupleDatabaseClient;
 };
-
-const testConfig = mudConfig({
-  tables: {
-    TestTable: { schema: { myField: "uint256" } },
-  },
-} as const);
-
-const client: DatabaseClient<typeof testConfig> = {} as any;
-
-const { myField } = client.TestTable.get({ key: "0x00" });
-
-client.TestTable.set({ key: "0x00" }, { myField: BigInt(1) });
-client.TestTable.remove({ key: "0x00" });

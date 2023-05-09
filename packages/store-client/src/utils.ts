@@ -3,8 +3,10 @@ import { AbiDefaults } from "./defaults";
 import { StoreConfig } from "@latticexyz/store";
 import { Key, Value } from "./types";
 
-// Set a (partial) value
-// The value is merged with the existing value; missing fields are initialzied with the default Solidity value
+/**
+ * Set a (partial) value
+ * The value is merged with the existing value; missing fields are initialzied with the default Solidity value
+ */
 export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
   table: T,
@@ -24,7 +26,9 @@ export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
   return tx;
 }
 
-// Get a value
+/**
+ * Get the value for the given key
+ */
 export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
   table: T,
@@ -33,7 +37,9 @@ export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
   return client.get([String(table), ...toKeyTuple(key)]);
 }
 
-// Remove a value
+/**
+ * Remove the value at the given key
+ */
 export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
   table: T,
