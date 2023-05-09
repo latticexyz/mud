@@ -1,5 +1,5 @@
 import { setup } from "./mud/setup";
-import { mount as mountDevUI } from "@latticexyz/dev-ui";
+import { mount as mountDevTools } from "@latticexyz/dev-tools";
 
 const { components, worldSend } = await setup();
 
@@ -53,4 +53,4 @@ document.getElementById("chat-form")?.addEventListener("submit", (e) => {
   (window as any).sendMessage();
 });
 
-mountDevUI();
+mountDevTools();

@@ -1,7 +1,7 @@
 import Emittery from "emittery";
 import { TableId } from "@latticexyz/utils";
 
-// Expose a global emitter to ease in getting data from our internals to the dev UI
+// Expose a global emitter to ease in getting data from our internal packages to dev tools
 
 export type EmitterEvents = {
   storeEvent: {
@@ -21,7 +21,6 @@ export type EmitterEvents = {
   };
   // TODO: connection status?
   // TODO: sync status (rpc vs mode vs cache)
-  // TODO: user txs
 };
 
 export const emitter = new Emittery<EmitterEvents>();

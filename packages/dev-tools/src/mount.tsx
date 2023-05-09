@@ -1,6 +1,6 @@
 export async function mount() {
   if (typeof window === "undefined") {
-    console.warn("dev-ui should only be used in browser bundles");
+    console.warn("MUD dev-tools should only be used in browser bundles");
     return;
   }
 
@@ -10,7 +10,7 @@ export async function mount() {
     const { App } = await import("./App");
 
     const rootElement = document.createElement("div");
-    rootElement.id = "mud-dev-ui";
+    rootElement.id = "mud-dev-tools";
 
     const root = ReactDOM.createRoot(rootElement);
     root.render(
@@ -21,7 +21,7 @@ export async function mount() {
 
     document.body.appendChild(rootElement);
   } catch (error) {
-    console.error("Failed to mount dev-ui", error);
+    console.error("Failed to mount MUD dev-tools", error);
   }
 
   // TODO: expose an unmount function?

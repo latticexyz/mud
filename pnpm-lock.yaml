@@ -178,7 +178,7 @@ importers:
         version: 17.0.23
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -212,7 +212,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       vitest:
         specifier: 0.30.1
         version: 0.30.1
@@ -243,7 +243,7 @@ importers:
     devDependencies:
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
 
   packages/create-mud:
     dependencies:
@@ -256,12 +256,12 @@ importers:
         version: 18.15.11
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
 
-  packages/dev-ui:
+  packages/dev-tools:
     dependencies:
       '@latticexyz/network':
         specifier: workspace:*
@@ -317,10 +317,10 @@ importers:
         version: 8.4.23
       tailwindcss:
         specifier: ^3.3.2
-        version: 3.3.2(ts-node@10.9.1)
+        version: 3.3.2
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       vitest:
         specifier: 0.30.1
         version: 0.30.1
@@ -399,7 +399,7 @@ importers:
         version: 2.5.0
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       typescript:
         specifier: ^4.9.5
         version: 4.9.5
@@ -511,7 +511,7 @@ importers:
         version: 2.5.0
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       typedoc:
         specifier: 0.23.21
         version: 0.23.21(typescript@4.9.5)
@@ -590,7 +590,7 @@ importers:
         version: 29.0.5(@babel/core@7.21.3)(esbuild@0.17.17)(jest@29.5.0)(typescript@4.9.5)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(ts-node@10.9.1)(typescript@4.9.5)
       ttypescript:
         specifier: ^1.5.13
         version: 1.5.13(ts-node@10.9.1)(typescript@4.9.5)
@@ -814,7 +814,7 @@ importers:
         version: 3.0.2
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
 
   packages/services:
     dependencies:
@@ -836,7 +836,7 @@ importers:
         version: 1.146.0
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
 
   packages/solecs:
     devDependencies:
@@ -972,7 +972,7 @@ importers:
         version: 2.5.0
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -1090,7 +1090,7 @@ importers:
         version: 0.6.0-beta.22(hardhat@2.10.2)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -1233,7 +1233,7 @@ importers:
         version: 0.6.0-beta.22(hardhat@2.10.2)
       tsup:
         specifier: ^6.7.0
-        version: 6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4)
+        version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
       tsx:
         specifier: ^3.12.6
         version: 3.12.6
@@ -12884,7 +12884,7 @@ packages:
       postcss: 8.4.23
     dev: true
 
-  /postcss-load-config@3.1.4(postcss@8.4.23)(ts-node@10.9.1):
+  /postcss-load-config@3.1.4(postcss@8.4.23):
     resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
     engines: {node: '>= 10'}
     peerDependencies:
@@ -12898,11 +12898,27 @@ packages:
     dependencies:
       lilconfig: 2.1.0
       postcss: 8.4.23
+      yaml: 1.10.2
+    dev: true
+
+  /postcss-load-config@3.1.4(ts-node@10.9.1):
+    resolution: {integrity: sha512-6DiM4E7v4coTE4uzA8U//WhtPwyhiim3eyjEMFCnUpzbrkK9wJHgKDT2mR+HbtSrd/NubVaYTOpSpjUl8NQeRg==}
+    engines: {node: '>= 10'}
+    peerDependencies:
+      postcss: '>=8.0.9'
+      ts-node: '>=9.0.0'
+    peerDependenciesMeta:
+      postcss:
+        optional: true
+      ts-node:
+        optional: true
+    dependencies:
+      lilconfig: 2.1.0
       ts-node: 10.9.1(@types/node@18.15.11)(typescript@4.9.5)
       yaml: 1.10.2
     dev: true
 
-  /postcss-load-config@4.0.1(postcss@8.4.23)(ts-node@10.9.1):
+  /postcss-load-config@4.0.1(postcss@8.4.23):
     resolution: {integrity: sha512-vEJIc8RdiBRu3oRAI0ymerOn+7rPuMvRXslTvZUKZonDHFIczxztIyJ1urxM1x9JXEikvpWWTUUqal5j/8QgvA==}
     engines: {node: '>= 14'}
     peerDependencies:
@@ -12916,7 +12932,6 @@ packages:
     dependencies:
       lilconfig: 2.1.0
       postcss: 8.4.23
-      ts-node: 10.9.1(@types/node@18.15.11)(typescript@4.9.5)
       yaml: 2.2.2
     dev: true
 
@@ -14633,7 +14648,7 @@ packages:
     resolution: {integrity: sha512-Y17eDp7FtN1+JJ4OY0Bqv9OA41O+MS8c1Iyr3T6JFLnOgLg3EvcyMKZAnQ8AGyvB5Nxm3t9Xb5Mhe139m8QT/g==}
     dev: false
 
-  /tailwindcss@3.3.2(ts-node@10.9.1):
+  /tailwindcss@3.3.2:
     resolution: {integrity: sha512-9jPkMiIBXvPc2KywkraqsUfbfj+dHDb+JPWtSJa9MLFdrPyazI7q6WX2sUrm7R9eVR7qqv3Pas7EvQFzxKnI6w==}
     engines: {node: '>=14.0.0'}
     hasBin: true
@@ -14655,7 +14670,7 @@ packages:
       postcss: 8.4.23
       postcss-import: 15.1.0(postcss@8.4.23)
       postcss-js: 4.0.1(postcss@8.4.23)
-      postcss-load-config: 4.0.1(postcss@8.4.23)(ts-node@10.9.1)
+      postcss-load-config: 4.0.1(postcss@8.4.23)
       postcss-nested: 6.0.1(postcss@8.4.23)
       postcss-selector-parser: 6.0.11
       postcss-value-parser: 4.2.0
@@ -15098,7 +15113,7 @@ packages:
     resolution: {integrity: sha512-Tyrf5mxF8Ofs1tNoxA13lFeZ2Zrbd6cKbuH3V+MQ5sb6DtBj5FjrXVsRWT8YvNAQTqNoz66dz1WsbigI22aEnw==}
     dev: true
 
-  /tsup@6.7.0(postcss@8.4.23)(ts-node@10.9.1)(typescript@5.0.4):
+  /tsup@6.7.0(postcss@8.4.23)(typescript@5.0.4):
     resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
     engines: {node: '>=14.18'}
     hasBin: true
@@ -15123,13 +15138,49 @@ packages:
       globby: 11.1.0
       joycon: 3.1.1
       postcss: 8.4.23
-      postcss-load-config: 3.1.4(postcss@8.4.23)(ts-node@10.9.1)
+      postcss-load-config: 3.1.4(postcss@8.4.23)
+      resolve-from: 5.0.0
+      rollup: 3.20.6
+      source-map: 0.8.0-beta.0
+      sucrase: 3.32.0
+      tree-kill: 1.2.2
+      typescript: 5.0.4
+    transitivePeerDependencies:
+      - supports-color
+      - ts-node
+    dev: true
+
+  /tsup@6.7.0(ts-node@10.9.1)(typescript@4.9.5):
+    resolution: {integrity: sha512-L3o8hGkaHnu5TdJns+mCqFsDBo83bJ44rlK7e6VdanIvpea4ArPcU3swWGsLVbXak1PqQx/V+SSmFPujBK+zEQ==}
+    engines: {node: '>=14.18'}
+    hasBin: true
+    peerDependencies:
+      '@swc/core': ^1
+      postcss: ^8.4.12
+      typescript: '>=4.1.0'
+    peerDependenciesMeta:
+      '@swc/core':
+        optional: true
+      postcss:
+        optional: true
+      typescript:
+        optional: true
+    dependencies:
+      bundle-require: 4.0.1(esbuild@0.17.17)
+      cac: 6.7.14
+      chokidar: 3.5.3
+      debug: 4.3.4(supports-color@8.1.1)
+      esbuild: 0.17.17
+      execa: 5.1.1
+      globby: 11.1.0
+      joycon: 3.1.1
+      postcss-load-config: 3.1.4(ts-node@10.9.1)
       resolve-from: 5.0.0
       rollup: 3.20.6
       source-map: 0.8.0-beta.0
       sucrase: 3.31.0
       tree-kill: 1.2.2
-      typescript: 5.0.4
+      typescript: 4.9.5
     transitivePeerDependencies:
       - supports-color
       - ts-node

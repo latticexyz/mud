@@ -1,11 +1,11 @@
 {
-  "name": "@latticexyz/dev-ui",
+  "name": "@latticexyz/dev-tools",
   "version": "1.42.0",
-  "description": "MUD development UI",
+  "description": "MUD developer tools",
   "repository": {
     "type": "git",
     "url": "https://github.com/latticexyz/mud.git",
-    "directory": "packages/dev-ui"
+    "directory": "packages/dev-tools"
   },
   "license": "MIT",
   "type": "module",

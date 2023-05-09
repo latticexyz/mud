@@ -38,7 +38,7 @@ export function App() {
             className="peer text-sm p-2 rounded leading-none transition opacity-60 hover:opacity-100"
             onClick={() => setShown(!shown)}
           >
-            <span className="whitespace-nowrap font-medium">{shown ? "→" : "←"} MUD Dev UI</span>
+            <span className="whitespace-nowrap font-medium">{shown ? "→" : "←"} MUD Dev Tools</span>
           </button>
           <span className="transition opacity-0 peer-hover:opacity-40 px-2 text-xs flex items-center justify-center gap-2">
             Keyboard shortcut

@@ -1,9 +1,8 @@
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { App } from "./App";
 import { setup } from "./mud/setup";
 import { MUDProvider } from "./MUDContext";
-import { mount as mountDevUI } from "@latticexyz/dev-ui";
+import { mount as mountDevTools } from "@latticexyz/dev-tools";
 
 const rootElement = document.getElementById("react-root");
 if (!rootElement) throw new Error("React root not found");
@@ -16,5 +15,5 @@ setup().then((result) => {
       <App />
     </MUDProvider>
   );
-  mountDevUI();
+  mountDevTools();
 });

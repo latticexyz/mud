@@ -19,9 +19,9 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../../packages/cli
         version: link:../../../../packages/cli
-      '@latticexyz/dev-ui':
-        specifier: link:../../../../packages/dev-ui
-        version: link:../../../../packages/dev-ui
+      '@latticexyz/dev-tools':
+        specifier: link:../../../../packages/dev-tools
+        version: link:../../../../packages/dev-tools
       '@latticexyz/network':
         specifier: link:../../../../packages/network
         version: link:../../../../packages/network
@@ -125,9 +125,9 @@ importers:
       '@latticexyz/cli':
         specifier: link:../../../../packages/cli
         version: link:../../../../packages/cli
-      '@latticexyz/dev-ui':
-        specifier: link:../../../../packages/dev-ui
-        version: link:../../../../packages/dev-ui
+      '@latticexyz/dev-tools':
+        specifier: link:../../../../packages/dev-tools
+        version: link:../../../../packages/dev-tools
       '@latticexyz/network':
         specifier: link:../../../../packages/network
         version: link:../../../../packages/network

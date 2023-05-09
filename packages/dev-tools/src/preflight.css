@@ -13,21 +13,21 @@ This isn't my favorite approach. Iframes would be cleaner but they have issues a
 2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
 */
 
-#mud-dev-ui {
+#mud-dev-tools {
   all: initial;
 }
 
-#mud-dev-ui *,
-#mud-dev-ui ::before,
-#mud-dev-ui ::after {
+#mud-dev-tools *,
+#mud-dev-tools ::before,
+#mud-dev-tools ::after {
   box-sizing: border-box; /* 1 */
   border-width: 0; /* 2 */
   border-style: solid; /* 2 */
   border-color: theme("borderColor.DEFAULT", currentColor); /* 2 */
 }
 
-#mud-dev-ui ::before,
-#mud-dev-ui ::after {
+#mud-dev-tools ::before,
+#mud-dev-tools ::after {
   --tw-content: "";
 }
 
@@ -40,7 +40,7 @@ This isn't my favorite approach. Iframes would be cleaner but they have issues a
 6. Use the user's configured `sans` font-variation-settings by default.
 */
 
-#mud-dev-ui {
+#mud-dev-tools {
   line-height: 1.5; /* 1 */
   -webkit-text-size-adjust: 100%; /* 2 */
   -moz-tab-size: 4; /* 3 */
@@ -71,7 +71,7 @@ This isn't my favorite approach. Iframes would be cleaner but they have issues a
 2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
 */
 
-#mud-dev-ui {
+#mud-dev-tools {
   margin: 0; /* 1 */
   line-height: inherit; /* 2 */
 }
@@ -82,7 +82,7 @@ This isn't my favorite approach. Iframes would be cleaner but they have issues a
 3. Ensure horizontal rules are visible by default.
 */
 
-#mud-dev-ui hr {
+#mud-dev-tools hr {
   height: 0; /* 1 */
   color: inherit; /* 2 */
   border-top-width: 1px; /* 3 */
@@ -92,7 +92,7 @@ This isn't my favorite approach. Iframes would be cleaner but they have issues a
 Add the correct text decoration in Chrome, Edge, and Safari.
 */
 
-#mud-dev-ui abbr:where([title]) {
+#mud-dev-tools abbr:where([title]) {
   text-decoration: underline dotted;
 }
 
@@ -100,12 +100,12 @@ Add the correct text decoration in Chrome, Edge, and Safari.
 Remove the default font size and weight for headings.
 */
 
-#mud-dev-ui h1,
-#mud-dev-ui h2,
-#mud-dev-ui h3,
-#mud-dev-ui h4,
-#mud-dev-ui h5,
-#mud-dev-ui h6 {
+#mud-dev-tools h1,
+#mud-dev-tools h2,
+#mud-dev-tools h3,
+#mud-dev-tools h4,
+#mud-dev-tools h5,
+#mud-dev-tools h6 {
   font-size: inherit;
   font-weight: inherit;
 }
@@ -114,7 +114,7 @@ Remove the default font size and weight for headings.
 Reset links to optimize for opt-in styling instead of opt-out.
 */
 
-#mud-dev-ui a {
+#mud-dev-tools a {
   color: inherit;
   text-decoration: inherit;
 }
@@ -123,8 +123,8 @@ Reset links to optimize for opt-in styling instead of opt-out.
 Add the correct font weight in Edge and Safari.
 */
 
-#mud-dev-ui b,
-#mud-dev-ui strong {
+#mud-dev-tools b,
+#mud-dev-tools strong {
   font-weight: bolder;
 }
 
@@ -133,10 +133,10 @@ Add the correct font weight in Edge and Safari.
 2. Correct the odd `em` font sizing in all browsers.
 */
 
-#mud-dev-ui code,
-#mud-dev-ui kbd,
-#mud-dev-ui samp,
-#mud-dev-ui pre {
+#mud-dev-tools code,
+#mud-dev-tools kbd,
+#mud-dev-tools samp,
+#mud-dev-tools pre {
   font-family: theme(
     "fontFamily.mono",
     ui-monospace,
@@ -155,7 +155,7 @@ Add the correct font weight in Edge and Safari.
 Add the correct font size in all browsers.
 */
 
-#mud-dev-ui small {
+#mud-dev-tools small {
   font-size: 80%;
 }
 
@@ -163,19 +163,19 @@ Add the correct font size in all browsers.
 Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 */
 
-#mud-dev-ui sub,
-#mud-dev-ui sup {
+#mud-dev-tools sub,
+#mud-dev-tools sup {
   font-size: 75%;
   line-height: 0;
   position: relative;
   vertical-align: baseline;
 }
 
-#mud-dev-ui sub {
+#mud-dev-tools sub {
   bottom: -0.25em;
 }
 
-#mud-dev-ui sup {
+#mud-dev-tools sup {
   top: -0.5em;
 }
 
@@ -185,7 +185,7 @@ Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 3. Remove gaps between table borders by default.
 */
 
-#mud-dev-ui table {
+#mud-dev-tools table {
   text-indent: 0; /* 1 */
   border-color: inherit; /* 2 */
   border-collapse: collapse; /* 3 */
@@ -197,11 +197,11 @@ Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 3. Remove default padding in all browsers.
 */
 
-#mud-dev-ui button,
-#mud-dev-ui input,
-#mud-dev-ui optgroup,
-#mud-dev-ui select,
-#mud-dev-ui textarea {
+#mud-dev-tools button,
+#mud-dev-tools input,
+#mud-dev-tools optgroup,
+#mud-dev-tools select,
+#mud-dev-tools textarea {
   font-family: inherit; /* 1 */
   font-size: 100%; /* 1 */
   font-weight: inherit; /* 1 */
@@ -215,8 +215,8 @@ Prevent `sub` and `sup` elements from affecting the line height in all browsers.
 Remove the inheritance of text transform in Edge and Firefox.
 */
 
-#mud-dev-ui button,
-#mud-dev-ui select {
+#mud-dev-tools button,
+#mud-dev-tools select {
   text-transform: none;
 }
 
@@ -225,10 +225,10 @@ Remove the inheritance of text transform in Edge and Firefox.
 2. Remove default button styles.
 */
 
-#mud-dev-ui button,
-#mud-dev-ui [type="button"],
-#mud-dev-ui [type="reset"],
-#mud-dev-ui [type="submit"] {
+#mud-dev-tools button,
+#mud-dev-tools [type="button"],
+#mud-dev-tools [type="reset"],
+#mud-dev-tools [type="submit"] {
   -webkit-appearance: button; /* 1 */
   background-color: transparent; /* 2 */
   background-image: none; /* 2 */
@@ -238,7 +238,7 @@ Remove the inheritance of text transform in Edge and Firefox.
 Use the modern Firefox focus style for all focusable elements.
 */
 
-#mud-dev-ui :-moz-focusring {
+#mud-dev-tools :-moz-focusring {
   outline: auto;
 }
 
@@ -246,7 +246,7 @@ Use the modern Firefox focus style for all focusable elements.
 Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
 */
 
-#mud-dev-ui :-moz-ui-invalid {
+#mud-dev-tools :-moz-ui-invalid {
   box-shadow: none;
 }
 
@@ -254,7 +254,7 @@ Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/
 Add the correct vertical alignment in Chrome and Firefox.
 */
 
-#mud-dev-ui progress {
+#mud-dev-tools progress {
   vertical-align: baseline;
 }
 
@@ -262,8 +262,8 @@ Add the correct vertical alignment in Chrome and Firefox.
 Correct the cursor style of increment and decrement buttons in Safari.
 */
 
-#mud-dev-ui ::-webkit-inner-spin-button,
-#mud-dev-ui ::-webkit-outer-spin-button {
+#mud-dev-tools ::-webkit-inner-spin-button,
+#mud-dev-tools ::-webkit-outer-spin-button {
   height: auto;
 }
 
@@ -272,7 +272,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 2. Correct the outline style in Safari.
 */
 
-#mud-dev-ui [type="search"] {
+#mud-dev-tools [type="search"] {
   -webkit-appearance: textfield; /* 1 */
   outline-offset: -2px; /* 2 */
 }
@@ -281,7 +281,7 @@ Correct the cursor style of increment and decrement buttons in Safari.
 Remove the inner padding in Chrome and Safari on macOS.
 */
 
-#mud-dev-ui ::-webkit-search-decoration {
+#mud-dev-tools ::-webkit-search-decoration {
   -webkit-appearance: none;
 }
 
@@ -290,7 +290,7 @@ Remove the inner padding in Chrome and Safari on macOS.
 2. Change font properties to `inherit` in Safari.
 */
 
-#mud-dev-ui ::-webkit-file-upload-button {
+#mud-dev-tools ::-webkit-file-upload-button {
   -webkit-appearance: button; /* 1 */
   font: inherit; /* 2 */
 }
@@ -299,7 +299,7 @@ Remove the inner padding in Chrome and Safari on macOS.
 Add the correct display in Chrome and Safari.
 */
 
-#mud-dev-ui summary {
+#mud-dev-tools summary {
   display: list-item;
 }
 
@@ -307,34 +307,34 @@ Add the correct display in Chrome and Safari.
 Removes the default spacing and border for appropriate elements.
 */
 
-#mud-dev-ui blockquote,
-#mud-dev-ui dl,
-#mud-dev-ui dd,
-#mud-dev-ui h1,
-#mud-dev-ui h2,
-#mud-dev-ui h3,
-#mud-dev-ui h4,
-#mud-dev-ui h5,
-#mud-dev-ui h6,
-#mud-dev-ui hr,
-#mud-dev-ui figure,
-#mud-dev-ui p,
-#mud-dev-ui pre {
+#mud-dev-tools blockquote,
+#mud-dev-tools dl,
+#mud-dev-tools dd,
+#mud-dev-tools h1,
+#mud-dev-tools h2,
+#mud-dev-tools h3,
+#mud-dev-tools h4,
+#mud-dev-tools h5,
+#mud-dev-tools h6,
+#mud-dev-tools hr,
+#mud-dev-tools figure,
+#mud-dev-tools p,
+#mud-dev-tools pre {
   margin: 0;
 }
 
-#mud-dev-ui fieldset {
+#mud-dev-tools fieldset {
   margin: 0;
   padding: 0;
 }
 
-#mud-dev-ui legend {
+#mud-dev-tools legend {
   padding: 0;
 }
 
-#mud-dev-ui ol,
-#mud-dev-ui ul,
-#mud-dev-ui menu {
+#mud-dev-tools ol,
+#mud-dev-tools ul,
+#mud-dev-tools menu {
   list-style: none;
   margin: 0;
   padding: 0;
@@ -344,7 +344,7 @@ Removes the default spacing and border for appropriate elements.
 Prevent resizing textareas horizontally by default.
 */
 
-#mud-dev-ui textarea {
+#mud-dev-tools textarea {
   resize: vertical;
 }
 
@@ -353,8 +353,8 @@ Prevent resizing textareas horizontally by default.
 2. Set the default placeholder color to the user's configured gray 400 color.
 */
 
-#mud-dev-ui input::placeholder,
-#mud-dev-ui textarea::placeholder {
+#mud-dev-tools input::placeholder,
+#mud-dev-tools textarea::placeholder {
   opacity: 1; /* 1 */
   color: theme("colors.gray.400", #9ca3af); /* 2 */
 }
@@ -363,15 +363,15 @@ Prevent resizing textareas horizontally by default.
 Set the default cursor for buttons.
 */
 
-#mud-dev-ui button,
-#mud-dev-ui [role="button"] {
+#mud-dev-tools button,
+#mud-dev-tools [role="button"] {
   cursor: pointer;
 }
 
 /*
 Make sure disabled buttons don't get the pointer cursor.
 */
-#mud-dev-ui :disabled {
+#mud-dev-tools :disabled {
   cursor: default;
 }
 
@@ -381,14 +381,14 @@ Make sure disabled buttons don't get the pointer cursor.
    This can trigger a poorly considered lint error in some tools but is included by design.
 */
 
-#mud-dev-ui img,
-#mud-dev-ui svg,
-#mud-dev-ui video,
-#mud-dev-ui canvas,
-#mud-dev-ui audio,
-#mud-dev-ui iframe,
-#mud-dev-ui embed,
-#mud-dev-ui object {
+#mud-dev-tools img,
+#mud-dev-tools svg,
+#mud-dev-tools video,
+#mud-dev-tools canvas,
+#mud-dev-tools audio,
+#mud-dev-tools iframe,
+#mud-dev-tools embed,
+#mud-dev-tools object {
   display: block; /* 1 */
   vertical-align: middle; /* 2 */
 }
@@ -397,13 +397,13 @@ Make sure disabled buttons don't get the pointer cursor.
 Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
 */
 
-#mud-dev-ui img,
-#mud-dev-ui video {
+#mud-dev-tools img,
+#mud-dev-tools video {
   max-width: 100%;
   height: auto;
 }
 
 /* Make elements with the HTML hidden attribute stay hidden by default */
-#mud-dev-ui [hidden] {
+#mud-dev-tools [hidden] {
   display: none;
 }
