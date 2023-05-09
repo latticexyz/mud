@@ -45,7 +45,7 @@ import { mudConfig } from "@latticexyz/config";
 
 export default mudConfig({
   tables: {
-    TradeExectuted: {
+    TradeExecuted: {
       schema: {
         amount: "uint32",
         receiver: "bytes32",
@@ -59,8 +59,10 @@ export default mudConfig({
 This will slightly change the generated code for the table. The `emitEphemeral` function is the main entrypoint:
 
 ```solidity
+import { TradeExecuted, TradeExecutedData } from "./codegen/Tables.sol";
+
 // Emitting an ephemeral record
-TradeExectuted.emitEphemeral("0x1234", TradeExecutedData({
+TradeExecuted.emitEphemeral("0x1234", TradeExecutedData({
   amount: 10,
   receiver: "0x5678",
 }));
