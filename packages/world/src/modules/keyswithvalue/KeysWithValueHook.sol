@@ -65,7 +65,12 @@ contract KeysWithValueHook is IStoreHook {
     // Get the keys with the previous value excluding the current key
     bytes32[] memory keysWithPreviousValue = KeysWithValue.get(targetTableId, valueHash).filter(key);
 
-    // Set the keys with the previous value
-    KeysWithValue.set(targetTableId, valueHash, keysWithPreviousValue);
+    if (keysWithPreviousValue.length == 0) {
+      // Delete the list of keys in this table
+      KeysWithValue.deleteRecord(targetTableId, valueHash);
+    } else {
+      // Set the keys with the previous value
+      KeysWithValue.set(targetTableId, valueHash, keysWithPreviousValue);
+    }
   }
 }
