@@ -20,7 +20,7 @@ declare module "@latticexyz/config" {
   export interface MUDCoreConfig extends WorldConfig {}
 }
 
-declare module "@latticexyz/store" {
+declare module "@latticexyz/store/register" {
   // eslint-disable-next-line @typescript-eslint/no-empty-interface
   export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig> extends OrDefaults<T, WorldConfigDefaults> {
     overrideSystems: ExpandSystemsConfig<

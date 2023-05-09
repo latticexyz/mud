@@ -15,15 +15,12 @@ import {
   STORE_SELECTOR_MAX_LENGTH,
   // config
   MUDCoreUserConfig,
-  mudCoreConfig,
   // schemas
   zObjectName,
   zSelector,
   zUserEnum,
   zValueName,
 } from "@latticexyz/config";
-// typeExtensions are necessary for `ExpandMUDUserConfig`, but configExtensions can be avoided
-import "../../register/typeExtensions";
 
 const zTableName = zObjectName;
 const zKeyName = zValueName;
@@ -265,32 +262,6 @@ export type MUDUserConfig<
     /** Path to the directory where generated files will be placed. (Default is "codegen") */
     codegenDirectory?: string;
   };
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ExpandMUDUserConfig<T extends MUDCoreUserConfig>
-  extends OrDefaults<
-    T,
-    {
-      enums: Record<string, never>;
-      namespace: "";
-      storeImportPath: "@latticexyz/store/src/";
-      userTypesPath: "Types";
-      codegenDirectory: "codegen";
-    }
-  > {
-  tables: ExpandTablesConfig<T["tables"]>;
-}
-
-/** mudCoreConfig wrapper to use generics in some options for better type inference */
-export function mudConfig<
-  T extends MUDCoreUserConfig,
-  // (`never` is overridden by inference, so only the defined enums can be used by default)
-  EnumNames extends StringForUnion = never,
-  StaticUserTypes extends ExtractUserTypes<EnumNames> = ExtractUserTypes<EnumNames>
->(config: MUDUserConfig<T, EnumNames, StaticUserTypes>): ExpandMUDUserConfig<T> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return mudCoreConfig(config) as any;
-}
 
 const StoreConfigUnrefined = z
   .object({
