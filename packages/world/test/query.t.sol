@@ -65,7 +65,6 @@ contract queryTest is Test {
     bytes32[] memory tableIds = new bytes32[](1);
     tableIds[0] = tableA;
 
-    // !gasreport Get list of keys in a given table
     bytes32[][] memory keyTuples = query(world, tableIds);
 
     // Assert that the list includes all the keys in the table
@@ -87,8 +86,6 @@ contract queryTest is Test {
     }
   }
 
-  // USING TWO TABLES****************************************
-
   function testQueryTwoTables21(bytes32[2] memory keys, uint256[2] memory values) public {
     vm.assume(keys[0] != keys[1]);
 
@@ -107,7 +104,6 @@ contract queryTest is Test {
     world.setRecord(namespace, nameA, keyTuple2, abi.encodePacked(values[1]));
     world.setRecord(namespace, nameB, keyTuple1, abi.encodePacked(values[0]));
 
-    // !gasreport Get list of keys in a given table
     bytes32[][] memory keyTuples = query(world, tableIds);
 
     // Assert that the list is the union of both tables keys
@@ -134,7 +130,6 @@ contract queryTest is Test {
     world.setRecord(namespace, nameB, keyTuple1, abi.encodePacked(values[0]));
     world.setRecord(namespace, nameB, keyTuple2, abi.encodePacked(values[1]));
 
-    // !gasreport Get list of keys in a given table
     bytes32[][] memory keyTuples = query(world, tableIds);
 
     // Assert that the list is the union of both tables keys
@@ -163,7 +158,6 @@ contract queryTest is Test {
     world.setRecord(namespace, nameB, keyTuple1, abi.encodePacked(values[0]));
     world.setRecord(namespace, nameB, keyTuple2, abi.encodePacked(values[1]));
 
-    // !gasreport Get list of keys in a given table
     bytes32[][] memory keyTuples = query(world, tableIds);
 
     // Assert that the list is the union of both tables keys
