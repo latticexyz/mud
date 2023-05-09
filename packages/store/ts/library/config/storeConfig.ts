@@ -187,7 +187,9 @@ export type ExpandTablesConfig<T extends TablesConfig<string, string>> = {
     ? ExpandTableConfig<{ schema: { value: T[TableName] } }, TableName extends string ? TableName : never>
     : T[TableName] extends TableConfig<string, string>
     ? ExpandTableConfig<T[TableName], TableName extends string ? TableName : never>
-    : never;
+    : // Weakly typed values get a weakly typed expansion.
+      // This shouldn't normally happen within `mudConfig`, but can be manually triggered via `ExpandMUDUserConfig`
+      ExpandTableConfig<TableConfig<string, string>, TableName extends string ? TableName : string>;
 };
 
 /************************************************************************
