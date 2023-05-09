@@ -1,18 +1,13 @@
-import {
-  emitter,
-  EmitterEvents,
-  publicClient as publicClientObservable,
-  walletClient as walletClientObservable,
-  cacheStore as cacheStoreObservable,
-} from "@latticexyz/network/dev";
+import { storeEvent$, transactionHash$, publicClient$, walletClient$, cacheStore$ } from "@latticexyz/network/dev";
 import { PublicClient, WalletClient, Hex, Chain } from "viem";
 import { Abi } from "abitype";
 import { create } from "zustand";
-import { worldAbiObservable } from "@latticexyz/std-client/dev";
+import { worldAbi$ } from "@latticexyz/std-client/dev";
 import { CacheStore } from "@latticexyz/network";
 import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/factories/IWorldKernel.sol/IWorldKernel__factory";
+import { ObservedValueOf } from "rxjs";
 
-export type StoreEvent = EmitterEvents["storeEvent"];
+export type StoreEvent = ObservedValueOf<typeof storeEvent$>;
 
 export const useStore = create<{
   storeEvents: StoreEvent[];
@@ -34,14 +29,14 @@ export const useStore = create<{
 
 // TODO: clean up listeners
 
-emitter.on("storeEvent", (storeEvent) => {
+storeEvent$.subscribe((storeEvent) => {
   // TODO: narrow down to the chain/world we care about?
   useStore.setState((state) => ({
     storeEvents: [...state.storeEvents, storeEvent],
   }));
 });
 
-emitter.on("transaction", ({ hash }) => {
+transactionHash$.subscribe((hash) => {
   const { publicClient } = useStore.getState();
   if (!publicClient) {
     console.log("Got transaction hash, but no public client to fetch it", hash);
@@ -53,11 +48,11 @@ emitter.on("transaction", ({ hash }) => {
   }));
 });
 
-cacheStoreObservable.subscribe((cacheStore) => {
+cacheStore$.subscribe((cacheStore) => {
   useStore.setState({ cacheStore });
 });
 
-publicClientObservable.subscribe((publicClient) => {
+publicClient$.subscribe((publicClient) => {
   useStore.setState({ publicClient });
 
   // TODO: unwatch if publicClient changes
@@ -69,10 +64,10 @@ publicClientObservable.subscribe((publicClient) => {
   });
 });
 
-walletClientObservable.subscribe((walletClient) => {
+walletClient$.subscribe((walletClient) => {
   useStore.setState({ walletClient });
 });
 
-worldAbiObservable.subscribe((worldAbi) => {
+worldAbi$.subscribe((worldAbi) => {
   useStore.setState({ worldAbi: worldAbi ?? IWorldKernel__factory.abi });
 });

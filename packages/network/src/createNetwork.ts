@@ -88,8 +88,8 @@ export async function createNetwork(initialConfig: NetworkConfig) {
       })
     : null;
 
-  devObservables.publicClient.next(publicClient);
-  devObservables.walletClient.next(burnerWalletClient);
+  devObservables.publicClient$.next(publicClient);
+  devObservables.walletClient$.next(burnerWalletClient);
 
   return {
     providers,

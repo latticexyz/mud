@@ -6,7 +6,7 @@ import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
 import { decodeStoreSetField } from "./decodeStoreSetField";
 import { keyTupleToEntityID } from "./keyTupleToEntityID";
-import { emitter as devEmitter } from "../dev/emitter";
+import * as devObservables from "../dev/observables";
 
 export const ecsEventFromLog = async (
   chainId: number,
@@ -42,7 +42,7 @@ export const ecsEventFromLog = async (
         ...namedValues,
       },
       devEmit: () => {
-        devEmitter.emit("storeEvent", {
+        devObservables.storeEvent$.next({
           event: name,
           chainId,
           worldAddress: contract.address,
@@ -68,7 +68,7 @@ export const ecsEventFromLog = async (
         ...namedValues,
       },
       devEmit: () => {
-        devEmitter.emit("storeEvent", {
+        devObservables.storeEvent$.next({
           event: name,
           chainId,
           worldAddress: contract.address,
@@ -103,7 +103,7 @@ export const ecsEventFromLog = async (
         ...namedInitialValues,
       },
       devEmit: () => {
-        devEmitter.emit("storeEvent", {
+        devObservables.storeEvent$.next({
           event: name,
           chainId,
           worldAddress: contract.address,
@@ -123,7 +123,7 @@ export const ecsEventFromLog = async (
     return {
       ...ecsEvent,
       devEmit: () => {
-        devEmitter.emit("storeEvent", {
+        devObservables.storeEvent$.next({
           event: name,
           chainId,
           worldAddress: contract.address,

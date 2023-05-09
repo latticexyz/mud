@@ -17,10 +17,9 @@ import { IWorldKernel__factory } from "@latticexyz/world/types/ethers-contracts/
 import { defineStringComponent } from "../components";
 import { ContractComponent, ContractComponents, SetupContractConfig } from "./types";
 import { applyNetworkUpdates, createEncoders } from "./utils";
-import { Entity } from "@latticexyz/recs";
 import { defineContractComponents as defineStoreComponents } from "../mud-definitions/store/contractComponents";
 import { defineContractComponents as defineWorldComponents } from "../mud-definitions/world/contractComponents";
-import { worldAbiObservable } from "../dev/observables";
+import * as devObservables from "../dev/observables";
 import { Abi } from "abitype";
 
 type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
@@ -42,7 +41,7 @@ export async function setupMUDV2Network<C extends ContractComponents>({
   syncThread,
   worldAbi = IWorldKernel__factory.abi,
 }: SetupMUDV2NetworkOptions<C>) {
-  worldAbiObservable.next(worldAbi);
+  devObservables.worldAbi$.next(worldAbi);
 
   const SystemsRegistry = defineStringComponent(world, {
     id: "SystemsRegistry",

@@ -1,4 +1,4 @@
-import { decodeEventLog, decodeFunctionData, decodeFunctionResult, toBytes, Hex } from "viem";
+import { decodeEventLog, decodeFunctionData, toBytes, Hex } from "viem";
 import { twMerge } from "tailwind-merge";
 import { TableId } from "@latticexyz/utils";
 import { keyTupleToEntityID } from "@latticexyz/network/dev";

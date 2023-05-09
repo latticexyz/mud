@@ -1,6 +1,6 @@
 import { BigNumber, Contract, Overrides, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { emitter } from "./dev";
+import * as devObservables from "./dev/observables";
 
 /**
  * Create a stateful util to execute transactions as fast as possible.
@@ -73,7 +73,7 @@ export async function createFastTxExecutor(
       }
 
       // TODO: emit txs that fail gas estimation so we can display em in dev tools
-      emitter.emit("transaction", { hash });
+      devObservables.transactionHash$.next(hash);
 
       // Return the transaction promise and transaction hash.
       // The hash is available immediately, the full transaction is available as a promise

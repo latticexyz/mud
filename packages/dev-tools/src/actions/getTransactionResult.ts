@@ -1,12 +1,4 @@
-import {
-  Hex,
-  SimulateContractReturnType,
-  PublicClient,
-  Chain,
-  getContractError,
-  BaseError,
-  decodeFunctionData,
-} from "viem";
+import { Hex, SimulateContractReturnType, PublicClient, Chain, decodeFunctionData } from "viem";
 import { getTransaction } from "./getTransaction";
 import { getTransactionReceipt } from "./getTransactionReceipt";
 import { useStore } from "../useStore";
