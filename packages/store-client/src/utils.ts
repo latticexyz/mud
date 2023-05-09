@@ -1,15 +1,15 @@
 import { TupleDatabaseClient, TupleRootTransactionApi } from "tuple-database";
-import { ExpandedConfig } from "./types";
-import { AbiType } from "@latticexyz/schema-type";
 import { AbiDefaults } from "./defaults";
+import { StoreConfig } from "@latticexyz/store";
+import { Key, Value } from "./types";
 
 // Set a (partial) value
 // The value is merged with the existing value; missing fields are initialzied with the default Solidity value
-export function set<C extends ExpandedConfig = ExpandedConfig>(
+export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
-  table: keyof C["tables"],
-  key: C["tables"][typeof table]["primaryKeys"],
-  value: Partial<C["tables"][typeof table]["schema"]>,
+  table: T,
+  key: Key<C, T>,
+  value: Partial<Value<C, T>>,
   options?: {
     defaultValue?: Record<string, unknown>;
     appendToTransaction?: TupleRootTransactionApi;
@@ -25,19 +25,19 @@ export function set<C extends ExpandedConfig = ExpandedConfig>(
 }
 
 // Get a value
-export function get<C extends ExpandedConfig = ExpandedConfig>(
+export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
-  table: keyof C["tables"],
-  key: C["tables"][typeof table]["primaryKeys"]
-): C["tables"][typeof table]["schema"] {
+  table: T,
+  key: Key<C, T>
+): Value<C, T> {
   return client.get([String(table), ...toKeyTuple(key)]);
 }
 
 // Remove a value
-export function remove<C extends ExpandedConfig = ExpandedConfig>(
+export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
-  table: keyof C["tables"],
-  key: C["tables"][typeof table]["primaryKeys"]
+  table: T,
+  key: Key<C, T>
 ) {
   const tx = client.transact();
   tx.remove([String(table), ...toKeyTuple(key)]);
@@ -48,7 +48,7 @@ export function remove<C extends ExpandedConfig = ExpandedConfig>(
 /**
  * Map a table schema to the corresponding default value
  */
-export function getDefaultValue(table?: Record<string, AbiType>) {
+export function getDefaultValue(table?: Record<string, string>) {
   if (table == null) return undefined;
 
   // Map schema to its default values
@@ -61,7 +61,7 @@ export function getDefaultValue(table?: Record<string, AbiType>) {
 
 /**
  * Convert a record like `{ a: string, b: number }` to a record tuple like `[{ a: string }, { b: number }]`,
- * as expected by tuple-database
+ * as expected for keys in tuple-database
  */
 function toKeyTuple(record: Record<string, unknown>): Record<string, unknown>[] {
   const tuple = [];

@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { createDatabase, createDatabaseClient, upsert } from "../src";
+import { createDatabase, createDatabaseClient } from "../src";
 import { InMemoryTupleStorage, TupleDatabase } from "tuple-database";
-import { StoreConfigShorthand } from "@latticexyz/config";
+import { mudConfig } from "@latticexyz/store/register";
 
-const config = {
+const config = mudConfig({
   tables: {
     Counter: { primaryKeys: { first: "bytes32", second: "uint256" }, schema: "uint256" },
   },
-} as const satisfies StoreConfigShorthand;
+} as const);
 
 describe("createDatabase", () => {
   it("should create a tuple database", () => {
@@ -21,10 +21,10 @@ describe("createDatabaseClient", () => {
     const db = createDatabase();
     const client = createDatabaseClient(db, config);
 
-    const key = { first: "key", second: BigInt(1) };
+    const key = { first: "0x00", second: BigInt(1) } as const;
     const value = { value: BigInt(2) };
 
-    client.Counter.upsert(key, value);
+    client.Counter.set(key, value);
     expect(client.Counter.get(key)).toEqual(value);
   });
 
@@ -32,9 +32,9 @@ describe("createDatabaseClient", () => {
     const db = createDatabase();
     const client = createDatabaseClient(db, config);
 
-    const key = { first: "key", second: BigInt(1) };
+    const key = { first: "0x00", second: BigInt(1) } as const;
 
-    client.Counter.upsert(key, {});
+    client.Counter.set(key, {}); // Setting a partial value
     expect(client.Counter.get(key)).toEqual({ value: 0n });
   });
 
@@ -42,11 +42,11 @@ describe("createDatabaseClient", () => {
     const db = createDatabase();
     const client = createDatabaseClient(db, config);
 
-    const key = { first: "key", second: BigInt(1) };
+    const key = { first: "0x00", second: BigInt(1) } as const;
     const value = { value: BigInt(2) };
 
     // Set the value
-    client.Counter.upsert(key, value);
+    client.Counter.set(key, value);
     expect(client.Counter.get(key)).toEqual(value);
 
     // Remove the value
@@ -70,12 +70,12 @@ describe("Performance", () => {
   it(`set ${size} values`, () => {
     const db = createDatabase();
     const client = createDatabaseClient(db, config);
-    const key = { first: "key", second: BigInt(0) };
+    const key = { first: "0x00", second: BigInt(0) } as const;
     const value = { value: BigInt(0) };
 
     const time = timeIt(() => {
       for (let i = 0; i < size; i++) {
-        client.Counter.upsert(key, value);
+        client.Counter.set(key, value);
       }
     });
 
