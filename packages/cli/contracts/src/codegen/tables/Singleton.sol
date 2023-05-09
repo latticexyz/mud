@@ -404,12 +404,6 @@ library Singleton {
       );
   }
 
-  function encodeKey() internal pure returns (bytes32[] memory) {
-    bytes32[] memory _primaryKeys = new bytes32[](0);
-
-    return _primaryKeys;
-  }
-
   /* Delete all data for given keys */
   function deleteRecord() internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);

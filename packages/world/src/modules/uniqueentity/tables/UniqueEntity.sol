@@ -96,12 +96,6 @@ library UniqueEntity {
     return abi.encodePacked(value);
   }
 
-  function encodeKey() internal pure returns (bytes32[] memory) {
-    bytes32[] memory _primaryKeys = new bytes32[](0);
-
-    return _primaryKeys;
-  }
-
   /* Delete all data for given keys */
   function deleteRecord(bytes32 _tableId) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);

@@ -200,13 +200,6 @@ library Vector2 {
     return abi.encodePacked(x, y);
   }
 
-  function encodeKey(bytes32 key) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
-
-    return _primaryKeys;
-  }
-
   /* Delete all data for given keys */
   function deleteRecord(bytes32 key) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

@@ -109,14 +109,6 @@ library ResourceAccess {
     return abi.encodePacked(access);
   }
 
-  function encodeKey(bytes32 resourceSelector, address caller) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _primaryKeys = new bytes32[](2);
-    _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
-
-    return _primaryKeys;
-  }
-
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector, address caller) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);

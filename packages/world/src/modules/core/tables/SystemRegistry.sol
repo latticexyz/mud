@@ -104,13 +104,6 @@ library SystemRegistry {
     return abi.encodePacked(resourceSelector);
   }
 
-  function encodeKey(address system) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32(bytes20((system)));
-
-    return _primaryKeys;
-  }
-
   /* Delete all data for given keys */
   function deleteRecord(address system) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

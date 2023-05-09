@@ -185,13 +185,6 @@ library Systems {
     return abi.encodePacked(system, publicAccess);
   }
 
-  function encodeKey(bytes32 resourceSelector) internal pure returns (bytes32[] memory) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((resourceSelector));
-
-    return _primaryKeys;
-  }
-
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
