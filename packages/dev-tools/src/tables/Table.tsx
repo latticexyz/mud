@@ -2,6 +2,8 @@ import { unpackTuple } from "@latticexyz/utils";
 import { serializeWithoutIndexedValues } from "./serializeWithoutIndexedValues";
 import { useParams } from "react-router-dom";
 import { useStore } from "../useStore";
+import { filter, distinctUntilChanged, map, of } from "rxjs";
+import { useObservableValue } from "../../../react/src";
 
 // TODO: use react-table or similar for better perf with lots of logs
 // TODO: this will need refactoring once we have better v2 client code, for now we're leaning on v1 cache store (ECS based)
@@ -9,6 +11,16 @@ import { useStore } from "../useStore";
 export function Table() {
   const cacheStore = useStore((state) => state.cacheStore);
   const { table } = useParams();
+
+  // Rerender when we detect a change to the table
+  const lastBlockNumber = useObservableValue(
+    cacheStore
+      ? cacheStore.componentUpdate$
+          .pipe(filter(({ component }) => component == table))
+          .pipe(map(({ blockNumber }) => blockNumber))
+          .pipe(distinctUntilChanged())
+      : of(0)
+  );
 
   if (!cacheStore) return null;
   if (!table) return null;

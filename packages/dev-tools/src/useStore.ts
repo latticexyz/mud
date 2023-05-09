@@ -74,5 +74,5 @@ walletClientObservable.subscribe((walletClient) => {
 });
 
 worldAbiObservable.subscribe((worldAbi) => {
-  useStore.setState({ worldAbi });
+  useStore.setState({ worldAbi: worldAbi ?? IWorldKernel__factory.abi });
 });
