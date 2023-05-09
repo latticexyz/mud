@@ -240,7 +240,7 @@ library FunctionSelectors {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKey(bytes4 functionSelector) internal pure returns (bytes32[] memory _primaryKeys) {
+  function encodeKeyTuple(bytes4 functionSelector) internal pure returns (bytes32[] memory _primaryKeys) {
     _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((functionSelector));
   }

@@ -97,7 +97,7 @@ library Bool {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKey() internal pure returns (bytes32[] memory _primaryKeys) {
+  function encodeKeyTuple() internal pure returns (bytes32[] memory _primaryKeys) {
     _primaryKeys = new bytes32[](0);
   }
 

@@ -877,7 +877,7 @@ library Statics {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKey(
+  function encodeKeyTuple(
     uint256 k1,
     int32 k2,
     bytes16 k3,

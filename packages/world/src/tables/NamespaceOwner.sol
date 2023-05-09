@@ -105,7 +105,7 @@ library NamespaceOwner {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKey(bytes16 namespace) internal pure returns (bytes32[] memory _primaryKeys) {
+  function encodeKeyTuple(bytes16 namespace) internal pure returns (bytes32[] memory _primaryKeys) {
     _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((namespace));
   }
