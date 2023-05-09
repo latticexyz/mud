@@ -94,6 +94,8 @@ export interface TableConfig<
   storeArgument?: boolean;
   /** Include a data struct and methods for it. Default is false for 1-column tables; true for multi-column tables. */
   dataStruct?: boolean;
+  /** Generate only `emitEphemeral` which emits an event without writing to storage. Default is false. */
+  ephemeral?: boolean;
   /** Table's primary key names mapped to their types. Default is `{ key: "bytes32" }` */
   primaryKeys?: Record<string, PrimaryKey<StaticUserTypes>>;
   /** Table's column names mapped to their types. Table name's 1st letter should be lowercase. */
@@ -132,6 +134,7 @@ const zFullTableConfig = z
     dataStruct: z.boolean().optional(),
     primaryKeys: zPrimaryKeys,
     schema: zSchemaConfig,
+    ephemeral: z.boolean().default(false),
   })
   .transform((arg) => {
     // default dataStruct value depends on schema's length

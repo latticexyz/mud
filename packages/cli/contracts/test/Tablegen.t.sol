@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
 
-import { Statics, StaticsData, Dynamics, DynamicsData, Singleton } from "../src/codegen/Tables.sol";
+import { Statics, StaticsData, Dynamics, DynamicsData, Singleton, Ephemeral } from "../src/codegen/Tables.sol";
 
 import { Enum1, Enum2 } from "../src/codegen/Types.sol";
 
@@ -109,5 +109,11 @@ contract TablegenTest is Test, StoreReadWithStubs {
     assertEq(abi.encode(Singleton.getV2()), abi.encode([uint32(1), 2]));
     assertEq(abi.encode(Singleton.getV3()), abi.encode([uint32(3), 4]));
     assertEq(abi.encode(Singleton.getV4()), abi.encode([uint32(5)]));
+  }
+
+  function testEphemeral() public {
+    Ephemeral.registerSchema();
+
+    Ephemeral.emitEphemeral("key", 123);
   }
 }

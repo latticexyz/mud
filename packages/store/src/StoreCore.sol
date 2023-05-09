@@ -21,6 +21,7 @@ library StoreCore {
   event StoreSetRecord(bytes32 tableId, bytes32[] key, bytes data);
   event StoreSetField(bytes32 tableId, bytes32[] key, uint8 schemaIndex, bytes data);
   event StoreDeleteRecord(bytes32 tableId, bytes32[] key);
+  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
 
   /**
    * Initialize internal tables.
@@ -147,18 +148,7 @@ library StoreCore {
     Schema schema = getSchema(tableId);
 
     // Verify static data length + dynamic data length matches the given data
-    uint256 staticLength = schema.staticDataLength();
-    uint256 expectedLength = staticLength;
-    PackedCounter dynamicLength;
-    if (schema.numDynamicFields() > 0) {
-      // Dynamic length is encoded at the start of the dynamic length blob
-      dynamicLength = PackedCounter.wrap(Bytes.slice32(data, staticLength));
-      expectedLength += 32 + dynamicLength.total(); // encoded length + data
-    }
-
-    if (expectedLength != data.length) {
-      revert IErrors.StoreCore_InvalidDataLength(expectedLength, data.length);
-    }
+    (uint256 staticLength, PackedCounter dynamicLength) = StoreCoreInternal._validateDataLength(schema, data);
 
     // Emit event to notify indexers
     emit StoreSetRecord(tableId, key, data);
@@ -369,6 +359,34 @@ library StoreCore {
     for (uint256 i; i < hooks.length; i++) {
       IStoreHook hook = IStoreHook(hooks[i]);
       hook.onAfterSetField(tableId, key, schemaIndex, fullData);
+    }
+  }
+
+  /************************************************************************
+   *
+   *    EPHEMERAL SET DATA
+   *
+   ************************************************************************/
+
+  /**
+   * Emit the ephemeral event without modifying storage for the full data of the given tableId and key tuple
+   */
+  function emitEphemeralRecord(bytes32 tableId, bytes32[] memory key, bytes memory data) internal {
+    // verify the value has the correct length for the tableId (based on the tableId's schema)
+    // to prevent invalid data from being emitted
+    Schema schema = getSchema(tableId);
+
+    // Verify static data length + dynamic data length matches the given data
+    StoreCoreInternal._validateDataLength(schema, data);
+
+    // Emit event to notify indexers
+    emit StoreEphemeralRecord(tableId, key, data);
+
+    // Call onSetRecord hooks
+    address[] memory hooks = Hooks.get(tableId);
+    for (uint256 i; i < hooks.length; i++) {
+      IStoreHook hook = IStoreHook(hooks[i]);
+      hook.onSetRecord(tableId, key, data);
     }
   }
 
@@ -669,6 +687,28 @@ library StoreCoreInternal {
    *    HELPER FUNCTIONS
    *
    ************************************************************************/
+
+  /**
+   * Verify static data length + dynamic data length matches the given data
+   * Returns the static and dynamic lengths
+   */
+  function _validateDataLength(
+    Schema schema,
+    bytes memory data
+  ) internal pure returns (uint256 staticLength, PackedCounter dynamicLength) {
+    staticLength = schema.staticDataLength();
+    uint256 expectedLength = staticLength;
+    dynamicLength;
+    if (schema.numDynamicFields() > 0) {
+      // Dynamic length is encoded at the start of the dynamic length blob
+      dynamicLength = PackedCounter.wrap(Bytes.slice32(data, staticLength));
+      expectedLength += 32 + dynamicLength.total(); // encoded length + data
+    }
+
+    if (expectedLength != data.length) {
+      revert IErrors.StoreCore_InvalidDataLength(expectedLength, data.length);
+    }
+  }
 
   /////////////////////////////////////////////////////////////////////////
   //    STATIC DATA
