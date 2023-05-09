@@ -14,7 +14,7 @@ const zSystemConfig = z.intersection(
   }),
   z.discriminatedUnion("openAccess", [
     z.object({
-      openAccess: z.literal(true),
+      openAccess: z.literal(true).default(SYSTEM_DEFAULTS.openAccess),
     }),
     z.object({
       openAccess: z.literal(false),

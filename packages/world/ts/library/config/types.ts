@@ -20,7 +20,7 @@ export type SystemUserConfig =
     } & (
       | {
           /** If openAccess is true, any address can call the system */
-          openAccess: true;
+          openAccess?: true;
         }
       | {
           /** If openAccess is false, only the addresses or systems in `access` can call the system */
