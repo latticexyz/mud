@@ -3,6 +3,7 @@
   "private": true,
   "scripts": {
     "build": "pnpm recursive run build",
+    "clean": "pnpm recursive run clean",
     "dev": "run-pty % pnpm dev:node % pnpm dev:contracts",
     "dev:contracts": "pnpm --filter 'contracts' dev",
     "dev:node": "pnpm --filter 'contracts' devnode",

@@ -27,6 +27,10 @@ jobs:
         working-directory: ./integration/${{ matrix.integration }}
         run: pnpm install
 
+      - name: Clean integration
+        working-directory: ./integration/${{ matrix.integration }}
+        run: pnpm run clean
+
       - name: Build integration
         working-directory: ./integration/${{ matrix.integration }}
         run: pnpm run build
