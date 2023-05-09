@@ -8,7 +8,6 @@ import { SliceLib } from "../src/Slice.sol";
 import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
-import { IErrors } from "../src/IErrors.sol";
 
 contract StoreCoreDynamicUpdateTest is Test, StoreReadWithStubs {
   Schema internal defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);

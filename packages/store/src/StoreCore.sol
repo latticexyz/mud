@@ -9,7 +9,7 @@ import { Schema, SchemaLib } from "./Schema.sol";
 import { PackedCounter } from "./PackedCounter.sol";
 import { Slice, SliceLib } from "./Slice.sol";
 import { StoreMetadata, Hooks, HooksTableId } from "./codegen/Tables.sol";
-import { IErrors } from "./IErrors.sol";
+import { IStoreErrors } from "./IStoreErrors.sol";
 import { IStoreHook } from "./IStore.sol";
 import { Utils } from "./Utils.sol";
 import { TableId } from "./TableId.sol";
@@ -67,7 +67,7 @@ library StoreCore {
   function getSchema(bytes32 tableId) internal view returns (Schema schema) {
     schema = StoreCoreInternal._getSchema(tableId);
     if (schema.isEmpty()) {
-      revert IErrors.StoreCore_TableNotFound(tableId, tableId.toString());
+      revert IStoreErrors.StoreCore_TableNotFound(tableId, tableId.toString());
     }
   }
 
@@ -77,7 +77,7 @@ library StoreCore {
   function getKeySchema(bytes32 tableId) internal view returns (Schema keySchema) {
     keySchema = StoreCoreInternal._getKeySchema(tableId);
     if (keySchema.isEmpty()) {
-      revert IErrors.StoreCore_TableNotFound(tableId, tableId.toString());
+      revert IStoreErrors.StoreCore_TableNotFound(tableId, tableId.toString());
     }
   }
 
@@ -98,7 +98,7 @@ library StoreCore {
 
     // Verify the schema doesn't exist yet
     if (hasTable(tableId)) {
-      revert IErrors.StoreCore_TableAlreadyExists(tableId, tableId.toString());
+      revert IStoreErrors.StoreCore_TableAlreadyExists(tableId, tableId.toString());
     }
 
     // Register the schema
@@ -113,7 +113,7 @@ library StoreCore {
 
     // Verify the number of field names corresponds to the schema length
     if (!(fieldNames.length == 0 || fieldNames.length == schema.numFields())) {
-      revert IErrors.StoreCore_InvalidFieldNamesLength(schema.numFields(), fieldNames.length);
+      revert IStoreErrors.StoreCore_InvalidFieldNamesLength(schema.numFields(), fieldNames.length);
     }
 
     // Set metadata
@@ -253,7 +253,7 @@ library StoreCore {
     Schema schema = getSchema(tableId);
 
     if (schemaIndex < schema.numStaticFields()) {
-      revert IErrors.StoreCore_NotDynamicField();
+      revert IStoreErrors.StoreCore_NotDynamicField();
     }
 
     // TODO add push-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
@@ -285,7 +285,7 @@ library StoreCore {
     Schema schema = getSchema(tableId);
 
     if (schemaIndex < schema.numStaticFields()) {
-      revert IErrors.StoreCore_NotDynamicField();
+      revert IStoreErrors.StoreCore_NotDynamicField();
     }
 
     // TODO add pop-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
@@ -324,12 +324,12 @@ library StoreCore {
     Schema schema = getSchema(tableId);
 
     if (schemaIndex < schema.numStaticFields()) {
-      revert IErrors.StoreCore_NotDynamicField();
+      revert IStoreErrors.StoreCore_NotDynamicField();
     }
     // index must be checked because it could be arbitrarily large
     // (but dataToSet.length can be unchecked - it won't overflow into another slot due to gas costs and hashed slots)
     if (startByteIndex > type(uint16).max) {
-      revert IErrors.StoreCore_DataIndexOverflow(type(uint16).max, startByteIndex);
+      revert IStoreErrors.StoreCore_DataIndexOverflow(type(uint16).max, startByteIndex);
     }
 
     // TODO add setItem-specific event and hook to avoid the storage read? (https://github.com/latticexyz/mud/issues/444)
@@ -532,7 +532,7 @@ library StoreCoreInternal {
     // verify the value has the correct length for the field
     SchemaType schemaType = schema.atIndex(schemaIndex);
     if (schemaType.getStaticByteLength() != data.length) {
-      revert IErrors.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
+      revert IStoreErrors.StoreCore_InvalidDataLength(schemaType.getStaticByteLength(), data.length);
     }
 
     // Store the provided value in storage
@@ -706,7 +706,7 @@ library StoreCoreInternal {
     }
 
     if (expectedLength != data.length) {
-      revert IErrors.StoreCore_InvalidDataLength(expectedLength, data.length);
+      revert IStoreErrors.StoreCore_InvalidDataLength(expectedLength, data.length);
     }
   }
 
