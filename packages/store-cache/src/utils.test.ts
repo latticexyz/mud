@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { createDatabase, createDatabaseClient } from "../src";
+import { createDatabase, createDatabaseClient } from ".";
 import { mudConfig } from "@latticexyz/store/register";
 import { subscribe } from "./utils";
 import { KeyValue } from "./types";

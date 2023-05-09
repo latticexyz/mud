@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { createDatabase } from "../src";
+import { createDatabase } from ".";
 import { InMemoryTupleStorage, TupleDatabase } from "tuple-database";
 
 describe("createDatabase", () => {
