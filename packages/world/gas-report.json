@@ -39,7 +39,55 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of keys with a given value",
     "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value1))",
-    "gasUsed": 7658
+    "gasUsed": 7688
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "install keys with value module",
+    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
+    "gasUsed": 609250
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "Setting the first of 10 keys",
+    "functionCall": "world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value))",
+    "gasUsed": 141550
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "Setting the last of 10 keys",
+    "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
+    "gasUsed": 134842
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "Get list of 10 keys with a given value",
+    "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value))",
+    "gasUsed": 12162
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "install keys with value module",
+    "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
+    "gasUsed": 609250
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "Setting the first of 100 keys",
+    "functionCall": "world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value))",
+    "gasUsed": 141550
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "Setting the last of 100 keys",
+    "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
+    "gasUsed": 192968
+  },
+  {
+    "source": "test/KeysWithValueModule.t.sol",
+    "name": "Get list of 100 keys with a given value",
+    "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value))",
+    "gasUsed": 57163
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
