@@ -5,9 +5,6 @@ import { twMerge } from "tailwind-merge";
 import { router } from "./router";
 import { RouterProvider } from "react-router-dom";
 
-// TODO: error boundary to catch route errors and any other downstream errors
-//       might need to move router provider in here instead of in mount.tsx and wrap the whole thing in an error boundary
-
 // TODO: fix tab index so that it's not possible to tab around in the UI when it's hidden
 
 export function App() {
