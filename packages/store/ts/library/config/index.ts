@@ -114,7 +114,7 @@ export interface ExpandTableConfig<T extends TableConfig<string, string>, TableN
       name: TableName;
       tableIdArgument: false;
       storeArgument: false;
-      // TODO should dataStruct conditional default be expanded?
+      // dataStruct isn't expanded, because its value is conditional on the number of schema fields
       dataStruct: boolean;
       primaryKeys: { key: "bytes32" };
     }
