@@ -5,7 +5,7 @@ import type { CommandModule, Options } from "yargs";
 import { loadConfig, MUDError } from "@latticexyz/config";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
-import { deploy } from "../utils/deploy-v2";
+import { deploy } from "../utils/deploy";
 import { logError } from "../utils/errors";
 import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
 import { mkdirSync, writeFileSync } from "fs";
@@ -94,7 +94,7 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
 }
 
 const commandModule: CommandModule<DeployOptions, DeployOptions> = {
-  command: "deploy-v2",
+  command: "deploy",
 
   describe: "Deploy MUD v2 contracts",
 
