@@ -3,8 +3,10 @@ cache/
 node_modules/
 bindings/
 artifacts/
-deployments
 abi/
-types/
 broadcast/
-.env
+
+# Ignore all deploy artifacts
+deploys/**/*.json
+# Except the latest ones (so we can load these into client)
+!deploys/**/latest.json

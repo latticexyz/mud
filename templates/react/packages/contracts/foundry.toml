@@ -6,6 +6,14 @@ optimizer = true
 optimizer_runs = 3000
 verbosity = 1
 src = "src"
-test = "src/test"
+test = "test"
 out = "out"
 allow_paths = ["../../node_modules", "../../../../packages"]
+extra_output_files = [
+  "abi",
+  "evm.bytecode"
+]
+fs_permissions = [{ access = "read", path = "./"}]
+
+[profile.lattice-testnet]
+eth_rpc_url = "https://follower.testnet-chain.linfra.xyz"

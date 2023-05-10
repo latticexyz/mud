@@ -1,37 +1,45 @@
-import { setupMUDNetwork } from "@latticexyz/std-client";
-import { createWorld } from "@latticexyz/recs";
-import { SystemTypes } from "contracts/types/SystemTypes";
-import { SystemAbis } from "contracts/types/SystemAbis.mjs";
-import { defineNumberComponent } from "@latticexyz/std-client";
-import { config } from "./config";
+import { setup } from "./mud/setup";
 
-// The world contains references to all entities, all components and disposers.
-const world = createWorld();
-
-// Components contain the application state.
-// If a contractId is provided, MUD syncs the state with the corresponding
-// component contract (in this case `CounterComponent.sol`)
-const components = {
-  Counter: defineNumberComponent(world, {
-    metadata: {
-      contractId: "component.Counter",
-    },
-  }),
-};
+const { components, worldSend } = await setup();
 
 // Components expose a stream that triggers when the component is updated.
-components.Counter.update$.subscribe(({ value }) => {
-  document.getElementById("counter")!.innerHTML = String(value?.[0]?.value);
+components.CounterTable.update$.subscribe((update) => {
+  const [nextValue, prevValue] = update.value;
+  console.log("Counter updated", update, { nextValue, prevValue });
+  document.getElementById("counter")!.innerHTML = String(nextValue?.value ?? "unset");
 });
 
-// This is where the magic happens
-setupMUDNetwork<typeof components, SystemTypes>(config, world, components, SystemAbis).then(
-  ({ startSync, systems }) => {
-    // After setting up the network, we can tell MUD to start the synchronization process.
-    startSync();
+components.MessageTable.update$.subscribe((update) => {
+  console.log("Message received", update);
+  const [nextValue] = update.value;
 
-    // Just for demonstration purposes: we create a global function that can be
-    // called to invoke the Increment system contract. (See IncrementSystem.sol.)
-    (window as any).increment = () => systems["system.Increment"].executeTyped("0x00");
-  }
-);
+  const ele = document.getElementById("chat-output")!;
+  ele.innerHTML = ele.innerHTML + `${new Date().toLocaleString()}: ${nextValue?.value}\n`;
+});
+
+// Just for demonstration purposes: we create a global function that can be
+// called to invoke the Increment system contract via the world. (See IncrementSystem.sol.)
+(window as any).increment = async () => {
+  const tx = await worldSend("increment", []);
+
+  console.log("increment tx", tx);
+  console.log("increment result", await tx.wait());
+};
+
+(window as any).sendMessage = async () => {
+  const input = document.getElementById("chat-input") as HTMLInputElement;
+  const msg = input.value;
+  if (!msg || msg.length === 0) return;
+
+  input.value = "";
+
+  const tx = await worldSend("sendMessage", [msg]);
+
+  console.log("sendMessage tx", tx);
+  console.log("sendMessage result", await tx.wait());
+};
+
+document.getElementById("chat-form")?.addEventListener("submit", (e) => {
+  e.preventDefault();
+  (window as any).sendMessage();
+});

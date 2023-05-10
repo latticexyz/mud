@@ -1,17 +1,26 @@
-import { SingletonID, TxQueue } from "@latticexyz/network";
-import { World } from "@latticexyz/recs";
-import { SystemTypes } from "contracts/types/SystemTypes";
 import { useComponentValue } from "@latticexyz/react";
-import { components, singletonIndex } from ".";
+import { useMUD } from "./MUDContext";
+import { useEffect, useState } from "react";
 
-type Props = {
-  world: World;
-  systems: TxQueue<SystemTypes>;
-  components: typeof components;
-};
+export const App = () => {
+  const {
+    components: { CounterTable, MessageTable },
+    singletonEntity,
+    worldSend,
+  } = useMUD();
 
-export const App = ({ systems, components }: Props) => {
-  const counter = useComponentValue(components.Counter, singletonIndex);
+  const counter = useComponentValue(CounterTable, singletonEntity);
+
+  const [myMessage, setMyMessage] = useState<string>("");
+  const [messages, setMessages] = useState<string[]>([]);
+  const message = useComponentValue(MessageTable, singletonEntity);
+
+  useEffect(() => {
+    if (!message?.value) return;
+
+    setMessages((messages) => [...messages, `${new Date().toLocaleTimeString()}: ${message.value}`]);
+  }, [message]);
+
   return (
     <>
       <div>
@@ -19,13 +28,44 @@ export const App = ({ systems, components }: Props) => {
       </div>
       <button
         type="button"
-        onClick={(event) => {
+        onClick={async (event) => {
           event.preventDefault();
-          systems["system.Increment"].executeTyped(SingletonID);
+
+          const tx = await worldSend("increment", []);
+
+          console.log("increment tx", tx);
+          console.log("increment result", await tx.wait());
         }}
       >
         Increment
       </button>
+
+      <div>
+        <h1>Chat</h1>
+        <textarea value={messages.join("\n")} rows={10} cols={50} readOnly>
+          {messages.join("\n")}
+        </textarea>
+        <form
+          onSubmit={async (event) => {
+            event.preventDefault();
+            await worldSend("sendMessage", [myMessage]);
+            setMyMessage("");
+          }}
+        >
+          <input value={myMessage} onChange={(event) => setMyMessage(event.target.value)} type="text" />
+          {" "}
+          <button
+            type="submit"
+            disabled={!myMessage}
+          >
+            <span role="img" aria-label="Send">
+              📤
+            </span>
+            {" "}
+            Send
+          </button>
+        </form>
+      </div>
     </>
   );
 };
