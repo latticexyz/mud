@@ -124,6 +124,49 @@ library Dynamics {
     _store.setField(_tableId, _primaryKeys, 0, EncodeArray.encode(fromStaticArray_bytes32_1(staticB32)));
   }
 
+  /** Get the length of staticB32 */
+  function lengthStaticB32(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 32;
+  }
+
+  /** Get the length of staticB32 (using the specified store) */
+  function lengthStaticB32(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 32;
+  }
+
+  /** Get an item of staticB32 */
+  function getItemStaticB32(bytes32 key, uint256 _index) internal view returns (bytes32) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      0,
+      getSchema(),
+      _index * 32,
+      (_index + 1) * 32
+    );
+    return (Bytes.slice32(_blob, 0));
+  }
+
+  /** Get an item of staticB32 (using the specified store) */
+  function getItemStaticB32(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes32) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 0, getSchema(), _index * 32, (_index + 1) * 32);
+    return (Bytes.slice32(_blob, 0));
+  }
+
   /** Push an element to staticB32 */
   function pushStaticB32(bytes32 key, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -204,6 +247,49 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     _store.setField(_tableId, _primaryKeys, 1, EncodeArray.encode(fromStaticArray_int32_2(staticI32)));
+  }
+
+  /** Get the length of staticI32 */
+  function lengthStaticI32(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 1, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get the length of staticI32 (using the specified store) */
+  function lengthStaticI32(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 1, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get an item of staticI32 */
+  function getItemStaticI32(bytes32 key, uint256 _index) internal view returns (int32) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      1,
+      getSchema(),
+      _index * 4,
+      (_index + 1) * 4
+    );
+    return (int32(uint32(Bytes.slice4(_blob, 0))));
+  }
+
+  /** Get an item of staticI32 (using the specified store) */
+  function getItemStaticI32(IStore _store, bytes32 key, uint256 _index) internal view returns (int32) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 1, getSchema(), _index * 4, (_index + 1) * 4);
+    return (int32(uint32(Bytes.slice4(_blob, 0))));
   }
 
   /** Push an element to staticI32 */
@@ -288,6 +374,49 @@ library Dynamics {
     _store.setField(_tableId, _primaryKeys, 2, EncodeArray.encode(fromStaticArray_uint128_3(staticU128)));
   }
 
+  /** Get the length of staticU128 */
+  function lengthStaticU128(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 2, getSchema());
+    return _byteLength / 16;
+  }
+
+  /** Get the length of staticU128 (using the specified store) */
+  function lengthStaticU128(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 2, getSchema());
+    return _byteLength / 16;
+  }
+
+  /** Get an item of staticU128 */
+  function getItemStaticU128(bytes32 key, uint256 _index) internal view returns (uint128) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      2,
+      getSchema(),
+      _index * 16,
+      (_index + 1) * 16
+    );
+    return (uint128(Bytes.slice16(_blob, 0)));
+  }
+
+  /** Get an item of staticU128 (using the specified store) */
+  function getItemStaticU128(IStore _store, bytes32 key, uint256 _index) internal view returns (uint128) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 2, getSchema(), _index * 16, (_index + 1) * 16);
+    return (uint128(Bytes.slice16(_blob, 0)));
+  }
+
   /** Push an element to staticU128 */
   function pushStaticU128(bytes32 key, uint128 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -368,6 +497,49 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     _store.setField(_tableId, _primaryKeys, 3, EncodeArray.encode(fromStaticArray_address_4(staticAddrs)));
+  }
+
+  /** Get the length of staticAddrs */
+  function lengthStaticAddrs(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 3, getSchema());
+    return _byteLength / 20;
+  }
+
+  /** Get the length of staticAddrs (using the specified store) */
+  function lengthStaticAddrs(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 3, getSchema());
+    return _byteLength / 20;
+  }
+
+  /** Get an item of staticAddrs */
+  function getItemStaticAddrs(bytes32 key, uint256 _index) internal view returns (address) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      3,
+      getSchema(),
+      _index * 20,
+      (_index + 1) * 20
+    );
+    return (address(Bytes.slice20(_blob, 0)));
+  }
+
+  /** Get an item of staticAddrs (using the specified store) */
+  function getItemStaticAddrs(IStore _store, bytes32 key, uint256 _index) internal view returns (address) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 3, getSchema(), _index * 20, (_index + 1) * 20);
+    return (address(Bytes.slice20(_blob, 0)));
   }
 
   /** Push an element to staticAddrs */
@@ -452,6 +624,49 @@ library Dynamics {
     _store.setField(_tableId, _primaryKeys, 4, EncodeArray.encode(fromStaticArray_bool_5(staticBools)));
   }
 
+  /** Get the length of staticBools */
+  function lengthStaticBools(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 4, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get the length of staticBools (using the specified store) */
+  function lengthStaticBools(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 4, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get an item of staticBools */
+  function getItemStaticBools(bytes32 key, uint256 _index) internal view returns (bool) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      4,
+      getSchema(),
+      _index * 1,
+      (_index + 1) * 1
+    );
+    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+  }
+
+  /** Get an item of staticBools (using the specified store) */
+  function getItemStaticBools(IStore _store, bytes32 key, uint256 _index) internal view returns (bool) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 4, getSchema(), _index * 1, (_index + 1) * 1);
+    return (_toBool(uint8(Bytes.slice1(_blob, 0))));
+  }
+
   /** Push an element to staticBools */
   function pushStaticBools(bytes32 key, bool _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -532,6 +747,49 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     _store.setField(_tableId, _primaryKeys, 5, EncodeArray.encode((u64)));
+  }
+
+  /** Get the length of u64 */
+  function lengthU64(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 5, getSchema());
+    return _byteLength / 8;
+  }
+
+  /** Get the length of u64 (using the specified store) */
+  function lengthU64(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 5, getSchema());
+    return _byteLength / 8;
+  }
+
+  /** Get an item of u64 */
+  function getItemU64(bytes32 key, uint256 _index) internal view returns (uint64) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      5,
+      getSchema(),
+      _index * 8,
+      (_index + 1) * 8
+    );
+    return (uint64(Bytes.slice8(_blob, 0)));
+  }
+
+  /** Get an item of u64 (using the specified store) */
+  function getItemU64(IStore _store, bytes32 key, uint256 _index) internal view returns (uint64) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 5, getSchema(), _index * 8, (_index + 1) * 8);
+    return (uint64(Bytes.slice8(_blob, 0)));
   }
 
   /** Push an element to u64 */
@@ -616,6 +874,49 @@ library Dynamics {
     _store.setField(_tableId, _primaryKeys, 6, bytes((str)));
   }
 
+  /** Get the length of str */
+  function lengthStr(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 6, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get the length of str (using the specified store) */
+  function lengthStr(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 6, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get an item of str */
+  function getItemStr(bytes32 key, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      6,
+      getSchema(),
+      _index * 1,
+      (_index + 1) * 1
+    );
+    return (string(_blob));
+  }
+
+  /** Get an item of str (using the specified store) */
+  function getItemStr(IStore _store, bytes32 key, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 6, getSchema(), _index * 1, (_index + 1) * 1);
+    return (string(_blob));
+  }
+
   /** Push a slice to str */
   function pushStr(bytes32 key, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -696,6 +997,49 @@ library Dynamics {
     _primaryKeys[0] = bytes32((key));
 
     _store.setField(_tableId, _primaryKeys, 7, bytes((b)));
+  }
+
+  /** Get the length of b */
+  function lengthB(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 7, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get the length of b (using the specified store) */
+  function lengthB(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 7, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get an item of b */
+  function getItemB(bytes32 key, uint256 _index) internal view returns (bytes memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      7,
+      getSchema(),
+      _index * 1,
+      (_index + 1) * 1
+    );
+    return (bytes(_blob));
+  }
+
+  /** Get an item of b (using the specified store) */
+  function getItemB(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 7, getSchema(), _index * 1, (_index + 1) * 1);
+    return (bytes(_blob));
   }
 
   /** Push a slice to b */
@@ -1028,4 +1372,10 @@ function fromStaticArray_bool_5(bool[5] memory _value) view returns (bool[] memo
     toPointer := add(_result, 0x20)
   }
   Memory.copy(fromPointer, toPointer, 160);
+}
+
+function _toBool(uint8 value) pure returns (bool result) {
+  assembly {
+    result := value
+  }
 }
