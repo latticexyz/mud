@@ -51,7 +51,7 @@
     "typescript": "^4.9.5"
   },
   "peerDependencies": {
-    "@latticexyz/recs": "latest",
+    "@latticexyz/recs": "*",
     "mobx": "^6.7.0",
     "react": "^18.2.0",
     "rxjs": "^7.5.5"
