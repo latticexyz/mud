@@ -2,7 +2,7 @@ import { SchemaType, SchemaTypeToPrimitive } from "@latticexyz/schema-type";
 import { decodeDynamicField } from "./decodeDynamicField";
 import { decodeStaticField } from "./decodeStaticField";
 
-export function decodeValueV2(bytes: Uint8Array): any {
+export function decodeValueJSON(bytes: Uint8Array): any {
   return JSON.parse(new TextDecoder().decode(bytes));
 }
 
