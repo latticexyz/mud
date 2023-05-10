@@ -13,7 +13,8 @@
     ".": "./dist/ts/library/index.js",
     "./register": "./dist/ts/register/index.js",
     "./mud.config.js": "./dist/mud.config.js",
-    "./abi/*": "./abi/*"
+    "./abi/*": "./abi/*",
+    "./types/*": "./types/*"
   },
   "typesVersions": {
     "*": {
