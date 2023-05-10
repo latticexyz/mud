@@ -30,8 +30,8 @@
     "lodash": "^4.17.21",
     "mobx": "^6.7.0",
     "mobx-react-lite": "^3.4.0",
-    "shiki": "^0.11.1",
-    "react": "^18.2.0"
+    "react": "^18.2.0",
+    "shiki": "^0.11.1"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.182",
