@@ -293,4 +293,94 @@ contract KeysInTableModuleTest is Test {
     // Assert that the key tuple is in the source table
     assertTrue(hasKey(world, sourceTableId, keyTuple));
   }
+
+  function testGetKeysWithValueMany10() public {
+    _installKeysInTableModule();
+
+    uint256 AMOUNT = 10;
+    uint256 value = 1;
+
+    bytes32[] memory firstKey = new bytes32[](1);
+    firstKey[0] = bytes32(0);
+    bytes32[] memory lastKey = new bytes32[](1);
+    lastKey[0] = bytes32(uint256(AMOUNT - 1));
+
+    // !gasreport Setting the first of 10 keys
+    world.setRecord(namespace, sourceFile, firstKey, abi.encodePacked(value));
+
+    for (uint256 i = 1; i < AMOUNT - 1; i++) {
+      bytes32[] memory key = new bytes32[](1);
+      key[0] = bytes32(i);
+      world.setRecord(namespace, sourceFile, key, abi.encodePacked(value));
+    }
+
+    // !gasreport Setting the last of 10 keys
+    world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
+
+    // !gasreport Get list of 10 keys with a given value
+    bytes32[][] memory keyTuples = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keyTuples.length, AMOUNT);
+  }
+
+  function testGetKeysWithValueMany100() public {
+    _installKeysInTableModule();
+
+    uint256 AMOUNT = 100;
+    uint256 value = 1;
+
+    bytes32[] memory firstKey = new bytes32[](1);
+    firstKey[0] = bytes32(0);
+    bytes32[] memory lastKey = new bytes32[](1);
+    lastKey[0] = bytes32(uint256(AMOUNT - 1));
+
+    // !gasreport Setting the first of 100 keys
+    world.setRecord(namespace, sourceFile, firstKey, abi.encodePacked(value));
+
+    for (uint256 i = 1; i < AMOUNT - 1; i++) {
+      bytes32[] memory key = new bytes32[](1);
+      key[0] = bytes32(i);
+      world.setRecord(namespace, sourceFile, key, abi.encodePacked(value));
+    }
+
+    // !gasreport Setting the last of 100 keys
+    world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
+
+    // !gasreport Get list of 100 keys with a given value
+    bytes32[][] memory keyTuples = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keyTuples.length, AMOUNT);
+  }
+
+  function testGetKeysWithValueMany1000() public {
+    _installKeysInTableModule();
+
+    uint256 AMOUNT = 1000;
+    uint256 value = 1;
+
+    bytes32[] memory firstKey = new bytes32[](1);
+    firstKey[0] = bytes32(0);
+    bytes32[] memory lastKey = new bytes32[](1);
+    lastKey[0] = bytes32(uint256(AMOUNT - 1));
+
+    // !gasreport Setting the first of 1000 keys
+    world.setRecord(namespace, sourceFile, firstKey, abi.encodePacked(value));
+
+    for (uint256 i = 1; i < AMOUNT - 1; i++) {
+      bytes32[] memory key = new bytes32[](1);
+      key[0] = bytes32(i);
+      world.setRecord(namespace, sourceFile, key, abi.encodePacked(value));
+    }
+
+    // !gasreport Setting the last of 1000 keys
+    world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
+
+    // !gasreport Get list of 1000 keys with a given value
+    bytes32[][] memory keyTuples = getKeysInTable(world, sourceTableId);
+
+    // Assert that the list is correct
+    assertEq(keyTuples.length, AMOUNT);
+  }
 }
