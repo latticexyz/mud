@@ -23,6 +23,7 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
+    "gas-report": "./dist/mud.js gas-report --path contracts/test/* --save gas-report.json",
     "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "generate-test-types": "tsx ./scripts/generate-test-types.ts",
     "generate-test-templates": "tsx ./scripts/generate-test-templates.ts",

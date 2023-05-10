@@ -16,10 +16,6 @@ const factoryConfig = templateConfig({
         v6: "E1",
         v7: "E1",
       },
-      Counter: { value: 2n },
-    },
-    Person: {
-      Counter: { value: 123456789n },
     },
   },
 });

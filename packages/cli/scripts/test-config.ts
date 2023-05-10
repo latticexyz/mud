@@ -54,9 +54,6 @@ try {
         schema: "uint256",
         ephemeral: true,
       },
-      Counter: {
-        schema: "uint256",
-      },
     },
 
     enums: {

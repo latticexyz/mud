@@ -8,16 +8,14 @@ import { TemplateContent } from "@latticexyz/world/src/modules/templates/tables/
 import { TemplateIndex } from "@latticexyz/world/src/modules/templates/tables/TemplateIndex.sol";
 import { Enum1, Enum2 } from "../Types.sol";
 import { Statics, StaticsTableId, StaticsData } from "../tables/Statics.sol";
-import { Counter, CounterTableId } from "../tables/Counter.sol";
 
 bytes32 constant templateId = "Example";
 bytes32 constant ExampleTemplateId = templateId;
-uint256 constant LENGTH = 2;
+uint256 constant LENGTH = 1;
 
 function ExampleTemplate() {
   bytes32[] memory tableIds = new bytes32[](LENGTH);
   tableIds[0] = StaticsTableId;
-  tableIds[1] = CounterTableId;
   TemplateIndex.set(templateId, tableIds);
 
   TemplateContent.set(
@@ -25,13 +23,11 @@ function ExampleTemplate() {
     StaticsTableId,
     Statics.encode(1, 1, "wasd", 0x71C7656EC7ab88b098defB751B7401B5f6d8976F, true, Enum1.E1, Enum2.E1)
   );
-  TemplateContent.set(templateId, CounterTableId, Counter.encode(2));
 }
 
 function ExampleTemplate(IStore store) {
   bytes32[] memory tableIds = new bytes32[](LENGTH);
   tableIds[0] = StaticsTableId;
-  tableIds[1] = CounterTableId;
   TemplateIndex.set(store, templateId, tableIds);
 
   TemplateContent.set(
@@ -40,5 +36,4 @@ function ExampleTemplate(IStore store) {
     StaticsTableId,
     Statics.encode(1, 1, "wasd", 0x71C7656EC7ab88b098defB751B7401B5f6d8976F, true, Enum1.E1, Enum2.E1)
   );
-  TemplateContent.set(store, templateId, CounterTableId, Counter.encode(2));
 }
