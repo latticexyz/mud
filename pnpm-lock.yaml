@@ -417,7 +417,7 @@ importers:
         version: 5.7.2
       '@improbable-eng/grpc-web':
         specifier: ^0.15.0
-        version: 0.15.0(google-protobuf@3.21.0)
+        version: 0.15.0(google-protobuf@3.21.2)
       '@latticexyz/common':
         specifier: workspace:*
         version: link:../common
@@ -456,7 +456,7 @@ importers:
         version: 6.9.0
       nice-grpc-web:
         specifier: ^2.0.1
-        version: 2.0.1(google-protobuf@3.21.0)
+        version: 2.0.1(google-protobuf@3.21.2)
       rxjs:
         specifier: ^7.5.5
         version: 7.5.6
@@ -494,9 +494,6 @@ importers:
       ts-jest:
         specifier: ^29.0.5
         version: 29.0.5(@babel/core@7.21.3)(esbuild@0.17.17)(jest@29.5.0)(typescript@4.9.5)
-      tslib:
-        specifier: ^2.5.0
-        version: 2.5.0
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
@@ -2629,15 +2626,6 @@ packages:
       '@improbable-eng/grpc-web': '>=0.13.0'
     dependencies:
       '@improbable-eng/grpc-web': 0.15.0(google-protobuf@3.21.2)
-    dev: false
-
-  /@improbable-eng/grpc-web@0.15.0(google-protobuf@3.21.0):
-    resolution: {integrity: sha512-ERft9/0/8CmYalqOVnJnpdDry28q+j+nAlFFARdjyxXDJ+Mhgv9+F600QC8BR9ygOfrXRlAk6CvST2j+JCpQPg==}
-    peerDependencies:
-      google-protobuf: ^3.14.0
-    dependencies:
-      browser-headers: 0.4.1
-      google-protobuf: 3.21.0
     dev: false
 
   /@improbable-eng/grpc-web@0.15.0(google-protobuf@3.21.2):
@@ -8601,10 +8589,6 @@ packages:
       csstype: 3.1.2
     dev: false
 
-  /google-protobuf@3.21.0:
-    resolution: {integrity: sha512-byR7MBTK4tZ5PZEb+u5ZTzpt4SfrTxv5682MjPlHN16XeqgZE2/8HOIWeiXe8JKnT9OVbtBGhbq8mtvkK8cd5g==}
-    dev: false
-
   /google-protobuf@3.21.2:
     resolution: {integrity: sha512-3MSOYFO5U9mPGikIYCzK0SaThypfGgS6bHqrUGXG3DPHCrb+txNqeEcns1W0lkGfk0rCyNXm7xB9rMxnCiZOoA==}
     dev: false
@@ -11672,17 +11656,6 @@ packages:
     resolution: {integrity: sha512-7RNWbls5kAL1QVUOXvBsv1uO0wPQK3lHv+cY1gwkTzirnG1Nop4cBJZubpgziNbaVc/bl9QJcyvsf/NQxa3rjQ==}
     dependencies:
       ts-error: 1.0.6
-    dev: false
-
-  /nice-grpc-web@2.0.1(google-protobuf@3.21.0):
-    resolution: {integrity: sha512-r8jy0TJY6ZO9qWtujiqmtRkqgItAChoJxJyYv+CHacP9G5kRIH03M+sQqtieXNNDUAKfFT/z5yroSy1cPFX0sA==}
-    dependencies:
-      '@improbable-eng/grpc-web': 0.15.0(google-protobuf@3.21.0)
-      abort-controller-x: 0.4.1
-      js-base64: 3.7.5
-      nice-grpc-common: 2.0.2
-    transitivePeerDependencies:
-      - google-protobuf
     dev: false
 
   /nice-grpc-web@2.0.1(google-protobuf@3.21.2):
