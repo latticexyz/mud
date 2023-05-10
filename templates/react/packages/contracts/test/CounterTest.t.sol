@@ -6,12 +6,10 @@ import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
 import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { CounterTable, CounterTableTableId } from "../src/codegen/Tables.sol";
-
-import { SingletonKey } from "../src/systems/IncrementSystem.sol";
+import { Counter, CounterTableId } from "../src/codegen/Tables.sol";
 
 contract CounterTest is MudV2Test {
-  IWorld world;
+  IWorld public world;
 
   function setUp() public override {
     super.setUp();
@@ -29,20 +27,18 @@ contract CounterTest is MudV2Test {
 
   function testCounter() public {
     // Expect the counter to be 1 because it was incremented in the PostDeploy script.
-    bytes32 key = SingletonKey;
-    uint32 counter = CounterTable.get(world, key);
+    uint32 counter = Counter.get(world);
     assertEq(counter, 1);
 
     // Expect the counter to be 2 after calling increment.
     world.increment();
-    counter = CounterTable.get(world, key);
+    counter = Counter.get(world);
     assertEq(counter, 2);
   }
 
   function testKeysWithValue() public {
-    bytes32 key = SingletonKey;
-    uint32 counter = CounterTable.get(world, key);
-    bytes32[] memory keysWithValue = getKeysWithValue(world, CounterTableTableId, CounterTable.encode(counter));
+    uint32 counter = Counter.get(world);
+    bytes32[] memory keysWithValue = getKeysWithValue(world, CounterTableId, Counter.encode(counter));
     assertEq(keysWithValue.length, 1);
   }
 }

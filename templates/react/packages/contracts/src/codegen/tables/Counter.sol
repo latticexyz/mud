@@ -17,10 +17,10 @@ import { EncodeArray } from "@latticexyz/store/src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "@latticexyz/store/src/PackedCounter.sol";
 
-bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("counter")));
-bytes32 constant CounterTableTableId = _tableId;
+bytes32 constant _tableId = bytes32(abi.encodePacked(bytes16(""), bytes16("Counter")));
+bytes32 constant CounterTableId = _tableId;
 
-library CounterTable {
+library Counter {
   /** Get the table's schema */
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](1);
@@ -30,8 +30,7 @@ library CounterTable {
   }
 
   function getKeySchema() internal pure returns (Schema) {
-    SchemaType[] memory _schema = new SchemaType[](1);
-    _schema[0] = SchemaType.BYTES32;
+    SchemaType[] memory _schema = new SchemaType[](0);
 
     return SchemaLib.encode(_schema);
   }
@@ -40,7 +39,7 @@ library CounterTable {
   function getMetadata() internal pure returns (string memory, string[] memory) {
     string[] memory _fieldNames = new string[](1);
     _fieldNames[0] = "value";
-    return ("CounterTable", _fieldNames);
+    return ("Counter", _fieldNames);
   }
 
   /** Register the table's schema */
@@ -66,35 +65,31 @@ library CounterTable {
   }
 
   /** Get value */
-  function get(bytes32 key) internal view returns (uint32 value) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+  function get() internal view returns (uint32 value) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
   /** Get value (using the specified store) */
-  function get(IStore _store, bytes32 key) internal view returns (uint32 value) {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+  function get(IStore _store) internal view returns (uint32 value) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
   /** Set value */
-  function set(bytes32 key, uint32 value) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+  function set(uint32 value) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
 
   /** Set value (using the specified store) */
-  function set(IStore _store, bytes32 key, uint32 value) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+  function set(IStore _store, uint32 value) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((value)));
   }
@@ -105,23 +100,20 @@ library CounterTable {
   }
 
   /** Encode keys as a bytes32 array using this table's schema */
-  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _primaryKeys) {
-    _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+  function encodeKeyTuple() internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](0);
   }
 
   /* Delete all data for given keys */
-  function deleteRecord(bytes32 key) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+  function deleteRecord() internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
 
   /* Delete all data for given keys (using the specified store) */
-  function deleteRecord(IStore _store, bytes32 key) internal {
-    bytes32[] memory _primaryKeys = new bytes32[](1);
-    _primaryKeys[0] = bytes32((key));
+  function deleteRecord(IStore _store) internal {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.deleteRecord(_tableId, _primaryKeys);
   }
