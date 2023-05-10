@@ -1,2 +1,2 @@
 export * from "./errors";
-export * from "./deploy";
+export * from "./deploy-v2";

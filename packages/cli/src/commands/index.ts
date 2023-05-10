@@ -6,10 +6,10 @@ import gasReport from "./gas-report";
 import hello from "./hello";
 import tablegen from "./tablegen";
 import tsgen from "./tsgen";
-import deployV2 from "./deploy";
+import deployV2 from "./deploy-v2";
 import worldgen from "./worldgen";
 import setVersion from "./set-version";
-import testV2 from "./test";
+import testV2 from "./test-v2";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each command has different options
 export const commands: CommandModule<any, any>[] = [

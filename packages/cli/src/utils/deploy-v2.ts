@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync, readFileSync } from "fs";
 import path from "path";
 import chalk from "chalk";

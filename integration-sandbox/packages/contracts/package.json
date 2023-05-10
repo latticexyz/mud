@@ -11,7 +11,7 @@
     "clean": "pnpm run clean:abi && pnpm run clean:typechain",
     "clean:abi": "rimraf abi",
     "clean:typechain": "rimraf types",
-    "test": "mud test"
+    "test": "mud test-v2"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
