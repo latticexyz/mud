@@ -3,13 +3,14 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
-import { getKeysWithValue } from "@latticexyz/world/src/modules/keyswithvalue/getKeysWithValue.sol";
+import { createInstance } from "@latticexyz/world/src/modules/templates/createInstance.sol";
+import { TemplateContent } from "@latticexyz/world/src/modules/templates/tables/TemplateContent.sol";
+
 import { createTemplates } from "../src/codegen/scripts/CreateTemplates.sol";
 
 import { IWorld } from "../src/codegen/world/IWorld.sol";
-import { CounterTable, CounterTableTableId, TemplateContent } from "../src/codegen/Tables.sol";
+import { CounterTable, CounterTableTableId } from "../src/codegen/Tables.sol";
 import { SampleTemplateId } from "../src/codegen/Templates.sol";
-import { createInstance } from "../src/scripts/CreateInstance.sol";
 
 import { SingletonKey } from "../src/systems/IncrementSystem.sol";
 

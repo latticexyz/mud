@@ -41,7 +41,8 @@ export function renderTemplate(mudConfig: StoreConfig, templateConfig: { templat
   ${renderedSolidityHeader}
   
   import { IStore } from "@latticexyz/store/src/IStore.sol";
-  import { TemplateContent, TemplateIndex } from "../Tables.sol";
+  import { TemplateContent } from "@latticexyz/world/src/modules/templates/tables/TemplateContent.sol";
+  import { TemplateIndex } from "@latticexyz/world/src/modules/templates/tables/TemplateIndex.sol";
   ${
     Object.keys(mudConfig.enums).length > 0
       ? `import { ${Object.keys(mudConfig.enums)

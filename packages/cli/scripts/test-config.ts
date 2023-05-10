@@ -57,13 +57,6 @@ try {
       Counter: {
         schema: "uint256",
       },
-      TemplateContent: {
-        primaryKeys: { templateId: "bytes32", tableId: "bytes32" },
-        schema: "bytes",
-      },
-      TemplateIndex: {
-        schema: "bytes32[]",
-      },
     },
 
     enums: {

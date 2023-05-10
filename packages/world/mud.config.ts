@@ -119,6 +119,15 @@ export default mudConfig({
       tableIdArgument: true,
       storeArgument: true,
     },
+    TemplateContent: {
+      directory: "modules/templates/tables",
+      primaryKeys: { templateId: "bytes32", tableId: "bytes32" },
+      schema: "bytes",
+    },
+    TemplateIndex: {
+      directory: "modules/templates/tables",
+      schema: "bytes32[]",
+    },
     /************************************************************************
      *
      *    TEST TABLES

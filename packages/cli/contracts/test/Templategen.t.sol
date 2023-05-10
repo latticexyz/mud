@@ -3,11 +3,13 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
+import { createInstance } from "@latticexyz/world/src/modules/templates/createInstance.sol";
+import { TemplateContent } from "@latticexyz/world/src/modules/templates/tables/TemplateContent.sol";
+import { TemplateIndex } from "@latticexyz/world/src/modules/templates/tables/TemplateIndex.sol";
 
-import { Statics, StaticsTableId, StaticsData, Counter, CounterTableId, TemplateContent, TemplateIndex } from "../src/codegen/Tables.sol";
+import { Statics, StaticsTableId, StaticsData, Counter, CounterTableId } from "../src/codegen/Tables.sol";
 import { ExampleTemplateId } from "../src/codegen/Templates.sol";
 import { createTemplates } from "../src/codegen/scripts/CreateTemplates.sol";
-import { createInstance } from "../src/scripts/CreateInstance.sol";
 
 import { Enum1, Enum2 } from "../src/codegen/Types.sol";
 

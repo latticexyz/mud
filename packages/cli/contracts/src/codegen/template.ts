@@ -23,14 +23,10 @@ interface ConfigType {
   Singleton?: { v1: bigint; v2: number[]; v3: number[]; v4: number[] };
   Ephemeral?: { value: bigint };
   Counter?: { value: bigint };
-  TemplateContent?: { value: string };
-  TemplateIndex?: { value: bigint[] };
 }
 
 export interface TemplateConfig {
   templates: Record<string, ConfigType>;
-  /** Path to the directory where generated files will be placed. */
-  codegenDirectory?: string;
 }
 
 export function templateConfig(config: TemplateConfig) {

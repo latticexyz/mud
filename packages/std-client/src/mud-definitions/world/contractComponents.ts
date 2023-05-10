@@ -145,5 +145,35 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    TemplateContent: (() => {
+      const tableId = new TableId("", "TemplateContent");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.String,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
+    TemplateIndex: (() => {
+      const tableId = new TableId("", "TemplateIndex");
+      return defineComponent(
+        world,
+        {
+          value: RecsType.BigIntArray,
+        },
+        {
+          metadata: {
+            contractId: tableId.toHexString(),
+            tableId: tableId.toString(),
+          },
+        }
+      );
+    })(),
   };
 }
