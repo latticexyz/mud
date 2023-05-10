@@ -22,7 +22,7 @@
     "@latticexyz/std-client": "link:../../../../packages/std-client",
     "@latticexyz/utils": "link:../../../../packages/utils",
     "@latticexyz/world": "link:../../../../packages/world",
-    "@wagmi/chains": "^0.2.20",
+    "@wagmi/chains": "^0.2.22",
     "async-mutex": "^0.4.0",
     "contracts": "workspace:*",
     "ethers": "^5.7.2",

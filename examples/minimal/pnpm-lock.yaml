@@ -59,8 +59,8 @@ importers:
         specifier: link:../../../../packages/world
         version: link:../../../../packages/world
       '@wagmi/chains':
-        specifier: ^0.2.14
-        version: 0.2.14(typescript@5.0.4)
+        specifier: ^0.2.22
+        version: 0.2.22(typescript@5.0.4)
       async-mutex:
         specifier: ^0.4.0
         version: 0.4.0
@@ -156,8 +156,8 @@ importers:
         specifier: link:../../../../packages/world
         version: link:../../../../packages/world
       '@wagmi/chains':
-        specifier: ^0.2.20
-        version: 0.2.20(typescript@5.0.4)
+        specifier: ^0.2.22
+        version: 0.2.22(typescript@5.0.4)
       async-mutex:
         specifier: ^0.4.0
         version: 0.4.0
@@ -1452,17 +1452,6 @@ packages:
       - supports-color
     dev: true
 
-  /@wagmi/chains@0.2.14(typescript@5.0.4):
-    resolution: {integrity: sha512-esWhs1sf8/J/u+54F/sUQ97iZ/zUN2rYUrLYOD35ynIJn9ZwGXeV/tkiXx/6xXDmq0VK5oe1Pe7BU/pvaURzcA==}
-    peerDependencies:
-      typescript: '>=4.9.4'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-    dependencies:
-      typescript: 5.0.4
-    dev: false
-
   /@wagmi/chains@0.2.16(typescript@5.0.4):
     resolution: {integrity: sha512-rkWaI2PxCnbD8G07ZZff5QXftnSkYL0h5f4DkHCG3fGYYr/ZDvmCL4bMae7j7A9sAif1csPPBmbCzHp3R5ogCQ==}
     peerDependencies:
@@ -1474,8 +1463,8 @@ packages:
       typescript: 5.0.4
     dev: false
 
-  /@wagmi/chains@0.2.20(typescript@5.0.4):
-    resolution: {integrity: sha512-VdsyZrukVkDbQQBAfQel/Ro7EMBzlO/xYMSblad+v+RMA0CbXYtSx0obiZhfVmK+8IR/5XeSkvv6gC95UReFjA==}
+  /@wagmi/chains@0.2.22(typescript@5.0.4):
+    resolution: {integrity: sha512-TdiOzJT6TO1JrztRNjTA5Quz+UmQlbvWFG8N41u9tta0boHA1JCAzGGvU6KuIcOmJfRJkKOUIt67wlbopCpVHg==}
     peerDependencies:
       typescript: '>=4.9.4'
     peerDependenciesMeta:

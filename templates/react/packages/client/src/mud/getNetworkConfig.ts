@@ -1,8 +1,7 @@
 import { SetupContractConfig, getBurnerWallet } from "@latticexyz/std-client";
-
+import { foundry } from "@wagmi/chains";
 import latticeTestnet from "./supportedChains/latticeTestnet";
 import latestLatticeTestnetDeploy from "contracts/deploys/4242/latest.json";
-import localhost from "./supportedChains/localhost";
 import latestLocalhostDeploy from "contracts/deploys/31337/latest.json";
 
 type NetworkConfig = SetupContractConfig & {
@@ -13,7 +12,7 @@ type NetworkConfig = SetupContractConfig & {
 export async function getNetworkConfig(): Promise<NetworkConfig> {
   const params = new URLSearchParams(window.location.search);
 
-  const supportedChains = [localhost, latticeTestnet];
+  const supportedChains = [foundry, latticeTestnet];
   const deploys = [latestLocalhostDeploy, latestLatticeTestnetDeploy];
 
   const chainId = Number(params.get("chainId") || import.meta.env.VITE_CHAIN_ID);
