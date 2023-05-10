@@ -6,22 +6,20 @@ import { getKeysInTable } from "@latticexyz/world/src/modules/keysintable/getKey
 import { Record } from "./Record.sol";
 
 contract SyncSystem is System {
-  function sync(bytes32[] memory tableIds) public view returns (Record[][] memory records) {
-    records = new Record[][](tableIds.length);
+  function getRecords(bytes32 tableId, uint256 limit, uint256 offset) public view returns (Record[] memory records) {
+    records = new Record[](limit);
 
-    for (uint256 i; i < tableIds.length; i++) {
-      bytes32 tableId = tableIds[i];
+    // WARNING: KeysInTable does not support composite keys
+    bytes32[][] memory keys = getKeysInTable(tableId);
 
-      // WARNING: KeysInTable does not support composite keys
-      bytes32[][] memory keys = getKeysInTable(tableId);
-
-      records[i] = new Record[](keys.length);
-
-      for (uint256 j; j < keys.length; j++) {
-        bytes memory value = StoreSwitch.getRecord(tableId, keys[j]);
-
-        records[i][j] = Record({ tableId: tableId, keyTuple: keys[j], value: value });
-      }
+    for (uint256 i; i < limit; i++) {
+      uint256 keyIndex = i + offset;
+      bytes memory value = StoreSwitch.getRecord(tableId, keys[keyIndex]);
+      records[i] = Record({ tableId: tableId, keyTuple: keys[keyIndex], value: value });
     }
+  }
+
+  function getNumKeys(bytes32 tableId) public view returns (uint256) {
+    return getKeysInTable(tableId).length;
   }
 }

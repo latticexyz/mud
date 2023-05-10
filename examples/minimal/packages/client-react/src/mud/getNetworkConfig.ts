@@ -8,6 +8,7 @@ import latestLocalhostDeploy from "contracts/deploys/31337/latest.json";
 type NetworkConfig = SetupContractConfig & {
   privateKey: string;
   faucetServiceUrl?: string;
+  snapSync?: boolean;
 };
 
 export async function getNetworkConfig(): Promise<NetworkConfig> {
@@ -51,5 +52,6 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     worldAddress,
     initialBlockNumber: Number(params.get("initialBlockNumber")) || deploy.blockNumber || 0,
     devMode: params.get("dev") === "true",
+    snapSync: params.get("snapSync") === "true",
   };
 }

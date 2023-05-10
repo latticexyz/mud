@@ -33,39 +33,25 @@ contract CounterTest is MudV2Test {
     keys[2] = "two";
     keys[3] = "three";
 
-    bytes32[] memory tableIds = new bytes32[](1);
-    tableIds[0] = CounterTableTableId;
-
-    Record[][] memory records = world.sync(tableIds);
-
     vm.startPrank(address(world));
-    CounterTable.set(world, keys[1], vals[1]);
-    CounterTable.set(world, keys[2], vals[2]);
+    for (uint i; i < keys.length; i++) {
+      CounterTable.set(world, keys[i], vals[i]);
+    }
     vm.stopPrank();
 
-    records = world.sync(tableIds);
+    Record[] memory records = world.getRecords(CounterTableTableId, 4, 0);
+    assertTrue(records.length == 4);
 
-    assertEq(records.length, 1);
-    // There is an extra record from PostDeploy
-    assertEq(records[0].length, 3);
-    for (uint256 i = 1; i < 3; i++) {
-      assertEq(records[0][i].keyTuple.length, 1);
-      assertEq(records[0][i].keyTuple[0], keys[i]);
-      assertEq(records[0][i].value, CounterTable.encode(vals[i]));
+    for (uint i; i < records.length; i++) {
+      assertTrue(records[i].keyTuple[0] == keys[i]);
+      assertEq(records[i].value, CounterTable.encode(vals[i]));
     }
 
-    vm.startPrank(address(world));
-    CounterTable.set(world, keys[3], vals[3]);
-    vm.stopPrank();
+    // only grab last key
+    records = world.getRecords(CounterTableTableId, 1, 3);
+    assertTrue(records.length == 1);
 
-    records = world.sync(tableIds);
-
-    assertEq(records.length, 1);
-    assertEq(records[0].length, 4);
-    for (uint256 i = 1; i < 4; i++) {
-      assertEq(records[0][i].keyTuple.length, 1);
-      assertEq(records[0][i].keyTuple[0], keys[i]);
-      assertEq(records[0][i].value, CounterTable.encode(vals[i]));
-    }
+    assertTrue(records[0].keyTuple[0] == keys[3]);
+    assertEq(records[0].value, CounterTable.encode(vals[3]));
   }
 }

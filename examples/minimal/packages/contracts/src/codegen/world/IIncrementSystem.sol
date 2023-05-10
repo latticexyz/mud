@@ -5,4 +5,6 @@ pragma solidity >=0.8.0;
 
 interface IIncrementSystem {
   function increment() external returns (uint32);
+
+  function addPosition(bytes32 key, int32 x, int32 y) external;
 }

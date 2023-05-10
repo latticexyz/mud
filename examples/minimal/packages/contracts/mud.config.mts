@@ -26,6 +26,12 @@ export default mudConfig({
       },
       ephemeral: true,
     },
+    PositionTable: {
+      schema: {
+        x: "int32",
+        y: "int32",
+      },
+    }
   },
   modules: [
     {
@@ -37,6 +43,11 @@ export default mudConfig({
       name: "KeysWithValueModule",
       root: true,
       args: [resolveTableId("CounterTable")],
+    },
+    {
+      name: "KeysInTableModule",
+      root: true,
+      args: [resolveTableId("PositionTable")],
     },
   ],
 });
