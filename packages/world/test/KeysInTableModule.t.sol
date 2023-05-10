@@ -300,15 +300,10 @@ contract KeysInTableModuleTest is Test {
     uint256 AMOUNT = 10;
     uint256 value = 1;
 
-    bytes32[] memory firstKey = new bytes32[](1);
-    firstKey[0] = bytes32(0);
     bytes32[] memory lastKey = new bytes32[](1);
     lastKey[0] = bytes32(uint256(AMOUNT - 1));
 
-    // !gasreport Setting the first of 10 keys
-    world.setRecord(namespace, sourceFile, firstKey, abi.encodePacked(value));
-
-    for (uint256 i = 1; i < AMOUNT - 1; i++) {
+    for (uint256 i; i < AMOUNT - 1; i++) {
       bytes32[] memory key = new bytes32[](1);
       key[0] = bytes32(i);
       world.setRecord(namespace, sourceFile, key, abi.encodePacked(value));
@@ -330,15 +325,10 @@ contract KeysInTableModuleTest is Test {
     uint256 AMOUNT = 100;
     uint256 value = 1;
 
-    bytes32[] memory firstKey = new bytes32[](1);
-    firstKey[0] = bytes32(0);
     bytes32[] memory lastKey = new bytes32[](1);
     lastKey[0] = bytes32(uint256(AMOUNT - 1));
 
-    // !gasreport Setting the first of 100 keys
-    world.setRecord(namespace, sourceFile, firstKey, abi.encodePacked(value));
-
-    for (uint256 i = 1; i < AMOUNT - 1; i++) {
+    for (uint256 i; i < AMOUNT - 1; i++) {
       bytes32[] memory key = new bytes32[](1);
       key[0] = bytes32(i);
       world.setRecord(namespace, sourceFile, key, abi.encodePacked(value));
@@ -360,15 +350,10 @@ contract KeysInTableModuleTest is Test {
     uint256 AMOUNT = 1000;
     uint256 value = 1;
 
-    bytes32[] memory firstKey = new bytes32[](1);
-    firstKey[0] = bytes32(0);
     bytes32[] memory lastKey = new bytes32[](1);
     lastKey[0] = bytes32(uint256(AMOUNT - 1));
 
-    // !gasreport Setting the first of 1000 keys
-    world.setRecord(namespace, sourceFile, firstKey, abi.encodePacked(value));
-
-    for (uint256 i = 1; i < AMOUNT - 1; i++) {
+    for (uint256 i; i < AMOUNT - 1; i++) {
       bytes32[] memory key = new bytes32[](1);
       key[0] = bytes32(i);
       world.setRecord(namespace, sourceFile, key, abi.encodePacked(value));
