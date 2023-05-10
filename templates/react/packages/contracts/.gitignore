@@ -4,6 +4,7 @@ node_modules/
 bindings/
 artifacts/
 abi/
+types/
 broadcast/
 
 # Ignore all deploy artifacts
