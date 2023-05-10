@@ -1,4 +1,3 @@
-import React from "react";
 import { createContext, ReactNode, useContext } from "react";
 import { SetupResult } from "./mud/setup";
 
