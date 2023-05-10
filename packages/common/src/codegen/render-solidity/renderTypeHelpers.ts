@@ -10,7 +10,7 @@ export function renderTypeHelpers(options: { fields: RenderField[]; primaryKeys:
   }
 
   // bool is special - it's the only primitive value type that can't be typecasted to/from
-  if (fields.some(({ typeId }) => typeId === "bool")) {
+  if (fields.some(({ internalTypeId }) => internalTypeId.match("bool"))) {
     result += `
     function _toBool(uint8 value) pure returns (bool result) {
       assembly {
@@ -19,7 +19,7 @@ export function renderTypeHelpers(options: { fields: RenderField[]; primaryKeys:
     }
     `;
   }
-  if (primaryKeys.some(({ typeId }) => typeId === "bool")) {
+  if (primaryKeys.some(({ internalTypeId }) => internalTypeId.match("bool"))) {
     result += `
     function _boolToBytes32(bool value) pure returns (bytes32 result) {
       assembly {
