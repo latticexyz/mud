@@ -409,22 +409,6 @@ importers:
 
   packages/network:
     dependencies:
-      '@latticexyz/common':
-        specifier: workspace:*
-        version: link:../common
-      debug:
-        specifier: ^4.3.4
-        version: 4.3.4(supports-color@8.1.1)
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      observable-webworker:
-        specifier: ^4.0.1
-        version: 4.0.1(rxjs@7.5.6)
-      viem:
-        specifier: ^0.3.18
-        version: 0.3.18(typescript@4.9.5)
-    devDependencies:
       '@ethersproject/abi':
         specifier: ^5.7.0
         version: 5.7.0
@@ -434,6 +418,9 @@ importers:
       '@improbable-eng/grpc-web':
         specifier: ^0.15.0
         version: 0.15.0(google-protobuf@3.21.0)
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
       '@latticexyz/recs':
         specifier: workspace:*
         version: link:../recs
@@ -452,9 +439,34 @@ importers:
       '@latticexyz/utils':
         specifier: workspace:*
         version: link:../utils
-      '@protobuf-ts/grpcweb-transport':
-        specifier: ^2.7.0
-        version: 2.7.0
+      async-mutex:
+        specifier: ^0.3.2
+        version: 0.3.2
+      debug:
+        specifier: ^4.3.4
+        version: 4.3.4(supports-color@8.1.1)
+      ethers:
+        specifier: ^5.7.2
+        version: 5.7.2
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      mobx:
+        specifier: ^6.7.0
+        version: 6.9.0
+      nice-grpc-web:
+        specifier: ^2.0.1
+        version: 2.0.1(google-protobuf@3.21.0)
+      rxjs:
+        specifier: ^7.5.5
+        version: 7.5.6
+      threads:
+        specifier: ^1.7.0
+        version: 1.7.0
+      viem:
+        specifier: ^0.3.18
+        version: 0.3.18(typescript@4.9.5)
+    devDependencies:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
@@ -470,39 +482,15 @@ importers:
       '@types/node':
         specifier: ^18.15.11
         version: 18.15.11
-      async-mutex:
-        specifier: ^0.3.2
-        version: 0.3.2
-      ethers:
-        specifier: ^5.7.2
-        version: 5.7.2
       fake-indexeddb:
         specifier: ^4.0.0
         version: 4.0.0
-      google-protobuf:
-        specifier: ^3.21.0
-        version: 3.21.0
       jest:
         specifier: ^29.3.1
         version: 29.5.0(@types/node@18.15.11)(ts-node@10.9.1)
       jest-environment-jsdom:
         specifier: ^29.3.1
         version: 29.3.1
-      mobx:
-        specifier: ^6.7.0
-        version: 6.9.0
-      nice-grpc-web:
-        specifier: ^2.0.1
-        version: 2.0.1(google-protobuf@3.21.0)
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
-      rxjs:
-        specifier: ^7.5.5
-        version: 7.5.6
-      threads:
-        specifier: ^1.7.0
-        version: 1.7.0
       ts-jest:
         specifier: ^29.0.5
         version: 29.0.5(@babel/core@7.21.3)(esbuild@0.17.17)(jest@29.5.0)(typescript@4.9.5)
@@ -518,9 +506,6 @@ importers:
       typedoc-plugin-markdown:
         specifier: ^3.13.6
         version: 3.14.0(typedoc@0.23.21)
-      typescript:
-        specifier: ^4.9.5
-        version: 4.9.5
 
   packages/noise:
     dependencies:
@@ -2653,7 +2638,7 @@ packages:
     dependencies:
       browser-headers: 0.4.1
       google-protobuf: 3.21.0
-    dev: true
+    dev: false
 
   /@improbable-eng/grpc-web@0.15.0(google-protobuf@3.21.2):
     resolution: {integrity: sha512-ERft9/0/8CmYalqOVnJnpdDry28q+j+nAlFFARdjyxXDJ+Mhgv9+F600QC8BR9ygOfrXRlAk6CvST2j+JCpQPg==}
@@ -3998,23 +3983,6 @@ packages:
       nullthrows: 1.1.1
     dev: true
 
-  /@protobuf-ts/grpcweb-transport@2.7.0:
-    resolution: {integrity: sha512-xRWlD0/zulrx+e1hZVGaXpEFl209yzQdi9QBypaZ+lP/8XKC4cbyPM8ABuQXFc/J22Em9FyaXc7NNOcYIl2XSQ==}
-    dependencies:
-      '@protobuf-ts/runtime': 2.8.3
-      '@protobuf-ts/runtime-rpc': 2.8.3
-    dev: true
-
-  /@protobuf-ts/runtime-rpc@2.8.3:
-    resolution: {integrity: sha512-Tb6nuevgezjGNnT8WF+aveGWeI5xeAbNpySd/nzknKx6ynepXdlNz5cN0xIADeOgDJHo/05Ka+vZ5ZI33tz2Og==}
-    dependencies:
-      '@protobuf-ts/runtime': 2.8.3
-    dev: true
-
-  /@protobuf-ts/runtime@2.8.3:
-    resolution: {integrity: sha512-nVL1s5wWpF6U+wtWTEWfUPD9Ockckj+fHqhzgm41CKV4Oma3D/2M6tzqOQ+wrm4GZu1bt+s6f43feNnar6fhjA==}
-    dev: true
-
   /@protobufjs/aspromise@1.1.2:
     resolution: {integrity: sha512-j+gKExEuLmKwvz3OgROXtrJ2UG2x8Ch2YZUxahh+s1F2HZ+wAceUNLkvy6zKCPVRkU++ZWQrdxsUeQXmcg4uoQ==}
 
@@ -4967,6 +4935,7 @@ packages:
 
   /abort-controller-x@0.4.1:
     resolution: {integrity: sha512-lJ2ssrl3FoTK3cX/g15lRCkXFWKiwRTRtBjfwounO2EM/Q65rI/MEZsfsch1juWU2pH2aLSaq0HGowlDP/imrw==}
+    dev: false
 
   /abort-controller@3.0.0:
     resolution: {integrity: sha512-h8lQ8tacZYnR3vNQTgibj+tODHI5/+l06Au2Pcriv/Gmet0eaj4TwWH41sO9wnHDiQsEj19q0drzdWdeAHtweg==}
@@ -5416,7 +5385,7 @@ packages:
     resolution: {integrity: sha512-HuTK7E7MT7jZEh1P9GtRW9+aTWiDWWi9InbZ5hjxrnRa39KS4BW04+xLBhYNS2aXhHUIKZSw3gj4Pn1pj+qGAA==}
     dependencies:
       tslib: 2.5.0
-    dev: true
+    dev: false
 
   /async@1.5.2:
     resolution: {integrity: sha512-nSVgobk4rv61R9PUSDtYt7mPVB2olxNR5RWJcAsH676/ef11bUZwvu7+RGYrYauVdDPcO519v68wRhXQtxsV9w==}
@@ -5728,6 +5697,7 @@ packages:
 
   /browser-headers@0.4.1:
     resolution: {integrity: sha512-CA9hsySZVo9371qEHjHZtYxV2cFtVj5Wj/ZHi8ooEsrtm4vOnl9Y9HmyYWk9q+05d7K3rdoAE0j3MVEFVvtQtg==}
+    dev: false
 
   /browser-stdout@1.3.1:
     resolution: {integrity: sha512-qhAVI1+Av2X7qelOfAIYwXONood6XlZE/fXaBSmW/T5SzLAmCgzi+eiWE7fUvbHaeNBQH13UftjpXxsfLkMpgw==}
@@ -5966,7 +5936,6 @@ packages:
   /callsites@3.1.0:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
-    dev: true
 
   /camelcase-css@2.0.1:
     resolution: {integrity: sha512-QOSvevhslijgYwRx6Rv7zKdMF8lbRmx+uQGx2+vDc+KI/eBnsy9kit5aj23AgGu3pa4t9AgwbnXWqS+iOY+2aA==}
@@ -7538,7 +7507,7 @@ packages:
   /esm@3.2.25:
     resolution: {integrity: sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==}
     engines: {node: '>=6'}
-    dev: true
+    dev: false
     optional: true
 
   /espree@5.0.1:
@@ -8634,7 +8603,7 @@ packages:
 
   /google-protobuf@3.21.0:
     resolution: {integrity: sha512-byR7MBTK4tZ5PZEb+u5ZTzpt4SfrTxv5682MjPlHN16XeqgZE2/8HOIWeiXe8JKnT9OVbtBGhbq8mtvkK8cd5g==}
-    dev: true
+    dev: false
 
   /google-protobuf@3.21.2:
     resolution: {integrity: sha512-3MSOYFO5U9mPGikIYCzK0SaThypfGgS6bHqrUGXG3DPHCrb+txNqeEcns1W0lkGfk0rCyNXm7xB9rMxnCiZOoA==}
@@ -9494,7 +9463,7 @@ packages:
   /is-observable@2.1.0:
     resolution: {integrity: sha512-DailKdLb0WU+xX8K5w7VsJhapwHLZ9jjmazqCJq4X12CTgqq73TKnbRcnSLuXYPOoLQgV5IrD7ePiX/h1vnkBw==}
     engines: {node: '>=8'}
-    dev: true
+    dev: false
 
   /is-path-cwd@2.2.0:
     resolution: {integrity: sha512-w942bTcih8fdJPJmQHFzkS76NEP8Kzzvmw92cXsazb8intwLqPibPPdXf4ANdKV3rYMuuQYGIWtvz9JilB3NFQ==}
@@ -10246,6 +10215,7 @@ packages:
 
   /js-base64@3.7.5:
     resolution: {integrity: sha512-3MEt5DTINKqfScXKfJFrRbxkrnk2AxPWGBL/ycjz4dK8iqiSJ06UxD8jh8xuh6p10TX4t2+7FsBYVxxQbMg+qA==}
+    dev: false
 
   /js-sdsl@4.4.0:
     resolution: {integrity: sha512-FfVSdx6pJ41Oa+CF7RDaFmTnCaFhua+SNYQX74riGOpl96x+2jQCqEfQ2bnXu/5DPCqlRuiqyvTJM0Qjz26IVg==}
@@ -11562,7 +11532,6 @@ packages:
 
   /mobx@6.9.0:
     resolution: {integrity: sha512-HdKewQEREEJgsWnErClfbFoVebze6rGazxFLU/XUyrII8dORfVszN1V0BMRnQSzcgsNNtkX8DHj3nC6cdWE9YQ==}
-    dev: true
 
   /mocha@10.0.0:
     resolution: {integrity: sha512-0Wl+elVUD43Y0BqPZBzZt8Tnkw9CMUdNYnUsTfOM1vuhJVZL+kiesFYsqwBkEEuEixaiPe5ZQdqDgX2jddhmoA==}
@@ -11703,6 +11672,7 @@ packages:
     resolution: {integrity: sha512-7RNWbls5kAL1QVUOXvBsv1uO0wPQK3lHv+cY1gwkTzirnG1Nop4cBJZubpgziNbaVc/bl9QJcyvsf/NQxa3rjQ==}
     dependencies:
       ts-error: 1.0.6
+    dev: false
 
   /nice-grpc-web@2.0.1(google-protobuf@3.21.0):
     resolution: {integrity: sha512-r8jy0TJY6ZO9qWtujiqmtRkqgItAChoJxJyYv+CHacP9G5kRIH03M+sQqtieXNNDUAKfFT/z5yroSy1cPFX0sA==}
@@ -11713,7 +11683,7 @@ packages:
       nice-grpc-common: 2.0.2
     transitivePeerDependencies:
       - google-protobuf
-    dev: true
+    dev: false
 
   /nice-grpc-web@2.0.1(google-protobuf@3.21.2):
     resolution: {integrity: sha512-r8jy0TJY6ZO9qWtujiqmtRkqgItAChoJxJyYv+CHacP9G5kRIH03M+sQqtieXNNDUAKfFT/z5yroSy1cPFX0sA==}
@@ -12259,15 +12229,6 @@ packages:
 
   /observable-fns@0.6.1:
     resolution: {integrity: sha512-9gRK4+sRWzeN6AOewNBTLXir7Zl/i3GB6Yl26gK4flxz8BXVpD3kt8amREmWNb0mxYOGDotvE5a4N+PtGGKdkg==}
-    dev: true
-
-  /observable-webworker@4.0.1(rxjs@7.5.6):
-    resolution: {integrity: sha512-8Wh9zHl98zkA6IfrxfZ4UXK9jYbWB3xsr41+GjSuX+wKvn+/7KqyhTsikhWNZKqF8iueUnx2wPHPu20hW/miHQ==}
-    peerDependencies:
-      rxjs: '>=6.4.0'
-    dependencies:
-      rxjs: 7.5.6
-      tslib: 2.5.0
     dev: false
 
   /once@1.4.0:
@@ -14729,7 +14690,7 @@ packages:
       tiny-worker: 2.3.0
     transitivePeerDependencies:
       - supports-color
-    dev: true
+    dev: false
 
   /through2-filter@2.0.0:
     resolution: {integrity: sha512-miwWajb1B80NvIVKXFPN/o7+vJc4jYUvnZCwvhicRAoTxdD9wbcjri70j+BenCrN/JXEPKDjhpw4iY7yiNsCGg==}
@@ -14799,7 +14760,7 @@ packages:
     requiresBuild: true
     dependencies:
       esm: 3.2.25
-    dev: true
+    dev: false
     optional: true
 
   /tinybench@2.4.0:
@@ -14940,6 +14901,7 @@ packages:
 
   /ts-error@1.0.6:
     resolution: {integrity: sha512-tLJxacIQUM82IR7JO1UUkKlYuUTmoY9HBJAmNWFzheSlDS5SPMcNIepejHJa4BpPQLAcbRhRf3GDJzyj6rbKvA==}
+    dev: false
 
   /ts-essentials@7.0.3(typescript@4.9.5):
     resolution: {integrity: sha512-8+gr5+lqO3G84KdiTSMRLtuyJ+nTBVRKuCrK4lidMPdVeEp0uqC875uE5NMcaA7YYMN7XsNiFQuMvasF8HT/xQ==}
