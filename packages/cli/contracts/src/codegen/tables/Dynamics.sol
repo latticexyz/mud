@@ -142,7 +142,7 @@ library Dynamics {
     return _byteLength / 32;
   }
 
-  /** Get an item of staticB32 */
+  /** Get an item of staticB32 (unchecked, returns invalid data if index overflows) */
   function getItemStaticB32(bytes32 key, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -158,7 +158,7 @@ library Dynamics {
     return (Bytes.slice32(_blob, 0));
   }
 
-  /** Get an item of staticB32 (using the specified store) */
+  /** Get an item of staticB32 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemStaticB32(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes32) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -267,7 +267,7 @@ library Dynamics {
     return _byteLength / 4;
   }
 
-  /** Get an item of staticI32 */
+  /** Get an item of staticI32 (unchecked, returns invalid data if index overflows) */
   function getItemStaticI32(bytes32 key, uint256 _index) internal view returns (int32) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -283,7 +283,7 @@ library Dynamics {
     return (int32(uint32(Bytes.slice4(_blob, 0))));
   }
 
-  /** Get an item of staticI32 (using the specified store) */
+  /** Get an item of staticI32 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemStaticI32(IStore _store, bytes32 key, uint256 _index) internal view returns (int32) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -392,7 +392,7 @@ library Dynamics {
     return _byteLength / 16;
   }
 
-  /** Get an item of staticU128 */
+  /** Get an item of staticU128 (unchecked, returns invalid data if index overflows) */
   function getItemStaticU128(bytes32 key, uint256 _index) internal view returns (uint128) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -408,7 +408,7 @@ library Dynamics {
     return (uint128(Bytes.slice16(_blob, 0)));
   }
 
-  /** Get an item of staticU128 (using the specified store) */
+  /** Get an item of staticU128 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemStaticU128(IStore _store, bytes32 key, uint256 _index) internal view returns (uint128) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -517,7 +517,7 @@ library Dynamics {
     return _byteLength / 20;
   }
 
-  /** Get an item of staticAddrs */
+  /** Get an item of staticAddrs (unchecked, returns invalid data if index overflows) */
   function getItemStaticAddrs(bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -533,7 +533,7 @@ library Dynamics {
     return (address(Bytes.slice20(_blob, 0)));
   }
 
-  /** Get an item of staticAddrs (using the specified store) */
+  /** Get an item of staticAddrs (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemStaticAddrs(IStore _store, bytes32 key, uint256 _index) internal view returns (address) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -642,7 +642,7 @@ library Dynamics {
     return _byteLength / 1;
   }
 
-  /** Get an item of staticBools */
+  /** Get an item of staticBools (unchecked, returns invalid data if index overflows) */
   function getItemStaticBools(bytes32 key, uint256 _index) internal view returns (bool) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -658,7 +658,7 @@ library Dynamics {
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
   }
 
-  /** Get an item of staticBools (using the specified store) */
+  /** Get an item of staticBools (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemStaticBools(IStore _store, bytes32 key, uint256 _index) internal view returns (bool) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -767,7 +767,7 @@ library Dynamics {
     return _byteLength / 8;
   }
 
-  /** Get an item of u64 */
+  /** Get an item of u64 (unchecked, returns invalid data if index overflows) */
   function getItemU64(bytes32 key, uint256 _index) internal view returns (uint64) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -783,7 +783,7 @@ library Dynamics {
     return (uint64(Bytes.slice8(_blob, 0)));
   }
 
-  /** Get an item of u64 (using the specified store) */
+  /** Get an item of u64 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemU64(IStore _store, bytes32 key, uint256 _index) internal view returns (uint64) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -892,7 +892,7 @@ library Dynamics {
     return _byteLength / 1;
   }
 
-  /** Get an item of str */
+  /** Get an item of str (unchecked, returns invalid data if index overflows) */
   function getItemStr(bytes32 key, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -908,7 +908,7 @@ library Dynamics {
     return (string(_blob));
   }
 
-  /** Get an item of str (using the specified store) */
+  /** Get an item of str (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemStr(IStore _store, bytes32 key, uint256 _index) internal view returns (string memory) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -1017,7 +1017,7 @@ library Dynamics {
     return _byteLength / 1;
   }
 
-  /** Get an item of b */
+  /** Get an item of b (unchecked, returns invalid data if index overflows) */
   function getItemB(bytes32 key, uint256 _index) internal view returns (bytes memory) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));
@@ -1033,7 +1033,7 @@ library Dynamics {
     return (bytes(_blob));
   }
 
-  /** Get an item of b (using the specified store) */
+  /** Get an item of b (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemB(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes memory) {
     bytes32[] memory _primaryKeys = new bytes32[](1);
     _primaryKeys[0] = bytes32((key));

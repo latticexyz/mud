@@ -146,7 +146,7 @@ library Singleton {
     return _byteLength / 4;
   }
 
-  /** Get an item of v2 */
+  /** Get an item of v2 (unchecked, returns invalid data if index overflows) */
   function getItemV2(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
@@ -161,7 +161,7 @@ library Singleton {
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
-  /** Get an item of v2 (using the specified store) */
+  /** Get an item of v2 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemV2(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
@@ -257,7 +257,7 @@ library Singleton {
     return _byteLength / 4;
   }
 
-  /** Get an item of v3 */
+  /** Get an item of v3 (unchecked, returns invalid data if index overflows) */
   function getItemV3(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
@@ -272,7 +272,7 @@ library Singleton {
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
-  /** Get an item of v3 (using the specified store) */
+  /** Get an item of v3 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemV3(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
@@ -368,7 +368,7 @@ library Singleton {
     return _byteLength / 4;
   }
 
-  /** Get an item of v4 */
+  /** Get an item of v4 (unchecked, returns invalid data if index overflows) */
   function getItemV4(uint256 _index) internal view returns (uint32) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
@@ -383,7 +383,7 @@ library Singleton {
     return (uint32(Bytes.slice4(_blob, 0)));
   }
 
-  /** Get an item of v4 (using the specified store) */
+  /** Get an item of v4 (using the specified store) (unchecked, returns invalid data if index overflows) */
   function getItemV4(IStore _store, uint256 _index) internal view returns (uint32) {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
