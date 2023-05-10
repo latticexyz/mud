@@ -803,6 +803,14 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     // !gasreport access dynamic field of non-existing record
     bytes memory data3 = StoreCore.getField(table, key, 1);
     assertEq(data3.length, 0);
+
+    // !gasreport access length of dynamic field of non-existing record
+    uint256 data3Length = StoreCore.getFieldLength(table, key, 1, schema);
+    assertEq(data3Length, 0);
+
+    // !gasreport access slice of dynamic field of non-existing record
+    bytes memory data3Slice = StoreCore.getFieldSlice(table, key, 1, schema, 0, 0);
+    assertEq(data3Slice.length, 0);
   }
 
   function testHooks() public {
