@@ -18,6 +18,24 @@ interface IStoreRead {
   // Get partial data at schema index
   function getField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex) external view returns (bytes memory data);
 
+  // Get field length at schema index
+  function getFieldLength(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema
+  ) external view returns (uint256);
+
+  // Get start:end slice of the field at schema index
+  function getFieldSlice(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema,
+    uint256 start,
+    uint256 end
+  ) external view returns (bytes memory data);
+
   // If this function exists on the contract, it is a store
   // TODO: benchmark this vs. using a known storage slot to determine whether a contract is a Store
   // (see https://github.com/latticexyz/mud/issues/444)

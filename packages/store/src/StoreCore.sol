@@ -476,6 +476,50 @@ library StoreCore {
       return StoreCoreInternal._getDynamicField(tableId, key, schemaIndex, schema);
     }
   }
+
+  /**
+   * Get the byte length of a single field from the given tableId and key tuple, with the given schema
+   */
+  function getFieldLength(
+    bytes32 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema
+  ) internal view returns (uint256) {
+    uint8 numStaticFields = schema.numStaticFields();
+    if (schemaIndex < numStaticFields) {
+      SchemaType schemaType = schema.atIndex(schemaIndex);
+      return schemaType.getStaticByteLength();
+    } else {
+      // Get the length and storage location of the dynamic field
+      uint8 dynamicSchemaIndex = schemaIndex - numStaticFields;
+      return StoreCoreInternal._loadEncodedDynamicDataLength(tableId, key).atIndex(dynamicSchemaIndex);
+    }
+  }
+
+  /**
+   * Get a byte slice of a single dynamic field from the given tableId and key tuple, with the given schema
+   * The slice is unchecked and will return invalid data if `start`:`end` overflow
+   */
+  function getFieldSlice(
+    bytes32 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema,
+    uint256 start,
+    uint256 end
+  ) internal view returns (bytes memory) {
+    uint8 numStaticFields = schema.numStaticFields();
+    if (schemaIndex < schema.numStaticFields()) {
+      revert IStoreErrors.StoreCore_NotDynamicField();
+    }
+
+    // Get the length and storage location of the dynamic field
+    uint8 dynamicSchemaIndex = schemaIndex - numStaticFields;
+    uint256 location = StoreCoreInternal._getDynamicDataLocation(tableId, key, dynamicSchemaIndex);
+
+    return Storage.load({ storagePointer: location, length: end - start, offset: start });
+  }
 }
 
 library StoreCoreInternal {

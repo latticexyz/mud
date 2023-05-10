@@ -154,4 +154,32 @@ library StoreSwitch {
       return IStore(msg.sender).getField(table, key, fieldIndex);
     }
   }
+
+  function getFieldLength(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    Schema schema
+  ) internal view returns (uint256) {
+    if (isDelegateCall()) {
+      return StoreCore.getFieldLength(table, key, fieldIndex, schema);
+    } else {
+      return IStore(msg.sender).getFieldLength(table, key, fieldIndex, schema);
+    }
+  }
+
+  function getFieldSlice(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    Schema schema,
+    uint256 start,
+    uint256 end
+  ) internal view returns (bytes memory) {
+    if (isDelegateCall()) {
+      return StoreCore.getFieldSlice(table, key, fieldIndex, schema, start, end);
+    } else {
+      return IStore(msg.sender).getFieldSlice(table, key, fieldIndex, schema, start, end);
+    }
+  }
 }
