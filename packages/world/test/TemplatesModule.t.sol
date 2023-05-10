@@ -3,29 +3,76 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 
+import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
+import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
+
+import { TemplateContent } from "../src/modules/templates/tables/TemplateContent.sol";
+import { TemplateIndex } from "../src/modules/templates/tables/TemplateIndex.sol";
+import { createInstance } from "../src/modules/templates/createInstance.sol";
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
+import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { TemplatesModule } from "../src/modules/templates/TemplatesModule.sol";
 
-import { NAMESPACE, TABLE_NAME } from "../src/modules/uniqueentity/constants.sol";
-import { ResourceSelector } from "../src/ResourceSelector.sol";
-
 contract TemplatesModuleTest is Test {
-  using ResourceSelector for bytes32;
-
+  bytes16 namespace = ROOT_NAMESPACE;
+  bytes16 name = bytes16("source");
   IBaseWorld world;
   TemplatesModule templatesModule = new TemplatesModule();
 
+  Schema tableSchema;
+  Schema tableKeySchema;
+  bytes32 tableId;
+  bytes32 templateId;
+
   function setUp() public {
+    tableSchema = SchemaLib.encode(SchemaType.UINT256);
+    tableKeySchema = SchemaLib.encode(SchemaType.BYTES32);
     world = IBaseWorld(address(new World()));
     world.installRootModule(new CoreModule(), new bytes(0));
   }
 
-  function testInstallRoot() public {
+  function _installTemplatesModule() internal {
+    // Register table
+    tableId = world.registerTable(namespace, name, tableSchema, tableKeySchema);
+
     // !gasreport install templates module
     world.installRootModule(templatesModule, new bytes(0));
+  }
+
+  function testInstallRoot() public {
+    _installTemplatesModule();
+  }
+
+  function MyTemplate() internal {
+    bytes32[] memory tableIds = new bytes32[](1);
+    tableIds[0] = tableId;
+    TemplateIndex.set(world, templateId, tableIds);
+
+    TemplateContent.set(world, templateId, tableId, abi.encode(1));
+  }
+
+  function testTemplates() public {
+    _installTemplatesModule();
+
+    // !gasreport create a template
+    MyTemplate();
+
+    // Assert that the template content was set correctly
+    assertEq(TemplateContent.get(world, templateId, tableId), abi.encode(1));
+
+    // Create a template instance
+    uint256 k1 = 1;
+
+    bytes32[][] memory keys = new bytes32[][](1);
+    keys[0] = new bytes32[](1);
+    keys[0][0] = bytes32(k1);
+
+    // !gasreport create an instance of a template
+    createInstance(world, templateId, keys);
+
+    assertEq(world.getRecord(tableId, keys[0]), abi.encode(1));
   }
 }

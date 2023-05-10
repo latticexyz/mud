@@ -99,7 +99,25 @@
     "source": "test/TemplatesModule.t.sol",
     "name": "install templates module",
     "functionCall": "world.installRootModule(templatesModule, new bytes(0))",
-    "gasUsed": 714627
+    "gasUsed": 689636
+  },
+  {
+    "source": "test/TemplatesModule.t.sol",
+    "name": "install templates module",
+    "functionCall": "world.installRootModule(templatesModule, new bytes(0))",
+    "gasUsed": 689636
+  },
+  {
+    "source": "test/TemplatesModule.t.sol",
+    "name": "create a template",
+    "functionCall": "MyTemplate()",
+    "gasUsed": 141676
+  },
+  {
+    "source": "test/TemplatesModule.t.sol",
+    "name": "create an instance of a template",
+    "functionCall": "createInstance(world, templateId, keys)",
+    "gasUsed": 57010
   },
   {
     "source": "test/UniqueEntityModule.t.sol",

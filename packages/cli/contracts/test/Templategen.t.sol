@@ -19,7 +19,7 @@ contract TemplateTest is Test, StoreReadWithStubs {
     TemplateContent.registerSchema();
     TemplateIndex.registerSchema();
 
-    // !gasreport create a template
+    // create a template
     createTemplates();
 
     // Assert that the template content was set correctly
@@ -40,7 +40,7 @@ contract TemplateTest is Test, StoreReadWithStubs {
     bytes32[][] memory keys = new bytes32[][](1);
     keys[0] = Statics.encodeKeyTuple(k1, k2, k3, k4, k5, k6, k7);
 
-    // !gasreport create an instance of a template
+    // create an instance of a template
     createInstance(ExampleTemplateId, keys);
 
     // Assert that the instance was created properly
