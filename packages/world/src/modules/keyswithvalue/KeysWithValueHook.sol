@@ -15,26 +15,24 @@ contract KeysWithValueHook is IStoreHook {
     bytes32 keyHash = keccak256(abi.encode(key));
     bytes32 valueHash = keccak256(value);
 
-    (bool has, uint32 index) = WithValueIndex.get(tableId, valueHash, keyHash);
+    (bool has, uint256 index) = WithValueIndex.get(tableId, valueHash, keyHash);
 
     // If the key/value pair was in the table...
     if (has) {
       // Delete the index
       WithValueIndex.deleteRecord(tableId, valueHash, keyHash);
 
-      uint32 length = KeysWithValue.getLength(tableId, valueHash);
+      uint256 length = KeysWithValue.length(tableId, valueHash);
 
       if (length == 1) {
         // Fully delete the list for this value
         KeysWithValue.deleteRecord(tableId, valueHash);
       } else {
-        bytes32 lastKey = KeysWithValue.getKeys(tableId, valueHash)[length - 1];
+        bytes32 lastKey = KeysWithValue.get(tableId, valueHash)[length - 1];
 
         // Remove this key/value pair from the list
-        KeysWithValue.updateKeys(tableId, valueHash, index, lastKey);
-        KeysWithValue.popKeys(tableId, valueHash);
-
-        KeysWithValue.setLength(tableId, valueHash, length - 1);
+        KeysWithValue.update(tableId, valueHash, index, lastKey);
+        KeysWithValue.pop(tableId, valueHash);
       }
     }
   }
@@ -45,11 +43,10 @@ contract KeysWithValueHook is IStoreHook {
 
     // If the key/value pair is not in the table...
     if (!WithValueIndex.getHas(tableId, valueHash, keyHash)) {
-      uint32 length = KeysWithValue.getLength(tableId, valueHash);
+      uint256 length = KeysWithValue.length(tableId, valueHash);
 
       // Push the key/value pair to the list
-      KeysWithValue.pushKeys(tableId, valueHash, key[0]);
-      KeysWithValue.setLength(tableId, valueHash, length + 1);
+      KeysWithValue.push(tableId, valueHash, key[0]);
 
       // Update the index to avoid duplicating keys
       WithValueIndex.set(tableId, valueHash, keyHash, true, length);

@@ -18,7 +18,7 @@ import { KeysWithValue } from "./tables/KeysWithValue.sol";
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
 function getKeysWithValue(bytes32 tableId, bytes memory value) view returns (bytes32[][] memory keyTuples) {
-  bytes32[] memory keyTuplesFlat = KeysWithValue.getKeys(tableId, keccak256(value));
+  bytes32[] memory keyTuplesFlat = KeysWithValue.get(tableId, keccak256(value));
 
   keyTuples = new bytes32[][](keyTuplesFlat.length);
 
@@ -36,7 +36,7 @@ function getKeysWithValue(
   bytes32 tableId,
   bytes memory value
 ) view returns (bytes32[][] memory keyTuples) {
-  bytes32[] memory keyTuplesFlat = KeysWithValue.getKeys(store, tableId, keccak256(value));
+  bytes32[] memory keyTuplesFlat = KeysWithValue.get(store, tableId, keccak256(value));
 
   keyTuples = new bytes32[][](keyTuplesFlat.length);
 

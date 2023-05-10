@@ -10,7 +10,7 @@ import { Systems, SystemsTableId } from "./modules/core/tables/Systems.sol";
 import { SystemRegistry, SystemRegistryTableId } from "./modules/core/tables/SystemRegistry.sol";
 import { ResourceType, ResourceTypeTableId } from "./modules/core/tables/ResourceType.sol";
 import { FunctionSelectors, FunctionSelectorsTableId } from "./modules/core/tables/FunctionSelectors.sol";
-import { KeysWithValue, KeysWithValueData, KeysWithValueTableId } from "./modules/keyswithvalue/tables/KeysWithValue.sol";
+import { KeysWithValue, KeysWithValueTableId } from "./modules/keyswithvalue/tables/KeysWithValue.sol";
 import { WithValueIndex, WithValueIndexTableId } from "./modules/keyswithvalue/tables/WithValueIndex.sol";
 import { KeysInTable, KeysInTableData, KeysInTableTableId } from "./modules/keysintable/tables/KeysInTable.sol";
 import { InTableIndex, InTableIndexTableId } from "./modules/keysintable/tables/InTableIndex.sol";

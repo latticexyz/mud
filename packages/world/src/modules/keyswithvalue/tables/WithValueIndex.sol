@@ -25,7 +25,7 @@ library WithValueIndex {
   function getSchema() internal pure returns (Schema) {
     SchemaType[] memory _schema = new SchemaType[](2);
     _schema[0] = SchemaType.BOOL;
-    _schema[1] = SchemaType.UINT32;
+    _schema[1] = SchemaType.UINT256;
 
     return SchemaLib.encode(_schema);
   }
@@ -117,14 +117,14 @@ library WithValueIndex {
   }
 
   /** Get index */
-  function getIndex(bytes32 sourceTable, bytes32 valueHash, bytes32 keysHash) internal view returns (uint32 index) {
+  function getIndex(bytes32 sourceTable, bytes32 valueHash, bytes32 keysHash) internal view returns (uint256 index) {
     bytes32[] memory _primaryKeys = new bytes32[](3);
     _primaryKeys[0] = bytes32((sourceTable));
     _primaryKeys[1] = bytes32((valueHash));
     _primaryKeys[2] = bytes32((keysHash));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 1);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    return (uint256(Bytes.slice32(_blob, 0)));
   }
 
   /** Get index (using the specified store) */
@@ -133,18 +133,18 @@ library WithValueIndex {
     bytes32 sourceTable,
     bytes32 valueHash,
     bytes32 keysHash
-  ) internal view returns (uint32 index) {
+  ) internal view returns (uint256 index) {
     bytes32[] memory _primaryKeys = new bytes32[](3);
     _primaryKeys[0] = bytes32((sourceTable));
     _primaryKeys[1] = bytes32((valueHash));
     _primaryKeys[2] = bytes32((keysHash));
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 1);
-    return (uint32(Bytes.slice4(_blob, 0)));
+    return (uint256(Bytes.slice32(_blob, 0)));
   }
 
   /** Set index */
-  function setIndex(bytes32 sourceTable, bytes32 valueHash, bytes32 keysHash, uint32 index) internal {
+  function setIndex(bytes32 sourceTable, bytes32 valueHash, bytes32 keysHash, uint256 index) internal {
     bytes32[] memory _primaryKeys = new bytes32[](3);
     _primaryKeys[0] = bytes32((sourceTable));
     _primaryKeys[1] = bytes32((valueHash));
@@ -154,7 +154,7 @@ library WithValueIndex {
   }
 
   /** Set index (using the specified store) */
-  function setIndex(IStore _store, bytes32 sourceTable, bytes32 valueHash, bytes32 keysHash, uint32 index) internal {
+  function setIndex(IStore _store, bytes32 sourceTable, bytes32 valueHash, bytes32 keysHash, uint256 index) internal {
     bytes32[] memory _primaryKeys = new bytes32[](3);
     _primaryKeys[0] = bytes32((sourceTable));
     _primaryKeys[1] = bytes32((valueHash));
@@ -168,7 +168,7 @@ library WithValueIndex {
     bytes32 sourceTable,
     bytes32 valueHash,
     bytes32 keysHash
-  ) internal view returns (bool has, uint32 index) {
+  ) internal view returns (bool has, uint256 index) {
     bytes32[] memory _primaryKeys = new bytes32[](3);
     _primaryKeys[0] = bytes32((sourceTable));
     _primaryKeys[1] = bytes32((valueHash));
@@ -184,7 +184,7 @@ library WithValueIndex {
     bytes32 sourceTable,
     bytes32 valueHash,
     bytes32 keysHash
-  ) internal view returns (bool has, uint32 index) {
+  ) internal view returns (bool has, uint256 index) {
     bytes32[] memory _primaryKeys = new bytes32[](3);
     _primaryKeys[0] = bytes32((sourceTable));
     _primaryKeys[1] = bytes32((valueHash));
@@ -195,7 +195,7 @@ library WithValueIndex {
   }
 
   /** Set the full data using individual values */
-  function set(bytes32 sourceTable, bytes32 valueHash, bytes32 keysHash, bool has, uint32 index) internal {
+  function set(bytes32 sourceTable, bytes32 valueHash, bytes32 keysHash, bool has, uint256 index) internal {
     bytes memory _data = encode(has, index);
 
     bytes32[] memory _primaryKeys = new bytes32[](3);
@@ -213,7 +213,7 @@ library WithValueIndex {
     bytes32 valueHash,
     bytes32 keysHash,
     bool has,
-    uint32 index
+    uint256 index
   ) internal {
     bytes memory _data = encode(has, index);
 
@@ -226,14 +226,14 @@ library WithValueIndex {
   }
 
   /** Decode the tightly packed blob using this table's schema */
-  function decode(bytes memory _blob) internal pure returns (bool has, uint32 index) {
+  function decode(bytes memory _blob) internal pure returns (bool has, uint256 index) {
     has = (_toBool(uint8(Bytes.slice1(_blob, 0))));
 
-    index = (uint32(Bytes.slice4(_blob, 1)));
+    index = (uint256(Bytes.slice32(_blob, 1)));
   }
 
   /** Tightly pack full data using this table's schema */
-  function encode(bool has, uint32 index) internal view returns (bytes memory) {
+  function encode(bool has, uint256 index) internal view returns (bytes memory) {
     return abi.encodePacked(has, index);
   }
 
