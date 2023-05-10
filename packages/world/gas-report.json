@@ -51,13 +51,13 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the first of 10 keys",
     "functionCall": "world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value))",
-    "gasUsed": 188179
+    "gasUsed": 188168
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the last of 10 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 201371
+    "gasUsed": 201360
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -75,13 +75,13 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the first of 100 keys",
     "functionCall": "world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value))",
-    "gasUsed": 188179
+    "gasUsed": 188168
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the last of 100 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 259497
+    "gasUsed": 259486
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -99,13 +99,13 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the first of 1000 keys",
     "functionCall": "world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value))",
-    "gasUsed": 188179
+    "gasUsed": 188168
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the last of 1000 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 857546
+    "gasUsed": 857535
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -123,7 +123,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "set a record on a table with KeysWithValueModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value))",
-    "gasUsed": 212315
+    "gasUsed": 212304
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -135,7 +135,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "change a record on a table with KeysWithValueModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value2))",
-    "gasUsed": 269455
+    "gasUsed": 267768
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -153,13 +153,13 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "set a field on a table with KeysWithValueModule installed",
     "functionCall": "world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value1))",
-    "gasUsed": 220255
+    "gasUsed": 220244
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "change a field on a table with KeysWithValueModule installed",
     "functionCall": "world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value2))",
-    "gasUsed": 232006
+    "gasUsed": 231995
   },
   {
     "source": "test/UniqueEntityModule.t.sol",

@@ -28,7 +28,7 @@ contract KeysWithValueHook is IStoreHook {
         // Fully delete the list for this value
         KeysWithValue.deleteRecord(tableId, valueHash);
       } else {
-        bytes32 lastKey = KeysWithValue.get(tableId, valueHash)[length - 1];
+        bytes32 lastKey = KeysWithValue.getItem(tableId, valueHash, length - 1);
 
         // Remove this key/value pair from the list
         KeysWithValue.update(tableId, valueHash, index, lastKey);
