@@ -9,5 +9,5 @@ export { mudCoreConfig, resolveTableId } from "@latticexyz/config/register";
 import "./configExtensions";
 import "./typeExtensions";
 
-// Export store-specific config wrapper, which adds generics for better typehints
-export { mudConfig } from "../library/config";
+export { mudConfig } from "./mudConfig";
+export type { ExpandMUDUserConfig } from "./typeExtensions";

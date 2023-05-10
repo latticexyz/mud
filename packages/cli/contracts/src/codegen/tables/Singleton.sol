@@ -130,6 +130,45 @@ library Singleton {
     _store.setField(_tableId, _primaryKeys, 1, EncodeArray.encode(fromStaticArray_uint32_2(v2)));
   }
 
+  /** Get the length of v2 */
+  function lengthV2() internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 1, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get the length of v2 (using the specified store) */
+  function lengthV2(IStore _store) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 1, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get an item of v2 (unchecked, returns invalid data if index overflows) */
+  function getItemV2(uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      1,
+      getSchema(),
+      _index * 4,
+      (_index + 1) * 4
+    );
+    return (uint32(Bytes.slice4(_blob, 0)));
+  }
+
+  /** Get an item of v2 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItemV2(IStore _store, uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 1, getSchema(), _index * 4, (_index + 1) * 4);
+    return (uint32(Bytes.slice4(_blob, 0)));
+  }
+
   /** Push an element to v2 */
   function pushV2(uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
@@ -202,6 +241,45 @@ library Singleton {
     _store.setField(_tableId, _primaryKeys, 2, EncodeArray.encode(fromStaticArray_uint32_2(v3)));
   }
 
+  /** Get the length of v3 */
+  function lengthV3() internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 2, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get the length of v3 (using the specified store) */
+  function lengthV3(IStore _store) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 2, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get an item of v3 (unchecked, returns invalid data if index overflows) */
+  function getItemV3(uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      2,
+      getSchema(),
+      _index * 4,
+      (_index + 1) * 4
+    );
+    return (uint32(Bytes.slice4(_blob, 0)));
+  }
+
+  /** Get an item of v3 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItemV3(IStore _store, uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 2, getSchema(), _index * 4, (_index + 1) * 4);
+    return (uint32(Bytes.slice4(_blob, 0)));
+  }
+
   /** Push an element to v3 */
   function pushV3(uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);
@@ -272,6 +350,45 @@ library Singleton {
     bytes32[] memory _primaryKeys = new bytes32[](0);
 
     _store.setField(_tableId, _primaryKeys, 3, EncodeArray.encode(fromStaticArray_uint32_1(v4)));
+  }
+
+  /** Get the length of v4 */
+  function lengthV4() internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 3, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get the length of v4 (using the specified store) */
+  function lengthV4(IStore _store) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 3, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get an item of v4 (unchecked, returns invalid data if index overflows) */
+  function getItemV4(uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      3,
+      getSchema(),
+      _index * 4,
+      (_index + 1) * 4
+    );
+    return (uint32(Bytes.slice4(_blob, 0)));
+  }
+
+  /** Get an item of v4 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItemV4(IStore _store, uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _primaryKeys = new bytes32[](0);
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 3, getSchema(), _index * 4, (_index + 1) * 4);
+    return (uint32(Bytes.slice4(_blob, 0)));
   }
 
   /** Push an element to v4 */

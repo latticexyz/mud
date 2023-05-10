@@ -153,6 +153,58 @@ library KeysWithValue {
     _store.setField(_tableId, _primaryKeys, 1, EncodeArray.encode((keys)));
   }
 
+  /** Get the length of keys */
+  function lengthKeys(bytes32 sourceTable, bytes32 valueHash) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((sourceTable));
+    _primaryKeys[1] = bytes32((valueHash));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 1, getSchema());
+    return _byteLength / 32;
+  }
+
+  /** Get the length of keys (using the specified store) */
+  function lengthKeys(IStore _store, bytes32 sourceTable, bytes32 valueHash) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((sourceTable));
+    _primaryKeys[1] = bytes32((valueHash));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 1, getSchema());
+    return _byteLength / 32;
+  }
+
+  /** Get an item of keys (unchecked, returns invalid data if index overflows) */
+  function getItemKeys(bytes32 sourceTable, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((sourceTable));
+    _primaryKeys[1] = bytes32((valueHash));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      1,
+      getSchema(),
+      _index * 32,
+      (_index + 1) * 32
+    );
+    return (Bytes.slice32(_blob, 0));
+  }
+
+  /** Get an item of keys (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItemKeys(
+    IStore _store,
+    bytes32 sourceTable,
+    bytes32 valueHash,
+    uint256 _index
+  ) internal view returns (bytes32) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((sourceTable));
+    _primaryKeys[1] = bytes32((valueHash));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 1, getSchema(), _index * 32, (_index + 1) * 32);
+    return (Bytes.slice32(_blob, 0));
+  }
+
   /** Push an element to keys */
   function pushKeys(bytes32 sourceTable, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);

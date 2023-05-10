@@ -9,9 +9,19 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./dev": "./dist/dev/index.js"
   },
-  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./src/index.ts"
+      ],
+      "dev": [
+        "./src/dev/index.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
@@ -24,8 +34,10 @@
     "test": "tsc --noEmit && jest --forceExit"
   },
   "dependencies": {
+    "@latticexyz/common": "workspace:*",
     "debug": "^4.3.4",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "viem": "^0.3.18"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
@@ -59,19 +71,18 @@
     "tsup": "^6.7.0",
     "typedoc": "0.23.21",
     "typedoc-plugin-markdown": "^3.13.6",
-    "typescript": "^4.9.5",
-    "viem": "^0.2.0"
+    "typescript": "^4.9.5"
   },
   "peerDependencies": {
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
-    "@latticexyz/recs": "latest",
-    "@latticexyz/schema-type": "latest",
-    "@latticexyz/services": "latest",
-    "@latticexyz/solecs": "latest",
-    "@latticexyz/store": "latest",
-    "@latticexyz/utils": "latest",
+    "@latticexyz/recs": "*",
+    "@latticexyz/schema-type": "*",
+    "@latticexyz/services": "*",
+    "@latticexyz/solecs": "*",
+    "@latticexyz/store": "*",
+    "@latticexyz/utils": "*",
     "@protobuf-ts/grpcweb-transport": "^2.7.0",
     "async-mutex": "^0.3.2",
     "ethers": "^5.7.2",
@@ -79,8 +90,7 @@
     "nice-grpc-web": "^2.0.1",
     "observable-webworker": "^4.0.1",
     "rxjs": "^7.5.5",
-    "threads": "^1.7.0",
-    "viem": "^0.2.0"
+    "threads": "^1.7.0"
   },
   "engines": {
     "node": ">=18"
