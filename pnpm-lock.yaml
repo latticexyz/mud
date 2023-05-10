@@ -952,9 +952,6 @@ importers:
       '@types/uuid':
         specifier: ^8.3.4
         version: 8.3.4
-      rimraf:
-        specifier: ^3.0.2
-        version: 3.0.2
       tslib:
         specifier: ^2.5.0
         version: 2.5.0
