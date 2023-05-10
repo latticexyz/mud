@@ -865,9 +865,6 @@ importers:
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
-      '@types/mocha':
-        specifier: ^9.1.1
-        version: 9.1.1
       forge-std:
         specifier: https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
         version: github.com/foundry-rs/forge-std/b4f121555729b3afb3c5ffccb62ff4b6e2818fd3
