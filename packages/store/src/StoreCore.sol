@@ -498,8 +498,8 @@ library StoreCore {
   }
 
   /**
-   * Get a byte slice of a single dynamic field from the given tableId and key tuple, with the given schema
-   * The slice is unchecked and will return invalid data if `start`:`end` overflow
+   * Get a byte slice (including start, excluding end) of a single dynamic field from the given tableId and key tuple, with the given schema.
+   * The slice is unchecked and will return invalid data if `start`:`end` overflow.
    */
   function getFieldSlice(
     bytes32 tableId,
