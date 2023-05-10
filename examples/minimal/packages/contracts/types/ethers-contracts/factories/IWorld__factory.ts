@@ -68,6 +68,11 @@ const _abi = [
     type: "error",
   },
   {
+    inputs: [],
+    name: "MyCustomError",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "string",
@@ -1263,6 +1268,13 @@ const _abi = [
       },
     ],
     name: "updateInField",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "willRevert",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

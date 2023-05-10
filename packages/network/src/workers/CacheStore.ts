@@ -5,6 +5,7 @@ import { ECSStateReply } from "@latticexyz/services/ecs-snapshot";
 import { NetworkComponentUpdate, NetworkEvents } from "../types";
 import { normalizeEntityID } from "../utils";
 import { debug as parentDebug } from "./debug";
+import { Subject } from "rxjs";
 
 const debug = parentDebug.extend("CacheStore");
 
@@ -23,8 +24,9 @@ export function createCacheStore() {
   const entityToIndex = new Map<string, number>();
   const blockNumber = 0;
   const state: State = new Map<number, ComponentValue>();
+  const componentUpdate$ = new Subject<{ component: string; entity: Entity; blockNumber: number }>();
 
-  return { components, componentToIndex, entities, entityToIndex, blockNumber, state };
+  return { components, componentToIndex, entities, entityToIndex, blockNumber, state, componentUpdate$ };
 }
 
 export function storeEvent<Cm extends Components>(
@@ -74,6 +76,8 @@ export function storeEvent<Cm extends Components>(
   // (Events are expected to be ordered, so once a new block number appears,
   // the previous block number is done processing)
   cacheStore.blockNumber = blockNumber - 1;
+
+  cacheStore.componentUpdate$.next({ component, entity, blockNumber });
 }
 
 export function storeEvents<Cm extends Components>(
@@ -147,6 +151,7 @@ export async function loadIndexDbCacheStore(cache: ECSCache): Promise<CacheStore
   const entities = (await cache.get("Mappings", "entities")) ?? [];
   const componentToIndex = new Map<string, number>();
   const entityToIndex = new Map<string, number>();
+  const componentUpdate$ = new Subject<{ component: string; entity: Entity; blockNumber: number }>();
 
   // Init componentToIndex map
   for (let i = 0; i < components.length; i++) {
@@ -158,7 +163,7 @@ export async function loadIndexDbCacheStore(cache: ECSCache): Promise<CacheStore
     entityToIndex.set(entities[i], i);
   }
 
-  return { state, blockNumber, components, entities, componentToIndex, entityToIndex };
+  return { state, blockNumber, components, entities, componentToIndex, entityToIndex, componentUpdate$ };
 }
 
 export async function getIndexDBCacheStoreBlockNumber(cache: ECSCache): Promise<number> {

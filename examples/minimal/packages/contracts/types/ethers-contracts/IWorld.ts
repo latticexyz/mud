@@ -69,6 +69,7 @@ export interface IWorldInterface extends utils.Interface {
     "setRecord(bytes32,bytes32[],bytes)": FunctionFragment;
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)": FunctionFragment;
+    "willRevert()": FunctionFragment;
   };
 
   getFunction(
@@ -112,6 +113,7 @@ export interface IWorldInterface extends utils.Interface {
       | "setRecord(bytes32,bytes32[],bytes)"
       | "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"
       | "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)"
+      | "willRevert"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -397,6 +399,10 @@ export interface IWorldInterface extends utils.Interface {
       PromiseOrValue<BytesLike>
     ]
   ): string;
+  encodeFunctionData(
+    functionFragment: "willRevert",
+    values?: undefined
+  ): string;
 
   decodeFunctionResult(functionFragment: "call", data: BytesLike): Result;
   decodeFunctionResult(
@@ -539,6 +545,7 @@ export interface IWorldInterface extends utils.Interface {
     functionFragment: "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "willRevert", data: BytesLike): Result;
 
   events: {
     "HelloWorld()": EventFragment;
@@ -909,6 +916,10 @@ export interface IWorld extends BaseContract {
       dataToSet: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
+
+    willRevert(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
   };
 
   call(
@@ -1184,6 +1195,10 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
+  willRevert(
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   callStatic: {
     call(
       namespace: PromiseOrValue<BytesLike>,
@@ -1455,6 +1470,8 @@ export interface IWorld extends BaseContract {
       dataToSet: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    willRevert(overrides?: CallOverrides): Promise<void>;
   };
 
   filters: {
@@ -1776,6 +1793,10 @@ export interface IWorld extends BaseContract {
       dataToSet: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
+
+    willRevert(
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
   };
 
   populateTransaction: {
@@ -2049,6 +2070,10 @@ export interface IWorld extends BaseContract {
       schemaIndex: PromiseOrValue<BigNumberish>,
       startByteIndex: PromiseOrValue<BigNumberish>,
       dataToSet: PromiseOrValue<BytesLike>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
+
+    willRevert(
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
   };
