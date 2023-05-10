@@ -58,7 +58,6 @@
     "@types/react": "^18.2.6",
     "@types/react-collapse": "^5.0.1",
     "@types/uuid": "^8.3.4",
-    "tslib": "^2.5.0",
     "tsup": "^6.7.0",
     "tsx": "^3.12.6",
     "typedoc": "0.23.21",
