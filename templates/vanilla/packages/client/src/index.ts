@@ -1,3 +1,4 @@
+import { mount as mountDevTools } from "@latticexyz/dev-tools";
 import { setup } from "./mud/setup";
 
 const { components, worldSend } = await setup();
@@ -17,3 +18,5 @@ components.CounterTable.update$.subscribe((update) => {
   console.log("increment tx", tx);
   console.log("increment result", await tx.wait());
 };
+
+mountDevTools();
