@@ -54,6 +54,7 @@ import { Contract } from "ethers";
 import { createModeClient } from "../v2/mode/createModeClient";
 import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";
 import { getModeBlockNumber } from "../v2/mode/getModeBlockNumber";
+import { transformTableRecordsIntoEvents } from "../v2/transformTableRecordsIntoEvents";
 
 const debug = parentDebug.extend("SyncWorker");
 
@@ -139,6 +140,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       initialBlockNumber,
       fetchSystemCalls,
       disableCache,
+      initialRecords,
     } = config;
 
     // Set default values for cacheAgeThreshold and cacheInterval
@@ -229,7 +231,13 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     );
 
     let initialState = createCacheStore();
-    if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber, modeBlockNumber)) {
+    if (initialRecords) {
+      console.log("Initial state from pre-loaded records");
+      this.setLoadingState({ state: SyncState.INITIAL, msg: "Loading initial state.", percentage: 0 });
+      const events = await transformTableRecordsIntoEvents(storeContract, initialRecords, initialBlockNumber);
+      storeEvents(initialState, events);
+      initialState.blockNumber = initialBlockNumber;
+    } else if (initialBlockNumber > Math.max(cacheBlockNumber, snapshotBlockNumber, modeBlockNumber)) {
       // Skip initializing from cache/snapshot/mode if the initial block number is newer than all of them
       initialState.blockNumber = initialBlockNumber;
     } else {
@@ -237,9 +245,6 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       const syncFromMode = modeClient && modeBlockNumber > cacheBlockNumber + cacheAgeThreshold;
       const syncFromSnapshot =
         !syncFromMode && snapshotClient && snapshotBlockNumber > cacheBlockNumber + cacheAgeThreshold;
-
-      console.log("syncFromSnapshot", syncFromSnapshot);
-      console.log("syncFromMode", syncFromMode);
 
       if (syncFromMode) {
         console.log("Initial sync from MODE");

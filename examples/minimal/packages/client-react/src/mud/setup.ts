@@ -7,6 +7,7 @@ import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
+import { TableId, awaitStreamValue } from "@latticexyz/utils";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
@@ -19,8 +20,6 @@ export async function setup() {
     contractComponents,
     syncThread: "main",
   });
-
-  result.startSync();
 
   // Request drip from faucet
   const signer = result.network.signer.get();
@@ -52,6 +51,27 @@ export async function setup() {
     networkConfig.worldAddress,
     signer ?? result.network.providers.get().json
   );
+
+  const currentBlockNumber = await awaitStreamValue(result.network.blockNumber$);
+
+  const snapSyncResult = (
+    await worldContract.sync(
+      Object.values(contractComponents).map((c) => c.metadata.contractId),
+      {
+        blockTag: currentBlockNumber,
+      }
+    )
+  )
+    .flat(1)
+    .map((record) => {
+      return {
+        tableId: TableId.fromHexString(record[0]),
+        keyTuple: record[1],
+        value: record[2],
+      };
+    });
+
+  result.startSync(snapSyncResult, currentBlockNumber);
 
   // Create a fast tx executor
   const fastTxExecutor =

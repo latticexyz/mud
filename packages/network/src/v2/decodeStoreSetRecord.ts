@@ -1,5 +1,5 @@
 import { ComponentValue } from "@latticexyz/recs";
-import { TableId, arrayToHex } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/utils";
 import { Contract, utils } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
 import { registerMetadata } from "./schemas/tableMetadata";

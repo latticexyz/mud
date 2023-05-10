@@ -2,7 +2,7 @@ import { Result } from "@ethersproject/abi";
 import { ExternalProvider } from "@ethersproject/providers";
 import { Components, ComponentValue, Entity, SchemaOf } from "@latticexyz/recs";
 import { TxMetadata } from "@latticexyz/services/ecs-stream";
-import { Cached } from "@latticexyz/utils";
+import { Cached, TableId } from "@latticexyz/utils";
 import { BaseContract, BigNumber, ContractInterface } from "ethers";
 import { Observable } from "rxjs";
 import { SyncState } from "./workers";
@@ -130,6 +130,12 @@ export function isNetworkComponentUpdateEvent<C extends Components>(
   return e.type === NetworkEvents.NetworkComponentUpdate;
 }
 
+export type RawTableRecord = {
+  tableId: TableId;
+  keyTuple: string[];
+  value: string;
+};
+
 export type SyncWorkerConfig = {
   provider: ProviderConfig;
   initialBlockNumber: number;
@@ -144,6 +150,7 @@ export type SyncWorkerConfig = {
   cacheAgeThreshold?: number;
   snapshotNumChunks?: number;
   pruneOptions?: { playerAddress: string; hashedComponentId: string };
+  initialRecords?: RawTableRecord[];
 };
 
 export enum ContractSchemaValue {
