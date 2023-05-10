@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        template: [minimal, react]
+        template: [vanilla, react]
 
     steps:
       - name: Checkout
