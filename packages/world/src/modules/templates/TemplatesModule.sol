@@ -20,7 +20,7 @@ contract TemplatesModule is IModule, WorldContext {
     return bytes16("templates");
   }
 
-  function install(bytes memory args) public override {
+  function install(bytes memory) public override {
     IBaseWorld world = IBaseWorld(_world());
 
     if (ResourceType.get(TemplateContentTableId) == Resource.NONE) {

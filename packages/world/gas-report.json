@@ -96,6 +96,12 @@
     "gasUsed": 138080
   },
   {
+    "source": "test/TemplatesModule.t.sol",
+    "name": "install templates module",
+    "functionCall": "world.installRootModule(templatesModule, new bytes(0))",
+    "gasUsed": 714627
+  },
+  {
     "source": "test/UniqueEntityModule.t.sol",
     "name": "install unique entity module",
     "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",

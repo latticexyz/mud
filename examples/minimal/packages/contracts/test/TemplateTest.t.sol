@@ -12,8 +12,6 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { CounterTable, CounterTableTableId } from "../src/codegen/Tables.sol";
 import { SampleTemplateId } from "../src/codegen/Templates.sol";
 
-import { SingletonKey } from "../src/systems/IncrementSystem.sol";
-
 contract CounterTest is MudV2Test {
   IWorld world;
 
