@@ -14,12 +14,11 @@
   },
   "types": "src/index.ts",
   "bin": {
-    "mud": "./dist/mud.js",
-    "mud2": "./dist/mud2.js"
+    "mud": "./dist/mud.js"
   },
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "tsup && chmod +x ./dist/mud.js ./dist/mud2.js",
+    "build:js": "tsup && chmod +x ./dist/mud.js",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
