@@ -17,7 +17,7 @@
     "dev": "tsup --watch",
     "release": "npm publish --access=public",
     "start": "npx serve .",
-    "test": "forge test"
+    "test": "forge test && tsc --noEmit"
   },
   "dependencies": {
     "abdk-libraries-solidity": "^3.0.0"
