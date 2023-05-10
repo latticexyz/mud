@@ -1,4 +1,4 @@
-import { mudConfig, resolveTableId } from "@latticexyz/world/register"
+import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
   overrideSystems: {
@@ -13,21 +13,6 @@ export default mudConfig({
       schema: {
         value: "uint32",
       },
-      storeArgument: true,
-    },
-    MessageTable: {
-      primaryKeys: {},
-      schema: {
-        value: "string",
-      },
-      ephemeral: true,
     },
   },
-  modules: [
-    {
-      name: "KeysWithValueModule",
-      root: true,
-      args: [resolveTableId("CounterTable")],
-    },
-  ],
 });

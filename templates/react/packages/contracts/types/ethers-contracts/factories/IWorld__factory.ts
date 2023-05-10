@@ -1023,19 +1023,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "string",
-        name: "message",
-        type: "string",
-      },
-    ],
-    name: "sendMessage",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",

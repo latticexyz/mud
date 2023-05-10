@@ -60,7 +60,6 @@ export interface IWorldInterface extends utils.Interface {
     "registerTable(bytes16,bytes16,bytes32,bytes32)": FunctionFragment;
     "registerTableHook(bytes16,bytes16,address)": FunctionFragment;
     "revokeAccess(bytes16,bytes16,address)": FunctionFragment;
-    "sendMessage(string)": FunctionFragment;
     "setField(bytes32,bytes32[],uint8,bytes)": FunctionFragment;
     "setField(bytes16,bytes16,bytes32[],uint8,bytes)": FunctionFragment;
     "setMetadata(bytes16,bytes16,string,string[])": FunctionFragment;
@@ -103,7 +102,6 @@ export interface IWorldInterface extends utils.Interface {
       | "registerTable"
       | "registerTableHook"
       | "revokeAccess"
-      | "sendMessage"
       | "setField(bytes32,bytes32[],uint8,bytes)"
       | "setField(bytes16,bytes16,bytes32[],uint8,bytes)"
       | "setMetadata(bytes16,bytes16,string,string[])"
@@ -320,10 +318,6 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "sendMessage",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
     functionFragment: "setField(bytes32,bytes32[],uint8,bytes)",
     values: [
       PromiseOrValue<BytesLike>,
@@ -501,10 +495,6 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "revokeAccess",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "sendMessage",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -839,11 +829,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    sendMessage(
-      message: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     "setField(bytes32,bytes32[],uint8,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1113,11 +1098,6 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  sendMessage(
-    message: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
   "setField(bytes32,bytes32[],uint8,bytes)"(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
@@ -1382,11 +1362,6 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    sendMessage(
-      message: PromiseOrValue<string>,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1706,11 +1681,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    sendMessage(
-      message: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     "setField(bytes32,bytes32[],uint8,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1978,11 +1948,6 @@ export interface IWorld extends BaseContract {
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
       grantee: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sendMessage(
-      message: PromiseOrValue<string>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<PopulatedTransaction>;
 
