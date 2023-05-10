@@ -30,7 +30,6 @@
     "dev": "tsup --watch",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\;",
     "lint": "eslint . --ext .ts",
-    "release": "npm publish --access=public",
     "test": "tsc --noEmit && jest --forceExit"
   },
   "dependencies": {
