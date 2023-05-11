@@ -755,6 +755,9 @@ importers:
       rxjs:
         specifier: ^7.5.5
         version: 7.5.6
+      type-fest:
+        specifier: ^2.14.0
+        version: 2.14.0
     devDependencies:
       '@types/jest':
         specifier: ^27.4.1
@@ -771,9 +774,6 @@ importers:
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
-      type-fest:
-        specifier: ^2.14.0
-        version: 2.14.0
       typedoc:
         specifier: 0.23.21
         version: 0.23.21(typescript@4.9.5)
@@ -15328,7 +15328,7 @@ packages:
   /type-fest@2.14.0:
     resolution: {integrity: sha512-hQnTQkFjL5ik6HF2fTAM8ycbr94UbQXK364wF930VHb0dfBJ5JBP8qwrR8TaK9zwUEk7meruo2JAUDMwvuxd/w==}
     engines: {node: '>=12.20'}
-    dev: true
+    dev: false
 
   /type@1.2.0:
     resolution: {integrity: sha512-+5nt5AAniqsCnu2cEQQdpzCAh33kVx8n0VoFidKpB1dVVLAN/F+bgVOqOJqOnEnrhp222clB5p3vUlD+1QAnfg==}
