@@ -123,7 +123,7 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
       }
 
       // Add the set event to the updates for this table
-      updates[table] = updates[table] ?? ({ table, set: [], remove: [] } satisfies Update);
+      updates[table] ??= { table, set: [], remove: [] } satisfies Update;
       updates[table].set.push({ key: tupleToRecord(update.key), value: update.value });
     }
 
@@ -136,7 +136,7 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
       }
 
       // Add the remove event to the updates for this table
-      updates[table] = updates[table] ?? ({ table, set: [], remove: [] } satisfies Update);
+      updates[table] ??= { table, set: [], remove: [] } satisfies Update;
       updates[table].remove.push({ key: tupleToRecord(removedKey) });
     }
 
