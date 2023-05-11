@@ -12,5 +12,6 @@ export default {
     "^@latticexyz/services/ecs-snapshot$": "<rootDir>/../services/protobuf/ts/ecs-snapshot/ecs-snapshot.ts",
     "^@latticexyz/services/ecs-stream$": "<rootDir>/../services/protobuf/ts/ecs-stream/ecs-stream.ts",
     "^@latticexyz/services/mode$": "<rootDir>/../services/protobuf/ts/mode/mode.ts",
+    "^@latticexyz/utils$": "<rootDir>/../utils/src/index.ts",
   },
 };
