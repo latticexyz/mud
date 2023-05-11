@@ -226,15 +226,13 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const modeBlockNumber = modeClient ? await getModeBlockNumber(modeClient, chainId) : -1;
 
     let initialBlockNumber = config.initialBlockNumber;
-    if (!initialBlockNumber) {
+    if (initialBlockNumber < 0) {
       const worldDeployLogs = await provider.getLogs({
         address: worldContract.address,
-        topics: [getEventSelector("HelloWorld()")],
+        topics: [getEventSelector("event HelloWorld()")],
         fromBlock: "earliest",
       });
-      if (worldDeployLogs.length > 0) {
-        initialBlockNumber = worldDeployLogs[0].blockNumber;
-      }
+      initialBlockNumber = worldDeployLogs.length > 0 ? worldDeployLogs[0].blockNumber : 0;
     }
 
     this.setLoadingState({ percentage: 100 });

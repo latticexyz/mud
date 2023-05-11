@@ -41,7 +41,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
-    initialBlockNumber: params.has("initialBlockNumber") ? Number(params.get("initialBlockNumber")) : 0,
+    initialBlockNumber: params.has("initialBlockNumber") ? Number(params.get("initialBlockNumber")) : -1,
     devMode: params.get("dev") === "true",
     disableCache: params.get("cache") === "false",
   };
