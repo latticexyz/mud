@@ -8,7 +8,7 @@ import { WorldConfig } from "@latticexyz/world";
 import { deploy } from "../utils/deploy-v2";
 import { logError } from "../utils/errors";
 import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { mkdirSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { getChainId } from "../utils/getChainId";
 
 export type DeployOptions = {
@@ -81,6 +81,10 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
       mkdirSync(outputDir, { recursive: true });
       writeFileSync(path.join(outputDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
       writeFileSync(path.join(outputDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
+
+      const deploys = existsSync(mudConfig.worldsFile) ? JSON.parse(readFileSync(mudConfig.worldsFile, "utf-8")) : {};
+      deploys[chainId] = deploymentInfo.worldAddress;
+      writeFileSync(mudConfig.worldsFile, JSON.stringify(deploys, null, 2));
 
       console.log(chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${outputDir}): \n`)));
     }

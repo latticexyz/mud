@@ -1,9 +1,8 @@
 import { SetupContractConfig, getBurnerWallet } from "@latticexyz/std-client";
 
 import latticeTestnet from "./supportedChains/latticeTestnet";
-import latestLatticeTestnetDeploy from "contracts/deploys/4242/latest.json";
 import localhost from "./supportedChains/localhost";
-import latestLocalhostDeploy from "contracts/deploys/31337/latest.json";
+import worlds from "contracts/worlds.json";
 
 type NetworkConfig = SetupContractConfig & {
   privateKey: string;
@@ -14,8 +13,6 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
   const params = new URLSearchParams(window.location.search);
 
   const supportedChains = [localhost, latticeTestnet];
-  const deploys = [latestLocalhostDeploy, latestLatticeTestnetDeploy];
-
   const chainId = Number(params.get("chainId") || import.meta.env.VITE_CHAIN_ID || 31337);
   const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
   const chain = supportedChains[chainIndex];
@@ -23,14 +20,9 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     throw new Error(`Chain ${chainId} not found`);
   }
 
-  const deploy = deploys[chainIndex];
-  if (!deploy) {
-    throw new Error(`No deployment found for chain ${chainId}. Did you run \`mud deploy\`?`);
-  }
-
-  const worldAddress = params.get("worldAddress") || deploy.worldAddress;
+  const worldAddress = params.get("worldAddress") || worlds[chain.id.toString()];
   if (!worldAddress) {
-    throw new Error("No world address provided");
+    throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
   }
 
   return {
@@ -49,7 +41,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
-    initialBlockNumber: Number(params.get("initialBlockNumber")) || deploy.blockNumber || 0,
+    initialBlockNumber: params.has("initialBlockNumber") ? Number(params.get("initialBlockNumber")) : 0,
     devMode: params.get("dev") === "true",
     disableCache: params.get("cache") === "false",
   };
