@@ -26,12 +26,12 @@ import {
  */
 export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
-  table: T,
+  table: T & string,
   key: Key<C, T>,
   value: Partial<Value<C, T>>,
   options?: SetOptions
 ) {
-  const keyTuple = [String(table), ...recordToTuple(key)];
+  const keyTuple = [table, ...recordToTuple(key)];
   const currentValue = client.get(keyTuple) ?? options?.defaultValue;
   const tx = options?.appendToTransaction ?? client.transact();
   tx.set(keyTuple, { ...currentValue, ...value });
@@ -48,10 +48,10 @@ export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
  */
 export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
-  table: T,
+  table: T & string,
   key: Key<C, T>
 ): Value<C, T> {
-  return client.get([String(table), ...recordToTuple(key)]);
+  return client.get([table, ...recordToTuple(key)]);
 }
 
 /**
@@ -67,12 +67,12 @@ export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
  */
 export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
-  table: T,
+  table: T & string,
   key: Key<C, T>,
   options?: RemoveOptions
 ) {
   const tx = options?.appendToTransaction ?? client.transact();
-  tx.remove([String(table), ...recordToTuple(key)]);
+  tx.remove([table, ...recordToTuple(key)]);
   if (!options?.appendToTransaction) tx.commit();
   return tx;
 }
