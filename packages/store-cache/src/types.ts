@@ -1,6 +1,7 @@
 import { TupleDatabaseClient, TupleRootTransactionApi, Unsubscribe } from "tuple-database";
 import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
 import { AbiTypeToPrimitiveType } from "@latticexyz/schema-type";
+import { StringForUnion } from "@latticexyz/common/type-utils";
 
 type FieldTypeToPrimitiveType<T extends FieldData<string>> = AbiTypeToPrimitiveType<T> extends never
   ? T extends `${any}[${any}]` // FieldType might include Enums and Enum arrays, which are mapped to uint8/uint8[]
@@ -25,19 +26,38 @@ export type KeyValue<C extends StoreConfig, Table extends keyof Tables<C>> = {
 };
 
 export type DatabaseClient<C extends StoreConfig> = {
+  /** Utils for every table with the table argument prefilled */
   tables: {
-    [table in keyof C["tables"]]: {
-      set: (key: Key<C, table>, value: Partial<Value<C, table>>, options?: SetOptions) => TupleRootTransactionApi;
-      get: (key: Key<C, table>) => Value<C, table>;
-      remove: (key: Key<C, table>, options?: RemoveOptions) => TupleRootTransactionApi;
+    [Table in keyof C["tables"]]: {
+      set: (key: Key<C, Table>, value: Partial<Value<C, Table>>, options?: SetOptions) => TupleRootTransactionApi;
+      get: (key: Key<C, Table>) => Value<C, Table>;
+      remove: (key: Key<C, Table>, options?: RemoveOptions) => TupleRootTransactionApi;
       subscribe: (
-        callback: SubscriptionCallback<C, table>,
+        callback: SubscriptionCallback<C, Table>,
         // Omitting the table config option because the table is prefilled when calling subscribe via the client
-        filter?: Omit<SubscriptionFilterOptions<C, table>, "table">
+        filter?: Omit<SubscriptionFilterOptions<C, Table>, "table">
       ) => Unsubscribe;
     };
   };
 } & {
+  /** Utils to set a custom table value */
+  set: <Table extends string>(
+    table: Table,
+    key: Key<C, Table>,
+    value: Partial<Value<C, Table>>,
+    options?: SetOptions
+  ) => TupleRootTransactionApi;
+  get: <Table extends string = string>(table: Table, key: Key<C, Table>) => Value<C, Table>;
+  remove: <Table extends string = string>(
+    table: Table,
+    key: Key<C, Table>,
+    options?: RemoveOptions
+  ) => TupleRootTransactionApi;
+  subscribe: <Table extends string = string>(
+    callback: SubscriptionCallback<C, Table>,
+    // Omitting the table config option because the table is prefilled when calling subscribe via the client
+    filter: SubscriptionFilterOptions<C, Table>
+  ) => Unsubscribe;
   _tupleDatabaseClient: TupleDatabaseClient;
 };
 

@@ -12,7 +12,7 @@ const config = mudConfig({
     MultiTable: { schema: { arr: "int32[]", str: "string", bts: "bytes" } },
   },
   enums: {
-    Enum1: ["A1", "A1"],
+    Enum1: ["A1", "A2"],
     Enum2: ["B1", "B2"],
   },
 });
@@ -318,5 +318,14 @@ describe("createDatabaseClient", () => {
         Position: { set: [positionUpdates[1]], remove: [], table: "Position" },
       });
     });
+  });
+
+  it("should expose global methods to set values on any table", () => {
+    const table = "some-other-table";
+    const key = { key: "0x00" };
+    const value = { someValue: 1 };
+
+    client.set(table, key, value);
+    expect(client.get(table, key)).toStrictEqual(value);
   });
 });
