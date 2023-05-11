@@ -177,13 +177,37 @@
     "source": "test/World.t.sol",
     "name": "Set metadata",
     "functionCall": "world.setMetadata(namespace, name, tableName, fieldNames)",
-    "gasUsed": 277616
+    "gasUsed": 277632
   },
   {
     "source": "test/World.t.sol",
     "name": "Write data to the table",
     "functionCall": "Bool.set(world, tableId, true)",
     "gasUsed": 42687
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "setting the 1000th element",
+    "functionCall": "AddressArray.push(world, tableId, key, address(1))",
+    "gasUsed": 455801
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "getting the length with 1000 elements",
+    "functionCall": "uint256 length = AddressArray.length(world, tableId, key)",
+    "gasUsed": 5030
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "setting the 10000th element",
+    "functionCall": "AddressArray.push(world, tableId, key, address(1))",
+    "gasUsed": 93081
+  },
+  {
+    "source": "test/World.t.sol",
+    "name": "getting the length with 10000 elements",
+    "functionCall": "uint256 length = AddressArray.length(world, tableId, key)",
+    "gasUsed": 6178
   },
   {
     "source": "test/WorldDynamicUpdate.t.sol",

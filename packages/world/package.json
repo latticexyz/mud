@@ -40,7 +40,7 @@
     "docs": "rimraf API && hardhat docgen",
     "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "tsc --noEmit && vitest --run && forge test"
+    "test": "tsc --noEmit && vitest --run && forge test -vv"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",

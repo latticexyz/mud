@@ -357,6 +357,46 @@ contract WorldTest is Test {
     Bool.set(world, tableId, true);
   }
 
+  function setRecordsHelper(uint256 amount) internal returns (bytes32 tableId) {
+    bytes16 namespace = "testNamespace";
+    bytes16 table = "testTable";
+
+    tableId = world.registerTable(namespace, table, AddressArray.getSchema(), defaultKeySchema);
+
+    for (uint256 i; i < amount; i++) {
+      AddressArray.push(world, tableId, key, address(1));
+    }
+  }
+
+  function testSetRecords1000() public {
+    uint256 amount = 1000;
+
+    bytes32 tableId = setRecordsHelper(amount);
+
+    // !gasreport setting the 1000th element
+    AddressArray.push(world, tableId, key, address(1));
+
+    // !gasreport getting the length with 1000 elements
+    uint256 length = AddressArray.length(world, tableId, key);
+
+    assertEq(length, amount + 1);
+  }
+
+  // NOTE: this test is expected to fail weirdly
+  function testSetRecords10000() public {
+    uint256 amount = 10000;
+
+    bytes32 tableId = setRecordsHelper(amount);
+
+    // !gasreport setting the 10000th element
+    AddressArray.push(world, tableId, key, address(1));
+
+    // !gasreport getting the length with 10000 elements
+    uint256 length = AddressArray.length(world, tableId, key);
+
+    assertEq(length, 170);
+  }
+
   function testSetField() public {
     bytes16 namespace = "testSetField";
     bytes16 name = "testTable";
