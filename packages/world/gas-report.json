@@ -105,7 +105,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the last of 10 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 134835
+    "gasUsed": 134842
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -123,7 +123,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the last of 100 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 192958
+    "gasUsed": 192967
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -141,7 +141,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the last of 1000 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 790938
+    "gasUsed": 790975
   },
   {
     "source": "test/KeysWithValueModule.t.sol",

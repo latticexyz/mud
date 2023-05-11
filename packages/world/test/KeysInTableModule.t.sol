@@ -271,7 +271,7 @@ contract KeysInTableModuleTest is Test {
   }
 
   // The KeysInTable module does not support composite keys yet,
-  // so this checks that the tuple returned only contains the first key
+  // so this documents that the tuple returned only contains the first key
   function testGetKeysInTableDoesNotSupportCompositeKeys(bytes32 keyA, bytes32 keyB, uint256 value1) public {
     _installKeysInTableModule();
 
@@ -294,20 +294,26 @@ contract KeysInTableModuleTest is Test {
     assertTrue(hasKey(world, sourceTableId, keyTuple));
   }
 
-  function testGetKeysWithValueMany10() public {
+  function setKeysHelper(uint256 amount, uint256 value) internal returns (bytes32[] memory lastKey) {
     _installKeysInTableModule();
 
-    uint256 AMOUNT = 10;
-    uint256 value = 1;
+    lastKey = new bytes32[](1);
+    lastKey[0] = bytes32(uint256(amount - 1));
 
-    bytes32[] memory lastKey = new bytes32[](1);
-    lastKey[0] = bytes32(uint256(AMOUNT - 1));
-
-    for (uint256 i; i < AMOUNT - 1; i++) {
+    for (uint256 i; i < amount - 1; i++) {
       bytes32[] memory key = new bytes32[](1);
       key[0] = bytes32(i);
       world.setRecord(namespace, sourceFile, key, abi.encodePacked(value));
     }
+
+    return lastKey;
+  }
+
+  function testGetKeysWithValueMany10() public {
+    uint256 amount = 10;
+    uint256 value = 1;
+
+    bytes32[] memory lastKey = setKeysHelper(amount, value);
 
     // !gasreport Setting the last of 10 keys
     world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
@@ -316,23 +322,14 @@ contract KeysInTableModuleTest is Test {
     bytes32[][] memory keyTuples = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
-    assertEq(keyTuples.length, AMOUNT);
+    assertEq(keyTuples.length, amount);
   }
 
   function testGetKeysWithValueMany100() public {
-    _installKeysInTableModule();
-
-    uint256 AMOUNT = 100;
+    uint256 amount = 100;
     uint256 value = 1;
 
-    bytes32[] memory lastKey = new bytes32[](1);
-    lastKey[0] = bytes32(uint256(AMOUNT - 1));
-
-    for (uint256 i; i < AMOUNT - 1; i++) {
-      bytes32[] memory key = new bytes32[](1);
-      key[0] = bytes32(i);
-      world.setRecord(namespace, sourceFile, key, abi.encodePacked(value));
-    }
+    bytes32[] memory lastKey = setKeysHelper(amount, value);
 
     // !gasreport Setting the last of 100 keys
     world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
@@ -341,23 +338,14 @@ contract KeysInTableModuleTest is Test {
     bytes32[][] memory keyTuples = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
-    assertEq(keyTuples.length, AMOUNT);
+    assertEq(keyTuples.length, amount);
   }
 
   function testGetKeysWithValueMany1000() public {
-    _installKeysInTableModule();
-
-    uint256 AMOUNT = 1000;
+    uint256 amount = 1000;
     uint256 value = 1;
 
-    bytes32[] memory lastKey = new bytes32[](1);
-    lastKey[0] = bytes32(uint256(AMOUNT - 1));
-
-    for (uint256 i; i < AMOUNT - 1; i++) {
-      bytes32[] memory key = new bytes32[](1);
-      key[0] = bytes32(i);
-      world.setRecord(namespace, sourceFile, key, abi.encodePacked(value));
-    }
+    bytes32[] memory lastKey = setKeysHelper(amount, value);
 
     // !gasreport Setting the last of 1000 keys
     world.setRecord(namespace, sourceFile, lastKey, abi.encodePacked(value));
@@ -366,6 +354,6 @@ contract KeysInTableModuleTest is Test {
     bytes32[][] memory keyTuples = getKeysInTable(world, sourceTableId);
 
     // Assert that the list is correct
-    assertEq(keyTuples.length, AMOUNT);
+    assertEq(keyTuples.length, amount);
   }
 }
