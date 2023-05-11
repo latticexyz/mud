@@ -178,7 +178,7 @@ contract KeysWithValueModuleTest is Test {
     assertEq(keysWithValue.length, 1);
     assertEq(keysWithValue[0][0], key1);
 
-    // Set a another key with the same value
+    // Set another key with the same value
     world.setRecord(namespace, sourceName, keyTuple2, abi.encodePacked(value1));
 
     // Get the list of keys with value1 from the target table
@@ -190,99 +190,66 @@ contract KeysWithValueModuleTest is Test {
     assertEq(keysWithValue[1][0], key2);
   }
 
-  function testGetKeysWithValueMany10() public {
+  function setKeysHelper(uint256 amount, uint256 value) internal returns (bytes32[] memory lastKey) {
     _installKeysWithValueModule();
 
-    uint256 AMOUNT = 10;
-    uint256 value = 1;
-
-    bytes32[] memory firstKey = new bytes32[](1);
-    firstKey[0] = bytes32(0);
-    // !gasreport Setting the first of 10 keys
-    world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value));
-
-    for (uint256 i = 1; i < AMOUNT - 1; i++) {
+    for (uint256 i; i < amount - 1; i++) {
       bytes32[] memory key = new bytes32[](1);
       key[0] = bytes32(i);
       world.setRecord(namespace, sourceName, key, abi.encodePacked(value));
     }
 
-    bytes32[] memory lastKey = new bytes32[](1);
-    lastKey[0] = bytes32(uint256(AMOUNT - 1));
+    lastKey = new bytes32[](1);
+    lastKey[0] = bytes32(uint256(amount - 1));
+
+    return lastKey;
+  }
+
+  function testGetKeysWithValueMany10() public {
+    uint256 amount = 10;
+    uint256 value = 1;
+
+    bytes32[] memory lastKey = setKeysHelper(amount, value);
+
     // !gasreport Setting the last of 10 keys
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 10 keys with a given value
     bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value));
 
-    // Get the list of keys with value1 from the target table
-    keysWithValue = getKeysWithValue(world, tableId, abi.encode(value));
-
     // Assert that the list is correct
-    assertEq(keysWithValue.length, AMOUNT);
+    assertEq(keysWithValue.length, amount);
   }
 
   function testGetKeysWithValueMany100() public {
-    _installKeysWithValueModule();
-
-    uint256 AMOUNT = 100;
+    uint256 amount = 100;
     uint256 value = 1;
 
-    bytes32[] memory firstKey = new bytes32[](1);
-    firstKey[0] = bytes32(0);
-    // !gasreport Setting the first of 100 keys
-    world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value));
+    bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    for (uint256 i = 1; i < AMOUNT - 1; i++) {
-      bytes32[] memory key = new bytes32[](1);
-      key[0] = bytes32(i);
-      world.setRecord(namespace, sourceName, key, abi.encodePacked(value));
-    }
-
-    bytes32[] memory lastKey = new bytes32[](1);
-    lastKey[0] = bytes32(uint256(AMOUNT - 1));
     // !gasreport Setting the last of 100 keys
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 100 keys with a given value
     bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value));
 
-    // Get the list of keys with value1 from the target table
-    keysWithValue = getKeysWithValue(world, tableId, abi.encode(value));
-
     // Assert that the list is correct
-    assertEq(keysWithValue.length, AMOUNT);
+    assertEq(keysWithValue.length, amount);
   }
 
   function testGetKeysWithValueMany1000() public {
-    _installKeysWithValueModule();
-
-    uint256 AMOUNT = 1000;
+    uint256 amount = 1000;
     uint256 value = 1;
 
-    bytes32[] memory firstKey = new bytes32[](1);
-    firstKey[0] = bytes32(0);
-    // !gasreport Setting the first of 1000 keys
-    world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value));
+    bytes32[] memory lastKey = setKeysHelper(amount, value);
 
-    for (uint256 i = 1; i < AMOUNT - 1; i++) {
-      bytes32[] memory key = new bytes32[](1);
-      key[0] = bytes32(i);
-      world.setRecord(namespace, sourceName, key, abi.encodePacked(value));
-    }
-
-    bytes32[] memory lastKey = new bytes32[](1);
-    lastKey[0] = bytes32(uint256(AMOUNT - 1));
     // !gasreport Setting the last of 1000 keys
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 1000 keys with a given value
     bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value));
 
-    // Get the list of keys with value1 from the target table
-    keysWithValue = getKeysWithValue(world, tableId, abi.encode(value));
-
     // Assert that the list is correct
-    assertEq(keysWithValue.length, AMOUNT);
+    assertEq(keysWithValue.length, amount);
   }
 }

@@ -271,7 +271,7 @@ contract KeysInTableModuleTest is Test {
   }
 
   // The KeysInTable module does not support composite keys yet,
-  // so this checks that the tuple returned only contains the first key
+  // so this documents that the tuple returned only contains the first key
   function testGetKeysInTableDoesNotSupportCompositeKeys(bytes32 keyA, bytes32 keyB, uint256 value1) public {
     _installKeysInTableModule();
 
@@ -292,5 +292,68 @@ contract KeysInTableModuleTest is Test {
 
     // Assert that the key tuple is in the source table
     assertTrue(hasKey(world, tableId, keyTuple));
+  }
+
+  function setKeysHelper(uint256 amount, uint256 value) internal returns (bytes32[] memory lastKey) {
+    _installKeysInTableModule();
+
+    lastKey = new bytes32[](1);
+    lastKey[0] = bytes32(uint256(amount - 1));
+
+    for (uint256 i; i < amount - 1; i++) {
+      bytes32[] memory key = new bytes32[](1);
+      key[0] = bytes32(i);
+      world.setRecord(namespace, sourceName, key, abi.encodePacked(value));
+    }
+
+    return lastKey;
+  }
+
+  function testGetKeysWithValueMany10() public {
+    uint256 amount = 10;
+    uint256 value = 1;
+
+    bytes32[] memory lastKey = setKeysHelper(amount, value);
+
+    // !gasreport Setting the last of 10 keys
+    world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
+
+    // !gasreport Get list of 10 keys with a given value
+    bytes32[][] memory keyTuples = getKeysInTable(world, tableId);
+
+    // Assert that the list is correct
+    assertEq(keyTuples.length, amount);
+  }
+
+  function testGetKeysWithValueMany100() public {
+    uint256 amount = 100;
+    uint256 value = 1;
+
+    bytes32[] memory lastKey = setKeysHelper(amount, value);
+
+    // !gasreport Setting the last of 100 keys
+    world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
+
+    // !gasreport Get list of 100 keys with a given value
+    bytes32[][] memory keyTuples = getKeysInTable(world, tableId);
+
+    // Assert that the list is correct
+    assertEq(keyTuples.length, amount);
+  }
+
+  function testGetKeysWithValueMany1000() public {
+    uint256 amount = 1000;
+    uint256 value = 1;
+
+    bytes32[] memory lastKey = setKeysHelper(amount, value);
+
+    // !gasreport Setting the last of 1000 keys
+    world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
+
+    // !gasreport Get list of 1000 keys with a given value
+    bytes32[][] memory keyTuples = getKeysInTable(world, tableId);
+
+    // Assert that the list is correct
+    assertEq(keyTuples.length, amount);
   }
 }

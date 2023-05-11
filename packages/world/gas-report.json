@@ -7,6 +7,60 @@
   },
   {
     "source": "test/KeysInTableModule.t.sol",
+    "name": "Setting the last of 10 keys",
+    "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
+    "gasUsed": 185027
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "Get list of 10 keys with a given value",
+    "functionCall": "bytes32[][] memory keyTuples = getKeysInTable(world, tableId)",
+    "gasUsed": 17032
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "install keys in table module",
+    "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
+    "gasUsed": 1032601
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "Setting the last of 100 keys",
+    "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
+    "gasUsed": 243150
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "Get list of 100 keys with a given value",
+    "functionCall": "bytes32[][] memory keyTuples = getKeysInTable(world, tableId)",
+    "gasUsed": 106170
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "install keys in table module",
+    "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
+    "gasUsed": 1032601
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "Setting the last of 1000 keys",
+    "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
+    "gasUsed": 841130
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "Get list of 1000 keys with a given value",
+    "functionCall": "bytes32[][] memory keyTuples = getKeysInTable(world, tableId)",
+    "gasUsed": 1150690
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
+    "name": "install keys in table module",
+    "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
+    "gasUsed": 1032601
+  },
+  {
+    "source": "test/KeysInTableModule.t.sol",
     "name": "set a record on a table with keysInTableModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(val1))",
     "gasUsed": 239899
@@ -49,12 +103,6 @@
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
-    "name": "Setting the first of 10 keys",
-    "functionCall": "world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value))",
-    "gasUsed": 183149
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the last of 10 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
     "gasUsed": 176441
@@ -63,43 +111,31 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 10 keys with a given value",
     "functionCall": "bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value))",
-    "gasUsed": 17513
+    "gasUsed": 17508
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(tableId))",
     "gasUsed": 964845
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
-    "name": "Setting the first of 100 keys",
-    "functionCall": "world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value))",
-    "gasUsed": 183149
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Setting the last of 100 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 234567
+    "gasUsed": 234566
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 100 keys with a given value",
     "functionCall": "bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value))",
-    "gasUsed": 106690
+    "gasUsed": 106659
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(tableId))",
     "gasUsed": 964845
-  },
-  {
-    "source": "test/KeysWithValueModule.t.sol",
-    "name": "Setting the first of 1000 keys",
-    "functionCall": "world.setRecord(namespace, sourceName, firstKey, abi.encodePacked(value))",
-    "gasUsed": 183149
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -111,7 +147,7 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 1000 keys with a given value",
     "functionCall": "bytes32[][] memory keysWithValue = getKeysWithValue(world, tableId, abi.encode(value))",
-    "gasUsed": 1151628
+    "gasUsed": 1151295
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
