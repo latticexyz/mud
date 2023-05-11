@@ -49,7 +49,7 @@ contract KeysWithValueHook is IStoreHook {
       KeysWithValue.push(tableId, valueHash, key[0]);
 
       // Update the index to avoid duplicating keys
-      WithValueIndex.set(tableId, valueHash, keyHash, true, length);
+      WithValueIndex.set(tableId, valueHash, keyHash, true, uint32(length));
     }
   }
 

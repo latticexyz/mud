@@ -103,7 +103,7 @@ export default mudConfig({
         valueHash: "bytes32",
         keysHash: "bytes32",
       },
-      schema: { has: "bool", index: "uint256" },
+      schema: { has: "bool", index: "uint32" },
       dataStruct: false,
     },
     KeysInTable: {
