@@ -104,6 +104,58 @@ library TemplateContent {
     _store.setField(_tableId, _primaryKeys, 0, bytes((value)));
   }
 
+  /** Get the length of value */
+  function length(bytes32 templateId, bytes32 tableId) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((templateId));
+    _primaryKeys[1] = bytes32((tableId));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get the length of value (using the specified store) */
+  function length(IStore _store, bytes32 templateId, bytes32 tableId) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((templateId));
+    _primaryKeys[1] = bytes32((tableId));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get an item of value (unchecked, returns invalid data if index overflows) */
+  function getItem(bytes32 templateId, bytes32 tableId, uint256 _index) internal view returns (bytes memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((templateId));
+    _primaryKeys[1] = bytes32((tableId));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      0,
+      getSchema(),
+      _index * 1,
+      (_index + 1) * 1
+    );
+    return (bytes(_blob));
+  }
+
+  /** Get an item of value (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItem(
+    IStore _store,
+    bytes32 templateId,
+    bytes32 tableId,
+    uint256 _index
+  ) internal view returns (bytes memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](2);
+    _primaryKeys[0] = bytes32((templateId));
+    _primaryKeys[1] = bytes32((tableId));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 0, getSchema(), _index * 1, (_index + 1) * 1);
+    return (bytes(_blob));
+  }
+
   /** Push a slice to value */
   function push(bytes32 templateId, bytes32 tableId, bytes memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
