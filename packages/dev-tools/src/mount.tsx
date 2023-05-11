@@ -5,18 +5,18 @@ export async function mount() {
   }
 
   try {
-    const React = await import("react");
-    const ReactDOM = await import("react-dom/client");
+    const { StrictMode } = await import("react");
+    const { createRoot } = await import("react-dom/client");
     const { App } = await import("./App");
 
     const rootElement = document.createElement("div");
     rootElement.id = "mud-dev-tools";
 
-    const root = ReactDOM.createRoot(rootElement);
+    const root = createRoot(rootElement);
     root.render(
-      <React.StrictMode>
+      <StrictMode>
         <App />
-      </React.StrictMode>
+      </StrictMode>
     );
 
     document.body.appendChild(rootElement);
