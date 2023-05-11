@@ -266,9 +266,6 @@ importers:
       '@latticexyz/network':
         specifier: workspace:*
         version: link:../network
-      '@latticexyz/react':
-        specifier: workspace:*
-        version: link:../react
       '@latticexyz/std-client':
         specifier: workspace:*
         version: link:../std-client
