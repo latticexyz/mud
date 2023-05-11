@@ -53,7 +53,7 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-pnpm create mud my-project
+yarn create mud my-project
 ```
 
 ![Scaffolding a new project with the MUD CLI.](./docs/public/mud-create.gif)

@@ -106,6 +106,49 @@ library StoreMetadata {
     _store.setField(_tableId, _primaryKeys, 0, bytes((tableName)));
   }
 
+  /** Get the length of tableName */
+  function lengthTableName(bytes32 tableId) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get the length of tableName (using the specified store) */
+  function lengthTableName(IStore _store, bytes32 tableId) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get an item of tableName (unchecked, returns invalid data if index overflows) */
+  function getItemTableName(bytes32 tableId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      0,
+      getSchema(),
+      _index * 1,
+      (_index + 1) * 1
+    );
+    return (string(_blob));
+  }
+
+  /** Get an item of tableName (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItemTableName(IStore _store, bytes32 tableId, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 0, getSchema(), _index * 1, (_index + 1) * 1);
+    return (string(_blob));
+  }
+
   /** Push a slice to tableName */
   function pushTableName(bytes32 tableId, string memory _slice) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -189,6 +232,53 @@ library StoreMetadata {
     _primaryKeys[0] = bytes32((tableId));
 
     _store.setField(_tableId, _primaryKeys, 1, bytes((abiEncodedFieldNames)));
+  }
+
+  /** Get the length of abiEncodedFieldNames */
+  function lengthAbiEncodedFieldNames(bytes32 tableId) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 1, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get the length of abiEncodedFieldNames (using the specified store) */
+  function lengthAbiEncodedFieldNames(IStore _store, bytes32 tableId) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 1, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get an item of abiEncodedFieldNames (unchecked, returns invalid data if index overflows) */
+  function getItemAbiEncodedFieldNames(bytes32 tableId, uint256 _index) internal view returns (bytes memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      1,
+      getSchema(),
+      _index * 1,
+      (_index + 1) * 1
+    );
+    return (bytes(_blob));
+  }
+
+  /** Get an item of abiEncodedFieldNames (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItemAbiEncodedFieldNames(
+    IStore _store,
+    bytes32 tableId,
+    uint256 _index
+  ) internal view returns (bytes memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((tableId));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 1, getSchema(), _index * 1, (_index + 1) * 1);
+    return (bytes(_blob));
   }
 
   /** Push a slice to abiEncodedFieldNames */

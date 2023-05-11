@@ -9,7 +9,7 @@ import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
 
-contract StoreCoreDynamicUpdateTest is Test, StoreReadWithStubs {
+contract StoreCoreDynamicTest is Test, StoreReadWithStubs {
   Schema internal defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
 
   bytes32[] internal _key;
@@ -137,5 +137,45 @@ contract StoreCoreDynamicUpdateTest is Test, StoreReadWithStubs {
     // Verify none of the other fields were impacted
     assertEq(bytes32(StoreCore.getField(_table, _key, 0)), firstDataBytes);
     assertEq(StoreCore.getField(_table, _key, 1), secondDataBytes);
+  }
+
+  function testGetSecondFieldLength() public {
+    Schema schema = StoreCore.getSchema(_table);
+
+    // !gasreport get field length (cold, 1 slot)
+    uint256 length = StoreCore.getFieldLength(_table, _key, 1, schema);
+    assertEq(length, secondDataBytes.length);
+    // !gasreport get field length (warm, 1 slot)
+    length = StoreCore.getFieldLength(_table, _key, 1, schema);
+    assertEq(length, secondDataBytes.length);
+  }
+
+  function testGetThirdFieldLength() public {
+    Schema schema = StoreCore.getSchema(_table);
+
+    // !gasreport get field length (warm due to , 2 slots)
+    uint256 length = StoreCore.getFieldLength(_table, _key, 2, schema);
+    assertEq(length, thirdDataBytes.length);
+    // !gasreport get field length (warm, 2 slots)
+    length = StoreCore.getFieldLength(_table, _key, 2, schema);
+    assertEq(length, thirdDataBytes.length);
+  }
+
+  function testGetFieldSlice() public {
+    Schema schema = StoreCore.getSchema(_table);
+
+    // !gasreport get field slice (cold, 1 slot)
+    bytes memory secondFieldSlice = StoreCore.getFieldSlice(_table, _key, 1, schema, 0, 4);
+    assertEq(secondFieldSlice, SliceLib.getSubslice(secondDataBytes, 0, 4).toBytes());
+    // !gasreport get field slice (warm, 1 slot)
+    secondFieldSlice = StoreCore.getFieldSlice(_table, _key, 1, schema, 4, 8);
+    assertEq(secondFieldSlice, SliceLib.getSubslice(secondDataBytes, 4, 8).toBytes());
+
+    // !gasreport get field slice (semi-cold, 1 slot)
+    bytes memory thirdFieldSlice = StoreCore.getFieldSlice(_table, _key, 2, schema, 4, 32);
+    assertEq(thirdFieldSlice, SliceLib.getSubslice(thirdDataBytes, 4, 32).toBytes());
+    // !gasreport get field slice (warm, 2 slots)
+    thirdFieldSlice = StoreCore.getFieldSlice(_table, _key, 2, schema, 8, 40);
+    assertEq(thirdFieldSlice, SliceLib.getSubslice(thirdDataBytes, 8, 40).toBytes());
   }
 }

@@ -1,19 +1,20 @@
 import { z } from "zod";
 import { DynamicResolutionType, zEthereumAddress, zObjectName, zSelector } from "@latticexyz/config";
+import { SYSTEM_DEFAULTS, WORLD_DEFAULTS } from "./defaults";
 
 const zSystemName = zObjectName;
 const zModuleName = zObjectName;
-const zSystemAccessList = z.array(zSystemName.or(zEthereumAddress)).default([]);
+const zSystemAccessList = z.array(zSystemName.or(zEthereumAddress)).default(SYSTEM_DEFAULTS.accessList);
 
 // The system config is a combination of a name config and access config
 const zSystemConfig = z.intersection(
   z.object({
     name: zSelector,
-    registerFunctionSelectors: z.boolean().default(true),
+    registerFunctionSelectors: z.boolean().default(SYSTEM_DEFAULTS.registerFunctionSelector),
   }),
   z.discriminatedUnion("openAccess", [
     z.object({
-      openAccess: z.literal(true),
+      openAccess: z.literal(true).default(SYSTEM_DEFAULTS.openAccess),
     }),
     z.object({
       openAccess: z.literal(false),
@@ -36,16 +37,15 @@ const zModuleConfig = z.object({
 
 // The parsed world config is the result of parsing the user config
 export const zWorldConfig = z.object({
-  namespace: zSelector.default(""),
   worldContractName: z.string().optional(),
-  worldInterfaceName: z.string().default("IWorld"),
-  overrideSystems: z.record(zSystemName, zSystemConfig).default({}),
-  excludeSystems: z.array(zSystemName).default([]),
-  postDeployScript: z.string().default("PostDeploy"),
-  deploysDirectory: z.string().default("./deploys"),
-  worldgenDirectory: z.string().default("world"),
-  worldImportPath: z.string().default("@latticexyz/world/src/"),
-  modules: z.array(zModuleConfig).default([]),
+  worldInterfaceName: z.string().default(WORLD_DEFAULTS.worldInterfaceName),
+  overrideSystems: z.record(zSystemName, zSystemConfig).default(WORLD_DEFAULTS.overrideSystems),
+  excludeSystems: z.array(zSystemName).default(WORLD_DEFAULTS.excludeSystems),
+  postDeployScript: z.string().default(WORLD_DEFAULTS.postDeployScript),
+  deploysDirectory: z.string().default(WORLD_DEFAULTS.deploysDirectory),
+  worldgenDirectory: z.string().default(WORLD_DEFAULTS.worldgenDirectory),
+  worldImportPath: z.string().default(WORLD_DEFAULTS.worldImportPath),
+  modules: z.array(zModuleConfig).default(WORLD_DEFAULTS.modules),
 });
 
 // Catchall preserves other plugins' options

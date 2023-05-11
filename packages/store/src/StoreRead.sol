@@ -41,5 +41,25 @@ contract StoreRead is IStoreRead {
     data = StoreCore.getField(table, key, schemaIndex);
   }
 
+  function getFieldLength(
+    bytes32 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema
+  ) public view virtual returns (uint256) {
+    return StoreCore.getFieldLength(tableId, key, schemaIndex, schema);
+  }
+
+  function getFieldSlice(
+    bytes32 tableId,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema,
+    uint256 start,
+    uint256 end
+  ) public view virtual returns (bytes memory) {
+    return StoreCore.getFieldSlice(tableId, key, schemaIndex, schema, start, end);
+  }
+
   function isStore() public view {}
 }
