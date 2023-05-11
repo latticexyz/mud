@@ -118,7 +118,7 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
       // The first tuple element is always the table name
       const table = update.key[0];
       if (typeof table !== "string") {
-        console.error("Unexpected update:", set);
+        console.warn("store-cache: Expected first tuple element to be the table id, ignoring set operation:", set);
         continue;
       }
 
@@ -131,7 +131,7 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
       // The first tuple element is always the table name
       const table = removedKey[0];
       if (typeof table !== "string") {
-        console.error("Unexpected update:", removedKey);
+        console.warn("store-cache: Expected first tuple element to be the table id, ignoring remove operation:", set);
         continue;
       }
 
