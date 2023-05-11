@@ -1,4 +1,4 @@
-import { SchemaType } from "./SchemaType";
+import { SchemaType } from "../SchemaType";
 
 export type SchemaTypeToPrimitive = {
   [SchemaType.UINT8]: number;

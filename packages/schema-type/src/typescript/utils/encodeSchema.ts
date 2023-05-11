@@ -1,5 +1,5 @@
 import { getStaticByteLength } from "./getStaticByteLength";
-import { SchemaType } from "./SchemaType";
+import { SchemaType } from "../SchemaType";
 
 /**
  * Encode a table schema into a bytes32 hex string

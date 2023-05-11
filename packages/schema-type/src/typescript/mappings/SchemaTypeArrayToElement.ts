@@ -1,6 +1,6 @@
-import { StaticSchemaType } from "./StaticSchemaType";
-import { ArraySchemaType } from "./ArraySchemaType";
-import { SchemaType } from "./SchemaType";
+import { StaticSchemaType } from "../types/StaticSchemaType";
+import { ArraySchemaType } from "../types/ArraySchemaType";
+import { SchemaType } from "../SchemaType";
 
 export const SchemaTypeArrayToElement = {
   [SchemaType.UINT8_ARRAY]: SchemaType.UINT8,

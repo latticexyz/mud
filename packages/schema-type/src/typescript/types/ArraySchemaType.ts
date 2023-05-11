@@ -1,4 +1,4 @@
-import { SchemaType } from "./SchemaType";
+import { SchemaType } from "../SchemaType";
 
 export type ArraySchemaType =
   | SchemaType.UINT8_ARRAY

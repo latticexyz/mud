@@ -1,13 +1,6 @@
-import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
+import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes, StaticArray } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import {
-  AsDependent,
-  ExtractUserTypes,
-  OrDefaults,
-  RequireKeys,
-  StaticArray,
-  StringForUnion,
-} from "@latticexyz/common/type-utils";
+import { AsDependent, ExtractUserTypes, OrDefaults, RequireKeys, StringForUnion } from "@latticexyz/common/type-utils";
 import {
   // validation utils
   getDuplicates,

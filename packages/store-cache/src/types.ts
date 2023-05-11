@@ -1,5 +1,5 @@
 import { TupleDatabaseClient, TupleRootTransactionApi, Unsubscribe } from "tuple-database";
-import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
+import { FullSchemaConfig, StoreConfig } from "@latticexyz/store";
 
 // TODO: add mappings for remaining Solidity types
 // TODO: move to schema-type

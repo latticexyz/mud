@@ -1,4 +1,4 @@
-import { SchemaType } from "./SchemaType";
+import { SchemaType } from "../SchemaType";
 
 export function getStaticByteLength(schemaType: SchemaType) {
   const val = schemaType.valueOf();
