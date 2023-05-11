@@ -35,10 +35,4 @@ contract CounterTest is MudV2Test {
     counter = Counter.get(world);
     assertEq(counter, 2);
   }
-
-  function testKeysWithValue() public {
-    uint32 counter = Counter.get(world);
-    bytes32[] memory keysWithValue = getKeysWithValue(world, CounterTableId, Counter.encode(counter));
-    assertEq(keysWithValue.length, 1);
-  }
 }

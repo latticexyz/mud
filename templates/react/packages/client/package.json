@@ -8,7 +8,8 @@
     "build": "vite build",
     "dev": "vite",
     "initialize": "pnpm build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "tsc --noEmit"
   },
   "dependencies": {
     "@ethersproject/providers": "^5.7.2",
