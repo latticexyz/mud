@@ -53,6 +53,46 @@ export function renderFieldMethods(options: RenderTableOptions) {
       result += renderWithStore(
         storeArgument,
         (_typedStore, _store, _commentSuffix) => `
+        /** Get the length of ${field.name}${_commentSuffix} */
+        function length${field.methodNameSuffix}(${renderArguments([
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+        ])}) internal view returns (uint256) {
+          ${_primaryKeysDefinition}
+          uint256 _byteLength = ${_store}.getFieldLength(_tableId, _primaryKeys, ${schemaIndex}, getSchema());
+          return _byteLength / ${portionData.elementLength};
+        }
+      `
+      );
+
+      result += renderWithStore(
+        storeArgument,
+        (_typedStore, _store, _commentSuffix) => `
+        /** Get an item of ${field.name}${_commentSuffix} (unchecked, returns invalid data if index overflows) */
+        function getItem${field.methodNameSuffix}(${renderArguments([
+          _typedStore,
+          _typedTableId,
+          _typedKeyArgs,
+          "uint256 _index",
+        ])}) internal view returns (${portionData.typeWithLocation}) {
+          ${_primaryKeysDefinition}
+          bytes memory _blob = ${_store}.getFieldSlice(
+            _tableId,
+            _primaryKeys,
+            ${schemaIndex},
+            getSchema(),
+            _index * ${portionData.elementLength},
+            (_index + 1) * ${portionData.elementLength}
+          );
+          return ${portionData.decoded};
+        }
+      `
+      );
+
+      result += renderWithStore(
+        storeArgument,
+        (_typedStore, _store, _commentSuffix) => `
         /** Push ${portionData.title} to ${field.name}${_commentSuffix} */
         function push${field.methodNameSuffix}(${renderArguments([
           _typedStore,
@@ -146,19 +186,23 @@ function fieldPortionData(field: RenderField) {
   const methodNameSuffix = "";
   if (field.arrayElement) {
     const name = "_element";
+    const elementFieldData = { ...field.arrayElement, arrayElement: undefined, name, methodNameSuffix };
     return {
       typeWithLocation: field.arrayElement.typeWithLocation,
       name: "_element",
-      encoded: renderEncodeField({ ...field.arrayElement, arrayElement: undefined, name, methodNameSuffix }),
+      encoded: renderEncodeField(elementFieldData),
+      decoded: renderDecodeFieldSingle(elementFieldData),
       title: "an element",
       elementLength: field.arrayElement.staticByteLength,
     };
   } else {
     const name = "_slice";
+    const elementFieldData = { ...field, name, methodNameSuffix };
     return {
       typeWithLocation: `${field.typeId} memory`,
       name,
-      encoded: renderEncodeField({ ...field, name, methodNameSuffix }),
+      encoded: renderEncodeField(elementFieldData),
+      decoded: renderDecodeFieldSingle(elementFieldData),
       title: "a slice",
       elementLength: 1,
     };

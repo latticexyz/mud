@@ -1,5 +1,6 @@
 import { BigNumber, Contract, Overrides, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
+import * as devObservables from "./dev/observables";
 
 /**
  * Create a stateful util to execute transactions as fast as possible.
@@ -71,9 +72,13 @@ export async function createFastTxExecutor(
         hash = tx.hash;
       }
 
+      // TODO: emit txs that fail gas estimation so we can display em in dev tools
+      devObservables.transactionHash$.next(hash);
+
       // Return the transaction promise and transaction hash.
       // The hash is available immediately, the full transaction is available as a promise
       const tx = signer.provider.getTransaction(hash) as ReturnType<C[F]>;
+
       return { hash, tx };
     } catch (error: any) {
       // Handle "transaction already imported" errors
@@ -81,7 +86,9 @@ export async function createFastTxExecutor(
         if (options.retryCount === 0) {
           updateFeePerGas(globalOptions.priorityFeeMultiplier * 1.1);
           return fastTxExecute(contract, func, args, { retryCount: options.retryCount++ });
-        } else throw new Error(`Gas estimation error for ${functionName}: ${error?.reason}`);
+        } else {
+          throw new Error(`Gas estimation error for ${functionName}: ${error?.reason}`);
+        }
       }
 
       // TODO: potentially handle more transaction errors here, like:

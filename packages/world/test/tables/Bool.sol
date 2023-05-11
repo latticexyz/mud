@@ -96,6 +96,11 @@ library Bool {
     return abi.encodePacked(value);
   }
 
+  /** Encode keys as a bytes32 array using this table's schema */
+  function encodeKeyTuple() internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](0);
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 _tableId) internal {
     bytes32[] memory _primaryKeys = new bytes32[](0);

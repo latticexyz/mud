@@ -32,7 +32,7 @@ const zUserEnumName = zObjectName;
 // (user types are refined later, based on the appropriate config options)
 const zFieldData = z.string();
 
-export type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray | UserTypes;
+type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray | UserTypes;
 
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
