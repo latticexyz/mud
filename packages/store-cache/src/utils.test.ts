@@ -42,8 +42,8 @@ describe("utils", () => {
       subscribe(client._tupleDatabaseClient, callback);
 
       // Set values in the tables
-      for (const update of positionUpdates) client.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value);
+      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value);
 
       let i = 1;
 
@@ -56,8 +56,8 @@ describe("utils", () => {
       }
 
       // Remove all the table entries
-      for (const update of positionUpdates) client.Position.remove(update.key);
-      for (const update of multiKeyUpdates) client.MultiKey.remove(update.key);
+      for (const update of positionUpdates) client.tables.Position.remove(update.key);
+      for (const update of multiKeyUpdates) client.tables.MultiKey.remove(update.key);
 
       // Expect the callback to have called with all remove updates
       for (const update of positionUpdates) {
@@ -94,8 +94,8 @@ describe("utils", () => {
 
       // Set values in the tables
       const tx = client._tupleDatabaseClient.transact();
-      for (const update of positionUpdates) client.Position.set(update.key, update.value, { transaction: tx });
-      for (const update of multiKeyUpdates) client.MultiKey.set(update.key, update.value, { transaction: tx });
+      for (const update of positionUpdates) client.tables.Position.set(update.key, update.value, { transaction: tx });
+      for (const update of multiKeyUpdates) client.tables.MultiKey.set(update.key, update.value, { transaction: tx });
       tx.commit();
 
       // Expect the callback to have been called with all set updates (in a single transaction)
@@ -106,8 +106,8 @@ describe("utils", () => {
 
       // Remove all the table entries
       const tx2 = client._tupleDatabaseClient.transact();
-      for (const update of positionUpdates) client.Position.remove(update.key, { transaction: tx2 });
-      for (const update of multiKeyUpdates) client.MultiKey.remove(update.key, { transaction: tx2 });
+      for (const update of positionUpdates) client.tables.Position.remove(update.key, { transaction: tx2 });
+      for (const update of multiKeyUpdates) client.tables.MultiKey.remove(update.key, { transaction: tx2 });
       tx2.commit();
 
       // Expect the callback to have called with all remove updates (in a single transaction)

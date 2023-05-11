@@ -25,15 +25,17 @@ export type KeyValue<C extends StoreConfig, Table extends keyof Tables<C>> = {
 };
 
 export type DatabaseClient<C extends StoreConfig> = {
-  [table in keyof C["tables"]]: {
-    set: (key: Key<C, table>, value: Partial<Value<C, table>>, options?: SetOptions) => TupleRootTransactionApi;
-    get: (key: Key<C, table>) => Value<C, table>;
-    remove: (key: Key<C, table>, options?: RemoveOptions) => TupleRootTransactionApi;
-    subscribe: (
-      callback: SubscriptionCallback<C, table>,
-      // Omitting the table config option because the table is prefilled when calling subscribe via the client
-      filter?: Omit<SubscriptionFilterOptions<C, table>, "table">
-    ) => Unsubscribe;
+  tables: {
+    [table in keyof C["tables"]]: {
+      set: (key: Key<C, table>, value: Partial<Value<C, table>>, options?: SetOptions) => TupleRootTransactionApi;
+      get: (key: Key<C, table>) => Value<C, table>;
+      remove: (key: Key<C, table>, options?: RemoveOptions) => TupleRootTransactionApi;
+      subscribe: (
+        callback: SubscriptionCallback<C, table>,
+        // Omitting the table config option because the table is prefilled when calling subscribe via the client
+        filter?: Omit<SubscriptionFilterOptions<C, table>, "table">
+      ) => Unsubscribe;
+    };
   };
 } & {
   _tupleDatabaseClient: TupleDatabaseClient;

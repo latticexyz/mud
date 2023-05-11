@@ -20,33 +20,35 @@ const config = mudConfig({
 describe("createDatabaseClient", () => {
   let db: ReturnType<typeof createDatabase>;
   let client: ReturnType<typeof createDatabaseClient<typeof config>>;
+  let tables: (typeof client)["tables"];
 
   beforeEach(() => {
     db = createDatabase();
     client = createDatabaseClient(db, config);
+    tables = client.tables;
   });
 
   describe("Types", () => {
     it("should infer enums as numbers", () => {
-      expectTypeOf(client.EnumTable.set).parameter(0).toMatchTypeOf<{ first: number }>();
-      expectTypeOf(client.EnumTable.set).parameter(1).toMatchTypeOf<{ value?: number }>();
+      expectTypeOf(tables.EnumTable.set).parameter(0).toMatchTypeOf<{ first: number }>();
+      expectTypeOf(tables.EnumTable.set).parameter(1).toMatchTypeOf<{ value?: number }>();
     });
 
     it("should infer bytes32 as string and uint256 as bigint", () => {
-      expectTypeOf(client.Counter.set).parameter(0).toMatchTypeOf<{ first: string; second: bigint }>();
-      expectTypeOf(client.Counter.set).parameter(1).toMatchTypeOf<{ value?: bigint }>();
+      expectTypeOf(tables.Counter.set).parameter(0).toMatchTypeOf<{ first: string; second: bigint }>();
+      expectTypeOf(tables.Counter.set).parameter(1).toMatchTypeOf<{ value?: bigint }>();
     });
 
     it("should infer int32[] as number[]", () => {
-      expectTypeOf(client.MultiTable.set).parameter(1).toMatchTypeOf<{ arr?: number[] }>();
+      expectTypeOf(tables.MultiTable.set).parameter(1).toMatchTypeOf<{ arr?: number[] }>();
     });
 
     it("should infer string as string", () => {
-      expectTypeOf(client.MultiTable.set).parameter(1).toMatchTypeOf<{ str?: string }>();
+      expectTypeOf(tables.MultiTable.set).parameter(1).toMatchTypeOf<{ str?: string }>();
     });
 
     it("should infer bytes as string", () => {
-      expectTypeOf(client.MultiTable.set).parameter(1).toMatchTypeOf<{ bts?: string }>();
+      expectTypeOf(tables.MultiTable.set).parameter(1).toMatchTypeOf<{ bts?: string }>();
     });
   });
 
@@ -55,20 +57,20 @@ describe("createDatabaseClient", () => {
     const value = { value: BigInt(2) };
 
     // Set a value
-    client.Counter.set(key, value);
+    tables.Counter.set(key, value);
 
     // Expect the value to be set
-    expect(client.Counter.get(key)).toEqual(value);
+    expect(tables.Counter.get(key)).toEqual(value);
   });
 
   it("should initialize with Solidity default values", () => {
     const key = { key: "0x00" } as const;
 
     // Set a partial value
-    client.Position.set(key, {});
+    tables.Position.set(key, {});
 
     // Expect the value to be initialized with default values
-    expect(client.Position.get(key)).toEqual({ x: 0, y: 0 });
+    expect(tables.Position.get(key)).toEqual({ x: 0, y: 0 });
 
     // TODO: add tests for other abi types
   });
@@ -77,32 +79,29 @@ describe("createDatabaseClient", () => {
     const key = { key: "0x00" } as const;
 
     // Set a partial value
-    client.Position.set(key, { x: 1 });
+    tables.Position.set(key, { x: 1 });
 
     // Expect the value to be set and extended with default values
-    expect(client.Position.get(key)).toEqual({ x: 1, y: 0 });
+    expect(tables.Position.get(key)).toEqual({ x: 1, y: 0 });
 
     // Set another partial value
-    client.Position.set(key, { y: 2 });
+    tables.Position.set(key, { y: 2 });
 
     // Expect the value to be partially updated
-    expect(client.Position.get(key)).toEqual({ x: 1, y: 2 });
+    expect(tables.Position.get(key)).toEqual({ x: 1, y: 2 });
   });
 
   it("should remove values", () => {
-    const db = createDatabase();
-    const client = createDatabaseClient(db, config);
-
     const key = { first: "0x00", second: BigInt(1) } as const;
     const value = { value: BigInt(2) };
 
     // Set the value
-    client.Counter.set(key, value);
-    expect(client.Counter.get(key)).toEqual(value);
+    tables.Counter.set(key, value);
+    expect(tables.Counter.get(key)).toEqual(value);
 
     // Remove the value
-    client.Counter.remove(key);
-    expect(client.Counter.get(key)).toBeUndefined();
+    tables.Counter.remove(key);
+    expect(tables.Counter.get(key)).toBeUndefined();
   });
 
   describe("subscribe", () => {
@@ -124,11 +123,11 @@ describe("createDatabaseClient", () => {
       const callback = vi.fn();
 
       // Subscribe only to updates of the Position table
-      client.Position.subscribe(callback);
+      tables.Position.subscribe(callback);
 
       // Set values in the tables
-      for (const update of positionUpdates) client.Position.set(update.key, update.value);
-      for (const update of multiKeyUpdates) client.MultiKey.set(update.key, update.value);
+      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
+      for (const update of multiKeyUpdates) tables.MultiKey.set(update.key, update.value);
 
       let i = 1;
 
@@ -143,8 +142,8 @@ describe("createDatabaseClient", () => {
       }
 
       // Remove all the table entries
-      for (const update of positionUpdates) client.Position.remove(update.key);
-      for (const update of multiKeyUpdates) client.MultiKey.remove(update.key);
+      for (const update of positionUpdates) tables.Position.remove(update.key);
+      for (const update of multiKeyUpdates) tables.MultiKey.remove(update.key);
 
       // Expect the callback to only have been called with remove updates of the Position table
       for (const update of positionUpdates) {
@@ -170,10 +169,10 @@ describe("createDatabaseClient", () => {
       const callback = vi.fn();
 
       // Subscribe only to Position table updates greater than key "0x01"
-      client.Position.subscribe(callback, { key: { gt: { key: "0x01" } } });
+      tables.Position.subscribe(callback, { key: { gt: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) client.Position.set(update.key, update.value);
+      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
 
       // Expect the callback to only have been called with updates of a key greater than 0x01
       expect(callback).toHaveBeenCalledTimes(2);
@@ -196,10 +195,10 @@ describe("createDatabaseClient", () => {
       const callback = vi.fn();
 
       // Subscribe only to Position table updates greater than or equal to key "0x01"
-      client.Position.subscribe(callback, { key: { gte: { key: "0x01" } } });
+      tables.Position.subscribe(callback, { key: { gte: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) client.Position.set(update.key, update.value);
+      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
 
       // Expect the callback to only have been called with updates of a key greater than or equal to 0x01
       expect(callback).toHaveBeenCalledTimes(3);
@@ -225,10 +224,10 @@ describe("createDatabaseClient", () => {
       const callback = vi.fn();
 
       // Subscribe only to Position table updates equal to key "0x01"
-      client.Position.subscribe(callback, { key: { eq: { key: "0x01" } } });
+      tables.Position.subscribe(callback, { key: { eq: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) client.Position.set(update.key, update.value);
+      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
 
       // Expect the callback to only have been called with updates of a key equal to 0x01
       expect(callback).toHaveBeenCalledTimes(1);
@@ -248,10 +247,10 @@ describe("createDatabaseClient", () => {
       const callback = vi.fn();
 
       // Subscribe only to Position table updates less than or equal to key "0x01"
-      client.Position.subscribe(callback, { key: { lte: { key: "0x01" } } });
+      tables.Position.subscribe(callback, { key: { lte: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) client.Position.set(update.key, update.value);
+      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
 
       // Expect the callback to only have been called with updates of a key less than or equal to 0x01
       expect(callback).toHaveBeenCalledTimes(2);
@@ -274,10 +273,10 @@ describe("createDatabaseClient", () => {
       const callback = vi.fn();
 
       // Subscribe only to Position table updates less than key "0x01"
-      client.Position.subscribe(callback, { key: { lt: { key: "0x01" } } });
+      tables.Position.subscribe(callback, { key: { lt: { key: "0x01" } } });
 
       // Set values in the tables
-      for (const update of positionUpdates) client.Position.set(update.key, update.value);
+      for (const update of positionUpdates) tables.Position.set(update.key, update.value);
 
       // Expect the callback to only have been called with updates of a key less than 0x01
       expect(callback).toHaveBeenCalledTimes(1);
@@ -297,18 +296,18 @@ describe("createDatabaseClient", () => {
       const callback = vi.fn();
 
       // Subscribe to all Position table updates
-      const unsubscribe = client.Position.subscribe(callback);
+      const unsubscribe = tables.Position.subscribe(callback);
 
       // Set values in the tables
-      client.Position.set(positionUpdates[0].key, positionUpdates[0].value);
-      client.Position.set(positionUpdates[1].key, positionUpdates[1].value);
+      tables.Position.set(positionUpdates[0].key, positionUpdates[0].value);
+      tables.Position.set(positionUpdates[1].key, positionUpdates[1].value);
 
       // Unsubscribe from updates
       unsubscribe();
 
       // Set more values in the tables
-      client.Position.set(positionUpdates[2].key, positionUpdates[2].value);
-      client.Position.set(positionUpdates[3].key, positionUpdates[3].value);
+      tables.Position.set(positionUpdates[2].key, positionUpdates[2].value);
+      tables.Position.set(positionUpdates[3].key, positionUpdates[3].value);
 
       // Expect the callback to only have been called with updates of a key less than or equal to 0x01
       expect(callback).toHaveBeenCalledTimes(2);
