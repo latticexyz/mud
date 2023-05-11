@@ -12,7 +12,7 @@ type NetworkConfig = SetupContractConfig & {
 export async function getNetworkConfig(): Promise<NetworkConfig> {
   const params = new URLSearchParams(window.location.search);
 
-  const supportedChains = [foundry, latticeTestnet];
+  const supportedChains: MudChain[] = [foundry, latticeTestnet];
   const deploys = [latestLocalhostDeploy, latestLatticeTestnetDeploy];
 
   const chainId = Number(params.get("chainId") || import.meta.env.VITE_CHAIN_ID || 31337);
