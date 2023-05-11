@@ -846,6 +846,9 @@ importers:
       '@ethersproject/providers':
         specifier: ^5.7.2
         version: 5.7.2
+      '@solidstate/contracts':
+        specifier: ^0.0.52
+        version: 0.0.52
       ds-test:
         specifier: https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084
         version: github.com/dapphub/ds-test/c9ce3f25bde29fc5eb9901842bf02850dfd2d084
@@ -859,9 +862,6 @@ importers:
         specifier: https://github.com/transmissions11/solmate.git#9cf1428245074e39090dceacb0c28b1f684f584c
         version: github.com/transmissions11/solmate/9cf1428245074e39090dceacb0c28b1f684f584c
     devDependencies:
-      '@solidstate/contracts':
-        specifier: ^0.0.52
-        version: 0.0.52
       '@typechain/ethers-v5':
         specifier: ^10.2.0
         version: 10.2.0(@ethersproject/abi@5.7.0)(@ethersproject/bytes@5.7.0)(@ethersproject/providers@5.7.2)(ethers@5.7.2)(typechain@8.1.1)(typescript@4.9.5)
@@ -4296,7 +4296,6 @@ packages:
 
   /@solidstate/contracts@0.0.52:
     resolution: {integrity: sha512-xSBn5oLnfYtgNYrsRq/COlWHt0NxK26PFQ3FvI2DDMAFpZKFsffGLzUl8umezj2gVKpN7EZ+EVLdPKjqx6eUOw==}
-    dev: true
 
   /@testing-library/react-hooks@8.0.1(@types/react@18.2.6)(react-test-renderer@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-Aqhl2IVmLt8IovEVarNDFuJDVWVvhnr9/GCU6UUnrYXwgDFF9h2L2o2P9KBni1AST5sT6riAyoukFLyjQUgD/g==}
