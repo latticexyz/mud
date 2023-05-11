@@ -1,9 +1,0 @@
-Component
-Indexer
-Set
-World
-IEntityContainer
-IEntityIndexer
-IERC165
-LibTypes
-LibQuery

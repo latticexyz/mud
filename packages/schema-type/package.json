@@ -19,7 +19,6 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist/typescript",
     "dev": "tsup --watch",
-    "release": "npm publish --access=public",
     "test": "tsc --noEmit && forge test"
   },
   "devDependencies": {

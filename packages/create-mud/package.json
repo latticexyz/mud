@@ -15,7 +15,6 @@
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
     "prepublishOnly": "npm run clean && npm run build",
-    "release": "npm publish --access=public",
     "test": "pnpm run test:vanilla && pnpm run test:react",
     "test:react": "dist/cli.js test-project --template react && rimraf test-project",
     "test:vanilla": "dist/cli.js test-project --template vanilla && rimraf test-project"

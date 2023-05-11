@@ -25,7 +25,6 @@
     "dev": "tsup --watch",
     "generate-test-tables": "tsx ./scripts/generate-test-tables.ts",
     "lint": "eslint . --ext .ts",
-    "release": "npm publish --access=public",
     "test": "tsc --noEmit && pnpm run generate-test-tables && forge test"
   },
   "dependencies": {
