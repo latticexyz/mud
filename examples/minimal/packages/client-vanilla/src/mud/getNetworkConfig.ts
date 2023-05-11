@@ -3,6 +3,7 @@ import { foundry } from "@wagmi/chains";
 import latticeTestnet from "./supportedChains/latticeTestnet";
 import latestLatticeTestnetDeploy from "contracts/deploys/4242/latest.json";
 import latestLocalhostDeploy from "contracts/deploys/31337/latest.json";
+import { MudChain } from "./supportedChains/types";
 
 type NetworkConfig = SetupContractConfig & {
   privateKey: string;

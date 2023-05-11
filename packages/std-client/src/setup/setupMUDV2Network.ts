@@ -29,7 +29,7 @@ type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
   initialGasPrice?: number;
   fetchSystemCalls?: boolean;
   syncThread?: "main" | "worker";
-  worldAbi?: Abi; // TODO: should this extend IWorldKernel ABI or a subset of?
+  worldAbi: Abi; // TODO: should this extend IWorldKernel ABI or a subset of?
 };
 
 export async function setupMUDV2Network<C extends ContractComponents>({

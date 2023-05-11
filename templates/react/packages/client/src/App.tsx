@@ -3,12 +3,12 @@ import { useMUD } from "./MUDContext";
 
 export const App = () => {
   const {
-    components: { CounterTable },
+    components: { Counter },
     singletonEntity,
     worldSend,
   } = useMUD();
 
-  const counter = useComponentValue(CounterTable, singletonEntity);
+  const counter = useComponentValue(Counter, singletonEntity);
 
   return (
     <>
