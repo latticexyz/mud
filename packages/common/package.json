@@ -36,7 +36,6 @@
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "release": "npm publish --access=public",
     "test": "vitest typecheck --run --passWithNoTests"
   },
   "dependencies": {
