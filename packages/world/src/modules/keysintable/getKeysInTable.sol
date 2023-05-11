@@ -17,7 +17,7 @@ import { KeysInTable } from "./tables/KeysInTable.sol";
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
 function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTuples) {
-  bytes32[] memory keyTuplesFlat = KeysInTable.getKeys(tableId);
+  bytes32[] memory keyTuplesFlat = KeysInTable.get(tableId);
 
   keyTuples = new bytes32[][](keyTuplesFlat.length);
 
@@ -31,7 +31,7 @@ function getKeysInTable(bytes32 tableId) view returns (bytes32[][] memory keyTup
  * Get a list of keys in the given table for the given store.
  */
 function getKeysInTable(IStore store, bytes32 tableId) view returns (bytes32[][] memory keyTuples) {
-  bytes32[] memory keyTuplesFlat = KeysInTable.getKeys(store, tableId);
+  bytes32[] memory keyTuplesFlat = KeysInTable.get(store, tableId);
 
   keyTuples = new bytes32[][](keyTuplesFlat.length);
 

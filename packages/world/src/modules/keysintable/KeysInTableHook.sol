@@ -15,14 +15,13 @@ contract KeysInTableHook is IStoreHook {
 
     // If the key has not yet been set in the table...
     if (!InTableIndex.getHas(tableId, keysHash)) {
-      uint32 length = KeysInTable.getLength(tableId);
+      uint256 length = KeysInTable.length(tableId);
 
       // Push the key to the list of keys in this table
-      KeysInTable.pushKeys(tableId, key[0]);
-      KeysInTable.setLength(tableId, length + 1);
+      KeysInTable.push(tableId, key[0]);
 
       // Update the index to avoid duplicating this key in the array
-      InTableIndex.set(tableId, keysHash, true, length);
+      InTableIndex.set(tableId, keysHash, true, uint32(length));
     }
   }
 
@@ -45,19 +44,17 @@ contract KeysInTableHook is IStoreHook {
       // Delete the index as the key is not in the table
       InTableIndex.deleteRecord(tableId, keysHash);
 
-      uint32 length = KeysInTable.getLength(tableId);
+      uint256 length = KeysInTable.length(tableId);
 
       if (length == 1) {
         // Delete the list of keys in this table
         KeysInTable.deleteRecord(tableId);
       } else {
-        bytes32 lastKey = KeysInTable.getKeys(tableId)[length - 1];
+        bytes32 lastKey = KeysInTable.getItem(tableId, length - 1);
 
         // Remove the key from the list of keys in this table
-        KeysInTable.updateKeys(tableId, index, lastKey);
-        KeysInTable.popKeys(tableId);
-
-        KeysInTable.setLength(tableId, length - 1);
+        KeysInTable.update(tableId, index, lastKey);
+        KeysInTable.pop(tableId);
       }
     }
   }

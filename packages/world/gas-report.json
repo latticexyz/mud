@@ -3,13 +3,13 @@
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1032601
+    "gasUsed": 961267
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "Setting the last of 10 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 185027
+    "gasUsed": 159394
   },
   {
     "source": "test/KeysInTableModule.t.sol",
@@ -21,13 +21,13 @@
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1032601
+    "gasUsed": 961267
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "Setting the last of 100 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 243150
+    "gasUsed": 217517
   },
   {
     "source": "test/KeysInTableModule.t.sol",
@@ -39,13 +39,13 @@
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1032601
+    "gasUsed": 961267
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "Setting the last of 1000 keys",
     "functionCall": "world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value))",
-    "gasUsed": 841130
+    "gasUsed": 815497
   },
   {
     "source": "test/KeysInTableModule.t.sol",
@@ -57,31 +57,31 @@
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1032601
+    "gasUsed": 961267
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "set a record on a table with keysInTableModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(val1))",
-    "gasUsed": 239899
+    "gasUsed": 192366
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(tableId))",
-    "gasUsed": 1032601
+    "gasUsed": 961267
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "change a record on a table with keysInTableModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(val2))",
-    "gasUsed": 30820
+    "gasUsed": 30809
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "delete a record on a table with keysInTableModule installed",
     "functionCall": "world.deleteRecord(namespace, sourceName, keyTuple1)",
-    "gasUsed": 146885
+    "gasUsed": 119565
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
