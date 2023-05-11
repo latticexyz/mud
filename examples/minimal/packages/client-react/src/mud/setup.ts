@@ -19,6 +19,7 @@ export async function setup() {
     world,
     contractComponents,
     syncThread: "main",
+    worldAbi: IWorld__factory.abi,
   });
 
   // Request drip from faucet

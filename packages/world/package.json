@@ -13,7 +13,8 @@
     ".": "./dist/ts/library/index.js",
     "./register": "./dist/ts/register/index.js",
     "./mud.config.js": "./dist/mud.config.js",
-    "./abi/*": "./abi/*"
+    "./abi/*": "./abi/*",
+    "./types/*": "./types/*"
   },
   "typesVersions": {
     "*": {
@@ -39,7 +40,6 @@
     "docs": "rimraf API && hardhat docgen",
     "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "release": "npm publish --access=public",
     "test": "tsc --noEmit && vitest --run && forge test"
   },
   "dependencies": {

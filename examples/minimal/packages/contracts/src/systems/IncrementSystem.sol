@@ -7,6 +7,8 @@ import { CounterTable, PositionTable } from "../codegen/Tables.sol";
 bytes32 constant SingletonKey = bytes32(uint256(0x060D));
 
 contract IncrementSystem is System {
+  error MyCustomError();
+
   function increment() public returns (uint32) {
     bytes32 key = SingletonKey;
     uint32 counter = CounterTable.get(key);
@@ -17,5 +19,11 @@ contract IncrementSystem is System {
 
   function addPosition(bytes32 key, int32 x, int32 y) public {
     PositionTable.set(key, x, y);
+  }
+
+  function willRevert() public {
+    // revert("I told you it would revert");
+    CounterTable.registerSchema();
+    // revert MyCustomError();
   }
 }

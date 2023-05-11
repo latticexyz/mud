@@ -11,7 +11,7 @@ import { EncodeArray } from "../src/tightcoder/EncodeArray.sol";
 import { Schema, SchemaLib } from "../src/Schema.sol";
 import { PackedCounter, PackedCounterLib } from "../src/PackedCounter.sol";
 import { StoreReadWithStubs } from "../src/StoreReadWithStubs.sol";
-import { IErrors } from "../src/IErrors.sol";
+import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { StoreMetadataData, StoreMetadata } from "../src/codegen/Tables.sol";
@@ -151,7 +151,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     // Register table
     StoreCore.registerSchema(table, schema, keySchema);
 
-    vm.expectRevert(abi.encodeWithSelector(IErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 2));
+    vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 2));
     StoreCore.setMetadata(table, tableName, fieldNames);
   }
 
@@ -777,7 +777,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
 
     // startByteIndex must not overflow
     vm.expectRevert(
-      abi.encodeWithSelector(IErrors.StoreCore_DataIndexOverflow.selector, type(uint16).max, type(uint32).max)
+      abi.encodeWithSelector(IStoreErrors.StoreCore_DataIndexOverflow.selector, type(uint16).max, type(uint32).max)
     );
     StoreCore.updateInField(table, key, 2, type(uint32).max, thirdDataForUpdate);
   }
@@ -803,6 +803,14 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     // !gasreport access dynamic field of non-existing record
     bytes memory data3 = StoreCore.getField(table, key, 1);
     assertEq(data3.length, 0);
+
+    // !gasreport access length of dynamic field of non-existing record
+    uint256 data3Length = StoreCore.getFieldLength(table, key, 1, schema);
+    assertEq(data3Length, 0);
+
+    // !gasreport access slice of dynamic field of non-existing record
+    bytes memory data3Slice = StoreCore.getFieldSlice(table, key, 1, schema, 0, 0);
+    assertEq(data3Slice.length, 0);
   }
 
   function testHooks() public {

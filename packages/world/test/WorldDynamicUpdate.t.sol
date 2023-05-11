@@ -20,7 +20,7 @@ import { AddressArray } from "./tables/AddressArray.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { IErrors } from "../src/interfaces/IErrors.sol";
+import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 contract UpdateInFieldTest is Test {
   using ResourceSelector for bytes32;
@@ -70,7 +70,11 @@ contract UpdateInFieldTest is Test {
   function _expectAccessDenied(address caller, bytes16 namespace, bytes16 name) internal {
     vm.prank(caller);
     vm.expectRevert(
-      abi.encodeWithSelector(IErrors.AccessDenied.selector, ResourceSelector.from(namespace, name).toString(), caller)
+      abi.encodeWithSelector(
+        IWorldErrors.AccessDenied.selector,
+        ResourceSelector.from(namespace, name).toString(),
+        caller
+      )
     );
   }
 

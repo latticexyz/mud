@@ -104,6 +104,12 @@ library SystemRegistry {
     return abi.encodePacked(resourceSelector);
   }
 
+  /** Encode keys as a bytes32 array using this table's schema */
+  function encodeKeyTuple(address system) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32(bytes20((system)));
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(address system) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

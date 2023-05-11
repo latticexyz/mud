@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ["src/index.ts", "src/workers/Sync.worker.ts", "src/workers/Recover.worker.ts"],
+  entry: ["src/index.ts", "src/dev/index.ts", "src/workers/Sync.worker.ts", "src/workers/Recover.worker.ts"],
   target: "esnext",
   format: ["esm"],
   dts: false,
