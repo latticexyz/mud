@@ -470,9 +470,6 @@ importers:
       '@types/debug':
         specifier: ^4.1.7
         version: 4.1.7
-      '@types/google-protobuf':
-        specifier: ^3.15.6
-        version: 3.15.6
       '@types/jest':
         specifier: ^27.4.1
         version: 27.4.1
@@ -4426,10 +4423,6 @@ packages:
     dependencies:
       '@types/minimatch': 3.0.5
       '@types/node': 18.15.11
-    dev: true
-
-  /@types/google-protobuf@3.15.6:
-    resolution: {integrity: sha512-pYVNNJ+winC4aek+lZp93sIKxnXt5qMkuKmaqS3WGuTq0Bw1ZDYNBgzG5kkdtwcv+GmYJGo3yEg6z2cKKAiEdw==}
     dev: true
 
   /@types/graceful-fs@4.1.6:

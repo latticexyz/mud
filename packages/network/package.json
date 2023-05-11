@@ -56,7 +56,6 @@
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/google-protobuf": "^3.15.6",
     "@types/jest": "^27.4.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^18.15.11",
