@@ -22,6 +22,7 @@
     "test": "vitest --run --passWithNoTests"
   },
   "dependencies": {
+    "@latticexyz/common": "workspace:^",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",

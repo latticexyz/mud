@@ -1,6 +1,19 @@
+import { describe } from "vitest";
+import { SchemaTypeToPrimitiveTypeLookup } from "./SchemaTypeToPrimitiveType";
 import { SchemaType } from "../SchemaType";
 
-export type SchemaTypeToPrimitive = {
+describe("mapping between schema type, abi type and primitive types", () => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const expectAbiTypeToPrimitiveType = (_: TestSchemaTypeToPrimitiveLookup) => void 0;
+
+  // Expect argument of type `SchemaTypeToPrimitiveLookup` to be equivalent to `TestSchemaTypeToPrimitiveTypeLookup`
+  const input = {} as SchemaTypeToPrimitiveTypeLookup;
+
+  expectAbiTypeToPrimitiveType(input);
+});
+
+// Manual mapping from schema type to primitive type for testing purposes
+export type TestSchemaTypeToPrimitiveLookup = {
   [SchemaType.UINT8]: number;
   [SchemaType.UINT16]: number;
   [SchemaType.UINT24]: number;

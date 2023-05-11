@@ -1,5 +1,6 @@
 import { TupleDatabaseClient, TupleRootTransactionApi, Unsubscribe } from "tuple-database";
-import { FullSchemaConfig, StoreConfig } from "@latticexyz/store";
+import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
+import { StringForUnion } from "@latticexyz/common/type-utils";
 
 // TODO: add mappings for remaining Solidity types
 // TODO: move to schema-type
@@ -8,7 +9,7 @@ type AbiTypeToPrimitiveTypeLookup = {
   uint256: bigint;
   int32: number;
 } & {
-  [_ in FieldData<string>]: unknown;
+  [_ in StringForUnion]: number; // Enums are mapped to uint8
 };
 
 type FieldTypeToPrimitiveType<T extends FieldData<string>> = AbiTypeToPrimitiveTypeLookup[T];

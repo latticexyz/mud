@@ -105,5 +105,5 @@ export const SchemaTypeArrayToElement = {
   [SchemaType.BOOL_ARRAY]: SchemaType.BOOL,
   [SchemaType.ADDRESS_ARRAY]: SchemaType.ADDRESS,
 } as {
-  [K in SchemaType]: K extends ArraySchemaType ? StaticSchemaType : undefined;
+  [K in SchemaType]: K extends ArraySchemaType ? StaticSchemaType : never;
 };
