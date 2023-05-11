@@ -3,6 +3,7 @@ pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { getKeysInTable } from "@latticexyz/world/src/modules/keysintable/getKeysInTable.sol";
+import { KeysInTable } from "@latticexyz/world/src/modules/keysintable/tables/KeysInTable.sol";
 import { Record } from "./Record.sol";
 
 contract SyncSystem is System {
@@ -20,6 +21,6 @@ contract SyncSystem is System {
   }
 
   function getNumKeys(bytes32 tableId) public view returns (uint256) {
-    return getKeysInTable(tableId).length;
+    return KeysInTable.getLength(tableId);
   }
 }
