@@ -15,7 +15,6 @@
     "clean:js": "rimraf dist",
     "clean:wasm": "rimraf build",
     "dev": "tsup --watch",
-    "release": "npm publish --access=public",
     "start": "npx serve .",
     "test": "forge test && tsc --noEmit"
   },

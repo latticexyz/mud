@@ -40,7 +40,6 @@
     "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
     "generate-tightcoder": "tsx ./scripts/generate-tightcoder.ts && prettier --write '**/tightcoder/*.sol'",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "release": "npm publish --access=public",
     "test": "vitest typecheck --run && vitest --run && forge test"
   },
   "dependencies": {

@@ -32,7 +32,6 @@
     "clean:mud": "rimraf src/mud-definitions",
     "dev": "tsup --watch",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\;",
-    "release": "npm publish --access=public",
     "test": "pnpm run build:mud && vitest typecheck --run"
   },
   "dependencies": {
