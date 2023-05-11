@@ -320,12 +320,27 @@ describe("createDatabaseClient", () => {
     });
   });
 
-  it("should expose global methods to set values on any table", () => {
+  it("should expose global methods to modify values on any table", () => {
     const table = "some-other-table";
     const key = { key: "0x00" };
     const value = { someValue: 1 };
 
+    const mock = vi.fn();
+
+    client.subscribe(mock);
+
     client.set(table, key, value);
     expect(client.get(table, key)).toStrictEqual(value);
+
+    client.remove(table, key);
+    expect(client.get(table, key)).toBe(undefined);
+
+    expect(mock).toHaveBeenCalledTimes(2);
+    expect(mock).toHaveBeenNthCalledWith(1, {
+      [table]: { set: [{ key, value }], remove: [], table },
+    });
+    expect(mock).toHaveBeenNthCalledWith(2, {
+      [table]: { set: [], remove: [{ key }], table },
+    });
   });
 });

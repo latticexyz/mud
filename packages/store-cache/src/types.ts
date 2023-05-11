@@ -56,7 +56,7 @@ export type DatabaseClient<C extends StoreConfig> = {
   subscribe: <Table extends string = string>(
     callback: SubscriptionCallback<C, Table>,
     // Omitting the table config option because the table is prefilled when calling subscribe via the client
-    filter: SubscriptionFilterOptions<C, Table>
+    filter?: SubscriptionFilterOptions<C, Table>
   ) => Unsubscribe;
   _tupleDatabaseClient: TupleDatabaseClient;
 };
