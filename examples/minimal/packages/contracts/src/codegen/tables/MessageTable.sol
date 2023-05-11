@@ -84,8 +84,8 @@ library MessageTable {
 
   /** Tightly pack full data using this table's schema */
   function encode(string memory value) internal view returns (bytes memory) {
-    uint16[] memory _counters = new uint16[](1);
-    _counters[0] = uint16(bytes(value).length);
+    uint40[] memory _counters = new uint40[](1);
+    _counters[0] = uint40(bytes(value).length);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 
     return abi.encodePacked(_encodedLengths.unwrap(), bytes((value)));
