@@ -20,7 +20,9 @@
     "test": "forge test && tsc --noEmit"
   },
   "dependencies": {
-    "abdk-libraries-solidity": "^3.0.0"
+    "abdk-libraries-solidity": "^3.0.0",
+    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
+    "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3"
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-chai-matchers": "^1.0.3",
@@ -29,7 +31,6 @@
     "@types/node-fetch": "^2.6.2",
     "assemblyscript": "^0.21.2",
     "chai": "^4.3.6",
-    "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ethers": "^5.7.2",
     "hardhat": "^2.10.2",
     "keccak-wasm": "^0.10.3",
