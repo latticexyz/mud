@@ -123,7 +123,7 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
       if (typeof namespace !== "string" || typeof table !== "string") {
         console.warn(
           "store-cache: Expected first tuple elements to be namespace and table, ignoring set operation:",
-          set
+          update
         );
         continue;
       }
@@ -139,7 +139,7 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
       if (typeof namespace !== "string" || typeof table !== "string") {
         console.warn(
           "store-cache: Expected first tuple elements to be namespace and table, ignoring remove operation:",
-          set
+          removedKey
         );
         continue;
       }
