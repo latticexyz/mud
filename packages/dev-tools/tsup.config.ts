@@ -9,4 +9,6 @@ export default defineConfig({
   clean: true,
   minify: true,
   injectStyle: true,
+  // bundle react deps so folks can use this in non-react clients
+  noExternal: ["react", "react-dom", "react-router-dom"],
 });
