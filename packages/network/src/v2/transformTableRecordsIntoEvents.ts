@@ -22,7 +22,7 @@ export async function transformTableRecordsIntoEvents(
       type: NetworkEvents.NetworkComponentUpdate,
       component,
       entity: entityId as Entity,
-      value: decodedValue,
+      value: decodedValue.namedValues,
       lastEventInTx: false,
       txHash: "cache",
       blockNumber,

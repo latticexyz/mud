@@ -26,7 +26,7 @@ contract CounterTest is MudV2Test {
     assertTrue(codeSize > 0);
   }
 
-  function testSync(uint32[4] memory vals) public {
+  function testGetRecords(uint32[4] memory vals) public {
     bytes32[4] memory keys;
     keys[0] = bytes32(uint256(0x060D));
     keys[1] = "one";
@@ -55,7 +55,7 @@ contract CounterTest is MudV2Test {
     assertEq(records[0].value, CounterTable.encode(vals[3]));
   }
 
-  function testSyncMany() public {
+  function testNumKeys() public {
     uint256 amount = 1000;
     uint32 val = 1;
 

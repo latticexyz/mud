@@ -6,7 +6,7 @@ pragma solidity >=0.8.0;
 import { Record } from "./../../systems/Record.sol";
 
 interface ISyncSystem {
-  function getRecords(bytes32 tableId, uint256 limit, uint256 offset) external view returns (Record[] memory records);
+  function getRecords(bytes32 tableId, uint256 limit, uint256 offset) external view returns (Record[] memory);
 
   function getNumKeys(bytes32 tableId) external view returns (uint256);
 }

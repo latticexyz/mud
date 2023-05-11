@@ -682,7 +682,7 @@ const _abi = [
           },
         ],
         internalType: "struct Record[]",
-        name: "records",
+        name: "",
         type: "tuple[]",
       },
     ],

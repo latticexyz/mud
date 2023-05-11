@@ -25,7 +25,7 @@ export const App = () => {
   //       randomPosiiton.x,
   //       randomPosiiton.y,
   //     ]);
-  //   }, 50);
+  //   }, 25);
 
   //   return () => clearInterval(int);
   // }, []);

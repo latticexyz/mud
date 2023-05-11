@@ -815,7 +815,7 @@ export interface IWorld extends BaseContract {
       limit: PromiseOrValue<BigNumberish>,
       offset: PromiseOrValue<BigNumberish>,
       overrides?: CallOverrides
-    ): Promise<[RecordStructOutput[]] & { records: RecordStructOutput[] }>;
+    ): Promise<[RecordStructOutput[]]>;
 
     getSchema(
       table: PromiseOrValue<BytesLike>,
