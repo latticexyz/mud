@@ -23,13 +23,11 @@ import {
   updateComponent,
   Entity,
 } from "@latticexyz/recs";
-import { toEthAddress } from "@latticexyz/utils";
+import { isDefined, toEthAddress } from "@latticexyz/utils";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.sol/Component.json";
 import { Contract, BigNumber, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import toLower from "lodash/toLower";
-import compact from "lodash/compact";
 import { IComputedValue } from "mobx";
 import { filter, map, Observable, Subject, timer } from "rxjs";
 import { DecodedNetworkComponentUpdate, DecodedSystemCall } from "./types";
@@ -74,7 +72,7 @@ export function createSystemCallStreams<C extends Components, SystemTypes extend
     decodeAndEmitSystemCall: (systemCall: SystemCall<C>) => {
       const { tx } = systemCall;
 
-      const systemEntity = toLower(BigNumber.from(tx.to).toHexString()) as Entity;
+      const systemEntity = BigNumber.from(tx.to).toHexString().toLowerCase() as Entity;
       if (!systemEntity) return;
 
       const hashedSystemId = getComponentValue(systemsRegistry, systemEntity)?.value;
@@ -91,7 +89,7 @@ export function createSystemCallStreams<C extends Components, SystemTypes extend
 
       systemCallStreams[name].next({
         ...systemCall,
-        updates: compact(systemCall.updates.map(decodeNetworkComponentUpdate)),
+        updates: systemCall.updates.map(decodeNetworkComponentUpdate).filter(isDefined),
         systemId: name,
         args: decodedTx.args,
       });
