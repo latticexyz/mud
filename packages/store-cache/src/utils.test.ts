@@ -9,7 +9,7 @@ const config = mudConfig({
     MultiKey: { primaryKeys: { first: "bytes32", second: "uint32" }, schema: "int32" },
     Position: { schema: { x: "int32", y: "int32" } },
   },
-} as const);
+});
 
 describe("utils", () => {
   let db: ReturnType<typeof createDatabase>;

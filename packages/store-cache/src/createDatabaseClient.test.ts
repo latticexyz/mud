@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, expectTypeOf, it, vi } from "vitest";
 import { createDatabase, createDatabaseClient } from ".";
 import { mudConfig } from "@latticexyz/store/register";
 import { KeyValue } from "./types";
@@ -8,8 +8,14 @@ const config = mudConfig({
     Counter: { primaryKeys: { first: "bytes32", second: "uint256" }, schema: "uint256" },
     Position: { schema: { x: "int32", y: "int32" } },
     MultiKey: { primaryKeys: { first: "bytes32", second: "uint32" }, schema: "int32" },
+    EnumTable: { primaryKeys: { first: "Enum1" }, schema: "Enum2" },
+    MultiTable: { schema: { arr: "int32[]", str: "string", bts: "bytes" } },
   },
-} as const);
+  enums: {
+    Enum1: ["A1", "A1"],
+    Enum2: ["B1", "B2"],
+  },
+});
 
 describe("createDatabaseClient", () => {
   let db: ReturnType<typeof createDatabase>;
@@ -18,6 +24,30 @@ describe("createDatabaseClient", () => {
   beforeEach(() => {
     db = createDatabase();
     client = createDatabaseClient(db, config);
+  });
+
+  describe("Types", () => {
+    it("should infer enums as numbers", () => {
+      expectTypeOf(client.EnumTable.set).parameter(0).toMatchTypeOf<{ first: number }>();
+      expectTypeOf(client.EnumTable.set).parameter(1).toMatchTypeOf<{ value?: number }>();
+    });
+
+    it("should infer bytes32 as string and uint256 as bigint", () => {
+      expectTypeOf(client.Counter.set).parameter(0).toMatchTypeOf<{ first: string; second: bigint }>();
+      expectTypeOf(client.Counter.set).parameter(1).toMatchTypeOf<{ value?: bigint }>();
+    });
+
+    it("should infer int32[] as number[]", () => {
+      expectTypeOf(client.MultiTable.set).parameter(1).toMatchTypeOf<{ arr?: number[] }>();
+    });
+
+    it("should infer string as string", () => {
+      expectTypeOf(client.MultiTable.set).parameter(1).toMatchTypeOf<{ str?: string }>();
+    });
+
+    it("should infer bytes as string", () => {
+      expectTypeOf(client.MultiTable.set).parameter(1).toMatchTypeOf<{ bts?: string }>();
+    });
   });
 
   it("should set and get typed values", () => {
