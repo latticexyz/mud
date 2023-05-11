@@ -113,8 +113,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    KeysWithValue: (() => {
-      const tableId = new TableId("", "KeysWithValue");
+    WithValueKeys: (() => {
+      const tableId = new TableId("", "WithValueKeys");
       return defineComponent(
         world,
         {
@@ -144,8 +144,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    KeysInTable: (() => {
-      const tableId = new TableId("", "KeysInTable");
+    InTableKeys: (() => {
+      const tableId = new TableId("", "InTableKeys");
       return defineComponent(
         world,
         {

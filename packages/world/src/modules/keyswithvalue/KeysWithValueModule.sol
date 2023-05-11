@@ -14,7 +14,7 @@ import { ResourceSelector } from "../../ResourceSelector.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
 import { KeysWithValueHook } from "./KeysWithValueHook.sol";
-import { KeysWithValue, KeysWithValueTableId } from "./tables/KeysWithValue.sol";
+import { WithValueKeys, WithValueKeysTableId } from "./tables/WithValueKeys.sol";
 import { WithValueIndex, WithValueIndexTableId } from "./tables/WithValueIndex.sol";
 
 /**
@@ -45,13 +45,13 @@ contract KeysWithValueModule is IModule, WorldContext {
 
     IBaseWorld world = IBaseWorld(_world());
 
-    if (ResourceType.get(KeysWithValueTableId) == Resource.NONE) {
+    if (ResourceType.get(WithValueKeysTableId) == Resource.NONE) {
       // Register the tables
       world.registerTable(
-        KeysWithValueTableId.getNamespace(),
-        KeysWithValueTableId.getName(),
-        KeysWithValue.getSchema(),
-        KeysWithValue.getKeySchema()
+        WithValueKeysTableId.getNamespace(),
+        WithValueKeysTableId.getName(),
+        WithValueKeys.getSchema(),
+        WithValueKeys.getKeySchema()
       );
       world.registerTable(
         WithValueIndexTableId.getNamespace(),
@@ -61,13 +61,13 @@ contract KeysWithValueModule is IModule, WorldContext {
       );
 
       // Register metadata for the tables
-      (string memory tableName1, string[] memory fieldNames1) = KeysWithValue.getMetadata();
-      world.setMetadata(KeysWithValueTableId.getNamespace(), KeysWithValueTableId.getName(), tableName1, fieldNames1);
+      (string memory tableName1, string[] memory fieldNames1) = WithValueKeys.getMetadata();
+      world.setMetadata(WithValueKeysTableId.getNamespace(), WithValueKeysTableId.getName(), tableName1, fieldNames1);
       (string memory tableName2, string[] memory fieldNames2) = WithValueIndex.getMetadata();
       world.setMetadata(WithValueIndexTableId.getNamespace(), WithValueIndexTableId.getName(), tableName2, fieldNames2);
 
       // Grant the hook access to the tables
-      world.grantAccess(KeysWithValueTableId.getNamespace(), KeysWithValueTableId.getName(), address(hook));
+      world.grantAccess(WithValueKeysTableId.getNamespace(), WithValueKeysTableId.getName(), address(hook));
       world.grantAccess(WithValueIndexTableId.getNamespace(), WithValueIndexTableId.getName(), address(hook));
     }
 

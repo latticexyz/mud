@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 import { IBaseWorld } from "../../interfaces/IBaseWorld.sol";
 
-import { KeysWithValue } from "./tables/KeysWithValue.sol";
+import { WithValueKeys } from "./tables/WithValueKeys.sol";
 import { WithValueIndex } from "./tables/WithValueIndex.sol";
 
 /**
@@ -22,17 +22,17 @@ contract KeysWithValueHook is IStoreHook {
       // Delete the index
       WithValueIndex.deleteRecord(tableId, valueHash, keyHash);
 
-      uint256 length = KeysWithValue.length(tableId, valueHash);
+      uint256 length = WithValueKeys.length(tableId, valueHash);
 
       if (length == 1) {
         // Fully delete the list for this value
-        KeysWithValue.deleteRecord(tableId, valueHash);
+        WithValueKeys.deleteRecord(tableId, valueHash);
       } else {
-        bytes32 lastKey = KeysWithValue.getItem(tableId, valueHash, length - 1);
+        bytes32 lastKey = WithValueKeys.getItem(tableId, valueHash, length - 1);
 
         // Remove this key/value pair from the list
-        KeysWithValue.update(tableId, valueHash, index, lastKey);
-        KeysWithValue.pop(tableId, valueHash);
+        WithValueKeys.update(tableId, valueHash, index, lastKey);
+        WithValueKeys.pop(tableId, valueHash);
       }
     }
   }
@@ -43,10 +43,10 @@ contract KeysWithValueHook is IStoreHook {
 
     // If the key/value pair is not in the table...
     if (!WithValueIndex.getHas(tableId, valueHash, keyHash)) {
-      uint256 length = KeysWithValue.length(tableId, valueHash);
+      uint256 length = WithValueKeys.length(tableId, valueHash);
 
       // Push the key/value pair to the list
-      KeysWithValue.push(tableId, valueHash, key[0]);
+      WithValueKeys.push(tableId, valueHash, key[0]);
 
       // Update the index to avoid duplicating keys
       WithValueIndex.set(tableId, valueHash, keyHash, true, uint32(length));

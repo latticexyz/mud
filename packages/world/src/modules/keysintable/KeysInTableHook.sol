@@ -3,7 +3,7 @@ pragma solidity >=0.8.0;
 
 import { IStoreHook } from "@latticexyz/store/src/IStore.sol";
 
-import { KeysInTable } from "./tables/KeysInTable.sol";
+import { InTableKeys } from "./tables/InTableKeys.sol";
 import { InTableIndex } from "./tables/InTableIndex.sol";
 
 /**
@@ -15,10 +15,10 @@ contract KeysInTableHook is IStoreHook {
 
     // If the key has not yet been set in the table...
     if (!InTableIndex.getHas(tableId, keysHash)) {
-      uint256 length = KeysInTable.length(tableId);
+      uint256 length = InTableKeys.length(tableId);
 
       // Push the key to the list of keys in this table
-      KeysInTable.push(tableId, key[0]);
+      InTableKeys.push(tableId, key[0]);
 
       // Update the index to avoid duplicating this key in the array
       InTableIndex.set(tableId, keysHash, true, uint32(length));
@@ -44,17 +44,17 @@ contract KeysInTableHook is IStoreHook {
       // Delete the index as the key is not in the table
       InTableIndex.deleteRecord(tableId, keysHash);
 
-      uint256 length = KeysInTable.length(tableId);
+      uint256 length = InTableKeys.length(tableId);
 
       if (length == 1) {
         // Delete the list of keys in this table
-        KeysInTable.deleteRecord(tableId);
+        InTableKeys.deleteRecord(tableId);
       } else {
-        bytes32 lastKey = KeysInTable.getItem(tableId, length - 1);
+        bytes32 lastKey = InTableKeys.getItem(tableId, length - 1);
 
         // Remove the key from the list of keys in this table
-        KeysInTable.update(tableId, index, lastKey);
-        KeysInTable.pop(tableId);
+        InTableKeys.update(tableId, index, lastKey);
+        InTableKeys.pop(tableId);
       }
     }
   }

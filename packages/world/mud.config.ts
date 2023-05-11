@@ -88,7 +88,7 @@ export default mudConfig({
       },
       dataStruct: false,
     },
-    KeysWithValue: {
+    WithValueKeys: {
       directory: "modules/keyswithvalue/tables",
       primaryKeys: {
         sourceTable: "bytes32",
@@ -106,7 +106,7 @@ export default mudConfig({
       schema: { has: "bool", index: "uint32" },
       dataStruct: false,
     },
-    KeysInTable: {
+    InTableKeys: {
       directory: "modules/keysintable/tables",
       primaryKeys: { sourceTable: "bytes32" },
       schema: "bytes32[]", // For now only indexes the first key of a primary key tuple

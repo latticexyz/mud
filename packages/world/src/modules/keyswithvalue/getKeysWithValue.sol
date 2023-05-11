@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
 import { MODULE_NAMESPACE } from "./constants.sol";
-import { KeysWithValue } from "./tables/KeysWithValue.sol";
+import { WithValueKeys } from "./tables/WithValueKeys.sol";
 
 /**
  * Note: this module does not yet support composite keys.
@@ -18,7 +18,7 @@ import { KeysWithValue } from "./tables/KeysWithValue.sol";
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
 function getKeysWithValue(bytes32 tableId, bytes memory value) view returns (bytes32[][] memory keyTuples) {
-  bytes32[] memory keyTuplesFlat = KeysWithValue.get(tableId, keccak256(value));
+  bytes32[] memory keyTuplesFlat = WithValueKeys.get(tableId, keccak256(value));
 
   keyTuples = new bytes32[][](keyTuplesFlat.length);
 
@@ -36,7 +36,7 @@ function getKeysWithValue(
   bytes32 tableId,
   bytes memory value
 ) view returns (bytes32[][] memory keyTuples) {
-  bytes32[] memory keyTuplesFlat = KeysWithValue.get(store, tableId, keccak256(value));
+  bytes32[] memory keyTuplesFlat = WithValueKeys.get(store, tableId, keccak256(value));
 
   keyTuples = new bytes32[][](keyTuplesFlat.length);
 
