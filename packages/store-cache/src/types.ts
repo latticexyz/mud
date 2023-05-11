@@ -8,7 +8,7 @@ type FieldTypeToPrimitiveType<T extends FieldData<string>> = AbiTypeToPrimitiveT
     : number // Map enums to `number`
   : AbiTypeToPrimitiveType<T>;
 
-type SchemaToPrimitives<T extends FullSchemaConfig> = { [key in keyof T]: FieldTypeToPrimitiveType<T[key]> };
+export type SchemaToPrimitives<T extends FullSchemaConfig> = { [key in keyof T]: FieldTypeToPrimitiveType<T[key]> };
 
 export type Tables<C extends StoreConfig> = {
   [key in keyof C["tables"]]: {
@@ -39,8 +39,8 @@ export type DatabaseClient<C extends StoreConfig> = {
   _tupleDatabaseClient: TupleDatabaseClient;
 };
 
-export type SetOptions = {
-  defaultValue?: Record<string, unknown>;
+export type SetOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
+  defaultValue?: Value<C, T>;
   appendToTransaction?: TupleRootTransactionApi;
 };
 
@@ -65,5 +65,5 @@ export type SubscriptionFilterOptions<
 export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["tables"] = keyof C["tables"]> = {
   table: Table;
   set: KeyValue<C, Table>[];
-  remove: Key<C, Table>[];
+  remove: { key: Key<C, Table> }[];
 };

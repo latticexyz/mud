@@ -4,6 +4,7 @@ import { StoreConfig } from "@latticexyz/store";
 import {
   Key,
   RemoveOptions,
+  SchemaToPrimitives,
   SetOptions,
   SubscriptionCallback,
   SubscriptionFilterOptions,
@@ -146,14 +147,15 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
 /**
  * Map a table schema to the corresponding default value
  */
-export function getDefaultValue(table?: Record<string, string>) {
-  if (table == null) return undefined;
+export function getDefaultValue<Schema extends Record<string, string>>(schema?: Schema) {
+  if (schema == null) return undefined;
 
   // Map schema to its default values
-  const defaultValue: Record<string, unknown> = {};
-  for (const key in table) {
-    defaultValue[key] = AbiDefaults[table[key]];
+  const defaultValue = {} as SchemaToPrimitives<Schema>;
+  for (const key in schema) {
+    defaultValue[key] = AbiDefaults[schema[key]];
   }
+
   return defaultValue;
 }
 
@@ -172,7 +174,7 @@ function recordToTuple(record: Record<string, unknown>): Tuple {
 /**
  * Convert a record tuple like `[{ a: string }, { b: number }]` to a record like `{ a: string, b: number }`,
  */
-function tupleToRecord(tuple: Tuple): Record<string, unknown> {
+function tupleToRecord(tuple: Tuple): Record<string, any> {
   const record: Record<string, unknown> = {};
 
   for (const entry of tuple) {
