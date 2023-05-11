@@ -166,7 +166,7 @@ export function getDefaultValue<Schema extends Record<string, string>>(schema?: 
 function recordToTuple(record: Record<string, unknown>): Tuple {
   const tuple = [];
   for (const [key, value] of Object.entries(record)) {
-    tuple.push({ [key]: flatten(value) });
+    tuple.push({ [key]: serializeKey(value) });
   }
   return tuple;
 }
@@ -188,9 +188,10 @@ function tupleToRecord(tuple: Tuple): Record<string, any> {
 }
 
 /**
- * Helper to serialize bigints
+ * Helper to serialize values that are not natively supported in keys by tuple-database.
+ * For now only `bigint` needs serialization.
  */
-function flatten(value: unknown) {
-  if (typeof value === "bigint") return String(value);
-  return value;
+function serializeKey(key: unknown) {
+  if (typeof key === "bigint") return String(key);
+  return key;
 }
