@@ -54,4 +54,20 @@ contract CounterTest is MudV2Test {
     assertTrue(records[0].keyTuple[0] == keys[3]);
     assertEq(records[0].value, CounterTable.encode(vals[3]));
   }
+
+  function testSyncMany() public {
+    uint256 amount = 1000;
+    uint32 val = 1;
+
+    vm.startPrank(worldAddress);
+    for (uint256 i; i < amount; i++) {
+      CounterTable.set(world, bytes32(i), val);
+    }
+
+    Record[] memory records = world.getRecords(CounterTableTableId, amount, 0);
+    assertTrue(records.length == amount);
+
+    uint256 length = world.getNumKeys(CounterTableTableId);
+    assertTrue(length == amount + 1);
+  }
 }
