@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
 
-import { Statics, StaticsData, Dynamics, DynamicsData, Singleton, Ephemeral } from "../src/codegen/Tables.sol";
+import { Statics, StaticsData, Dynamics1, Dynamics1Data, Dynamics2, Dynamics2Data, Singleton, Ephemeral } from "../src/codegen/Tables.sol";
 
 import { Enum1, Enum2 } from "../src/codegen/Types.sol";
 
@@ -29,13 +29,16 @@ contract TablegenTest is Test, StoreReadWithStubs {
   }
 
   function testDynamicsSetAndGet() public {
-    Dynamics.registerSchema();
+    Dynamics1.registerSchema();
+    Dynamics2.registerSchema();
 
     bytes32 key = keccak256("key");
 
     // using `get` before setting any data should return default empty values
-    DynamicsData memory emptyData;
-    assertEq(abi.encode(Dynamics.get(key)), abi.encode(emptyData));
+    Dynamics1Data memory emptyData1;
+    Dynamics2Data memory emptyData2;
+    assertEq(abi.encode(Dynamics1.get(key)), abi.encode(emptyData1));
+    assertEq(abi.encode(Dynamics2.get(key)), abi.encode(emptyData2));
 
     // initialize values
     bytes32[1] memory staticB32 = [keccak256("value")];
@@ -52,42 +55,45 @@ contract TablegenTest is Test, StoreReadWithStubs {
     string memory str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit,";
     bytes memory b = hex"ff";
     // combine them into a struct
-    DynamicsData memory data = DynamicsData(staticB32, staticI32, staticU128, staticAddrs, staticBools, u64, str, b);
+    Dynamics1Data memory data1 = Dynamics1Data(staticB32, staticI32, staticU128, staticAddrs, staticBools);
+    Dynamics2Data memory data2 = Dynamics2Data(u64, str, b);
 
     // test that the record is set correctly
-    Dynamics.set(key, data);
-    assertEq(abi.encode(Dynamics.get(key)), abi.encode(data));
+    Dynamics1.set(key, data1);
+    assertEq(abi.encode(Dynamics1.get(key)), abi.encode(data1));
+    Dynamics2.set(key, data2);
+    assertEq(abi.encode(Dynamics2.get(key)), abi.encode(data2));
 
     // test length getters
-    assertEq(Dynamics.lengthStaticB32(key), staticB32.length);
-    assertEq(Dynamics.lengthStaticI32(key), staticI32.length);
-    assertEq(Dynamics.lengthStaticU128(key), staticU128.length);
-    assertEq(Dynamics.lengthStaticAddrs(key), staticAddrs.length);
-    assertEq(Dynamics.lengthStaticBools(key), staticBools.length);
-    assertEq(Dynamics.lengthU64(key), u64.length);
-    assertEq(Dynamics.lengthStr(key), bytes(str).length);
-    assertEq(Dynamics.lengthB(key), b.length);
+    assertEq(Dynamics1.lengthStaticB32(key), staticB32.length);
+    assertEq(Dynamics1.lengthStaticI32(key), staticI32.length);
+    assertEq(Dynamics1.lengthStaticU128(key), staticU128.length);
+    assertEq(Dynamics1.lengthStaticAddrs(key), staticAddrs.length);
+    assertEq(Dynamics1.lengthStaticBools(key), staticBools.length);
+    assertEq(Dynamics2.lengthU64(key), u64.length);
+    assertEq(Dynamics2.lengthStr(key), bytes(str).length);
+    assertEq(Dynamics2.lengthB(key), b.length);
 
     // test item getters
-    assertEq(Dynamics.getItemStaticB32(key, 0), staticB32[0]);
-    assertEq(Dynamics.getItemStaticI32(key, 1), staticI32[1]);
-    assertEq(Dynamics.getItemStaticU128(key, 2), staticU128[2]);
-    assertEq(Dynamics.getItemStaticAddrs(key, 3), staticAddrs[3]);
-    assertEq(Dynamics.getItemStaticBools(key, 4), staticBools[4]);
-    assertEq(Dynamics.getItemU64(key, 0), u64[0]);
-    assertEq(Dynamics.getItemStr(key, 1), string(abi.encodePacked(bytes(str)[1])));
-    assertEq(Dynamics.getItemB(key, 0), abi.encodePacked(b[0]));
+    assertEq(Dynamics1.getItemStaticB32(key, 0), staticB32[0]);
+    assertEq(Dynamics1.getItemStaticI32(key, 1), staticI32[1]);
+    assertEq(Dynamics1.getItemStaticU128(key, 2), staticU128[2]);
+    assertEq(Dynamics1.getItemStaticAddrs(key, 3), staticAddrs[3]);
+    assertEq(Dynamics1.getItemStaticBools(key, 4), staticBools[4]);
+    assertEq(Dynamics2.getItemU64(key, 0), u64[0]);
+    assertEq(Dynamics2.getItemStr(key, 1), string(abi.encodePacked(bytes(str)[1])));
+    assertEq(Dynamics2.getItemB(key, 0), abi.encodePacked(b[0]));
 
     // test setting single fields
-    Dynamics.setStaticBools(key, staticBools);
-    assertEq(abi.encode(Dynamics.getStaticBools(key)), abi.encode(staticBools));
+    Dynamics1.setStaticBools(key, staticBools);
+    assertEq(abi.encode(Dynamics1.getStaticBools(key)), abi.encode(staticBools));
 
-    Dynamics.setU64(key, u64);
-    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64));
+    Dynamics2.setU64(key, u64);
+    assertEq(abi.encode(Dynamics2.getU64(key)), abi.encode(u64));
   }
 
   function testDynamicsPushAndPop() public {
-    Dynamics.registerSchema();
+    Dynamics2.registerSchema();
 
     bytes32 key = keccak256("key");
 
@@ -101,19 +107,19 @@ contract TablegenTest is Test, StoreReadWithStubs {
     u64_full[0] = 123;
     u64_full[1] = 456;
 
-    Dynamics.pushU64(key, 123);
-    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_1));
-    Dynamics.pushU64(key, 456);
-    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_full));
+    Dynamics2.pushU64(key, 123);
+    assertEq(abi.encode(Dynamics2.getU64(key)), abi.encode(u64_1));
+    Dynamics2.pushU64(key, 456);
+    assertEq(abi.encode(Dynamics2.getU64(key)), abi.encode(u64_full));
 
-    Dynamics.popU64(key);
-    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_1));
-    Dynamics.pushU64(key, 456);
-    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_full));
-    Dynamics.popU64(key);
-    assertEq(abi.encode(Dynamics.getU64(key)), abi.encode(u64_1));
-    Dynamics.popU64(key);
-    assertEq(Dynamics.getU64(key).length, 0);
+    Dynamics2.popU64(key);
+    assertEq(abi.encode(Dynamics2.getU64(key)), abi.encode(u64_1));
+    Dynamics2.pushU64(key, 456);
+    assertEq(abi.encode(Dynamics2.getU64(key)), abi.encode(u64_full));
+    Dynamics2.popU64(key);
+    assertEq(abi.encode(Dynamics2.getU64(key)), abi.encode(u64_1));
+    Dynamics2.popU64(key);
+    assertEq(Dynamics2.getU64(key).length, 0);
   }
 
   function testSingletonSetAndGet() public {

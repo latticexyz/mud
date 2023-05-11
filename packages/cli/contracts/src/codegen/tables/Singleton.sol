@@ -505,10 +505,10 @@ library Singleton {
     uint32[2] memory v3,
     uint32[1] memory v4
   ) internal view returns (bytes memory) {
-    uint16[] memory _counters = new uint16[](3);
-    _counters[0] = uint16(v2.length * 4);
-    _counters[1] = uint16(v3.length * 4);
-    _counters[2] = uint16(v4.length * 4);
+    uint40[] memory _counters = new uint40[](3);
+    _counters[0] = uint40(v2.length * 4);
+    _counters[1] = uint40(v3.length * 4);
+    _counters[2] = uint40(v4.length * 4);
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 
     return
