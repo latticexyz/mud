@@ -1,7 +1,6 @@
 import { TupleDatabaseClient, TupleRootTransactionApi, Unsubscribe } from "tuple-database";
 import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
 import { AbiTypeToPrimitiveType } from "@latticexyz/schema-type";
-import { StringForUnion } from "@latticexyz/common/type-utils";
 
 type FieldTypeToPrimitiveType<T extends FieldData<string>> = AbiTypeToPrimitiveType<T> extends never
   ? T extends `${any}[${any}]` // FieldType might include Enums and Enum arrays, which are mapped to uint8/uint8[]
@@ -35,20 +34,22 @@ export type DatabaseClient<C extends StoreConfig> = {
       subscribe: (
         callback: SubscriptionCallback<C, Table>,
         // Omitting the table config option because the table is prefilled when calling subscribe via the client
-        filter?: Omit<SubscriptionFilterOptions<C, Table>, "table">
+        filter?: Omit<SubscriptionFilterOptions<C, Table>, "table" | "namespace">
       ) => Unsubscribe;
     };
   };
 } & {
   /** Utils to set a custom table value */
   set: <Table extends string>(
+    namespace: string,
     table: Table,
     key: Key<C, Table>,
     value: Partial<Value<C, Table>>,
     options?: SetOptions
   ) => TupleRootTransactionApi;
-  get: <Table extends string = string>(table: Table, key: Key<C, Table>) => Value<C, Table>;
+  get: <Table extends string = string>(namespace: string, table: Table, key: Key<C, Table>) => Value<C, Table>;
   remove: <Table extends string = string>(
+    namespace: string,
     table: Table,
     key: Key<C, Table>,
     options?: RemoveOptions
@@ -75,18 +76,20 @@ export type RemoveOptions = {
 export type SubscriptionCallback<
   C extends StoreConfig = StoreConfig,
   T extends keyof C["tables"] = keyof C["tables"]
-> = (updates: Record<T, Update<C, T>>) => void;
+> = (updates: Update<C, T>[]) => void;
 
 export type SubscriptionFilterOptions<
   C extends StoreConfig = StoreConfig,
   T extends keyof C["tables"] = keyof C["tables"]
 > = {
   table: T & string;
+  namespace: string;
   key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Partial<Key<C, T>> };
 };
 
 // TODO: figure out how to turn this into a proper typed union (where typescript can infer the type of set/remove from the type of table)
 export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["tables"] = keyof C["tables"]> = {
+  namespace: C["namespace"];
   table: Table;
   set: KeyValue<C, Table>[];
   remove: { key: Key<C, Table> }[];

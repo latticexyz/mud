@@ -26,12 +26,13 @@ import {
  */
 export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
+  namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>,
   value: Partial<Value<C, T>>,
   options?: SetOptions
 ) {
-  const keyTuple = databaseKey(table, key);
+  const keyTuple = databaseKey<C, T>(namespace, table, key);
   const currentValue = client.get(keyTuple) ?? options?.defaultValue;
   const tx = options?.transaction ?? client.transact();
   tx.set(keyTuple, { ...currentValue, ...value });
@@ -48,10 +49,11 @@ export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
  */
 export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
+  namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>
 ): Value<C, T> {
-  return client.get(databaseKey<C, T>(table, key));
+  return client.get(databaseKey<C, T>(namespace, table, key));
 }
 
 /**
@@ -67,12 +69,13 @@ export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
  */
 export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
   client: TupleDatabaseClient,
+  namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>,
   options?: RemoveOptions
 ) {
   const tx = options?.transaction ?? client.transact();
-  tx.remove(databaseKey<C, T>(table, key));
+  tx.remove(databaseKey<C, T>(namespace, table, key));
   if (!options?.transaction) tx.commit();
   return tx;
 }
@@ -92,9 +95,9 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
   callback: SubscriptionCallback<C, T>,
   filter?: SubscriptionFilterOptions<C, T>
 ) {
-  const { table, key } = filter || {};
+  const { namespace, table, key } = filter || {};
 
-  const prefix = table ? [table] : undefined;
+  const prefix = table && namespace ? [namespace, table] : undefined;
 
   const scanArgs: ScanArgs<Tuple, Tuple> = {};
 
@@ -116,31 +119,37 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
     // Transform the writes into the expected format
     for (const update of write.set ?? []) {
       // The first tuple element is always the table name
-      const table = update.key[0];
-      if (typeof table !== "string") {
-        console.warn("store-cache: Expected first tuple element to be the table id, ignoring set operation:", set);
+      const [namespace, table] = update.key;
+      if (typeof namespace !== "string" || typeof table !== "string") {
+        console.warn(
+          "store-cache: Expected first tuple elements to be namespace and table, ignoring set operation:",
+          set
+        );
         continue;
       }
 
       // Add the set event to the updates for this table
-      updates[table] ??= { table, set: [], remove: [] } satisfies Update;
-      updates[table].set.push({ key: tupleToRecord(update.key), value: update.value });
+      updates[toSelector(namespace, table)] ??= { namespace, table, set: [], remove: [] } satisfies Update;
+      updates[toSelector(namespace, table)].set.push({ key: tupleToRecord(update.key), value: update.value });
     }
 
     for (const removedKey of write.remove ?? []) {
       // The first tuple element is always the table name
-      const table = removedKey[0];
-      if (typeof table !== "string") {
-        console.warn("store-cache: Expected first tuple element to be the table id, ignoring remove operation:", set);
+      const [namespace, table] = removedKey;
+      if (typeof namespace !== "string" || typeof table !== "string") {
+        console.warn(
+          "store-cache: Expected first tuple elements to be namespace and table, ignoring remove operation:",
+          set
+        );
         continue;
       }
 
       // Add the remove event to the updates for this table
-      updates[table] ??= { table, set: [], remove: [] } satisfies Update;
-      updates[table].remove.push({ key: tupleToRecord(removedKey) });
+      updates[toSelector(namespace, table)] ??= { namespace, table, set: [], remove: [] } satisfies Update;
+      updates[toSelector(namespace, table)].remove.push({ key: tupleToRecord(removedKey) });
     }
 
-    callback(updates as Record<T, Update<C, T>>);
+    callback(Object.values(updates) as Update<C, T>[]);
   });
 }
 
@@ -163,10 +172,11 @@ export function getDefaultValue<Schema extends Record<string, string>>(schema?: 
  * Convert a table and key into the corresponding tuple expected by tuple-database
  */
 function databaseKey<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  namespace: C["namespace"],
   table: T & string,
   key: Key<C, T>
 ) {
-  return [table, ...recordToTuple(key)] satisfies Tuple;
+  return [namespace, table, ...recordToTuple(key)] satisfies Tuple;
 }
 
 /**
@@ -204,4 +214,11 @@ function tupleToRecord(tuple: Tuple): Record<string, any> {
 function serializeKey(key: unknown) {
   if (typeof key === "bigint") return String(key);
   return key;
+}
+
+/**
+ * Helper to concat namespace and table with a separator
+ */
+function toSelector(namespace: string, table: string) {
+  return namespace + "/" + table;
 }

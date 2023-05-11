@@ -4,6 +4,7 @@ import { mudConfig } from "@latticexyz/store/register";
 import { KeyValue } from "./types";
 
 const config = mudConfig({
+  namespace: "somenamespace",
   tables: {
     Counter: { primaryKeys: { first: "bytes32", second: "uint256" }, schema: "uint256" },
     Position: { schema: { x: "int32", y: "int32" } },
@@ -133,12 +134,14 @@ describe("createDatabaseClient", () => {
 
       // Expect the callback to only have been called with updates of the PositionTable
       for (const update of positionUpdates) {
-        expect(callback).toHaveBeenNthCalledWith(i++, { Position: { set: [update], remove: [], table: "Position" } });
+        expect(callback).toHaveBeenNthCalledWith(i++, [
+          { set: [update], remove: [], table: "Position", namespace: config.namespace },
+        ]);
       }
       for (const update of multiKeyUpdates) {
-        expect(callback).not.toHaveBeenCalledWith({
-          MultiKey: { set: [update], remove: [], table: "MultiKey" },
-        });
+        expect(callback).not.toHaveBeenCalledWith([
+          { set: [update], remove: [], table: "MultiKey", namespace: config.namespace },
+        ]);
       }
 
       // Remove all the table entries
@@ -147,14 +150,14 @@ describe("createDatabaseClient", () => {
 
       // Expect the callback to only have been called with remove updates of the Position table
       for (const update of positionUpdates) {
-        expect(callback).toHaveBeenNthCalledWith(i++, {
-          Position: { set: [], remove: [{ key: update.key }], table: "Position" },
-        });
+        expect(callback).toHaveBeenNthCalledWith(i++, [
+          { set: [], remove: [{ key: update.key }], table: "Position", namespace: config.namespace },
+        ]);
       }
       for (const update of multiKeyUpdates) {
-        expect(callback).not.toHaveBeenCalledWith({
-          MultiKey: { set: [], remove: [{ key: update.key }], table: "MultiKey" },
-        });
+        expect(callback).not.toHaveBeenCalledWith([
+          { set: [], remove: [{ key: update.key }], table: "MultiKey", namespace: config.namespace },
+        ]);
       }
     });
 
@@ -176,12 +179,12 @@ describe("createDatabaseClient", () => {
 
       // Expect the callback to only have been called with updates of a key greater than 0x01
       expect(callback).toHaveBeenCalledTimes(2);
-      expect(callback).toHaveBeenNthCalledWith(1, {
-        Position: { set: [positionUpdates[2]], remove: [], table: "Position" },
-      });
-      expect(callback).toHaveBeenNthCalledWith(2, {
-        Position: { set: [positionUpdates[3]], remove: [], table: "Position" },
-      });
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        { set: [positionUpdates[2]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
+      expect(callback).toHaveBeenNthCalledWith(2, [
+        { set: [positionUpdates[3]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
     });
 
     it("should only subscribe to updates greater than or equal to provided key", () => {
@@ -202,15 +205,15 @@ describe("createDatabaseClient", () => {
 
       // Expect the callback to only have been called with updates of a key greater than or equal to 0x01
       expect(callback).toHaveBeenCalledTimes(3);
-      expect(callback).toHaveBeenNthCalledWith(1, {
-        Position: { set: [positionUpdates[1]], remove: [], table: "Position" },
-      });
-      expect(callback).toHaveBeenNthCalledWith(2, {
-        Position: { set: [positionUpdates[2]], remove: [], table: "Position" },
-      });
-      expect(callback).toHaveBeenNthCalledWith(3, {
-        Position: { set: [positionUpdates[3]], remove: [], table: "Position" },
-      });
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        { set: [positionUpdates[1]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
+      expect(callback).toHaveBeenNthCalledWith(2, [
+        { set: [positionUpdates[2]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
+      expect(callback).toHaveBeenNthCalledWith(3, [
+        { set: [positionUpdates[3]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
     });
 
     it("should only subscribe to updates equal to the provided key", () => {
@@ -231,9 +234,9 @@ describe("createDatabaseClient", () => {
 
       // Expect the callback to only have been called with updates of a key equal to 0x01
       expect(callback).toHaveBeenCalledTimes(1);
-      expect(callback).toHaveBeenNthCalledWith(1, {
-        Position: { set: [positionUpdates[1]], remove: [], table: "Position" },
-      });
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        { set: [positionUpdates[1]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
     });
 
     it("should only subscribe to updates less than or equal to the provided key", () => {
@@ -254,12 +257,12 @@ describe("createDatabaseClient", () => {
 
       // Expect the callback to only have been called with updates of a key less than or equal to 0x01
       expect(callback).toHaveBeenCalledTimes(2);
-      expect(callback).toHaveBeenNthCalledWith(1, {
-        Position: { set: [positionUpdates[0]], remove: [], table: "Position" },
-      });
-      expect(callback).toHaveBeenNthCalledWith(2, {
-        Position: { set: [positionUpdates[1]], remove: [], table: "Position" },
-      });
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        { set: [positionUpdates[0]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
+      expect(callback).toHaveBeenNthCalledWith(2, [
+        { set: [positionUpdates[1]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
     });
 
     it("should only subscribe to updates less than the provided key", () => {
@@ -280,9 +283,9 @@ describe("createDatabaseClient", () => {
 
       // Expect the callback to only have been called with updates of a key less than 0x01
       expect(callback).toHaveBeenCalledTimes(1);
-      expect(callback).toHaveBeenNthCalledWith(1, {
-        Position: { set: [positionUpdates[0]], remove: [], table: "Position" },
-      });
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        { set: [positionUpdates[0]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
     });
 
     it("should not subscribe to updates anymore after unsubscribing", () => {
@@ -311,16 +314,17 @@ describe("createDatabaseClient", () => {
 
       // Expect the callback to only have been called with updates of a key less than or equal to 0x01
       expect(callback).toHaveBeenCalledTimes(2);
-      expect(callback).toHaveBeenNthCalledWith(1, {
-        Position: { set: [positionUpdates[0]], remove: [], table: "Position" },
-      });
-      expect(callback).toHaveBeenNthCalledWith(2, {
-        Position: { set: [positionUpdates[1]], remove: [], table: "Position" },
-      });
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        { set: [positionUpdates[0]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
+      expect(callback).toHaveBeenNthCalledWith(2, [
+        { set: [positionUpdates[1]], remove: [], table: "Position", namespace: config.namespace },
+      ]);
     });
   });
 
   it("should expose global methods to modify values on any table", () => {
+    const namespace = "some-other-namespace";
     const table = "some-other-table";
     const key = { key: "0x00" };
     const value = { someValue: 1 };
@@ -329,18 +333,14 @@ describe("createDatabaseClient", () => {
 
     client.subscribe(mock);
 
-    client.set(table, key, value);
-    expect(client.get(table, key)).toStrictEqual(value);
+    client.set(namespace, table, key, value);
+    expect(client.get(namespace, table, key)).toStrictEqual(value);
 
-    client.remove(table, key);
-    expect(client.get(table, key)).toBe(undefined);
+    client.remove(namespace, table, key);
+    expect(client.get(namespace, table, key)).toBe(undefined);
 
     expect(mock).toHaveBeenCalledTimes(2);
-    expect(mock).toHaveBeenNthCalledWith(1, {
-      [table]: { set: [{ key, value }], remove: [], table },
-    });
-    expect(mock).toHaveBeenNthCalledWith(2, {
-      [table]: { set: [], remove: [{ key }], table },
-    });
+    expect(mock).toHaveBeenNthCalledWith(1, [{ set: [{ key, value }], remove: [], table, namespace }]);
+    expect(mock).toHaveBeenNthCalledWith(2, [{ set: [], remove: [{ key }], table, namespace }]);
   });
 });

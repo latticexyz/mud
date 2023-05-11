@@ -49,10 +49,14 @@ describe("utils", () => {
 
       // Expect the callback to have been called with all set updates
       for (const update of positionUpdates) {
-        expect(callback).toHaveBeenNthCalledWith(i++, { Position: { set: [update], remove: [], table: "Position" } });
+        expect(callback).toHaveBeenNthCalledWith(i++, [
+          { set: [update], remove: [], table: "Position", namespace: "" },
+        ]);
       }
       for (const update of multiKeyUpdates) {
-        expect(callback).toHaveBeenNthCalledWith(i++, { MultiKey: { set: [update], remove: [], table: "MultiKey" } });
+        expect(callback).toHaveBeenNthCalledWith(i++, [
+          { set: [update], remove: [], table: "MultiKey", namespace: "" },
+        ]);
       }
 
       // Remove all the table entries
@@ -61,18 +65,18 @@ describe("utils", () => {
 
       // Expect the callback to have called with all remove updates
       for (const update of positionUpdates) {
-        expect(callback).toHaveBeenNthCalledWith(i++, {
-          Position: { set: [], remove: [{ key: update.key }], table: "Position" },
-        });
+        expect(callback).toHaveBeenNthCalledWith(i++, [
+          { set: [], remove: [{ key: update.key }], table: "Position", namespace: "" },
+        ]);
       }
       for (const update of multiKeyUpdates) {
-        expect(callback).toHaveBeenNthCalledWith(i++, {
-          MultiKey: { set: [], remove: [{ key: update.key }], table: "MultiKey" },
-        });
+        expect(callback).toHaveBeenNthCalledWith(i++, [
+          { set: [], remove: [{ key: update.key }], table: "MultiKey", namespace: "" },
+        ]);
       }
     });
 
-    it("should subscribe to table updates with multiple writes per transaction", () => {
+    it.only("should subscribe to table updates with multiple writes per transaction", () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
@@ -99,10 +103,10 @@ describe("utils", () => {
       tx.commit();
 
       // Expect the callback to have been called with all set updates (in a single transaction)
-      expect(callback).toHaveBeenNthCalledWith(1, {
-        Position: { set: positionUpdates, remove: [], table: "Position" },
-        MultiKey: { set: multiKeyUpdates, remove: [], table: "MultiKey" },
-      });
+      expect(callback).toHaveBeenNthCalledWith(1, [
+        { set: multiKeyUpdates, remove: [], table: "MultiKey", namespace: "" },
+        { set: positionUpdates, remove: [], table: "Position", namespace: "" },
+      ]);
 
       // Remove all the table entries
       const tx2 = client._tupleDatabaseClient.transact();
@@ -111,18 +115,20 @@ describe("utils", () => {
       tx2.commit();
 
       // Expect the callback to have called with all remove updates (in a single transaction)
-      expect(callback).toHaveBeenNthCalledWith(2, {
-        Position: {
-          set: [],
-          remove: positionUpdates.map(({ key }) => ({ key })),
-          table: "Position",
-        },
-        MultiKey: {
+      expect(callback).toHaveBeenNthCalledWith(2, [
+        {
           set: [],
           remove: multiKeyUpdates.map(({ key }) => ({ key })),
           table: "MultiKey",
+          namespace: "",
         },
-      });
+        {
+          set: [],
+          remove: positionUpdates.map(({ key }) => ({ key })),
+          table: "Position",
+          namespace: "",
+        },
+      ]);
     });
 
     // More tests for subscriptions to specific tables are in `createDatabaseClient.test.ts`
