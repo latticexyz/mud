@@ -17,7 +17,6 @@ import { Contract, ContractInterface } from "ethers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
 import WorldAbi from "@latticexyz/solecs/abi/World.sol/World.abi.json";
 import { defineStringComponent } from "../components";
-import keys from "lodash/keys";
 import { ContractComponent, ContractComponents, NetworkComponents, SetupContractConfig } from "./types";
 import {
   applyNetworkUpdates,
@@ -132,7 +131,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   const decodeNetworkComponentUpdate = createDecodeNetworkComponentUpdate(world, components, mappings);
   const { systemCallStreams, decodeAndEmitSystemCall } = createSystemCallStreams(
     world,
-    keys(SystemAbis),
+    Object.keys(SystemAbis),
     SystemsRegistry,
     getSystemContract,
     decodeNetworkComponentUpdate
