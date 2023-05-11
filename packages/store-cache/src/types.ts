@@ -41,11 +41,13 @@ export type DatabaseClient<C extends StoreConfig> = {
 
 export type SetOptions<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]> = {
   defaultValue?: Value<C, T>;
-  appendToTransaction?: TupleRootTransactionApi;
+  /** Transaction to append the set operation to. If provided, the transaction will not be committed. */
+  transaction?: TupleRootTransactionApi;
 };
 
 export type RemoveOptions = {
-  appendToTransaction?: TupleRootTransactionApi;
+  /** Transaction to append the remove operation to. If provided, the transaction will not be committed. */
+  transaction?: TupleRootTransactionApi;
 };
 
 export type SubscriptionCallback<

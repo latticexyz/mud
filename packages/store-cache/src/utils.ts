@@ -19,7 +19,7 @@ import {
  * @param key Key to identify the record to set in the table
  * @param value Value to set for the given key
  * @param options {
- *  appendToTransaction?: Append to an existing transaction, do not commit
+ *  transaction?: Append to an existing transaction, do not commit
  *  defaultValue?: Default value to use if the key does not exist
  * }
  * @returns Transaction
@@ -33,9 +33,9 @@ export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
 ) {
   const keyTuple = [table, ...recordToTuple(key)];
   const currentValue = client.get(keyTuple) ?? options?.defaultValue;
-  const tx = options?.appendToTransaction ?? client.transact();
+  const tx = options?.transaction ?? client.transact();
   tx.set(keyTuple, { ...currentValue, ...value });
-  if (!options?.appendToTransaction) tx.commit();
+  if (!options?.transaction) tx.commit();
   return tx;
 }
 
@@ -60,7 +60,7 @@ export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
  * @param table Table to remove the given key from
  * @param key Key to identify the record to remove from the table
  * @param options {
- *  appendToTransaction?: Append to an existing transaction, do not commit
+ *  transaction?: Append to an existing transaction, do not commit
  *  defaultValue?: Default value to use if the key does not exist
  * }
  * @returns Transaction
@@ -71,9 +71,9 @@ export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["t
   key: Key<C, T>,
   options?: RemoveOptions
 ) {
-  const tx = options?.appendToTransaction ?? client.transact();
+  const tx = options?.transaction ?? client.transact();
   tx.remove([table, ...recordToTuple(key)]);
-  if (!options?.appendToTransaction) tx.commit();
+  if (!options?.transaction) tx.commit();
   return tx;
 }
 
