@@ -31,7 +31,7 @@ export function set<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
   value: Partial<Value<C, T>>,
   options?: SetOptions
 ) {
-  const keyTuple = [table, ...recordToTuple(key)];
+  const keyTuple = databaseKey(table, key);
   const currentValue = client.get(keyTuple) ?? options?.defaultValue;
   const tx = options?.transaction ?? client.transact();
   tx.set(keyTuple, { ...currentValue, ...value });
@@ -51,7 +51,7 @@ export function get<C extends StoreConfig = StoreConfig, T extends keyof C["tabl
   table: T & string,
   key: Key<C, T>
 ): Value<C, T> {
-  return client.get([table, ...recordToTuple(key)]);
+  return client.get(databaseKey<C, T>(table, key));
 }
 
 /**
@@ -72,7 +72,7 @@ export function remove<C extends StoreConfig = StoreConfig, T extends keyof C["t
   options?: RemoveOptions
 ) {
   const tx = options?.transaction ?? client.transact();
-  tx.remove([table, ...recordToTuple(key)]);
+  tx.remove(databaseKey<C, T>(table, key));
   if (!options?.transaction) tx.commit();
   return tx;
 }
@@ -157,6 +157,16 @@ export function getDefaultValue<Schema extends Record<string, string>>(schema?: 
   }
 
   return defaultValue;
+}
+
+/**
+ * Convert a table and key into the corresponding tuple expected by tuple-database
+ */
+function databaseKey<C extends StoreConfig = StoreConfig, T extends keyof C["tables"] = keyof C["tables"]>(
+  table: T & string,
+  key: Key<C, T>
+) {
+  return [table, ...recordToTuple(key)] satisfies Tuple;
 }
 
 /**
