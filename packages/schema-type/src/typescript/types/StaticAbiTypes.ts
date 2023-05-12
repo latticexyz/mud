@@ -1,7 +1,7 @@
 import { AbiTypes } from "./AbiTypes";
-import { AbiTypeToSchemaType } from "./AbiTypeToSchemaType";
-import { getStaticByteLength } from "./getStaticByteLength";
-import { SchemaTypeToAbiType } from "./SchemaTypeToAbiType";
+import { AbiTypeToSchemaType } from "../mappings/AbiTypeToSchemaType";
+import { getStaticByteLength } from "../utils/getStaticByteLength";
+import { SchemaTypeToAbiType } from "../mappings/SchemaTypeToAbiType";
 import { StaticSchemaType } from "./StaticSchemaType";
 
 export type StaticAbiType = (typeof SchemaTypeToAbiType)[StaticSchemaType];
