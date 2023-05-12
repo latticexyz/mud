@@ -195,7 +195,7 @@ export const schemaTypesToRecsTypeStrings: Record<SchemaType, string> = {
   [SchemaType.BYTES30_ARRAY]: "RecsType.StringArray",
   [SchemaType.BYTES31_ARRAY]: "RecsType.StringArray",
   [SchemaType.BYTES32_ARRAY]: "RecsType.StringArray",
-  [SchemaType.BOOL_ARRAY]: "RecsType.BooleanArray",
+  [SchemaType.BOOL_ARRAY]: "RecsType.T", // no boolean array
   [SchemaType.ADDRESS_ARRAY]: "RecsType.StringArray",
   [SchemaType.BYTES]: "RecsType.String",
   [SchemaType.STRING]: "RecsType.String",
