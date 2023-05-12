@@ -103,8 +103,8 @@ export function decodeValue<T extends SchemaType>(schemaType: T, bytes: Uint8Arr
     case SchemaType.BYTES31:
     case SchemaType.BYTES32:
     case SchemaType.ADDRESS:
-      return decodeStaticField(schemaType, bytes, 0) as SchemaTypeToPrimitiveType[T];
+      return decodeStaticField(schemaType, bytes, 0) as SchemaTypeToPrimitiveType<T>;
     default:
-      return decodeDynamicField(schemaType, bytes) as SchemaTypeToPrimitiveType[T];
+      return decodeDynamicField(schemaType, bytes) as SchemaTypeToPrimitiveType<T>;
   }
 }
