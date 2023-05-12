@@ -1,0 +1,25 @@
+{
+  "name": "mud-template-vanilla",
+  "private": true,
+  "scripts": {
+    "build": "pnpm recursive run build",
+    "dev": "run-pty % pnpm dev:node % pnpm dev:client % pnpm dev:contracts",
+    "dev:client": "pnpm --filter 'client' run dev",
+    "dev:contracts": "pnpm --filter 'contracts' dev",
+    "dev:node": "pnpm --filter 'contracts' devnode",
+    "initialize": "pnpm recursive run initialize",
+    "test": "pnpm recursive run test"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "5.46.1",
+    "@typescript-eslint/parser": "5.46.1",
+    "eslint": "8.29.0",
+    "rimraf": "^3.0.2",
+    "run-pty": "^4.0.3",
+    "typescript": "^4.9.5"
+  },
+  "engines": {
+    "node": "18.x",
+    "pnpm": "8.x"
+  }
+}

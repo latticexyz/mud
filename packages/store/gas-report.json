@@ -105,19 +105,19 @@
     "source": "test/Mixed.t.sol",
     "name": "register Mixed schema",
     "functionCall": "Mixed.registerSchema()",
-    "gasUsed": 61139
+    "gasUsed": 61228
   },
   {
     "source": "test/Mixed.t.sol",
     "name": "set record in Mixed",
     "functionCall": "Mixed.set({ key: key, u32: 1, u128: 2, a32: a32, s: s })",
-    "gasUsed": 112031
+    "gasUsed": 112165
   },
   {
     "source": "test/Mixed.t.sol",
     "name": "get record from Mixed",
     "functionCall": "MixedData memory mixed = Mixed.get(key)",
-    "gasUsed": 13382
+    "gasUsed": 13460
   },
   {
     "source": "test/PackedCounter.t.sol",
@@ -295,6 +295,18 @@
   },
   {
     "source": "test/StoreCore.t.sol",
+    "name": "access length of dynamic field of non-existing record",
+    "functionCall": "uint256 data3Length = StoreCore.getFieldLength(table, key, 1, schema)",
+    "gasUsed": 1342
+  },
+  {
+    "source": "test/StoreCore.t.sol",
+    "name": "access slice of dynamic field of non-existing record",
+    "functionCall": "bytes memory data3Slice = StoreCore.getFieldSlice(table, key, 1, schema, 0, 0)",
+    "gasUsed": 1338
+  },
+  {
+    "source": "test/StoreCore.t.sol",
     "name": "delete record (complex data, 3 slots)",
     "functionCall": "StoreCore.deleteRecord(table, key)",
     "gasUsed": 10952
@@ -321,7 +333,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set record on table with subscriber",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 73911
+    "gasUsed": 73889
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -333,7 +345,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "delete record on table with subscriber",
     "functionCall": "StoreCore.deleteRecord(table, key)",
-    "gasUsed": 24382
+    "gasUsed": 24405
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -345,7 +357,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "set (dynamic) record on table with subscriber",
     "functionCall": "StoreCore.setRecord(table, key, data)",
-    "gasUsed": 167348
+    "gasUsed": 167326
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -357,7 +369,7 @@
     "source": "test/StoreCore.t.sol",
     "name": "delete (dynamic) record on table with subscriber",
     "functionCall": "StoreCore.deleteRecord(table, key)",
-    "gasUsed": 25861
+    "gasUsed": 25884
   },
   {
     "source": "test/StoreCore.t.sol",
@@ -522,25 +534,73 @@
     "gasUsed": 17636
   },
   {
-    "source": "test/StoreCoreDynamicUpdate.t.sol",
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field slice (cold, 1 slot)",
+    "functionCall": "bytes memory secondFieldSlice = StoreCore.getFieldSlice(_table, _key, 1, schema, 0, 4)",
+    "gasUsed": 8161
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field slice (warm, 1 slot)",
+    "functionCall": "secondFieldSlice = StoreCore.getFieldSlice(_table, _key, 1, schema, 4, 8)",
+    "gasUsed": 2188
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field slice (semi-cold, 1 slot)",
+    "functionCall": "bytes memory thirdFieldSlice = StoreCore.getFieldSlice(_table, _key, 2, schema, 4, 32)",
+    "gasUsed": 4193
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field slice (warm, 2 slots)",
+    "functionCall": "thirdFieldSlice = StoreCore.getFieldSlice(_table, _key, 2, schema, 8, 40)",
+    "gasUsed": 4475
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field length (cold, 1 slot)",
+    "functionCall": "uint256 length = StoreCore.getFieldLength(_table, _key, 1, schema)",
+    "gasUsed": 7968
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field length (warm, 1 slot)",
+    "functionCall": "length = StoreCore.getFieldLength(_table, _key, 1, schema)",
+    "gasUsed": 1964
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field length (warm due to , 2 slots)",
+    "functionCall": "uint256 length = StoreCore.getFieldLength(_table, _key, 2, schema)",
+    "gasUsed": 7968
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
+    "name": "get field length (warm, 2 slots)",
+    "functionCall": "length = StoreCore.getFieldLength(_table, _key, 2, schema)",
+    "gasUsed": 1964
+  },
+  {
+    "source": "test/StoreCoreDynamic.t.sol",
     "name": "pop from field (cold, 1 slot, 1 uint32 item)",
     "functionCall": "StoreCore.popFromField(_table, _key, 1, byteLengthToPop)",
     "gasUsed": 29270
   },
   {
-    "source": "test/StoreCoreDynamicUpdate.t.sol",
+    "source": "test/StoreCoreDynamic.t.sol",
     "name": "pop from field (warm, 1 slot, 1 uint32 item)",
     "functionCall": "StoreCore.popFromField(_table, _key, 1, byteLengthToPop)",
     "gasUsed": 19348
   },
   {
-    "source": "test/StoreCoreDynamicUpdate.t.sol",
+    "source": "test/StoreCoreDynamic.t.sol",
     "name": "pop from field (cold, 2 slots, 10 uint32 items)",
     "functionCall": "StoreCore.popFromField(_table, _key, 2, byteLengthToPop)",
     "gasUsed": 31149
   },
   {
-    "source": "test/StoreCoreDynamicUpdate.t.sol",
+    "source": "test/StoreCoreDynamic.t.sol",
     "name": "pop from field (warm, 2 slots, 10 uint32 items)",
     "functionCall": "StoreCore.popFromField(_table, _key, 2, byteLengthToPop)",
     "gasUsed": 19231
@@ -555,13 +615,13 @@
     "source": "test/StoreMetadata.t.sol",
     "name": "get record from StoreMetadataTable",
     "functionCall": "StoreMetadataData memory metadata = StoreMetadata.get(tableId)",
-    "gasUsed": 12106
+    "gasUsed": 12117
   },
   {
     "source": "test/StoreSwitch.t.sol",
     "name": "check if delegatecall",
     "functionCall": "isDelegate = StoreSwitch.isDelegateCall()",
-    "gasUsed": 716
+    "gasUsed": 694
   },
   {
     "source": "test/StoreSwitch.t.sol",
@@ -663,7 +723,7 @@
     "source": "test/Vector2.t.sol",
     "name": "register Vector2 schema",
     "functionCall": "Vector2.registerSchema()",
-    "gasUsed": 57982
+    "gasUsed": 58004
   },
   {
     "source": "test/Vector2.t.sol",
@@ -675,6 +735,6 @@
     "source": "test/Vector2.t.sol",
     "name": "get Vector2 record",
     "functionCall": "Vector2Data memory vector = Vector2.get(key)",
-    "gasUsed": 5083
+    "gasUsed": 5094
   }
 ]

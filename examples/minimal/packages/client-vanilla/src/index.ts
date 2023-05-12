@@ -1,4 +1,5 @@
 import { setup } from "./mud/setup";
+import { mount as mountDevTools } from "@latticexyz/dev-tools";
 
 const { components, worldSend } = await setup();
 
@@ -26,6 +27,14 @@ components.MessageTable.update$.subscribe((update) => {
   console.log("increment result", await tx.wait());
 };
 
+(window as any).willRevert = async () => {
+  // set gas limit so we skip estimation and can test tx revert
+  const tx = await worldSend("willRevert", [{ gasLimit: 100000 }]);
+
+  console.log("willRevert tx", tx);
+  console.log("willRevert result", await tx.wait());
+};
+
 (window as any).sendMessage = async () => {
   const input = document.getElementById("chat-input") as HTMLInputElement;
   const msg = input.value;
@@ -43,3 +52,5 @@ document.getElementById("chat-form")?.addEventListener("submit", (e) => {
   e.preventDefault();
   (window as any).sendMessage();
 });
+
+mountDevTools();

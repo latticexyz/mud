@@ -26,6 +26,7 @@ export interface DeployConfig {
   priorityFeeMultiplier: number;
   debug?: boolean;
   worldAddress?: string;
+  disableTxWait: boolean;
 }
 
 export interface DeploymentInfo {
@@ -42,7 +43,7 @@ export async function deploy(
 
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
-  const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress } = deployConfig;
+  const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait } = deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
@@ -70,14 +71,14 @@ export async function deploy(
     World: worldAddress
       ? Promise.resolve(worldAddress)
       : worldContractName
-      ? deployContractByName(worldContractName)
-      : deployContract(IBaseWorldData.abi, WorldData.bytecode, "World"),
+      ? deployContractByName(worldContractName, disableTxWait)
+      : deployContract(IBaseWorldData.abi, WorldData.bytecode, disableTxWait, "World"),
   };
 
   // Deploy Systems
   const systemPromises = Object.keys(resolvedConfig.systems).reduce<Record<string, Promise<string>>>(
     (acc, systemName) => {
-      acc[systemName] = deployContractByName(systemName);
+      acc[systemName] = deployContractByName(systemName, disableTxWait);
       return acc;
     },
     {}
@@ -86,16 +87,23 @@ export async function deploy(
   // Deploy default World modules
   const defaultModules: Record<string, Promise<string>> = {
     // TODO: these only need to be deployed once per chain, add a check if they exist already
-    CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, "CoreModule"),
+    CoreModule: deployContract(CoreModuleData.abi, CoreModuleData.bytecode, disableTxWait, "CoreModule"),
     KeysWithValueModule: deployContract(
       KeysWithValueModuleData.abi,
       KeysWithValueModuleData.bytecode,
+      disableTxWait,
       "KeysWithValueModule"
     ),
-    KeysInTableModule: deployContract(KeysInTableModuleData.abi, KeysInTableModuleData.bytecode, "KeysInTableModule"),
+    KeysInTableModule: deployContract(
+      KeysInTableModuleData.abi,
+      KeysInTableModuleData.bytecode,
+      disableTxWait,
+      "KeysInTableModule"
+    ),
     UniqueEntityModule: deployContract(
       UniqueEntityModuleData.abi,
       UniqueEntityModuleData.bytecode,
+      disableTxWait,
       "UniqueEntityModule"
     ),
   };
@@ -104,7 +112,7 @@ export async function deploy(
   const modulePromises = mudConfig.modules
     .filter((module) => !defaultModules[module.name]) // Only deploy user modules here, not default modules
     .reduce<Record<string, Promise<string>>>((acc, module) => {
-      acc[module.name] = deployContractByName(module.name);
+      acc[module.name] = deployContractByName(module.name, disableTxWait);
       return acc;
     }, defaultModules);
 
@@ -114,15 +122,17 @@ export async function deploy(
   // Create World contract instance from deployed address
   const WorldContract = new ethers.Contract(await contractPromises.World, IBaseWorldData.abi, signer) as IBaseWorld;
 
+  const confirmations = disableTxWait ? 0 : 1;
+
   // Install core Modules
   if (!worldAddress) {
     console.log(chalk.blue("Installing core World modules"));
-    await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.CoreModule, "0x"]);
+    await fastTxExecute(WorldContract, "installRootModule", [await modulePromises.CoreModule, "0x"], confirmations);
     console.log(chalk.green("Installed core World modules"));
   }
 
   // Register namespace
-  if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)]);
+  if (namespace) await fastTxExecute(WorldContract, "registerNamespace", [toBytes16(namespace)], confirmations);
 
   // Register tables
   const tableIds: { [tableName: string]: Uint8Array } = {};
@@ -145,20 +155,20 @@ export async function deploy(
         return schemaType;
       });
 
-      await fastTxExecute(WorldContract, "registerTable", [
-        toBytes16(namespace),
-        toBytes16(name),
-        encodeSchema(schemaTypes),
-        encodeSchema(keyTypes),
-      ]);
+      await fastTxExecute(
+        WorldContract,
+        "registerTable",
+        [toBytes16(namespace), toBytes16(name), encodeSchema(schemaTypes), encodeSchema(keyTypes)],
+        confirmations
+      );
 
       // Register table metadata
-      await fastTxExecute(WorldContract, "setMetadata(bytes16,bytes16,string,string[])", [
-        toBytes16(namespace),
-        toBytes16(name),
-        tableName,
-        Object.keys(schema),
-      ]);
+      await fastTxExecute(
+        WorldContract,
+        "setMetadata(bytes16,bytes16,string,string[])",
+        [toBytes16(namespace), toBytes16(name), tableName, Object.keys(schema)],
+        confirmations
+      );
 
       console.log(chalk.green(`Registered table ${tableName} at ${name}`));
     }),
@@ -171,12 +181,12 @@ export async function deploy(
       async ([systemName, { name, openAccess, registerFunctionSelectors }]) => {
         // Register system at route
         console.log(chalk.blue(`Registering system ${systemName} at ${namespace}/${name}`));
-        await fastTxExecute(WorldContract, "registerSystem", [
-          toBytes16(namespace),
-          toBytes16(name),
-          await contractPromises[systemName],
-          openAccess,
-        ]);
+        await fastTxExecute(
+          WorldContract,
+          "registerSystem",
+          [toBytes16(namespace), toBytes16(name), await contractPromises[systemName], openAccess],
+          confirmations
+        );
         console.log(chalk.green(`Registered system ${systemName} at ${namespace}/${name}`));
 
         // Register function selectors for the system
@@ -198,19 +208,19 @@ export async function deploy(
                     : { functionName, functionArgs }
                 );
                 const systemFunctionSelector = toFunctionSelector({ functionName, functionArgs });
-                await fastTxExecute(WorldContract, "registerRootFunctionSelector", [
-                  toBytes16(namespace),
-                  toBytes16(name),
-                  worldFunctionSelector,
-                  systemFunctionSelector,
-                ]);
+                await fastTxExecute(
+                  WorldContract,
+                  "registerRootFunctionSelector",
+                  [toBytes16(namespace), toBytes16(name), worldFunctionSelector, systemFunctionSelector],
+                  confirmations
+                );
               } else {
-                await fastTxExecute(WorldContract, "registerFunctionSelector", [
-                  toBytes16(namespace),
-                  toBytes16(name),
-                  functionName,
-                  functionArgs,
-                ]);
+                await fastTxExecute(
+                  WorldContract,
+                  "registerFunctionSelector",
+                  [toBytes16(namespace), toBytes16(name), functionName, functionArgs],
+                  confirmations
+                );
               }
               console.log(chalk.green(`Registered function "${functionSignature}"`));
             })
@@ -233,7 +243,12 @@ export async function deploy(
       ...promises,
       ...accessListAddresses.map(async (address) => {
         console.log(chalk.blue(`Grant ${address} access to ${systemName} (${resourceSelector})`));
-        await fastTxExecute(WorldContract, "grantAccess", [toBytes16(namespace), toBytes16(name), address]);
+        await fastTxExecute(
+          WorldContract,
+          "grantAccess",
+          [toBytes16(namespace), toBytes16(name), address],
+          confirmations
+        );
         console.log(chalk.green(`Granted ${address} access to ${systemName} (${namespace}/${name})`));
       }),
     ];
@@ -243,11 +258,12 @@ export async function deploy(
       ...promises,
       ...accessListSystems.map(async (granteeSystem) => {
         console.log(chalk.blue(`Grant ${granteeSystem} access to ${systemName} (${resourceSelector})`));
-        await fastTxExecute(WorldContract, "grantAccess", [
-          toBytes16(namespace),
-          toBytes16(name),
-          await contractPromises[granteeSystem],
-        ]);
+        await fastTxExecute(
+          WorldContract,
+          "grantAccess",
+          [toBytes16(namespace), toBytes16(name), await contractPromises[granteeSystem]],
+          confirmations
+        );
         console.log(chalk.green(`Granted ${granteeSystem} access to ${systemName} (${resourceSelector})`));
       }),
     ];
@@ -272,10 +288,12 @@ export async function deploy(
       if (!moduleAddress) throw new Error(`Module ${module.name} not found`);
 
       // Send transaction to install module
-      await fastTxExecute(WorldContract, module.root ? "installRootModule" : "installModule", [
-        moduleAddress,
-        abi.encode(types, values),
-      ]);
+      await fastTxExecute(
+        WorldContract,
+        module.root ? "installRootModule" : "installModule",
+        [moduleAddress, abi.encode(types, values)],
+        confirmations
+      );
 
       console.log(chalk.green(`Installed${module.root ? " root " : " "}module ${module.name}`));
     }),
@@ -319,36 +337,43 @@ export async function deploy(
   /**
    * Deploy a contract and return the address
    * @param contractName Name of the contract to deploy (must exist in the file system)
+   * @param disableTxWait Disable waiting for contract deployment
    * @returns Address of the deployed contract
    */
-  async function deployContractByName(contractName: string): Promise<string> {
+  async function deployContractByName(contractName: string, disableTxWait: boolean): Promise<string> {
     console.log(chalk.blue("Deploying", contractName));
 
     const { abi, bytecode } = await getContractData(contractName);
-    return deployContract(abi, bytecode, contractName);
+    return deployContract(abi, bytecode, disableTxWait, contractName);
   }
 
   /**
    * Deploy a contract and return the address
    * @param abi The contract interface
    * @param bytecode The contract bytecode
+   * @param disableTxWait Disable waiting for contract deployment
    * @param contractName The contract name (optional, used for logs)
+   * @param retryCount
    * @returns Address of the deployed contract
    */
   async function deployContract(
     abi: ContractInterface,
     bytecode: string | { object: string },
+    disableTxWait: boolean,
     contractName?: string,
     retryCount = 0
   ): Promise<string> {
     try {
       const factory = new ethers.ContractFactory(abi, bytecode, signer);
       console.log(chalk.gray(`executing deployment of ${contractName} with nonce ${nonce}`));
-      const deployPromise = factory.deploy({
-        nonce: nonce++,
-        maxPriorityFeePerGas,
-        maxFeePerGas,
-      });
+      const deployPromise = factory
+        .deploy({
+          nonce: nonce++,
+          maxPriorityFeePerGas,
+          maxFeePerGas,
+        })
+        .then((c) => (disableTxWait ? c : c.deployed()));
+
       promises.push(deployPromise);
       const { address } = await deployPromise;
 
@@ -360,7 +385,7 @@ export async function deploy(
         // If the deployment failed because the transaction was already imported,
         // retry with a higher priority fee
         setInternalFeePerGas(priorityFeeMultiplier * 1.1);
-        return deployContract(abi, bytecode, contractName, retryCount++);
+        return deployContract(abi, bytecode, disableTxWait, contractName, retryCount++);
       } else if (error?.message.includes("invalid bytecode")) {
         throw new MUDError(
           `Error deploying ${contractName}: invalid bytecode. Note that linking of public libraries is not supported yet, make sure none of your libraries use "external" functions.`
@@ -424,8 +449,8 @@ export async function deploy(
     contract: C,
     func: F,
     args: Parameters<C[F]>,
-    retryCount = 0,
-    confirmations = 1
+    confirmations = 1,
+    retryCount = 0
   ): Promise<Awaited<ReturnType<Awaited<ReturnType<C[F]>>["wait"]>>> {
     const functionName = `${func as string}(${args.map((arg) => `'${arg}'`).join(",")})`;
     try {
@@ -433,7 +458,7 @@ export async function deploy(
       console.log(chalk.gray(`executing transaction: ${functionName} with nonce ${nonce}`));
       const txPromise = contract[func]
         .apply(null, [...args, { gasLimit, nonce: nonce++, maxPriorityFeePerGas, maxFeePerGas }])
-        .then((tx: any) => tx.wait(confirmations));
+        .then((tx: any) => (confirmations === 0 ? tx : tx.wait(confirmations)));
       promises.push(txPromise);
       return txPromise;
     } catch (error: any) {
@@ -442,7 +467,7 @@ export async function deploy(
         // If the deployment failed because the transaction was already imported,
         // retry with a higher priority fee
         setInternalFeePerGas(priorityFeeMultiplier * 1.1);
-        return fastTxExecute(contract, func, args, retryCount++, confirmations);
+        return fastTxExecute(contract, func, args, confirmations, retryCount++);
       } else throw new MUDError(`Gas estimation error for ${functionName}: ${error?.reason}`);
     }
   }

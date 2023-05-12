@@ -54,6 +54,7 @@ import { Contract } from "ethers";
 import { createModeClient } from "../v2/mode/createModeClient";
 import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";
 import { getModeBlockNumber } from "../v2/mode/getModeBlockNumber";
+import * as devObservables from "../dev/observables";
 
 const debug = parentDebug.extend("SyncWorker");
 
@@ -166,6 +167,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     this.setLoadingState({ state: SyncState.INITIAL, msg: "Starting initial sync", percentage: 0 });
     let passLiveEventsToOutput = false;
     const cacheStore = { current: createCacheStore() };
+    devObservables.cacheStore$.next(cacheStore.current);
     const { blockNumber$ } = createBlockNumberStream(providers);
     // The RPC is only queried if this stream is subscribed to
 
@@ -198,16 +200,18 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       // If initial sync is in progress, temporary store the events to apply later
       // Ignore system calls during initial sync
       if (!passLiveEventsToOutput) {
-        if (isNetworkComponentUpdateEvent(event)) initialLiveEvents.push(event);
+        if (isNetworkComponentUpdateEvent(event)) {
+          initialLiveEvents.push(event);
+        }
         return;
       }
 
       if (isNetworkComponentUpdateEvent(event)) {
-        // Store cache to indexdb every block
-        if (event.blockNumber > cacheStore.current.blockNumber + 1 && event.blockNumber % cacheInterval === 0)
-          saveCacheStoreToIndexDb(indexDbCache, cacheStore.current);
-
         storeEvent(cacheStore.current, event);
+        // Store cache to indexdb every block
+        if (event.blockNumber > cacheStore.current.blockNumber + 1 && event.blockNumber % cacheInterval === 0) {
+          saveCacheStoreToIndexDb(indexDbCache, cacheStore.current);
+        }
       }
 
       this.output$.next(event as NetworkEvent<C>);
@@ -294,6 +298,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       [...gapStateEvents, ...initialLiveEvents].filter((e) => !e.ephemeral)
     );
     cacheStore.current = initialState;
+    devObservables.cacheStore$.next(cacheStore.current);
     debug(`initial sync state size: ${cacheStore.current.state.size}`);
 
     this.setLoadingState({
