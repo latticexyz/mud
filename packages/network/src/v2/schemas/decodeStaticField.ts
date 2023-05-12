@@ -5,7 +5,7 @@ const unsupportedStaticField = (fieldType: never): never => {
   throw new Error(`Unsupported static field type: ${SchemaType[fieldType] ?? fieldType}`);
 };
 
-// TODO: figure out how to use with SchemaTypeToPrimitive<T> return type to ensure correctness here
+// TODO: figure out how to use with SchemaTypeToPrimitiveType<T> return type to ensure correctness here
 export const decodeStaticField = <T extends StaticSchemaType>(fieldType: T, bytes: Uint8Array, offset: number) => {
   const staticLength = getStaticByteLength(fieldType);
   const slice = bytes.slice(offset, offset + staticLength);
