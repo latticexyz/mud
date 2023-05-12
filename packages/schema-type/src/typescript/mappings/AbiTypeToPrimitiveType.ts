@@ -3,7 +3,7 @@ import { AbiType, AbiTypeToPrimitiveType as StaticAbiTypeToPrimitiveType } from 
 /**
  * Like abitype's AbiTypeToPrimitiveType but adding support for arrays and using strings as input
  */
-export type AbiTypeToPrimitiveType<T extends string> = T extends `${infer StaticAbiType}[${any}]`
+export type AbiTypeToPrimitiveType<T extends string> = T extends `${infer StaticAbiType}[${string}]`
   ? StaticAbiType extends AbiType
     ? StaticAbiTypeToPrimitiveType<StaticAbiType>[]
     : never

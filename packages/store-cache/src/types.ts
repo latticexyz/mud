@@ -3,7 +3,7 @@ import { FieldData, FullSchemaConfig, StoreConfig } from "@latticexyz/store";
 import { AbiTypeToPrimitiveType } from "@latticexyz/schema-type";
 
 type FieldTypeToPrimitiveType<T extends FieldData<string>> = AbiTypeToPrimitiveType<T> extends never
-  ? T extends `${any}[${any}]` // FieldType might include Enums and Enum arrays, which are mapped to uint8/uint8[]
+  ? T extends `${string}[${string}]` // FieldType might include Enums and Enum arrays, which are mapped to uint8/uint8[]
     ? number[] // Map enum arrays to `number[]`
     : number // Map enums to `number`
   : AbiTypeToPrimitiveType<T>;

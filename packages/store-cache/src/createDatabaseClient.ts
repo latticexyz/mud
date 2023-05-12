@@ -1,13 +1,5 @@
 import { TupleDatabase, TupleDatabaseClient } from "tuple-database";
-import {
-  DatabaseClient,
-  Key,
-  RemoveOptions,
-  SetOptions,
-  SubscriptionCallback,
-  SubscriptionFilterOptions,
-  Value,
-} from "./types";
+import { DatabaseClient, Key, SetOptions, SubscriptionCallback, SubscriptionFilterOptions, Value } from "./types";
 import { set, get, remove, getDefaultValue, subscribe } from "./utils";
 import { StoreConfig } from "@latticexyz/store";
 import { curry } from "@latticexyz/common/utils";

@@ -1,5 +1,4 @@
 import { ScanArgs, Tuple, TupleDatabaseClient } from "tuple-database";
-import { AbiDefaults } from "./defaults";
 import { StoreConfig } from "@latticexyz/store";
 import {
   Key,
@@ -11,6 +10,7 @@ import {
   Update,
   Value,
 } from "./types";
+import { getAbiTypeDefaultValue } from "@latticexyz/schema-type";
 
 /**
  * Set the value for the given key
@@ -160,12 +160,12 @@ export function getDefaultValue<Schema extends Record<string, string>>(schema?: 
   if (schema == null) return undefined;
 
   // Map schema to its default values
-  const defaultValue = {} as SchemaToPrimitives<Schema>;
+  const defaultValue: Record<string, unknown> = {};
   for (const key in schema) {
-    defaultValue[key] = AbiDefaults[schema[key]];
+    defaultValue[key] = getAbiTypeDefaultValue(schema[key]);
   }
 
-  return defaultValue;
+  return defaultValue as SchemaToPrimitives<Schema>;
 }
 
 /**

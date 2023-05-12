@@ -65,15 +65,22 @@ describe("createDatabaseClient", () => {
   });
 
   it("should initialize with Solidity default values", () => {
-    const key = { key: "0x00" } as const;
+    const key1 = { key: "0x00" } as const;
+    const key2 = { first: "0x00", second: 1n } as const;
 
     // Set a partial value
-    tables.Position.set(key, {});
+    tables.Position.set(key1, {});
 
     // Expect the value to be initialized with default values
-    expect(tables.Position.get(key)).toEqual({ x: 0, y: 0 });
+    expect(tables.Position.get(key1)).toEqual({ x: 0, y: 0 });
 
-    // TODO: add tests for other abi types
+    // Set a partial value and expect the value to be initialized with default values
+    tables.Counter.set(key2, {});
+    expect(tables.Counter.get(key2)).toEqual({ value: 0n });
+
+    // Set a partial value and expect the value to be initialized with default values
+    tables.MultiTable.set(key1, {});
+    expect(tables.MultiTable.get(key1)).toEqual({ arr: [], str: "", bts: "0x" });
   });
 
   it("should partially update existing values", () => {
