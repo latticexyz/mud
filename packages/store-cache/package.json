@@ -18,20 +18,22 @@
     "build": "tsup",
     "clean": "rimraf dist",
     "dev": "tsup --watch",
-    "release": "npm publish --access=public",
     "test": "vitest --run --passWithNoTests"
   },
   "dependencies": {
-    "@latticexyz/common": "workspace:^",
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/config": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "abitype": "^0.8.0",
-    "tsup": "^6.7.0",
     "tuple-database": "^2.2.0"
   },
   "devDependencies": {
-    "vitest": "^0.30.1"
+    "vitest": "^0.30.1",
+    "tsup": "^6.7.0"
   },
-  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
+  "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f",
+  "publishConfig": {
+    "access": "public"
+  }
 }
