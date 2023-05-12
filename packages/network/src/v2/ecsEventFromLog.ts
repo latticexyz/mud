@@ -26,6 +26,7 @@ export const ecsEventFromLog = async (
     type: NetworkEvents.NetworkComponentUpdate,
     component,
     entity,
+    key: args.key,
     value: undefined,
     blockNumber,
     txHash: transactionHash,

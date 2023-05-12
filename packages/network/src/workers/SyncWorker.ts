@@ -59,6 +59,8 @@ import { getEventSelector } from "viem";
 
 const debug = parentDebug.extend("SyncWorker");
 
+const VERSION = 3;
+
 export enum InputType {
   Ack,
   Config,
@@ -99,6 +101,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       component: keccak256("component.LoadingState"),
       value: newLoadingState as unknown as ComponentValue<SchemaOf<C[keyof C]>>,
       entity: SingletonID,
+      key: [],
       txHash: "worker",
       lastEventInTx: false,
       blockNumber,
@@ -151,7 +154,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     const provider = providers.get().json;
     const snapshotClient = snapshotServiceUrl ? createSnapshotClient(snapshotServiceUrl) : undefined;
     const modeClient = modeUrl ? createModeClient(modeUrl) : undefined;
-    const indexDbCache = await getIndexDbECSCache(chainId, worldContract.address);
+    const indexDbCache = await getIndexDbECSCache(chainId, worldContract.address, VERSION);
     const decode = createDecode(worldContract, provider);
     const fetchWorldEvents = createFetchWorldEventsInBlockRange(
       provider,
@@ -177,9 +180,9 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
 
     const latestEventRPC$ = createLatestEventStreamRPC(
       blockNumber$,
-      fetchWorldEvents,
-      boundFetchStoreEvents,
-      fetchSystemCalls ? createFetchSystemCallsFromEvents(provider) : undefined
+      async () => [], // fetchWorldEvents,
+      boundFetchStoreEvents
+      // fetchSystemCalls ? createFetchSystemCallsFromEvents(provider) : undefined
     );
     const latestEvent$ = streamServiceUrl
       ? createLatestEventStreamService(

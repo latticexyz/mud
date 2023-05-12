@@ -155,6 +155,8 @@ export function applyNetworkUpdates<C extends Components>(
       if (isNetworkComponentUpdateEvent<C>(update)) {
         if (update.lastEventInTx) txReduced$.next(update.txHash);
 
+        console.log("Network update", update);
+
         const entity = update.entity ?? world.registerEntity({ id: update.entity });
         const componentKey = mappings[update.component];
         if (!componentKey) {

@@ -63,7 +63,14 @@ export async function syncTablesFromMode(
       const entity = keyTupleToEntityID(keyTuple);
       const value = Object.fromEntries(values.map((value, i) => [fieldNames[i], value])) as ComponentValue;
 
-      storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
+      storeEvent(cacheStore, {
+        type: NetworkEvents.NetworkComponentUpdate,
+        component,
+        entity,
+        key: keyTuple,
+        value,
+        blockNumber,
+      });
 
       numRowsProcessed++;
       // Update progress every 100 rows
