@@ -51,6 +51,17 @@ describe("createDatabaseClient", () => {
     it("should infer bytes as string", () => {
       expectTypeOf(tables.MultiTable.set).parameter(1).toMatchTypeOf<{ bts?: string }>();
     });
+
+    it("should create a typed union for updates", () => {
+      client.subscribe((updates) => {
+        const update = updates[0];
+        if (update.table === "Position") expectTypeOf(update.set[0].value).toMatchTypeOf<{ x: number; y: number }>();
+        if (update.table === "Counter") expectTypeOf(update.set[0].value).toMatchTypeOf<{ value: bigint }>();
+        if (update.table === "EnumTable") expectTypeOf(update.set[0].key).toMatchTypeOf<{ first: number }>();
+        if (update.table === "MultiKey")
+          expectTypeOf(update.set[0].key).toMatchTypeOf<{ first: string; second: number }>();
+      });
+    });
   });
 
   it("should set and get typed values", () => {

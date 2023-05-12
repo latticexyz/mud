@@ -8,6 +8,7 @@ type FieldTypeToPrimitiveType<T extends FieldData<string>> = AbiTypeToPrimitiveT
     : number // Map enums to `number`
   : AbiTypeToPrimitiveType<T>;
 
+/** Map a table schema like `{ value: "uint256 "}` to its primitive TypeScript types like `{ value: bigint }`*/
 export type SchemaToPrimitives<T extends FullSchemaConfig> = { [key in keyof T]: FieldTypeToPrimitiveType<T[key]> };
 
 export type Tables<C extends StoreConfig> = {
@@ -33,30 +34,33 @@ export type DatabaseClient<C extends StoreConfig> = {
       remove: (key: Key<C, Table>, options?: RemoveOptions) => TupleRootTransactionApi;
       subscribe: (
         callback: SubscriptionCallback<C, Table>,
-        // Omitting the table config option because the table is prefilled when calling subscribe via the client
+        // Omitting the namespace and table config option because it is prefilled when calling subscribe via the client
         filter?: Omit<SubscriptionFilterOptions<C, Table>, "table" | "namespace">
       ) => Unsubscribe;
     };
   };
 } & {
   /** Utils to set a custom table value */
-  set: <Table extends string>(
+  set: <Table extends string = keyof C["tables"] & string>(
     namespace: string,
     table: Table,
     key: Key<C, Table>,
     value: Partial<Value<C, Table>>,
     options?: SetOptions
   ) => TupleRootTransactionApi;
-  get: <Table extends string = string>(namespace: string, table: Table, key: Key<C, Table>) => Value<C, Table>;
-  remove: <Table extends string = string>(
+  get: <Table extends string = keyof C["tables"] & string>(
+    namespace: string,
+    table: Table,
+    key: Key<C, Table>
+  ) => Value<C, Table>;
+  remove: <Table extends string = keyof C["tables"] & string>(
     namespace: string,
     table: Table,
     key: Key<C, Table>,
     options?: RemoveOptions
   ) => TupleRootTransactionApi;
-  subscribe: <Table extends string = string>(
+  subscribe: <Table extends string = keyof C["tables"] & string>(
     callback: SubscriptionCallback<C, Table>,
-    // Omitting the table config option because the table is prefilled when calling subscribe via the client
     filter?: SubscriptionFilterOptions<C, Table>
   ) => Unsubscribe;
   _tupleDatabaseClient: TupleDatabaseClient;
@@ -87,10 +91,11 @@ export type SubscriptionFilterOptions<
   key?: { [key in "gt" | "gte" | "lt" | "lte" | "eq"]?: Partial<Key<C, T>> };
 };
 
-// TODO: figure out how to turn this into a proper typed union (where typescript can infer the type of set/remove from the type of table)
 export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["tables"] = keyof C["tables"]> = {
-  namespace: C["namespace"];
-  table: Table;
-  set: KeyValue<C, Table>[];
-  remove: { key: Key<C, Table> }[];
-};
+  [key in Table]: {
+    namespace: C["namespace"];
+    table: key;
+    set: KeyValue<C, key>[];
+    remove: Key<C, key>[];
+  };
+}[Table];
