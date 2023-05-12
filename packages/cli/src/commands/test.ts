@@ -11,7 +11,7 @@ const WORLD_ADDRESS_FILE = ".mudtest";
 const commandModule: CommandModule<Options, Options> = {
   command: "test",
 
-  describe: "Run tests in MUD v2 contracts",
+  describe: "Run tests in MUD contracts",
 
   builder(yargs) {
     return yargs.options({

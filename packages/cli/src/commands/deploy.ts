@@ -50,7 +50,7 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
   const rpc = args.rpc ?? (await getRpcUrl(profile));
   console.log(
     chalk.bgBlue(
-      chalk.whiteBright(`\n Deploying MUD v2 contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
+      chalk.whiteBright(`\n Deploying MUD contracts${profile ? " with profile " + profile : ""} to RPC ${rpc} \n`)
     )
   );
 
@@ -98,7 +98,7 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
 const commandModule: CommandModule<DeployOptions, DeployOptions> = {
   command: "deploy",
 
-  describe: "Deploy MUD v2 contracts",
+  describe: "Deploy MUD contracts",
 
   builder(yargs) {
     return yargs.options(yDeployOptions);
