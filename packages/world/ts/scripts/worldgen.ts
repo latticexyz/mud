@@ -1,7 +1,7 @@
 import glob from "glob";
 import path, { basename } from "path";
 import { rmSync } from "fs";
-import { loadConfig } from "@latticexyz/config";
+import { loadConfig } from "@latticexyz/config/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { WorldConfig, worldgen } from "../library";
 import { StoreConfig } from "@latticexyz/store";
