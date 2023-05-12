@@ -164,7 +164,7 @@ export function renderValueTypeToBytes32(name: string, { staticByteLength, typeU
   } else if (internalTypeId.match(/^bytes\d{1,2}$/)) {
     return `bytes32(${innerText})`;
   } else if (internalTypeId === "address") {
-    return `bytes32(bytes20(${innerText}))`;
+    return `bytes32(uint256(uint160(${innerText})))`;
   } else if (internalTypeId === "bool") {
     return `_boolToBytes32(${innerText})`;
   } else {
