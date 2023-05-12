@@ -7,7 +7,5 @@ abi/
 types/
 broadcast/
 
-# Ignore all deploy artifacts
+# Ignore MUD deploy artifacts
 deploys/**/*.json
-# Except the latest ones (so we can load these into client)
-!deploys/**/latest.json

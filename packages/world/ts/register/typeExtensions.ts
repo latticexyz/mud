@@ -30,6 +30,7 @@ declare module "@latticexyz/store/register" {
         excludeSystems: typeof WORLD_DEFAULTS.excludeSystems;
         postDeployScript: typeof WORLD_DEFAULTS.postDeployScript;
         deploysDirectory: typeof WORLD_DEFAULTS.deploysDirectory;
+        worldsFile: typeof WORLD_DEFAULTS.worldsFile;
         worldgenDirectory: typeof WORLD_DEFAULTS.worldgenDirectory;
         worldImportPath: typeof WORLD_DEFAULTS.worldImportPath;
         modules: typeof WORLD_DEFAULTS.modules;
