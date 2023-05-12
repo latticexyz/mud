@@ -14,7 +14,6 @@
     "./foundry": "./dist/foundry.js",
     "./type-utils": "./dist/type-utils.js",
     "./utils": "./dist/utils.js"
-
   },
   "typesVersions": {
     "*": {
