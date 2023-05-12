@@ -1,4 +1,4 @@
-import { ComponentValue, Schema } from "@latticexyz/recs";
+import { ComponentValue } from "@latticexyz/recs";
 import { TableId } from "@latticexyz/utils";
 import { Contract } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
@@ -8,6 +8,7 @@ import { TableSchema } from "./common";
 import { decodeStaticField } from "./schemas/decodeStaticField";
 import { DynamicSchemaType, StaticSchemaType } from "@latticexyz/schema-type";
 import { decodeDynamicField } from "./schemas/decodeDynamicField";
+import { decodeKeyTuple } from "./schemas/decodeKeyTuple";
 
 export async function decodeStoreSetField(
   contract: Contract,
@@ -21,15 +22,23 @@ export async function decodeStoreSetField(
   indexedInitialValues: Record<number, any>;
   namedValues?: Record<string, any>;
   namedInitialValues?: Record<string, any>;
+  indexedKey: Record<number, any>;
+  namedKey?: Record<string, any>;
 }> {
   const schema = await registerSchema(contract, table);
-  const indexedValues = decodeField(schema, schemaIndex, data);
+  const { valueSchema, keySchema } = schema;
+  const indexedValues = decodeField(valueSchema, schemaIndex, data);
+  const indexedKey = decodeKeyTuple(keySchema, keyTuple);
 
   // Create an object that represents an "uninitialized" record as it would exist in Solidity
   // to help populate RECS state when using StoreSetField before StoreSetRecord.
   const defaultValues = [
-    ...schema.staticFields.map((fieldType) => decodeStaticField(fieldType as StaticSchemaType, new Uint8Array(0), 0)),
-    ...schema.dynamicFields.map((fieldType) => decodeDynamicField(fieldType as DynamicSchemaType, new Uint8Array(0))),
+    ...valueSchema.staticFields.map((fieldType) =>
+      decodeStaticField(fieldType as StaticSchemaType, new Uint8Array(0), 0)
+    ),
+    ...valueSchema.dynamicFields.map((fieldType) =>
+      decodeDynamicField(fieldType as DynamicSchemaType, new Uint8Array(0))
+    ),
   ];
   const indexedInitialValues = Object.fromEntries(
     defaultValues.map((value, index) => [index, value])
@@ -43,6 +52,9 @@ export async function decodeStoreSetField(
         return [fieldNames[schemaIndex], fieldValue];
       })
     ) as ComponentValue;
+
+    // TODO: add named key
+
     return {
       schema,
       indexedValues,
@@ -51,6 +63,7 @@ export async function decodeStoreSetField(
         [fieldNames[schemaIndex]]: indexedValues[schemaIndex],
       },
       namedInitialValues,
+      indexedKey,
     };
   }
 
@@ -61,5 +74,6 @@ export async function decodeStoreSetField(
     schema,
     indexedValues,
     indexedInitialValues,
+    indexedKey,
   };
 }

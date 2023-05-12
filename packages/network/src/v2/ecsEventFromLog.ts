@@ -7,6 +7,8 @@ import { decodeStoreSetRecord } from "./decodeStoreSetRecord";
 import { decodeStoreSetField } from "./decodeStoreSetField";
 import { keyTupleToEntityID } from "./keyTupleToEntityID";
 import * as devObservables from "../dev/observables";
+import { registerSchema } from "./schemas/tableSchemas";
+import { decodeKeyTuple } from "./schemas/decodeKeyTuple";
 
 export const ecsEventFromLog = async (
   chainId: number,
@@ -26,7 +28,6 @@ export const ecsEventFromLog = async (
     type: NetworkEvents.NetworkComponentUpdate,
     component,
     entity,
-    key: args.key,
     value: undefined,
     blockNumber,
     txHash: transactionHash,
@@ -35,12 +36,21 @@ export const ecsEventFromLog = async (
   } satisfies NetworkComponentUpdate;
 
   if (name === "StoreSetRecord") {
-    const { indexedValues, namedValues } = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
+    const { indexedValues, namedValues, indexedKey, namedKey } = await decodeStoreSetRecord(
+      contract,
+      tableId,
+      args.key,
+      args.data
+    );
     return {
       ...ecsEvent,
       value: {
         ...indexedValues,
         ...namedValues,
+      },
+      key: {
+        ...indexedKey,
+        ...namedKey,
       },
       devEmit: () => {
         devObservables.storeEvent$.next({
@@ -60,13 +70,22 @@ export const ecsEventFromLog = async (
   }
 
   if (name === "StoreEphemeralRecord") {
-    const { indexedValues, namedValues } = await decodeStoreSetRecord(contract, tableId, args.key, args.data);
+    const { indexedValues, namedValues, indexedKey, namedKey } = await decodeStoreSetRecord(
+      contract,
+      tableId,
+      args.key,
+      args.data
+    );
     return {
       ...ecsEvent,
       ephemeral: true,
       value: {
         ...indexedValues,
         ...namedValues,
+      },
+      key: {
+        ...indexedKey,
+        ...namedKey,
       },
       devEmit: () => {
         devObservables.storeEvent$.next({
@@ -86,13 +105,8 @@ export const ecsEventFromLog = async (
   }
 
   if (name === "StoreSetField") {
-    const { indexedValues, indexedInitialValues, namedValues, namedInitialValues } = await decodeStoreSetField(
-      contract,
-      tableId,
-      args.key,
-      args.schemaIndex,
-      args.data
-    );
+    const { indexedValues, indexedInitialValues, namedValues, namedInitialValues, indexedKey, namedKey } =
+      await decodeStoreSetField(contract, tableId, args.key, args.schemaIndex, args.data);
     return {
       ...ecsEvent,
       partialValue: {
@@ -102,6 +116,10 @@ export const ecsEventFromLog = async (
       initialValue: {
         ...indexedInitialValues,
         ...namedInitialValues,
+      },
+      key: {
+        ...indexedKey,
+        ...namedKey,
       },
       devEmit: () => {
         devObservables.storeEvent$.next({
@@ -121,8 +139,12 @@ export const ecsEventFromLog = async (
   }
 
   if (name === "StoreDeleteRecord") {
+    const { keySchema } = await registerSchema(contract, tableId);
+    const indexedKey = decodeKeyTuple(keySchema, args.key);
+
     return {
       ...ecsEvent,
+      key: indexedKey,
       devEmit: () => {
         devObservables.storeEvent$.next({
           event: name,

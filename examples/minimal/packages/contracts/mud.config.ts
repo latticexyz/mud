@@ -22,6 +22,14 @@ export default mudConfig({
       },
       ephemeral: true,
     },
+    TestTable: {
+      primaryKeys: {
+        first: "uint160",
+        second: "address",
+        third: "bytes20",
+      },
+      schema: { value: "uint64" },
+    },
   },
   modules: [
     {

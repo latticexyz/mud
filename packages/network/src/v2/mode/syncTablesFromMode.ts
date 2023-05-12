@@ -67,7 +67,8 @@ export async function syncTablesFromMode(
         type: NetworkEvents.NetworkComponentUpdate,
         component,
         entity,
-        key: keyTuple,
+        // TODO: fix
+        key: { todo: "mode" },
         value,
         blockNumber,
       });
