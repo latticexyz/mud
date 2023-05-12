@@ -82,11 +82,20 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
       writeFileSync(path.join(outputDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
       writeFileSync(path.join(outputDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
 
+      const localChains = [1337, 31337];
       const deploys = existsSync(mudConfig.worldsFile) ? JSON.parse(readFileSync(mudConfig.worldsFile, "utf-8")) : {};
-      deploys[chainId] = deploymentInfo.worldAddress;
+      deploys[chainId] = {
+        address: deploymentInfo.worldAddress,
+        // We expect the worlds file to be committed and since local deployments are often a consistent address but different block number, we'll ignore the block number.
+        blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
+      };
       writeFileSync(mudConfig.worldsFile, JSON.stringify(deploys, null, 2));
 
-      console.log(chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${outputDir}): \n`)));
+      console.log(
+        chalk.bgGreen(
+          chalk.whiteBright(`\n Deployment result (written to ${mudConfig.worldsFile} and ${outputDir}): \n`)
+        )
+      );
     }
 
     console.log(deploymentInfo);

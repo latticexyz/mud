@@ -2,7 +2,9 @@ import { SetupContractConfig, getBurnerWallet } from "@latticexyz/std-client";
 
 import latticeTestnet from "./supportedChains/latticeTestnet";
 import localhost from "./supportedChains/localhost";
-import worlds from "contracts/worlds.json";
+import worldsJson from "contracts/worlds.json";
+
+const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
 
 type NetworkConfig = SetupContractConfig & {
   privateKey: string;
@@ -20,7 +22,8 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     throw new Error(`Chain ${chainId} not found`);
   }
 
-  const worldAddress = params.get("worldAddress") || worlds[chain.id.toString()];
+  const world = worlds[chain.id.toString()];
+  const worldAddress = params.get("worldAddress") || world?.address;
   if (!worldAddress) {
     throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
   }
@@ -41,7 +44,9 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
-    initialBlockNumber: params.has("initialBlockNumber") ? Number(params.get("initialBlockNumber")) : -1,
+    initialBlockNumber: params.has("initialBlockNumber")
+      ? Number(params.get("initialBlockNumber"))
+      : world?.blockNumber ?? -1, // -1 will attempt to find the block number from RPC
     devMode: params.get("dev") === "true",
     disableCache: params.get("cache") === "false",
   };
