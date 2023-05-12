@@ -31,6 +31,8 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { IComputedValue } from "mobx";
 import { filter, map, Observable, Subject, timer } from "rxjs";
 import { DecodedNetworkComponentUpdate, DecodedSystemCall } from "./types";
+import { StoreConfig } from "@latticexyz/store";
+import { createDatabaseClient } from "@latticexyz/store-cache";
 
 export function createDecodeNetworkComponentUpdate<C extends Components>(
   world: World,
@@ -130,12 +132,13 @@ export async function createEncoders(
 /**
  * Sets up synchronization between contract components and client components
  */
-export function applyNetworkUpdates<C extends Components>(
+export function applyNetworkUpdates<C extends Components, S extends StoreConfig>(
   world: World,
   components: C,
   ecsEvents$: Observable<NetworkEvent<C>[]>,
   mappings: Mappings<C>,
   ack$: Subject<Ack>,
+  storeCache: ReturnType<typeof createDatabaseClient<S>>,
   decodeAndEmitSystemCall?: (event: SystemCall<C>) => void
 ) {
   const txReduced$ = new Subject<string>();
@@ -156,6 +159,10 @@ export function applyNetworkUpdates<C extends Components>(
         if (update.lastEventInTx) txReduced$.next(update.txHash);
 
         console.log("Network update", update);
+
+        // TODO: expose table id and namespace in the network update
+        // TODO: apply network updates to store cache
+        // storeCache.set(...)
 
         const entity = update.entity ?? world.registerEntity({ id: update.entity });
         const componentKey = mappings[update.component];

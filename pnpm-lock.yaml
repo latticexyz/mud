@@ -732,6 +732,9 @@ importers:
       '@latticexyz/store':
         specifier: workspace:*
         version: link:../store
+      '@latticexyz/store-cache':
+        specifier: workspace:^
+        version: link:../store-cache
       '@latticexyz/utils':
         specifier: workspace:*
         version: link:../utils
