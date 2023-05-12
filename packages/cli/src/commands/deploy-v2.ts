@@ -2,7 +2,8 @@ import chalk from "chalk";
 import glob from "glob";
 import path, { basename } from "path";
 import type { CommandModule, Options } from "yargs";
-import { loadConfig, MUDError } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/common/errors";
+import { loadConfig } from "@latticexyz/config";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
 import { deploy } from "../utils/deploy-v2";
@@ -22,6 +23,7 @@ export type DeployOptions = {
   rpc?: string;
   worldAddress?: string;
   srcDir?: string;
+  disableTxWait: boolean;
 };
 
 export const yDeployOptions = {
@@ -39,6 +41,7 @@ export const yDeployOptions = {
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
+  disableTxWait: { type: "boolean", desc: "Disable waiting for transactions to be confirmed.", default: false },
 } satisfies Record<keyof DeployOptions, Options>;
 
 export async function deployHandler(args: Parameters<(typeof commandModule)["handler"]>[0]) {

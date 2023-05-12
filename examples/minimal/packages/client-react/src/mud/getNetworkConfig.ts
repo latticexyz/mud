@@ -1,7 +1,7 @@
 import { SetupContractConfig, getBurnerWallet } from "@latticexyz/std-client";
-
+import { foundry } from "@wagmi/chains";
 import latticeTestnet from "./supportedChains/latticeTestnet";
-import localhost from "./supportedChains/localhost";
+import { MudChain } from "./supportedChains/types";
 import worldsJson from "contracts/worlds.json";
 
 const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
@@ -14,7 +14,7 @@ type NetworkConfig = SetupContractConfig & {
 export async function getNetworkConfig(): Promise<NetworkConfig> {
   const params = new URLSearchParams(window.location.search);
 
-  const supportedChains = [localhost, latticeTestnet];
+  const supportedChains: MudChain[] = [foundry, latticeTestnet];
   const chainId = Number(params.get("chainId") || import.meta.env.VITE_CHAIN_ID || 31337);
   const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
   const chain = supportedChains[chainIndex];

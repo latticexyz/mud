@@ -1,13 +1,6 @@
-import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes } from "@latticexyz/schema-type";
+import { AbiType, AbiTypes, StaticAbiType, StaticAbiTypes, StaticArray } from "@latticexyz/schema-type";
 import { RefinementCtx, z, ZodIssueCode } from "zod";
-import {
-  AsDependent,
-  ExtractUserTypes,
-  OrDefaults,
-  RequireKeys,
-  StaticArray,
-  StringForUnion,
-} from "@latticexyz/common/type-utils";
+import { AsDependent, ExtractUserTypes, OrDefaults, RequireKeys, StringForUnion } from "@latticexyz/common/type-utils";
 import {
   // validation utils
   getDuplicates,
@@ -32,7 +25,7 @@ const zUserEnumName = zObjectName;
 // (user types are refined later, based on the appropriate config options)
 const zFieldData = z.string();
 
-type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray | UserTypes;
+export type FieldData<UserTypes extends StringForUnion> = AbiType | StaticArray | UserTypes;
 
 // Primary keys allow only static types
 // (user types are refined later, based on the appropriate config options)
