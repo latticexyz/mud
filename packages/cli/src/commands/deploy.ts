@@ -2,13 +2,14 @@ import chalk from "chalk";
 import glob from "glob";
 import path, { basename } from "path";
 import type { CommandModule, Options } from "yargs";
-import { loadConfig, MUDError } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/common/errors";
+import { loadConfig } from "@latticexyz/config";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
 import { deploy } from "../utils/deploy";
 import { logError } from "../utils/errors";
 import { forge, getRpcUrl, getSrcDirectory } from "@latticexyz/common/foundry";
-import { mkdirSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs";
 import { getChainId } from "../utils/getChainId";
 
 export type DeployOptions = {
@@ -84,7 +85,20 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
       writeFileSync(path.join(outputDir, "latest.json"), JSON.stringify(deploymentInfo, null, 2));
       writeFileSync(path.join(outputDir, Date.now() + ".json"), JSON.stringify(deploymentInfo, null, 2));
 
-      console.log(chalk.bgGreen(chalk.whiteBright(`\n Deployment result (written to ${outputDir}): \n`)));
+      const localChains = [1337, 31337];
+      const deploys = existsSync(mudConfig.worldsFile) ? JSON.parse(readFileSync(mudConfig.worldsFile, "utf-8")) : {};
+      deploys[chainId] = {
+        address: deploymentInfo.worldAddress,
+        // We expect the worlds file to be committed and since local deployments are often a consistent address but different block number, we'll ignore the block number.
+        blockNumber: localChains.includes(chainId) ? undefined : deploymentInfo.blockNumber,
+      };
+      writeFileSync(mudConfig.worldsFile, JSON.stringify(deploys, null, 2));
+
+      console.log(
+        chalk.bgGreen(
+          chalk.whiteBright(`\n Deployment result (written to ${mudConfig.worldsFile} and ${outputDir}): \n`)
+        )
+      );
     }
 
     console.log(deploymentInfo);

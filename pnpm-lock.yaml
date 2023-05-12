@@ -176,9 +176,6 @@ importers:
 
   packages/common:
     dependencies:
-      '@latticexyz/config':
-        specifier: workspace:*
-        version: link:../config
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type
@@ -198,6 +195,9 @@ importers:
         specifier: ^1.1.2
         version: 1.1.2(prettier@2.8.4)
     devDependencies:
+      '@types/node':
+        specifier: ^18.15.11
+        version: 18.15.11
       tsup:
         specifier: ^6.7.0
         version: 6.7.0(postcss@8.4.23)(typescript@5.0.4)
@@ -207,6 +207,9 @@ importers:
 
   packages/config:
     dependencies:
+      '@latticexyz/common':
+        specifier: workspace:*
+        version: link:../common
       '@latticexyz/schema-type':
         specifier: workspace:*
         version: link:../schema-type

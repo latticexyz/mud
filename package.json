@@ -10,7 +10,7 @@
   "scripts": {
     "build": "turbo run build",
     "clean": "turbo run clean",
-    "dev": "turbo run dev --concurrency 20",
+    "dev": "turbo run dev --concurrency 100",
     "docs": "pnpm recursive run docs && pnpm prettier --write '**/*.md' && pnpm run --filter docs build:prepare && pnpm run --filter docs build",
     "entry:dist": "lerna run prepack",
     "entry:src": "lerna run postpack",
@@ -31,7 +31,8 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": "eslint --cache --fix",
-    "*.{ts,tsx,css,md,sol}": "prettier --write"
+    "*.{ts,tsx,css,md,sol}": "prettier --write",
+    "package.json": "pnpm sort-package-json"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "5.46.1",
