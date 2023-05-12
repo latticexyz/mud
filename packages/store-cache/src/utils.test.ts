@@ -76,7 +76,7 @@ describe("utils", () => {
       }
     });
 
-    it.only("should subscribe to table updates with multiple writes per transaction", () => {
+    it("should subscribe to table updates with multiple writes per transaction", () => {
       const positionUpdates: KeyValue<typeof config, "Position">[] = [
         { key: { key: "0x00" }, value: { x: 1, y: 2 } },
         { key: { key: "0x01" }, value: { x: 2, y: 3 } },
