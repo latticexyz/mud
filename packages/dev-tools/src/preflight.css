@@ -1,0 +1,409 @@
+/*
+
+Modified version of https://github.com/tailwindlabs/tailwindcss/blob/master/src/css/preflight.css
+- prefixes everything with the root element selector
+- adds `all: initial` to the root element before applying styles
+
+This isn't my favorite approach. Iframes would be cleaner but they have issues around focus.
+
+*/
+
+/*
+1. Prevent padding and border from affecting element width. (https://github.com/mozdevs/cssremedy/issues/4)
+2. Allow adding a border to an element by just adding a border-width. (https://github.com/tailwindcss/tailwindcss/pull/116)
+*/
+
+#mud-dev-tools {
+  all: initial;
+}
+
+#mud-dev-tools *,
+#mud-dev-tools ::before,
+#mud-dev-tools ::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+  border-color: theme("borderColor.DEFAULT", currentColor); /* 2 */
+}
+
+#mud-dev-tools ::before,
+#mud-dev-tools ::after {
+  --tw-content: "";
+}
+
+/*
+1. Use a consistent sensible line-height in all browsers.
+2. Prevent adjustments of font size after orientation changes in iOS.
+3. Use a more readable tab size.
+4. Use the user's configured `sans` font-family by default.
+5. Use the user's configured `sans` font-feature-settings by default.
+6. Use the user's configured `sans` font-variation-settings by default.
+*/
+
+#mud-dev-tools {
+  line-height: 1.5; /* 1 */
+  -webkit-text-size-adjust: 100%; /* 2 */
+  -moz-tab-size: 4; /* 3 */
+  tab-size: 4; /* 3 */
+  font-family: theme(
+    "fontFamily.sans",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    "Noto Sans",
+    sans-serif,
+    "Apple Color Emoji",
+    "Segoe UI Emoji",
+    "Segoe UI Symbol",
+    "Noto Color Emoji"
+  ); /* 4 */
+  font-feature-settings: theme("fontFamily.sans[1].fontFeatureSettings", normal); /* 5 */
+  font-variation-settings: theme("fontFamily.sans[1].fontVariationSettings", normal); /* 6 */
+}
+
+/*
+1. Remove the margin in all browsers.
+2. Inherit line-height from `html` so users can set them as a class directly on the `html` element.
+*/
+
+#mud-dev-tools {
+  margin: 0; /* 1 */
+  line-height: inherit; /* 2 */
+}
+
+/*
+1. Add the correct height in Firefox.
+2. Correct the inheritance of border color in Firefox. (https://bugzilla.mozilla.org/show_bug.cgi?id=190655)
+3. Ensure horizontal rules are visible by default.
+*/
+
+#mud-dev-tools hr {
+  height: 0; /* 1 */
+  color: inherit; /* 2 */
+  border-top-width: 1px; /* 3 */
+}
+
+/*
+Add the correct text decoration in Chrome, Edge, and Safari.
+*/
+
+#mud-dev-tools abbr:where([title]) {
+  text-decoration: underline dotted;
+}
+
+/*
+Remove the default font size and weight for headings.
+*/
+
+#mud-dev-tools h1,
+#mud-dev-tools h2,
+#mud-dev-tools h3,
+#mud-dev-tools h4,
+#mud-dev-tools h5,
+#mud-dev-tools h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*
+Reset links to optimize for opt-in styling instead of opt-out.
+*/
+
+#mud-dev-tools a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+/*
+Add the correct font weight in Edge and Safari.
+*/
+
+#mud-dev-tools b,
+#mud-dev-tools strong {
+  font-weight: bolder;
+}
+
+/*
+1. Use the user's configured `mono` font family by default.
+2. Correct the odd `em` font sizing in all browsers.
+*/
+
+#mud-dev-tools code,
+#mud-dev-tools kbd,
+#mud-dev-tools samp,
+#mud-dev-tools pre {
+  font-family: theme(
+    "fontFamily.mono",
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    "Courier New",
+    monospace
+  ); /* 1 */
+  font-size: 1em; /* 2 */
+}
+
+/*
+Add the correct font size in all browsers.
+*/
+
+#mud-dev-tools small {
+  font-size: 80%;
+}
+
+/*
+Prevent `sub` and `sup` elements from affecting the line height in all browsers.
+*/
+
+#mud-dev-tools sub,
+#mud-dev-tools sup {
+  font-size: 75%;
+  line-height: 0;
+  position: relative;
+  vertical-align: baseline;
+}
+
+#mud-dev-tools sub {
+  bottom: -0.25em;
+}
+
+#mud-dev-tools sup {
+  top: -0.5em;
+}
+
+/*
+1. Remove text indentation from table contents in Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=999088, https://bugs.webkit.org/show_bug.cgi?id=201297)
+2. Correct table border color inheritance in all Chrome and Safari. (https://bugs.chromium.org/p/chromium/issues/detail?id=935729, https://bugs.webkit.org/show_bug.cgi?id=195016)
+3. Remove gaps between table borders by default.
+*/
+
+#mud-dev-tools table {
+  text-indent: 0; /* 1 */
+  border-color: inherit; /* 2 */
+  border-collapse: collapse; /* 3 */
+}
+
+/*
+1. Change the font styles in all browsers.
+2. Remove the margin in Firefox and Safari.
+3. Remove default padding in all browsers.
+*/
+
+#mud-dev-tools button,
+#mud-dev-tools input,
+#mud-dev-tools optgroup,
+#mud-dev-tools select,
+#mud-dev-tools textarea {
+  font-family: inherit; /* 1 */
+  font-size: 100%; /* 1 */
+  font-weight: inherit; /* 1 */
+  line-height: inherit; /* 1 */
+  color: inherit; /* 1 */
+  margin: 0; /* 2 */
+  padding: 0; /* 3 */
+}
+
+/*
+Remove the inheritance of text transform in Edge and Firefox.
+*/
+
+#mud-dev-tools button,
+#mud-dev-tools select {
+  text-transform: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Remove default button styles.
+*/
+
+#mud-dev-tools button,
+#mud-dev-tools [type="button"],
+#mud-dev-tools [type="reset"],
+#mud-dev-tools [type="submit"] {
+  -webkit-appearance: button; /* 1 */
+  background-color: transparent; /* 2 */
+  background-image: none; /* 2 */
+}
+
+/*
+Use the modern Firefox focus style for all focusable elements.
+*/
+
+#mud-dev-tools :-moz-focusring {
+  outline: auto;
+}
+
+/*
+Remove the additional `:invalid` styles in Firefox. (https://github.com/mozilla/gecko-dev/blob/2f9eacd9d3d995c937b4251a5557d95d494c9be1/layout/style/res/forms.css#L728-L737)
+*/
+
+#mud-dev-tools :-moz-ui-invalid {
+  box-shadow: none;
+}
+
+/*
+Add the correct vertical alignment in Chrome and Firefox.
+*/
+
+#mud-dev-tools progress {
+  vertical-align: baseline;
+}
+
+/*
+Correct the cursor style of increment and decrement buttons in Safari.
+*/
+
+#mud-dev-tools ::-webkit-inner-spin-button,
+#mud-dev-tools ::-webkit-outer-spin-button {
+  height: auto;
+}
+
+/*
+1. Correct the odd appearance in Chrome and Safari.
+2. Correct the outline style in Safari.
+*/
+
+#mud-dev-tools [type="search"] {
+  -webkit-appearance: textfield; /* 1 */
+  outline-offset: -2px; /* 2 */
+}
+
+/*
+Remove the inner padding in Chrome and Safari on macOS.
+*/
+
+#mud-dev-tools ::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+/*
+1. Correct the inability to style clickable types in iOS and Safari.
+2. Change font properties to `inherit` in Safari.
+*/
+
+#mud-dev-tools ::-webkit-file-upload-button {
+  -webkit-appearance: button; /* 1 */
+  font: inherit; /* 2 */
+}
+
+/*
+Add the correct display in Chrome and Safari.
+*/
+
+#mud-dev-tools summary {
+  display: list-item;
+}
+
+/*
+Removes the default spacing and border for appropriate elements.
+*/
+
+#mud-dev-tools blockquote,
+#mud-dev-tools dl,
+#mud-dev-tools dd,
+#mud-dev-tools h1,
+#mud-dev-tools h2,
+#mud-dev-tools h3,
+#mud-dev-tools h4,
+#mud-dev-tools h5,
+#mud-dev-tools h6,
+#mud-dev-tools hr,
+#mud-dev-tools figure,
+#mud-dev-tools p,
+#mud-dev-tools pre {
+  margin: 0;
+}
+
+#mud-dev-tools fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+#mud-dev-tools legend {
+  padding: 0;
+}
+
+#mud-dev-tools ol,
+#mud-dev-tools ul,
+#mud-dev-tools menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/*
+Prevent resizing textareas horizontally by default.
+*/
+
+#mud-dev-tools textarea {
+  resize: vertical;
+}
+
+/*
+1. Reset the default placeholder opacity in Firefox. (https://github.com/tailwindlabs/tailwindcss/issues/3300)
+2. Set the default placeholder color to the user's configured gray 400 color.
+*/
+
+#mud-dev-tools input::placeholder,
+#mud-dev-tools textarea::placeholder {
+  opacity: 1; /* 1 */
+  color: theme("colors.gray.400", #9ca3af); /* 2 */
+}
+
+/*
+Set the default cursor for buttons.
+*/
+
+#mud-dev-tools button,
+#mud-dev-tools [role="button"] {
+  cursor: pointer;
+}
+
+/*
+Make sure disabled buttons don't get the pointer cursor.
+*/
+#mud-dev-tools :disabled {
+  cursor: default;
+}
+
+/*
+1. Make replaced elements `display: block` by default. (https://github.com/mozdevs/cssremedy/issues/14)
+2. Add `vertical-align: middle` to align replaced elements more sensibly by default. (https://github.com/jensimmons/cssremedy/issues/14#issuecomment-634934210)
+   This can trigger a poorly considered lint error in some tools but is included by design.
+*/
+
+#mud-dev-tools img,
+#mud-dev-tools svg,
+#mud-dev-tools video,
+#mud-dev-tools canvas,
+#mud-dev-tools audio,
+#mud-dev-tools iframe,
+#mud-dev-tools embed,
+#mud-dev-tools object {
+  display: block; /* 1 */
+  vertical-align: middle; /* 2 */
+}
+
+/*
+Constrain images and videos to the parent width and preserve their intrinsic aspect ratio. (https://github.com/mozdevs/cssremedy/issues/14)
+*/
+
+#mud-dev-tools img,
+#mud-dev-tools video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Make elements with the HTML hidden attribute stay hidden by default */
+#mud-dev-tools [hidden] {
+  display: none;
+}

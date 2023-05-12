@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.0;
 
-import { IErrors } from "./IErrors.sol";
+import { IStoreErrors } from "./IStoreErrors.sol";
 import { Schema } from "./Schema.sol";
 
 interface IStoreRead {
@@ -17,6 +17,24 @@ interface IStoreRead {
 
   // Get partial data at schema index
   function getField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex) external view returns (bytes memory data);
+
+  // Get field length at schema index
+  function getFieldLength(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema
+  ) external view returns (uint256);
+
+  // Get start:end slice of the field at schema index
+  function getFieldSlice(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 schemaIndex,
+    Schema schema,
+    uint256 start,
+    uint256 end
+  ) external view returns (bytes memory data);
 
   // If this function exists on the contract, it is a store
   // TODO: benchmark this vs. using a known storage slot to determine whether a contract is a Store
@@ -54,6 +72,13 @@ interface IStoreWrite {
   function deleteRecord(bytes32 table, bytes32[] memory key) external;
 }
 
+interface IStoreEphemeral {
+  event StoreEphemeralRecord(bytes32 table, bytes32[] key, bytes data);
+
+  // Emit the ephemeral event without modifying storage
+  function emitEphemeralRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) external;
+}
+
 /**
  * The IStoreData interface includes methods for reading and writing table values.
  * These methods are frequently invoked during runtime, so it is essential to prioritize
@@ -77,7 +102,7 @@ interface IStoreRegistration {
   function registerStoreHook(bytes32 table, IStoreHook hook) external;
 }
 
-interface IStore is IStoreData, IStoreRegistration {}
+interface IStore is IStoreData, IStoreRegistration, IStoreEphemeral, IStoreErrors {}
 
 interface IStoreHook {
   function onSetRecord(bytes32 table, bytes32[] memory key, bytes memory data) external;

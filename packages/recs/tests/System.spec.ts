@@ -3,7 +3,7 @@ import { Type, UpdateType } from "../src/constants";
 import { createEntity } from "../src/Entity";
 import { Has } from "../src/Query";
 import { defineEnterSystem, defineExitSystem, defineSystem, defineUpdateSystem } from "../src/System";
-import { Component, EntityIndex, World } from "../src/types";
+import { Component, Entity, World } from "../src/types";
 import { createWorld } from "../src/World";
 
 describe("System", () => {
@@ -15,7 +15,7 @@ describe("System", () => {
 
   describe("Systems", () => {
     let Position: Component<{ x: number; y: number }>;
-    let entity: EntityIndex;
+    let entity: Entity;
 
     beforeEach(() => {
       Position = defineComponent(world, { x: Type.Number, y: Type.Number });

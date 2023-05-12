@@ -25,6 +25,7 @@ import { WorldRegistrationSystem } from "./implementations/WorldRegistrationSyst
 import { StoreRegistrationSystem } from "./implementations/StoreRegistrationSystem.sol";
 import { ModuleInstallationSystem } from "./implementations/ModuleInstallationSystem.sol";
 import { AccessManagementSystem } from "./implementations/AccessManagementSystem.sol";
+import { EphemeralRecordSystem } from "./implementations/EphemeralRecordSystem.sol";
 
 /**
  * The CoreModule registers internal World tables, the CoreSystem, and its function selectors.
@@ -99,7 +100,7 @@ contract CoreModule is IModule, WorldContext {
    * Register function selectors for all CoreSystem functions in the World
    */
   function _registerFunctionSelectors() internal {
-    bytes4[15] memory functionSelectors = [
+    bytes4[16] memory functionSelectors = [
       // --- WorldRegistrationSystem ---
       WorldRegistrationSystem.registerNamespace.selector,
       WorldRegistrationSystem.registerTable.selector,
@@ -118,7 +119,9 @@ contract CoreModule is IModule, WorldContext {
       ModuleInstallationSystem.installModule.selector,
       // --- AccessManagementSystem ---
       AccessManagementSystem.grantAccess.selector,
-      AccessManagementSystem.revokeAccess.selector
+      AccessManagementSystem.revokeAccess.selector,
+      // --- EphemeralRecordSystem ---
+      EphemeralRecordSystem.emitEphemeralRecord.selector
     ];
 
     for (uint256 i = 0; i < functionSelectors.length; i++) {

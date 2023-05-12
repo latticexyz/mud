@@ -7,7 +7,20 @@
   </head>
   <body>
     <script type="module" src="/src/index.ts"></script>
-    <div>Counter: <span id="counter">??</span></div>
-    <button onclick="window.increment()">Increment</button>
+    <div>
+      <div>Counter: <span id="counter">0</span></div>
+      <button onclick="window.increment()">Increment</button>
+      <button onclick="window.willRevert()">Revert</button>
+    </div>
+
+    <div>
+      <h1>Live Chat</h1>
+      <textarea id="chat-output" cols="40" rows="10" readonly></textarea>
+      <br />
+      <form id="chat-form">
+        <input id="chat-input" type="text" />
+        <button onclick="window.sendMessage()">Send</button>
+      </form>
+    </div>
   </body>
 </html>

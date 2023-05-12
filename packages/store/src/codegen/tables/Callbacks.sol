@@ -99,6 +99,49 @@ library Callbacks {
     _store.setField(_tableId, _primaryKeys, 0, EncodeArray.encode((value)));
   }
 
+  /** Get the length of value */
+  function length(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 24;
+  }
+
+  /** Get the length of value (using the specified store) */
+  function length(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 24;
+  }
+
+  /** Get an item of value (unchecked, returns invalid data if index overflows) */
+  function getItem(bytes32 key, uint256 _index) internal view returns (bytes24) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      0,
+      getSchema(),
+      _index * 24,
+      (_index + 1) * 24
+    );
+    return (Bytes.slice24(_blob, 0));
+  }
+
+  /** Get an item of value (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItem(IStore _store, bytes32 key, uint256 _index) internal view returns (bytes24) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 0, getSchema(), _index * 24, (_index + 1) * 24);
+    return (Bytes.slice24(_blob, 0));
+  }
+
   /** Push an element to value */
   function push(bytes32 key, bytes24 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -154,6 +197,12 @@ library Callbacks {
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 
     return abi.encodePacked(_encodedLengths.unwrap(), EncodeArray.encode((value)));
+  }
+
+  /** Encode keys as a bytes32 array using this table's schema */
+  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
   }
 
   /* Delete all data for given keys */

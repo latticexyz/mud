@@ -23,7 +23,7 @@ import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { Systems } from "../src/modules/core/tables/Systems.sol";
 
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { IErrors } from "../src/interfaces/IErrors.sol";
+import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 import { Bool } from "./tables/Bool.sol";
 import { AddressArray } from "./tables/AddressArray.sol";
@@ -144,7 +144,11 @@ contract WorldTest is Test {
   function _expectAccessDenied(address caller, bytes16 namespace, bytes16 name) internal {
     vm.prank(caller);
     vm.expectRevert(
-      abi.encodeWithSelector(IErrors.AccessDenied.selector, ResourceSelector.from(namespace, name).toString(), caller)
+      abi.encodeWithSelector(
+        IWorldErrors.AccessDenied.selector,
+        ResourceSelector.from(namespace, name).toString(),
+        caller
+      )
     );
   }
 
@@ -179,7 +183,7 @@ contract WorldTest is Test {
 
     // Expect an error when registering an existing namespace
     vm.expectRevert(
-      abi.encodeWithSelector(IErrors.ResourceExists.selector, ResourceSelector.toString(bytes16("test")))
+      abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, ResourceSelector.toString(bytes16("test")))
     );
     world.registerNamespace("test");
   }
@@ -200,7 +204,7 @@ contract WorldTest is Test {
     assertEq(world.getSchema(tableSelector).unwrap(), schema.unwrap(), "schema should be registered");
 
     // Expect an error when registering an existing table
-    vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, tableSelector.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, tableSelector.toString()));
     world.registerTable(namespace, table, schema, defaultKeySchema);
 
     // Expect an error when registering a table in a namespace that is not owned by the caller
@@ -287,14 +291,14 @@ contract WorldTest is Test {
     assertEq(NamespaceOwner.get(world, "newNamespace"), address(this));
 
     // Expect an error when registering an existing system
-    vm.expectRevert(abi.encodeWithSelector(IErrors.SystemExists.selector, address(system)));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.SystemExists.selector, address(system)));
     world.registerSystem("", "newSystem", system, true);
 
     // Expect an error when registering a system at an existing resource selector
     System newSystem = new System();
 
     // Expect an error when registering a system at an existing resource selector
-    vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, resourceSelector.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector.toString()));
     resourceSelector = world.registerSystem("", "testSystem", newSystem, true);
 
     // Expect an error when registering a system in a namespace is not owned by the caller
@@ -315,14 +319,14 @@ contract WorldTest is Test {
     System system = new System();
 
     // Expect an error when trying to register a system at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, resourceSelector.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector.toString()));
     world.registerSystem("namespace", "name", system, false);
 
     // Register a new system
     resourceSelector = world.registerSystem("namespace2", "name", new System(), false);
 
     // Expect an error when trying to register a table at the same selector
-    vm.expectRevert(abi.encodeWithSelector(IErrors.ResourceExists.selector, resourceSelector.toString()));
+    vm.expectRevert(abi.encodeWithSelector(IWorldErrors.ResourceExists.selector, resourceSelector.toString()));
     world.registerTable("namespace2", "name", Bool.getSchema(), defaultKeySchema);
   }
 

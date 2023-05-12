@@ -1,4 +1,4 @@
-import { EntityID } from "@latticexyz/recs";
+import { Entity } from "@latticexyz/recs";
 
 export enum SyncState {
   CONNECTING,
@@ -6,7 +6,7 @@ export enum SyncState {
   LIVE,
 }
 
-export const SingletonID = "0x060d" as EntityID;
+export const SingletonID = "0x060d" as Entity;
 
 /** @deprecated Import SingletonID instead */
 export const GodID = SingletonID;

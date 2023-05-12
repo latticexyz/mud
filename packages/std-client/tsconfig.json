@@ -14,5 +14,5 @@
     "skipLibCheck": true,
     "jsx": "react-jsx"
   },
-  "exclude": ["dist"]
+  "include": ["src"]
 }

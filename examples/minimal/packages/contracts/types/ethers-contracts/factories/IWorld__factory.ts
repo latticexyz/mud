@@ -68,6 +68,11 @@ const _abi = [
     type: "error",
   },
   {
+    inputs: [],
+    name: "MyCustomError",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "string",
@@ -87,6 +92,96 @@ const _abi = [
       },
     ],
     name: "ResourceNotFound",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "length",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "received",
+        type: "uint256",
+      },
+    ],
+    name: "StoreCore_DataIndexOverflow",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "expected",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "received",
+        type: "uint256",
+      },
+    ],
+    name: "StoreCore_InvalidDataLength",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "expected",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "received",
+        type: "uint256",
+      },
+    ],
+    name: "StoreCore_InvalidFieldNamesLength",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "StoreCore_NotDynamicField",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "StoreCore_NotImplemented",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "tableId",
+        type: "bytes32",
+      },
+      {
+        internalType: "string",
+        name: "tableIdString",
+        type: "string",
+      },
+    ],
+    name: "StoreCore_TableAlreadyExists",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "tableId",
+        type: "bytes32",
+      },
+      {
+        internalType: "string",
+        name: "tableIdString",
+        type: "string",
+      },
+    ],
+    name: "StoreCore_TableNotFound",
     type: "error",
   },
   {
@@ -123,6 +218,31 @@ const _abi = [
       },
     ],
     name: "StoreDeleteRecord",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        indexed: false,
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        indexed: false,
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "StoreEphemeralRecord",
     type: "event",
   },
   {
@@ -254,6 +374,57 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes16",
+        name: "namespace",
+        type: "bytes16",
+      },
+      {
+        internalType: "bytes16",
+        name: "name",
+        type: "bytes16",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "emitEphemeralRecord",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    name: "emitEphemeralRecord",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
@@ -270,6 +441,84 @@ const _abi = [
       },
     ],
     name: "getField",
+    outputs: [
+      {
+        internalType: "bytes",
+        name: "data",
+        type: "bytes",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "uint8",
+        name: "schemaIndex",
+        type: "uint8",
+      },
+      {
+        internalType: "Schema",
+        name: "schema",
+        type: "bytes32",
+      },
+    ],
+    name: "getFieldLength",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "bytes32",
+        name: "table",
+        type: "bytes32",
+      },
+      {
+        internalType: "bytes32[]",
+        name: "key",
+        type: "bytes32[]",
+      },
+      {
+        internalType: "uint8",
+        name: "schemaIndex",
+        type: "uint8",
+      },
+      {
+        internalType: "Schema",
+        name: "schema",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint256",
+        name: "start",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "end",
+        type: "uint256",
+      },
+    ],
+    name: "getFieldSlice",
     outputs: [
       {
         internalType: "bytes",
@@ -857,6 +1106,19 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "string",
+        name: "message",
+        type: "string",
+      },
+    ],
+    name: "sendMessage",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes32",
         name: "table",
         type: "bytes32",
@@ -1088,7 +1350,14 @@ const _abi = [
     stateMutability: "nonpayable",
     type: "function",
   },
-];
+  {
+    inputs: [],
+    name: "willRevert",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+] as const;
 
 export class IWorld__factory {
   static readonly abi = _abi;

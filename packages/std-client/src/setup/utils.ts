@@ -14,23 +14,20 @@ import {
   World,
   Schema,
   Type,
-  EntityID,
   getComponentValue,
   removeComponent,
   setComponent,
-  EntityIndex,
   getComponentEntities,
   getComponentValueStrict,
   Component,
   updateComponent,
+  Entity,
 } from "@latticexyz/recs";
-import { toEthAddress } from "@latticexyz/utils";
+import { isDefined, toEthAddress } from "@latticexyz/utils";
 import { Component as SolecsComponent } from "@latticexyz/solecs";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.sol/Component.json";
 import { Contract, BigNumber, Signer } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import toLower from "lodash/toLower";
-import compact from "lodash/compact";
 import { IComputedValue } from "mobx";
 import { filter, map, Observable, Subject, timer } from "rxjs";
 import { DecodedNetworkComponentUpdate, DecodedSystemCall } from "./types";
@@ -41,7 +38,7 @@ export function createDecodeNetworkComponentUpdate<C extends Components>(
   mappings: Mappings<C>
 ): (update: NetworkComponentUpdate) => DecodedNetworkComponentUpdate | undefined {
   return (update: NetworkComponentUpdate) => {
-    const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
+    const entity = update.entity ?? world.registerEntity({ id: update.entity });
     const componentKey = mappings[update.component];
     const component = components[componentKey] as Component<Schema>;
 
@@ -52,7 +49,7 @@ export function createDecodeNetworkComponentUpdate<C extends Components>(
 
     return {
       ...update,
-      entity: entityIndex,
+      entity,
       component,
     };
   };
@@ -75,10 +72,10 @@ export function createSystemCallStreams<C extends Components, SystemTypes extend
     decodeAndEmitSystemCall: (systemCall: SystemCall<C>) => {
       const { tx } = systemCall;
 
-      const systemEntityIndex = world.entityToIndex.get(toLower(BigNumber.from(tx.to).toHexString()) as EntityID);
-      if (!systemEntityIndex) return;
+      const systemEntity = BigNumber.from(tx.to).toHexString().toLowerCase() as Entity;
+      if (!systemEntity) return;
 
-      const hashedSystemId = getComponentValue(systemsRegistry, systemEntityIndex)?.value;
+      const hashedSystemId = getComponentValue(systemsRegistry, systemEntity)?.value;
       if (!hashedSystemId) return;
 
       const { name, contract } = getSystemContract(hashedSystemId);
@@ -92,7 +89,7 @@ export function createSystemCallStreams<C extends Components, SystemTypes extend
 
       systemCallStreams[name].next({
         ...systemCall,
-        updates: compact(systemCall.updates.map(decodeNetworkComponentUpdate)),
+        updates: systemCall.updates.map(decodeNetworkComponentUpdate).filter(isDefined),
         systemId: name,
         args: decodedTx.args,
       });
@@ -107,8 +104,8 @@ export async function createEncoders(
 ) {
   const encoders = {} as Record<string, ReturnType<typeof createEncoder>>;
 
-  async function fetchAndCreateEncoder(entity: EntityIndex) {
-    const componentAddress = toEthAddress(world.entities[entity]);
+  async function fetchAndCreateEncoder(entity: Entity) {
+    const componentAddress = toEthAddress(entity);
     const componentId = getComponentValueStrict(components, entity).value;
     console.info("[SyncUtils] Creating encoder for " + componentAddress);
     const componentContract = new Contract(
@@ -158,7 +155,7 @@ export function applyNetworkUpdates<C extends Components>(
       if (isNetworkComponentUpdateEvent<C>(update)) {
         if (update.lastEventInTx) txReduced$.next(update.txHash);
 
-        const entityIndex = world.entityToIndex.get(update.entity) ?? world.registerEntity({ id: update.entity });
+        const entity = update.entity ?? world.registerEntity({ id: update.entity });
         const componentKey = mappings[update.component];
         if (!componentKey) {
           console.warn("Unknown component:", update);
@@ -168,12 +165,12 @@ export function applyNetworkUpdates<C extends Components>(
 
         // keep this logic aligned with CacheStore's storeEvent
         if (update.partialValue !== undefined) {
-          updateComponent(component, entityIndex, update.partialValue, update.initialValue);
+          updateComponent(component, entity, update.partialValue, update.initialValue);
         } else if (update.value === undefined) {
           // undefined value means component removed
-          removeComponent(component, entityIndex);
+          removeComponent(component, entity);
         } else {
-          setComponent(component, entityIndex, update.value);
+          setComponent(component, entity, update.value);
         }
       } else if (decodeAndEmitSystemCall && isSystemCallEvent(update)) {
         decodeAndEmitSystemCall(update);

@@ -1,6 +1,6 @@
 import { Result } from "@ethersproject/abi";
 import { ExternalProvider } from "@ethersproject/providers";
-import { Components, ComponentValue, EntityID, SchemaOf } from "@latticexyz/recs";
+import { Components, ComponentValue, Entity, SchemaOf } from "@latticexyz/recs";
 import { TxMetadata } from "@latticexyz/services/ecs-stream";
 import { Cached } from "@latticexyz/utils";
 import { BaseContract, BigNumber, ContractInterface } from "ethers";
@@ -88,9 +88,10 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
     value: ComponentValue<SchemaOf<C[key]>> | undefined;
     partialValue?: Partial<ComponentValue<SchemaOf<C[key]>>>;
     initialValue?: ComponentValue<SchemaOf<C[key]>>;
+    ephemeral?: boolean;
   };
 }[keyof C] & {
-  entity: EntityID;
+  entity: Entity;
   lastEventInTx: boolean;
   txHash: string;
   txMetadata?: TxMetadata;
@@ -118,8 +119,7 @@ export enum NetworkEvents {
   NetworkComponentUpdate = "NetworkComponentUpdate",
 }
 
-export type NetworkEvent<C extends Components = Components> = NetworkComponentUpdate<C> | SystemCall<C>;
-
+export type NetworkEvent<C extends Components = Components> = SystemCall<C> | NetworkComponentUpdate<C>;
 export function isSystemCallEvent<C extends Components>(e: NetworkEvent<C>): e is SystemCall<C> {
   return e.type === NetworkEvents.SystemCall;
 }
