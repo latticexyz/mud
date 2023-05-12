@@ -28,6 +28,10 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
   }
 
+  const initialBlockNumber = params.has("initialBlockNumber")
+    ? Number(params.get("initialBlockNumber"))
+    : world?.blockNumber ?? -1; // -1 will attempt to find the block number from RPC
+
   return {
     clock: {
       period: 1000,
@@ -44,10 +48,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
-    initialBlockNumber: params.has("initialBlockNumber")
-      ? Number(params.get("initialBlockNumber"))
-      : world?.blockNumber ?? -1, // -1 will attempt to find the block number from RPC
-    devMode: params.get("dev") === "true",
+    initialBlockNumber,
     disableCache: params.get("cache") === "false",
   };
 }
