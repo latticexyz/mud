@@ -26,8 +26,9 @@ type ChainConfig struct {
 
 // DbConfig defines the configuration for a database.
 type DbConfig struct {
-	Dsn  string `yaml:"dsn"`
-	Wipe bool   `yaml:"wipe"`
+	Dsn     string `yaml:"dsn"`
+	DsnGorm string `yaml:"dsnGorm"`
+	Wipe    bool   `yaml:"wipe"`
 }
 
 // SyncConfig defines the configuration for the synchronization process.
@@ -73,7 +74,7 @@ func FromFile(configFile string, logger *zap.Logger) (*Config, error) {
 
 // FromFlags parses the configuration from command-line flags.
 func FromFlags(
-	chainNames, chainIds, chainRpcsHttp, chainRpcsWs, dbDsn string,
+	chainNames, chainIds, chainRpcsHttp, chainRpcsWs, dbDsn, dbDsnGorm string,
 	dbWipe bool,
 	syncEnabled bool,
 	syncStartBlock, syncBlockBatchCount uint64,
@@ -82,8 +83,9 @@ func FromFlags(
 	config := &Config{
 		Chains: make([]ChainConfig, 0),
 		Db: DbConfig{
-			Dsn:  dbDsn,
-			Wipe: dbWipe,
+			Dsn:     dbDsn,
+			DsnGorm: dbDsnGorm,
+			Wipe:    dbWipe,
 		},
 		Sync: SyncConfig{
 			Enabled:         syncEnabled,

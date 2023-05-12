@@ -17,14 +17,16 @@ import (
 func RowFromDecodedData(decodedKeyData *storecore.DecodedData, decodedFieldData *storecore.DecodedData, tableSchema *mode.TableSchema) RowKV {
 	// Create a row for the table.
 	row := RowKV{}
-	// Add the keys.
-	for idx, key_name := range tableSchema.KeyNames {
-		row[key_name] = decodedKeyData.DataAt(idx)
+
+	// DecodedData has everything stored in a single values array. So we start the index at 0 and
+	// go to the length of the key/field names.
+	// First add the keys.
+	for index, key_name := range tableSchema.KeyNames {
+		row[key_name] = decodedKeyData.GetData(index)
 	}
 	// Add the fields.
-	for idx, field_name := range tableSchema.FieldNames {
-		row[field_name] = decodedFieldData.DataAt(idx)
+	for index, field_name := range tableSchema.FieldNames {
+		row[field_name] = decodedFieldData.GetData(index)
 	}
-
 	return row
 }

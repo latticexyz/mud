@@ -1,6 +1,6 @@
-import { StaticSchemaType } from "./StaticSchemaType";
-import { ArraySchemaType } from "./ArraySchemaType";
-import { SchemaType } from "./SchemaType";
+import { StaticSchemaType } from "../types/StaticSchemaType";
+import { ArraySchemaType } from "../types/ArraySchemaType";
+import { SchemaType } from "../SchemaType";
 
 export const SchemaTypeArrayToElement = {
   [SchemaType.UINT8_ARRAY]: SchemaType.UINT8,
@@ -105,5 +105,5 @@ export const SchemaTypeArrayToElement = {
   [SchemaType.BOOL_ARRAY]: SchemaType.BOOL,
   [SchemaType.ADDRESS_ARRAY]: SchemaType.ADDRESS,
 } as {
-  [K in SchemaType]: K extends ArraySchemaType ? StaticSchemaType : undefined;
+  [K in SchemaType]: K extends ArraySchemaType ? StaticSchemaType : never;
 };

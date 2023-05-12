@@ -23,6 +23,7 @@ export type DeployOptions = {
   rpc?: string;
   worldAddress?: string;
   srcDir?: string;
+  disableTxWait: boolean;
 };
 
 export const yDeployOptions = {
@@ -40,6 +41,7 @@ export const yDeployOptions = {
   rpc: { type: "string", desc: "The RPC URL to use. Defaults to the RPC url from the local foundry.toml" },
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
+  disableTxWait: { type: "boolean", desc: "Disable waiting for transactions to be confirmed.", default: false },
 } satisfies Record<keyof DeployOptions, Options>;
 
 export async function deployHandler(args: Parameters<(typeof commandModule)["handler"]>[0]) {

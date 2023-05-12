@@ -13,6 +13,7 @@
     "./codegen": "./dist/codegen.js",
     "./foundry": "./dist/foundry.js",
     "./type-utils": "./dist/type-utils.js",
+    "./utils": "./dist/utils.js",
     "./errors": "./dist/errors.js"
   },
   "typesVersions": {
@@ -25,6 +26,9 @@
       ],
       "type-utils": [
         "./src/type-utils/index.ts"
+      ],
+      "utils": [
+        "./src/utils/index.ts"
       ],
       "errors": [
         "./src/errors/index.ts"

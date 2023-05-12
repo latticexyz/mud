@@ -75,7 +75,7 @@ func (dataSchema *DataSchema) BuildTableSchemas() map[string]*TableSchema {
 // Returns:
 //   - (string): The fully-qualified table name.
 func (schema *TableSchema) NamespacedTableName() string {
-	return schema.Namespace + "." + schema.TableName
+	return schema.Namespace + `."` + schema.TableName + `"`
 }
 
 // GetEncodingTypes returns the encoding types for the specified field names and projections.

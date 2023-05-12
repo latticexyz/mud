@@ -92,6 +92,100 @@ After the initial setup, to quickly re-build and run the MODE service, you can u
 make mode run-mode
 ```
 
+#### MODE and MUD
+
+Certain parts of MODE depend on MUD, specifically the `storecore` package of MODE which allows us to work with data coming from MUD and perfom encoding/decodings between MUD SchemaTypes, Go types, and Postgres types when the data is store in the DB. If modifications are made to MUD StoreCore, MODE `storecore.go` needs to be re-generated. To do this, perform these steps:
+
+1. Get the latest MUD StoreCore abi and save it to a file, e.g. `storecore.json` or `storecore.abi`. It should look something like this
+
+```json
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "tableId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      }
+    ],
+    "name": "StoreDeleteRecord",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "tableId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint8",
+        "name": "schemaIndex",
+        "type": "uint8"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "StoreSetField",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "internalType": "bytes32",
+        "name": "tableId",
+        "type": "bytes32"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes32[]",
+        "name": "key",
+        "type": "bytes32[]"
+      },
+      {
+        "indexed": false,
+        "internalType": "bytes",
+        "name": "data",
+        "type": "bytes"
+      }
+    ],
+    "name": "StoreSetRecord",
+    "type": "event"
+  }
+]
+```
+
+2. Run the following command to generate the MODE `storecore.go` file:
+
+```bash
+abigen --abi storecore.abi --pkg storecore --out storecore.go
+```
+
+3. Copy the generated `storecore.go` file to the MODE `storecore` package. Alternatively, run the command in the storecore package directory and the file will overwrite the existing one.
+
 ## V1 Services
 
 ### [📄 Docs](./README.v1.md)

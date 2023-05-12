@@ -1,6 +1,9 @@
 package mode
 
-import "latticexyz/mud/packages/services/pkg/mode/storecore"
+import (
+	"latticexyz/mud/packages/services/pkg/mode/storecore"
+	"strings"
+)
 
 type DataSchemaTypePair struct {
 	SolidityType string `json:"solidity"`
@@ -16,6 +19,8 @@ type TableSchema struct {
 	SolidityTypes map[string]string `json:"solidity_types"` // Field name -> Solidity type
 	PostgresTypes map[string]string `json:"postgres_types"` // Field name -> Postgres type
 
+	IsKey map[string]bool `json:"is_key"` // Field name -> Is key?
+
 	// Auxiliary data about the table.
 	Namespace             string                  `json:"namespace"`
 	StoreCoreSchemaTypeKV *storecore.SchemaTypeKV `json:"store_core_schema_type_kv"`
@@ -29,4 +34,25 @@ type DataSchema struct {
 	ComponentValueSchema         map[string]map[string]DataSchemaTypePair `json:"component_value_schema"`
 	ComponentSolidityTypeMapping map[string]string                        `json:"component_solidity_type_mapping"`
 	ComponentDefaultSchema       map[string]DataSchemaTypePair            `json:"component_default_schema"`
+}
+
+func (t *TableSchema) String() string {
+	var str strings.Builder
+	str.WriteString("TableSchema{")
+	str.WriteString("TableId: " + t.TableId + ", ")
+	str.WriteString("TableName: " + t.TableName + ", ")
+	str.WriteString("FieldNames: " + strings.Join(t.FieldNames, ", ") + ", ")
+	str.WriteString("KeyNames: " + strings.Join(t.KeyNames, ", ") + ", ")
+	str.WriteString("SolidityTypes: {")
+	for k, v := range t.PostgresTypes {
+		str.WriteString(k + ": " + v + ", ")
+	}
+	str.WriteString("}, ")
+	str.WriteString("PostgresTypes: {")
+	for k, v := range t.PostgresTypes {
+		str.WriteString(k + ": " + v + ", ")
+	}
+	str.WriteString("}, ")
+	str.WriteString("Namespace: " + t.Namespace + ", ")
+	return str.String()
 }
