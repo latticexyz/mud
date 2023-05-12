@@ -4,12 +4,15 @@
  */
 export enum Type {
   Boolean,
+  OptionalBoolean,
   Number,
   OptionalNumber,
   BigInt,
   OptionalBigInt,
   String,
   OptionalString,
+  BooleanArray,
+  OptionalBooleanArray,
   NumberArray,
   OptionalNumberArray,
   BigIntArray,
@@ -42,6 +45,8 @@ export enum UpdateType {
  * Helper constant with all optional {@link Type}s.
  */
 export const OptionalTypes = [
+  Type.OptionalBoolean,
+  Type.OptionalBooleanArray,
   Type.OptionalEntity,
   Type.OptionalEntityArray,
   Type.OptionalNumber,
