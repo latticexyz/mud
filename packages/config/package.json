@@ -32,8 +32,8 @@
     "test": "tsc --noEmit"
   },
   "dependencies": {
-    "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/common": "workspace:*",
+    "@latticexyz/schema-type": "workspace:*",
     "chalk": "^5.2.0",
     "esbuild": "^0.17.15",
     "ethers": "^5.7.2",
