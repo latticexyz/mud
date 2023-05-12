@@ -119,7 +119,7 @@ export function defineContractComponents(world: World) {
         world,
         {
           length: RecsType.Number,
-          keys: RecsType.BigIntArray,
+          keys: RecsType.StringArray,
         },
         {
           metadata: {
