@@ -138,6 +138,7 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
   ecsEvents$: Observable<NetworkEvent<C>[]>,
   mappings: Mappings<C>,
   ack$: Subject<Ack>,
+  storeConfig: S,
   storeCache: ReturnType<typeof createDatabaseClient<S>>,
   decodeAndEmitSystemCall?: (event: SystemCall<C>) => void
 ) {
@@ -158,11 +159,26 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
       if (isNetworkComponentUpdateEvent<C>(update)) {
         if (update.lastEventInTx) txReduced$.next(update.txHash);
 
-        console.log("Network update", update);
+        // Apply network updates to store cache
+        const { namespace, table, key, value } = update;
 
-        // TODO: expose table id and namespace in the network update
-        // TODO: apply network updates to store cache
-        // storeCache.set(...)
+        // TODO: We should remove the `name` override from the table config and always use the key in the tables object as name
+        const tableConfig = storeConfig.tables[table];
+
+        // Apply network updates to cache store
+        if (!tableConfig || namespace !== storeConfig.namespace) {
+          // console.warn("Ignoring table config outside own mud config", update, storeConfig.namespace);
+        } else {
+          // `Object.getOwnPropertyNames` guarantees key order, `Object.keys` does not
+          const namedKey = nameKeys(key, Object.getOwnPropertyNames(tableConfig.primaryKeys));
+
+          if (value) {
+            const namedValue = nameKeys(value, Object.getOwnPropertyNames(tableConfig.schema));
+            storeCache.set(namespace, table, namedKey as any, namedValue as any);
+          } else {
+            storeCache.remove(namespace, table, namedKey as any);
+          }
+        }
 
         const entity = update.entity ?? world.registerEntity({ id: update.entity });
         const componentKey = mappings[update.component];
@@ -195,4 +211,12 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
     ackSub?.unsubscribe();
   });
   return { txReduced$: txReduced$.asObservable() };
+}
+
+function nameKeys(indexedRecord: Record<number, unknown>, keyNames: string[]) {
+  const namedRecord: Record<string, unknown> = {};
+  keyNames.forEach((key, index) => {
+    namedRecord[key] = indexedRecord[index];
+  });
+  return namedRecord;
 }

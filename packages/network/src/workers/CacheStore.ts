@@ -25,9 +25,10 @@ export function createCacheStore() {
   const blockNumber = 0;
   const state: State = new Map<number, ComponentValue>();
   const componentUpdate$ = new Subject<{ component: string; entity: Entity; blockNumber: number }>();
-  const keys: Record<number, unknown[]> = {};
+  const keys: Record<number, Record<string | number, unknown>> = {}; // Mapping from entity index to key tuple
+  const tables: Record<number, { namespace: string; table: string }> = {}; // Mapping from component index to namespace/table
 
-  return { components, componentToIndex, entities, entityToIndex, blockNumber, state, componentUpdate$, keys };
+  return { components, componentToIndex, entities, entityToIndex, blockNumber, state, componentUpdate$, keys, tables };
 }
 
 export function storeEvent<Cm extends Components>(
@@ -40,11 +41,13 @@ export function storeEvent<Cm extends Components>(
     initialValue,
     blockNumber,
     key,
+    namespace,
+    table,
   }: Omit<NetworkComponentUpdate<Cm>, "lastEventInTx" | "txHash">
 ) {
   const entityId = normalizeEntityID(entity);
 
-  const { components, entities, componentToIndex, entityToIndex, state, keys } = cacheStore;
+  const { components, entities, componentToIndex, entityToIndex, state, keys, tables } = cacheStore;
 
   // Get component index
   let componentIndex = componentToIndex.get(component);
@@ -61,7 +64,14 @@ export function storeEvent<Cm extends Components>(
   }
 
   // Store the key
-  if (key) keys[entityIndex] = key;
+  if (key) {
+    keys[entityIndex] = key;
+  }
+
+  // Store the namespace/table
+  if (namespace != null && table != null) {
+    tables[componentIndex] = { namespace, table };
+  }
 
   // Entity index gets the right 24 bits, component index the left 8 bits
   const cacheKey = packTuple([componentIndex, entityIndex]);
@@ -100,12 +110,14 @@ export function getCacheStoreEntries<Cm extends Components>({
   components,
   entities,
   keys,
+  tables,
 }: CacheStore): IterableIterator<NetworkComponentUpdate<Cm>> {
   return transformIterator(state.entries(), ([cacheKey, value]) => {
     const [componentIndex, entityIndex] = unpackTuple(cacheKey);
     const component = components[componentIndex];
     const entity = entities[entityIndex];
     const key = keys[entityIndex];
+    const { namespace, table } = tables[componentIndex];
 
     if (component == null || entity == null) {
       throw new Error(`Unknown component / entity: ${component}, ${entity}`);
@@ -116,6 +128,8 @@ export function getCacheStoreEntries<Cm extends Components>({
       component,
       entity: entity as Entity,
       value: value as ComponentValue<SchemaOf<Cm[keyof Cm]>>,
+      namespace,
+      table,
       key,
       lastEventInTx: false,
       txHash: "cache",
@@ -159,6 +173,7 @@ export async function loadIndexDbCacheStore(cache: ECSCache): Promise<CacheStore
   const components = (await cache.get("Mappings", "components")) ?? [];
   const entities = (await cache.get("Mappings", "entities")) ?? [];
   const keys = (await cache.get("Keys", "current")) ?? {};
+  const tables = (await cache.get("Tables", "current")) ?? {};
   const componentToIndex = new Map<string, number>();
   const entityToIndex = new Map<string, number>();
   const componentUpdate$ = new Subject<{ component: string; entity: Entity; blockNumber: number }>();
@@ -173,7 +188,7 @@ export async function loadIndexDbCacheStore(cache: ECSCache): Promise<CacheStore
     entityToIndex.set(entities[i], i);
   }
 
-  return { state, blockNumber, components, entities, componentToIndex, entityToIndex, componentUpdate$, keys };
+  return { state, blockNumber, components, entities, componentToIndex, entityToIndex, componentUpdate$, keys, tables };
 }
 
 export async function getIndexDBCacheStoreBlockNumber(cache: ECSCache): Promise<number> {
@@ -186,10 +201,11 @@ export function getIndexDbECSCache(chainId: number, worldAddress: string, versio
     BlockNumber: number;
     Mappings: string[];
     Snapshot: ECSStateReply;
-    Keys: Record<number, unknown[]>;
+    Keys: Record<number, Record<string | number, unknown>>;
+    Tables: Record<number, { namespace: string; table: string }>;
   }>(
     getCacheId("ECSCache", chainId, worldAddress), // Store a separate cache for each World contract address
-    ["ComponentValues", "BlockNumber", "Mappings", "Snapshot", "Keys"],
+    ["ComponentValues", "BlockNumber", "Mappings", "Snapshot", "Keys", "Tables"],
     version,
     idb
   );

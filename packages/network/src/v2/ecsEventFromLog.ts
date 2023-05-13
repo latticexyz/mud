@@ -33,6 +33,8 @@ export const ecsEventFromLog = async (
     txHash: transactionHash,
     logIndex,
     lastEventInTx,
+    namespace: tableId.namespace,
+    table: tableId.name,
   } satisfies NetworkComponentUpdate;
 
   if (name === "StoreSetRecord") {

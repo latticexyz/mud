@@ -7,23 +7,26 @@ import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import storeConfig from "../../../contracts/mud.config";
+import { config } from "../../../contracts/mud.config";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
 export async function setup() {
   const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
-  const result = await setupMUDV2Network<typeof contractComponents, typeof storeConfig>({
+  const result = await setupMUDV2Network<typeof contractComponents, typeof config>({
     networkConfig,
     world,
     contractComponents,
     syncThread: "main",
-    storeConfig,
+    storeConfig: config,
     worldAbi: IWorld__factory.abi,
   });
 
   result.startSync();
+  result.storeCache.tables.CounterTable.subscribe((update) => {
+    console.log("GOT COUNTER TABLE UPDATE", update);
+  });
 
   // Request drip from faucet
   const signer = result.network.signer.get();

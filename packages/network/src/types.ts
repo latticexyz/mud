@@ -92,7 +92,9 @@ export type NetworkComponentUpdate<C extends Components = Components> = {
   };
 }[keyof C] & {
   entity: Entity;
-  key?: Record<string, unknown>;
+  namespace: string;
+  table: string;
+  key: Record<string, unknown>;
   lastEventInTx: boolean;
   txHash: string;
   txMetadata?: TxMetadata;

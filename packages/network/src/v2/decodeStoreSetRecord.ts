@@ -32,7 +32,6 @@ export async function decodeStoreSetRecord(
   const { keySchema, valueSchema } = await registerSchema(contract, table);
   const indexedValues = decodeData(valueSchema, data);
   const indexedKey = decodeKeyTuple(keySchema, keyTuple);
-  console.log("indexed key", indexedKey);
 
   if (table.toHexString() === metadataTableId.toHexString()) {
     const [tableForMetadata, ...otherKeys] = keyTuple;
@@ -54,7 +53,6 @@ export async function decodeStoreSetRecord(
     for (const [index, fieldName] of fieldNames.entries()) {
       namedValues[fieldName] = indexedValues[index];
     }
-    // TODO: add named key
 
     return {
       indexedValues,

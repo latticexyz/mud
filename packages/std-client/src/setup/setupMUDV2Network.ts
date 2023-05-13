@@ -169,7 +169,7 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
   const db = createDatabase();
   const storeCache = createDatabaseClient(db, storeConfig);
 
-  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$, storeCache);
+  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$, storeConfig, storeCache);
 
   const encoders = networkConfig.encoders
     ? createEncoders(world, ComponentsRegistry, signerOrProvider)

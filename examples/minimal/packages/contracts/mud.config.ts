@@ -1,14 +1,16 @@
 // TODO: using mudConfig breaks the ability to import this in the browser
-// import { mudConfig } from "@latticexyz/world/register";
+import { mudConfig } from "@latticexyz/world/register";
 import { resolveTableId } from "@latticexyz/config";
 import { MUDUserConfig } from "@latticexyz/store";
 import { ExpandMUDUserConfig } from "@latticexyz/store/register";
 
+// TODO: actually expand the config
 function defineConfig<T extends MUDUserConfig>(config: T): ExpandMUDUserConfig<T> {
   return config as any;
 }
 
-export default defineConfig({
+export const config = defineConfig({
+  namespace: "",
   overrideSystems: {
     IncrementSystem: {
       name: "increment",
@@ -17,7 +19,7 @@ export default defineConfig({
   },
   tables: {
     CounterTable: {
-      name: "counter",
+      primaryKeys: { key: "bytes32" },
       schema: {
         value: "uint32",
       },
@@ -47,3 +49,5 @@ export default defineConfig({
     },
   ],
 });
+
+// export default mudConfig(config);
