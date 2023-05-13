@@ -35,6 +35,7 @@ export const ecsEventFromLog = async (
     lastEventInTx,
     namespace: tableId.namespace,
     table: tableId.name,
+    key: {},
   } satisfies NetworkComponentUpdate;
 
   if (name === "StoreSetRecord") {

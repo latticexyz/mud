@@ -24,9 +24,6 @@ export async function setup() {
   });
 
   result.startSync();
-  result.storeCache.tables.CounterTable.subscribe((update) => {
-    console.log("GOT COUNTER TABLE UPDATE", update);
-  });
 
   // Request drip from faucet
   const signer = result.network.signer.get();

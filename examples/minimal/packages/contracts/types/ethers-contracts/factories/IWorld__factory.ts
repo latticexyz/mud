@@ -1280,6 +1280,13 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "setTestTable",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "bytes32",

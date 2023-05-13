@@ -7,6 +7,7 @@ export const App = () => {
     components: { CounterTable, MessageTable },
     singletonEntity,
     worldSend,
+    storeCache,
   } = useMUD();
 
   const counter = useComponentValue(CounterTable, singletonEntity);
@@ -14,6 +15,10 @@ export const App = () => {
   const [myMessage, setMyMessage] = useState<string>("");
   const [messages, setMessages] = useState<string[]>([]);
   const message = useComponentValue(MessageTable, singletonEntity);
+
+  useEffect(() => {
+    storeCache.tables.TestTable.subscribe((update) => console.log("got update from test table", update));
+  }, [storeCache]);
 
   useEffect(() => {
     if (!message?.value) return;
@@ -36,6 +41,17 @@ export const App = () => {
         }}
       >
         Increment
+      </button>{" "}
+      <button
+        type="button"
+        onClick={async () => {
+          const tx = await worldSend("setTestTable", []);
+
+          console.log("setTestTable tx", tx);
+          console.log("setTestTable result", await tx.wait());
+        }}
+      >
+        Set test table
       </button>{" "}
       <button
         type="button"

@@ -9,4 +9,6 @@ interface IIncrementSystem {
   function increment() external returns (uint32);
 
   function willRevert() external;
+
+  function setTestTable() external;
 }
