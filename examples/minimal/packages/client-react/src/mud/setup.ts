@@ -7,7 +7,6 @@ import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import mudConfig from "../../../contracts/mud.config";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
@@ -21,8 +20,6 @@ export async function setup() {
     syncThread: "main",
     worldAbi: IWorld__factory.abi,
   });
-
-  console.log(mudConfig);
 
   result.startSync();
 
