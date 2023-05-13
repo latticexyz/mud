@@ -301,6 +301,19 @@ export async function deploy(
 
   // Await all promises before executing PostDeploy script
   await Promise.all(promises); // ----------------------------------------------------------------------------------------------
+
+  // Confirm the current nonce is the expected nonce to make sure all transactions have been included
+  let remoteNonce = await signer.getTransactionCount();
+  while (remoteNonce !== nonce) {
+    console.log(
+      chalk.gray(
+        `Waiting for transactions to be included before executing ${postDeployScript} (local nonce: ${nonce}, remote nonce: ${remoteNonce})`
+      )
+    );
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    remoteNonce = await signer.getTransactionCount();
+  }
+
   promises = [];
 
   // Execute postDeploy forge script
