@@ -175,6 +175,7 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
           // `Object.getOwnPropertyNames` guarantees key order, `Object.keys` does not
           const namedKey = nameKeys(key, Object.getOwnPropertyNames(tableConfig.primaryKeys));
 
+          // StoreCache handles setting partial value and initializing with default values
           const value = update.value ?? update.partialValue;
           if (value) {
             const namedValue = nameKeys(value, Object.getOwnPropertyNames(tableConfig.schema));
