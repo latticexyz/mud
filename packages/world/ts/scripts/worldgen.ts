@@ -3,7 +3,8 @@ import path, { basename } from "path";
 import { rmSync } from "fs";
 import { loadConfig } from "@latticexyz/config/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
-import { WorldConfig, worldgen } from "../library";
+import { WorldConfig } from "../library";
+import { worldgen } from "../cli";
 import { StoreConfig } from "@latticexyz/store";
 
 // TODO dedupe this and cli's worldgen command
