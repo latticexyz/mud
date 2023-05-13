@@ -162,13 +162,16 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
         // Apply network updates to store cache
         const { namespace, table, key, value } = update;
 
-        // TODO: We should remove the `name` override from the table config and always use the key in the tables object as name
         const tableConfig = storeConfig.tables[table];
 
         // Apply network updates to cache store
         if (!tableConfig || namespace !== storeConfig.namespace) {
           // console.warn("Ignoring table config outside own mud config", update, storeConfig.namespace);
         } else {
+          // TODO: key names are not yet part of the on-chain table metadata, so we have to
+          // load them from the local mud.config (and have to ignore all tables that are not
+          // defined in the local mud config)
+
           // `Object.getOwnPropertyNames` guarantees key order, `Object.keys` does not
           const namedKey = nameKeys(key, Object.getOwnPropertyNames(tableConfig.primaryKeys));
 
