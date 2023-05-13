@@ -11,6 +11,7 @@ const config = mudConfig({
     MultiKey: { primaryKeys: { first: "bytes32", second: "uint32" }, schema: "int32" },
     EnumTable: { primaryKeys: { first: "Enum1" }, schema: "Enum2" },
     MultiTable: { schema: { arr: "int32[]", str: "string", bts: "bytes" } },
+    BigInt: { primaryKeys: { first: "uint256" }, schema: "uint256" },
   },
   enums: {
     Enum1: ["A1", "A2"],
@@ -360,5 +361,31 @@ describe("createDatabaseClient", () => {
     expect(mock).toHaveBeenCalledTimes(2);
     expect(mock).toHaveBeenNthCalledWith(1, [{ set: [{ key, value }], remove: [], table, namespace }]);
     expect(mock).toHaveBeenNthCalledWith(2, [{ set: [], remove: [{ key }], table, namespace }]);
+  });
+
+  // Requires bigint keys to be supported by `tuple-database`, see https://github.com/ccorcos/tuple-database/issues/2
+  // For now we serialize bigints to use them as keys, which changes the comparison (eg. 2n < 10n but "2n" > "10n")
+  it.skip("should be possible to filter based on bigint keys", () => {
+    const mock = vi.fn();
+
+    // Subscribe to key values larger than 10n
+    tables.BigInt.subscribe(mock, { key: { gt: { first: 10n } } });
+
+    // Set a couple values on various keys
+    tables.BigInt.set({ first: 1n }, { value: 1n }); // should not be subscribed to
+    tables.BigInt.set({ first: 2n }, { value: 2n }); // should not be subscribed to
+    tables.BigInt.set({ first: 10n }, { value: 10n }); // should not be subscribed to
+    tables.BigInt.set({ first: 11n }, { value: 11n }); // should be subscribed to
+
+    // Expect mock to only have been called with keys greater than 10n
+    expect(mock).toHaveBeenCalledTimes(1);
+    expect(mock).toHaveBeenNthCalledWith(1, [
+      {
+        set: [{ key: { first: 11n }, value: { value: 11n } }],
+        remove: [],
+        table: "BigInt",
+        namespace: config.namespace,
+      },
+    ]);
   });
 });
