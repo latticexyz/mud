@@ -10,7 +10,7 @@ const templateRoot = resolve(__dirname, "..", "dist", "templates");
 
 create("create-mud", {
   templateRoot,
-  defaultTemplate: "minimal",
+  defaultTemplate: "vanilla",
   // templates use pnpm workspaces, so default to that for now
   // not sure if it's worth trying to support multiple kinds of package managers for monorepos, given the tooling is so different
   defaultPackageManager: "pnpm",

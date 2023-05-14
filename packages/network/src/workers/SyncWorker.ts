@@ -56,6 +56,7 @@ import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";
 import { getModeBlockNumber } from "../v2/mode/getModeBlockNumber";
 import { transformTableRecordsIntoEvents } from "../v2/transformTableRecordsIntoEvents";
 import * as devObservables from "../dev/observables";
+import { getEventSelector } from "viem";
 
 const debug = parentDebug.extend("SyncWorker");
 
@@ -138,7 +139,6 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       chainId,
       worldContract,
       provider: { options: providerOptions },
-      initialBlockNumber,
       fetchSystemCalls,
       disableCache,
       initialRecords,
@@ -226,6 +226,16 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     this.setLoadingState({ percentage: 50 });
     const snapshotBlockNumber = await getSnapshotBlockNumber(snapshotClient, worldContract.address);
     const modeBlockNumber = modeClient ? await getModeBlockNumber(modeClient, chainId) : -1;
+
+    let initialBlockNumber = config.initialBlockNumber;
+    if (initialBlockNumber < 0) {
+      const worldDeployLogs = await provider.getLogs({
+        address: worldContract.address,
+        topics: [getEventSelector("event HelloWorld()")],
+        fromBlock: "earliest",
+      });
+      initialBlockNumber = worldDeployLogs.length > 0 ? worldDeployLogs[0].blockNumber : 0;
+    }
 
     this.setLoadingState({ percentage: 100 });
     debug(

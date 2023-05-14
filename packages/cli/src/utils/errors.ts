@@ -2,7 +2,7 @@ import chalk from "chalk";
 import { ZodError } from "zod";
 import { fromZodError, ValidationError } from "zod-validation-error";
 import { NotInsideProjectError } from "@latticexyz/config";
-import { MUDError } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/common/errors";
 
 export function logError(error: unknown) {
   if (error instanceof ValidationError) {

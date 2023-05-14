@@ -1,9 +1,10 @@
 import { SetupContractConfig, getBurnerWallet } from "@latticexyz/std-client";
-
+import { foundry } from "@wagmi/chains";
 import latticeTestnet from "./supportedChains/latticeTestnet";
-import latestLatticeTestnetDeploy from "contracts/deploys/4242/latest.json";
-import localhost from "./supportedChains/localhost";
-import latestLocalhostDeploy from "contracts/deploys/31337/latest.json";
+import { MudChain } from "./supportedChains/types";
+import worldsJson from "contracts/worlds.json";
+
+const worlds = worldsJson as Partial<Record<string, { address: string; blockNumber?: number }>>;
 
 type NetworkConfig = SetupContractConfig & {
   privateKey: string;
@@ -14,9 +15,7 @@ type NetworkConfig = SetupContractConfig & {
 export async function getNetworkConfig(): Promise<NetworkConfig> {
   const params = new URLSearchParams(window.location.search);
 
-  const supportedChains = [localhost, latticeTestnet];
-  const deploys = [latestLocalhostDeploy, latestLatticeTestnetDeploy];
-
+  const supportedChains: MudChain[] = [foundry, latticeTestnet];
   const chainId = Number(params.get("chainId") || import.meta.env.VITE_CHAIN_ID || 31337);
   const chainIndex = supportedChains.findIndex((c) => c.id === chainId);
   const chain = supportedChains[chainIndex];
@@ -24,15 +23,15 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     throw new Error(`Chain ${chainId} not found`);
   }
 
-  const deploy = deploys[chainIndex];
-  if (!deploy) {
-    throw new Error(`No deployment found for chain ${chainId}. Did you run \`mud deploy\`?`);
+  const world = worlds[chain.id.toString()];
+  const worldAddress = params.get("worldAddress") || world?.address;
+  if (!worldAddress) {
+    throw new Error(`No world address found for chain ${chainId}. Did you run \`mud deploy\`?`);
   }
 
-  const worldAddress = params.get("worldAddress") || deploy.worldAddress;
-  if (!worldAddress) {
-    throw new Error("No world address provided");
-  }
+  const initialBlockNumber = params.has("initialBlockNumber")
+    ? Number(params.get("initialBlockNumber"))
+    : world?.blockNumber ?? -1; // -1 will attempt to find the block number from RPC
 
   return {
     clock: {
@@ -50,8 +49,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     modeUrl: params.get("mode") ?? chain.modeUrl,
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
-    initialBlockNumber: Number(params.get("initialBlockNumber")) || deploy.blockNumber || 0,
-    devMode: params.get("dev") === "true",
+    initialBlockNumber,
     snapSync: params.get("snapSync") === "true",
     disableCache: params.get("cache") === "false",
   };

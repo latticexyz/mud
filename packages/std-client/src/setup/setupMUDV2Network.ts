@@ -30,7 +30,7 @@ type SetupMUDV2NetworkOptions<C extends ContractComponents> = {
   initialGasPrice?: number;
   fetchSystemCalls?: boolean;
   syncThread?: "main" | "worker";
-  worldAbi?: Abi; // TODO: should this extend IWorldKernel ABI or a subset of?
+  worldAbi: Abi; // TODO: should this extend IWorldKernel ABI or a subset of?
 };
 
 export async function setupMUDV2Network<C extends ContractComponents>({
@@ -157,7 +157,7 @@ export async function setupMUDV2Network<C extends ContractComponents>({
         ...syncWorkerConfig,
         provider: providerConfig,
         worldContract: contractsConfig.World,
-        initialBlockNumber: initialBlockNumber ?? networkConfig.initialBlockNumber ?? 0,
+        initialBlockNumber: initialBlockNumber ?? networkConfig.initialBlockNumber,
         disableCache: networkConfig.disableCache, // Disable cache on local networks (hardhat / anvil)
         fetchSystemCalls,
         initialRecords,
