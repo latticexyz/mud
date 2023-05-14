@@ -2,7 +2,7 @@
 solc_version = "0.8.13"
 ffi = false
 fuzz_runs = 256
-optimizer = false
+optimizer = true
 optimizer_runs = 3000
 verbosity = 1
 src = "src"
