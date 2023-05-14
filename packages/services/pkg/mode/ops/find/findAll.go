@@ -77,7 +77,7 @@ func (builder *FindAllBuilder) ToSQLQueryList() (queries []string, tableNameList
 
 	for _, tableName := range builder.TableList() {
 		var query strings.Builder
-		query.WriteString("SELECT * FROM " + builder.QueryNamespace + "." + tableName)
+		query.WriteString("SELECT * FROM " + builder.QueryNamespace + ".\"" + tableName + "\"")
 		// Handle the internal schema table specially. The schemas are stored all in one
 		// table even though for different namespaces (i.e. different worlds), so we need
 		// to filter by namespace.

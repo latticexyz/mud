@@ -12,8 +12,6 @@ import (
 	"math/big"
 	"strconv"
 
-	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
-
 	"github.com/avast/retry-go"
 	"github.com/ethereum/go-ethereum"
 	"github.com/ethereum/go-ethereum/common"
@@ -183,7 +181,7 @@ func (il *IngressLayer) Sync(startBlockNumber *big.Int, endBlockNumber *big.Int)
 	// Get the block number that the state is currently at.
 	currentBlockNumber, err := il.rl.GetBlockNumber(il.chainConfig.Id)
 	if err != nil {
-		il.logger.Fatal("failed to get current block number", zap.Error(err))
+		il.logger.Error("failed to get current block number", zap.Error(err))
 	}
 
 	// If the current block number is greater than the start block number, then set the start block number to the current block number.
@@ -232,10 +230,13 @@ func (il *IngressLayer) UpdateBlockNumber(chainId string, blockNumber *big.Int) 
 	// Build the row to update or insert (contains the block number).
 	row := write.RowKV{
 		"block_number": blockNumber.String(),
+		"chain_id":     chainId,
 	}
 	// Insert the block number into the database.
 	tableSchema := schema.Internal__BlockNumberTableSchema(chainId)
-	err := il.wl.UpdateOrInsertRow(tableSchema, row, []*pb_mode.Filter{})
+	err := il.wl.UpdateOrInsertRow(tableSchema, row, map[string]interface{}{
+		"chain_id": chainId,
+	})
 	if err != nil {
 		il.logger.Error("failed to update or insert block number", zap.Error(err))
 	}
@@ -255,11 +256,14 @@ func (il *IngressLayer) UpdateSyncStatus(chainId string, syncing bool) {
 
 	// Build the row to update or insert (contains the syncing status).
 	row := write.RowKV{
-		"syncing": strconv.FormatBool(syncing),
+		"syncing":  strconv.FormatBool(syncing),
+		"chain_id": chainId,
 	}
 	// Insert the syncing status into the database.
 	tableSchema := schema.Internal__SyncStatusTableSchema(chainId)
-	err := il.wl.UpdateOrInsertRow(tableSchema, row, []*pb_mode.Filter{})
+	err := il.wl.UpdateOrInsertRow(tableSchema, row, map[string]interface{}{
+		"chain_id": chainId,
+	})
 	if err != nil {
 		il.logger.Error("failed to update or insert syncing status", zap.Error(err))
 	}

@@ -80,6 +80,8 @@ export interface WorldUserConfig {
   postDeployScript?: string;
   /** Directory to write the deployment info to (Default "./deploys") */
   deploysDirectory?: string;
+  /** JSON file to write to with chain -> latest world deploy address (Default "./worlds.json") */
+  worldsFile?: string;
   /** Directory to output system and world interfaces of `worldgen` (Default "world") */
   worldgenDirectory?: string;
   /** Path for world package imports. Default is "@latticexyz/world/src/" */

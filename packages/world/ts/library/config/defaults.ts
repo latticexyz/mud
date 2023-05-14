@@ -11,6 +11,7 @@ export const WORLD_DEFAULTS = {
   excludeSystems: [] as string[],
   postDeployScript: "PostDeploy",
   deploysDirectory: "./deploys",
+  worldsFile: "./worlds.json",
   worldgenDirectory: "world",
   worldImportPath: "@latticexyz/world/src/",
   modules: [] as [],
