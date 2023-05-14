@@ -13,7 +13,7 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
-import { union } from "../src/modules/keysintable/query.sol";
+import { intersection, union } from "../src/modules/keysintable/query.sol";
 
 contract queryTest is Test {
   using ResourceSelector for bytes32;
@@ -49,7 +49,7 @@ contract queryTest is Test {
     world.installRootModule(keysInTableModule, abi.encode(tableB));
   }
 
-  function testQuerySingleTable(bytes32[2] memory keys, uint256[2] memory values) public {
+  function testUnionSingleTable(bytes32[2] memory keys, uint256[2] memory values) public {
     vm.assume(keys[0] != keys[1]);
 
     _installKeysInTableModule();
@@ -86,7 +86,7 @@ contract queryTest is Test {
     }
   }
 
-  function testQueryTwoTables21(bytes32[2] memory keys, uint256[2] memory values) public {
+  function testUnionTwoTables21(bytes32[2] memory keys, uint256[2] memory values) public {
     vm.assume(keys[0] != keys[1]);
 
     _installKeysInTableModule();
@@ -112,7 +112,7 @@ contract queryTest is Test {
     assertEq(keyTuples[1][0], keys[0]);
   }
 
-  function testQueryTwoTables12(bytes32[2] memory keys, uint256[2] memory values) public {
+  function testUnionTwoTables12(bytes32[2] memory keys, uint256[2] memory values) public {
     vm.assume(keys[0] != keys[1]);
 
     _installKeysInTableModule();
@@ -138,7 +138,7 @@ contract queryTest is Test {
     assertEq(keyTuples[1][0], keys[1]);
   }
 
-  function testQueryTwoTables22(bytes32[2] memory keys, uint256[2] memory values) public {
+  function testUnionTwoTables22(bytes32[2] memory keys, uint256[2] memory values) public {
     vm.assume(keys[0] != keys[1]);
 
     _installKeysInTableModule();
@@ -159,6 +159,121 @@ contract queryTest is Test {
     world.setRecord(namespace, nameB, keyTuple2, abi.encodePacked(values[1]));
 
     bytes32[][] memory keyTuples = union(world, tableIds);
+
+    // Assert that the list is the union of both tables keys
+    assertEq(keyTuples.length, 2);
+    assertEq(keyTuples[0][0], keys[0]);
+    assertEq(keyTuples[1][0], keys[1]);
+  }
+
+  function testIntersectionSingleTable(bytes32[2] memory keys, uint256[2] memory values) public {
+    vm.assume(keys[0] != keys[1]);
+
+    _installKeysInTableModule();
+
+    bytes32[] memory keyTuple1 = new bytes32[](1);
+    keyTuple1[0] = keys[0];
+    bytes32[] memory keyTuple2 = new bytes32[](1);
+    keyTuple2[0] = keys[1];
+
+    // Set a value in the source table
+    world.setRecord(namespace, nameA, keyTuple1, abi.encodePacked(values[0]));
+
+    bytes32[] memory tableIds = new bytes32[](1);
+    tableIds[0] = tableA;
+
+    bytes32[][] memory keyTuples = union(world, tableIds);
+
+    // Assert that the list includes all the keys in the table
+    assertEq(keyTuples.length, 1);
+    for (uint256 i; i < 1; i++) {
+      assertEq(keyTuples[i][0], keys[i]);
+    }
+
+    // Set another key with a different value
+    world.setRecord(namespace, nameA, keyTuple2, abi.encodePacked(values[1]));
+
+    // Get the list of keys in the target table
+    keyTuples = intersection(world, tableIds);
+
+    // Assert that the list includes all the keys in the table
+    assertEq(keyTuples.length, 2);
+    for (uint256 i; i < 2; i++) {
+      assertEq(keyTuples[i][0], keys[i]);
+    }
+  }
+
+  function testIntersectionTwoTables21(bytes32[2] memory keys, uint256[2] memory values) public {
+    vm.assume(keys[0] != keys[1]);
+
+    _installKeysInTableModule();
+
+    bytes32[] memory keyTuple1 = new bytes32[](1);
+    keyTuple1[0] = keys[0];
+    bytes32[] memory keyTuple2 = new bytes32[](1);
+    keyTuple2[0] = keys[1];
+
+    bytes32[] memory tableIds = new bytes32[](2);
+    tableIds[0] = tableA;
+    tableIds[1] = tableB;
+
+    world.setRecord(namespace, nameA, keyTuple1, abi.encodePacked(values[0]));
+    world.setRecord(namespace, nameA, keyTuple2, abi.encodePacked(values[1]));
+    world.setRecord(namespace, nameB, keyTuple1, abi.encodePacked(values[0]));
+
+    bytes32[][] memory keyTuples = intersection(world, tableIds);
+
+    // Assert that the list is the union of both tables keys
+    assertEq(keyTuples.length, 1);
+    assertEq(keyTuples[0][0], keys[0]);
+  }
+
+  function testIntersectionTwoTables12(bytes32[2] memory keys, uint256[2] memory values) public {
+    vm.assume(keys[0] != keys[1]);
+
+    _installKeysInTableModule();
+
+    bytes32[] memory keyTuple1 = new bytes32[](1);
+    keyTuple1[0] = keys[0];
+    bytes32[] memory keyTuple2 = new bytes32[](1);
+    keyTuple2[0] = keys[1];
+
+    bytes32[] memory tableIds = new bytes32[](2);
+    tableIds[0] = tableA;
+    tableIds[1] = tableB;
+
+    world.setRecord(namespace, nameA, keyTuple1, abi.encodePacked(values[0]));
+    world.setRecord(namespace, nameB, keyTuple1, abi.encodePacked(values[0]));
+    world.setRecord(namespace, nameB, keyTuple2, abi.encodePacked(values[1]));
+
+    bytes32[][] memory keyTuples = intersection(world, tableIds);
+
+    // Assert that the list is the union of both tables keys
+    assertEq(keyTuples.length, 1);
+    assertEq(keyTuples[0][0], keys[0]);
+  }
+
+  function testIntersectionTwoTables22(bytes32[2] memory keys, uint256[2] memory values) public {
+    vm.assume(keys[0] != keys[1]);
+
+    _installKeysInTableModule();
+
+    bytes32[] memory keyTuple1 = new bytes32[](1);
+    keyTuple1[0] = keys[0];
+    bytes32[] memory keyTuple2 = new bytes32[](1);
+    keyTuple2[0] = keys[1];
+
+    bytes32[] memory tableIds = new bytes32[](2);
+    tableIds[0] = tableA;
+    tableIds[1] = tableB;
+
+    // Set both keys in both tables
+    world.setRecord(namespace, nameA, keyTuple1, abi.encodePacked(values[0]));
+    world.setRecord(namespace, nameA, keyTuple2, abi.encodePacked(values[1]));
+    world.setRecord(namespace, nameB, keyTuple1, abi.encodePacked(values[0]));
+    world.setRecord(namespace, nameB, keyTuple2, abi.encodePacked(values[1]));
+
+    bytes32[][] memory keyTuples = intersection(world, tableIds);
 
     // Assert that the list is the union of both tables keys
     assertEq(keyTuples.length, 2);
