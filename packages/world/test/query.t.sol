@@ -223,7 +223,7 @@ contract queryTest is Test {
 
     bytes32[][] memory keyTuples = intersection(world, tableIds);
 
-    // Assert that the list is the union of both tables keys
+    // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 1);
     assertEq(keyTuples[0][0], keys[0]);
   }
@@ -248,7 +248,7 @@ contract queryTest is Test {
 
     bytes32[][] memory keyTuples = intersection(world, tableIds);
 
-    // Assert that the list is the union of both tables keys
+    // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 1);
     assertEq(keyTuples[0][0], keys[0]);
   }
@@ -275,7 +275,7 @@ contract queryTest is Test {
 
     bytes32[][] memory keyTuples = intersection(world, tableIds);
 
-    // Assert that the list is the union of both tables keys
+    // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 2);
     assertEq(keyTuples[0][0], keys[0]);
     assertEq(keyTuples[1][0], keys[1]);
