@@ -25,7 +25,7 @@
     "@latticexyz/world": "link:../../../../packages/world",
     "@wagmi/chains": "^0.2.22",
     "async-mutex": "^0.4.0",
-    "contracts": "workspace:../contracts",
+    "contracts": "workspace:*",
     "ethers": "^5.7.2",
     "lodash": "^4.17.21",
     "mobx": "^6.7.0",
