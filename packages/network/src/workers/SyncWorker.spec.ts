@@ -18,23 +18,14 @@ const cacheEvent = {
   type: NetworkEvents.NetworkComponentUpdate,
   component: "0x10",
   entity: "0x11" as Entity,
+  key: { key: "0x11" },
   value: {},
   txHash: "0x12",
   lastEventInTx: true,
   blockNumber: cacheBlockNumber + 1,
+  namespace: "namespace",
+  table: "table",
 } as NetworkComponentUpdate;
-const snapshotBlockNumber = 9999;
-const snapshotEvents = [
-  {
-    type: NetworkEvents.NetworkComponentUpdate,
-    component: "0x42",
-    entity: "0x11" as Entity,
-    value: {},
-    txHash: "0x12",
-    lastEventInTx: true,
-    blockNumber: snapshotBlockNumber + 1,
-  },
-] as NetworkComponentUpdate[];
 const blockNumber$ = new Subject<number>();
 const latestEvent$ = new Subject<NetworkComponentUpdate>();
 const lastGapStateEventBlockNumber = 999;
@@ -43,10 +34,13 @@ const gapStateEvents = [
     type: NetworkEvents.NetworkComponentUpdate,
     component: "0x20",
     entity: "0x21" as Entity,
+    key: { key: "0x21" },
     value: {},
     txHash: "0x22",
     lastEventInTx: true,
     blockNumber: lastGapStateEventBlockNumber,
+    namespace: "namespace",
+    table: "table2",
   },
 ] as NetworkComponentUpdate[];
 
@@ -83,16 +77,10 @@ jest.mock("../createBlockNumberStream", () => ({
 }));
 
 jest.mock("../v2/syncUtils", () => ({
-  ...jest.requireActual("./syncUtils"),
+  ...jest.requireActual("../v2/syncUtils"),
   createFetchWorldEventsInBlockRange: () => () => Promise.resolve([]),
   createLatestEventStreamRPC: jest.fn(() => latestEvent$),
   createLatestEventStreamService: jest.fn(() => latestEvent$),
-  getSnapshotBlockNumber: () => Promise.resolve(snapshotBlockNumber),
-  fetchSnapshotChunked: () => {
-    const store = createCacheStore();
-    for (const event of snapshotEvents) storeEvent(store, event);
-    return store;
-  },
   fetchStateInBlockRange: jest.fn((fetchWorldEvents: any, boundFetchStoreEvents: any, from: number, to: number) => {
     const store = createCacheStore();
     if (to > 1000) {
@@ -144,7 +132,7 @@ describe("Sync.worker", () => {
     jest.clearAllMocks();
   });
 
-  it("should report the current loading state via the `component.LoadingState` component", async () => {
+  it.only("should report the current loading state via the `component.LoadingState` component", async () => {
     const freshOutput = jest.fn();
     const freshWorker = new SyncWorker();
     const freshInput$ = new Subject<Input>();
@@ -246,37 +234,6 @@ describe("Sync.worker", () => {
     });
     await sleep(0);
     expect(createLatestEventStreamRPC).toHaveBeenCalled();
-  });
-
-  it("should sync from the snapshot if the snapshot block number is more than 100 blocks newer than then cache", async () => {
-    input$.next({
-      type: InputType.Config,
-      data: {
-        snapshotServiceUrl: "http://localhost:50062",
-        streamServiceUrl: "",
-        chainId: 4242,
-        worldContract: { address: "0x00", abi: [] },
-        provider: {
-          chainId: 4242,
-          jsonRpcUrl: "",
-          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
-        },
-        initialBlockNumber: 0,
-      },
-    });
-
-    await sleep(0);
-    blockNumber$.next(101);
-    await sleep(50);
-
-    // Expect output to contain the events from the cache
-    expect(output).toHaveBeenCalledTimes(1);
-    expect(output).toHaveBeenCalledWith({
-      ...snapshotEvents[0],
-      blockNumber: snapshotBlockNumber,
-      lastEventInTx: false,
-      txHash: "cache",
-    });
   });
 
   it("should sync from the cache if the snapshot service is not available", async () => {

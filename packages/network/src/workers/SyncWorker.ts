@@ -95,11 +95,11 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
    * 1. Get config
    * 2. Load initial state
    *   2.1 Get cache block number
-   *   2.2 Get snapshot block number
+   *   2.2 Get mode block number
    *   2.3 Load from more recent source
    * 3. Cach up to current block number by requesting events from RPC ( -> TODO: Replace with own service)
    * 4. Keep in sync
-   *  4.1 If available keep in sync with streaming service
+   *  4.1 If available keep in sync with mode
    *  4.2 Else keep in sync with RPC
    */
   private async init() {
@@ -153,6 +153,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       }
 
       if (isNetworkComponentUpdateEvent(event)) {
+        console.log("latest event", event);
         storeEvent(cacheStore.current, event);
         // Store cache to indexdb every block
         if (event.blockNumber > cacheStore.current.blockNumber + 1 && event.blockNumber % cacheInterval === 0) {
