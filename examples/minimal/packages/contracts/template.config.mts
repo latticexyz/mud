@@ -1,20 +1,7 @@
-interface ConfigType {
-  CounterTable?: { value: number };
-  MessageTable?: { value: string };
-}
-
-export interface TemplateConfig {
-  templates: Record<string, ConfigType>;
-}
-
-export function templateConfig(config: TemplateConfig) {
-  return config;
-}
+import { templateConfig } from "./src/codegen/template";
 
 export default templateConfig({
-  templates: {
-    Sample: {
-      CounterTable: { value: 420 },
-    },
+  Sample: {
+    CounterTable: { value: 420 },
   },
 });
