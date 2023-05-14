@@ -60,6 +60,7 @@ export async function syncTablesFromMode(
       const keyTuple = row.values.slice(0, keyLength).map((bytes, _) => decodeValueJSON(bytes));
       const values = row.values.slice(keyLength).map((bytes, _) => decodeValueJSON(bytes));
 
+      const key = keyTuple.reduce<Record<number, unknown>>((acc, curr, i) => ({ ...acc, [i]: curr }), {});
       const entity = keyTupleToEntityID(keyTuple);
       const value = Object.fromEntries(values.map((value, i) => [fieldNames[i], value])) as ComponentValue;
 
@@ -67,10 +68,11 @@ export async function syncTablesFromMode(
         type: NetworkEvents.NetworkComponentUpdate,
         component,
         entity,
-        // TODO: fix
-        key: { todo: "mode" },
+        key,
         value,
         blockNumber,
+        namespace: tableId.namespace,
+        table: tableId.name,
       });
 
       numRowsProcessed++;
