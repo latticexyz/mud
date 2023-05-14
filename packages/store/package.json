@@ -40,7 +40,7 @@
     "gas-report": "../cli/dist/mud.js gas-report --path test/* --path test/**/* --save gas-report.json",
     "generate-tightcoder": "tsx ./scripts/generate-tightcoder.ts && prettier --write '**/tightcoder/*.sol'",
     "lint": "solhint --config ./.solhint.json 'src/**/*.sol'",
-    "test": "vitest typecheck --run && vitest --run && forge test"
+    "test": "vitest typecheck --run && vitest --run --passWithNoTests && forge test"
   },
   "dependencies": {
     "@ethersproject/abi": "^5.7.0",
