@@ -60,8 +60,9 @@ export async function setup() {
     const tableIds = Object.values(contractComponents).map((c) => c.metadata.contractId);
     const tableRecords = [] as RawTableRecord[];
     for (const tableId of tableIds) {
-      const numKeys = (await worldContract.getNumKeys(tableId, { blockTag: currentBlockNumber })).toNumber();
-      console.log(`Syncing table ${tableId} with ${numKeys} keys`);
+      const numKeys = (
+        await worldContract.snapSync_system_getNumKeysInTable(tableId, { blockTag: currentBlockNumber })
+      ).toNumber();
       if (numKeys === 0) continue;
 
       let remainingKeys = numKeys;
@@ -71,7 +72,9 @@ export async function setup() {
         const offset = i * chunkSize;
         remainingKeys -= limit;
 
-        const records = await worldContract.getRecords(tableId, limit, offset, { blockTag: currentBlockNumber });
+        const records = await worldContract.snapSync_system_getRecords(tableId, limit, offset, {
+          blockTag: currentBlockNumber,
+        });
         const transformedRecords = records.map((record) => {
           return {
             tableId: TableId.fromHexString(record[0]),

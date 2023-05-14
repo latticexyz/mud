@@ -19,6 +19,7 @@ import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
 import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
 import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
+import SnapSyncModuleData from "@latticexyz/world/abi/SnapSyncModule.sol/SnapSyncModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
@@ -99,6 +100,7 @@ export async function deploy(
       UniqueEntityModuleData.bytecode,
       "UniqueEntityModule"
     ),
+    SnapSyncModule: deployContract(SnapSyncModuleData.abi, SnapSyncModuleData.bytecode, "SnapSyncModule"),
   };
 
   // Deploy user Modules

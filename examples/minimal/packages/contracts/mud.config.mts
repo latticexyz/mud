@@ -6,10 +6,6 @@ export default mudConfig({
       name: "increment",
       openAccess: true,
     },
-    SyncSystem: {
-      name: "sync",
-      openAccess: true,
-    },
   },
   tables: {
     CounterTable: {
@@ -26,12 +22,6 @@ export default mudConfig({
       },
       ephemeral: true,
     },
-    PositionTable: {
-      schema: {
-        x: "int32",
-        y: "int32",
-      },
-    }
   },
   modules: [
     {
@@ -45,9 +35,9 @@ export default mudConfig({
       args: [resolveTableId("CounterTable")],
     },
     {
-      name: "KeysInTableModule",
+      name: "SnapSyncModule",
       root: true,
-      args: [resolveTableId("PositionTable")],
+      args: [],
     },
   ],
 });
