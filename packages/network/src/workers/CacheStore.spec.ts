@@ -23,6 +23,8 @@ describe("CacheStore", () => {
       expect(cacheStore.entityToIndex.size).toBe(0);
       expect(cacheStore.state.size).toBe(0);
       expect(cacheStore.blockNumber).toBe(0);
+      expect(cacheStore.tables).toEqual({});
+      expect(cacheStore.keys).toEqual({});
     });
   });
 
@@ -38,7 +40,7 @@ describe("CacheStore", () => {
         blockNumber: 1,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
 
       const cacheStore = createCacheStore();
@@ -51,6 +53,8 @@ describe("CacheStore", () => {
       expect(cacheStore.state.size).toBe(1);
       expect(cacheStore.blockNumber).toBe(0);
       expect([...cacheStore.state.entries()]).toEqual([[packTuple([0, 0]), { x: 1, y: 2 }]]);
+      expect(cacheStore.tables).toEqual({ 0: { namespace: "namespace", table: "Position" } });
+      expect(cacheStore.keys).toEqual({ 0: { key: "0x00" } });
 
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
@@ -62,7 +66,7 @@ describe("CacheStore", () => {
         blockNumber: 1,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
       storeEvent(cacheStore, event2);
 
@@ -77,6 +81,11 @@ describe("CacheStore", () => {
         [packTuple([0, 0]), { x: 1, y: 2 }],
         [packTuple([0, 1]), { x: 1, y: 2 }],
       ]);
+      expect(cacheStore.tables).toEqual({ 0: { namespace: "namespace", table: "Position" } });
+      expect(cacheStore.keys).toEqual({
+        0: { key: "0x00" },
+        1: { key: "0x01" },
+      });
     });
 
     it("should normalize hex entity ids to the same padding", () => {
@@ -90,7 +99,7 @@ describe("CacheStore", () => {
         blockNumber: 1,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
 
       const event2: NetworkComponentUpdate = {
@@ -103,7 +112,7 @@ describe("CacheStore", () => {
         blockNumber: 1,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
 
       const cacheStore = createCacheStore();
@@ -122,7 +131,7 @@ describe("CacheStore", () => {
         blockNumber: 0,
         txHash: "cache",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       });
     });
 
@@ -137,7 +146,7 @@ describe("CacheStore", () => {
         blockNumber: 1,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
 
       const cacheStore = createCacheStore();
@@ -163,7 +172,7 @@ describe("CacheStore", () => {
         blockNumber: 1,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
 
       storeEvent(cacheStore, event);
@@ -179,7 +188,7 @@ describe("CacheStore", () => {
           blockNumber: 0,
           txHash: "cache",
           namespace: "namespace",
-          table: "table",
+          table: "Position",
         },
       ]);
 
@@ -193,7 +202,7 @@ describe("CacheStore", () => {
         blockNumber: 2,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
 
       storeEvent(cacheStore, event2);
@@ -209,7 +218,7 @@ describe("CacheStore", () => {
           blockNumber: 1,
           txHash: "cache",
           namespace: "namespace",
-          table: "table",
+          table: "Position",
         },
       ]);
 
@@ -223,7 +232,7 @@ describe("CacheStore", () => {
         blockNumber: 3,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
 
       storeEvent(cacheStore, event3);
@@ -239,7 +248,7 @@ describe("CacheStore", () => {
           blockNumber: 2,
           txHash: "cache",
           namespace: "namespace",
-          table: "table",
+          table: "Position",
         },
         {
           type: NetworkEvents.NetworkComponentUpdate,
@@ -251,7 +260,7 @@ describe("CacheStore", () => {
           blockNumber: 2,
           txHash: "cache",
           namespace: "namespace",
-          table: "table",
+          table: "Position",
         },
       ]);
     });
@@ -272,7 +281,7 @@ describe("CacheStore", () => {
         blockNumber: 1,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
 
       const event2: NetworkComponentUpdate = {
@@ -285,7 +294,7 @@ describe("CacheStore", () => {
         blockNumber: 2,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Health",
       };
 
       storeEvent(cacheStore1, event1);
@@ -301,7 +310,7 @@ describe("CacheStore", () => {
         blockNumber: 3,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       };
 
       const event4: NetworkComponentUpdate = {
@@ -314,7 +323,7 @@ describe("CacheStore", () => {
         blockNumber: 4,
         txHash: "",
         namespace: "namespace",
-        table: "table",
+        table: "Speed",
       };
 
       storeEvent(cacheStore2, event3);
@@ -335,7 +344,7 @@ describe("CacheStore", () => {
           blockNumber: 3,
           txHash: "cache",
           namespace: "namespace",
-          table: "table",
+          table: "Position",
         },
         {
           type: NetworkEvents.NetworkComponentUpdate,
@@ -347,7 +356,7 @@ describe("CacheStore", () => {
           blockNumber: 3,
           txHash: "cache",
           namespace: "namespace",
-          table: "table",
+          table: "Health",
         },
         {
           type: NetworkEvents.NetworkComponentUpdate,
@@ -359,7 +368,7 @@ describe("CacheStore", () => {
           blockNumber: 3,
           txHash: "cache",
           namespace: "namespace",
-          table: "table",
+          table: "Speed",
         },
       ]);
     });
@@ -379,7 +388,7 @@ describe("CacheStore", () => {
         value: { x: 1, y: 2 },
         blockNumber: 1,
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       });
 
       storeEvent(cacheStore, {
@@ -390,7 +399,7 @@ describe("CacheStore", () => {
         value: { value: 1 },
         blockNumber: 2,
         namespace: "namespace",
-        table: "table",
+        table: "Health",
       });
 
       storeEvent(cacheStore, {
@@ -401,7 +410,7 @@ describe("CacheStore", () => {
         value: { x: 3, y: 2 },
         blockNumber: 3,
         namespace: "namespace",
-        table: "table",
+        table: "Position",
       });
 
       storeEvent(cacheStore, {
@@ -412,7 +421,7 @@ describe("CacheStore", () => {
         value: { value: 10 },
         blockNumber: 4,
         namespace: "namespace",
-        table: "table",
+        table: "Speed",
       });
 
       await saveCacheStoreToIndexDb(cache, cacheStore);
