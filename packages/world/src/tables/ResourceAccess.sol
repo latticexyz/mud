@@ -70,7 +70,7 @@ library ResourceAccess {
   function get(bytes32 resourceSelector, address caller) internal view returns (bool access) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
 
     bytes memory _blob = StoreSwitch.getField(_tableId, _primaryKeys, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -80,7 +80,7 @@ library ResourceAccess {
   function get(IStore _store, bytes32 resourceSelector, address caller) internal view returns (bool access) {
     bytes32[] memory _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
 
     bytes memory _blob = _store.getField(_tableId, _primaryKeys, 0);
     return (_toBool(uint8(Bytes.slice1(_blob, 0))));
@@ -90,7 +90,7 @@ library ResourceAccess {
   function set(bytes32 resourceSelector, address caller, bool access) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
 
     StoreSwitch.setField(_tableId, _primaryKeys, 0, abi.encodePacked((access)));
   }
@@ -99,7 +99,7 @@ library ResourceAccess {
   function set(IStore _store, bytes32 resourceSelector, address caller, bool access) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
 
     _store.setField(_tableId, _primaryKeys, 0, abi.encodePacked((access)));
   }
@@ -116,14 +116,14 @@ library ResourceAccess {
   ) internal pure returns (bytes32[] memory _primaryKeys) {
     _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
   }
 
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector, address caller) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
 
     StoreSwitch.deleteRecord(_tableId, _primaryKeys);
   }
@@ -132,7 +132,7 @@ library ResourceAccess {
   function deleteRecord(IStore _store, bytes32 resourceSelector, address caller) internal {
     bytes32[] memory _primaryKeys = new bytes32[](2);
     _primaryKeys[0] = bytes32((resourceSelector));
-    _primaryKeys[1] = bytes32(bytes20((caller)));
+    _primaryKeys[1] = bytes32(uint256(uint160((caller))));
 
     _store.deleteRecord(_tableId, _primaryKeys);
   }
