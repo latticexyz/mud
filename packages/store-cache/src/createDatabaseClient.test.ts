@@ -363,6 +363,7 @@ describe("createDatabaseClient", () => {
     expect(mock).toHaveBeenNthCalledWith(2, [{ set: [], remove: [{ key }], table, namespace }]);
   });
 
+  // TODO: Remove bigint seralization to allow filter based on numeric value of bigints (see https://github.com/latticexyz/mud/issues/816)
   // Requires bigint keys to be supported by `tuple-database`, see https://github.com/ccorcos/tuple-database/issues/2
   // For now we serialize bigints to use them as keys, which changes the comparison (eg. 2n < 10n but "2n" > "10n")
   it.skip("should be possible to filter based on bigint keys", () => {
