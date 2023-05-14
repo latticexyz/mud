@@ -7,10 +7,10 @@ import { concatMap, from, map, Subject, Subscription, timer } from "rxjs";
 import { isNetworkComponentUpdateEvent, NetworkComponentUpdate, NetworkEvents } from "../types";
 import { Components, Entity } from "@latticexyz/recs";
 import { createCacheStore, storeEvent } from "./CacheStore";
-import * as syncUtils from "./syncUtils";
 import "fake-indexeddb/auto";
 import { SingletonID, SyncState } from "./constants";
-import { createLatestEventStreamRPC, createLatestEventStreamService } from "./syncUtils";
+import * as syncUtils from "../v2/syncUtils";
+import { createLatestEventStreamRPC } from "../v2/syncUtils";
 
 // Test constants
 const cacheBlockNumber = 99;
@@ -82,7 +82,7 @@ jest.mock("../createBlockNumberStream", () => ({
   createBlockNumberStream: () => ({ blockNumber$ }),
 }));
 
-jest.mock("./syncUtils", () => ({
+jest.mock("../v2/syncUtils", () => ({
   ...jest.requireActual("./syncUtils"),
   createFetchWorldEventsInBlockRange: () => () => Promise.resolve([]),
   createLatestEventStreamRPC: jest.fn(() => latestEvent$),
@@ -246,27 +246,6 @@ describe("Sync.worker", () => {
     });
     await sleep(0);
     expect(createLatestEventStreamRPC).toHaveBeenCalled();
-    expect(createLatestEventStreamService).not.toHaveBeenCalled();
-  });
-
-  it("should sync live events from streaming service if streaming service is available", async () => {
-    input$.next({
-      type: InputType.Config,
-      data: {
-        snapshotServiceUrl: "",
-        streamServiceUrl: "http://localhost:50052",
-        chainId: 4242,
-        worldContract: { address: "0x00", abi: [] },
-        provider: {
-          chainId: 4242,
-          jsonRpcUrl: "",
-          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
-        },
-        initialBlockNumber: 0,
-      },
-    });
-    await sleep(0);
-    expect(createLatestEventStreamService).toHaveBeenCalled();
   });
 
   it("should sync from the snapshot if the snapshot block number is more than 100 blocks newer than then cache", async () => {
