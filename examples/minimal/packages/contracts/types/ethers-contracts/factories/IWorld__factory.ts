@@ -304,29 +304,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "bytes32",
-        name: "key",
-        type: "bytes32",
-      },
-      {
-        internalType: "int32",
-        name: "x",
-        type: "int32",
-      },
-      {
-        internalType: "int32",
-        name: "y",
-        type: "int32",
-      },
-    ],
-    name: "addPosition",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "bytes16",
         name: "namespace",
         type: "bytes16",

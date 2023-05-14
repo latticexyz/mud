@@ -35,21 +35,5 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    PositionTable: (() => {
-      const tableId = new TableId("", "PositionTable");
-      return defineComponent(
-        world,
-        {
-          x: RecsType.Number,
-          y: RecsType.Number,
-        },
-        {
-          metadata: {
-            contractId: tableId.toHexString(),
-            tableId: tableId.toString(),
-          },
-        }
-      );
-    })(),
   };
 }

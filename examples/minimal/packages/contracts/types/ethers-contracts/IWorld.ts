@@ -42,7 +42,6 @@ export type SyncRecordStructOutput = [string, string[], string] & {
 
 export interface IWorldInterface extends utils.Interface {
   functions: {
-    "addPosition(bytes32,int32,int32)": FunctionFragment;
     "call(bytes16,bytes16,bytes)": FunctionFragment;
     "deleteRecord(bytes32,bytes32[])": FunctionFragment;
     "deleteRecord(bytes16,bytes16,bytes32[])": FunctionFragment;
@@ -91,7 +90,6 @@ export interface IWorldInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
-      | "addPosition"
       | "call"
       | "deleteRecord(bytes32,bytes32[])"
       | "deleteRecord(bytes16,bytes16,bytes32[])"
@@ -138,14 +136,6 @@ export interface IWorldInterface extends utils.Interface {
       | "willRevert"
   ): FunctionFragment;
 
-  encodeFunctionData(
-    functionFragment: "addPosition",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
-  ): string;
   encodeFunctionData(
     functionFragment: "call",
     values: [
@@ -466,10 +456,6 @@ export interface IWorldInterface extends utils.Interface {
     values?: undefined
   ): string;
 
-  decodeFunctionResult(
-    functionFragment: "addPosition",
-    data: BytesLike
-  ): Result;
   decodeFunctionResult(functionFragment: "call", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "deleteRecord(bytes32,bytes32[])",
@@ -726,13 +712,6 @@ export interface IWorld extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
-    addPosition(
-      key: PromiseOrValue<BytesLike>,
-      x: PromiseOrValue<BigNumberish>,
-      y: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
     call(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
@@ -1040,13 +1019,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
   };
-
-  addPosition(
-    key: PromiseOrValue<BytesLike>,
-    x: PromiseOrValue<BigNumberish>,
-    y: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
 
   call(
     namespace: PromiseOrValue<BytesLike>,
@@ -1356,13 +1328,6 @@ export interface IWorld extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    addPosition(
-      key: PromiseOrValue<BytesLike>,
-      x: PromiseOrValue<BigNumberish>,
-      y: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     call(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
@@ -1714,13 +1679,6 @@ export interface IWorld extends BaseContract {
   };
 
   estimateGas: {
-    addPosition(
-      key: PromiseOrValue<BytesLike>,
-      x: PromiseOrValue<BigNumberish>,
-      y: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
     call(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
@@ -2030,13 +1988,6 @@ export interface IWorld extends BaseContract {
   };
 
   populateTransaction: {
-    addPosition(
-      key: PromiseOrValue<BytesLike>,
-      x: PromiseOrValue<BigNumberish>,
-      y: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
     call(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
