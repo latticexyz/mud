@@ -9,7 +9,7 @@ const zSystemAccessList = z.array(zSystemName.or(zEthereumAddress)).default(SYST
 // The system config is a combination of a name config and access config
 const zSystemConfig = z.intersection(
   z.object({
-    name: zSelector,
+    name: zSelector.optional(),
     registerFunctionSelectors: z.boolean().default(SYSTEM_DEFAULTS.registerFunctionSelector),
   }),
   z.discriminatedUnion("openAccess", [
