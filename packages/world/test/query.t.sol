@@ -267,6 +267,7 @@ contract queryTest is Test {
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 1);
+    assertEq(keyTuples[0][0], keys[0][0]);
   }
 
   function testIntersectionFragment12(uint256 value) public {
@@ -303,5 +304,6 @@ contract queryTest is Test {
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 1);
+    assertEq(keyTuples[0][0], keys[0][0]);
   }
 }
