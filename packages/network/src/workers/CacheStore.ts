@@ -165,6 +165,7 @@ export async function saveCacheStoreToIndexDb(cache: ECSCache, store: CacheStore
   await cache.set("Mappings", "entities", store.entities);
   await cache.set("BlockNumber", "current", store.blockNumber);
   await cache.set("Keys", "current", store.keys);
+  await cache.set("Tables", "current", store.tables);
 }
 
 export async function loadIndexDbCacheStore(cache: ECSCache): Promise<CacheStore> {

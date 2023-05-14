@@ -11,7 +11,6 @@ export default mudConfig({
   },
   tables: {
     CounterTable: {
-      primaryKeys: { key: "bytes32" },
       schema: {
         value: "uint32",
       },
