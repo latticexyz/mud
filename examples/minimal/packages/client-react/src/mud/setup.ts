@@ -1,5 +1,5 @@
 import { setupMUDV2Network } from "@latticexyz/std-client";
-import { RawTableRecord, createFastTxExecutor, createFaucetService } from "@latticexyz/network";
+import { createFastTxExecutor, createFaucetService } from "@latticexyz/network";
 import { getNetworkConfig } from "./getNetworkConfig";
 import { defineContractComponents } from "./contractComponents";
 import { clientComponents } from "./clientComponents";
@@ -7,8 +7,8 @@ import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import { TableId, awaitStreamValue } from "@latticexyz/utils";
-import snapSyncSystemAbi from "./snapSyncSystemAbi";
+import { awaitStreamValue } from "@latticexyz/utils";
+import { getSnapSyncRecords } from "./snapSync";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
@@ -48,52 +48,19 @@ export async function setup() {
     setInterval(requestDrip, 20000);
   }
 
+  const signerOrProvider = signer ?? result.network.providers.get().json;
   // Create a World contract instance
-  const worldContract = IWorld__factory.connect(
-    networkConfig.worldAddress,
-    signer ?? result.network.providers.get().json
-  );
+  const worldContract = IWorld__factory.connect(networkConfig.worldAddress, signerOrProvider);
 
   const currentBlockNumber = await awaitStreamValue(result.network.blockNumber$);
 
   if (networkConfig.snapSync) {
-    const snapSyncContract = new Contract(
+    const tableRecords = await getSnapSyncRecords(
       networkConfig.worldAddress,
-      snapSyncSystemAbi,
-      signer ?? result.network.providers.get().json
+      contractComponents,
+      currentBlockNumber,
+      signerOrProvider
     );
-
-    const chunkSize = 100;
-    const tableIds = Object.values(contractComponents).map((c) => c.metadata.contractId);
-    const tableRecords = [] as RawTableRecord[];
-    for (const tableId of tableIds) {
-      const numKeys = (
-        await snapSyncContract.callStatic["snapSync_system_getNumKeysInTable"](tableId, {
-          blockTag: currentBlockNumber,
-        })
-      ).toNumber();
-      if (numKeys === 0) continue;
-
-      let remainingKeys = numKeys;
-      const numChunks = Math.ceil(numKeys / chunkSize);
-      for (let i = 0; i < numChunks; i++) {
-        const limit = Math.min(remainingKeys, chunkSize);
-        const offset = i * chunkSize;
-        remainingKeys -= limit;
-
-        const records = await snapSyncContract.callStatic["snapSync_system_getRecords"](tableId, limit, offset, {
-          blockTag: currentBlockNumber,
-        });
-        const transformedRecords = records.map((record: [string, string[], string]) => {
-          return {
-            tableId: TableId.fromHexString(record[0]),
-            keyTuple: record[1],
-            value: record[2],
-          };
-        });
-        tableRecords.push(...transformedRecords);
-      }
-    }
 
     console.log(`Syncing ${tableRecords.length} records`);
     result.startSync(tableRecords, currentBlockNumber);
