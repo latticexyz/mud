@@ -171,9 +171,12 @@ describe("Sync.worker", () => {
       component: keccak256("component.LoadingState"),
       value: { state: SyncState.LIVE, msg: "Streaming live events", percentage: 100 },
       entity: SingletonID,
+      key: {},
       txHash: "worker",
       lastEventInTx: false,
       blockNumber: 99,
+      namespace: "mudsync",
+      table: "LoadingState",
     };
 
     await sleep(0);
@@ -209,10 +212,13 @@ describe("Sync.worker", () => {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x00",
       entity: "0x01" as Entity,
+      key: { key: "0x01" },
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
       blockNumber: 111,
+      namespace: "namespace",
+      table: "table",
     };
 
     latestEvent$.next(event);
@@ -392,30 +398,39 @@ describe("Sync.worker", () => {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x99",
       entity: "0x01" as Entity,
+      key: { key: "0x01" },
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
       blockNumber: firstLiveBlockNumber,
+      namespace: "namespace",
+      table: "table",
     };
 
     const event2: NetworkComponentUpdate = {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x0999",
       entity: "0x01" as Entity,
+      key: { key: "0x00" },
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
       blockNumber: secondLiveBlockNumber,
+      namespace: "namespace",
+      table: "table",
     };
 
     const event3: NetworkComponentUpdate = {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x9999",
       entity: "0x01" as Entity,
+      key: { key: "0x01" },
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
       blockNumber: 1003,
+      namespace: "namespace",
+      table: "table",
     };
 
     await sleep(0);
