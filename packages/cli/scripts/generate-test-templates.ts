@@ -5,17 +5,15 @@ import config from "./test-config";
 import { templateConfig } from "../contracts/src/codegen/template";
 
 const factoryConfig = templateConfig({
-  templates: {
-    Example: {
-      Statics: {
-        v1: 1n,
-        v2: 1,
-        v3: "wasd",
-        v4: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
-        v5: true,
-        v6: "E1",
-        v7: "E1",
-      },
+  Example: {
+    Statics: {
+      v1: 1n,
+      v2: 1,
+      v3: "wasd",
+      v4: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
+      v5: true,
+      v6: "E1",
+      v7: "E1",
     },
   },
 });

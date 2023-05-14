@@ -2,7 +2,7 @@ import path from "path";
 import type { CommandModule } from "yargs";
 import { loadConfig } from "@latticexyz/config";
 import { loadTemplateConfig } from "@latticexyz/config";
-import { FactoryConfig, StoreConfig, templategen } from "@latticexyz/store";
+import { StoreConfig, templategen } from "@latticexyz/store";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 
 type Options = {
@@ -24,7 +24,7 @@ const commandModule: CommandModule<Options, Options> = {
 
   async handler({ configPath, templatePath }) {
     const config = (await loadConfig(configPath)) as StoreConfig;
-    const templateConfig = (await loadTemplateConfig(templatePath)) as FactoryConfig;
+    const templateConfig = (await loadTemplateConfig(templatePath)) as Record<string, object>;
     const srcDir = await getSrcDirectory();
 
     await templategen(config, templateConfig, path.join(srcDir, config.codegenDirectory));

@@ -5,14 +5,14 @@ import { renderTemplateIndex } from "./renderTemplateIndex";
 import { renderTemplateScript } from "./renderTemplateScript";
 import { renderTemplate } from "./renderTemplate";
 
-const generateIndex = async (templateConfig: { templates: object }, outputBaseDirectory: string) => {
+const generateIndex = async (templateConfig: Record<string, object>, outputBaseDirectory: string) => {
   const output = renderTemplateIndex(templateConfig);
   const fullOutputPath = path.join(outputBaseDirectory, `Templates.sol`);
 
   await formatAndWriteSolidity(output, fullOutputPath, "Generated index");
 };
 
-const generateSystem = async (templateConfig: { templates: object }, outputBaseDirectory: string) => {
+const generateSystem = async (templateConfig: Record<string, object>, outputBaseDirectory: string) => {
   const output = renderTemplateScript(templateConfig);
 
   const fullOutputPath = path.join(outputBaseDirectory, `scripts/CreateTemplates.sol`);
@@ -21,10 +21,10 @@ const generateSystem = async (templateConfig: { templates: object }, outputBaseD
 
 const generateTemplates = async (
   mudConfig: StoreConfig,
-  templateConfig: { templates: object },
+  templateConfig: Record<string, object>,
   outputBaseDirectory: string
 ) => {
-  for (const name of Object.keys(templateConfig.templates)) {
+  for (const name of Object.keys(templateConfig)) {
     const output = renderTemplate(mudConfig, templateConfig, name);
     const fullOutputPath = path.join(outputBaseDirectory, `templates/${name}Template.sol`);
 
@@ -34,7 +34,7 @@ const generateTemplates = async (
 
 export async function templategen(
   mudConfig: StoreConfig,
-  templateConfig: { templates: object },
+  templateConfig: Record<string, object>,
   outputBaseDirectory: string
 ) {
   generateSystem(templateConfig, outputBaseDirectory);

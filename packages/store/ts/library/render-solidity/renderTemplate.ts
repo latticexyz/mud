@@ -34,8 +34,8 @@ const getValue = (mudConfig: StoreConfig, key: string, value: any) => {
     .join(",");
 };
 
-export function renderTemplate(mudConfig: StoreConfig, templateConfig: { templates: any }, name: string) {
-  const values = templateConfig.templates[name];
+export function renderTemplate(mudConfig: StoreConfig, templateConfig: Record<string, object>, name: string) {
+  const values = templateConfig[name];
 
   return `
   ${renderedSolidityHeader}
