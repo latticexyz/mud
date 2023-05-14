@@ -234,10 +234,10 @@ contract KeysWithValueModuleTest is Test {
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 10 keys with a given value
-    bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
+    bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value));
 
     // Assert that the list is correct
-    assertEq(keysWithValue.length, amount);
+    assertEq(keyTuples.length, amount);
   }
 
   function testGetKeysWithValueMany100() public {
@@ -250,10 +250,10 @@ contract KeysWithValueModuleTest is Test {
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 100 keys with a given value
-    bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
+    bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value));
 
     // Assert that the list is correct
-    assertEq(keysWithValue.length, amount);
+    assertEq(keyTuples.length, amount);
   }
 
   function testGetKeysWithValueMany1000() public {
@@ -266,10 +266,10 @@ contract KeysWithValueModuleTest is Test {
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 1000 keys with a given value
-    bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
+    bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value));
 
     // Assert that the list is correct
-    assertEq(keysWithValue.length, amount);
+    assertEq(keyTuples.length, amount);
   }
 
   // NOTE: this test is expected to fail by setting too many keys
@@ -283,9 +283,9 @@ contract KeysWithValueModuleTest is Test {
     world.setRecord(namespace, sourceName, lastKey, abi.encodePacked(value));
 
     // !gasreport Get list of 10000 keys with a given value
-    bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value));
+    bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value));
 
     // Assert that the list is NOT what we expect
-    assertFalse(keysWithValue.length == amount);
+    assertFalse(keyTuples.length == amount);
   }
 }

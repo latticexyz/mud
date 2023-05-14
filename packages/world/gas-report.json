@@ -128,7 +128,7 @@
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 10 keys with a given value",
-    "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value))",
+    "functionCall": "bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value))",
     "gasUsed": 12160
   },
   {
@@ -146,7 +146,7 @@
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 100 keys with a given value",
-    "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value))",
+    "functionCall": "bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value))",
     "gasUsed": 57149
   },
   {
@@ -164,7 +164,7 @@
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 1000 keys with a given value",
-    "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value))",
+    "functionCall": "bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value))",
     "gasUsed": 571437
   },
   {
@@ -182,7 +182,7 @@
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "Get list of 10000 keys with a given value",
-    "functionCall": "bytes32[] memory keysWithValue = getKeysWithValue(world, sourceTableId, abi.encode(value))",
+    "functionCall": "bytes32[] memory keyTuples = getKeysWithValue(world, sourceTableId, abi.encode(value))",
     "gasUsed": 1828167
   },
   {
