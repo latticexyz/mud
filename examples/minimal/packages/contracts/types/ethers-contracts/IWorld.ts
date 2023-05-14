@@ -28,18 +28,6 @@ import type {
   PromiseOrValue,
 } from "./common";
 
-export type SyncRecordStruct = {
-  tableId: PromiseOrValue<BytesLike>;
-  keyTuple: PromiseOrValue<BytesLike>[];
-  value: PromiseOrValue<BytesLike>;
-};
-
-export type SyncRecordStructOutput = [string, string[], string] & {
-  tableId: string;
-  keyTuple: string[];
-  value: string;
-};
-
 export interface IWorldInterface extends utils.Interface {
   functions: {
     "call(bytes16,bytes16,bytes)": FunctionFragment;
@@ -81,8 +69,6 @@ export interface IWorldInterface extends utils.Interface {
     "setMetadata(bytes32,string,string[])": FunctionFragment;
     "setRecord(bytes16,bytes16,bytes32[],bytes)": FunctionFragment;
     "setRecord(bytes32,bytes32[],bytes)": FunctionFragment;
-    "snapSync_system_getNumKeysInTable(bytes32)": FunctionFragment;
-    "snapSync_system_getRecords(bytes32,uint256,uint256)": FunctionFragment;
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)": FunctionFragment;
     "willRevert()": FunctionFragment;
@@ -129,8 +115,6 @@ export interface IWorldInterface extends utils.Interface {
       | "setMetadata(bytes32,string,string[])"
       | "setRecord(bytes16,bytes16,bytes32[],bytes)"
       | "setRecord(bytes32,bytes32[],bytes)"
-      | "snapSync_system_getNumKeysInTable"
-      | "snapSync_system_getRecords"
       | "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"
       | "updateInField(bytes16,bytes16,bytes32[],uint8,uint256,bytes)"
       | "willRevert"
@@ -419,18 +403,6 @@ export interface IWorldInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "snapSync_system_getNumKeysInTable",
-    values: [PromiseOrValue<BytesLike>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "snapSync_system_getRecords",
-    values: [
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "updateInField(bytes32,bytes32[],uint8,uint256,bytes)",
     values: [
       PromiseOrValue<BytesLike>,
@@ -595,14 +567,6 @@ export interface IWorldInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setRecord(bytes32,bytes32[],bytes)",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "snapSync_system_getNumKeysInTable",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "snapSync_system_getRecords",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -984,18 +948,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<ContractTransaction>;
 
-    snapSync_system_getNumKeysInTable(
-      tableId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    snapSync_system_getRecords(
-      tableId: PromiseOrValue<BytesLike>,
-      limit: PromiseOrValue<BigNumberish>,
-      offset: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[SyncRecordStructOutput[]]>;
-
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -1292,18 +1244,6 @@ export interface IWorld extends BaseContract {
     overrides?: Overrides & { from?: PromiseOrValue<string> }
   ): Promise<ContractTransaction>;
 
-  snapSync_system_getNumKeysInTable(
-    tableId: PromiseOrValue<BytesLike>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  snapSync_system_getRecords(
-    tableId: PromiseOrValue<BytesLike>,
-    limit: PromiseOrValue<BigNumberish>,
-    offset: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<SyncRecordStructOutput[]>;
-
   "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
     table: PromiseOrValue<BytesLike>,
     key: PromiseOrValue<BytesLike>[],
@@ -1597,18 +1537,6 @@ export interface IWorld extends BaseContract {
       data: PromiseOrValue<BytesLike>,
       overrides?: CallOverrides
     ): Promise<void>;
-
-    snapSync_system_getNumKeysInTable(
-      tableId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    snapSync_system_getRecords(
-      tableId: PromiseOrValue<BytesLike>,
-      limit: PromiseOrValue<BigNumberish>,
-      offset: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<SyncRecordStructOutput[]>;
 
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
@@ -1951,18 +1879,6 @@ export interface IWorld extends BaseContract {
       overrides?: Overrides & { from?: PromiseOrValue<string> }
     ): Promise<BigNumber>;
 
-    snapSync_system_getNumKeysInTable(
-      tableId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    snapSync_system_getRecords(
-      tableId: PromiseOrValue<BytesLike>,
-      limit: PromiseOrValue<BigNumberish>,
-      offset: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
       table: PromiseOrValue<BytesLike>,
       key: PromiseOrValue<BytesLike>[],
@@ -2258,18 +2174,6 @@ export interface IWorld extends BaseContract {
       key: PromiseOrValue<BytesLike>[],
       data: PromiseOrValue<BytesLike>,
       overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    snapSync_system_getNumKeysInTable(
-      tableId: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    snapSync_system_getRecords(
-      tableId: PromiseOrValue<BytesLike>,
-      limit: PromiseOrValue<BigNumberish>,
-      offset: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     "updateInField(bytes32,bytes32[],uint8,uint256,bytes)"(
