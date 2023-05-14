@@ -96,7 +96,7 @@ describe("CacheStore", () => {
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x0001" as Entity,
-        key: { key: "0x0001" },
+        key: { key: "0x00000000000000000000000001" },
         component: "Position",
         value: { x: 1, y: 3 },
         lastEventInTx: true,
@@ -115,7 +115,7 @@ describe("CacheStore", () => {
       expect(events[0]).toEqual({
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x01" as Entity,
-        key: { key: "0x01" },
+        key: { key: "0x00000000000000000000000001" },
         component: "Position",
         value: { x: 1, y: 3 },
         lastEventInTx: false,
@@ -172,6 +172,7 @@ describe("CacheStore", () => {
         {
           type: NetworkEvents.NetworkComponentUpdate,
           entity: "0x00",
+          key: { key: "0x00" },
           component: "Position",
           value: { x: 1, y: 2 },
           lastEventInTx: false,
@@ -201,6 +202,7 @@ describe("CacheStore", () => {
         {
           type: NetworkEvents.NetworkComponentUpdate,
           entity: "0x00",
+          key: { key: "0x00" },
           component: "Position",
           value: { x: 2, y: 2 },
           lastEventInTx: false,
@@ -230,6 +232,7 @@ describe("CacheStore", () => {
         {
           type: NetworkEvents.NetworkComponentUpdate,
           entity: "0x00",
+          key: { key: "0x00" },
           component: "Position",
           value: { x: 2, y: 2 },
           lastEventInTx: false,
@@ -241,6 +244,7 @@ describe("CacheStore", () => {
         {
           type: NetworkEvents.NetworkComponentUpdate,
           entity: "0x01",
+          key: { key: "0x01" },
           component: "Position",
           value: { x: -1, y: 2 },
           lastEventInTx: false,
@@ -324,6 +328,7 @@ describe("CacheStore", () => {
         {
           type: NetworkEvents.NetworkComponentUpdate,
           entity: "0x00",
+          key: { key: "0x00" },
           component: "Position",
           value: { x: 3, y: 2 },
           lastEventInTx: false,
@@ -335,6 +340,7 @@ describe("CacheStore", () => {
         {
           type: NetworkEvents.NetworkComponentUpdate,
           entity: "0x01",
+          key: { key: "0x01" },
           component: "Health",
           value: { value: 1 },
           lastEventInTx: false,
@@ -346,6 +352,7 @@ describe("CacheStore", () => {
         {
           type: NetworkEvents.NetworkComponentUpdate,
           entity: "0x00",
+          key: { key: "0x00" },
           component: "Speed",
           value: { value: 10 },
           lastEventInTx: false,
