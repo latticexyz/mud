@@ -100,6 +100,49 @@ library KeysWithValue {
     _store.setField(_tableId, _primaryKeys, 0, EncodeArray.encode((keysWithValue)));
   }
 
+  /** Get the length of keysWithValue */
+  function length(bytes32 _tableId, bytes32 valueHash) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((valueHash));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 32;
+  }
+
+  /** Get the length of keysWithValue (using the specified store) */
+  function length(IStore _store, bytes32 _tableId, bytes32 valueHash) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((valueHash));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 0, getSchema());
+    return _byteLength / 32;
+  }
+
+  /** Get an item of keysWithValue (unchecked, returns invalid data if index overflows) */
+  function getItem(bytes32 _tableId, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((valueHash));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      0,
+      getSchema(),
+      _index * 32,
+      (_index + 1) * 32
+    );
+    return (Bytes.slice32(_blob, 0));
+  }
+
+  /** Get an item of keysWithValue (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItem(IStore _store, bytes32 _tableId, bytes32 valueHash, uint256 _index) internal view returns (bytes32) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((valueHash));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 0, getSchema(), _index * 32, (_index + 1) * 32);
+    return (Bytes.slice32(_blob, 0));
+  }
+
   /** Push an element to keysWithValue */
   function push(bytes32 _tableId, bytes32 valueHash, bytes32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

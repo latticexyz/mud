@@ -15,9 +15,15 @@ export async function decodeStoreSetField(
   keyTuple: string[],
   schemaIndex: number,
   data: string
-): Promise<{ schema: TableSchema; value: ComponentValue; initialValue: ComponentValue }> {
+): Promise<{
+  schema: TableSchema;
+  indexedValues: Record<number, any>;
+  indexedInitialValues: Record<number, any>;
+  namedValues?: Record<string, any>;
+  namedInitialValues?: Record<string, any>;
+}> {
   const schema = await registerSchema(contract, table);
-  const value = decodeField(schema, schemaIndex, data);
+  const indexedValues = decodeField(schema, schemaIndex, data);
 
   // Create an object that represents an "uninitialized" record as it would exist in Solidity
   // to help populate RECS state when using StoreSetField before StoreSetRecord.
@@ -25,26 +31,26 @@ export async function decodeStoreSetField(
     ...schema.staticFields.map((fieldType) => decodeStaticField(fieldType as StaticSchemaType, new Uint8Array(0), 0)),
     ...schema.dynamicFields.map((fieldType) => decodeDynamicField(fieldType as DynamicSchemaType, new Uint8Array(0))),
   ];
-  const initialValue = Object.fromEntries(defaultValues.map((value, index) => [index, value])) as ComponentValue;
+  const indexedInitialValues = Object.fromEntries(
+    defaultValues.map((value, index) => [index, value])
+  ) as ComponentValue;
 
   const metadata = await registerMetadata(contract, table);
   if (metadata) {
     const { tableName, fieldNames } = metadata;
-    const initialValueWithNames = Object.fromEntries(
+    const namedInitialValues = Object.fromEntries(
       defaultValues.map((fieldValue, schemaIndex) => {
         return [fieldNames[schemaIndex], fieldValue];
       })
     ) as ComponentValue;
     return {
       schema,
-      value: {
-        ...value,
-        [fieldNames[schemaIndex]]: value[schemaIndex],
+      indexedValues,
+      indexedInitialValues,
+      namedValues: {
+        [fieldNames[schemaIndex]]: indexedValues[schemaIndex],
       },
-      initialValue: {
-        ...initialValue,
-        ...initialValueWithNames,
-      },
+      namedInitialValues,
     };
   }
 
@@ -53,7 +59,7 @@ export async function decodeStoreSetField(
   );
   return {
     schema,
-    value,
-    initialValue,
+    indexedValues,
+    indexedInitialValues,
   };
 }

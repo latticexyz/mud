@@ -6,6 +6,7 @@ import (
 	"latticexyz/mud/packages/services/pkg/mode/config"
 	"latticexyz/mud/packages/services/pkg/mode/db"
 	"latticexyz/mud/packages/services/pkg/mode/ops/find"
+	"latticexyz/mud/packages/services/pkg/utils"
 	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 
 	"go.uber.org/zap"
@@ -184,7 +185,7 @@ func (cache *SchemaCache) GetTableSchema(chainId string, worldAddress string, ta
 					TableField: "world_address",
 				},
 				Operator: "=",
-				Value:    worldAddress,
+				Value:    utils.ChecksumAddressString(worldAddress),
 			},
 			{
 				Field: &pb_mode.Field{
