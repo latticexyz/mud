@@ -13,7 +13,7 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
-import { query } from "../src/modules/keysintable/query.sol";
+import { union } from "../src/modules/keysintable/query.sol";
 
 contract queryTest is Test {
   using ResourceSelector for bytes32;
@@ -65,7 +65,7 @@ contract queryTest is Test {
     bytes32[] memory tableIds = new bytes32[](1);
     tableIds[0] = tableA;
 
-    bytes32[][] memory keyTuples = query(world, tableIds);
+    bytes32[][] memory keyTuples = union(world, tableIds);
 
     // Assert that the list includes all the keys in the table
     assertEq(keyTuples.length, 1);
@@ -77,7 +77,7 @@ contract queryTest is Test {
     world.setRecord(namespace, nameA, keyTuple2, abi.encodePacked(values[1]));
 
     // Get the list of keys in the target table
-    keyTuples = query(world, tableIds);
+    keyTuples = union(world, tableIds);
 
     // Assert that the list includes all the keys in the table
     assertEq(keyTuples.length, 2);
@@ -104,7 +104,7 @@ contract queryTest is Test {
     world.setRecord(namespace, nameA, keyTuple2, abi.encodePacked(values[1]));
     world.setRecord(namespace, nameB, keyTuple1, abi.encodePacked(values[0]));
 
-    bytes32[][] memory keyTuples = query(world, tableIds);
+    bytes32[][] memory keyTuples = union(world, tableIds);
 
     // Assert that the list is the union of both tables keys
     assertEq(keyTuples.length, 2);
@@ -130,7 +130,7 @@ contract queryTest is Test {
     world.setRecord(namespace, nameB, keyTuple1, abi.encodePacked(values[0]));
     world.setRecord(namespace, nameB, keyTuple2, abi.encodePacked(values[1]));
 
-    bytes32[][] memory keyTuples = query(world, tableIds);
+    bytes32[][] memory keyTuples = union(world, tableIds);
 
     // Assert that the list is the union of both tables keys
     assertEq(keyTuples.length, 2);
@@ -158,7 +158,7 @@ contract queryTest is Test {
     world.setRecord(namespace, nameB, keyTuple1, abi.encodePacked(values[0]));
     world.setRecord(namespace, nameB, keyTuple2, abi.encodePacked(values[1]));
 
-    bytes32[][] memory keyTuples = query(world, tableIds);
+    bytes32[][] memory keyTuples = union(world, tableIds);
 
     // Assert that the list is the union of both tables keys
     assertEq(keyTuples.length, 2);
