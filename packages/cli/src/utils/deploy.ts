@@ -27,7 +27,7 @@ export interface DeployConfig {
   debug?: boolean;
   worldAddress?: string;
   disableTxWait: boolean;
-  pollInterval: 1000;
+  pollInterval: number;
 }
 
 export interface DeploymentInfo {
