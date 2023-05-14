@@ -31,11 +31,14 @@ describe("CacheStore", () => {
       const event: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
         blockNumber: 1,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       const cacheStore = createCacheStore();
@@ -52,11 +55,14 @@ describe("CacheStore", () => {
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x01" as Entity,
+        key: { key: "0x01" },
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: true,
         blockNumber: 1,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
       storeEvent(cacheStore, event2);
 
@@ -77,21 +83,27 @@ describe("CacheStore", () => {
       const event1: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00000000000000000000000001" as Entity,
+        key: { key: "0x00000000000000000000000001" },
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: true,
         blockNumber: 1,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x0001" as Entity,
+        key: { key: "0x0001" },
         component: "Position",
         value: { x: 1, y: 3 },
         lastEventInTx: true,
         blockNumber: 1,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       const cacheStore = createCacheStore();
@@ -103,11 +115,14 @@ describe("CacheStore", () => {
       expect(events[0]).toEqual({
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x01" as Entity,
+        key: { key: "0x01" },
         component: "Position",
         value: { x: 1, y: 3 },
         lastEventInTx: false,
         blockNumber: 0,
         txHash: "cache",
+        namespace: "namespace",
+        table: "table",
       });
     });
 
@@ -115,11 +130,14 @@ describe("CacheStore", () => {
       const event: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
         blockNumber: 1,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       const cacheStore = createCacheStore();
@@ -138,11 +156,14 @@ describe("CacheStore", () => {
       const event: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
         blockNumber: 1,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       storeEvent(cacheStore, event);
@@ -156,17 +177,22 @@ describe("CacheStore", () => {
           lastEventInTx: false,
           blockNumber: 0,
           txHash: "cache",
+          namespace: "namespace",
+          table: "table",
         },
       ]);
 
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Position",
         value: { x: 2, y: 2 },
         lastEventInTx: false,
         blockNumber: 2,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       storeEvent(cacheStore, event2);
@@ -180,17 +206,22 @@ describe("CacheStore", () => {
           lastEventInTx: false,
           blockNumber: 1,
           txHash: "cache",
+          namespace: "namespace",
+          table: "table",
         },
       ]);
 
       const event3: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x01" as Entity,
+        key: { key: "0x01" },
         component: "Position",
         value: { x: -1, y: 2 },
         lastEventInTx: false,
         blockNumber: 3,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       storeEvent(cacheStore, event3);
@@ -204,6 +235,8 @@ describe("CacheStore", () => {
           lastEventInTx: false,
           blockNumber: 2,
           txHash: "cache",
+          namespace: "namespace",
+          table: "table",
         },
         {
           type: NetworkEvents.NetworkComponentUpdate,
@@ -213,6 +246,8 @@ describe("CacheStore", () => {
           lastEventInTx: false,
           blockNumber: 2,
           txHash: "cache",
+          namespace: "namespace",
+          table: "table",
         },
       ]);
     });
@@ -226,21 +261,27 @@ describe("CacheStore", () => {
       const event1: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Position",
         value: { x: 1, y: 2 },
         lastEventInTx: false,
         blockNumber: 1,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       const event2: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x01" as Entity,
+        key: { key: "0x01" },
         component: "Health",
         value: { value: 1 },
         lastEventInTx: false,
         blockNumber: 2,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       storeEvent(cacheStore1, event1);
@@ -249,21 +290,27 @@ describe("CacheStore", () => {
       const event3: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Position",
         value: { x: 3, y: 2 },
         lastEventInTx: false,
         blockNumber: 3,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       const event4: NetworkComponentUpdate = {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Speed",
         value: { value: 10 },
         lastEventInTx: true,
         blockNumber: 4,
         txHash: "",
+        namespace: "namespace",
+        table: "table",
       };
 
       storeEvent(cacheStore2, event3);
@@ -282,6 +329,8 @@ describe("CacheStore", () => {
           lastEventInTx: false,
           blockNumber: 3,
           txHash: "cache",
+          namespace: "namespace",
+          table: "table",
         },
         {
           type: NetworkEvents.NetworkComponentUpdate,
@@ -291,6 +340,8 @@ describe("CacheStore", () => {
           lastEventInTx: false,
           blockNumber: 3,
           txHash: "cache",
+          namespace: "namespace",
+          table: "table",
         },
         {
           type: NetworkEvents.NetworkComponentUpdate,
@@ -300,6 +351,8 @@ describe("CacheStore", () => {
           lastEventInTx: false,
           blockNumber: 3,
           txHash: "cache",
+          namespace: "namespace",
+          table: "table",
         },
       ]);
     });
@@ -314,33 +367,45 @@ describe("CacheStore", () => {
       storeEvent(cacheStore, {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Position",
         value: { x: 1, y: 2 },
         blockNumber: 1,
+        namespace: "namespace",
+        table: "table",
       });
 
       storeEvent(cacheStore, {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x01" as Entity,
+        key: { key: "0x01" },
         component: "Health",
         value: { value: 1 },
         blockNumber: 2,
+        namespace: "namespace",
+        table: "table",
       });
 
       storeEvent(cacheStore, {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Position",
         value: { x: 3, y: 2 },
         blockNumber: 3,
+        namespace: "namespace",
+        table: "table",
       });
 
       storeEvent(cacheStore, {
         type: NetworkEvents.NetworkComponentUpdate,
         entity: "0x00" as Entity,
+        key: { key: "0x00" },
         component: "Speed",
         value: { value: 10 },
         blockNumber: 4,
+        namespace: "namespace",
+        table: "table",
       });
 
       await saveCacheStoreToIndexDb(cache, cacheStore);
