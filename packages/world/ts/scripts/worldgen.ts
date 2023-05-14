@@ -1,10 +1,10 @@
 import glob from "glob";
 import path, { basename } from "path";
 import { rmSync } from "fs";
-import { loadConfig } from "@latticexyz/config/cli";
+import { loadConfig } from "@latticexyz/config/node";
 import { getSrcDirectory } from "@latticexyz/common/foundry";
 import { WorldConfig } from "../library";
-import { worldgen } from "../cli";
+import { worldgen } from "../node";
 import { StoreConfig } from "@latticexyz/store";
 
 // TODO dedupe this and cli's worldgen command

@@ -12,7 +12,7 @@
   "exports": {
     ".": "./dist/library/index.js",
     "./register": "./dist/register/index.js",
-    "./cli": "./dist/cli/index.js"
+    "./node": "./dist/node/index.js"
   },
   "typesVersions": {
     "*": {
@@ -22,8 +22,8 @@
       "register": [
         "./src/register/index.ts"
       ],
-      "cli": [
-        "./src/cli/index.ts"
+      "node": [
+        "./src/node/index.ts"
       ]
     }
   },

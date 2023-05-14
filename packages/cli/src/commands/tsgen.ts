@@ -1,5 +1,5 @@
 import type { CommandModule } from "yargs";
-import { loadConfig } from "@latticexyz/config/cli";
+import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { tsgen } from "../render-ts/tsgen";
 

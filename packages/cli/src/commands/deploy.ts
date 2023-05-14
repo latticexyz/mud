@@ -3,7 +3,7 @@ import glob from "glob";
 import path, { basename } from "path";
 import type { CommandModule, Options } from "yargs";
 import { MUDError } from "@latticexyz/common/errors";
-import { loadConfig } from "@latticexyz/config/cli";
+import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
 import { deploy } from "../utils/deploy";
