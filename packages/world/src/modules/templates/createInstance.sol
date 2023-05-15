@@ -6,6 +6,12 @@ import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
 import { TemplateContent } from "./tables/TemplateContent.sol";
 import { TemplateIndex } from "./tables/TemplateIndex.sol";
 
+/**
+ * Create an instance of a given template.
+ *
+ * Note: this util can only be called within the context of a Store (e.g. from a System or Module).
+ * For usage outside of a Store, use the overload that takes an explicit store argument.
+ */
 function createInstance(bytes32 templateId, bytes32[][] memory keys) {
   bytes32[] memory tableIds = TemplateIndex.get(templateId);
 
@@ -16,6 +22,9 @@ function createInstance(bytes32 templateId, bytes32[][] memory keys) {
   }
 }
 
+/**
+ * Create an instance of a given template.
+ */
 function createInstance(IStore store, bytes32 templateId, bytes32[][] memory keys) {
   bytes32[] memory tableIds = TemplateIndex.get(store, templateId);
 

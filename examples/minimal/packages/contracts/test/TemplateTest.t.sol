@@ -12,7 +12,7 @@ import { IWorld } from "../src/codegen/world/IWorld.sol";
 import { CounterTable, CounterTableTableId } from "../src/codegen/Tables.sol";
 import { SampleTemplateId } from "../src/codegen/Templates.sol";
 
-contract CounterTest is MudV2Test {
+contract TemplateTest is MudV2Test {
   IWorld world;
 
   function setUp() public override {

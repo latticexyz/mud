@@ -9,6 +9,7 @@ import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol"
 import { TemplateContent } from "../src/modules/templates/tables/TemplateContent.sol";
 import { TemplateIndex } from "../src/modules/templates/tables/TemplateIndex.sol";
 import { createInstance } from "../src/modules/templates/createInstance.sol";
+import { createTemplate } from "../src/modules/templates/createTemplate.sol";
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
@@ -46,19 +47,17 @@ contract TemplatesModuleTest is Test {
     _installTemplatesModule();
   }
 
-  function MyTemplate() internal {
-    bytes32[] memory tableIds = new bytes32[](1);
-    tableIds[0] = tableId;
-    TemplateIndex.set(world, templateId, tableIds);
-
-    TemplateContent.set(world, templateId, tableId, abi.encode(1));
-  }
-
   function testTemplates() public {
     _installTemplatesModule();
 
+    bytes32[] memory tableIds = new bytes32[](1);
+    tableIds[0] = tableId;
+
+    bytes[] memory values = new bytes[](1);
+    values[0] = abi.encode(1);
+
     // !gasreport create a template
-    MyTemplate();
+    createTemplate(world, templateId, tableIds, values);
 
     // Assert that the template content was set correctly
     assertEq(TemplateContent.get(world, templateId, tableId), abi.encode(1));
