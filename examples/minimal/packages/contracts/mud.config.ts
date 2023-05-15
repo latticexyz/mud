@@ -23,13 +23,13 @@ export default mudConfig({
       },
       ephemeral: true,
     },
-    TestTable: {
+    Inventory: {
       primaryKeys: {
-        first: "uint160",
-        second: "address",
-        third: "bytes20",
+        user: "address",
+        item: "bytes32",
+        variant: "uint32",
       },
-      schema: { value: "uint64" },
+      schema: { amount: "uint32" },
     },
   },
   modules: [

@@ -35,12 +35,12 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    TestTable: (() => {
-      const tableId = new TableId("", "TestTable");
+    Inventory: (() => {
+      const tableId = new TableId("", "Inventory");
       return defineComponent(
         world,
         {
-          value: RecsType.BigInt,
+          amount: RecsType.Number,
         },
         {
           metadata: {

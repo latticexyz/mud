@@ -1,6 +1,7 @@
 import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
+import { stringToBytes16, stringToBytes32 } from "@latticexyz/utils";
 
 export const App = () => {
   const {
@@ -17,7 +18,7 @@ export const App = () => {
   const message = useComponentValue(MessageTable, singletonEntity);
 
   useEffect(() => {
-    storeCache.tables.TestTable.subscribe((update) => console.log("got update from test table", update));
+    storeCache.tables.Inventory.subscribe((update) => console.log("got update from inventory table", update));
   }, [storeCache]);
 
   useEffect(() => {
@@ -45,10 +46,10 @@ export const App = () => {
       <button
         type="button"
         onClick={async () => {
-          const tx = await worldSend("setTestTable", []);
+          const tx = await worldSend("pickUp", [stringToBytes32("someItem"), 1]);
 
-          console.log("setTestTable tx", tx);
-          console.log("setTestTable result", await tx.wait());
+          console.log("pickUp tx", tx);
+          console.log("pickUp result", await tx.wait());
         }}
       >
         Set test table

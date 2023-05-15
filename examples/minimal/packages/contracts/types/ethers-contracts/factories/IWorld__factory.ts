@@ -702,6 +702,24 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "bytes32",
+        name: "item",
+        type: "bytes32",
+      },
+      {
+        internalType: "uint32",
+        name: "variant",
+        type: "uint32",
+      },
+    ],
+    name: "pickUp",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "bytes16",
         name: "namespace",
         type: "bytes16",
@@ -1275,13 +1293,6 @@ const _abi = [
       },
     ],
     name: "setRecord",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "setTestTable",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
