@@ -1,0 +1,18 @@
+## 🐍 Snake onchain
+
+### Snake game but fully on chain
+
+- Goal is to stay alive
+- Snakes die by hitting another snake or a border
+- It all happens in a map with borders
+- Every connected wallet controls a snake
+- A pixel of food is always available
+- Snake that eats the food wins/increases size
+- The tick speed will be tricky but fun to play with
+- When does my snake move, when does the other snake move?
+
+### Why onchain?
+
+- Possibility of automation
+- Front-running wars to avoid hitting another snake
+- Provides a good playground to test different feedback on the sequencing of events for optimistic roll up. Tx sent, movement happens but not confirmed, movement is confirmed or reverted. Can reverting movements be less frustrating if we have better feedback?

@@ -1,0 +1,89 @@
+.splashOverlay {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.splashContent {
+  background: #715845;
+  color: white;
+  padding: 20px;
+  max-width: 80vw;
+  max-height: 80vh;
+  overflow: auto;
+  position: relative;
+}
+
+.splashClose {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  font-size: 1.5em;
+  cursor: pointer;
+}
+
+.content {
+  text-align: center;
+}
+
+.logo {
+  width: 200px;
+  margin: 0 auto;
+}
+
+.date {
+  margin-top: 10px;
+  font-size: 15px;
+  color: white;
+}
+
+.title {
+  font-size: 20px;
+  color: white;
+  font-weight: bold;
+}
+
+.signupButton {
+  color: white;
+  background-color: #7d7373;
+  border: none;
+  padding: 5px 70px;
+  margin-top: 20px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.separator {
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  margin: 20px 0;
+  margin-top: 25px;
+}
+
+.info {
+  font-size: 15px;
+  color: white;
+  display: flex;
+  align-items: center;
+  padding: 0px 20px;
+  text-align: left;
+}
+
+.info span {
+  margin-right: 10px;
+  font-size: 25px;
+}
+
+.info a {
+  color: white;
+  text-decoration: underline;
+}
