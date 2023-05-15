@@ -14,7 +14,7 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
-import { union } from "../src/modules/keysintable/query.sol";
+import { union } from "../src/modules/keysintable/union.sol";
 
 contract unionTest is Test {
   using ResourceSelector for bytes32;
