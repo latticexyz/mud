@@ -87,7 +87,7 @@ importers:
         version: 4.3.5(@types/node@20.1.3)
       vitest:
         specifier: ^0.31.0
-        version: 0.31.0(jsdom@22.0.0)
+        version: 0.31.0(jsdom@22.0.0)(playwright@1.33.0)
 
   packages/contracts:
     devDependencies:
@@ -133,6 +133,9 @@ importers:
       jsdom:
         specifier: ^22.0.0
         version: 22.0.0
+      playwright:
+        specifier: ^1.33.0
+        version: 1.33.0
       rimraf:
         specifier: ^3.0.2
         version: 3.0.2
@@ -147,7 +150,7 @@ importers:
         version: 4.3.5(@types/node@20.1.3)
       vitest:
         specifier: ^0.31.0
-        version: 0.31.0(jsdom@22.0.0)
+        version: 0.31.0(jsdom@22.0.0)(playwright@1.33.0)
 
 packages:
 
@@ -1788,6 +1791,15 @@ packages:
     hasBin: true
     dev: true
 
+  /playwright@1.33.0:
+    resolution: {integrity: sha512-+zzU3V2TslRX2ETBRgQKsKytYBkJeLZ2xzUj4JohnZnxQnivoUvOvNbRBYWSYykQTO0Y4zb8NwZTYFUO+EpPBQ==}
+    engines: {node: '>=14'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      playwright-core: 1.33.0
+    dev: true
+
   /postcss@8.4.23:
     resolution: {integrity: sha512-bQ3qMcpF6A/YjR55xtoTr0jGOlnPOKAIMdOWiv0EIT6HVPEaJiJB4NLljSbiHoC2RX7DN5Uvjtpbg1NPdwv1oA==}
     engines: {node: ^10 || ^12 || >=14}
@@ -2249,7 +2261,7 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vitest@0.31.0(jsdom@22.0.0):
+  /vitest@0.31.0(jsdom@22.0.0)(playwright@1.33.0):
     resolution: {integrity: sha512-JwWJS9p3GU9GxkG7eBSmr4Q4x4bvVBSswaCFf1PBNHiPx00obfhHRJfgHcnI0ffn+NMlIh9QGvG75FlaIBdKGA==}
     engines: {node: '>=v14.18.0'}
     hasBin: true
@@ -2299,6 +2311,7 @@ packages:
       magic-string: 0.30.0
       pathe: 1.1.0
       picocolors: 1.0.0
+      playwright: 1.33.0
       std-env: 3.3.3
       strip-literal: 1.0.1
       tinybench: 2.5.0
