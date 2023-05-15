@@ -15,6 +15,7 @@ import { IStoreErrors } from "../src/IStoreErrors.sol";
 import { IStore, IStoreHook } from "../src/IStore.sol";
 import { StoreSwitch } from "../src/StoreSwitch.sol";
 import { StoreMetadataData, StoreMetadata } from "../src/codegen/Tables.sol";
+import { StoreMock } from "./StoreMock.sol";
 
 struct TestStruct {
   uint128 firstData;
@@ -22,51 +23,11 @@ struct TestStruct {
   uint32[] thirdData;
 }
 
-contract StoreCoreTest is Test, StoreReadWithStubs {
+contract StoreCoreTest is Test, StoreMock {
   TestStruct private testStruct;
+
   mapping(uint256 => bytes) private testMapping;
   Schema defaultKeySchema = SchemaLib.encode(SchemaType.BYTES32);
-
-  // Expose an external setRecord function for testing purposes of indexers (see testHooks)
-  function setRecord(bytes32 table, bytes32[] calldata key, bytes calldata data) public override {
-    StoreCore.setRecord(table, key, data);
-  }
-
-  // Expose an external setField function for testing purposes of indexers (see testHooks)
-  function setField(bytes32 table, bytes32[] calldata key, uint8 schemaIndex, bytes calldata data) public override {
-    StoreCore.setField(table, key, schemaIndex, data);
-  }
-
-  // Expose an external pushToField function for testing purposes of indexers (see testHooks)
-  function pushToField(
-    bytes32 table,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    bytes calldata dataToPush
-  ) public override {
-    StoreCore.pushToField(table, key, schemaIndex, dataToPush);
-  }
-
-  // Expose an external updateInField function for testing purposes of indexers (see testHooks)
-  function updateInField(
-    bytes32 table,
-    bytes32[] calldata key,
-    uint8 schemaIndex,
-    uint256 startByteIndex,
-    bytes calldata dataToSet
-  ) public override {
-    StoreCore.updateInField(table, key, schemaIndex, startByteIndex, dataToSet);
-  }
-
-  // Expose an external deleteRecord function for testing purposes of indexers (see testHooks)
-  function deleteRecord(bytes32 table, bytes32[] calldata key) public override {
-    StoreCore.deleteRecord(table, key);
-  }
-
-  // Expose an external registerSchema function for testing purposes of indexers (see testHooks)
-  function registerSchema(bytes32 table, Schema schema, Schema keySchema) public override {
-    StoreCore.registerSchema(table, schema, keySchema);
-  }
 
   function testRegisterAndGetSchema() public {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
@@ -80,21 +41,18 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     vm.expectEmit(true, true, true, true);
     emit StoreSetRecord(StoreCoreInternal.SCHEMA_TABLE, key, abi.encodePacked(schema.unwrap(), keySchema.unwrap()));
 
-    // !gasreport StoreCore: register schema
-    StoreCore.registerSchema(table, schema, keySchema);
+    IStore(this).registerSchema(table, schema, keySchema);
 
-    // !gasreport StoreCore: get schema (warm)
-    Schema loadedSchema = StoreCore.getSchema(table);
+    Schema loadedSchema = IStore(this).getSchema(table);
 
     assertEq(loadedSchema.unwrap(), schema.unwrap());
 
-    // !gasreport StoreCore: get key schema (warm)
-    Schema loadedKeySchema = StoreCore.getKeySchema(table);
+    Schema loadedKeySchema = IStore(this).getKeySchema(table);
     assertEq(loadedKeySchema.unwrap(), keySchema.unwrap());
   }
 
   function testFailRegisterInvalidSchema() public {
-    StoreCore.registerSchema(
+    IStore(this).registerSchema(
       keccak256("table"),
       Schema.wrap(keccak256("random bytes as schema")),
       Schema.wrap(keccak256("random bytes as key schema"))
@@ -105,12 +63,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     bytes32 table = keccak256("some.table");
     bytes32 table2 = keccak256("other.table");
-    StoreCore.registerSchema(table, schema, defaultKeySchema);
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
-    // !gasreport Check for existence of table (existent)
     StoreCore.hasTable(table);
 
-    // !gasreport check for existence of table (non-existent)
     StoreCore.hasTable(table2);
 
     assertTrue(StoreCore.hasTable(table));
@@ -127,10 +83,9 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     fieldNames[1] = "field2";
 
     // Register table
-    StoreCore.registerSchema(table, schema, keySchema);
+    IStore(this).registerSchema(table, schema, keySchema);
 
-    // !gasreport StoreCore: set table metadata
-    StoreCore.setMetadata(table, tableName, fieldNames);
+    IStore(this).setMetadata(table, tableName, fieldNames);
 
     // Get metadata for table
     StoreMetadataData memory metadata = StoreMetadata.get(table);
@@ -149,10 +104,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     fieldNames[1] = "field2";
 
     // Register table
-    StoreCore.registerSchema(table, schema, keySchema);
+    IStore(this).registerSchema(table, schema, keySchema);
 
     vm.expectRevert(abi.encodeWithSelector(IStoreErrors.StoreCore_InvalidFieldNamesLength.selector, 1, 2));
-    StoreCore.setMetadata(table, tableName, fieldNames);
+    IStore(this).setMetadata(table, tableName, fieldNames);
   }
 
   function testSetAndGetDynamicDataLength() public {
@@ -167,14 +122,13 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     );
 
     // Register schema
-    StoreCore.registerSchema(table, schema, defaultKeySchema);
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
     // Create some key
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32("some key");
 
     // Set dynamic data length of dynamic index 0
-    // !gasreport set dynamic length of dynamic index 0
     StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 0, 10);
 
     PackedCounter encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(table, key);
@@ -183,7 +137,6 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     assertEq(encodedLength.total(), 10);
 
     // Set dynamic data length of dynamic index 1
-    // !gasreport set dynamic length of dynamic index 1
     StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 1, 99);
 
     encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(table, key);
@@ -192,7 +145,6 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     assertEq(encodedLength.total(), 109);
 
     // Reduce dynamic data length of dynamic index 0 again
-    // !gasreport reduce dynamic length of dynamic index 0
     StoreCoreInternal._setDynamicDataLengthAtIndex(table, key, 0, 5);
 
     encodedLength = StoreCoreInternal._loadEncodedDynamicDataLength(table, key);
@@ -206,7 +158,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
 
     bytes32 table = keccak256("some.table");
-    StoreCore.registerSchema(table, schema, defaultKeySchema);
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04), bytes2(0x0506));
@@ -218,12 +170,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     vm.expectEmit(true, true, true, true);
     emit StoreSetRecord(table, key, data);
 
-    // !gasreport set static record (1 slot)
-    StoreCore.setRecord(table, key, data);
+    IStore(this).setRecord(table, key, data);
 
     // Get data
-    // !gasreport get static record (1 slot)
-    bytes memory loadedData = StoreCore.getRecord(table, key, schema);
+    bytes memory loadedData = IStore(this).getRecord(table, key, schema);
 
     assertTrue(Bytes.equals(data, loadedData));
   }
@@ -232,7 +182,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT8, SchemaType.UINT16, SchemaType.UINT8, SchemaType.UINT16);
     bytes32 table = keccak256("some.table");
-    StoreCore.registerSchema(table, schema, defaultKeySchema);
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
     // Set data
     bytes memory data = abi.encodePacked(bytes1(0x01), bytes2(0x0203), bytes1(0x04));
@@ -241,14 +191,14 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     key[0] = keccak256("some.key");
 
     // This should fail because the data is not 6 bytes long
-    StoreCore.setRecord(table, key, data);
+    IStore(this).setRecord(table, key, data);
   }
 
   function testSetAndGetStaticDataSpanningWords() public {
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT256);
     bytes32 table = keccak256("some.table");
-    StoreCore.registerSchema(table, schema, defaultKeySchema);
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
     // Set data
     bytes memory data = abi.encodePacked(
@@ -263,12 +213,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     vm.expectEmit(true, true, true, true);
     emit StoreSetRecord(table, key, data);
 
-    // !gasreport set static record (2 slots)
-    StoreCore.setRecord(table, key, data);
+    IStore(this).setRecord(table, key, data);
 
     // Get data
-    // !gasreport get static record (2 slots)
-    bytes memory loadedData = StoreCore.getRecord(table, key, schema);
+    bytes memory loadedData = IStore(this).getRecord(table, key, schema);
 
     assertTrue(Bytes.equals(data, loadedData));
   }
@@ -279,7 +227,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     {
       // Register table's schema
       Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
-      StoreCore.registerSchema(table, schema, defaultKeySchema);
+      IStore(this).registerSchema(table, schema, defaultKeySchema);
     }
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -326,12 +274,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     emit StoreSetRecord(table, key, data);
 
     // Set data
-    // !gasreport set complex record with dynamic data (4 slots)
-    StoreCore.setRecord(table, key, data);
+    IStore(this).setRecord(table, key, data);
 
     // Get data
-    // !gasreport get complex record with dynamic data (4 slots)
-    bytes memory loadedData = StoreCore.getRecord(table, key);
+    bytes memory loadedData = IStore(this).getRecord(table, key);
 
     assertEq(loadedData.length, data.length);
     assertEq(keccak256(loadedData), keccak256(data));
@@ -345,10 +291,8 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     _testStruct.thirdData[1] = 0x1d1e1f20;
     _testStruct.thirdData[2] = 0x21222324;
 
-    // !gasreport compare: Set complex record with dynamic data using native solidity
     testStruct = _testStruct;
 
-    // !gasreport compare: Set complex record with dynamic data using abi.encode
     testMapping[1234] = abi.encode(_testStruct);
   }
 
@@ -363,7 +307,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
         SchemaType.UINT32_ARRAY,
         SchemaType.UINT32_ARRAY
       );
-      StoreCore.registerSchema(table, schema, defaultKeySchema);
+      IStore(this).registerSchema(table, schema, defaultKeySchema);
     }
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
@@ -372,56 +316,56 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32("some.key");
 
+    bytes memory firstDataPacked = abi.encodePacked(firstDataBytes);
+
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(table, key, 0, abi.encodePacked(firstDataBytes));
+    emit StoreSetField(table, key, 0, firstDataPacked);
 
     // Set first field
-    // !gasreport set static field (1 slot)
-    StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes));
+    IStore(this).setField(table, key, 0, firstDataPacked);
 
     ////////////////
     // Static data
     ////////////////
 
     // Get first field
-    // !gasreport get static field (1 slot)
-    bytes memory loadedData = StoreCore.getField(table, key, 0);
+    bytes memory loadedData = IStore(this).getField(table, key, 0);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, 16);
     assertEq(bytes16(loadedData), bytes16(firstDataBytes));
 
     // Verify the second index is not set yet
-    assertEq(uint256(bytes32(StoreCore.getField(table, key, 1))), 0);
+    assertEq(uint256(bytes32(IStore(this).getField(table, key, 1))), 0);
 
     // Set second field
     bytes32 secondDataBytes = keccak256("some data");
 
+    bytes memory secondDataPacked = abi.encodePacked(secondDataBytes);
+
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
-    emit StoreSetField(table, key, 1, abi.encodePacked(secondDataBytes));
+    emit StoreSetField(table, key, 1, secondDataPacked);
 
-    // !gasreport set static field (overlap 2 slot)
-    StoreCore.setField(table, key, 1, abi.encodePacked(secondDataBytes));
+    IStore(this).setField(table, key, 1, secondDataPacked);
 
     // Get second field
-    // !gasreport get static field (overlap 2 slot)
-    loadedData = StoreCore.getField(table, key, 1);
+    loadedData = IStore(this).getField(table, key, 1);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, 32);
     assertEq(bytes32(loadedData), secondDataBytes);
 
     // Verify the first field didn't change
-    assertEq(bytes16(StoreCore.getField(table, key, 0)), bytes16(firstDataBytes));
+    assertEq(bytes16(IStore(this).getField(table, key, 0)), bytes16(firstDataBytes));
 
     // Verify the full static data is correct
-    assertEq(StoreCore.getSchema(table).staticDataLength(), 48);
-    assertEq(Bytes.slice16(StoreCore.getRecord(table, key), 0), firstDataBytes);
-    assertEq(Bytes.slice32(StoreCore.getRecord(table, key), 16), secondDataBytes);
+    assertEq(IStore(this).getSchema(table).staticDataLength(), 48);
+    assertEq(Bytes.slice16(IStore(this).getRecord(table, key), 0), firstDataBytes);
+    assertEq(Bytes.slice32(IStore(this).getRecord(table, key), 16), secondDataBytes);
     assertEq(
-      keccak256(SliceLib.getSubslice(StoreCore.getRecord(table, key), 0, 48).toBytes()),
+      keccak256(SliceLib.getSubslice(IStore(this).getRecord(table, key), 0, 48).toBytes()),
       keccak256(abi.encodePacked(firstDataBytes, secondDataBytes))
     );
 
@@ -451,12 +395,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     emit StoreSetField(table, key, 2, thirdDataBytes);
 
     // Set third field
-    // !gasreport set dynamic field (1 slot, first dynamic field)
-    StoreCore.setField(table, key, 2, thirdDataBytes);
+    IStore(this).setField(table, key, 2, thirdDataBytes);
 
     // Get third field
-    // !gasreport get dynamic field (1 slot, first dynamic field)
-    loadedData = StoreCore.getField(table, key, 2);
+    loadedData = IStore(this).getField(table, key, 2);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint32().length, 2);
@@ -464,23 +406,21 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     assertEq(keccak256(loadedData), keccak256(thirdDataBytes));
 
     // Verify the fourth field is not set yet
-    assertEq(StoreCore.getField(table, key, 3).length, 0);
+    assertEq(IStore(this).getField(table, key, 3).length, 0);
 
     // Verify none of the previous fields were impacted
-    assertEq(bytes16(StoreCore.getField(table, key, 0)), bytes16(firstDataBytes));
-    assertEq(bytes32(StoreCore.getField(table, key, 1)), bytes32(secondDataBytes));
+    assertEq(bytes16(IStore(this).getField(table, key, 0)), bytes16(firstDataBytes));
+    assertEq(bytes32(IStore(this).getField(table, key, 1)), bytes32(secondDataBytes));
 
     // Expect a StoreSetField event to be emitted
     vm.expectEmit(true, true, true, true);
     emit StoreSetField(table, key, 3, fourthDataBytes);
 
     // Set fourth field
-    // !gasreport set dynamic field (1 slot, second dynamic field)
-    StoreCore.setField(table, key, 3, fourthDataBytes);
+    IStore(this).setField(table, key, 3, fourthDataBytes);
 
     // Get fourth field
-    // !gasreport get dynamic field (1 slot, second dynamic field)
-    loadedData = StoreCore.getField(table, key, 3);
+    loadedData = IStore(this).getField(table, key, 3);
 
     // Verify loaded data is correct
     assertEq(loadedData.length, fourthDataBytes.length);
@@ -489,7 +429,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     // Verify all fields are correct
     PackedCounter encodedLengths = PackedCounterLib.pack(uint40(thirdDataBytes.length), uint40(fourthDataBytes.length));
     assertEq(
-      keccak256(StoreCore.getRecord(table, key)),
+      keccak256(IStore(this).getRecord(table, key)),
       keccak256(
         abi.encodePacked(firstDataBytes, secondDataBytes, encodedLengths.unwrap(), thirdDataBytes, fourthDataBytes)
       )
@@ -501,7 +441,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
 
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
-    StoreCore.registerSchema(table, schema, defaultKeySchema);
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
     bytes16 firstDataBytes = bytes16(0x0102030405060708090a0b0c0d0e0f10);
 
@@ -543,10 +483,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     key[0] = bytes32("some.key");
 
     // Set data
-    StoreCore.setRecord(table, key, data);
+    IStore(this).setRecord(table, key, data);
 
     // Get data
-    bytes memory loadedData = StoreCore.getRecord(table, key);
+    bytes memory loadedData = IStore(this).getRecord(table, key);
 
     assertEq(loadedData.length, data.length);
     assertEq(keccak256(loadedData), keccak256(data));
@@ -556,11 +496,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     emit StoreDeleteRecord(table, key);
 
     // Delete data
-    // !gasreport delete record (complex data, 3 slots)
-    StoreCore.deleteRecord(table, key);
+    IStore(this).deleteRecord(table, key);
 
     // Verify data is deleted
-    loadedData = StoreCore.getRecord(table, key);
+    loadedData = IStore(this).getRecord(table, key);
     assertEq(keccak256(loadedData), keccak256(new bytes(schema.staticDataLength())));
   }
 
@@ -570,7 +509,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     {
       // Register table's schema
       Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT32_ARRAY);
-      StoreCore.registerSchema(table, schema, defaultKeySchema);
+      IStore(this).registerSchema(table, schema, defaultKeySchema);
     }
 
     // Create key
@@ -596,10 +535,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     }
 
     // Set fields
-    StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes));
-    StoreCore.setField(table, key, 1, secondDataBytes);
+    IStore(this).setField(table, key, 0, abi.encodePacked(firstDataBytes));
+    IStore(this).setField(table, key, 1, secondDataBytes);
     // Initialize a field with push
-    StoreCore.pushToField(table, key, 2, thirdDataBytes);
+    IStore(this).pushToField(table, key, 2, thirdDataBytes);
 
     // Create data to push
     bytes memory secondDataToPush;
@@ -615,11 +554,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     emit StoreSetField(table, key, 1, newSecondDataBytes);
 
     // Push to second field
-    // !gasreport push to field (1 slot, 1 uint32 item)
-    StoreCore.pushToField(table, key, 1, secondDataToPush);
+    IStore(this).pushToField(table, key, 1, secondDataToPush);
 
     // Get second field
-    bytes memory loadedData = StoreCore.getField(table, key, 1);
+    bytes memory loadedData = IStore(this).getField(table, key, 1);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint32().length, 2 + 1);
@@ -627,8 +565,8 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     assertEq(loadedData, newSecondDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(table, key, 0)), firstDataBytes);
-    assertEq(StoreCore.getField(table, key, 2), thirdDataBytes);
+    assertEq(bytes32(IStore(this).getField(table, key, 0)), firstDataBytes);
+    assertEq(IStore(this).getField(table, key, 2), thirdDataBytes);
 
     // Create data to push
     bytes memory thirdDataToPush;
@@ -653,11 +591,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     emit StoreSetField(table, key, 2, newThirdDataBytes);
 
     // Push to third field
-    // !gasreport push to field (2 slots, 10 uint32 items)
-    StoreCore.pushToField(table, key, 2, thirdDataToPush);
+    IStore(this).pushToField(table, key, 2, thirdDataToPush);
 
     // Get third field
-    loadedData = StoreCore.getField(table, key, 2);
+    loadedData = IStore(this).getField(table, key, 2);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint32().length, 3 + 10);
@@ -665,8 +602,8 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     assertEq(loadedData, newThirdDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(table, key, 0)), firstDataBytes);
-    assertEq(StoreCore.getField(table, key, 1), newSecondDataBytes);
+    assertEq(bytes32(IStore(this).getField(table, key, 0)), firstDataBytes);
+    assertEq(IStore(this).getField(table, key, 1), newSecondDataBytes);
   }
 
   function testUpdateInField() public {
@@ -675,7 +612,7 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     {
       // Register table's schema
       Schema schema = SchemaLib.encode(SchemaType.UINT256, SchemaType.UINT32_ARRAY, SchemaType.UINT64_ARRAY);
-      StoreCore.registerSchema(table, schema, defaultKeySchema);
+      IStore(this).registerSchema(table, schema, defaultKeySchema);
     }
 
     // Create key
@@ -699,9 +636,9 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     bytes memory thirdDataBytes = EncodeArray.encode(thirdData);
 
     // Set fields
-    StoreCore.setField(table, key, 0, abi.encodePacked(firstDataBytes));
-    StoreCore.setField(table, key, 1, secondDataBytes);
-    StoreCore.setField(table, key, 2, thirdDataBytes);
+    IStore(this).setField(table, key, 0, abi.encodePacked(firstDataBytes));
+    IStore(this).setField(table, key, 1, secondDataBytes);
+    IStore(this).setField(table, key, 2, thirdDataBytes);
 
     // Create data to use for the update
     bytes memory secondDataForUpdate;
@@ -719,11 +656,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     emit StoreSetField(table, key, 1, newSecondDataBytes);
 
     // Update index 1 in second field (4 = byte length of uint32)
-    // !gasreport update in field (1 slot, 1 uint32 item)
-    StoreCore.updateInField(table, key, 1, 4 * 1, secondDataForUpdate);
+    IStore(this).updateInField(table, key, 1, 4 * 1, secondDataForUpdate);
 
     // Get second field
-    bytes memory loadedData = StoreCore.getField(table, key, 1);
+    bytes memory loadedData = IStore(this).getField(table, key, 1);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint32().length, secondData.length);
@@ -731,8 +667,8 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     assertEq(loadedData, newSecondDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(table, key, 0)), firstDataBytes);
-    assertEq(StoreCore.getField(table, key, 2), thirdDataBytes);
+    assertEq(bytes32(IStore(this).getField(table, key, 0)), firstDataBytes);
+    assertEq(IStore(this).getField(table, key, 2), thirdDataBytes);
 
     // Create data for update
     bytes memory thirdDataForUpdate;
@@ -760,11 +696,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     emit StoreSetField(table, key, 2, newThirdDataBytes);
 
     // Update indexes 1,2,3,4 in third field (8 = byte length of uint64)
-    // !gasreport push to field (2 slots, 6 uint64 items)
-    StoreCore.updateInField(table, key, 2, 8 * 1, thirdDataForUpdate);
+    IStore(this).updateInField(table, key, 2, 8 * 1, thirdDataForUpdate);
 
     // Get third field
-    loadedData = StoreCore.getField(table, key, 2);
+    loadedData = IStore(this).getField(table, key, 2);
 
     // Verify loaded data is correct
     assertEq(SliceLib.fromBytes(loadedData).decodeArray_uint64().length, thirdData.length);
@@ -772,44 +707,39 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     assertEq(loadedData, newThirdDataBytes);
 
     // Verify none of the other fields were impacted
-    assertEq(bytes32(StoreCore.getField(table, key, 0)), firstDataBytes);
-    assertEq(StoreCore.getField(table, key, 1), newSecondDataBytes);
+    assertEq(bytes32(IStore(this).getField(table, key, 0)), firstDataBytes);
+    assertEq(IStore(this).getField(table, key, 1), newSecondDataBytes);
 
     // startByteIndex must not overflow
     vm.expectRevert(
       abi.encodeWithSelector(IStoreErrors.StoreCore_DataIndexOverflow.selector, type(uint40).max, type(uint56).max)
     );
-    StoreCore.updateInField(table, key, 2, type(uint56).max, thirdDataForUpdate);
+    IStore(this).updateInField(table, key, 2, type(uint56).max, thirdDataForUpdate);
   }
 
   function testAccessEmptyData() public {
     bytes32 table = keccak256("some.table");
     Schema schema = SchemaLib.encode(SchemaType.UINT32, SchemaType.UINT32_ARRAY);
 
-    StoreCore.registerSchema(table, schema, defaultKeySchema);
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
     // Create key
     bytes32[] memory key = new bytes32[](1);
     key[0] = bytes32("some.key");
 
-    // !gasreport access non-existing record
-    bytes memory data1 = StoreCore.getRecord(table, key);
+    bytes memory data1 = IStore(this).getRecord(table, key);
     assertEq(data1.length, schema.staticDataLength());
 
-    // !gasreport access static field of non-existing record
-    bytes memory data2 = StoreCore.getField(table, key, 0);
+    bytes memory data2 = IStore(this).getField(table, key, 0);
     assertEq(data2.length, schema.staticDataLength());
 
-    // !gasreport access dynamic field of non-existing record
-    bytes memory data3 = StoreCore.getField(table, key, 1);
+    bytes memory data3 = IStore(this).getField(table, key, 1);
     assertEq(data3.length, 0);
 
-    // !gasreport access length of dynamic field of non-existing record
-    uint256 data3Length = StoreCore.getFieldLength(table, key, 1, schema);
+    uint256 data3Length = IStore(this).getFieldLength(table, key, 1, schema);
     assertEq(data3Length, 0);
 
-    // !gasreport access slice of dynamic field of non-existing record
-    bytes memory data3Slice = StoreCore.getFieldSlice(table, key, 1, schema, 0, 0);
+    bytes memory data3Slice = IStore(this).getFieldSlice(table, key, 1, schema, 0, 0);
     assertEq(data3Slice.length, 0);
   }
 
@@ -820,37 +750,33 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
 
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128);
-    StoreCore.registerSchema(table, schema, defaultKeySchema);
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(table, schema, defaultKeySchema);
 
-    // !gasreport register subscriber
-    StoreCore.registerStoreHook(table, subscriber);
+    IStore(this).registerStoreHook(table, subscriber);
 
     bytes memory data = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
 
-    // !gasreport set record on table with subscriber
-    StoreCore.setRecord(table, key, data);
+    IStore(this).setRecord(table, key, data);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    bytes memory indexedData = StoreCore.getRecord(indexerTableId, key);
+    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key);
     assertEq(keccak256(data), keccak256(indexedData));
 
     data = abi.encodePacked(bytes16(0x1112131415161718191a1b1c1d1e1f20));
 
-    // !gasreport set static field on table with subscriber
-    StoreCore.setField(table, key, 0, data);
+    IStore(this).setField(table, key, 0, data);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = StoreCore.getRecord(indexerTableId, key);
+    indexedData = IStore(this).getRecord(indexerTableId, key);
     assertEq(keccak256(data), keccak256(indexedData));
 
-    // !gasreport delete record on table with subscriber
-    StoreCore.deleteRecord(table, key);
+    IStore(this).deleteRecord(table, key);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = StoreCore.getRecord(indexerTableId, key);
+    indexedData = IStore(this).getRecord(indexerTableId, key);
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 
@@ -861,13 +787,12 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
 
     // Register table's schema
     Schema schema = SchemaLib.encode(SchemaType.UINT128, SchemaType.UINT32_ARRAY);
-    StoreCore.registerSchema(table, schema, defaultKeySchema);
+    IStore(this).registerSchema(table, schema, defaultKeySchema);
 
     // Create subscriber
     MirrorSubscriber subscriber = new MirrorSubscriber(table, schema, defaultKeySchema);
 
-    // !gasreport register subscriber
-    StoreCore.registerStoreHook(table, subscriber);
+    IStore(this).registerStoreHook(table, subscriber);
 
     uint32[] memory arrayData = new uint32[](1);
     arrayData[0] = 0x01020304;
@@ -877,11 +802,10 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     bytes memory staticData = abi.encodePacked(bytes16(0x0102030405060708090a0b0c0d0e0f10));
     bytes memory data = abi.encodePacked(staticData, dynamicData);
 
-    // !gasreport set (dynamic) record on table with subscriber
-    StoreCore.setRecord(table, key, data);
+    IStore(this).setRecord(table, key, data);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    bytes memory indexedData = StoreCore.getRecord(indexerTableId, key);
+    bytes memory indexedData = IStore(this).getRecord(indexerTableId, key);
     assertEq(keccak256(data), keccak256(indexedData));
 
     // Update dynamic data
@@ -890,18 +814,16 @@ contract StoreCoreTest is Test, StoreReadWithStubs {
     dynamicData = abi.encodePacked(encodedArrayDataLength.unwrap(), arrayDataBytes);
     data = abi.encodePacked(staticData, dynamicData);
 
-    // !gasreport set (dynamic) field on table with subscriber
-    StoreCore.setField(table, key, 1, arrayDataBytes);
+    IStore(this).setField(table, key, 1, arrayDataBytes);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = StoreCore.getRecord(indexerTableId, key);
+    indexedData = IStore(this).getRecord(indexerTableId, key);
     assertEq(keccak256(data), keccak256(indexedData));
 
-    // !gasreport delete (dynamic) record on table with subscriber
-    StoreCore.deleteRecord(table, key);
+    IStore(this).deleteRecord(table, key);
 
     // Get data from indexed table - the indexer should have mirrored the data there
-    indexedData = StoreCore.getRecord(indexerTableId, key);
+    indexedData = IStore(this).getRecord(indexerTableId, key);
     assertEq(keccak256(indexedData), keccak256(abi.encodePacked(bytes16(0))));
   }
 }

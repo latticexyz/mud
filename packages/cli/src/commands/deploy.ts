@@ -18,6 +18,11 @@ export const yDeployOptions = {
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   disableTxWait: { type: "boolean", desc: "Disable waiting for transactions to be confirmed.", default: false },
+  pollInterval: {
+    type: "number",
+    desc: "Interval in miliseconds to use to poll for transaction receipts / block inclusion",
+    default: 1000,
+  },
 } satisfies Record<keyof DeployOptions, Options>;
 
 export async function deployHandler(args: Parameters<(typeof commandModule)["handler"]>[0]) {

@@ -2,7 +2,7 @@ import chalk from "chalk";
 import glob from "glob";
 import path, { basename } from "path";
 import { MUDError } from "@latticexyz/common/errors";
-import { loadConfig } from "@latticexyz/config";
+import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
 import { deploy } from "../utils/deploy";
@@ -22,6 +22,7 @@ export type DeployOptions = {
   worldAddress?: string;
   srcDir?: string;
   disableTxWait: boolean;
+  pollInterval: number;
 };
 
 export async function deployHandler(args: DeployOptions) {
