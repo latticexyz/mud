@@ -20,6 +20,14 @@ struct QueryFragment {
   bytes value;
 }
 
+function valuesToTuples(bytes32[] memory flatArr) pure returns (bytes32[][] memory arr) {
+  arr = new bytes32[][](flatArr.length);
+  for (uint256 i; i < flatArr.length; i++) {
+    arr[i] = new bytes32[](1);
+    arr[i][0] = flatArr[i];
+  }
+}
+
 /**
  * Helper function to check whether a given key passes a given query fragment.
  *
@@ -37,7 +45,7 @@ function passesQueryFragment(bytes32[] memory keyTuple, QueryFragment memory fra
 
   if (fragment.queryType == QueryType.HasValue) {
     // Key must have the given value
-    return ArrayLib.includes(ArrayLib.unflatten(getKeysWithValue(fragment.tableId, fragment.value)), keyTuple);
+    return ArrayLib.includes(valuesToTuples(getKeysWithValue(fragment.tableId, fragment.value)), keyTuple);
   }
 
   if (fragment.queryType == QueryType.Not) {
@@ -47,7 +55,7 @@ function passesQueryFragment(bytes32[] memory keyTuple, QueryFragment memory fra
 
   if (fragment.queryType == QueryType.NotValue) {
     // Key must not have the given value
-    return !ArrayLib.includes(ArrayLib.unflatten(getKeysWithValue(fragment.tableId, fragment.value)), keyTuple);
+    return !ArrayLib.includes(valuesToTuples(getKeysWithValue(fragment.tableId, fragment.value)), keyTuple);
   }
 
   return false;
@@ -70,7 +78,7 @@ function passesQueryFragment(
 
   if (fragment.queryType == QueryType.HasValue) {
     // Key must be have the given value
-    return ArrayLib.includes(ArrayLib.unflatten(getKeysWithValue(store, fragment.tableId, fragment.value)), keyTuple);
+    return ArrayLib.includes(valuesToTuples(getKeysWithValue(store, fragment.tableId, fragment.value)), keyTuple);
   }
 
   if (fragment.queryType == QueryType.Not) {
@@ -80,7 +88,7 @@ function passesQueryFragment(
 
   if (fragment.queryType == QueryType.NotValue) {
     // Key must not have the given value
-    return !ArrayLib.includes(ArrayLib.unflatten(getKeysWithValue(store, fragment.tableId, fragment.value)), keyTuple);
+    return !ArrayLib.includes(valuesToTuples(getKeysWithValue(store, fragment.tableId, fragment.value)), keyTuple);
   }
 
   return false;
@@ -100,7 +108,7 @@ function query(QueryFragment[] memory fragments) view returns (bytes32[][] memor
   // Create the first interim result
   keyTuples = fragments[0].queryType == QueryType.Has
     ? getKeysInTable(fragments[0].tableId)
-    : ArrayLib.unflatten(getKeysWithValue(fragments[0].tableId, fragments[0].value));
+    : valuesToTuples(getKeysWithValue(fragments[0].tableId, fragments[0].value));
 
   for (uint256 i = 1; i < fragments.length; i++) {
     bytes32[][] memory result = new bytes32[][](0);
@@ -135,7 +143,7 @@ function query(IStore store, QueryFragment[] memory fragments) view returns (byt
   // Create the first interim result
   keyTuples = fragments[0].queryType == QueryType.Has
     ? getKeysInTable(store, fragments[0].tableId)
-    : ArrayLib.unflatten(getKeysWithValue(store, fragments[0].tableId, fragments[0].value));
+    : valuesToTuples(getKeysWithValue(store, fragments[0].tableId, fragments[0].value));
 
   for (uint256 i = 1; i < fragments.length; i++) {
     bytes32[][] memory result = new bytes32[][](0);
