@@ -36,7 +36,7 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
 
   async handler(args) {
     try {
-      deployHandler(args);
+      await deployHandler(args);
     } catch (error: any) {
       logError(error);
       process.exit(1);
