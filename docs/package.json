@@ -1,16 +1,16 @@
 {
   "name": "docs",
   "version": "1.0.0",
-  "private": true,
   "description": "mud.dev docs",
-  "license": "",
-  "type": "module",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "build": "next build",
     "dev": "next dev",
-    "start": "next start"
+    "start": "next start",
+    "build": "next build"
   },
+  "private": true,
+  "license": "",
   "dependencies": {
     "next": "^13.3.0",
     "nextra": "^2.4.0",
