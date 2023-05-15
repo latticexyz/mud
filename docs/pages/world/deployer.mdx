@@ -1,12 +1,12 @@
 ## The Deployer
 
-To deploy a World and its resources, there exists a `deploy-v2` command on the [MUD CLI](../cli).
+To deploy a World and its resources, there exists a `deploy` command on the [MUD CLI](../cli).
 
-When using the deployer, you must set the private key of the deployer using the `PRIVATE_KEY` environment variable. You can make this easier by using `[dotenv](https://www.npmjs.com/package/dotenv)` before running `mud deploy-v2` in your deployment script.
+When using the deployer, you must set the private key of the deployer using the `PRIVATE_KEY` environment variable. You can make this easier by using `[dotenv](https://www.npmjs.com/package/dotenv)` before running `mud deploy` in your deployment script.
 
 The deployer also supports Foundry profile to deploy to different chains.
 
-To set the profile used by the deployer, either set your `FOUNDRY_PROFILE` environment variable, or pass `--profile <profileName>` to the deployer (eg: `mud deploy-v2 --profile optimism-mainnet`).
+To set the profile used by the deployer, either set your `FOUNDRY_PROFILE` environment variable, or pass `--profile <profileName>` to the deployer (eg: `mud deploy --profile optimism-mainnet`).
 
 The RPC used by the deployer will be `[http://localhost:8545](http://localhost:8545)` if no profile is set, otherwise it will be read from the `eth_rpc_url` configuration field of the Foundry profile.
 

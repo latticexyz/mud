@@ -11,46 +11,48 @@ When building with the MUD World framework, the first decision you need to make 
 - **I want to add new features to an application I have built before**: build on the World where you initially deployed your application.
 
 ## World Concepts
+
 ### Resources and namespaces
 
 A World contains resources. Currently, there exists three types of resources. More of them can be added by the root user of the World (if there is one), and future versions of MUD might include new default resources.
 
 1. **Namespace**: a namespace is like a folder in a file system. They are used to group resources together for the purpose of making access-control less verbose. Currently, nested namespaces are not available in World framework. The filesystem is thus flat.
-2. **Table**: a [Store](store) table. Used to store and retrieve data. 
+2. **Table**: a [Store](store) table. Used to store and retrieve data.
 3. **System**: a piece of logic, stored as EVM bytecode. Systems have no state, and instead read and write to Tables.
 
 Each resource is contained within a namespace. You can think of the resources within a World as a filesystem:
 
 ```jsx
-root
-|-- mudswap <- Namespace
-   | Balance <- Table
-   | Pool <- Table
-   | Transfer <- System
-|-- tetris <- Namespace
-   | Board <- Table
-   | Move <- System
-   | Drop <- System
-   | Score <- Table
-   | Win <- System
+root |
+  (--mudswap < -Namespace) |
+  (Balance < -Table) |
+  (Pool < -Table) |
+  (Transfer < -System) |
+  (--tetris < -Namespace) |
+  (Board < -Table) |
+  (Move < -System) |
+  (Drop < -System) |
+  (Score < -Table) |
+  (Win < -System);
 ```
 
 The organization of resources within namespaces is used for two different features of MUD:
 
 1. **Access control:** resources in a namespace have “write” access to the other resources within their namespace. Currently, having write access only matters for systems interacting with tables: it means these systems can create and edit records within those tables.
 2. **Synchronization of state**: MUD clients can decide which namespaces they synchronize. Synchronization means different things depending on the resource type:
-    - **Synchronizing a Table** means downloading and keeping track of all changes to records found within the Table. As an example, synchronizing a `BalanceTable` would mean keeping track of the balances of all addresses within that table.
-    - **Synchronizing a System** means downloading its EVM bytecode from the chain, and in a future version of MUD, being able to execute these systems optimistically client side. As an example, this would allow clients to immediately predict the likely outcome of an on-chain action without relying on external nodes or services like Tenderly to simulate the outcome.
+   - **Synchronizing a Table** means downloading and keeping track of all changes to records found within the Table. As an example, synchronizing a `BalanceTable` would mean keeping track of the balances of all addresses within that table.
+   - **Synchronizing a System** means downloading its EVM bytecode from the chain, and in a future version of MUD, being able to execute these systems optimistically client side. As an example, this would allow clients to immediately predict the likely outcome of an on-chain action without relying on external nodes or services like Tenderly to simulate the outcome.
 
-**A note on managing namespaces and resources**: 
-In most basic cases, you don’t need to worry about namespaces and access control while building your application with World (regardless of whether you are deploying a new World or building on an existing one). If your project was generated from the MUD templates using `npm create mud`/`yarn create mud`/`mud create`, it will use the `tablegen` tool from the MUD CLI to generate libraries for tables, and the `deploy-v2` tool to deploy the resources into the World. Namespace access will be done for you: systems will be able to write to all your tables out-of-the-box. You just need to decide which namespace you will build your application in!
+**A note on managing namespaces and resources**:
+In most basic cases, you don’t need to worry about namespaces and access control while building your application with World (regardless of whether you are deploying a new World or building on an existing one). If your project was generated from the MUD templates using `npm create mud`/`yarn create mud`/`mud create`, it will use the `tablegen` tool from the MUD CLI to generate libraries for tables, and the `deploy` tool to deploy the resources into the World. Namespace access will be done for you: systems will be able to write to all your tables out-of-the-box. You just need to decide which namespace you will build your application in!
 
 ### Systems
+
 This is WIP
 
 - Piece of code added to the world with logic
 - no state! use tables to read and write data
-- _msgSender
+- \_msgSender
 - root systems
 - systems and namespaces
 - can be delegatacall from the world
@@ -63,7 +65,7 @@ In order to use World, you just need your project to have the right folder struc
 
 1. **Start from the minimal template**
 
-Run `yarn create mud my-first-mud-project`; and `cd` into it. Open your favorite code editor. 
+Run `yarn create mud my-first-mud-project`; and `cd` into it. Open your favorite code editor.
 
 2. **Let’s look at the MUD config**
 
@@ -73,28 +75,28 @@ The MUD config for the vanilla template looks like this:
 import { mudConfig } from "@latticexyz/config";
 
 export default mudConfig({
-    namespace: "mud",
-    systems: {
-        IncrementSystem: {
-            name: "increment",
-            openAccess: true,
+  namespace: "mud",
+  systems: {
+    IncrementSystem: {
+      name: "increment",
+      openAccess: true,
+    },
+    tables: {
+      CounterTable: {
+        name: "counter",
+        schema: {
+          value: "uint32",
         },
-        tables: {
-            CounterTable: {
-                name: "counter",
-                schema: {
-                    value: "uint32",
-                },
-            },
-        },
-    }
+      },
+    },
+  },
 });
 ```
 
 Let’s break it down:
 
 ```jsx
-namespace: "mud"
+namespace: "mud";
 ```
 
 `namespace: "mud"`: we are deploying our systems and tables in the namespace called “mud”. This namespace will be registered on the World deployed in development and will be owned by the deployer address.
@@ -108,7 +110,7 @@ systems: {
 },
 ```
 
-We are deploying one system named “IncrementSystem”. The deployer will find its code by looking for a file named `IncrementSystem.sol`. Its name is `increment`, so its full path  within the world will be `/mud/increment` (remember our namespace is `mud`). Its access is **open**, which means the World will let any address call this system.
+We are deploying one system named “IncrementSystem”. The deployer will find its code by looking for a file named `IncrementSystem.sol`. Its name is `increment`, so its full path within the world will be `/mud/increment` (remember our namespace is `mud`). Its access is **open**, which means the World will let any address call this system.
 
 ```tsx
 tables: {
@@ -123,7 +125,7 @@ tables: {
 
 We are creating one table named “CounterTable”, with a single column named `value` with type `uint32`. To learn more about the format for defining tables, head to the [Store documentation](store).
 
-The file system on the World looks like this now when deployed: 
+The file system on the World looks like this now when deployed:
 
 ```bash
 root
@@ -147,7 +149,7 @@ CounterTable.set(bytes32("singleton"), newValue);
 - The generated library detects that the Store is on the World — that routed the call to the system, it is `msg.sender` — instead of the system itself, and routes the write request (here `CounterTable.set(...)`) to the World.
 - The World checks that the system has access to the counter table. Here it does because it is in the same namespace.
 - The World writes to the appropriate record, and gives execution back to the system.
-</aside>
+  </aside>
 
 3. **Adding another table**
 
@@ -157,33 +159,33 @@ Let’s add a new table. It’s as simple as extending the config. For reference
 import { mudConfig } from "@latticexyz/config";
 
 export default mudConfig({
-    namespace: "mud",
-    systems: {
-        IncrementSystem: {
-            name: "increment",
-            openAccess: true,
+  namespace: "mud",
+  systems: {
+    IncrementSystem: {
+      name: "increment",
+      openAccess: true,
+    },
+    tables: {
+      CounterTable: {
+        name: "counter",
+        schema: {
+          value: "uint32",
         },
-        tables: {
-            CounterTable: {
-                name: "counter",
-                schema: {
-                    value: "uint32",
-                },
-            },
-            DogTable: {
-                name: "dog",
-                schema: {
-                    owner: "address",
-                    name: "string",
-                    color: "string"
-                }
-            }
+      },
+      DogTable: {
+        name: "dog",
+        schema: {
+          owner: "address",
+          name: "string",
+          color: "string",
         },
-    }
+      },
+    },
+  },
 });
 ```
 
-We can run `yarn mud tablegen` in the contract folder to recreate the libraries. 
+We can run `yarn mud tablegen` in the contract folder to recreate the libraries.
 
 ```bash
 > yarn mud tablegen
@@ -193,7 +195,7 @@ Generated table: src/codegen/tables/DogTable.sol
 
 We now have a library in `src/codegen/tables/DogTable.sol` that can be used to interact with the new table we created!
 
-The file system on the World looks like this at this stage: 
+The file system on the World looks like this at this stage:
 
 ```bash
 root
@@ -215,7 +217,7 @@ pragma solidity >=0.8.0;
 import { System } from "@latticexyz/world/src/System.sol";
 
 contract MySystem is System {
-    function doStuff() public returns () {}
+  function doStuff() public returns () {}
 }
 ```
 
