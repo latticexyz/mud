@@ -64,64 +64,12 @@ function union(IStore store, bytes32[] memory tableIds) view returns (bytes32[][
   }
 }
 
-function intersection(bytes32[] memory tableIds) view returns (bytes32[][] memory keyTuples) {
-  keyTuples = getKeysInTable(tableIds[0]);
-
-  for (uint256 i = 1; i < tableIds.length; i++) {
-    uint256 index;
-    for (uint256 j; j < keyTuples.length; j++) {
-      // if the current table has the key, include it
-      if (hasKey(tableIds[i], keyTuples[j])) {
-        index++;
-      }
-    }
-
-    bytes32[][] memory result = new bytes32[][](index);
-
-    index = 0;
-    for (uint256 j; j < keyTuples.length; j++) {
-      if (hasKey(tableIds[i], keyTuples[j])) {
-        result[index] = keyTuples[j];
-        index++;
-      }
-    }
-
-    keyTuples = result;
-  }
-}
-
-function intersection(IStore store, bytes32[] memory tableIds) view returns (bytes32[][] memory keyTuples) {
-  keyTuples = getKeysInTable(store, tableIds[0]);
-
-  for (uint256 i = 1; i < tableIds.length; i++) {
-    uint256 index;
-    for (uint256 j; j < keyTuples.length; j++) {
-      // if the current table has the key, include it
-      if (hasKey(store, tableIds[i], keyTuples[j])) {
-        index++;
-      }
-    }
-
-    bytes32[][] memory result = new bytes32[][](index);
-
-    index = 0;
-    for (uint256 j; j < keyTuples.length; j++) {
-      if (hasKey(store, tableIds[i], keyTuples[j])) {
-        result[index] = keyTuples[j];
-        index++;
-      }
-    }
-
-    keyTuples = result;
-  }
-}
-
 struct Fragment {
   bool has;
   bytes32 tableId;
 }
 
-function intersectionFragment(IStore store, Fragment[] memory fragments) view returns (bytes32[][] memory keyTuples) {
+function intersection(IStore store, Fragment[] memory fragments) view returns (bytes32[][] memory keyTuples) {
   keyTuples = getKeysInTable(store, fragments[0].tableId);
 
   for (uint256 i = 1; i < fragments.length; i++) {

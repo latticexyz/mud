@@ -13,7 +13,7 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
-import { intersection, union, intersectionFragment, Fragment } from "../src/modules/keysintable/query.sol";
+import { union, intersection, Fragment } from "../src/modules/keysintable/query.sol";
 
 contract queryTest is Test {
   using ResourceSelector for bytes32;
@@ -151,10 +151,10 @@ contract queryTest is Test {
     // Set a value in the source table
     world.setRecord(namespace, nameA, keys[0], abi.encodePacked(value));
 
-    bytes32[] memory tableIds = new bytes32[](1);
-    tableIds[0] = tableA;
+    Fragment[] memory fragments = new Fragment[](1);
+    fragments[0] = Fragment(true, tableA);
 
-    bytes32[][] memory keyTuples = intersection(world, tableIds);
+    bytes32[][] memory keyTuples = intersection(world, fragments);
 
     // Assert that the list includes all the keys in the table
     assertEq(keyTuples.length, 1);
@@ -166,7 +166,7 @@ contract queryTest is Test {
     world.setRecord(namespace, nameA, keys[1], abi.encodePacked(value));
 
     // Get the list of keys in the target table
-    keyTuples = intersection(world, tableIds);
+    keyTuples = intersection(world, fragments);
 
     // Assert that the list includes all the keys in the table
     assertEq(keyTuples.length, 2);
@@ -178,15 +178,15 @@ contract queryTest is Test {
   function testIntersectionTwoTables21(uint256 value) public {
     _installKeysInTableModule();
 
-    bytes32[] memory tableIds = new bytes32[](2);
-    tableIds[0] = tableA;
-    tableIds[1] = tableB;
+    Fragment[] memory fragments = new Fragment[](2);
+    fragments[0] = Fragment(true, tableA);
+    fragments[1] = Fragment(true, tableB);
 
     world.setRecord(namespace, nameA, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameA, keys[1], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples = intersection(world, tableIds);
+    bytes32[][] memory keyTuples = intersection(world, fragments);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 1);
@@ -196,15 +196,15 @@ contract queryTest is Test {
   function testIntersectionTwoTables12(uint256 value) public {
     _installKeysInTableModule();
 
-    bytes32[] memory tableIds = new bytes32[](2);
-    tableIds[0] = tableA;
-    tableIds[1] = tableB;
+    Fragment[] memory fragments = new Fragment[](2);
+    fragments[0] = Fragment(true, tableA);
+    fragments[1] = Fragment(true, tableB);
 
     world.setRecord(namespace, nameA, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[1], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples = intersection(world, tableIds);
+    bytes32[][] memory keyTuples = intersection(world, fragments);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 1);
@@ -214,9 +214,9 @@ contract queryTest is Test {
   function testIntersectionTwoTables22(uint256 value) public {
     _installKeysInTableModule();
 
-    bytes32[] memory tableIds = new bytes32[](2);
-    tableIds[0] = tableA;
-    tableIds[1] = tableB;
+    Fragment[] memory fragments = new Fragment[](2);
+    fragments[0] = Fragment(true, tableA);
+    fragments[1] = Fragment(true, tableB);
 
     // Set both keys in both tables
     world.setRecord(namespace, nameA, keys[0], abi.encodePacked(value));
@@ -224,7 +224,7 @@ contract queryTest is Test {
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[1], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples = intersection(world, tableIds);
+    bytes32[][] memory keyTuples = intersection(world, fragments);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 2);
@@ -232,7 +232,7 @@ contract queryTest is Test {
     assertEq(keyTuples[1][0], keys[1][0]);
   }
 
-  function testIntersectionFragment21(uint256 value) public {
+  function testintersection21(uint256 value) public {
     _installKeysInTableModule();
 
     Fragment[] memory fragments = new Fragment[](2);
@@ -244,14 +244,14 @@ contract queryTest is Test {
 
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples = intersectionFragment(world, fragments);
+    bytes32[][] memory keyTuples = intersection(world, fragments);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 1);
     assertEq(keyTuples[0][0], keys[1][0]);
   }
 
-  function testIntersectionFragment21True(uint256 value) public {
+  function testintersection21True(uint256 value) public {
     _installKeysInTableModule();
 
     Fragment[] memory fragments = new Fragment[](2);
@@ -263,14 +263,14 @@ contract queryTest is Test {
 
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples = intersectionFragment(world, fragments);
+    bytes32[][] memory keyTuples = intersection(world, fragments);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 1);
     assertEq(keyTuples[0][0], keys[0][0]);
   }
 
-  function testIntersectionFragment12(uint256 value) public {
+  function testintersection12(uint256 value) public {
     _installKeysInTableModule();
 
     Fragment[] memory fragments = new Fragment[](2);
@@ -282,13 +282,13 @@ contract queryTest is Test {
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[1], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples = intersectionFragment(world, fragments);
+    bytes32[][] memory keyTuples = intersection(world, fragments);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 0);
   }
 
-  function testIntersectionFragment12True(uint256 value) public {
+  function testintersection12True(uint256 value) public {
     _installKeysInTableModule();
 
     Fragment[] memory fragments = new Fragment[](2);
@@ -300,7 +300,7 @@ contract queryTest is Test {
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[1], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples = intersectionFragment(world, fragments);
+    bytes32[][] memory keyTuples = intersection(world, fragments);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples.length, 1);
