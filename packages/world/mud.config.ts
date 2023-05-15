@@ -67,6 +67,13 @@ export default mudConfig({
         resourceSelector: "bytes32",
       },
     },
+    SystemHooks: {
+      directory: "modules/core/tables",
+      primaryKeys: {
+        resourceSelector: "bytes32",
+      },
+      schema: "address[]",
+    },
     ResourceType: {
       directory: "modules/core/tables",
       primaryKeys: {
