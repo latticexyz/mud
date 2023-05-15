@@ -2,7 +2,7 @@ import type { CommandModule } from "yargs";
 import { anvil, forge, getRpcUrl } from "@latticexyz/common/foundry";
 import chalk from "chalk";
 import { rmSync, writeFileSync } from "fs";
-import { yDeployOptions } from "./deploy-v2";
+import { yDeployOptions } from "./deploy";
 import { deployHandler, DeployOptions } from "../utils";
 
 type Options = DeployOptions & { port?: number; worldAddress?: string; forgeOptions?: string };
@@ -10,9 +10,9 @@ type Options = DeployOptions & { port?: number; worldAddress?: string; forgeOpti
 const WORLD_ADDRESS_FILE = ".mudtest";
 
 const commandModule: CommandModule<Options, Options> = {
-  command: "test-v2",
+  command: "test",
 
-  describe: "Run tests in MUD v2 contracts",
+  describe: "Run tests in MUD contracts",
 
   builder(yargs) {
     return yargs.options({

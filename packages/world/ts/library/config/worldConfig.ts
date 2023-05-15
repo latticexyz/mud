@@ -43,6 +43,7 @@ export const zWorldConfig = z.object({
   excludeSystems: z.array(zSystemName).default(WORLD_DEFAULTS.excludeSystems),
   postDeployScript: z.string().default(WORLD_DEFAULTS.postDeployScript),
   deploysDirectory: z.string().default(WORLD_DEFAULTS.deploysDirectory),
+  worldsFile: z.string().default(WORLD_DEFAULTS.worldsFile),
   worldgenDirectory: z.string().default(WORLD_DEFAULTS.worldgenDirectory),
   worldImportPath: z.string().default(WORLD_DEFAULTS.worldImportPath),
   modules: z.array(zModuleConfig).default(WORLD_DEFAULTS.modules),

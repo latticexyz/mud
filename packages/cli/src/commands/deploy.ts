@@ -30,9 +30,9 @@ export async function deployHandler(args: Parameters<(typeof commandModule)["han
 }
 
 const commandModule: CommandModule<DeployOptions, DeployOptions> = {
-  command: "deploy-v2",
+  command: "deploy",
 
-  describe: "Deploy MUD v2 contracts",
+  describe: "Deploy MUD contracts",
 
   builder(yargs) {
     return yargs.options(yDeployOptions);

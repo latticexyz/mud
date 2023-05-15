@@ -6,6 +6,7 @@ export default defineConfig({
     foundry: "src/foundry/index.ts",
     "type-utils": "src/type-utils/index.ts",
     utils: "src/utils/index.ts",
+    errors: "src/errors/index.ts",
   },
   target: "esnext",
   format: ["esm"],

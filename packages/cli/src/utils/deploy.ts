@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { existsSync, readFileSync } from "fs";
 import path from "path";
 import chalk from "chalk";
@@ -7,7 +6,7 @@ import { defaultAbiCoder as abi, Fragment, ParamType } from "ethers/lib/utils.js
 
 import { getOutDirectory, getScriptDirectory, cast, forge } from "@latticexyz/common/foundry";
 import { resolveWithContext } from "@latticexyz/config";
-import { MUDError } from "@latticexyz/config";
+import { MUDError } from "@latticexyz/common/errors";
 import { encodeSchema } from "@latticexyz/schema-type";
 import { StoreConfig, resolveAbiOrUserType } from "@latticexyz/store";
 import { WorldConfig, resolveWorldConfig } from "@latticexyz/world";
