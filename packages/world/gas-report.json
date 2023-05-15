@@ -96,6 +96,72 @@
     "gasUsed": 138103
   },
   {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasHasValueNotQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 69727
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasHasValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 45842
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasNotQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 58018
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 42214
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasValueNotQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 45736
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 19563
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 9398
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasQuery with 1000 keys",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 1150518
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasQuery with 100 keys",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 106293
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 9498
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "NotValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 39031
+  },
+  {
     "source": "test/UniqueEntityModule.t.sol",
     "name": "install unique entity module",
     "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",
