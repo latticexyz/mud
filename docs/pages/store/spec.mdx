@@ -1,0 +1,17 @@
+**This spec is a work-in-progress**
+## Standard events with enough information for Indexers to reconstruct the state
+
+When a record or a single field is edited, or when a record is deleted, Store emits a standard event with enough information for off-chain actors to reconstruct the new version of the Store with even-sourcing.
+
+```solidity
+event StoreSetRecord(uint256 tableId, bytes32[] key, bytes data);
+event StoreSetField(uint256 tableId, bytes32[] key, uint8 schemaIndex, bytes data);
+event StoreDeleteRecord(uint256 tableId, bytes32[] key);
+```
+
+Each event includes the table ID and each primary key encoded as `bytes32`.
+
+MUD comes with many libraries and services in order to reconstruct the state of any Store with typed columns and keys:
+
+1. MODE is a service that mirrors the state of a Store in a Postgres database, and keeping it update to that with milliseconds of latency. It is then possible for clients to make queries on the Postgres database directly, thus sidestepping the Ethereum JSON-RCP.
+2. The MUD Networking stack can reconstruct the state of Store in the browser using a JSON-RPC or a MODE.
