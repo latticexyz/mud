@@ -73,12 +73,6 @@ export interface TableConfig<
 > {
   /** Output directory path for the file. Default is "tables" */
   directory?: string;
-  /**
-   * The name is used with the namespace to register the table and construct its id.
-   * The table id will be uint256(bytes32(abi.encodePacked(bytes16(namespace), bytes16(name)))).
-   * Default is "<tableName>"
-   * */
-  name?: string;
   /** Make methods accept `tableId` argument instead of it being a hardcoded constant. Default is false */
   tableIdArgument?: boolean;
   /** Include methods that accept a manual `IStore` argument. Default is true. */
@@ -163,7 +157,7 @@ export const zTablesConfig = z.record(zTableName, zTableConfig).transform((table
   // default name depends on tableName
   for (const tableName of Object.keys(tables)) {
     const table = tables[tableName];
-    table.name ??= tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
+    table.name = tableName.slice(0, STORE_SELECTOR_MAX_LENGTH);
 
     tables[tableName] = table;
   }
