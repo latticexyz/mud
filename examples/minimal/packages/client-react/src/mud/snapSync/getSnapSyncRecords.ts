@@ -2,18 +2,17 @@ import { RawTableRecord } from "@latticexyz/network";
 import { TableId } from "@latticexyz/utils";
 import snapSyncSystemAbi from "./snapSyncSystemAbi";
 import { Contract, Signer, providers } from "ethers";
-import { defineContractComponents } from "../contractComponents";
 
 export async function getSnapSyncRecords(
   worldAddress: string,
-  contractComponents: ReturnType<typeof defineContractComponents>,
+  tables: TableId[],
   currentBlockNumber: number,
   signerOrProvider: Signer | providers.JsonRpcProvider
 ) {
   const snapSyncContract = new Contract(worldAddress, snapSyncSystemAbi, signerOrProvider);
 
   const chunkSize = 100;
-  const tableIds = Object.values(contractComponents).map((c) => c.metadata.contractId);
+  const tableIds = tables.map((table) => table.toHexString());
   const tableRecords = [] as RawTableRecord[];
   for (const tableId of tableIds) {
     const numKeys = (
