@@ -13,7 +13,7 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
-import { union, intersection, Fragment } from "../src/modules/keysintable/query.sol";
+import { union, intersection, intersectionBare, Fragment } from "../src/modules/keysintable/query.sol";
 
 contract queryTest is Test {
   using ResourceSelector for bytes32;
@@ -192,12 +192,19 @@ contract queryTest is Test {
 
     bytes32[][] memory keyTuples1 = intersection(world, fragmentsTrueFalse);
     bytes32[][] memory keyTuples2 = intersection(world, fragmentsTrueTrue);
+    bytes32[][] memory keyTuplesBare1 = intersectionBare(world, fragmentsTrueFalse);
+    bytes32[][] memory keyTuplesBare2 = intersectionBare(world, fragmentsTrueTrue);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples1.length, 1);
     assertEq(keyTuples1[0][0], keys[1][0]);
     assertEq(keyTuples2.length, 1);
     assertEq(keyTuples2[0][0], keys[0][0]);
+
+    assertEq(keyTuplesBare1.length, 1);
+    assertEq(keyTuplesBare1[0][0], keys[1][0]);
+    assertEq(keyTuplesBare2.length, 1);
+    assertEq(keyTuplesBare2[0][0], keys[0][0]);
   }
 
   function testIntersectionTwoTables12(uint256 value) public {
@@ -209,11 +216,17 @@ contract queryTest is Test {
 
     bytes32[][] memory keyTuples1 = intersection(world, fragmentsTrueFalse);
     bytes32[][] memory keyTuples2 = intersection(world, fragmentsTrueTrue);
+    bytes32[][] memory keyTuplesBare1 = intersectionBare(world, fragmentsTrueFalse);
+    bytes32[][] memory keyTuplesBare2 = intersectionBare(world, fragmentsTrueTrue);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples1.length, 0);
     assertEq(keyTuples2.length, 1);
     assertEq(keyTuples2[0][0], keys[0][0]);
+
+    assertEq(keyTuplesBare1.length, 0);
+    assertEq(keyTuplesBare2.length, 1);
+    assertEq(keyTuplesBare2[0][0], keys[0][0]);
   }
 
   function testIntersectionTwoTables22(uint256 value) public {
@@ -227,11 +240,18 @@ contract queryTest is Test {
 
     bytes32[][] memory keyTuples1 = intersection(world, fragmentsTrueFalse);
     bytes32[][] memory keyTuples2 = intersection(world, fragmentsTrueTrue);
+    bytes32[][] memory keyTuplesBare1 = intersectionBare(world, fragmentsTrueFalse);
+    bytes32[][] memory keyTuplesBare2 = intersectionBare(world, fragmentsTrueTrue);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples1.length, 0);
     assertEq(keyTuples2.length, 2);
     assertEq(keyTuples2[0][0], keys[0][0]);
     assertEq(keyTuples2[1][0], keys[1][0]);
+
+    assertEq(keyTuplesBare1.length, 0);
+    assertEq(keyTuplesBare2.length, 2);
+    assertEq(keyTuplesBare2[0][0], keys[0][0]);
+    assertEq(keyTuplesBare2[1][0], keys[1][0]);
   }
 }
