@@ -61,22 +61,21 @@ function intersection(IStore store, QueryFragment[] memory fragments) view retur
     : ArrayLib.unflatten(getKeysWithValue(store, fragments[0].tableId, fragments[0].value));
 
   for (uint256 i = 1; i < fragments.length; i++) {
-    uint256 index;
+    bytes32[][] memory result = new bytes32[][](0);
+
     for (uint256 j; j < keyTuples.length; j++) {
       bool passes = passesQueryFragment(store, keyTuples[j], fragments[i]);
       if (passes) {
-        index++;
-      }
-    }
+        // Increase the length of result array and add the new key
+        uint256 length = result.length;
 
-    bytes32[][] memory result = new bytes32[][](index);
+        bytes32[][] memory newResult = new bytes32[][](length + 1);
+        for (uint256 k; k < length; k++) {
+          newResult[k] = result[k];
+        }
+        result = newResult;
 
-    index = 0;
-    for (uint256 j; j < keyTuples.length; j++) {
-      bool passes = passesQueryFragment(store, keyTuples[j], fragments[i]);
-      if (passes) {
-        result[index] = keyTuples[j];
-        index++;
+        result[length] = keyTuples[j];
       }
     }
 
