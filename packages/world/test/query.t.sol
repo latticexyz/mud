@@ -278,7 +278,7 @@ contract QueryTest is Test {
     assertTrue(keyTuples[1][0] == key2[0]);
   }
 
-  function testHasQuery100() public {
+  function testHasQuery100Keys() public {
     _installKeysInTableModule();
 
     for (uint256 i; i < 100; i++) {
@@ -298,7 +298,7 @@ contract QueryTest is Test {
     assertTrue(keyTuples.length == 100);
   }
 
-  function testHasQuery1000() public {
+  function testHasQuery1000Keys() public {
     _installKeysInTableModule();
 
     for (uint256 i; i < 1000; i++) {
