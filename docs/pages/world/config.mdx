@@ -1,0 +1,94 @@
+## The World config
+
+In order to use World, your project needs a MUD framework config that can be interpreted by the deployer and the test-runner. Currently, the configuration parser supports typescript, but more format will come later (if you really despise javascript as an example 🥲).
+
+The configuration file needs to be named `mud.config.ts` and in the same folder as your `foundry.toml` file. You’ll notice it’s the same configuration file as for Store: if you are already using Store, using World is as easy as adding additional fields to your config!
+
+The config is used to define:
+
+1. All the tables in your project in the `tables` object of your configuration. You can head to the [Store documentation](../store) to read more about the format for tables.
+2. The namespace the systems and tables will be deployed in. 
+3. The systems in your project. By default, the deployer will find all Solidity matching `*System*.sol` (so any file containing `System` with a `.sol` extension, in any folder) and deploy them as System. If you want greater control over your systems (to change their public access or their name), you can use the `systems` object in the config
+4. The modules that will be installed on the World. More on this in the [Modules section](module)
+
+An example of a World config with all the different configuration keys and options used:
+```tsx
+import { mudConfig } from "@latticexyz/config";
+
+export default mudConfig({
+  excludeSystems: ["System3", "System2"],
+  worldContractName: "CustomWorld",
+  namespace: "mud",
+  systems: {
+    IncrementSystem: {
+      name: "increment",
+      openAccess: true,
+    },
+  },
+  tables: {
+    CounterTable: {
+      name: "counter",
+      schema: {
+        value: "uint32",
+      },
+    },
+  },
+  deploysDirectory: "./mud-deploys",
+	modules: [
+    {
+      name: "KeysWithValueModule",
+      root: true,
+      args: [resolveTableId("CounterTable")],
+    },
+  ],
+});
+```
+
+### Global configuration keys
+
+**`namespace` (required)**: a `string`: which namespace to deploy the resources defined in the config into
+
+**`excludeSystems` (optional)**: an array of `string`: which systems to not deploy, even if their name includes “system”.
+
+**`worldContractName` (optional)**: a `string`: the name of a contract in your project implementing the `IWorld` interface. Useful if you want to modify the default World implementation. Here be dragons 🐲
+
+**`deploysDirectory` (optional)** a `string`: which folder to put the deployment artifacts into after deployment.
+
+**`modules` (optional)** an array of module definition: module definition have a `name`, `root` (optional), and `args` key.
+
+`name`: Name of the module to instantiate. The same module can be instantiated multiple times. This should be the name of the contract file without `.sol` (eg: if the contract is named `DopeModule.sol`, the name of the module is `DopeModule`)
+
+`root`: wether to create a `root` module or not. `root` modules have access to all tables and are not bound to namespace restrictions.
+
+`args`: a list of arguments to be sent to the `install` function of the module. In this array, you can use special functions:
+
+1. `resolveTableId`: This function will turn a table name from your config into its low-level ID in the World. Useful to pass references of a table to a module.
+2. ***More to come*** 
+
+### System configuration keys
+
+Adding a system is done by adding an entry to the **`systems`** key. The name of the record is the name of the file (if your system is named `SystemA.sol`, use `SystemA` as the key to add to the **`systems`** dictionary.
+
+Example:
+
+```tsx
+import { mudConfig } from "@latticexyz/config";
+
+export default mudConfig({
+  systems: {
+    SystemA: {
+      name: "systema",
+      openAccess: true,
+    },
+  },
+  tables: {},
+});
+```
+
+The system configuration can have these properties: 
+
+**`fileSelector` (optional)**: a `string`: the file selector for the system. 
+
+**`openAccess` (optional)**: a `bool`: if set to `false`, only the systems in the same namespace and the addresses or systems listed from the accessList. Default is `true`.
+
+**`accessList` (required if openAccess is `false`)**: an array of `string`. Each address in the array will be granted access to this system, allowing them to call it.

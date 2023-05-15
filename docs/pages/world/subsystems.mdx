@@ -1,0 +1,64 @@
+## Pattern: sub-system
+
+If you want to re-use logic in your namespace, it can be useful to create sub-systems: private system that bundles often re-used logic together.
+
+As an example, let’s say you are building an NFT project. You have an `OwnerTable` and `BalanceTable` in your namespace representing token ownership and the total balance of each address. In order to comply with the ERC-721 spec, you need to modify both tables atomically and emit an event a `Transfer` event on a contract.
+
+You have many different places in your code that that transfers NFTs from one address to another (a game, a raffle, an auction, etc) and you would like to make sure this code exists only in one place to avoid errors.
+
+You could use a library, but it would increase the code size of each system. You could use a public library, but deployment tools today don’t support re-using public libraries really well (they tend to re-deploy them over and over again), and it’s not possible to upgrade them unless you do some proxy magic.
+With World, you could deploy this piece of logic in a system — let’s call it the `TransferSystem` — and set its `openAccess` to false. Now only systems in the same namespace can execute a transfer through this system, and there are no risk of security coming from having external EOAs or systems in different namespaces transfer NFTs directly by being able to call that system.
+
+```tsx
+import { mudConfig } from "@latticexyz/config";
+
+export default mudConfig({
+    namespace: "nftgame",
+    systems: {
+        TransferSystem: {
+            name: "transfer",
+            openAccess: false, // it's a subsystem now!
+        },
+        GameSystem: {...},
+        RaffleSystem: {...},
+        MintSystem: {...},
+    },
+    tables: {
+        BalanceTable: {
+            primaryKeys: { owner: "address"},
+            schema: { amount: "uint256" },
+            name: "balance"
+        },
+        OwnerTable: {
+            primaryKeys: { token: "uint256" },
+            schema: { owner: "address" },
+            name: "owner"
+        },
+    },
+});
+```
+
+And the Transfer system could look like this:
+
+```solidity
+// SPDX-License-Identifier: MIT
+pragma solidity >=0.8.0;
+import { System } from "@latticexyz/world/src/System.sol";
+import { BalanceTable } from "../codegen/tables/BalanceTable.sol";
+import { OwnerTable } from "../codegen/tables/OwnerTable.sol";
+contract TranferSystem is System {
+    function transfer(uint256 token, address to) public returns () {
+        address from = OwnerTable.get(token);
+        OwnerTable.set(token, to);
+        Balance.set(from, Balance.get(from) - 1);
+        Balance.set(to, Balance.get(to) + 1);
+        emit Transfer(from, to, token);
+    }
+}
+```
+
+<aside>
+**Question**: How can there be no access control or modifier on the transfer function? How does the World make sure no-one can call this function directly and change the BalanceTable and the OwnerTable?
+
+**Answer**: When using World, systems are called from the World, never directly. The World is used as an entry point and deals with access-control. Here, the World would enforce that only systems within the `nftgame` namespace can call this TransferSystem. If a contract or an EOA were to call this contract directly, the Store auto-generated libraries would try forwarding the read and writes to the `msg.sender` (remember that systems have no state!), where this likely no Store and no Store API; and even if there were to be one they wouldn’t modifying the one on the Store!
+</aside>

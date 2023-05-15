@@ -1,12 +1,14 @@
 import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
+import { stringToBytes32 } from "@latticexyz/utils";
 
 export const App = () => {
   const {
     components: { CounterTable, MessageTable },
     singletonEntity,
     worldSend,
+    storeCache,
   } = useMUD();
 
   const counter = useComponentValue(CounterTable, singletonEntity);
@@ -14,6 +16,10 @@ export const App = () => {
   const [myMessage, setMyMessage] = useState<string>("");
   const [messages, setMessages] = useState<string[]>([]);
   const message = useComponentValue(MessageTable, singletonEntity);
+
+  useEffect(() => {
+    storeCache.tables.Inventory.subscribe((update) => console.log("got update from inventory table", update));
+  }, [storeCache]);
 
   useEffect(() => {
     if (!message?.value) return;
@@ -36,6 +42,17 @@ export const App = () => {
         }}
       >
         Increment
+      </button>{" "}
+      <button
+        type="button"
+        onClick={async () => {
+          const tx = await worldSend("pickUp", [stringToBytes32("someItem"), 1]);
+
+          console.log("pickup tx", tx);
+          console.log("pickUp result", await tx.wait());
+        }}
+      >
+        Set Inventory table
       </button>{" "}
       <button
         type="button"

@@ -1,0 +1,63 @@
+## Modules
+
+Modules are on-chain scripts that can be executed on the World. They are used to install tables, systems, hooks, and new entry point to a World in order to extend its capabilities.
+
+Currently the code of each module you want to use need to exist in your project, but we are paving the way to having an on-chain module registry à la NPM. 
+
+### Default modules
+
+Currently, two modules are installed on each World:
+
+1. **`CoreModule`**
+    
+The [`CoreModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/core/CoreModule.sol) module adds critical tables to the World. 
+    
+2. **`RegistrationModule`**
+    
+The [`RegistrationModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationModule.sol) adds the [`RegistrationSystem`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/registration/RegistrationSystem.sol) along with its dependencies to the World. This registration system surfaces the APIs necessary to register Systems, Tables, and Namespaces on-chain without being the World root user. If you do not want to make your World permissionlessly extensible, you can simply not install the RegistrationModule (this is not supported by the CLI right now).
+    
+
+One module is currently offered by default:
+
+1. **`KeysWithValueModule`**
+    
+The [`KeysWithValueModule`](https://github.com/latticexyz/mud/blob/main/packages/world/src/modules/keyswithvalue/KeysWithValueModule.sol) allows for installing a specialized indexer on tables that only have one key (eg: ECS components). It install a hook that keeps a **reverse-mapping** index up to date for tables it is installed on. 
+
+This allows for querying for all keys that have a specific value. As an example, this can be used to ask for all NFTs owned by a specific use (if the table models `NFT ID → Owner`), or all units on a specific position (if the ECS component is modeled as `entity → Position`)
+
+Using `getKeysWithValue(uint256 tableId, bytes memory value)` to ask for all NFTs owned by a specific address
+
+```jsx
+// assumes this ownership table:
+// Owners: {
+//   schema: "address",
+//   primaryKeys: { nftId: "uint256" }
+// }
+import { Owners, OwnersId } from "./tables/Owners.sol";
+// get all nfts (as bytes, need to convert to uint256) owned by address 0x42
+bytes32[] memory keysWithValue = getKeysWithValue(world, OwnersId, Owners.encode(address(42)));
+```
+    
+
+### Installing a module
+To install a module, create an entry in the **`modules`** field of your config, and specify whether it should be a root module with the `root` key. The arguments sent to the `install` functions are listed in the `args` key, and you can use dynamic functions that resolve to resources in the World (currently only `resolveTableId` is available).
+
+```tsx
+import { mudConfig } from "@latticexyz/config";
+
+export default mudConfig({
+    tables: {
+        MyTable: {
+            name: "mytable",
+            schema: "uint32"
+        },
+    },
+    modules: [
+        {
+        name: "KeysWithValueModule",
+        root: true,
+        args: [resolveTableId("MyTable")],
+        },
+    ],
+});
+```

@@ -9,17 +9,19 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
 import { awaitStreamValue } from "@latticexyz/utils";
 import { getSnapSyncRecords } from "./snapSync";
+import storeConfig from "contracts/mud.config";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
 export async function setup() {
   const contractComponents = defineContractComponents(world);
   const networkConfig = await getNetworkConfig();
-  const result = await setupMUDV2Network<typeof contractComponents>({
+  const result = await setupMUDV2Network<typeof contractComponents, typeof storeConfig>({
     networkConfig,
     world,
     contractComponents,
     syncThread: "main",
+    storeConfig,
     worldAbi: IWorld__factory.abi,
   });
 

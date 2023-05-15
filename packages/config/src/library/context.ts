@@ -6,8 +6,10 @@ export type GlobalWithMUDCoreContext = typeof global & {
 };
 
 export class MUDCoreContext {
+  static _global = typeof global === "undefined" ? window.global ?? {} : global;
+
   public static isCreated(): boolean {
-    const globalWithMUDCoreContext = global as GlobalWithMUDCoreContext;
+    const globalWithMUDCoreContext = this._global as GlobalWithMUDCoreContext;
     return globalWithMUDCoreContext.__mudCoreContext !== undefined;
   }
 
@@ -15,14 +17,14 @@ export class MUDCoreContext {
     if (this.isCreated()) {
       throw new MUDContextAlreadyCreatedError();
     }
-    const globalWithMUDCoreContext = global as GlobalWithMUDCoreContext;
+    const globalWithMUDCoreContext = this._global as GlobalWithMUDCoreContext;
     const context = new MUDCoreContext();
     globalWithMUDCoreContext.__mudCoreContext = context;
     return context;
   }
 
   public static getContext(): MUDCoreContext {
-    const globalWithMUDCoreContext = global as GlobalWithMUDCoreContext;
+    const globalWithMUDCoreContext = this._global as GlobalWithMUDCoreContext;
     const context = globalWithMUDCoreContext.__mudCoreContext;
     if (context === undefined) {
       throw new MUDContextNotCreatedError();

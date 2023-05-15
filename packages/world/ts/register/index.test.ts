@@ -7,20 +7,18 @@ test("resolveWorldConfig requires unique table and system names", () => {
     resolveWorldConfig(
       mudConfig({
         tables: {
-          Table: {
-            name: "Selector",
+          Selector: {
             schema: "uint256",
           },
         },
         overrideSystems: {
-          TestSystem: {
-            name: "Selector",
+          Selector: {
             openAccess: false,
             accessList: [],
           },
         },
       }),
-      ["TestSystem"]
+      ["Selector"]
     )
   ).toThrowError("Table and system names must be unique: Selector");
 });

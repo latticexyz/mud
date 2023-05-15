@@ -97,7 +97,7 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
 ) {
   const { namespace, table, key } = filter || {};
 
-  const prefix = table && namespace ? [namespace, table] : undefined;
+  const prefix = table != null && namespace != null ? [namespace, table] : undefined;
 
   const scanArgs: ScanArgs<Tuple, Tuple> = {};
 
@@ -201,7 +201,7 @@ function tupleToRecord(tuple: Tuple): Record<string, any> {
     // Ignore all non-object tuple values
     if (entry === null || Array.isArray(entry) || typeof entry !== "object") continue;
     for (const [key, value] of Object.entries(entry)) {
-      record[key] = value;
+      record[key] = deserializeKey(value);
     }
   }
   return record;
@@ -209,10 +209,26 @@ function tupleToRecord(tuple: Tuple): Record<string, any> {
 
 /**
  * Helper to serialize values that are not natively supported in keys by tuple-database.
+ * (see https://github.com/ccorcos/tuple-database/issues/25)
  * For now only `bigint` needs serialization.
  */
 function serializeKey(key: unknown) {
-  if (typeof key === "bigint") return String(key);
+  if (typeof key === "bigint") return `${key.toString()}n`;
+  return key;
+}
+
+/**
+ * Helper to deserialize values that were serialized by `serializeKey` (because they are not natively supported in keys by tuple-database).
+ * (see https://github.com/ccorcos/tuple-database/issues/25)
+ * For now only `bigint` is serialized and need to be deserialized here.
+ */
+function deserializeKey(key: unknown): unknown {
+  // Check whether the key matches the mattern `${number}n`
+  // (serialization of bigint in `serializeKey`)
+  // and turn it back into a bigint
+  if (typeof key === "string" && /^-?\d+n$/.test(key)) {
+    return BigInt(key.slice(0, -1));
+  }
   return key;
 }
 

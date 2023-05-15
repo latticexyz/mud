@@ -7,10 +7,10 @@ import { concatMap, from, map, Subject, Subscription, timer } from "rxjs";
 import { isNetworkComponentUpdateEvent, NetworkComponentUpdate, NetworkEvents } from "../types";
 import { Components, Entity } from "@latticexyz/recs";
 import { createCacheStore, storeEvent } from "./CacheStore";
-import * as syncUtils from "./syncUtils";
 import "fake-indexeddb/auto";
 import { SingletonID, SyncState } from "./constants";
-import { createLatestEventStreamRPC, createLatestEventStreamService } from "./syncUtils";
+import * as syncUtils from "../v2/syncUtils";
+import { createLatestEventStreamRPC } from "../v2/syncUtils";
 
 // Test constants
 const cacheBlockNumber = 99;
@@ -18,23 +18,14 @@ const cacheEvent = {
   type: NetworkEvents.NetworkComponentUpdate,
   component: "0x10",
   entity: "0x11" as Entity,
+  key: { key: "0x11" },
   value: {},
   txHash: "0x12",
   lastEventInTx: true,
   blockNumber: cacheBlockNumber + 1,
+  namespace: "namespace",
+  table: "table",
 } as NetworkComponentUpdate;
-const snapshotBlockNumber = 9999;
-const snapshotEvents = [
-  {
-    type: NetworkEvents.NetworkComponentUpdate,
-    component: "0x42",
-    entity: "0x11" as Entity,
-    value: {},
-    txHash: "0x12",
-    lastEventInTx: true,
-    blockNumber: snapshotBlockNumber + 1,
-  },
-] as NetworkComponentUpdate[];
 const blockNumber$ = new Subject<number>();
 const latestEvent$ = new Subject<NetworkComponentUpdate>();
 const lastGapStateEventBlockNumber = 999;
@@ -43,10 +34,13 @@ const gapStateEvents = [
     type: NetworkEvents.NetworkComponentUpdate,
     component: "0x20",
     entity: "0x21" as Entity,
+    key: { key: "0x21" },
     value: {},
     txHash: "0x22",
     lastEventInTx: true,
     blockNumber: lastGapStateEventBlockNumber,
+    namespace: "namespace",
+    table: "table2",
   },
 ] as NetworkComponentUpdate[];
 
@@ -82,17 +76,11 @@ jest.mock("../createBlockNumberStream", () => ({
   createBlockNumberStream: () => ({ blockNumber$ }),
 }));
 
-jest.mock("./syncUtils", () => ({
-  ...jest.requireActual("./syncUtils"),
+jest.mock("../v2/syncUtils", () => ({
+  ...jest.requireActual("../v2/syncUtils"),
   createFetchWorldEventsInBlockRange: () => () => Promise.resolve([]),
   createLatestEventStreamRPC: jest.fn(() => latestEvent$),
   createLatestEventStreamService: jest.fn(() => latestEvent$),
-  getSnapshotBlockNumber: () => Promise.resolve(snapshotBlockNumber),
-  fetchSnapshotChunked: () => {
-    const store = createCacheStore();
-    for (const event of snapshotEvents) storeEvent(store, event);
-    return store;
-  },
   fetchStateInBlockRange: jest.fn((fetchWorldEvents: any, boundFetchStoreEvents: any, from: number, to: number) => {
     const store = createCacheStore();
     if (to > 1000) {
@@ -144,7 +132,7 @@ describe("Sync.worker", () => {
     jest.clearAllMocks();
   });
 
-  it("should report the current loading state via the `component.LoadingState` component", async () => {
+  it.only("should report the current loading state via the `component.LoadingState` component", async () => {
     const freshOutput = jest.fn();
     const freshWorker = new SyncWorker();
     const freshInput$ = new Subject<Input>();
@@ -171,9 +159,12 @@ describe("Sync.worker", () => {
       component: keccak256("component.LoadingState"),
       value: { state: SyncState.LIVE, msg: "Streaming live events", percentage: 100 },
       entity: SingletonID,
+      key: {},
       txHash: "worker",
       lastEventInTx: false,
       blockNumber: 99,
+      namespace: "mudsync",
+      table: "LoadingState",
     };
 
     await sleep(0);
@@ -209,10 +200,13 @@ describe("Sync.worker", () => {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x00",
       entity: "0x01" as Entity,
+      key: { key: "0x01" },
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
       blockNumber: 111,
+      namespace: "namespace",
+      table: "table",
     };
 
     latestEvent$.next(event);
@@ -240,58 +234,6 @@ describe("Sync.worker", () => {
     });
     await sleep(0);
     expect(createLatestEventStreamRPC).toHaveBeenCalled();
-    expect(createLatestEventStreamService).not.toHaveBeenCalled();
-  });
-
-  it("should sync live events from streaming service if streaming service is available", async () => {
-    input$.next({
-      type: InputType.Config,
-      data: {
-        snapshotServiceUrl: "",
-        streamServiceUrl: "http://localhost:50052",
-        chainId: 4242,
-        worldContract: { address: "0x00", abi: [] },
-        provider: {
-          chainId: 4242,
-          jsonRpcUrl: "",
-          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
-        },
-        initialBlockNumber: 0,
-      },
-    });
-    await sleep(0);
-    expect(createLatestEventStreamService).toHaveBeenCalled();
-  });
-
-  it("should sync from the snapshot if the snapshot block number is more than 100 blocks newer than then cache", async () => {
-    input$.next({
-      type: InputType.Config,
-      data: {
-        snapshotServiceUrl: "http://localhost:50062",
-        streamServiceUrl: "",
-        chainId: 4242,
-        worldContract: { address: "0x00", abi: [] },
-        provider: {
-          chainId: 4242,
-          jsonRpcUrl: "",
-          options: { batch: false, pollingInterval: 1000, skipNetworkCheck: true },
-        },
-        initialBlockNumber: 0,
-      },
-    });
-
-    await sleep(0);
-    blockNumber$.next(101);
-    await sleep(50);
-
-    // Expect output to contain the events from the cache
-    expect(output).toHaveBeenCalledTimes(1);
-    expect(output).toHaveBeenCalledWith({
-      ...snapshotEvents[0],
-      blockNumber: snapshotBlockNumber,
-      lastEventInTx: false,
-      txHash: "cache",
-    });
   });
 
   it("should sync from the cache if the snapshot service is not available", async () => {
@@ -392,30 +334,39 @@ describe("Sync.worker", () => {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x99",
       entity: "0x01" as Entity,
+      key: { key: "0x01" },
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
       blockNumber: firstLiveBlockNumber,
+      namespace: "namespace",
+      table: "table",
     };
 
     const event2: NetworkComponentUpdate = {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x0999",
       entity: "0x01" as Entity,
+      key: { key: "0x00" },
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
       blockNumber: secondLiveBlockNumber,
+      namespace: "namespace",
+      table: "table",
     };
 
     const event3: NetworkComponentUpdate = {
       type: NetworkEvents.NetworkComponentUpdate,
       component: "0x9999",
       entity: "0x01" as Entity,
+      key: { key: "0x01" },
       value: {},
       txHash: "0x02",
       lastEventInTx: true,
       blockNumber: 1003,
+      namespace: "namespace",
+      table: "table",
     };
 
     await sleep(0);

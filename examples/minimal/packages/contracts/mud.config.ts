@@ -1,4 +1,5 @@
-import { mudConfig, resolveTableId } from "@latticexyz/world/register";
+import { mudConfig } from "@latticexyz/world/register";
+import { resolveTableId } from "@latticexyz/config";
 
 export default mudConfig({
   overrideSystems: {
@@ -9,7 +10,6 @@ export default mudConfig({
   },
   tables: {
     CounterTable: {
-      name: "counter",
       schema: {
         value: "uint32",
       },
@@ -21,6 +21,14 @@ export default mudConfig({
         value: "string",
       },
       ephemeral: true,
+    },
+    Inventory: {
+      primaryKeys: {
+        user: "address",
+        item: "bytes32",
+        variant: "uint32",
+      },
+      schema: { amount: "uint32" },
     },
   },
   modules: [

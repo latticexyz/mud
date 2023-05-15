@@ -10,7 +10,9 @@ export const ephemeralEvents = ["StoreEphemeralRecord"] as const;
 export type StoreEvent = (typeof storeEvents)[number];
 export type EphemeralEvent = (typeof ephemeralEvents)[number];
 
-export type TableSchema = Readonly<{
+export type TableSchema = { valueSchema: Schema; keySchema: Schema };
+
+export type Schema = Readonly<{
   staticDataLength: number;
   staticFields: SchemaType[];
   dynamicFields: SchemaType[];

@@ -1,10 +1,10 @@
 import { DynamicSchemaType, StaticSchemaType } from "@latticexyz/schema-type";
 import { hexToArray } from "@latticexyz/utils";
-import { TableSchema } from "../common";
+import { Schema } from "../common";
 import { decodeStaticField } from "./decodeStaticField";
 import { decodeDynamicField } from "./decodeDynamicField";
 
-export const decodeField = (schema: TableSchema, schemaIndex: number, hexData: string): Record<number, any> => {
+export const decodeField = (schema: Schema, schemaIndex: number, hexData: string): Record<number, any> => {
   const data: Record<number, any> = {};
   const bytes = hexToArray(hexData);
 

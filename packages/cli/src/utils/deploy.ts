@@ -28,6 +28,7 @@ export interface DeployConfig {
   debug?: boolean;
   worldAddress?: string;
   disableTxWait: boolean;
+  pollInterval: number;
 }
 
 export interface DeploymentInfo {
@@ -44,11 +45,13 @@ export async function deploy(
 
   const startTime = Date.now();
   const { worldContractName, namespace, postDeployScript } = mudConfig;
-  const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait } = deployConfig;
+  const { profile, rpc, privateKey, priorityFeeMultiplier, debug, worldAddress, disableTxWait, pollInterval } =
+    deployConfig;
   const forgeOutDirectory = await getOutDirectory(profile);
 
   // Set up signer for deployment
   const provider = new ethers.providers.StaticJsonRpcProvider(rpc);
+  provider.pollingInterval = pollInterval;
   const signer = new ethers.Wallet(privateKey, provider);
 
   // Manual nonce handling to allow for faster sending of transactions without waiting for previous transactions
@@ -303,6 +306,27 @@ export async function deploy(
 
   // Await all promises before executing PostDeploy script
   await Promise.all(promises); // ----------------------------------------------------------------------------------------------
+
+  // Confirm the current nonce is the expected nonce to make sure all transactions have been included
+  let remoteNonce = await signer.getTransactionCount();
+  let retryCount = 0;
+  const maxRetries = 100;
+  while (remoteNonce !== nonce && retryCount < maxRetries) {
+    console.log(
+      chalk.gray(
+        `Waiting for transactions to be included before executing ${postDeployScript} (local nonce: ${nonce}, remote nonce: ${remoteNonce}, retry number ${retryCount}/${maxRetries})`
+      )
+    );
+    await new Promise((resolve) => setTimeout(resolve, pollInterval));
+    retryCount++;
+    remoteNonce = await signer.getTransactionCount();
+  }
+  if (remoteNonce !== nonce) {
+    throw new MUDError(
+      "Remote nonce doesn't match local nonce, indicating that not all deploy transactions were included."
+    );
+  }
+
   promises = [];
 
   // Execute postDeploy forge script
