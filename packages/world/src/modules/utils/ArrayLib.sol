@@ -11,11 +11,16 @@ library ArrayLib {
   }
 
   function equal(bytes32[] memory arr1, bytes32[] memory arr2) internal pure returns (bool) {
+    if (arr1.length != arr2.length) {
+      return false;
+    }
+
     for (uint256 i; i < arr1.length; i++) {
       if (arr1[i] != arr2[i]) {
         return false;
       }
     }
+
     return true;
   }
 
