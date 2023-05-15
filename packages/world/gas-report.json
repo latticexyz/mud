@@ -96,6 +96,42 @@
     "gasUsed": 138103
   },
   {
+    "source": "test/query.t.sol",
+    "name": "running a Has query with one key",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 8427
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "running a Has query with two keys",
+    "functionCall": "keyTuples = query(world, fragments)",
+    "gasUsed": 9368
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "running a Has, Has query with four keys",
+    "functionCall": "keyTuplesHasHas = query(world, fragmentsHasHas)",
+    "gasUsed": 33237
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "running a Has, HasNot query with four keys",
+    "functionCall": "keyTuplesHasNot = query(world, fragmentsHasNot)",
+    "gasUsed": 32417
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "running a Has, HasValue query with four keys",
+    "functionCall": "bytes32[][] memory keyTuplesHasHasValue = query(world, fragmentsHasHasvalue)",
+    "gasUsed": 19025
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "running a HasValue, HasValue query with four keys",
+    "functionCall": "bytes32[][] memory keyTuplesHasvalueHasvalue = query(world, fragmentsHasvalueHasValue)",
+    "gasUsed": 19140
+  },
+  {
     "source": "test/UniqueEntityModule.t.sol",
     "name": "install unique entity module",
     "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",

@@ -31,10 +31,10 @@ contract QueryTest is Test {
   bytes32 tableA = ResourceSelector.from(namespace, nameA);
   bytes32 tableB = ResourceSelector.from(namespace, nameB);
 
+  uint256 value = 1;
   bytes32[][] keys = new bytes32[][](2);
-
-  QueryFragment[] fragmentsHasNot;
   QueryFragment[] fragmentsHasHas;
+  QueryFragment[] fragmentsHasNot;
 
   function setUp() public {
     tableSchema = SchemaLib.encode(SchemaType.UINT256);
@@ -47,10 +47,10 @@ contract QueryTest is Test {
     keys[0][0] = "test1";
     keys[1][0] = "test2";
 
-    fragmentsHasNot.push(QueryFragment(QueryType.Has, tableA, ""));
-    fragmentsHasNot.push(QueryFragment(QueryType.Not, tableB, ""));
     fragmentsHasHas.push(QueryFragment(QueryType.Has, tableA, ""));
     fragmentsHasHas.push(QueryFragment(QueryType.Has, tableB, ""));
+    fragmentsHasNot.push(QueryFragment(QueryType.Has, tableA, ""));
+    fragmentsHasNot.push(QueryFragment(QueryType.Not, tableB, ""));
   }
 
   function _installKeysInTableModule() internal {
@@ -61,7 +61,6 @@ contract QueryTest is Test {
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    // !gasreport install keys in table module
     world.installRootModule(keysInTableModule, abi.encode(tableA));
     world.installRootModule(keysInTableModule, abi.encode(tableB));
   }
@@ -70,97 +69,92 @@ contract QueryTest is Test {
     // Install the index module
     // TODO: add support for installing this via installModule
     // -> requires `callFrom` for the module to be able to register a hook in the name of the original caller
-    // !gasreport install keys in table module
     world.installRootModule(keysWithValueModule, abi.encode(tableA));
     world.installRootModule(keysWithValueModule, abi.encode(tableB));
   }
 
-  function testIntersectionOneTable(uint256 value) public {
+  function testHas() public {
     _installKeysInTableModule();
 
-    // Set a value in the source table
+    // Add the first key to table A
     world.setRecord(namespace, nameA, keys[0], abi.encodePacked(value));
 
     QueryFragment[] memory fragments = new QueryFragment[](1);
     fragments[0] = QueryFragment(QueryType.Has, tableA, "");
 
+    // !gasreport running a Has query with one key
     bytes32[][] memory keyTuples = query(world, fragments);
 
-    // Assert that the list includes all the keys in the table
     assertEq(keyTuples.length, 1);
     for (uint256 i; i < 1; i++) {
       assertEq(keyTuples[i][0], keys[i][0]);
     }
 
-    // Set another key with a different value
+    // Add the second key to table A
     world.setRecord(namespace, nameA, keys[1], abi.encodePacked(value));
 
-    // Get the list of keys in the target table
+    // !gasreport running a Has query with two keys
     keyTuples = query(world, fragments);
 
-    // Assert that the list includes all the keys in the table
     assertEq(keyTuples.length, 2);
     for (uint256 i; i < 2; i++) {
       assertEq(keyTuples[i][0], keys[i][0]);
     }
-  }
 
-  function testIntersectionTwoTables21(uint256 value) public {
-    _installKeysInTableModule();
-    _installKeysWithValueModule();
-
-    world.setRecord(namespace, nameA, keys[0], abi.encodePacked(value));
-    world.setRecord(namespace, nameA, keys[1], abi.encodePacked(value));
+    // Add the first key to table B
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples1 = query(world, fragmentsHasNot);
-    bytes32[][] memory keyTuples2 = query(world, fragmentsHasHas);
+    bytes32[][] memory keyTuplesHasHas = query(world, fragmentsHasHas);
+    bytes32[][] memory keyTuplesHasNot = query(world, fragmentsHasNot);
 
-    // Assert that the list is the intersection of both tables keys
-    assertEq(keyTuples1.length, 1);
-    assertEq(keyTuples1[0][0], keys[1][0]);
-    assertEq(keyTuples2.length, 1);
-    assertEq(keyTuples2[0][0], keys[0][0]);
+    assertEq(keyTuplesHasHas.length, 1);
+    assertEq(keyTuplesHasHas[0][0], keys[0][0]);
+    assertEq(keyTuplesHasNot.length, 1);
+    assertEq(keyTuplesHasNot[0][0], keys[1][0]);
+
+    // Add the second key to table B
+    world.setRecord(namespace, nameB, keys[1], abi.encodePacked(value));
+
+    // !gasreport running a Has, Has query with four keys
+    keyTuplesHasHas = query(world, fragmentsHasHas);
+    // !gasreport running a Has, HasNot query with four keys
+    keyTuplesHasNot = query(world, fragmentsHasNot);
+
+    assertEq(keyTuplesHasHas.length, 2);
+    for (uint256 i; i < 2; i++) {
+      assertEq(keyTuplesHasHas[i][0], keys[i][0]);
+    }
+    assertEq(keyTuplesHasNot.length, 0);
   }
 
-  function testIntersectionTwoTables12(uint256 value) public {
+  function testHasReverseOrder() public {
     _installKeysInTableModule();
-    _installKeysWithValueModule();
 
     world.setRecord(namespace, nameA, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[1], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples1 = query(world, fragmentsHasNot);
-    bytes32[][] memory keyTuples2 = query(world, fragmentsHasHas);
+    bytes32[][] memory keyTuplesHasNot = query(world, fragmentsHasNot);
+    bytes32[][] memory keyTuplesHasHas = query(world, fragmentsHasHas);
 
-    // Assert that the list is the intersection of both tables keys
-    assertEq(keyTuples1.length, 0);
-    assertEq(keyTuples2.length, 1);
-    assertEq(keyTuples2[0][0], keys[0][0]);
-  }
+    assertEq(keyTuplesHasNot.length, 0);
+    assertEq(keyTuplesHasHas.length, 1);
+    assertEq(keyTuplesHasHas[0][0], keys[0][0]);
 
-  function testIntersectionTwoTables22(uint256 value) public {
-    _installKeysInTableModule();
-    _installKeysWithValueModule();
-
-    // Set both keys in both tables
-    world.setRecord(namespace, nameA, keys[0], abi.encodePacked(value));
+    // Insert the second key into table A
     world.setRecord(namespace, nameA, keys[1], abi.encodePacked(value));
-    world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
-    world.setRecord(namespace, nameB, keys[1], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples1 = query(world, fragmentsHasNot);
-    bytes32[][] memory keyTuples2 = query(world, fragmentsHasHas);
+    keyTuplesHasNot = query(world, fragmentsHasNot);
+    keyTuplesHasHas = query(world, fragmentsHasHas);
 
-    // Assert that the list is the intersection of both tables keys
-    assertEq(keyTuples1.length, 0);
-    assertEq(keyTuples2.length, 2);
-    assertEq(keyTuples2[0][0], keys[0][0]);
-    assertEq(keyTuples2[1][0], keys[1][0]);
+    assertEq(keyTuplesHasNot.length, 0);
+    assertEq(keyTuplesHasHas.length, 2);
+    for (uint256 i; i < 2; i++) {
+      assertEq(keyTuplesHasHas[i][0], keys[i][0]);
+    }
   }
 
-  function testIntersectionHasValue(uint256 value) public {
+  function testHasValue() public {
     vm.assume(value != 0);
 
     _installKeysInTableModule();
@@ -183,21 +177,22 @@ contract QueryTest is Test {
     fragmentsHasvalueHasValue[0] = QueryFragment(QueryType.HasValue, tableA, abi.encodePacked(value));
     fragmentsHasvalueHasValue[1] = QueryFragment(QueryType.HasValue, tableB, abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples1 = query(world, fragmentsHasNot);
-    bytes32[][] memory keyTuples2 = query(world, fragmentsHasHas);
-    bytes32[][] memory keyTuples3 = query(world, fragmentsHasHasvalue);
-    bytes32[][] memory keyTuples4 = query(world, fragmentsHasNotvalue);
-    bytes32[][] memory keyTuples5 = query(world, fragmentsHasvalueHas);
-    bytes32[][] memory keyTuples6 = query(world, fragmentsHasvalueHasValue);
-
-    // Assert that the list is the intersection of both tables keys
-    assertEq(keyTuples1.length, 0);
-    assertEq(keyTuples2.length, 1);
-    assertEq(keyTuples2[0][0], keys[0][0]);
-    assertEq(keyTuples3.length, 1);
-    assertEq(keyTuples3[0][0], keys[0][0]);
-    assertEq(keyTuples4.length, 0);
-    assertEq(keyTuples5.length, 1);
-    assertEq(keyTuples6.length, 1);
+    // Assert that all the fragments return the correct keys
+    bytes32[][] memory keyTuplesHasHas = query(world, fragmentsHasHas);
+    assertEq(keyTuplesHasHas.length, 1);
+    assertEq(keyTuplesHasHas[0][0], keys[0][0]);
+    bytes32[][] memory keyTuplesHasNot = query(world, fragmentsHasNot);
+    assertEq(keyTuplesHasNot.length, 0);
+    // !gasreport running a Has, HasValue query with four keys
+    bytes32[][] memory keyTuplesHasHasValue = query(world, fragmentsHasHasvalue);
+    assertEq(keyTuplesHasHasValue.length, 1);
+    assertEq(keyTuplesHasHasValue[0][0], keys[0][0]);
+    bytes32[][] memory keyTuplesHasNotvalue = query(world, fragmentsHasNotvalue);
+    assertEq(keyTuplesHasNotvalue.length, 0);
+    bytes32[][] memory keyTuplesHasvalueHas = query(world, fragmentsHasvalueHas);
+    assertEq(keyTuplesHasvalueHas.length, 1);
+    // !gasreport running a HasValue, HasValue query with four keys
+    bytes32[][] memory keyTuplesHasvalueHasvalue = query(world, fragmentsHasvalueHasValue);
+    assertEq(keyTuplesHasvalueHasvalue.length, 1);
   }
 }
