@@ -4,8 +4,8 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     environment: "jsdom",
-    testTimeout: 60_000,
-    hookTimeout: 60_000,
+    testTimeout: 80_000,
+    hookTimeout: 80_000,
     // load .env for world deploy
     setupFiles: ["dotenv/config"],
   },
