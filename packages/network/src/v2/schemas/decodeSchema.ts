@@ -3,16 +3,13 @@ import { hexToArray } from "@latticexyz/utils";
 import { TableSchema } from "../common";
 
 export function decodeSchema(rawSchema: string): TableSchema {
-  console.log("decodeSchema", rawSchema, rawSchema.length);
   const isEmpty = !rawSchema || rawSchema === "0x";
   const buffer = isEmpty ? new Uint8Array(64).buffer : hexToArray(rawSchema).buffer;
   const valueSchemaBytes = new DataView(buffer); // First 32 bytes of the raw schema are the value schema
   const keySchemaBytes = new DataView(buffer.slice(32)); // Last 32 bytes of the raw schema are the key schema
 
   const valueSchema = { ...decodeSchemaBytes(valueSchemaBytes), rawSchema, isEmpty };
-  console.log("value schema", rawSchema, valueSchema);
   const keySchema = { ...decodeSchemaBytes(keySchemaBytes), rawSchema, isEmpty };
-  console.log("key schema", keySchema);
 
   return { valueSchema, keySchema };
 }
