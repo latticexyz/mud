@@ -138,8 +138,8 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
   ecsEvents$: Observable<NetworkEvent<C>[]>,
   mappings: Mappings<C>,
   ack$: Subject<Ack>,
-  storeConfig: S,
-  storeCache: ReturnType<typeof createDatabaseClient<S>>,
+  storeConfig?: S,
+  storeCache?: ReturnType<typeof createDatabaseClient<S>>,
   decodeAndEmitSystemCall?: (event: SystemCall<C>) => void
 ) {
   const txReduced$ = new Subject<string>();
@@ -159,30 +159,32 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
       if (isNetworkComponentUpdateEvent<C>(update)) {
         if (update.lastEventInTx) txReduced$.next(update.txHash);
 
-        // Apply network updates to store cache
-        const { namespace, table, key } = update;
+        if (storeCache && storeConfig) {
+          // Apply network updates to store cache
+          const { namespace, table, key } = update;
 
-        const tableConfig = storeConfig.tables[table];
+          const tableConfig = storeConfig.tables[table];
 
-        // Apply network updates to cache store
-        if (!tableConfig || namespace !== storeConfig.namespace) {
-          // console.warn("Ignoring table config outside own mud config", update, storeConfig.namespace);
-        } else {
-          // TODO: key names are not yet part of the on-chain table metadata, so we have to
-          // load them from the local mud.config (and have to ignore all tables that are not
-          // defined in the local mud config)
-          // (see https://github.com/latticexyz/mud/issues/824)
-
-          // `Object.getOwnPropertyNames` guarantees key order, `Object.keys` does not
-          const namedKey = nameKeys(key, Object.getOwnPropertyNames(tableConfig.primaryKeys));
-
-          // StoreCache handles setting partial value and initializing with default values
-          const value = update.value ?? update.partialValue;
-          if (value) {
-            const namedValue = nameKeys(value, Object.getOwnPropertyNames(tableConfig.schema));
-            storeCache.set(namespace, table, namedKey as any, namedValue as any);
+          // Apply network updates to cache store
+          if (!tableConfig || namespace !== storeConfig.namespace) {
+            // console.warn("Ignoring table config outside own mud config", update, storeConfig.namespace);
           } else {
-            storeCache.remove(namespace, table, namedKey as any);
+            // TODO: key names are not yet part of the on-chain table metadata, so we have to
+            // load them from the local mud.config (and have to ignore all tables that are not
+            // defined in the local mud config)
+            // (see https://github.com/latticexyz/mud/issues/824)
+
+            // `Object.getOwnPropertyNames` guarantees key order, `Object.keys` does not
+            const namedKey = nameKeys(key, Object.getOwnPropertyNames(tableConfig.primaryKeys));
+
+            // StoreCache handles setting partial value and initializing with default values
+            const value = update.value ?? update.partialValue;
+            if (value) {
+              const namedValue = nameKeys(value, Object.getOwnPropertyNames(tableConfig.schema));
+              storeCache.set(namespace, table, namedKey as any, namedValue as any);
+            } else {
+              storeCache.remove(namespace, table, namedKey as any);
+            }
           }
         }
 

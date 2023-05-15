@@ -31,6 +31,7 @@ type SetupMUDV2NetworkOptions<C extends ContractComponents, S extends StoreConfi
   initialGasPrice?: number;
   fetchSystemCalls?: boolean;
   syncThread?: "main" | "worker";
+  syncStoreCache?: boolean;
   storeConfig: S;
   worldAbi: Abi; // TODO: should this extend IWorldKernel ABI or a subset of?
 };
@@ -43,6 +44,7 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
   fetchSystemCalls,
   syncThread,
   storeConfig,
+  syncStoreCache = true,
   worldAbi = IWorldKernel__factory.abi,
 }: SetupMUDV2NetworkOptions<C, S>) {
   devObservables.worldAbi$.next(worldAbi);
@@ -169,7 +171,15 @@ export async function setupMUDV2Network<C extends ContractComponents, S extends 
   const db = createDatabase();
   const storeCache = createDatabaseClient(db, storeConfig);
 
-  const { txReduced$ } = applyNetworkUpdates(world, components, ecsEvents$, mappings, ack$, storeConfig, storeCache);
+  const { txReduced$ } = applyNetworkUpdates(
+    world,
+    components,
+    ecsEvents$,
+    mappings,
+    ack$,
+    syncStoreCache ? storeConfig : undefined,
+    syncStoreCache ? storeCache : undefined
+  );
 
   const encoders = networkConfig.encoders
     ? createEncoders(world, ComponentsRegistry, signerOrProvider)
