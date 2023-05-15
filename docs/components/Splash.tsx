@@ -29,7 +29,7 @@ const Splash = ({ theme }) => {
   };
 
   const handleSignUp = () => {
-    window.location.href = "https://ethglobal.com/events/autonomous";
+    window.open("https://ethglobal.com/events/autonomous", "_blank");
   };
 
   if (!isSplashOpen) return null;
