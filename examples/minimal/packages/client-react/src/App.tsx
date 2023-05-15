@@ -1,7 +1,7 @@
 import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { useEffect, useState } from "react";
-import { stringToBytes16, stringToBytes32 } from "@latticexyz/utils";
+import { stringToBytes32 } from "@latticexyz/utils";
 
 export const App = () => {
   const {
@@ -48,11 +48,11 @@ export const App = () => {
         onClick={async () => {
           const tx = await worldSend("pickUp", [stringToBytes32("someItem"), 1]);
 
-          console.log("pickUp tx", tx);
+          console.log("pickup tx", tx);
           console.log("pickUp result", await tx.wait());
         }}
       >
-        Set test table
+        Set Inventory table
       </button>{" "}
       <button
         type="button"

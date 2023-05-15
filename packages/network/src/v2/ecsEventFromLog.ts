@@ -108,6 +108,7 @@ export const ecsEventFromLog = async (
   }
 
   if (name === "StoreSetField") {
+    console.log("set field");
     const { indexedValues, indexedInitialValues, namedValues, namedInitialValues, indexedKey, namedKey } =
       await decodeStoreSetField(contract, tableId, args.key, args.schemaIndex, args.data);
     return {
