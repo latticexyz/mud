@@ -92,6 +92,7 @@ contract QueryTest is Test {
     QueryFragment[] memory fragments = new QueryFragment[](1);
     // The value argument is ignored in for Has query fragments
     fragments[0] = QueryFragment(QueryType.Has, table1, new bytes(0));
+    // !gasreport HasQuery
     bytes32[][] memory keyTuples = query(world, fragments);
 
     assertTrue(keyTuples.length == 2);
@@ -109,6 +110,7 @@ contract QueryTest is Test {
     // Query should return all keys in table1 with value 1
     QueryFragment[] memory fragments = new QueryFragment[](1);
     fragments[0] = QueryFragment(QueryType.HasValue, table1, abi.encode(1));
+    // !gasreport HasValueQuery
     bytes32[][] memory keyTuples = query(world, fragments);
 
     assertTrue(keyTuples.length == 2);
@@ -130,6 +132,7 @@ contract QueryTest is Test {
     QueryFragment[] memory fragments = new QueryFragment[](2);
     fragments[0] = QueryFragment(QueryType.Has, table1, new bytes(0));
     fragments[1] = QueryFragment(QueryType.Has, table2, new bytes(0));
+    // !gasreport CombinedHasQuery
     bytes32[][] memory keyTuples = query(world, fragments);
 
     assertTrue(keyTuples.length == 2);
@@ -152,6 +155,7 @@ contract QueryTest is Test {
     QueryFragment[] memory fragments = new QueryFragment[](2);
     fragments[0] = QueryFragment(QueryType.HasValue, table1, abi.encode(1));
     fragments[1] = QueryFragment(QueryType.HasValue, table2, abi.encode(1));
+    // !gasreport CombinedHasValueQuery
     bytes32[][] memory keyTuples = query(world, fragments);
 
     assertTrue(keyTuples.length == 1);
@@ -174,6 +178,7 @@ contract QueryTest is Test {
     QueryFragment[] memory fragments = new QueryFragment[](2);
     fragments[0] = QueryFragment(QueryType.Has, table1, new bytes(0));
     fragments[1] = QueryFragment(QueryType.HasValue, table2, abi.encode(2));
+    // !gasreport CombinedHasHasValueQuery
     bytes32[][] memory keyTuples = query(world, fragments);
 
     assertTrue(keyTuples.length == 2);
@@ -196,6 +201,7 @@ contract QueryTest is Test {
     QueryFragment[] memory fragments = new QueryFragment[](2);
     fragments[0] = QueryFragment(QueryType.Has, table2, new bytes(0));
     fragments[1] = QueryFragment(QueryType.Not, table1, new bytes(0));
+    // !gasreport CombinedHasNotQuery
     bytes32[][] memory keyTuples = query(world, fragments);
 
     assertTrue(keyTuples.length == 1);
@@ -218,6 +224,7 @@ contract QueryTest is Test {
     QueryFragment[] memory fragments = new QueryFragment[](2);
     fragments[0] = QueryFragment(QueryType.HasValue, table2, abi.encode(1));
     fragments[1] = QueryFragment(QueryType.Not, table1, new bytes(0));
+    // !gasreport CombinedHasValueNotQuery
     bytes32[][] memory keyTuples = query(world, fragments);
 
     assertTrue(keyTuples.length == 1);
@@ -244,6 +251,7 @@ contract QueryTest is Test {
     fragments[0] = QueryFragment(QueryType.Has, table1, new bytes(0));
     fragments[1] = QueryFragment(QueryType.HasValue, table2, abi.encode(1));
     fragments[2] = QueryFragment(QueryType.Not, table3, new bytes(0));
+    // !gasreport CombinedHasHasValueNotQuery
     bytes32[][] memory keyTuples = query(world, fragments);
 
     assertTrue(keyTuples.length == 1);
@@ -262,6 +270,7 @@ contract QueryTest is Test {
     QueryFragment[] memory fragments = new QueryFragment[](2);
     fragments[0] = QueryFragment(QueryType.Has, table1, new bytes(0));
     fragments[1] = QueryFragment(QueryType.NotValue, table1, abi.encode(6));
+    // !gasreport NotValueQuery
     bytes32[][] memory keyTuples = query(world, fragments);
 
     assertTrue(keyTuples.length == 2);

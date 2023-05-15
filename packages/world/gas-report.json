@@ -97,39 +97,57 @@
   },
   {
     "source": "test/query.t.sol",
-    "name": "running a Has query with one key",
+    "name": "CombinedHasHasValueNotQuery",
     "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
-    "gasUsed": 8427
+    "gasUsed": 69727
   },
   {
     "source": "test/query.t.sol",
-    "name": "running a Has query with two keys",
-    "functionCall": "keyTuples = query(world, fragments)",
-    "gasUsed": 9368
+    "name": "CombinedHasHasValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 45842
   },
   {
     "source": "test/query.t.sol",
-    "name": "running a Has, Has query with four keys",
-    "functionCall": "keyTuplesHasHas = query(world, fragmentsHasHas)",
-    "gasUsed": 33237
+    "name": "CombinedHasNotQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 58018
   },
   {
     "source": "test/query.t.sol",
-    "name": "running a Has, HasNot query with four keys",
-    "functionCall": "keyTuplesHasNot = query(world, fragmentsHasNot)",
-    "gasUsed": 32417
+    "name": "CombinedHasQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 42214
   },
   {
     "source": "test/query.t.sol",
-    "name": "running a Has, HasValue query with four keys",
-    "functionCall": "bytes32[][] memory keyTuplesHasHasValue = query(world, fragmentsHasHasvalue)",
-    "gasUsed": 19025
+    "name": "CombinedHasValueNotQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 45736
   },
   {
     "source": "test/query.t.sol",
-    "name": "running a HasValue, HasValue query with four keys",
-    "functionCall": "bytes32[][] memory keyTuplesHasvalueHasvalue = query(world, fragmentsHasvalueHasValue)",
-    "gasUsed": 19140
+    "name": "CombinedHasValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 19563
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 9398
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 9498
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "NotValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 39031
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
