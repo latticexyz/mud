@@ -39,7 +39,7 @@ const Splash = ({ theme }) => {
       <div className={styles.splashOverlay} onClick={closeSplash}>
         <div className={styles.splashContent} onClick={stopPropagation}>
           <button className={styles.splashClose} onClick={closeSplash}>
-            X
+            &times;
           </button>
           <div>
             <div className={styles.content}>
@@ -52,7 +52,7 @@ const Splash = ({ theme }) => {
               <hr className={styles.separator} />
               <div className={styles.info}>
                 <span role="img" aria-label="book">
-                  📖
+                  💡
                 </span>
                 <p>
                   If you’re already signed-up, check out the docs and browse some of our{" "}

@@ -3,7 +3,7 @@ import Logo from "./Logo";
 import Splash from "./Splash";
 import WarningBox from "./WarningBox";
 
-export default function ComponentsWrapper() {
+export default function IndexIntro() {
   // This component wraps the Splash and Logo components, to make sure that they're only loaded once light/dark mode has been confirmed.
   // This makes sure that the correct MUD logo (light/dark-mode) is displayed
 
