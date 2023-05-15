@@ -65,6 +65,7 @@ describe("arrays", async () => {
     const pushManyButton = page.getByRole("button", { name: /Push 5000 items/ });
     const pushOneButton = page.getByRole("button", { name: /Push 1 item/ });
     const listLength = page.getByTestId("list-length");
+    const lastItem = page.getByTestId("last-item");
     await expect(resetButton).toBeVisible();
     await expect(pushManyButton).toBeVisible();
     await expect(pushOneButton).toBeVisible();
@@ -74,14 +75,19 @@ describe("arrays", async () => {
 
     await resetButton.click();
     await expect(listLength).toHaveText("0", { timeout: 30_000 });
+    await expect(lastItem).toHaveText("unset");
 
     await pushManyButton.click();
     await expect(listLength).toHaveText("5000", { timeout: 30_000 });
+    await expect(lastItem).toHaveText("4999");
     await pushOneButton.click();
     await expect(listLength).toHaveText("5001");
+    await expect(lastItem).toHaveText("123");
     await pushManyButton.click();
     await expect(listLength).toHaveText("10001", { timeout: 30_000 });
+    await expect(lastItem).toHaveText("4999");
     await pushOneButton.click();
     await expect(listLength).toHaveText("10002");
+    await expect(lastItem).toHaveText("123");
   });
 });
