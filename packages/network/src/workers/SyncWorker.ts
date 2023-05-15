@@ -153,7 +153,6 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       }
 
       if (isNetworkComponentUpdateEvent(event)) {
-        console.log("latest event", event);
         storeEvent(cacheStore.current, event);
         // Store cache to indexdb every block
         if (event.blockNumber > cacheStore.current.blockNumber + 1 && event.blockNumber % cacheInterval === 0) {

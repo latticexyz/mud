@@ -171,6 +171,7 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
           // TODO: key names are not yet part of the on-chain table metadata, so we have to
           // load them from the local mud.config (and have to ignore all tables that are not
           // defined in the local mud config)
+          // (see https://github.com/latticexyz/mud/issues/824)
 
           // `Object.getOwnPropertyNames` guarantees key order, `Object.keys` does not
           const namedKey = nameKeys(key, Object.getOwnPropertyNames(tableConfig.primaryKeys));

@@ -54,6 +54,11 @@ export async function decodeStoreSetRecord(
       namedValues[fieldName] = indexedValues[index];
     }
 
+    // TODO: once TableMetadata supports key names we can decode them here.
+    // For now we extract the key names of known tables from the `mud.config.ts`
+    // and ignore others in `applyNetworkUpdate`.
+    // (see https://github.com/latticexyz/mud/issues/824)
+
     return {
       indexedValues,
       namedValues,
