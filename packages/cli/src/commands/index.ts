@@ -8,14 +8,14 @@ import tablegen from "./tablegen";
 import templategen from "./templategen";
 import configgen from "./configgen";
 import tsgen from "./tsgen";
-import deployV2 from "./deploy-v2";
+import deploy from "./deploy";
 import worldgen from "./worldgen";
 import setVersion from "./set-version";
-import testV2 from "./test-v2";
+import test from "./test";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- Each command has different options
 export const commands: CommandModule<any, any>[] = [
-  deployV2,
+  deploy,
   devnode,
   faucet,
   gasReport,
@@ -26,5 +26,5 @@ export const commands: CommandModule<any, any>[] = [
   tsgen,
   worldgen,
   setVersion,
-  testV2,
+  test,
 ];

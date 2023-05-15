@@ -119,7 +119,7 @@ export function defineContractComponents(world: World) {
         world,
         {
           length: RecsType.Number,
-          keys: RecsType.BigIntArray,
+          keys: RecsType.StringArray,
         },
         {
           metadata: {
@@ -165,7 +165,7 @@ export function defineContractComponents(world: World) {
       return defineComponent(
         world,
         {
-          value: RecsType.BigIntArray,
+          value: RecsType.StringArray,
         },
         {
           metadata: {

@@ -9,4 +9,7 @@ export default defineConfig({
       strict: false,
     },
   },
+  build: {
+    target: "es2022",
+  },
 });

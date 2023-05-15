@@ -1,6 +1,6 @@
 import path from "path";
 import type { CommandModule } from "yargs";
-import { loadConfig } from "@latticexyz/config";
+import { loadConfig } from "@latticexyz/config/node";
 import { loadTemplateConfig } from "@latticexyz/config";
 import { StoreConfig, templategen } from "@latticexyz/store";
 import { getSrcDirectory } from "@latticexyz/common/foundry";

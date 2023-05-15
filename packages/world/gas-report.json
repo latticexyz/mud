@@ -3,37 +3,37 @@
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(sourceTableId))",
-    "gasUsed": 1032601
+    "gasUsed": 1032619
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "set a record on a table with keysInTableModule installed",
     "functionCall": "world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(val1))",
-    "gasUsed": 239899
+    "gasUsed": 239962
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "install keys in table module",
     "functionCall": "world.installRootModule(keysInTableModule, abi.encode(sourceTableId))",
-    "gasUsed": 1032601
+    "gasUsed": 1032619
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "change a record on a table with keysInTableModule installed",
     "functionCall": "world.setRecord(namespace, sourceFile, keyTuple1, abi.encodePacked(val2))",
-    "gasUsed": 30820
+    "gasUsed": 30829
   },
   {
     "source": "test/KeysInTableModule.t.sol",
     "name": "delete a record on a table with keysInTableModule installed",
     "functionCall": "world.deleteRecord(namespace, sourceFile, keyTuple1)",
-    "gasUsed": 146885
+    "gasUsed": 146966
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 609316
+    "gasUsed": 609334
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
@@ -51,49 +51,115 @@
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 609316
+    "gasUsed": 609334
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "set a record on a table with KeysWithValueModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value))",
-    "gasUsed": 165686
+    "gasUsed": 165731
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 609316
+    "gasUsed": 609334
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "change a record on a table with KeysWithValueModule installed",
     "functionCall": "world.setRecord(namespace, sourceName, keyTuple1, abi.encodePacked(value2))",
-    "gasUsed": 135337
+    "gasUsed": 135382
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "delete a record on a table with KeysWithValueModule installed",
     "functionCall": "world.deleteRecord(namespace, sourceName, keyTuple1)",
-    "gasUsed": 54294
+    "gasUsed": 54321
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "install keys with value module",
     "functionCall": "world.installRootModule(keysWithValueModule, abi.encode(sourceTableId))",
-    "gasUsed": 609316
+    "gasUsed": 609334
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "set a field on a table with KeysWithValueModule installed",
     "functionCall": "world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value1))",
-    "gasUsed": 173700
+    "gasUsed": 173745
   },
   {
     "source": "test/KeysWithValueModule.t.sol",
     "name": "change a field on a table with KeysWithValueModule installed",
     "functionCall": "world.setField(namespace, sourceName, keyTuple1, 0, abi.encodePacked(value2))",
-    "gasUsed": 138058
+    "gasUsed": 138103
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasHasValueNotQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 69727
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasHasValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 45842
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasNotQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 58018
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 42214
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasValueNotQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 45736
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "CombinedHasValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 19563
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 9398
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasQuery with 1000 keys",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 1150518
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasQuery with 100 keys",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 106293
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 9498
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "NotValueQuery",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 39031
   },
   {
     "source": "test/TemplatesModule.t.sol",
@@ -123,37 +189,37 @@
     "source": "test/UniqueEntityModule.t.sol",
     "name": "install unique entity module",
     "functionCall": "world.installModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 791314
+    "gasUsed": 791350
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
     "name": "get a unique entity nonce (non-root module)",
     "functionCall": "uint256 uniqueEntity = uint256(getUniqueEntity(world))",
-    "gasUsed": 65663
+    "gasUsed": 65672
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
     "name": "installRoot unique entity module",
     "functionCall": "world.installRootModule(uniqueEntityModule, new bytes(0))",
-    "gasUsed": 767115
+    "gasUsed": 767151
   },
   {
     "source": "test/UniqueEntityModule.t.sol",
     "name": "get a unique entity nonce (root module)",
     "functionCall": "uint256 uniqueEntity = uint256(getUniqueEntity(world))",
-    "gasUsed": 65663
+    "gasUsed": 65672
   },
   {
     "source": "test/World.t.sol",
     "name": "Delete record",
     "functionCall": "world.deleteRecord(namespace, name, singletonKey)",
-    "gasUsed": 16147
+    "gasUsed": 16156
   },
   {
     "source": "test/World.t.sol",
     "name": "Push data to the table",
     "functionCall": "world.pushToField(namespace, name, keyTuple, 0, encodedData)",
-    "gasUsed": 96512
+    "gasUsed": 96521
   },
   {
     "source": "test/World.t.sol",
@@ -177,7 +243,7 @@
     "source": "test/World.t.sol",
     "name": "Register a new namespace",
     "functionCall": "world.registerNamespace(\"test\")",
-    "gasUsed": 151950
+    "gasUsed": 151959
   },
   {
     "source": "test/World.t.sol",
@@ -189,13 +255,13 @@
     "source": "test/World.t.sol",
     "name": "Register a new table in the namespace",
     "functionCall": "bytes32 tableSelector = world.registerTable(namespace, table, schema, defaultKeySchema)",
-    "gasUsed": 252676
+    "gasUsed": 252685
   },
   {
     "source": "test/World.t.sol",
     "name": "Write data to a table field",
     "functionCall": "world.setField(namespace, name, singletonKey, 0, abi.encodePacked(true))",
-    "gasUsed": 44798
+    "gasUsed": 44807
   },
   {
     "source": "test/World.t.sol",
@@ -207,30 +273,30 @@
     "source": "test/World.t.sol",
     "name": "Write data to the table",
     "functionCall": "Bool.set(world, tableId, true)",
-    "gasUsed": 42687
+    "gasUsed": 42696
   },
   {
     "source": "test/WorldDynamicUpdate.t.sol",
     "name": "pop 1 address (cold)",
     "functionCall": "world.popFromField(namespace, name, keyTuple, 0, byteLengthToPop)",
-    "gasUsed": 38040
+    "gasUsed": 38049
   },
   {
     "source": "test/WorldDynamicUpdate.t.sol",
     "name": "pop 1 address (warm)",
     "functionCall": "world.popFromField(namespace, name, keyTuple, 0, byteLengthToPop)",
-    "gasUsed": 22834
+    "gasUsed": 22843
   },
   {
     "source": "test/WorldDynamicUpdate.t.sol",
     "name": "updateInField 1 item (cold)",
     "functionCall": "world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate))",
-    "gasUsed": 40375
+    "gasUsed": 40384
   },
   {
     "source": "test/WorldDynamicUpdate.t.sol",
     "name": "updateInField 1 item (warm)",
     "functionCall": "world.updateInField(namespace, name, keyTuple, 0, 0, EncodeArray.encode(dataForUpdate))",
-    "gasUsed": 25573
+    "gasUsed": 25582
   }
 ]

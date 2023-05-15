@@ -2,7 +2,6 @@ package mode
 
 import (
 	"latticexyz/mud/packages/services/pkg/mode/storecore"
-	pb_mode "latticexyz/mud/packages/services/protobuf/go/mode"
 
 	"github.com/ethereum/go-ethereum/common/hexutil"
 )
@@ -52,30 +51,23 @@ func KeyToString(keys [][32]byte) []string {
 }
 
 // KeyToFilter converts the given byte array keys into filter objects for use in queries.
-// It returns a slice of filter objects, one for each key name in the tableSchema.
+// It returns a map of filter objects, one for each key name in the tableSchema.
 //
 // Parameters:
 //   - tableSchema (*TableSchema): A pointer to the schema of the table containing the keys.
 //   - key ([][32]byte): The byte array keys to convert.
 //
 // Returns:
-//   - ([]*pb_mode.Filter): A slice of filter objects.
-func KeyToFilter(tableSchema *TableSchema, key [][32]byte) []*pb_mode.Filter {
+//   - (map[string]interface{}): A map of filter objects.
+func KeyToFilter(tableSchema *TableSchema, key [][32]byte) map[string]interface{} {
 	// First decode the key data so that it's easier to work with.
 	aggregateKey := AggregateKey(key)
 	decodedKeyData := storecore.DecodeData(aggregateKey, *tableSchema.StoreCoreSchemaTypeKV.Key)
 
-	filters := []*pb_mode.Filter{}
+	filter := make(map[string]interface{})
 
 	for idx, key_name := range tableSchema.KeyNames {
-		filters = append(filters, &pb_mode.Filter{
-			Field: &pb_mode.Field{
-				TableName:  tableSchema.TableName,
-				TableField: key_name,
-			},
-			Operator: "=",
-			Value:    decodedKeyData.DataAt(idx),
-		})
+		filter[key_name] = decodedKeyData.GetData(idx)
 	}
-	return filters
+	return filter
 }
