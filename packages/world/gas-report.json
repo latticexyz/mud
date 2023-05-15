@@ -139,6 +139,18 @@
   },
   {
     "source": "test/query.t.sol",
+    "name": "HasQuery with 100 keys",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 106293
+  },
+  {
+    "source": "test/query.t.sol",
+    "name": "HasQuery with 1000 keys",
+    "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
+    "gasUsed": 1150518
+  },
+  {
+    "source": "test/query.t.sol",
     "name": "HasValueQuery",
     "functionCall": "bytes32[][] memory keyTuples = query(world, fragments)",
     "gasUsed": 9498

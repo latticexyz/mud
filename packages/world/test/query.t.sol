@@ -277,4 +277,44 @@ contract QueryTest is Test {
     assertTrue(keyTuples[0][0] == key1[0]);
     assertTrue(keyTuples[1][0] == key2[0]);
   }
+
+  function testHasQuery100() public {
+    _installKeysInTableModule();
+
+    for (uint256 i; i < 100; i++) {
+      bytes32[] memory key = new bytes32[](1);
+      key[0] = bytes32(i);
+      world.setRecord(namespace, name1, key, abi.encode(1));
+    }
+    world.setRecord(namespace, name2, key1, abi.encode(0));
+
+    // Query should return all keys in table1
+    QueryFragment[] memory fragments = new QueryFragment[](1);
+    // The value argument is ignored in for Has query fragments
+    fragments[0] = QueryFragment(QueryType.Has, table1, new bytes(0));
+    // !gasreport HasQuery with 100 keys
+    bytes32[][] memory keyTuples = query(world, fragments);
+
+    assertTrue(keyTuples.length == 100);
+  }
+
+  function testHasQuery1000() public {
+    _installKeysInTableModule();
+
+    for (uint256 i; i < 1000; i++) {
+      bytes32[] memory key = new bytes32[](1);
+      key[0] = bytes32(i);
+      world.setRecord(namespace, name1, key, abi.encode(1));
+    }
+    world.setRecord(namespace, name2, key1, abi.encode(0));
+
+    // Query should return all keys in table1
+    QueryFragment[] memory fragments = new QueryFragment[](1);
+    // The value argument is ignored in for Has query fragments
+    fragments[0] = QueryFragment(QueryType.Has, table1, new bytes(0));
+    // !gasreport HasQuery with 1000 keys
+    bytes32[][] memory keyTuples = query(world, fragments);
+
+    assertTrue(keyTuples.length == 1000);
+  }
 }
