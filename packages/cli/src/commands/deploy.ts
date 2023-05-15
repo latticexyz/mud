@@ -1,6 +1,6 @@
 import type { CommandModule, Options } from "yargs";
 import { logError } from "../utils/errors";
-import { DeployOptions } from "../utils";
+import { deployHandler, DeployOptions } from "../utils";
 
 export const yDeployOptions = {
   configPath: { type: "string", desc: "Path to the config file" },
@@ -25,15 +25,6 @@ export const yDeployOptions = {
   },
 } satisfies Record<keyof DeployOptions, Options>;
 
-export async function deployHandler(args: Parameters<(typeof commandModule)["handler"]>[0]) {
-  try {
-    deployHandler(args);
-  } catch (error: any) {
-    logError(error);
-    process.exit(1);
-  }
-}
-
 const commandModule: CommandModule<DeployOptions, DeployOptions> = {
   command: "deploy",
 
@@ -44,7 +35,12 @@ const commandModule: CommandModule<DeployOptions, DeployOptions> = {
   },
 
   async handler(args) {
-    await deployHandler(args);
+    try {
+      deployHandler(args);
+    } catch (error: any) {
+      logError(error);
+      process.exit(1);
+    }
     process.exit(0);
   },
 };
