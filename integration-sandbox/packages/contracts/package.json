@@ -6,12 +6,13 @@
   "scripts": {
     "build": "pnpm run build:mud && pnpm run build:abi && pnpm run build:typechain",
     "build:abi": "forge build --extra-output-files abi --out abi --skip test script",
-    "build:mud": "mud tablegen && mud worldgen",
+    "build:mud": "mud tablegen && mud worldgen && pnpm run tsgen",
     "build:typechain": "typechain --target=ethers-v5 abi/IWorld.sol/IWorld.json",
     "clean": "pnpm run clean:abi && pnpm run clean:typechain",
     "clean:abi": "rimraf abi",
     "clean:typechain": "rimraf types",
-    "test": "mud test-v2"
+    "test": "vitest --run && mud test-v2",
+    "tsgen": "mud tsgen --configPath mud.config.ts --out ../client-vanilla/src/mud"
   },
   "devDependencies": {
     "@latticexyz/cli": "link:../../../packages/cli",
@@ -20,12 +21,18 @@
     "@latticexyz/std-contracts": "link:../../../packages/std-contracts",
     "@latticexyz/store": "link:../../../packages/store",
     "@latticexyz/world": "link:../../../packages/world",
+    "@playwright/test": "^1.33.0",
     "@typechain/ethers-v5": "^10.2.0",
+    "dotenv": "^16.0.3",
     "ds-test": "https://github.com/dapphub/ds-test.git#c9ce3f25bde29fc5eb9901842bf02850dfd2d084",
     "ethers": "^5.7.2",
+    "execa": "^7.1.1",
     "forge-std": "https://github.com/foundry-rs/forge-std.git#b4f121555729b3afb3c5ffccb62ff4b6e2818fd3",
+    "jsdom": "^22.0.0",
     "rimraf": "^3.0.2",
     "typechain": "^8.1.1",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "vite": "^4.2.1",
+    "vitest": "^0.31.0"
   }
 }

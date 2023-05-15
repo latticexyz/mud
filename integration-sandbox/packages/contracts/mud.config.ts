@@ -1,5 +1,12 @@
 import { mudConfig } from "@latticexyz/world/register";
 
 export default mudConfig({
-  tables: {},
+  tables: {
+    NumberList: {
+      primaryKeys: {},
+      schema: {
+        value: "uint32[]",
+      },
+    },
+  },
 });
