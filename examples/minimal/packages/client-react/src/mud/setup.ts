@@ -7,7 +7,7 @@ import { world } from "./world";
 import { Contract, Signer, utils } from "ethers";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { IWorld__factory } from "contracts/types/ethers-contracts/factories/IWorld__factory";
-import { awaitStreamValue } from "@latticexyz/utils";
+import { awaitStreamValue, getTableIds } from "@latticexyz/utils";
 import { getSnapSyncRecords } from "./snapSync";
 import storeConfig from "contracts/mud.config";
 
@@ -59,7 +59,7 @@ export async function setup() {
   if (networkConfig.snapSync) {
     const tableRecords = await getSnapSyncRecords(
       networkConfig.worldAddress,
-      contractComponents,
+      getTableIds(storeConfig),
       currentBlockNumber,
       signerOrProvider
     );

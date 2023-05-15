@@ -14,7 +14,13 @@ export async function transformTableRecordsIntoEvents(
 
   for (const record of records) {
     const { tableId, keyTuple, value } = record;
-    const decodedValue = await decodeStoreSetRecord(storeContract, tableId, keyTuple, value);
+    const { indexedValues, namedValues, indexedKey, namedKey } = await decodeStoreSetRecord(
+      storeContract,
+      tableId,
+      keyTuple,
+      value
+    );
+    const key = { ...indexedKey, ...indexedValues };
     const component = tableId.toString();
     const entityId = keyTupleToEntityID(keyTuple);
 
@@ -22,10 +28,13 @@ export async function transformTableRecordsIntoEvents(
       type: NetworkEvents.NetworkComponentUpdate,
       component,
       entity: entityId as Entity,
-      value: decodedValue.namedValues,
+      key,
+      value: { ...indexedValues, ...indexedKey },
       lastEventInTx: false,
       txHash: "cache",
       blockNumber,
+      namespace: tableId.namespace,
+      table: tableId.name,
     } satisfies NetworkComponentUpdate;
 
     events.push(ecsEvent);
