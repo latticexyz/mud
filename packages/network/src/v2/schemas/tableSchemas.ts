@@ -23,7 +23,7 @@ export function registerSchema(world: Contract, table: TableId, rawSchema?: stri
     // Warn if a different schema was already registered
     if (rawSchema) {
       existingSchema.then((schema) => {
-        if (schema.rawSchema !== rawSchema) {
+        if (schema.valueSchema.rawSchema !== rawSchema) {
           console.warn("a different schema was already registered for this table", {
             table,
             currentSchema: schema,
@@ -46,9 +46,15 @@ export function registerSchema(world: Contract, table: TableId, rawSchema?: stri
   // TODO: populate from ECS cache before fetching from RPC
 
   console.log("fetching schema for table", { table: table.toString(), world: world.address });
-  const schema = (world as IStore).getSchema(table.toHexString()).then((rawSchema: string) => {
+  const store = world as IStore;
+  const rawKeySchemaPromise = store.getKeySchema(table.toHexString());
+  const rawValueSchemaPromise = store.getSchema(table.toHexString());
+  const rawSchemaPromise = Promise.all([rawKeySchemaPromise, rawValueSchemaPromise]).then(
+    ([rawKeySchema, rawValueSchema]) => rawValueSchema + rawKeySchema.substring(2)
+  );
+  const schema = rawSchemaPromise.then((rawSchema: string) => {
     const decodedSchema = decodeSchema(rawSchema);
-    if (decodedSchema.isEmpty) {
+    if (decodedSchema.valueSchema.isEmpty) {
       console.warn("Schema not found for table", { table: table.toString(), world: world.address });
     }
     return decodedSchema;

@@ -47,6 +47,7 @@ export interface IWorldInterface extends utils.Interface {
     "installModule(address,bytes)": FunctionFragment;
     "installRootModule(address,bytes)": FunctionFragment;
     "isStore()": FunctionFragment;
+    "pickUp(bytes32,uint32)": FunctionFragment;
     "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)": FunctionFragment;
     "popFromField(bytes32,bytes32[],uint8,uint256)": FunctionFragment;
     "pushToField(bytes32,bytes32[],uint8,bytes)": FunctionFragment;
@@ -93,6 +94,7 @@ export interface IWorldInterface extends utils.Interface {
       | "installModule"
       | "installRootModule"
       | "isStore"
+      | "pickUp"
       | "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)"
       | "popFromField(bytes32,bytes32[],uint8,uint256)"
       | "pushToField(bytes32,bytes32[],uint8,bytes)"
@@ -223,6 +225,10 @@ export interface IWorldInterface extends utils.Interface {
     values: [PromiseOrValue<string>, PromiseOrValue<BytesLike>]
   ): string;
   encodeFunctionData(functionFragment: "isStore", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "pickUp",
+    values: [PromiseOrValue<BytesLike>, PromiseOrValue<BigNumberish>]
+  ): string;
   encodeFunctionData(
     functionFragment: "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)",
     values: [
@@ -481,6 +487,7 @@ export interface IWorldInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "isStore", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "pickUp", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)",
     data: BytesLike
@@ -784,6 +791,12 @@ export interface IWorld extends BaseContract {
 
     isStore(overrides?: CallOverrides): Promise<[void]>;
 
+    pickUp(
+      item: PromiseOrValue<BytesLike>,
+      variant: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<ContractTransaction>;
+
     "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
@@ -1080,6 +1093,12 @@ export interface IWorld extends BaseContract {
 
   isStore(overrides?: CallOverrides): Promise<void>;
 
+  pickUp(
+    item: PromiseOrValue<BytesLike>,
+    variant: PromiseOrValue<BigNumberish>,
+    overrides?: Overrides & { from?: PromiseOrValue<string> }
+  ): Promise<ContractTransaction>;
+
   "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)"(
     namespace: PromiseOrValue<BytesLike>,
     name: PromiseOrValue<BytesLike>,
@@ -1373,6 +1392,12 @@ export interface IWorld extends BaseContract {
     ): Promise<void>;
 
     isStore(overrides?: CallOverrides): Promise<void>;
+
+    pickUp(
+      item: PromiseOrValue<BytesLike>,
+      variant: PromiseOrValue<BigNumberish>,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)"(
       namespace: PromiseOrValue<BytesLike>,
@@ -1715,6 +1740,12 @@ export interface IWorld extends BaseContract {
 
     isStore(overrides?: CallOverrides): Promise<BigNumber>;
 
+    pickUp(
+      item: PromiseOrValue<BytesLike>,
+      variant: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<BigNumber>;
+
     "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)"(
       namespace: PromiseOrValue<BytesLike>,
       name: PromiseOrValue<BytesLike>,
@@ -2011,6 +2042,12 @@ export interface IWorld extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     isStore(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    pickUp(
+      item: PromiseOrValue<BytesLike>,
+      variant: PromiseOrValue<BigNumberish>,
+      overrides?: Overrides & { from?: PromiseOrValue<string> }
+    ): Promise<PopulatedTransaction>;
 
     "popFromField(bytes16,bytes16,bytes32[],uint8,uint256)"(
       namespace: PromiseOrValue<BytesLike>,

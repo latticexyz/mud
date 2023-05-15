@@ -97,7 +97,7 @@ export function subscribe<C extends StoreConfig = StoreConfig, T extends keyof C
 ) {
   const { namespace, table, key } = filter || {};
 
-  const prefix = table && namespace ? [namespace, table] : undefined;
+  const prefix = table != null && namespace != null ? [namespace, table] : undefined;
 
   const scanArgs: ScanArgs<Tuple, Tuple> = {};
 

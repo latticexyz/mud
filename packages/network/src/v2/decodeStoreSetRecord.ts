@@ -1,16 +1,22 @@
-import { TableId, arrayToHex } from "@latticexyz/utils";
+import { TableId } from "@latticexyz/utils";
 import { Contract, utils } from "ethers";
 import { registerSchema } from "./schemas/tableSchemas";
 import { registerMetadata } from "./schemas/tableMetadata";
 import { decodeData } from "./schemas/decodeData";
 import { schemaTableId, metadataTableId } from "./common";
+import { decodeKeyTuple } from "./schemas/decodeKeyTuple";
 
 export async function decodeStoreSetRecord(
   contract: Contract,
   table: TableId,
   keyTuple: string[],
   data: string
-): Promise<{ indexedValues: Record<number, any>; namedValues?: Record<string, any> }> {
+): Promise<{
+  indexedValues: Record<number, any>;
+  namedValues?: Record<string, any>;
+  indexedKey: Record<number, unknown>;
+  namedKey?: Record<string, unknown>;
+}> {
   // registerSchema event
   if (table.toHexString() === schemaTableId.toHexString()) {
     const [tableForSchema, ...otherKeys] = keyTuple;
@@ -23,8 +29,9 @@ export async function decodeStoreSetRecord(
     registerSchema(contract, TableId.fromBytes32(utils.arrayify(tableForSchema)), data);
   }
 
-  const schema = await registerSchema(contract, table);
-  const indexedValues = decodeData(schema, data);
+  const { keySchema, valueSchema } = await registerSchema(contract, table);
+  const indexedValues = decodeData(valueSchema, data);
+  const indexedKey = decodeKeyTuple(keySchema, keyTuple);
 
   if (table.toHexString() === metadataTableId.toHexString()) {
     const [tableForMetadata, ...otherKeys] = keyTuple;
@@ -46,9 +53,16 @@ export async function decodeStoreSetRecord(
     for (const [index, fieldName] of fieldNames.entries()) {
       namedValues[fieldName] = indexedValues[index];
     }
+
+    // TODO: once TableMetadata supports key names we can decode them here.
+    // For now we extract the key names of known tables from the `mud.config.ts`
+    // and ignore others in `applyNetworkUpdate`.
+    // (see https://github.com/latticexyz/mud/issues/824)
+
     return {
       indexedValues,
       namedValues,
+      indexedKey,
     };
   }
 
@@ -57,5 +71,6 @@ export async function decodeStoreSetRecord(
   );
   return {
     indexedValues,
+    indexedKey,
   };
 }
