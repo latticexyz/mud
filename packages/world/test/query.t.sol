@@ -14,9 +14,9 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
-import { intersection, QueryFragment, QueryType } from "../src/modules/keysintable/intersection.sol";
+import { query, QueryFragment, QueryType } from "../src/modules/keysintable/query.sol";
 
-contract intersectionTest is Test {
+contract QueryTest is Test {
   using ResourceSelector for bytes32;
   IBaseWorld world;
   KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
@@ -84,7 +84,7 @@ contract intersectionTest is Test {
     QueryFragment[] memory fragments = new QueryFragment[](1);
     fragments[0] = QueryFragment(QueryType.Has, tableA, "");
 
-    bytes32[][] memory keyTuples = intersection(world, fragments);
+    bytes32[][] memory keyTuples = query(world, fragments);
 
     // Assert that the list includes all the keys in the table
     assertEq(keyTuples.length, 1);
@@ -96,7 +96,7 @@ contract intersectionTest is Test {
     world.setRecord(namespace, nameA, keys[1], abi.encodePacked(value));
 
     // Get the list of keys in the target table
-    keyTuples = intersection(world, fragments);
+    keyTuples = query(world, fragments);
 
     // Assert that the list includes all the keys in the table
     assertEq(keyTuples.length, 2);
@@ -113,8 +113,8 @@ contract intersectionTest is Test {
     world.setRecord(namespace, nameA, keys[1], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples1 = intersection(world, fragmentsHasNot);
-    bytes32[][] memory keyTuples2 = intersection(world, fragmentsHasHas);
+    bytes32[][] memory keyTuples1 = query(world, fragmentsHasNot);
+    bytes32[][] memory keyTuples2 = query(world, fragmentsHasHas);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples1.length, 1);
@@ -131,8 +131,8 @@ contract intersectionTest is Test {
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[1], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples1 = intersection(world, fragmentsHasNot);
-    bytes32[][] memory keyTuples2 = intersection(world, fragmentsHasHas);
+    bytes32[][] memory keyTuples1 = query(world, fragmentsHasNot);
+    bytes32[][] memory keyTuples2 = query(world, fragmentsHasHas);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples1.length, 0);
@@ -150,8 +150,8 @@ contract intersectionTest is Test {
     world.setRecord(namespace, nameB, keys[0], abi.encodePacked(value));
     world.setRecord(namespace, nameB, keys[1], abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples1 = intersection(world, fragmentsHasNot);
-    bytes32[][] memory keyTuples2 = intersection(world, fragmentsHasHas);
+    bytes32[][] memory keyTuples1 = query(world, fragmentsHasNot);
+    bytes32[][] memory keyTuples2 = query(world, fragmentsHasHas);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples1.length, 0);
@@ -183,12 +183,12 @@ contract intersectionTest is Test {
     fragmentsHasvalueHasValue[0] = QueryFragment(QueryType.HasValue, tableA, abi.encodePacked(value));
     fragmentsHasvalueHasValue[1] = QueryFragment(QueryType.HasValue, tableB, abi.encodePacked(value));
 
-    bytes32[][] memory keyTuples1 = intersection(world, fragmentsHasNot);
-    bytes32[][] memory keyTuples2 = intersection(world, fragmentsHasHas);
-    bytes32[][] memory keyTuples3 = intersection(world, fragmentsHasHasvalue);
-    bytes32[][] memory keyTuples4 = intersection(world, fragmentsHasNotvalue);
-    bytes32[][] memory keyTuples5 = intersection(world, fragmentsHasvalueHas);
-    bytes32[][] memory keyTuples6 = intersection(world, fragmentsHasvalueHasValue);
+    bytes32[][] memory keyTuples1 = query(world, fragmentsHasNot);
+    bytes32[][] memory keyTuples2 = query(world, fragmentsHasHas);
+    bytes32[][] memory keyTuples3 = query(world, fragmentsHasHasvalue);
+    bytes32[][] memory keyTuples4 = query(world, fragmentsHasNotvalue);
+    bytes32[][] memory keyTuples5 = query(world, fragmentsHasvalueHas);
+    bytes32[][] memory keyTuples6 = query(world, fragmentsHasvalueHasValue);
 
     // Assert that the list is the intersection of both tables keys
     assertEq(keyTuples1.length, 0);

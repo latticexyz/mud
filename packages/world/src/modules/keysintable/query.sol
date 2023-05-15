@@ -49,12 +49,12 @@ function passesQueryFragment(
 }
 
 /**
- * Execute the given intersection query and return a list of keys
+ * Execute the given query and return a list of keys
  * The first fragment should be Has or HasValue
  * @param fragments List of query fragments to execute
  * @return keyTuples List of keys matching the query
  */
-function intersection(IStore store, QueryFragment[] memory fragments) view returns (bytes32[][] memory keyTuples) {
+function query(IStore store, QueryFragment[] memory fragments) view returns (bytes32[][] memory keyTuples) {
   // Create the first interim result
   keyTuples = fragments[0].queryType == QueryType.Has
     ? getKeysInTable(store, fragments[0].tableId)
