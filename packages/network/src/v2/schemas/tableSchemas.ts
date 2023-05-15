@@ -6,7 +6,7 @@ import { IStore } from "@latticexyz/store/types/ethers-contracts/IStore.sol/ISto
 
 // worldAddress:tableId => schema
 // TODO: add chain ID to namespace?
-const schemaCache: Record<`${string}:${string}`, Promise<TableSchema>> = {};
+const schemaCache: Partial<Record<`${string}:${string}`, Promise<TableSchema>>> = {};
 
 // the Contract arguments below assume that they're bound to a provider
 
