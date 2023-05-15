@@ -14,9 +14,9 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
 import { KeysWithValueModule } from "../src/modules/keyswithvalue/KeysWithValueModule.sol";
-import { intersection, QueryFragment, QueryType } from "../src/modules/keysintable/query.sol";
+import { intersection, QueryFragment, QueryType } from "../src/modules/keysintable/intersection.sol";
 
-contract queryTest is Test {
+contract intersectionTest is Test {
   using ResourceSelector for bytes32;
   IBaseWorld world;
   KeysInTableModule keysInTableModule = new KeysInTableModule(); // Modules can be deployed once and installed multiple times
@@ -172,24 +172,32 @@ contract queryTest is Test {
 
     QueryFragment[] memory fragmentsHasHasvalue = new QueryFragment[](2);
     QueryFragment[] memory fragmentsHasNotvalue = new QueryFragment[](2);
+    QueryFragment[] memory fragmentsHasvalueHas = new QueryFragment[](2);
+    QueryFragment[] memory fragmentsHasvalueHasValue = new QueryFragment[](2);
     fragmentsHasHasvalue[0] = QueryFragment(QueryType.Has, tableA, "");
     fragmentsHasHasvalue[1] = QueryFragment(QueryType.HasValue, tableB, abi.encodePacked(value));
     fragmentsHasNotvalue[0] = QueryFragment(QueryType.Has, tableA, "");
     fragmentsHasNotvalue[1] = QueryFragment(QueryType.NotValue, tableB, abi.encodePacked(value));
+    fragmentsHasvalueHas[0] = QueryFragment(QueryType.HasValue, tableA, abi.encodePacked(value));
+    fragmentsHasvalueHas[1] = QueryFragment(QueryType.Has, tableB, "");
+    fragmentsHasvalueHasValue[0] = QueryFragment(QueryType.HasValue, tableA, abi.encodePacked(value));
+    fragmentsHasvalueHasValue[1] = QueryFragment(QueryType.HasValue, tableB, abi.encodePacked(value));
 
-    bytes32[][] memory keyTuplesBare1 = intersection(world, fragmentsHasNot);
-    bytes32[][] memory keyTuplesBare2 = intersection(world, fragmentsHasHas);
-    bytes32[][] memory keyTuplesBare3 = intersection(world, fragmentsHasHasvalue);
-    bytes32[][] memory keyTuplesBare4 = intersection(world, fragmentsHasNotvalue);
+    bytes32[][] memory keyTuples1 = intersection(world, fragmentsHasNot);
+    bytes32[][] memory keyTuples2 = intersection(world, fragmentsHasHas);
+    bytes32[][] memory keyTuples3 = intersection(world, fragmentsHasHasvalue);
+    bytes32[][] memory keyTuples4 = intersection(world, fragmentsHasNotvalue);
+    bytes32[][] memory keyTuples5 = intersection(world, fragmentsHasvalueHas);
+    bytes32[][] memory keyTuples6 = intersection(world, fragmentsHasvalueHasValue);
 
     // Assert that the list is the intersection of both tables keys
-    assertEq(keyTuplesBare1.length, 0);
-    assertEq(keyTuplesBare2.length, 1);
-    assertEq(keyTuplesBare2[0][0], keys[0][0]);
-
-    assertEq(keyTuplesBare3.length, 1);
-    assertEq(keyTuplesBare3[0][0], keys[0][0]);
-
-    assertEq(keyTuplesBare4.length, 0);
+    assertEq(keyTuples1.length, 0);
+    assertEq(keyTuples2.length, 1);
+    assertEq(keyTuples2[0][0], keys[0][0]);
+    assertEq(keyTuples3.length, 1);
+    assertEq(keyTuples3[0][0], keys[0][0]);
+    assertEq(keyTuples4.length, 0);
+    assertEq(keyTuples5.length, 1);
+    assertEq(keyTuples6.length, 1);
   }
 }
