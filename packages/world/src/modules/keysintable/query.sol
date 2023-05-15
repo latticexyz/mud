@@ -87,7 +87,8 @@ function intersection(IStore store, Fragment[] memory fragments) view returns (b
     index = 0;
     for (uint256 j; j < keyTuples.length; j++) {
       bool present = hasKey(store, fragments[i].tableId, keyTuples[j]);
-      if ((fragments[i].has && present) || !(fragments[i].has || present)) {
+      bool on = (fragments[i].has && present) || !(fragments[i].has || present);
+      if (on) {
         result[index] = keyTuples[j];
         index++;
       }
