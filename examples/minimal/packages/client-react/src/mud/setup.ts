@@ -50,13 +50,13 @@ export async function setup() {
     setInterval(requestDrip, 20000);
   }
 
-  const signerOrProvider = signer ?? result.network.providers.get().json;
+  const provider = result.network.providers.get().json;
+  const signerOrProvider = signer ?? provider;
   // Create a World contract instance
   const worldContract = IWorld__factory.connect(networkConfig.worldAddress, signerOrProvider);
 
-  const currentBlockNumber = await awaitStreamValue(result.network.blockNumber$);
-
   if (networkConfig.snapSync) {
+    const currentBlockNumber = await provider.getBlockNumber();
     const tableRecords = await getSnapSyncRecords(
       networkConfig.worldAddress,
       getTableIds(storeConfig),
