@@ -4,74 +4,15 @@ pragma solidity >=0.8.0;
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 
 import { getKeysInTable } from "./getKeysInTable.sol";
+import { getKeysWithValue } from "../keyswithvalue/getKeysWithValue.sol";
 import { hasKey } from "./hasKey.sol";
 import { ArrayLib } from "../utils/ArrayLib.sol";
-
-function union(bytes32[] memory tableIds) view returns (bytes32[][] memory keyTuples) {
-  for (uint256 i; i < tableIds.length; i++) {
-    uint256 index;
-    for (uint256 j; j < keyTuples.length; j++) {
-      // if the current table does not have key, include it
-      if (!hasKey(tableIds[i], keyTuples[j])) {
-        index++;
-      }
-    }
-
-    bytes32[][] memory tableKeyTuples = getKeysInTable(tableIds[i]);
-    bytes32[][] memory result = new bytes32[][](index + tableKeyTuples.length);
-
-    index = 0;
-    for (uint256 j; j < keyTuples.length; j++) {
-      if (!hasKey(tableIds[i], keyTuples[j])) {
-        result[index] = keyTuples[j];
-        index++;
-      }
-    }
-
-    for (uint256 j; j < tableKeyTuples.length; j++) {
-      result[j + index] = tableKeyTuples[j];
-    }
-
-    keyTuples = result;
-  }
-}
-
-function union(IStore store, bytes32[] memory tableIds) view returns (bytes32[][] memory keyTuples) {
-  for (uint256 i; i < tableIds.length; i++) {
-    uint256 index;
-    for (uint256 j; j < keyTuples.length; j++) {
-      // if the current table does not have key, include it
-      if (!hasKey(store, tableIds[i], keyTuples[j])) {
-        index++;
-      }
-    }
-
-    bytes32[][] memory tableKeyTuples = getKeysInTable(store, tableIds[i]);
-    bytes32[][] memory result = new bytes32[][](index + tableKeyTuples.length);
-
-    index = 0;
-    for (uint256 j; j < keyTuples.length; j++) {
-      if (!hasKey(store, tableIds[i], keyTuples[j])) {
-        result[index] = keyTuples[j];
-        index++;
-      }
-    }
-
-    for (uint256 j; j < tableKeyTuples.length; j++) {
-      result[j + index] = tableKeyTuples[j];
-    }
-
-    keyTuples = result;
-  }
-}
 
 enum QueryType {
   Has,
   Not,
   HasValue,
-  NotValue,
-  ProxyRead,
-  ProxyExpand
+  NotValue
 }
 
 struct QueryFragment {
@@ -86,9 +27,8 @@ function intersection(IStore store, QueryFragment[] memory fragments) view retur
   for (uint256 i = 1; i < fragments.length; i++) {
     uint256 index;
     for (uint256 j; j < keyTuples.length; j++) {
-      bool present = hasKey(store, fragments[i].tableId, keyTuples[j]);
-      bool on = (fragments[i].queryType == QueryType.Has && present) ||
-        (fragments[i].queryType == QueryType.Not && !present);
+      bool on = (fragments[i].queryType == QueryType.Has && hasKey(store, fragments[i].tableId, keyTuples[j])) ||
+        (fragments[i].queryType == QueryType.Not && !hasKey(store, fragments[i].tableId, keyTuples[j]));
       if (on) {
         index++;
       }
@@ -98,9 +38,8 @@ function intersection(IStore store, QueryFragment[] memory fragments) view retur
 
     index = 0;
     for (uint256 j; j < keyTuples.length; j++) {
-      bool present = hasKey(store, fragments[i].tableId, keyTuples[j]);
-      bool on = (fragments[i].queryType == QueryType.Has && present) ||
-        (fragments[i].queryType == QueryType.Not && !present);
+      bool on = (fragments[i].queryType == QueryType.Has && hasKey(store, fragments[i].tableId, keyTuples[j])) ||
+        (fragments[i].queryType == QueryType.Not && !hasKey(store, fragments[i].tableId, keyTuples[j]));
       if (on) {
         result[index] = keyTuples[j];
         index++;
@@ -116,12 +55,18 @@ function intersectionBare(IStore store, QueryFragment[] memory fragments) view r
 
   for (uint256 i = 1; i < fragments.length; i++) {
     bytes32[][] memory tableKeyTuples = getKeysInTable(store, fragments[i].tableId);
+    bytes32[][] memory valueKeyTuples = ArrayLib.unflatten(
+      getKeysWithValue(store, fragments[i].tableId, fragments[i].value)
+    );
 
     uint256 index;
     for (uint256 j; j < keyTuples.length; j++) {
-      bool present = ArrayLib.includes(tableKeyTuples, keyTuples[j]);
-      bool on = (fragments[i].queryType == QueryType.Has && present) ||
-        (fragments[i].queryType == QueryType.Not && !present);
+      QueryType queryType = fragments[i].queryType;
+
+      bool on = (queryType == QueryType.Has && ArrayLib.includes(tableKeyTuples, keyTuples[j])) ||
+        (queryType == QueryType.Not && !ArrayLib.includes(tableKeyTuples, keyTuples[j])) ||
+        (queryType == QueryType.HasValue && ArrayLib.includes(valueKeyTuples, keyTuples[j])) ||
+        (queryType == QueryType.NotValue && !ArrayLib.includes(valueKeyTuples, keyTuples[j]));
       if (on) {
         index++;
       }
@@ -131,9 +76,12 @@ function intersectionBare(IStore store, QueryFragment[] memory fragments) view r
 
     index = 0;
     for (uint256 j; j < keyTuples.length; j++) {
-      bool present = ArrayLib.includes(tableKeyTuples, keyTuples[j]);
-      bool on = (fragments[i].queryType == QueryType.Has && present) ||
-        (fragments[i].queryType == QueryType.Not && !present);
+      QueryType queryType = fragments[i].queryType;
+
+      bool on = (queryType == QueryType.Has && ArrayLib.includes(tableKeyTuples, keyTuples[j])) ||
+        (queryType == QueryType.Not && !ArrayLib.includes(tableKeyTuples, keyTuples[j])) ||
+        (queryType == QueryType.HasValue && ArrayLib.includes(valueKeyTuples, keyTuples[j])) ||
+        (queryType == QueryType.NotValue && !ArrayLib.includes(valueKeyTuples, keyTuples[j]));
       if (on) {
         result[index] = keyTuples[j];
         index++;
