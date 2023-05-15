@@ -4,7 +4,7 @@ import { formatAndWriteSolidity, contractToInterface, type RelativeImportDatum }
 import { StoreConfig } from "@latticexyz/store";
 import { renderSystemInterface } from "./renderSystemInterface";
 import { renderWorld } from "./renderWorld";
-import { resolveWorldConfig, WorldConfig } from "../config";
+import { resolveWorldConfig, WorldConfig } from "../../library/config";
 
 export async function worldgen(
   config: StoreConfig & WorldConfig,
