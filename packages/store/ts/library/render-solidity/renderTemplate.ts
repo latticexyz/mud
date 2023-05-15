@@ -41,8 +41,8 @@ export function renderTemplate(mudConfig: StoreConfig, templateConfig: Record<st
   ${renderedSolidityHeader}
   
   import { IStore } from "@latticexyz/store/src/IStore.sol";
-  import { TemplateContent } from "@latticexyz/world/src/modules/templates/tables/TemplateContent.sol";
-  import { TemplateIndex } from "@latticexyz/world/src/modules/templates/tables/TemplateIndex.sol";
+  import { FactoryContent } from "@latticexyz/world/src/modules/factory/tables/FactoryContent.sol";
+  import { FactoryIndex } from "@latticexyz/world/src/modules/factory/tables/FactoryIndex.sol";
   ${
     Object.keys(mudConfig.enums).length > 0
       ? `import { ${Object.keys(mudConfig.enums)
@@ -61,11 +61,11 @@ export function renderTemplate(mudConfig: StoreConfig, templateConfig: Record<st
     ${Object.keys(values)
       .map((key, i) => `tableIds[${i}] = ${key}TableId`)
       .join(";")};
-    TemplateIndex.set(templateId, tableIds);
+    FactoryIndex.set(templateId, tableIds);
 
     ${Object.entries(values)
       .map(([key, value]) => {
-        return `TemplateContent.set(templateId, ${key}TableId, ${key}.encode(${getValue(mudConfig, key, value)}))`;
+        return `FactoryContent.set(templateId, ${key}TableId, ${key}.encode(${getValue(mudConfig, key, value)}))`;
       })
       .join(";")};
   }
@@ -75,11 +75,11 @@ export function renderTemplate(mudConfig: StoreConfig, templateConfig: Record<st
     ${Object.keys(values)
       .map((key, i) => `tableIds[${i}] = ${key}TableId`)
       .join(";")};
-    TemplateIndex.set(store, templateId, tableIds);
+    FactoryIndex.set(store, templateId, tableIds);
 
     ${Object.entries(values)
       .map(([key, value]) => {
-        return `TemplateContent.set(store, templateId, ${key}TableId, ${key}.encode(${getValue(
+        return `FactoryContent.set(store, templateId, ${key}TableId, ${key}.encode(${getValue(
           mudConfig,
           key,
           value

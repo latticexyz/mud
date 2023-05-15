@@ -164,13 +164,13 @@
   {
     "source": "test/TemplatesModule.t.sol",
     "name": "install templates module",
-    "functionCall": "world.installRootModule(templatesModule, new bytes(0))",
+    "functionCall": "world.installRootModule(factoryModule, new bytes(0))",
     "gasUsed": 689724
   },
   {
     "source": "test/TemplatesModule.t.sol",
     "name": "install templates module",
-    "functionCall": "world.installRootModule(templatesModule, new bytes(0))",
+    "functionCall": "world.installRootModule(factoryModule, new bytes(0))",
     "gasUsed": 689724
   },
   {

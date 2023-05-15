@@ -145,8 +145,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    TemplateContent: (() => {
-      const tableId = new TableId("", "TemplateContent");
+    FactoryContent: (() => {
+      const tableId = new TableId("", "FactoryContent");
       return defineComponent(
         world,
         {
@@ -160,8 +160,8 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
-    TemplateIndex: (() => {
-      const tableId = new TableId("", "TemplateIndex");
+    FactoryIndex: (() => {
+      const tableId = new TableId("", "FactoryIndex");
       return defineComponent(
         world,
         {

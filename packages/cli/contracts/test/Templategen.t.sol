@@ -3,9 +3,9 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
-import { createInstance } from "@latticexyz/world/src/modules/templates/createInstance.sol";
-import { TemplateContent } from "@latticexyz/world/src/modules/templates/tables/TemplateContent.sol";
-import { TemplateIndex } from "@latticexyz/world/src/modules/templates/tables/TemplateIndex.sol";
+import { createInstance } from "@latticexyz/world/src/modules/factory/createInstance.sol";
+import { FactoryContent } from "@latticexyz/world/src/modules/factory/tables/FactoryContent.sol";
+import { FactoryIndex } from "@latticexyz/world/src/modules/factory/tables/FactoryIndex.sol";
 
 import { Statics, StaticsTableId, StaticsData } from "../src/codegen/Tables.sol";
 import { ExampleTemplateId } from "../src/codegen/Templates.sol";
@@ -16,15 +16,15 @@ import { Enum1, Enum2 } from "../src/codegen/Types.sol";
 contract TemplateTest is Test, StoreReadWithStubs {
   function testTemplates() public {
     Statics.registerSchema();
-    TemplateContent.registerSchema();
-    TemplateIndex.registerSchema();
+    FactoryContent.registerSchema();
+    FactoryIndex.registerSchema();
 
     // create a template
     createTemplates();
 
     // Assert that the template content was set correctly
     assertEq(
-      TemplateContent.get(ExampleTemplateId, StaticsTableId),
+      FactoryContent.get(ExampleTemplateId, StaticsTableId),
       Statics.encode(1, 1, "wasd", 0x71C7656EC7ab88b098defB751B7401B5f6d8976F, true, Enum1.E1, Enum2.E1)
     );
 

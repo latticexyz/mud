@@ -3,8 +3,8 @@ pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
 import { StoreSwitch } from "@latticexyz/store/src/StoreSwitch.sol";
-import { TemplateContent } from "./tables/TemplateContent.sol";
-import { TemplateIndex } from "./tables/TemplateIndex.sol";
+import { FactoryContent } from "./tables/FactoryContent.sol";
+import { FactoryIndex } from "./tables/FactoryIndex.sol";
 
 /**
  * Create an instance of a given template.
@@ -13,10 +13,10 @@ import { TemplateIndex } from "./tables/TemplateIndex.sol";
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
 function createInstance(bytes32 templateId, bytes32[][] memory keys) {
-  bytes32[] memory tableIds = TemplateIndex.get(templateId);
+  bytes32[] memory tableIds = FactoryIndex.get(templateId);
 
   for (uint256 i; i < tableIds.length; i++) {
-    bytes memory value = TemplateContent.get(templateId, tableIds[i]);
+    bytes memory value = FactoryContent.get(templateId, tableIds[i]);
 
     StoreSwitch.setRecord(tableIds[i], keys[i], value);
   }
@@ -26,10 +26,10 @@ function createInstance(bytes32 templateId, bytes32[][] memory keys) {
  * Create an instance of a given template.
  */
 function createInstance(IStore store, bytes32 templateId, bytes32[][] memory keys) {
-  bytes32[] memory tableIds = TemplateIndex.get(store, templateId);
+  bytes32[] memory tableIds = FactoryIndex.get(store, templateId);
 
   for (uint256 i; i < tableIds.length; i++) {
-    bytes memory value = TemplateContent.get(store, templateId, tableIds[i]);
+    bytes memory value = FactoryContent.get(store, templateId, tableIds[i]);
 
     store.setRecord(tableIds[i], keys[i], value);
   }

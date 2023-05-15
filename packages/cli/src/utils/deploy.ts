@@ -18,7 +18,7 @@ import CoreModuleData from "@latticexyz/world/abi/CoreModule.sol/CoreModule.json
 import KeysWithValueModuleData from "@latticexyz/world/abi/KeysWithValueModule.sol/KeysWithValueModule.json" assert { type: "json" };
 import KeysInTableModuleData from "@latticexyz/world/abi/KeysInTableModule.sol/KeysInTableModule.json" assert { type: "json" };
 import UniqueEntityModuleData from "@latticexyz/world/abi/UniqueEntityModule.sol/UniqueEntityModule.json" assert { type: "json" };
-import TemplatesModuleData from "@latticexyz/world/abi/TemplatesModule.sol/TemplatesModule.json" assert { type: "json" };
+import FactoryModuleData from "@latticexyz/world/abi/FactoryModule.sol/FactoryModule.json" assert { type: "json" };
 
 export interface DeployConfig {
   profile?: string;
@@ -110,12 +110,7 @@ export async function deploy(
       disableTxWait,
       "UniqueEntityModule"
     ),
-    TemplatesModule: deployContract(
-      TemplatesModuleData.abi,
-      TemplatesModuleData.bytecode,
-      disableTxWait,
-      "TemplatesModule"
-    ),
+    FactoryModule: deployContract(FactoryModuleData.abi, FactoryModuleData.bytecode, disableTxWait, "FactoryModule"),
   };
 
   // Deploy user Modules

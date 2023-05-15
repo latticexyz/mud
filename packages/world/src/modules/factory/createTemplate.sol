@@ -2,8 +2,8 @@
 pragma solidity >=0.8.0;
 
 import { IStore } from "@latticexyz/store/src/IStore.sol";
-import { TemplateContent } from "./tables/TemplateContent.sol";
-import { TemplateIndex } from "./tables/TemplateIndex.sol";
+import { FactoryContent } from "./tables/FactoryContent.sol";
+import { FactoryIndex } from "./tables/FactoryIndex.sol";
 
 /**
  * Create a template of default table values.
@@ -12,10 +12,10 @@ import { TemplateIndex } from "./tables/TemplateIndex.sol";
  * For usage outside of a Store, use the overload that takes an explicit store argument.
  */
 function createTemplate(bytes32 templateId, bytes32[] memory tableIds, bytes[] memory values) {
-  TemplateIndex.set(templateId, tableIds);
+  FactoryIndex.set(templateId, tableIds);
 
   for (uint256 i; i < tableIds.length; i++) {
-    TemplateContent.set(templateId, tableIds[i], values[i]);
+    FactoryContent.set(templateId, tableIds[i], values[i]);
   }
 }
 
@@ -23,9 +23,9 @@ function createTemplate(bytes32 templateId, bytes32[] memory tableIds, bytes[] m
  * Create a template of default table values.
  */
 function createTemplate(IStore store, bytes32 templateId, bytes32[] memory tableIds, bytes[] memory values) {
-  TemplateIndex.set(store, templateId, tableIds);
+  FactoryIndex.set(store, templateId, tableIds);
 
   for (uint256 i; i < tableIds.length; i++) {
-    TemplateContent.set(store, templateId, tableIds[i], values[i]);
+    FactoryContent.set(store, templateId, tableIds[i], values[i]);
   }
 }

@@ -3,8 +3,8 @@ pragma solidity >=0.8.0;
 
 import "forge-std/Test.sol";
 import { MudV2Test } from "@latticexyz/std-contracts/src/test/MudV2Test.t.sol";
-import { createInstance } from "@latticexyz/world/src/modules/templates/createInstance.sol";
-import { TemplateContent } from "@latticexyz/world/src/modules/templates/tables/TemplateContent.sol";
+import { createInstance } from "@latticexyz/world/src/modules/factory/createInstance.sol";
+import { FactoryContent } from "@latticexyz/world/src/modules/factory/tables/FactoryContent.sol";
 
 import { createTemplates } from "../src/codegen/scripts/CreateTemplates.sol";
 
@@ -27,7 +27,7 @@ contract TemplateTest is MudV2Test {
     createTemplates(world);
 
     // Assert that the template content was set correctly
-    assertEq(TemplateContent.get(world, SampleTemplateId, CounterTableTableId), CounterTable.encode(420));
+    assertEq(FactoryContent.get(world, SampleTemplateId, CounterTableTableId), CounterTable.encode(420));
 
     bytes32[][] memory keys = new bytes32[][](1);
     keys[0] = CounterTable.encodeKeyTuple("test");

@@ -30,7 +30,7 @@ export default mudConfig({
       args: [resolveTableId("CounterTable")],
     },
     {
-      name: "TemplatesModule",
+      name: "FactoryModule",
       root: true,
       args: [],
     },

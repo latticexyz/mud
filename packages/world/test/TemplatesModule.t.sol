@@ -6,22 +6,22 @@ import "forge-std/Test.sol";
 import { Schema, SchemaLib } from "@latticexyz/store/src/Schema.sol";
 import { SchemaType } from "@latticexyz/schema-type/src/solidity/SchemaType.sol";
 
-import { TemplateContent } from "../src/modules/templates/tables/TemplateContent.sol";
-import { TemplateIndex } from "../src/modules/templates/tables/TemplateIndex.sol";
-import { createInstance } from "../src/modules/templates/createInstance.sol";
-import { createTemplate } from "../src/modules/templates/createTemplate.sol";
+import { FactoryContent } from "../src/modules/factory/tables/FactoryContent.sol";
+import { FactoryIndex } from "../src/modules/factory/tables/FactoryIndex.sol";
+import { createInstance } from "../src/modules/factory/createInstance.sol";
+import { createTemplate } from "../src/modules/factory/createTemplate.sol";
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
 import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
-import { TemplatesModule } from "../src/modules/templates/TemplatesModule.sol";
+import { FactoryModule } from "../src/modules/factory/FactoryModule.sol";
 
-contract TemplatesModuleTest is Test {
+contract FactoryModuleTest is Test {
   bytes16 namespace = ROOT_NAMESPACE;
   bytes16 name = bytes16("source");
   IBaseWorld world;
-  TemplatesModule templatesModule = new TemplatesModule();
+  FactoryModule factoryModule = new FactoryModule();
 
   Schema tableSchema;
   Schema tableKeySchema;
@@ -35,20 +35,20 @@ contract TemplatesModuleTest is Test {
     world.installRootModule(new CoreModule(), new bytes(0));
   }
 
-  function _installTemplatesModule() internal {
+  function _installFactoryModule() internal {
     // Register table
     tableId = world.registerTable(namespace, name, tableSchema, tableKeySchema);
 
     // !gasreport install templates module
-    world.installRootModule(templatesModule, new bytes(0));
+    world.installRootModule(factoryModule, new bytes(0));
   }
 
   function testInstallRoot() public {
-    _installTemplatesModule();
+    _installFactoryModule();
   }
 
   function testTemplates() public {
-    _installTemplatesModule();
+    _installFactoryModule();
 
     bytes32[] memory tableIds = new bytes32[](1);
     tableIds[0] = tableId;
@@ -60,7 +60,7 @@ contract TemplatesModuleTest is Test {
     createTemplate(world, templateId, tableIds, values);
 
     // Assert that the template content was set correctly
-    assertEq(TemplateContent.get(world, templateId, tableId), abi.encode(1));
+    assertEq(FactoryContent.get(world, templateId, tableId), abi.encode(1));
 
     // Create a template instance
     uint256 k1 = 1;
