@@ -15,7 +15,7 @@ export async function loadConfig(configPath?: string): Promise<unknown> {
     configPath = await resolveConfigPath(TEMP_CONFIG);
     return (await import(configPath)).default;
   } finally {
-    rmSync(TEMP_CONFIG);
+    rmSync(TEMP_CONFIG, { force: true });
   }
 }
 
