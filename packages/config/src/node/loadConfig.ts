@@ -1,6 +1,6 @@
 import { findUp } from "find-up";
 import path from "path";
-import { NotInsideProjectError } from "./errors";
+import { NotInsideProjectError } from "../library/errors";
 import esbuild from "esbuild";
 import { rmSync } from "fs";
 

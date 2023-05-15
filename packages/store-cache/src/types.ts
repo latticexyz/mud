@@ -96,6 +96,6 @@ export type Update<C extends StoreConfig = StoreConfig, Table extends keyof C["t
     namespace: C["namespace"];
     table: key;
     set: KeyValue<C, key>[];
-    remove: Key<C, key>[];
+    remove: { key: Key<C, key> }[];
   };
 }[Table];

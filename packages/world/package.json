@@ -12,6 +12,7 @@
   "exports": {
     ".": "./dist/ts/library/index.js",
     "./register": "./dist/ts/register/index.js",
+    "./node": "./dist/ts/node/index.js",
     "./mud.config.js": "./dist/mud.config.js",
     "./abi/*": "./abi/*",
     "./types/*": "./types/*"
@@ -23,6 +24,9 @@
       ],
       "register": [
         "./ts/register/index.ts"
+      ],
+      "node": [
+        "./ts/node/index.ts"
       ]
     }
   },

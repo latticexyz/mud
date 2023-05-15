@@ -3,7 +3,7 @@ import glob from "glob";
 import path, { basename } from "path";
 import type { CommandModule, Options } from "yargs";
 import { MUDError } from "@latticexyz/common/errors";
-import { loadConfig } from "@latticexyz/config";
+import { loadConfig } from "@latticexyz/config/node";
 import { StoreConfig } from "@latticexyz/store";
 import { WorldConfig } from "@latticexyz/world";
 import { deploy } from "../utils/deploy";
@@ -24,6 +24,7 @@ export type DeployOptions = {
   worldAddress?: string;
   srcDir?: string;
   disableTxWait: boolean;
+  pollInterval: number;
 };
 
 export const yDeployOptions = {
@@ -42,6 +43,11 @@ export const yDeployOptions = {
   worldAddress: { type: "string", desc: "Deploy to an existing World at the given address" },
   srcDir: { type: "string", desc: "Source directory. Defaults to foundry src directory." },
   disableTxWait: { type: "boolean", desc: "Disable waiting for transactions to be confirmed.", default: false },
+  pollInterval: {
+    type: "number",
+    desc: "Interval in miliseconds to use to poll for transaction receipts / block inclusion",
+    default: 1000,
+  },
 } satisfies Record<keyof DeployOptions, Options>;
 
 export async function deployHandler(args: Parameters<(typeof commandModule)["handler"]>[0]) {
