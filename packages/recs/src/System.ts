@@ -2,7 +2,7 @@ import { concat, EMPTY, from, Observable } from "rxjs";
 import { getComponentEntities, removeComponent, setComponent } from "./Component";
 import { UpdateType } from "./constants";
 import { defineEnterQuery, defineExitQuery, defineQuery, defineUpdateQuery } from "./Query";
-import { Component, ComponentUpdate, ComponentValue, EntityIndex, QueryFragment, Schema, World } from "./types";
+import { Component, ComponentUpdate, ComponentValue, Entity, QueryFragment, Schema, World } from "./types";
 import { toUpdateStream } from "./utils";
 
 /**
@@ -133,8 +133,8 @@ export function defineComponentSystem<S extends Schema>(
 export function defineSyncSystem<T extends Schema>(
   world: World,
   query: QueryFragment[],
-  component: (entity: EntityIndex) => Component<T>,
-  value: (entity: EntityIndex) => ComponentValue<T>,
+  component: (entity: Entity) => Component<T>,
+  value: (entity: Entity) => ComponentValue<T>,
   options: { update?: boolean; runOnInit?: boolean } = { update: false, runOnInit: true }
 ) {
   defineSystem(

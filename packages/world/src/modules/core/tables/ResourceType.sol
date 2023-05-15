@@ -107,6 +107,12 @@ library ResourceType {
     return abi.encodePacked(resourceType);
   }
 
+  /** Encode keys as a bytes32 array using this table's schema */
+  function encodeKeyTuple(bytes32 resourceSelector) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((resourceSelector));
+  }
+
   /* Delete all data for given keys */
   function deleteRecord(bytes32 resourceSelector) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);

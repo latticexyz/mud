@@ -123,6 +123,14 @@ library StoreSwitch {
     }
   }
 
+  function emitEphemeralRecord(bytes32 table, bytes32[] memory key, bytes memory data) internal {
+    if (isDelegateCall()) {
+      StoreCore.emitEphemeralRecord(table, key, data);
+    } else {
+      IStore(msg.sender).emitEphemeralRecord(table, key, data);
+    }
+  }
+
   function getRecord(bytes32 table, bytes32[] memory key) internal view returns (bytes memory) {
     if (isDelegateCall()) {
       return StoreCore.getRecord(table, key);
@@ -144,6 +152,34 @@ library StoreSwitch {
       return StoreCore.getField(table, key, fieldIndex);
     } else {
       return IStore(msg.sender).getField(table, key, fieldIndex);
+    }
+  }
+
+  function getFieldLength(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    Schema schema
+  ) internal view returns (uint256) {
+    if (isDelegateCall()) {
+      return StoreCore.getFieldLength(table, key, fieldIndex, schema);
+    } else {
+      return IStore(msg.sender).getFieldLength(table, key, fieldIndex, schema);
+    }
+  }
+
+  function getFieldSlice(
+    bytes32 table,
+    bytes32[] memory key,
+    uint8 fieldIndex,
+    Schema schema,
+    uint256 start,
+    uint256 end
+  ) internal view returns (bytes memory) {
+    if (isDelegateCall()) {
+      return StoreCore.getFieldSlice(table, key, fieldIndex, schema, start, end);
+    } else {
+      return IStore(msg.sender).getFieldSlice(table, key, fieldIndex, schema, start, end);
     }
   }
 }

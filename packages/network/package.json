@@ -8,81 +8,63 @@
   },
   "license": "MIT",
   "type": "module",
-  "main": "src/index.ts",
-  "source": "src/index.ts",
+  "exports": {
+    ".": "./dist/index.js",
+    "./dev": "./dist/dev/index.js"
+  },
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./src/index.ts"
+      ],
+      "dev": [
+        "./src/dev/index.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm run build:js",
-    "build:js": "pnpm run prepack && (parcel build || true) && pnpm run postpack && tsc --emitDeclarationOnly",
+    "build:js": "tsup",
     "clean": "pnpm run clean:js",
-    "clean:js": "rimraf dist .parcel-cache",
+    "clean:js": "rimraf dist",
+    "dev": "tsup --watch",
     "docs": "rimraf API && typedoc src && find API -type f -name '*.md' -exec sed -E -i \"\" \"s/(#.*)(<.*>)/\\1/\" {} \\;",
     "lint": "eslint . --ext .ts",
-    "prepack": "mv package.json package.json.bak && jq \".main = \\\"dist/index.js\\\"\" package.json.bak > package.json ",
-    "postpack": "mv package.json.bak package.json || echo 'no package.json.bak'",
-    "release": "npm publish --access=public",
     "test": "tsc --noEmit && jest --forceExit"
   },
   "dependencies": {
-    "debug": "^4.3.4",
-    "lodash": "^4.17.21"
-  },
-  "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
     "@ethersproject/providers": "^5.7.2",
     "@improbable-eng/grpc-web": "^0.15.0",
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/recs": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "@latticexyz/services": "workspace:*",
     "@latticexyz/solecs": "workspace:*",
     "@latticexyz/store": "workspace:*",
     "@latticexyz/utils": "workspace:*",
-    "@protobuf-ts/grpcweb-transport": "^2.7.0",
+    "async-mutex": "^0.3.2",
+    "debug": "^4.3.4",
+    "ethers": "^5.7.2",
+    "lodash": "^4.17.21",
+    "mobx": "^6.7.0",
+    "nice-grpc-web": "^2.0.1",
+    "rxjs": "^7.5.5",
+    "threads": "^1.7.0",
+    "viem": "^0.3.18"
+  },
+  "devDependencies": {
     "@types/debug": "^4.1.7",
-    "@types/google-protobuf": "^3.15.6",
     "@types/jest": "^27.4.1",
     "@types/lodash": "^4.14.182",
     "@types/node": "^18.15.11",
-    "async-mutex": "^0.3.2",
-    "ethers": "^5.7.2",
     "fake-indexeddb": "^4.0.0",
-    "google-protobuf": "^3.21.0",
     "jest": "^29.3.1",
     "jest-environment-jsdom": "^29.3.1",
-    "mobx": "^6.7.0",
-    "nice-grpc-web": "^2.0.1",
-    "parcel": "2.8.3",
-    "rimraf": "^3.0.2",
-    "rxjs": "^7.5.5",
-    "threads": "^1.7.0",
     "ts-jest": "^29.0.5",
-    "tslib": "^2.5.0",
+    "tsup": "^6.7.0",
     "typedoc": "0.23.21",
-    "typedoc-plugin-markdown": "^3.13.6",
-    "typescript": "^4.9.5",
-    "viem": "^0.2.0"
-  },
-  "peerDependencies": {
-    "@ethersproject/abi": "^5.7.0",
-    "@ethersproject/providers": "^5.7.2",
-    "@improbable-eng/grpc-web": "^0.15.0",
-    "@latticexyz/recs": "latest",
-    "@latticexyz/schema-type": "latest",
-    "@latticexyz/services": "latest",
-    "@latticexyz/solecs": "latest",
-    "@latticexyz/store": "latest",
-    "@latticexyz/utils": "latest",
-    "@protobuf-ts/grpcweb-transport": "^2.7.0",
-    "async-mutex": "^0.3.2",
-    "ethers": "^5.7.2",
-    "mobx": "^6.7.0",
-    "nice-grpc-web": "^2.0.1",
-    "observable-webworker": "^4.0.1",
-    "rxjs": "^7.5.5",
-    "threads": "^1.7.0",
-    "viem": "^0.2.0"
-  },
-  "engines": {
-    "node": ">=18"
+    "typedoc-plugin-markdown": "^3.13.6"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

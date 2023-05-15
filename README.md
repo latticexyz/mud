@@ -1,7 +1,7 @@
 # MUD
 
 <div align="center">
-<img src="docs/public/logo512-black.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
+<img src="docs/public/logo512-black-w-background.png" width="200" style="margin: 0 0 30px 0;" alt="MUD logo" />
 <p>MUD - Engine for Autonomous Worlds</p>
 </div>
 
@@ -53,7 +53,7 @@ MUD is MIT-licensed, open source and free to use.
 ## Quickstart
 
 ```
-pnpm create mud my-project
+yarn create mud my-project
 ```
 
 ![Scaffolding a new project with the MUD CLI.](./docs/public/mud-create.gif)
@@ -85,21 +85,23 @@ The following steps are only necessary if you want to contribute to MUD. To use 
 
 1. Install go (required to build [packages/services](packages/services/)): [https://go.dev/doc/install](https://go.dev/doc/install)
 
-2. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
+2. Install protobuf (required to build [packages/services](packages/services/)): [https://grpc.io/docs/protoc-installation/](https://grpc.io/docs/protoc-installation/)
 
-3. Install pnpm
+3. Install the foundry toolkit (required to build and test MUD solidity packages): [https://getfoundry.sh/](https://getfoundry.sh/)
+
+4. Install pnpm
 
 ```bash
 npm install pnpm --global
 ```
 
-4. Clone the MUD monorepo
+5. Clone the MUD monorepo
 
 ```
 git clone https://github.com/latticexyz/mud
 ```
 
-5. Install MUD dependencies and setup local environment
+6. Install MUD dependencies and setup local environment
 
 ```
 cd mud && pnpm install

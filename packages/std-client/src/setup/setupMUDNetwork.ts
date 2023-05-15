@@ -10,14 +10,13 @@ import {
   SingletonID,
 } from "@latticexyz/network";
 import { BehaviorSubject, concatMap, from, Subject } from "rxjs";
-import { defineComponent, Type, World, EntityID } from "@latticexyz/recs";
+import { defineComponent, Type, World } from "@latticexyz/recs";
 import { computed } from "mobx";
 import { keccak256 } from "@latticexyz/utils";
 import { Contract, ContractInterface } from "ethers";
 import { World as WorldContract } from "@latticexyz/solecs/types/ethers-contracts/World";
 import WorldAbi from "@latticexyz/solecs/abi/World.sol/World.abi.json";
 import { defineStringComponent } from "../components";
-import keys from "lodash/keys";
 import { ContractComponent, ContractComponents, NetworkComponents, SetupContractConfig } from "./types";
 import {
   applyNetworkUpdates,
@@ -98,7 +97,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   const singletonEntity = world.registerEntity({ id: SingletonID });
   // Register player entity
   const address = network.connectedAddress.get();
-  const playerEntityId = address ? (address as EntityID) : undefined;
+  const playerEntityId = address;
   const playerEntity = playerEntityId ? world.registerEntity({ id: playerEntityId }) : undefined;
 
   const signerOrProvider = computed(() => network.signer.get() || network.providers.get().json);
@@ -132,7 +131,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
   const decodeNetworkComponentUpdate = createDecodeNetworkComponentUpdate(world, components, mappings);
   const { systemCallStreams, decodeAndEmitSystemCall } = createSystemCallStreams(
     world,
-    keys(SystemAbis),
+    Object.keys(SystemAbis),
     SystemsRegistry,
     getSystemContract,
     decodeNetworkComponentUpdate
@@ -184,6 +183,7 @@ export async function setupMUDNetwork<C extends ContractComponents, SystemTypes 
     components,
     singletonEntityId: SingletonID,
     singletonEntity,
+    /* @deprecated playerEntityId is equivalent to playerEntity */
     playerEntityId,
     playerEntity,
   };

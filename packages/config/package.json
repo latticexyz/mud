@@ -10,19 +10,33 @@
   "license": "MIT",
   "type": "module",
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/library/index.js",
+    "./register": "./dist/register/index.js",
+    "./node": "./dist/node/index.js"
   },
-  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "index": [
+        "./src/library/index.ts"
+      ],
+      "register": [
+        "./src/register/index.ts"
+      ],
+      "node": [
+        "./src/node/index.ts"
+      ]
+    }
+  },
   "scripts": {
     "build": "pnpm run build:js",
     "build:js": "tsup",
     "clean": "pnpm run clean:js",
     "clean:js": "rimraf dist",
     "dev": "tsup --watch",
-    "release": "npm publish --access=public",
-    "test": "vitest typecheck --run"
+    "test": "tsc --noEmit"
   },
   "dependencies": {
+    "@latticexyz/common": "workspace:*",
     "@latticexyz/schema-type": "workspace:*",
     "chalk": "^5.2.0",
     "esbuild": "^0.17.15",
@@ -32,8 +46,7 @@
     "zod-validation-error": "^1.3.0"
   },
   "devDependencies": {
-    "tsup": "^6.7.0",
-    "vitest": "0.30.1"
+    "tsup": "^6.7.0"
   },
   "gitHead": "914a1e0ae4a573d685841ca2ea921435057deb8f"
 }

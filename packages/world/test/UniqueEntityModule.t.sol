@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 
 import { World } from "../src/World.sol";
 import { IBaseWorld } from "../src/interfaces/IBaseWorld.sol";
-import { IErrors } from "../src/interfaces/IErrors.sol";
+import { IWorldErrors } from "../src/interfaces/IWorldErrors.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { UniqueEntityModule } from "../src/modules/uniqueentity/UniqueEntityModule.sol";
@@ -72,7 +72,7 @@ contract UniqueEntityModuleTest is Test {
     // But changing the table directly isn't allowed
     vm.expectRevert(
       abi.encodeWithSelector(
-        IErrors.AccessDenied.selector,
+        IWorldErrors.AccessDenied.selector,
         ResourceSelector.from(NAMESPACE, TABLE_NAME).toString(),
         alice
       )

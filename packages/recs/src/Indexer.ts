@@ -1,5 +1,6 @@
 import { getComponentEntities, getComponentValue } from "./Component";
-import { Component, ComponentValue, EntityIndex, Indexer, Metadata, Schema } from "./types";
+import { getEntityString, getEntitySymbol } from "./Entity";
+import { Component, ComponentValue, Entity, EntitySymbol, Indexer, Metadata, Schema } from "./types";
 
 /**
  * Create an indexed component from a given component.
@@ -18,29 +19,29 @@ import { Component, ComponentValue, EntityIndex, Indexer, Metadata, Schema } fro
 export function createIndexer<S extends Schema, M extends Metadata, T = undefined>(
   component: Component<S, M, T>
 ): Indexer<S, M, T> {
-  const valueToEntities = new Map<string, Set<EntityIndex>>();
+  const valueToEntities = new Map<string, Set<EntitySymbol>>();
 
   function getEntitiesWithValue(value: ComponentValue<S, T>) {
     const entities = valueToEntities.get(getValueKey(value));
-    return entities ? new Set([...entities]) : new Set<EntityIndex>();
+    return entities ? new Set([...entities].map(getEntityString)) : new Set<Entity>();
   }
 
   function getValueKey(value: ComponentValue<S, T>): string {
     return Object.values(value).join("/");
   }
 
-  function add(entity: EntityIndex, value: ComponentValue<S, T> | undefined) {
+  function add(entity: EntitySymbol, value: ComponentValue<S, T> | undefined) {
     if (!value) return;
     const valueKey = getValueKey(value);
     let entitiesWithValue = valueToEntities.get(valueKey);
     if (!entitiesWithValue) {
-      entitiesWithValue = new Set<EntityIndex>();
+      entitiesWithValue = new Set<EntitySymbol>();
       valueToEntities.set(valueKey, entitiesWithValue);
     }
     entitiesWithValue.add(entity);
   }
 
-  function remove(entity: EntityIndex, value: ComponentValue<S, T> | undefined) {
+  function remove(entity: EntitySymbol, value: ComponentValue<S, T> | undefined) {
     if (!value) return;
     const valueKey = getValueKey(value);
     const entitiesWithValue = valueToEntities.get(valueKey);
@@ -51,16 +52,16 @@ export function createIndexer<S extends Schema, M extends Metadata, T = undefine
   // Initial indexing
   for (const entity of getComponentEntities(component)) {
     const value = getComponentValue(component, entity);
-    add(entity, value);
+    add(getEntitySymbol(entity), value);
   }
 
   // Keeping index up to date
   const subscription = component.update$.subscribe(({ entity, value }) => {
     // Remove from previous location
-    remove(entity, value[1]);
+    remove(getEntitySymbol(entity), value[1]);
 
     // Add to new location
-    add(entity, value[0]);
+    add(getEntitySymbol(entity), value[0]);
   });
 
   component.world.registerDisposer(() => subscription?.unsubscribe());

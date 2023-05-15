@@ -1,2 +1,2 @@
-export * from "./errors.js";
-export * from "./deploy-v2.js";
+export * from "./errors";
+export * from "./deploy";

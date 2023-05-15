@@ -3,7 +3,7 @@ import { Subject } from "rxjs";
 import { defineComponent, setComponent } from "../src/Component";
 import { Type } from "../src/constants";
 import { createEntity } from "../src/Entity";
-import { World, AnyComponent, EntityIndex } from "../src/types";
+import { World, AnyComponent, EntitySymbol } from "../src/types";
 import { createWorld, getEntityComponents } from "../src/World";
 
 describe("World", () => {
@@ -16,11 +16,11 @@ describe("World", () => {
 
     describe("registerEntity", () => {
       it("should add the entitiy to the world's entities", () => {
-        expect(world.entities.length).toBe(0);
+        expect([...world.getEntities()].length).toBe(0);
 
         world.registerEntity();
-        expect(world.entities.length).toBe(1);
-        expect(world.entities[0]).not.toBe(undefined);
+        expect([...world.getEntities()].length).toBe(1);
+        expect([...world.getEntities()][0]).not.toBe(undefined);
       });
     });
 
@@ -31,7 +31,7 @@ describe("World", () => {
         rawComponent = {
           id: "some-id",
           values: {
-            value: new Map<EntityIndex, number>(),
+            value: new Map<EntitySymbol, number>(),
           },
           update$: new Subject(),
           schema: { value: Type.Number },

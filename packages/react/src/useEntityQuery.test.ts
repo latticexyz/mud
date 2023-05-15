@@ -99,8 +99,8 @@ describe("useEntityQuery", () => {
 
     // Changing a different component value should NOT re-render
     act(() => {
-      setComponent(OwnedBy, entity2, { value: world.entities[entity1] });
-      setComponent(OwnedBy, entity3, { value: world.entities[entity1] });
+      setComponent(OwnedBy, entity2, { value: entity1 });
+      setComponent(OwnedBy, entity3, { value: entity1 });
     });
 
     expect(result.all).toHaveLength(2);

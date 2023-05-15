@@ -7,12 +7,12 @@ on:
   pull_request:
 
 jobs:
-  build:
-    name: Build examples
+  main:
+    name: Build/test examples
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        example: [v2-minimal]
+        example: [minimal]
 
     steps:
       - name: Checkout
@@ -31,5 +31,9 @@ jobs:
         working-directory: ./examples/${{ matrix.example }}
         run: pnpm run initialize && pnpm run build
 
-      - name: Outdated files, run `pnpm gas-report` and commit them
+      - name: Outdated files, run `pnpm run initialize && pnpm run build` in `examples/${{ matrix.example }}` and commit them
         uses: ./.github/actions/require-empty-diff
+
+      - name: Run tests
+        working-directory: ./examples/${{ matrix.example }}
+        run: pnpm run test

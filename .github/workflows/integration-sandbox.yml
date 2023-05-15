@@ -1,0 +1,40 @@
+name: Integration sandbox
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  main:
+    name: Build/test integration sandbox
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+
+      - name: Setup
+        uses: ./.github/actions/setup
+
+      - name: Install integration sandbox dependencies
+        working-directory: ./integration-sandbox
+        run: pnpm install
+
+      - name: Clean integration sandbox
+        working-directory: ./integration-sandbox
+        run: pnpm run clean
+
+      - name: Build integration sandbox
+        working-directory: ./integration-sandbox
+        run: pnpm run build
+
+      - name: Outdated files, run `pnpm run build` in `integration-sandbox` and commit them
+        uses: ./.github/actions/require-empty-diff
+
+      - name: Run tests
+        working-directory: ./integration-sandbox
+        run: pnpm test

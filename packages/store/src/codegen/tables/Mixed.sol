@@ -180,6 +180,49 @@ library Mixed {
     _store.setField(_tableId, _primaryKeys, 2, EncodeArray.encode((a32)));
   }
 
+  /** Get the length of a32 */
+  function lengthA32(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 2, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get the length of a32 (using the specified store) */
+  function lengthA32(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 2, getSchema());
+    return _byteLength / 4;
+  }
+
+  /** Get an item of a32 (unchecked, returns invalid data if index overflows) */
+  function getItemA32(bytes32 key, uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      2,
+      getSchema(),
+      _index * 4,
+      (_index + 1) * 4
+    );
+    return (uint32(Bytes.slice4(_blob, 0)));
+  }
+
+  /** Get an item of a32 (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItemA32(IStore _store, bytes32 key, uint256 _index) internal view returns (uint32) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 2, getSchema(), _index * 4, (_index + 1) * 4);
+    return (uint32(Bytes.slice4(_blob, 0)));
+  }
+
   /** Push an element to a32 */
   function pushA32(bytes32 key, uint32 _element) internal {
     bytes32[] memory _primaryKeys = new bytes32[](1);
@@ -260,6 +303,49 @@ library Mixed {
     _primaryKeys[0] = bytes32((key));
 
     _store.setField(_tableId, _primaryKeys, 3, bytes((s)));
+  }
+
+  /** Get the length of s */
+  function lengthS(bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = StoreSwitch.getFieldLength(_tableId, _primaryKeys, 3, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get the length of s (using the specified store) */
+  function lengthS(IStore _store, bytes32 key) internal view returns (uint256) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    uint256 _byteLength = _store.getFieldLength(_tableId, _primaryKeys, 3, getSchema());
+    return _byteLength / 1;
+  }
+
+  /** Get an item of s (unchecked, returns invalid data if index overflows) */
+  function getItemS(bytes32 key, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = StoreSwitch.getFieldSlice(
+      _tableId,
+      _primaryKeys,
+      3,
+      getSchema(),
+      _index * 1,
+      (_index + 1) * 1
+    );
+    return (string(_blob));
+  }
+
+  /** Get an item of s (using the specified store) (unchecked, returns invalid data if index overflows) */
+  function getItemS(IStore _store, bytes32 key, uint256 _index) internal view returns (string memory) {
+    bytes32[] memory _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
+
+    bytes memory _blob = _store.getFieldSlice(_tableId, _primaryKeys, 3, getSchema(), _index * 1, (_index + 1) * 1);
+    return (string(_blob));
   }
 
   /** Push a slice to s */
@@ -391,6 +477,12 @@ library Mixed {
     PackedCounter _encodedLengths = PackedCounterLib.pack(_counters);
 
     return abi.encodePacked(u32, u128, _encodedLengths.unwrap(), EncodeArray.encode((a32)), bytes((s)));
+  }
+
+  /** Encode keys as a bytes32 array using this table's schema */
+  function encodeKeyTuple(bytes32 key) internal pure returns (bytes32[] memory _primaryKeys) {
+    _primaryKeys = new bytes32[](1);
+    _primaryKeys[0] = bytes32((key));
   }
 
   /* Delete all data for given keys */

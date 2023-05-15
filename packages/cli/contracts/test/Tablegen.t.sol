@@ -4,7 +4,7 @@ pragma solidity >=0.8.0;
 import "forge-std/Test.sol";
 import { StoreReadWithStubs } from "@latticexyz/store/src/StoreReadWithStubs.sol";
 
-import { Statics, StaticsData, Dynamics, DynamicsData, Singleton } from "../src/codegen/Tables.sol";
+import { Statics, StaticsData, Dynamics, DynamicsData, Singleton, Ephemeral } from "../src/codegen/Tables.sol";
 
 import { Enum1, Enum2 } from "../src/codegen/Types.sol";
 
@@ -38,6 +38,10 @@ contract TablegenTest is Test, StoreReadWithStubs {
     assertEq(abi.encode(Dynamics.get(key)), abi.encode(emptyData));
 
     // initialize values
+    bytes32[1] memory staticB32 = [keccak256("value")];
+    int32[2] memory staticI32 = [int32(-123), 123];
+    uint128[3] memory staticU128 = [type(uint128).max, 123, 456];
+    address[4] memory staticAddrs = [address(this), address(0x0), address(0x1), address(0x2)];
     bool[5] memory staticBools = [true, false, true, true, false];
     uint64[] memory u64 = new uint64[](5);
     u64[0] = 0;
@@ -48,20 +52,31 @@ contract TablegenTest is Test, StoreReadWithStubs {
     string memory str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit,";
     bytes memory b = hex"ff";
     // combine them into a struct
-    DynamicsData memory data = DynamicsData(
-      [keccak256("value")],
-      [int32(-123), 123],
-      [type(uint128).max, 123, 456],
-      [address(this), address(0x0), address(0x1), address(0x2)],
-      staticBools,
-      u64,
-      str,
-      b
-    );
+    DynamicsData memory data = DynamicsData(staticB32, staticI32, staticU128, staticAddrs, staticBools, u64, str, b);
 
     // test that the record is set correctly
     Dynamics.set(key, data);
     assertEq(abi.encode(Dynamics.get(key)), abi.encode(data));
+
+    // test length getters
+    assertEq(Dynamics.lengthStaticB32(key), staticB32.length);
+    assertEq(Dynamics.lengthStaticI32(key), staticI32.length);
+    assertEq(Dynamics.lengthStaticU128(key), staticU128.length);
+    assertEq(Dynamics.lengthStaticAddrs(key), staticAddrs.length);
+    assertEq(Dynamics.lengthStaticBools(key), staticBools.length);
+    assertEq(Dynamics.lengthU64(key), u64.length);
+    assertEq(Dynamics.lengthStr(key), bytes(str).length);
+    assertEq(Dynamics.lengthB(key), b.length);
+
+    // test item getters
+    assertEq(Dynamics.getItemStaticB32(key, 0), staticB32[0]);
+    assertEq(Dynamics.getItemStaticI32(key, 1), staticI32[1]);
+    assertEq(Dynamics.getItemStaticU128(key, 2), staticU128[2]);
+    assertEq(Dynamics.getItemStaticAddrs(key, 3), staticAddrs[3]);
+    assertEq(Dynamics.getItemStaticBools(key, 4), staticBools[4]);
+    assertEq(Dynamics.getItemU64(key, 0), u64[0]);
+    assertEq(Dynamics.getItemStr(key, 1), string(abi.encodePacked(bytes(str)[1])));
+    assertEq(Dynamics.getItemB(key, 0), abi.encodePacked(b[0]));
 
     // test setting single fields
     Dynamics.setStaticBools(key, staticBools);
@@ -106,8 +121,26 @@ contract TablegenTest is Test, StoreReadWithStubs {
 
     Singleton.set(-10, [uint32(1), 2], [uint32(3), 4], [uint32(5)]);
     assertEq(Singleton.getV1(), -10);
+
     assertEq(abi.encode(Singleton.getV2()), abi.encode([uint32(1), 2]));
+    assertEq(Singleton.lengthV2(), 2);
+    assertEq(Singleton.getItemV2(0), 1);
+    assertEq(Singleton.getItemV2(1), 2);
+
     assertEq(abi.encode(Singleton.getV3()), abi.encode([uint32(3), 4]));
+    assertEq(Singleton.lengthV3(), 2);
+    assertEq(Singleton.getItemV3(0), 3);
+    assertEq(Singleton.getItemV3(1), 4);
+
     assertEq(abi.encode(Singleton.getV4()), abi.encode([uint32(5)]));
+    assertEq(Singleton.lengthV4(), 1);
+    assertEq(Singleton.getItemV4(0), 5);
+    assertEq(Singleton.getItemV4(1), 0);
+  }
+
+  function testEphemeral() public {
+    Ephemeral.registerSchema();
+
+    Ephemeral.emitEphemeral("key", 123);
   }
 }

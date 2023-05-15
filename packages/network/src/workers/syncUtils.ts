@@ -1,5 +1,3 @@
-import { JsonRpcProvider, Network } from "@ethersproject/providers";
-import { EntityID, ComponentValue, Components } from "@latticexyz/recs";
 import { to256BitString, awaitPromise, range, Uint8ArrayToHexString } from "@latticexyz/utils";
 import { BytesLike, Contract, BigNumber } from "ethers";
 import { Observable, map, concatMap, of, from } from "rxjs";
@@ -15,10 +13,10 @@ import {
 import {
   NetworkComponentUpdate,
   ContractConfig,
-  SystemCallTransaction,
   NetworkEvents,
-  SystemCall,
   NetworkEvent,
+  SystemCallTransaction,
+  SystemCall,
 } from "../types";
 import { CacheStore, createCacheStore, storeEvent, storeEvents } from "./CacheStore";
 import ComponentAbi from "@latticexyz/solecs/abi/Component.sol/Component.abi.json";
@@ -35,6 +33,8 @@ import { grpc } from "@improbable-eng/grpc-web";
 import { debug as parentDebug } from "./debug";
 import { fetchStoreEvents } from "../v2/fetchStoreEvents";
 import orderBy from "lodash/orderBy";
+import { ComponentValue, Components, Entity } from "@latticexyz/recs";
+import { JsonRpcProvider } from "@ethersproject/providers";
 
 const debug = parentDebug.extend("syncUtils");
 
@@ -166,7 +166,7 @@ export async function reduceFetchedState(
 
   for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
     const component = to256BitString(stateComponents[componentIdIdx]);
-    const entity = stateEntities[entityIdIdx] as EntityID;
+    const entity = stateEntities[entityIdIdx] as Entity;
     const value = await decode(component, rawValue);
     storeEvent(cacheStore, { type: NetworkEvents.NetworkComponentUpdate, component, entity, value, blockNumber });
   }
@@ -186,7 +186,7 @@ export async function reduceFetchedStateV2(
   decode: ReturnType<typeof createDecode>
 ): Promise<void> {
   const { state, blockNumber, stateComponents, stateEntities } = response;
-  const stateEntitiesHex = stateEntities.map((e) => Uint8ArrayToHexString(e) as EntityID);
+  const stateEntitiesHex = stateEntities.map((e) => Uint8ArrayToHexString(e) as Entity);
   const stateComponentsHex = stateComponents.map((e) => to256BitString(e));
 
   for (const { componentIdIdx, entityIdIdx, value: rawValue } of state) {
@@ -350,7 +350,10 @@ export async function fetchStateInBlockRange(
     setPercentage
   );
 
-  storeEvents(cacheStore, events);
+  storeEvents(
+    cacheStore,
+    events.filter((e) => !e.ephemeral)
+  );
 
   return cacheStore;
 }
