@@ -32,6 +32,7 @@ describe("arrays", async () => {
       rpc: forkRpc,
       priorityFeeMultiplier: 1,
       disableTxWait: false,
+      pollInterval: 1000,
     });
 
     // start vite
