@@ -65,19 +65,30 @@ function union(IStore store, bytes32[] memory tableIds) view returns (bytes32[][
   }
 }
 
-struct Fragment {
-  bool has;
-  bytes32 tableId;
+enum QueryType {
+  Has,
+  Not,
+  HasValue,
+  NotValue,
+  ProxyRead,
+  ProxyExpand
 }
 
-function intersection(IStore store, Fragment[] memory fragments) view returns (bytes32[][] memory keyTuples) {
+struct QueryFragment {
+  QueryType queryType;
+  bytes32 tableId;
+  bytes value;
+}
+
+function intersection(IStore store, QueryFragment[] memory fragments) view returns (bytes32[][] memory keyTuples) {
   keyTuples = getKeysInTable(store, fragments[0].tableId);
 
   for (uint256 i = 1; i < fragments.length; i++) {
     uint256 index;
     for (uint256 j; j < keyTuples.length; j++) {
       bool present = hasKey(store, fragments[i].tableId, keyTuples[j]);
-      bool on = (fragments[i].has && present) || !(fragments[i].has || present);
+      bool on = (fragments[i].queryType == QueryType.Has && present) ||
+        (fragments[i].queryType == QueryType.Not && !present);
       if (on) {
         index++;
       }
@@ -88,7 +99,8 @@ function intersection(IStore store, Fragment[] memory fragments) view returns (b
     index = 0;
     for (uint256 j; j < keyTuples.length; j++) {
       bool present = hasKey(store, fragments[i].tableId, keyTuples[j]);
-      bool on = (fragments[i].has && present) || !(fragments[i].has || present);
+      bool on = (fragments[i].queryType == QueryType.Has && present) ||
+        (fragments[i].queryType == QueryType.Not && !present);
       if (on) {
         result[index] = keyTuples[j];
         index++;
@@ -99,7 +111,7 @@ function intersection(IStore store, Fragment[] memory fragments) view returns (b
   }
 }
 
-function intersectionBare(IStore store, Fragment[] memory fragments) view returns (bytes32[][] memory keyTuples) {
+function intersectionBare(IStore store, QueryFragment[] memory fragments) view returns (bytes32[][] memory keyTuples) {
   keyTuples = getKeysInTable(store, fragments[0].tableId);
 
   for (uint256 i = 1; i < fragments.length; i++) {
@@ -108,7 +120,8 @@ function intersectionBare(IStore store, Fragment[] memory fragments) view return
     uint256 index;
     for (uint256 j; j < keyTuples.length; j++) {
       bool present = ArrayLib.includes(tableKeyTuples, keyTuples[j]);
-      bool on = (fragments[i].has && present) || !(fragments[i].has || present);
+      bool on = (fragments[i].queryType == QueryType.Has && present) ||
+        (fragments[i].queryType == QueryType.Not && !present);
       if (on) {
         index++;
       }
@@ -119,7 +132,8 @@ function intersectionBare(IStore store, Fragment[] memory fragments) view return
     index = 0;
     for (uint256 j; j < keyTuples.length; j++) {
       bool present = ArrayLib.includes(tableKeyTuples, keyTuples[j]);
-      bool on = (fragments[i].has && present) || !(fragments[i].has || present);
+      bool on = (fragments[i].queryType == QueryType.Has && present) ||
+        (fragments[i].queryType == QueryType.Not && !present);
       if (on) {
         result[index] = keyTuples[j];
         index++;

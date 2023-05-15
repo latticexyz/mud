@@ -13,7 +13,7 @@ import { ROOT_NAMESPACE } from "../src/constants.sol";
 
 import { CoreModule } from "../src/modules/core/CoreModule.sol";
 import { KeysInTableModule } from "../src/modules/keysintable/KeysInTableModule.sol";
-import { union, intersection, intersectionBare, Fragment } from "../src/modules/keysintable/query.sol";
+import { union, intersection, intersectionBare, QueryFragment, QueryType } from "../src/modules/keysintable/query.sol";
 
 contract queryTest is Test {
   using ResourceSelector for bytes32;
@@ -31,8 +31,8 @@ contract queryTest is Test {
 
   bytes32[][] keys = new bytes32[][](2);
 
-  Fragment[] fragmentsTrueFalse;
-  Fragment[] fragmentsTrueTrue;
+  QueryFragment[] fragmentsTrueFalse;
+  QueryFragment[] fragmentsTrueTrue;
 
   function setUp() public {
     tableSchema = SchemaLib.encode(SchemaType.UINT256);
@@ -45,10 +45,10 @@ contract queryTest is Test {
     keys[0][0] = "test1";
     keys[1][0] = "test2";
 
-    fragmentsTrueFalse.push(Fragment(true, tableA));
-    fragmentsTrueFalse.push(Fragment(false, tableB));
-    fragmentsTrueTrue.push(Fragment(true, tableA));
-    fragmentsTrueTrue.push(Fragment(true, tableB));
+    fragmentsTrueFalse.push(QueryFragment(QueryType.Has, tableA, ""));
+    fragmentsTrueFalse.push(QueryFragment(QueryType.Not, tableB, ""));
+    fragmentsTrueTrue.push(QueryFragment(QueryType.Has, tableA, ""));
+    fragmentsTrueTrue.push(QueryFragment(QueryType.Has, tableB, ""));
   }
 
   function _installKeysInTableModule() internal {
@@ -159,8 +159,8 @@ contract queryTest is Test {
     // Set a value in the source table
     world.setRecord(namespace, nameA, keys[0], abi.encodePacked(value));
 
-    Fragment[] memory fragments = new Fragment[](1);
-    fragments[0] = Fragment(true, tableA);
+    QueryFragment[] memory fragments = new QueryFragment[](1);
+    fragments[0] = QueryFragment(QueryType.Has, tableA, "");
 
     bytes32[][] memory keyTuples = intersection(world, fragments);
 
