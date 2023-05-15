@@ -14,8 +14,9 @@ const Splash = ({ theme }) => {
 
   // Effect to set a flag in localstorage if splash screen hasn't been displayed
   useEffect(() => {
-    if (!localStorage.getItem("splashDisplayed")) {
-      localStorage.setItem("splashDisplayed", "true");
+    const key = "ethglobal-aw-2023-splash-displayed";
+    if (!localStorage.getItem(key)) {
+      localStorage.setItem(key, "true");
       setDisplay(true);
     }
   }, []);
@@ -26,10 +27,6 @@ const Splash = ({ theme }) => {
 
   const stopPropagation = (event) => {
     event.stopPropagation();
-  };
-
-  const handleSignUp = () => {
-    window.open("https://ethglobal.com/events/autonomous", "_blank");
   };
 
   if (!isSplashOpen) return null;
@@ -46,9 +43,9 @@ const Splash = ({ theme }) => {
               <img src="/aw-logo.png" alt="Logo" className={styles.logo} />
               <h2 className={styles.date}>May 18 - 26, 2023</h2>
               <h1 className={styles.title}>Autonomous Worlds Hackathon</h1>
-              <button className={styles.signupButton} onClick={handleSignUp}>
+              <a href="https://ethglobal.com/events/autonomous" target="_blank" className={styles.signupButton}>
                 Sign-up now
-              </button>
+              </a>
               <hr className={styles.separator} />
               <div className={styles.info}>
                 <span role="img" aria-label="book">
@@ -56,7 +53,7 @@ const Splash = ({ theme }) => {
                 </span>
                 <p>
                   If you’re already signed-up, check out the docs and browse some of our{" "}
-                  <a href="./ethglobal-hackathon">hackathon ideas</a>
+                  <a href="/ethglobal-hackathon">hackathon ideas</a>.
                 </p>
               </div>
             </div>

@@ -54,9 +54,11 @@
 }
 
 .signupButton {
+  display: inline-block;
   color: white;
   background-color: #7d7373;
   border: none;
+  border-radius: 0;
   padding: 5px 70px;
   margin-top: 20px;
   cursor: pointer;
