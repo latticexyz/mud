@@ -1,6 +1,6 @@
 export default {
   index: "Introduction",
-  "quick-start": "Quick Start",
+  "quick-start": "Quick start",
   "what-is-mud": "What is MUD?",
   store: "Store",
   world: "World",
