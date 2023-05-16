@@ -9,7 +9,7 @@ import { getKeysInTable } from "../keysintable/getKeysInTable.sol";
 import { KeysInTable, KeysInTableTableId } from "../keysintable/tables/KeysInTable.sol";
 import { SyncRecord } from "./SyncRecord.sol";
 
-function singletonKey(bytes32 key) pure returns (bytes32[] memory) {
+function keyToTuple(bytes32 key) pure returns (bytes32[] memory) {
   bytes32[] memory keyTuple = new bytes32[](1);
   keyTuple[0] = key;
   return keyTuple;
@@ -25,7 +25,7 @@ contract SnapSyncSystem is System {
 
     bytes memory keyBlob = StoreSwitch.getFieldSlice(
       KeysInTableTableId,
-      singletonKey(tableId),
+      keyToTuple(tableId),
       1,
       KeysInTable.getSchema(),
       offset * 32,
@@ -36,7 +36,7 @@ contract SnapSyncSystem is System {
     bytes32[] memory keysRaw = DecodeSlice.decodeArray_bytes32(keySlice);
 
     for (uint256 i; i < limit; i++) {
-      bytes32[] memory key = singletonKey(keysRaw[i]);
+      bytes32[] memory key = keyToTuple(keysRaw[i]);
       bytes memory value = StoreSwitch.getRecord(tableId, key);
       records[i] = SyncRecord({ tableId: tableId, keyTuple: key, value: value });
     }
