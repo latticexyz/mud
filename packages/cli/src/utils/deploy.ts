@@ -110,7 +110,12 @@ export async function deploy(
       disableTxWait,
       "UniqueEntityModule"
     ),
-    SnapSyncModule: deployContract(SnapSyncModuleData.abi, SnapSyncModuleData.bytecode, "SnapSyncModule"),
+    SnapSyncModule: deployContract(
+      SnapSyncModuleData.abi,
+      SnapSyncModuleData.bytecode,
+      disableTxWait,
+      "SnapSyncModule"
+    ),
   };
 
   // Deploy user Modules
