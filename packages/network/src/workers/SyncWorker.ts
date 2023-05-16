@@ -30,6 +30,7 @@ import { Contract } from "ethers";
 import { createModeClient } from "../v2/mode/createModeClient";
 import { syncTablesFromMode } from "../v2/mode/syncTablesFromMode";
 import { getModeBlockNumber } from "../v2/mode/getModeBlockNumber";
+import { transformTableRecordsIntoEvents } from "../v2/transformTableRecordsIntoEvents";
 import * as devObservables from "../dev/observables";
 import { getEventSelector } from "viem";
 import { createLatestEventStreamRPC, fetchEventsInBlockRangeChunked } from "../v2/syncUtils";
@@ -113,7 +114,7 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
       )
     );
     const config = computedConfig.get();
-    const { modeUrl, chainId, worldContract, disableCache } = config;
+    const { modeUrl, chainId, worldContract, disableCache, initialRecords } = config;
 
     // Set default values for cacheAgeThreshold and cacheInterval
     const cacheAgeThreshold = config.cacheAgeThreshold || 100;
@@ -184,7 +185,14 @@ export class SyncWorker<C extends Components> implements DoWork<Input, NetworkEv
     debug(`cache block: ${cacheBlockNumber}, start sync at ${initialBlockNumber}`);
 
     let initialState = createCacheStore();
-    if (initialBlockNumber > Math.max(cacheBlockNumber, modeBlockNumber)) {
+
+    if (initialRecords) {
+      console.log("Initial state from pre-loaded records");
+      this.setLoadingState({ state: SyncState.INITIAL, msg: "Loading initial state", percentage: 0 });
+      const events = await transformTableRecordsIntoEvents(storeContract, initialRecords, initialBlockNumber);
+      storeEvents(initialState, events);
+      initialState.blockNumber = initialBlockNumber;
+    } else if (initialBlockNumber > Math.max(cacheBlockNumber, modeBlockNumber)) {
       // Skip initializing from cache/mode if the initial block number is newer than all of them
       initialState.blockNumber = initialBlockNumber;
     } else {

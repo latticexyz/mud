@@ -33,9 +33,19 @@ export default mudConfig({
   },
   modules: [
     {
+      name: "KeysInTableModule",
+      root: true,
+      args: [resolveTableId("CounterTable")],
+    },
+    {
       name: "KeysWithValueModule",
       root: true,
       args: [resolveTableId("CounterTable")],
+    },
+    {
+      name: "SnapSyncModule",
+      root: true,
+      args: [],
     },
   ],
 });

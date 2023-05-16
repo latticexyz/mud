@@ -388,6 +388,9 @@ importers:
       '@latticexyz/utils':
         specifier: workspace:*
         version: link:../utils
+      '@latticexyz/world':
+        specifier: workspace:*
+        version: link:../world
       async-mutex:
         specifier: ^0.3.2
         version: 0.3.2

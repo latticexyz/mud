@@ -149,6 +149,8 @@ export default mudConfig({
     // (see https://github.com/latticexyz/mud/pull/584)
     "UniqueEntitySystem",
 
+    "SnapSyncSystem",
+
     // Worldgen currently does not support systems inheriting logic
     // from other contracts, so all parts of CoreSystem are named
     // System too to be included in the IBaseWorld interface.

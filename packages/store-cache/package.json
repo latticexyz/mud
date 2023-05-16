@@ -1,7 +1,6 @@
 {
   "name": "@latticexyz/store-cache",
   "version": "1.42.0",
-  "private": true,
   "description": "Database to replicate Store contract state on a TypeScript client",
   "repository": {
     "type": "git",

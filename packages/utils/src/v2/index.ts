@@ -6,3 +6,4 @@ export * from "./isNotNull";
 export * from "./isHex";
 export * from "./stringToBytes";
 export * from "./TableId";
+export * from "./getTableIds";
