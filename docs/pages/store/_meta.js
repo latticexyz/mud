@@ -2,7 +2,7 @@ export default {
   "installation": "Installation",
   "reading-and-writing": "Reading and Writing to Store",
   "config": "Store Config",
-  "advanced-features": "Avanced features of Store",
+  "advanced-features": "Advanced features of Store",
   "indexing": "Indexing",
   "spec": "Specification",
   "gas-efficiency": "Gas Efficiency",

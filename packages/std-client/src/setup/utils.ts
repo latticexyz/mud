@@ -175,7 +175,7 @@ export function applyNetworkUpdates<C extends Components, S extends StoreConfig>
             // (see https://github.com/latticexyz/mud/issues/824)
 
             // `Object.getOwnPropertyNames` guarantees key order, `Object.keys` does not
-            const namedKey = nameKeys(key, Object.getOwnPropertyNames(tableConfig.primaryKeys));
+            const namedKey = nameKeys(key, Object.getOwnPropertyNames(tableConfig.keySchema));
 
             // StoreCache handles setting partial value and initializing with default values
             const value = update.value ?? update.partialValue;
