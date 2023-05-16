@@ -11,7 +11,7 @@ test("resolveWorldConfig requires unique table and system names", () => {
             schema: "uint256",
           },
         },
-        overrideSystems: {
+        systems: {
           Selector: {
             openAccess: false,
             accessList: [],

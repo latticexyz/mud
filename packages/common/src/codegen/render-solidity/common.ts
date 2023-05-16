@@ -4,7 +4,7 @@ import {
   RelativeImportDatum,
   ImportDatum,
   StaticResourceData,
-  RenderPrimaryKey,
+  RenderKeyTuple,
   RenderType,
 } from "./types";
 
@@ -30,24 +30,21 @@ export function renderArguments(args: (string | undefined)[]) {
 
 export function renderCommonData({
   staticResourceData,
-  primaryKeys,
+  keyTuple,
 }: {
   staticResourceData?: StaticResourceData;
-  primaryKeys: RenderPrimaryKey[];
+  keyTuple: RenderKeyTuple[];
 }) {
   // static resource means static tableId as well, and no tableId arguments
   const _tableId = staticResourceData ? "" : "_tableId";
   const _typedTableId = staticResourceData ? "" : "bytes32 _tableId";
 
-  const _keyArgs = renderArguments(primaryKeys.map(({ name }) => name));
-  const _typedKeyArgs = renderArguments(primaryKeys.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
+  const _keyArgs = renderArguments(keyTuple.map(({ name }) => name));
+  const _typedKeyArgs = renderArguments(keyTuple.map(({ name, typeWithLocation }) => `${typeWithLocation} ${name}`));
 
-  const _primaryKeysDefinition = `
-    bytes32[] memory _primaryKeys = new bytes32[](${primaryKeys.length});
-    ${renderList(
-      primaryKeys,
-      (primaryKey, index) => `_primaryKeys[${index}] = ${renderValueTypeToBytes32(primaryKey.name, primaryKey)};`
-    )}
+  const _keyTupleDefinition = `
+    bytes32[] memory _keyTuple = new bytes32[](${keyTuple.length});
+    ${renderList(keyTuple, (key, index) => `_keyTuple[${index}] = ${renderValueTypeToBytes32(key.name, key)};`)}
   `;
 
   return {
@@ -55,7 +52,7 @@ export function renderCommonData({
     _typedTableId,
     _keyArgs,
     _typedKeyArgs,
-    _primaryKeysDefinition,
+    _keyTupleDefinition,
   };
 }
 

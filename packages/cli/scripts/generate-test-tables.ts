@@ -12,7 +12,7 @@ try {
   config = mudConfig({
     tables: {
       Statics: {
-        primaryKeys: {
+        keySchema: {
           k1: "uint256",
           k2: "int32",
           k3: "bytes16",
@@ -44,7 +44,7 @@ try {
         },
       },
       Singleton: {
-        primaryKeys: {},
+        keySchema: {},
         schema: {
           v1: "int256",
           v2: "uint32[2]",

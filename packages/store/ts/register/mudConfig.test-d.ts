@@ -9,7 +9,7 @@ describe("mudConfig", () => {
       typeof mudConfig<{
         tables: {
           Table1: {
-            primaryKeys: {
+            keySchema: {
               a: "Enum1";
             };
             schema: {
@@ -35,7 +35,7 @@ describe("mudConfig", () => {
     };
     tables: {
       Table1: {
-        primaryKeys: {
+        keySchema: {
           a: "Enum1";
         };
         schema: {
