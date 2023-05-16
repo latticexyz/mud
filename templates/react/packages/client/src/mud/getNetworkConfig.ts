@@ -9,6 +9,7 @@ const worlds = worldsJson as Partial<Record<string, { address: string; blockNumb
 type NetworkConfig = SetupContractConfig & {
   privateKey: string;
   faucetServiceUrl?: string;
+  snapSync?: boolean;
 };
 
 export async function getNetworkConfig(): Promise<NetworkConfig> {
@@ -49,6 +50,7 @@ export async function getNetworkConfig(): Promise<NetworkConfig> {
     faucetServiceUrl: params.get("faucet") ?? chain.faucetUrl,
     worldAddress,
     initialBlockNumber,
+    snapSync: params.get("snapSync") === "true",
     disableCache: params.get("cache") === "false",
   };
 }
